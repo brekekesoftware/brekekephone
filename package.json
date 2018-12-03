@@ -1,0 +1,58 @@
+{
+  "name": "Phone",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {
+    "start:app": "webpack-dev-server --config web/webpack.js &",
+    "start:storybook": "start-storybook -p 9001 -c ./storybook/web & storybook start -p 7001 -c ./storybook/native &",
+    "build:app": "webpack -p --config web/webpack.js",
+    "build:storybook": "build-storybook -c storybook/web -o dist/storybook",
+    "build:app2": "webpack --config web/webpack.js"
+  },
+  "dependencies": {
+    "@thenewvu/immutable": "^1.0.0",
+    "@thenewvu/redux-model": "^2.1.0",
+    "debounce": "^1.1.0",
+    "eventemitter3": "^3.0.0",
+    "history": "^4.6.3",
+    "jssip": "github:thenewvu/jssip#v0.7.11-react-native",
+    "lodash.get": "^4.4.2",
+    "lodash.omit": "^4.5.0",
+    "lodash.pick": "^4.4.0",
+    "object-path": "^0.11.4",
+    "query-string": "^5.1.0",
+    "react": "^16.4.1",
+    "react-art": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-native": "^0.55.4",
+    "react-native-code-push": "^5.3.5",
+    "react-native-fcm": "^16.2.0",
+    "react-native-incall-manager": "^2.1.0",
+    "react-native-keep-awake": "^2.0.5",
+    "react-native-permissions": "^1.0.0",
+    "react-native-progress-circle": "^2.0.0",
+    "react-native-web": "^0.8.6",
+    "react-native-webrtc": "github:thenewvu/react-native-webrtc#brekeke",
+    "react-redux": "^5.0.4",
+    "react-router-native": "^4.2.0",
+    "react-router-redux": "^5.0.0-alpha.9",
+    "redux-persist": "^5.7.0",
+    "shortid": "^2.2.8"
+  },
+  "devDependencies": {
+    "@storybook/react": "^3.3.9",
+    "@storybook/react-native": "^3.3.9",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-react": "^6.24.1",
+    "copy-webpack-plugin": "^4.3.1",
+    "faker": "^4.1.0",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.2"
+  },
+  "rnpm": {
+    "assets": [
+      "./app/fonts"
+    ]
+  }
+}
