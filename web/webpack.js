@@ -10,9 +10,11 @@ const babelLoader = {
   include: [
     // The main source folder for js code:
     path.join(cwd, './app'),
+    path.join(cwd, './index.web.js'),
     // Other node modules need to be tranpiled:
-    path.join(cwd, './node_modules/react-router-native'),
+    path.join(cwd, './node_modules/react-native-fcm'),
     path.join(cwd, './node_modules/react-native-progress-circle'),
+    path.join(cwd, './node_modules/react-router-native'),
   ],
   use: {
     loader: 'babel-loader',
