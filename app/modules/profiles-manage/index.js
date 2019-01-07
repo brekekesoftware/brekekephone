@@ -42,10 +42,6 @@ function registerFcmAppListener(){
 
 }
 
-if (Platform.OS === 'android') {
-    registerFcmKilledListener();
-}
-
 const mapGetter = (getter) => (state, props ) => (
     {
         profileIds: getter.profiles.idsByOrder(state),
@@ -98,6 +94,12 @@ const mapAction = (action) => (emit) => ({
 });
 
 class View extends Component {
+    constructor(props) {
+        super(props);
+        if (Platform.OS === 'android') {
+            registerFcmKilledListener.call(this);
+        }
+    }
 
     _onNotification( notif ){
 
@@ -170,7 +172,7 @@ class View extends Component {
                 description: 'used for example',
                 priority: 'high'
             })
-            registerFcmAppListener();
+            registerFcmAppListener.call(this);
             FCM.getInitialNotification().then(notif => {
             });
 
