@@ -53,7 +53,6 @@ buck-out/
 */fastlane/screenshots
 android/app/app-release.apk
 **/*.zip
-/package-lock.json
 **/*~
 builds
 dist/

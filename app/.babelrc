@@ -1,0 +1,20 @@
+// Same with babel config in web/webpack.js
+
+{
+  presets: [
+    ['env', {
+      target: {
+        browsers: [
+          'last 5 versions',
+          'safari >= 7',
+        ],
+      },
+    }],
+    'react',
+  ],
+  plugins: [
+    'transform-class-properties',
+    'transform-object-rest-spread',
+    'syntax-dynamic-import',
+  ],
+}

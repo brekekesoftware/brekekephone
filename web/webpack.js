@@ -1,18 +1,18 @@
-const path = require('path')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const dev = process.NODE_ENV !== 'production'
-const abspath = (relpath) => path.resolve(__dirname, relpath)
+const cwd = process.cwd();
+const dev = process.NODE_ENV !== 'production';
+const abspath = (relpath) => path.resolve(__dirname, relpath);
 
 const babelLoader = {
   test: /\.js$/,
   include: [
-    /app/,
-    /node_modules\/react-native-/,
-    /node_modules\/react-router/
-  ],
-  exclude: [
-    /node_modules\/react-native-web/
+    // The main source folder for js code:
+    path.join(cwd, './app'),
+    // Other node modules need to be tranpiled:
+    path.join(cwd, './node_modules/react-router-native'),
+    path.join(cwd, './node_modules/react-native-progress-circle'),
   ],
   use: {
     loader: 'babel-loader',
@@ -23,68 +23,71 @@ const babelLoader = {
           target: {
             browsers: [
               'last 5 versions',
-              'safari >= 7'
-            ]
-          }
-        }]
+              'safari >= 7',
+            ],
+          },
+        }],
+        'react',
       ],
       plugins: [
-        'transform-class-properties'
-      ]
-    }
-  }
-}
+        'transform-class-properties',
+        'transform-object-rest-spread',
+        'syntax-dynamic-import',
+      ],
+    },
+  },
+};
 
 const imageLoader = {
   test: /\.(gif|jpe?g|png|svg)$/,
   use: {
     loader: 'url-loader',
     options: {
-      name: '[name].[ext]'
-    }
-  }
-}
+      name: '[name].[ext]',
+    },
+  },
+};
 
 const cssLoader = {
   test: /\.css$/,
   use: [
     'style-loader',
-    'css-loader'
-  ]
-}
+    'css-loader',
+  ],
+};
 
 const fontLoader = {
   test: /\.(woff|woff2|eot|svg|ttf)(\?*)?$/,
   use: {
     loader: 'file-loader',
     options: {
-      name: './fonts/[name].[ext]'
-    }
-  }
-}
+      name: './fonts/[name].[ext]',
+    },
+  },
+};
 
 const soundLoader = {
   test: /\.(mp3)(\?*)?$/,
   use: {
     loader: 'file-loader',
     options: {
-      name: './sounds/[name].[ext]'
-    }
-  }
-}
+      name: './sounds/[name].[ext]',
+    },
+  },
+};
 
 const plugins = [
   new CopyWebpackPlugin([
     {from: path.resolve(__dirname, './index.html')},
     {from: path.resolve(__dirname, './jssip-0.7.11-1.js')},
-    {from: path.resolve(__dirname, './favicon.png')}
-  ])
-]
+    {from: path.resolve(__dirname, './favicon.png')},
+  ]),
+];
 
 module.exports = {
   entry: [
     'babel-polyfill',
-    abspath('../index.web.js')
+    abspath('../index.web.js'),
   ],
   //devtool: dev ? 'eval' : false,
   devtool: 'inline-source-map',
@@ -95,24 +98,24 @@ module.exports = {
       imageLoader,
       cssLoader,
       fontLoader,
-      soundLoader
-    ]
+      soundLoader,
+    ],
   },
   output: {
     filename: 'bundle.web.js',
-    path: abspath('../dist/web')
+    path: abspath('../dist/web'),
   },
   plugins,
   resolve: {
     alias: {
-      'react-native': 'react-native-web'
+      'react-native': 'react-native-web',
     },
     extensions: [
       '.web.js',
-      '.js'
-    ]
+      '.js',
+    ],
   },
   devServer: {
-    contentBase: abspath('./')
-  }
-}
+    contentBase: abspath('./'),
+  },
+};
