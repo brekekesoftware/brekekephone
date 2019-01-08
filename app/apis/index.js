@@ -12,6 +12,7 @@ import fmtKey from '../util/uint8array-to-url-base64'
 import {Platform,AsyncStorage} from 'react-native'
 import { get as $ } from 'object-path'
 import {store } from '../index'
+import { getApnsToken } from '../push-notification/apns';
 
 const mapGetter = (getter) => (state) => ({
     profile: getter.auth.profile(state),
@@ -28,7 +29,22 @@ const mapAction = (action) => (emit) => ({
     },
     onSIPConnectionStarted () {
         emit(action.auth.sip.onSuccess());
-        this.registerFcm();
+        if (Platform.OS === 'ios') {
+            const device_id = getApnsToken();
+            if (!device_id) {
+              return;
+            }
+            pbx.endpoint.apns({
+              username: this.userExtensionProperties.phones[3].id,
+              device_id,
+            }).then(res => {
+              console.log('Add apns token to pbx successfully', res);
+            }).catch(err => {
+              console.error('Can not add apns token to pbx', err);
+            });
+        } else {
+            this.registerFcm();
+        }
     },
 
     registerFcm(){
@@ -317,7 +333,7 @@ class APIProvider extends Component {
     onPBXConnectionTimeout = () => {
         this.props.onPBXConnectionTimeout()
 	}
- 
+
 	async loadPbxUsers () {
         const {profile} = this.props
         if (!profile) return

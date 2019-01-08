@@ -56,3 +56,6 @@ android/app/app-release.apk
 **/*~
 builds
 dist/
+main.jsbundle*
+
+Pods/

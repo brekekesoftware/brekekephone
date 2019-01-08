@@ -5,6 +5,7 @@
   "scripts": {
     "start:app": "webpack-dev-server --config web/webpack.js &",
     "start:storybook": "start-storybook -p 9001 -c ./storybook/web & storybook start -p 7001 -c ./storybook/native &",
+    "build:ios": "react-native bundle --entry-file='index.native.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "build:app": "webpack -p --config web/webpack.js",
     "build:storybook": "build-storybook -c storybook/web -o dist/storybook",
     "build:app2": "webpack --config web/webpack.js"
@@ -29,8 +30,9 @@
     "react-native-fcm": "16.2.0",
     "react-native-incall-manager": "2.2.0",
     "react-native-keep-awake": "2.0.5",
-    "react-native-permissions": "1.0.0",
+    "react-native-permissions": "1.0.6",
     "react-native-progress-circle": "2.0.0",
+    "react-native-voip-push-notification": "1.1.2",
     "react-native-web": "0.8.6",
     "react-native-webrtc": "github:thenewvu/react-native-webrtc#brekeke",
     "react-redux": "5.0.4",

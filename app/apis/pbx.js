@@ -344,6 +344,18 @@ class PBX extends EventEmitter {
                 )
             })
         ),
+
+      apns: ({ username, device_id }) => new Promise((resolve, reject) => {
+        this.client.pnmanage({
+          service_id: '1',
+          application_id: 'com.brekeke.phone',
+          command: 'add',
+          username,
+          user_agent: 'react-native',
+          device_id,
+        }, resolve, reject);
+      }),
+
       web : data => (
           new Promise((onres, onerr) => {
               const params = {
@@ -360,7 +372,7 @@ class PBX extends EventEmitter {
                   params, onres, onerr
               )
           })
-      )
+      ),
   };
 
 }

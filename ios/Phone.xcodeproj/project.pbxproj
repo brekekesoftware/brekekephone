@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -22,6 +23,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		27141DD80BEC4685B9D9C2E0 /* feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1C95106384D42D7BBDFB985 /* feather.ttf */; };
 		28730D709D3A4540BFDDB1D3 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC4B93D528A4326AB6D6A99 /* libCodePush.a */; };
 		2CA7EE2DB0E140D38A238382 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 85551F28DB7E4D349CE40F41 /* libz.tbd */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -37,9 +39,8 @@
 		2D16E6881FA4F8E400B85C8A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6891FA4F8E400B85C8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* PhoneTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* PhoneTests.m */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
+		72A10B32EC2C7B705B2B0C68 /* libPods-Phone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A86D685CF0BF174538B265A /* libPods-Phone.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		8437F370202F817400536C99 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8437F36E202F817300536C99 /* incallmanager_ringback.mp3 */; };
-		8437F371202F817400536C99 /* incallmanager_ringtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8437F36F202F817300536C99 /* incallmanager_ringtone.mp3 */; };
 		8437F373202F82CA00536C99 /* text-bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8437F372202F82B600536C99 /* text-bold.ttf */; };
 		846C98D91F160BF500696596 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846C98D71F160A9500696596 /* WebRTC.framework */; };
 		846C98DA1F160BF500696596 /* WebRTC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 846C98D71F160A9500696596 /* WebRTC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -56,13 +57,15 @@
 		84D1D1181EA9B99000BC7305 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10E1EA9B99000BC7305 /* VideoToolbox.framework */; };
 		84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */; };
 		84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */; };
-		8C20452192EF44AD8A329726 /* icon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9DC112A1CD5A40E2B6C3AAF0 /* icon.ttf */; };
+		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
+		9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */; };
+		9C9E4AAD21C16C2600BF913A /* incallmanager_ringtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */; };
+		9CE69B1821E51AEA00019491 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
+		9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6841FA4F8DC00B85C8A /* libfishhook.a */; };
 		9F12878AE4DF4557A16A4C23 /* text.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6CD3AC7F4BF44E6CBF51C8F0 /* text.ttf */; };
+		A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */; };
-		1085439173EF44E7A7EE6528 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1103938539E4850AEADD6C5 /* libRNFIRMessaging.a */; };
-		6C17BAABF29C4272806684B4 /* libReactNativePermissions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5348151F6BD54F3487072813 /* libReactNativePermissions.a */; };
-		27141DD80BEC4685B9D9C2E0 /* feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1C95106384D42D7BBDFB985 /* feather.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -360,6 +363,20 @@
 			remoteGlobalIDString = F886647B1F4ADB500036D01B;
 			remoteInfo = "CodePush-tvOS";
 		};
+		9C31A4AF21D5098F000CB78F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 23D512051CC765E500845BEE;
+			remoteInfo = RNVoipPushNotification;
+		};
+		9CD99C2C21C15DF8009B8736 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 04223E69D13FFC1B851B5443BE080483;
+			remoteInfo = "Pods-Phone";
+		};
 		ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
@@ -407,14 +424,15 @@
 		2D02E4901E0B4A5D006451C7 /* Phone-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Phone-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4B93D528A4326AB6D6A99 /* libCodePush.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libCodePush.a; sourceTree = "<group>"; };
+		3A6379D10205755E0939E514 /* Pods-Phone.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Phone.staging.xcconfig"; path = "Pods/Target Support Files/Pods-Phone/Pods-Phone.staging.xcconfig"; sourceTree = "<group>"; };
+		3A86D685CF0BF174538B265A /* libPods-Phone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Phone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		60A48DF5263246A5B72C136B /* text-italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "text-italic.ttf"; path = "../app/fonts/text-italic.ttf"; sourceTree = "<group>"; };
 		6CD3AC7F4BF44E6CBF51C8F0 /* text.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = text.ttf; path = ../app/fonts/text.ttf; sourceTree = "<group>"; };
 		74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = KCKeepAwake.xcodeproj; path = "../node_modules/react-native-keep-awake/ios/KCKeepAwake.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
+		81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVoipPushNotification.xcodeproj; path = "../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		8437F36E202F817300536C99 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../app/views/call-voices/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
-		8437F36F202F817300536C99 /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../app/views/call-voices/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
 		8437F372202F82B600536C99 /* text-bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "text-bold.ttf"; path = "../app/fonts/text-bold.ttf"; sourceTree = "<group>"; };
 		846C98D11F16087E00696596 /* RCTWebRTC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebRTC.xcodeproj; path = "../node_modules/react-native-webrtc/ios/RCTWebRTC.xcodeproj"; sourceTree = "<group>"; };
 		846C98D71F160A9500696596 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "../node_modules/react-native-webrtc/ios/WebRTC.framework"; sourceTree = "<group>"; };
@@ -434,14 +452,16 @@
 		84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNInCallManagerBridge.m; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManagerBridge.m"; sourceTree = "<group>"; };
 		85551F28DB7E4D349CE40F41 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8559968DE4AC494E99480892 /* CodePush.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
-		9DC112A1CD5A40E2B6C3AAF0 /* icon.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = icon.ttf; path = ../app/fonts/icon.ttf; sourceTree = "<group>"; };
+		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../app/modules/call-voices/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
+		9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../app/modules/call-voices/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
+		9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
+		A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = "<group>"; };
+		A1C95106384D42D7BBDFB985 /* feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = feather.ttf; path = ../app/fonts/feather.ttf; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
+		B42C3871A13C17D60F3727AB /* Pods-Phone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Phone.release.xcconfig"; path = "Pods/Target Support Files/Pods-Phone/Pods-Phone.release.xcconfig"; sourceTree = "<group>"; };
+		E2226E6C1F8023B7785F21E9 /* Pods-Phone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Phone.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Phone/Pods-Phone.debug.xcconfig"; sourceTree = "<group>"; };
 		F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libKCKeepAwake.a; sourceTree = "<group>"; };
-		4FBFF6ACC5A84ED78A9EBCDA /* RNFIRMessaging.xcodeproj */ = {isa = PBXFileReference; name = "RNFIRMessaging.xcodeproj"; path = "../node_modules/react-native-fcm/ios/RNFIRMessaging.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		A1103938539E4850AEADD6C5 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; name = "libRNFIRMessaging.a"; path = "libRNFIRMessaging.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		F3CE3788A0584578B5841901 /* ReactNativePermissions.xcodeproj */ = {isa = PBXFileReference; name = "ReactNativePermissions.xcodeproj"; path = "../node_modules/react-native-permissions/ios/ReactNativePermissions.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		5348151F6BD54F3487072813 /* libReactNativePermissions.a */ = {isa = PBXFileReference; name = "libReactNativePermissions.a"; path = "libReactNativePermissions.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		A1C95106384D42D7BBDFB985 /* feather.ttf */ = {isa = PBXFileReference; name = "feather.ttf"; path = "../app/fonts/feather.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -457,6 +477,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */,
+				9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				846C98DB1F160C4300696596 /* libRCTWebRTC.a in Frameworks */,
@@ -485,8 +507,8 @@
 				28730D709D3A4540BFDDB1D3 /* libCodePush.a in Frameworks */,
 				2CA7EE2DB0E140D38A238382 /* libz.tbd in Frameworks */,
 				E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */,
-				1085439173EF44E7A7EE6528 /* libRNFIRMessaging.a in Frameworks */,
-				6C17BAABF29C4272806684B4 /* libReactNativePermissions.a in Frameworks */,
+				72A10B32EC2C7B705B2B0C68 /* libPods-Phone.a in Frameworks */,
+				A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,7 +600,6 @@
 			isa = PBXGroup;
 			children = (
 				8437F372202F82B600536C99 /* text-bold.ttf */,
-				9DC112A1CD5A40E2B6C3AAF0 /* icon.ttf */,
 				60A48DF5263246A5B72C136B /* text-italic.ttf */,
 				6CD3AC7F4BF44E6CBF51C8F0 /* text.ttf */,
 				A1C95106384D42D7BBDFB985 /* feather.ttf */,
@@ -609,8 +630,8 @@
 		13B07FAE1A68108700A75B9A /* Phone */ = {
 			isa = PBXGroup;
 			children = (
-				8437F36E202F817300536C99 /* incallmanager_ringback.mp3 */,
-				8437F36F202F817300536C99 /* incallmanager_ringtone.mp3 */,
+				9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */,
+				9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */,
 				84DCA7291ECA0C540075F500 /* RNInCallManager */,
 				84D1D1191EA9BF6800BC7305 /* Phone.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -647,10 +668,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1BCC5714552A7E4B3B4067EE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E2226E6C1F8023B7785F21E9 /* Pods-Phone.debug.xcconfig */,
+				B42C3871A13C17D60F3727AB /* Pods-Phone.release.xcconfig */,
+				3A6379D10205755E0939E514 /* Pods-Phone.staging.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9C31A4B121D50BE1000CB78F /* PushKit.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
+				3A86D685CF0BF174538B265A /* libPods-Phone.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -676,6 +709,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */,
 				846C98D11F16087E00696596 /* RCTWebRTC.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -691,8 +725,7 @@
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				8559968DE4AC494E99480892 /* CodePush.xcodeproj */,
 				74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */,
-				4FBFF6ACC5A84ED78A9EBCDA /* RNFIRMessaging.xcodeproj */,
-				F3CE3788A0584578B5841901 /* ReactNativePermissions.xcodeproj */,
+				81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -716,6 +749,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				0B217CCCB90143119BEB3D1E /* Resources */,
 				8437F33B202F7FAA00536C99 /* Recovered References */,
+				1BCC5714552A7E4B3B4067EE /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -750,6 +784,7 @@
 				2DC4B93D528A4326AB6D6A99 /* libCodePush.a */,
 				85551F28DB7E4D349CE40F41 /* libz.tbd */,
 				F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */,
+				A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -789,6 +824,22 @@
 			name = RNInCallManager;
 			sourceTree = "<group>";
 		};
+		9C31A4AC21D5098F000CB78F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C31A4B021D5098F000CB78F /* libRNVoipPushNotification.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CD99C1C21C15DF8009B8736 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9CD99C2D21C15DF8009B8736 /* libPods-Phone.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		ADBDB9201DFEBF0600ED6528 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -823,6 +874,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Phone" */;
 			buildPhases = (
+				7E0770985C85046361936711 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -893,9 +945,15 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 4XR752Y62T;
 						LastSwiftMigration = 830;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 						};
@@ -931,6 +989,10 @@
 				{
 					ProductGroup = 849545A11F9FA25F000E4486 /* Products */;
 					ProjectRef = 74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */;
+				},
+				{
+					ProductGroup = 9CD99C1C21C15DF8009B8736 /* Products */;
+					ProjectRef = 9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -983,6 +1045,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 9C31A4AC21D5098F000CB78F /* Products */;
+					ProjectRef = 81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1276,6 +1342,20 @@
 			remoteRef = 849545D91F9FA25F000E4486 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9C31A4B021D5098F000CB78F /* libRNVoipPushNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNVoipPushNotification.a;
+			remoteRef = 9C31A4AF21D5098F000CB78F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9CD99C2D21C15DF8009B8736 /* libPods-Phone.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libPods-Phone.a";
+			remoteRef = 9CD99C2C21C15DF8009B8736 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1297,14 +1377,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CE69B1821E51AEA00019491 /* main.jsbundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				8C20452192EF44AD8A329726 /* icon.ttf in Resources */,
 				9F12878AE4DF4557A16A4C23 /* text.ttf in Resources */,
+				9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */,
 				08A68D5016D645189B0EDB38 /* text-italic.ttf in Resources */,
 				8437F373202F82CA00536C99 /* text-bold.ttf in Resources */,
-				8437F370202F817400536C99 /* incallmanager_ringback.mp3 in Resources */,
-				8437F371202F817400536C99 /* incallmanager_ringtone.mp3 in Resources */,
+				9C9E4AAD21C16C2600BF913A /* incallmanager_ringtone.mp3 in Resources */,
 				27141DD80BEC4685B9D9C2E0 /* feather.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1339,7 +1419,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1354,6 +1434,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		7E0770985C85046361936711 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Phone-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 		84B0B5D91EC0175000805EB7 /* Exclude Simulator-related Archs */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1450,17 +1552,15 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				INFOPLIST_FILE = PhoneTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1485,17 +1585,15 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				INFOPLIST_FILE = PhoneTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1511,33 +1609,41 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E2226E6C1F8023B7785F21E9 /* Pods-Phone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Phone/Phone.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-webrtc/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
+				);
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"RCTLog=1",
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
+					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
-					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-webrtc/**";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
+					"$(SRCROOT)/../node_modules/react-native-permissions/**",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1545,8 +1651,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
 				PRODUCT_NAME = Phone;
-				PROVISIONING_PROFILE = "4f2d3e6a-9998-454b-8f96-3db4e8cea013";
-				PROVISIONING_PROFILE_SPECIFIER = "Brekeke Phone Development";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1556,28 +1662,36 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B42C3871A13C17D60F3727AB /* Pods-Phone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Phone/Phone.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-webrtc/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
+				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
+					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
-					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-webrtc/**";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
+					"$(SRCROOT)/../node_modules/react-native-permissions/**",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1585,8 +1699,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
 				PRODUCT_NAME = Phone;
-				PROVISIONING_PROFILE = "4f2d3e6a-9998-454b-8f96-3db4e8cea013";
-				PROVISIONING_PROFILE_SPECIFIER = "Brekeke Phone Development";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1610,16 +1724,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				INFOPLIST_FILE = "Phone-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1651,16 +1763,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				INFOPLIST_FILE = "Phone-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1693,7 +1803,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Phone-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1719,7 +1828,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Phone-tvOSTests";
@@ -1857,28 +1965,36 @@
 		};
 		849545E01F9FA30D000E4486 /* Staging */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3A6379D10205755E0939E514 /* Pods-Phone.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Phone/Phone.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-webrtc/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
+				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
+					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
-					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-webrtc/**";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
+					"$(SRCROOT)/../node_modules/react-native-permissions/**",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1886,8 +2002,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
 				PRODUCT_NAME = Phone;
-				PROVISIONING_PROFILE = "4f2d3e6a-9998-454b-8f96-3db4e8cea013";
-				PROVISIONING_PROFILE_SPECIFIER = "Brekeke Phone Development";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1906,17 +2022,15 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				INFOPLIST_FILE = PhoneTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1946,16 +2060,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
-					"$(SRCROOT)\..\node_modules\react-native-fcm\ios",
-					"$(SRCROOT)\..\node_modules\react-native-permissions\ios/**",
+					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				INFOPLIST_FILE = "Phone-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1987,7 +2099,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Phone-tvOSTests";

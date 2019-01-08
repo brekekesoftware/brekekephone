@@ -26,21 +26,60 @@
 - After the build is finished, the apk file is located at: `android\app\build\outputs\apk\release`.
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 
-# Push Incoming calls
+### iOS build & debug
+- My current environment:
+```sh
+# macOS Mojave Version 10.14.1 (18B75)
+# XCode Version 10.1 (10B61)
+
+$ node -v
+v11.4.0
+$ react-native -v
+react-native-cli: 2.0.1
+react-native: 0.55.4
+```
+
+- Install dependencies
+```sh
+# Install node packages
+# IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
+cd /path/to/test-brekeke-phone
+npm install
+# Try to build the app once and fix build errors
+react-native run-ios
+./configure-ios.sh
+# Install CocoaPods if you haven't had it
+sudo gem install cocoapods
+# Install pods
+cd ios && pod install && cd ..
+```
+
+- Configure react-native-voip-push-notification: follow the steps in https://github.com/ianlin/react-native-voip-push-notification#ios
+
+- In XCode, check all search paths and ensure they have $(inherited) value. Add one if there isn't any, otherwise there will be library linking error, or framework not found error. If any of these kind of errors still happens, add the missing node_module package to the search path.
+
+##### Build iOS app for distribution
+- Build main.jsbundle using command yarn build:ios
+- Include the main.jsbundle in the Copy Bundle Resource section if haven't
+- Request for distribution certificate and install it correctly on local machine
+- Check the jsCodeLocation in AppDelegate.m for the correct config
+- Archive and distribute for Ad-hoc / Team distribution
+
+### Push Incoming calls
 $pbx.src = ^true
 $request = ^INVITE
 $getSIPuser(To) = (.+)
 $pn.user("%1") = true
-X-PBX-EXINFO = (.+):(.+)/(.+)/(.+)  
+X-PBX-EXINFO = (.+):(.+)/(.+)/(.+)
 
 &pn.notify.user = %1
 &pn.notify.message = Incoming call
 &pn.notify.custom = "body": "%{$getDisplayName(From)} - %{$getSIPuser(From)}", "tag": "incoming-call", "data": { "user": "%5", "host": "%2", "port": "%3", "tenant": "%4" }
 $continue = true
-X-PBX-EXINFO =  
+X-PBX-EXINFO =
 
 
-# Wait REGISTER 
+### Wait REGISTER
 $request = ^INVITE
 &pn.notify.user = (.+)
 $registered = false

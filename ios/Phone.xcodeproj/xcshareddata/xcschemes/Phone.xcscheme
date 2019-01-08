@@ -131,6 +131,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "Brekeke Phone"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

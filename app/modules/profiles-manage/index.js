@@ -334,3 +334,6 @@ class View extends Component {
 
 export default
 createModelView(mapGetter, mapAction)(View)
+
+// To get the PROFILES_MANAGE_VIEW to use in apns handlers
+export const getProfileManager = () => PROFILES_MANAGE_VIEW;

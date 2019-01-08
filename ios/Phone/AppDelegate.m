@@ -14,17 +14,21 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLog.h>
 
+#import <PushKit/PushKit.h>
+#import "RNVoipPushNotificationManager.h"
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
 
-  
+
     #ifdef DEBUG
         jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.native" fallbackResource:nil];
     #else
-        jsCodeLocation = [CodePush bundleURL];
+        //jsCodeLocation = [CodePush bundleURL]; REMOVE CODEPUSH
+        jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
     #endif
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
@@ -42,6 +46,20 @@
   RCTSetLogThreshold(RCTLogLevelInfo);
 
   return YES;
+}
+
+
+//
+// react-native-voip-push-notification
+// Handle updated push credentials
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
+  // Register VoIP push token (a property of PKPushCredentials) with server
+  [RNVoipPushNotificationManager didUpdatePushCredentials:credentials forType:(NSString *)type];
+}
+// Handle incoming pushes
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+  // Process the received push
+  [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
 }
 
 @end
