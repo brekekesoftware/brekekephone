@@ -5,7 +5,8 @@
   "scripts": {
     "start:app": "webpack-dev-server --config web/webpack.js &",
     "start:storybook": "start-storybook -p 9001 -c ./storybook/web & storybook start -p 7001 -c ./storybook/native &",
-    "build:ios": "react-native bundle --entry-file='index.native.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
+    "build:ios": "rm -rf dist/ios && mkdir -p dist/ios && react-native bundle --platform ios --entry-file index.native.js --bundle-output dist/ios/main.jsbundle --assets-dest dist/ios/ --dev false",
+    "codepush:ios": "code-push release brekeke-testphone-ios dist/ios 0.0.1",
     "build:app": "webpack -p --config web/webpack.js",
     "build:storybook": "build-storybook -c storybook/web -o dist/storybook",
     "build:app2": "webpack --config web/webpack.js"

@@ -1,5 +1,5 @@
-import VoipPushNotification from 'react-native-voip-push-notification';
 import { get as $ } from 'object-path';
+import VoipPushNotification from 'react-native-voip-push-notification';
 import { getProfileManager } from '../modules/profiles-manage'
 
 let apnsToken = '';
@@ -29,13 +29,6 @@ const onVoipNotification = notification => {
     clearInterval(intervalId);
     intervalId = 0;
   }, 1000);
-
-  if (VoipPushNotification.wakeupByPush) {
-    // remember to set this static variable to false
-    // since the constant are exported only at initialization time
-    // and it will keep the same in the whole app
-    VoipPushNotification.wakeupByPush = false;
-  }
 
   /**
    * Local Notification Payload

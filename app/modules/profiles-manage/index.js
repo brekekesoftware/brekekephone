@@ -12,8 +12,10 @@ const isIncoming = (call) => call.incoming && !call.answered
 function registerFcmKilledListener(){
 
     this._shutodownNotificationListener = FCM.on(FCMEvent.Notification, notif => {
+        // to check in componentDidMount see app/CodePushApp.js
+        //    and app/push-notification/isWakeupByPush.js
+        FCM.wakeupByPush = true;
         AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
-
         if( notif.opened_from_tray ){
             setTimeout(()=>{
                 PROFILES_MANAGE_VIEW._onNotification(notif);

@@ -27,8 +27,8 @@
     #ifdef DEBUG
         jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.native" fallbackResource:nil];
     #else
-        //jsCodeLocation = [CodePush bundleURL]; REMOVE CODEPUSH
-        jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+        jsCodeLocation = [CodePush bundleURL];
+        // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
     #endif
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
