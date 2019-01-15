@@ -5,7 +5,8 @@
  */
 (function (root, factory) {
     if (typeof module === 'object' && module.exports) {
-        module.exports = factory({ net: Brekeke.net });
+        //module.exports = factory({ net: require('../net/jsonrpc.js') });
+        module.exports = factory({ net: require('./jsonrpc.js') });
     } else {
         root.Brekeke = root.Brekeke || {};
         root.Brekeke.UCClient = factory(root.Brekeke);
@@ -82,6 +83,7 @@
         OVER_MAX_TENANT_LOGIN_COUNT: -71,
         ALREADY_SIGNED_IN: -72,
         LICENSE_INVALID: -80,
+        VERSION_INVALID: -81,
         PASSWORD_REQUIRED: -90,
         SENDTEXT_NOT_A_MEMBER: -500,
         JOINCONFERENCE_NOT_A_MEMBER: -600,
@@ -142,8 +144,29 @@
         CTYPE_FILE_REJECT: 7,
         CTYPE_FILE_CANCEL: 8,
         CTYPE_FILE_PROGRESS: 9,
+        CTYPE_OBJECT: 101,
         DUMMY: null
-    };
+    },
+    Events = [
+        'forcedSignOut',
+        'buddyStatusChanged',
+        'receivedText',
+        'receivedTyping',
+        'invitedToConference',
+        'conferenceMemberChanged',
+        'extConfInfoChanged',
+        'confTagUpdated',
+        'fileReceived',
+        'fileInfoChanged',
+        'fileTerminated',
+        'objectReceived',
+        'phoneStatusChanged',
+        'callReceived',
+        'callInfoChanged',
+        'callTerminated',
+        'receivedCustomClientEvent',
+        'debugLogFilePrepared'
+    ];
     
     /*
      * ChatClient constructor
@@ -160,8 +183,11 @@
         this._user_id = null;
         this._pass = null;
         this._forceAjax = false;
+        this._servlet = false;
         this._useHttps = false;
+        this._auth_timeout = 0;
         this._modest = false;
+        this._pver = "";
         
         this._profile = {};
         this._settings = {};
@@ -194,6 +220,8 @@
         this._topics = {};
         
         this._eventListeners = {};
+        this._handlers = [];
+        this._eventListeners0 = {};
         
         this._rpc = null;
         
@@ -211,6 +239,8 @@
         this._makeCallStatus = {};
         this._sendSharedObjectFuncOKTable = {};
         this._receivedSharedObjectJsonTable = {};
+        
+        this._chat_session_id = 0;
     };
     
     /*
@@ -219,11 +249,38 @@
     ChatClient.prototype = {
         
         /*
+         * Function addHandler
+         */
+        addHandler: function(handler) {
+            if (Object.keys(this._eventListeners).length === 0) {
+                for (var i = 0; i < Events.length; i++) {
+                    this._eventListeners[Events[i]] = this._initEventListener(Events[i]);
+                }
+            }
+            this._handlers.push(handler);
+        },
+        
+        /*
+         * Function removeHandler
+         */
+        removeHandler: function(handler) {
+            var index = this._handlers.indexOf(handler);
+            if (index !== -1) {
+                this._handlers.splice(index, 1);
+            }
+        },
+        
+        /*
          * Function setEventListeners
          */
         setEventListeners: function(listeners) {
+            if (Object.keys(this._eventListeners).length === 0) {
+                for (var i = 0; i < Events.length; i++) {
+                    this._eventListeners[Events[i]] = this._initEventListener(Events[i]);
+                }
+            }
             for (var e in listeners) {
-                this._eventListeners[e] = listeners[e];
+                this._eventListeners0[e] = listeners[e];
             }
         },
         
@@ -303,8 +360,11 @@
             this._user_id = string(user).replace(trimRegExp, "");
             this._pass = string(pass).replace(trimRegExp, "");
             this._forceAjax = Boolean(option.forceAjax);
+            this._servlet = Boolean(option.servlet);
             this._useHttps = Boolean(option.useHttps || string(host).toLowerCase().lastIndexOf("https", 0) === 0);
+            this._auth_timeout = int(option.auth_timeout);
             this._modest = Boolean(option.modest);
+            this._pver = string(option.pver);
             
             this._profile = {};
             this._settings = {};
@@ -363,7 +423,7 @@
          * Function signOut
          */
         signOut: function() {
-            this.cancelProfileImage();
+            this.cancelProfileImage({ _suppressWarn: true });
             this._rpcNotify("Logout", {}, null);
             this._signInStatus = 0;
             this._signedOut();
@@ -687,7 +747,11 @@
          */
         cancelProfileImage: function(options) {
             if (this._signInStatus !== 3) {
-                this._logger.log("warn", "Not signed-in");
+                if (options && options._suppressWarn) {
+                    this._logger.log("info", "Not signed-in");
+                } else {
+                    this._logger.log("warn", "Not signed-in");
+                }
                 return;
             }
             
@@ -1018,7 +1082,7 @@
                         var ev = {
                             text_id: string(result.action_id) + "_" + ltime.substr(0, 7).split("-").join(""),
                             ltime: ltime,
-                            tstamp: result.tstamp
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1110,7 +1174,16 @@
                             var sender_tenant = message.sender.tenant || this._tenant;
                             var sender_user_id = string(message.sender.user_id);
                             
+                            var receivedObject = undefined;
+                            
                             switch (message.ctype) {
+                            case Constants.CTYPE_OBJECT:
+                                try {
+                                    receivedObject = JSON.parse(message.text);
+                                } catch(e) {
+                                    this._logger.log("warn", e.message + " at _recvText");
+                                }
+                                // fall through
                             case Constants.CTYPE_TEXT:
                             case Constants.CTYPE_FILE_REQUEST:
                                 messages.push({
@@ -1119,14 +1192,15 @@
                                         user_id: sender_user_id
                                     },
                                     text: string(message.text),
+                                    object: receivedObject,
                                     conf_id: message.conf_id ? string(message.conf_id) : null, // message.conf_id might be undefined or "" on non-conf
                                     ctype: int(message.ctype),
                                     received_text_id: int(message.action_id) + "_" + string(message.sent_ltime).substr(0, 7).split("-").join(""),
                                     ltime: stringifyTstamp(result.tstamp), // received time
+                                    tstamp: int(result.tstamp), // received time
                                     sent_ltime: stringifyTstamp(message.sent_tstamp), // message.sent_tstamp has value in GetUnreadText
-                                    requires_read: message.conf_id ? false : true,
-                                    tstamp: result.tstamp,
-                                    sent_tstamp: message.sent_tstamp
+                                    sent_tstamp: int(message.sent_tstamp), // message.sent_tstamp has value in GetUnreadText
+                                    requires_read: message.conf_id ? false : true
                                 });
                                 break;
                             default:
@@ -1181,7 +1255,16 @@
                             var sender_tenant = message.sender.tenant || this._tenant;
                             var sender_user_id = string(message.sender.user_id);
                             
+                            var receivedObject = undefined;
+                            
                             switch (message.ctype) {
+                            case Constants.CTYPE_OBJECT:
+                                try {
+                                    receivedObject = JSON.parse(message.text);
+                                } catch(e) {
+                                    this._logger.log("warn", e.message + " at _recvText");
+                                }
+                                // fall through
                             case Constants.CTYPE_TEXT:
                             case Constants.CTYPE_FILE_REQUEST:
                                 messages.push({
@@ -1190,11 +1273,14 @@
                                         user_id: sender_user_id
                                     },
                                     text: string(message.text),
+                                    object: receivedObject,
                                     conf_id: message.conf_id ? string(message.conf_id) : null, // message.conf_id might be undefined or "" on non-conf
                                     ctype: int(message.ctype),
                                     received_text_id: int(message.action_id) + "_" + string(message.sent_ltime).substr(0, 7).split("-").join(""),
                                     ltime: stringifyTstamp(result.tstamp), // received time
+                                    tstamp: int(result.tstamp), // received time
                                     sent_ltime: stringifyTstamp(message.sent_tstamp), // message.sent_tstamp has value in GetUnreadText
+                                    sent_tstamp: int(message.sent_tstamp), // message.sent_tstamp has value in GetUnreadText
                                     requires_read: message.conf_id ? false : true
                                 });
                                 break;
@@ -1274,7 +1360,8 @@
                         var ltime = stringifyTstamp(result.tstamp);
                         var ev = {
                             text_id: string(result.action_id) + "_" + ltime.substr(0, 7).split("-").join(""),
-                            ltime: ltime
+                            ltime: ltime,
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1398,7 +1485,8 @@
                     if (funcOK) {
                         var ev = {
                             conference: this.getConference(conf_id),
-                            ltime: stringifyTstamp(result.tstamp)
+                            ltime: stringifyTstamp(result.tstamp),
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1450,7 +1538,8 @@
                     if (funcOK) {
                         var ev = {
                             conference: this.getConference(conf_id),
-                            ltime: stringifyTstamp(result.tstamp)
+                            ltime: stringifyTstamp(result.tstamp),
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1501,7 +1590,54 @@
                     if (funcOK) {
                         var ev = {
                             closes: Boolean(result.closes),
-                            ltime: stringifyTstamp(result.tstamp)
+                            ltime: stringifyTstamp(result.tstamp),
+                            tstamp: int(result.tstamp)
+                        };
+                        funcOK(ev);
+                    }
+                },
+                function(error) {
+                    if (funcError) {
+                        var ev = {
+                            code: int(error.code),
+                            message: string(error.message)
+                        };
+                        funcError(ev);
+                    }
+                });
+        },
+        
+        /*
+         * Function kickOutOfConference
+         */
+        kickOutOfConference: function(options, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            var conf_id = string(options && options.conf_id);
+            var tenant = string(options && options.tenant);
+            var user_id = string(options && options.user_id);
+            
+            this._rpcCall("KickOutOfConference",
+                {
+                    conf_id: conf_id,
+                    tenant: tenant,
+                    user_id: user_id
+                },
+                function(result) {
+                    // callback
+                    if (funcOK) {
+                        var ev = {
+                            ltime: stringifyTstamp(result.tstamp),
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1579,7 +1715,8 @@
                 function(result) {
                     if (funcOK) {
                         var ev = {
-                            ltime: stringifyTstamp(result.tstamp)
+                            ltime: stringifyTstamp(result.tstamp),
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1612,6 +1749,7 @@
             
             var profile = this.getProfile();
             var subject = options && options.properties && options.properties.subject;
+            var ext_conf_info = JSON.parse(JSON.stringify(options && options.properties && options.properties.ext_conf_info || {}));
             
             this._rpcCall("EnterWebchatRoom",
                 {
@@ -1628,6 +1766,8 @@
                     this._conferences[conf_id].created_tstamp = int(result.tstamp);
                     this._conferences[conf_id].created_server_time = string(result.ltime);
                     this._conferences[conf_id].conf_type = this.CONFTYPE_WEBCHAT;
+                    this._conferences[conf_id].ext_conf_info = ext_conf_info;
+                    this._conferences[conf_id].conf_tags = [];
                     
                     // from
                     this._conferences[conf_id].from.tenant = this._tenant;
@@ -1646,7 +1786,8 @@
                     if (funcOK) {
                         var ev = {
                             conference: this.getConference(conf_id),
-                            ltime: stringifyTstamp(result.tstamp)
+                            ltime: stringifyTstamp(result.tstamp),
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1660,6 +1801,24 @@
                         funcError(ev);
                     }
                 });
+        },
+        
+        /*
+         * Function changeExtConfInfo
+         */
+        changeExtConfInfo: function(options, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            this._rpcCall("SetExtConfInfo", options, funcOK, funcError);
         },
         
         /*
@@ -1706,7 +1865,7 @@
                         var ev = {
                             text_id: string(result.action_id) + "_" + ltime.substr(0, 7).split("-").join(""),
                             ltime: ltime,
-                            tstamp: result.tstamp
+                            tstamp: int(result.tstamp)
                         };
                         funcOK(ev);
                     }
@@ -1829,8 +1988,10 @@
                             // FormData
                             var fd = null;
                             if (window.FormData) { // FormData enabled
-                                fd = new window.FormData();
-                                fd.append('file', input.files[0], name)
+                                // upload with XHR + FormData
+                                input.form.method = "POST";
+                                input.form.enctype = "multipart/form-data";
+                                fd = new window.FormData(input.form);
                             }
                             
                             // new file info
@@ -1843,7 +2004,7 @@
                                     fileInfo: this.getFileInfo(file_id),
                                     text_id: string(result.action_id) + "_" + ltime.substr(0, 7).split("-").join(""),
                                     ltime: ltime,
-                                    tstamp: result.tstamp
+                                    tstamp: int(result.tstamp)
                                 };
                                 funcOK(ev);
                             }
@@ -1878,7 +2039,7 @@
                 }
                 return;
             }
-            if (!options || !options.user_id) {
+            if (!options || (!options.user_id && (!options.conf_id || !this._conferences[options.conf_id]))) {
                 if (funcError) {
                     var ev = {
                         code: Errors.SENDFILES_EMPTY_USER,
@@ -1903,6 +2064,22 @@
                 tenant: string(options.tenant || this._tenant),
                 user_id: string(options.user_id)
             };
+            var conf_users = [];
+            if (!options.user_id && this._conferences[conf_id] && this._conferences[conf_id].user) {
+                for (var i = 0; i < this._conferences[conf_id].user.length; i++) {
+                    if (int(this._conferences[conf_id].user[i].conf_status) === Constants.CONF_STATUS_JOINED &&
+                        (this._conferences[conf_id].user[i].tenant !== this._tenant || this._conferences[conf_id].user[i].user_id !== this._user_id)
+                    ) {
+                        conf_users.push({
+                            tenant: string(this._conferences[conf_id].user[i].tenant || this._tenant),
+                            user_id: string(this._conferences[conf_id].user[i].user_id)
+                        });
+                    }
+                }
+                if (conf_users.length) {
+                    target = conf_users.shift();
+                }
+            }
             var file = fileList[0];
             var name = file.name;
             var size = file.size;
@@ -1936,7 +2113,9 @@
                 var date = new Date();
                 evRecursion.infoList.push({
                     fileInfo: this.getFileInfo(file_id),
-                    ltime: date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)
+                    fileInfos: [this.getFileInfo(file_id)],
+                    ltime: stringifyTstamp(+date),
+                    tstamp: int(+date)
                 });
                 if (fileList.length > 1) {
                     // recursion
@@ -1956,18 +2135,36 @@
             }
             
             // get file_id from server
-            this._rpcCall("PrepareFileTransfer",
-                params,
-                function(result) {
-                    var file_id = result.file_id;
-                    var fileProps = {
+            var fileProps = {
+                file_id: null,
+                name: name,
+                target: target,
+                additionals: []
+            };
+            if (size > 0) {
+                fileProps.size = size;
+            }
+            var prepareFileTransferFuncOK = function(result) {
+                var file_id = string(result.file_id);
+                if (!fileProps.file_id) {
+                    // file_id of first user
+                    fileProps.file_id = file_id;
+                } else {
+                    // file_id of additional conf_users
+                    fileProps.additionals.push({
                         file_id: file_id,
-                        name: name,
-                        target: target
-                    };
-                    if (size > 0) {
-                        fileProps.size = size;
-                    }
+                        target: params.target
+                    });
+                }
+                if (conf_users.length) {
+                    // get file_id for additional conf_users from server
+                    params.target = conf_users.shift();
+                    this._rpcCall("PrepareFileTransfer",
+                        params,
+                        prepareFileTransferFuncOK,
+                        funcError);
+                } else {
+                    // getting file_id completed for all users
                     var sendTextParams = {
                         text: JSON.stringify(fileProps),
                         ctype: Constants.CTYPE_FILE_REQUEST
@@ -1980,15 +2177,26 @@
                     }
                     this._rpcCall("SendText", sendTextParams,
                         function(result) {
+                            var form;
+                            var fd;
                             // FormData
-                            var form = document.createElement("form");
+                            form = document.createElement("form");
                             form.method = "POST";
                             form.enctype = "multipart/form-data";
-                            var fd = new window.FormData(form);
+                            fd = new window.FormData(form);
                             fd.append(name, file);
-                            
                             // new file info
-                            this._newFileInfo(file_id, target, true, Constants.FILE_STATUS_UNACCEPTED, name, size, null, fd);
+                            this._newFileInfo(fileProps.file_id, target, true, Constants.FILE_STATUS_UNACCEPTED, name, size, null, fd);
+                            for (var i = 0; i < fileProps.additionals.length; i++) {
+                                // FormData for additional conf_users
+                                form = document.createElement("form");
+                                form.method = "POST";
+                                form.enctype = "multipart/form-data";
+                                fd = new window.FormData(form);
+                                fd.append(name, file);
+                                // new file info for additional conf_users
+                                this._newFileInfo(fileProps.additionals[i].file_id, fileProps.additionals[i].target, true, Constants.FILE_STATUS_UNACCEPTED, name, size, null, fd);
+                            }
                             
                             if (!evRecursion || !evRecursion.infoList || !evRecursion.infoList.push) {
                                 evRecursion = {
@@ -1997,10 +2205,15 @@
                             }
                             var ltime = stringifyTstamp(result.tstamp);
                             evRecursion.infoList.push({
-                                fileInfo: this.getFileInfo(file_id),
+                                fileInfo: this.getFileInfo(fileProps.file_id),
+                                fileInfos: [this.getFileInfo(fileProps.file_id)],
                                 text_id: string(result.action_id) + "_" + ltime.substr(0, 7).split("-").join(""),
-                                ltime: ltime
+                                ltime: ltime,
+                                tstamp: int(result.tstamp)
                             });
+                            for (var i = 0; i < fileProps.additionals.length; i++) {
+                                evRecursion.infoList[evRecursion.infoList.length - 1].fileInfos.push(this.getFileInfo(fileProps.additionals[i].file_id));
+                            }
                             if (fileList.length > 1) {
                                 // recursion
                                 var newFileList = [];
@@ -2017,7 +2230,11 @@
                             }
                         },
                         funcError);
-                },
+                }
+            };
+            this._rpcCall("PrepareFileTransfer",
+                params,
+                prepareFileTransferFuncOK,
                 funcError);
         },
         
@@ -2123,8 +2340,6 @@
             xhr.open("POST", (this._useHttps ? "https://" : "http://") + this._host + "/" + this._path + "/file?ACTION=DOWNLOAD&SUBACTION=TRANS&TRANSFER_ID=" + encodeURIComponent(file_id) + "&tenant=" + encodeURIComponent(this._tenant) + "&user=" + encodeURIComponent(this._user_id), true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send();
-
-            fileInfo._xhr = xhr
             
             // accept
             this._rpcCall("SendClientEvent",
@@ -2179,11 +2394,6 @@
                 }
                 return;
             }
-
-            if (fileInfo._xhr) {
-              fileInfo._xhr.abort();
-            }
-
             if (fileInfo.isUpload) { // cancel upload
                 this._rpcCall("SendClientEvent",
                     {
@@ -2201,6 +2411,9 @@
                                 file_id: file_id
                             },
                             function(result) {
+                                if (fileInfo._xhr) {
+                                    fileInfo._xhr.abort();
+                                }
                                 this._terminateFileInfo(file_id, Constants.FILE_STATUS_LOCAL_CANCEL);
                             },
                             funcError);
@@ -2221,6 +2434,94 @@
                     },
                     funcError);
             }
+        },
+        
+        /*
+         * Function sendObject
+         */
+        sendObject: function(options, object, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            options = options || {};
+            
+            var sendTextParams = {
+                ctype: Constants.CTYPE_OBJECT
+            };
+            
+            if (options.conf_id) {
+                var conf_id = string(options.conf_id);
+                if (!this._conferences[conf_id]) {
+                    if (funcError) {
+                        var ev = {
+                            code: Errors.SENDCONFERENCETEXT_NOT_FOUND_CONF,
+                            message: "Not found conf_id=" + conf_id
+                        };
+                        funcError(ev);
+                    }
+                    return;
+                }
+                sendTextParams.conf_id = conf_id;
+                sendTextParams.conf_type = string(this._conferences[conf_id].conf_type);
+            } else {
+                sendTextParams.target = [];
+                var targets = [options].concat(options.targets || []);
+                for (var i = 0; i < targets.length; i++) {
+                    if (targets[i] && targets[i].user_id) {
+                        sendTextParams.target.push({
+                            tenant: string(targets[i].tenant || this._tenant),
+                            user_id: string(targets[i].user_id)
+                        });
+                    }
+                }
+                if (sendTextParams.target.length < 1) {
+                    if (funcError) {
+                        var ev = {
+                            code: Errors.SENDTEXT_EMPTY_USER,
+                            message: "Empty user_id"
+                        };
+                        funcError(ev);
+                    }
+                    return;
+                }
+            }
+            
+            try {
+                sendTextParams.text = JSON.stringify(object);
+            } catch(e) {
+                this._logger.log("warn", e.message + " at sendObject");
+                if (funcError) {
+                    var ev = {
+                        code: Errors.SENDFILES_EMPTY_FILELIST,
+                        message: e.message + " at sendObject"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            // send
+            this._rpcCall("SendText", sendTextParams,
+                function(result) {
+                    if (funcOK) {
+                        var ltime = stringifyTstamp(result.tstamp);
+                        var ev = {
+                            text_id: string(result.action_id) + "_" + ltime.substr(0, 7).split("-").join(""),
+                            ltime: ltime,
+                            tstamp: int(result.tstamp)
+                        };
+                        funcOK(ev);
+                    }
+                },
+                funcError);
         },
         
         /*
@@ -2731,6 +3032,41 @@
         },
         
         /*
+         * Function updateTag
+         */
+        updateTag: function(options, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            var text_id = string(options && options.attached_id).split("_");
+            if (text_id[1] && (options.attached_type === "text" || options.attached_type === "topic")) {
+                // clone options
+                var optionsOrg = options;
+                options = {};
+                var keys = Object.keys(optionsOrg);
+                for (var i = 0; i < keys.length; i++) {
+                    options[keys[i]] = optionsOrg[keys[i]];
+                }
+                // convert format
+                if (options.attached_type === "text") {
+                    options.attached_type = "action";
+                }
+                options.attached_id= text_id[0];
+                options.yyyymm= text_id[1];
+            }
+            
+            this._rpcCall("UpdateTag", options, funcOK, funcError);
+        },
+        
+        /*
          * Function searchTopicsByDate
          */
         searchTopicsByDate: function(date, funcOK, funcError) {
@@ -2904,12 +3240,26 @@
             }
             
             // check condition
-            var content = condition.content && condition.content.length ? condition.content : [];
-            var name = condition.name && condition.name.length ? condition.name : [];
-            var subject = condition.subject && condition.subject.length ? condition.subject : [];
-            var any = condition.any && condition.any.length ? condition.any : [];
+            var toArray = function(a) {
+                if (typeof a === 'string') {
+                    return a.split(' ');
+                } else if (a && a.length) {
+                    return a;
+                } else {
+                    return [];
+                }
+            };
+            var content = toArray(condition.content);
+            var name = toArray(condition.name);
+            var subject = toArray(condition.subject);
+            var any = toArray(condition.any);
+            var tenant = string(condition.tenant) || null;
             var user_id = string(condition.user_id) || null;
-            var conf_id = string(condition.conf_id) || null;
+            var conf_type = toArray(condition.conf_type);
+            var conf_id = toArray(condition.conf_id);
+            var tenant_me = condition.tenant_me || condition.tenant_me === "" ? string(condition.tenant_me) : null;
+            var user_id_me = condition.user_id_me || condition.user_id_me === "" ? string(condition.user_id_me) : null;
+            var tags = condition.tags && condition.tags.length ? condition.tags : [];
             var begin = string(condition.begin) || null;
             var end = string(condition.end) || null;
             var asc = Boolean(condition.asc);
@@ -2921,8 +3271,13 @@
                     name: name,
                     subject: subject,
                     any: any,
+                    tenant: tenant,
                     user_id: user_id,
+                    conf_type: conf_type,
                     conf_id: conf_id,
+                    tenant_me: tenant_me,
+                    user_id_me: user_id_me,
+                    tags: tags,
                     begin: begin,
                     end: end,
                     asc: asc,
@@ -2933,6 +3288,14 @@
                         var ev = result;
                         if (ev && ev.topics) {
                             for (var i = 0; i < ev.topics.length; i++) {
+                                ev.topics[i].object = undefined;
+                                if (ev.topics[i].ctype === Constants.CTYPE_OBJECT) {
+                                    try {
+                                        ev.topics[i].object = JSON.parse(ev.topics[i].content);
+                                    } catch(e) {
+                                        this._logger.log("warn", e.message + " at searchTopicsByCondition");
+                                    }
+                                }
                                 ev.topics[i].ltime = stringifyTstamp(ev.topics[i].tstamp);
                             }
                         }
@@ -2972,8 +3335,70 @@
                 function(result) {
                     if (funcOK) {
                         var ev = result;
-                        if (ev && ev.logs) {
+                        if (ev && ev.logs && ev.senders) {
                             for (var i = 0; i < ev.logs.length; i++) {
+                                ev.logs[i].sender = ev.senders[ev.logs[i].sender];
+                                ev.logs[i].object = undefined;
+                                if (ev.logs[i].ctype === Constants.CTYPE_OBJECT) {
+                                    try {
+                                        ev.logs[i].object = JSON.parse(ev.logs[i].content);
+                                    } catch(e) {
+                                        this._logger.log("warn", e.message + " at searchTopicTexts");
+                                    }
+                                }
+                                ev.logs[i].ltime = stringifyTstamp(ev.logs[i].tstamp);
+                            }
+                        }
+                        funcOK(ev);
+                    }
+                },
+                function(error) {
+                    if (funcError) {
+                        var ev = {
+                            code: int(error.code),
+                            message: string(error.message)
+                        };
+                        funcError(ev);
+                    }
+                });
+        },
+        
+        /*
+         * Function searchConferenceTexts
+         */
+        searchConferenceTexts: function(condition, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            this._rpcCall("SearchConferenceTexts",
+                {
+                    conf_id: string(condition && condition.conf_id),
+                    topic_id: string(condition && condition.topic_id),
+                    yyyymm: string(condition && condition.yyyymm),
+                    searchtoken: string(condition && condition.searchtoken)
+                },
+                function(result) {
+                    if (funcOK) {
+                        var ev = result;
+                        if (ev && ev.logs && ev.senders) {
+                            for (var i = 0; i < ev.logs.length; i++) {
+                                ev.logs[i].sender = ev.senders[ev.logs[i].sender];
+                                ev.logs[i].object = undefined;
+                                if (ev.logs[i].ctype === Constants.CTYPE_OBJECT) {
+                                    try {
+                                        ev.logs[i].object = JSON.parse(ev.logs[i].content);
+                                    } catch(e) {
+                                        this._logger.log("warn", e.message + " at searchConferenceTexts");
+                                    }
+                                }
                                 ev.logs[i].ltime = stringifyTstamp(ev.logs[i].tstamp);
                             }
                         }
@@ -3028,8 +3453,17 @@
                 function(result) {
                     if (funcOK) {
                         var ev = result;
-                        if (ev && ev.logs) {
+                        if (ev && ev.logs && ev.senders) {
                             for (var i = 0; i < ev.logs.length; i++) {
+                                ev.logs[i].sender = ev.senders[ev.logs[i].sender];
+                                ev.logs[i].object = undefined;
+                                if (ev.logs[i].ctype === Constants.CTYPE_OBJECT) {
+                                    try {
+                                        ev.logs[i].object = JSON.parse(ev.logs[i].content);
+                                    } catch(e) {
+                                        this._logger.log("warn", e.message + " at searchTexts");
+                                    }
+                                }
                                 ev.logs[i].ltime = stringifyTstamp(ev.logs[i].tstamp);
                             }
                         }
@@ -3171,6 +3605,8 @@
                             systemProperties: {
                                 db: result.db,
                                 pbx: result.pbx,
+                                cim: result.cim,
+                                log: result.log,
                                 misc: result.misc
                             }
                         };
@@ -3215,9 +3651,11 @@
             }
             
             var params = {
-                type: "db,pbx,misc",
+                type: "db,pbx,cim,log,misc",
                 db: systemProperties.db,
                 pbx: systemProperties.pbx,
+                cim: systemProperties.cim,
+                log: systemProperties.log,
                 misc: systemProperties.misc
             };
             
@@ -3670,6 +4108,105 @@
         },
         
         /*
+         * Function prepareDebugLog
+         */
+        prepareDebugLog: function(options, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.INVALID_USER_TYPE,
+                        message: "Invalid user_type"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            var params = {
+                days: string(options && options.days)
+            };
+            
+            this._rpcCall("PrepareDebugLog", params,
+                function(result) {
+                    if (funcOK) {
+                        var ev = {
+                            debug_log_id: string(result && result.debug_log_id)
+                        };
+                        funcOK(ev);
+                    }
+                },
+                function(error) {
+                    if (funcError) {
+                        var ev = {
+                            code: int(error.code),
+                            message: string(error.message)
+                        };
+                        funcError(ev);
+                    }
+                });
+        },
+        
+        /*
+         * Function cancelDebugLog
+         */
+        cancelDebugLog: function(options, funcOK, funcError) {
+            if (this._signInStatus !== 3) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.NOT_SIGNED_IN,
+                        message: "Not signed-in"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+                if (funcError) {
+                    var ev = {
+                        code: Errors.INVALID_USER_TYPE,
+                        message: "Invalid user_type"
+                    };
+                    funcError(ev);
+                }
+                return;
+            }
+            
+            var params = {
+                debug_log_id: string(options && options.debug_log_id)
+            };
+            
+            this._rpcCall("CancelDebugLog", params,
+                function(result) {
+                    if (funcOK) {
+                        var ev = {
+                        };
+                        funcOK(ev);
+                    }
+                },
+                function(error) {
+                    if (funcError) {
+                        var ev = {
+                            code: int(error.code),
+                            message: string(error.message)
+                        };
+                        funcError(ev);
+                    }
+                });
+        },
+        
+        /*
          * Function getProfile
          */
         getProfile: function() {
@@ -3696,6 +4233,11 @@
             settings.text_open_sec = this._settings ? int(this._settings.text_open_sec) : 0;
             if (this._settings && this._settings.optional_settings) {
                 settings.optional_settings = JSON.parse(JSON.stringify(this._settings.optional_settings));
+            }
+            if (this._settings && this._settings.ext_info) {
+                settings.ext_info = JSON.parse(JSON.stringify(this._settings.ext_info));
+            } else {
+                settings.ext_info = {};
             }
             return settings;
         },
@@ -3820,22 +4362,28 @@
                 created_time: "",
                 created_tstamp: 0,
                 created_server_time: "",
+                yyyymm: "",
                 conf_type: "",
                 conf_status: Constants.CONF_STATUS_INACTIVE,
                 from: {
                     tenant: "",
                     user_id: "",
-                    user_name: ""
+                    user_name: "",
+                    conf_status: Constants.CONF_STATUS_INACTIVE
                 },
                 creator: {
                     tenant: "",
                     user_id: "",
-                    user_name: ""
+                    user_name: "",
+                    conf_status: Constants.CONF_STATUS_INACTIVE
                 },
                 assigned: {
                     tenant: "",
-                    user_id: ""
+                    user_id: "",
+                    conf_status: Constants.CONF_STATUS_INACTIVE
                 },
+                ext_conf_info: {},
+                conf_tags: [],
                 webchatinfo: {},
                 invite_properties: {
                     invisible: false,
@@ -3849,6 +4397,7 @@
                 conference.created_time = string(this._conferences[conf_id].created_time);
                 conference.created_tstamp = int(this._conferences[conf_id].created_tstamp);
                 conference.created_server_time = string(this._conferences[conf_id].created_server_time);
+                conference.yyyymm = conference.created_server_time.substr(0, 4) + conference.created_server_time.substr(5, 2);
                 conference.conf_type = string(this._conferences[conf_id].conf_type);
                 conference.conf_status = int(this._conferences[conf_id].conf_status);
                 if (this._conferences[conf_id].from) {
@@ -3865,6 +4414,12 @@
                     conference.assigned.tenant = string(this._conferences[conf_id].assigned.tenant);
                     conference.assigned.user_id = string(this._conferences[conf_id].assigned.user_id);
                 }
+                if (this._conferences[conf_id].ext_conf_info) {
+                    conference.ext_conf_info = JSON.parse(JSON.stringify(this._conferences[conf_id].ext_conf_info));
+                }
+                if (this._conferences[conf_id].conf_tags) {
+                    conference.conf_tags = JSON.parse(JSON.stringify(this._conferences[conf_id].conf_tags));
+                }
                 if (this._conferences[conf_id].webchatinfo) {
                     conference.webchatinfo = JSON.parse(JSON.stringify(this._conferences[conf_id].webchatinfo));
                 }
@@ -3879,6 +4434,15 @@
                     user.name = string(this._conferences[conf_id].user[i].name);
                     user.conf_status = int(this._conferences[conf_id].user[i].conf_status);
                     conference.user.push(user);
+                    if (user.tenant === conference.from.tenant && user.user_id === conference.from.user_id) {
+                        conference.from.conf_status = user.conf_status;
+                    }
+                    if (user.tenant === conference.creator.tenant && user.user_id === conference.creator.user_id) {
+                        conference.creator.conf_status = user.conf_status;
+                    }
+                    if (user.tenant === conference.assigned.tenant && user.user_id === conference.assigned.user_id) {
+                        conference.assigned.conf_status = user.conf_status;
+                    }
                 }
             }
             return conference;
@@ -3928,7 +4492,7 @@
                 video: false,
                 microphoneMuted: false,
                 cameraMuted: false,
-                localStreamUrl: "",	//deprecated
+                localStreamUrl: "",
                 streamTables: []
             };
             var streamTables = {};
@@ -3967,7 +4531,7 @@
                                 video: Boolean(session.mediaConstraints.video)
                             };
                             streamTables[key].streamTable[session.id] = stream;
-                            if (callInfo.localStreamUrl === "" && stream.video && session.localStreamURL) {	//deprecated
+                            if (callInfo.localStreamUrl === "" && stream.video && session.localStreamURL) {
                                 callInfo.localStreamUrl = string(session.localStreamURL);
                             }
                         } else if (session.status === "in-progress") {
@@ -4030,6 +4594,24 @@
         /*
          * Private functions
          */
+        _initEventListener: function(eventName) {
+            var self = this;
+            return function(ev) {
+                try {
+                    self._logger.log("debug", "eventName: " + eventName + " ev: " + JSON.stringify(ev));
+                } catch(e) {
+                }
+                for (var i = 0; i < self._handlers.length; i++) {
+                    var handler = self._handlers[i];
+                    if (handler && handler[eventName]) {
+                        handler[eventName].apply(handler, arguments);
+                    }
+                }
+                if (self._eventListeners0[eventName]) {
+                    self._eventListeners0[eventName].apply(self, arguments);
+                }
+            };
+        },
         _byThis: function(func, argsArray) {
             var self = this;
             // if argsArray is not given, returned function calls func with arguments of itself
@@ -4043,11 +4625,11 @@
         _rpcPrintError: function(content) {
             this._logger.log("error", content);
         },
-        _rpcClose: function() {
+        _rpcClose: function(e) {
             if (this._signInStatus === 2) {
-                this._signInNG(Errors.RPC_CLOSED, "RPC closed");
+                this._signInNG(int(e && e.code || e) || Errors.RPC_CLOSED, "RPC closed");
             } else if (this._signInStatus === 3) {
-                this._forcedSignOut(Errors.RPC_CLOSED, "RPC closed");
+                this._forcedSignOut(int(e && e.code || e) || Errors.RPC_CLOSED, "RPC closed");
             }
         },
         _rpcError: function() {
@@ -4158,6 +4740,7 @@
             this._receivedSharedObjectJsonTable = {};
             
             if (this._rpc) {
+                this._rpc.onClose = function() {};
                 this._rpc.close();
                 this._rpc = null;
             }
@@ -4172,8 +4755,12 @@
                 this._pingTimer = null;
             }
         },
-        _signInNG: function(code, message) {
-            this._logger.log("warn", "_signInNG code: " + code + ", message: " + message);
+        _signInNG: function(code, message, tstamp) {
+            if (code) {
+                this._logger.log("warn", "_signInNG code: " + code + ", message: " + message);
+            } else {
+                this._logger.log("info", "_signInNG code: " + code + ", message: " + message);
+            }
             
             this._signInStatus = 1;
             
@@ -4182,14 +4769,16 @@
             if (this._signInFuncError) {
                 var ev = {
                     code: int(code),
-                    message: string(message)
+                    message: string(message),
+                    ltime: stringifyTstamp(tstamp),
+                    tstamp: int(tstamp)
                 };
                 this._signInFuncError(ev);
             }
             this._signInFuncOK = null;
             this._signInFuncError = null;
         },
-        _signInSuccess: function() {
+        _signInSuccess: function(tstamp) {
             this._signInStatus = 3;
             if (this._signInTimer) {
                 clearTimeout(this._signInTimer);
@@ -4201,6 +4790,8 @@
             
             if (this._signInFuncOK) {
                 var ev = {
+                    ltime: stringifyTstamp(tstamp),
+                    tstamp: int(tstamp)
                 };
                 this._signInFuncOK(ev);
             }
@@ -4226,15 +4817,21 @@
             if (password) {
                 prms += "&password=" + encodeURIComponent(password);
             }
+            if (this._auth_timeout) {
+                prms += "&auth_timeout=" + encodeURIComponent(this._auth_timeout);
+            }
             if (this._modest) {
-                prms += "&modest"
+                prms += "&modest&prev_chat_session_id=" + encodeURIComponent(this._chat_session_id);
+            }
+            if (this._pver) {
+                prms += "&pver=" + encodeURIComponent(this._pver);
             }
             try {
                 if (this._forceAjax) {
                     this._rpc = Brekeke.net.createJsonRpcOverAjax((this._useHttps ? "https://" : "http://") + this._host + "/" + this._path + "/ca" + prms);
                 } else {
                     try {
-                        this._rpc = Brekeke.net.createJsonRpcOverWebSocket((this._useHttps ? "wss://" : "ws://") + this._host + "/" + this._path + "/ws" + prms);
+                        this._rpc = Brekeke.net.createJsonRpcOverWebSocket((this._useHttps ? "wss://" : "ws://") + this._host + "/" + this._path + (this._servlet ? "/ws" : "/wssep") + prms);
                     } catch(e) {
                         this._logger.log("info", "Websocket unavailable, fallback to ajax\n" + e.message + " at _signInStartRpc" + "\n" + e.stack + "\n");
                     }
@@ -4262,11 +4859,12 @@
                 this._rpc.setUrl(this._rpc.url.split("?").shift());
                 
                 this._configProperties = args.properties;
+                this._chat_session_id = int(args.properties && args.properties.chat_session_id);
                 if (args.type === 1) { // chat disabled (sa)
                     // this is sa
                     this._profile.user_type = Constants.USER_TYPE_SYSTEM_ADMIN;
                     
-                    this._signInSuccess();
+                    this._signInSuccess(args.tstamp);
                 } else { // chat enabled
                     this._download_keys[JSON.stringify({ tenant: this._tenant, user_id: this._user_id })] = args.properties.dlk;
                     this._rpcCall("GetProperties",
@@ -4291,7 +4889,7 @@
                     this._signInStartRpc(passwordHashedWithNonce);
                 } else {
                     // authentication error
-                    this._signInNG(int(args.code), args.msg);
+                    this._signInNG(int(args.code), args.msg, args.tstamp);
                 }
             }
         },
@@ -4436,7 +5034,7 @@
         },
         _signInSubscribeStatusOK: function(result) {
             if (this._signInStatus === 2) {
-                this._signInAllOK();
+                this._signInAllOK(result);
             }
         },
         _signInSubscribeStatusNG: function(error) {
@@ -4454,7 +5052,7 @@
                 setTimeout(this._byThis(this._sendStatusAfterSignIn), 1000);
                 
                 // sign-in success callback
-                this._signInSuccess();
+                this._signInSuccess(result.tstamp);
                 
                 if (this._phone) { // webrtc enabled
                     this._getPhoneProperties();
@@ -4716,7 +5314,10 @@
                 
                 var buddy_mode = this.getConfigProperties().buddy_mode;
                 if (buddy_mode !== Constants.BUDDY_MODE_MANUAL &&
-                    this.getProfile().user_type !== Constants.USER_TYPE_TENANT_GUEST) {
+                    this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN &&
+                    this.getProfile().user_type !== Constants.USER_TYPE_TENANT_GUEST &&
+                    sender_user_id.substr(0, 2) !== "##"
+                ) {
                     // reload buddy list from PBX
                     this._rpcCall("GetAllUsers",
                         {
@@ -4817,7 +5418,8 @@
                     profile_image_url: this._getProfileImageUrl(sender_tenant, sender_user_id),
                     status: int(args.client_param.status),
                     display: string(args.client_param.display),
-                    request_ltime: stringifyTstamp(args.request_tstamp)
+                    request_ltime: stringifyTstamp(args.request_tstamp),
+                    request_tstamp: int(args.request_tstamp)
                 };
                 this._eventListeners.buddyStatusChanged(ev);
             }
@@ -4848,10 +5450,10 @@
                         ctype: int(args.ctype),
                         received_text_id: string(args.action_id) + "_" + string(args.sent_ltime || args.ltime).substr(0, 7).split("-").join(""),
                         ltime: stringifyTstamp(args.tstamp),
+                        tstamp: int(args.tstamp),
                         sent_ltime: stringifyTstamp(args.sent_tstamp || args.tstamp), // args.sent_tstamp has value only in GetUnreadText
-                        requires_read: args.conf_id ? false : true,
-                        tstamp: args.tstamp,
-                        sent_tstamp: args.sent_tstamp || args.tstamp
+                        sent_tstamp: int(args.sent_tstamp || args.tstamp), // args.sent_tstamp has value only in GetUnreadText
+                        requires_read: args.conf_id ? false : true
                     };
                     this._eventListeners.receivedText(ev);
                 }
@@ -4864,7 +5466,29 @@
                     this._logger.log("warn", "Invalid argument: _recvText text=" + args.text);
                     break;
                 }
-                if (fileProps.target && !(fileProps.target.tenant === this._tenant && fileProps.target.user_id === this._user_id)) {
+                var isThirdParty;
+                var file_id = string(fileProps.file_id);
+                if (fileProps.target) {
+                    if (fileProps.target.tenant === this._tenant && fileProps.target.user_id === this._user_id) {
+                        isThirdParty = false;
+                    } else {
+                        if (fileProps.additionals) {
+                            isThirdParty = true;
+                            for (var i = 0; i < fileProps.additionals.length; i++) {
+                                if (fileProps.additionals[i].target.tenant === this._tenant && fileProps.additionals[i].target.user_id === this._user_id) {
+                                    isThirdParty = false;
+                                    file_id = fileProps.additionals[i].file_id;
+                                    break;
+                                }
+                            }
+                        } else {
+                            isThirdParty = true;
+                        }
+                    }
+                } else {
+                    isThirdParty = false;
+                }
+                if (isThirdParty) {
                     if (this._eventListeners.receivedText && this._signInStatus === 3) {
                         var ev = {
                             sender: {
@@ -4876,13 +5500,14 @@
                             ctype: int(args.ctype),
                             received_text_id: string(args.action_id) + "_" + string(args.sent_ltime || args.ltime).substr(0, 7).split("-").join(""),
                             ltime: stringifyTstamp(args.tstamp),
+                            tstamp: int(args.tstamp),
                             sent_ltime: stringifyTstamp(args.sent_tstamp || args.tstamp), // args.sent_tstamp has value only in GetUnreadText
+                            sent_tstamp: int(args.sent_tstamp || args.tstamp), // args.sent_tstamp has value only in GetUnreadText
                             requires_read: args.conf_id ? false : true
                         };
                         this._eventListeners.receivedText(ev);
                     }
                 } else {
-                    var file_id = string(fileProps.file_id);
                     var target = {
                         tenant: sender_tenant,
                         user_id: sender_user_id
@@ -4900,12 +5525,40 @@
                             conf_id: args.conf_id ? string(args.conf_id) : null,
                             text_id: string(args.action_id) + "_" + string(args.sent_ltime || args.ltime).substr(0, 7).split("-").join(""),
                             ltime: stringifyTstamp(args.tstamp),
+                            tstamp: int(args.tstamp),
                             sent_ltime: stringifyTstamp(args.sent_tstamp || args.tstamp),
-                            tstamp: args.tstamp,
-                            sent_tstamp: args.sent_tstamp || args.tstamp
+                            sent_tstamp: int(args.sent_tstamp || args.tstamp)
                         };
                         this._eventListeners.fileReceived(ev);
                     }
+                }
+                break;
+            case Constants.CTYPE_OBJECT:
+                var receivedObject = undefined;
+                try {
+                    receivedObject = JSON.parse(args.text);
+                } catch(e) {
+                    this._logger.log("warn", e.message + " at _recvText");
+                }
+                // raise objectReceived event
+                if (this._eventListeners.objectReceived && this._signInStatus === 3) {
+                    var ev = {
+                        sender: {
+                            tenant: sender_tenant,
+                            user_id: sender_user_id
+                        },
+                        text: string(args.text),
+                        object: receivedObject,
+                        conf_id: args.conf_id ? string(args.conf_id) : null, // args.conf_id might be undefined or "" on non-conf
+                        ctype: int(args.ctype),
+                        received_text_id: string(args.action_id) + "_" + string(args.sent_ltime || args.ltime).substr(0, 7).split("-").join(""),
+                        ltime: stringifyTstamp(args.tstamp),
+                        tstamp: int(args.tstamp),
+                        sent_ltime: stringifyTstamp(args.sent_tstamp || args.tstamp), // args.sent_tstamp has value only in GetUnreadText
+                        sent_tstamp: int(args.sent_tstamp || args.tstamp), // args.sent_tstamp has value only in GetUnreadText
+                        requires_read: args.conf_id ? false : true
+                    };
+                    this._eventListeners.objectReceived(ev);
                 }
                 break;
             default:
@@ -4926,7 +5579,8 @@
                 var ev = {
                     tenant: sender_tenant,
                     user_id: sender_user_id,
-                    request_ltime: stringifyTstamp(args.request_tstamp)
+                    request_ltime: stringifyTstamp(args.request_tstamp),
+                    request_tstamp: int(args.request_tstamp)
                 };
                 this._eventListeners.receivedTyping(ev);
             }
@@ -4956,6 +5610,8 @@
                     tenant: "",
                     user_id: ""
                 };
+                conference.ext_conf_info = {};
+                conference.conf_tags = [];
                 conference.webchatinfo = {};
                 conference.invite_properties = {
                     invisible: false,
@@ -4991,6 +5647,9 @@
                     tenant: string(args.assigned.tenant),
                     user_id: string(args.assigned.user_id)
                 };
+            }
+            if (args.ext_conf_info) {
+                this._conferences[conf_id].ext_conf_info = args.ext_conf_info;
             }
             if (args.webchatinfo) {
                 this._conferences[conf_id].webchatinfo = args.webchatinfo;
@@ -5087,7 +5746,9 @@
             // raise conferenceMemberChanged event
             if (this._eventListeners.conferenceMemberChanged && this._signInStatus === 3) {
                 var ev = {
-                    conference: conference
+                    conference: conference,
+                    ltime: stringifyTstamp(args.tstamp),
+                    tstamp: int(args.tstamp)
                 };
                 this._eventListeners.conferenceMemberChanged(ev);
             }
@@ -5101,6 +5762,54 @@
                         // raise callInfoChanged event
                         this._callInfoChanged(bundleId);
                     }
+                }
+            }
+        },
+        _extConfInfoChanged: function(args) {
+            var conf_id = string(args.conf_id);
+            
+            if (!this._conferences[conf_id]) {
+                this._logger.log("warn", "Unknown conference changed: " + conf_id);
+                return;
+            }
+            
+            this._conferences[conf_id].ext_conf_info = args.ext_conf_info || {};
+            
+            var conference = this.getConference(conf_id);
+            
+            // raise extConfInfoChanged event
+            if (this._eventListeners.extConfInfoChanged && this._signInStatus === 3) {
+                var ev = {
+                    conference: conference
+                };
+                this._eventListeners.extConfInfoChanged(ev);
+            }
+        },
+        _tagUpdated: function(args) {
+            var attached_type = string(args.attached_type);
+            var attached_id = string(args.attached_id);
+            var tags = args.tags && args.tags.length ? args.tags : [];
+            var yyyymm = string(args.yyyymm);
+            var ltime = string(args.ltime);
+            
+            if (attached_type === "conf") {
+                var conf_id = attached_id;
+                if (Math.abs(int(ltime.substr(0, 7).split("-").join("")) - int(yyyymm)) > 1) {
+                    this._logger.log("info", "_tagUpdated old conference (conf_id: " + conf_id + ", yyyymm: " + yyyymm + ", ltime: " + ltime + ")");
+                    return;
+                }
+                if (!this._conferences[conf_id]) {
+                    this._logger.log("info", "_tagUpdated inactive conference (conf_id: " + conf_id + ")");
+                    return;
+                }
+                this._conferences[conf_id].conf_tags = tags;
+                var conference = this.getConference(conf_id);
+                // raise confTagUpdated event
+                if (this._eventListeners.confTagUpdated && this._signInStatus === 3) {
+                    var ev = {
+                        conference: conference
+                    };
+                    this._eventListeners.confTagUpdated(ev);
                 }
             }
         },
@@ -5735,7 +6444,8 @@
                     tenant: sender_tenant,
                     user_id: sender_user_id,
                     client_param: args.client_param,
-                    request_ltime: stringifyTstamp(args.request_tstamp)
+                    request_ltime: stringifyTstamp(args.request_tstamp),
+                    request_tstamp: int(args.request_tstamp)
                 };
                 this._eventListeners.receivedCustomClientEvent(ev);
             }
@@ -5799,8 +6509,29 @@
         ConferenceMemberChanged: function(args) {
             this._conferenceMemberChanged(args);
         },
+        ExtConfInfoChanged: function(args) {
+            this._extConfInfoChanged(args);
+        },
+        TagUpdated: function(args) {
+            this._tagUpdated(args);
+        },
         RecvFile: function(args) {
             this._recvFile(args);
+        },
+        DebugLogFilePrepared: function(args) {
+            // raise debugLogFilePrepared event
+            if (this._eventListeners.debugLogFilePrepared && this._signInStatus === 3) {
+                var ev = {
+                    debug_log_id: string(args.debug_log_id),
+                    debug_log_file_id: string(args.debug_log_file_id),
+                    index: int(args.index),
+                    has_more: Boolean(args.has_more),
+                    error: args.error ? string(args.error) : null,
+                    ltime: stringifyTstamp(args.tstamp),
+                    tstamp: int(args.tstamp)
+                };
+                this._eventListeners.debugLogFilePrepared(ev);
+            }
         },
         keepalive: function(args) {
             // ping reply OK
@@ -5841,7 +6572,7 @@
         return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
     };
     var stringifyTstamp = function(tstamp) {
-        return stringifyDate(new Date(tstamp));
+        return stringifyDate(new Date(int(tstamp)));
     }
     
     var CryptoJS = (function () {
@@ -5872,6 +6603,7 @@ C,15,a[50]),d=n(d,e,f,c,s,21,a[51]),c=n(c,d,e,f,A,6,a[52]),f=n(f,c,d,e,q,10,a[53
     UCClient.ChatClient = ChatClient;
     UCClient.Errors = Errors;
     UCClient.Constants = Constants;
+    UCClient.Events = Events;
     UCClient.CryptoJS = CryptoJS;
     
     /*

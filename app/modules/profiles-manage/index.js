@@ -3,28 +3,48 @@ import {createModelView} from '@thenewvu/redux-model'
 import UI from './ui'
 import UserLanguage from "../../language/UserLanguage"
 import { Text, Platform, AsyncStorage, AppState } from 'react-native';
-import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType, NotificationActionType, NotificationActionOption, NotificationCategoryOption} from "react-native-fcm";
+import FCM, {FCMEvent, WillPresentNotificationResult, NotificationType } from "react-native-fcm";
 
 let PROFILES_MANAGE_VIEW = null;
 
 const isIncoming = (call) => call.incoming && !call.answered
 
-function registerFcmKilledListener(){
+const pushNotifTimeout = 20000 + 15000;
 
-    this._shutodownNotificationListener = FCM.on(FCMEvent.Notification, notif => {
-        AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
+function parseCustomNotification_s( notif ){
+    let customNotif = notif.custom_notification;
+    if( !customNotif ){
+        customNotif = notif;
+    }
+    if( typeof customNotif == "string" ){
+        customNotif = JSON.parse( customNotif );
+    }
+
+    const currentTime = new Date().getTime();
+    const expire = currentTime + pushNotifTimeout;
+    customNotif["brekekephone.notif.expire"] = expire;
+    return customNotif;
+}
+
+function registerFcmKilledListener(){
+    FCM.on(FCMEvent.Notification, notif => {
+        const oCustomNotif = parseCustomNotification_s(notif);
 
         if( notif.opened_from_tray ){
             setTimeout(()=>{
-                PROFILES_MANAGE_VIEW._onNotification(notif);
+                PROFILES_MANAGE_VIEW._onOpenCustomNotification(oCustomNotif);
             }, 500)
+        }
+        else{
+            AsyncStorage.setItem('lastNotification', JSON.stringify(oCustomNotif));
         }
 
     });
 }
 
+
 function registerFcmAppListener(){
-    this._foreOrBackgroundNotificationListener = FCM.on(FCMEvent.Notification, notif => {
+    FCM.on(FCMEvent.Notification, notif => {
         if(AppState.currentState !== 'background') {
             return;
         }
@@ -34,9 +54,11 @@ function registerFcmAppListener(){
             return;
         }
 
-        setTimeout(()=>{
-            PROFILES_MANAGE_VIEW._onNotification(notif);
-        }, 500)
+        if( notif.opened_from_tray ) {
+            setTimeout(() => {
+                PROFILES_MANAGE_VIEW._onOpenNotification(notif);
+            }, 500)
+        }
 
     });
 
@@ -85,10 +107,6 @@ const mapAction = (action) => (emit) => ({
 
     addPushnotif( notif ){
         emit(action.pushNotifies.add( notif ) );
-    },
-
-    removePushnotif( notif ){
-        emit(action.pushNotifies.remove( notif ) );
     }
 
 });
@@ -101,63 +119,43 @@ class View extends Component {
         }
     }
 
-    _onNotification( notif ){
+    _onOpenNotification( notif ){
+        AsyncStorage.removeItem('lastNotification');
 
-        let currentTime = new Date().getTime();
-        let sentTime = notif["google.sent_time"];
-        let elapsed = currentTime - sentTime;
+        const oCustomNotif = parseCustomNotification_s(notif);
+        this._onOpenCustomNotification(oCustomNotif);
 
-        if (elapsed > 60000 ) {
-            return;
-        }
+    }
 
-        const oCustomNotif = this._parseCustomNotification(notif);
+    _onOpenCustomNotification( oCustomNotif ){
+        AsyncStorage.removeItem('lastNotification');
         this.props.addPushnotif(oCustomNotif);
         this._signinByNotif(oCustomNotif);
 
     }
 
-    _parseCustomNotification( notif ){
-        let customNotif = notif.custom_notification;
-        if( !customNotif ){
-            customNotif = notif;
-        }
-        if( typeof customNotif == "string" ){
-            customNotif = JSON.parse( customNotif );
-        }
-
-        let sentTime = notif["google.sent_time"];
-        const expire = sentTime + 60000;
-
-        customNotif["brekekephone.notif.expire"] = expire;
-
-        return customNotif;
-    }
-
-    componentWillUnmount() {
-        if( this._foreOrBackgroundNotificationListener ) {
-            this._foreOrBackgroundNotificationListener.remove();
-        }
-        if( this._shutodownNotificationListener ) {
-            this._shutodownNotificationListener.remove();
-        }
-    }
-
     async componentWillMount() {
+
         PROFILES_MANAGE_VIEW = this;
         this.setState({isReady: false})
 
-        await UserLanguage.getUserzLanguage_s();
-
         await UserLanguage.init_s();
-        let msg = UserLanguage.getUserzMessage_s("a");
 
-        const this_ = this;
         await AsyncStorage.getItem('lastNotification').then(sData => {
             if(sData){
-                const data = JSON.parse(sData);
-                AsyncStorage.removeItem('lastNotification');
-                PROFILES_MANAGE_VIEW._onNotification(data);
+                const customNotif = JSON.parse(sData);
+
+                const currentTime = new Date().getTime();
+                const expire = customNotif["brekekephone.notif.expire"];
+                const bTimeout = currentTime > expire;
+
+                if (bTimeout) {
+                    AsyncStorage.removeItem('lastNotification');
+                }
+                else{
+                    PROFILES_MANAGE_VIEW._onOpenCustomNotification(customNotif);
+                }
+
             }
         })
 
@@ -177,7 +175,7 @@ class View extends Component {
             });
 
             try {
-                let result = await FCM.requestPermissions({
+                await FCM.requestPermissions({
                     badge: false,
                     sound: true,
                     alert: true
@@ -247,37 +245,6 @@ class View extends Component {
 
     }
 
-    _getUid( tenant, username ){
-        const profiles = this.props.profileById;
-        const uids = Object.keys( profiles );
-        for( let i = 0; i < uids.length; i++ ) {
-            const uid = uids[i];
-            const profile = profiles[uid];
-            if (profile.pbxUsername !== username) {
-                continue;
-            }
-            const isPbxTenantEmpty =  !profile.pbxTenant || profile.pbxTenant.length === 0;
-            if( isPbxTenantEmpty ){
-                if( !tenant ) {
-                    return uid;
-                }
-                else{
-                    continue;
-                }
-            }
-
-            if( profile.pbxTenant !== tenant ){
-                continue;
-            }
-
-            return uid;
-
-        }
-
-        return null;
-    }
-
-
     _signinByNotif( customNotif ){
         const uid = this._getUidByCustomNotif( customNotif );
         if( !uid ){
@@ -286,28 +253,10 @@ class View extends Component {
         this.signin(uid);
     }
 
-    sampleResolve(value) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve(value * 2);
-            }, 2000);
-        })
-    }
-
-    async sample() {
-        const result = await this.sampleResolve(5);
-        return result + 5;
-    }
-
     render() {
-
-        let thisState = this.state;
-
-        if (this.state.isReady !== true ) {
-
+        if ( !this.state || this.state.isReady !== true ) {
             return <Text></Text>
         }
-
 
         return <UI
             profileIds={this.props.profileIds}
@@ -330,7 +279,6 @@ class View extends Component {
         this.props.routeToAuth();
     }
 }
-
 
 export default
 createModelView(mapGetter, mapAction)(View)

@@ -5,6 +5,7 @@ import createID from 'shortid'
 import UI from './ui'
 import saveBlob from './save-blob'
 import pickFile from './pick-file'
+import formatChatText_s from '../../util/brekekephone-misc'
 
 const mapGetter = (getter) => (state, props) => ({
   buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
@@ -116,7 +117,7 @@ class View extends Component {
 
     const created = formatTime(chat.created);
     const file = fileById[chat.file]
-    const text = chat.text
+    const text = formatChatText_s(chat.text);
 
     if (mini) {
       return {mini: true, created, text, file}

@@ -81,7 +81,7 @@ const soundLoader = {
 const plugins = [
   new CopyWebpackPlugin([
     {from: path.resolve(__dirname, './index.html')},
-    {from: path.resolve(__dirname, './jssip-0.7.11-1.js')},
+    {from: path.resolve(__dirname, './jssip-3.2.15.js')},
     {from: path.resolve(__dirname, './favicon.png')},
   ]),
 ];

@@ -1,5 +1,3 @@
-
-
 import {AsyncStorage} from 'react-native'
 
 class UserLanguage {
@@ -12,40 +10,23 @@ class UserLanguage {
     }
 
     _getMessage( key, defaultValue ){
-        var msg = this._jsonModule[key];
+        let msg = this._jsonModule[key];
         if( !msg ){
             msg = defaultValue;
         }
         return msg;
     }
 
-     //language_en.
-     static _loadToMap_s( map ) {
+     static async _loadToMap_s( map ) {
+        let ulEn = new UserLanguage();
+        const jsonModuleEn = await import("./message-en.json");
+        ulEn._load( jsonModuleEn );
+        map["en"] = ulEn;
 
-         let ths = this;
-
-         var ulEn = new UserLanguage();
-         import("./message-en.json")
-             .then(
-                 jsonModule => {
-                     ulEn._load( jsonModule );
-                     map["en"] = ulEn;
-
-
-
-
-                     var ulJa = new UserLanguage();
-
-                     import("./message-ja.json")
-                         .then(
-                             jsonModule => {
-                                 ulJa._load( jsonModule );
-                                 map["ja"] = ulJa;
-                             }
-                         );
-                 }
-             );
-
+        let ulJa = new UserLanguage();
+        const jsonModuleJa = await import("./message-ja.json")
+        ulJa._load( jsonModuleJa );
+        map["ja"] = ulJa;
      }
 
 
@@ -75,14 +56,14 @@ class UserLanguage {
     static async refreshUserzInstance_s(){
         if( !UserLanguage._MAP ){
             UserLanguage._MAP = [];
-            UserLanguage._loadToMap_s(UserLanguage._MAP);
+            await UserLanguage._loadToMap_s(UserLanguage._MAP);
         }
 
         await UserLanguage.getUserzLanguage_s().then( (lang) =>{
             if( !lang ){
                 lang = "en";
             }
-            var o = UserLanguage._MAP[lang];
+            const o = UserLanguage._MAP[lang];
             UserLanguage.INSTANCE = o;
         });
     }

@@ -1,5 +1,13 @@
-if (typeof Brekeke === "undefined") {
-    window.Brekeke = {};
+(function (root, factory) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory({});
+    } else {
+        root.Brekeke = root.Brekeke || {};
+        root.Brekeke.net = factory(root.Brekeke);
+    }
+}(this, function(Brekeke) {
+if (!window.Brekeke) {
+    window.Brekeke = Brekeke;
 }
 
 Brekeke.net = {
@@ -42,10 +50,10 @@ Brekeke.net = {
             },
             printDebug: function(str) {
                 if (this.debugLevel >= 2) {
-                	// if( typeof str === "object" ){
-                	// 	str = JSON.stringify( str );
-                	// }
-                    console.debug(str);
+                	if( typeof str === "object" ){
+                		str = JSON.stringify( str );
+                	}
+                    console.debug(new Date() + " [debug] " + str);
                 }
             },
             printError: function(str) {
@@ -53,12 +61,12 @@ Brekeke.net = {
                 	if( typeof str === "object" ){
                 		str = JSON.stringify( str );
                 	}
-                    console.debug(str);
+                    console.debug(new Date() + " [error] " + str);
                 }
             },
             _sendMethod: function(obj_send, mid, funcOK, funcError, returnObj) {
                 if (!this.isOpen()) {
-                    funcError("Not Opened", Brekeke.net.ERROR_NOT_OPENED, returnObj);
+                    funcError({code: Brekeke.net.ERROR_NOT_OPENED, message: "Not Opened"}, returnObj);
                     return;
                 }
                 this.methods_sending[ mid ] = {
@@ -154,12 +162,12 @@ Brekeke.net = {
             onClose: function() {
 
             },
-            _onClose: function() {
+            _onClose: function(e) {
                 if (this.closed) {
                     return;
                 }
                 this.closed = true;
-                this.onClose();
+                this.onClose(e);
             },
             onOpen: function(){
             	
@@ -208,13 +216,12 @@ Brekeke.net = {
             return Brekeke.net.prototype_jsonrpc_websocket;
         }
         var rpc = Object.create(Brekeke.net.getJsonRpcPrototype());
-      rpc.isOpen = function() {
-            var openned = this.socket ? this.socket.readyState === 1 : false
-            this.printDebug("JsonRpcOverWebSocket.isOpen() =" + openned);
-            return openned;
+        rpc.isOpen = function() {
+            this.printDebug("JsonRpcOverWebSocket.isOpen() rpc.socket.readyState=" + this.socket.readyState);
+            return (this.socket.readyState === 1);
         };
         rpc.send = function(msg) {
-            this.socket && this.socket.send(msg);
+            this.socket.send(msg);
         };
         rpc.open = function() {
             if (!this._canOpen()) {
@@ -230,11 +237,11 @@ Brekeke.net = {
             socket.onclose = function(e) {
                 for (var id in t.methods_sending) {
                     var m = t.methods_sending[ id ];
-                    m.funcError({code: Brekeke.net.ERROR_DISCONNECTED, message: "Disconnected"}, m[2]);
+                    m.funcError({code: Brekeke.net.ERROR_DISCONNECTED, message: "Disconnected"}, m.returnObj);
                 }
                 delete this.methods_sending;
                 t.methods_sending = {};
-                t._onClose();
+                t._onClose(e);
             };
             socket.onmessage = function(e) {
                 if( !e ){
@@ -343,9 +350,9 @@ Brekeke.net = {
 			} catch (e) {
 			    t.onError(e);
 			}
-			t._onClose();
+			t._onClose(xhr.status);
                     } else {
-                        t._onClose();
+                        t._onClose(xhr.status);
                     }
                     t.xhr_r = null;
                 } else {
@@ -370,7 +377,7 @@ Brekeke.net = {
                             t._recv(JSON.parse(xhr.responseText));
                         }
                     } else {
-                        t._onClose();
+                        t._onClose(xhr.status);
                     }
                 } else {
                 }
@@ -406,3 +413,5 @@ Brekeke.net = {
         return r;
     }
 };
+return Brekeke.net;
+}));

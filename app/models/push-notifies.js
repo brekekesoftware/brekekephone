@@ -15,13 +15,16 @@ export default createModel({
                 immutable.fset('notifDatas', (datas) => [...datas, notifData]),
             );
             return obj;
-        },
-        remove: (state, notifData) => immutable.on(state)(
-            immutable.fset('notifDatas', ({[notifData]: removed, ...rest}) => rest)
-        )
+        }
+        ,removeAt: function(state, index ) {
+            const a = state.notifDatas.slice(0,index);
+            const b = state.notifDatas.slice(index + 1, state.length );
+            const c = a.concat(b);
+
+            return { notifDatas: c };
+        }
         ,clear: () => ({
             notifDatas : []
         })
-
     }
 })

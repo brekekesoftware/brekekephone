@@ -20,8 +20,8 @@ class UC extends EventEmitter {
     })
   }
 
-  onConnectionStopped = () => {
-    this.emit('connection-stopped')
+  onConnectionStopped = (ev) => {
+    this.emit('connection-stopped',ev )
   }
 
   onUserUpdated = (ev) => {
@@ -48,13 +48,13 @@ class UC extends EventEmitter {
         group: ev.conf_id,
         text: ev.text,
         creator: ev.sender.user_id,
-        created: ev.sent_tstamp
+        created: ev.sent_ltime
       })
       : this.emit('buddy-chat-created', {
         id: ev.received_text_id,
         text: ev.text,
         creator: ev.sender.user_id,
-        created: ev.sent_tstamp
+        created: ev.sent_ltime
       })
   }
 
@@ -84,13 +84,13 @@ class UC extends EventEmitter {
         creator: ev.fileInfo.target.user_id,
         group: ev.conf_id,
         file: file.id,
-        created: ev.sent_tstamp
+        created: ev.sent_ltime
       })
       : this.emit('buddy-chat-created', {
         id: ev.text_id,
         creator: ev.fileInfo.target.user_id,
         file: file.id,
-        created: ev.sent_tstamp
+        created: ev.sent_ltime
       })
   }
 
@@ -157,14 +157,27 @@ class UC extends EventEmitter {
     })
   }
 
-  connect (profile) {
+  connect (profile, option ) {
     return new Promise((onres, onerr) => this.client.signIn({
       host: `https://${profile.hostname}:${profile.port}`,
       path: profile.pathname || 'uc',
       tenant: profile.tenant,
       user: profile.username,
-      pass: profile.password
-    }, onres, onerr))
+      pass: profile.password,
+        option: option,
+      }, onres, onerr))
+  }
+
+
+  connect (profile, option) {
+    return new Promise((onres, onerr) => this.client.signIn(
+      `https://${profile.hostname}:${profile.port}`,
+      profile.pathname || 'uc',
+      profile.tenant,
+      profile.username,
+      profile.password,
+      option
+    , onres, onerr))
   }
 
   disconnect () {
@@ -240,7 +253,7 @@ class UC extends EventEmitter {
       id: msg.received_text_id,
       text: msg.text,
       creator: msg.sender && msg.sender.user_id,
-      created: msg.sent_tstamp
+      created: msg.sent_ltime
     }))
   }
 
@@ -263,7 +276,7 @@ class UC extends EventEmitter {
         ? JSON.parse(log.content).name
         : log.content,
       creator: log.sender.user_id,
-      created: log.tstamp
+      created: log.ltime
     }))
   }
 
@@ -284,7 +297,7 @@ class UC extends EventEmitter {
       id: log.log_id,
       text: log.content,
       creator: log.sender.user_id,
-      created: log.tstamp
+      created: res.ltime
     }))
   }
 
@@ -296,7 +309,7 @@ class UC extends EventEmitter {
           id: res.text_id,
           text,
           creator: this.client.getProfile().user_id,
-          created: res.tstamp
+          created: res.ltime
         }),
         onerr
       )
@@ -311,7 +324,7 @@ class UC extends EventEmitter {
           id: res.text_id,
           text,
           creator: this.client.getProfile().user_id,
-          created: res.tstamp
+          created: res.ltime
         }),
         onerr
       )
@@ -404,7 +417,7 @@ class UC extends EventEmitter {
         id: res.text_id,
         file: res.fileInfo.file_id,
         creator: this.client.getProfile().user_id,
-        created: res.tstamp
+        created: res.ltime
       }
     }
   }

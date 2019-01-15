@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {createModelView} from '@thenewvu/redux-model'
 import createID from 'shortid'
 import UI from './ui'
+import formatChatText_s from '../../util/brekekephone-misc'
 
 const mapGetter = (getter) => (state, props) => ({
   group: getter.chatGroups.detailMapById(state)[props.match.params.group],
@@ -124,7 +125,8 @@ class View extends Component {
     const prev = chatById[chatIds[index - 1]] || {}
     const mini = isMiniChat(chat, prev)
 	const created = formatTime(chat.created);
-    const text = chat.text
+    //const text = chat.text
+    const text = formatChatText_s( chat.text );
 
     if (mini) {
       return {mini: true, created, text}

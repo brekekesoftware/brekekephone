@@ -60,12 +60,21 @@ class View extends Component {
   isMatchUser = (id) => {
     const {pbxUserById} = this.props;
     const searchTextLC = this.state.target.toLowerCase();
+
+    const userId = id.toLowerCase()
+
+    let pbxUserName;
     const pbxUser = pbxUserById[id] || {name: ''}
-    const pbxUserId = pbxUser.id.toLowerCase()
-    const pbxUserName = pbxUser.name.toLowerCase()
+    if( pbxUser ){
+      pbxUserName = pbxUser.name.toLowerCase();
+    }
+    else{
+      pbxUserName = '';
+    }
+
     return (
-      pbxUserId.includes(searchTextLC) ||
-      pbxUserName.includes(searchTextLC)
+        userId.includes(searchTextLC) ||
+        pbxUserName.includes(searchTextLC)
     )
   }
 

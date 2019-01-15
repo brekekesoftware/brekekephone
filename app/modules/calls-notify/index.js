@@ -7,16 +7,19 @@ import createID from "shortid";
 const isIncoming = (call) => call.incoming && !call.answered
 
 const mapGetter = (getter) => (state) => ({
-  callIds: getter.runningCalls.idsByOrder(state).filter((id) =>
-    isIncoming(getter.runningCalls.detailMapById(state)[id])
-  ),
-  callById: getter.runningCalls.detailMapById(state),
+    callIds: getter.runningCalls.idsByOrder(state).filter((id) =>
+        isIncoming(getter.runningCalls.detailMapById(state)[id])
+    ),
+    callById: getter.runningCalls.detailMapById(state),
     pushNotifies: getter.pushNotifies.notifDatas(state)
 })
 
 const mapAction = (action) => (emit) => ({
-    removeNotif (notifData) {
-        emit(action.pushNotifies.remove(notifData));
+    clearNotif() {
+        emit(action.pushNotifies.clear());
+    },
+    removeNotifAt(index) {
+        emit(action.pushNotifies.removeAt(index));
     },
     routeToProfilesManage () {
         emit(action.router.goToProfilesManage())
@@ -71,29 +74,30 @@ class View extends Component {
         }
 
         return null;
-
     }
 
-  componentDidUpdate(){
-      for( let i = 0; i < this.props.pushNotifies.length; i++ ){
-         const data = this.props.pushNotifies[i];
-         const call = this._findCallByCustomNotifData(data);
-         if( call ){
-             this.accept( call.id );
-            this.props.removeNotif(data);
-         }
-         else{
-             const expire = data["brekekephone.notif.expire"];
-             const currentTime = new Date().getTime();
-             if (currentTime > expire ) {
-                 this.props.removeNotif(data);
-             }
+    componentDidUpdate(){
+        const callidslength = this.props.callIds.length;
+        const pushNotifies = this.props.pushNotifies;
+        const notifCount = pushNotifies.length;
+        const currentTime = new Date().getTime();
 
-         }
-
-      }
-
-  }
+        for (let i = notifCount - 1; i >= 0; i--) {
+          const data = pushNotifies[i];
+          const expire = data["brekekephone.notif.expire"];
+          const bTimeout = expire && currentTime > expire;
+          if (bTimeout) {
+              this.props.removeNotifAt(i);
+          }
+          else{
+              const call = this._findCallByCustomNotifData(data);
+              if (call) {
+                  this.accept(call.id);
+                  this.props.removeNotifAt(i);
+              }
+          }
+        }
+    }
 
     render = () => <UI
         callIds={this.props.callIds}
