@@ -24,7 +24,7 @@ export default createModel({
       stopped: false
     },
     profile: null,
-      userExtensionProperties : null
+    userExtensionProperties : null
   },
   getter: {
     pbx: {
@@ -109,6 +109,6 @@ export default createModel({
       onStopped: (prevState) => immutable.on(prevState)(
         immutable.vset('uc', {stopped: true})
       )
-    }
+    },
   }
 })

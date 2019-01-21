@@ -48,19 +48,40 @@ class View extends Component {
   />
 
   isMatchUser = (id) => {
-    const {pbxUserById, ucUserById, searchText} = this.props
-    const searchTextLC = searchText.toLowerCase()
-    const pbxUser = pbxUserById[id] || {name: ''}
-    const ucUser = ucUserById[id] || {name: ''}
-      const pbxUserId = pbxUser.id.toLowerCase()
-      const pbxUserName = pbxUser.name.toLowerCase()
-    const ucUserName = ucUser.name.toLowerCase()
-    return (
-      pbxUserId.includes(searchTextLC) ||
-      pbxUserName.includes(searchTextLC) ||
-      ucUserName.includes(searchTextLC)
-    )
+      if( !id ){
+          return false;
+      }
+
+      const {pbxUserById, ucUserById, searchText} = this.props
+      const searchTextLC = searchText.toLowerCase()
+
+      const userId = id.toLowerCase()
+
+      let pbxUserName;
+      const pbxUser = pbxUserById[id];
+      if( pbxUser ){
+        pbxUserName = pbxUser.name;
+      }
+      else{
+        pbxUserName = '';
+      }
+
+      let ucUserName;
+      const ucUser = ucUserById[id];
+      if( ucUser ){
+          ucUserName = ucUser.name;
+      }
+      else{
+          ucUserName = '';
+      }
+
+      return (
+          userId.includes(searchTextLC) ||
+          pbxUserName.includes(searchTextLC) ||
+          ucUserName.includes(searchTextLC)
+      )
   }
+
 
   getMatchUserIds () {
     const {pbxUserIds, ucUserIds} = this.props

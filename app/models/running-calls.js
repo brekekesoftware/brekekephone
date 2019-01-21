@@ -11,7 +11,6 @@ const validateCreatingCall = (call) => pickProps(call, allowedToCreateProps)
 const allowedToUpdateProps = [
     'incoming', 'answered', 'holding', 'recording', 'transfering',
     'partyName', 'partyNumber', 'pbxTenant', 'pbxTalkerId',
-    'voiceStreamURL',	//deprecated
     'voiceStreamObject',
     'localVideoEnabled',
     'remoteVideoStreamURL',	//deprecated

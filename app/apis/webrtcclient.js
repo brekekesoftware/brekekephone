@@ -1,23 +1,21 @@
 /**
  * webrtcclient.js
- * 1.0.0.26
+ * 2.0.1.189
  *
- * require jssip/jssip-0.7.11-1.js
- *          OR
- *         jssip/jssip-0.4.2-1.js AND jssip/rtcninja.js
+ * require jssip/jssip-3.2.15.js
  */
 
 if (typeof Brekeke === "undefined") {
     //var Brekeke = {};
-	window.Brekeke = {};
+    window.Brekeke = {};
 }
 
 /**
  * instance Brekeke.WebrtcClient
  */
-//if (!Brekeke.WebrtcClient) {
-//    Brekeke.WebrtcClient = {};
-//}
+// if (!Brekeke.WebrtcClient) {
+//     Brekeke.WebrtcClient = {};
+// }
 if (!window.Brekeke.WebrtcClient) {
     window.Brekeke.WebrtcClient = {};
 }
@@ -25,6 +23,9 @@ if (!window.Brekeke.WebrtcClient) {
 (function(WebrtcClient){
     var Phone,
         Logger,
+        jssipHack,
+        jssipRtcSessionHack,
+        jssipIncomingRequestHack,
         by,
         clone,
         stringifyError,
@@ -35,15 +36,10 @@ if (!window.Brekeke.WebrtcClient) {
      * class Brekeke.WebrtcClient.Phone
      */
     Phone = function(options) {
-        var browserInfo = null,
-            d,
-            self = this;
+        var d;
         
-        if (typeof JsSIP === "undefined") {
-            throw new Error("jssip-0.7.11-1.js is not loaded");
-        }
-        if (!JsSIP.rtcninja && typeof rtcninja === "undefined") {
-            throw new Error("rtcninja.js is not loaded");
+        if (typeof JsSIP === "undefined" || !JsSIP.Utils || !JsSIP.UA) {
+            throw new Error("jssip-3.2.15.js is not loaded");
         }
         
         /**
@@ -79,7 +75,6 @@ if (!window.Brekeke.WebrtcClient) {
         this._lastCreatedSessionId = 0;
         this._sessionTable = {};
         this._sessionRemoteStreamsTable = {};
-        this._sessionRemoteStreamUrlTable = {};
         this._sessionLocalMediaTable = {};
         this._outgoingRtcInfo = {};
         this._lastCreatedVideoClientSessionId = 0;
@@ -89,9 +84,8 @@ if (!window.Brekeke.WebrtcClient) {
         
         this._masterVolume = typeof(this._options.masterVolume) === "number" ? this._options.masterVolume : 1000;
         
-        this._jssipEscapeUserOrg = null;
-        
         this.UA_WO_GAIN = "Firefox";
+        this.CHECK_CTX_STATE = false;
         
         /**
          * field autoAnswer
@@ -142,92 +136,25 @@ if (!window.Brekeke.WebrtcClient) {
                 call: (d && d.videoClient && d.videoClient.call) || { mediaConstraints: { audio: false, video: true } },
                 answer: (d && d.videoClient && d.videoClient.answer) || { mediaConstraints: { audio: false, video: true } }
             },
-            exInfo: "",
-            rtcOfferConstraints : {
-                mandatory: {
-                    OfferToReceiveAudio: false,
-                    OfferToReceiveVideo: true,
-                },
-                optional: [],
-            }
+            exInfo: ""
         };
+        
+        // shim
+        if (window.RTCPeerConnection && !window.RTCPeerConnection.prototype.addStream) {
+            window.RTCPeerConnection.prototype.addStream = function(stream) {
+                var pc = this;
+                stream.getTracks().forEach(function(track) {
+                    window.RTCPeerConnection.prototype.addTrack.call(pc, track, stream);
+                });
+            };
+        }
+        
+        // hack jssip
+        jssipHack();
         
         // enable jssip log
         if (this._jssipLogLevel !== "none" && JsSIP.debug && JsSIP.debug.enable) { // jssip 0.6~
             JsSIP.debug.enable('*');
-        }
-        
-        // for jssip ~0.5
-        if (!JsSIP.rtcninja) {
-            JsSIP.rtcninja = rtcninja;
-        }
-        try {
-            try {
-                browserInfo = JSON.stringify(JsSIP.rtcninja.browser);
-            } catch(e) {}
-            this._logger.log("debug", "browserInfo: " + browserInfo);
-            if (JsSIP.rtcninja.browser && JsSIP.rtcninja.browser.chrome) {
-                if (!navigator.webkitGetUserMedia) {
-                    if (navigator.getUserMedia) {
-                        navigator.webkitGetUserMedia = navigator.getUserMedia;
-                        this._logger.log("info", "webkitGetUserMedia is removed at " + browserInfo);
-                    } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                        navigator.webkitGetUserMedia = navigator.getUserMedia = function(constraints, cb, errcb) {
-                            navigator.mediaDevices.getUserMedia(constraints).then(cb, errcb);
-                        }.bind(navigator);
-                        this._logger.log("info", "navigator.getUserMedia is removed at " + browserInfo);
-                    } else {
-                        navigator.webkitGetUserMedia = { bind: function() { throw new Error("getUserMedia is unavailable in this webrtc library at " + browserInfo); } };
-                        this._logger.log("info", "getUserMedia is not found at " + browserInfo);
-                    }
-                }
-                if (!window.webkitRTCPeerConnection) {
-                    window.webkitRTCPeerConnection = window.RTCPeerConnection;
-                    this._logger.log("info", "webkitRTCPeerConnection is removed at " + browserInfo);
-                }
-            } else if (JsSIP.rtcninja.browser && JsSIP.rtcninja.browser.firefox) {
-                if (!navigator.mozGetUserMedia) {
-                    if (navigator.getUserMedia) {
-                        navigator.mozGetUserMedia = navigator.getUserMedia;
-                        this._logger.log("info", "mozGetUserMedia is removed at " + browserInfo);
-                    } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                        navigator.mozGetUserMedia = navigator.getUserMedia = function(constraints, cb, errcb) {
-                            navigator.mediaDevices.getUserMedia(constraints).then(cb, errcb);
-                        }.bind(navigator);
-                        this._logger.log("info", "navigator.getUserMedia is removed at " + browserInfo);
-                    } else {
-                        navigator.mozGetUserMedia = { bind: function() { throw new Error("getUserMedia is unavailable in this webrtc library at " + browserInfo); } };
-                        this._logger.log("info", "getUserMedia is not found at " + browserInfo);
-                    }
-                }
-                if (!window.mozRTCPeerConnection) {
-                    window.mozRTCPeerConnection = window.RTCPeerConnection;
-                    this._logger.log("info", "mozRTCPeerConnection is removed at " + browserInfo);
-                }
-            } else {
-                if (!navigator.getUserMedia) {
-                    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                        navigator.getUserMedia = function(constraints, cb, errcb) {
-                            navigator.mediaDevices.getUserMedia(constraints).then(cb, errcb);
-                        }.bind(navigator);
-                        this._logger.log("info", "navigator.getUserMedia is removed at " + browserInfo);
-                    } else {
-                        navigator.getUserMedia = { bind: function() { throw new Error("getUserMedia is unavailable in this webrtc library at " + browserInfo); } };
-                        this._logger.log("info", "getUserMedia is not found at " + browserInfo);
-                    }
-                }
-            }
-            JsSIP.rtcninja();
-        } catch(e) {
-            this._logger.log("error", "JsSIP.rtcninja() failed: " + stringifyError(e));
-        }
-        
-        // do not escape '=' in SIP 'To' header
-        if (JsSIP.Utils && JsSIP.Utils.escapeUser) {
-            this._jssipEscapeUserOrg = JsSIP.Utils.escapeUser;
-            JsSIP.Utils.escapeUser = function(user) {
-                return string(self._jssipEscapeUserOrg(user)).replace(/%3D/ig, "=");
-            };
         }
         
         // for chrome 66~
@@ -264,7 +191,7 @@ if (!window.Brekeke.WebrtcClient) {
             
             if (eventId) { // remove one
                 if (this._eventNameIdsTable[eventName]) {
-                    for (let i = this._eventNameIdsTable[eventName].length; i--; ) {
+                    for (i = this._eventNameIdsTable[eventName].length; i--; ) {
                         if (this._eventNameIdsTable[eventName][i] === eventId) {
                             this._eventNameIdsTable[eventName].splice(i, 1);
                         }
@@ -273,7 +200,7 @@ if (!window.Brekeke.WebrtcClient) {
                 delete this._eventIdFuncTable[eventId];
             } else { // remove all events in eventName
                 if (this._eventNameIdsTable[eventName]) {
-                    for (let i = this._eventNameIdsTable[eventName].length; i--; ) {
+                    for (i = this._eventNameIdsTable[eventName].length; i--; ) {
                         delete this._eventIdFuncTable[this._eventNameIdsTable[eventName][i]];
                     }
                     this._eventNameIdsTable[eventName] = [];
@@ -351,42 +278,36 @@ if (!window.Brekeke.WebrtcClient) {
                 log: { level: this._jssipLogLevel },
                 uri: user + "@" + host,
                 password: password,
-                ws_servers: url ? url : ((tls ? "wss://" : "ws://") + host + ":" + port),
+                sockets: new JsSIP.WebSocketInterface(url ? url : ((tls ? "wss://" : "ws://") + host + ":" + port)),
                 display_name: "",
                 authorization_user: "",
                 register: typeof configuration.register === "boolean" ? configuration.register: true,
                 register_expires: typeof configuration.register_expires === "number" ? configuration.register_expires : 1296000,
                 registrar_server: "",
                 no_answer_timeout: 60,
-                trace_sip: true,
-                stun_servers: [],
-                turn_servers: "",
                 use_preloaded_route: false,
                 connection_recovery_min_interval: 2,
                 connection_recovery_max_interval: 30,
-                hack_via_tcp: false,
-                hack_ip_in_contact: false
+                user_agent: userAgent,
+                contact_uri: new JsSIP.URI("sip", JsSIP.Utils.createRandomToken(8), "".concat(JsSIP.Utils.createRandomToken(12), ".invalid"), null, { transport: tls ? "wss" : "ws" }).toString()
             });
             if (useVideoClient) {
                 this._vua = new JsSIP.UA({
                     log: { level: this._jssipLogLevel },
                     uri: videoClientUser + "@" + host,
                     password: password,
-                    ws_servers: url ? url : ((tls ? "wss://" : "ws://") + host + ":" + port),
+                    sockets: new JsSIP.WebSocketInterface(url ? url : ((tls ? "wss://" : "ws://") + host + ":" + port)),
                     display_name: "",
                     authorization_user: "",
                     register: typeof configuration.register === "boolean" ? configuration.register: true,
                     register_expires: typeof configuration.register_expires === "number" ? configuration.register_expires : 1296000,
                     registrar_server: "",
                     no_answer_timeout: 60,
-                    trace_sip: true,
-                    stun_servers: [],
-                    turn_servers: "",
                     use_preloaded_route: false,
                     connection_recovery_min_interval: 2,
                     connection_recovery_max_interval: 30,
-                    hack_via_tcp: false,
-                    hack_ip_in_contact: false
+                    user_agent: userAgent,
+                    contact_uri: new JsSIP.URI("sip", JsSIP.Utils.createRandomToken(8), "".concat(JsSIP.Utils.createRandomToken(12), ".invalid"), null, { transport: tls ? "wss" : "ws" }).toString()
                 });
             }
             // set auth to registrator extra headers
@@ -401,13 +322,6 @@ if (!window.Brekeke.WebrtcClient) {
                     if (this._vua) {
                         this._vua.registrator.setExtraHeaders(["Authorization: " + auth]);
                     }
-                }
-            }
-            // user agent (jssip-0.7.11-1~ only)
-            if (userAgent) {
-                this._ua.userAgent = userAgent;
-                if (this._vua) {
-                    this._vua.userAgent = userAgent;
                 }
             }
             
@@ -474,7 +388,7 @@ if (!window.Brekeke.WebrtcClient) {
             
             this._changePhoneStatus("stopping");
             
-            for (let sessionId in this._sessionTable) {
+            for (sessionId in this._sessionTable) {
                 session = this._sessionTable[sessionId];
                 if (session.sessionStatus !== "terminated") {
                     if (force) {
@@ -536,7 +450,7 @@ if (!window.Brekeke.WebrtcClient) {
             this._getUserMedia(
                 options.mediaConstraints,
                 function(stream) {
-                    JsSIP.rtcninja.closeMediaStream(stream);
+                    JsSIP.Utils.closeMediaStream(stream);
                     if (callback) {
                         callback({
                             enabled: true,
@@ -612,6 +526,7 @@ if (!window.Brekeke.WebrtcClient) {
                 withVideo: withVideo,
                 exInfo: exInfo
             };
+            
             this._doCall(target, options, this._ua, null, by(this, this._rtcErrorOccurred, [{sessionId: null, target: target, options: options, client: "main"}]));
         },
         
@@ -663,7 +578,7 @@ if (!window.Brekeke.WebrtcClient) {
                 members = rm && rm.members;
                 if (members) {
                     targets = [];
-                    for (let i = 0; i < members.length; i++) {
+                    for (i = 0; i < members.length; i++) {
                         if (this._videoClientUser > members[i].phone_id) { // send request only to earlier id
                             if (members[i].talker_hold !== "h" && rm.me.talker_hold !== "h" && members[i].talker_attr === rm.me.talker_attr) {
                                 targets.push(members[i].phone_id);
@@ -694,7 +609,7 @@ if (!window.Brekeke.WebrtcClient) {
                             targets = [targets[0]];
                         }
                     }
-                    for (let i = 0; i < targets.length; i++) {
+                    for (i = 0; i < targets.length; i++) {
                         // send
                         this._doCall(targets[i], options, this._vua, sourceSessionId, by(this, this._rtcErrorOccurred, [{sessionId: sessionId, target: null, options: options, client: "video"}]));
                     }
@@ -770,7 +685,7 @@ if (!window.Brekeke.WebrtcClient) {
             
             // targets
             memberTargets = [];
-            for (let i = 0; i < members.length; i++) {
+            for (i = 0; i < members.length; i++) {
                 if (members[i].phone_id !== this._videoClientUser) {
                     if (Array.isArray(targets) && targets.indexOf(members[i].user) >= 0) {
                         memberTargets.push(members[i].phone_id);
@@ -805,7 +720,7 @@ if (!window.Brekeke.WebrtcClient) {
             }
             
             // make call
-            for (let i = 0; i < memberTargets.length; i++) {
+            for (i = 0; i < memberTargets.length; i++) {
                 this._doCall(memberTargets[i], options, this._vua, sourceSessionId, by(this, this._rtcErrorOccurred, [{sessionId: sessionId, target: null, options: options, client: "video"}]));
             }
         },
@@ -907,7 +822,7 @@ if (!window.Brekeke.WebrtcClient) {
                     function(stream) {
                         if (mediaObject === this._sessionLocalMediaTable[sessionId]) {
                             if (mediaObject.localMediaStream) {
-                                JsSIP.rtcninja.closeMediaStream(mediaObject.localMediaStream);
+                                JsSIP.Utils.closeMediaStream(mediaObject.localMediaStream);
                             }
                             try {
                                 mediaObject.sourceNode.disconnect();
@@ -918,7 +833,7 @@ if (!window.Brekeke.WebrtcClient) {
                             mediaObject.localMediaStream = stream;
                         } else {
                             this._logger.log("warn", "_sessionLocalMediaTable[" + sessionId + "] removed");
-                            JsSIP.rtcninja.closeMediaStream(stream);
+                            JsSIP.Utils.closeMediaStream(stream);
                         }
                     },
                     function(error) {
@@ -973,7 +888,7 @@ if (!window.Brekeke.WebrtcClient) {
                 session.videoClientMuted = muted.videoClient;
                 rid = this._getRid(sessionId);
                 if (rid && this._ridVideoClientSessionsTable[rid]) {
-                    for (let videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
+                    for (videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
                         videoClientSession = this._ridVideoClientSessionsTable[rid][videoClientSessionId];
                         if (videoClientSession && videoClientSession.rtcSession && videoClientSession.rtcSession.isEstablished()) {
                             if (muted.videoClient) {
@@ -1129,12 +1044,9 @@ if (!window.Brekeke.WebrtcClient) {
         getSession: function(sessionId) {
             var analyser,
                 localStreamObject,
-                localStreamUrl,
                 localVideoStreamObject,
                 localVideoStreamTimestamp,
-                localVideoStreamUrl,
                 remoteStreamObject,
-                remoteStreamUrl,
                 remoteUserOptions,
                 remoteUserOptionsTable,
                 remoteVideoStreamObject,
@@ -1152,64 +1064,43 @@ if (!window.Brekeke.WebrtcClient) {
                 return null;
             }
             
-            remoteStreamUrl = "";
             remoteStreamObject = null;
-            localStreamUrl = "";
             localStreamObject = null;
-            localVideoStreamUrl = "";
             localVideoStreamObject = null;
             localVideoStreamTimestamp = +new Date() + 1;
             videoClientSessionTable = {};
             analyser = null;
             if (session.sessionStatus !== "terminated") {
-                // create remote stream url if not created
-                if (!this._sessionRemoteStreamUrlTable[sessionId]) {
-                    this._sessionRemoteStreamUrlTable[sessionId] = this._createRemoteStreamUrl(session.rtcSession);
-                }
-                remoteStreamUrl = this._sessionRemoteStreamUrlTable[sessionId];
                 try {
-                    remoteStreamObject = session.rtcSession.getRemoteStreams()[0];
+                    remoteStreamObject = (this._sessionRemoteStreamsTable[sessionId] || [])[0] || null;
                 } catch(e) {
                     remoteStreamObject = null;
                 }
                 
                 if (this._sessionLocalMediaTable[sessionId]) {
-                    // create local stream url if not created
-                    if (!this._sessionLocalMediaTable[sessionId].localStreamUrl) {
-                        this._sessionLocalMediaTable[sessionId].localStreamUrl = this._createLocalStreamUrl(session.rtcSession);
-                    }
-                    localStreamUrl = this._sessionLocalMediaTable[sessionId].localStreamUrl;
-                    localStreamObject = this._getLocalStreamObject(session.rtcSession);
+                    localStreamObject = this._sessionLocalMediaTable[sessionId].localMediaStreamForCall;
                 }
                 
                 // video client sessions information
                 rid = this._getRid(sessionId);
                 if (rid) {
                     if (this._ridVideoClientSessionsTable[rid]) {
-                        for (let videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
+                        for (videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
                             videoClientSession = this._ridVideoClientSessionsTable[rid][videoClientSessionId];
                             if (videoClientSession && videoClientSession.rtcSession && videoClientSession.rtcSession.isEstablished()) {
-                                if (!this._sessionRemoteStreamUrlTable[videoClientSessionId]) {
-                                    this._sessionRemoteStreamUrlTable[videoClientSessionId] = this._createRemoteStreamUrl(videoClientSession.rtcSession);
-                                }
                                 try {
-                                    remoteVideoStreamObject = videoClientSession.rtcSession.getRemoteStreams()[0];
+                                    remoteVideoStreamObject = (this._sessionRemoteStreamsTable[videoClientSessionId] || [])[0] || null;
                                 } catch(e) {
                                     remoteVideoStreamObject = null;
                                 }
                                 videoClientSessionTable[videoClientSessionId] = {
                                     user: string(videoClientSession.member && videoClientSession.member.user),
-                                    remoteStreamUrl: this._sessionRemoteStreamUrlTable[videoClientSessionId],
                                     remoteStreamObject: remoteVideoStreamObject,
                                     rtcSession: videoClientSession.rtcSession
                                 };
                                 if (this._sessionLocalMediaTable[videoClientSessionId]) {
-                                    if (!this._sessionLocalMediaTable[videoClientSessionId].localStreamUrl) {
-                                        this._sessionLocalMediaTable[videoClientSessionId].localStreamUrl = this._createLocalStreamUrl(videoClientSession.rtcSession);
-                                    }
                                     if (this._sessionLocalMediaTable[videoClientSessionId].timestamp < localVideoStreamTimestamp) {
-                                        localVideoStreamUrl = this._sessionLocalMediaTable[videoClientSessionId].localStreamUrl;
-                                        localVideoStreamObject = this._getLocalStreamObject(videoClientSession.rtcSession);
+                                        localVideoStreamObject = this._sessionLocalMediaTable[videoClientSessionId].localMediaStreamForCall;
                                         localVideoStreamTimestamp = this._sessionLocalMediaTable[videoClientSessionId].timestamp;
                                     }
                                 }
@@ -1226,7 +1117,7 @@ if (!window.Brekeke.WebrtcClient) {
             
             remoteUserOptionsTable = {};
             remoteWithVideo = false;
-            for (let user in session.remoteUserOptionsTable) {
+            for (user in session.remoteUserOptionsTable) {
                 remoteUserOptions = session.remoteUserOptionsTable[user];
                 remoteUserOptionsTable[user] = {
                     withVideo: Boolean(remoteUserOptions.withVideo),
@@ -1243,9 +1134,7 @@ if (!window.Brekeke.WebrtcClient) {
                 answering: session.answeringStarted && session.sessionStatus === "progress",
                 audio: session.audio,
                 video: session.video,
-                remoteStreamUrl: remoteStreamUrl,
                 remoteStreamObject: remoteStreamObject,
-                localStreamUrl: localStreamUrl,
                 localStreamObject: localStreamObject,
                 remoteWithVideo: remoteWithVideo,
                 withVideo: session.withVideo,
@@ -1255,7 +1144,6 @@ if (!window.Brekeke.WebrtcClient) {
                     main: Boolean(session.mainMuted),
                     videoClient: Boolean(session.videoClientMuted)
                 },
-                localVideoStreamUrl: localVideoStreamUrl,
                 localVideoStreamObject: localVideoStreamObject,
                 videoClientSessionTable: videoClientSessionTable,
                 rtcSession: session.rtcSession,
@@ -1273,7 +1161,7 @@ if (!window.Brekeke.WebrtcClient) {
                 sessionTable = {};
             
             // return copy of _sessionTable
-            for (let sessionId in this._sessionTable) {
+            for (sessionId in this._sessionTable) {
                 sessionTable[sessionId] = this.getSession(sessionId);
             }
             return sessionTable;
@@ -1288,12 +1176,13 @@ if (!window.Brekeke.WebrtcClient) {
                 gain: false,
                 oscillator: false
             };
-            if (window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection) {
+            if ((window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection) &&
+                typeof(navigator) === "object" && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 environment.webRTC = true;
             }
             if (this.UA_WO_GAIN && typeof(navigator) === "object" && navigator.userAgent && navigator.userAgent.indexOf(this.UA_WO_GAIN) >= 0) {
                 // "Cannot create an offer with no local tracks, no offerToReceiveAudio/Video, and no DataChannel."
-            } else if (this._audioContext && this._audioContext.createGain && this._audioContext.createMediaStreamSource && this._audioContext.createMediaStreamDestination && this._audioContext.state === "running") {
+            } else if (this._audioContext && this._audioContext.createGain && this._audioContext.createMediaStreamSource && this._audioContext.createMediaStreamDestination) {
                 environment.gain = true;
                 if (this._audioContext.createOscillator) {
                     environment.oscillator = true;
@@ -1317,7 +1206,7 @@ if (!window.Brekeke.WebrtcClient) {
                 mediaObject;
             
             this._masterVolume = int(value);
-            for (let key in this._sessionLocalMediaTable) {
+            for (key in this._sessionLocalMediaTable) {
                 mediaObject = this._sessionLocalMediaTable[key];
                 if (mediaObject.gainNode) {
                     mediaObject.gainNode.gain.value = this._masterVolume * mediaObject.volumePercent / 100000;
@@ -1336,7 +1225,7 @@ if (!window.Brekeke.WebrtcClient) {
             this._logger.log("debug", "Emitting event: " + eventName);
             
             if (this._eventNameIdsTable[eventName]) {
-                for (let i = 0, len = this._eventNameIdsTable[eventName].length; i < len; i++) {
+                for (i = 0, len = this._eventNameIdsTable[eventName].length; i < len; i++) {
                     func = this._eventIdFuncTable[this._eventNameIdsTable[eventName][i]];
                     if (func) {
                         try {
@@ -1426,8 +1315,7 @@ if (!window.Brekeke.WebrtcClient) {
                     this._logger.log("warn", "autoFocusWindow error message: " + e.message);
                 }
             }
-            JsSIP.rtcninja.getUserMedia(
-                constraints,
+            navigator.mediaDevices.getUserMedia(constraints).then(
                 by(this, function(stream) {
                     this._gettingUserMedia = false;
                     if (successCallback) {
@@ -1621,7 +1509,7 @@ if (!window.Brekeke.WebrtcClient) {
             // targets
             targets = [];
             mustUpdateRemoteUserOptions = false;
-            for (let i = 0; i < members.length; i++) {
+            for (i = 0; i < members.length; i++) {
                 if (this._videoClientUser < members[i].phone_id) { // make call only from earlier id
                     if (members[i].talker_hold !== "h" && rm.me.talker_hold !== "h" && members[i].talker_attr === rm.me.talker_attr) {
                         if (!this._tryingVideoCallTargets[members[i].phone_id]) {
@@ -1661,7 +1549,7 @@ if (!window.Brekeke.WebrtcClient) {
                     targets = [targets[0]];
                 }
             }
-            for (let i = 0; i < targets.length; i++) {
+            for (i = 0; i < targets.length; i++) {
                 this._tryingVideoCallTargets[targets[i]] = true;
                 
                 // options
@@ -1707,15 +1595,15 @@ if (!window.Brekeke.WebrtcClient) {
                 videoClientSessionId;
             
             // check all video client sessions
-            for (let rid in this._ridVideoClientSessionsTable) {
+            for (rid in this._ridVideoClientSessionsTable) {
                 // check main session
                 sessionOk = false;
-                for (let sessionId in this._sessionTable) {
+                for (sessionId in this._sessionTable) {
                     if (rid === this._getRid(sessionId) && this._sessionTable[sessionId].withVideo) {
                         sessionOk = true;
                     }
                 }
-                for (let videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
+                for (videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
                     memberOk = false;
                     if (sessionOk) {
                         // check member
@@ -1723,7 +1611,7 @@ if (!window.Brekeke.WebrtcClient) {
                         rm = this._ridMembersTable[rid];
                         if (rm) {
                             members = rm.members;
-                            for (let i = 0; i < members.length; i++) {
+                            for (i = 0; i < members.length; i++) {
                                 if (members[i].phone_id === member.phone_id) {
                                     if (members[i].talker_hold !== "h" && rm.me.talker_hold !== "h" && members[i].talker_attr === rm.me.talker_attr) {
                                         memberOk = true;
@@ -1752,7 +1640,7 @@ if (!window.Brekeke.WebrtcClient) {
                 sessionId;
             
             sessionId = "";
-            for (let sid in this._sessionTable) {
+            for (sid in this._sessionTable) {
                 if (this._sessionTable[sid].sessionStatus !== "terminated") {
                     if (int(sid) > int(sessionId)) {
                         sessionId = sid;
@@ -1761,73 +1649,6 @@ if (!window.Brekeke.WebrtcClient) {
             }
             return sessionId;
         },
-        _getRemoteStreams: function(sessionId) {
-            return this._sessionRemoteStreamsTable[sessionId] || [];
-        },
-        _createRemoteStreamUrl: function(rtcSession) {
-            var remoteStream,
-                remoteStreamUrl;
-            
-            try {
-                remoteStream = rtcSession.getRemoteStreams()[0];
-            } catch(e) {
-                remoteStream = null;
-            }
-            if (remoteStream) {
-                try {
-                    remoteStreamUrl = window.URL.createObjectURL(remoteStream);
-                } catch(e) {
-                    this._logger.log("info", "URL.createObjectURL error message: " + e.message);
-                    remoteStreamUrl = "javascript:void(0)";
-                }
-            } else {
-                remoteStreamUrl = "";
-            }
-            return remoteStreamUrl;
-        },
-        _getLocalStreamObject: function(rtcSession) {
-            var localStream = null;
-            
-            if (!localStream && rtcSession.connection && rtcSession.connection.pc && rtcSession.connection.pc.getLocalStreams) { // jssip 0.7
-                try {
-                    localStream = rtcSession.connection.pc.getLocalStreams()[0];
-                } catch(e) {
-                    this._logger.log("warn", "rtcSession.connection.pc.getLocalStreams()[0] error message: " + e.message);
-                }
-            }
-            if (!localStream && rtcSession.connection && rtcSession.connection.getLocalStreams) {
-                try {
-                    localStream = rtcSession.connection.getLocalStreams()[0];
-                } catch(e) {
-                    this._logger.log("warn", "rtcSession.connection.getLocalStreams()[0] error message: " + e.message);
-                }
-            }
-            if (!localStream && rtcSession.getLocalStreams) { // jssip ~0.5
-                try {
-                    localStream = rtcSession.getLocalStreams()[0];
-                } catch(e) {
-                    this._logger.log("warn", "rtcSession.getLocalStreams()[0] error message: " + e.message);
-                }
-            }
-            return localStream;
-        },
-        _createLocalStreamUrl: function(rtcSession) {
-            var localStream,
-                localStreamUrl;
-            
-            localStream = this._getLocalStreamObject(rtcSession);
-            if (localStream) {
-                try {
-                    localStreamUrl = window.URL.createObjectURL(localStream);
-                } catch(e) {
-                    this._logger.log("info", "URL.createObjectURL error message: " + e.message);
-                    localStreamUrl = "javascript:void(0)";
-                }
-            } else {
-                localStreamUrl = "";
-            }
-            return localStreamUrl;
-        },
         _createLocalMedia: function(sessionId, stream, mediaConstraints, isNew, sourceSessionId) {
             if (sourceSessionId) {
                 this._sessionLocalMediaTable[sessionId] = this._sessionLocalMediaTable[sourceSessionId];
@@ -1835,7 +1656,6 @@ if (!window.Brekeke.WebrtcClient) {
                 this._sessionLocalMediaTable[sessionId] = {
                     localMediaStream: isNew ? stream : null,
                     localMediaStreamForCall: stream,
-                    localStreamUrl: "",
                     mediaConstraints: mediaConstraints,
                     volumePercent: this._sessionTable[sessionId] && typeof this._sessionTable[sessionId].initialVolumePercent === "number" ? this._sessionTable[sessionId].initialVolumePercent : 100,
                     gainNode: null,
@@ -1875,7 +1695,9 @@ if (!window.Brekeke.WebrtcClient) {
             mediaConstraints = mediaObject.mediaConstraints;
             volumePercent = mediaObject.volumePercent;
             environment = this.getEnvironment();
-            if (environment.gain && stream && mediaConstraints && mediaConstraints.audio && !mediaConstraints.video) {
+            if (environment.gain && stream && mediaConstraints && mediaConstraints.audio && !mediaConstraints.video &&
+                (!this.CHECK_CTX_STATE || this._audioContext.state === "running")
+            ) {
                 if (int(this.analyserMode) === 1 && this._audioContext.createAnalyser) {
                     // create analyser
                     analyser = this._audioContext.createAnalyser();
@@ -1959,15 +1781,6 @@ if (!window.Brekeke.WebrtcClient) {
                 mediaObject.analyser = analyser;
             }
         },
-        _disposeRemoteMedia: function(sessionId) {
-            if (this._sessionRemoteStreamUrlTable[sessionId]) {
-                try {
-                     window.URL.revokeObjectURL(this._sessionRemoteStreamUrlTable[sessionId]);
-                } catch(e) {
-                }
-            }
-            delete this._sessionRemoteStreamUrlTable[sessionId];
-        },
         _disposeLocalMedia: function(sessionId) {
             var existing = false,
                 mediaObject,
@@ -1975,7 +1788,7 @@ if (!window.Brekeke.WebrtcClient) {
             
             mediaObject = this._sessionLocalMediaTable[sessionId];
             if (mediaObject) {
-                for (let sid in this._sessionLocalMediaTable) {
+                for (sid in this._sessionLocalMediaTable) {
                     if (sid !== string(sessionId) && this._sessionLocalMediaTable[sid] === mediaObject) {
                         existing = true;
                         break;
@@ -1983,7 +1796,7 @@ if (!window.Brekeke.WebrtcClient) {
                 }
                 if (!existing) {
                     if (mediaObject.localMediaStream) {
-                        JsSIP.rtcninja.closeMediaStream(mediaObject.localMediaStream);
+                        JsSIP.Utils.closeMediaStream(mediaObject.localMediaStream);
                     }
                     if (mediaObject.oscillators) {
                         Object.keys(mediaObject.oscillators).forEach(function(i) {
@@ -2020,12 +1833,6 @@ if (!window.Brekeke.WebrtcClient) {
                         } catch(e) {
                         }
                     }
-                    if (mediaObject.localStreamUrl) {
-                        try {
-                             window.URL.revokeObjectURL(mediaObject.localStreamUrl);
-                        } catch(e) {
-                        }
-                    }
                     if (mediaObject.analyser) {
                         try {
                             mediaObject.analyser.disconnect();
@@ -2057,25 +1864,18 @@ if (!window.Brekeke.WebrtcClient) {
                 return;
             }
             session = this._sessionTable[sessionId];
-            if (session && session.rtcSession && session.rtcSession.dialog) {
-                session.rtcSession.dialog.sendRequest(
-                    {
-                        owner: { status: session.rtcSession.status },
-                        onRequestTimeout: this._dialog_emptyFunction,
-                        onTransportError: this._dialog_emptyFunction,
-                        onDialogError: this._dialog_emptyFunction,
-                        receiveResponse: this._dialog_emptyFunction
-                    },
-                    "INFO",
-                    {
-                        extraHeaders: [
-                            "X-UA-EX: rtcinfo=" + encodeURIComponent(JSON.stringify({
-                                user: string(string(session.incomingMessage && session.incomingMessage.getHeader && session.incomingMessage.getHeader("X-PBX-Session-Info")).split(";")[3]),
-                                withVideo: typeof withVideo === "boolean" ? withVideo : Boolean(session.withVideo),
-                                echo: Boolean(echo)
-                            })) + ";" + session.exInfo
-                        ]
-                    });
+            try {
+                session.rtcSession.sendInfo("application/x-ua-ex", null, {
+                    extraHeaders: [
+                        "X-UA-EX: rtcinfo=" + encodeURIComponent(JSON.stringify({
+                            user: string(string(session.incomingMessage && session.incomingMessage.getHeader && session.incomingMessage.getHeader("X-PBX-Session-Info")).split(";")[3]),
+                            withVideo: typeof withVideo === "boolean" ? withVideo : Boolean(session.withVideo),
+                            echo: Boolean(echo)
+                        })) + ";" + session.exInfo
+                    ]
+                });
+            } catch(e) {
+                this._logger.log("error", "session.rtcSession.sendInfo() failed: " + stringifyError(e));
             }
         },
         _putRemoteUserOptions: function(sessionId, xUaEx) {
@@ -2200,6 +2000,8 @@ if (!window.Brekeke.WebrtcClient) {
             
             data = e.data || e; // jssip ~0.5: e.data, jssip 0.6~: e
             
+            jssipRtcSessionHack(data && data.session);
+            
             if (this._phoneStatus !== "started" ||
                 !this.multiSession && this._sessionTable[this._lastCreatedSessionId] && this._sessionTable[this._lastCreatedSessionId].sessionStatus !== "terminated" ||
                 this.doNotDisturb && data.session.direction === "incoming") {
@@ -2255,13 +2057,13 @@ if (!window.Brekeke.WebrtcClient) {
             data.session.on("progress", by(this, this._rtcSession_progress, [sessionId]));
             data.session.on("accepted", by(this, this._rtcSession_accepted, [sessionId]));
             data.session.on("notifiedSessionInfo", by(this, this._rtcSession_notifiedSessionInfo, [sessionId]));
-            data.session.on("receivedInfoXUaEx", by(this, this._rtcSession_receivedInfoXUaEx, [sessionId]));
+            data.session.on("newInfo", by(this, this._rtcSession_newInfo, [sessionId]));
             data.session.on("failed", by(this, this._rtcSession_ended, [sessionId]));
             data.session.on("ended", by(this, this._rtcSession_ended, [sessionId]));
-            if (!data.session.getRemoteStreams) { // jssip 0.6~
-                data.session.getRemoteStreams = by(this, this._getRemoteStreams, [sessionId]);
-                data.session.on("addstream", by(this, this._rtcSession_addstream, [sessionId]));
-                data.session.on("removestream", by(this, this._rtcSession_removestream, [sessionId]));
+            if (data.session.connection) { // outgoing
+                data.session.connection.ontrack = by(this, this._rtcSession_ontrack, [sessionId]);
+            } else { // incoming
+                data.session.on("peerconnection", by(this, this._rtcSession_peerconnection, [sessionId]));
             }
             
             if (data.session.direction === "incoming") {
@@ -2369,6 +2171,8 @@ if (!window.Brekeke.WebrtcClient) {
             
             data = e.data || e; // jssip ~0.5: e.data, jssip 0.6~: e
             
+            jssipRtcSessionHack(data && data.session);
+            
             if (!data || !data.session || data.session.isEnded()) {
                 // already ended
                 this._logger.log("debug", "Video client session already ended");
@@ -2393,11 +2197,11 @@ if (!window.Brekeke.WebrtcClient) {
             sessionId = "";
             rid = "";
             member = null;
-            for (let sid in this._sessionTable) {
+            for (sid in this._sessionTable) {
                 if (this._sessionTable[sid].withVideo) {
                     r = this._getRid(sid);
-                    members = this._ridMembersTable[r].members;
-                    for (let i = 0; i < members.length; i++) {
+                    members = (this._ridMembersTable[r] || {}).members || [];
+                    for (i = 0; i < members.length; i++) {
                         if (members[i].phone_id === data.session.remote_identity.uri.user) {
                             member = members[i];
                             break;
@@ -2449,10 +2253,10 @@ if (!window.Brekeke.WebrtcClient) {
                 data.session.on("accepted", by(this, this._videoClientRtcSession_accepted, [videoClientSessionId, sessionId]));
                 data.session.on("failed", by(this, this._videoClientRtcSession_ended, [videoClientSessionId, sessionId]));
                 data.session.on("ended", by(this, this._videoClientRtcSession_ended, [videoClientSessionId, sessionId]));
-                if (!data.session.getRemoteStreams) { // jssip 0.6~
-                    data.session.getRemoteStreams = by(this, this._getRemoteStreams, [videoClientSessionId]);
-                    data.session.on("addstream", by(this, this._videoClientRtcSession_addstream, [videoClientSessionId, sessionId]));
-                    data.session.on("removestream", by(this, this._videoClientRtcSession_removestream, [videoClientSessionId, sessionId]));
+                if (data.session.connection) { // outgoing
+                    data.session.connection.ontrack = by(this, this._videoClientRtcSession_ontrack, [videoClientSessionId, sessionId]);
+                } else { // incoming
+                    data.session.on("peerconnection", by(this, this._videoClientRtcSession_peerconnection, [videoClientSessionId, sessionId]));
                 }
                 
                 if (data.session.direction === "incoming") {
@@ -2549,7 +2353,7 @@ if (!window.Brekeke.WebrtcClient) {
             }
             me = {};
             members = [];
-            for (let i = 1; i < body2.length; i++) {
+            for (i = 1; i < body2.length; i++) {
                 member2 = body2[i].split("|");
                 members.push({
                     user: member2[0] || "",
@@ -2568,7 +2372,7 @@ if (!window.Brekeke.WebrtcClient) {
                 me: me
             };
             
-            for (let sessionId in this._sessionTable) {
+            for (sessionId in this._sessionTable) {
                 if (this._getRid(sessionId) === rid) {
                     this._tryVideoCall(sessionId);
                     break;
@@ -2622,7 +2426,7 @@ if (!window.Brekeke.WebrtcClient) {
             }
             this._emitEvent("sessionStatusChanged", this.getSession(sessionId));
         },
-        _rtcSession_receivedInfoXUaEx: function(sessionId, e) {
+        _rtcSession_newInfo: function(sessionId, e) {
             var data;
             
             data = e.data || e; // jssip ~0.5: e.data, jssip 0.6~: e
@@ -2644,7 +2448,7 @@ if (!window.Brekeke.WebrtcClient) {
             rid = this._getRid(sessionId);
             if (rid) {
                 if (this._ridVideoClientSessionsTable[rid]) {
-                    for (let videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
+                    for (videoClientSessionId in this._ridVideoClientSessionsTable[rid]) {
                         setTimeout(by(this, this._terminateRtcSession, [this._ridVideoClientSessionsTable[rid][videoClientSessionId].rtcSession]), 0);
                         this._videoClientRtcSession_ended(videoClientSessionId, sessionId);
                     }
@@ -2662,25 +2466,34 @@ if (!window.Brekeke.WebrtcClient) {
             
             delete this._sessionTable[sessionId];
             delete this._sessionRemoteStreamsTable[sessionId];
-            this._disposeRemoteMedia(sessionId);
             this._disposeLocalMedia(sessionId);
             this._emitEvent("sessionStatusChanged", session);
         },
-        _rtcSession_addstream: function(sessionId, e) {
-            this._sessionRemoteStreamsTable[sessionId].push(e.stream);
-            this._emitEvent("sessionStatusChanged", this.getSession(sessionId));
-        },
-        _rtcSession_removestream: function(sessionId, e) {
-            var index;
+        _rtcSession_ontrack: function(sessionId, e) {
+            var index,
+                stream;
             
-            index = this._sessionRemoteStreamsTable[sessionId].indexOf(e.stream);
-            if (index >= 0) {
-                this._sessionRemoteStreamsTable[sessionId].splice(index, 1);
+            stream = e.streams && e.streams[0];
+            if (stream) {
+                if (this._sessionRemoteStreamsTable[sessionId]) {
+                    index = this._sessionRemoteStreamsTable[sessionId].indexOf(stream);
+                    if (index === -1) {
+                        this._sessionRemoteStreamsTable[sessionId].push(stream);
+                        this._emitEvent("sessionStatusChanged", this.getSession(sessionId));
+                    } else {
+                        this._logger.log("debug", "_rtcSession_ontrack occurred but stream already exists");
+                    }
+                } else {
+                    this._logger.log("warn", "_rtcSession_ontrack occurred but _sessionRemoteStreamsTable[" + sessionId + "] is not defined");
+                }
+            } else {
+                this._logger.log("warn", "_rtcSession_ontrack occurred with invalid e.streams: " + e.streams);
             }
-            if (index === 0) {
-                this._disposeRemoteMedia(sessionId);
+        },
+        _rtcSession_peerconnection: function(sessionId, e) {
+            if (e.peerconnection) {
+                e.peerconnection.ontrack = by(this, this._rtcSession_ontrack, [sessionId]);
             }
-            this._emitEvent("sessionStatusChanged", this.getSession(sessionId));
         },
         _rtcSession_responseAfterMakeCallWithVideo: function(self, videoOptions, orgFunc, e) { // this: RTCSession
             var rtcSession = this,
@@ -2688,7 +2501,7 @@ if (!window.Brekeke.WebrtcClient) {
                 sessionId;
             
             // set videoOptions to session
-            for (let sessionId in self._sessionTable) {
+            for (sessionId in self._sessionTable) {
                 session = self._sessionTable[sessionId];
                 if (session.rtcSession === rtcSession) {
                     if (!session.videoOptions) {
@@ -2721,7 +2534,7 @@ if (!window.Brekeke.WebrtcClient) {
         _videoClientRtcSession_ended: function(videoClientSessionId, sessionId) {
             var r;
             
-            for (let r in this._ridVideoClientSessionsTable) {
+            for (r in this._ridVideoClientSessionsTable) {
                 if (this._ridVideoClientSessionsTable[r][videoClientSessionId]) {
                     delete this._ridVideoClientSessionsTable[r][videoClientSessionId];
                     if (Object.keys(this._ridVideoClientSessionsTable[r]).length === 0) {
@@ -2731,7 +2544,6 @@ if (!window.Brekeke.WebrtcClient) {
                 }
             }
             delete this._sessionRemoteStreamsTable[videoClientSessionId];
-            this._disposeRemoteMedia(videoClientSessionId);
             this._disposeLocalMedia(videoClientSessionId);
             
             if (this._sessionTable[sessionId]) {
@@ -2741,25 +2553,39 @@ if (!window.Brekeke.WebrtcClient) {
                 });
             }
         },
-        _videoClientRtcSession_addstream: function(videoClientSessionId, sessionId, e) {
-            this._sessionRemoteStreamsTable[videoClientSessionId].push(e.stream);
+        _videoClientRtcSession_ontrack: function(videoClientSessionId, sessionId, e) {
+            var index,
+                stream;
             
-            if (this._sessionTable[sessionId]) {
-                this._emitEvent("videoClientSessionCreated", {
-                    sessionId: string(sessionId),
-                    videoClientSessionId: string(videoClientSessionId)
-                });
+            stream = e.streams && e.streams[0];
+            if (stream) {
+                if (this._sessionRemoteStreamsTable[videoClientSessionId]) {
+                    if (this._sessionTable[sessionId]) {
+                        index = this._sessionRemoteStreamsTable[videoClientSessionId].indexOf(stream);
+                        if (index === -1) {
+                            this._sessionRemoteStreamsTable[videoClientSessionId].push(stream);
+                            
+                            this._emitEvent("videoClientSessionCreated", {
+                                sessionId: string(sessionId),
+                                videoClientSessionId: string(videoClientSessionId)
+                            });
+                        } else {
+                            this._logger.log("debug", "_videoClientRtcSession_ontrack occurred but stream already exists");
+                        }
+                    } else {
+                        this._logger.log("warn", "_videoClientRtcSession_ontrack occurred but _sessionTable[" + sessionId + "] is not defined");
+                    }
+                } else {
+                    this._logger.log("warn", "_videoClientRtcSession_ontrack occurred but _sessionRemoteStreamsTable[" + videoClientSessionId + "] is not defined");
+                }
+            } else {
+                this._logger.log("warn", "_videoClientRtcSession_ontrack occurred with invalid e.streams: " + e.streams);
             }
         },
-        _videoClientRtcSession_removestream: function(videoClientSessionId, sessionId, e) {
-            var index;
-            
-            index = this._sessionRemoteStreamsTable[videoClientSessionId].indexOf(e.stream);
-            if (index >= 0) {
-                this._sessionRemoteStreamsTable[videoClientSessionId].splice(index, 1);
+        _videoClientRtcSession_peerconnection: function(videoClientSessionId, sessionId, e) {
+            if (e.peerconnection) {
+                e.peerconnection.ontrack = by(this, this._videoClientRtcSession_ontrack, [videoClientSessionId, sessionId]);
             }
-        },
-        _dialog_emptyFunction: function() {
         },
         
         END_OF_PROTOTYPE: null
@@ -2910,6 +2736,97 @@ if (!window.Brekeke.WebrtcClient) {
     };
     
     /**
+     * jssipHack function
+     */
+    jssipHack = (function() {
+        var orig = null;
+        return function jssipHack() {
+            if (orig || typeof JsSIP === "undefined") {
+                return;
+            }
+            orig = {};
+            if (JsSIP.Utils && JsSIP.Utils.escapeUser) {
+                orig.Utils_escapeUser = JsSIP.Utils.escapeUser;
+                JsSIP.Utils.escapeUser = function(user) {
+                    return string(orig.Utils_escapeUser(user)).replace(/%3D/ig, "=");
+                };
+            }
+            if (JsSIP.UA && JsSIP.UA.prototype && JsSIP.UA.prototype.receiveRequest) {
+                orig.UA_receiveRequest = JsSIP.UA.prototype.receiveRequest;
+                JsSIP.UA.prototype.receiveRequest = function(request) {
+                    jssipIncomingRequestHack(request);
+                    orig.UA_receiveRequest.apply(this, arguments);
+                    if (request && !request.to_tag && request.method === "NOTIFY" && this.listeners("newNotify").length) {
+                        this.emit("newNotify", { request: request });
+                    }
+                };
+            }
+        };
+    })();
+    
+    /**
+     * jssipRtcSessionHack function
+     */
+    jssipRtcSessionHack = (function() {
+        var orig = null;
+        return function jssipRtcSessionHack(rtcSession) {
+            var proto;
+            
+            if (orig || typeof rtcSession === "undefined" || typeof rtcSession.receiveRequest !== "function" || typeof rtcSession._receiveNotify !== "function") {
+                return;
+            }
+            orig = {};
+            proto = Object.getPrototypeOf(rtcSession);
+            if (proto && proto.receiveRequest) {
+                orig.receiveRequest = proto.receiveRequest;
+                proto.receiveRequest = function(request) {
+                    if (request && request.method === "INFO" && request.headers && request.headers["X-Ua-Ex"] && !request.headers["Content-Type"]) {
+                        request.headers["Content-Type"] = [{ raw: "application/x-ua-ex" }];
+                    }
+                    orig.receiveRequest.apply(this, arguments);
+                };
+            }
+            if (proto && proto._receiveNotify) {
+                orig._receiveNotify = proto._receiveNotify;
+                proto._receiveNotify = function(request) {
+                    if (request && request.event && request.event.event === "session-info" && this.listeners("notifiedSessionInfo").length) {
+                        this.emit("notifiedSessionInfo", { originator: "remote", request: request });
+                        request.reply(200);
+                        return;
+                    }
+                    orig._receiveNotify.apply(this, arguments);
+                };
+            }
+        };
+    })();
+    
+    /**
+     * jssipIncomingRequestHack function
+     */
+    jssipIncomingRequestHack = (function() {
+        var orig = null;
+        return function jssipIncomingRequestHack(incomingRequest) {
+            var proto;
+            
+            if (orig || typeof incomingRequest === "undefined" || typeof incomingRequest.reply !== "function") {
+                return;
+            }
+            orig = {};
+            proto = Object.getPrototypeOf(incomingRequest);
+            if (proto && proto.reply) {
+                orig.reply = proto.reply;
+                proto.reply = function(code, reason, extraHeaders, body, onSuccess, onFailure) {
+                    if (this && !this.to_tag && this.method === "NOTIFY" && this.event && this.event.event === "x-video-client" && code === 405) {
+                        orig.reply.apply(this, [200].concat(Array.prototype.slice.call(arguments, 1)));
+                    } else {
+                        orig.reply.apply(this, arguments);
+                    }
+                };
+            }
+        };
+    })();
+    
+    /**
      * utility functions
      */
     by = function(thisArg, func, argsArray) {
@@ -2926,7 +2843,7 @@ if (!window.Brekeke.WebrtcClient) {
         if (object && typeof(object) === "object") {
             // memberwise clone (shallow copy)
             returnObject = {};
-            for (let key in object) {
+            for (key in object) {
                 returnObject[key] = object[key];
             }
             return returnObject;
@@ -2947,7 +2864,7 @@ if (!window.Brekeke.WebrtcClient) {
                 return returnString;
             }
             returnString = "";
-            for (let key in object) {
+            for (key in object) {
                 returnString += string(key) + ": " + string(object[key]) + ", ";
             }
             if (returnString.length > 2) {
@@ -2969,4 +2886,4 @@ if (!window.Brekeke.WebrtcClient) {
     WebrtcClient.Phone = Phone;
     // publicize Brekeke.WebrtcClient.Logger
     WebrtcClient.Logger = Logger;
-}(window.Brekeke.WebrtcClient));
+}(Brekeke.WebrtcClient));

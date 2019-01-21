@@ -14,6 +14,8 @@ import { get as $ } from 'object-path'
 import {store } from '../index'
 import { getApnsToken } from '../push-notification/apns';
 
+let API_PROVIDER = null;
+
 const mapGetter = (getter) => (state) => ({
     profile: getter.auth.profile(state),
     userExtensionProperties: getter.auth.userExtensionProperties(state),
@@ -48,7 +50,6 @@ const mapAction = (action) => (emit) => ({
     },
 
     registerFcm(){
-
         FCM.createNotificationChannel({
             id: 'default',
             name: 'Default',
@@ -76,7 +77,6 @@ const mapAction = (action) => (emit) => ({
         } else if (Platform.OS === 'android') {
             setTimeout(async () => {
                 try {
-                    let storeDispatch = store.dispatch;
                     const deviceToken = await FCM.getFCMToken();
                     await pbx.endpoint.fcm({
                         user: webPhoneId,
@@ -84,10 +84,8 @@ const mapAction = (action) => (emit) => ({
                         device: deviceToken
                     })
 
-                    let ths = this;
-
                     try {
-                        let result = await FCM.requestPermissions({
+                        await FCM.requestPermissions({
                             badge: false,
                             sound: true,
                             alert: true
@@ -104,16 +102,12 @@ const mapAction = (action) => (emit) => ({
                         });
                     }
 
-                    this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, token => {
+                    API_PROVIDER._refreshTokenListener = FCM.on(FCMEvent.RefreshToken, token => {
                     });
 
                     FCM.enableDirectChannel();
-                    this.directChannelConnectionChangedListener = FCM.on(FCMEvent.DirectChannelConnectionChanged, data => {
+                    API_PROVIDER._directChannelConnectionChangedListener = FCM.on(FCMEvent.DirectChannelConnectionChanged, data => {
                     });
-
-                    setTimeout(function() {
-                        FCM.isDirectChannelEstablished().then(d => console.log(d));
-                    }, 1000);
 
                 } catch (err) {
                     console.error(err);
@@ -125,14 +119,14 @@ const mapAction = (action) => (emit) => ({
     },
 
     componentWillUnmount() {
-        if( this.refreshTokenListener ) {
-            this.refreshTokenListener.remove();
+        if( this._refreshTokenListener ) {
+            this._refreshTokenListener.remove();
         }
-        if( this.directChannelConnectionChangedListener ) {
-            this.directChannelConnectionChangedListener.remove();
+        if( this._directChannelConnectionChangedListener ) {
+            this._directChannelConnectionChangedListener.remove();
         }
-        if( this.directChannelConnectionChangedListener ) {
-            this.directChannelConnectionChangedListener.remove();
+        if( this._directChannelConnectionChangedListener ) {
+            this._directChannelConnectionChangedListener.remove();
         }
     },
 
@@ -226,6 +220,7 @@ const mapAction = (action) => (emit) => ({
     }
 })
 
+
 class APIProvider extends Component {
     static childContextTypes = {
         pbx: PropTypes.object.isRequired,
@@ -243,6 +238,7 @@ class APIProvider extends Component {
     }
 
     componentDidMount () {
+        API_PROVIDER = this;
         pbx.on('connection-started', this.onPBXConnectionStarted)
         pbx.on('connection-stopped', this.onPBXConnectionStopped)
         pbx.on('connection-timeout', this.onPBXConnectionTimeout)

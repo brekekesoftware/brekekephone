@@ -235,7 +235,8 @@ const Target = (p) => (<Fragment>
   <View style={st.opt}>
     <TextInput style={st.targetInput}
       autoFocus
-      keyboardType='phone-pad'
+      //keyboardType='phone-pad'
+      keyboardType='default'
       placeholder='Enter name or number'
       value={p.target}
       onChangeText={p.setTarget}

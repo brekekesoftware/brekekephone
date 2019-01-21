@@ -16,7 +16,7 @@ Brekeke.pbx.getPalPrototype = function(){
 	}
 	var pal = Object.create(Brekeke.net.getJsonRpcOverWebSocketPrototype());
 	pal.login = function( funcOK, funcErr ){
-		if( pal.login_password ){
+		if( this.login_password ){
 			this.login_password_required = function( params ){
 				var pw = CryptoJS.MD5( this.login_password ).toString();
 				var login_str_cryp = CryptoJS.MD5( this.login_user + ":" + params.nonce + ":" + pw ).toString();
@@ -31,7 +31,7 @@ Brekeke.pbx.getPalPrototype = function(){
 		this.open();
 	};
 	pal.regMethod = function( name ){
-		pal[ name ] = function( params, funcOK, funcErr ){
+		this[ name ] = function( params, funcOK, funcErr ){
 			this.call( name, params, funcOK, funcErr,	this );
 		}
 	}	

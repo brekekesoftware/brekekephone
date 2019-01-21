@@ -140,8 +140,7 @@ class SIP extends EventEmitter {
       const patch = {
         answered: ev.sessionStatus === 'connected',
         remoteVideoEnabled: ev.remoteWithVideo,
-          voiceStreamURL: ev.remoteStreamUrl, //deprecated
-          voiceStreamObject: ev.remoteStreamObject,
+        voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo
       }
 
@@ -167,7 +166,6 @@ class SIP extends EventEmitter {
       const videoSession = session.videoClientSessionTable[ev.videoClientSessionId]
       this.emit('session-updated', {
         id: ev.sessionId,
-        remoteVideoStreamURL: videoSession.remoteStreamUrl,	//deprecated
         remoteVideoStreamObject: videoSession.remoteStreamObject
       })
       this.emit('video-session-created', {
@@ -193,16 +191,16 @@ class SIP extends EventEmitter {
       console.error(ev)
     })
 
-      this._makeCallOptionsForAndroid = {
-          rtcOfferConstraints : {
-              mandatory: {
-                  OfferToReceiveAudio: true,
-                  OfferToReceiveVideo: false,
-                  _____SKIP_Adapter_fixRTCOfferOptions_____ : true
-              },
-              optional: [],
-          }
-      };
+    this._makeCallOptionsForAndroid = {
+        rtcOfferConstraints : {
+            mandatory: {
+                OfferToReceiveAudio: true,
+                OfferToReceiveVideo: false,
+                _____SKIP_Adapter_fixRTCOfferOptions_____ : true
+            },
+            optional: [],
+        }
+    };
   }
 
   getCreatingSessions(){
@@ -212,6 +210,24 @@ class SIP extends EventEmitter {
   connect (profile) {
     this._creatingSessions.__clear();
 
+    let platformOs = Platform.OS;
+    if( platformOs === "ios"){
+      platformOs = "iOS";
+    }
+    else if( platformOs === "android"){
+      platformOs = "Android";
+    }
+    else if( platformOs === "web"){
+      platformOs  = "Web";
+    }
+
+    const jssipVersion = "3.2.15";  //hardcode for JsSIP 3.2.15 /Web limited
+
+    const appPackageJson = require('../../package.json');
+    const appVersion = appPackageJson.version;
+
+    const lUseragent = "Brekeke Phone for " + platformOs + " " + appVersion + "/JsSIP " + jssipVersion;
+
     this.phone.startWebRTC({
       host: profile.hostname,
       port: profile.port,
@@ -220,7 +236,8 @@ class SIP extends EventEmitter {
       user: profile.username,
       password: profile.password,
       auth: profile.accessToken,
-      useVideoClient: true
+      useVideoClient: true,
+	  userAgent: lUseragent
     })
   }
 

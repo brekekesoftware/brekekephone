@@ -46,7 +46,6 @@ const mapAction = (action) => (emit) => ({
     emit(action.auth.setUserExtensionProperties(properties));
   }
 
-
 });
 
 class View extends Component {
@@ -114,17 +113,16 @@ class View extends Component {
       this.props.pbxTenant, this.props.pbxUsername
     )
 
-
     if (!pbxUserConfig) {
       throw new Error('Invalid PBX user config')
     }
 
-      const language = pbxUserConfig.language;
+    const language = pbxUserConfig.language;
 
-      await UserLanguage.setUserzLanguage_s( language );
+    await UserLanguage.setUserzLanguage_s( language );
 
 
-      const userPhones = pbxUserConfig.phones
+    const userPhones = pbxUserConfig.phones
     const isWebPhone = (phone) => !!phone.id && (
       phone.type === 'Web Phone' //||
       //phone.type === 'webrtc' ||
@@ -154,13 +152,10 @@ class View extends Component {
   }
 
   onAuthFailure = (err) => {
-    console.error(err);
     if (err && err.message) {
       this.props.showToast(err.message)
     }
     this.props.onFailure();
-
-
   }
 
   retry = () => {

@@ -92,6 +92,7 @@ class View extends Component {
     pbx.disconnect()
 
     this.props.onStarted()
+
     pbx.connect(this.props.profile)
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure)
@@ -102,7 +103,6 @@ class View extends Component {
   }
 
   onAuthFailure = (err) => {
-    console.error(err)
     if (err && err.message) {
       this.props.showToast(err.message)
     }

@@ -26,6 +26,7 @@
 - After the build is finished, the apk file is located at: `android\app\build\outputs\apk\release`.
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 
+
 ### iOS build & debug
 - My current environment:
 ```sh
@@ -64,6 +65,7 @@ cd ios && pod install && cd ..
 - Request for distribution certificate and install it correctly on local machine
 - Check the jsCodeLocation in AppDelegate.m for the correct config
 - Archive and distribute for Ad-hoc / Team distribution
+
 
 ### Push Incoming calls
 $pbx.src = ^true
