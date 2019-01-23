@@ -1,55 +1,41 @@
-import React, {Component, Fragment} from 'react'
-import InCall from 'react-native-incall-manager'
+import React, { Component, Fragment } from 'react';
+import InCall from 'react-native-incall-manager';
 
 class IncomingItem extends Component {
-  componentDidMount () {
-    InCall.startRingtone('_BUNDLE_')
+  componentDidMount() {
+    InCall.startRingtone('_BUNDLE_');
   }
 
-  componentWillUnmount () {
-    InCall.stopRingtone()
+  componentWillUnmount() {
+    InCall.stopRingtone();
   }
 
-  render = () => null
+  render = () => null;
 }
 
-const IncomingList = (p) => (
-  p.ids.map((id) => (
-    <IncomingItem key={id}
-      {...p.resolve(id)}
-    />
-  ))
-)
+const IncomingList = p =>
+  p.ids.map(id => <IncomingItem key={id} {...p.resolve(id)} />);
 
 class OutgoingItem extends Component {
-  componentDidMount () {
-    InCall.start({ringback: '_BUNDLE_'})
+  componentDidMount() {
+    InCall.start({ ringback: '_BUNDLE_' });
   }
 
-  componentWillUnmount () {
-    InCall.stopRingback()
+  componentWillUnmount() {
+    InCall.stopRingback();
   }
 
-  render = () => null
+  render = () => null;
 }
 
-const OutgoingList = (p) => (
-  p.ids.map((id) => (
-    <OutgoingItem key={id}
-      {...p.resolve(id)}
-    />
-  ))
-)
+const OutgoingList = p =>
+  p.ids.map(id => <OutgoingItem key={id} {...p.resolve(id)} />);
 
-const CallVoices = (p) => (<Fragment>
-  <IncomingList
-    ids={p.incomingCallIds}
-    resolve={p.resolveCall}
-  />
-  <OutgoingList
-    ids={p.outgoingCallIds}
-    resolve={p.resolveCall}
-  />
-</Fragment>)
+const CallVoices = p => (
+  <Fragment>
+    <IncomingList ids={p.incomingCallIds} resolve={p.resolveCall} />
+    <OutgoingList ids={p.outgoingCallIds} resolve={p.resolveCall} />
+  </Fragment>
+);
 
-export default CallVoices
+export default CallVoices;

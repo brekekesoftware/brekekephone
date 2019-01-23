@@ -1,22 +1,31 @@
-import React, {PureComponent} from 'react'
-import {StyleSheet, View, ScrollView, TouchableOpacity as Button, Text, TextInput, ActivityIndicator, KeyboardAvoidingView} from 'react-native'
-import {std, rem} from '../styleguide'
+import React, { PureComponent } from 'react';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  TouchableOpacity as Button,
+  Text,
+  TextInput,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+} from 'react-native';
+import { std, rem } from '../styleguide';
 
 const st = StyleSheet.create({
   empty: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   emptyMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
-    lineHeight: std.textSize.md + std.gap.md * 2
+    lineHeight: std.textSize.md + std.gap.md * 2,
   },
   main: {
     flex: 1,
-    backgroundColor: std.color.shade3
+    backgroundColor: std.color.shade3,
   },
   navbar: {
     backgroundColor: std.color.shade1,
@@ -24,13 +33,13 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
-    color: std.color.shade9
+    color: std.color.shade9,
   },
   navbarLeftOpt: {
     alignItems: 'center',
@@ -39,7 +48,7 @@ const st = StyleSheet.create({
     left: std.gap.lg,
     top: 0,
     bottom: 0,
-    paddingRight: std.gap.lg
+    paddingRight: std.gap.lg,
   },
   navbarRightOpt: {
     alignItems: 'center',
@@ -48,13 +57,13 @@ const st = StyleSheet.create({
     right: std.gap.lg,
     top: 0,
     bottom: 0,
-    paddingLeft: std.gap.lg
+    paddingLeft: std.gap.lg,
   },
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
-    color: std.color.action
+    color: std.color.action,
   },
   search: {
     flexDirection: 'row',
@@ -63,7 +72,7 @@ const st = StyleSheet.create({
     paddingVertical: std.gap.md,
     paddingHorizontal: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchInput: {
     flex: 1,
@@ -75,7 +84,7 @@ const st = StyleSheet.create({
     color: std.color.shade9,
     textAlign: 'center',
     backgroundColor: std.color.shade0,
-    borderRadius: std.gap.sm
+    borderRadius: std.gap.sm,
   },
   searchClear: {
     position: 'absolute',
@@ -83,15 +92,15 @@ const st = StyleSheet.create({
     right: std.gap.lg + std.gap.sm,
     bottom: 0,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   searchClearIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
-    color: std.color.action
+    color: std.color.action,
   },
   contacts: {
-    flex: 1
+    flex: 1,
   },
   contact: {
     backgroundColor: std.color.shade0,
@@ -99,7 +108,7 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: std.gap.lg,
     overflow: 'hidden',
-    margin: std.gap.lg
+    margin: std.gap.lg,
   },
   contactLoading: {
     justifyContent: 'center',
@@ -110,17 +119,17 @@ const st = StyleSheet.create({
     bottom: 0,
     left: 0,
     backgroundColor: std.color.shade0,
-    opacity: 0.5
+    opacity: 0.5,
   },
   contactHead: {
     flexDirection: 'row',
     alignItems: 'center',
     height: std.textSize.md * 2 + std.gap.md * 6,
     paddingHorizontal: std.gap.lg,
-    backgroundColor: std.color.shade1
+    backgroundColor: std.color.shade1,
   },
   contactHeadInfo: {
-    flex: 1
+    flex: 1,
   },
   contactAction: {
     justifyContent: 'center',
@@ -129,19 +138,19 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth
+    borderWidth: StyleSheet.hairlineWidth,
   },
   contactActionIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
-    color: std.color.action
+    color: std.color.action,
   },
   fieldHeadText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     fontWeight: 'bold',
     lineHeight: std.textSize.md + std.gap.md * 2,
-    color: std.color.shade9
+    color: std.color.shade9,
   },
   fieldHeadEdit: {
     fontFamily: std.font.text,
@@ -150,7 +159,7 @@ const st = StyleSheet.create({
     paddingVertical: 0,
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.md * 2,
-    color: std.color.shade5
+    color: std.color.shade5,
   },
   field: {
     flexDirection: 'row',
@@ -158,32 +167,32 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2 + std.gap.md * 2,
     paddingHorizontal: std.gap.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: std.color.shade2
+    borderColor: std.color.shade2,
   },
   fieldIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
-    color: std.color.shade4
+    color: std.color.shade4,
   },
   fieldBodyText: {
     flex: 1,
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
-    paddingHorizontal: std.gap.lg
+    paddingHorizontal: std.gap.lg,
   },
   fieldBodyEdit: {
     flex: 1,
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
-    paddingHorizontal: std.gap.lg
+    paddingHorizontal: std.gap.lg,
   },
   fieldTBA: {
     height: std.textSize.md,
     width: rem(128),
     backgroundColor: std.color.shade1,
-    marginHorizontal: std.gap.lg
+    marginHorizontal: std.gap.lg,
   },
   fieldAction: {
     justifyContent: 'center',
@@ -192,17 +201,17 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth
+    borderWidth: StyleSheet.hairlineWidth,
   },
   actionIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
-    color: std.color.action
+    color: std.color.action,
   },
   loading: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   paging: {
     justifyContent: 'center',
@@ -212,161 +221,143 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: std.gap.md,
-    margin: std.gap.lg
+    margin: std.gap.lg,
   },
   pagingText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
-    color: std.color.action
-  }
-})
+    color: std.color.action,
+  },
+});
 
-const pure = (Component) => (
+const pure = Component =>
   class extends PureComponent {
-    render = () => (
-      <Component {...this.props}/>
-    )
-  }
-)
+    render = () => <Component {...this.props} />;
+  };
 
-const Navbar = pure((p) => (
+const Navbar = pure(p => (
   <View style={st.navbar}>
     <Button style={st.navbarLeftOpt} onPress={p.back}>
-      <Text style={st.navbarOptText}>
-        Back
-      </Text>
+      <Text style={st.navbarOptText}>Back</Text>
     </Button>
     <Text style={st.navbarTitle}>
       {p.book} {p.shared && '(Shared)'}
     </Text>
     {p.canCreate && (
-      <Button style={st.navbarRightOpt}
-        onPress={p.create}>
-        <Text style={st.navbarOptText}>
-          Create
-        </Text>
+      <Button style={st.navbarRightOpt} onPress={p.create}>
+        <Text style={st.navbarOptText}>Create</Text>
       </Button>
     )}
   </View>
-))
+));
 
-const Search = pure((p) => (
+const Search = pure(p => (
   <View style={st.search}>
-    <TextInput style={st.searchInput}
-      placeholder='Search'
+    <TextInput
+      style={st.searchInput}
+      placeholder="Search"
       value={p.value}
       onChangeText={p.setValue}
     />
     {!!p.value && (
-      <Button style={st.searchClear}
-        onPress={() => p.setValue('')}>
-        <Text style={st.searchClearIcon}>
-          icon_x_circle
-        </Text>
+      <Button style={st.searchClear} onPress={() => p.setValue('')}>
+        <Text style={st.searchClearIcon}>icon_x_circle</Text>
       </Button>
     )}
   </View>
-))
+));
 
-const ContactEdit = pure((p) => (
+const ContactEdit = pure(p => (
   <View style={st.contact}>
     <View style={st.contactHead}>
       <View style={st.contactHeadInfo}>
-        <TextInput style={st.fieldHeadEdit}
+        <TextInput
+          style={st.fieldHeadEdit}
           placeholderTextColor={std.color.shade4}
-          placeholder='First Name'
+          placeholder="First Name"
           value={p.firstName}
-          onChangeText={(v) => p.setFirstName(p.id, v)}
+          onChangeText={v => p.setFirstName(p.id, v)}
         />
-        <TextInput style={st.fieldHeadEdit}
+        <TextInput
+          style={st.fieldHeadEdit}
           placeholderTextColor={std.color.shade4}
-          placeholder='Last Name'
+          placeholder="Last Name"
           value={p.lastName}
-          onChangeText={(v) => p.setLastName(p.id, v)}
+          onChangeText={v => p.setLastName(p.id, v)}
         />
       </View>
-      <Button style={st.contactAction}
-        onPress={() => p.save(p.id)}>
-        <Text style={st.contactActionIcon}>
-          icon_check
-        </Text>
+      <Button style={st.contactAction} onPress={() => p.save(p.id)}>
+        <Text style={st.contactActionIcon}>icon_check</Text>
       </Button>
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_user
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_user</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Job Title'
+        placeholder="Job Title"
         value={p.job}
-        onChangeText={(v) => p.setJob(p.id, v)}
+        onChangeText={v => p.setJob(p.id, v)}
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_users
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_users</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Company'
+        placeholder="Company"
         value={p.company}
-        onChangeText={(v) => p.setCompany(p.id, v)}
+        onChangeText={v => p.setCompany(p.id, v)}
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_map_pin
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_map_pin</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Address'
+        placeholder="Address"
         value={p.address}
-        onChangeText={(v) => p.setAddress(p.id, v)}
+        onChangeText={v => p.setAddress(p.id, v)}
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_briefcase
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_briefcase</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Work Number'
+        placeholder="Work Number"
         value={p.workNumber}
-        onChangeText={(v) => p.setWorkNumber(p.id, v)}
+        onChangeText={v => p.setWorkNumber(p.id, v)}
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_smartphone
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_smartphone</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Cell Number'
+        placeholder="Cell Number"
         value={p.cellNumber}
-        onChangeText={(v) => p.setCellNumber(p.id, v)}
+        onChangeText={v => p.setCellNumber(p.id, v)}
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_home
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_home</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Home Number'
+        placeholder="Home Number"
         value={p.homeNumber}
-        onChangeText={(v) => p.setHomeNumber(p.id, v)}
+        onChangeText={v => p.setHomeNumber(p.id, v)}
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_mail
-      </Text>
-      <TextInput style={st.fieldBodyEdit}
+      <Text style={st.fieldIcon}>icon_mail</Text>
+      <TextInput
+        style={st.fieldBodyEdit}
         placeholderTextColor={std.color.shade4}
-        placeholder='Email'
+        placeholder="Email"
         value={p.email}
-        onChangeText={(v) => p.setEmail(p.id, v)}
+        onChangeText={v => p.setEmail(p.id, v)}
       />
     </View>
     {p.loading && (
@@ -375,129 +366,87 @@ const ContactEdit = pure((p) => (
       </View>
     )}
   </View>
-))
+));
 
-const ContactView = pure((p) => (
+const ContactView = pure(p => (
   <View style={st.contact}>
     <View style={st.contactHead}>
       <View style={st.contactHeadInfo}>
-        <Text style={st.fieldHeadText}>
-          {p.name}
-        </Text>
+        <Text style={st.fieldHeadText}>{p.name}</Text>
       </View>
       {p.editable && (
-        <Button style={st.contactAction}
-          onPress={() => p.edit(p.id)}>
-          <Text style={st.contactActionIcon}>
-            icon_edit_2
-          </Text>
+        <Button style={st.contactAction} onPress={() => p.edit(p.id)}>
+          <Text style={st.contactActionIcon}>icon_edit_2</Text>
         </Button>
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_user
-      </Text>
+      <Text style={st.fieldIcon}>icon_user</Text>
       {p.job ? (
-        <Text style={st.fieldBodyText}>
-          {p.job}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.job}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_users
-      </Text>
+      <Text style={st.fieldIcon}>icon_users</Text>
       {p.company ? (
-        <Text style={st.fieldBodyText}>
-          {p.company}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.company}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_map_pin
-      </Text>
+      <Text style={st.fieldIcon}>icon_map_pin</Text>
       {p.address ? (
-        <Text style={st.fieldBodyText}>
-          {p.address}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.address}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_briefcase
-      </Text>
+      <Text style={st.fieldIcon}>icon_briefcase</Text>
       {p.workNumber ? (
-        <Text style={st.fieldBodyText}>
-          {p.workNumber}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.workNumber}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
       {!!p.workNumber && (
-        <Button style={st.fieldAction}
-          onPress={() => p.call(p.workNumber)}>
-          <Text style={st.actionIcon}>
-            icon_phone_pick
-          </Text>
+        <Button style={st.fieldAction} onPress={() => p.call(p.workNumber)}>
+          <Text style={st.actionIcon}>icon_phone_pick</Text>
         </Button>
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_smartphone
-      </Text>
+      <Text style={st.fieldIcon}>icon_smartphone</Text>
       {p.cellNumber ? (
-        <Text style={st.fieldBodyText}>
-          {p.cellNumber}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.cellNumber}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
       {!!p.cellNumber && (
-        <Button style={st.fieldAction}
-          onPress={() => p.call(p.cellNumber)}>
-          <Text style={st.actionIcon}>
-            icon_phone_pick
-          </Text>
+        <Button style={st.fieldAction} onPress={() => p.call(p.cellNumber)}>
+          <Text style={st.actionIcon}>icon_phone_pick</Text>
         </Button>
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_home
-      </Text>
+      <Text style={st.fieldIcon}>icon_home</Text>
       {p.homeNumber ? (
-        <Text style={st.fieldBodyText}>
-          {p.homeNumber}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.homeNumber}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
       {!!p.homeNumber && (
-        <Button style={st.fieldAction}
-          onPress={() => p.call(p.homeNumber)}>
-          <Text style={st.actionIcon}>
-            icon_phone_pick
-          </Text>
+        <Button style={st.fieldAction} onPress={() => p.call(p.homeNumber)}>
+          <Text style={st.actionIcon}>icon_phone_pick</Text>
         </Button>
       )}
     </View>
     <View style={st.field}>
-      <Text style={st.fieldIcon}>
-        icon_mail
-      </Text>
+      <Text style={st.fieldIcon}>icon_mail</Text>
       {p.email ? (
-        <Text style={st.fieldBodyText}>
-          {p.email}
-        </Text>
+        <Text style={st.fieldBodyText}>{p.email}</Text>
       ) : (
         <View style={st.fieldTBA} />
       )}
@@ -508,64 +457,58 @@ const ContactView = pure((p) => (
       </View>
     )}
   </View>
-))
+));
 
-const Contact = (p) => p.editing
-  ? <ContactEdit {...p} />
-  : <ContactView {...p} />
+const Contact = p =>
+  p.editing ? <ContactEdit {...p} /> : <ContactView {...p} />;
 
-const Contacts = (p) => (
+const Contacts = p => (
   <ScrollView style={st.contacts}>
     {p.hasPrevPage && (
-      <Button style={st.paging}
-        onPress={p.goPrevPage}>
-        <Text style={st.pagingText}>
-          Previous Page
-        </Text>
+      <Button style={st.paging} onPress={p.goPrevPage}>
+        <Text style={st.pagingText}>Previous Page</Text>
       </Button>
     )}
-    {p.ids.map((id) => <Contact
-      key={id} {...p.resolve(id)}
-      editable={p.editable}
-      edit={p.edit}
-      setFirstName={p.setFirstName}
-      setLastName={p.setLastName}
-      setJob={p.setJob}
-      setCompany={p.setCompany}
-      setAddress={p.setAddress}
-      setWorkNumber={p.setWorkNumber}
-      setCellNumber={p.setCellNumber}
-      setHomeNumber={p.setHomeNumber}
-      setEmail={p.setEmail}
-      save={p.save}
-      call={p.call}
-    />)}
+    {p.ids.map(id => (
+      <Contact
+        key={id}
+        {...p.resolve(id)}
+        editable={p.editable}
+        edit={p.edit}
+        setFirstName={p.setFirstName}
+        setLastName={p.setLastName}
+        setJob={p.setJob}
+        setCompany={p.setCompany}
+        setAddress={p.setAddress}
+        setWorkNumber={p.setWorkNumber}
+        setCellNumber={p.setCellNumber}
+        setHomeNumber={p.setHomeNumber}
+        setEmail={p.setEmail}
+        save={p.save}
+        call={p.call}
+      />
+    ))}
     {p.hasNextPage && (
-      <Button style={st.paging}
-        onPress={p.goNextPage}>
-        <Text style={st.pagingText}>
-          Next Page
-        </Text>
+      <Button style={st.paging} onPress={p.goNextPage}>
+        <Text style={st.pagingText}>Next Page</Text>
       </Button>
     )}
   </ScrollView>
-)
+);
 
-const Empty = (p) => (
+const Empty = p => (
   <View style={st.empty}>
-    <Text style={st.emptyMessage}>
-      Empty
-    </Text>
+    <Text style={st.emptyMessage}>Empty</Text>
   </View>
-)
+);
 
 const Loading = () => (
   <View style={st.loading}>
     <ActivityIndicator />
   </View>
-)
+);
 
-const ContactsBrowse = (p) => (
+const ContactsBrowse = p => (
   <KeyboardAvoidingView style={st.main}>
     <Navbar
       canCreate={!p.shared}
@@ -574,12 +517,7 @@ const ContactsBrowse = (p) => (
       back={p.back}
       create={p.create}
     />
-    {!p.loading && (
-      <Search
-        value={p.searchText}
-        setValue={p.setSearchText}
-      />
-    )}
+    {!p.loading && <Search value={p.searchText} setValue={p.setSearchText} />}
     {p.contactIds.length ? (
       <Contacts
         ids={p.contactIds}
@@ -602,10 +540,12 @@ const ContactsBrowse = (p) => (
         goPrevPage={p.goPrevPage}
         call={p.call}
       />
+    ) : p.loading ? (
+      <Loading />
     ) : (
-      p.loading ? <Loading /> : <Empty />
+      <Empty />
     )}
   </KeyboardAvoidingView>
-)
+);
 
-export default ContactsBrowse
+export default ContactsBrowse;

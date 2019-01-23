@@ -1,30 +1,30 @@
-import {createModel} from '@thenewvu/redux-model'
-import immutable from "@thenewvu/immutable";
+import { createModel } from '@thenewvu/redux-model';
+import immutable from '@thenewvu/immutable';
 
 export default createModel({
-    prefix: 'pushNotifies',
-    origin: {
-        notifDatas: []
+  prefix: 'pushNotifies',
+  origin: {
+    notifDatas: [],
+  },
+  getter: {
+    notifDatas: s => s.notifDatas,
+  },
+  action: {
+    add: function(state, notifData) {
+      const obj = immutable.on(state)(
+        immutable.fset('notifDatas', datas => [...datas, notifData]),
+      );
+      return obj;
     },
-    getter: {
-        notifDatas: (s) => s.notifDatas
-    },
-    action: {
-        add: function(state, notifData) {
-            const obj = immutable.on(state)(
-                immutable.fset('notifDatas', (datas) => [...datas, notifData]),
-            );
-            return obj;
-        }
-        ,removeAt: function(state, index ) {
-            const a = state.notifDatas.slice(0,index);
-            const b = state.notifDatas.slice(index + 1, state.length );
-            const c = a.concat(b);
+    removeAt: function(state, index) {
+      const a = state.notifDatas.slice(0, index);
+      const b = state.notifDatas.slice(index + 1, state.length);
+      const c = a.concat(b);
 
-            return { notifDatas: c };
-        }
-        ,clear: () => ({
-            notifDatas : []
-        })
-    }
-})
+      return { notifDatas: c };
+    },
+    clear: () => ({
+      notifDatas: [],
+    }),
+  },
+});

@@ -1,2 +1,2 @@
-import UI from './ui'
-export default UI
+import UI from './ui';
+export default UI;

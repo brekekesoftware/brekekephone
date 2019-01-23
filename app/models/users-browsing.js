@@ -1,14 +1,14 @@
-import {createModel} from '@thenewvu/redux-model'
+import { createModel } from '@thenewvu/redux-model';
 
 export default createModel({
   prefix: 'usersBrowsing',
   origin: {
-    searchText: ''
+    searchText: '',
   },
   getter: {
-    searchText: (s) => s.searchText
+    searchText: s => s.searchText,
   },
   action: {
-    setSearchText: (s, searchText) => ({searchText})
-  }
-})
+    setSearchText: (s, searchText) => ({ searchText }),
+  },
+});

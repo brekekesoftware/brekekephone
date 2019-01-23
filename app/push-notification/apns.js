@@ -1,6 +1,6 @@
 import { get as $ } from 'object-path';
 import VoipPushNotification from 'react-native-voip-push-notification';
-import { getProfileManager } from '../modules/profiles-manage'
+import { getProfileManager } from '../modules/profiles-manage';
 
 let apnsToken = '';
 const getApnsToken = () => apnsToken;
@@ -39,15 +39,16 @@ const onVoipNotification = notification => {
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo`  : An optional object containing additional notification data.
    */
-  const alertBody = $(notification, '_data.custom_notification.body')
+  const alertBody =
+    $(notification, '_data.custom_notification.body') ||
     // Add fallback to see the detail notification if there's no body
-    || JSON.stringify(notification);
+    JSON.stringify(notification);
   const alertAction = /call/.test(alertBody) ? 'Answer' : 'View';
   const soundName = $(notification, '_data.custom_notification.sound');
   VoipPushNotification.presentLocalNotification({
-      alertBody,
-      alertAction,
-      soundName,
+    alertBody,
+    alertAction,
+    soundName,
   });
 };
 

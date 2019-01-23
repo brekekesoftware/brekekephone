@@ -6,10 +6,7 @@ const json5 = require('json5');
 const cwd = process.cwd();
 
 module.exports = {
-  entry: [
-    'babel-polyfill',
-    path.join(cwd, 'index.web.js'),
-  ],
+  entry: ['babel-polyfill', path.join(cwd, 'index.web.js')],
   output: {
     filename: 'bundle.web.js',
     path: path.join(cwd, 'dist/web'),
@@ -32,7 +29,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             ...json5.parse(fs.readFileSync(path.join(cwd, '.babelrc'))),
-            presets: [ 'env', 'react' ],
+            presets: ['env', 'react'],
             cacheDirectory: true,
           },
         },
@@ -48,10 +45,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(woff|woff2|eot|svg|ttf)(\?*)?$/,
@@ -75,18 +69,15 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      {from: path.resolve(__dirname, './index.html')},
-      {from: path.resolve(__dirname, './favicon.png')},
+      { from: path.resolve(__dirname, './index.html') },
+      { from: path.resolve(__dirname, './favicon.png') },
     ]),
   ],
   resolve: {
     alias: {
       'react-native': 'react-native-web',
     },
-    extensions: [
-      '.web.js',
-      '.js',
-    ],
+    extensions: ['.web.js', '.js'],
   },
   devServer: {
     contentBase: path.join(cwd, 'web'),

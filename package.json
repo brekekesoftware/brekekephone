@@ -9,11 +9,13 @@
     "start:storybook:web": "start-storybook -p 9001 -c ./storybook/web",
     "start:storybook:native": "start-storybook -p 7001 -c ./storybook/native",
     "build:storybook": "build-storybook -c storybook/web -o dist/storybook",
-    "build:ios": "rm -rf dist/ios && mkdir -p dist/ios && react-native bundle --platform ios --entry-file index.native.js --bundle-output dist/ios/main.jsbundle --assets-dest dist/ios/ --dev false"
+    "build:ios": "rm -rf dist/ios && mkdir -p dist/ios && react-native bundle --platform ios --entry-file index.native.js --bundle-output dist/ios/main.jsbundle --assets-dest dist/ios/ --dev false",
+    "pret": "prettier --write \"{app,web}/**/*.{js,css,scss}\" \"index.{native,web}.js\""
   },
   "dependencies": {
     "@thenewvu/immutable": "1.0.0",
     "@thenewvu/redux-model": "2.1.0",
+    "crypto-js": "3.1.2",
     "debounce": "1.1.0",
     "eventemitter3": "3.0.0",
     "history": "4.6.3",

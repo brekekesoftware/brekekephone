@@ -1,6 +1,6 @@
-import React from 'react'
-import {StyleSheet, View, Text} from 'react-native'
-import {std, rem} from '../styleguide'
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { std, rem } from '../styleguide';
 
 const st = StyleSheet.create({
   notify: {
@@ -15,9 +15,9 @@ const st = StyleSheet.create({
     shadowOpacity: 0.24,
     shadowOffset: {
       width: 0,
-      height: rem(4)
+      height: rem(4),
     },
-    elevation: 3
+    elevation: 3,
   },
   notifyTitle: {
     fontFamily: std.font.text,
@@ -25,24 +25,17 @@ const st = StyleSheet.create({
     lineHeight: std.textSize.md + std.gap.sm * 2,
     color: std.color.shade0,
     paddingHorizontal: std.gap.lg,
-    paddingVertical: std.gap.md
-  }
-})
+    paddingVertical: std.gap.md,
+  },
+});
 
-const Notify = (p) => (
+const Notify = p => (
   <View style={st.notify}>
-    <Text style={st.notifyTitle}>
-      {p.message}
-    </Text>
+    <Text style={st.notifyTitle}>{p.message}</Text>
   </View>
-)
+);
 
-const ToastsNotify = (p) => (
-  p.toastIds.map((id) => (
-    <Notify key={id}
-      {...p.resolveToast(id)}
-    />
-  ))
-)
+const ToastsNotify = p =>
+  p.toastIds.map(id => <Notify key={id} {...p.resolveToast(id)} />);
 
-export default ToastsNotify
+export default ToastsNotify;

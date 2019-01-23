@@ -1,9 +1,9 @@
-import {AppRegistry} from 'react-native'
-import App from './app/'
-import './web/index.css'
+import { AppRegistry } from 'react-native';
+import App from './app/';
+import './web/index.css';
 
-AppRegistry.registerComponent('App', () => App)
+AppRegistry.registerComponent('App', () => App);
 
 AppRegistry.runApplication('App', {
-  rootTag: document.getElementById('react')
-})
+  rootTag: document.getElementById('root'),
+});

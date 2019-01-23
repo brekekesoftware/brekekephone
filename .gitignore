@@ -54,7 +54,7 @@ buck-out/
 android/app/app-release.apk
 **/*.zip
 **/*~
-builds
+
 dist/
 main.jsbundle*
 

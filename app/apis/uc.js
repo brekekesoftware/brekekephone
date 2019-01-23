@@ -1,12 +1,12 @@
-import EventEmitter from 'eventemitter3'
-import UCClient from './ucclient'
+import EventEmitter from 'eventemitter3';
+import UCClient from './ucclient';
 
 class UC extends EventEmitter {
-  constructor () {
-    super()
+  constructor() {
+    super();
 
-    const logger = new UCClient.Logger('all')
-    this.client = new UCClient.ChatClient(logger)
+    const logger = new UCClient.Logger('all');
+    this.client = new UCClient.ChatClient(logger);
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
       buddyStatusChanged: this.onUserUpdated,
@@ -16,16 +16,16 @@ class UC extends EventEmitter {
       fileInfoChanged: this.onFileProgress,
       fileTerminated: this.onFileFinished,
       invitedToConference: this.onGroupInvited,
-      conferenceMemberChanged: this.onGroupUpdated
-    })
+      conferenceMemberChanged: this.onGroupUpdated,
+    });
   }
 
-  onConnectionStopped = (ev) => {
-    this.emit('connection-stopped',ev )
-  }
+  onConnectionStopped = ev => {
+    this.emit('connection-stopped', ev);
+  };
 
-  onUserUpdated = (ev) => {
-    if (!ev) return
+  onUserUpdated = ev => {
+    if (!ev) return;
 
     this.emit('user-updated', {
       id: ev.user_id,
@@ -35,31 +35,31 @@ class UC extends EventEmitter {
       online: ev.status === 1,
       idle: ev.status === 2,
       busy: ev.status === 3,
-      avatar: ev.profile_image_url
-    })
-  }
+      avatar: ev.profile_image_url,
+    });
+  };
 
-  onTextReceived = (ev) => {
-    if (!ev || !ev.sender) return
+  onTextReceived = ev => {
+    if (!ev || !ev.sender) return;
 
     ev.conf_id
       ? this.emit('group-chat-created', {
-        id: ev.received_text_id,
-        group: ev.conf_id,
-        text: ev.text,
-        creator: ev.sender.user_id,
-        created: ev.sent_ltime
-      })
+          id: ev.received_text_id,
+          group: ev.conf_id,
+          text: ev.text,
+          creator: ev.sender.user_id,
+          created: ev.sent_ltime,
+        })
       : this.emit('buddy-chat-created', {
-        id: ev.received_text_id,
-        text: ev.text,
-        creator: ev.sender.user_id,
-        created: ev.sent_ltime
-      })
-  }
+          id: ev.received_text_id,
+          text: ev.text,
+          creator: ev.sender.user_id,
+          created: ev.sent_ltime,
+        });
+  };
 
-  onFileReceived = (ev) => {
-    if (!ev || !ev.fileInfo) return
+  onFileReceived = ev => {
+    if (!ev || !ev.fileInfo) return;
 
     const file = {
       id: ev.fileInfo.file_id,
@@ -67,84 +67,78 @@ class UC extends EventEmitter {
       size: ev.fileInfo.size,
       incoming: true,
       transferPercent: ev.fileInfo.progress,
-      transferWaiting: ev.fileInfo.status === 0 ||
-                       ev.fileInfo.status === 1,
+      transferWaiting: ev.fileInfo.status === 0 || ev.fileInfo.status === 1,
       transferStarted: ev.fileInfo.status === 2,
       transferSuccess: ev.fileInfo.status === 3,
-      transferStopped: ev.fileInfo.status === 4 ||
-                       ev.fileInfo.status === 5,
-      transferFailure: ev.fileInfo.status === 6
-    }
+      transferStopped: ev.fileInfo.status === 4 || ev.fileInfo.status === 5,
+      transferFailure: ev.fileInfo.status === 6,
+    };
 
-    this.emit('file-received', file)
+    this.emit('file-received', file);
 
     ev.conf_id
       ? this.emit('group-chat-created', {
-        id: ev.text_id,
-        creator: ev.fileInfo.target.user_id,
-        group: ev.conf_id,
-        file: file.id,
-        created: ev.sent_ltime
-      })
+          id: ev.text_id,
+          creator: ev.fileInfo.target.user_id,
+          group: ev.conf_id,
+          file: file.id,
+          created: ev.sent_ltime,
+        })
       : this.emit('buddy-chat-created', {
-        id: ev.text_id,
-        creator: ev.fileInfo.target.user_id,
-        file: file.id,
-        created: ev.sent_ltime
-      })
-  }
+          id: ev.text_id,
+          creator: ev.fileInfo.target.user_id,
+          file: file.id,
+          created: ev.sent_ltime,
+        });
+  };
 
-  onFileProgress = (ev) => {
-    if (!ev || !ev.fileInfo) return
+  onFileProgress = ev => {
+    if (!ev || !ev.fileInfo) return;
 
     this.emit('file-progress', {
       id: ev.fileInfo.file_id,
       transferPercent: ev.fileInfo.progress,
-      transferWaiting: ev.fileInfo.status === 0 ||
-                       ev.fileInfo.status === 1,
+      transferWaiting: ev.fileInfo.status === 0 || ev.fileInfo.status === 1,
       transferStarted: ev.fileInfo.status === 2,
       transferSuccess: ev.fileInfo.status === 3,
-      transferStopped: ev.fileInfo.status === 4 ||
-                       ev.fileInfo.status === 5,
-      transferFailure: ev.fileInfo.status === 6
-    })
-  }
+      transferStopped: ev.fileInfo.status === 4 || ev.fileInfo.status === 5,
+      transferFailure: ev.fileInfo.status === 6,
+    });
+  };
 
-  onFileFinished = (ev) => {
-    if (!ev || !ev.fileInfo) return
+  onFileFinished = ev => {
+    if (!ev || !ev.fileInfo) return;
 
     this.emit('file-finished', {
       id: ev.fileInfo.file_id,
       transferPercent: ev.fileInfo.progress,
-      transferWaiting: ev.fileInfo.status === 0 ||
-                       ev.fileInfo.status === 1,
+      transferWaiting: ev.fileInfo.status === 0 || ev.fileInfo.status === 1,
       transferStarted: ev.fileInfo.status === 2,
       transferSuccess: ev.fileInfo.status === 3,
-      transferStopped: ev.fileInfo.status === 4 ||
-                       ev.fileInfo.status === 5,
-      transferFailure: ev.fileInfo.status === 6
-    })
-  }
+      transferStopped: ev.fileInfo.status === 4 || ev.fileInfo.status === 5,
+      transferFailure: ev.fileInfo.status === 6,
+    });
+  };
 
-  onGroupInvited = (ev) => {
-    if (!ev || !ev.conference) return
+  onGroupInvited = ev => {
+    if (!ev || !ev.conference) return;
 
     this.emit('chat-group-invited', {
       id: ev.conference.conf_id,
       name: ev.conference.subject,
       inviter: ev.conference.from.user_id,
-      buddies: ev.conference.user || []
-    })
-  }
+      buddies: ev.conference.user || [],
+    });
+  };
 
-  onGroupUpdated = (ev) => {
-    if (!ev || !ev.conference) return
+  onGroupUpdated = ev => {
+    if (!ev || !ev.conference) return;
 
     if (ev.conference.conf_status === 0) {
       this.emit('chat-group-revoked', {
-        id: ev.conference.conf_id
-      })
-      return
+        id: ev.conference.conf_id,
+      });
+      return;
     }
 
     this.emit('chat-group-updated', {
@@ -152,41 +146,50 @@ class UC extends EventEmitter {
       name: ev.conference.subject,
       jointed: ev.conference.conf_status === 2,
       members: (ev.conference.user || [])
-        .filter((user) => user.conf_status === 2)
-        .map((user) => user.user_id)
-    })
+        .filter(user => user.conf_status === 2)
+        .map(user => user.user_id),
+    });
+  };
+
+  connect(profile, option) {
+    return new Promise((onres, onerr) =>
+      this.client.signIn(
+        {
+          host: `https://${profile.hostname}:${profile.port}`,
+          path: profile.pathname || 'uc',
+          tenant: profile.tenant,
+          user: profile.username,
+          pass: profile.password,
+          option: option,
+        },
+        onres,
+        onerr,
+      ),
+    );
   }
 
-  connect (profile, option ) {
-    return new Promise((onres, onerr) => this.client.signIn({
-      host: `https://${profile.hostname}:${profile.port}`,
-      path: profile.pathname || 'uc',
-      tenant: profile.tenant,
-      user: profile.username,
-      pass: profile.password,
-        option: option,
-      }, onres, onerr))
+  connect(profile, option) {
+    return new Promise((onres, onerr) =>
+      this.client.signIn(
+        `https://${profile.hostname}:${profile.port}`,
+        profile.pathname || 'uc',
+        profile.tenant,
+        profile.username,
+        profile.password,
+        option,
+        onres,
+        onerr,
+      ),
+    );
   }
 
-
-  connect (profile, option) {
-    return new Promise((onres, onerr) => this.client.signIn(
-      `https://${profile.hostname}:${profile.port}`,
-      profile.pathname || 'uc',
-      profile.tenant,
-      profile.username,
-      profile.password,
-      option
-    , onres, onerr))
+  disconnect() {
+    this.client.signOut();
   }
 
-  disconnect () {
-    this.client.signOut()
-  }
-
-  me () {
-    const profile = this.client.getProfile() || {}
-    const status = this.client.getStatus() || {}
+  me() {
+    const profile = this.client.getProfile() || {};
+    const status = this.client.getStatus() || {};
 
     return {
       id: profile.user_id,
@@ -196,208 +199,219 @@ class UC extends EventEmitter {
       offline: status.status === 0,
       online: status.status === 1,
       idle: status.status === 2,
-      busy: status.status === 3
-    }
+      busy: status.status === 3,
+    };
   }
 
-  setOffline (mood) {
+  setOffline(mood) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(0, mood, onres, onerr)
-    )
+      this.client.changeStatus(0, mood, onres, onerr),
+    );
   }
 
-  setOnline (mood) {
+  setOnline(mood) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(1, mood, onres, onerr)
-    )
+      this.client.changeStatus(1, mood, onres, onerr),
+    );
   }
 
-  setBusy (mood) {
+  setBusy(mood) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(3, mood, onres, onerr)
-    )
+      this.client.changeStatus(3, mood, onres, onerr),
+    );
   }
 
-  getUsers () {
-    const buddyList = this.client.getBuddylist()
+  getUsers() {
+    const buddyList = this.client.getBuddylist();
     if (!buddyList || !Array.isArray(buddyList.user)) {
-      return []
+      return [];
     }
-    return buddyList.user.map((user) => ({
+    return buddyList.user.map(user => ({
       id: user.user_id,
       avatar: user.profile_image_url,
       name: user.name,
       offline: user.status === 0,
       online: user.status === 1,
       busy: user.status === 2,
-      mood: user.display
-    }))
+      mood: user.display,
+    }));
   }
 
-  async getUnreadChats () {
+  async getUnreadChats() {
     const res = await new Promise((onres, onerr) => {
-      this.client.receiveUnreadText(onres, onerr)
-    })
+      this.client.receiveUnreadText(onres, onerr);
+    });
 
     if (!res || !Array.isArray(res.messages)) {
-      return []
+      return [];
     }
 
     const readRequiredMessageIds = res.messages
-      .filter((msg) => msg.requires_read)
-      .map((msg) => msg.received_text_id)
+      .filter(msg => msg.requires_read)
+      .map(msg => msg.received_text_id);
 
-    this.client.readText(readRequiredMessageIds)
+    this.client.readText(readRequiredMessageIds);
 
-    return res.messages.map((msg) => ({
+    return res.messages.map(msg => ({
       id: msg.received_text_id,
       text: msg.text,
       creator: msg.sender && msg.sender.user_id,
-      created: msg.sent_ltime
-    }))
+      created: msg.sent_ltime,
+    }));
   }
 
-  async getBuddyChats (buddy, opts) {
+  async getBuddyChats(buddy, opts) {
     const res = await new Promise((onres, onerr) =>
-      this.client.searchTexts({
-        user_id: buddy,
-        max: opts.max,
-        begin: opts.begin,
-        end: opts.end,
-        asc: opts.asc
-      }, onres, onerr)
-    )
+      this.client.searchTexts(
+        {
+          user_id: buddy,
+          max: opts.max,
+          begin: opts.begin,
+          end: opts.end,
+          asc: opts.asc,
+        },
+        onres,
+        onerr,
+      ),
+    );
     if (!res || !Array.isArray(res.logs)) {
-      return []
+      return [];
     }
-    return res.logs.map((log) => ({
+    return res.logs.map(log => ({
       id: log.log_id,
-      text: log.ctype === 5 // ctype-file-request
-        ? JSON.parse(log.content).name
-        : log.content,
+      text:
+        log.ctype === 5 // ctype-file-request
+          ? JSON.parse(log.content).name
+          : log.content,
       creator: log.sender.user_id,
-      created: log.ltime
-    }))
+      created: log.ltime,
+    }));
   }
 
-  async getGroupChats (group, opts) {
+  async getGroupChats(group, opts) {
     const res = await new Promise((onres, onerr) =>
-      this.client.searchTexts({
-        conf_id: group,
-        max: opts.max,
-        begin: opts.begin,
-        end: opts.end,
-        asc: opts.asc
-      }, onres, onerr)
-    )
+      this.client.searchTexts(
+        {
+          conf_id: group,
+          max: opts.max,
+          begin: opts.begin,
+          end: opts.end,
+          asc: opts.asc,
+        },
+        onres,
+        onerr,
+      ),
+    );
     if (!res || !Array.isArray(res.logs)) {
-      return []
+      return [];
     }
-    return res.logs.map((log) => ({
+    return res.logs.map(log => ({
       id: log.log_id,
       text: log.content,
       creator: log.sender.user_id,
-      created: res.ltime
-    }))
+      created: res.ltime,
+    }));
   }
 
-  sendBuddyChatText (buddy, text) {
+  sendBuddyChatText(buddy, text) {
     return new Promise((onres, onerr) =>
       this.client.sendText(
-        text, {user_id: buddy},
-        (res) => onres({
-          id: res.text_id,
-          text,
-          creator: this.client.getProfile().user_id,
-          created: res.ltime
-        }),
-        onerr
-      )
-    )
+        text,
+        { user_id: buddy },
+        res =>
+          onres({
+            id: res.text_id,
+            text,
+            creator: this.client.getProfile().user_id,
+            created: res.ltime,
+          }),
+        onerr,
+      ),
+    );
   }
 
-  sendGroupChatText (group, text) {
+  sendGroupChatText(group, text) {
     return new Promise((onres, onerr) =>
       this.client.sendConferenceText(
-        text, group,
-        (res) => onres({
-          id: res.text_id,
-          text,
-          creator: this.client.getProfile().user_id,
-          created: res.ltime
-        }),
-        onerr
-      )
-    )
+        text,
+        group,
+        res =>
+          onres({
+            id: res.text_id,
+            text,
+            creator: this.client.getProfile().user_id,
+            created: res.ltime,
+          }),
+        onerr,
+      ),
+    );
   }
 
-  async createChatGroup (name, members = []) {
+  async createChatGroup(name, members = []) {
     const res = await new Promise((onres, onerr) => {
-      this.client.createConference(name, members, onres, onerr)
-    })
+      this.client.createConference(name, members, onres, onerr);
+    });
 
     return {
       id: res.conference.conf_id,
       name: res.conference.subject,
-      jointed: true
-    }
+      jointed: true,
+    };
   }
 
-  async joinChatGroup (group) {
+  async joinChatGroup(group) {
     await new Promise((onres, onerr) => {
-      this.client.joinConference(group, null, onres, onerr)
-    })
+      this.client.joinConference(group, null, onres, onerr);
+    });
 
     return {
-      id: group
-    }
+      id: group,
+    };
   }
 
-  async leaveChatGroup (group) {
+  async leaveChatGroup(group) {
     await new Promise((onres, onerr) => {
-      this.client.leaveConference(group, onres, onerr)
-    })
+      this.client.leaveConference(group, onres, onerr);
+    });
 
     return {
-      id: group
-    }
+      id: group,
+    };
   }
 
-  inviteChatGroupMembers (group, members) {
+  inviteChatGroupMembers(group, members) {
     return new Promise((onres, onerr) => {
-      this.client.inviteToConference(group, members, onres, onerr)
-    })
+      this.client.inviteToConference(group, members, onres, onerr);
+    });
   }
 
-  acceptFile (file) {
+  acceptFile(file) {
     return new Promise((onres, onerr) => {
-      const xhr = new XMLHttpRequest()
-      xhr.responseType = 'blob'
-      xhr.onload = function (ev) {
-        if (this.status === 200) onres(this.response)
-      }
-      this.client.acceptFileWithXhr(file, xhr, onerr)
-    })
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = function(ev) {
+        if (this.status === 200) onres(this.response);
+      };
+      this.client.acceptFileWithXhr(file, xhr, onerr);
+    });
   }
 
-  rejectFile (file) {
+  rejectFile(file) {
     return new Promise((onres, onerr) => {
-      this.client.cancelFile(file, onerr)
-      onres()
-    })
+      this.client.cancelFile(file, onerr);
+      onres();
+    });
   }
 
-  async sendFile (buddy, file) {
-    const target = {user_id: buddy}
-    const files = [file]
-    const form = {elements: {name: 'file', files}}
-    const input = {files, form}
+  async sendFile(buddy, file) {
+    const target = { user_id: buddy };
+    const files = [file];
+    const form = { elements: { name: 'file', files } };
+    const input = { files, form };
 
-    const res = await new Promise(
-      (onres, onerr) => this.client.sendFile(
-        target, input, onres, onerr
-      )
-    )
+    const res = await new Promise((onres, onerr) =>
+      this.client.sendFile(target, input, onres, onerr),
+    );
 
     return {
       file: {
@@ -405,22 +419,20 @@ class UC extends EventEmitter {
         name: res.fileInfo.name,
         size: res.fileInfo.size,
         transferPercent: res.fileInfo.progress,
-        transferWaiting: res.fileInfo.status === 0 ||
-                         res.fileInfo.status === 1,
+        transferWaiting: res.fileInfo.status === 0 || res.fileInfo.status === 1,
         transferStarted: res.fileInfo.status === 2,
         transferSuccess: res.fileInfo.status === 3,
-        transferStopped: res.fileInfo.status === 4 ||
-                         res.fileInfo.status === 5,
-        transferFailure: res.fileInfo.status === 6
+        transferStopped: res.fileInfo.status === 4 || res.fileInfo.status === 5,
+        transferFailure: res.fileInfo.status === 6,
       },
       chat: {
         id: res.text_id,
         file: res.fileInfo.file_id,
         creator: this.client.getProfile().user_id,
-        created: res.ltime
-      }
-    }
+        created: res.ltime,
+      },
+    };
   }
 }
 
-export default new UC()
+export default new UC();

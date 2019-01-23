@@ -1,7 +1,7 @@
-import {Platform, Text, TextInput, KeyboardAvoidingView} from 'react-native'
+import { Platform, Text, TextInput, KeyboardAvoidingView } from 'react-native';
 
-const scale = 0.9
-export const rem = (size) => size * scale;
+const scale = 0.9;
+export const rem = size => size * scale;
 
 export const std = {
   color: {
@@ -21,52 +21,52 @@ export const std = {
     notice: '#FF9500',
     notify: '#FEFEFE',
     action: '#007aff',
-    active: '#4CD964'
+    active: '#4CD964',
   },
   textSize: {
     sm: rem(12),
     md: rem(16),
-    lg: rem(20)
+    lg: rem(20),
   },
   iconSize: {
     sm: rem(18),
     md: rem(24),
-      //md: rem(30),
-    lg: rem(26)
+    //md: rem(30),
+    lg: rem(26),
   },
   gap: {
     sm: rem(4),
     md: rem(8),
-    lg: rem(12)
+    lg: rem(12),
   },
   font: {
     text: Platform.select({
       ios: 'RobotoLight',
       web: 'RobotoLight',
-      android: 'text-light'
+      android: 'text-light',
     }),
     icon: Platform.select({
       ios: 'feather',
       web: 'feather',
-	  android: 'feather'
-    })
-  }
-}
+      android: 'feather',
+    }),
+  },
+};
 
 Text.defaultProps = {
   ...Text.defaultProps,
-  numberOfLines: 1
-}
+  numberOfLines: 1,
+};
 
 TextInput.defaultProps = {
   ...TextInput.defaultProps,
   numberOfLines: 1,
   autoCorrect: false,
   autoCapitalize: 'none',
-  underlineColorAndroid: 'transparent'
-}
+  underlineColorAndroid: 'transparent',
+};
 
 KeyboardAvoidingView.defaultProps = {
   ...KeyboardAvoidingView.defaultProps,
-  behavior: Platform.OS === 'ios' ? 'padding' : null
-}
+  behavior: Platform.OS === 'ios' ? 'padding' : null,
+};

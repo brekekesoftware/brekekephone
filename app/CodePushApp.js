@@ -5,9 +5,10 @@ import App from './index';
 import isWakeupByPush from './push-notification/isWakeupByPush';
 
 // Staging keys:
-const CODEPUSH_DEPLOYMENT_KEY = Platform.OS === 'ios'
-  ? 'KSjV3ZwUrK1lmgMOH_XGYj_qAovk887dddad-fc48-4390-a39d-5f011e36c097'
-  : 'INA8bgEBKIzZAuEEVUE5h3DTJ4pG887dddad-fc48-4390-a39d-5f011e36c097';
+const CODEPUSH_DEPLOYMENT_KEY =
+  Platform.OS === 'ios'
+    ? 'KSjV3ZwUrK1lmgMOH_XGYj_qAovk887dddad-fc48-4390-a39d-5f011e36c097'
+    : 'INA8bgEBKIzZAuEEVUE5h3DTJ4pG887dddad-fc48-4390-a39d-5f011e36c097';
 
 // Production keys:
 // const CODEPUSH_DEPLOYMENT_KEY = Platform.OS === 'ios'
