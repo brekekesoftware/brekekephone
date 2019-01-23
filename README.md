@@ -4,6 +4,16 @@
   - `%USERPROFILE%\AppData\Local\Android\Sdk\tools`
   - `%USERPROFILE%\AppData\Local\Android\Sdk\tools\bin`
 
+```sh
+# Install node packages
+# IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
+cd \path\to\test-brekeke-phone
+npm install
+
+# Remove .babelrc file in jssip
+del node_modules\jssip\.babelrc
+```
+
 ##### Run and debug app in Android Emulator:
 - To create a virtual device:
   - Option 1: Using Android Studio: Go to `Tools > AVD Manager` to install a new virtual device.
@@ -19,7 +29,11 @@
 - Start the react native bundle at the project root: `react-native run-android`.
 
 ##### Run and debug app in a real device:
-- Follow the instruction at https://facebook.github.io/react-native/docs/running-on-device#running-your-app-on-android-devices to run and debug the app in a real device.
+```sh
+adb devices
+adb -s DEVICE_ID reverse tcp:8081 tcp:8081
+react-native run-android --deviceId=DEVICE_ID
+```
 
 ##### Build the app in release mode and install it in the real device:
 - At the project root execute: `cd android && gradlew clean && gradlew assembleRelease`.
@@ -46,13 +60,11 @@ react-native: 0.55.4
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd /path/to/test-brekeke-phone
 npm install
+# Install CocoaPods if you haven't had it
+sudo gem install cocoapods
 # Try to build the app once and fix build errors
 react-native run-ios
 ./configure-ios.sh
-# Install CocoaPods if you haven't had it
-sudo gem install cocoapods
-# Install pods
-cd ios && pod install && cd ..
 ```
 
 - Configure react-native-voip-push-notification: follow the steps in https://github.com/ianlin/react-native-voip-push-notification#ios

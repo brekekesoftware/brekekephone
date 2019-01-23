@@ -57,7 +57,7 @@ class View extends Component {
     const { pbxUserById, ucUserById, searchText } = this.props;
     const searchTextLC = searchText.toLowerCase();
 
-    const userId = id.toLowerCase();
+    const userId =id && id.toLowerCase();
 
     let pbxUserName;
     const pbxUser = pbxUserById[id];
