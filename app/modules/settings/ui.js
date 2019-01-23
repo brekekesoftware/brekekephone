@@ -280,7 +280,7 @@ const Chat = pure((p) => (<NopParent>
     <CustomTextInput style={st.fieldInput}
       placeholder='Type your mood'
       selectTextOnFocus={true}
-      value={p.mood}
+      value={typeof p.mood === 'string' ? p.mood : ''}
       onChangeText={p.setMood}
       onSubmitEditing={p.submitMood}
     />
