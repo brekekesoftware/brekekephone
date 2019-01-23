@@ -209,7 +209,7 @@ const PBX = pure((p) => (<Fragment>
       value={p.password}
       onChangeText={p.setPassword}
       onSubmitEditing={p.submit}
-               password={true}
+               password="true"
     />
   </View>
 </Fragment>))

@@ -3,13 +3,13 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "start:app": "webpack-dev-server --config web/webpack.js &",
-    "start:storybook": "start-storybook -p 9001 -c ./storybook/web & storybook start -p 7001 -c ./storybook/native &",
-    "build:ios": "rm -rf dist/ios && mkdir -p dist/ios && react-native bundle --platform ios --entry-file index.native.js --bundle-output dist/ios/main.jsbundle --assets-dest dist/ios/ --dev false",
-    "codepush:ios": "code-push release brekeke-testphone-ios dist/ios 0.0.1",
-    "build:app": "webpack -p --config web/webpack.js",
+    "start:web": "webpack-dev-server --config web/webpack.js",
+    "build:web": "webpack -p --config web/webpack.js",
+    "build:web:dev": "webpack --config web/webpack.js",
+    "start:storybook:web": "start-storybook -p 9001 -c ./storybook/web",
+    "start:storybook:native": "start-storybook -p 7001 -c ./storybook/native",
     "build:storybook": "build-storybook -c storybook/web -o dist/storybook",
-    "build:app2": "webpack --config web/webpack.js"
+    "build:ios": "rm -rf dist/ios && mkdir -p dist/ios && react-native bundle --platform ios --entry-file index.native.js --bundle-output dist/ios/main.jsbundle --assets-dest dist/ios/ --dev false"
   },
   "dependencies": {
     "@thenewvu/immutable": "1.0.0",
@@ -17,6 +17,7 @@
     "debounce": "1.1.0",
     "eventemitter3": "3.0.0",
     "history": "4.6.3",
+    "jssip": "3.2.15",
     "lodash.get": "4.4.2",
     "lodash.omit": "4.5.0",
     "lodash.pick": "4.4.0",
@@ -42,6 +43,7 @@
     "shortid": "2.2.8"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.3.1",
     "@storybook/react": "3.3.9",
     "@storybook/react-native": "3.3.9",
     "babel-plugin-syntax-dynamic-import": "6.18.0",
@@ -52,6 +54,8 @@
     "babel-preset-react": "6.24.1",
     "copy-webpack-plugin": "4.3.1",
     "faker": "4.1.0",
+    "json5": "2.1.0",
+    "prettier": "1.16.0",
     "webpack": "3.10.0",
     "webpack-dev-server": "2.11.2"
   },

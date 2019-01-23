@@ -1,7 +1,7 @@
 {
   presets: [
     // In web/webpack.js babel config we should remove this
-    //		and use the presets for web build
+    //    and use the presets for web build
     'react-native',
   ],
   plugins: [

@@ -232,7 +232,7 @@ const User = pure((p) => (
     <View style={st.user}>
         {p.chatEnabled && (
             <Image style={st.userAvatar}
-                   source={{uri: p.avatar, cache: true}}
+                   source={{uri: p.avatar}}
             />
         )}
         <View style={st.userBody}>
