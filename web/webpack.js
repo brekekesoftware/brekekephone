@@ -20,6 +20,7 @@ module.exports = {
           path.join(cwd, './app'),
           path.join(cwd, './index.web.js'),
           // Other node modules need to be transpiled:
+          path.join(cwd, './node_modules/jssip'),
           path.join(cwd, './node_modules/react-native-fcm'),
           path.join(cwd, './node_modules/react-native-progress-circle'),
           path.join(cwd, './node_modules/react-router-native'),
