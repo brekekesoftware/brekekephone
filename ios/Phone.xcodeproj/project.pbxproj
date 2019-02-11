@@ -60,6 +60,7 @@
 		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
 		9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */; };
 		9C9E4AAD21C16C2600BF913A /* incallmanager_ringtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */; };
+		9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CBF72CB221160B800A93F01 /* libRNDocumentPicker.a */; };
 		9CC8493F21F95B6900AC2BA0 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 9CC8491321F95B6900AC2BA0 /* main.jsbundle */; };
 		9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6841FA4F8DC00B85C8A /* libfishhook.a */; };
 		9F12878AE4DF4557A16A4C23 /* text.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6CD3AC7F4BF44E6CBF51C8F0 /* text.ttf */; };
@@ -370,6 +371,13 @@
 			remoteGlobalIDString = 23D512051CC765E500845BEE;
 			remoteInfo = RNVoipPushNotification;
 		};
+		9CBF72CA221160B800A93F01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E01DD9DB1D2311A600C39062;
+			remoteInfo = RNDocumentPicker;
+		};
 		9CD99C2C21C15DF8009B8736 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */;
@@ -454,6 +462,7 @@
 		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../app/modules/call-voices/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
 		9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../app/modules/call-voices/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
+		9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDocumentPicker.xcodeproj; path = "../node_modules/react-native-document-picker/ios/RNDocumentPicker.xcodeproj"; sourceTree = "<group>"; };
 		9CC8491321F95B6900AC2BA0 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = main.jsbundle; path = ../dist/ios/main.jsbundle; sourceTree = "<group>"; };
 		9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = "<group>"; };
@@ -477,6 +486,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */,
 				9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */,
 				9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
@@ -709,6 +719,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */,
 				9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */,
 				846C98D11F16087E00696596 /* RCTWebRTC.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
@@ -828,6 +839,14 @@
 			isa = PBXGroup;
 			children = (
 				9C31A4B021D5098F000CB78F /* libRNVoipPushNotification.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CBF729D221160B800A93F01 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9CBF72CB221160B800A93F01 /* libRNDocumentPicker.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -956,6 +975,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
 						};
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -1045,6 +1067,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 9CBF729D221160B800A93F01 /* Products */;
+					ProjectRef = 9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */;
 				},
 				{
 					ProductGroup = 9C31A4AC21D5098F000CB78F /* Products */;
@@ -1347,6 +1373,13 @@
 			fileType = archive.ar;
 			path = libRNVoipPushNotification.a;
 			remoteRef = 9C31A4AF21D5098F000CB78F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9CBF72CB221160B800A93F01 /* libRNDocumentPicker.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNDocumentPicker.a;
+			remoteRef = 9CBF72CA221160B800A93F01 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9CD99C2D21C15DF8009B8736 /* libPods-Phone.a */ = {
