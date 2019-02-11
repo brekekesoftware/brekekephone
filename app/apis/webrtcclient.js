@@ -1370,7 +1370,8 @@ if (!window.Brekeke.WebrtcClient) {
         session,
         videoClientSession,
         videoClientSessionId,
-        videoClientSessionTable;
+        videoClientSessionTable,
+        user;
 
       sessionId = string(sessionId) || this._getLatestSessionId();
       session = this._sessionTable[sessionId];
