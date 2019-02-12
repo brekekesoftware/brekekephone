@@ -20,7 +20,7 @@ del node_modules\jssip\.babelrc
   - Option 2: Using command line tool: Follow the instruction at: https://developer.android.com/studio/command-line/avdmanager
 - To run the virtual device:
   - Option 1: Using Android Studio: In AVD Manager, click the Run button on the Emulator we want to run.
-  - Option 2: Using command line tool: First `cd %USERPROFILE%\AppData\Local\Android\Sdk\tools`. Then execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it.
+  - Option 2: Using command line tool: First `cd %USERPROFILE%\AppData\Local\Android\Sdk\emulator`. Then execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it.
   - Caveat: If we can not run the emulator and it throws an error like: `Emulator: ERROR: x86 emulation currently requires hardware acceleration!`. Try to follow these steps to fix:
     - In Android Studio, go to SDK Manager and make sure the option `Intel x86 Emulator Accelerator` is checked.
     - Open folder `%USERPROFILE%\AppData\Local\Android\sdk\extras\intel\Hardware_Accelerated_Execution_Manager\`.
