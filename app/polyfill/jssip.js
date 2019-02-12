@@ -1,3 +1,3 @@
-import JsSIP from 'jssip';
+import JsSIP from 'jssip/lib/JsSIP';
 
 window.JsSIP = window.JsSIP || JsSIP;
