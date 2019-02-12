@@ -38,7 +38,7 @@
     "react-native-progress-circle": "2.0.0",
     "react-native-voip-push-notification": "1.1.2",
     "react-native-web": "0.8.6",
-    "react-native-webrtc": "github:thenewvu/react-native-webrtc#brekeke",
+    "react-native-webrtc": "github:namnm/react-native-webrtc#brekeke",
     "react-redux": "5.0.4",
     "react-router-native": "4.2.0",
     "react-router-redux": "5.0.0-alpha.9",
