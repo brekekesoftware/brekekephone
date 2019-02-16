@@ -39,7 +39,6 @@
 		2D16E6881FA4F8E400B85C8A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6891FA4F8E400B85C8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* PhoneTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* PhoneTests.m */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
-		72A10B32EC2C7B705B2B0C68 /* libPods-Phone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A86D685CF0BF174538B265A /* libPods-Phone.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8437F373202F82CA00536C99 /* text-bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8437F372202F82B600536C99 /* text-bold.ttf */; };
 		846C98D91F160BF500696596 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846C98D71F160A9500696596 /* WebRTC.framework */; };
@@ -378,13 +377,6 @@
 			remoteGlobalIDString = E01DD9DB1D2311A600C39062;
 			remoteInfo = RNDocumentPicker;
 		};
-		9CD99C2C21C15DF8009B8736 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 04223E69D13FFC1B851B5443BE080483;
-			remoteInfo = "Pods-Phone";
-		};
 		ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
@@ -431,8 +423,6 @@
 		2D02E4901E0B4A5D006451C7 /* Phone-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Phone-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4B93D528A4326AB6D6A99 /* libCodePush.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libCodePush.a; sourceTree = "<group>"; };
-		3A6379D10205755E0939E514 /* Pods-Phone.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Phone.staging.xcconfig"; path = "Pods/Target Support Files/Pods-Phone/Pods-Phone.staging.xcconfig"; sourceTree = "<group>"; };
-		3A86D685CF0BF174538B265A /* libPods-Phone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Phone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		60A48DF5263246A5B72C136B /* text-italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "text-italic.ttf"; path = "../app/fonts/text-italic.ttf"; sourceTree = "<group>"; };
 		6CD3AC7F4BF44E6CBF51C8F0 /* text.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = text.ttf; path = ../app/fonts/text.ttf; sourceTree = "<group>"; };
@@ -464,12 +454,9 @@
 		9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../app/modules/call-voices/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
 		9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDocumentPicker.xcodeproj; path = "../node_modules/react-native-document-picker/ios/RNDocumentPicker.xcodeproj"; sourceTree = "<group>"; };
 		9CC8491321F95B6900AC2BA0 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = main.jsbundle; path = ../dist/ios/main.jsbundle; sourceTree = "<group>"; };
-		9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = "<group>"; };
 		A1C95106384D42D7BBDFB985 /* feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = feather.ttf; path = ../app/fonts/feather.ttf; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
-		B42C3871A13C17D60F3727AB /* Pods-Phone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Phone.release.xcconfig"; path = "Pods/Target Support Files/Pods-Phone/Pods-Phone.release.xcconfig"; sourceTree = "<group>"; };
-		E2226E6C1F8023B7785F21E9 /* Pods-Phone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Phone.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Phone/Pods-Phone.debug.xcconfig"; sourceTree = "<group>"; };
 		F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libKCKeepAwake.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -517,7 +504,6 @@
 				28730D709D3A4540BFDDB1D3 /* libCodePush.a in Frameworks */,
 				2CA7EE2DB0E140D38A238382 /* libz.tbd in Frameworks */,
 				E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */,
-				72A10B32EC2C7B705B2B0C68 /* libPods-Phone.a in Frameworks */,
 				A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -678,22 +664,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1BCC5714552A7E4B3B4067EE /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				E2226E6C1F8023B7785F21E9 /* Pods-Phone.debug.xcconfig */,
-				B42C3871A13C17D60F3727AB /* Pods-Phone.release.xcconfig */,
-				3A6379D10205755E0939E514 /* Pods-Phone.staging.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				9C31A4B121D50BE1000CB78F /* PushKit.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
-				3A86D685CF0BF174538B265A /* libPods-Phone.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -720,7 +695,6 @@
 			isa = PBXGroup;
 			children = (
 				9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */,
-				9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */,
 				846C98D11F16087E00696596 /* RCTWebRTC.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -760,7 +734,6 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				0B217CCCB90143119BEB3D1E /* Resources */,
 				8437F33B202F7FAA00536C99 /* Recovered References */,
-				1BCC5714552A7E4B3B4067EE /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -851,14 +824,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9CD99C1C21C15DF8009B8736 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9CD99C2D21C15DF8009B8736 /* libPods-Phone.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		ADBDB9201DFEBF0600ED6528 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -893,7 +858,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Phone" */;
 			buildPhases = (
-				7E0770985C85046361936711 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -1011,10 +975,6 @@
 				{
 					ProductGroup = 849545A11F9FA25F000E4486 /* Products */;
 					ProjectRef = 74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */;
-				},
-				{
-					ProductGroup = 9CD99C1C21C15DF8009B8736 /* Products */;
-					ProjectRef = 9CD99C1B21C15DF8009B8736 /* Pods.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -1382,13 +1342,6 @@
 			remoteRef = 9CBF72CA221160B800A93F01 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9CD99C2D21C15DF8009B8736 /* libPods-Phone.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libPods-Phone.a";
-			remoteRef = 9CD99C2C21C15DF8009B8736 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1467,28 +1420,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
-		};
-		7E0770985C85046361936711 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Phone-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		84B0B5D91EC0175000805EB7 /* Exclude Simulator-related Archs */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1642,7 +1573,6 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E2226E6C1F8023B7785F21E9 /* Pods-Phone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1696,7 +1626,6 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B42C3871A13C17D60F3727AB /* Pods-Phone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2000,7 +1929,6 @@
 		};
 		849545E01F9FA30D000E4486 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A6379D10205755E0939E514 /* Pods-Phone.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

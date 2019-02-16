@@ -64,8 +64,6 @@ react-native: 0.55.4
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd /path/to/test-brekeke-phone
 npm install
-# Install CocoaPods if you haven't had it
-sudo gem install cocoapods
 # Try to build the app once and fix build errors
 react-native run-ios
 ./configure-ios.sh

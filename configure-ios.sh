@@ -15,8 +15,3 @@ cp ios/build/Build/Products/Debug-iphonesimulator/libfishhook.a node_modules/rea
 
 # Error `... preset @babel/env not found ... jssip`
 rm -f node_modules/jssip/.babelrc
-
-# Install pods if any
-cd ios
-pod install
-cd ..
