@@ -122,6 +122,7 @@ const st = StyleSheet.create({
     borderRadius: std.iconSize.md,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: std.color.shade4,
+    marginLeft: std.gap.sm,
     marginRight: std.gap.lg,
   },
   pickFileIcon: {
@@ -379,6 +380,9 @@ const Chats = p => (
 
 const Edit = pure(p => (
   <View style={st.edit}>
+    <Button onPress={p.pickFile} style={st.pickFile}>
+      <Text style={st.pickFileIcon}>icon_paperclip</Text>
+    </Button>
     <TextInput
       style={st.editTextInput}
       placeholder="Type your message"

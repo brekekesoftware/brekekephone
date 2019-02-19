@@ -56,6 +56,7 @@
 		84D1D1181EA9B99000BC7305 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10E1EA9B99000BC7305 /* VideoToolbox.framework */; };
 		84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */; };
 		84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */; };
+		9C1D8C5F221BE0190071279B /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1D8C5D221BDFED0071279B /* libRNFetchBlob.a */; };
 		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
 		9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */; };
 		9C9E4AAD21C16C2600BF913A /* incallmanager_ringtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */; };
@@ -363,6 +364,13 @@
 			remoteGlobalIDString = F886647B1F4ADB500036D01B;
 			remoteInfo = "CodePush-tvOS";
 		};
+		9C1D8C5C221BDFED0071279B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C1D8C2E221BDFED0071279B /* RNFetchBlob.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A15C300E1CD25C330074CB35;
+			remoteInfo = RNFetchBlob;
+		};
 		9C31A4AF21D5098F000CB78F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */;
@@ -449,6 +457,7 @@
 		84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNInCallManagerBridge.m; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManagerBridge.m"; sourceTree = "<group>"; };
 		85551F28DB7E4D349CE40F41 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8559968DE4AC494E99480892 /* CodePush.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
+		9C1D8C2E221BDFED0071279B /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "../node_modules/rn-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; };
 		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../app/modules/call-voices/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
 		9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../app/modules/call-voices/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
@@ -473,6 +482,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C1D8C5F221BE0190071279B /* libRNFetchBlob.a in Frameworks */,
 				9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */,
 				9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */,
 				9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */,
@@ -694,6 +704,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9C1D8C2E221BDFED0071279B /* RNFetchBlob.xcodeproj */,
 				9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */,
 				846C98D11F16087E00696596 /* RCTWebRTC.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
@@ -806,6 +817,14 @@
 				84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */,
 			);
 			name = RNInCallManager;
+			sourceTree = "<group>";
+		};
+		9C1D8C2F221BDFED0071279B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C1D8C5D221BDFED0071279B /* libRNFetchBlob.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		9C31A4AC21D5098F000CB78F /* Products */ = {
@@ -1031,6 +1050,10 @@
 				{
 					ProductGroup = 9CBF729D221160B800A93F01 /* Products */;
 					ProjectRef = 9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */;
+				},
+				{
+					ProductGroup = 9C1D8C2F221BDFED0071279B /* Products */;
+					ProjectRef = 9C1D8C2E221BDFED0071279B /* RNFetchBlob.xcodeproj */;
 				},
 				{
 					ProductGroup = 9C31A4AC21D5098F000CB78F /* Products */;
@@ -1326,6 +1349,13 @@
 			fileType = archive.ar;
 			path = libCodePush.a;
 			remoteRef = 849545D91F9FA25F000E4486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9C1D8C5D221BDFED0071279B /* libRNFetchBlob.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFetchBlob.a;
+			remoteRef = 9C1D8C5C221BDFED0071279B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9C31A4B021D5098F000CB78F /* libRNVoipPushNotification.a */ = {

@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { Platform } from 'react-native';
 import UCClient from './ucclient';
 
 class UC extends EventEmitter {
@@ -403,14 +404,42 @@ class UC extends EventEmitter {
     });
   }
 
-  async sendFile(buddy, file) {
-    const target = { user_id: buddy };
-    const files = [file];
-    const form = { elements: { name: 'file', files } };
-    const input = { files, form };
+  async sendFile(user_id, file) {
+    let input = null;
+    if (Platform.OS === 'web') {
+      input = document.createElement('input');
+      input.type = 'file';
+      input.name = 'file';
+      input.files = (() => {
+        let b = null;
+        if (window.DataTransfer) {
+          b = new DataTransfer();
+        } else if (window.ClipboardEvent) {
+          b = new ClipboardEvent('').clipboardData;
+        } else {
+          throw new Error('Can not set input.files');
+        }
+        b.items.add(file);
+        return b.files;
+      })();
+      const form = document.createElement('form');
+      form.appendChild(input);
+    } else {
+      const fd = new FormData();
+      fd.append('file', {
+        ...file,
+        type: 'multipart/form-data',
+      });
+      input = {
+        // Add `form` property because ucclient requires it
+        form: 'This is not a form element, see app/apis/uc.js for detail',
+        files: [file],
+        __rnFormData: fd, // Will be used in ./ucclient.js _recvRecvFile method
+      };
+    }
 
     const res = await new Promise((onres, onerr) =>
-      this.client.sendFile(target, input, onres, onerr),
+      this.client.sendFile({ user_id }, input, onres, onerr),
     );
 
     return {

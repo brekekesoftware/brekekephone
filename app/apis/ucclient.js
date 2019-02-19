@@ -2243,8 +2243,8 @@
             sendTextParams,
             function(result) {
               // FormData
-              var fd = null;
-              if (window.FormData) {
+              var fd = input.__rnFormData; // __rnFormData from react native ./uc.js
+              if (!fd && window.FormData) {
                 // FormData enabled
                 // upload with XHR + FormData
                 input.form.method = 'POST';

@@ -43,6 +43,7 @@
     "react-router-native": "4.2.0",
     "react-router-redux": "5.0.0-alpha.9",
     "redux-persist": "5.7.0",
+    "rn-fetch-blob": "0.10.15",
     "shortid": "2.2.8"
   },
   "devDependencies": {
