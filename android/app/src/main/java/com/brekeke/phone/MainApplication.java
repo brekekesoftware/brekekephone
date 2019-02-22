@@ -13,9 +13,8 @@ import com.facebook.soloader.SoLoader;
 import com.google.firebase.FirebaseApp;
 import com.microsoft.codepush.react.CodePush;
 import com.oney.WebRTCModule.WebRTCModulePackage;
-import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
-import com.RNFetchBlob.RNFetchBlobPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
+import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -37,8 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
         new InCallManagerPackage(),
         new KCKeepAwakePackage(),
         new MainReactPackage(),
-        new ReactNativeDocumentPicker(),
-        new RNFetchBlobPackage(),
+        new DocumentPickerPackage(),
         new WebRTCModulePackage()
       );
     }

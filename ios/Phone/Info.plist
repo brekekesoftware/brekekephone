@@ -33,10 +33,6 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>This permission is for executing video calls</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This permission is for executing voice calls</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>icon.ttf</string>
@@ -76,5 +72,13 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Capture a new photo</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Capture a new video</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Select from photo library</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save photo to photo library</string>
 </dict>
 </plist>

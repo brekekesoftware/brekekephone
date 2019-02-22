@@ -82,4 +82,4 @@ react-native run-ios
 
 ##### TODO
 - [] Add CODEPUSH_KEY in BuildConfig
-- [] Use react-native-fs instead of rn-fetch-blob
+- [] Add a loop and use RNFS.exist to check file exists before write
