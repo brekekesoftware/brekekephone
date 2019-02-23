@@ -21,16 +21,18 @@ del node_modules\jssip\.babelrc
 - To run the virtual device:
   - Option 1: Using Android Studio: In AVD Manager, click the Run button on the Emulator we want to run.
   - Option 2: Using command line tool: First `cd %USERPROFILE%\AppData\Local\Android\Sdk\emulator`. Then execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it.
-  - Caveat:
-    - If we can not run the emulator and it throws an error like: `Emulator: ERROR: x86 emulation currently requires hardware acceleration!`. Try to follow these steps to fix:
-      - In Android Studio, go to SDK Manager and make sure the option `Intel x86 Emulator Accelerator` is checked.
-      - Open folder `%USERPROFILE%\AppData\Local\Android\sdk\extras\intel\Hardware_Accelerated_Execution_Manager\`.
-      - Open `intelhaxm-android.exe`. If it shows that the installation is completed, we need to click the remove button to remove it, then reopen and reinstall it again.
-      - When reinstalling, if it shows an error like: `... Intel Virtualization Technology (VT-x) is not turned on`: We need to restart the computer, enter the BIOS and configure the CPU to support Virtualization. After that try to reopen and reinstall `intelhaxm-android.exe` again.
-    - The device starts up but the Command Line shows endless loop of `VCPU shutdown request`
-      - This is a bug of Intel HAXM: https://issuetracker.google.com/issues/37124550
-      - Remove the old HAXM then download and reinstall the latest HAXM version should fix this.
 - Start the react native bundle at the project root: `react-native run-android`.
+
+- Some errors:
+  - If we can not run the emulator and it throws an error like: `Emulator: ERROR: x86 emulation currently requires hardware acceleration!`. Try to follow these steps to fix:
+    - In Android Studio, go to SDK Manager and make sure the option `Intel x86 Emulator Accelerator` is checked.
+    - Open folder `%USERPROFILE%\AppData\Local\Android\sdk\extras\intel\Hardware_Accelerated_Execution_Manager\`.
+    - Open `intelhaxm-android.exe`. If it shows that the installation is completed, we need to click the remove button to remove it, then reopen and reinstall it again.
+    - When reinstalling, if it shows an error like: `... Intel Virtualization Technology (VT-x) is not turned on`: We need to restart the computer, enter the BIOS and configure the CPU to support Virtualization. After that try to reopen and reinstall `intelhaxm-android.exe` again.
+  - The device starts up but the Command Line shows endless loop of `VCPU shutdown request`
+    - This is a bug of Intel HAXM: https://issuetracker.google.com/issues/37124550
+    - Remove the old HAXM then download and reinstall the latest HAXM version should fix this.
+  - `You have not accepted the license agreements of the following SDK components`: Execute `cd %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin` then `sdkmanager --licenses` then press y and enter for all licenses.
 
 ##### Run and debug app in a real device:
 ```sh

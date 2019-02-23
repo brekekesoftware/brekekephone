@@ -3,6 +3,7 @@ package com.brekeke.phone;
 import android.app.Application;
 import java.util.Arrays;
 import java.util.List;
+import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
@@ -13,8 +14,10 @@ import com.facebook.soloader.SoLoader;
 import com.google.firebase.FirebaseApp;
 import com.microsoft.codepush.react.CodePush;
 import com.oney.WebRTCModule.WebRTCModulePackage;
+import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
+import org.reactnative.camera.RNCameraPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -32,11 +35,14 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
+        new DocumentPickerPackage(),
         new FIRMessagingPackage(),
         new InCallManagerPackage(),
         new KCKeepAwakePackage(),
         new MainReactPackage(),
-        new DocumentPickerPackage(),
+        new ReactVideoPackage(),
+        new RNCameraPackage(),
+        new RNFSPackage(),
         new WebRTCModulePackage()
       );
     }
