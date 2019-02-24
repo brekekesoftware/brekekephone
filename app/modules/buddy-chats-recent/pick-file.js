@@ -4,7 +4,6 @@ import * as ImagePicker from 'react-native-full-image-picker';
 import ActionSheet from 'react-native-general-actionsheet';
 
 ActionSheet.useActionSheetIOS = true;
-ImagePicker.AlbumListView.autoConvertPath = true;
 
 const actionSheetOptions = {
   options: [
