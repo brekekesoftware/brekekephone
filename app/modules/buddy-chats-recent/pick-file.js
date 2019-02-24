@@ -4,6 +4,7 @@ import * as ImagePicker from 'react-native-full-image-picker';
 import ActionSheet from 'react-native-general-actionsheet';
 
 ActionSheet.useActionSheetIOS = true;
+ImagePicker.AlbumListView.autoConvertPath = true;
 
 const actionSheetOptions = {
   options: [
@@ -76,8 +77,29 @@ async function pickFileNative(cb) {
     uri
       .split(/[\\/]/g)
       .pop()
-      .replace(/\?[^.]+$/, '');
+      .replace(/\?.+$/, '');
   let size = file.fileSize || file.filesize || file.size || 0;
+  // Fix name has no extension
+  const ext =
+    '.' +
+    uri
+      .split('.')
+      .pop()
+      .replace(/\?.+$/, '');
+  if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
+    name = name + ext;
+  }
+  // Fix size stat from uri
+  if (!size) {
+    try {
+      const RNFS = require('react-native-fs');
+      const stat = await RNFS.stat(uri);
+      size = stat.size;
+    } catch (err) {
+      console.warn('pickFileNative RNFS.stat', err);
+      // TODO handle this case?
+    }
+  }
   //
   cb({ uri, name, size });
 }
