@@ -23,7 +23,6 @@ module.exports = {
           path.join(cwd, './node_modules/jssip'),
           /react-native.+/,
           /react-.+native/,
-          /rn-.+/,
         ],
         use: {
           loader: 'babel-loader',

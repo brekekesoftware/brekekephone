@@ -1,6 +1,12 @@
 rootProject.name = 'Phone'
 include ':app'
 
+include ':react-native-camera'
+project(':react-native-camera').projectDir = new File(
+  rootProject.projectDir,
+  '../node_modules/react-native-camera/android'
+)
+
 include ':react-native-code-push'
 project(':react-native-code-push').projectDir = new File(
   rootProject.projectDir,
@@ -19,6 +25,12 @@ project(':react-native-fcm').projectDir = new File(
   '../node_modules/react-native-fcm/android'
 )
 
+include ':react-native-fs'
+project(':react-native-fs').projectDir = new File(
+  rootProject.projectDir,
+  '../node_modules/react-native-fs/android'
+)
+
 include ':react-native-incall-manager'
 project(':react-native-incall-manager').projectDir = new File(
   rootProject.projectDir,
@@ -31,14 +43,14 @@ project(':react-native-keep-awake').projectDir = new File(
   '../node_modules/react-native-keep-awake/android'
 )
 
+include ':react-native-video'
+project(':react-native-video').projectDir = new File(
+  rootProject.projectDir,
+  '../node_modules/react-native-video/android-exoplayer'
+)
+
 include ':react-native-webrtc'
 project(':react-native-webrtc').projectDir = new File(
   rootProject.projectDir,
   '../node_modules/react-native-webrtc/android'
-)
-
-include ':rn-fetch-blob'
-project(':rn-fetch-blob').projectDir = new File(
-  rootProject.projectDir,
-  '../node_modules/rn-fetch-blob/android'
 )
