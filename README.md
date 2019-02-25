@@ -82,6 +82,6 @@ react-native run-ios
 - Check the jsCodeLocation in AppDelegate.m for the correct config
 - Archive and distribute for Ad-hoc / Team distribution
 
-##### TODO
-- [] Add CODEPUSH_KEY in BuildConfig
-- [] Add a loop and use RNFS.exist to check file exists before write
+### TODO
+- [ ] Add CODEPUSH_KEY in BuildConfig
+- [ ] Add a loop and use RNFS.exist to check file exists before write

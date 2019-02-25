@@ -73,30 +73,46 @@ async function pickFileNative(cb) {
   let name =
     file.fileName ||
     file.filename ||
+    file.name ||
     uri
       .split(/[\\/]/g)
       .pop()
       .replace(/\?.+$/, '');
   let size = file.fileSize || file.filesize || file.size || 0;
+  // Fix some issues using RNFS.stat
+  const RNFS = require('react-native-fs');
+  let stat = null;
   // Fix name has no extension
-  const ext =
-    '.' +
-    uri
-      .split('.')
-      .pop()
-      .replace(/\?.+$/, '');
-  if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
-    name = name + ext;
+  let ext = uri
+    .split('.')
+    .pop()
+    .replace(/\?.+$/, '');
+  if (/\W/.test(ext)) {
+    // Invalid extension
+    try {
+      stat = await RNFS.stat(uri);
+      ext = (stat.originalFilepath || stat.path).split('.').pop();
+    } catch (err) {
+      // silent
+    }
+  }
+  if (!/\W/.test(ext)) {
+    ext = '.' + ext;
+    if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
+      name = name + ext;
+    }
   }
   // Fix size stat from uri
   if (!size) {
-    try {
-      const RNFS = require('react-native-fs');
-      const stat = await RNFS.stat(uri);
+    if (!stat) {
+      try {
+        stat = await RNFS.stat(uri);
+      } catch (err) {
+        // silent
+      }
+    }
+    if (stat) {
       size = stat.size;
-    } catch (err) {
-      console.warn('pickFileNative RNFS.stat', err);
-      // TODO handle this case?
     }
   }
   //
