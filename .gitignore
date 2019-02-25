@@ -47,13 +47,9 @@ buck-out/
 # screenshots whenever they are needed.
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/
-
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
-android/app/app-release.apk
-**/*.zip
-**/*~
 
+# Build output
 dist/
-main.jsbundle*

@@ -71,8 +71,6 @@ react-native run-ios
 ./configure-ios.sh
 ```
 
-- Configure react-native-voip-push-notification: follow the steps in https://github.com/ianlin/react-native-voip-push-notification#ios
-
 - In XCode, check all search paths and ensure they have $(inherited) value. Add one if there isn't any, otherwise there will be library linking error, or framework not found error. If any of these kind of errors still happens, add the missing node_module package to the search path.
 
 ##### Build iOS app for distribution

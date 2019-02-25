@@ -136,9 +136,6 @@ android {
     debug {
       buildConfigField "String", "CODEPUSH_KEY", '""' // TODO add codepush key
     }
-    releaseStaging {
-      buildConfigField "String", "CODEPUSH_KEY", '""' // TODO add codepush key
-    }
     release {
       minifyEnabled enableProguardInReleaseBuilds
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
