@@ -2,14 +2,17 @@ import {
   RTCPeerConnection,
   RTCIceCandidate,
   RTCSessionDescription,
-  getUserMedia,
+  MediaStream,
+  MediaStreamTrack,
+  mediaDevices,
 } from 'react-native-webrtc';
 
 window.RTCPeerConnection = window.RTCPeerConnection || RTCPeerConnection;
-window.navigator.getUserMedia = window.navigator.getUserMedia || getUserMedia;
-window.navigator.mediaDevices = window.navigator.mediaDevices || {
-  getUserMedia,
-};
+window.RTCIceCandidate = window.RTCIceCandidate || RTCIceCandidate;
 window.RTCSessionDescription =
   window.RTCSessionDescription || RTCSessionDescription;
-window.RTCIceCandidate = window.RTCIceCandidate || RTCIceCandidate;
+window.MediaStream = window.MediaStream || MediaStream;
+window.MediaStreamTrack = window.MediaStreamTrack || MediaStreamTrack;
+window.navigator.mediaDevices = window.navigator.mediaDevices || mediaDevices;
+window.navigator.getUserMedia =
+  window.navigator.getUserMedia || mediaDevices.getUserMedia;

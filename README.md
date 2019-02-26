@@ -1,3 +1,6 @@
+### Environment
+- Install use yarn instead of npm
+
 ### Android build & debug:
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
   - `%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools`
@@ -8,7 +11,7 @@
 # Install node packages
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd \path\to\test-brekeke-phone
-npm install
+yarn install
 
 # Remove .babelrc file in jssip
 del node_modules\jssip\.babelrc
@@ -65,7 +68,7 @@ react-native: 0.55.4
 # Install node packages
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd /path/to/test-brekeke-phone
-npm install
+yarn install
 # Try to build the app once and fix build errors
 react-native run-ios
 ./configure-ios.sh
