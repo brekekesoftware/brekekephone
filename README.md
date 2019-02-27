@@ -9,9 +9,6 @@
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd \path\to\test-brekeke-phone
 npm install
-
-# Remove .babelrc file in jssip
-del node_modules\jssip\.babelrc
 ```
 
 ##### Run and debug app in Android Emulator:
@@ -66,9 +63,22 @@ react-native: 0.55.4
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd /path/to/test-brekeke-phone
 npm install
-# Try to build the app once and fix build errors
+
+# Error: `... glog-0.3.4 ... 'config.h' file not found`
+# https://github.com/facebook/react-native/issues/14382
+cd node_modules/react-native
+./scripts/ios-install-third-party.sh
+cd ../../
+cd node_modules/react-native/third-party/glog-0.3.4/
+../../scripts/ios-configure-glog.sh
+cd ../../../../
+
+# Try to build the app to generate build folder
 react-native run-ios
-./configure-ios.sh
+
+# Error: `... Build input file cannot be found ... /Libraries/WebSocket/libfishhook.a`
+# https://github.com/facebook/react-native/issues/19569
+cp ios/build/Build/Products/Debug-iphonesimulator/libfishhook.a node_modules/react-native/Libraries/WebSocket/
 ```
 
 - In XCode, check all search paths and ensure they have $(inherited) value. Add one if there isn't any, otherwise there will be library linking error, or framework not found error. If any of these kind of errors still happens, add the missing node_module package to the search path.
