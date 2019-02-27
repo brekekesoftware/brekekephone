@@ -19,7 +19,7 @@
     "debounce": "1.1.0",
     "eventemitter3": "3.0.0",
     "history": "4.6.3",
-    "jssip": "github:namnm/jssip#brekeke",
+    "jssip": "3.3.5",
     "lodash.get": "4.4.2",
     "lodash.omit": "4.5.0",
     "lodash.pick": "4.4.0",

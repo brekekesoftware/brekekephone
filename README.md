@@ -1,6 +1,3 @@
-### Environment
-- Install use yarn instead of npm
-
 ### Android build & debug:
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
   - `%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools`
@@ -11,7 +8,7 @@
 # Install node packages
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd \path\to\test-brekeke-phone
-yarn install
+npm install
 
 # Remove .babelrc file in jssip
 del node_modules\jssip\.babelrc
@@ -68,7 +65,7 @@ react-native: 0.55.4
 # Install node packages
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd /path/to/test-brekeke-phone
-yarn install
+npm install
 # Try to build the app once and fix build errors
 react-native run-ios
 ./configure-ios.sh
@@ -77,7 +74,7 @@ react-native run-ios
 - In XCode, check all search paths and ensure they have $(inherited) value. Add one if there isn't any, otherwise there will be library linking error, or framework not found error. If any of these kind of errors still happens, add the missing node_module package to the search path.
 
 ##### Build iOS app for distribution
-- Build main.jsbundle using command yarn build:ios
+- Build main.jsbundle using command `npm run build:ios`
 - Include the main.jsbundle in the Copy Bundle Resource section if haven't
 - Request for distribution certificate and install it correctly on local machine
 - Check the jsCodeLocation in AppDelegate.m for the correct config
