@@ -178,7 +178,7 @@ class SIP extends EventEmitter {
       console.error(ev);
     });
 
-    this._makeCallOptionsForAndroid = {
+    this._makeCallOptionsForAndoirOrIos = {
       rtcOfferConstraints: {
         mandatory: {
           OfferToReceiveAudio: true,
@@ -238,7 +238,7 @@ class SIP extends EventEmitter {
 
   createSession(number, opts = {}) {
     const options =
-      Platform.OS === 'android' ? this._makeCallOptionsForAndroid : null;
+      Platform.OS === 'android' || Platform.OS === 'ios' ? this._makeCallOptionsForAndoirOrIos : null;
 
     this.phone.makeCall(number, options, opts.videoEnabled, undefined, '');
     this._creatingSessions.__add();
