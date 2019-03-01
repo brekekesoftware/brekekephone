@@ -3396,6 +3396,7 @@ if (!window.Brekeke.WebrtcClient) {
       var index, stream;
 
       stream = e.streams && e.streams[0];
+      stream = stream || e.stream; // Support old onaddstream
       if (stream) {
         if (this._sessionRemoteStreamsTable[videoClientSessionId]) {
           if (this._sessionTable[sessionId]) {
@@ -3452,6 +3453,7 @@ if (!window.Brekeke.WebrtcClient) {
           this._videoClientRtcSession_ontrack,
           [videoClientSessionId, sessionId],
         );
+        e.peerconnection.onaddstream = e.peerconnection.ontrack;
       }
     },
 
