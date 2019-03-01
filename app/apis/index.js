@@ -471,10 +471,6 @@ class APIProvider extends Component {
     this.props.createRunningVideo(ev);
   };
 
-  onSIPVideoSessionCreated = ev => {
-    this.props.createRunningVideo(ev);
-  };
-
   onSIPVideoSessionUpdated = ev => {
     this.props.updateRunningVideo(ev);
   };

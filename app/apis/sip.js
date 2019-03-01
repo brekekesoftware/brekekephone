@@ -238,7 +238,9 @@ class SIP extends EventEmitter {
 
   createSession(number, opts = {}) {
     const options =
-      Platform.OS === 'android' || Platform.OS === 'ios' ? this._makeCallOptionsForAndoirOrIos : null;
+      Platform.OS === 'android' || Platform.OS === 'ios'
+        ? this._makeCallOptionsForAndoirOrIos
+        : null;
 
     this.phone.makeCall(number, options, opts.videoEnabled, undefined, '');
     this._creatingSessions.__add();
