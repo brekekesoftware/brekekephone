@@ -2715,6 +2715,7 @@ if (!window.Brekeke.WebrtcClient) {
         data.session.connection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
+        data.session.connection.onaddstream = data.session.connection.ontrack;
       } else {
         // incoming
         data.session.on(
@@ -2983,6 +2984,7 @@ if (!window.Brekeke.WebrtcClient) {
             this._videoClientRtcSession_ontrack,
             [videoClientSessionId, sessionId],
           );
+          data.session.connection.onaddstream = data.session.connection.ontrack;
         } else {
           // incoming
           data.session.on(
@@ -3284,6 +3286,7 @@ if (!window.Brekeke.WebrtcClient) {
       var index, stream;
 
       stream = e.streams && e.streams[0];
+      stream = stream || e.stream; // Support old onaddstream
       if (stream) {
         if (this._sessionRemoteStreamsTable[sessionId]) {
           index = this._sessionRemoteStreamsTable[sessionId].indexOf(stream);
@@ -3316,6 +3319,7 @@ if (!window.Brekeke.WebrtcClient) {
         e.peerconnection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
+        e.peerconnection.onaddstream = e.peerconnection.ontrack;
       }
     },
     _rtcSession_responseAfterMakeCallWithVideo: function(
