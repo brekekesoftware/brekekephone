@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { createModelView } from '@thenewvu/redux-model';
 import createID from 'shortid';
 import UI from './ui';
-import saveBlob from './save-blob';
-import pickFile from './pick-file';
+import saveBlob from './saveBlob';
+import pickFile from './pickFile';
 import formatChatText_s from '../../util/brekekephone-misc';
 
 const mapGetter = getter => (state, props) => ({

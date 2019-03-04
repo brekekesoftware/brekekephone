@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import * as ImagePicker from 'react-native-full-image-picker';
 import ActionSheet from 'react-native-general-actionsheet';
+import RNFS from 'react-native-fs';
 
 ActionSheet.useActionSheetIOS = true;
 
@@ -44,7 +44,7 @@ const actionSheetHandlers = [
     }),
 ];
 
-async function pickFileNative(cb) {
+const pickFile = async cb => {
   const i = await new Promise(resolve => {
     ActionSheet.showActionSheetWithOptions(actionSheetOptions, resolve);
   });
@@ -80,7 +80,6 @@ async function pickFileNative(cb) {
       .replace(/\?.+$/, '');
   let size = file.fileSize || file.filesize || file.size || 0;
   // Fix some issues using RNFS.stat
-  const RNFS = require('react-native-fs');
   let stat = null;
   // Fix name has no extension
   let ext = uri
@@ -117,20 +116,6 @@ async function pickFileNative(cb) {
   }
   //
   cb({ uri, name, size });
-}
-
-function pickFileWeb(cb) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.onchange = function() {
-    cb(this.files[0]);
-  };
-  input.click();
-}
-
-function pickFile(cb) {
-  const fn = Platform.OS === 'web' ? pickFileWeb : pickFileNative;
-  return fn(cb);
-}
+};
 
 export default pickFile;
