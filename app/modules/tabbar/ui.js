@@ -69,9 +69,9 @@ const Tabbar = p => (
   <View style={st.main}>
     <Books press={p.pressBooks} />
     <Users press={p.pressUsers} />
-    {p.runningIds.length !== 0 && <Calls press={p.pressCallsManage} />}
-    {p.runningIds.length === 0 && <Calls press={p.pressCallsCreate} />}
-    {p.chatsEnabled && <Chats press={p.pressChats} />}
+    {(p.runningIds.length !== 0 && <Calls press={p.pressCallsManage} />) || null}
+    {(p.runningIds.length === 0 && <Calls press={p.pressCallsCreate} />) || null}
+    {(p.chatsEnabled && <Chats press={p.pressChats} />) || null}
     <Settings press={p.pressSettings} />
   </View>
 );
