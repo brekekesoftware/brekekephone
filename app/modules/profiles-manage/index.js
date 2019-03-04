@@ -21,6 +21,25 @@ if (Platform.OS === 'web') {
     p2 = qs.parse(window.location.hash.substr(i).replace(/^\?+/, ''));
   }
   Object.assign(searchParams, p1, p2);
+  // Parse host port
+  searchParams.host = window.location.hostname;
+  searchParams.port = '' + window.location.port;
+  if (searchParams.url) {
+    try {
+      const a = document.createElement('a');
+      a.href = searchParams.url;
+      searchParams.host = a.host;
+      if (a.port) {
+        searchParams.port = a.port;
+      } else if (/^ws:/.test(searchParams.url)) {
+        searchParams.port = '80';
+      } else {
+        searchParams.port = '443';
+      }
+    } catch (err) {
+      // silent
+    }
+  }
 }
 //
 let alreadyHandleSearchParams = false;
@@ -98,6 +117,9 @@ const mapGetter = getter => (state, props) => ({
 const mapAction = action => emit => ({
   createProfile(profile) {
     emit(action.profiles.create(profile));
+  },
+  updateProfile(profile) {
+    emit(action.profiles.update(profile));
   },
 
   routeToProfilesCreate() {
@@ -223,7 +245,15 @@ class View extends Component {
     // _wn
     // _prtenant
     // _pruser
-    const { tenant, user } = searchParams;
+    const {
+      url,
+      tenant,
+      user,
+      _wn,
+      // host port added from above
+      host,
+      port,
+    } = searchParams;
     if (!user || !tenant) {
       return;
     }
@@ -233,7 +263,16 @@ class View extends Component {
     });
     const u = this.props.profileById[uid];
     if (u) {
-      if (u.pbxPassword) {
+      u.url = url;
+      u.accessToken = _wn;
+      if (!u.pbxHostname) {
+        u.pbxHostname = host;
+      }
+      if (!u.pbxPort) {
+        u.pbxPort = port;
+      }
+      this.props.updateProfile(u);
+      if (u.pbxPassword || u.accessToken) {
         this.signin(uid);
       } else {
         this.props.routeToProfileUpdate(uid);
@@ -243,17 +282,22 @@ class View extends Component {
     //
     uid = createID();
     this.props.createProfile({
+      //
+      wsUri: url,
+      //
       id: uid,
       pbxTenant: tenant,
       pbxUsername: user,
       //
-      pbxHostname: '',
-      pbxPort: '',
+      pbxHostname: host,
+      pbxPort: port,
       pbxPassword: '',
       parks: [],
       ucEnabled: false,
       ucHostname: '',
       ucPort: '',
+      //
+      accessToken: _wn,
     });
     this.props.routeToProfileUpdate(uid);
   }
