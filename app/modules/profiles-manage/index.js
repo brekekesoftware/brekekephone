@@ -8,6 +8,22 @@ import FCM, {
   WillPresentNotificationResult,
   NotificationType,
 } from 'react-native-fcm';
+import qs from 'qs';
+import createID from 'shortid';
+
+// Read url search params
+let searchParams = {};
+if (Platform.OS === 'web') {
+  const p1 = qs.parse(window.location.search.replace(/^\?+/, ''));
+  let p2 = {};
+  const i = window.location.hash.indexOf('?');
+  if (i > 0) {
+    p2 = qs.parse(window.location.hash.substr(i).replace(/^\?+/, ''));
+  }
+  Object.assign(searchParams, p1, p2);
+}
+//
+let alreadyHandleSearchParams = false;
 
 let PROFILES_MANAGE_VIEW = null;
 
@@ -23,7 +39,6 @@ function parseCustomNotification_s(notif) {
   if (typeof customNotif == 'string') {
     customNotif = JSON.parse(customNotif);
   }
-
   const currentTime = new Date().getTime();
   const expire = currentTime + pushNotifTimeout;
   customNotif['brekekephone.notif.expire'] = expire;
@@ -53,7 +68,6 @@ function registerFcmAppListener() {
       if (AppState.currentState !== 'background') {
         return;
       }
-
       if (
         Platform.OS === 'ios' &&
         notif._notificationType === NotificationType.WillPresent &&
@@ -62,7 +76,6 @@ function registerFcmAppListener() {
         notif.finish(WillPresentNotificationResult.All);
         return;
       }
-
       if (notif.opened_from_tray) {
         setTimeout(() => {
           PROFILES_MANAGE_VIEW._onOpenNotification(notif);
@@ -83,6 +96,10 @@ const mapGetter = getter => (state, props) => ({
 });
 
 const mapAction = action => emit => ({
+  createProfile(profile) {
+    emit(action.profiles.create(profile));
+  },
+
   routeToProfilesCreate() {
     emit(action.router.goToProfilesCreate());
   },
@@ -117,6 +134,10 @@ const mapAction = action => emit => ({
 });
 
 class View extends Component {
+  state = {
+    isReady: false,
+  };
+
   constructor(props) {
     super(props);
     if (Platform.OS === 'android') {
@@ -126,7 +147,6 @@ class View extends Component {
 
   _onOpenNotification(notif) {
     AsyncStorage.removeItem('lastNotification');
-
     const oCustomNotif = parseCustomNotification_s(notif);
     this._onOpenCustomNotification(oCustomNotif);
   }
@@ -145,20 +165,17 @@ class View extends Component {
       this._shutodownNotificationListener.remove();
     }
   }
-  async componentWillMount() {
+
+  async componentDidMount() {
     PROFILES_MANAGE_VIEW = this;
-    this.setState({ isReady: false });
 
     await UserLanguage.init_s();
-
     await AsyncStorage.getItem('lastNotification').then(sData => {
       if (sData) {
         const customNotif = JSON.parse(sData);
-
         const currentTime = new Date().getTime();
         const expire = customNotif['brekekephone.notif.expire'];
         const bTimeout = currentTime > expire;
-
         if (bTimeout) {
           AsyncStorage.removeItem('lastNotification');
         } else {
@@ -167,10 +184,6 @@ class View extends Component {
       }
     });
 
-    this.setState({ isReady: true });
-  }
-
-  async componentDidMount() {
     if (Platform.OS === 'android') {
       FCM.createNotificationChannel({
         id: 'default',
@@ -179,8 +192,9 @@ class View extends Component {
         priority: 'high',
       });
       registerFcmAppListener.call(this);
-      FCM.getInitialNotification().then(notif => {});
-
+      FCM.getInitialNotification().then(notif => {
+        // TODO
+      });
       try {
         await FCM.requestPermissions({
           badge: false,
@@ -190,11 +204,58 @@ class View extends Component {
       } catch (e) {
         console.error(e);
       }
-
       FCM.getFCMToken().then(token => {
-        this.setState({ token: token || '' });
+        // TODO
       });
     }
+
+    this.setState({ isReady: true });
+
+    // Handle search params
+    if (alreadyHandleSearchParams) {
+      return;
+    }
+    alreadyHandleSearchParams = true;
+    //
+    // url
+    // tenant
+    // user
+    // _wn
+    // _prtenant
+    // _pruser
+    const { tenant, user } = searchParams;
+    if (!user || !tenant) {
+      return;
+    }
+    let uid = this._getUidByCustomNotif({
+      tenant,
+      to: user,
+    });
+    const u = this.props.profileById[uid];
+    if (u) {
+      if (u.pbxPassword) {
+        this.signin(uid);
+      } else {
+        this.props.routeToProfileUpdate(uid);
+      }
+      return;
+    }
+    //
+    uid = createID();
+    this.props.createProfile({
+      id: uid,
+      pbxTenant: tenant,
+      pbxUsername: user,
+      //
+      pbxHostname: '',
+      pbxPort: '',
+      pbxPassword: '',
+      parks: [],
+      ucEnabled: false,
+      ucHostname: '',
+      ucPort: '',
+    });
+    this.props.routeToProfileUpdate(uid);
   }
 
   _getUidByCustomNotif(notif) {
