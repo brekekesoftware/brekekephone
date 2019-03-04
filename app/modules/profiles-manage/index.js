@@ -28,7 +28,7 @@ if (Platform.OS === 'web') {
     try {
       const a = document.createElement('a');
       a.href = searchParams.url;
-      searchParams.host = a.host;
+      searchParams.host = a.hostname;
       if (a.port) {
         searchParams.port = a.port;
       } else if (/^ws:/.test(searchParams.url)) {
