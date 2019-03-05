@@ -5,6 +5,7 @@
   "scripts": {
     "start:web": "webpack-dev-server --config web/webpack.js",
     "build:web": "webpack -p --config web/webpack.js",
+    "build:web:unminified": "webpack --config web/webpack.js",
     "build:web:dev": "webpack --config web/webpack.js",
     "start:storybook:web": "start-storybook -p 9001 -c ./storybook/web",
     "start:storybook:native": "start-storybook -p 7001 -c ./storybook/native",
@@ -66,7 +67,6 @@
     "faker": "4.1.0",
     "file-loader": "2.0.0",
     "json5": "2.1.0",
-    "null-loader": "0.1.1",
     "prettier": "1.16.0",
     "webpack": "3.10.0",
     "webpack-dev-server": "2.11.2"

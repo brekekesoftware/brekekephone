@@ -14,15 +14,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /.*/,
-        include: [
-          // Ignore those package because they are only being used in native part
-          path.join(cwd, './node_modules/react-native-full-image-picker'),
-          path.join(cwd, './node_modules/react-native-general-actionsheet'),
-        ],
-        use: 'null-loader',
-      },
-      {
         test: /\.js$/,
         include: [
           // The main source folder for js code:
