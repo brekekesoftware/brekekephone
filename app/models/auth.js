@@ -67,6 +67,7 @@ export default createModel({
             'ucEnabled',
             'ucHostname',
             'ucPort',
+            'accessToken',
           ]),
         ),
       ),

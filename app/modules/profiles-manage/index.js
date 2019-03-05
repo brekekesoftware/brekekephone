@@ -263,8 +263,12 @@ class View extends Component {
     });
     const u = this.props.profileById[uid];
     if (u) {
-      u.url = url;
-      u.accessToken = _wn;
+      if (url) {
+        u.wsUri = url;
+      }
+      if (_wn) {
+        u.accessToken = _wn;
+      }
       if (!u.pbxHostname) {
         u.pbxHostname = host;
       }
@@ -280,12 +284,11 @@ class View extends Component {
       return;
     }
     //
-    uid = createID();
-    this.props.createProfile({
+    const newU = {
       //
       wsUri: url,
       //
-      id: uid,
+      id: createID(),
       pbxTenant: tenant,
       pbxUsername: user,
       //
@@ -298,8 +301,13 @@ class View extends Component {
       ucPort: '',
       //
       accessToken: _wn,
-    });
-    this.props.routeToProfileUpdate(uid);
+    };
+    this.props.createProfile(newU);
+    if (newU.accessToken) {
+      this.signin(newU.id);
+    } else {
+      this.props.routeToProfileUpdate(newU.id);
+    }
   }
 
   _getUidByCustomNotif(notif) {

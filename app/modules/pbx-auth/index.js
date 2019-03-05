@@ -24,6 +24,7 @@ const mapGetter = getter => state => {
       username: profile.pbxUsername,
       password: profile.pbxPassword,
       parks: profile.parks,
+      accessToken: profile.accessToken,
     },
   };
 };
