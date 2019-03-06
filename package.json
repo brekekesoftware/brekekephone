@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "start:web": "webpack-dev-server --config web/webpack.js",
-    "build:web": "webpack -p --config web/webpack.js",
-    "build:web:unminified": "webpack --config web/webpack.js",
+    "build:web": "cross-env NODE_ENV=production webpack -p --config web/webpack.js",
     "build:web:dev": "webpack --config web/webpack.js",
     "start:storybook:web": "start-storybook -p 9001 -c ./storybook/web",
     "start:storybook:native": "start-storybook -p 7001 -c ./storybook/native",
@@ -64,6 +63,7 @@
     "babel-preset-env": "1.7.0",
     "babel-preset-react": "6.24.1",
     "copy-webpack-plugin": "4.3.1",
+    "cross-env": "^5.2.0",
     "faker": "4.1.0",
     "file-loader": "2.0.0",
     "json5": "2.1.0",

@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const json5 = require('json5');
 
 const cwd = process.cwd();
+const prod = process.env.NODE_ENV === 'production';
 
 module.exports = {
   entry: ['babel-polyfill', path.join(cwd, 'index.web.js')],
@@ -81,5 +82,5 @@ module.exports = {
   devServer: {
     contentBase: path.join(cwd, 'web'),
   },
-  devtool: 'inline-source-map',
+  devtool: prod ? false : 'inline-source-map',
 };
