@@ -1,5 +1,5 @@
-import { createModel } from '@thenewvu/redux-model';
-import immutable from '@thenewvu/immutable';
+import { createModel } from 'redux-model';
+import immutable from 'immutable';
 
 export default createModel({
   prefix: 'pushNotifies',

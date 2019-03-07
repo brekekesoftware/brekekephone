@@ -3,7 +3,7 @@ import { routerMiddleware } from 'react-router-redux';
 import storage from 'redux-persist/lib/storage';
 import { createHashHistory, createMemoryHistory } from 'history';
 import { Platform } from 'react-native';
-import { combineModels } from '@thenewvu/redux-model/dist';
+import { combineModels } from 'redux-model';
 import * as models from './models';
 import { createStore, applyMiddleware, compose } from 'redux';
 

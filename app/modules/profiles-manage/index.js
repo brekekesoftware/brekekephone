@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { createModelView } from '@thenewvu/redux-model';
+import { createModelView } from 'redux-model';
 import UI from './ui';
 import UserLanguage from '../../language/UserLanguage';
 import { Text, Platform, AsyncStorage, AppState } from 'react-native';

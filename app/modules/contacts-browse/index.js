@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { createModelView } from '@thenewvu/redux-model';
-import immutable from '@thenewvu/immutable';
+import { createModelView } from 'redux-model';
+import immutable from 'immutable';
 import createID from 'shortid';
 import debounce from 'debounce';
 import UI from './ui';

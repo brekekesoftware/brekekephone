@@ -1,6 +1,5 @@
-import { createModelView } from '@thenewvu/redux-model';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { createModelView } from 'redux-model';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { rem } from '../styleguide';
 
@@ -26,7 +25,7 @@ const mapGetter = getter => state => {
   };
 };
 
-class Auth extends Component {
+class Auth extends React.Component {
   render() {
     const s = [st.main];
     if (!this.props.success) {

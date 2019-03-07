@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { createModelView } from '@thenewvu/redux-model';
+import { createModelView } from 'redux-model';
 import createID from 'shortid';
 import pbx from './pbx';
 import sip from './sip';

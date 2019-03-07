@@ -1,4 +1,4 @@
-import { createModel } from '@thenewvu/redux-model';
+import { createModel } from 'redux-model';
 
 export default createModel({
   prefix: 'parkingCalls',

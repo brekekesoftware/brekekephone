@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { createModelView } from '@thenewvu/redux-model';
+import { createModelView } from 'redux-model';
 import UI from './ui';
 
 const TIMEOUT = 2000;

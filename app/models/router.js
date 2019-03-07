@@ -1,14 +1,11 @@
 import { routerReducer, push, getLocation, goBack } from 'react-router-redux';
-import {
-  parse as queryStringToObject,
-  stringify as objectToQueryString,
-} from 'query-string';
+import qs from 'qs';
 
 export default {
   prefix: 'router',
   reduce: routerReducer,
   getter: {
-    getQuery: state => queryStringToObject(getLocation(state).search),
+    getQuery: state => qs.parse(getLocation(state).search),
   },
   action: {
     goBack,
@@ -33,8 +30,8 @@ export default {
     goToChatGroupInvite: group => push(`/auth/chat-group/${group}/invite`),
     goToPhonebooksBrowse: () => push('/auth/phonebooks/browse'),
     goToContactsBrowse: query =>
-      push(`/auth/contacts/browse?${objectToQueryString(query)}`),
+      push(`/auth/contacts/browse?${qs.stringify(query)}`),
     goToContactsCreate: query =>
-      push(`/auth/contacts/create?${objectToQueryString(query)}`),
+      push(`/auth/contacts/create?${qs.stringify(query)}`),
   },
 };

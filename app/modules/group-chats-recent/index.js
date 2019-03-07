@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { createModelView } from '@thenewvu/redux-model';
+import { createModelView } from 'redux-model';
 import createID from 'shortid';
 import UI from './ui';
 import formatChatText_s from '../../util/brekekephone-misc';

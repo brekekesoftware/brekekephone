@@ -1,4 +1,4 @@
-import { createModelView } from '@thenewvu/redux-model';
+import { createModelView } from 'redux-model';
 import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
 import React from 'react';

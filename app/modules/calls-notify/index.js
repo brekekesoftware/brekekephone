@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { createModelView } from '@thenewvu/redux-model';
+import { createModelView } from 'redux-model';
 import UI from './ui';
 import createID from 'shortid';
 

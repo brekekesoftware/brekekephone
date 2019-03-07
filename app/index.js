@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider as StoreProvider } from 'react-redux';
-import { ModelProvider, combineModels } from '@thenewvu/redux-model';
+import { ModelProvider, combineModels } from 'redux-model';
 import { Route, Redirect } from 'react-router-native';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import { createHashHistory, createMemoryHistory } from 'history';
@@ -40,6 +40,7 @@ import Tabbar from './modules/tabbar';
 import Callbar from './modules/callbar';
 import Settings from './modules/settings';
 import Auth from './modules/auth';
+import WithoutStatusBar from './modules/auth/WithoutStatusBar';
 import PBXAuth from './modules/pbx-auth';
 import SIPAuth from './modules/sip-auth';
 import UCAuth from './modules/uc-auth';
@@ -78,83 +79,89 @@ const Loading = () => (
 const Routing = () => (
   <View style={StyleSheet.absoluteFill}>
     <StatusBar />
-    <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-    <Route exact path="/profiles/manage" component={ProfilesManage} />
-    <Route exact path="/profiles/create" component={ProfilesCreate} />
-    <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
-    <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
-    <Route
-      path="/auth"
-      render={() => (
-        <Auth>
-          <Route path="/auth" component={Callbar} />
-          <Route
-            exact
-            path="/auth"
-            render={() => <Redirect to="/auth/users" />}
-          />
-          <Route exact path="/auth/calls/manage" component={CallsManage} />
-          <Route exact path="/auth/calls/create" component={CallsCreate} />
-          <Route exact path="/auth/calls/recent" component={CallsRecent} />
-          <Route
-            exact
-            path="/auth/call/:call/transfer/dial"
-            component={CallTransferDial}
-          />
-          <Route
-            exact
-            path="/auth/call/:call/transfer/attend"
-            component={CallTransferAttend}
-          />
-          <Route exact path="/auth/call/:call/keypad" component={CallKeypad} />
-          <Route exact path="/auth/call/:call/park" component={CallPark} />
-          <Route exact path="/auth/users" component={UsersBrowse} />
-          <Route
-            exact
-            path="/auth/chats/buddy/:buddy/recent"
-            component={BuddyChatsRecent}
-          />
-          <Route
-            exact
-            path="/auth/chats/group/:group/recent"
-            component={GroupChatsRecent}
-          />
-          <Route
-            exact
-            path="/auth/chat-groups/create"
-            component={ChatGroupsCreate}
-          />
-          <Route
-            exact
-            path="/auth/chat-group/:group/invite"
-            component={ChatGroupInvite}
-          />
-          <Route exact path="/auth/chats/recent" component={ChatsRecent} />
-          <Route exact path="/auth/settings" component={Settings} />
-          <Route
-            exact
-            path="/auth/phonebooks/browse"
-            component={PhonebooksBrowse}
-          />
-          <Route
-            exact
-            path="/auth/contacts/browse"
-            component={ContactsBrowse}
-          />
-          <Route
-            exact
-            path="/auth/contacts/create"
-            component={ContactsCreate}
-          />
-        </Auth>
-      )}
-    />
-    <Route path="/auth" component={CallVoices} />
-    <Route path="/auth" component={Tabbar} />
-    <Route path="/auth" component={CallVideos} />
-    <Route path="/auth" component={SIPAuth} />
-    <Route path="/auth" component={UCAuth} />
-    <Route path="/auth" component={PBXAuth} />
+    <WithoutStatusBar>
+      <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
+      <Route exact path="/profiles/manage" component={ProfilesManage} />
+      <Route exact path="/profiles/create" component={ProfilesCreate} />
+      <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
+      <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
+      <Route
+        path="/auth"
+        render={() => (
+          <Auth>
+            <Route path="/auth" component={Callbar} />
+            <Route
+              exact
+              path="/auth"
+              render={() => <Redirect to="/auth/users" />}
+            />
+            <Route exact path="/auth/calls/manage" component={CallsManage} />
+            <Route exact path="/auth/calls/create" component={CallsCreate} />
+            <Route exact path="/auth/calls/recent" component={CallsRecent} />
+            <Route
+              exact
+              path="/auth/call/:call/transfer/dial"
+              component={CallTransferDial}
+            />
+            <Route
+              exact
+              path="/auth/call/:call/transfer/attend"
+              component={CallTransferAttend}
+            />
+            <Route
+              exact
+              path="/auth/call/:call/keypad"
+              component={CallKeypad}
+            />
+            <Route exact path="/auth/call/:call/park" component={CallPark} />
+            <Route exact path="/auth/users" component={UsersBrowse} />
+            <Route
+              exact
+              path="/auth/chats/buddy/:buddy/recent"
+              component={BuddyChatsRecent}
+            />
+            <Route
+              exact
+              path="/auth/chats/group/:group/recent"
+              component={GroupChatsRecent}
+            />
+            <Route
+              exact
+              path="/auth/chat-groups/create"
+              component={ChatGroupsCreate}
+            />
+            <Route
+              exact
+              path="/auth/chat-group/:group/invite"
+              component={ChatGroupInvite}
+            />
+            <Route exact path="/auth/chats/recent" component={ChatsRecent} />
+            <Route exact path="/auth/settings" component={Settings} />
+            <Route
+              exact
+              path="/auth/phonebooks/browse"
+              component={PhonebooksBrowse}
+            />
+            <Route
+              exact
+              path="/auth/contacts/browse"
+              component={ContactsBrowse}
+            />
+            <Route
+              exact
+              path="/auth/contacts/create"
+              component={ContactsCreate}
+            />
+          </Auth>
+        )}
+      />
+      <Route path="/auth" component={CallVoices} />
+      <Route path="/auth" component={Tabbar} />
+      <Route path="/auth" component={CallVideos} />
+      <Route path="/auth" component={SIPAuth} />
+      <Route path="/auth" component={UCAuth} />
+      <Route path="/auth" component={PBXAuth} />
+    </WithoutStatusBar>
     <Notifications>
       <Route path="/auth" component={CallsNotify} />
       <Route path="/auth" component={ChatGroupsNotify} />
