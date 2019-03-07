@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity as Button,
-  Text,
-} from 'react-native';
-import { std, rem } from '../styleguide';
+import { View, TouchableOpacity as Btn, Text } from 'react-native';
 import { st } from '../pbx-auth/ui';
 
 const SIPAuth = p => (
@@ -14,13 +8,13 @@ const SIPAuth = p => (
     {p.failure && <Text style={st.message}>CONNECTING FAILED</Text>}
     <View style={st.buttons}>
       {p.failure && p.retryable && (
-        <Button style={st.retry} onPress={p.retry}>
+        <Btn style={st.retry} onPress={p.retry}>
           <Text style={st.retryText}>Retry</Text>
-        </Button>
+        </Btn>
       )}
-      <Button style={st.abort} onPress={p.abort}>
+      <Btn style={st.abort} onPress={p.abort}>
         <Text style={st.abortText}>Abort</Text>
-      </Button>
+      </Btn>
     </View>
   </View>
 );

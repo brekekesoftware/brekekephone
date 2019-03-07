@@ -1,13 +1,13 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity as Button,
-  Text,
-} from 'react-native';
-import { std, rem } from '../styleguide';
-import { UC_CONNECT_STATES } from './uc-connect-state';
+import { View, TouchableOpacity as Btn, Text } from 'react-native';
 import { st } from '../pbx-auth/ui';
+
+const UC_CONNECT_STATES = {
+  NONE: 0,
+  CONNECTING: 1,
+  CONNECTED: 2,
+  CONNECT_FAILED: 3,
+};
 
 const UCAuth = p => (
   <View style={st.main}>
@@ -19,15 +19,16 @@ const UCAuth = p => (
     )}
     <View style={st.buttons}>
       {p.connectState === UC_CONNECT_STATES.CONNECT_FAILED && (
-        <Button style={st.retry} onPress={p.retry}>
+        <Btn style={st.retry} onPress={p.retry}>
           <Text style={st.retryText}>Retry</Text>
-        </Button>
+        </Btn>
       )}
-      <Button style={st.abort} onPress={p.abort}>
+      <Btn style={st.abort} onPress={p.abort}>
         <Text style={st.abortText}>Abort</Text>
-      </Button>
+      </Btn>
     </View>
   </View>
 );
 
+export { UC_CONNECT_STATES };
 export default UCAuth;
