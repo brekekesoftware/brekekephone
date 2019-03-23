@@ -108,12 +108,12 @@ android {
       }
     }
   }
-  compileSdkVersion 27
-  buildToolsVersion "27.0.1"
+  compileSdkVersion 28
+  buildToolsVersion "28.0.1"
   defaultConfig {
     applicationId "com.brekeke.phone"
     minSdkVersion 16
-    targetSdkVersion 27
+    targetSdkVersion 28
     versionCode 30000
     versionName "3.0.0"
     ndk {
@@ -164,7 +164,7 @@ dependencies {
   compile (project(":react-native-camera")) {
     exclude group: "com.google.android.gms"
     exclude group: "com.android.support"
-    compile "com.android.support:exifinterface:27.+"
+    compile "com.android.support:exifinterface:28.+"
     compile ("com.google.android.gms:play-services-vision:12.0.1") {
       force = true
     }

@@ -53,17 +53,17 @@
         },
         printDebug: function(str) {
           if (this.debugLevel >= 2) {
-            if (typeof str === 'object') {
-              str = JSON.stringify(str);
-            }
+            // if (typeof str === 'object') {
+            //   str = JSON.stringify(str);
+            // }
             console.debug(new Date() + ' [debug] ' + str);
           }
         },
         printError: function(str) {
           if (this.debugLevel >= 1) {
-            if (typeof str === 'object') {
-              str = JSON.stringify(str);
-            }
+            // if (typeof str === 'object') {
+            //   str = JSON.stringify(str);
+            // }
             console.debug(new Date() + ' [error] ' + str);
           }
         },
