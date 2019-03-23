@@ -50,7 +50,7 @@ class SIP extends EventEmitter {
     super();
     this._creatingSessions = new CreatingSessions();
 
-    this.phone = new Brekeke.WebrtcClient.Phone({
+    this.phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
       multiSession: true,
       defaultOptions: {

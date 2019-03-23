@@ -3,7 +3,7 @@ export default function formatChatText_s(str) {
     return '';
   }
 
-  str = str.replace(/<br\s*[\/]?>/gi, '\r\n'); ///<br> to newLine
+  str = str.replace(/<br\s*[/]?>/gi, '\r\n');
 
   str = str.replace(/<[^>]*>/g, '');
   return str;

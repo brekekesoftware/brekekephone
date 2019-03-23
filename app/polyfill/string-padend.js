@@ -1,6 +1,7 @@
 // https://github.com/uxitten/polyfill/blob/master/string.polyfill.js
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padEnd
 if (!String.prototype.padEnd) {
+  // eslint-disable-next-line no-extend-native
   String.prototype.padEnd = function padEnd(targetLength, padString) {
     targetLength = targetLength >> 0; // floor if number or convert non-number to 0;
     padString = String(typeof padString !== 'undefined' ? padString : ' ');

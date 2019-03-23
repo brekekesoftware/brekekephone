@@ -67,9 +67,6 @@ function parseCustomNotification_s(notif) {
 function registerFcmKilledListener() {
   this._shutodownNotificationListener = FCM.on(FCMEvent.Notification, notif => {
     const oCustomNotif = parseCustomNotification_s(notif);
-    // to check in componentDidMount see app/CodePushApp.js
-    //    and app/push-notification/isWakeupByPush.js
-    FCM.wakeupByPush = true;
     if (notif.opened_from_tray) {
       setTimeout(() => {
         PROFILES_MANAGE_VIEW._onOpenCustomNotification(oCustomNotif);

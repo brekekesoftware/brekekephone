@@ -150,7 +150,7 @@ class View extends Component {
     const pbxPassword = this.state.pbxPassword.trim();
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
-    let parks = new Array();
+    let parks = [];
     for (let i = 0; i < this.state.parks.length; i++) {
       parks.push(this.state.parks[i].trim());
     }

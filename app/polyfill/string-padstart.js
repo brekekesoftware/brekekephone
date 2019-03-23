@@ -1,6 +1,7 @@
 // https://github.com/uxitten/polyfill/blob/master/string.polyfill.js
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
 if (!String.prototype.padStart) {
+  // eslint-disable-next-line no-extend-native
   String.prototype.padStart = function padStart(targetLength, padString) {
     targetLength = targetLength >> 0; // truncate if number or convert non-number to 0;
     padString = String(typeof padString !== 'undefined' ? padString : ' ');

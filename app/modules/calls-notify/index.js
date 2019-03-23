@@ -76,7 +76,6 @@ class View extends Component {
   }
 
   componentDidUpdate() {
-    const callidslength = this.props.callIds.length;
     const pushNotifies = this.props.pushNotifies;
     const notifCount = pushNotifies.length;
     const currentTime = new Date().getTime();

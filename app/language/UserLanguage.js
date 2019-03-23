@@ -1,8 +1,6 @@
 import { AsyncStorage } from 'react-native';
 
 class UserLanguage {
-  constructor() {}
-
   _load(jsonModule) {
     this._jsonModule = jsonModule;
   }

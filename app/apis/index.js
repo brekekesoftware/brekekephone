@@ -5,18 +5,11 @@ import createID from 'shortid';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
-import FCM, {
-  FCMEvent,
-  RemoteNotificationResult,
-  WillPresentNotificationResult,
-  NotificationType,
-} from 'react-native-fcm';
+import FCM, { FCMEvent } from 'react-native-fcm';
 import subscribePn from '../util/subscribe-pn';
 import manifest from '../manifest.web.json';
 import fmtKey from '../util/uint8array-to-url-base64';
-import { Platform, AsyncStorage } from 'react-native';
-import { get as $ } from 'object-path';
-import { store } from '../index';
+import { Platform } from 'react-native';
 import { getApnsToken } from '../push-notification/apns';
 
 let API_PROVIDER = null;
@@ -139,11 +132,15 @@ const mapAction = action => emit => ({
   onSIPConnectionStopped() {
     emit(action.auth.sip.onStopped());
   },
-  onSIPConnectionTimeout() {},
+  onSIPConnectionTimeout() {
+    emit(action.auth.sip.onStopped());
+  },
   onUCConnectionStopped() {
     emit(action.auth.uc.onStopped());
   },
-  onUCConnectionTimeout() {},
+  onUCConnectionTimeout() {
+    emit(action.auth.uc.onStopped());
+  },
   createRunningCall(call) {
     emit(action.runningCalls.create(call));
   },
@@ -385,7 +382,7 @@ class APIProvider extends Component {
   };
 
   onSIPConnectionTimeout = () => {
-    emit(action.auth.sip.onStopped());
+    this.props.onSIPConnectionTimeout();
   };
 
   onSIPSessionStarted = call => {
@@ -428,7 +425,9 @@ class APIProvider extends Component {
     this.props.onUCConnectionStopped();
   };
 
-  onUCConnectionTimeout = () => {};
+  onUCConnectionTimeout = () => {
+    this.props.onUCConnectionTimeout();
+  };
 
   onUcUserUpdated = ev => {
     this.props.updateUcUser(ev);

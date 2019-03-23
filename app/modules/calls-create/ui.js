@@ -6,9 +6,8 @@ import {
   TouchableOpacity as Button,
   Text,
   TextInput,
-  Switch,
 } from 'react-native';
-import { std, rem } from '../styleguide';
+import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   main: {
@@ -198,11 +197,11 @@ const Navbar = pure(p => (
   </View>
 ));
 
-const Divider = pure(({ children }) => (
-  <View style={st.divider}>
-    <Text style={st.dividerTitle}>{children}</Text>
-  </View>
-));
+// const Divider = pure(({ children }) => (
+//   <View style={st.divider}>
+//     <Text style={st.dividerTitle}>{children}</Text>
+//   </View>
+// ));
 
 const Actions = p => (
   <View style={st.controlOpts}>
@@ -215,27 +214,12 @@ const Actions = p => (
   </View>
 );
 
-const Options = p => (
-  <Fragment>
-    <Divider>OPTIONS</Divider>
-    <View style={st.opt}>
-      <Text style={st.optTitle}>Video</Text>
-      <Switch
-        style={st.videoSwitch}
-        value={p.video}
-        onValueChange={p.setVideo}
-      />
-    </View>
-  </Fragment>
-);
-
 const Target = p => (
   <Fragment>
     <View style={st.opt}>
       <TextInput
         style={st.targetInput}
         autoFocus
-        //keyboardType='phone-pad'
         keyboardType="default"
         placeholder="Enter name or number"
         value={p.target}

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import immutable from 'immutable';
 import createID from 'shortid';
-import debounce from 'debounce';
+import debounce from 'lodash.debounce';
 import UI from './ui';
 
 const mapGetter = getter => state => ({

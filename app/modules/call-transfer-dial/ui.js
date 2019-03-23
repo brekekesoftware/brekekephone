@@ -6,7 +6,6 @@ import {
   TouchableOpacity as Button,
   Text,
   TextInput,
-  Switch,
 } from 'react-native';
 import { std } from '../styleguide';
 

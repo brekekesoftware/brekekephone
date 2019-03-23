@@ -1,18 +1,18 @@
 ### Environment requirement
 - Install `yarn` and use it instead of `npm`.
-
-### Android build & debug:
-- The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
-  - `%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools`
-  - `%USERPROFILE%\AppData\Local\Android\Sdk\tools`
-  - `%USERPROFILE%\AppData\Local\Android\Sdk\tools\bin`
-
+- Install node packages:
 ```sh
-# Install node packages
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd \path\to\test-brekeke-phone
 yarn install
 ```
+
+
+### Android on Windows
+- The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
+  - `%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools`
+  - `%USERPROFILE%\AppData\Local\Android\Sdk\tools`
+  - `%USERPROFILE%\AppData\Local\Android\Sdk\tools\bin`
 
 ##### Run and debug app in Android Emulator:
 - To create a virtual device:
@@ -47,52 +47,15 @@ react-native run-android --deviceId=DEVICE_ID
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 
 
-### iOS build & debug
-- My current environment:
-```sh
-# macOS Mojave Version 10.14.1 (18B75)
-# XCode Version 10.1 (10B61)
-
-$ node -v
-v11.4.0
-$ react-native -v
-react-native-cli: 2.0.1
-react-native: 0.55.4
-```
-
-- Install dependencies
-```sh
-# Install node packages
-# IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
-cd /path/to/test-brekeke-phone
-yarn install
-
-# Error: `... glog-0.3.4 ... 'config.h' file not found`
-# https://github.com/facebook/react-native/issues/14382
-cd node_modules/react-native
-./scripts/ios-install-third-party.sh
-cd ../../
-cd node_modules/react-native/third-party/glog-0.3.4/
-../../scripts/ios-configure-glog.sh
-cd ../../../../
-
-# Try to build the app to generate build folder
-react-native run-ios
-
-# Error: `... Build input file cannot be found ... /Libraries/WebSocket/libfishhook.a`
-# https://github.com/facebook/react-native/issues/19569
-cp ios/build/Build/Products/Debug-iphonesimulator/libfishhook.a node_modules/react-native/Libraries/WebSocket/
-```
-
-- In XCode, check all search paths and ensure they have $(inherited) value. Add one if there isn't any, otherwise there will be library linking error, or framework not found error. If any of these kind of errors still happens, add the missing node_module package to the search path.
+### iOS
+- Build main.jsbundle if you haven't built any: `yarn build:ios`.
+- Start the react native bundle at the project root: `react-native run-ios`.
 
 ##### Build iOS app for distribution
-- Build main.jsbundle using command `yarn build:ios`
+- Rebuild main.jsbundle using command `yarn build:ios`
 - Include the main.jsbundle in the Copy Bundle Resource section if haven't
-- Request for distribution certificate and install it correctly on local machine
-- Check the jsCodeLocation in AppDelegate.m for the correct config
+- Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution
 
 ### TODO
-- [ ] Add CODEPUSH_KEY in BuildConfig
-- [ ] Add a loop and use RNFS.exist to check file exists before write
+- [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.native.js

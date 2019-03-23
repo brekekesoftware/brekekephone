@@ -15,7 +15,7 @@ class PBX extends EventEmitter {
       wsUri = `wss://${profile.hostname}:${profile.port}/pbx/ws`;
     }
 
-    const client = Brekeke.pbx.getPal(wsUri, {
+    const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: profile.tenant,
       login_user: profile.username,
       login_password: profile.password,
@@ -119,6 +119,8 @@ class PBX extends EventEmitter {
             user: ev.user,
             talker: ev.talker_id,
           });
+        default:
+          return;
       }
     };
   }

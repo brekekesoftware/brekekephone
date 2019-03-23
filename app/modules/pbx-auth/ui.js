@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity as Btn, Text } from 'react-native';
-import { std, rem } from '../styleguide';
+import { std } from '../styleguide';
 
 export const st = StyleSheet.create({
   main: {

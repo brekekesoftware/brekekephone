@@ -1,16 +1,22 @@
-const fs = require('fs');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const json5 = require('json5');
 
-const cwd = process.cwd();
-const prod = process.env.NODE_ENV === 'production';
+const rootDir = path.join(__dirname, '../');
+const isProd = process.env.NODE_ENV === 'production';
+
+// https://webpack.js.org/configuration/stats/
+const stats = {
+  modules: false,
+};
 
 module.exports = {
-  entry: ['babel-polyfill', path.join(cwd, 'index.web.js')],
+  entry: [
+    '@babel/polyfill', // polyfill for babel 7
+    path.join(rootDir, 'index.web.js'), // main bundle
+  ],
   output: {
     filename: 'bundle.web.js',
-    path: path.join(cwd, 'dist/web'),
+    path: path.join(rootDir, 'build/web'),
   },
   module: {
     rules: [
@@ -18,19 +24,26 @@ module.exports = {
         test: /\.js$/,
         include: [
           // The main source folder for js code:
-          path.join(cwd, './app'),
-          path.join(cwd, './index.web.js'),
+          path.join(rootDir, './app'),
+          path.join(rootDir, './index.web.js'),
           // Other node modules need to be transpiled:
-          path.join(cwd, './node_modules/jssip'),
+          path.join(rootDir, './node_modules/jssip'),
           /react-native.+/,
           /react-.+native/,
         ],
         use: {
           loader: 'babel-loader',
+          // Override the root config .babelrc.js
           options: {
-            ...json5.parse(fs.readFileSync(path.join(cwd, '.babelrc'))),
-            presets: ['env', 'react'],
-            cacheDirectory: true,
+            presets: [
+              '@babel/preset-env',
+              '@babel/preset-react',
+            ],
+            plugins: [
+              '@babel/plugin-proposal-class-properties',
+              '@babel/plugin-proposal-object-rest-spread',
+              '@babel/plugin-syntax-dynamic-import',
+            ],
           },
         },
       },
@@ -68,19 +81,33 @@ module.exports = {
     ],
   },
   plugins: [
-    new CopyWebpackPlugin([
-      { from: path.resolve(__dirname, './index.html') },
-      { from: path.resolve(__dirname, './favicon.png') },
-    ]),
+    new CopyWebpackPlugin(
+      [
+        // root assets to be copied
+        './index.html',
+        './favicon.png',
+      ].map(p => ({
+        from: path.resolve(__dirname, p),
+      })),
+    ),
   ],
   resolve: {
     alias: {
       'react-native': 'react-native-web',
     },
-    extensions: ['.web.js', '.js'],
+    extensions: [
+      // Add .web.js first to resolve
+      '.web.js',
+      '.js',
+    ],
+  },
+  performance: {
+    hints: false,
   },
   devServer: {
-    contentBase: path.join(cwd, 'web'),
+    contentBase: path.join(rootDir, 'web'),
+    stats,
   },
-  devtool: prod ? false : 'inline-source-map',
+  devtool: isProd ? false : 'inline-source-map',
+  stats,
 };

@@ -5,7 +5,6 @@ import {
   ScrollView as Scroll,
   TouchableOpacity as Button,
   Text,
-  Platform,
 } from 'react-native';
 import { std } from '../styleguide';
 import UserLanguage from '../../language/UserLanguage';
@@ -140,35 +139,6 @@ const ProfileItem = p => (
     </Button>
   </View>
 );
-
-const styles = StyleSheet.create({
-  profile: {
-    flexDirection: 'row',
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  actionIcon: {
-    fontFamily: std.font.icon,
-    fontSize: std.iconSize.md,
-    color: std.color.action,
-    width: std.iconSize.md,
-    height: std.iconSize.md,
-  },
-});
 
 const Profiles = p =>
   p.ids.length ? (

@@ -125,7 +125,7 @@ class View extends Component {
   };
 
   findActiveCallByRunids_s(runids, props) {
-    if (!runids || runids.length == 0) {
+    if (!runids || !runids.length) {
       return null;
     }
 

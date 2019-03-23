@@ -27,7 +27,7 @@ export default createModel({
       idsMapByBuddy: {},
       detailMapById: {},
     }),
-    appendByBuddy: (s, buddy, chats) =>
+    appendByBuddy: (s, buddy, chats = []) =>
       immutable.on(s)(
         immutable.fset('buddyIdsByRecent', ids => uniqArray([buddy, ...ids])),
         immutable.fset('detailMapById', map => ({
@@ -39,7 +39,7 @@ export default createModel({
           ...mapChatsToIds(chats),
         ]),
       ),
-    prependByBuddy: (s, buddy, chats) =>
+    prependByBuddy: (s, buddy, chats = []) =>
       immutable.on(s)(
         immutable.fset('buddyIdsByRecent', ids => uniqArray([buddy, ...ids])),
         immutable.fset('detailMapById', map => ({

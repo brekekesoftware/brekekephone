@@ -14,21 +14,21 @@ const allowedToCreateProps = [
 ];
 const validateCreatingCall = call => pickProps(call, allowedToCreateProps);
 
-const allowedToUpdateProps = [
-  'answered',
-  'holding',
-  'recording',
-  'transfering',
-  'partyName',
-  'partyNumber',
-  'pbxTenant',
-  'pbxTalkerId',
-  'voiceStreamObject',
-  'localVideoEnabled',
-  'remoteVideoStreamObject',
-  'remoteVideoEnabled',
-];
-const validateUpdatingCall = ev => pickProps(ev, allowedToUpdateProps);
+// const allowedToUpdateProps = [
+//   'answered',
+//   'holding',
+//   'recording',
+//   'transfering',
+//   'partyName',
+//   'partyNumber',
+//   'pbxTenant',
+//   'pbxTalkerId',
+//   'voiceStreamObject',
+//   'localVideoEnabled',
+//   'remoteVideoStreamObject',
+//   'remoteVideoEnabled',
+// ];
+// const validateUpdatingCall = ev => pickProps(ev, allowedToUpdateProps);
 
 export default createModel({
   prefix: 'runningVideos',

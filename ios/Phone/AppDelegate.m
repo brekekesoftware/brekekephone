@@ -8,7 +8,6 @@
  */
 
 #import "AppDelegate.h"
-#import <CodePush/CodePush.h>
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -27,7 +26,6 @@
   #ifdef DEBUG
     jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.native" fallbackResource:nil];
   #else
-    // jsCodeLocation = [CodePush bundleURL];
     jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
   #endif
 

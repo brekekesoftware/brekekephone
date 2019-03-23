@@ -1,8 +1,8 @@
 import { AppRegistry, Platform } from 'react-native';
 import { registerVoipApns } from './app/push-notification/apns';
-import CodePushApp from './app/CodePushApp';
+import App from './app/App';
 
-AppRegistry.registerComponent('App', () => CodePushApp);
+AppRegistry.registerComponent('App', () => App);
 
 if (Platform.OS === 'ios') {
   registerVoipApns();

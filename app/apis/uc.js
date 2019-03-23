@@ -155,23 +155,6 @@ class UC extends EventEmitter {
   connect(profile, option) {
     return new Promise((onres, onerr) =>
       this.client.signIn(
-        {
-          host: `https://${profile.hostname}:${profile.port}`,
-          path: profile.pathname || 'uc',
-          tenant: profile.tenant,
-          user: profile.username,
-          pass: profile.password,
-          option: option,
-        },
-        onres,
-        onerr,
-      ),
-    );
-  }
-
-  connect(profile, option) {
-    return new Promise((onres, onerr) =>
-      this.client.signIn(
         `https://${profile.hostname}:${profile.port}`,
         profile.pathname || 'uc',
         profile.tenant,

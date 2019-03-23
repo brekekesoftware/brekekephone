@@ -5,7 +5,6 @@ import {
   View,
   Text,
   TouchableOpacity as Button,
-  Image,
 } from 'react-native';
 import { std, rem } from '../styleguide';
 

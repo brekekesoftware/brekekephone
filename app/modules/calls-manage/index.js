@@ -54,12 +54,8 @@ class View extends Component {
 
   _selectActiveCallWithRoute(props) {
     const runids = props.runningIds;
-    const curSelectedId = this.props.selectedId;
-    const nextSelectedId = props.selectedId;
-
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
-
       if (activeCall) {
         this.props.selectCall(activeCall);
       }
@@ -79,13 +75,11 @@ class View extends Component {
 
   componentWillReceiveProps(nextProps) {
     let runids = nextProps.runningIds;
-    const curSelectedId = this.props.selectedId;
     const nextSelectedId = nextProps.selectedId;
     if (runids && runids.length !== 0) {
-      const isSelectedIdInactive = runids.indexOf(nextSelectedId) == -1;
+      const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
 
       if (!nextSelectedId || isSelectedIdInactive) {
-        const runid = runids[0];
         const call = this.findNewestCallByRunids_s(runids, nextProps);
         this.props.selectCall(call);
       }
@@ -95,7 +89,7 @@ class View extends Component {
   }
 
   findNewestCallByRunids_s(runids, props) {
-    if (!runids || runids.length == 0) {
+    if (!runids || runids.length === 0) {
       return null;
     }
 
@@ -118,7 +112,7 @@ class View extends Component {
   }
 
   findActiveCallByRunids_s(runids, props) {
-    if (!runids || runids.length == 0) {
+    if (!runids || runids.length === 0) {
       return null;
     }
 
