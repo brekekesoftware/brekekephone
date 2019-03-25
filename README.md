@@ -5,6 +5,9 @@
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd \path\to\test-brekeke-phone
 yarn install
+
+# Start the metro bundler and let it running
+react-native start
 ```
 
 
