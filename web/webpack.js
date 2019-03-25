@@ -10,10 +10,9 @@ const stats = {
 };
 
 module.exports = {
-  entry: [
-    '@babel/polyfill', // polyfill for babel 7
-    path.join(rootDir, 'index.web.js'), // main bundle
-  ],
+  entry: {
+    main: path.join(rootDir, 'index.web.js'),
+  },
   output: {
     filename: 'bundle.web.js',
     path: path.join(rootDir, 'build/web'),
