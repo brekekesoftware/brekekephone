@@ -170,10 +170,11 @@
   /*
    * ChatClient constructor
    */
-  ChatClient = function(logger) {
+  ChatClient = function(logger, reportConsoleOptions) {
     /*
      * Private fields
      */
+    ReportConsole(reportConsoleOptions);
     this._logger = logger || new Logger();
 
     this._host = null;
@@ -296,6 +297,14 @@
       funcError,
     ) {
       if (this._signInStatus === 2) {
+        this._logger.log(
+          'info',
+          'signIn failed (code: ' +
+            Errors.SIGNING_IN +
+            ', message: ' +
+            'Now in sign-in process' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SIGNING_IN,
@@ -306,6 +315,14 @@
         return;
       }
       if (this._signInStatus === 3) {
+        this._logger.log(
+          'info',
+          'signIn failed (code: ' +
+            Errors.SIGNED_IN +
+            ', message: ' +
+            'Already signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SIGNED_IN,
@@ -344,6 +361,14 @@
 
       if (option.usePhone) {
         if (!Brekeke.webrtc || !Brekeke.webrtc.Phone) {
+          this._logger.log(
+            'info',
+            'signIn failed (code: ' +
+              Errors.WEBRTC_NOT_LOADED +
+              ', message: ' +
+              'WebRTC library not loaded' +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.WEBRTC_NOT_LOADED,
@@ -358,6 +383,14 @@
           !window.mozRTCPeerConnection &&
           !window.RTCPeerConnection
         ) {
+          this._logger.log(
+            'info',
+            'signIn failed (code: ' +
+              Errors.WEBRTC_NOT_SUPPORTED +
+              ', message: ' +
+              'WebRTC not supported' +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.WEBRTC_NOT_SUPPORTED,
@@ -477,6 +510,14 @@
      */
     loadPhoneProperties: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'loadPhoneProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -501,6 +542,14 @@
               funcOK(ev);
             }
           } else {
+            this._logger.log(
+              'info',
+              'loadPhoneProperties failed (code: ' +
+                Errors.WEBRTC_PERMANENTLY_UNAVAILABLE +
+                ', message: ' +
+                'Empty pnumber' +
+                ')',
+            );
             if (funcError) {
               var ev = {
                 code: Errors.WEBRTC_PERMANENTLY_UNAVAILABLE,
@@ -527,6 +576,14 @@
      */
     saveProperties: function(profile, settings, buddylist, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'saveProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -696,6 +753,14 @@
      */
     uploadProfileImage: function(input, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'uploadProfileImage failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -716,6 +781,14 @@
       var key = JSON.stringify({ tenant: tenant, user_id: user_id });
 
       if (!input || !input.form) {
+        this._logger.log(
+          'info',
+          'uploadProfileImage failed (code: ' +
+            Errors.UPLOADPROFILEIMAGE_EMPTY_FORM +
+            ', message: ' +
+            'Empty input.form' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.UPLOADPROFILEIMAGE_EMPTY_FORM,
@@ -783,6 +856,14 @@
                       null,
                       null,
                     );
+                    this._logger.log(
+                      'info',
+                      'uploadProfileImage failed (code: ' +
+                        Errors.UPLOADPROFILEIMAGE_TIMEOUT +
+                        ', message: ' +
+                        'Upload timeout' +
+                        ')',
+                    );
                     if (funcError) {
                       var ev = {
                         code: Errors.UPLOADPROFILEIMAGE_TIMEOUT,
@@ -800,6 +881,14 @@
                     { tenant: tenant, user_id: user_id, upload_id: upload_id },
                     null,
                     null,
+                  );
+                  this._logger.log(
+                    'info',
+                    'uploadProfileImage failed (code: ' +
+                      Errors.UPLOADPROFILEIMAGE_FAILED +
+                      ', message: ' +
+                      'Upload failed' +
+                      ')',
                   );
                   if (funcError) {
                     var ev = {
@@ -928,6 +1017,14 @@
       }
 
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'saveProfileImage failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -989,6 +1086,14 @@
       }
 
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'deleteProfileImage failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1184,6 +1289,14 @@
      */
     changeStatus: function(status, display, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'changeStatus failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1219,6 +1332,14 @@
      */
     sendText: function(text, target, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendText failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1230,6 +1351,14 @@
       }
 
       if (!target.user_id) {
+        this._logger.log(
+          'info',
+          'sendText failed (code: ' +
+            Errors.SENDTEXT_EMPTY_USER +
+            ', message: ' +
+            'Empty target.user_id' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDTEXT_EMPTY_USER,
@@ -1282,6 +1411,14 @@
      */
     readText: function(received_text_id_array, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'readText failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1293,6 +1430,14 @@
       }
 
       if (!received_text_id_array || !received_text_id_array.length) {
+        this._logger.log(
+          'info',
+          'readText failed (code: ' +
+            Errors.READTEXT_EMPTY_ID +
+            ', message: ' +
+            'Empty received_text_id_array' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.READTEXT_EMPTY_ID,
@@ -1309,6 +1454,17 @@
         var action_id = received_text_id[0];
         var month = received_text_id[1];
         if (isNaN(action_id) || isNaN(month)) {
+          this._logger.log(
+            'info',
+            'readText failed (code: ' +
+              Errors.READTEXT_INVALID_ID +
+              ', message: ' +
+              'Invalid value: received_text_id_array[' +
+              i +
+              '] = ' +
+              received_text_id_array[i] +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.READTEXT_INVALID_ID,
@@ -1342,6 +1498,14 @@
      */
     receiveUnreadText: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'receiveUnreadText failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1427,6 +1591,14 @@
      */
     receiveUnreceivedConferenceText: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'receiveUnreceivedConferenceText failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1520,6 +1692,14 @@
      */
     sendBroadcastText: function(text, target, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendBroadcastText failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1531,6 +1711,14 @@
       }
 
       if (!target.length) {
+        this._logger.log(
+          'info',
+          'sendBroadcastText failed (code: ' +
+            Errors.SENDBROADCASTTEXT_EMPTY_TARGET +
+            ', message: ' +
+            'Empty target' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDBROADCASTTEXT_EMPTY_TARGET,
@@ -1545,6 +1733,16 @@
       var targetVal = [];
       for (var i = 0; i < target.length; i++) {
         if (!target[i].user_id) {
+          this._logger.log(
+            'info',
+            'sendBroadcastText failed (code: ' +
+              Errors.SENDBROADCASTTEXT_EMPTY_USER +
+              ', message: ' +
+              'Empty target[' +
+              i +
+              '].user_id' +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.SENDBROADCASTTEXT_EMPTY_USER,
@@ -1594,6 +1792,14 @@
      */
     sendTyping: function(target, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendTyping failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1605,6 +1811,14 @@
       }
 
       if (!target.user_id) {
+        this._logger.log(
+          'info',
+          'sendTyping failed (code: ' +
+            Errors.SENDTYPING_EMPTY_USER +
+            ', message: ' +
+            'Empty target.user_id' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDTYPING_EMPTY_USER,
@@ -1638,6 +1852,14 @@
      */
     createConference: function(subject, invite, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'createConference failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1649,6 +1871,14 @@
       }
 
       if (!subject) {
+        this._logger.log(
+          'info',
+          'createConference failed (code: ' +
+            Errors.CREATECONFERENCE_EMPTY_SUBJECT +
+            ', message: ' +
+            'Empty subject' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.CREATECONFERENCE_EMPTY_SUBJECT,
@@ -1733,6 +1963,14 @@
      */
     joinConference: function(conf_id, properties, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'joinConference failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1788,6 +2026,14 @@
      */
     leaveConference: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'leaveConference failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1842,6 +2088,14 @@
      */
     kickOutOfConference: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'kickOutOfConference failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1890,6 +2144,14 @@
      */
     inviteToConference: function(conf_id, invite, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'inviteToConference failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -1903,6 +2165,15 @@
       conf_id = string(conf_id);
 
       if (!this._conferences[conf_id]) {
+        this._logger.log(
+          'info',
+          'inviteToConference failed (code: ' +
+            Errors.INVITETOCONFERENCE_NOT_FOUND_CONF +
+            ', message: ' +
+            'Not found conf_id=' +
+            conf_id +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVITETOCONFERENCE_NOT_FOUND_CONF,
@@ -1913,6 +2184,14 @@
         return;
       }
       if (!invite || !invite.length) {
+        this._logger.log(
+          'info',
+          'inviteToConference failed (code: ' +
+            Errors.INVITETOCONFERENCE_EMPTY_INVITE +
+            ', message: ' +
+            'Empty invite' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVITETOCONFERENCE_EMPTY_INVITE,
@@ -1971,6 +2250,14 @@
      */
     enterWebchatRoom: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'enterWebchatRoom failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2051,6 +2338,14 @@
      */
     changeExtConfInfo: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'changeExtConfInfo failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2069,6 +2364,14 @@
      */
     sendConferenceText: function(text, conf_id, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendConferenceText failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2082,6 +2385,15 @@
       conf_id = string(conf_id);
 
       if (!this._conferences[conf_id]) {
+        this._logger.log(
+          'info',
+          'sendConferenceText failed (code: ' +
+            Errors.SENDCONFERENCETEXT_NOT_FOUND_CONF +
+            ', message: ' +
+            'Not found conf_id=' +
+            conf_id +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDCONFERENCETEXT_NOT_FOUND_CONF,
@@ -2129,6 +2441,14 @@
      */
     sendFile: function(target, input, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendFile failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2140,6 +2460,14 @@
       }
 
       if (!target || !target.user_id) {
+        this._logger.log(
+          'info',
+          'sendFile failed (code: ' +
+            Errors.SENDFILE_EMPTY_USER +
+            ', message: ' +
+            'Empty target.user_id' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDFILE_EMPTY_USER,
@@ -2150,6 +2478,14 @@
         return;
       }
       if (!input || !input.form) {
+        this._logger.log(
+          'info',
+          'sendFile failed (code: ' +
+            Errors.SENDFILE_EMPTY_FORM +
+            ', message: ' +
+            'Empty input.form' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDFILE_EMPTY_FORM,
@@ -2174,6 +2510,14 @@
           name = file.name;
           size = file.size;
         } else {
+          this._logger.log(
+            'info',
+            'sendFile failed (code: ' +
+              Errors.SENDFILE_EMPTY_FILES +
+              ', message: ' +
+              'Empty input.files[0]' +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.SENDFILE_EMPTY_FILES,
@@ -2188,6 +2532,14 @@
         if (path) {
           name = path.split('\\').pop();
         } else {
+          this._logger.log(
+            'info',
+            'sendFile failed (code: ' +
+              Errors.SENDFILE_EMPTY_VALUE +
+              ', message: ' +
+              'Empty input.value' +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.SENDFILE_EMPTY_VALUE,
@@ -2294,6 +2646,14 @@
      */
     sendFiles: function(options, fileList, funcOK, funcError, evRecursion) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendFiles failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2305,6 +2665,14 @@
       }
 
       if (!window.FormData) {
+        this._logger.log(
+          'info',
+          'sendFiles failed (code: ' +
+            Errors.SENDFILES_FORMDATA_NOT_SUPPORTED +
+            ', message: ' +
+            'FormData not supported' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDFILES_FORMDATA_NOT_SUPPORTED,
@@ -2319,6 +2687,14 @@
         (!options.user_id &&
           (!options.conf_id || !this._conferences[options.conf_id]))
       ) {
+        this._logger.log(
+          'info',
+          'sendFiles failed (code: ' +
+            Errors.SENDFILES_EMPTY_USER +
+            ', message: ' +
+            'Empty options.user_id' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDFILES_EMPTY_USER,
@@ -2329,6 +2705,14 @@
         return;
       }
       if (!fileList || !fileList.length || !fileList[0]) {
+        this._logger.log(
+          'info',
+          'sendFiles failed (code: ' +
+            Errors.SENDFILES_EMPTY_FILELIST +
+            ', message: ' +
+            'Empty fileList' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDFILES_EMPTY_FILELIST,
@@ -2592,6 +2976,14 @@
      */
     acceptFile: function(file_id, form, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'acceptFile failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2605,6 +2997,15 @@
       file_id = string(file_id);
       var fileInfo = this._fileInfos[file_id];
       if (!fileInfo || !fileInfo.file_id) {
+        this._logger.log(
+          'info',
+          'acceptFile failed (code: ' +
+            Errors.ACCEPTFILE_NOT_FOUND_FILE +
+            ', message: ' +
+            'Not found file_id=' +
+            file_id +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.ACCEPTFILE_NOT_FOUND_FILE,
@@ -2615,6 +3016,14 @@
         return;
       }
       if (fileInfo.isUpload || fileInfo.status !== 1) {
+        this._logger.log(
+          'info',
+          'acceptFile failed (code: ' +
+            Errors.ACCEPTFILE_INVALID_STATE +
+            ', message: ' +
+            'Invalid transfer state' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.ACCEPTFILE_INVALID_STATE,
@@ -2664,6 +3073,14 @@
      */
     acceptFileWithXhr: function(file_id, xhr, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'acceptFileWithXhr failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2677,6 +3094,15 @@
       file_id = string(file_id);
       var fileInfo = this._fileInfos[file_id];
       if (!fileInfo || !fileInfo.file_id) {
+        this._logger.log(
+          'info',
+          'acceptFileWithXhr failed (code: ' +
+            Errors.ACCEPTFILE_NOT_FOUND_FILE +
+            ', message: ' +
+            'Not found file_id=' +
+            file_id +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.ACCEPTFILE_NOT_FOUND_FILE,
@@ -2687,6 +3113,14 @@
         return;
       }
       if (fileInfo.isUpload || fileInfo.status !== 1) {
+        this._logger.log(
+          'info',
+          'acceptFileWithXhr failed (code: ' +
+            Errors.ACCEPTFILE_INVALID_STATE +
+            ', message: ' +
+            'Invalid transfer state' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.ACCEPTFILE_INVALID_STATE,
@@ -2738,6 +3172,14 @@
      */
     cancelFile: function(file_id, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'cancelFile failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2751,6 +3193,15 @@
       file_id = string(file_id);
       var fileInfo = this._fileInfos[file_id];
       if (!fileInfo || !fileInfo.file_id) {
+        this._logger.log(
+          'info',
+          'cancelFile failed (code: ' +
+            Errors.CANCELFILE_NOT_FOUND_FILE +
+            ', message: ' +
+            'Not found file_id=' +
+            file_id +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.CANCELFILE_NOT_FOUND_FILE,
@@ -2761,6 +3212,14 @@
         return;
       }
       if (fileInfo.status !== 1 && fileInfo.status !== 2) {
+        this._logger.log(
+          'info',
+          'cancelFile failed (code: ' +
+            Errors.CANCELFILE_INVALID_STATE +
+            ', message: ' +
+            'Invalid transfer state' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.CANCELFILE_INVALID_STATE,
@@ -2831,6 +3290,14 @@
      */
     sendObject: function(options, object, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendObject failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -2850,6 +3317,15 @@
       if (options.conf_id) {
         var conf_id = string(options.conf_id);
         if (!this._conferences[conf_id]) {
+          this._logger.log(
+            'info',
+            'sendObject failed (code: ' +
+              Errors.SENDCONFERENCETEXT_NOT_FOUND_CONF +
+              ', message: ' +
+              'Not found conf_id=' +
+              conf_id +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.SENDCONFERENCETEXT_NOT_FOUND_CONF,
@@ -2873,6 +3349,14 @@
           }
         }
         if (sendTextParams.target.length < 1) {
+          this._logger.log(
+            'info',
+            'sendObject failed (code: ' +
+              Errors.SENDTEXT_EMPTY_USER +
+              ', message: ' +
+              'Empty user_id' +
+              ')',
+          );
           if (funcError) {
             var ev = {
               code: Errors.SENDTEXT_EMPTY_USER,
@@ -2886,8 +3370,19 @@
 
       try {
         sendTextParams.text = JSON.stringify(object);
+        if (!sendTextParams.text) {
+          throw { message: 'object is invalid' };
+        }
       } catch (e) {
-        this._logger.log('warn', e.message + ' at sendObject');
+        this._logger.log(
+          'info',
+          'sendObject failed (code: ' +
+            Errors.SENDFILES_EMPTY_FILELIST +
+            ', message: ' +
+            e.message +
+            ' at sendObject' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDFILES_EMPTY_FILELIST,
@@ -3466,6 +3961,14 @@
      */
     sendCustomClientEvent: function(target, client_param, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'sendCustomClientEvent failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3477,6 +3980,14 @@
       }
 
       if (!target.user_id) {
+        this._logger.log(
+          'info',
+          'sendCustomClientEvent failed (code: ' +
+            Errors.SENDTYPING_EMPTY_USER +
+            ', message: ' +
+            'Empty target.user_id' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SENDTYPING_EMPTY_USER,
@@ -3507,6 +4018,14 @@
      */
     updateTag: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'updateTag failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3545,6 +4064,14 @@
      */
     searchTopicsByDate: function(date, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'searchTopicsByDate failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3556,6 +4083,14 @@
       }
 
       if (!date || !date.getTime || !date.getTime()) {
+        this._logger.log(
+          'info',
+          'searchTopicsByDate failed (code: ' +
+            Errors.SEARCHTOPICSBYDATE_INVALID_DATE +
+            ', message: ' +
+            'Invalid date' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SEARCHTOPICSBYDATE_INVALID_DATE,
@@ -3663,6 +4198,14 @@
      */
     searchLogsByTopic: function(topic_id, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'searchLogsByTopic failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3674,6 +4217,14 @@
       }
 
       if (!topic_id || !this._topics[topic_id]) {
+        this._logger.log(
+          'info',
+          'searchLogsByTopic failed (code: ' +
+            Errors.SEARCHLOGSBYTOPIC_INVALID_TOPIC +
+            ', message: ' +
+            'Invalid topic_id' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.SEARCHLOGSBYTOPIC_INVALID_TOPIC,
@@ -3729,6 +4280,14 @@
      */
     searchTopicsByCondition: function(condition, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'searchTopicsByCondition failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3829,6 +4388,14 @@
      */
     searchTopicTexts: function(topic_id, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'searchTopicTexts failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3884,6 +4451,14 @@
      */
     searchConferenceTexts: function(condition, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'searchConferenceTexts failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -3942,6 +4517,14 @@
      */
     searchTexts: function(condition, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'searchTexts failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4009,6 +4592,14 @@
      */
     getServerTime: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'getServerTime failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4049,6 +4640,14 @@
      */
     createGuestAccount: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'createGuestAccount failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4101,6 +4700,14 @@
      */
     loadSystemProperties: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'loadSystemProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4112,6 +4719,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'loadSystemProperties failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4158,6 +4773,14 @@
      */
     saveSystemProperties: function(systemProperties, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'saveSystemProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4169,6 +4792,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'saveSystemProperties failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4214,6 +4845,14 @@
      */
     loadTenantProperties: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'loadTenantProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4228,6 +4867,14 @@
         this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN &&
         this.getProfile().user_type !== Constants.USER_TYPE_TENANT_ADMIN
       ) {
+        this._logger.log(
+          'info',
+          'loadTenantProperties failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4266,6 +4913,14 @@
      */
     saveTenantProperties: function(tenantProperties, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'saveTenantProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4280,6 +4935,14 @@
         this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN &&
         this.getProfile().user_type !== Constants.USER_TYPE_TENANT_ADMIN
       ) {
+        this._logger.log(
+          'info',
+          'saveTenantProperties failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4316,6 +4979,14 @@
      */
     createTenantProperties: function(tenant, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'createTenantProperties failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4327,6 +4998,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'createTenantProperties failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4365,6 +5044,14 @@
      */
     createTenantListFromPbx: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'createTenantListFromPbx failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4376,6 +5063,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'createTenantListFromPbx failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4414,6 +5109,14 @@
      */
     loadTenantSettings: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'loadTenantSettings failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4425,6 +5128,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'loadTenantSettings failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4463,6 +5174,14 @@
      */
     saveTenantSettings: function(tenantSettings, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'saveTenantSettings failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4474,6 +5193,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'saveTenantSettings failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4510,6 +5237,14 @@
      */
     loadTenantListFromPbx: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'loadTenantListFromPbx failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4521,6 +5256,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'loadTenantListFromPbx failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4559,6 +5302,14 @@
      */
     loadAdvancedSettings: function(funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'loadAdvancedSettings failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4570,6 +5321,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'loadAdvancedSettings failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4612,6 +5371,14 @@
      */
     saveAdvancedSettings: function(advancedSettings, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'saveAdvancedSettings failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4623,6 +5390,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'saveAdvancedSettings failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4664,6 +5439,14 @@
      */
     prepareDebugLog: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'prepareDebugLog failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4675,6 +5458,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'prepareDebugLog failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4717,6 +5508,14 @@
      */
     cancelDebugLog: function(options, funcOK, funcError) {
       if (this._signInStatus !== 3) {
+        this._logger.log(
+          'info',
+          'cancelDebugLog failed (code: ' +
+            Errors.NOT_SIGNED_IN +
+            ', message: ' +
+            'Not signed-in' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.NOT_SIGNED_IN,
@@ -4728,6 +5527,14 @@
       }
 
       if (this.getProfile().user_type !== Constants.USER_TYPE_SYSTEM_ADMIN) {
+        this._logger.log(
+          'info',
+          'cancelDebugLog failed (code: ' +
+            Errors.INVALID_USER_TYPE +
+            ', message: ' +
+            'Invalid user_type' +
+            ')',
+        );
         if (funcError) {
           var ev = {
             code: Errors.INVALID_USER_TYPE,
@@ -4982,6 +5789,7 @@
         yyyymm: '',
         conf_type: '',
         conf_status: Constants.CONF_STATUS_INACTIVE,
+        conf_ext: '',
         from: {
           tenant: '',
           user_id: '',
@@ -5025,6 +5833,8 @@
           conference.created_server_time.substr(5, 2);
         conference.conf_type = string(this._conferences[conf_id].conf_type);
         conference.conf_status = int(this._conferences[conf_id].conf_status);
+        conference.conf_ext =
+          this.PREFIX_CONFERENCE_EXTENSION + conference.conf_id;
         if (this._conferences[conf_id].from) {
           conference.from.tenant = string(
             this._conferences[conf_id].from.tenant,
@@ -5494,6 +6304,11 @@
         clearTimeout(this._pingTimer);
         this._pingTimer = null;
       }
+
+      // stop report console
+      if (reportConsoleInfo) {
+        reportConsoleInfo.signedIn = false;
+      }
     },
     _signInNG: function(code, message, tstamp) {
       if (code) {
@@ -5536,6 +6351,31 @@
         this._byThis(this._keepAlive),
         this.CHECK_ALIVE_INTERVAL,
       );
+
+      // start report console
+      var optional_config = this.getConfigProperties().optional_config;
+      if (reportConsoleInfo && optional_config) {
+        Object.keys(reportConsoleInfo).forEach(function(key) {
+          if (typeof reportConsoleInfo[key] === typeof optional_config[key]) {
+            reportConsoleInfo[key] = optional_config[key];
+          }
+        });
+        if (
+          reportConsoleInfo.report_console &&
+          (reportConsoleInfo.report_console_guest ||
+            string(this._user_id)[0] !== '#')
+        ) {
+          reportConsoleInfo.myid = JSON.stringify({
+            tenant: this._tenant,
+            user_id: this._user_id,
+          });
+        } else {
+          reportConsoleInfo.myid = '';
+        }
+        reportConsoleInfo.expires =
+          new Date().getTime() + reportConsoleInfo.report_console_expiry / 2;
+        reportConsoleInfo.signedIn = true;
+      }
 
       if (this._signInFuncOK) {
         var ev = {
@@ -7784,6 +8624,234 @@
     return stringifyDate(new Date(int(tstamp)));
   };
 
+  var reportConsoleInfo = null;
+  var ReportConsole = function(options) {
+    if (reportConsoleInfo) {
+      return;
+    }
+    reportConsoleInfo = {
+      report_console: string(options && options.report_console),
+      report_console_guest: string(options && options.report_console_guest),
+      report_console_methods: string(options && options.report_console_methods),
+      report_console_pw: string(options && options.report_console_pw),
+      report_console_pw2: string(options && options.report_console_pw2),
+      myid: string(options && options.myid),
+      expires: int(options && options.expires),
+      signedIn: false,
+      report_console_queue_size: int(
+        (options && options.report_console_queue_size) || 500,
+      ),
+      report_console_interval: int(
+        (options && options.report_console_interval) || 100,
+      ),
+      report_console_expiry: int(
+        (options && options.report_console_expiry) || 86400000,
+      ),
+      report_console_categories:
+        options && typeof options.report_console_categories === 'string'
+          ? options.report_console_categories
+          : 'error,warn,info,log,debug,trace',
+      report_console_mode:
+        options && typeof options.report_console_mode === 'string'
+          ? options.report_console_mode
+          : 'login,jssip',
+    };
+    if (!reportConsoleInfo.expires) {
+      reportConsoleInfo.expires =
+        new Date().getTime() + reportConsoleInfo.report_console_expiry;
+    }
+    var queue = [];
+    var overflowed = false;
+    var output = function() {
+      var expired =
+        int(reportConsoleInfo && reportConsoleInfo.expires) <
+        new Date().getTime();
+      if (
+        reportConsoleInfo &&
+        reportConsoleInfo.signedIn &&
+        queue.length > 0 &&
+        (!expired || reportConsoleInfo.report_console_pw2)
+      ) {
+        if (reportConsoleInfo.myid) {
+          var data =
+            '\n' + reportConsoleInfo.myid + (overflowed ? '\noverflowed' : '');
+          var categories = string(
+            reportConsoleInfo.report_console_methods,
+          ).split(',');
+          data += queue.reduce(function(accumulator, currentValue) {
+            if (categories.indexOf(currentValue.category) >= 0) {
+              return accumulator + '\n' + currentValue.message;
+            } else {
+              return accumulator;
+            }
+          }, '');
+          var xhr = new XMLHttpRequest();
+          xhr.open(
+            'POST',
+            location.protocol +
+              '//' +
+              location.host +
+              '/' +
+              location.pathname.split('/')[1] +
+              '/lds',
+          );
+          xhr.setRequestHeader(
+            'Content-Type',
+            'application/x-www-form-urlencoded',
+          );
+          var body =
+            'pw=' +
+            encodeURIComponent(reportConsoleInfo.report_console_pw) +
+            '&data=' +
+            encodeURIComponent(encodeURIComponent(data));
+          if (expired) {
+            body += '&renew=' + reportConsoleInfo.report_console_pw2;
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                  var pws = string(xhr.responseText).split(',');
+                  if (reportConsoleInfo && pws[0] && pws[1]) {
+                    reportConsoleInfo.report_console_pw = pws[0];
+                    reportConsoleInfo.report_console_pw2 = pws[1];
+                    reportConsoleInfo.expires =
+                      new Date().getTime() +
+                      reportConsoleInfo.report_console_expiry / 2;
+                  }
+                }
+              }
+            };
+          }
+          xhr.send(body);
+        }
+        queue.length = 0;
+        overflowed = false;
+      }
+    };
+    var timer = null;
+    var toHack = [];
+    // override console[category]
+    reportConsoleInfo.report_console_categories
+      .split(',')
+      .forEach(function(category) {
+        if (typeof console[category] === 'function') {
+          var orgFunc = console[category];
+          console[category] = function() {
+            orgFunc.apply(console, arguments);
+            var msg = arguments[0];
+            if (arguments.length >= 2) {
+              try {
+                msg = Array.prototype.reduce.call(
+                  arguments,
+                  function(accumulator, currentValue) {
+                    if (accumulator) {
+                      accumulator += '\n |||\n';
+                    }
+                    accumulator += currentValue;
+                    if (typeof currentValue === 'object') {
+                      try {
+                        accumulator += JSON.stringify(currentValue);
+                      } catch (e) {}
+                    }
+                    return accumulator;
+                  },
+                  '',
+                );
+              } catch (e) {}
+            }
+            var now = new Date();
+            queue.push({
+              category: category,
+              message:
+                '(' +
+                ('0' + now.getHours()).slice(-2) +
+                ('0' + now.getMinutes()).slice(-2) +
+                ('0' + now.getSeconds()).slice(-2) +
+                '.' +
+                ('00' + now.getMilliseconds()).slice(-3) +
+                ')' +
+                category[0] +
+                msg,
+            });
+            if (queue.length > reportConsoleInfo.report_console_queue_size) {
+              queue.shift();
+              overflowed = true;
+            }
+            if (!timer) {
+              timer = setInterval(
+                output,
+                reportConsoleInfo.report_console_interval,
+              );
+            }
+            toHack = toHack.filter(function(f) {
+              return f();
+            });
+          };
+        }
+      });
+    // get pw for dumping logs of login screen
+    if (
+      reportConsoleInfo.report_console_mode.split(',').indexOf('login') != -1
+    ) {
+      var xhr = new XMLHttpRequest();
+      xhr.open(
+        'POST',
+        location.protocol +
+          '//' +
+          location.host +
+          '/' +
+          location.pathname.split('/')[1] +
+          '/lds',
+      );
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      var body = 'anonymous=true';
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              var newReportConsoleInfo = JSON.parse(xhr.responseText);
+              Object.keys(reportConsoleInfo).forEach(function(key) {
+                if (
+                  typeof reportConsoleInfo[key] ===
+                  typeof newReportConsoleInfo[key]
+                ) {
+                  reportConsoleInfo[key] = newReportConsoleInfo[key];
+                }
+              });
+            } catch (e) {}
+          }
+        }
+      };
+      xhr.send(body);
+    }
+    // hack jssip (after jssip loaded)
+    if (
+      reportConsoleInfo.report_console_mode.split(',').indexOf('jssip') != -1
+    ) {
+      toHack.push(function() {
+        if (
+          typeof JsSIP !== 'undefined' &&
+          JsSIP.debug &&
+          JsSIP.debug.instances &&
+          JsSIP.debug.instances.length
+        ) {
+          Array.prototype.forEach.call(JsSIP.debug.instances, function(
+            debug_instance,
+          ) {
+            if (debug_instance && debug_instance.useColors) {
+              debug_instance.useColors = false;
+            }
+          });
+          return false;
+        } else {
+          return true;
+        }
+      });
+    }
+    toHack = toHack.filter(function(f) {
+      return f();
+    });
+  };
+
   var CryptoJS = (function() {
     /**
      * @license
@@ -8160,6 +9228,7 @@ code.google.com/p/crypto-js/wiki/License
   UCClient.Errors = Errors;
   UCClient.Constants = Constants;
   UCClient.Events = Events;
+  UCClient.ReportConsole = ReportConsole;
   UCClient.CryptoJS = CryptoJS;
 
   /*

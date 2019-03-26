@@ -35,6 +35,7 @@ module.exports = {
           // Override the root config .babelrc.js
           options: {
             presets: [
+              //
               '@babel/preset-env',
               '@babel/preset-react',
             ],
