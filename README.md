@@ -8,6 +8,8 @@ yarn install
 
 # Start the metro bundler and let it running
 react-native start
+# Error: Unable to resolve module `./index.native` from `.../react-native/...`
+react-native start --reset-cache
 ```
 
 

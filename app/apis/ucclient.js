@@ -1,3 +1,5 @@
+import Url from 'url-parse';
+
 /*
  * require jsonrpc.js
  * require jssip-0.4.2.js (optional)
@@ -11,6 +13,9 @@
     root.Brekeke.UCClient = factory(root.Brekeke);
   }
 })(this, function(Brekeke) {
+  // Fix location for react native
+  var location = window.location || new Url('https://apps.brekeke.com:8443/uc');
+
   var UCClient = {},
     ChatClient,
     Errors = {
@@ -296,6 +301,9 @@
       funcOK,
       funcError,
     ) {
+      // Fix location for react native
+      location = window.location || new Url(host + '/' + path);
+
       if (this._signInStatus === 2) {
         this._logger.log(
           'info',
