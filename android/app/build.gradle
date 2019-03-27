@@ -76,6 +76,8 @@ project.ext.react = [
   entryFile: "index.native.js"
 ]
 
+apply from: "../../node_modules/react-native/react.gradle"
+
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -92,35 +94,38 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  //
   signingConfigs {
     development {
-      keyAlias "development"
-      keyPassword "codelyoko"
-      storeFile file("../keystores/development.jks")
-      storePassword "codelyoko"
+      storeFile file(DEV_STORE_FILE)
+      keyAlias DEV_KEY_ALIAS
+      storePassword DEV_STORE_PASSWORD
+      keyPassword DEV_KEY_PASSWORD
     }
     release {
-      if (project.hasProperty("MYAPP_RELEASE_STORE_FILE")) {
-        storeFile file(MYAPP_RELEASE_STORE_FILE)
-        storePassword MYAPP_RELEASE_STORE_PASSWORD
-        keyAlias MYAPP_RELEASE_KEY_ALIAS
-        keyPassword MYAPP_RELEASE_KEY_PASSWORD
-      }
+      storeFile file(RELEASE_STORE_FILE)
+      keyAlias RELEASE_KEY_ALIAS
+      storePassword RELEASE_STORE_PASSWORD
+      keyPassword RELEASE_KEY_PASSWORD
     }
   }
-  compileSdkVersion 28
-  buildToolsVersion "28.0.1"
+  //
   defaultConfig {
     applicationId "com.brekeke.phone"
-    minSdkVersion 16
-    targetSdkVersion 28
     versionCode 30000
     versionName "3.0.0"
+    targetSdkVersion rootProject.ext.targetSdkVersion
     ndk {
       abiFilters "armeabi-v7a", "x86"
     }
     signingConfig signingConfigs.development
   }
+  //
   splits {
     abi {
       reset()
@@ -129,13 +134,13 @@ android {
       include "armeabi-v7a", "x86"
     }
   }
+  //
   buildTypes {
-    debug {
-    }
     release {
       minifyEnabled enableProguardInReleaseBuilds
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
       signingConfig signingConfigs.release
+      debuggable true
     }
   }
   // applicationVariants are e.g. debug, release
@@ -150,17 +155,14 @@ android {
       }
     }
   }
-  productFlavors {
-  }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
+  //
 }
 
 dependencies {
   compile fileTree(include: ["*.jar"], dir: "libs")
+  compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
   compile "com.facebook.react:react-native:+"
+  //
   compile (project(":react-native-camera")) {
     exclude group: "com.google.android.gms"
     exclude group: "com.android.support"
@@ -176,6 +178,7 @@ dependencies {
   compile project(":react-native-keep-awake")
   compile project(":react-native-video")
   compile project(":react-native-webrtc")
+
 }
 
 // Run this once to be able to run the application with BUCK
@@ -185,6 +188,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
   into "libs"
 }
 
-// ADD THIS AT THE BOTTOM
 apply plugin: "com.google.gms.google-services"
-// com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true

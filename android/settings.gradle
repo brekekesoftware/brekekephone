@@ -1,4 +1,4 @@
-rootProject.name = 'Phone'
+rootProject.name = 'BrekekePhone'
 include ':app'
 
 include ':react-native-camera'
