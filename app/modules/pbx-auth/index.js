@@ -82,7 +82,6 @@ const mapGetter = getter => state => {
       password: profile.pbxPassword,
       parks: profile.parks,
       accessToken: profile.accessToken,
-      wsUri: profile.wsUri,
     },
   };
 };

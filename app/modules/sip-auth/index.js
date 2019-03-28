@@ -120,7 +120,6 @@ const mapGetter = getter => state => {
     pbxTenant: profile.pbxTenant,
     pbxUsername: profile.pbxUsername,
     accessToken: profile.accessToken,
-    wsUri: profile.wsUri,
     started: getter.auth.sip.started(state),
     stopped: getter.auth.sip.stopped(state),
     success: getter.auth.sip.success(state),

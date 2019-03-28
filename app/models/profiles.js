@@ -14,7 +14,6 @@ const allowedToCreateFields = [
   'ucHostname',
   'ucPort',
   'accessToken',
-  'wsUri',
 ];
 const validateCreatingData = data => pick(data, allowedToCreateFields);
 
@@ -29,7 +28,6 @@ const allowedToUpdateFields = [
   'ucHostname',
   'ucPort',
   'accessToken',
-  'wsUri',
 ];
 const validateUpdatingData = data => pick(data, allowedToUpdateFields);
 
