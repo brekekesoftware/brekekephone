@@ -19,6 +19,7 @@ const allowedToUpdateProps = [
   'answered',
   'holding',
   'recording',
+  'loudspeaker',
   'transfering',
   'partyName',
   'partyNumber',

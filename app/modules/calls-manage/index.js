@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import createID from 'shortid';
 import UI from './ui';
+import LoudSpeaker from 'react-native-loud-speaker';
+
+
 
 const mapGetter = getter => state => ({
   runningIds: getter.runningCalls.idsByOrder(state),
@@ -143,29 +146,47 @@ class View extends Component {
 
   render() {
     return (
-      <UI
-        selectedId={this.props.selectedId}
-        runningIds={this.props.runningIds}
-        runningById={this.props.runningById}
-        parkingIds={this.props.parkingIds}
-        browseHistory={this.props.routeToCallsRecent}
-        create={this.props.routeToCallsCreate}
-        select={this.props.selectCall}
-        hangup={this.hangup}
-        answer={this.answer}
-        hold={this.hold}
-        unhold={this.unhold}
-        startRecording={this.startRecording}
-        stopRecording={this.stopRecording}
-        transfer={this.transfer}
-        dtmf={this.dtmf}
-        unpark={this.unpark}
-        park={this.park}
-        enableVideo={this.enableVideo}
-        disableVideo={this.disableVideo}
-      />
+        <UI
+            selectedId={this.props.selectedId}
+            runningIds={this.props.runningIds}
+            runningById={this.props.runningById}
+            parkingIds={this.props.parkingIds}
+            browseHistory={this.props.routeToCallsRecent}
+            create={this.props.routeToCallsCreate}
+            select={this.props.selectCall}
+            hangup={this.hangup}
+            answer={this.answer}
+            hold={this.hold}
+            unhold={this.unhold}
+            startRecording={this.startRecording}
+            stopRecording={this.stopRecording}
+            transfer={this.transfer}
+            dtmf={this.dtmf}
+            unpark={this.unpark}
+            park={this.park}
+            enableVideo={this.enableVideo}
+            disableVideo={this.disableVideo}
+            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+            onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+        />
     );
   }
+
+  onOpenLoudSpeaker = () => {
+    LoudSpeaker.open(true);
+    this.props.updateCall({
+      id: this.props.selectedId,
+      loudspeaker: true,
+    });
+  };
+
+  onCloseLoudSpeaker = () => {
+    LoudSpeaker.open(false);
+    this.props.updateCall({
+      id: this.props.selectedId,
+      loudspeaker: false,
+    });
+  };
 
   hangup = () => {
     const { sip } = this.context;
@@ -181,8 +202,8 @@ class View extends Component {
     const { pbx } = this.context;
     const call = this.props.runningById[this.props.selectedId];
     pbx
-      .holdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onHoldSuccess, this.onHoldFailure);
+        .holdTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onHoldSuccess, this.onHoldFailure);
   };
 
   onHoldSuccess = () => {
@@ -201,8 +222,8 @@ class View extends Component {
     const { pbx } = this.context;
     const call = this.props.runningById[this.props.selectedId];
     pbx
-      .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onUnholdSuccess, this.onUnholdFailure);
+        .unholdTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onUnholdSuccess, this.onUnholdFailure);
   };
 
   onUnholdSuccess = () => {
@@ -221,8 +242,8 @@ class View extends Component {
     const { pbx } = this.context;
     const call = this.props.runningById[this.props.selectedId];
     pbx
-      .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStartRecordingSuccess, this.onStartRecordingFailure);
+        .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onStartRecordingSuccess, this.onStartRecordingFailure);
   };
 
   onStartRecordingSuccess = () => {
@@ -241,8 +262,8 @@ class View extends Component {
     const { pbx } = this.context;
     const call = this.props.runningById[this.props.selectedId];
     pbx
-      .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStopRecordingSuccess, this.onStopRecordingFailure);
+        .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onStopRecordingSuccess, this.onStopRecordingFailure);
   };
 
   onStopRecordingSuccess = () => {
