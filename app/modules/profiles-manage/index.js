@@ -243,7 +243,6 @@ class View extends Component {
     // _prtenant
     // _pruser
     const {
-      url,
       tenant,
       user,
       _wn,
@@ -260,9 +259,6 @@ class View extends Component {
     });
     const u = this.props.profileById[uid];
     if (u) {
-      if (url) {
-        u.wsUri = url;
-      }
       if (_wn) {
         u.accessToken = _wn;
       }
@@ -282,8 +278,6 @@ class View extends Component {
     }
     //
     const newU = {
-      //
-      wsUri: url,
       //
       id: createID(),
       pbxTenant: tenant,

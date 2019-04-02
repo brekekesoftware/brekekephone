@@ -68,7 +68,6 @@ export default createModel({
             'ucHostname',
             'ucPort',
             'accessToken',
-            'wsUri',
           ]),
         ),
       ),

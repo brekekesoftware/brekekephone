@@ -68,4 +68,5 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] It goes down when it fails to connect - at least with iOS editon (when we have wrong settings or when we reconnect after the sleep mode)
 - [ ] UC doesn't work (cannot even show the user's list ) when we have made a group on the body list with the desktop version of UC
 - [ ] Add a feature to switch to the loud speaker (and back to the front speaker)
+- [ ] Fix header space is too small so it becomes overflow by the status bar. Currently we are using `StatusBar` component, but can consider to use `SafeAreaView` instead.
 - [ ] Join to group chat call (video/voice). if we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || ( ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id );`
