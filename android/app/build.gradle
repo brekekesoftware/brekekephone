@@ -160,6 +160,7 @@ android {
 
 dependencies {
   compile fileTree(include: ["*.jar"], dir: "libs")
+  compile project(':react-native-loud-speaker')
   compile "com.facebook.react:react-native:+"
   compile (project(":react-native-camera")) {
     exclude group: "com.google.android.gms"
