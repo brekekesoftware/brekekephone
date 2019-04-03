@@ -38,7 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
         new RNCameraPackage(),
         new RNFSPackage(),
         new WebRTCModulePackage(),
-        new LoudSpeakerPackage(),
+        new LoudSpeakerPackage()
       );
     }
 

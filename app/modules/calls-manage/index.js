@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import createID from 'shortid';
 import UI from './ui';
-import LoudSpeaker from 'react-native-loud-speaker';
+import LoudSpeaker from './LoudSpeaker';
 
 const mapGetter = getter => state => ({
   runningIds: getter.runningCalls.idsByOrder(state),
