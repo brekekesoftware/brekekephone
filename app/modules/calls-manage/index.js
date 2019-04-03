@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import createID from 'shortid';
 import UI from './ui';
+import LoudSpeaker from './LoudSpeaker';
 
 const mapGetter = getter => state => ({
   runningIds: getter.runningCalls.idsByOrder(state),
@@ -163,9 +164,27 @@ class View extends Component {
         park={this.park}
         enableVideo={this.enableVideo}
         disableVideo={this.disableVideo}
+        onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+        onCloseLoudSpeaker={this.onCloseLoudSpeaker}
       />
     );
   }
+
+  onOpenLoudSpeaker = () => {
+    LoudSpeaker.open(true);
+    this.props.updateCall({
+      id: this.props.selectedId,
+      loudspeaker: true,
+    });
+  };
+
+  onCloseLoudSpeaker = () => {
+    LoudSpeaker.open(false);
+    this.props.updateCall({
+      id: this.props.selectedId,
+      loudspeaker: false,
+    });
+  };
 
   hangup = () => {
     const { sip } = this.context;

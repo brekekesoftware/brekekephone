@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Platform,
   StyleSheet,
   View,
   ScrollView,
@@ -330,6 +331,26 @@ const Control = p => (
           </Text>
         </View>
       )}
+      {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== 'web' && (
+        <View style={st.actionIcon}>
+          <Button style={st.controlOpt} onPress={p.onOpenLoudSpeaker}>
+            <Text style={st.optIconAction}>icon_volume_2</Text>
+          </Button>
+          <Text style={st.tipText} onPress={p.onOpenLoudSpeaker}>
+            Loud
+          </Text>
+        </View>
+      )}
+      {p.answered && !p.holding && p.loudspeaker && Platform.OS !== 'web' && (
+        <View style={st.actionIcon}>
+          <Button style={st.controlOpt} onPress={p.onCloseLoudSpeaker}>
+            <Text style={st.optIconAction}>icon_volume_1</Text>
+          </Button>
+          <Text style={st.tipText} onPress={p.onCloseLoudSpeaker}>
+            Normal
+          </Text>
+        </View>
+      )}
       {p.answered && !p.holding && (
         <View style={st.actionIcon}>
           <Button style={st.controlOpt} onPress={p.hold}>
@@ -433,6 +454,8 @@ const CallsManage = p => (
         park={p.park}
         enableVideo={p.enableVideo}
         disableVideo={p.disableVideo}
+        onOpenLoudSpeaker={p.onOpenLoudSpeaker}
+        onCloseLoudSpeaker={p.onCloseLoudSpeaker}
       />
     ) : (
       <ControlPlaceholder />

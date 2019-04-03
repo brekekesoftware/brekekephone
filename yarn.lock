@@ -6210,6 +6210,11 @@ react-native-keep-awake@2.0.5:
   resolved "https://registry.yarnpkg.com/react-native-keep-awake/-/react-native-keep-awake-2.0.5.tgz#b1ff5667611c018c44b285b855f32e93b1c16fd9"
   integrity sha512-Uo0Dw4S0H4njBGg9dpMevI9RsKZumwUxyVXJ3pa0fSUheQGnwoaUrBG953XAu4KDgWIRW4BfrDtoaEmoOAt3lg==
 
+react-native-loud-speaker@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-loud-speaker/-/react-native-loud-speaker-1.0.4.tgz#e3cca90a095cfe971f61ce3db4bfc31b64323788"
+  integrity sha512-DFiQpzEBmaK0TWSSklKegDJrJ48dh+YAROT/OU2IgUBOM+KvehHbz5tM7T5xdmJzSfpRd5b4F8uDyxXMHbSuHQ==
+
 react-native-permissions@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.0.6.tgz#504f01728191431ad4b82895c4a349981fb5802b"
