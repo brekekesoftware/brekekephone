@@ -331,7 +331,7 @@ const Control = p => (
           </Text>
         </View>
       )}
-      {p.answered && !p.holding && !p.loudspeaker && Platform.OS != 'web' && (
+      {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== 'web' && (
         <View style={st.actionIcon}>
           <Button style={st.controlOpt} onPress={p.onOpenLoudSpeaker}>
             <Text style={st.optIconAction}>icon_volume_2</Text>
@@ -341,7 +341,7 @@ const Control = p => (
           </Text>
         </View>
       )}
-      {p.answered && !p.holding && p.loudspeaker && Platform.OS != 'web' && (
+      {p.answered && !p.holding && p.loudspeaker && Platform.OS !== 'web' && (
         <View style={st.actionIcon}>
           <Button style={st.controlOpt} onPress={p.onCloseLoudSpeaker}>
             <Text style={st.optIconAction}>icon_volume_1</Text>
