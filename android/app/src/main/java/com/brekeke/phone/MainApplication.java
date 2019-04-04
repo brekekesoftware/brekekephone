@@ -12,12 +12,12 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.google.firebase.FirebaseApp;
+import com.loudspeaker.LoudSpeakerPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
 import org.reactnative.camera.RNCameraPackage;
-import com.loudspeaker.LoudSpeakerPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -33,12 +33,12 @@ public class MainApplication extends Application implements ReactApplication {
         new FIRMessagingPackage(),
         new InCallManagerPackage(),
         new KCKeepAwakePackage(),
+        new LoudSpeakerPackage(),
         new MainReactPackage(),
         new ReactVideoPackage(),
         new RNCameraPackage(),
         new RNFSPackage(),
-        new WebRTCModulePackage(),
-        new LoudSpeakerPackage()
+        new WebRTCModulePackage()
       );
     }
 
