@@ -4,12 +4,19 @@ import { std } from '../styleguide';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 const st = StyleSheet.create({
-  bar: {
-    height: getStatusBarHeight(),
-    backgroundColor: std.color.shade3,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: std.color.shade4,
-  },
+  bar: Platform.select({
+    ios: {
+      height: getStatusBarHeight(),
+      backgroundColor: std.color.shade3,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderColor: std.color.shade4,
+    },
+    android: {
+      backgroundColor: std.color.shade3,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderColor: std.color.shade4,
+    },
+  }),
 });
 
 export default () => (
