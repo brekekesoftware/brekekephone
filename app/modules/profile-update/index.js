@@ -121,9 +121,36 @@ class View extends Component {
     !this.state.pbxPassword ||
     (this.state.ucEnabled && (!this.state.ucHostname || !this.state.ucPort));
 
+  validate_info = () => {
+    let special_characters = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    if (
+      special_characters.test(this.state.pbxHostname[0]) ||
+      special_characters.test(this.state.pbxHostname.slice(-1)) ||
+      this.state.pbxHostname.length > 255
+    ) {
+      // hostname start and end as special character  and length > 255
+      return { status: false, message: 'Hostname incorrect format' };
+    }
+    if (!/^[0][1-9]\d{0,4}$|^[1-9]\d{0,4}$/i.test(this.state.pbxPort)) {
+      // max port 65536
+      return { status: false, message: 'Port incorrect format' };
+    }
+    if (this.state.pbxPassword.length < 6) {
+      // length password >= 6
+      return { status: false, message: 'Password must be least 6 characters' };
+    }
+    return { status: true, message: '' };
+  };
+
   save = () => {
     if (this.missingRequired()) {
       this.props.showToast('Missing required fields');
+      return;
+    }
+
+    let valid_info = this.validate_info();
+    if (valid_info.status === false) {
+      this.props.showToast(valid_info.message);
       return;
     }
 
