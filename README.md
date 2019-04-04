@@ -5,6 +5,8 @@
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
 cd \path\to\test-brekeke-phone
 yarn install
+# Sometimes we need to clear yarn cache as well (we use git repo instead of npm with jssip and some other forks as well, yarn has issue with those git repos sometimes)
+yarn cache clean
 
 # Start the metro bundler and let it running
 react-native start
