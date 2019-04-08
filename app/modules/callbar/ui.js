@@ -233,6 +233,8 @@ const Callbar = function(p) {
           activecallid={p.activecallid}
           activecall={p.runningById[p.activecallid]}
           pressCallsManage={p.pressCallsManage}
+          onOpenLoudSpeaker={p.onOpenLoudSpeaker}
+          onCloseLoudSpeaker={p.onCloseLoudSpeaker}
         />
       )}
     </View>
@@ -272,6 +274,23 @@ const RunningItem = p => (
         <Text style={st.optIconDanger}>icon_phone_hang</Text>
       </Button>
     )}
+    {p.activecall.answered &&
+      !p.activecall.holding &&
+      !p.activecall.loudspeaker &&
+      Platform.OS !== 'web' && (
+        <Button style={st.callOpt} onPress={p.onOpenLoudSpeaker}>
+          <Text style={st.optIconAction}>icon_volume_2</Text>
+        </Button>
+      )}
+    {p.activecall.answered &&
+      !p.activecall.holding &&
+      p.activecall.loudspeaker &&
+      Platform.OS !== 'web' && (
+        <Button style={st.callOpt} onPress={p.onCloseLoudSpeaker}>
+          <Text style={st.optIconAction}>icon_volume_1</Text>
+        </Button>
+      )}
+
     {p.activecall.answered && !p.activecall.holding && (
       <Button style={st.callOpt} onPress={p.hold}>
         <Text style={st.optIconAction}>icon_pause</Text>

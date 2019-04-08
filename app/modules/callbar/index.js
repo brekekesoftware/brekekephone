@@ -3,6 +3,7 @@ import { createModelView } from 'redux-model';
 import UI from './ui';
 import PropTypes from 'prop-types';
 import createID from 'shortid';
+import LoudSpeaker from '../../modules/calls-manage/LoudSpeaker';
 
 const mapGetter = getter => state => ({
   chatsEnabled: (getter.auth.profile(state) || {}).ucEnabled,
@@ -65,8 +66,28 @@ class View extends Component {
       hold={this.hold}
       unhold={this.unhold}
       pathname={this.props.location.pathname}
+      onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+      onCloseLoudSpeaker={this.onCloseLoudSpeaker}
     />
   );
+
+  onOpenLoudSpeaker = () => {
+    const activecallid = this.state.activecallid;
+    LoudSpeaker.open(true);
+    this.props.updateCall({
+      id: activecallid,
+      loudspeaker: true,
+    });
+  };
+
+  onCloseLoudSpeaker = () => {
+    const activecallid = this.state.activecallid;
+    LoudSpeaker.open(false);
+    this.props.updateCall({
+      id: activecallid,
+      loudspeaker: false,
+    });
+  };
 
   hangup = () => {
     const { sip } = this.context;
