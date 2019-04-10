@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createID from 'shortid';
 import UI from './ui';
+import validateHostname from '../../util/validateHostname';
+import validatePort from '../../util/validatePort';
 
 const mapGetter = getter => (state, props) => ({
   profile: getter.profiles.detailMapById(state)[props.match.params.profile],
@@ -126,6 +128,16 @@ class View extends Component {
       this.props.showToast('Missing required fields');
       return;
     }
+    const hostRes = validateHostname(this.state.pbxHostname);
+    const portRes = validatePort(this.state.pbxPort);
+    if (hostRes.status === false) {
+      this.props.showToast(hostRes.message);
+      return;
+    }
+    if (portRes.status === false) {
+      this.props.showToast(portRes.message);
+      return;
+    }
 
     const pbxHostname = this.state.pbxHostname.trim();
     const pbxPort = this.state.pbxPort.trim();
@@ -134,7 +146,7 @@ class View extends Component {
     const pbxPassword = this.state.pbxPassword.trim();
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
-    let parks = [];
+    const parks = [];
     for (let i = 0; i < this.state.parks.length; i++) {
       parks.push(this.state.parks[i].trim());
     }
