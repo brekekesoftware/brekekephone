@@ -326,7 +326,7 @@ class PBX extends EventEmitter {
           command: 'add',
           application_id: data.app,
           endpoint: data.id,
-          service_id: '2',
+          service_id: '12',
           username: data.user,
           user_agent: 'react-native',
           device_id: data.device,
@@ -338,7 +338,7 @@ class PBX extends EventEmitter {
       new Promise((resolve, reject) => {
         this.client.pnmanage(
           {
-            service_id: '1',
+            service_id: '11',
             application_id: 'com.brekeke.phone',
             command: 'add',
             username,
@@ -356,7 +356,7 @@ class PBX extends EventEmitter {
           command: 'add',
           application_id: data.app,
           endpoint: data.id,
-          service_id: '3',
+          service_id: '13',
           username: data.user,
           auth_secret: data.auth,
           key: data.p256dh,
