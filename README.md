@@ -17,6 +17,13 @@ react-native start --reset-cache
 ```
 
 
+### Keystores and other credentials keys
+- You need to contact us to download or generate your own following files:
+  - `android/app/google-services.json`
+  - `android/keystores/development.keystore`
+  - `android/keystores/release.keystore`
+
+
 ### Android on Windows
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
   - `%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools`
