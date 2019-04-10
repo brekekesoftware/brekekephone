@@ -128,14 +128,14 @@ class View extends Component {
       this.props.showToast('Missing required fields');
       return;
     }
-    let valid_hostname = validateHostname(this.state.pbxHostname);
-    let valid_port = validatePort(this.state.pbxPort);
-    if (valid_hostname.status === false) {
-      this.props.showToast(valid_hostname.message);
+    const hostRes = validateHostname(this.state.pbxHostname);
+    const portRes = validatePort(this.state.pbxPort);
+    if (hostRes.status === false) {
+      this.props.showToast(hostRes.message);
       return;
     }
-    if (valid_port.status === false) {
-      this.props.showToast(valid_port.message);
+    if (portRes.status === false) {
+      this.props.showToast(portRes.message);
       return;
     }
 
@@ -146,7 +146,7 @@ class View extends Component {
     const pbxPassword = this.state.pbxPassword.trim();
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
-    let parks = [];
+    const parks = [];
     for (let i = 0; i < this.state.parks.length; i++) {
       parks.push(this.state.parks[i].trim());
     }

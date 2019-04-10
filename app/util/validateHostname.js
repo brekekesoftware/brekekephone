@@ -1,12 +1,13 @@
-export default function validateHostname(host_name) {
-  let special_characters = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+const validateHostname = hostname => {
   if (
-    special_characters.test(host_name[0]) ||
-    special_characters.test(host_name.slice(-1)) ||
-    host_name.length > 255
+    /^\W/.test(hostname) // special character at the beginning => invalid
+    || /\W$/.test(hostname) // special character at the end => invalid
+    || /[^\w-]{2,}/.test(hostname) // two special characters near to each other => invalid
+    || hostname.length > 255 // too long => invalid
   ) {
-    // hostname start and end as special character  and length > 255
-    return { status: false, message: 'Hostname is invalid' };
+    return { status: false, message: 'Host name is invalid' };
   }
   return { status: true, message: '' };
-}
+};
+
+export default validateHostname;

@@ -1,7 +1,12 @@
-export default function validatePort(port) {
-  if (!/^[0][1-9]\d{0,4}$|^[1-9]\d{0,4}$/i.test(port)) {
-    //  port 0-65536
+const validatePort = port => {
+  if (
+      /\D/.test(port) // non numeric character => invalid
+      || /^0/.test(port) // starts with 0 => invalid
+      || parseInt(port) > 65535 // greater than max => invalid
+    ) {
     return { status: false, message: 'Port is invalid' };
   }
   return { status: true, message: '' };
-}
+};
+
+export default validatePort;
