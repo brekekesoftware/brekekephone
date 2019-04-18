@@ -1,9 +1,0 @@
-{
-  "name": "Brekeke Phone",
-  "short_name": "Phone",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "gcm_sender_id.org": "869467672551",
-  "gcm_sender_id": "690724857431",
-  "gcm_user_visible_only": true
-}

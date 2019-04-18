@@ -7,7 +7,6 @@ import sip from './sip';
 import uc from './uc';
 import FCM, { FCMEvent } from 'react-native-fcm';
 import subscribePn from '../util/subscribe-pn';
-import manifest from '../manifest.web.json';
 import fmtKey from '../util/uint8array-to-url-base64';
 import { Platform } from 'react-native';
 import { getApnsToken } from '../push-notification/apns';
@@ -66,7 +65,7 @@ const mapAction = action => emit => ({
           await pbx.endpoint.web({
             id: sub.endpoint,
             user: webPhoneId,
-            app: manifest.gcm_sender_id,
+            app: '22177122297',
             p256dh: fmtKey(sub.getKey('p256dh')),
             auth: fmtKey(sub.getKey('auth')),
           });
@@ -80,7 +79,7 @@ const mapAction = action => emit => ({
           const deviceToken = await FCM.getFCMToken();
           await pbx.endpoint.fcm({
             user: webPhoneId,
-            app: manifest.gcm_sender_id,
+            app: '22177122297',
             device: deviceToken,
           });
 
