@@ -49,6 +49,7 @@ export default createModel({
         immutable.fset('idsByOrder', ids => [...ids, call.id]),
         immutable.vset(`detailMapById.${call.id}`, validateCreatingCall(call)),
       );
+      console.warn(obj);
       return obj;
     },
     update: function(state, call) {

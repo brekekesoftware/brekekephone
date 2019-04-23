@@ -387,7 +387,7 @@ class APIProvider extends Component {
 
   onSIPSessionStarted = call => {
     const number = call.partyNumber;
-
+    console.warn('vao ham onSIPSessionStarted 1');
     if (number === '8') {
       call.partyName = 'Voicemails';
     }
@@ -397,7 +397,7 @@ class APIProvider extends Component {
       const pbxUser = pbxUserById[number];
       call.partyName = pbxUser ? pbxUser.name : 'Unnamed';
     }
-
+    console.warn(call);
     this.props.createRunningCall(call);
   };
 

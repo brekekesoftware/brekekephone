@@ -86,6 +86,7 @@ const numberOfChatsPerLoad = 50;
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
+    sip: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -96,6 +97,7 @@ class View extends Component {
   };
 
   state = {
+    target: {},
     loadingRecent: false,
     loadingMore: false,
     editingText: '',
@@ -124,11 +126,11 @@ class View extends Component {
       back={this.props.routeToChatsRecent}
       leave={this.leave}
       invite={this.invite}
+      callVoice={this.callVoice}
     />
   );
 
   me = this.context.uc.me();
-
   resolveBuddy = creator => {
     if (creator === this.me.id) return this.me;
 
@@ -273,6 +275,31 @@ class View extends Component {
   invite = () => {
     const groupId = this.props.group.id;
     this.props.routeToChatGroupInvite(groupId);
+  };
+
+  call = (target, bVideoEnabled) => {
+    const { sip } = this.context;
+    console.warn(this.context);
+    sip.createSession(target, {
+      videoEnabled: bVideoEnabled,
+    });
+  };
+
+  callVoice = match => {
+    console.warn('vao day call');
+    const { group } = this.props;
+    console.warn(group);
+    const target = '34453463';
+    console.warn(target);
+    // this.call(target, false);
+
+    // var number = this.cl.getConference(group.id).conf_ext || ( this.cl.PREFIX_CONFERENCE_EXTENSION + group.id );
+    // console.warn(number);
+    this.call(target, false);
+  };
+
+  setTarget = target => {
+    this.setState({ target });
   };
 }
 

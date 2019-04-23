@@ -230,6 +230,7 @@ if (!window.Brekeke.WebrtcClient) {
      * function startWebRTC
      */
     startWebRTC: function(configuration) {
+      console.warn('vao ham startWebRTC');
       var auth = '',
         url = '',
         urlUrl = null,
@@ -380,7 +381,9 @@ if (!window.Brekeke.WebrtcClient) {
       }
       this._ua.on('unregistered', by(this, this._ua_unregistered));
       this._ua.on('registrationFailed', by(this, this._ua_registrationFailed));
+
       this._ua.on('newRTCSession', by(this, this._ua_newRTCSession));
+
       if (this._vua) {
         if (configuration.register === false) {
           this._vua.on('connected', by(this, this._vua_registered));
@@ -554,7 +557,7 @@ if (!window.Brekeke.WebrtcClient) {
      */
     makeCall: function(target, options, withVideo, videoOptions, exInfo) {
       var rtcInfoJsonStr;
-
+      console.warn('vao call web');
       if (!this._ua || this._phoneStatus !== 'started') {
         this._logger.log('warn', 'WebRTC not started');
         return;
@@ -641,6 +644,7 @@ if (!window.Brekeke.WebrtcClient) {
           { sessionId: null, target: target, options: options, client: 'main' },
         ]),
       );
+      console.warn('chay toi het ham');
     },
 
     /**
@@ -1716,8 +1720,9 @@ if (!window.Brekeke.WebrtcClient) {
     },
     _doCall: function(target, options, ua, sourceSessionId, errorCallback) {
       options = clone(options);
-
+      console.warn('cal ham docall');
       if (sourceSessionId) {
+        console.warn('cal ham docall 1');
         this._doUaCall(
           target,
           options,
@@ -1728,9 +1733,11 @@ if (!window.Brekeke.WebrtcClient) {
           null,
         );
       } else if (options.mediaStream) {
+        console.warn('cal ham docall 2');
         this._doUaCall(target, options, ua, false, null, errorCallback, null);
       } else {
         // getUserMedia
+        console.warn('cal ham docall 3');
         this._getUserMedia(
           options.mediaConstraints,
           this._doUaCall.bind(
@@ -1754,6 +1761,7 @@ if (!window.Brekeke.WebrtcClient) {
           0,
         );
       }
+      console.warn('ket thuc ham docall');
     },
     _doUaCall: function(
       target,
@@ -1764,6 +1772,7 @@ if (!window.Brekeke.WebrtcClient) {
       errorCallback,
       stream,
     ) {
+      console.warn('cal ham doUacall');
       options = clone(options);
 
       this._disposeLocalMedia('outgoing');
@@ -1776,11 +1785,13 @@ if (!window.Brekeke.WebrtcClient) {
       );
       if (!options.mediaStream) {
         try {
+          console.warn('cal ham doUacall 1');
           this._connectLocalMediaToAudioNode('outgoing');
           options.mediaStream = this._sessionLocalMediaTable[
             'outgoing'
           ].localMediaStreamForCall;
         } catch (e) {
+          console.warn('cal ham doUacall catch1');
           this._logger.log(
             'error',
             '_connectLocalMediaToAudioNode() failed: ' + stringifyError(e),
@@ -1794,8 +1805,10 @@ if (!window.Brekeke.WebrtcClient) {
       }
       // call
       try {
-        ua.call(target, options);
+        console.warn('cal ham doUacall 2');
+        ua.call(target, options); // vao day -->
       } catch (e) {
+        console.warn('cal ham doUacall catch2');
         this._logger.log(
           'error',
           'JsSIP.UA.call() failed: ' + stringifyError(e),
@@ -1805,6 +1818,7 @@ if (!window.Brekeke.WebrtcClient) {
           errorCallback.apply(this, [{ from: 'jssip', error: e }]);
         }
       }
+      console.warn('ket thuc ham doUacall');
     },
     _rtcErrorOccurred: function(eventArgs, e) {
       eventArgs.from = e.from;
@@ -2626,6 +2640,7 @@ if (!window.Brekeke.WebrtcClient) {
             'terminated') ||
         (this.doNotDisturb && data.session.direction === 'incoming')
       ) {
+        console.warn('pass cass start');
         this._logger.log(
           'info',
           'Terminate session: phoneStatus: ' + this._phoneStatus,
@@ -2685,6 +2700,7 @@ if (!window.Brekeke.WebrtcClient) {
       };
       this._sessionRemoteStreamsTable[sessionId] = [];
       if (data.session.direction === 'incoming') {
+        console.warn('pass cass incoming');
         this._putRemoteUserOptions(
           sessionId,
           data.request.getHeader('X-UA-EX'),
@@ -2692,31 +2708,42 @@ if (!window.Brekeke.WebrtcClient) {
       }
 
       // attach JsSIP.RTCSession event listeners
+      console.warn('da toi _ua_newRTCSession 1');
       data.session.on(
         'progress',
         by(this, this._rtcSession_progress, [sessionId]),
       );
+      console.warn('da toi _ua_newRTCSession 2');
       data.session.on(
         'accepted',
         by(this, this._rtcSession_accepted, [sessionId]),
       );
+      console.warn('da toi _ua_newRTCSession 3');
       data.session.on(
         'notifiedSessionInfo',
         by(this, this._rtcSession_notifiedSessionInfo, [sessionId]),
       );
+      console.warn('da toi _ua_newRTCSession 4');
       data.session.on(
         'newInfo',
         by(this, this._rtcSession_newInfo, [sessionId]),
       );
+
+      // console.warn('toi day truoc fail');
       data.session.on('failed', by(this, this._rtcSession_ended, [sessionId]));
+
+      // console.warn('toi day sau fail');
       data.session.on('ended', by(this, this._rtcSession_ended, [sessionId]));
+
       if (data.session.connection) {
         // outgoing
+        console.warn('da toi _ua_newRTCSession 4.1');
         data.session.connection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
         data.session.connection.onaddstream = data.session.connection.ontrack;
       } else {
+        console.warn('da toi _ua_newRTCSession 4.2');
         // incoming
         data.session.on(
           'peerconnection',
@@ -2725,6 +2752,7 @@ if (!window.Brekeke.WebrtcClient) {
       }
 
       if (data.session.direction === 'incoming') {
+        console.warn('da toi _ua_newRTCSession 5');
         if (this.defaultOptions && this.defaultOptions.withVideo) {
           if (this._vua) {
             this._sessionTable[sessionId].withVideo = true;
@@ -2749,7 +2777,7 @@ if (!window.Brekeke.WebrtcClient) {
             ) >= 0)
         ) {
           // auto answer
-
+          console.warn('da toi _ua_newRTCSession 6');
           if (this._sessionTable[sessionId].withVideo) {
             setTimeout(by(this, this._tryVideoCall, [sessionId]), 0);
           }
@@ -2787,10 +2815,12 @@ if (!window.Brekeke.WebrtcClient) {
             ]),
             0,
           );
+          console.warn('da toi _ua_newRTCSession 7');
         }
       }
 
       this._emitEvent('sessionCreated', this.getSession(sessionId));
+      console.warn('het ham _ua_newRTCSession');
     },
     _vua_registered: function(e) {
       this._vuaStarting = false;
@@ -2987,6 +3017,7 @@ if (!window.Brekeke.WebrtcClient) {
           data.session.connection.onaddstream = data.session.connection.ontrack;
         } else {
           // incoming
+          console.warn('vao ham _vua_newRTCSession 1');
           data.session.on(
             'peerconnection',
             by(this, this._videoClientRtcSession_peerconnection, [
@@ -3174,6 +3205,7 @@ if (!window.Brekeke.WebrtcClient) {
         this._tryVideoCall(sessionId);
       }
       this._emitEvent('sessionStatusChanged', this.getSession(sessionId));
+      console.warn('pass ss accept');
     },
     _rtcSession_accepted: function(sessionId, e) {
       var data;
@@ -3276,11 +3308,12 @@ if (!window.Brekeke.WebrtcClient) {
         this._sessionTable[sessionId].incomingMessage = data.message;
       }
       session = this.getSession(sessionId);
-
+      console.warn(session);
       delete this._sessionTable[sessionId];
       delete this._sessionRemoteStreamsTable[sessionId];
       this._disposeLocalMedia(sessionId);
       this._emitEvent('sessionStatusChanged', session);
+      console.warn('het ham session end');
     },
     _rtcSession_ontrack: function(sessionId, e) {
       var index, stream;

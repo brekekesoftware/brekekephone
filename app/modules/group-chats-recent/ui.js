@@ -355,6 +355,9 @@ const LoadingRecent = () => (
 const Main = p => (
   <Fragment>
     <Members ids={p.members} resolve={p.resolveMember} invite={p.invite} />
+    <Button onPress={p.callVoice}>
+      <Text>Call</Text>
+    </Button>
     <Chats
       hasMore={p.hasMore}
       loadingMore={p.loadingMore}
