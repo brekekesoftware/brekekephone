@@ -197,8 +197,7 @@ const st = StyleSheet.create({
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
-  userOpt: {
-    // change name class
+  btnOptIcon: {
     justifyContent: 'center',
     alignItems: 'center',
     width: std.iconSize.md * 2,
@@ -257,7 +256,7 @@ const Member = pure(p => (
 
 const NavbarCall = pure(p => (
   <View style={st.member}>
-    <Button style={st.userOpt} onPress={p.callReference}>
+    <Button style={st.btnOptIcon} onPress={p.callReference}>
       <Text style={st.optIcon}>icon_phone_pick</Text>
     </Button>
   </View>

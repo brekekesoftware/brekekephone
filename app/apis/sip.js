@@ -99,6 +99,7 @@ class SIP extends EventEmitter {
 
     this.phone.addEventListener('sessionCreated', ev => {
       if (!ev) return;
+
       if (ev.rtcSession.direction === 'outgoing') {
         this._creatingSessions.__removeFirst();
       }
@@ -115,6 +116,7 @@ class SIP extends EventEmitter {
 
     this.phone.addEventListener('sessionStatusChanged', ev => {
       if (!ev) return;
+
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId);
       }

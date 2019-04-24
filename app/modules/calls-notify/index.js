@@ -107,7 +107,6 @@ class View extends Component {
 
   resolveCall = id => {
     const call = this.props.callById[id];
-    console.warn(call);
     return call;
   };
 
