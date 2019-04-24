@@ -98,12 +98,9 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener('sessionCreated', ev => {
-      console.warn('vao ham sessionCreated 1');
       if (!ev) return;
-      console.warn('vao ham sessionCreated 2');
       if (ev.rtcSession.direction === 'outgoing') {
         this._creatingSessions.__removeFirst();
-        console.warn('vao ham sessionCreated 3');
       }
 
       this.emit('session-started', {
@@ -114,14 +111,10 @@ class SIP extends EventEmitter {
         remoteVideoEnabled: ev.remoteWithVideo,
         createdAt: Date.now(),
       });
-      console.warn('vao ham sessionCreated 4');
     });
 
     this.phone.addEventListener('sessionStatusChanged', ev => {
-      console.warn('vao session status');
       if (!ev) return;
-      console.warn('pass dc ev');
-      console.warn(ev.sessionStatus);
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId);
       }
@@ -249,7 +242,6 @@ class SIP extends EventEmitter {
 
     this.phone.makeCall(number, options, opts.videoEnabled, undefined, '');
     this._creatingSessions.__add();
-    console.warn('tao session thanh cong');
   }
 
   hangupSession(sessionId) {

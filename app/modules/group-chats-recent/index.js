@@ -97,7 +97,7 @@ class View extends Component {
   };
 
   state = {
-    target: {},
+    target: '',
     loadingRecent: false,
     loadingMore: false,
     editingText: '',
@@ -126,7 +126,7 @@ class View extends Component {
       back={this.props.routeToChatsRecent}
       leave={this.leave}
       invite={this.invite}
-      callVoice={this.callVoice}
+      callVoiceReference={this.callVoiceReference}
     />
   );
 
@@ -279,27 +279,18 @@ class View extends Component {
 
   call = (target, bVideoEnabled) => {
     const { sip } = this.context;
-    console.warn(this.context);
     sip.createSession(target, {
       videoEnabled: bVideoEnabled,
     });
   };
 
-  callVoice = match => {
-    console.warn('vao day call');
+  callVoiceReference = match => {
     const { group } = this.props;
-    console.warn(group);
-    const target = '34453463';
-    console.warn(target);
-    // this.call(target, false);
-
-    // var number = this.cl.getConference(group.id).conf_ext || ( this.cl.PREFIX_CONFERENCE_EXTENSION + group.id );
-    // console.warn(number);
+    let target = group.id;
+    if (!target.startsWith('uc')) {
+      target = 'uc' + group.id;
+    }
     this.call(target, false);
-  };
-
-  setTarget = target => {
-    this.setState({ target });
   };
 }
 
