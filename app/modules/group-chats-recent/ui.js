@@ -192,6 +192,28 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+  optIcon: {
+    fontFamily: std.font.icon,
+    fontSize: std.iconSize.md,
+    color: std.color.action,
+  },
+  btnOptIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: std.iconSize.md * 2,
+    height: std.iconSize.md * 2,
+    borderRadius: std.iconSize.md,
+    borderColor: std.color.shade4,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginHorizontal: std.gap.md,
+  },
+  containerInvite: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  navbarCall: {
+    paddingVertical: std.gap.lg,
+  },
 });
 
 const pure = Component =>
@@ -232,6 +254,14 @@ const Member = pure(p => (
   </View>
 ));
 
+const NavbarCall = pure(p => (
+  <View style={st.member}>
+    <Button style={st.btnOptIcon} onPress={p.callReference}>
+      <Text style={st.optIcon}>icon_phone_pick</Text>
+    </Button>
+  </View>
+));
+
 const Invite = pure(p => (
   <View style={st.member}>
     <Button style={st.memberAvatar} onPress={p.invite}>
@@ -242,11 +272,16 @@ const Invite = pure(p => (
 ));
 
 const Members = pure(p => (
-  <ScrollView style={st.members} horizontal>
-    <Invite invite={p.invite} />
-    {p.ids.map(id => (
-      <Member key={id} {...p.resolve(id)} />
-    ))}
+  <ScrollView style={st.members}>
+    <View style={st.containerInvite}>
+      <Invite invite={p.invite} />
+      {p.ids.map(id => (
+        <Member key={id} {...p.resolve(id)} />
+      ))}
+    </View>
+    <View style={st.navbarCall}>
+      <NavbarCall callReference={p.callReference} />
+    </View>
   </ScrollView>
 ));
 
@@ -354,7 +389,12 @@ const LoadingRecent = () => (
 
 const Main = p => (
   <Fragment>
-    <Members ids={p.members} resolve={p.resolveMember} invite={p.invite} />
+    <Members
+      ids={p.members}
+      resolve={p.resolveMember}
+      invite={p.invite}
+      callReference={p.callVoiceReference}
+    />
     <Chats
       hasMore={p.hasMore}
       loadingMore={p.loadingMore}

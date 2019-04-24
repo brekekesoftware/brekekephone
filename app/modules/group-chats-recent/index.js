@@ -86,6 +86,7 @@ const numberOfChatsPerLoad = 50;
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
+    sip: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -96,6 +97,7 @@ class View extends Component {
   };
 
   state = {
+    target: '',
     loadingRecent: false,
     loadingMore: false,
     editingText: '',
@@ -124,11 +126,11 @@ class View extends Component {
       back={this.props.routeToChatsRecent}
       leave={this.leave}
       invite={this.invite}
+      callVoiceReference={this.callVoiceReference}
     />
   );
 
   me = this.context.uc.me();
-
   resolveBuddy = creator => {
     if (creator === this.me.id) return this.me;
 
@@ -272,6 +274,22 @@ class View extends Component {
   invite = () => {
     const groupId = this.props.group.id;
     this.props.routeToChatGroupInvite(groupId);
+  };
+
+  call = (target, bVideoEnabled) => {
+    const { sip } = this.context;
+    sip.createSession(target, {
+      videoEnabled: bVideoEnabled,
+    });
+  };
+
+  callVoiceReference = match => {
+    const { group } = this.props;
+    let target = group.id;
+    if (!target.startsWith('uc')) {
+      target = 'uc' + group.id;
+    }
+    this.call(target, false);
   };
 }
 
