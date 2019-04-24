@@ -73,9 +73,14 @@ react-native run-android --deviceId=DEVICE_ID
 - Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution
 
+
 ### TODO
-- [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.native.js
+- [ ] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)
+- [ ] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || ( ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id );`
+- [x] UC doesn't work (cannot even show the user's list ) when we have made a group on the body list with the desktop version of UC
+- [x] Add a feature to switch to the loud speaker (and back to the front speaker)
+- [x] Fix header space is too small so it becomes overflow by the status bar
+- [ ] Change the sound for push notification. Research more about if we can use default sound in the OS
 - [ ] Add documentation for self signed certificate
-- [ ] It goes down when it fails to connect - at least with iOS editon (when we have wrong settings or when we reconnect after the sleep mode)
-- [ ] Join to group chat call (video/voice). if we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || ( ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id );`
 - [ ] Make automatically archive script for iOS
+- [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.native.js
