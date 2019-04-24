@@ -1,13 +1,13 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
 import FCM, { FCMEvent } from 'react-native-fcm';
 import subscribePn from '../util/subscribe-pn';
-import fmtKey from '../util/uint8array-to-url-base64';
+import fmtKey from '../util/uint8ArrayToUrlBase64';
 import { Platform } from 'react-native';
 import { getApnsToken } from '../push-notification/apns';
 
@@ -216,7 +216,7 @@ const mapAction = action => emit => ({
     emit(action.chatFiles.update(file));
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 
@@ -408,7 +408,7 @@ class APIProvider extends Component {
     const call = this.props.runningCallById[id];
 
     this.props.createRecentCall({
-      id: createID(),
+      id: createId(),
       incoming: call.incoming,
       answered: call.answered,
       partyName: call.partyName,

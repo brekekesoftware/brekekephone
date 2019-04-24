@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import immutable from 'immutable';
-import createID from 'shortid';
+import createId from 'shortid';
 import debounce from 'lodash.debounce';
 import UI from './ui';
 
@@ -21,7 +21,7 @@ const mapAction = action => emit => ({
     emit(action.router.goToContactsCreate(query));
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 

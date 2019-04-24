@@ -8694,13 +8694,13 @@ import Url from 'url-parse';
             }
           }, '');
           var xhr = new XMLHttpRequest();
+          var basePathname = location.pathname.split('/')[1];
           xhr.open(
             'POST',
             location.protocol +
               '//' +
               location.host +
-              '/' +
-              location.pathname.split('/')[1] +
+              (basePathname ? '/' + basePathname : '') +
               '/lds',
           );
           xhr.setRequestHeader(
@@ -8801,13 +8801,13 @@ import Url from 'url-parse';
       reportConsoleInfo.report_console_mode.split(',').indexOf('login') != -1
     ) {
       var xhr = new XMLHttpRequest();
+      var basePathname = location.pathname.split('/')[1];
       xhr.open(
         'POST',
         location.protocol +
           '//' +
           location.host +
-          '/' +
-          location.pathname.split('/')[1] +
+          (basePathname ? '/' + basePathname : '') +
           '/lds',
       );
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');

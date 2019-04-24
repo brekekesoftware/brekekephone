@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import at from 'lodash.get';
 import UI from './ui';
 
@@ -20,7 +20,7 @@ const mapAction = action => emit => ({
     emit(action.chatGroups.remove(id));
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 

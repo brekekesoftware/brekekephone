@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -18,7 +18,7 @@ const mapAction = action => emit => ({
     emit(action.router.goToCallsManage());
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 

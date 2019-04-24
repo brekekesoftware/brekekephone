@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import UI from './ui';
-import validateHostname from '../../util/validateHostname';
-import validatePort from '../../util/validatePort';
+import { validateHostname, validatePort } from '../../util/validate';
 
 const mapGetter = getter => (state, props) => ({
   profile: getter.profiles.detailMapById(state)[props.match.params.profile],
@@ -17,7 +16,7 @@ const mapAction = action => emit => ({
     emit(action.router.goToProfilesManage());
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 
@@ -128,14 +127,14 @@ class View extends Component {
       this.props.showToast('Missing required fields');
       return;
     }
-    const hostRes = validateHostname(this.state.pbxHostname);
-    const portRes = validatePort(this.state.pbxPort);
-    if (hostRes.status === false) {
-      this.props.showToast(hostRes.message);
+    const hostnameValidationErr = validateHostname(this.state.pbxHostname);
+    if (hostnameValidationErr) {
+      this.props.showToast(hostnameValidationErr);
       return;
     }
-    if (portRes.status === false) {
-      this.props.showToast(portRes.message);
+    const portValidationErr = validatePort(this.state.pbxPort);
+    if (portValidationErr === false) {
+      this.props.showToast(portValidationErr);
       return;
     }
 

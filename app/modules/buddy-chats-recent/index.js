@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import UI from './ui';
 import saveBlob from './saveBlob';
 import pickFile from './pickFile';
-import formatChatText_s from '../../util/brekekephone-misc';
+import formatChatText from '../../util/formatChatText';
 
 const mapGetter = getter => (state, props) => ({
   buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
@@ -26,7 +26,7 @@ const mapAction = action => emit => ({
     emit(action.chatFiles.create(file));
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
   routeToChatsRecent() {
     emit(action.router.goToChatsRecent());
@@ -137,7 +137,7 @@ class View extends Component {
 
     const created = chat.created && formatTime(chat.created);
     const file = fileById[chat.file];
-    const text = formatChatText_s(chat.text);
+    const text = formatChatText(chat.text);
 
     if (mini) {
       return { mini: true, created, text, file };

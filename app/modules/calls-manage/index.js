@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import UI from './ui';
 import LoudSpeaker from './LoudSpeaker';
 
@@ -26,7 +26,7 @@ const mapAction = action => emit => ({
     emit(action.callsManaging.setSelectedId(call.id));
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
   routeToCallTransferDial(call) {
     emit(action.router.goToCallTransferDial(call));

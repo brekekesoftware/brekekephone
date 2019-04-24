@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
-import createID from 'shortid';
+import createId from 'shortid';
 import UI from './ui';
-import formatChatText_s from '../../util/brekekephone-misc';
+import formatChatText from '../../util/formatChatText';
 
 const mapGetter = getter => (state, props) => ({
   group: getter.chatGroups.detailMapById(state)[props.match.params.group],
@@ -20,7 +20,7 @@ const mapAction = action => emit => ({
     emit(action.groupChats.prependByGroup(group, chats));
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
   routeToChatsRecent() {
     emit(action.router.goToChatsRecent());
@@ -142,8 +142,7 @@ class View extends Component {
     const prev = chatById[chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
     const created = formatTime(chat.created);
-    //const text = chat.text
-    const text = formatChatText_s(chat.text);
+    const text = formatChatText(chat.text);
 
     if (mini) {
       return { mini: true, created, text };

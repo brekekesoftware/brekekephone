@@ -2,7 +2,7 @@ import { createModelView } from 'redux-model';
 import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
-import createID from 'shortid';
+import createId from 'shortid';
 import UI from './ui';
 
 class View extends React.Component {
@@ -103,7 +103,7 @@ const mapAction = action => emit => ({
     emit(action.router.goToProfilesManage());
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 

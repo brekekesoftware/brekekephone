@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import UI from './ui';
-import createID from 'shortid';
+import createId from 'shortid';
 
 const isIncoming = call => call.incoming && !call.answered;
 
@@ -25,7 +25,7 @@ const mapAction = action => emit => ({
     emit(action.router.goToProfilesManage());
   },
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
 });
 

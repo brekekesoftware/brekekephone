@@ -9,7 +9,7 @@ import FCM, {
   NotificationType,
 } from 'react-native-fcm';
 import qs from 'qs';
-import createID from 'shortid';
+import createId from 'shortid';
 
 // Read url search params
 let searchParams = {};
@@ -279,7 +279,7 @@ class View extends Component {
     //
     const newU = {
       //
-      id: createID(),
+      id: createId(),
       pbxTenant: tenant,
       pbxUsername: user,
       //

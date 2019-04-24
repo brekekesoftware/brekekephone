@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import UI from './ui';
 import PropTypes from 'prop-types';
-import createID from 'shortid';
+import createId from 'shortid';
 import LoudSpeaker from '../../modules/calls-manage/LoudSpeaker';
 
 const mapGetter = getter => state => ({
@@ -32,7 +32,7 @@ const mapAction = action => emit => ({
   },
 
   showToast(message) {
-    emit(action.toasts.create({ id: createID(), message }));
+    emit(action.toasts.create({ id: createId(), message }));
   },
   updateCall(call) {
     emit(action.runningCalls.update(call));
