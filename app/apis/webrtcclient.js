@@ -554,6 +554,7 @@ if (!window.Brekeke.WebrtcClient) {
      */
     makeCall: function(target, options, withVideo, videoOptions, exInfo) {
       var rtcInfoJsonStr;
+
       if (!this._ua || this._phoneStatus !== 'started') {
         this._logger.log('warn', 'WebRTC not started');
         return;
@@ -1715,6 +1716,7 @@ if (!window.Brekeke.WebrtcClient) {
     },
     _doCall: function(target, options, ua, sourceSessionId, errorCallback) {
       options = clone(options);
+
       if (sourceSessionId) {
         this._doUaCall(
           target,
@@ -1792,7 +1794,7 @@ if (!window.Brekeke.WebrtcClient) {
       }
       // call
       try {
-        ua.call(target, options); // vao day -->
+        ua.call(target, options);
       } catch (e) {
         this._logger.log(
           'error',
@@ -2747,6 +2749,7 @@ if (!window.Brekeke.WebrtcClient) {
             ) >= 0)
         ) {
           // auto answer
+
           if (this._sessionTable[sessionId].withVideo) {
             setTimeout(by(this, this._tryVideoCall, [sessionId]), 0);
           }
@@ -3273,6 +3276,7 @@ if (!window.Brekeke.WebrtcClient) {
         this._sessionTable[sessionId].incomingMessage = data.message;
       }
       session = this.getSession(sessionId);
+
       delete this._sessionTable[sessionId];
       delete this._sessionRemoteStreamsTable[sessionId];
       this._disposeLocalMedia(sessionId);

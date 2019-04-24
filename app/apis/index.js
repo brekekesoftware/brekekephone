@@ -387,6 +387,7 @@ class APIProvider extends Component {
 
   onSIPSessionStarted = call => {
     const number = call.partyNumber;
+
     if (number === '8') {
       call.partyName = 'Voicemails';
     }
@@ -396,6 +397,7 @@ class APIProvider extends Component {
       const pbxUser = pbxUserById[number];
       call.partyName = pbxUser ? pbxUser.name : 'Unnamed';
     }
+
     this.props.createRunningCall(call);
   };
 
