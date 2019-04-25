@@ -126,7 +126,8 @@ class View extends Component {
       back={this.props.routeToChatsRecent}
       leave={this.leave}
       invite={this.invite}
-      callVoiceReference={this.callVoiceReference}
+      callVoiceConference={this.callVoiceConference}
+      callVideoConference={this.callVideoConference}
     />
   );
 
@@ -283,13 +284,22 @@ class View extends Component {
     });
   };
 
-  callVoiceReference = match => {
+  callVoiceConference = () => {
     const { group } = this.props;
     let target = group.id;
     if (!target.startsWith('uc')) {
       target = 'uc' + group.id;
     }
     this.call(target, false);
+  };
+
+  callVideoConference = () => {
+    const { group } = this.props;
+    let target = group.id;
+    if (!target.startsWith('uc')) {
+      target = 'uc' + group.id;
+    }
+    this.call(target, true);
   };
 }
 

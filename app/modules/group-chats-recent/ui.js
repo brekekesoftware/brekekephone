@@ -207,7 +207,7 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginHorizontal: std.gap.md,
   },
-  containerInvite: {
+  flexRow: {
     flex: 1,
     flexDirection: 'row',
   },
@@ -255,9 +255,12 @@ const Member = pure(p => (
 ));
 
 const NavbarCall = pure(p => (
-  <View style={st.member}>
-    <Button style={st.btnOptIcon} onPress={p.callReference}>
+  <View style={st.flexRow}>
+    <Button style={st.btnOptIcon} onPress={p.callVoiceConference}>
       <Text style={st.optIcon}>icon_phone_pick</Text>
+    </Button>
+    <Button style={st.btnOptIcon} onPress={p.callVideoConference}>
+      <Text style={st.optIcon}>icon_video_on</Text>
     </Button>
   </View>
 ));
@@ -273,14 +276,17 @@ const Invite = pure(p => (
 
 const Members = pure(p => (
   <ScrollView style={st.members}>
-    <View style={st.containerInvite}>
+    <View style={st.flexRow}>
       <Invite invite={p.invite} />
       {p.ids.map(id => (
         <Member key={id} {...p.resolve(id)} />
       ))}
     </View>
     <View style={st.navbarCall}>
-      <NavbarCall callReference={p.callReference} />
+      <NavbarCall
+        callVoiceConference={p.callVoiceConference}
+        callVideoConference={p.callVideoConference}
+      />
     </View>
   </ScrollView>
 ));
@@ -393,7 +399,8 @@ const Main = p => (
       ids={p.members}
       resolve={p.resolveMember}
       invite={p.invite}
-      callReference={p.callVoiceReference}
+      callVoiceConference={p.callVoiceConference}
+      callVideoConference={p.callVideoConference}
     />
     <Chats
       hasMore={p.hasMore}
