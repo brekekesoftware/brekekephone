@@ -1,10 +1,12 @@
-export default async function subscribePn(serverKey) {
+const subscribePn = async () => {
   const sw = await navigator.serviceWorker.ready;
-  let sub = await sw.pushManager.getSubscription();
-  if (!sub) {
-    sub = await sw.pushManager.subscribe({
+  const sub = await sw.pushManager.getSubscription();
+  return (
+    sub ||
+    sw.pushManager.subscribe({
       userVisibleOnly: true,
-    });
-  }
-  return Promise.resolve(sub);
-}
+    })
+  );
+};
+
+export default subscribePn;

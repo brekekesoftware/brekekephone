@@ -85,6 +85,7 @@ react-native run-android --deviceId=DEVICE_ID
   - [x] Work on Android
   - [ ] Refactor fcm to normalize the push notification code
 - [x] UC doesn't work (cannot even show the user's list ) when we have made a group on the body list with the desktop version of UC
+- [ ] Research and implement a feature to open the app via url, parse the url parameters
 - [x] Add a feature to switch to the loud speaker (and back to the front speaker)
 - [x] Fix header space is too small so it becomes overflow by the status bar
 - [ ] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)

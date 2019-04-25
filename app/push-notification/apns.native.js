@@ -17,7 +17,7 @@ const onVoipRegister = token => {
 
 let intervalId = 0; // To wait until the profile manager constructed
 const onVoipNotification = notification => {
-  if (!intervalId) {
+  if (intervalId) {
     clearInterval(intervalId);
   }
   intervalId = setInterval(() => {
