@@ -75,7 +75,7 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### TODO
-- [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || ( ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id );`
+- [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || (ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id);`
   - [x] Fix overflow UI in group chat
   - [x] Voice call
   - [x] Video call
@@ -84,7 +84,7 @@ react-native run-android --deviceId=DEVICE_ID
   - [x] Work on iOS
   - [x] Work on Android
 - [ ] Refactor code for fcm to normalize the push notification
-- [x] UC doesn't work (cannot even show the user's list ) when we have made a group on the body list with the desktop version of UC
+- [x] UC doesn't work (cannot even show the user's list) when we have made a group on the body list with the desktop version of UC
 - [ ] Research and implement a feature to open the app via url, parse the url parameters
 - [x] Add a feature to switch to the loud speaker (and back to the front speaker)
 - [x] Fix header space is too small so it becomes overflow by the status bar
