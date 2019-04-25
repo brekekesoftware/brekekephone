@@ -75,11 +75,19 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### TODO
-- [ ] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)
 - [ ] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || ( ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id );`
+  - [x] Fix overflow UI in group chat
+  - [x] Voice call
+  - [ ] Video call
+  - [ ] Refactor some code
+- [ ] Move push notification service_id to 11 12 13
+  - [x] Work on iOS
+  - [x] Work on Android
+  - [ ] Refactor fcm to normalize the push notification code
 - [x] UC doesn't work (cannot even show the user's list ) when we have made a group on the body list with the desktop version of UC
 - [x] Add a feature to switch to the loud speaker (and back to the front speaker)
 - [x] Fix header space is too small so it becomes overflow by the status bar
+- [ ] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)
 - [ ] Change the sound for push notification. Research more about if we can use default sound in the OS
 - [ ] Add documentation for self signed certificate
 - [ ] Make automatically archive script for iOS
