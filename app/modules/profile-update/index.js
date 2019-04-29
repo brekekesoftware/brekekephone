@@ -31,6 +31,7 @@ class View extends Component {
       setPBXTenant={this.setPBXTenant}
       setPBXUsername={this.setPBXUsername}
       setPBXPassword={this.setPBXPassword}
+      setPBXWebRtcType={this.setPBXWebRtcType}
       setAddingPark={this.setAddingPark}
       submitAddingPark={this.submitAddingPark}
       setUCEnabled={this.setUCEnabled}
@@ -60,6 +61,10 @@ class View extends Component {
 
   setPBXPassword = pbxPassword => {
     this.setState({ pbxPassword });
+  };
+
+  setPBXWebRtcType = pbxWebRtcType => {
+    this.setState({ pbxWebRtcType });
   };
 
   _isStringEmpty = s => {
@@ -157,6 +162,7 @@ class View extends Component {
       pbxTenant: pbxTenant,
       pbxUsername: pbxUsername,
       pbxPassword: pbxPassword,
+      pbxWebRtcType: pbxWebRtcType,
       parks: parks,
       ucEnabled: this.state.ucEnabled,
       ucHostname: ucHostname,

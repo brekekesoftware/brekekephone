@@ -342,11 +342,13 @@ const Main = p => (
         tenant={p.pbxTenant}
         username={p.pbxUsername}
         password={p.pbxPassword}
+        webRtcType={p.pbxWebRtcType}
         setHostname={p.setPBXHostname}
         setPort={p.setPBXPort}
         setTenant={p.setPBXTenant}
         setUsername={p.setPBXUsername}
         setPassword={p.setPBXPassword}
+        setWebRtcType={p.setPBXWebRtcType}
         submit={p.save}
       />
       <UC

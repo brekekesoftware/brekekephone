@@ -144,6 +144,56 @@ const st = StyleSheet.create({
   },
 });
 
+const webRtcTypes = [
+  {
+    label: "Standard",
+    key: "standard",
+  },
+  {
+    label: "TURN enabled",
+    key: "turn enabled",
+  },
+  {
+    label: "TURN only",
+    key: "turn only",
+  },
+  {
+    label: "TURN UDP enabled",
+    key: "turn udp enabled",
+  },
+  {
+    label: "TURN UDP only",
+    key: "turn udp only",
+  },
+];
+
+const WebRtcTypePickerNative = p => {
+  p.value = p.value || webRtcTypes[0].key;
+  return null;/*(
+    <ModalPicker
+      initValue={p.value}
+      data={webRtcTypes}
+      onChange={t => p.onChange(t.key)}
+    >
+      <Text style={st.fieldValueText}>{p.value}</Text>
+    </ModalPicker>
+  );*/
+};
+const WebRtcTypePickerWeb = p => {
+  p.value = p.value || webRtcTypes[0].key;
+  return (
+    <Picker
+      style={st.picker}
+      selectedValue={p.value}
+      onValueChange={v => p.onChange(v)}
+    >
+      {webRtcTypes.map(t => <Picker.Item key={t.key} label={t.label} value={t.key} />)}
+    </Picker>
+  );
+};
+
+export const WebRtcTypePicker = Platform.OS === 'web' ? WebRtcTypePickerWeb : WebRtcTypePickerNative;
+
 const pure = Component =>
   class extends PureComponent {
     render = () => <Component {...this.props} />;
@@ -229,42 +279,10 @@ const PBX = pure(p => (
     </View>
     <View style={st.field}>
       <Text style={st.fieldLabel}>WebRTC type</Text>
-      <ModalPicker
-        data={[
-          {
-            label: 'Standard',
-            value: 'standard',
-          },
-          {
-            label: 'TURN enabled',
-            value: 'turn enabled',
-          },
-          {
-            label: 'TURN only',
-            value: 'turn only',
-          },
-          {
-            label: 'TURN UDP enabled',
-            value: 'turn udp enabled',
-          },
-          {
-            label: 'TURN UDP only',
-            value: 'turn udp only',
-          },
-        ]}
+      <WebRtcTypePicker
+        value={p.webRtcType}
+        onChange={p.setWebRtcType}
       />
-      {/*
-      <Picker
-        selectedValue="standard"
-        style={st.picker}
-        onValueChange={(v, i) => console.warn(v, i)}
-      >
-        <Picker.Item label="Standard" value="standard" />
-        <Picker.Item label="TURN enabled" value="turn enabled" />
-        <Picker.Item label="TURN only" value="turn only" />
-        <Picker.Item label="TURN UDP enabled" value="turn udp enabled" />
-        <Picker.Item label="TURN UDP only" value="turn udp only" />
-      </Picker>*/}
     </View>
   </Fragment>
 ));
@@ -347,11 +365,13 @@ const ProfilesCreate = p => (
         tenant={p.pbxTenant}
         username={p.pbxUsername}
         password={p.pbxPassword}
+        webRtcType={p.pbxWebRtcType}
         setHostname={p.setPBXHostname}
         setPort={p.setPBXPort}
         setTenant={p.setPBXTenant}
         setUsername={p.setPBXUsername}
         setPassword={p.setPBXPassword}
+        setWebRtcType={p.setPBXWebRtcType}
         submit={p.save}
       />
       <UC

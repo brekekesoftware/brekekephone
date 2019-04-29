@@ -80,6 +80,7 @@ const mapGetter = getter => state => {
       tenant: profile.pbxTenant,
       username: profile.pbxUsername,
       password: profile.pbxPassword,
+      webRtcType: profile.pbxWebRtcType,
       parks: profile.parks,
       accessToken: profile.accessToken,
     },

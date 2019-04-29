@@ -63,6 +63,7 @@ export default createModel({
             'pbxTenant',
             'pbxUsername',
             'pbxPassword',
+            'pbxWebRtcType',
             'parks',
             'ucEnabled',
             'ucHostname',

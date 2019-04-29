@@ -5,6 +5,5 @@ import './web/index.css';
 
 AppRegistry.registerComponent('App', () => App);
 
-AppRegistry.runApplication('App', {
-  rootTag: document.getElementById('root'),
-});
+const rootTag = document.getElementById('root');
+AppRegistry.runApplication('App', { rootTag });
