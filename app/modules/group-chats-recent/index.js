@@ -5,12 +5,23 @@ import createId from 'shortid';
 import UI from './ui';
 import formatChatText from '../../util/formatChatText';
 
-const mapGetter = getter => (state, props) => ({
-  group: getter.chatGroups.detailMapById(state)[props.match.params.group],
-  chatIds: getter.groupChats.idsMapByGroup(state)[props.match.params.group],
-  chatById: getter.groupChats.detailMapById(state),
-  ucUserById: getter.ucUsers.detailMapById(state),
-});
+const mapGetter = getter => (state, props) => {
+  const duplicatedMap = {};
+  return {
+    group: getter.chatGroups.detailMapById(state)[props.match.params.group],
+    chatIds: (
+      getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
+    ).filter(id => {
+      if (duplicatedMap[id]) {
+        return false;
+      }
+      duplicatedMap[id] = true;
+      return true;
+    }),
+    chatById: getter.groupChats.detailMapById(state),
+    ucUserById: getter.ucUsers.detailMapById(state),
+  };
+};
 
 const mapAction = action => emit => ({
   appendChats(group, chats) {

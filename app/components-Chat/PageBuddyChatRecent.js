@@ -36,10 +36,11 @@ class PageBuddyChatRecent extends React.Component {
     const oldestMsg = msgsByThisBuddy[0] || {};
     const oldestCreated = oldestMsg.created || 0;
     //
-    this.context.uc.getBuddyChats(buddyId, {
-      max: 50,
-      end: oldestCreated ? (new Date(oldestCreated).getTime() - 1): undefined,
-    })
+    this.context.uc
+      .getBuddyChats(buddyId, {
+        max: 50,
+        end: oldestCreated ? new Date(oldestCreated).getTime() - 1 : undefined,
+      })
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
   };
@@ -54,7 +55,8 @@ class PageBuddyChatRecent extends React.Component {
     const oldMsgs = chatStore.getMsgs(buddyId);
     //
     const duplicatedMap = {};
-    const newMsgs = oldMsgs.concat(msgs)
+    const newMsgs = oldMsgs
+      .concat(msgs)
       .filter(m => {
         if (duplicatedMap[m.id]) {
           return false;
@@ -75,7 +77,8 @@ class PageBuddyChatRecent extends React.Component {
   render() {
     const buddyId = this.props.match.params.buddy;
     const msgs = chatStore.getMsgs(buddyId);
-    return <Main title="PageBuddyChatRecent">
+    return (
+      <Main title="PageBuddyChatRecent">
         {msgs.map(m => (
           <View>
             <Text>{m.text}</Text>
@@ -84,8 +87,9 @@ class PageBuddyChatRecent extends React.Component {
         <TouchableOpacity onPress={this.loadMore}>
           <Text>Load more msgs</Text>
         </TouchableOpacity>
-      </Main>;
+      </Main>
+    );
   }
 }
 
-export default PageBuddyChatRecent
+export default PageBuddyChatRecent;

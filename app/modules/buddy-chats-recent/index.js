@@ -7,13 +7,24 @@ import saveBlob from './saveBlob';
 import pickFile from './pickFile';
 import formatChatText from '../../util/formatChatText';
 
-const mapGetter = getter => (state, props) => ({
-  buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
-  chatIds: getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy],
-  chatById: getter.buddyChats.detailMapById(state),
-  ucUserById: getter.ucUsers.detailMapById(state),
-  fileById: getter.chatFiles.byId(state),
-});
+const mapGetter = getter => (state, props) => {
+  const duplicatedMap = {};
+  return {
+    buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
+    chatIds: (
+      getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy] || []
+    ).filter(id => {
+      if (duplicatedMap[id]) {
+        return false;
+      }
+      duplicatedMap[id] = true;
+      return true;
+    }),
+    chatById: getter.buddyChats.detailMapById(state),
+    ucUserById: getter.ucUsers.detailMapById(state),
+    fileById: getter.chatFiles.byId(state),
+  };
+};
 
 const mapAction = action => emit => ({
   appendChats(buddy, chats) {

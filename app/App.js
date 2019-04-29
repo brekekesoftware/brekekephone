@@ -12,7 +12,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import './polyfill';
 import ProfilesManage from './modules/profiles-manage';
-import PageProfileCreate from './components-Profile/PageProfileCreate';
+import ProfilesCreate from './modules/profiles-create';
 import ProfileUpdate from './modules/profile-update';
 import ProfileSignin from './modules/profile-signin';
 import UsersBrowse from './modules/users-browse';
@@ -27,7 +27,7 @@ import CallTransferAttend from './modules/call-transfer-attend';
 import CallKeypad from './modules/call-keypad';
 import CallPark from './modules/call-park';
 import ChatsRecent from './modules/chats-recent';
-import PageBuddyChatRecent from './components-Chat/PageBuddyChatRecent';
+import BuddyChatsRecent from './modules/buddy-chats-recent';
 import BuddyChatsNotify from './modules/buddy-chats-notify';
 import GroupChatsRecent from './modules/group-chats-recent';
 import ChatGroupsCreate from './modules/chat-groups-create';
@@ -82,7 +82,7 @@ const Routing = () => (
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
       <Route exact path="/profiles/manage" component={ProfilesManage} />
-      <Route exact path="/profiles/create" component={PageProfileCreate} />
+      <Route exact path="/profiles/create" component={ProfilesCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
       <Route
@@ -118,7 +118,7 @@ const Routing = () => (
             <Route
               exact
               path="/auth/chats/buddy/:buddy/recent"
-              component={PageBuddyChatRecent}
+              component={BuddyChatsRecent}
             />
             <Route
               exact
