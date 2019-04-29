@@ -1,7 +1,7 @@
 import { createModel } from 'redux-model';
 import immutable from 'immutable';
-import pickProps from 'lodash.pick';
-import omitProps from 'lodash.omit';
+import pickProps from 'lodash/pick';
+import omitProps from 'lodash/omit';
 
 const allowedChatProps = ['id', 'created', 'text', 'file', 'creator'];
 const validateChat = chat => pickProps(chat, allowedChatProps);

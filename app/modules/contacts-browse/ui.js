@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native';
-import { std, rem } from '../styleguide';
+import { std, rem } from '../../styleguide';
 
 const st = StyleSheet.create({
   empty: {

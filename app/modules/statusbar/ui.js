@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, StyleSheet, View, StatusBar } from 'react-native';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 const st = StyleSheet.create({

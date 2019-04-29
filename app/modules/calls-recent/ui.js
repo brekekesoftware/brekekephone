@@ -6,7 +6,7 @@ import {
   Text,
   TouchableOpacity as Button,
 } from 'react-native';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
 
 const monthName = [
   'Jan',

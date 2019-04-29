@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { std, rem } from '../styleguide';
+import { std, rem } from '../../styleguide';
 
 const st = StyleSheet.create({
   notify: {

@@ -1,15 +1,18 @@
 import React, { Fragment, PureComponent } from 'react';
 import {
   StyleSheet,
+  Platform,
   View,
   ScrollView as Scroll,
   TouchableOpacity as Button,
+  Picker,
   Text,
   TextInput,
   Switch,
   KeyboardAvoidingView,
 } from 'react-native';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
+import ModalPicker from 'react-native-modal-picker';
 
 const st = StyleSheet.create({
   main: {
@@ -92,6 +95,24 @@ const st = StyleSheet.create({
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.md * 2,
     textAlign: 'right',
+  },
+  picker: {
+    flex: 1,
+    color: std.color.shade9,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    height: std.textSize.md + std.gap.md * 2,
+    ...Platform.select({
+      web: {
+        fontFamily: std.font.text,
+        fontSize: std.textSize.md,
+        color: std.color.shade9,
+        appearance: 'none',
+        backgroundColor: 'white',
+        borderStyle: 'none',
+        direction: 'rtl',
+      },
+    }),
   },
   fieldSwitch: {
     marginLeft: 'auto',
@@ -205,6 +226,45 @@ const PBX = pure(p => (
         onSubmitEditing={p.submit}
         password="true"
       />
+    </View>
+    <View style={st.field}>
+      <Text style={st.fieldLabel}>WebRTC type</Text>
+      <ModalPicker
+        data={[
+          {
+            label: 'Standard',
+            value: 'standard',
+          },
+          {
+            label: 'TURN enabled',
+            value: 'turn enabled',
+          },
+          {
+            label: 'TURN only',
+            value: 'turn only',
+          },
+          {
+            label: 'TURN UDP enabled',
+            value: 'turn udp enabled',
+          },
+          {
+            label: 'TURN UDP only',
+            value: 'turn udp only',
+          },
+        ]}
+      />
+      {/*
+      <Picker
+        selectedValue="standard"
+        style={st.picker}
+        onValueChange={(v, i) => console.warn(v, i)}
+      >
+        <Picker.Item label="Standard" value="standard" />
+        <Picker.Item label="TURN enabled" value="turn enabled" />
+        <Picker.Item label="TURN only" value="turn only" />
+        <Picker.Item label="TURN UDP enabled" value="turn udp enabled" />
+        <Picker.Item label="TURN UDP only" value="turn udp only" />
+      </Picker>*/}
     </View>
   </Fragment>
 ));

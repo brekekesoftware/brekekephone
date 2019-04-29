@@ -1,5 +1,5 @@
 import { createModelView } from 'redux-model';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
 import createId from 'shortid';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, PanResponder } from 'react-native';
 import Video from './video';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
 
 const st = {
   mini: {

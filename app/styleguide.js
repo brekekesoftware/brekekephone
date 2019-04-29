@@ -31,7 +31,6 @@ export const std = {
   iconSize: {
     sm: rem(18),
     md: rem(24),
-    //md: rem(30),
     lg: rem(26),
   },
   gap: {

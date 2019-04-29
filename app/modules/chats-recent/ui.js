@@ -7,7 +7,7 @@ import {
   Text,
   Image,
 } from 'react-native';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {

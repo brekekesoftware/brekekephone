@@ -7,7 +7,7 @@ import {
   Text,
   TextInput,
 } from 'react-native';
-import { std, rem } from '../styleguide';
+import { std, rem } from '../../styleguide';
 
 const st = {
   signout: {

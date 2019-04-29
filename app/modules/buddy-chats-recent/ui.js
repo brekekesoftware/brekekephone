@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import Progress from 'react-native-progress-circle';
-import { std, rem } from '../styleguide';
+import { std, rem } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {

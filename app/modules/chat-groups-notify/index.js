@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
-import at from 'lodash.get';
+import at from 'lodash/get';
 import UI from './ui';
 
 const isNotJointed = group => !group.jointed;

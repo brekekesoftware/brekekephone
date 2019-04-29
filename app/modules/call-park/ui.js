@@ -6,7 +6,7 @@ import {
   TouchableOpacity as Button,
   Text,
 } from 'react-native';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
 
 const st = StyleSheet.create({
   fullpage: {

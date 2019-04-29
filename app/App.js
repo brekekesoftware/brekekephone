@@ -12,7 +12,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import './polyfill';
 import ProfilesManage from './modules/profiles-manage';
-import ProfilesCreate from './modules/profiles-create';
+import PageProfileCreate from './components-Profile/PageProfileCreate';
 import ProfileUpdate from './modules/profile-update';
 import ProfileSignin from './modules/profile-signin';
 import UsersBrowse from './modules/users-browse';
@@ -82,7 +82,7 @@ const Routing = () => (
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
       <Route exact path="/profiles/manage" component={ProfilesManage} />
-      <Route exact path="/profiles/create" component={ProfilesCreate} />
+      <Route exact path="/profiles/create" component={PageProfileCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
       <Route

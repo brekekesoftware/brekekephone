@@ -8,7 +8,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import { std } from '../styleguide';
+import { std } from '../../styleguide';
 import UserLanguage from '../../language/UserLanguage';
 
 const st = StyleSheet.create({

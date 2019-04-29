@@ -5,7 +5,7 @@ import {
   TouchableOpacity as Button,
   Text,
 } from 'react-native';
-import { std, rem } from '../styleguide';
+import { std, rem } from '../../styleguide';
 
 const st = StyleSheet.create({
   notify: {
