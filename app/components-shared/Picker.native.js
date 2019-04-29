@@ -22,7 +22,7 @@ const Picker = p => (
   </ModalPicker>
 );
 
-p.propTypes = {
+Picker.propTypes = {
   options: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 };

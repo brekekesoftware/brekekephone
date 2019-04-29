@@ -27,7 +27,7 @@ import CallTransferAttend from './modules/call-transfer-attend';
 import CallKeypad from './modules/call-keypad';
 import CallPark from './modules/call-park';
 import ChatsRecent from './modules/chats-recent';
-import BuddyChatsRecent from './modules/buddy-chats-recent';
+import PageBuddyChatRecent from './components-Chat/PageBuddyChatRecent';
 import BuddyChatsNotify from './modules/buddy-chats-notify';
 import GroupChatsRecent from './modules/group-chats-recent';
 import ChatGroupsCreate from './modules/chat-groups-create';
@@ -118,7 +118,7 @@ const Routing = () => (
             <Route
               exact
               path="/auth/chats/buddy/:buddy/recent"
-              component={BuddyChatsRecent}
+              component={PageBuddyChatRecent}
             />
             <Route
               exact
