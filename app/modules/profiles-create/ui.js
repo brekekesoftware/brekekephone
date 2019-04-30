@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { std } from '../../styleguide';
-import ModalPicker from 'react-native-modal-picker';
+import ModalPicker from 'react-native-modal-selector';
 
 const st = StyleSheet.create({
   main: {
