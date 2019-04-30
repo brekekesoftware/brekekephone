@@ -6246,10 +6246,9 @@ react-native-fs@2.13.3, react-native-fs@^2.13.3:
     base-64 "^0.1.0"
     utf8 "^2.1.1"
 
-react-native-full-image-picker@1.2.11:
+"react-native-full-image-picker@github:brekekesoftware/react-native-full-image-picker":
   version "1.2.11"
-  resolved "https://registry.yarnpkg.com/react-native-full-image-picker/-/react-native-full-image-picker-1.2.11.tgz#342953c5281adc8f8749ee52b96d21a41a57b47f"
-  integrity sha512-cOAyhfbjzl8FFICylcm+c1bwg4jZbuNBaevkAzXeYTtBPZRUOnvXHRFM2D/+IjmaBENFvQi0vSrNCxaaunCREg==
+  resolved "https://codeload.github.com/brekekesoftware/react-native-full-image-picker/tar.gz/88bfe4e2cbd305ba60b10af6500b13d1c0a1de29"
   dependencies:
     react-native-camera "^1.8.0"
     react-native-fs "^2.13.3"

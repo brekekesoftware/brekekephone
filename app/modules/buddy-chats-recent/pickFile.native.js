@@ -1,9 +1,13 @@
+import { Platform } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
+import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-full-image-picker';
 import ActionSheet from 'react-native-general-actionsheet';
-import RNFS from 'react-native-fs';
+import createId from 'shortid';
 
 ActionSheet.useActionSheetIOS = true;
+ImagePicker.AlbumView.autoConvertPath = true;
+ImagePicker.AlbumListView.autoConvertPath = true;
 
 const actionSheetOptions = {
   options: [
@@ -45,6 +49,8 @@ const actionSheetHandlers = [
 ];
 
 const pickFile = async cb => {
+  //
+  //
   const i = await new Promise(resolve => {
     ActionSheet.showActionSheetWithOptions(actionSheetOptions, resolve);
   });
@@ -70,50 +76,56 @@ const pickFile = async cb => {
   if (!uri) {
     return;
   }
-  let name =
-    file.fileName ||
-    file.filename ||
-    file.name ||
-    uri
+  //
+  //
+  const getName = p =>
+    p &&
+    p
       .split(/[\\/]/g)
       .pop()
       .replace(/\?.+$/, '');
+  let name = file.fileName || file.filename || file.name || getName(uri);
   let size = file.fileSize || file.filesize || file.size || 0;
-  // Fix some issues using RNFS.stat
-  let stat = null;
-  // Fix name has no extension
-  let ext = uri
-    .split('.')
-    .pop()
-    .replace(/\?.+$/, '');
-  if (/\W/.test(ext)) {
-    // Invalid extension
+  //
+  // Use RNFS.stat to get size if there's no size
+  if (!size) {
     try {
-      stat = await RNFS.stat(uri);
-      ext = (stat.originalFilepath || stat.path).split('.').pop();
+      const stat = await RNFS.stat(uri);
+      name = getName(stat.originalFilepath || stat.path) || name;
+      size = stat.size;
     } catch (err) {
       // silent
     }
   }
-  if (!/\W/.test(ext)) {
-    ext = '.' + ext;
-    if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
-      name = name + ext;
+  //
+  // Fix name has no extension
+  let ext = name
+    .split('.')
+    .pop()
+    .replace(/\?.+$/, '');
+  // Fix ios no extension
+  // TODO not so accuracy, just work around
+  if (Platform.OS === 'ios' && ext === name) {
+    switch (file.type) {
+      case 'image':
+        ext = 'jpg';
+        break;
+      case 'video':
+        ext = 'mp4';
+        break;
+      case 'audio':
+        ext = 'mp3';
+        break;
+      default:
+        break;
     }
+    name = createId();
   }
-  // Fix size stat from uri
-  if (!size) {
-    if (!stat) {
-      try {
-        stat = await RNFS.stat(uri);
-      } catch (err) {
-        // silent
-      }
-    }
-    if (stat) {
-      size = stat.size;
-    }
+  // Add extension to the file name
+  if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
+    name = name + '.' + ext;
   }
+  //
   //
   cb({ uri, name, size });
 };

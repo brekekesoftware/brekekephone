@@ -29,7 +29,7 @@
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
     "react-native-fcm": "16.2.4",
     "react-native-fs": "2.13.3",
-    "react-native-full-image-picker": "1.2.11",
+    "react-native-full-image-picker": "github:brekekesoftware/react-native-full-image-picker",
     "react-native-general-actionsheet": "1.0.3",
     "react-native-incall-manager": "2.2.0",
     "react-native-keep-awake": "2.0.5",
