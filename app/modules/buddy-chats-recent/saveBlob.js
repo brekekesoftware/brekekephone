@@ -8,11 +8,11 @@ const saveBlob = (blob, name) => {
     try {
       await RNFS.writeFile(p, b64, 'base64');
     } catch (err) {
-      console.error('saveBlob.native', err);
+      console.error('saveBlob', err);
     }
   };
   fr.onerror = err => {
-    console.error('saveBlob.native', err);
+    console.error('saveBlob', err);
   };
   fr.readAsDataURL(blob);
 };

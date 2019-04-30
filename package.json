@@ -6,7 +6,6 @@
     "start": "webpack-dev-server --config=web/webpack.js",
     "build": "cross-env NODE_ENV=production webpack -p --config=web/webpack.js",
     "build:dev": "webpack --config=web/webpack.js",
-    "build:ios": "rm -rf build/ios && mkdir -p build/ios && react-native bundle --platform=ios --entry-file=index.native.js --bundle-output=build/ios/main.jsbundle --assets-dest=build/ios/ --dev=false",
     "pret": "prettier --write \"{app,web}/**/*.{js,html,css}\" \"*.js\"",
     "lint": "eslint ."
   },

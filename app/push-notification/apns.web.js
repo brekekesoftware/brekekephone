@@ -1,4 +1,4 @@
-// Polyfill for apns.native.js
+// Polyfill for apns.js
 
 const getApnsToken = () => '';
 const registerVoipApns = () => undefined;

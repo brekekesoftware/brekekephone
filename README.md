@@ -64,12 +64,10 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### iOS
-- Build main.jsbundle if you haven't built any: `yarn build:ios`.
 - Start the react native bundle at the project root: `react-native run-ios`.
 - To clear cache: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`.
 
 ##### Build iOS app for distribution
-- Rebuild main.jsbundle using command `yarn build:ios`
 - Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution
 
@@ -92,4 +90,4 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Change the sound for push notification. Research more about if we can use default sound in the OS
 - [ ] Add documentation for self signed certificate
 - [ ] Make automatically archive script for iOS
-- [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.native.js
+- [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.js
