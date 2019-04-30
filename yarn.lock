@@ -6248,7 +6248,7 @@ react-native-fs@2.13.3, react-native-fs@^2.13.3:
 
 "react-native-full-image-picker@github:brekekesoftware/react-native-full-image-picker":
   version "1.2.11"
-  resolved "https://codeload.github.com/brekekesoftware/react-native-full-image-picker/tar.gz/f155404a530a59107afeb96065467efffcb89968"
+  resolved "https://codeload.github.com/brekekesoftware/react-native-full-image-picker/tar.gz/c82edcf2591c93515eb86c4040fbb13da00db1ce"
   dependencies:
     react-native-camera "^1.8.0"
     react-native-fs "^2.13.3"
