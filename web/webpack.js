@@ -1,6 +1,5 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const babelrc = require('../.babelrc');
 
 const rootDir = path.join(__dirname, '../');
 const isProd = process.env.NODE_ENV === 'production';
@@ -35,11 +34,16 @@ module.exports = {
           loader: 'babel-loader',
           // Override the root config .babelrc.js
           options: {
-            ...babelrc,
             presets: [
               //
               '@babel/preset-env',
               '@babel/preset-react',
+            ],
+            plugins: [
+              ['@babel/plugin-proposal-decorators', { legacy: true }],
+              ['@babel/plugin-proposal-class-properties', { loose: true }],
+              '@babel/plugin-proposal-object-rest-spread',
+              '@babel/plugin-syntax-dynamic-import',
             ],
           },
         },

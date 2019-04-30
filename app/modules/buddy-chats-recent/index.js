@@ -210,7 +210,7 @@ class View extends Component {
     const oldestCreated = oldestChat.created || 0;
     const max = numberOfChatsPerLoad;
     // to fix server-side issue
-    const end = oldestCreated - (oldestCreated % 1000) - 1;
+    const end = oldestCreated;
     const query = { max, end };
     const { uc } = this.context;
 

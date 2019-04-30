@@ -5,13 +5,13 @@ import {
   View,
   ScrollView as Scroll,
   TouchableOpacity as Button,
-  Picker,
   Text,
   TextInput,
   Switch,
   KeyboardAvoidingView,
 } from 'react-native';
 import { std } from '../../styleguide';
+import { WebRtcTypePicker } from '../profiles-create/ui';
 
 const st = StyleSheet.create({
   main: {
@@ -237,16 +237,10 @@ const PBX = pure(p => (
         onSubmitEditing={p.submit}
       />
     </View>
-    <View style={st.field}>
+    {/*<View style={st.field}>
       <Text style={st.fieldLabel}>WebRTC type</Text>
-      {/*<Picker style={st.picker} onValueChange={(v, i) => console.warn(v, i)}>
-        <Picker.Item label="Standard" value="standard" />
-        <Picker.Item label="TURN enabled" value="turn enabled" />
-        <Picker.Item label="TURN only" value="turn only" />
-        <Picker.Item label="TURN UDP enabled" value="turn udp enabled" />
-        <Picker.Item label="TURN UDP only" value="turn udp only" />
-      </Picker>*/}
-    </View>
+      <WebRtcTypePicker value={p.webRtcType} onChange={p.setWebRtcType} />
+    </View>*/}
   </Fragment>
 ));
 

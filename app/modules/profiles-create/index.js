@@ -23,7 +23,7 @@ class View extends Component {
     pbxTenant: '',
     pbxUsername: '',
     pbxPassword: '',
-    pbxWebRtcType: 'default',
+    pbxWebRtcType: 'standard',
     ucEnabled: false,
     ucHostname: '',
     ucPort: '',

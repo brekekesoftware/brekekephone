@@ -286,7 +286,7 @@ class View extends Component {
       pbxHostname: host,
       pbxPort: port,
       pbxPassword: '',
-      pbxWebRtcType: 'default',
+      pbxWebRtcType: 'standard',
       parks: [],
       ucEnabled: false,
       ucHostname: '',

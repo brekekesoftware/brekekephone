@@ -86,7 +86,7 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
-  fieldValueText: {
+  fieldValueTextInput: {
     flex: 1,
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -96,7 +96,25 @@ const st = StyleSheet.create({
     height: std.textSize.md + std.gap.md * 2,
     textAlign: 'right',
   },
-  picker: {
+  pickerNative: {
+    flex: 1,
+    height: std.textSize.md + std.gap.md * 2,
+  },
+  pickerNativeText: {
+    textAlign: 'right',
+    fontFamily: std.font.text,
+    fontSize: std.textSize.md,
+    color: std.color.shade9,
+    // Same with fieldLabel
+    lineHeight: std.textSize.md + std.gap.md * 2,
+  },
+  pickerNativeTextSelected: {
+    color: std.color.shade9,
+  },
+  pickerNativeCancelTextStyle: {
+    color: std.color.danger,
+  },
+  pickerWeb: {
     flex: 1,
     color: std.color.shade9,
     paddingVertical: 0,
@@ -146,53 +164,62 @@ const st = StyleSheet.create({
 
 const webRtcTypes = [
   {
-    label: "Standard",
-    key: "standard",
+    label: 'Standard',
+    key: 'standard',
   },
   {
-    label: "TURN enabled",
-    key: "turn enabled",
+    label: 'TURN enabled',
+    key: 'turn enabled',
   },
   {
-    label: "TURN only",
-    key: "turn only",
+    label: 'TURN only',
+    key: 'turn only',
   },
   {
-    label: "TURN UDP enabled",
-    key: "turn udp enabled",
+    label: 'TURN UDP enabled',
+    key: 'turn udp enabled',
   },
   {
-    label: "TURN UDP only",
-    key: "turn udp only",
+    label: 'TURN UDP only',
+    key: 'turn udp only',
   },
 ];
 
 const WebRtcTypePickerNative = p => {
-  p.value = p.value || webRtcTypes[0].key;
-  return null;/*(
+  const selected = webRtcTypes.find(t => t.key === p.value) || webRtcTypes[0];
+  return (
     <ModalPicker
-      initValue={p.value}
+      style={st.pickerNative}
+      selectedItemTextStyle={st.pickerNativeTextSelected}
+      cancelText="Cancel"
+      cancelTextStyle={st.pickerNativeCancelTextStyle}
+      backdropPressToClose
+      animationType="none"
       data={webRtcTypes}
       onChange={t => p.onChange(t.key)}
+      selectedKey={selected.key}
     >
-      <Text style={st.fieldValueText}>{p.value}</Text>
+      <Text style={st.pickerNativeText}>{selected.label}</Text>
     </ModalPicker>
-  );*/
+  );
 };
 const WebRtcTypePickerWeb = p => {
   p.value = p.value || webRtcTypes[0].key;
   return (
     <Picker
-      style={st.picker}
+      style={st.pickerWeb}
       selectedValue={p.value}
       onValueChange={v => p.onChange(v)}
     >
-      {webRtcTypes.map(t => <Picker.Item key={t.key} label={t.label} value={t.key} />)}
+      {webRtcTypes.map(t => (
+        <Picker.Item key={t.key} label={t.label} value={t.key} />
+      ))}
     </Picker>
   );
 };
 
-export const WebRtcTypePicker = Platform.OS === 'web' ? WebRtcTypePickerWeb : WebRtcTypePickerNative;
+export const WebRtcTypePicker =
+  Platform.OS === 'web' ? WebRtcTypePickerWeb : WebRtcTypePickerNative;
 
 const pure = Component =>
   class extends PureComponent {
@@ -223,7 +250,7 @@ const PBX = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Hostname</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder="Required"
         keyboardType="default"
         value={p.hostname}
@@ -234,7 +261,7 @@ const PBX = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Port</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder="Required"
         keyboardType="numeric"
         value={p.port}
@@ -245,7 +272,7 @@ const PBX = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Tenant</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder="Optional"
         keyboardType="default"
         value={p.tenant}
@@ -256,7 +283,7 @@ const PBX = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Username</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder="Required"
         keyboardType="default"
         value={p.username}
@@ -267,7 +294,7 @@ const PBX = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Password</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder="Required"
         keyboardType="default"
         secureTextEntry={true}
@@ -277,13 +304,10 @@ const PBX = pure(p => (
         password="true"
       />
     </View>
-    <View style={st.field}>
+    {/*<View style={st.field}>
       <Text style={st.fieldLabel}>WebRTC type</Text>
-      <WebRtcTypePicker
-        value={p.webRtcType}
-        onChange={p.setWebRtcType}
-      />
-    </View>
+      <WebRtcTypePicker value={p.webRtcType} onChange={p.setWebRtcType} />
+    </View>*/}
   </Fragment>
 ));
 
@@ -301,7 +325,7 @@ const UC = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Hostname</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder={p.enabled ? 'Required' : 'Optional'}
         keyboardType="default"
         value={p.hostname}
@@ -312,7 +336,7 @@ const UC = pure(p => (
     <View style={st.field}>
       <Text style={st.fieldLabel}>Port</Text>
       <TextInput
-        style={st.fieldValueText}
+        style={st.fieldValueTextInput}
         placeholder={p.enabled ? 'Required' : 'Optional'}
         keyboardType="numeric"
         value={p.port}

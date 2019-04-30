@@ -148,6 +148,7 @@ class View extends Component {
     const pbxTenant = this.state.pbxTenant.trim();
     const pbxUsername = this.state.pbxUsername.trim();
     const pbxPassword = this.state.pbxPassword.trim();
+    const pbxWebRtcType = this.state.pbxWebRtcType;
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
     const parks = [];

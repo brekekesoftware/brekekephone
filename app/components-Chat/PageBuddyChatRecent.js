@@ -3,17 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import chatStore from './chatStore';
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  Image,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import Main from '../components-shared/Main';
 
 @observer
