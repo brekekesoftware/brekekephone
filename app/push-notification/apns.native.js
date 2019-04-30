@@ -44,11 +44,10 @@ const onVoipNotification = notification => {
     // Add fallback to see the detail notification if there's no body
     JSON.stringify(notification);
   const alertAction = /call/.test(alertBody) ? 'Answer' : 'View';
-  const soundName = get(notification, '_data.custom_notification.sound');
   VoipPushNotification.presentLocalNotification({
     alertBody,
     alertAction,
-    soundName,
+    soundName: 'incallmanager_ringtone.mp3',
   });
 };
 
