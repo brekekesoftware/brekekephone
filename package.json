@@ -49,7 +49,8 @@
     "redux-model": "github:brekekesoftware/redux-model",
     "redux-persist": "5.7.0",
     "shortid": "2.2.14",
-    "url-parse": "1.4.7"
+    "url-parse": "1.4.7",
+    "react-native-splash-screen": "3.0.6"
   },
   "devDependencies": {
     "@babel/core": "7.4.4",

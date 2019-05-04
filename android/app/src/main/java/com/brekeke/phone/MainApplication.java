@@ -7,6 +7,7 @@ import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
         new KCKeepAwakePackage(),
         new LoudSpeakerPackage(),
         new MainReactPackage(),
+            new SplashScreenReactPackage(),
         new ReactVideoPackage(),
         new RNCameraPackage(),
         new RNFSPackage(),

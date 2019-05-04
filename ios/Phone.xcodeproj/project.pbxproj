@@ -54,6 +54,7 @@
 		A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */; };
 		A13821AC989E4690A7480ABB /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0272DDCB4BD947E2A3A1D461 /* libRCTVideo.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
+		B0A77634B35A41BDAF7154B5 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68C532534351421E930084E7 /* libSplashScreen.a */; };
 		E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E255C6C32251B8F100BA5410 /* libLoudSpeaker.a */; };
 		E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */; };
 /* End PBXBuildFile section */
@@ -388,6 +389,13 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		E23481EA227DB4FD00133B58 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7979DB2467C4F8889418A63 /* SplashScreen.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D7682761D8E76B80014119E;
+			remoteInfo = SplashScreen;
+		};
 		E255C6C22251B8F100BA5410 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */;
@@ -432,6 +440,7 @@
 		51632CEE6866414D8DE669E7 /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTVideo.xcodeproj; path = "../node_modules/react-native-video/ios/RCTVideo.xcodeproj"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		60A48DF5263246A5B72C136B /* text-italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "text-italic.ttf"; path = "../app/fonts/text-italic.ttf"; sourceTree = "<group>"; };
+		68C532534351421E930084E7 /* libSplashScreen.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSplashScreen.a; sourceTree = "<group>"; };
 		6CD3AC7F4BF44E6CBF51C8F0 /* text.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = text.ttf; path = ../app/fonts/text.ttf; sourceTree = "<group>"; };
 		74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = KCKeepAwake.xcodeproj; path = "../node_modules/react-native-keep-awake/ios/KCKeepAwake.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
@@ -468,6 +477,7 @@
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LoudSpeaker.xcodeproj; path = "../node_modules/react-native-loud-speaker/ios/LoudSpeaker.xcodeproj"; sourceTree = "<group>"; };
 		F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libKCKeepAwake.a; sourceTree = "<group>"; };
+		F7979DB2467C4F8889418A63 /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -512,6 +522,7 @@
 				E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */,
 				A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */,
 				A13821AC989E4690A7480ABB /* libRCTVideo.a in Frameworks */,
+				B0A77634B35A41BDAF7154B5 /* libSplashScreen.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,6 +694,7 @@
 				74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */,
 				81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */,
 				51632CEE6866414D8DE669E7 /* RCTVideo.xcodeproj */,
+				F7979DB2467C4F8889418A63 /* SplashScreen.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -737,6 +749,7 @@
 				F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */,
 				A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */,
 				0272DDCB4BD947E2A3A1D461 /* libRCTVideo.a */,
+				68C532534351421E930084E7 /* libSplashScreen.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -822,6 +835,14 @@
 			children = (
 				ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */,
 				2D16E6721FA4F8DC00B85C8A /* libRCTBlob-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E23481E7227DB4FD00133B58 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E23481EB227DB4FD00133B58 /* libSplashScreen.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -985,6 +1006,10 @@
 				{
 					ProductGroup = 9C31A4AC21D5098F000CB78F /* Products */;
 					ProjectRef = 81D2581CE2AE40FA93494E9B /* RNVoipPushNotification.xcodeproj */;
+				},
+				{
+					ProductGroup = E23481E7227DB4FD00133B58 /* Products */;
+					ProjectRef = F7979DB2467C4F8889418A63 /* SplashScreen.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1324,6 +1349,13 @@
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E23481EB227DB4FD00133B58 /* libSplashScreen.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSplashScreen.a;
+			remoteRef = E23481EA227DB4FD00133B58 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E255C6C32251B8F100BA5410 /* libLoudSpeaker.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1438,6 +1470,7 @@
 					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-video/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1445,6 +1478,7 @@
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
+					"\"$(SRCROOT)/Phone\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1486,6 +1520,7 @@
 					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-video/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1493,6 +1528,7 @@
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
+					"\"$(SRCROOT)/Phone\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1659,6 +1695,7 @@
 					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-video/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1666,6 +1703,7 @@
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
+					"\"$(SRCROOT)/Phone\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
