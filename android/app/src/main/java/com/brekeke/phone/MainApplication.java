@@ -36,7 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
         new KCKeepAwakePackage(),
         new LoudSpeakerPackage(),
         new MainReactPackage(),
-            new SplashScreenReactPackage(),
+        new SplashScreenReactPackage(),
         new ReactVideoPackage(),
         new RNCameraPackage(),
         new RNFSPackage(),
