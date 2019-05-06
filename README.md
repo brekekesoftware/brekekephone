@@ -90,4 +90,5 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Change the sound for push notification. Research more about if we can use default sound in the OS
 - [ ] Add documentation for self signed certificate
 - [ ] Make automatically archive script for iOS
+- [ ] Handle duplicated resources accross ios android and web
 - [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.js
