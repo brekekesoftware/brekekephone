@@ -72,12 +72,6 @@ const storeEnhancer = composeEnhancers(applyMiddleware(router));
 export const store = createStore(storeReducer, storeEnhancer);
 const storePersistor = persistStore(store);
 
-const Loading = () => (
-  <View style={StyleSheet.absoluteFill}>
-    <ActivityIndicator />
-  </View>
-);
-
 const Routing = () => (
   <View style={StyleSheet.absoluteFill}>
     <StatusBar />
@@ -175,7 +169,7 @@ const Routing = () => (
 
 const App = () => (
   <StoreProvider store={store}>
-    <PersistGate persistor={storePersistor} loading={<Loading />}>
+    <PersistGate persistor={storePersistor}>
       <ModelProvider getter={getter} action={action}>
         <APIProvider>
           <ConnectedRouter history={routerHistory}>

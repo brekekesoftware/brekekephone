@@ -10,6 +10,7 @@ import subscribePn from '../util/subscribe-pn';
 import fmtKey from '../util/uint8ArrayToUrlBase64';
 import { Platform } from 'react-native';
 import { getApnsToken } from '../push-notification/apns';
+import SplashScreen from 'react-native-splash-screen';
 
 let API_PROVIDER = null;
 
@@ -238,6 +239,7 @@ class APIProvider extends Component {
 
   componentDidMount() {
     API_PROVIDER = this;
+    SplashScreen.hide();
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);
     pbx.on('connection-timeout', this.onPBXConnectionTimeout);

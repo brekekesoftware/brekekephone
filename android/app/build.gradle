@@ -177,9 +177,9 @@ dependencies {
   compile project(":react-native-incall-manager")
   compile project(":react-native-keep-awake")
   compile project(":react-native-loud-speaker")
+  compile project(":react-native-splash-screen")
   compile project(":react-native-video")
   compile project(":react-native-webrtc")
-
 }
 
 // Run this once to be able to run the application with BUCK
