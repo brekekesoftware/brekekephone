@@ -7,7 +7,6 @@ import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -18,6 +17,7 @@ import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.reactnative.camera.RNCameraPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -36,10 +36,10 @@ public class MainApplication extends Application implements ReactApplication {
         new KCKeepAwakePackage(),
         new LoudSpeakerPackage(),
         new MainReactPackage(),
-        new SplashScreenReactPackage(),
         new ReactVideoPackage(),
         new RNCameraPackage(),
         new RNFSPackage(),
+        new SplashScreenReactPackage(),
         new WebRTCModulePackage()
       );
     }

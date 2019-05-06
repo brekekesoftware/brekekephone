@@ -1,6 +1,4 @@
 rootProject.name = 'BrekekePhone'
-include ':react-native-splash-screen'
-project(':react-native-splash-screen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-splash-screen/android')
 include ':app'
 
 include ':react-native-camera'
@@ -43,6 +41,12 @@ include ':react-native-loud-speaker'
 project(':react-native-loud-speaker').projectDir = new File(
   rootProject.projectDir,
   '../node_modules/react-native-loud-speaker/android'
+)
+
+include ':react-native-splash-screen'
+project(':react-native-splash-screen').projectDir = new File(
+  rootProject.projectDir,
+  '../node_modules/react-native-splash-screen/android'
 )
 
 include ':react-native-video'
