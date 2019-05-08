@@ -17,6 +17,7 @@ import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.reactnative.camera.RNCameraPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -38,6 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactVideoPackage(),
         new RNCameraPackage(),
         new RNFSPackage(),
+        new SplashScreenReactPackage(),
         new WebRTCModulePackage()
       );
     }

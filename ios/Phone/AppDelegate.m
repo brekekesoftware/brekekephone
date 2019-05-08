@@ -13,7 +13,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLog.h>
 #import <React/RCTLinkingManager.h>
-
+#import "SplashScreen.h"
 #import <PushKit/PushKit.h>
 #import "RNVoipPushNotificationManager.h"
 
@@ -42,6 +42,7 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   //
+  [SplashScreen show];
   RCTSetLogThreshold(RCTLogLevelInfo);
   //
   return YES;
