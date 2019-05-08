@@ -15,6 +15,7 @@ import ProfilesManage from './modules/profiles-manage';
 import ProfilesCreate from './modules/profiles-create';
 import ProfilesCreate2 from './components-Profile/PageProfileCreate';
 import ProfileUpdate from './modules/profile-update';
+import ProfileUpdate2 from './components-Profile/PageProfileUpdate';
 import ProfileSignin from './modules/profile-signin';
 import UsersBrowse from './modules/users-browse';
 import CallsManage from './modules/calls-manage';
@@ -83,8 +84,8 @@ const Routing = () => (
     <StatusBar />
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-      <Route exact path="/profiles/manage" component={ProfilesManage} />
-      <Route exact path="/profiles/create" component={ProfilesCreate} />
+      <Route exact path="/profiles/manage" component={ProfilesCreate} />
+      <Route exact path="/profiles/create" component={ProfileUpdate2} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
       <Route

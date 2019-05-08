@@ -33,13 +33,35 @@ const st = StyleSheet.create({
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
+    fontWeight: 'Bold',
     color: std.color.shade9,
+  },
+  navbarActionBack: {
+    fontFamily: std.font.icon,
+    fontSize: std.textSize.lg,
+    lineHeight: std.textSize.md + std.gap.md * 2,
+    color: std.color.shade9,
+    paddingTop: std.gap.sm,
   },
   navbarAction: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
+  },
+  navbarReset: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: std.gap.lg,
+  },
+  navbarActionReset: {
+    fontSize: std.textSize.sm,
+    fontFamily: std.font.text,
+    lineHeight: std.textSize.sm + std.gap.sm * 2,
+    paddingTop: std.gap.lg,
+    fontWeight: 'Bold',
+    paddingBottom: std.gap.lg,
   },
 });
 
@@ -48,13 +70,18 @@ const Main = p => (
     <View style={st.navbar}>
       <Text style={st.navbarTitle}>{p.title}</Text>
       {p.onBack && (
-        <TouchableOpacity style={st.navbarBack} onPress={p.onBack}>
-          <Text style={st.navbarAction}>{p.backLabel || 'Back'}</Text>
+        <TouchableOpacity style={st.navbarBack}>
+          <Text style={st.navbarActionBack}>icon_arrow_left</Text>
         </TouchableOpacity>
       )}
       {p.onNext && (
-        <TouchableOpacity style={st.navbarNext} onPress={p.onNext}>
+        <TouchableOpacity style={st.navbarNext}>
           <Text style={st.navbarAction}>{p.nextLabel || 'Next'}</Text>
+        </TouchableOpacity>
+      )}
+      {p.onReset && (
+        <TouchableOpacity style={st.navbarReset}>
+          <Text style={st.navbarActionReset}>RESET</Text>
         </TouchableOpacity>
       )}
     </View>
