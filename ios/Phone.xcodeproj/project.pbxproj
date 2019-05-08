@@ -42,6 +42,7 @@
 		84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */; };
 		84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */; };
 		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
+		9C36979E2283529F00A3CA04 /* Phone.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 84D1D1191EA9BF6800BC7305 /* Phone.entitlements */; };
 		9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C740745221FFC7400AC17B9 /* libRNCamera.a */; };
 		9C8C84F32246AE3500C5FB09 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */; };
 		9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C91651B22205623000DEF18 /* libRNFS.a */; };
@@ -1370,14 +1371,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				9C36979E2283529F00A3CA04 /* Phone.entitlements in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				9F12878AE4DF4557A16A4C23 /* text.ttf in Resources */,
-				9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */,
 				08A68D5016D645189B0EDB38 /* text-italic.ttf in Resources */,
 				8437F373202F82CA00536C99 /* text-bold.ttf in Resources */,
-				9C9E4AAD21C16C2600BF913A /* incallmanager_ringtone.mp3 in Resources */,
 				27141DD80BEC4685B9D9C2E0 /* feather.ttf in Resources */,
+				9C9E4AAD21C16C2600BF913A /* incallmanager_ringtone.mp3 in Resources */,
+				9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
