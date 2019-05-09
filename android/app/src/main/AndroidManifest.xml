@@ -45,11 +45,11 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
       <!-- deep link -->
-      <intent-filter android:label="filter_react_native">
+      <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="brekekeapp" android:host="brekeke"/>
+        <data android:scheme="brekekeapp" android:host="open"/>
       </intent-filter>
     </activity>
   </application>
