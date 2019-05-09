@@ -6,7 +6,7 @@
     "start": "webpack-dev-server --config=web/webpack.js",
     "build": "cross-env NODE_ENV=production webpack -p --config=web/webpack.js",
     "build:dev": "webpack --config=web/webpack.js",
-    "pret": "prettier --write \"{app,web}/**/*.{js,html,css}\" \"*.js\"",
+    "pret": "prettier --loglevel=silent --write \"**/*.{html,css,js,json}\" \"!build/**\"",
     "lint": "eslint ."
   },
   "dependencies": {

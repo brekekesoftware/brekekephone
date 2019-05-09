@@ -9,31 +9,38 @@
 
 #import "AppDelegate.h"
 
-#import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h>
-#import <React/RCTLog.h>
-#import <React/RCTLinkingManager.h>
-#import "SplashScreen.h"
 #import <PushKit/PushKit.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTLog.h>
+#import <React/RCTRootView.h>
+
 #import "RNVoipPushNotificationManager.h"
+#import "SplashScreen.h"
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   //
   NSURL *jsCodeLocation;
 #ifdef DEBUG
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  jsCodeLocation =
+      [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"
+                                                     fallbackResource:nil];
 #else
-  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main"
+                                           withExtension:@"jsbundle"];
 #endif
   //
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"App"
                                                initialProperties:nil
                                                    launchOptions:launchOptions];
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f
+                                                    green:1.0f
+                                                     blue:1.0f
+                                                    alpha:1];
   //
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -48,29 +55,43 @@
   return YES;
 }
 
-
 //
-// Universal links
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
-{
- return [RCTLinkingManager application:application
-                  continueUserActivity:userActivity
-                    restorationHandler:restorationHandler];
+// Deep links
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:
+                (NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  return [RCTLinkingManager application:application
+                                openURL:url
+                                options:options];
 }
-
+// Universal links
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(NSUserActivity *)userActivity
+      restorationHandler:(void (^)(NSArray *_Nullable))restorationHandler {
+  return [RCTLinkingManager application:application
+                   continueUserActivity:userActivity
+                     restorationHandler:restorationHandler];
+}
 
 //
 // react-native-voip-push-notification
 // Handle updated push credentials
-- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
+- (void)pushRegistry:(PKPushRegistry *)registry
+    didUpdatePushCredentials:(PKPushCredentials *)credentials
+                     forType:(NSString *)type {
   // Register VoIP push token (a property of PKPushCredentials) with server
-  [RNVoipPushNotificationManager didUpdatePushCredentials:credentials forType:(NSString *)type];
+  [RNVoipPushNotificationManager didUpdatePushCredentials:credentials
+                                                  forType:(NSString *)type];
 }
 // Handle incoming pushes
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+- (void)pushRegistry:(PKPushRegistry *)registry
+    didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
+                              forType:(NSString *)type {
   // Process the received push
-  [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
+  [RNVoipPushNotificationManager
+      didReceiveIncomingPushWithPayload:payload
+                                forType:(NSString *)type];
 }
 
 @end
