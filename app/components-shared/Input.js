@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextInput as TextInputOg } from 'react-native';
+import { StyleSheet, Text, TextInput as TextInputOg, View } from 'react-native';
+
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({

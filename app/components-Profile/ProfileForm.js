@@ -1,13 +1,14 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { ScrollView } from 'react-native';
+
 import Divider from '../components-shared/Divider';
 import { TextInput } from '../components-shared/Input';
-import mobxClosureSet from '../util/mobxClosureSet';
-import ProfileFormStore from './ProfileFormStore';
 import SwitchStatus from '../components-shared/Switch';
-import ButtonSave from './ButtonSave';
+import mobxClosureSet from '../util/mobxClosureSet';
 import ButtonNewField from './ButtonNewField';
+import ButtonSave from './ButtonSave';
+import ProfileFormStore from './ProfileFormStore';
 
 @observer
 class ProfileForm extends React.Component {

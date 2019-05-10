@@ -1,13 +1,14 @@
 import React, { PureComponent } from 'react';
 import {
-  StyleSheet,
-  View,
   ScrollView,
-  TouchableOpacity as Button,
+  StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
-import { std, rem } from '../../styleguide';
+
+import { rem, std } from '../../styleguide';
 
 const st = {
   signout: {

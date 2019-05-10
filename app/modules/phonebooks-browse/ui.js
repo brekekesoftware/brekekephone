@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity as Button,
-  Text,
   ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
+
 import { std } from '../../styleguide';
 
 const st = StyleSheet.create({

@@ -1,5 +1,5 @@
-import { createModel } from 'redux-model';
 import immutable from 'immutable';
+import { createModel } from 'redux-model';
 
 export default createModel({
   prefix: 'pushNotifies',

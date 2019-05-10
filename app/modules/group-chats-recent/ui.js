@@ -1,17 +1,18 @@
-import React, { Fragment, PureComponent, Component } from 'react';
+import React, { Component, Fragment, PureComponent } from 'react';
 import {
-  Platform,
-  StyleSheet,
-  View,
-  ScrollView,
+  ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
-  TouchableOpacity as Button,
+  Platform,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
-  Image,
-  ActivityIndicator,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
-import { std, rem } from '../../styleguide';
+
+import { rem, std } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {

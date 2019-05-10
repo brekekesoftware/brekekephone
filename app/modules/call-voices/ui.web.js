@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
-import ringtone from './incallmanager_ringtone.mp3';
+
 import ringback from './incallmanager_ringback.mp3';
+import ringtone from './incallmanager_ringtone.mp3';
 
 const IncomingItem = p => (
   <audio key={p.id} autoPlay volume={1} loop src={ringtone} />

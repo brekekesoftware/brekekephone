@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
-import UI from './ui';
-import saveBlob from './saveBlob';
-import pickFile from './pickFile';
+
 import formatChatText from '../../util/formatChatText';
+import pickFile from './pickFile';
+import saveBlob from './saveBlob';
+import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
   const duplicatedMap = {};

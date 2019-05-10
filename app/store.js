@@ -1,11 +1,12 @@
-import { persistReducer, persistStore } from 'redux-persist';
-import { routerMiddleware } from 'react-router-redux';
-import storage from 'redux-persist/lib/storage';
 import { createHashHistory, createMemoryHistory } from 'history';
 import { Platform } from 'react-native';
+import { routerMiddleware } from 'react-router-redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import { combineModels } from 'redux-model';
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
 import * as models from './models';
-import { createStore, applyMiddleware, compose } from 'redux';
 
 const persistedReducers = ['profiles', 'recentCalls'];
 const persistConfig = {

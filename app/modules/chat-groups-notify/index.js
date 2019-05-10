@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import at from 'lodash/get';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
-import at from 'lodash/get';
+
 import UI from './ui';
 
 const isNotJointed = group => !group.jointed;

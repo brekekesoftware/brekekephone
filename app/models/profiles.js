@@ -1,6 +1,6 @@
-import { createModel } from 'redux-model';
 import immutable from 'immutable';
 import pick from 'lodash/pick';
+import { createModel } from 'redux-model';
 
 const allowedToCreateFields = [
   'id',

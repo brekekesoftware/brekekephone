@@ -1,5 +1,6 @@
 import get from 'lodash/get';
 import VoipPushNotification from 'react-native-voip-push-notification';
+
 import { getProfileManager } from '../modules/profiles-manage';
 
 let apnsToken = '';

@@ -6,7 +6,7 @@
     "start": "webpack-dev-server --config=web/webpack.js",
     "build": "cross-env NODE_ENV=production webpack -p --config=web/webpack.js",
     "build:dev": "webpack --config=web/webpack.js",
-    "pret": "prettier --loglevel=silent --write \"**/*.{html,css,js,json}\" \"!build/**\"",
+    "pret": "js-import-sort --silent=1 --path app/* && prettier --loglevel=silent --write \"**/*.{html,css,js,json}\" \"!build/**\"",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "react-native-modal-selector": "1.0.3",
     "react-native-permissions": "1.1.1",
     "react-native-progress-circle": "2.0.1",
+    "react-native-splash-screen": "3.0.6",
     "react-native-status-bar-height": "2.3.1",
     "react-native-video": "4.4.1",
     "react-native-voip-push-notification": "1.1.4",
@@ -49,8 +50,7 @@
     "redux-model": "github:brekekesoftware/redux-model",
     "redux-persist": "5.7.0",
     "shortid": "2.2.14",
-    "url-parse": "1.4.7",
-    "react-native-splash-screen": "3.0.6"
+    "url-parse": "1.4.7"
   },
   "devDependencies": {
     "@babel/core": "7.4.4",
@@ -68,6 +68,7 @@
     "eslint": "5.16.0",
     "eslint-plugin-react-app": "5.0.0",
     "file-loader": "3.0.1",
+    "js-import-sort": "1.2.0",
     "prettier": "1.17.0",
     "style-loader": "0.23.1",
     "webpack": "4.30.0",

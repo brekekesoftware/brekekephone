@@ -1,6 +1,7 @@
 import React from 'react';
-import ProfileForm from './ProfileForm';
+
 import Main from '../components-shared/Main';
+import ProfileForm from './ProfileForm';
 
 class PageProfileUpdate extends React.Component {
   render() {

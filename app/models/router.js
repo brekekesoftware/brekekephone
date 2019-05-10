@@ -1,5 +1,5 @@
-import { routerReducer, push, getLocation, goBack } from 'react-router-redux';
 import qs from 'qs';
+import { getLocation, goBack, push, routerReducer } from 'react-router-redux';
 
 export default {
   prefix: 'router',

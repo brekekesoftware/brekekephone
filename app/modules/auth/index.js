@@ -1,6 +1,7 @@
-import { createModelView } from 'redux-model';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { createModelView } from 'redux-model';
+
 import { rem } from '../../styleguide';
 
 const st = StyleSheet.create({

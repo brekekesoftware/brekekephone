@@ -1,8 +1,9 @@
-import { createModelView } from 'redux-model';
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { createModelView } from 'redux-model';
 import createId from 'shortid';
+
 import UCClient from '../../apis/ucclient';
 import UI, { UC_CONNECT_STATES } from './ui';
 

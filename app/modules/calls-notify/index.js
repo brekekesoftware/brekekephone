@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import UI from './ui';
 import createId from 'shortid';
+
+import UI from './ui';
 
 const isIncoming = call => call.incoming && !call.answered;
 

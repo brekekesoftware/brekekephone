@@ -1,16 +1,17 @@
-import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Component } from 'react';
+import { Platform } from 'react-native';
+import FCM, { FCMEvent } from 'react-native-fcm';
+import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
+
+import { getApnsToken } from '../push-notification/apns';
+import subscribePn from '../util/subscribe-pn';
+import fmtKey from '../util/uint8ArrayToUrlBase64';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
-import FCM, { FCMEvent } from 'react-native-fcm';
-import subscribePn from '../util/subscribe-pn';
-import fmtKey from '../util/uint8ArrayToUrlBase64';
-import { Platform } from 'react-native';
-import { getApnsToken } from '../push-notification/apns';
-import SplashScreen from 'react-native-splash-screen';
 
 let API_PROVIDER = null;
 
@@ -238,8 +239,10 @@ class APIProvider extends Component {
   }
 
   componentDidMount() {
-    API_PROVIDER = this;
-    SplashScreen.hide();
+    if (Platform.OS !== 'web') {
+      SplashScreen.hide();
+    }
+
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);
     pbx.on('connection-timeout', this.onPBXConnectionTimeout);
@@ -275,6 +278,8 @@ class APIProvider extends Component {
     uc.on('file-received', this.onFileReceived);
     uc.on('file-progress', this.onFileProgress);
     uc.on('file-finished', this.onFileFinished);
+
+    API_PROVIDER = this;
   }
 
   componentWillUnmount() {

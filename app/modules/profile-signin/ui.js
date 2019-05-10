@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   StyleSheet,
-  View,
-  TouchableOpacity as Button,
   Text,
   TextInput,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
+
 import { std } from '../../styleguide';
 
 const st = {

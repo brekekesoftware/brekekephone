@@ -1,10 +1,10 @@
 import {
-  RTCPeerConnection,
-  RTCIceCandidate,
-  RTCSessionDescription,
+  mediaDevices,
   MediaStream,
   MediaStreamTrack,
-  mediaDevices,
+  RTCIceCandidate,
+  RTCPeerConnection,
+  RTCSessionDescription,
 } from 'react-native-webrtc';
 
 window.RTCPeerConnection = window.RTCPeerConnection || RTCPeerConnection;

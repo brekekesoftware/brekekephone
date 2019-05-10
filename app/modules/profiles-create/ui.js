@@ -1,18 +1,19 @@
 import React, { Fragment, PureComponent } from 'react';
 import {
-  StyleSheet,
-  Platform,
-  View,
-  ScrollView as Scroll,
-  TouchableOpacity as Button,
+  KeyboardAvoidingView,
   Picker,
+  Platform,
+  ScrollView as Scroll,
+  StyleSheet,
+  Switch,
   Text,
   TextInput,
-  Switch,
-  KeyboardAvoidingView,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
-import { std } from '../../styleguide';
 import ModalPicker from 'react-native-modal-selector';
+
+import { std } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {

@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  StyleSheet,
-  View,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity as Button,
+  View,
 } from 'react-native';
+
 import { std } from '../../styleguide';
 
 const monthName = [

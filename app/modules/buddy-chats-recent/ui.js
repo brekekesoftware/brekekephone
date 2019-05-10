@@ -1,17 +1,18 @@
-import React, { Fragment, PureComponent, Component } from 'react';
+import React, { Component, Fragment, PureComponent } from 'react';
 import {
-  StyleSheet,
-  View,
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
   ScrollView,
-  TouchableOpacity as Button,
+  StyleSheet,
   Text,
   TextInput,
-  Image,
-  ActivityIndicator,
-  KeyboardAvoidingView,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
 import Progress from 'react-native-progress-circle';
-import { std, rem } from '../../styleguide';
+
+import { rem, std } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {

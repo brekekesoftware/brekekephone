@@ -1,4 +1,4 @@
-import { Platform, Text, TextInput, KeyboardAvoidingView } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, TextInput } from 'react-native';
 
 const scale = 0.9;
 export const rem = size => size * scale;
@@ -16,7 +16,7 @@ export const std = {
     shade7: '#4b4b4b',
     shade8: '#393939',
     shade9: '#262626', // primary text
-    shade10: '#bdbdbd', //button save
+    shade10: '#bdbdbd', // button save
     // accent
     danger: '#FF2D55',
     notice: '#FF9500',

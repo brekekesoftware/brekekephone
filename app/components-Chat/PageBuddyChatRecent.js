@@ -1,10 +1,11 @@
-import { observable, action } from 'mobx';
+import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import React from 'react';
 import PropTypes from 'prop-types';
-import chatStore from './chatStore';
-import { View, TouchableOpacity, Text } from 'react-native';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+
 import Main from '../components-shared/Main';
+import chatStore from './chatStore';
 
 @observer
 class PageBuddyChatRecent extends React.Component {

@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { createModelView } from 'redux-model';
 import immutable from 'immutable';
-import createId from 'shortid';
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { createModelView } from 'redux-model';
+import createId from 'shortid';
+
 import UI from './ui';
 
 const mapGetter = getter => state => ({

@@ -1,15 +1,16 @@
+import qs from 'qs';
 import React, { Component } from 'react';
-import { createModelView } from 'redux-model';
-import UI from './ui';
-import UserLanguage from '../../language/UserLanguage';
-import { Text, Platform, AsyncStorage, AppState } from 'react-native';
+import { AppState, AsyncStorage, Platform, Text } from 'react-native';
 import FCM, {
   FCMEvent,
-  WillPresentNotificationResult,
   NotificationType,
+  WillPresentNotificationResult,
 } from 'react-native-fcm';
-import qs from 'qs';
+import { createModelView } from 'redux-model';
 import createId from 'shortid';
+
+import UserLanguage from '../../language/UserLanguage';
+import UI from './ui';
 
 // Read url search params
 let searchParams = {};

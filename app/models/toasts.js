@@ -1,6 +1,6 @@
-import { createModel } from 'redux-model';
 import immutable from 'immutable';
 import pickProps from 'lodash/pick';
+import { createModel } from 'redux-model';
 
 const allowedToCreateProps = ['id', 'message'];
 const validateCreatingToast = toast => pickProps(toast, allowedToCreateProps);

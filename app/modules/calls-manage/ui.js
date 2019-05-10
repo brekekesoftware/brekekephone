@@ -1,13 +1,14 @@
 import React from 'react';
 import {
   Platform,
-  StyleSheet,
-  View,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity as Button,
+  View,
 } from 'react-native';
-import { std, rem } from '../../styleguide';
+
+import { rem, std } from '../../styleguide';
 
 const st = {
   main: {

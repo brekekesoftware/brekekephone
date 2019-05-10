@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
+
 import UI from './ui';
 
 const isIncoming = call => !call.answered && call.incoming;

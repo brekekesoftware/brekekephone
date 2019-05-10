@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
+
 import './webrtcclient';
 
 class CreatingSessions {
@@ -206,7 +207,7 @@ class SIP extends EventEmitter {
       platformOs = 'Web';
     }
 
-    const jssipVersion = '3.2.15'; //hardcode for JsSIP 3.2.15 /Web limited
+    const jssipVersion = '3.2.15'; // hard code for JsSIP 3.2.15 /Web limited
 
     const appPackageJson = require('../../package.json');
     const appVersion = appPackageJson.version;

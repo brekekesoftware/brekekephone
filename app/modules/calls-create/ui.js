@@ -1,12 +1,13 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import {
-  StyleSheet,
-  View,
   ScrollView,
-  TouchableOpacity as Button,
+  StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
+
 import { std } from '../../styleguide';
 
 const st = StyleSheet.create({

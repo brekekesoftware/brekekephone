@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
-import UI from './ui';
+
 import { validateHostname, validatePort } from '../../util/validate';
+import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
   profile: getter.profiles.detailMapById(state)[props.match.params.profile],

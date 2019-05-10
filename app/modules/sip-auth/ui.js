@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity as Btn, Text } from 'react-native';
+import { Text, TouchableOpacity as Btn, View } from 'react-native';
+
 import { st } from '../pbx-auth/ui';
 
 const SIPAuth = p => (

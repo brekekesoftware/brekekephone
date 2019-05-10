@@ -1,4 +1,5 @@
 pret: pretobjc pretjava pretxml
+	yarn pret
 
 pretobjc:
 	git ls-tree -r HEAD --name-only \

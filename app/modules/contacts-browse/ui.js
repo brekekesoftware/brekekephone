@@ -1,15 +1,16 @@
 import React, { PureComponent } from 'react';
 import {
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity as Button,
-  Text,
-  TextInput,
   ActivityIndicator,
   KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
-import { std, rem } from '../../styleguide';
+
+import { rem, std } from '../../styleguide';
 
 const st = StyleSheet.create({
   empty: {

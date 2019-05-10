@@ -1,15 +1,16 @@
 import React, { Fragment, PureComponent } from 'react';
 import {
-  StyleSheet,
+  KeyboardAvoidingView,
   Platform,
-  View,
   ScrollView as Scroll,
-  TouchableOpacity as Button,
+  StyleSheet,
+  Switch,
   Text,
   TextInput,
-  Switch,
-  KeyboardAvoidingView,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
+
 import { std } from '../../styleguide';
 import { WebRtcTypePicker } from '../profiles-create/ui';
 
@@ -185,7 +186,7 @@ const PBX = pure(p => (
       <TextInput
         style={st.fieldValueText}
         placeholder="Required"
-        //keyboardType='email-address'
+        // keyboardType='email-address'
         keyboardType="default"
         value={p.hostname}
         onChangeText={p.setHostname}

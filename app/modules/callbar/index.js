@@ -1,9 +1,10 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import UI from './ui';
-import PropTypes from 'prop-types';
 import createId from 'shortid';
+
 import LoudSpeaker from '../../modules/calls-manage/LoudSpeaker';
+import UI from './ui';
 
 const mapGetter = getter => state => ({
   chatsEnabled: (getter.auth.profile(state) || {}).ucEnabled,

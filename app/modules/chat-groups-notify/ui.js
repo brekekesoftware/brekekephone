@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   StyleSheet,
-  View,
-  TouchableOpacity as Button,
   Text,
+  TouchableOpacity as Button,
+  View,
 } from 'react-native';
-import { std, rem } from '../../styleguide';
+
+import { rem, std } from '../../styleguide';
 
 const st = StyleSheet.create({
   notify: {

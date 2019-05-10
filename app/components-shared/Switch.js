@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, Switch } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
+
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({
