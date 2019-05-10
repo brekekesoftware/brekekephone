@@ -5,11 +5,12 @@ import { std } from '../styleguide';
 const st = StyleSheet.create({
   container: {
     padding: std.gap.lg,
-    paddingTop: 0,
+    paddingTop: std.gap.lg,
   },
   label: {
+    paddingBottom: std.gap.md,
     fontFamily: std.font.text,
-    fontSize: std.textSize.md,
+    fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
   required: {
@@ -47,6 +48,7 @@ const normalizeInput = Inner => {
 
 const TextInput = normalizeInput(p => (
   <TextInputOg
+    placeholder={p.placeholder}
     style={st.input}
     value={p.value}
     onChangeText={p.onChange}

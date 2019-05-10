@@ -5,7 +5,7 @@ import Main from '../components-shared/Main';
 class PageProfileCreate extends React.Component {
   render() {
     return (
-      <Main title="Create Profile">
+      <Main title="New Server" onBack={true} onReset={true}>
         <ProfileForm />
       </Main>
     );

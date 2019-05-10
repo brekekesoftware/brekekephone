@@ -15,6 +15,7 @@ import ProfilesManage from './modules/profiles-manage';
 import ProfilesCreate from './modules/profiles-create';
 import ProfilesCreate2 from './components-Profile/PageProfileCreate';
 import ProfileUpdate from './modules/profile-update';
+import ProfileUpdate2 from './components-Profile/PageProfileUpdate';
 import ProfileSignin from './modules/profile-signin';
 import UsersBrowse from './modules/users-browse';
 import CallsManage from './modules/calls-manage';
