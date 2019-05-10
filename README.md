@@ -51,6 +51,10 @@ react-native start --reset-cache
   - `You have not accepted the license agreements of the following SDK components`: Execute `cd %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin` then `sdkmanager --licenses` then press y and enter for all licenses.
 
 ##### Run and debug app in a real device:
+- Prepare with the phone:
+  - Go to Settings > Privacy
+  - Enable "Unknown Sources (Allow installation of apps from unknown sources)"
+- Then run those commands on the computer:
 ```sh
 adb devices
 adb -s DEVICE_ID reverse tcp:8081 tcp:8081
