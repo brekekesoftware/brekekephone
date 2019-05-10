@@ -25,7 +25,7 @@ const st = StyleSheet.create({
   textTitle: {
     padding: std.gap.lg,
     fontSize: std.textSize.sm,
-    fontWeight: 'Bold',
+    fontWeight: '700',
   },
 });
 

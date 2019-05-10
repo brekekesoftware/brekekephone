@@ -33,7 +33,7 @@ const st = StyleSheet.create({
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
-    fontWeight: 'Bold',
+    fontWeight: '700',
     color: std.color.shade9,
   },
   navbarActionBack: {
@@ -60,7 +60,7 @@ const st = StyleSheet.create({
     fontFamily: std.font.text,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     paddingTop: std.gap.lg,
-    fontWeight: 'Bold',
+    fontWeight: 'bold',
     paddingBottom: std.gap.lg,
   },
 });
