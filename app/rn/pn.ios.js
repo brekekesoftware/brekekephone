@@ -1,19 +1,20 @@
 import get from 'lodash/get';
+import { Platform } from 'react-native';
 import VoipPushNotification from 'react-native-voip-push-notification';
 
 import { getProfileManager } from '../modules/profiles-manage';
 
-let apnsToken = '';
-const getApnsToken = () => apnsToken;
+let voipApnsToken = '';
+const getPnToken = () => voipApnsToken;
 
-const registerVoipApns = () => {
+const registerPn = () => {
   VoipPushNotification.addEventListener('register', onVoipRegister);
   VoipPushNotification.addEventListener('notification', onVoipNotification);
   VoipPushNotification.requestPermissions();
 };
 
 const onVoipRegister = token => {
-  apnsToken = token;
+  voipApnsToken = token;
 };
 
 let intervalId = 0; // To wait until the profile manager constructed
@@ -52,4 +53,4 @@ const onVoipNotification = notification => {
   });
 };
 
-export { getApnsToken, registerVoipApns };
+export { getPnToken, registerPn };

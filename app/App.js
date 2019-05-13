@@ -12,9 +12,6 @@ import storage from 'redux-persist/lib/storage';
 
 import './-polyfill';
 import APIProvider from './apis';
-import BuddyChatsRecent2 from './components-Chat/PageBuddyChatRecent';
-import ProfilesCreate2 from './components-Profile/PageProfileCreate';
-import ProfileUpdate2 from './components-Profile/PageProfileUpdate';
 import * as models from './models';
 import Auth from './modules/auth';
 import WithoutStatusBar from './modules/auth/WithoutStatusBar';

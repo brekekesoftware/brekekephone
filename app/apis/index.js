@@ -6,7 +6,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import { getApnsToken } from '../push-notification/apns';
+import { getPnToken } from '../rn/pn';
 import subscribePn from '../util/subscribe-pn';
 import fmtKey from '../util/uint8ArrayToUrlBase64';
 import pbx from './pbx';
@@ -30,7 +30,7 @@ const mapAction = action => emit => ({
   onSIPConnectionStarted() {
     emit(action.auth.sip.onSuccess());
     if (Platform.OS === 'ios') {
-      const device_id = getApnsToken();
+      const device_id = getPnToken();
       if (!device_id) {
         return;
       }
@@ -98,7 +98,7 @@ const mapAction = action => emit => ({
           FCM.getFCMToken().then(token => {});
 
           if (Platform.OS === 'ios') {
-            FCM.getAPNSToken().then(token => {});
+            FCM.getPnToken().then(token => {});
           }
 
           API_PROVIDER._refreshTokenListener = FCM.on(

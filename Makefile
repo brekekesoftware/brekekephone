@@ -1,20 +1,41 @@
-pret: pretobjc pretjava pretxml
-	yarn pret
+pret: js-import-sort prettier pretjava pretobjc pretxml
+
+lint:
+	make -s git EXT='js' \
+	| xargs npx eslint --ignore-pattern='!*';
+
+js-import-sort:
+	make -s git EXT='js' \
+	| xargs npx js-import-sort --silent=1 --path;
+
+prettier:
+	make -s git EXT='html|css|js|json' \
+	| xargs npx prettier --loglevel=silent --write;
 
 pretobjc:
-	git ls-tree -r HEAD --name-only \
-	| egrep "\.(h|m)$$" \
-	| xargs -L1 clang-format -i -style=file \
-	| xargs;
+	make -s git EXT='h|m' \
+	| xargs clang-format -i -style=file;
 
 pretjava:
-	git ls-tree -r HEAD --name-only \
-	| egrep "\.java$$" \
-	| xargs -L1 google-java-format -i \
-	| xargs;
+	make -s git EXT='java' \
+	| xargs google-java-format -i;
 
 pretxml:
-	git ls-tree -r HEAD --name-only \
-	| egrep "\.(xml|xib|xccheme|xcworkspacedata|plist)$$" \
-	| xargs -L1 sh -c 'xmllint --format --output $$0 $$0' \
-	| xargs;
+	make -s git EXT='xml|xib|xccheme|xcworkspacedata|plist' \
+	| xargs -L1 bash -c 'xmllint --format --output $$0 $$0';
+
+git:
+ifdef ALL
+	make -s git-all;
+else
+	make -s git-changed-but-not-deleted;
+endif
+
+git-all:
+	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' \
+	| egrep -h '\.(${EXT})$$';
+
+git-changed-but-not-deleted:
+	git status -u --porcelain \
+	| egrep -h '^[^D]{2}.*\.(${EXT})$$' \
+	| cut -c 4-;
