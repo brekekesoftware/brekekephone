@@ -1,4 +1,3 @@
-import qs from 'qs';
 import React, { Component } from 'react';
 import { AppState, AsyncStorage, Platform, Text } from 'react-native';
 import FCM, {
@@ -10,40 +9,11 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import UserLanguage from '../../language/UserLanguage';
+import { getUrlParams } from '../../rn/deeplink';
 import UI from './ui';
 
-// Read url search params
-let searchParams = {};
-if (Platform.OS === 'web') {
-  const p1 = qs.parse(window.location.search.replace(/^\?+/, ''));
-  let p2 = {};
-  const i = window.location.hash.indexOf('?');
-  if (i > 0) {
-    p2 = qs.parse(window.location.hash.substr(i).replace(/^\?+/, ''));
-  }
-  Object.assign(searchParams, p1, p2);
-  // Parse host port
-  searchParams.host = window.location.hostname;
-  searchParams.port = '' + window.location.port;
-  if (searchParams.url) {
-    try {
-      const a = document.createElement('a');
-      a.href = searchParams.url;
-      searchParams.host = a.hostname;
-      if (a.port) {
-        searchParams.port = a.port;
-      } else if (/^ws:/.test(searchParams.url)) {
-        searchParams.port = '80';
-      } else {
-        searchParams.port = '443';
-      }
-    } catch (err) {
-      // silent
-    }
-  }
-}
 //
-let alreadyHandleSearchParams = false;
+let alreadyHandleUrlParams = false;
 
 let PROFILES_MANAGE_VIEW = null;
 
@@ -231,26 +201,13 @@ class View extends Component {
 
     this.setState({ isReady: true });
 
+    //
     // Handle search params
-    if (alreadyHandleSearchParams) {
+    if (alreadyHandleUrlParams) {
       return;
     }
-    alreadyHandleSearchParams = true;
-    //
-    // url
-    // tenant
-    // user
-    // _wn
-    // _prtenant
-    // _pruser
-    const {
-      tenant,
-      user,
-      _wn,
-      // host port added from above
-      host,
-      port,
-    } = searchParams;
+    alreadyHandleUrlParams = true;
+    const { tenant, user, _wn, host, port } = await getUrlParams();
     if (!user || !tenant) {
       return;
     }
