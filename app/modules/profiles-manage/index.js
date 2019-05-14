@@ -56,14 +56,6 @@ function registerFcmAppListener() {
       if (AppState.currentState !== 'background') {
         return;
       }
-      if (
-        Platform.OS === 'ios' &&
-        notif._notificationType === NotificationType.WillPresent &&
-        !notif.local_notification
-      ) {
-        notif.finish(WillPresentNotificationResult.All);
-        return;
-      }
       if (notif.opened_from_tray) {
         setTimeout(() => {
           PROFILES_MANAGE_VIEW._onOpenNotification(notif);
@@ -329,5 +321,25 @@ class View extends Component {
 
 export default createModelView(mapGetter, mapAction)(View);
 
-// To get the PROFILES_MANAGE_VIEW to use in apns handlers
-export const getProfileManager = () => PROFILES_MANAGE_VIEW;
+// To get the PROFILES_MANAGE_VIEW to use in other places
+// TODO fix this using mobx stores
+export const getProfileManager = () =>
+  PROFILES_MANAGE_VIEW
+    ? Promise.resolve(PROFILES_MANAGE_VIEW)
+    : new Promise(resolve => {
+        // Use interval to wait until the profile manager constructed
+        let eslapsed = 0;
+        const intervalId = setInterval(() => {
+          if (!PROFILES_MANAGE_VIEW) {
+            if (eslapsed >= 60) {
+              // 60 secs timeout
+              resolve(null);
+              clearInterval(intervalId);
+            }
+            eslapsed += 1;
+            return;
+          }
+          resolve(PROFILES_MANAGE_VIEW);
+          clearInterval(intervalId);
+        }, 1000);
+      });

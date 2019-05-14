@@ -16,8 +16,8 @@ const onVoipRegister = token => {
   voipApnsToken = token;
 };
 
-let intervalId = 0; // To wait until the profile manager constructed
-const onVoipNotification = notification => {
+const onVoipNotification = async notification => {
+  //
   const alertBody =
     get(notification, '_data.custom_notification.body') ||
     // Add fallback to see the detail notification if there's no body
@@ -27,20 +27,11 @@ const onVoipNotification = notification => {
     alertAction: /call/.test(alertBody) ? 'Answer' : 'View',
     soundName: 'incallmanager_ringtone.mp3',
   });
-
-  // TODO use mobx
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
-  intervalId = setInterval(() => {
-    const mgr = getProfileManager();
-    if (!mgr) {
-      return;
-    }
+  //
+  const mgr = await getProfileManager();
+  if (mgr) {
     mgr._signinByNotif(notification._data.custom_notification);
-    clearInterval(intervalId);
-    intervalId = 0;
-  }, 1000);
+  }
 };
 
 export { getPnToken, registerPn };
