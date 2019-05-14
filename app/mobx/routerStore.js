@@ -1,7 +1,6 @@
-import qs from 'qs';
 import { createHashHistory, createMemoryHistory } from 'history';
-import { RouterStore } from 'mobx-react-router';
-import { syncHistoryWithStore } from 'mobx-react-router';
+import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
+import qs from 'qs';
 import { Platform } from 'react-native';
 
 const routerStore = new RouterStore();

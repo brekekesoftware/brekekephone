@@ -18,7 +18,7 @@ class View extends Component {
       pressSettings={routerUtils.goToSettings}
       pressUsers={routerUtils.goToUsersBrowse}
       pressChats={routerUtils.goToRecentChats}
-      pressBooks={routerUtils.goToPhonebooks}
+      pressBooks={routerUtils.goToPhonebooksBrowse}
       runningIds={this.props.runningIds}
     />
   );

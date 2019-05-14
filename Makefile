@@ -1,8 +1,6 @@
-pret: js-import-sort prettier pretjava pretobjc pretxml
+pret: pretjs pretjava pretobjc pretxml
 
-lint:
-	make -s git EXT='js' \
-	| xargs npx eslint --ignore-pattern='!*';
+pretjs: js-import-sort prettier
 
 js-import-sort:
 	make -s git EXT='js' \
@@ -23,6 +21,14 @@ pretjava:
 pretxml:
 	make -s git EXT='xml|xib|xccheme|xcworkspacedata|plist' \
 	| xargs -L1 bash -c 'xmllint --format --output $$0 $$0';
+
+lint:
+ifdef ALL
+	npx eslint .;
+else
+	make -s git EXT='js' \
+	| xargs npx eslint --ignore-pattern='!*';
+endif
 
 git:
 ifdef ALL

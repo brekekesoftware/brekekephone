@@ -88,6 +88,16 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "eslintIgnore": [
+    "node_modules/**",
+    "android/**",
+    "ios/**",
+    "build/**",
+    "jsonrpc.js",
+    "pal.js",
+    "ucclient.js",
+    "webrtcclient.js"
+  ],
   "prettier": {
     "printWidth": 80,
     "tabWidth": 2,

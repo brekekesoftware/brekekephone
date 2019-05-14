@@ -48,8 +48,8 @@ class View extends Component {
         loading={this.state.loading}
         contactIds={this.state.contactIds}
         resolveContact={this.resolveContact}
-        book={this.props.query.book}
-        shared={this.props.query.shared === 'true'}
+        book={routerUtils.getQuery().book}
+        shared={routerUtils.getQuery().shared === 'true'}
         back={routerUtils.goToPhonebooksBrowse}
         goNextPage={this.goNextPage}
         goPrevPage={this.goPrevPage}
@@ -207,7 +207,7 @@ class View extends Component {
 
   loadContacts = debounce(() => {
     const { pbx } = this.context;
-    const { query } = this.state;
+    const query = routerUtils.getQuery();
     const book = query.book;
     const shared = query.shared;
     const opts = {

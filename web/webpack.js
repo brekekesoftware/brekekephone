@@ -99,6 +99,7 @@ module.exports = {
   resolve: {
     alias: {
       'react-native': 'react-native-web',
+      'mobx-react/native': 'mobx-react',
     },
     extensions: [
       // Add .web.js first to resolve

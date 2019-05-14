@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router-native';
 
 import Auth from './modules/auth';
