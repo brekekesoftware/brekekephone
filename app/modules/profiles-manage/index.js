@@ -9,6 +9,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import UserLanguage from '../../language/UserLanguage';
+import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams } from '../../rn/deeplink';
 import UI from './ui';
 
@@ -89,35 +90,15 @@ const mapAction = action => emit => ({
   updateProfile(profile) {
     emit(action.profiles.update(profile));
   },
-
-  routeToProfilesCreate() {
-    emit(action.router.goToProfilesCreate());
-  },
-
   removeProfile(id) {
     emit(action.profiles.remove(id));
   },
-
-  routeToProfileUpdate(id) {
-    emit(action.router.goToProfileUpdate(id));
-  },
-
-  routeToProfileSignin(id) {
-    emit(action.router.goToProfileSignin(id));
-  },
-
   setAuthProfile(profile) {
     emit(action.auth.setProfile(profile));
   },
-
-  routeToAuth() {
-    emit(action.router.goToAuth());
-  },
-
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
-
   addPushnotif(notif) {
     emit(action.pushNotifies.add(notif));
   },
@@ -154,6 +135,7 @@ class View extends Component {
     if (this._shutodownNotificationListener) {
       this._shutodownNotificationListener.remove();
     }
+    PROFILES_MANAGE_VIEW = null;
   }
 
   async componentDidMount() {
@@ -230,7 +212,7 @@ class View extends Component {
       if (u.pbxPassword || u.accessToken) {
         this.signin(uid);
       } else {
-        this.props.routeToProfileUpdate(uid);
+        routerUtils.goToProfileUpdate(uid);
       }
       return;
     }
@@ -256,7 +238,7 @@ class View extends Component {
     if (newU.accessToken) {
       this.signin(newU.id);
     } else {
-      this.props.routeToProfileUpdate(newU.id);
+      routerUtils.goToProfileUpdate(newU.id);
     }
   }
 
@@ -328,8 +310,8 @@ class View extends Component {
       <UI
         profileIds={this.props.profileIds}
         resolveProfile={this.resolveProfile}
-        create={this.props.routeToProfilesCreate}
-        update={this.props.routeToProfileUpdate}
+        create={routerUtils.goToProfilesCreate}
+        update={routerUtils.goToProfileUpdate}
         signin={this.signin}
         remove={this.props.removeProfile}
       />
@@ -341,7 +323,7 @@ class View extends Component {
   signin = id => {
     let profile = this.resolveProfile(id);
     this.props.setAuthProfile(profile);
-    this.props.routeToAuth();
+    routerUtils.goToAuth();
   };
 }
 

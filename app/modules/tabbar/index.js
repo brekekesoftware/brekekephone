@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -8,40 +9,19 @@ const mapGetter = getter => state => ({
   runningIds: getter.runningCalls.idsByOrder(state),
 });
 
-const mapAction = action => emit => ({
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
-  routeToCallsCreate() {
-    emit(action.router.goToCallsCreate());
-  },
-  routeToSettings() {
-    emit(action.router.goToSettings());
-  },
-  routeToUsersBrowse() {
-    emit(action.router.goToUsersBrowse());
-  },
-  routeToRecentChats() {
-    emit(action.router.goToChatsRecent());
-  },
-  routeToPhonebooks() {
-    emit(action.router.goToPhonebooksBrowse());
-  },
-});
-
 class View extends Component {
   render = () => (
     <UI
       chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={this.props.routeToCallsManage}
-      pressCallsCreate={this.props.routeToCallsCreate}
-      pressSettings={this.props.routeToSettings}
-      pressUsers={this.props.routeToUsersBrowse}
-      pressChats={this.props.routeToRecentChats}
-      pressBooks={this.props.routeToPhonebooks}
+      pressCallsManage={routerUtils.goToCallsManage}
+      pressCallsCreate={routerUtils.goToCallsCreate}
+      pressSettings={routerUtils.goToSettings}
+      pressUsers={routerUtils.goToUsersBrowse}
+      pressChats={routerUtils.goToRecentChats}
+      pressBooks={routerUtils.goToPhonebooks}
       runningIds={this.props.runningIds}
     />
   );
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default createModelView(mapGetter)(View);

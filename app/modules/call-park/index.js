@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
@@ -14,9 +15,6 @@ const mapGetter = getter => (state, props) => {
 };
 
 const mapAction = action => emit => ({
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -42,7 +40,7 @@ class View extends Component {
       selectedPark={this.state.selectedPark}
       selectPark={this.selectPark}
       park={this.park}
-      back={this.props.routeToCallsManage}
+      back={routerUtils.goToCallsManage}
     />
   );
 
@@ -70,7 +68,7 @@ class View extends Component {
   };
 
   onParkSuccess = () => {
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   onParkFailure = err => {

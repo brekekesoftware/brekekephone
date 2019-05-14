@@ -1,26 +1,17 @@
 import immutable from 'immutable';
 import debounce from 'lodash/debounce';
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  query: getter.router.getQuery(state),
-});
+const mapGetter = getter => state => ({});
 
 const mapAction = action => emit => ({
-  routeToPhonebooksBrowse() {
-    emit(action.router.goToPhonebooksBrowse());
-  },
-  routeToContactsBrowse(query) {
-    emit(action.router.goToContactsBrowse(query));
-  },
-  routeToContactsCreate(query) {
-    emit(action.router.goToContactsCreate(query));
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -30,23 +21,14 @@ const numberOfContactsPerPage = 30;
 
 const formatPhoneNumber = number => number.replace(/\D+/g, '');
 
+@observer
 class View extends Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
   };
 
-  static defaultProps = {
-    query: {},
-  };
-
   state = {
-    query: {
-      book: this.props.query.book,
-      offset: parseInt(this.props.query.offset || 0),
-      shared: this.props.query.shared === 'true',
-      searchText: this.props.query.searchText || '',
-    },
     loading: true,
     contactIds: [],
     contactById: {},
@@ -57,43 +39,45 @@ class View extends Component {
     this.loadContacts.flush();
   }
 
-  render = () => (
-    <UI
-      hasPrevPage={this.state.query.offset >= numberOfContactsPerPage}
-      hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
-      searchText={this.state.query.searchText}
-      loading={this.state.loading}
-      contactIds={this.state.contactIds}
-      resolveContact={this.resolveContact}
-      book={this.props.query.book}
-      shared={this.props.query.shared === 'true'}
-      back={this.props.routeToPhonebooksBrowse}
-      goNextPage={this.goNextPage}
-      goPrevPage={this.goPrevPage}
-      setSearchText={this.setSearchText}
-      call={this.call}
-      editContact={this.editContact}
-      saveContact={this.saveContact}
-      setContactFirstName={this.setContactFirstName}
-      setContactLastName={this.setContactLastName}
-      setContactJob={this.setContactJob}
-      setContactCompany={this.setContactCompany}
-      setContactAddress={this.setContactAddress}
-      setContactWorkNumber={this.setContactWorkNumber}
-      setContactCellNumber={this.setContactCellNumber}
-      setContactHomeNumber={this.setContactHomeNumber}
-      setContactEmail={this.setContactEmail}
-      create={this.create}
-    />
-  );
+  render = () => {
+    return (
+      <UI
+        hasPrevPage={routerUtils.getQuery().offset >= numberOfContactsPerPage}
+        hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
+        searchText={routerUtils.getQuery().searchText}
+        loading={this.state.loading}
+        contactIds={this.state.contactIds}
+        resolveContact={this.resolveContact}
+        book={this.props.query.book}
+        shared={this.props.query.shared === 'true'}
+        back={routerUtils.goToPhonebooksBrowse}
+        goNextPage={this.goNextPage}
+        goPrevPage={this.goPrevPage}
+        setSearchText={this.setSearchText}
+        call={this.call}
+        editContact={this.editContact}
+        saveContact={this.saveContact}
+        setContactFirstName={this.setContactFirstName}
+        setContactLastName={this.setContactLastName}
+        setContactJob={this.setContactJob}
+        setContactCompany={this.setContactCompany}
+        setContactAddress={this.setContactAddress}
+        setContactWorkNumber={this.setContactWorkNumber}
+        setContactCellNumber={this.setContactCellNumber}
+        setContactHomeNumber={this.setContactHomeNumber}
+        setContactEmail={this.setContactEmail}
+        create={this.create}
+      />
+    );
+  };
 
   resolveContact = id => this.state.contactById[id];
 
   setSearchText = searchText => {
-    const oldQuery = this.state.query;
+    const oldQuery = routerUtils.getQuery();
     const query = { ...oldQuery, searchText, offset: 0 };
-    this.props.routeToContactsBrowse(query);
-    this.setState({ query }, this.loadContacts);
+    routerUtils.goToContactsBrowse(query);
+    this.loadContacts();
   };
 
   editContact = id => {
@@ -294,29 +278,29 @@ class View extends Component {
   };
 
   goNextPage = () => {
-    const oldQuery = this.state.query;
+    const oldQuery = routerUtils.getQuery();
     const query = {
       ...oldQuery,
       offset: oldQuery.offset + numberOfContactsPerPage,
     };
-    this.props.routeToContactsBrowse(query);
-    this.setState({ query }, () => {
+    routerUtils.goToContactsBrowse(query);
+    setTimeout(() => {
       this.loadContacts();
       this.loadContacts.flush();
-    });
+    }, 170);
   };
 
   goPrevPage = () => {
-    const oldQuery = this.state.query;
+    const oldQuery = routerUtils.getQuery();
     const query = {
       ...oldQuery,
       offset: oldQuery.offset - numberOfContactsPerPage,
     };
-    this.props.routeToContactsBrowse(query);
-    this.setState({ query }, () => {
+    routerUtils.goToContactsBrowse(query);
+    setTimeout(() => {
       this.loadContacts();
       this.loadContacts.flush();
-    });
+    }, 170);
   };
 
   call = number => {
@@ -326,8 +310,8 @@ class View extends Component {
   };
 
   create = () => {
-    this.props.routeToContactsCreate({
-      book: this.state.query.book,
+    routerUtils.goToContactsCreate({
+      book: routerUtils.getQuery().book,
     });
   };
 }

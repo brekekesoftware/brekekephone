@@ -2,16 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
   call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-});
-
-const mapAction = action => emit => ({
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
 });
 
 class View extends Component {
@@ -22,7 +17,7 @@ class View extends Component {
   render = () => (
     <UI
       call={this.props.call}
-      back={this.props.routeToCallsManage}
+      back={routerUtils.goToCallsManage}
       sendKey={this.sendKey}
     />
   );
@@ -33,4 +28,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default createModelView(mapGetter)(View);

@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 
 import { std } from '../../styleguide';
-import { WebRtcTypePicker } from '../profiles-create/ui';
+
+// import { WebRtcTypePicker } from '../profiles-create/ui';
 
 const st = StyleSheet.create({
   main: {

@@ -22,9 +22,6 @@ const mapAction = action => emit => ({
   removeNotifAt(index) {
     emit(action.pushNotifies.removeAt(index));
   },
-  routeToProfilesManage() {
-    emit(action.router.goToProfilesManage());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import formatChatText from '../../util/formatChatText';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
@@ -39,9 +40,6 @@ const mapAction = action => emit => ({
   },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
-  },
-  routeToChatsRecent() {
-    emit(action.router.goToChatsRecent());
   },
 });
 
@@ -137,7 +135,7 @@ class View extends Component {
       acceptFile={this.acceptFile}
       rejectFile={this.rejectFile}
       pickFile={this.pickFile}
-      back={this.props.routeToChatsRecent}
+      back={routerUtils.goToChatsRecent}
     />
   );
 

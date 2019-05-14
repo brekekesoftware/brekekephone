@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -11,9 +12,6 @@ const mapGetter = getter => state => ({
 });
 
 const mapAction = action => emit => ({
-  routeToChatsRecent() {
-    emit(action.router.goToChatsRecent());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -39,7 +37,7 @@ class View extends Component {
       name={this.state.name}
       members={this.state.members}
       setName={this.setName}
-      back={this.props.routeToChatsRecent}
+      back={routerUtils.goToChatsRecent}
       toggleBuddy={this.toggleBuddy}
       create={this.create}
     />
@@ -75,7 +73,7 @@ class View extends Component {
   onCreateSuccess = group => {
     this.props.createChatGroup(group);
     this.context.uc.joinChatGroup(group.id);
-    this.props.routeToChatsRecent();
+    routerUtils.goToChatsRecent();
   };
 
   onCreateFailure = err => {

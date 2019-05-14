@@ -1,5 +1,4 @@
 import get from 'lodash/get';
-import { Platform } from 'react-native';
 import VoipPushNotification from 'react-native-voip-push-notification';
 
 import { getProfileManager } from '../modules/profiles-manage';
@@ -19,6 +18,17 @@ const onVoipRegister = token => {
 
 let intervalId = 0; // To wait until the profile manager constructed
 const onVoipNotification = notification => {
+  const alertBody =
+    get(notification, '_data.custom_notification.body') ||
+    // Add fallback to see the detail notification if there's no body
+    JSON.stringify(notification);
+  VoipPushNotification.presentLocalNotification({
+    alertBody,
+    alertAction: /call/.test(alertBody) ? 'Answer' : 'View',
+    soundName: 'incallmanager_ringtone.mp3',
+  });
+
+  // TODO use mobx
   if (intervalId) {
     clearInterval(intervalId);
   }
@@ -31,26 +41,6 @@ const onVoipNotification = notification => {
     clearInterval(intervalId);
     intervalId = 0;
   }, 1000);
-
-  /**
-   * Local Notification Payload
-   *
-   * - `alertBody` : The message displayed in the notification alert.
-   * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
-   * - `soundName` : The sound played when the notification is fired (optional).
-   * - `category`  : The category of this notification, required for actionable notifications (optional).
-   * - `userInfo`  : An optional object containing additional notification data.
-   */
-  const alertBody =
-    get(notification, '_data.custom_notification.body') ||
-    // Add fallback to see the detail notification if there's no body
-    JSON.stringify(notification);
-  const alertAction = /call/.test(alertBody) ? 'Answer' : 'View';
-  VoipPushNotification.presentLocalNotification({
-    alertBody,
-    alertAction,
-    soundName: 'incallmanager_ringtone.mp3',
-  });
 };
 
 export { getPnToken, registerPn };

@@ -7,8 +7,6 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import { getPnToken } from '../rn/pn';
-import subscribePn from '../util/subscribe-pn';
-import fmtKey from '../util/uint8ArrayToUrlBase64';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
@@ -63,13 +61,13 @@ const mapAction = action => emit => ({
     if (Platform.OS === 'web') {
       setTimeout(async () => {
         try {
-          const sub = await subscribePn();
+          const pn = await getPnToken();
           await pbx.endpoint.web({
-            id: sub.endpoint,
+            id: pn.endpoint,
+            p256dh: pn.p256dh,
+            auth: pn.auth,
             user: webPhoneId,
             app: '22177122297',
-            p256dh: fmtKey(sub.getKey('p256dh')),
-            auth: fmtKey(sub.getKey('auth')),
           });
         } catch (err) {
           console.log(err);
@@ -96,10 +94,6 @@ const mapAction = action => emit => ({
           }
 
           FCM.getFCMToken().then(token => {});
-
-          if (Platform.OS === 'ios') {
-            FCM.getPnToken().then(token => {});
-          }
 
           API_PROVIDER._refreshTokenListener = FCM.on(
             FCMEvent.RefreshToken,

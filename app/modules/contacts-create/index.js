@@ -1,23 +1,21 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  book: getter.router.getQuery(state).book,
-});
+const mapGetter = getter => state => ({});
 
 const mapAction = action => emit => ({
-  routeBack() {
-    emit(action.router.goBack());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
 });
 
+@observer
 class View extends Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
@@ -25,7 +23,7 @@ class View extends Component {
 
   state = {
     saving: false,
-    book: this.props.book || '',
+    book: routerUtils.getQuery().book || '',
     firtName: '',
     lastName: '',
     workNumber: '',
@@ -39,7 +37,7 @@ class View extends Component {
 
   render = () => (
     <UI
-      book={this.state.book}
+      book={routerUtils.getQuery().book}
       firstName={this.state.firstName}
       lastName={this.state.lastName}
       workNumber={this.state.workNumber}
@@ -49,7 +47,7 @@ class View extends Component {
       company={this.state.company}
       address={this.state.address}
       email={this.state.email}
-      back={this.props.routeBack}
+      back={routerUtils.goBack}
       save={this.save}
       setBook={this.setBook}
       setFirstName={this.setFirstName}
@@ -64,7 +62,7 @@ class View extends Component {
     />
   );
 
-  setBook = book => this.setState({ book });
+  setBook = book => routerUtils.goToContactsCreate({ book });
   setFirstName = firstName => this.setState({ firstName });
   setLastName = lastName => this.setState({ lastName });
   setWorkNumber = workNumber => this.setState({ workNumber });
@@ -76,7 +74,7 @@ class View extends Component {
   setEmail = email => this.setState({ email });
 
   save = () => {
-    if (!this.state.book) {
+    if (!routerUtils.getQuery().book) {
       this.props.showToast('The phonebook name is required');
       return;
     }
@@ -94,7 +92,7 @@ class View extends Component {
     const { pbx } = this.context;
 
     const contact = {
-      book: this.state.book,
+      book: routerUtils.getQuery().book,
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       workNumber: this.state.workNumber,
@@ -113,7 +111,7 @@ class View extends Component {
   };
 
   onSaveSuccess = () => {
-    this.props.routeBack();
+    routerUtils.goBack();
   };
 
   onSaveFailure = err => {

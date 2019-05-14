@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
@@ -10,9 +11,6 @@ const mapGetter = getter => (state, props) => ({
 });
 
 const mapAction = action => emit => ({
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
@@ -30,7 +28,7 @@ class View extends Component {
   render = () => (
     <UI
       call={this.props.call}
-      back={this.props.routeToCallsManage}
+      back={routerUtils.goToCallsManage}
       join={this.join}
       stop={this.stop}
       hangup={this.hangup}
@@ -57,7 +55,7 @@ class View extends Component {
       id: this.props.call.id,
       transfering: false,
     });
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   onJoinFailure = err => {
@@ -80,7 +78,7 @@ class View extends Component {
       id: this.props.call.id,
       transfering: false,
     });
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   onStopFailure = err => {

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -13,12 +14,6 @@ const mapGetter = getter => state => ({
 });
 
 const mapAction = action => d => ({
-  routeToCallsManage() {
-    d(action.router.goToCallsManage());
-  },
-  routeToCallsCreate() {
-    d(action.router.goToCallsCreate());
-  },
   removeCall(id) {
     d(action.recentCalls.remove(id));
   },
@@ -40,8 +35,8 @@ class View extends Component {
       resolveCall={this.resolveCall}
       removeCall={this.props.removeCall}
       callBack={this.callBack}
-      gotoCallsManage={this.props.routeToCallsManage}
-      gotoCallsCreate={this.props.routeToCallsCreate}
+      gotoCallsManage={routerUtils.goToCallsManage}
+      gotoCallsCreate={routerUtils.goToCallsCreate}
       parkingIds={this.props.parkingIds}
     />
   );
@@ -55,7 +50,7 @@ class View extends Component {
     const number = call.partyNumber;
 
     sip.createSession(number);
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 }
 

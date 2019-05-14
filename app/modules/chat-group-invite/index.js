@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
@@ -12,9 +13,6 @@ const mapGetter = getter => (state, props) => ({
 });
 
 const mapAction = action => emit => ({
-  routeToGroupChatsRecent(group) {
-    emit(action.router.goToGroupChatsRecent(group));
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -80,8 +78,7 @@ class View extends Component {
   };
 
   back = () => {
-    const { group, routeToGroupChatsRecent } = this.props;
-    routeToGroupChatsRecent(group.id);
+    routerUtils.goToGroupChatsRecent(this.props.group.id);
   };
 }
 

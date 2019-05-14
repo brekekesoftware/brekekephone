@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -14,14 +15,8 @@ const mapGetter = getter => state => ({
 });
 
 const mapAction = action => emit => ({
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
   setSearchText(value) {
     emit(action.usersBrowsing.setSearchText(value));
-  },
-  routeToBuddyChatsRecent(buddy) {
-    emit(action.router.goToBuddyChatsRecent(buddy));
   },
 });
 
@@ -45,7 +40,7 @@ class View extends Component {
       resolveUser={this.resolveUser}
       callVoice={this.callVoice}
       callVideo={this.callVideo}
-      chat={this.props.routeToBuddyChatsRecent}
+      chat={routerUtils.goToBuddyChatsRecent}
       setSearchText={this.setSearchText}
     />
   );
@@ -119,7 +114,7 @@ class View extends Component {
   callVoice = userId => {
     const { sip } = this.context;
     sip.createSession(userId);
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   callVideo = userId => {
@@ -127,7 +122,7 @@ class View extends Component {
     sip.createSession(userId, {
       videoEnabled: true,
     });
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   setSearchText = value => {

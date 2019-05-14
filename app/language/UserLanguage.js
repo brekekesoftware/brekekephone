@@ -1,5 +1,8 @@
 import { AsyncStorage } from 'react-native';
 
+import jsonModuleEn from './message-en.json';
+import jsonModuleJa from './message-ja.json';
+
 class UserLanguage {
   _load(jsonModule) {
     this._jsonModule = jsonModule;
@@ -15,12 +18,10 @@ class UserLanguage {
 
   static async _loadToMap_s(map) {
     let ulEn = new UserLanguage();
-    const jsonModuleEn = await import('./message-en.json');
     ulEn._load(jsonModuleEn);
     map['en'] = ulEn;
 
     let ulJa = new UserLanguage();
-    const jsonModuleJa = await import('./message-ja.json');
     ulJa._load(jsonModuleJa);
     map['ja'] = ulJa;
   }

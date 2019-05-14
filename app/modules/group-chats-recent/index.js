@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import formatChatText from '../../util/formatChatText';
 import UI from './ui';
 
@@ -34,17 +35,11 @@ const mapAction = action => emit => ({
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
-  routeToChatsRecent() {
-    emit(action.router.goToChatsRecent());
-  },
   removeChatGroup(id) {
     emit(action.chatGroups.remove(id));
   },
   clearChatsByGroup(group) {
     emit(action.groupChats.clearByGroup(group));
-  },
-  routeToChatGroupInvite(group) {
-    emit(action.router.goToChatGroupInvite(group));
   },
 });
 
@@ -135,7 +130,7 @@ class View extends Component {
       setEditingText={this.setEditingText}
       submitEditingText={this.submitEditingText}
       loadMore={this.loadMore}
-      back={this.props.routeToChatsRecent}
+      back={routerUtils.goToChatsRecent}
       leave={this.leave}
       invite={this.invite}
       callVoiceConference={this.callVoiceConference}
@@ -274,7 +269,7 @@ class View extends Component {
 
     this.props.removeChatGroup(group.id);
     this.props.clearChatsByGroup(group.id);
-    this.props.routeToChatsRecent();
+    routerUtils.goToChatsRecent();
   };
 
   onLeaveFailure = err => {
@@ -286,7 +281,7 @@ class View extends Component {
 
   invite = () => {
     const groupId = this.props.group.id;
-    this.props.routeToChatGroupInvite(groupId);
+    routerUtils.goToChatGroupInvite(groupId);
   };
 
   call = (target, bVideoEnabled) => {

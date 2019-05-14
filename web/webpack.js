@@ -45,9 +45,9 @@ module.exports = {
               '@babel/preset-react',
             ],
             plugins: [
+              ['@babel/plugin-proposal-decorators', { legacy: true }],
               ['@babel/plugin-proposal-class-properties', { loose: true }],
               '@babel/plugin-proposal-object-rest-spread',
-              '@babel/plugin-syntax-dynamic-import',
             ],
           },
         },
@@ -66,7 +66,7 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(woff|woff2|eot|svg|ttf)(\?*)?$/,
+        test: /\.(woff2?|eot|svg|ttf)(\?*)?$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -90,7 +90,7 @@ module.exports = {
       [
         // root assets to be copied
         './index.html',
-        './favicon.png',
+        './favicon.ico',
       ].map(p => ({
         from: path.resolve(__dirname, p),
       })),

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -12,12 +13,6 @@ const mapGetter = getter => state => ({
 });
 
 const mapAction = action => emit => ({
-  routeToCallsRecent() {
-    emit(action.router.goToCallsRecent());
-  },
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -48,8 +43,8 @@ class View extends Component {
       selectMatch={this.selectMatch}
       setVideo={this.setVideo}
       create={this.create}
-      calls={this.props.routeToCallsManage}
-      recent={this.props.routeToCallsRecent}
+      calls={routerUtils.goToCallsManage}
+      recent={routerUtils.goToCallsRecent}
       callVoice={this.callVoice}
       callVideo={this.callVideo}
       parkingIds={this.props.parkingIds}
@@ -111,7 +106,7 @@ class View extends Component {
       videoEnabled: video,
     });
 
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   call = (target, bVideoEnabled) => {
@@ -125,7 +120,7 @@ class View extends Component {
       videoEnabled: bVideoEnabled,
     });
 
-    this.props.routeToCallsManage();
+    routerUtils.goToCallsManage();
   };
 
   callVoice = match => {
