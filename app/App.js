@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider as StoreProvider } from 'react-redux';
-import { Router } from 'react-router-native';
+import { Router } from 'react-router';
 import { createStore } from 'redux';
 import { combineModels, ModelProvider } from 'redux-model';
 import { persistReducer, persistStore } from 'redux-persist';

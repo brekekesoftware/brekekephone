@@ -4,7 +4,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import formatChatText from '../../util/formatChatText';
+import stripTags from '../../util/stripTags';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
@@ -152,7 +152,7 @@ class View extends Component {
     const prev = chatById[chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
     const created = formatTime(chat.created);
-    const text = formatChatText(chat.text);
+    const text = stripTags(chat.text);
 
     if (mini) {
       return { mini: true, created, text };

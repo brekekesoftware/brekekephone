@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Redirect, Route } from 'react-router-native';
+import { Redirect, Route } from 'react-router';
 
 import Auth from './modules/auth';
 import WithoutStatusBar from './modules/auth/WithoutStatusBar';

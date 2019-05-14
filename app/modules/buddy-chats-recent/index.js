@@ -4,7 +4,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import formatChatText from '../../util/formatChatText';
+import stripTags from '../../util/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 import UI from './ui';
@@ -147,7 +147,7 @@ class View extends Component {
 
     const created = chat.created && formatTime(chat.created);
     const file = fileById[chat.file];
-    const text = formatChatText(chat.text);
+    const text = stripTags(chat.text);
 
     if (mini) {
       return { mini: true, created, text, file };
