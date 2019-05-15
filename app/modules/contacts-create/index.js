@@ -23,7 +23,6 @@ class View extends Component {
 
   state = {
     saving: false,
-    book: routerUtils.getQuery().book || '',
     firtName: '',
     lastName: '',
     workNumber: '',
@@ -37,7 +36,7 @@ class View extends Component {
 
   render = () => (
     <UI
-      book={routerUtils.getQuery().book}
+      book={routerUtils.getQuery().book || ''}
       firstName={this.state.firstName}
       lastName={this.state.lastName}
       workNumber={this.state.workNumber}
@@ -47,7 +46,7 @@ class View extends Component {
       company={this.state.company}
       address={this.state.address}
       email={this.state.email}
-      back={routerUtils.goBack}
+      back={routerUtils.goToPhonebooksBrowse}
       save={this.save}
       setBook={this.setBook}
       setFirstName={this.setFirstName}
@@ -78,40 +77,33 @@ class View extends Component {
       this.props.showToast('The phonebook name is required');
       return;
     }
-
     if (!this.state.firstName) {
       this.props.showToast('The first name is required');
       return;
     }
-
     if (!this.state.lastName) {
       this.props.showToast('The last name is required');
       return;
     }
-
-    const { pbx } = this.context;
-
-    const contact = {
-      book: routerUtils.getQuery().book,
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      workNumber: this.state.workNumber,
-      cellNumber: this.state.cellNumber,
-      homeNumber: this.state.homeNumber,
-      job: this.state.job,
-      company: this.state.company,
-      address: this.state.address,
-      email: this.state.email,
-    };
-
-    pbx
-      .setContact(contact)
+    this.context.pbx
+      .setContact({
+        book: routerUtils.getQuery().book,
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        workNumber: this.state.workNumber,
+        cellNumber: this.state.cellNumber,
+        homeNumber: this.state.homeNumber,
+        job: this.state.job,
+        company: this.state.company,
+        address: this.state.address,
+        email: this.state.email,
+      })
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
   };
 
   onSaveSuccess = () => {
-    routerUtils.goBack();
+    routerUtils.goToPhonebooksBrowse();
   };
 
   onSaveFailure = err => {
