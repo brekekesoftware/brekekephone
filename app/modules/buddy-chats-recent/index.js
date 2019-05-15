@@ -135,7 +135,7 @@ class View extends Component {
       acceptFile={this.acceptFile}
       rejectFile={this.rejectFile}
       pickFile={this.pickFile}
-      back={routerUtils.goToChatsRecent}
+      back={() => routerUtils.goToChatsRecent()}
     />
   );
 

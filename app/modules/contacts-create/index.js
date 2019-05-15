@@ -46,7 +46,7 @@ class View extends Component {
       company={this.state.company}
       address={this.state.address}
       email={this.state.email}
-      back={routerUtils.goToPhonebooksBrowse}
+      back={() => routerUtils.goToPhonebooksBrowse()}
       save={this.save}
       setBook={this.setBook}
       setFirstName={this.setFirstName}

@@ -17,7 +17,7 @@ class View extends Component {
   render = () => (
     <UI
       call={this.props.call}
-      back={routerUtils.goToCallsManage}
+      back={() => routerUtils.goToCallsManage()}
       sendKey={this.sendKey}
     />
   );

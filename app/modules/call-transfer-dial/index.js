@@ -48,7 +48,7 @@ class View extends Component {
       setAttended={this.setAttended}
       setTarget={this.setTarget}
       transfer={this.transfer}
-      back={routerUtils.goToCallsManage}
+      back={() => routerUtils.goToCallsManage()}
       transferAttended={this.transferAttended}
       transferBlind={this.transferBlind}
       transferAttendedForVideo={this.transferAttendedForVideo}

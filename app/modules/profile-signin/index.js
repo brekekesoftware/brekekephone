@@ -24,7 +24,7 @@ class View extends Component {
       profile={this.props.profile}
       pbxPassword={this.state.pbxPassword}
       setPbxPassword={this.setPbxPassword}
-      back={routerUtils.goToProfilesManage}
+      back={() => routerUtils.goToProfilesManage()}
       signin={this.signin}
     />
   );

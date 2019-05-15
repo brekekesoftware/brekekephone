@@ -22,9 +22,9 @@ class View extends Component {
       buddyById={this.props.buddyById}
       groupIds={this.props.groupIds}
       groupById={this.props.groupById}
-      selectBuddy={routerUtils.goToBuddyChatsRecent}
-      selectGroup={routerUtils.goToGroupChatsRecent}
-      createGroup={routerUtils.goToGroupChatsCreate}
+      selectBuddy={() => routerUtils.goToBuddyChatsRecent()}
+      selectGroup={() => routerUtils.goToGroupChatsRecent()}
+      createGroup={() => routerUtils.goToGroupChatsCreate()}
     />
   );
 }

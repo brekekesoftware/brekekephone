@@ -37,7 +37,7 @@ class View extends Component {
       name={this.state.name}
       members={this.state.members}
       setName={this.setName}
-      back={routerUtils.goToChatsRecent}
+      back={() => routerUtils.goToChatsRecent()}
       toggleBuddy={this.toggleBuddy}
       create={this.create}
     />

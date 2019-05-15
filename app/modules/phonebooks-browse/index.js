@@ -36,7 +36,7 @@ class View extends Component {
           shared: b.shared,
         })
       }
-      create={routerUtils.goToContactsCreate}
+      create={() => routerUtils.goToContactsCreate()}
     />
   );
 

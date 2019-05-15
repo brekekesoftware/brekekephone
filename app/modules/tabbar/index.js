@@ -13,12 +13,12 @@ class View extends Component {
   render = () => (
     <UI
       chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={routerUtils.goToCallsManage}
-      pressCallsCreate={routerUtils.goToCallsCreate}
-      pressSettings={routerUtils.goToSettings}
-      pressUsers={routerUtils.goToUsersBrowse}
-      pressChats={routerUtils.goToRecentChats}
-      pressBooks={routerUtils.goToPhonebooksBrowse}
+      pressCallsManage={() => routerUtils.goToCallsManage()}
+      pressCallsCreate={() => routerUtils.goToCallsCreate()}
+      pressSettings={() => routerUtils.goToSettings()}
+      pressUsers={() => routerUtils.goToUsersBrowse()}
+      pressChats={() => routerUtils.goToRecentChats()}
+      pressBooks={() => routerUtils.goToPhonebooksBrowse()}
       runningIds={this.props.runningIds}
     />
   );

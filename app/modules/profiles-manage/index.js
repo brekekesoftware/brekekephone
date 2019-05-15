@@ -302,8 +302,8 @@ class View extends Component {
       <UI
         profileIds={this.props.profileIds}
         resolveProfile={this.resolveProfile}
-        create={routerUtils.goToProfilesCreate}
-        update={routerUtils.goToProfileUpdate}
+        create={() => routerUtils.goToProfilesCreate()}
+        update={() => routerUtils.goToProfileUpdate()}
         signin={this.signin}
         remove={this.props.removeProfile}
       />

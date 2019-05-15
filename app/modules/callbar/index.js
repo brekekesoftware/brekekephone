@@ -37,12 +37,12 @@ class View extends Component {
     <UI
       activecallid={this.state.activecallid}
       chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={routerUtils.goToCallsManage}
-      pressCallsCreate={routerUtils.goToCallsCreate}
-      pressSettings={routerUtils.goToSettings}
-      pressUsers={routerUtils.goToUsersBrowse}
-      pressChats={routerUtils.goToRecentChats}
-      pressBooks={routerUtils.goToPhonebooksBrowse}
+      pressCallsManage={() => routerUtils.goToCallsManage()}
+      pressCallsCreate={() => routerUtils.goToCallsCreate()}
+      pressSettings={() => routerUtils.goToSettings()}
+      pressUsers={() => routerUtils.goToUsersBrowse()}
+      pressChats={() => routerUtils.goToRecentChats()}
+      pressBooks={() => routerUtils.goToPhonebooksBrowse()}
       runningIds={this.props.runningIds}
       runningById={this.props.runningById}
       hangup={this.hangup}

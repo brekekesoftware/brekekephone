@@ -43,8 +43,8 @@ class View extends Component {
       selectMatch={this.selectMatch}
       setVideo={this.setVideo}
       create={this.create}
-      calls={routerUtils.goToCallsManage}
-      recent={routerUtils.goToCallsRecent}
+      calls={() => routerUtils.goToCallsManage()}
+      recent={() => routerUtils.goToCallsRecent()}
       callVoice={this.callVoice}
       callVideo={this.callVideo}
       parkingIds={this.props.parkingIds}

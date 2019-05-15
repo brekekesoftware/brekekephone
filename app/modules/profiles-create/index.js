@@ -56,7 +56,7 @@ class View extends Component {
       setUCPort={this.setUCPort}
       removePark={this.removePark}
       save={this.save}
-      back={routerUtils.goToProfilesManage}
+      back={() => routerUtils.goToProfilesManage()}
     />
   );
 

@@ -130,7 +130,7 @@ class View extends Component {
       setEditingText={this.setEditingText}
       submitEditingText={this.submitEditingText}
       loadMore={this.loadMore}
-      back={routerUtils.goToChatsRecent}
+      back={() => routerUtils.goToChatsRecent()}
       leave={this.leave}
       invite={this.invite}
       callVoiceConference={this.callVoiceConference}

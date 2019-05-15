@@ -28,7 +28,7 @@ class View extends Component {
   render = () => (
     <UI
       call={this.props.call}
-      back={routerUtils.goToCallsManage}
+      back={() => routerUtils.goToCallsManage()}
       join={this.join}
       stop={this.stop}
       hangup={this.hangup}
