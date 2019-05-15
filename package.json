@@ -7,7 +7,8 @@
     "build": "cross-env NODE_ENV=production webpack -p --config=web/webpack.js",
     "build:dev": "webpack --config=web/webpack.js",
     "pret": "js-import-sort --silent=1 --path app/* && prettier --loglevel=silent --write \"**/*.{html,css,js,json}\" \"!build/**\"",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "transpile": "babel src/index.js --out-file src/index-transpiled.js"
   },
   "dependencies": {
     "crypto-js": "3.1.8",

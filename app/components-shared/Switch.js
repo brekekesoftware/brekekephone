@@ -9,7 +9,6 @@ const st = StyleSheet.create({
     alignItems: 'center',
     padding: std.gap.lg,
     paddingTop: std.gap.md,
-    marginBottom: std.gap.md,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
