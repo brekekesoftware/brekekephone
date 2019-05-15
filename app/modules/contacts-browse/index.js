@@ -1,6 +1,6 @@
 import immutable from 'immutable';
 import debounce from 'lodash/debounce';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react/native';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
