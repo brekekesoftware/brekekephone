@@ -78,7 +78,7 @@ class View extends Component {
   };
 
   back = () => {
-    routerUtils.goToGroupChatsRecent(this.props.group.id);
+    routerUtils.goToChatGroupsRecent(this.props.group.id);
   };
 }
 
