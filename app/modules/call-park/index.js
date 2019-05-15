@@ -40,7 +40,7 @@ class View extends Component {
       selectedPark={this.state.selectedPark}
       selectPark={this.selectPark}
       park={this.park}
-      back={() => routerUtils.goToCallsManage()}
+      back={routerUtils.goToCallsManage}
     />
   );
 

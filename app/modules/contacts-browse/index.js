@@ -51,7 +51,7 @@ class View extends Component {
         book={routerUtils.getQuery().book}
         shared={routerUtils.getQuery().shared === 'true'}
         back={routerUtils.goToPhonebooksBrowse}
-        back={() => routerUtils.goToPhonebooksBrowse()}
+        back={routerUtils.goToPhonebooksBrowse}
         goNextPage={this.goNextPage}
         goPrevPage={this.goPrevPage}
         setSearchText={this.setSearchText}

@@ -50,7 +50,7 @@ class View extends Component {
       setChatBusy={this.setChatBusy}
       setChatMood={this.setChatMood}
       submitChatMood={this.submitChatMood}
-      signout={() => routerUtils.goToProfilesManage()}
+      signout={routerUtils.goToProfilesManage}
     />
   );
 

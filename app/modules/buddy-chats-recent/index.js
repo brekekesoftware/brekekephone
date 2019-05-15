@@ -135,7 +135,7 @@ class View extends Component {
       acceptFile={this.acceptFile}
       rejectFile={this.rejectFile}
       pickFile={this.pickFile}
-      back={() => routerUtils.goToChatsRecent()}
+      back={routerUtils.goToChatsRecent}
     />
   );
 
@@ -248,7 +248,8 @@ class View extends Component {
       return;
     }
     this.submitting = true;
-    this.context.uc.sendBuddyChatText(this.props.buddy.id, txt)
+    this.context.uc
+      .sendBuddyChatText(this.props.buddy.id, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {

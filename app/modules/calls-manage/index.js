@@ -133,8 +133,8 @@ class View extends Component {
         runningIds={this.props.runningIds}
         runningById={this.props.runningById}
         parkingIds={this.props.parkingIds}
-        browseHistory={() => routerUtils.goToCallsRecent()}
-        create={() => routerUtils.goToCallsCreate()}
+        browseHistory={routerUtils.goToCallsRecent}
+        create={routerUtils.goToCallsCreate}
         select={this.props.selectCall}
         hangup={this.hangup}
         answer={this.answer}

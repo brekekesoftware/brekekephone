@@ -35,8 +35,8 @@ class View extends Component {
       resolveCall={this.resolveCall}
       removeCall={this.props.removeCall}
       callBack={this.callBack}
-      gotoCallsManage={() => routerUtils.goToCallsManage()}
-      gotoCallsCreate={() => routerUtils.goToCallsCreate()}
+      gotoCallsManage={routerUtils.goToCallsManage}
+      gotoCallsCreate={routerUtils.goToCallsCreate}
       parkingIds={this.props.parkingIds}
     />
   );

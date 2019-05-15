@@ -58,7 +58,7 @@ class View extends React.Component {
       <UI
         retryable={this.props.retryable}
         failure={this.props.failure}
-        abort={() => routerUtils.goToProfilesManage()}
+        abort={routerUtils.goToProfilesManage}
         retry={this.auth}
       />
     );

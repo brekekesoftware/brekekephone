@@ -136,7 +136,7 @@ class View extends React.Component {
     return (
       <UI
         failure={this.props.failure}
-        abort={() => routerUtils.goToProfilesManage()}
+        abort={routerUtils.goToProfilesManage}
         retry={this.auth}
         connectState={connectState}
       />

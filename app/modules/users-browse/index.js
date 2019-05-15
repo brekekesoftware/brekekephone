@@ -40,7 +40,7 @@ class View extends Component {
       resolveUser={this.resolveUser}
       callVoice={this.callVoice}
       callVideo={this.callVideo}
-      chat={() => routerUtils.goToBuddyChatsRecent()}
+      chat={routerUtils.goToBuddyChatsRecent}
       setSearchText={this.setSearchText}
     />
   );

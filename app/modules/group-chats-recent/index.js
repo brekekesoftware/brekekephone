@@ -130,7 +130,7 @@ class View extends Component {
       setEditingText={this.setEditingText}
       submitEditingText={this.submitEditingText}
       loadMore={this.loadMore}
-      back={() => routerUtils.goToChatsRecent()}
+      back={routerUtils.goToChatsRecent}
       leave={this.leave}
       invite={this.invite}
       callVoiceConference={this.callVoiceConference}
@@ -241,7 +241,8 @@ class View extends Component {
       return;
     }
     this.submitting = true;
-    this.context.uc.sendGroupChatText(this.props.group.id, txt)
+    this.context.uc
+      .sendGroupChatText(this.props.group.id, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
