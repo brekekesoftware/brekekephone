@@ -238,28 +238,30 @@ class View extends Component {
     this.setState({ editingText });
   };
 
+  submitting = false;
   submitEditingText = () => {
-    const { editingText } = this.state;
-    if (!editingText.trim()) return;
-
-    const { uc } = this.context;
-    const { buddy } = this.props;
-
-    uc.sendBuddyChatText(buddy.id, editingText)
+    if (this.submitting) {
+      return;
+    }
+    const txt = this.state.editingText.trim();
+    if (!txt) {
+      return;
+    }
+    this.submitting = true;
+    this.context.uc.sendBuddyChatText(this.props.buddy.id, txt)
       .then(this.onSubmitEditingTextSuccess)
-      .catch(this.onSubmitEditingTextFailure);
+      .catch(this.onSubmitEditingTextFailure)
+      .then(() => {
+        this.submitting = false;
+      });
   };
-
   onSubmitEditingTextSuccess = chat => {
-    const { appendChats, buddy } = this.props;
-    appendChats(buddy.id, [chat]);
+    this.props.appendChats(this.props.buddy.id, [chat]);
     this.setState({ editingText: '' });
   };
-
   onSubmitEditingTextFailure = err => {
     console.error(err);
-    const { showToast } = this.props;
-    showToast('Failed to send the message');
+    this.props.showToast('Failed to send the message');
   };
 
   acceptFile = file => {

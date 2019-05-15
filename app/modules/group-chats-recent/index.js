@@ -231,28 +231,30 @@ class View extends Component {
     this.setState({ editingText });
   };
 
+  submitting = false;
   submitEditingText = () => {
-    const { editingText } = this.state;
-    if (!editingText.trim()) return;
-
-    const { uc } = this.context;
-    const { group } = this.props;
-
-    uc.sendGroupChatText(group.id, editingText)
+    if (this.submitting) {
+      return;
+    }
+    const txt = this.state.editingText.trim();
+    if (!txt) {
+      return;
+    }
+    this.submitting = true;
+    this.context.uc.sendGroupChatText(this.props.group.id, txt)
       .then(this.onSubmitEditingTextSuccess)
-      .catch(this.onSubmitEditingTextFailure);
+      .catch(this.onSubmitEditingTextFailure)
+      .then(() => {
+        this.submitting = false;
+      });
   };
-
   onSubmitEditingTextSuccess = chat => {
-    const { appendChats, group } = this.props;
-    appendChats(group.id, [chat]);
+    this.props.appendChats(this.props.group.id, [chat]);
     this.setState({ editingText: '' });
   };
-
   onSubmitEditingTextFailure = err => {
-    const { showToast } = this.props;
-    showToast('Failed to send the message');
     console.error(err);
+    this.props.showToast('Failed to send the message');
   };
 
   leave = () => {

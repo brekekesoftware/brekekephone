@@ -6,7 +6,7 @@ import * as routerUtils from '../../mobx/routerStore';
 import { validateHostname, validatePort } from '../../util/validator';
 import UI from './ui';
 
-const mapGetter = () => ({});
+const mapGetter = getter => (state, props) => ({});
 const mapAction = action => emit => ({
   createProfile(profile) {
     emit(action.profiles.create(profile));
