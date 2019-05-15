@@ -1,5 +1,4 @@
 export { default as profiles } from './profiles';
-export { default as router } from './router';
 export { default as toasts } from './toasts';
 export { default as auth } from './auth';
 export { default as runningCalls } from './running-calls';

@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import { validateHostname, validatePort } from '../../util/validate';
+import * as routerUtils from '../../mobx/routerStore';
+import { validateHostname, validatePort } from '../../util/validator';
 import UI from './ui';
 
+const mapGetter = getter => (state, props) => ({});
 const mapAction = action => emit => ({
   createProfile(profile) {
     emit(action.profiles.create(profile));
-  },
-  routeToProfilesManage() {
-    emit(action.router.goToProfilesManage());
   },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
@@ -58,7 +57,7 @@ class View extends Component {
       setUCPort={this.setUCPort}
       removePark={this.removePark}
       save={this.save}
-      back={this.props.routeToProfilesManage}
+      back={routerUtils.goToProfilesManage}
     />
   );
 
@@ -152,14 +151,12 @@ class View extends Component {
       return;
     }
 
-    const hostnameValidationErr = validateHostname(this.state.pbxHostname);
-    if (hostnameValidationErr) {
-      this.props.showToast(hostnameValidationErr);
+    if (!validateHostname(this.state.pbxHostname)) {
+      this.props.showToast('Host name is invalid');
       return;
     }
-    const portValidationErr = validatePort(this.state.pbxPort);
-    if (portValidationErr === false) {
-      this.props.showToast(portValidationErr);
+    if (!validatePort(this.state.pbxPort)) {
+      this.props.showToast('Port is invalid');
       return;
     }
 
@@ -190,8 +187,8 @@ class View extends Component {
       ucPort: ucPort,
     });
 
-    this.props.routeToProfilesManage();
+    routerUtils.goToProfilesManage();
   };
 }
 
-export default createModelView(null, mapAction)(View);
+export default createModelView(mapGetter, mapAction)(View);

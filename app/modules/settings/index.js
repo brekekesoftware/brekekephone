@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
@@ -10,9 +11,6 @@ const mapGetter = getter => state => ({
 });
 
 const mapAction = action => emit => ({
-  routeToProfilesManage() {
-    emit(action.router.goToProfilesManage());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -52,7 +50,7 @@ class View extends Component {
       setChatBusy={this.setChatBusy}
       setChatMood={this.setChatMood}
       submitChatMood={this.submitChatMood}
-      signout={this.props.routeToProfilesManage}
+      signout={routerUtils.goToProfilesManage}
     />
   );
 

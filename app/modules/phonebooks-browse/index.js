@@ -3,20 +3,11 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
+const mapGetter = getter => (state, props) => ({});
 const mapAction = action => emit => ({
-  routeToContactsBrowse(book) {
-    emit(
-      action.router.goToContactsBrowse({
-        book: book.name,
-        shared: book.shared,
-      }),
-    );
-  },
-  routeToContactsCreate() {
-    emit(action.router.goToContactsCreate());
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -40,8 +31,13 @@ class View extends Component {
     <UI
       loading={this.state.loading}
       books={this.state.books}
-      selectBook={this.props.routeToContactsBrowse}
-      create={this.props.routeToContactsCreate}
+      selectBook={b =>
+        routerUtils.goToContactsBrowse({
+          book: b.name,
+          shared: b.shared,
+        })
+      }
+      create={() => routerUtils.goToContactsCreate()}
     />
   );
 
@@ -66,4 +62,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(null, mapAction)(View);
+export default createModelView(mapGetter, mapAction)(View);

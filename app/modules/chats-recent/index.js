@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const isGroupJointed = group => group.jointed;
@@ -14,18 +15,6 @@ const mapGetter = getter => state => ({
   groupById: getter.chatGroups.detailMapById(state),
 });
 
-const mapAction = action => emit => ({
-  routeToBuddyChatsRecent(buddy) {
-    emit(action.router.goToBuddyChatsRecent(buddy));
-  },
-  routeToGroupChatsRecent(group) {
-    emit(action.router.goToGroupChatsRecent(group));
-  },
-  routeToGroupChatsCreate() {
-    emit(action.router.goToChatGroupsCreate());
-  },
-});
-
 class View extends Component {
   render = () => (
     <UI
@@ -33,11 +22,11 @@ class View extends Component {
       buddyById={this.props.buddyById}
       groupIds={this.props.groupIds}
       groupById={this.props.groupById}
-      selectBuddy={this.props.routeToBuddyChatsRecent}
-      selectGroup={this.props.routeToGroupChatsRecent}
-      createGroup={this.props.routeToGroupChatsCreate}
+      selectBuddy={routerUtils.goToBuddyChatsRecent}
+      selectGroup={routerUtils.goToGroupChatsRecent}
+      createGroup={routerUtils.goToGroupChatsCreate}
     />
   );
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default createModelView(mapGetter)(View);

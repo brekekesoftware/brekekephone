@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
@@ -12,12 +13,6 @@ const mapGetter = getter => (state, props) => ({
 });
 
 const mapAction = action => emit => ({
-  routeToCallsManage() {
-    emit(action.router.goToCallsManage());
-  },
-  routeToCallTransferAttend(call) {
-    emit(action.router.goToCallTransferAttend(call));
-  },
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
@@ -53,7 +48,7 @@ class View extends Component {
       setAttended={this.setAttended}
       setTarget={this.setTarget}
       transfer={this.transfer}
-      back={this.props.routeToCallsManage}
+      back={routerUtils.goToCallsManage}
       transferAttended={this.transferAttended}
       transferBlind={this.transferBlind}
       transferAttendedForVideo={this.transferAttendedForVideo}
@@ -130,10 +125,10 @@ class View extends Component {
   onTransferSuccess = () => {
     const { call } = this.props;
     const { attended, target } = this.state;
-    if (!attended) return this.props.routeToCallsManage();
+    if (!attended) return routerUtils.goToCallsManage();
 
     this.props.updateCall({ id: call.id, transfering: target });
-    this.props.routeToCallTransferAttend(call.id);
+    routerUtils.goToCallTransferAttend(call.id);
   };
 
   onTransferFailure = err => {
@@ -178,11 +173,11 @@ class View extends Component {
   onTransferAttendedForVideoSuccess = () => {
     const { call } = this.props;
     const { attended, target } = this.state;
-    if (!attended) return this.props.routeToCallsManage();
+    if (!attended) return routerUtils.goToCallsManage();
 
     this.props.updateCall({ id: call.id, transfering: target });
 
-    this.props.routeToCallTransferAttend(call.id);
+    routerUtils.goToCallTransferAttend(call.id);
 
     const { sip } = this.context;
     sip.enableVideo(call.id);

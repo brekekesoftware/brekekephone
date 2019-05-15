@@ -5,6 +5,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import UserLanguage from '../../language/UserLanguage';
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 class View extends React.Component {
@@ -102,7 +103,7 @@ class View extends React.Component {
       <UI
         retryable={this.props.retryable}
         failure={this.props.failure}
-        abort={this.props.routeToProfilesManage}
+        abort={routerUtils.goToProfilesManage}
         retry={this.authCatched}
       />
     );
@@ -137,9 +138,6 @@ const mapAction = action => emit => ({
   },
   onStopped() {
     emit(action.auth.sip.onStopped());
-  },
-  routeToProfilesManage() {
-    emit(action.router.goToProfilesManage());
   },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));

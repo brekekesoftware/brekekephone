@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../../mobx/routerStore';
 import LoudSpeaker from './LoudSpeaker';
 import UI from './ui';
 
@@ -14,12 +15,6 @@ const mapGetter = getter => state => ({
 });
 
 const mapAction = action => emit => ({
-  routeToCallsRecent() {
-    emit(action.router.goToCallsRecent());
-  },
-  routeToCallsCreate() {
-    emit(action.router.goToCallsCreate());
-  },
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
@@ -28,18 +23,6 @@ const mapAction = action => emit => ({
   },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
-  },
-  routeToCallTransferDial(call) {
-    emit(action.router.goToCallTransferDial(call));
-  },
-  routeToCallTransferAttend(call) {
-    emit(action.router.goToCallTransferAttend(call));
-  },
-  routeToCallKeypad(call) {
-    emit(action.router.goToCallKeypad(call));
-  },
-  routeToCallPark(call) {
-    emit(action.router.goToCallPark(call));
   },
 });
 
@@ -71,7 +54,7 @@ class View extends Component {
     const { sip } = this.context;
     const creatingSessions = sip.getCreatingSessions();
     if (creatingSessions.isEmpty()) {
-      this.props.routeToCallsCreate();
+      routerUtils.goToCallsCreate();
     }
   }
 
@@ -150,8 +133,8 @@ class View extends Component {
         runningIds={this.props.runningIds}
         runningById={this.props.runningById}
         parkingIds={this.props.parkingIds}
-        browseHistory={this.props.routeToCallsRecent}
-        create={this.props.routeToCallsCreate}
+        browseHistory={routerUtils.goToCallsRecent}
+        create={routerUtils.goToCallsCreate}
         select={this.props.selectCall}
         hangup={this.hangup}
         answer={this.answer}
@@ -280,15 +263,15 @@ class View extends Component {
   transfer = () => {
     const call = this.props.runningById[this.props.selectedId];
     if (call.transfering) {
-      this.props.routeToCallTransferAttend(call.id);
+      routerUtils.goToCallTransferAttend(call.id);
     } else {
-      this.props.routeToCallTransferDial(call.id);
+      routerUtils.goToCallTransferDial(call.id);
     }
   };
 
   dtmf = () => {
     const call = this.props.runningById[this.props.selectedId];
-    this.props.routeToCallKeypad(call.id);
+    routerUtils.goToCallKeypad(call.id);
   };
 
   unpark = parkNumber => {
@@ -298,7 +281,7 @@ class View extends Component {
 
   park = () => {
     const call = this.props.runningById[this.props.selectedId];
-    this.props.routeToCallPark(call.id);
+    routerUtils.goToCallPark(call.id);
   };
 
   enableVideo = () => {

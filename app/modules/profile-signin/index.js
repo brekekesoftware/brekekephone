@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
@@ -10,12 +11,6 @@ const mapGetter = getter => (state, props) => ({
 const mapAction = action => emit => ({
   setAuthProfile(profile) {
     emit(action.auth.setProfile(profile));
-  },
-  routeToAuth() {
-    emit(action.router.goToAuth());
-  },
-  routeToProfilesManage() {
-    emit(action.router.goToProfilesManage());
   },
 });
 
@@ -29,7 +24,7 @@ class View extends Component {
       profile={this.props.profile}
       pbxPassword={this.state.pbxPassword}
       setPbxPassword={this.setPbxPassword}
-      back={this.props.routeToProfilesManage}
+      back={routerUtils.goToProfilesManage}
       signin={this.signin}
     />
   );
@@ -42,7 +37,7 @@ class View extends Component {
     let { profile } = this.props;
     profile.pbxPassword = this.state.pbxPassword;
     this.props.setAuthProfile(profile);
-    this.props.routeToAuth();
+    routerUtils.goToAuth();
   };
 }
 

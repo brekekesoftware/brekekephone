@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import formatChatText from '../../util/formatChatText';
+import * as routerUtils from '../../mobx/routerStore';
+import stripTags from '../../util/stripTags';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
@@ -34,17 +35,11 @@ const mapAction = action => emit => ({
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
-  routeToChatsRecent() {
-    emit(action.router.goToChatsRecent());
-  },
   removeChatGroup(id) {
     emit(action.chatGroups.remove(id));
   },
   clearChatsByGroup(group) {
     emit(action.groupChats.clearByGroup(group));
-  },
-  routeToChatGroupInvite(group) {
-    emit(action.router.goToChatGroupInvite(group));
   },
 });
 
@@ -135,7 +130,7 @@ class View extends Component {
       setEditingText={this.setEditingText}
       submitEditingText={this.submitEditingText}
       loadMore={this.loadMore}
-      back={this.props.routeToChatsRecent}
+      back={routerUtils.goToChatsRecent}
       leave={this.leave}
       invite={this.invite}
       callVoiceConference={this.callVoiceConference}
@@ -157,7 +152,7 @@ class View extends Component {
     const prev = chatById[chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
     const created = formatTime(chat.created);
-    const text = formatChatText(chat.text);
+    const text = stripTags(chat.text);
 
     if (mini) {
       return { mini: true, created, text };
@@ -236,28 +231,31 @@ class View extends Component {
     this.setState({ editingText });
   };
 
+  submitting = false;
   submitEditingText = () => {
-    const { editingText } = this.state;
-    if (!editingText.trim()) return;
-
-    const { uc } = this.context;
-    const { group } = this.props;
-
-    uc.sendGroupChatText(group.id, editingText)
+    if (this.submitting) {
+      return;
+    }
+    const txt = this.state.editingText.trim();
+    if (!txt) {
+      return;
+    }
+    this.submitting = true;
+    this.context.uc
+      .sendGroupChatText(this.props.group.id, txt)
       .then(this.onSubmitEditingTextSuccess)
-      .catch(this.onSubmitEditingTextFailure);
+      .catch(this.onSubmitEditingTextFailure)
+      .then(() => {
+        this.submitting = false;
+      });
   };
-
   onSubmitEditingTextSuccess = chat => {
-    const { appendChats, group } = this.props;
-    appendChats(group.id, [chat]);
+    this.props.appendChats(this.props.group.id, [chat]);
     this.setState({ editingText: '' });
   };
-
   onSubmitEditingTextFailure = err => {
-    const { showToast } = this.props;
-    showToast('Failed to send the message');
     console.error(err);
+    this.props.showToast('Failed to send the message');
   };
 
   leave = () => {
@@ -274,7 +272,7 @@ class View extends Component {
 
     this.props.removeChatGroup(group.id);
     this.props.clearChatsByGroup(group.id);
-    this.props.routeToChatsRecent();
+    routerUtils.goToChatsRecent();
   };
 
   onLeaveFailure = err => {
@@ -286,7 +284,7 @@ class View extends Component {
 
   invite = () => {
     const groupId = this.props.group.id;
-    this.props.routeToChatGroupInvite(groupId);
+    routerUtils.goToChatGroupInvite(groupId);
   };
 
   call = (target, bVideoEnabled) => {

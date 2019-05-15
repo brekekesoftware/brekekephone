@@ -11,7 +11,12 @@ const stats = {
 
 module.exports = {
   entry: {
-    main: path.join(rootDir, 'index.web.js'),
+    main: [
+      // js-import-sort doesn't sort it properly
+      //    if we place the polyfill in the index.web.js
+      '@babel/polyfill',
+      path.join(rootDir, 'index.web.js'),
+    ],
   },
   output: {
     filename: 'bundle.web.js',
@@ -43,7 +48,6 @@ module.exports = {
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               ['@babel/plugin-proposal-class-properties', { loose: true }],
               '@babel/plugin-proposal-object-rest-spread',
-              '@babel/plugin-syntax-dynamic-import',
             ],
           },
         },
@@ -62,7 +66,7 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(woff|woff2|eot|svg|ttf)(\?*)?$/,
+        test: /\.(woff2?|eot|svg|ttf)(\?*)?$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -86,7 +90,7 @@ module.exports = {
       [
         // root assets to be copied
         './index.html',
-        './favicon.png',
+        './favicon.ico',
       ].map(p => ({
         from: path.resolve(__dirname, p),
       })),
@@ -95,6 +99,7 @@ module.exports = {
   resolve: {
     alias: {
       'react-native': 'react-native-web',
+      'mobx-react/native': 'mobx-react',
     },
     extensions: [
       // Add .web.js first to resolve
@@ -109,6 +114,6 @@ module.exports = {
     contentBase: path.join(rootDir, 'web'),
     stats,
   },
-  devtool: isProd ? false : 'inline-source-map',
+  devtool: isProd ? false : 'source-map',
   stats,
 };

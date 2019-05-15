@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import formatChatText from '../../util/formatChatText';
+import * as routerUtils from '../../mobx/routerStore';
+import stripTags from '../../util/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 import UI from './ui';
@@ -39,9 +40,6 @@ const mapAction = action => emit => ({
   },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
-  },
-  routeToChatsRecent() {
-    emit(action.router.goToChatsRecent());
   },
 });
 
@@ -137,7 +135,7 @@ class View extends Component {
       acceptFile={this.acceptFile}
       rejectFile={this.rejectFile}
       pickFile={this.pickFile}
-      back={this.props.routeToChatsRecent}
+      back={routerUtils.goToChatsRecent}
     />
   );
 
@@ -149,7 +147,7 @@ class View extends Component {
 
     const created = chat.created && formatTime(chat.created);
     const file = fileById[chat.file];
-    const text = formatChatText(chat.text);
+    const text = stripTags(chat.text);
 
     if (mini) {
       return { mini: true, created, text, file };
@@ -240,28 +238,31 @@ class View extends Component {
     this.setState({ editingText });
   };
 
+  submitting = false;
   submitEditingText = () => {
-    const { editingText } = this.state;
-    if (!editingText.trim()) return;
-
-    const { uc } = this.context;
-    const { buddy } = this.props;
-
-    uc.sendBuddyChatText(buddy.id, editingText)
+    if (this.submitting) {
+      return;
+    }
+    const txt = this.state.editingText.trim();
+    if (!txt) {
+      return;
+    }
+    this.submitting = true;
+    this.context.uc
+      .sendBuddyChatText(this.props.buddy.id, txt)
       .then(this.onSubmitEditingTextSuccess)
-      .catch(this.onSubmitEditingTextFailure);
+      .catch(this.onSubmitEditingTextFailure)
+      .then(() => {
+        this.submitting = false;
+      });
   };
-
   onSubmitEditingTextSuccess = chat => {
-    const { appendChats, buddy } = this.props;
-    appendChats(buddy.id, [chat]);
+    this.props.appendChats(this.props.buddy.id, [chat]);
     this.setState({ editingText: '' });
   };
-
   onSubmitEditingTextFailure = err => {
     console.error(err);
-    const { showToast } = this.props;
-    showToast('Failed to send the message');
+    this.props.showToast('Failed to send the message');
   };
 
   acceptFile = file => {

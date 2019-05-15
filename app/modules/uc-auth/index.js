@@ -5,6 +5,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import UCClient from '../../apis/ucclient';
+import * as routerUtils from '../../mobx/routerStore';
 import UI, { UC_CONNECT_STATES } from './ui';
 
 class View extends React.Component {
@@ -135,7 +136,7 @@ class View extends React.Component {
     return (
       <UI
         failure={this.props.failure}
-        abort={this.props.routToProfilesManage}
+        abort={routerUtils.goToProfilesManage}
         retry={this.auth}
         connectState={connectState}
       />
@@ -180,9 +181,6 @@ const mapAction = action => emit => ({
   },
   fillUsers(users) {
     emit(action.ucUsers.refill(users));
-  },
-  routToProfilesManage() {
-    emit(action.router.goToProfilesManage());
   },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));

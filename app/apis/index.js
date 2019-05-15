@@ -6,9 +6,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import { getApnsToken } from '../push-notification/apns';
-import subscribePn from '../util/subscribe-pn';
-import fmtKey from '../util/uint8ArrayToUrlBase64';
+import { getPnToken } from '../rn/pn';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
@@ -30,7 +28,7 @@ const mapAction = action => emit => ({
   onSIPConnectionStarted() {
     emit(action.auth.sip.onSuccess());
     if (Platform.OS === 'ios') {
-      const device_id = getApnsToken();
+      const device_id = getPnToken();
       if (!device_id) {
         return;
       }
@@ -63,13 +61,13 @@ const mapAction = action => emit => ({
     if (Platform.OS === 'web') {
       setTimeout(async () => {
         try {
-          const sub = await subscribePn();
+          const pn = await getPnToken();
           await pbx.endpoint.web({
-            id: sub.endpoint,
+            id: pn.endpoint,
+            p256dh: pn.p256dh,
+            auth: pn.auth,
             user: webPhoneId,
             app: '22177122297',
-            p256dh: fmtKey(sub.getKey('p256dh')),
-            auth: fmtKey(sub.getKey('auth')),
           });
         } catch (err) {
           console.log(err);
@@ -96,10 +94,6 @@ const mapAction = action => emit => ({
           }
 
           FCM.getFCMToken().then(token => {});
-
-          if (Platform.OS === 'ios') {
-            FCM.getAPNSToken().then(token => {});
-          }
 
           API_PROVIDER._refreshTokenListener = FCM.on(
             FCMEvent.RefreshToken,

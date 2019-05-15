@@ -1,4 +1,3 @@
-import qs from 'qs';
 import React, { Component } from 'react';
 import { AppState, AsyncStorage, Platform, Text } from 'react-native';
 import FCM, {
@@ -10,40 +9,12 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import UserLanguage from '../../language/UserLanguage';
+import * as routerUtils from '../../mobx/routerStore';
+import { getUrlParams } from '../../rn/deeplink';
 import UI from './ui';
 
-// Read url search params
-let searchParams = {};
-if (Platform.OS === 'web') {
-  const p1 = qs.parse(window.location.search.replace(/^\?+/, ''));
-  let p2 = {};
-  const i = window.location.hash.indexOf('?');
-  if (i > 0) {
-    p2 = qs.parse(window.location.hash.substr(i).replace(/^\?+/, ''));
-  }
-  Object.assign(searchParams, p1, p2);
-  // Parse host port
-  searchParams.host = window.location.hostname;
-  searchParams.port = '' + window.location.port;
-  if (searchParams.url) {
-    try {
-      const a = document.createElement('a');
-      a.href = searchParams.url;
-      searchParams.host = a.hostname;
-      if (a.port) {
-        searchParams.port = a.port;
-      } else if (/^ws:/.test(searchParams.url)) {
-        searchParams.port = '80';
-      } else {
-        searchParams.port = '443';
-      }
-    } catch (err) {
-      // silent
-    }
-  }
-}
 //
-let alreadyHandleSearchParams = false;
+let alreadyHandleUrlParams = false;
 
 let PROFILES_MANAGE_VIEW = null;
 
@@ -85,14 +56,6 @@ function registerFcmAppListener() {
       if (AppState.currentState !== 'background') {
         return;
       }
-      if (
-        Platform.OS === 'ios' &&
-        notif._notificationType === NotificationType.WillPresent &&
-        !notif.local_notification
-      ) {
-        notif.finish(WillPresentNotificationResult.All);
-        return;
-      }
       if (notif.opened_from_tray) {
         setTimeout(() => {
           PROFILES_MANAGE_VIEW._onOpenNotification(notif);
@@ -119,35 +82,15 @@ const mapAction = action => emit => ({
   updateProfile(profile) {
     emit(action.profiles.update(profile));
   },
-
-  routeToProfilesCreate() {
-    emit(action.router.goToProfilesCreate());
-  },
-
   removeProfile(id) {
     emit(action.profiles.remove(id));
   },
-
-  routeToProfileUpdate(id) {
-    emit(action.router.goToProfileUpdate(id));
-  },
-
-  routeToProfileSignin(id) {
-    emit(action.router.goToProfileSignin(id));
-  },
-
   setAuthProfile(profile) {
     emit(action.auth.setProfile(profile));
   },
-
-  routeToAuth() {
-    emit(action.router.goToAuth());
-  },
-
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
-
   addPushnotif(notif) {
     emit(action.pushNotifies.add(notif));
   },
@@ -184,6 +127,7 @@ class View extends Component {
     if (this._shutodownNotificationListener) {
       this._shutodownNotificationListener.remove();
     }
+    PROFILES_MANAGE_VIEW = null;
   }
 
   async componentDidMount() {
@@ -231,26 +175,13 @@ class View extends Component {
 
     this.setState({ isReady: true });
 
+    //
     // Handle search params
-    if (alreadyHandleSearchParams) {
+    if (alreadyHandleUrlParams) {
       return;
     }
-    alreadyHandleSearchParams = true;
-    //
-    // url
-    // tenant
-    // user
-    // _wn
-    // _prtenant
-    // _pruser
-    const {
-      tenant,
-      user,
-      _wn,
-      // host port added from above
-      host,
-      port,
-    } = searchParams;
+    alreadyHandleUrlParams = true;
+    const { tenant, user, _wn, host, port } = await getUrlParams();
     if (!user || !tenant) {
       return;
     }
@@ -273,7 +204,7 @@ class View extends Component {
       if (u.pbxPassword || u.accessToken) {
         this.signin(uid);
       } else {
-        this.props.routeToProfileUpdate(uid);
+        routerUtils.goToProfileUpdate(uid);
       }
       return;
     }
@@ -299,7 +230,7 @@ class View extends Component {
     if (newU.accessToken) {
       this.signin(newU.id);
     } else {
-      this.props.routeToProfileUpdate(newU.id);
+      routerUtils.goToProfileUpdate(newU.id);
     }
   }
 
@@ -371,8 +302,8 @@ class View extends Component {
       <UI
         profileIds={this.props.profileIds}
         resolveProfile={this.resolveProfile}
-        create={this.props.routeToProfilesCreate}
-        update={this.props.routeToProfileUpdate}
+        create={routerUtils.goToProfilesCreate}
+        update={routerUtils.goToProfileUpdate}
         signin={this.signin}
         remove={this.props.removeProfile}
       />
@@ -384,11 +315,31 @@ class View extends Component {
   signin = id => {
     let profile = this.resolveProfile(id);
     this.props.setAuthProfile(profile);
-    this.props.routeToAuth();
+    routerUtils.goToAuth();
   };
 }
 
 export default createModelView(mapGetter, mapAction)(View);
 
-// To get the PROFILES_MANAGE_VIEW to use in apns handlers
-export const getProfileManager = () => PROFILES_MANAGE_VIEW;
+// To get the PROFILES_MANAGE_VIEW to use in other places
+// TODO fix this using mobx stores
+export const getProfileManager = () =>
+  PROFILES_MANAGE_VIEW
+    ? Promise.resolve(PROFILES_MANAGE_VIEW)
+    : new Promise(resolve => {
+        // Use interval to wait until the profile manager constructed
+        let eslapsed = 0;
+        const intervalId = setInterval(() => {
+          if (!PROFILES_MANAGE_VIEW) {
+            if (eslapsed >= 60) {
+              // 60 secs timeout
+              resolve(null);
+              clearInterval(intervalId);
+            }
+            eslapsed += 1;
+            return;
+          }
+          resolve(PROFILES_MANAGE_VIEW);
+          clearInterval(intervalId);
+        }, 1000);
+      });
