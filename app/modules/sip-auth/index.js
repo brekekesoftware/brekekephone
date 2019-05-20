@@ -80,6 +80,7 @@ class View extends React.Component {
       tenant: this.props.pbxTenant,
       username: webPhone.id,
       accessToken: sipAccessToken,
+      turnEnabled: this.props.pbxTurnEnabled,
     };
     this.context.sip.connect(connectSipConfig);
     this.props.setAuthUserExtensionProperties(pbxUserConfig);
@@ -121,6 +122,7 @@ const mapGetter = getter => state => {
     pbxHostname: profile.pbxHostname,
     pbxTenant: profile.pbxTenant,
     pbxUsername: profile.pbxUsername,
+    pbxTurnEnabled: profile.pbxTurnEnabled,
     accessToken: profile.accessToken,
     started: getter.auth.sip.started(state),
     stopped: getter.auth.sip.stopped(state),

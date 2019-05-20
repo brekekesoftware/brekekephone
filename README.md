@@ -22,6 +22,7 @@ react-native start --reset-cache
   - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
+  - `app/apis/turn.js`
 
 
 ### Android on Windows

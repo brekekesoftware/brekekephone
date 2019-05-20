@@ -30,7 +30,7 @@ class View extends Component {
       setPBXTenant={this.setPBXTenant}
       setPBXUsername={this.setPBXUsername}
       setPBXPassword={this.setPBXPassword}
-      setPBXWebRtcType={this.setPBXWebRtcType}
+      setPBXTurnEnabled={this.setPBXTurnEnabled}
       setAddingPark={this.setAddingPark}
       submitAddingPark={this.submitAddingPark}
       setUCEnabled={this.setUCEnabled}
@@ -62,8 +62,8 @@ class View extends Component {
     this.setState({ pbxPassword });
   };
 
-  setPBXWebRtcType = pbxWebRtcType => {
-    this.setState({ pbxWebRtcType });
+  setPBXTurnEnabled = pbxTurnEnabled => {
+    this.setState({ pbxTurnEnabled });
   };
 
   _isStringEmpty = s => {
@@ -145,7 +145,7 @@ class View extends Component {
     const pbxTenant = this.state.pbxTenant.trim();
     const pbxUsername = this.state.pbxUsername.trim();
     const pbxPassword = this.state.pbxPassword.trim();
-    const pbxWebRtcType = this.state.pbxWebRtcType;
+    const pbxTurnEnabled = this.state.pbxTurnEnabled;
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
     const parks = [];
@@ -160,7 +160,7 @@ class View extends Component {
       pbxTenant: pbxTenant,
       pbxUsername: pbxUsername,
       pbxPassword: pbxPassword,
-      pbxWebRtcType: pbxWebRtcType,
+      pbxTurnEnabled: pbxTurnEnabled,
       parks: parks,
       ucEnabled: this.state.ucEnabled,
       ucHostname: ucHostname,

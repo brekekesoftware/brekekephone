@@ -58,3 +58,6 @@ buck-out/
 # Google service keys for firebase
 GoogleService-Info.plist
 google-services.json
+
+# Turn server config
+app/apis/turn.js

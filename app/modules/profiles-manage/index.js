@@ -11,8 +11,8 @@ import createId from 'shortid';
 import UserLanguage from '../../language/UserLanguage';
 import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams, setUrlParams } from '../../rn/deeplink';
-import UI from './ui';
 import { setProfileManager } from './getset';
+import UI from './ui';
 
 //
 let alreadyHandleUrlParams = false;
@@ -133,6 +133,9 @@ class View extends Component {
   async componentDidMount() {
     setProfileManager(this);
 
+    //
+    this.handleUrlParams();
+
     await UserLanguage.init_s();
     await AsyncStorage.getItem('lastNotification').then(sData => {
       if (sData) {
@@ -174,8 +177,6 @@ class View extends Component {
     }
     //
     this.setState({ isReady: true });
-    //
-    this.handleUrlParams();
   }
 
   handleUrlParams = async () => {
@@ -223,7 +224,7 @@ class View extends Component {
       pbxHostname: host,
       pbxPort: port,
       pbxPassword: '',
-      pbxWebRtcType: 'standard',
+      pbxTurnEnabled: false,
       parks: [],
       ucEnabled: false,
       ucHostname: '',
