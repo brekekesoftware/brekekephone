@@ -1,7 +1,11 @@
 import get from 'lodash/get';
 import VoipPushNotification from 'react-native-voip-push-notification';
 
-import { getProfileManager } from '../modules/profiles-manage';
+import * as routerUtils from '../mobx/routerStore';
+import {
+  getProfileManager,
+  getProfileManagerInterval,
+} from '../modules/profiles-manage/getset';
 
 let voipApnsToken = '';
 const getPnToken = () => voipApnsToken;
@@ -28,7 +32,11 @@ const onVoipNotification = async notification => {
     soundName: 'incallmanager_ringtone.mp3',
   });
   //
-  const mgr = await getProfileManager();
+  let mgr = getProfileManager();
+  if (!mgr) {
+    routerUtils.goToProfilesManage();
+    mgr = await getProfileManagerInterval();
+  }
   if (mgr) {
     mgr._signinByNotif(notification._data.custom_notification);
   }

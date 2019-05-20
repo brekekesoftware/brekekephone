@@ -10,13 +10,12 @@ import createId from 'shortid';
 
 import UserLanguage from '../../language/UserLanguage';
 import * as routerUtils from '../../mobx/routerStore';
-import { getUrlParams } from '../../rn/deeplink';
+import { getUrlParams, setUrlParams } from '../../rn/deeplink';
 import UI from './ui';
+import { setProfileManager } from './getset';
 
 //
 let alreadyHandleUrlParams = false;
-
-let PROFILES_MANAGE_VIEW = null;
 
 const isIncoming = call => call.incoming && !call.answered;
 
@@ -41,7 +40,7 @@ function registerFcmKilledListener() {
     const oCustomNotif = parseCustomNotification_s(notif);
     if (notif.opened_from_tray) {
       setTimeout(() => {
-        PROFILES_MANAGE_VIEW._onOpenCustomNotification(oCustomNotif);
+        this._onOpenCustomNotification(oCustomNotif);
       }, 500);
     } else {
       AsyncStorage.setItem('lastNotification', JSON.stringify(oCustomNotif));
@@ -58,7 +57,7 @@ function registerFcmAppListener() {
       }
       if (notif.opened_from_tray) {
         setTimeout(() => {
-          PROFILES_MANAGE_VIEW._onOpenNotification(notif);
+          this._onOpenNotification(notif);
         }, 500);
       }
     },
@@ -127,11 +126,12 @@ class View extends Component {
     if (this._shutodownNotificationListener) {
       this._shutodownNotificationListener.remove();
     }
-    PROFILES_MANAGE_VIEW = null;
+    setProfileManager(null);
+    setUrlParams(null);
   }
 
   async componentDidMount() {
-    PROFILES_MANAGE_VIEW = this;
+    setProfileManager(this);
 
     await UserLanguage.init_s();
     await AsyncStorage.getItem('lastNotification').then(sData => {
@@ -143,7 +143,7 @@ class View extends Component {
         if (bTimeout) {
           AsyncStorage.removeItem('lastNotification');
         } else {
-          PROFILES_MANAGE_VIEW._onOpenCustomNotification(customNotif);
+          this._onOpenCustomNotification(customNotif);
         }
       }
     });
@@ -172,19 +172,24 @@ class View extends Component {
         // TODO
       });
     }
-
-    this.setState({ isReady: true });
-
     //
-    // Handle search params
-    if (alreadyHandleUrlParams) {
+    this.setState({ isReady: true });
+    //
+    this.handleUrlParams();
+  }
+
+  handleUrlParams = async () => {
+    // Only handle once in web platform
+    if (alreadyHandleUrlParams && Platform.OS === 'web') {
       return;
     }
     alreadyHandleUrlParams = true;
+    //
     const { tenant, user, _wn, host, port } = await getUrlParams();
     if (!user || !tenant) {
       return;
     }
+    //
     let uid = this._getUidByCustomNotif({
       tenant,
       to: user,
@@ -226,13 +231,14 @@ class View extends Component {
       //
       accessToken: _wn,
     };
+    //
     this.props.createProfile(newU);
     if (newU.accessToken) {
       this.signin(newU.id);
     } else {
       routerUtils.goToProfileUpdate(newU.id);
     }
-  }
+  };
 
   _getUidByCustomNotif(notif) {
     const nPbxTenant = notif.tenant;
@@ -320,26 +326,3 @@ class View extends Component {
 }
 
 export default createModelView(mapGetter, mapAction)(View);
-
-// To get the PROFILES_MANAGE_VIEW to use in other places
-// TODO fix this using mobx stores
-export const getProfileManager = () =>
-  PROFILES_MANAGE_VIEW
-    ? Promise.resolve(PROFILES_MANAGE_VIEW)
-    : new Promise(resolve => {
-        // Use interval to wait until the profile manager constructed
-        let eslapsed = 0;
-        const intervalId = setInterval(() => {
-          if (!PROFILES_MANAGE_VIEW) {
-            if (eslapsed >= 60) {
-              // 60 secs timeout
-              resolve(null);
-              clearInterval(intervalId);
-            }
-            eslapsed += 1;
-            return;
-          }
-          resolve(PROFILES_MANAGE_VIEW);
-          clearInterval(intervalId);
-        }, 1000);
-      });
