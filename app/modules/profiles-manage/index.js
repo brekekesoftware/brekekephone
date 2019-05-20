@@ -14,9 +14,6 @@ import { getUrlParams, setUrlParams } from '../../rn/deeplink';
 import { setProfileManager } from './getset';
 import UI from './ui';
 
-//
-let alreadyHandleUrlParams = false;
-
 const isIncoming = call => call.incoming && !call.answered;
 
 const pushNotifTimeout = 20000 + 15000;
@@ -180,11 +177,6 @@ class View extends Component {
   }
 
   handleUrlParams = async () => {
-    // Only handle once in web platform
-    if (alreadyHandleUrlParams && Platform.OS === 'web') {
-      return;
-    }
-    alreadyHandleUrlParams = true;
     //
     const { tenant, user, _wn, host, port } = await getUrlParams();
     if (!user || !tenant) {

@@ -6,18 +6,23 @@ import { getProfileManager } from '../modules/profiles-manage/getset';
 import parse from './deeplink-parse';
 
 // App opened in background mode via Linking
-let p = null;
+let alreadyHandleFirstOpen = false;
+let urlParams = null;
 
 export const getUrlParams = () => {
-  return p ? Promise.resolve(p) : Linking.getInitialURL().then(parse);
+  if (alreadyHandleFirstOpen) {
+    return Promise.resolve(urlParams);
+  }
+  alreadyHandleFirstOpen = true;
+  return Linking.getInitialURL().then(parse);
 };
-export const setUrlParams = _p => {
-  p = _p;
+export const setUrlParams = p => {
+  urlParams = p;
 };
 
 Linking.addEventListener('url', e => {
   //
-  p = parse(e.url);
+  const p = urlParams = parse(e.url);
   const u = getCurrentAuthProfile();
   const c = (v1, v2) => !v1 || !v2 || v1 === v2; // compare
   //
