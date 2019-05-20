@@ -3,7 +3,7 @@ import FCM, { FCMEvent } from 'react-native-fcm';
 import openCustomNoti from './pn-openCustomNoti';
 import parseCustomNoti from './pn-parseCustomNoti';
 
-const { RefreshToken, DirectChannelConnectionChanged } = FCMEvent;
+const { Notification, RefreshToken, DirectChannelConnectionChanged } = FCMEvent;
 
 let fcmPnToken = '';
 const getPnToken = () => {
@@ -30,7 +30,7 @@ const registerPn = () => {
     .catch(onFcmError);
   FCM.on(RefreshToken, onFcmToken); // No off
   //
-  FCM.enableDirectChannel().catch(onFcmError);
+  FCM.enableDirectChannel();
   FCM.on(DirectChannelConnectionChanged, onDirectChannelChanged); // No off
   //
   FCM.on(Notification, onFcmNotification);

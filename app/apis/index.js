@@ -5,7 +5,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import { getPnToken } from '../rn/pn';
+import { getPnToken, registerPn } from '../rn/pn';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
@@ -135,6 +135,7 @@ class ApiProvider extends Component {
     if (Platform.OS !== 'web') {
       SplashScreen.hide();
     }
+    registerPn();
     //
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);
