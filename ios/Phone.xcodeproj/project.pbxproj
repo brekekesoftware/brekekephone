@@ -56,6 +56,7 @@
 		A13821AC989E4690A7480ABB /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0272DDCB4BD947E2A3A1D461 /* libRCTVideo.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		B0A77634B35A41BDAF7154B5 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68C532534351421E930084E7 /* libSplashScreen.a */; };
+		E207C1EE2292B9AD00BAC02D /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E207C1E62292B93600BAC02D /* libBVLinearGradient.a */; };
 		E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E255C6C32251B8F100BA5410 /* libLoudSpeaker.a */; };
 		E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */; };
 /* End PBXBuildFile section */
@@ -390,6 +391,20 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		E207C1E52292B93600BAC02D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E207C1E02292B93600BAC02D /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = BVLinearGradient;
+		};
+		E207C1E72292B93600BAC02D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E207C1E02292B93600BAC02D /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 64AA15081EF7F30100718508;
+			remoteInfo = "BVLinearGradient-tvOS";
+		};
 		E23481EA227DB4FD00133B58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7979DB2467C4F8889418A63 /* SplashScreen.xcodeproj */;
@@ -476,6 +491,7 @@
 		A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = "<group>"; };
 		A1C95106384D42D7BBDFB985 /* feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = feather.ttf; path = ../app/fonts/feather.ttf; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
+		E207C1E02292B93600BAC02D /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LoudSpeaker.xcodeproj; path = "../node_modules/react-native-loud-speaker/ios/LoudSpeaker.xcodeproj"; sourceTree = "<group>"; };
 		F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libKCKeepAwake.a; sourceTree = "<group>"; };
 		F7979DB2467C4F8889418A63 /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
@@ -486,6 +502,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E207C1EE2292B9AD00BAC02D /* libBVLinearGradient.a in Frameworks */,
 				E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */,
 				9C8C84F32246AE3500C5FB09 /* JavaScriptCore.framework in Frameworks */,
 				9C9165FB22205A93000DEF18 /* libRCTCameraRoll.a in Frameworks */,
@@ -674,6 +691,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				E207C1E02292B93600BAC02D /* BVLinearGradient.xcodeproj */,
 				E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */,
 				9C9165C522205A76000DEF18 /* RCTCameraRoll.xcodeproj */,
 				9C9164EA22205623000DEF18 /* RNFS.xcodeproj */,
@@ -840,6 +858,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E207C1E12292B93600BAC02D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E207C1E62292B93600BAC02D /* libBVLinearGradient.a */,
+				E207C1E82292B93600BAC02D /* libBVLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E23481E7227DB4FD00133B58 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -924,6 +951,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = E207C1E12292B93600BAC02D /* Products */;
+					ProjectRef = E207C1E02292B93600BAC02D /* BVLinearGradient.xcodeproj */;
+				},
 				{
 					ProductGroup = 849545A11F9FA25F000E4486 /* Products */;
 					ProjectRef = 74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */;
@@ -1348,6 +1379,20 @@
 			fileType = archive.ar;
 			path = libRCTBlob.a;
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E207C1E62292B93600BAC02D /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = E207C1E52292B93600BAC02D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E207C1E82292B93600BAC02D /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = E207C1E72292B93600BAC02D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E23481EB227DB4FD00133B58 /* libSplashScreen.a */ = {

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.reactnative.camera.RNCameraPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost =
@@ -40,6 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
               new RNCameraPackage(),
               new RNFSPackage(),
               new SplashScreenReactPackage(),
+              new LinearGradientPackage(),
               new WebRTCModulePackage());
         }
 

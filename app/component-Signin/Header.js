@@ -19,6 +19,7 @@ const st = StyleSheet.create({
   btnTextTitle: {
     padding: std.gap.lg,
     fontSize: std.textSize.md,
+    color: std.color.shade0,
   },
   containerTitle: {
     padding: std.gap.lg,
@@ -27,9 +28,12 @@ const st = StyleSheet.create({
     fontSize: std.textSize.lg + std.gap.md,
     lineHeight: std.iconSize.md + std.gap.md * 2,
     paddingBottom: std.gap.sm,
+    color: std.color.shade0,
+    fontWeight: '700',
   },
   textCountServer: {
     fontSize: std.textSize.sm,
+    color: std.color.shade0,
   },
 });
 

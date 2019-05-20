@@ -16,28 +16,31 @@ const st = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     width: rem(268),
-    height: rem(330),
+    height: rem(320),
     borderRadius: std.gap.lg,
     backgroundColor: std.color.shade4,
     margin: std.gap.lg,
+    marginTop: rem(200),
   },
   containerServer: {
+    flex:1,
     flexDirection: 'column',
-    width: rem(268),
-    height: rem(330),
+    width: rem(240),
     borderRadius: std.gap.lg,
-    backgroundColor: std.color.shade4,
+    backgroundColor: std.color.shade0,
     margin: std.gap.lg,
-    marginTop: rem(120),
+    marginTop: rem(200),
   },
   btnNewServer: {
-    padding: std.gap.md,
+    padding: std.gap.lg,
     backgroundColor: std.color.shade9,
     borderRadius: std.gap.sm,
+    marginTop: std.gap.lg,
   },
   textNoServer: {
     fontSize: std.textSize.lg,
-    padding: std.gap.lg,
+    paddingTop: std.gap.lg *2,
+    paddingBottom: std.gap.lg,
   },
   btnText: {
     fontSize: std.textSize.sm,
@@ -49,8 +52,10 @@ const st = StyleSheet.create({
   description: {
     fontSize: std.textSize.md,
     lineHeight: std.iconSize.md,
-    whiteSpace: 'normal',
-    padding: std.gap.sm,
+    paddingTop: std.gap.lg,
+    paddingBottom: std.gap.lg,
+    paddingRight: std.gap.sm,
+    paddingLeft: std.gap.sm,
     color: std.color.shade5,
   },
   tenantcontainer: {
@@ -82,7 +87,6 @@ const st = StyleSheet.create({
   },
   servertitle: {
     fontSize: std.textSize.sm,
-    // color: std.color.shade4,
   },
   serverinfo: {
     fontSize: std.textSize.md,
@@ -111,6 +115,11 @@ const st = StyleSheet.create({
     paddingBottom: std.gap.lg + +std.gap.sm,
     color: std.color.shade0,
   },
+  iconserver: {
+    fontFamily: std.font.icon,
+    fontSize: std.iconSize.lg *3,
+    paddingTop: std.iconSize.lg,
+  },
 });
 
 const count_server = 0;
@@ -118,13 +127,13 @@ const count_server = 0;
 const NoServer = () => (
   <View style={st.container}>
     <View>
-      <Image />
+      <Text style={st.iconserver}>icon_server</Text>
     </View>
     <View>
       <Text style={st.textNoServer}>No Server</Text>
     </View>
     <View>
-      <Text style={st.description}>
+      <Text style={st.description} numberOfLines={2}>
         There is no server created. Tap the button below to make the first one.
       </Text>
     </View>
@@ -225,6 +234,8 @@ class ListServer extends React.Component {
   render() {
     return (
       <View>
+
+
         <FlatList
           data={this.state.data}
           horizontal
@@ -232,6 +243,7 @@ class ListServer extends React.Component {
             return <Server />;
           }}
         />
+        {/*<NoServer/>*/}
       </View>
     );
   }
