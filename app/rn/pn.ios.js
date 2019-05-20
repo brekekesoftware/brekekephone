@@ -22,13 +22,15 @@ const onVoipRegister = token => {
 const onVoipNotification = noti => {
   //
   const customNoti = parseCustomNoti(noti);
+  //
   const alertBody =
     get(customNoti, 'body') ||
     // Add fallback to see the detail notification if there's no body
     JSON.stringify(noti);
+  const alertAction = /call/.test(alertBody) ? 'Answer' : 'View';
   VoipPushNotification.presentLocalNotification({
     alertBody,
-    alertAction: /call/.test(alertBody) ? 'Answer' : 'View',
+    alertAction,
     soundName: 'incallmanager_ringtone.mp3',
   });
   //

@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import FCM, { FCMEvent } from 'react-native-fcm';
 
 import openCustomNoti from './pn-openCustomNoti';
@@ -44,7 +45,25 @@ const onDirectChannelChanged = data => {
 };
 
 const onFcmNotification = noti => {
+  //
   const customNoti = parseCustomNoti(noti);
+  //
+  const title =
+    get(customNoti, 'body') ||
+    // Add fallback to see the detail notification if there's no body
+    JSON.stringify(noti);
+  const body = /call/.test(title) ? 'Answer' : 'View';
+  FCM.presentLocalNotification({
+    title,
+    body,
+    priority: 'high',
+    show_in_foreground: false,
+    wake_screen: true,
+    ongoing: true,
+    lights: true,
+    sound: 'incallmanager_ringtone.mp3',
+  });
+  //
   openCustomNoti(customNoti);
 };
 
