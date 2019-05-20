@@ -178,10 +178,13 @@ class View extends Component {
 
   handleUrlParams = async () => {
     //
-    const { tenant, user, _wn, host, port } = await getUrlParams();
+    const urlParams = await getUrlParams();
+    const { tenant, user } = urlParams;
     if (!user || !tenant) {
       return;
     }
+    let { _wn, host, port } = urlParams;
+    [_wn, host, port] = [_wn, host, port].map(v => v ? v : '');
     //
     let uid = this._getUidByCustomNotif({
       tenant,
