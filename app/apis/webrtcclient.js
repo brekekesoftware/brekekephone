@@ -4,9 +4,10 @@
  * require jssip/jssip-3.2.15.js
  */
 
-if (typeof Brekeke === 'undefined') {
-  var Brekeke = {};
+if (!window.Brekeke) {
+  window.Brekeke = {};
 }
+var Brekeke = window.Brekeke;
 
 /**
  * instance Brekeke.WebrtcClient
@@ -189,6 +190,9 @@ if (!Brekeke.WebrtcClient) {
         var pc = this;
         if (!pc._ontrackpoly) {
           pc._ontrackpoly = function(e) {
+            if (typeof Event === 'undefined') {
+              return;
+            }
             // onaddstream does not fire when a track is added to an existing
             // stream. But stream.onaddtrack is implemented so we use that.
             e.stream.addEventListener('addtrack', function(te) {
@@ -3013,6 +3017,7 @@ if (!Brekeke.WebrtcClient) {
         data.session.connection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
+        data.session.connection.onaddstream = data.session.connection.ontrack;
       } else {
         // incoming
         data.session.on(
@@ -3313,6 +3318,7 @@ if (!Brekeke.WebrtcClient) {
             this._videoClientRtcSession_ontrack,
             [videoClientSessionId, sessionId],
           );
+          data.session.connection.onaddstream = data.session.connection.ontrack;
         } else {
           // incoming
           data.session.on(
@@ -3680,6 +3686,7 @@ if (!Brekeke.WebrtcClient) {
       var index, stream;
 
       stream = e.streams && e.streams[0];
+      stream = stream || e.stream; // Support old onaddstream
       if (stream) {
         if (this._sessionRemoteStreamsTable[sessionId]) {
           index = this._sessionRemoteStreamsTable[sessionId].indexOf(stream);
@@ -3712,6 +3719,7 @@ if (!Brekeke.WebrtcClient) {
         e.peerconnection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
+        e.peerconnection.onaddstream = e.peerconnection.ontrack;
       }
     },
     _rtcSession_responseAfterMakeCallWithVideo: function(
@@ -3793,6 +3801,7 @@ if (!Brekeke.WebrtcClient) {
       var index, stream;
 
       stream = e.streams && e.streams[0];
+      stream = stream || e.stream; // Support old onaddstream
       if (stream) {
         if (this._sessionRemoteStreamsTable[videoClientSessionId]) {
           if (this._sessionTable[sessionId]) {
@@ -3849,6 +3858,7 @@ if (!Brekeke.WebrtcClient) {
           this._videoClientRtcSession_ontrack,
           [videoClientSessionId, sessionId],
         );
+        e.peerconnection.onaddstream = e.peerconnection.ontrack;
       }
     },
 
