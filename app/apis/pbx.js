@@ -320,51 +320,52 @@ class PBX extends EventEmitter {
     return this.pal('park', { tenant, tid: talker, number: atNumber });
   }
 
-  endpoint = {
-    fcm: data =>
-      new Promise((onres, onerr) => {
-        const params = {
-          command: 'add',
-          application_id: data.app,
-          endpoint: data.id,
-          service_id: '12',
-          username: data.user,
-          user_agent: 'react-native',
-          device_id: data.device,
-        };
-        this.client.pnmanage(params, onres, onerr);
-      }),
-
-    apns: ({ username, device_id }) =>
-      new Promise((resolve, reject) => {
-        this.client.pnmanage(
-          {
-            service_id: '11',
-            application_id: 'com.brekeke.phone',
-            command: 'add',
-            username,
-            user_agent: 'react-native',
-            device_id,
-          },
-          resolve,
-          reject,
-        );
-      }),
-
-    web: data =>
-      new Promise((onres, onerr) => {
-        const params = {
-          command: 'add',
-          application_id: data.app,
-          endpoint: data.id,
-          service_id: '13',
-          username: data.user,
-          auth_secret: data.auth,
-          key: data.p256dh,
-          user_agent: navigator.userAgent,
-        };
-        this.client.pnmanage(params, onres, onerr);
-      }),
+  addApnsToken = ({ username, device_id }) => {
+    return new Promise((resolve, reject) => {
+      const params = {
+        command: 'add',
+        service_id: '11',
+        application_id: 'com.brekeke.phone',
+        user_agent: 'react-native',
+        username,
+        device_id,
+      };
+      this.client.pnmanage(params, resolve, reject);
+    }).catch(err => {
+      console.error('addApnsToken:', err);
+    });
+  };
+  addFcmPnToken = ({ username, device_id }) => {
+    return new Promise((resolve, reject) => {
+      const params = {
+        command: 'add',
+        service_id: '12',
+        application_id: '22177122297',
+        user_agent: 'react-native',
+        username,
+        device_id,
+      };
+      this.client.pnmanage(params, resolve, reject);
+    }).catch(err => {
+      console.error('addFcmPnToken:', err);
+    });
+  };
+  addWebPnToken = ({ username, endpoint, key, auth_secret }) => {
+    return new Promise((resolve, reject) => {
+      const params = {
+        command: 'add',
+        service_id: '13',
+        application_id: '22177122297',
+        user_agent: navigator.userAgent,
+        username,
+        endpoint,
+        auth_secret,
+        key,
+      };
+      this.client.pnmanage(params, resolve, reject);
+    }).catch(err => {
+      console.error('addWebPnToken:', err);
+    });
   };
 }
 

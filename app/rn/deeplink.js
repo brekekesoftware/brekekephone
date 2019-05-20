@@ -22,7 +22,10 @@ export const setUrlParams = p => {
 
 Linking.addEventListener('url', e => {
   //
-  const p = urlParams = parse(e.url);
+  const p = (urlParams = parse(e.url));
+  if (!p) {
+    return;
+  }
   const u = getCurrentAuthProfile();
   const c = (v1, v2) => !v1 || !v2 || v1 === v2; // compare
   //

@@ -83,7 +83,7 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Refactor code for group chat call
 - [ ] Add jsc-android for mobx: https://github.com/react-native-community/jsc-android-buildscripts#how-to-use-it-with-my-react-native-app
 - [x] Move push notification service_id to 11 12 13
-- [ ] Refactor code for fcm to normalize the push notification => Speed up startup time see deeplink.js for the comparision of the current logged in user
+- [x] Refactor code for fcm to normalize the push notification => Speed up startup time see deeplink.js for the comparision of the current logged in user
 - [x] UC doesn't work (cannot even show the user's list) when we have made a group on the body list with the desktop version of UC
 - [x] Research and implement a feature to open the app via url, parse the url parameters (Deep link)
 - [ ] Userversal Links and App Links

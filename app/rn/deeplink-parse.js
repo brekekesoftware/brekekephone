@@ -4,7 +4,7 @@ import Url from 'url-parse';
 export default location => {
   //
   if (!location) {
-    return {};
+    return null;
   }
   if (typeof location === 'string') {
     location = new Url(location, true);
