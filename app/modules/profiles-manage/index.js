@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import UserLanguage from '../../language/UserLanguage';
 import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams, setUrlParams } from '../../rn/deeplink';
 import { setProfileManager } from './getset';
@@ -40,7 +39,6 @@ class View extends Component {
   componentDidMount() {
     setProfileManager(this);
     this.handleUrlParams();
-    UserLanguage.init_s();
   }
   componentWillUnmount() {
     setProfileManager(null);

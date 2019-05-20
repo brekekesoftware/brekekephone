@@ -4,7 +4,6 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import UserLanguage from '../../language/UserLanguage';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
@@ -57,12 +56,10 @@ class View extends React.Component {
     }
     //
     const language = pbxUserConfig.language;
-    await UserLanguage.setUserzLanguage_s(language);
+    void language; // TODO update language
     //
     const userPhones = pbxUserConfig.phones;
     const isWebPhone = phone => !!phone.id && phone.type === 'Web Phone';
-    // || phone.type === 'webrtc'
-    // || phone.type === 'WebRTCs'
     const webPhone = userPhones.find(isWebPhone);
     if (!webPhone) {
       throw new Error('Web Phone not found');

@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 
-import UserLanguage from '../../language/UserLanguage';
 import { std } from '../../styleguide';
 
 const st = StyleSheet.create({
@@ -212,11 +211,7 @@ const pure = Component =>
 
 const Navbar = pure(p => (
   <View style={st.navbar}>
-    <Text style={st.navbarTitle}>
-      {UserLanguage.getUserzMessage_s(
-        'com.brekeke.phone.app.modules.users-browse.USERS',
-      )}
-    </Text>
+    <Text style={st.navbarTitle}>Users</Text>
   </View>
 ));
 
@@ -224,9 +219,7 @@ const Search = pure(p => (
   <View style={st.search}>
     <TextInput
       style={st.searchInput}
-      placeholder={UserLanguage.getUserzMessage_s(
-        'com.brekeke.phone.app.modules.users-browse.SEARCH',
-      )}
+      placeholder="Enter name or number"
       value={p.value}
       onChangeText={p.setValue}
     />

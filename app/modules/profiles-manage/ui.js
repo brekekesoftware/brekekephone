@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 
-import UserLanguage from '../../language/UserLanguage';
 import { std } from '../../styleguide';
 
 const st = StyleSheet.create({
@@ -104,11 +103,7 @@ const st = StyleSheet.create({
 
 const Navbar = p => (
   <View style={st.navbar}>
-    <Text style={st.navbarTitle}>
-      {UserLanguage.getUserzMessage_s(
-        'com.brekeke.phone.app.modules.profiles-manage.PROFILES',
-      )}
-    </Text>
+    <Text style={st.navbarTitle}>Profiles</Text>
     <Button style={st.navbarRightOpt} onPress={p.create}>
       <Text style={st.navbarOptText}>Create</Text>
     </Button>
