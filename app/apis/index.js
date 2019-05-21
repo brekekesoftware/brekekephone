@@ -1,17 +1,14 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { Platform } from 'react-native';
-import FCM, { FCMEvent } from 'react-native-fcm';
 import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import { getPnToken } from '../rn/pn';
+import * as pn from '../rn/pn';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
-
-let API_PROVIDER = null;
 
 const mapGetter = getter => state => ({
   profile: getter.auth.profile(state),
@@ -27,103 +24,7 @@ const mapAction = action => emit => ({
   },
   onSIPConnectionStarted() {
     emit(action.auth.sip.onSuccess());
-    if (Platform.OS === 'ios') {
-      const device_id = getPnToken();
-      if (!device_id) {
-        return;
-      }
-      pbx.endpoint
-        .apns({
-          username: this.userExtensionProperties.phones[3].id,
-          device_id,
-        })
-        .then(res => {
-          console.log('Add apns token to pbx successfully', res);
-        })
-        .catch(err => {
-          console.error('Can not add apns token to pbx', err);
-        });
-    } else {
-      this.registerFcm();
-    }
   },
-
-  registerFcm() {
-    FCM.createNotificationChannel({
-      id: 'default',
-      name: 'Default',
-      description: 'default desc',
-      priority: 'high',
-    });
-
-    const webPhoneId = this.userExtensionProperties.phones[3].id;
-
-    if (Platform.OS === 'web') {
-      setTimeout(async () => {
-        try {
-          const pn = await getPnToken();
-          await pbx.endpoint.web({
-            id: pn.endpoint,
-            p256dh: pn.p256dh,
-            auth: pn.auth,
-            user: webPhoneId,
-            app: '22177122297',
-          });
-        } catch (err) {
-          console.log(err);
-        }
-      }, 100);
-    } else if (Platform.OS === 'android') {
-      setTimeout(async () => {
-        try {
-          const deviceToken = await FCM.getFCMToken();
-          await pbx.endpoint.fcm({
-            user: webPhoneId,
-            app: '22177122297',
-            device: deviceToken,
-          });
-
-          try {
-            await FCM.requestPermissions({
-              badge: false,
-              sound: true,
-              alert: true,
-            });
-          } catch (e) {
-            console.error(e);
-          }
-
-          FCM.getFCMToken().then(token => {});
-
-          API_PROVIDER._refreshTokenListener = FCM.on(
-            FCMEvent.RefreshToken,
-            token => {},
-          );
-
-          FCM.enableDirectChannel();
-          API_PROVIDER._directChannelConnectionChangedListener = FCM.on(
-            FCMEvent.DirectChannelConnectionChanged,
-            data => {},
-          );
-        } catch (err) {
-          console.error(err);
-        }
-      }, 100);
-    }
-  },
-
-  componentWillUnmount() {
-    if (this._refreshTokenListener) {
-      this._refreshTokenListener.remove();
-    }
-    if (this._directChannelConnectionChangedListener) {
-      this._directChannelConnectionChangedListener.remove();
-    }
-    if (this._directChannelConnectionChangedListener) {
-      this._directChannelConnectionChangedListener.remove();
-    }
-  },
-
   onSIPConnectionStopped() {
     emit(action.auth.sip.onStopped());
   },
@@ -216,13 +117,12 @@ const mapAction = action => emit => ({
   },
 });
 
-class APIProvider extends Component {
+class ApiProvider extends Component {
   static childContextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
     uc: PropTypes.object.isRequired,
   };
-
   static defaultProps = {
     runningCallById: {},
     pbxUserById: {},
@@ -231,37 +131,36 @@ class APIProvider extends Component {
   getChildContext() {
     return { pbx, sip, uc };
   }
-
   componentDidMount() {
     if (Platform.OS !== 'web') {
       SplashScreen.hide();
     }
-
+    //
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);
     pbx.on('connection-timeout', this.onPBXConnectionTimeout);
-
+    //
     pbx.on('park-started', this.onPBXParkStarted);
     pbx.on('park-stopped', this.onPBXParkStopped);
-
+    //
     pbx.on('user-calling', this.onPBXUserCalling);
     pbx.on('user-ringing', this.onPBXUserRinging);
     pbx.on('user-talking', this.onPBXUserTalking);
     pbx.on('user-holding', this.onPBXUserHolding);
     pbx.on('user-hanging', this.onPBXUserHanging);
-
+    //
     sip.on('connection-started', this.onSIPConnectionStarted);
     sip.on('connection-stopped', this.onSIPConnectionStopped);
     sip.on('connection-timeout', this.onSIPConnectionTimeout);
-
+    //
     sip.on('session-started', this.onSIPSessionStarted);
     sip.on('session-updated', this.onSIPSessionUpdated);
     sip.on('session-stopped', this.onSIPSessionStopped);
-
+    //
     sip.on('video-session-created', this.onSIPVideoSessionCreated);
     sip.on('video-session-updated', this.onSIPVideoSessionUpdated);
     sip.on('video-session-ended', this.onSIPVideoSessionEnded);
-
+    //
     uc.on('connection-stopped', this.onUCConnectionStopped);
     uc.on('user-updated', this.onUcUserUpdated);
     uc.on('buddy-chat-created', this.onBuddyChatCreated);
@@ -272,36 +171,34 @@ class APIProvider extends Component {
     uc.on('file-received', this.onFileReceived);
     uc.on('file-progress', this.onFileProgress);
     uc.on('file-finished', this.onFileFinished);
-
-    API_PROVIDER = this;
   }
 
   componentWillUnmount() {
     pbx.off('connection-started', this.onPBXConnectionStarted);
     pbx.off('connection-stopped', this.onPBXConnectionStopped);
     pbx.off('connection-timeout', this.onPBXConnectionTimeout);
-
+    //
     pbx.off('park-started', this.onPBXParkStarted);
     pbx.off('park-stopped', this.onPBXParkStopped);
-
+    //
     pbx.off('user-calling', this.onPBXUserCalling);
     pbx.off('user-ringing', this.onPBXUserRinging);
     pbx.off('user-talking', this.onPBXUserTalking);
     pbx.off('user-holding', this.onPBXUserHolding);
     pbx.off('user-hanging', this.onPBXUserHanging);
-
+    //
     sip.off('connection-started', this.onSIPConnectionStarted);
     sip.off('connection-stopped', this.onSIPConnectionStopped);
     sip.off('connection-timeout', this.onSIPConnectionTimeout);
-
+    //
     sip.off('session-started', this.onSIPSessionStarted);
     sip.off('session-updated', this.onSIPSessionUpdated);
     sip.off('session-stopped', this.onSIPSessionStopped);
-
+    //
     sip.off('video-session-created', this.onSIPVideoSessionCreated);
     sip.off('video-session-updated', this.onSIPVideoSessionUpdated);
     sip.off('video-session-ended', this.onSIPVideoSessionEnded);
-
+    //
     uc.off('connection-stopped', this.onUCConnectionStopped);
     uc.off('connection-timeout', this.onUCConnectionTimeout);
     uc.off('user-updated', this.onUcUserUpdated);
@@ -315,52 +212,84 @@ class APIProvider extends Component {
     uc.off('file-finished', this.onFileFinished);
   }
 
+  addPnTokenFlag = 0;
+  addPnTokenToPbx = async () => {
+    //
+    // To wait until both pbx and sip ready
+    if (this.addPnTokenFlag < 1) {
+      this.addPnTokenFlag += 1;
+      return;
+    }
+    this.addPnTokenFlag = 0;
+    //
+    // TODO change phone type here hard code `3` now
+    const webPhoneId = this.props.userExtensionProperties.phones[3].id;
+    //
+    const t = await pn.getPnToken();
+    if (!t) {
+      return;
+    }
+    //
+    if (Platform.OS === 'ios') {
+      pbx.addApnsToken({
+        username: webPhoneId,
+        device_id: t,
+      });
+    } else if (Platform.OS === 'android') {
+      pbx.addFcmPnToken({
+        username: webPhoneId,
+        device_id: t,
+      });
+    } else if (Platform.OS === 'web') {
+      pbx.addWebPnToken({
+        user: webPhoneId,
+        endpoint: t.endpoint,
+        auth_secret: t.auth,
+        key: t.p256dh,
+      });
+    }
+  };
+
   onPBXConnectionStarted = () => {
     this.loadPbxUsers().catch(err => {
       this.props.showToast('Failed to load PBX users');
       console.error(err);
     });
+    setTimeout(this.addPnTokenToPbx, 170);
   };
-
   onPBXConnectionStopped = () => {
     this.props.onPBXConnectionStopped();
   };
-
   onPBXConnectionTimeout = () => {
     this.props.onPBXConnectionTimeout();
   };
 
-  async loadPbxUsers() {
+  loadPbxUsers = async () => {
     const { profile } = this.props;
-    if (!profile) return;
-
+    if (!profile) {
+      return;
+    }
     const tenant = profile.pbxTenant;
     const username = profile.pbxUsername;
-
     const userIds = await pbx
       .getUsers(tenant)
       .then(ids => ids.filter(id => id !== username));
-
     const users = await pbx.getOtherUsers(tenant, userIds);
     this.props.fillPbxUsers(users);
-  }
+  };
 
   onPBXUserCalling = ev => {
     this.props.setPBXUserTalkerCalling(ev.user, ev.talker);
   };
-
   onPBXUserRinging = ev => {
     this.props.setPBXUserTalkerRinging(ev.user, ev.talker);
   };
-
   onPBXUserTalking = ev => {
     this.props.setPBXUserTalkerTalking(ev.user, ev.talker);
   };
-
   onPBXUserHolding = ev => {
     this.props.setPBXUserTalkerHolding(ev.user, ev.talker);
   };
-
   onPBXUserHanging = ev => {
     this.props.setPBXUserTalkerHanging(ev.user, ev.talker);
   };
@@ -368,46 +297,37 @@ class APIProvider extends Component {
   onPBXParkStarted = park => {
     this.props.createParkingCall(park);
   };
-
   onPBXParkStopped = park => {
     this.props.removeParkingCall(park);
   };
 
   onSIPConnectionStarted = () => {
     this.props.onSIPConnectionStarted();
+    setTimeout(this.addPnTokenToPbx, 170);
   };
-
   onSIPConnectionStopped = () => {
     this.props.onSIPConnectionStopped();
   };
-
   onSIPConnectionTimeout = () => {
     this.props.onSIPConnectionTimeout();
   };
-
   onSIPSessionStarted = call => {
     const number = call.partyNumber;
-
     if (number === '8') {
       call.partyName = 'Voicemails';
     }
-
     if (!call.partyName) {
       const { pbxUserById } = this.props;
       const pbxUser = pbxUserById[number];
       call.partyName = pbxUser ? pbxUser.name : 'Unnamed';
     }
-
     this.props.createRunningCall(call);
   };
-
   onSIPSessionUpdated = call => {
     this.props.updateRunningCall(call);
   };
-
   onSIPSessionStopped = id => {
     const call = this.props.runningCallById[id];
-
     this.props.createRecentCall({
       id: createId(),
       incoming: call.incoming,
@@ -424,31 +344,24 @@ class APIProvider extends Component {
   onUCConnectionStopped = () => {
     this.props.onUCConnectionStopped();
   };
-
   onUCConnectionTimeout = () => {
     this.props.onUCConnectionTimeout();
   };
-
   onUcUserUpdated = ev => {
     this.props.updateUcUser(ev);
   };
-
   onBuddyChatCreated = chat => {
     this.props.appendBuddyChat(chat.creator, chat);
   };
-
   onGroupChatCreated = chat => {
     this.props.appendGroupChat(chat.group, chat);
   };
-
   onChatGroupInvited = group => {
     this.props.createChatGroup(group);
   };
-
   onChatGroupUpdated = group => {
     this.props.updateChatGroup(group);
   };
-
   onChatGroupRevoked = group => {
     this.props.removeChatGroup(group.id);
     this.props.clearChatsByGroup(group.id);
@@ -457,11 +370,9 @@ class APIProvider extends Component {
   onFileReceived = file => {
     this.props.createChatFile(file);
   };
-
   onFileProgress = file => {
     this.props.updateChatFile(file);
   };
-
   onFileFinished = file => {
     this.props.updateChatFile(file);
   };
@@ -469,11 +380,9 @@ class APIProvider extends Component {
   onSIPVideoSessionCreated = ev => {
     this.props.createRunningVideo(ev);
   };
-
   onSIPVideoSessionUpdated = ev => {
     this.props.updateRunningVideo(ev);
   };
-
   onSIPVideoSessionEnded = ev => {
     this.props.removeRunningVideo(ev);
   };
@@ -483,4 +392,4 @@ class APIProvider extends Component {
   }
 }
 
-export default createModelView(mapGetter, mapAction)(APIProvider);
+export default createModelView(mapGetter, mapAction)(ApiProvider);

@@ -13,3 +13,10 @@ export const getPnToken = async () => {
     auth: uint8ArrayToUrlBase64(sub.getKey('auth')),
   };
 };
+
+export const registerPn = () => {
+  if (!window.Notification || window.Notification.permission === 'granted') {
+    return;
+  }
+  Notification.requestPermission();
+};

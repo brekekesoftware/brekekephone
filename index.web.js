@@ -1,9 +1,7 @@
 import { AppRegistry } from 'react-native';
 
-import App from './app/App';
+import './index.js';
 import './web/index.css';
-
-AppRegistry.registerComponent('App', () => App);
 
 const rootTag = document.getElementById('root');
 AppRegistry.runApplication('App', { rootTag });

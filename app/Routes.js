@@ -119,12 +119,12 @@ const Routes = () => (
           </Auth>
         )}
       />
-      <Route path="/auth" component={CallVoices} />
-      <Route path="/auth" component={Tabbar} />
-      <Route path="/auth" component={CallVideos} />
+      <Route path="/auth" component={PBXAuth} />
       <Route path="/auth" component={SIPAuth} />
       <Route path="/auth" component={UCAuth} />
-      <Route path="/auth" component={PBXAuth} />
+      <Route path="/auth" component={CallVoices} />
+      <Route path="/auth" component={CallVideos} />
+      <Route path="/auth" component={Tabbar} />
     </WithoutStatusBar>
     <Notifications>
       <Route path="/auth" component={CallsNotify} />

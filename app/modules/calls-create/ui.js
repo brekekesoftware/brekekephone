@@ -170,8 +170,7 @@ const st = StyleSheet.create({
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
     borderWidth: StyleSheet.hairlineWidth,
-    marginHorizontal: std.gap.md,
-    marginBottom: std.gap.md,
+    margin: std.gap.md,
   },
 });
 

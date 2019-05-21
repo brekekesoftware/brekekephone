@@ -12,16 +12,9 @@ const mapGetter = getter => state => ({
     .idsByOrder(state)
     .filter(id => isIncoming(getter.runningCalls.detailMapById(state)[id])),
   callById: getter.runningCalls.detailMapById(state),
-  pushNotifies: getter.pushNotifies.notifDatas(state),
 });
 
 const mapAction = action => emit => ({
-  clearNotif() {
-    emit(action.pushNotifies.clear());
-  },
-  removeNotifAt(index) {
-    emit(action.pushNotifies.removeAt(index));
-  },
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
@@ -32,67 +25,20 @@ class View extends Component {
     sip: PropTypes.object.isRequired,
   };
 
-  _findCallByCustomNotifData(data) {
-    const nPartyNumber = data.from;
-    const nPbxUsername = data.to;
-    const nIsPbxUsernameEmpty = !nPbxUsername || nPbxUsername.length === 0;
-    const nPbxTenant = data.tenant;
-    const nIsPbxTenantEmpty = !nPbxTenant || nPbxTenant.length === 0;
-
-    for (let k = 0; k < this.props.callIds.length; k++) {
-      const callid = this.props.callIds[k];
-      const call = this.resolveCall(callid);
-
-      if (call.incoming !== true || call.answered !== false) {
-        continue;
-      }
-
-      const cPbxUsername = call.pbxUsername;
-      if (!nIsPbxUsernameEmpty) {
-        if (cPbxUsername) {
-          if (nPbxUsername !== cPbxUsername) {
-            continue;
-          }
-        } else {
-          if (nPartyNumber !== call.partyNumber) {
-            continue;
-          }
-        }
-      }
-
-      const cPbxTenant = call.pbxTenant;
-      if (!nIsPbxTenantEmpty) {
-        if (nPbxTenant !== cPbxTenant) {
-          continue;
-        }
-      }
-
-      return call;
-    }
-
-    return null;
-  }
-
-  componentDidUpdate() {
-    const pushNotifies = this.props.pushNotifies;
-    const notifCount = pushNotifies.length;
-    const currentTime = new Date().getTime();
-
-    for (let i = notifCount - 1; i >= 0; i--) {
-      const data = pushNotifies[i];
-      const expire = data['brekekephone.notif.expire'];
-      const bTimeout = expire && currentTime > expire;
-      if (bTimeout) {
-        this.props.removeNotifAt(i);
-      } else {
-        const call = this._findCallByCustomNotifData(data);
-        if (call) {
-          this.accept(call.id);
-          this.props.removeNotifAt(i);
-        }
-      }
-    }
-  }
+  resolveCall = id => {
+    const call = this.props.callById[id];
+    return call;
+  };
+  reject = id => {
+    const { sip } = this.context;
+    sip.hangupSession(id);
+  };
+  accept = id => {
+    const { sip } = this.context;
+    const call = this.props.callById[id];
+    const videoEnabled = call.remoteVideoEnabled;
+    sip.answerSession(id, { videoEnabled });
+  };
 
   render = () => (
     <UI
@@ -102,23 +48,6 @@ class View extends Component {
       reject={this.reject}
     />
   );
-
-  resolveCall = id => {
-    const call = this.props.callById[id];
-    return call;
-  };
-
-  reject = id => {
-    const { sip } = this.context;
-    sip.hangupSession(id);
-  };
-
-  accept = id => {
-    const { sip } = this.context;
-    const call = this.props.callById[id];
-    const videoEnabled = call.remoteVideoEnabled;
-    sip.answerSession(id, { videoEnabled });
-  };
 }
 
 export default createModelView(mapGetter, mapAction)(View);

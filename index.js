@@ -1,7 +1,7 @@
 import { AppRegistry } from 'react-native';
 
 import App from './app/App';
-import { registerPn } from './app/rn/pn';
+import * as pn from './app/rn/pn';
 
-registerPn();
+setTimeout(pn.registerPn);
 AppRegistry.registerComponent('App', () => App);

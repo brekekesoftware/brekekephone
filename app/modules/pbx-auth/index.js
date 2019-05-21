@@ -5,6 +5,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
+import { setCurrentAuthProfile } from './getset';
 import UI from './ui';
 
 class View extends React.Component {
@@ -24,6 +25,7 @@ class View extends React.Component {
   componentWillUnmount() {
     this.props.onStopped();
     this.context.pbx.disconnect();
+    setCurrentAuthProfile(null);
   }
 
   needToAuth = () =>
@@ -44,6 +46,7 @@ class View extends React.Component {
   });
 
   onAuthSuccess = () => {
+    setCurrentAuthProfile(this.props.profile);
     this.props.onSuccess();
   };
   onAuthFailure = err => {
@@ -82,7 +85,7 @@ const mapGetter = getter => state => {
       tenant: profile.pbxTenant,
       username: profile.pbxUsername,
       password: profile.pbxPassword,
-      webRtcType: profile.pbxWebRtcType,
+      turnEnabled: profile.pbxTurnEnabled,
       parks: profile.parks,
       accessToken: profile.accessToken,
     },

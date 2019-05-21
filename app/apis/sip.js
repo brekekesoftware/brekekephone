@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
 
+import turnConfig from './turn';
 import './webrtcclient';
 
 class CreatingSessions {
@@ -219,6 +220,10 @@ class SIP extends EventEmitter {
       appVersion +
       '/JsSIP ' +
       jssipVersion;
+
+    // Set turn config
+    this.phone.setDefaultCallOptions(profile.turnEnabled ? turnConfig : {});
+    // console.warn('profile.turnEnabled', profile.turnEnabled, turnConfig);
 
     this.phone.startWebRTC({
       host: profile.hostname,

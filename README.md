@@ -17,11 +17,18 @@ react-native start --reset-cache
 ```
 
 
+### Fonts and other resources
+- Put them in ./res
+- Rename the font files to match the exact the font names, eg: Roboto-LightItalic.ttf
+- Good icon font => https://materialdesignicons.com
+
+
 ### Keystores and other credentials keys
 - You need to contact us to download or generate your own following files:
   - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
+  - `app/apis/turn.js`
 
 
 ### Android on Windows
@@ -77,14 +84,15 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### TODO
+- [x] Add enable TURN option in profile pages and handle it. Add turn config to git ignore
 - [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || (ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id);`
 - [ ] Refactor code for group chat call
 - [ ] Add jsc-android for mobx: https://github.com/react-native-community/jsc-android-buildscripts#how-to-use-it-with-my-react-native-app
 - [x] Move push notification service_id to 11 12 13
-- [ ] Refactor code for fcm to normalize the push notification
-- [x] Enable deep link and handle app open via url
+- [x] Refactor code for fcm to normalize the push notification => Speed up startup time see deeplink.js for the comparision of the current logged in user
 - [x] UC doesn't work (cannot even show the user's list) when we have made a group on the body list with the desktop version of UC
-- [ ] Research and implement a feature to open the app via url, parse the url parameters
+- [x] Research and implement a feature to open the app via url, parse the url parameters (Deep link)
+- [ ] Userversal Links and App Links
 - [x] Add a feature to switch to the loud speaker (and back to the front speaker)
 - [x] Fix header space is too small so it becomes overflow by the status bar
 - [ ] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)

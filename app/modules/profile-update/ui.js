@@ -13,8 +13,6 @@ import {
 
 import { std } from '../../styleguide';
 
-// import { WebRtcTypePicker } from '../profiles-create/ui';
-
 const st = StyleSheet.create({
   main: {
     flex: 1,
@@ -239,10 +237,14 @@ const PBX = pure(p => (
         onSubmitEditing={p.submit}
       />
     </View>
-    {/*<View style={st.field}>
-      <Text style={st.fieldLabel}>WebRTC type</Text>
-      <WebRtcTypePicker value={p.webRtcType} onChange={p.setWebRtcType} />
-    </View>*/}
+    <View style={st.field}>
+      <Text style={st.fieldLabel}>Enable TURN</Text>
+      <Switch
+        style={st.fieldSwitch}
+        value={p.turnEnabled}
+        onValueChange={p.setTurnEnabled}
+      />
+    </View>
   </Fragment>
 ));
 
@@ -250,7 +252,7 @@ const UC = pure(p => (
   <Fragment>
     <Divider>UC</Divider>
     <View style={st.field}>
-      <Text style={st.fieldLabel}>Enabled</Text>
+      <Text style={st.fieldLabel}>Enable UC</Text>
       <Switch
         style={st.fieldSwitch}
         value={p.enabled}
@@ -338,13 +340,13 @@ const Main = p => (
         tenant={p.pbxTenant}
         username={p.pbxUsername}
         password={p.pbxPassword}
-        webRtcType={p.pbxWebRtcType}
+        turnEnabled={p.pbxTurnEnabled}
         setHostname={p.setPBXHostname}
         setPort={p.setPBXPort}
         setTenant={p.setPBXTenant}
         setUsername={p.setPBXUsername}
         setPassword={p.setPBXPassword}
-        setWebRtcType={p.setPBXWebRtcType}
+        setTurnEnabled={p.setPBXTurnEnabled}
         submit={p.save}
       />
       <UC
