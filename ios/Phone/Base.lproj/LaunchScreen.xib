@@ -15,7 +15,7 @@
       <rect key="frame" x="0.0" y="0.0" width="1024" height="1346"/>
       <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
       <subviews>
-        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="3Vf-cH-kOH">
+        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="LaunchScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="3Vf-cH-kOH">
           <rect key="frame" x="282" y="498" width="457" height="284"/>
           <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
           <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -28,6 +28,6 @@
     </view>
   </objects>
   <resources>
-    <image name="logo" width="168" height="129"/>
+    <image name="LaunchScreenLogo" width="168" height="129"/>
   </resources>
 </document>
