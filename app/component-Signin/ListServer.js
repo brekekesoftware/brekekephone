@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   FlatList,
-  Image,
+  Image, Platform,
   StyleSheet,
   Text,
   TouchableOpacity as Button,
@@ -18,7 +18,11 @@ const st = StyleSheet.create({
     width: rem(268),
     height: rem(320),
     borderRadius: std.gap.lg,
-    backgroundColor: std.color.shade4,
+    backgroundColor: Platform.select({
+      ios: std.color.shade0,
+      android: std.color.shade0,
+      web: std.color.shade4,
+    }),
     margin: std.gap.lg,
     marginTop: rem(200),
   },
@@ -27,7 +31,11 @@ const st = StyleSheet.create({
     flexDirection: 'column',
     width: rem(240),
     borderRadius: std.gap.lg,
-    backgroundColor: std.color.shade0,
+    backgroundColor: Platform.select({
+      ios: std.color.shade0,
+      android: std.color.shade0,
+      web: std.color.shade4,
+    }),
     margin: std.gap.lg,
     marginTop: rem(200),
   },
@@ -234,8 +242,6 @@ class ListServer extends React.Component {
   render() {
     return (
       <View>
-
-
         <FlatList
           data={this.state.data}
           horizontal

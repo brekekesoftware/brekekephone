@@ -1,12 +1,13 @@
 import React from 'react';
 import {
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity as Button,
   View,
 } from 'react-native';
 
-import { std } from '../styleguide';
+import {rem, std} from '../styleguide';
 
 const st = StyleSheet.create({
   container: {
@@ -19,7 +20,11 @@ const st = StyleSheet.create({
   btnTextTitle: {
     padding: std.gap.lg,
     fontSize: std.textSize.md,
-    color: std.color.shade0,
+    color: Platform.select({
+      ios: std.color.shade0,
+      android: std.color.shade0,
+      web: std.color.shade9,
+    }),
   },
   containerTitle: {
     padding: std.gap.lg,
@@ -28,12 +33,20 @@ const st = StyleSheet.create({
     fontSize: std.textSize.lg + std.gap.md,
     lineHeight: std.iconSize.md + std.gap.md * 2,
     paddingBottom: std.gap.sm,
-    color: std.color.shade0,
+    color: Platform.select({
+      ios: std.color.shade0,
+      android: std.color.shade0,
+      web: std.color.shade9,
+    }),
     fontWeight: '700',
   },
   textCountServer: {
     fontSize: std.textSize.sm,
-    color: std.color.shade0,
+    color: Platform.select({
+      ios: std.color.shade0,
+      android: std.color.shade0,
+      web: std.color.shade9,
+    }),
   },
 });
 
