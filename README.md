@@ -78,7 +78,6 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### TODO
-- [ ] Remove react-native-fcm then use https://rnfirebase.io
 - [x] Add enable TURN option in profile pages and handle it. Add turn config to git ignore
 - [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || (ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id);`
 - [ ] Refactor code for group chat call

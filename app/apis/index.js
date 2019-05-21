@@ -5,7 +5,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import { getPnToken, registerPn } from '../rn/pn';
+import * as pn from '../rn/pn';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
@@ -135,7 +135,6 @@ class ApiProvider extends Component {
     if (Platform.OS !== 'web') {
       SplashScreen.hide();
     }
-    registerPn();
     //
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);
@@ -213,11 +212,20 @@ class ApiProvider extends Component {
     uc.off('file-finished', this.onFileFinished);
   }
 
-  registerPn = async () => {
+  addPnTokenFlag = 0;
+  addPnTokenToPbx = async () => {
+    //
+    // To wait until both pbx and sip ready
+    if (this.addPnTokenFlag < 1) {
+      this.addPnTokenFlag += 1;
+      return;
+    }
+    this.addPnTokenFlag = 0;
+    //
     // TODO change phone type here hard code `3` now
     const webPhoneId = this.props.userExtensionProperties.phones[3].id;
     //
-    const t = await getPnToken();
+    const t = await pn.getPnToken();
     if (!t) {
       return;
     }
@@ -247,6 +255,7 @@ class ApiProvider extends Component {
       this.props.showToast('Failed to load PBX users');
       console.error(err);
     });
+    setTimeout(this.addPnTokenToPbx, 170);
   };
   onPBXConnectionStopped = () => {
     this.props.onPBXConnectionStopped();
@@ -294,7 +303,7 @@ class ApiProvider extends Component {
 
   onSIPConnectionStarted = () => {
     this.props.onSIPConnectionStarted();
-    setTimeout(this.registerPn, 170); // Add timeout to wait for the sip
+    setTimeout(this.addPnTokenToPbx, 170);
   };
   onSIPConnectionStopped = () => {
     this.props.onSIPConnectionStopped();

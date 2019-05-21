@@ -13,7 +13,10 @@ export const getPnToken = async () => {
     auth: uint8ArrayToUrlBase64(sub.getKey('auth')),
   };
 };
-// polyfill for native ./pn.ios|android.js
+
 export const registerPn = () => {
-  return;
+  if (!window.Notification || window.Notification.permission === 'granted') {
+    return;
+  }
+  Notification.requestPermission();
 };
