@@ -43,6 +43,7 @@
 		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
 		9C36979E2283529F00A3CA04 /* Phone.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 84D1D1191EA9BF6800BC7305 /* Phone.entitlements */; };
 		9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C740745221FFC7400AC17B9 /* libRNCamera.a */; };
+		9C89026D2294771800491DFE /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		9C8C84F32246AE3500C5FB09 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */; };
 		9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C91651B22205623000DEF18 /* libRNFS.a */; };
 		9C9165FB22205A93000DEF18 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9165D222205A76000DEF18 /* libRCTCameraRoll.a */; };
@@ -512,6 +513,7 @@
 				E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */,
 				E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
+				9C89026D2294771800491DFE /* libRCTAnimation.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				9C9165FB22205A93000DEF18 /* libRCTCameraRoll.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
