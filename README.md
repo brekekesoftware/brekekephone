@@ -17,6 +17,12 @@ react-native start --reset-cache
 ```
 
 
+### Fonts and other resources
+- Put them in ./res
+- Rename the font files to match the exact the font names, eg: Roboto-LightItalic.ttf
+- Good icon font => https://materialdesignicons.com
+
+
 ### Keystores and other credentials keys
 - You need to contact us to download or generate your own following files:
   - `android/app/google-services.json`
