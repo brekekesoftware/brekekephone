@@ -1,8 +1,8 @@
 if (typeof Brekeke === 'undefined' || typeof Brekeke.net === 'undefined') {
-  throw new Error('jsonrpc has not been loaded.');
+  console.error('jsonrpc has not been loaded.');
 }
 if (typeof CryptoJS === 'undefined') {
-  throw new Error('CryptoJS has not been loaded.');
+  console.error('CryptoJS has not been loaded.');
 }
 
 if (typeof Brekeke.pbx === 'undefined') {

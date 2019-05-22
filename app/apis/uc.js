@@ -401,7 +401,8 @@ class UC extends EventEmitter {
         } else if (window.ClipboardEvent) {
           b = new ClipboardEvent('').clipboardData;
         } else {
-          throw new Error('Can not set input.files');
+          console.error('Can not set input.files');
+          return;
         }
         b.items.add(file);
         return b.files;

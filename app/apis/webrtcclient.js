@@ -318,7 +318,7 @@ if (!Brekeke.WebrtcClient) {
 
       if (this._jssipLoadingFailed) {
         this._logger.log('error', 'jssip-3.2.15.js is not loaded');
-        throw new Error('jssip-3.2.15.js is not loaded');
+        return;
       }
 
       // check parameters

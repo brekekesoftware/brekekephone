@@ -6209,7 +6209,11 @@ import Url from 'url-parse';
     },
     _rpcNotify: function(method, params, funcError) {
       if (this._rpc) {
-        this._rpc.call(method, params, null, null, null);
+        try {
+          this._rpc.call(method, params, null, null, null);
+        } catch (err) {
+          console.error('_rpcNotify:', err);
+        }
       } else {
         this._logger.log(
           'info',
@@ -8986,7 +8990,8 @@ code.google.com/p/crypto-js/wiki/License
               try {
                 return decodeURIComponent(escape(a.stringify(b)));
               } catch (g) {
-                throw Error('Malformed UTF-8 data');
+                console.error('Malformed UTF-8 data');
+                return '';
               }
             },
             parse: function(b) {

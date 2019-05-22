@@ -66,7 +66,7 @@ const pickFile = async cb => {
     if (DocumentPicker.isCancel(err)) {
       return;
     }
-    throw err;
+    console.error(err);
   }
   if (!file) {
     return;

@@ -241,7 +241,8 @@
       };
       rpc.open = function() {
         if (!this._canOpen()) {
-          throw new Error('Failed to open');
+          console.error('rpc.open: Failed to open');
+          return;
         }
         var socket = new WebSocket(this.url);
         this.socket = socket;
@@ -308,7 +309,8 @@
         }
       } finally {
         if (!xhr) {
-          throw new Error('Could not create Xhr object.');
+          console.error('Could not create Xhr object.');
+          return;
         }
         if (xhr.overrideMimeType) {
           xhr.overrideMimeType('text/xml');
@@ -324,7 +326,8 @@
       var rpc = Object.create(Brekeke.net.getJsonRpcPrototype());
       rpc.open = function() {
         if (!this._canOpen()) {
-          throw new Error('Failed to open');
+          console.error('rpc.open: Failed to open');
+          return;
         }
         this.polling();
         return true;
@@ -351,17 +354,7 @@
               }
               t.polling();
             } else if (xhr.status === 500) {
-              try {
-                throw {
-                  value: 500,
-                  message: 'Internal Server Error.()',
-                  toString: function() {
-                    return this.value + this.message;
-                  },
-                };
-              } catch (e) {
-                t.onError(e);
-              }
+              t.onError(new Error('Internal Server Error'));
               t._onClose(xhr.status);
             } else {
               t._onClose(xhr.status);

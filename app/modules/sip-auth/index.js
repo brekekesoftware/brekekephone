@@ -39,12 +39,14 @@ class View extends React.Component {
     //
     const pbxConfig = await this.context.pbx.getConfig();
     if (!pbxConfig) {
-      throw new Error('Invalid PBX config');
+      console.error('Invalid PBX config');
+      return;
     }
     //
     const sipWSSPort = pbxConfig['sip.wss.port'];
     if (!sipWSSPort) {
-      throw new Error('Invalid SIP WSS port');
+      console.error('Invalid SIP WSS port');
+      return;
     }
     //
     const pbxUserConfig = await this.context.pbx.getUserForSelf(
@@ -52,7 +54,8 @@ class View extends React.Component {
       this.props.pbxUsername,
     );
     if (!pbxUserConfig) {
-      throw new Error('Invalid PBX user config');
+      console.error('Invalid PBX user config');
+      return;
     }
     //
     const language = pbxUserConfig.language;
@@ -62,14 +65,16 @@ class View extends React.Component {
     const isWebPhone = phone => !!phone.id && phone.type === 'Web Phone';
     const webPhone = userPhones.find(isWebPhone);
     if (!webPhone) {
-      throw new Error('Web Phone not found');
+      console.error('Web Phone not found');
+      return;
     }
     //
     const sipAccessToken = await this.context.pbx.createSIPAccessToken(
       webPhone.id,
     );
     if (!sipAccessToken) {
-      throw new Error('Invalid SIP access token');
+      console.error('Invalid SIP access token');
+      return;
     }
     const connectSipConfig = {
       hostname: this.props.pbxHostname,
