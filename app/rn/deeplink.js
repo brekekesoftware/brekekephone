@@ -2,7 +2,7 @@ import { Linking } from 'react-native';
 
 import * as routerUtils from '../mobx/routerStore';
 import { getCurrentAuthProfile } from '../modules/pbx-auth/getset';
-import { getProfileManager } from '../modules/profiles-manage/getset';
+import { getProfilesManager } from '../modules/profiles-manage/getset';
 import parse from './deeplink-parse';
 
 // App opened in background mode via Linking
@@ -41,7 +41,7 @@ Linking.addEventListener('url', e => {
   ) {
     return;
   }
-  const pm = getProfileManager();
+  const pm = getProfilesManager();
   if (pm) {
     pm.handleUrlParams();
   } else {

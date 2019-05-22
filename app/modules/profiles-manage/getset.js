@@ -2,13 +2,13 @@ let profilesManageInstance = null;
 
 // To get/set the profilesManageInstance to use in other places
 // TODO fix this using mobx stores
-export const setProfileManager = v => {
+export const setProfilesManager = v => {
   profilesManageInstance = v;
 };
-export const getProfileManager = () => {
+export const getProfilesManager = () => {
   return profilesManageInstance;
 };
-export const getProfileManagerInterval = () => {
+export const getProfilesManagerInterval = () => {
   if (profilesManageInstance) {
     return Promise.resolve(profilesManageInstance);
   }

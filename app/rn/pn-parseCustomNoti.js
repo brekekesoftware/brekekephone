@@ -1,5 +1,12 @@
 import get from 'lodash/get';
-import { AppState, AsyncStorage, Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
+
+import * as routerUtils from '../mobx/routerStore';
+import { getCurrentAuthProfile } from '../modules/pbx-auth/getset';
+import {
+  getProfilesManager,
+  getProfilesManagerInterval,
+} from '../modules/profiles-manage/getset';
 
 const keysInCustomNoti = [
   'body',
@@ -34,24 +41,38 @@ const parse = (...p) => {
     }, {});
 };
 
-const parseCustomNoti = noti => {
+const parseCustomNoti = n => {
+  //
   if (AppState.currentState === 'active') {
     return null;
   }
   //
   let customNoti = {};
   if (Platform.OS === 'android') {
-    customNoti = noti;
-    // TODO
+    customNoti = parse(
+      get(n, 'fcm'),
+      get(n, 'custom_notification'),
+      get(n, 'data.custom_notification'),
+    );
   } else if (Platform.OS === 'ios') {
     customNoti = parse(
-      get(noti, '_alert'), // UC message TODO
-      get(noti, '_data.custom_notification'),
+      get(n, '_alert'), // UC message TODO
+      get(n, '_data.custom_notification'),
     );
   }
-  customNoti.receivedAt = new Date();
   //
-  AsyncStorage.setItem('lastNotification', JSON.stringify(customNoti));
+  const pm = getProfilesManager();
+  if (pm) {
+    pm.signinByCustomNoti(customNoti);
+  } else if (!getCurrentAuthProfile()) {
+    routerUtils.goToProfilesManage();
+    getProfilesManagerInterval().then(pm => {
+      if (pm) {
+        pm.signinByCustomNoti(customNoti);
+      }
+    });
+  }
+  //
   return customNoti;
 };
 

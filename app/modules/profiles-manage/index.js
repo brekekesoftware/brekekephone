@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { AppState, AsyncStorage } from 'react-native';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams, setUrlParams } from '../../rn/deeplink';
 import { resetBadgeNumber } from '../../rn/pn';
-import { setProfileManager } from './getset';
+import { setProfilesManager } from './getset';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
@@ -40,28 +39,13 @@ const mapAction = action => emit => ({
   },
 });
 
-// To not signin lastSigninId repeatedly
-let didMountAtLeastOnce = false;
-
 class View extends Component {
   async componentDidMount() {
-    setProfileManager(this);
+    setProfilesManager(this);
     this.handleUrlParams();
-    if (AppState.currentState !== 'active') {
-      return;
-    }
-    const n = await AsyncStorage.getItem('lastNotification');
-    await AsyncStorage.removeItem('lastNotification');
-    let signinSuccess = this.signinByCustomNoti(n && JSON.parse(n));
-    if (!signinSuccess && !didMountAtLeastOnce) {
-      const lastSigninId = await AsyncStorage.getItem('lastSigninId');
-      signinSuccess = this.signin(lastSigninId);
-    }
-    void signinSuccess; // Other attempt?
-    didMountAtLeastOnce = true;
   }
   componentWillUnmount() {
-    setProfileManager(null);
+    setProfilesManager(null);
     setUrlParams(null);
   }
 
@@ -152,13 +136,6 @@ class View extends Component {
     if (!n || !n.tenant || !n.to) {
       return false;
     }
-    // Added in app/rn/pn-openNoti
-    const expired =
-      n.receivedAt &&
-      Date.now() < new Date(n.receivedAt).getTime() + 5 * 60 * 1000; // 5 min
-    if (expired) {
-      return false;
-    }
     const u = this.getProfileByCustomNoti(n);
     if (!u) {
       return false;
@@ -183,7 +160,6 @@ class View extends Component {
     this.props.setAuthProfile(u);
     routerUtils.goToAuth();
     resetBadgeNumber();
-    AsyncStorage.setItem('lastSigninId', id);
     return true;
   };
 
