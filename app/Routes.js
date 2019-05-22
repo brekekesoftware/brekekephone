@@ -39,6 +39,8 @@ import ToastsNotify from './modules/toasts-notify';
 import UCAuth from './modules/uc-auth';
 import UsersBrowse from './modules/users-browse';
 import PageServers from "./component-Signin/PageServers";
+import PageProfileCreate from "./components-Profile/PageProfileCreate";
+import PageProfileUpdate from "./components-Profile/PageProfileUpdate";
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
@@ -46,8 +48,8 @@ const Routes = () => (
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
       <Route exact path="/profiles/manage" component={PageServers} />
-      <Route exact path="/profiles/create" component={ProfilesCreate} />
-      <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
+      <Route exact path="/profiles/create" component={PageProfileCreate} />
+      <Route exact path="/profile/:profile/update" component={PageProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
       <Route
         path="/auth"
