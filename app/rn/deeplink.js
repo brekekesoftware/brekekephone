@@ -32,8 +32,8 @@ Linking.addEventListener('url', e => {
   // If the params links to current authenticated user
   //    => don't handle
   if (
-    p &&
     u &&
+    p.user && // must have user
     c(p.host, u.pbxHostname) &&
     c(p.port, u.pbxPort) &&
     c(p.user, u.pbxUsername) &&

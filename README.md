@@ -77,6 +77,7 @@ react-native run-android --deviceId=DEVICE_ID
 ### iOS
 - Start the react native bundle at the project root: `react-native run-ios`.
 - To clear cache: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`.
+- To have the push notification and other permission related to work, we need to uninstall the app first before reinstalling or debugging.
 
 ##### Build iOS app for distribution
 - Request for distribution certificate and install it correctly on local machine if haven't
@@ -84,6 +85,11 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### TODO
+- [ ] Move pbx-auth, sip-auth, uc-auth to auth
+- [ ] Add notification action: https://github.com/holmesal/react-native-ios-notification-actions
+- [ ] Can not make notification sound repeat?
+- [ ] PN only works in production archived ipa?
+- [ ] Upgrade fcm (no longer maintained for feature requests) https://github.com/evollu/react-native-fcm => https://github.com/invertase/react-native-firebase
 - [x] Add enable TURN option in profile pages and handle it. Add turn config to git ignore
 - [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || (ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id);`
 - [ ] Refactor code for group chat call

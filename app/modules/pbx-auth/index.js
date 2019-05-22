@@ -1,6 +1,7 @@
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { AsyncStorage } from 'react-native';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
@@ -22,7 +23,8 @@ class View extends React.Component {
       this.authDebounced();
     }
   }
-  componentWillUnmount() {
+  async componentWillUnmount() {
+    await AsyncStorage.removeItem('lastNotification');
     this.props.onStopped();
     this.context.pbx.disconnect();
     setCurrentAuthProfile(null);

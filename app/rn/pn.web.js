@@ -20,3 +20,7 @@ export const registerPn = () => {
   }
   Notification.requestPermission();
 };
+
+export const resetBadgeNumber = () => {
+  // polyfill
+};

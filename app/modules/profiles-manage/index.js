@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import { AppState, AsyncStorage } from 'react-native';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams, setUrlParams } from '../../rn/deeplink';
+import { resetBadgeNumber } from '../../rn/pn';
 import { setProfileManager } from './getset';
 import UI from './ui';
 
@@ -33,12 +35,30 @@ const mapAction = action => emit => ({
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
+  showToast(message) {
+    emit(action.toasts.create({ id: createId(), message }));
+  },
 });
 
+// To not signin lastSigninId repeatedly
+let didMountAtLeastOnce = false;
+
 class View extends Component {
-  componentDidMount() {
+  async componentDidMount() {
     setProfileManager(this);
     this.handleUrlParams();
+    if (AppState.currentState !== 'active') {
+      return;
+    }
+    const n = await AsyncStorage.getItem('lastNotification');
+    await AsyncStorage.removeItem('lastNotification');
+    let signinSuccess = this.signinByCustomNoti(n && JSON.parse(n));
+    if (!signinSuccess && !didMountAtLeastOnce) {
+      const lastSigninId = await AsyncStorage.getItem('lastSigninId');
+      signinSuccess = this.signin(lastSigninId);
+    }
+    void signinSuccess; // Other attempt?
+    didMountAtLeastOnce = true;
   }
   componentWillUnmount() {
     setProfileManager(null);
@@ -59,6 +79,8 @@ class View extends Component {
     const u = this.getProfileByCustomNoti({
       tenant,
       to: user,
+      pbxHostname: host,
+      pbxPort: port,
     });
     if (u) {
       if (_wn) {
@@ -106,10 +128,6 @@ class View extends Component {
   };
 
   getProfileByCustomNoti = n => {
-    //
-    if (!n) {
-      return null;
-    }
     // Compare utils
     const c = (v1, v2) => !v1 || !v2 || v1 === v2;
     const cp = p =>
@@ -118,11 +136,10 @@ class View extends Component {
       c(n.pbxHostname, p.pbxHostname) &&
       c(n.pbxPort, p.pbxPort);
     //
-    const profiles = this.props.profileById;
-    const ids = Object.keys(profiles);
+    const ids = Object.keys(this.props.profileById);
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];
-      const profile = profiles[id];
+      const profile = this.props.profileById[id];
       if (cp(profile)) {
         return profile;
       }
@@ -131,16 +148,44 @@ class View extends Component {
     return null;
   };
 
-  signinByCustomNoti(customNoti) {
-    const u = this.getProfileByCustomNoti(customNoti);
+  signinByCustomNoti = n => {
+    if (!n || !n.tenant || !n.to) {
+      return false;
+    }
+    // Added in app/rn/pn-openNoti
+    const expired =
+      n.receivedAt &&
+      Date.now() < new Date(n.receivedAt).getTime() + 5 * 60 * 1000; // 5 min
+    if (expired) {
+      return false;
+    }
+    const u = this.getProfileByCustomNoti(n);
     if (!u) {
-      return;
+      return false;
     }
-    if (!u.pbxPassword || !u.accessToken) {
+    return this.signin(u.id);
+  };
+
+  resolveProfile = id => {
+    return this.props.profileById[id];
+  };
+
+  signin = id => {
+    const u = this.props.profileById[id];
+    if (!u) {
+      return false;
+    }
+    if (!u.pbxPassword && !u.accessToken) {
       routerUtils.goToProfileUpdate(u.id);
+      this.props.showToast('The profile password is empty');
+      return true;
     }
-    this.signin(u.id);
-  }
+    this.props.setAuthProfile(u);
+    routerUtils.goToAuth();
+    resetBadgeNumber();
+    AsyncStorage.setItem('lastSigninId', id);
+    return true;
+  };
 
   render() {
     return (
@@ -154,14 +199,6 @@ class View extends Component {
       />
     );
   }
-
-  resolveProfile = id => this.props.profileById[id];
-
-  signin = id => {
-    let profile = this.resolveProfile(id);
-    this.props.setAuthProfile(profile);
-    routerUtils.goToAuth();
-  };
 }
 
 export default createModelView(mapGetter, mapAction)(View);

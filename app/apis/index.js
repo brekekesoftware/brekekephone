@@ -5,7 +5,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import * as pn from '../rn/pn';
+import { getPnToken } from '../rn/pn';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
@@ -225,7 +225,7 @@ class ApiProvider extends Component {
     // TODO change phone type here hard code `3` now
     const webPhoneId = this.props.userExtensionProperties.phones[3].id;
     //
-    const t = await pn.getPnToken();
+    const t = await getPnToken();
     if (!t) {
       return;
     }

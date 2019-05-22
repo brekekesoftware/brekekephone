@@ -1,7 +1,6 @@
-import get from 'lodash/get';
+import { AsyncStorage } from 'react-native';
 import FCM, { FCMEvent } from 'react-native-fcm';
 
-import openCustomNoti from './pn-openCustomNoti';
 import parseCustomNoti from './pn-parseCustomNoti';
 
 const { Notification, RefreshToken } = FCMEvent;
@@ -36,28 +35,49 @@ const onFcmToken = token => {
   fcmPnToken = token;
 };
 
-const onFcmNotification = noti => {
+const onFcmNotification = async noti => {
+  const n = parseCustomNoti(noti);
+  if (!n) {
+    return;
+  }
   //
-  const customNoti = parseCustomNoti(noti);
-  openCustomNoti(customNoti);
-  //
-  const body =
-    get(customNoti, 'body') ||
-    // Add fallback to see the detail notification if there's no body
-    JSON.stringify(noti);
-  const isCall = /call/.test(body);
+  const body = n.body || JSON.stringify(n);
+  const isCall = /call/i.test(body);
   const title = isCall ? 'Answer' : 'View';
   const sound = isCall ? 'incallmanager_ringtone.mp3' : undefined;
+  const badge = (await getBadgeNumber()) + 1;
   //
   FCM.presentLocalNotification({
     body,
     title,
     sound,
-    number: 1,
+    number: badge,
     priority: 'high',
     show_in_foreground: false,
     wake_screen: true,
     ongoing: true,
     lights: true,
+  });
+};
+
+const getBadgeNumber = async () => {
+  let n = await AsyncStorage.getItem('androidBadgeNumber');
+  return parseInt(n) || 0;
+};
+const setBadgeNumber = n => {
+  AsyncStorage.setItem('androidBadgeNumber', n);
+};
+export const resetBadgeNumber = () => {
+  setBadgeNumber(0);
+  //
+  // Call presentLocalNotification to reset badge?
+  FCM.presentLocalNotification({
+    body: 'Reset badge',
+    number: 0,
+    priority: 'low',
+    show_in_foreground: false,
+    wake_screen: false,
+    ongoing: false,
+    lights: false,
   });
 };
