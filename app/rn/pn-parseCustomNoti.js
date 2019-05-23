@@ -10,15 +10,20 @@ import {
 
 const keysInCustomNoti = [
   'body',
+  'message', // body fallback
+  'title', // body fallback
   'tenant',
   'to',
   'pbxHostname',
   'pbxPort',
   // ...
+  'my_custom_data',
+  'is_local_notification',
 ];
 
 const parse = (...p) => {
   return p
+    .filter(i => !!i)
     .map(i => {
       if (typeof i === 'string') {
         try {
@@ -43,37 +48,58 @@ const parse = (...p) => {
 
 const parseCustomNoti = n => {
   //
-  if (AppState.currentState === 'active') {
+  const u = getCurrentAuthProfile();
+  if (u && AppState.currentState === 'active') {
     return null;
   }
   //
-  let customNoti = {};
+  let custom = {};
   if (Platform.OS === 'android') {
-    customNoti = parse(
+    custom = parse(
+      n,
       get(n, 'fcm'),
+      get(n, 'data'),
+      get(n, 'alert'),
+      get(n, 'data.alert'),
       get(n, 'custom_notification'),
       get(n, 'data.custom_notification'),
     );
   } else if (Platform.OS === 'ios') {
-    customNoti = parse(
-      get(n, '_alert'), // UC message TODO
+    custom = parse(
+      n,
+      get(n, '_data'),
+      get(n, '_alert'),
       get(n, '_data.custom_notification'),
     );
+  }
+  if (!custom.body) {
+    custom.body = custom.message || custom.title;
+  }
+  //
+  if (
+    n.my_custom_data ||
+    n.is_local_notification ||
+    custom.my_custom_data ||
+    custom.is_local_notification
+  ) {
+    // Added from ./pn.android
+    // TODO handle user click
+    return null;
   }
   //
   const pm = getProfilesManager();
   if (pm) {
-    pm.signinByCustomNoti(customNoti);
-  } else if (!getCurrentAuthProfile()) {
+    pm.signinByCustomNoti(custom);
+  } else if (!u) {
     routerUtils.goToProfilesManage();
     getProfilesManagerInterval().then(pm => {
       if (pm) {
-        pm.signinByCustomNoti(customNoti);
+        pm.signinByCustomNoti(custom);
       }
     });
   }
   //
-  return customNoti;
+  return custom;
 };
 
 export default parseCustomNoti;

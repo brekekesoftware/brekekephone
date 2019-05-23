@@ -31,11 +31,31 @@ react-native start --reset-cache
   - `app/apis/turn.js`
 
 
-### Android on Windows
+### Push notification issues
+- Android
+  - Ensure latest google-servces.json
+  - Ensure correct server api key in sip proxy
+- iOS
+  - Check General, Info.plist, Phone.entitlements
+  - Ensure correct api key (string or file) in sip proxy
+
+
+### Android
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
-  - `%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools`
-  - `%USERPROFILE%\AppData\Local\Android\Sdk\tools`
-  - `%USERPROFILE%\AppData\Local\Android\Sdk\tools\bin`
+- Windows:
+```sh
+%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools
+%USERPROFILE%\AppData\Local\Android\Sdk\tools
+%USERPROFILE%\AppData\Local\Android\Sdk\tools\bin
+```
+- Mac: https://stackoverflow.com/questions/26483370
+```sh
+export ANDROID_HOME=/Users/$USER/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
 
 ##### Run and debug app in Android Emulator:
 - To create a virtual device:
@@ -43,7 +63,7 @@ react-native start --reset-cache
   - Option 2: Using command line tool: Follow the instruction at: https://developer.android.com/studio/command-line/avdmanager
 - To run the virtual device:
   - Option 1: Using Android Studio: In AVD Manager, click the Run button on the Emulator we want to run.
-  - Option 2: Using command line tool: First `cd %USERPROFILE%\AppData\Local\Android\Sdk\emulator`. Then execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it.
+  - Option 2: Using command line tool: Execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it. If you are on Windows, you may need to `cd %USERPROFILE%\AppData\Local\Android\Sdk\emulator` first.
 - Start the react native bundle at the project root: `react-native run-android`.
 
 - Some errors:
@@ -87,6 +107,7 @@ react-native run-android --deviceId=DEVICE_ID
 ### TODO
 - [ ] Move pbx-auth, sip-auth, uc-auth to auth
 - [ ] Add notification action: https://github.com/holmesal/react-native-ios-notification-actions
+- [ ] Handle notification in active mode, add custom popup to show the notifications (view deleted models/pushNotifies)
 - [ ] Can not make notification sound repeat?
 - [ ] PN only works in production archived ipa?
 - [ ] Upgrade fcm (no longer maintained for feature requests) https://github.com/evollu/react-native-fcm => https://github.com/invertase/react-native-firebase

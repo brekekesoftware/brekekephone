@@ -14,18 +14,20 @@ export const registerPn = async () => {
   try {
     //
     await FCM.requestPermissions();
-    await FCM.getFCMToken().then(onFcmToken);
     //
+    FCM.enableDirectChannel();
     await FCM.createNotificationChannel({
-      id: 'brekeke_phone',
+      id: 'default',
       name: 'Brekeke Phone',
-      description: 'Brekeke Phone notifcation channel',
+      description: 'Brekeke Phone notification channel',
       priority: 'high',
     });
     //
     // Register with no remove
     FCM.on(RefreshToken, onFcmToken);
     FCM.on(Notification, onFcmNotification);
+    //
+    await FCM.getFCMToken().then(onFcmToken);
   } catch (err) {
     console.error('pn.android.registerPn:', err);
   }
@@ -41,9 +43,9 @@ const onFcmNotification = async noti => {
     return;
   }
   //
-  const body = n.body || JSON.stringify(n);
-  const isCall = /call/i.test(body);
-  const title = isCall ? 'Answer' : 'View';
+  const title = n.body || JSON.stringify(n);
+  const isCall = /call/i.test(title);
+  const body = 'Click to ' + (isCall ? 'answer' : 'view');
   const sound = isCall ? 'incallmanager_ringtone.mp3' : undefined;
   const badge = (await getBadgeNumber()) + 1;
   //
@@ -53,10 +55,15 @@ const onFcmNotification = async noti => {
     sound,
     number: badge,
     priority: 'high',
-    show_in_foreground: false,
+    show_in_foreground: true,
+    local_notification: true,
     wake_screen: true,
     ongoing: true,
     lights: true,
+    channel: 'default',
+    icon: 'ic_launcher',
+    my_custom_data: 'local_notification',
+    is_local_notification: 'local_notification',
   });
 };
 
@@ -76,8 +83,13 @@ export const resetBadgeNumber = () => {
     number: 0,
     priority: 'low',
     show_in_foreground: false,
+    local_notification: true,
     wake_screen: false,
     ongoing: false,
     lights: false,
+    channel: 'default',
+    icon: 'ic_launcher',
+    my_custom_data: 'local_notification',
+    is_local_notification: 'local_notification',
   });
 };

@@ -6,4 +6,11 @@
       <certificates src="user"/>
     </trust-anchors>
   </base-config>
+  <!-- Fix android 9 network error -->
+  <!-- https://github.com/facebook/react-native/issues/22375 -->
+  <domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="false">localhost</domain>
+    <domain includeSubdomains="false">10.0.2.2</domain>
+    <domain includeSubdomains="false">10.0.3.2</domain>
+  </domain-config>
 </network-security-config>

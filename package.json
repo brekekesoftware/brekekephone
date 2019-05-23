@@ -40,7 +40,7 @@
     "react-native-status-bar-height": "2.3.1",
     "react-native-video": "4.4.1",
     "react-native-voip-push-notification": "1.1.4",
-    "react-native-web": "0.11.2",
+    "react-native-web": "0.11.4",
     "react-native-webrtc": "1.69.1",
     "react-navigation": "2.18.3",
     "react-redux": "5.0.4",
@@ -53,11 +53,11 @@
     "url-parse": "1.4.7"
   },
   "devDependencies": {
-    "@babel/core": "7.4.4",
+    "@babel/core": "7.4.5",
     "@babel/plugin-proposal-class-properties": "7.4.4",
     "@babel/plugin-proposal-decorators": "7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "7.4.4",
-    "@babel/preset-env": "7.4.4",
+    "@babel/preset-env": "7.4.5",
     "@babel/preset-react": "7.0.0",
     "babel-loader": "8.0.6",
     "copy-webpack-plugin": "5.0.3",
@@ -69,7 +69,7 @@
     "js-import-sort": "1.2.0",
     "prettier": "1.17.1",
     "style-loader": "0.23.1",
-    "webpack": "4.32.0",
+    "webpack": "4.32.2",
     "webpack-cli": "3.3.2",
     "webpack-dev-server": "3.4.1"
   },
