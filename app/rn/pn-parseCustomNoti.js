@@ -53,9 +53,9 @@ const parseCustomNoti = n => {
     return null;
   }
   //
-  let custom = {};
+  let c = {};
   if (Platform.OS === 'android') {
-    custom = parse(
+    c = parse(
       n,
       get(n, 'fcm'),
       get(n, 'data'),
@@ -65,22 +65,25 @@ const parseCustomNoti = n => {
       get(n, 'data.custom_notification'),
     );
   } else if (Platform.OS === 'ios') {
-    custom = parse(
+    c = parse(
       n,
       get(n, '_data'),
       get(n, '_alert'),
       get(n, '_data.custom_notification'),
     );
   }
-  if (!custom.body) {
-    custom.body = custom.message || custom.title;
+  if (!c.body) {
+    c.body = c.message || c.title;
+  }
+  if (!c.body && !c.to) {
+    return null;
   }
   //
   if (
     n.my_custom_data ||
     n.is_local_notification ||
-    custom.my_custom_data ||
-    custom.is_local_notification
+    c.my_custom_data ||
+    c.is_local_notification
   ) {
     // Added from ./pn.android
     // TODO handle user click
@@ -89,17 +92,17 @@ const parseCustomNoti = n => {
   //
   const pm = getProfilesManager();
   if (pm) {
-    pm.signinByCustomNoti(custom);
+    pm.signinByCustomNoti(c);
   } else if (!u) {
     routerUtils.goToProfilesManage();
     getProfilesManagerInterval().then(pm => {
       if (pm) {
-        pm.signinByCustomNoti(custom);
+        pm.signinByCustomNoti(c);
       }
     });
   }
   //
-  return custom;
+  return c;
 };
 
 export default parseCustomNoti;
