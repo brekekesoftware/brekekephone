@@ -2,6 +2,11 @@ pret: pretjs pretjava pretobjc pretxml
 
 pretjs: js-import-sort prettier
 
+# 	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$0';
+imagemin:
+	make -s git EXT='png|jpg|gif' \
+	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$$()(dirname $$0)';
+
 js-import-sort:
 	make -s git EXT='js' \
 	| xargs npx js-import-sort --silent=1 --path;
