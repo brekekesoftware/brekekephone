@@ -105,26 +105,28 @@ react-native run-android --deviceId=DEVICE_ID
 
 
 ### TODO
-- [ ] Move pbx-auth, sip-auth, uc-auth to auth
-- [ ] Add notification action: https://github.com/holmesal/react-native-ios-notification-actions
-- [ ] Handle notification in active mode, add custom popup to show the notifications (view deleted models/pushNotifies)
-- [ ] Can not make notification sound repeat?
-- [ ] PN only works in production archived ipa?
-- [ ] Upgrade fcm (no longer maintained for feature requests) https://github.com/evollu/react-native-fcm => https://github.com/invertase/react-native-firebase
-- [x] Add enable TURN option in profile pages and handle it. Add turn config to git ignore
-- [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || (ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id);`
-- [ ] Refactor code for group chat call
-- [ ] Add jsc-android for mobx: https://github.com/react-native-community/jsc-android-buildscripts#how-to-use-it-with-my-react-native-app
-- [x] Move push notification service_id to 11 12 13
-- [x] Refactor code for fcm to normalize the push notification => Speed up startup time see deeplink.js for the comparision of the current logged in user
-- [x] UC doesn't work (cannot even show the user's list) when we have made a group on the body list with the desktop version of UC
-- [x] Research and implement a feature to open the app via url, parse the url parameters (Deep link)
-- [ ] Userversal Links and App Links
-- [x] Add a feature to switch to the loud speaker (and back to the front speaker)
-- [x] Fix header space is too small so it becomes overflow by the status bar
 - [x] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)
-- [x] Change the sound for push notification. Research more about if we can use default sound in the OS
-- [ ] Add documentation for self signed certificate
-- [ ] Make automatically archive script for iOS
-- [ ] Handle duplicated resources accross ios android and web
+- [x] Fix header space is too small so it becomes overflow by the status bar
+- [x] Add a feature to switch to the loud speaker (and back to the front speaker)
+- [ ] Userversal Links and App Links
+- [x] Research and implement a feature to open the app via url, parse the url parameters (Deep link)
+- [x] UC doesn't work (cannot even show the user's list) when we have made a group on the body list with the desktop version of UC
+- [x] Refactor code for fcm to normalize the push notification => Speed up startup time see deeplink.js for the comparision of the current logged in user
+- [x] Move push notification service_id to 11 12 13
 - [ ] Add a loop and use RNFS.exist to check file exists before write in saveBlob.js
+- [ ] Handle duplicated resources accross ios android and web
+- [ ] Make automatically archive script for iOS
+- [ ] Add jsc-android for mobx: https://github.com/react-native-community/jsc-android-buildscripts#how-to-use-it-with-my-react-native-app
+- [ ] Refactor code for group chat call
+- [ ] Add documentation for self signed certificate
+- [x] Change the sound for push notification. Research more about if we can use default sound in the OS
+- [x] Join to group chat call (video/voice). If we make a call to a number as below, we can join to the conference call: `var number = ChatClient.getConference(conf_id).conf_ext || (ChatClient.PREFIX_CONFERENCE_EXTENSION + conf_id);`
+- [x] Add enable TURN option in profile pages and handle it. Add turn config to git ignore
+- [ ] Upgrade fcm (no longer maintained for feature requests) https://github.com/evollu/react-native-fcm => https://github.com/invertase/react-native-firebase
+- [ ] PN only works in production archived ipa?
+- [ ] Can not make notification sound repeat?
+- [ ] Handle notification in active mode, add custom popup to show the notifications (view deleted models/pushNotifies)
+- [ ] Add notification action: https://github.com/holmesal/react-native-ios-notification-actions
+- [ ] Move pbx-auth, sip-auth, uc-auth to auth
+- [x] Minify images
+- [ ] Add phone type in profile
