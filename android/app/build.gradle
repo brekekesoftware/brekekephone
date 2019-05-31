@@ -159,7 +159,6 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-vector-icons')
   compile fileTree(include: ["*.jar"], dir: "libs")
   compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
   compile "com.facebook.react:react-native:+"
@@ -180,6 +179,7 @@ dependencies {
   compile project(":react-native-loud-speaker")
   compile project(":react-native-splash-screen")
   compile project(':react-native-linear-gradient')
+  compile project(':react-native-vector-icons')
   compile project(":react-native-video")
   compile project(":react-native-webrtc")
 }

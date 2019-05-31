@@ -40,6 +40,7 @@ import UCAuth from './modules/uc-auth';
 import UsersBrowse from './modules/users-browse';
 import PageServers from './component-Signin/PageServers';
 import HomePage from './components-Home/HomePage';
+import PageContact from './components-Contacts';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
@@ -110,7 +111,7 @@ const Routes = () => (
             <Route
               exact
               path="/auth/contacts/browse"
-              component={ContactsBrowse}
+              component={PageContact}
             />
             <Route
               exact

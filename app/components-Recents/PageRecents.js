@@ -54,6 +54,3 @@ class PageRecents extends Component {
 }
 
 export default PageRecents;
-
-
-
