@@ -40,7 +40,7 @@ import UCAuth from './modules/uc-auth';
 import UsersBrowse from './modules/users-browse';
 import PageServers from './component-Signin/PageServers';
 import HomePage from './components-Home/HomePage';
-import PageContact from './components-Contacts';
+import PageContact from './components-Contacts/PageContact';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
