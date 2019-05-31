@@ -38,14 +38,15 @@ import Tabbar from './modules/tabbar';
 import ToastsNotify from './modules/toasts-notify';
 import UCAuth from './modules/uc-auth';
 import UsersBrowse from './modules/users-browse';
-import PageServers from "./component-Signin/PageServers";
+import PageServers from './component-Signin/PageServers';
+import HomePage from './components-Home/HomePage';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <StatusBar />
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-      <Route exact path="/profiles/manage" component={PageServers} />
+      <Route exact path="/profiles/manage" component={HomePage} />
       <Route exact path="/profiles/create" component={ProfilesCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />

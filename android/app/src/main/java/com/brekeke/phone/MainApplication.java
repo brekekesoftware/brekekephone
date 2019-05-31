@@ -5,6 +5,7 @@ import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -37,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
               new KCKeepAwakePackage(),
               new LoudSpeakerPackage(),
               new MainReactPackage(),
+            new VectorIconsPackage(),
               new ReactVideoPackage(),
               new RNCameraPackage(),
               new RNFSPackage(),
