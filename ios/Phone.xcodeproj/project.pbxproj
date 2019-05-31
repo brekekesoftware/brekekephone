@@ -1687,7 +1687,6 @@
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"\"$(SRCROOT)/Phone\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1738,7 +1737,6 @@
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"\"$(SRCROOT)/Phone\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1914,7 +1912,6 @@
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
 					"$(SRCROOT)/../node_modules/react-native-permissions/**",
-					"\"$(SRCROOT)/Phone\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
