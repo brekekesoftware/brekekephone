@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { std } from '../../styleguide';
+import { PhoneIndexPicker } from '../profiles-create/ui';
 
 const st = StyleSheet.create({
   main: {
@@ -238,6 +239,10 @@ const PBX = pure(p => (
       />
     </View>
     <View style={st.field}>
+      <Text style={st.fieldLabel}>Phone</Text>
+      <PhoneIndexPicker value={p.phoneIndex} onChange={p.setPhoneIndex} />
+    </View>
+    <View style={st.field}>
       <Text style={st.fieldLabel}>Enable TURN</Text>
       <Switch
         style={st.fieldSwitch}
@@ -340,12 +345,14 @@ const Main = p => (
         tenant={p.pbxTenant}
         username={p.pbxUsername}
         password={p.pbxPassword}
+        phoneIndex={p.pbxPhoneIndex}
         turnEnabled={p.pbxTurnEnabled}
         setHostname={p.setPBXHostname}
         setPort={p.setPBXPort}
         setTenant={p.setPBXTenant}
         setUsername={p.setPBXUsername}
         setPassword={p.setPBXPassword}
+        setPhoneIndex={p.setPBXPhoneIndex}
         setTurnEnabled={p.setPBXTurnEnabled}
         submit={p.save}
       />

@@ -170,6 +170,10 @@ const PBXProfile = pure(p => (
       <Text style={st.fieldValueText}>{p.username}</Text>
     </View>
     <View style={st.field}>
+      <Text style={st.fieldLabelNormal}>Phone</Text>
+      <Text style={st.fieldValueText}>Phone {p.phoneIndex}</Text>
+    </View>
+    <View style={st.field}>
       <Text style={st.fieldLabelNormal}>TURN enabled</Text>
       <Text style={st.fieldValueText}>{p.turnEnabled ? 'YES' : 'NO'}</Text>
     </View>
@@ -299,6 +303,7 @@ const Main = p => (
         port={p.profile.pbxPort}
         tenant={p.profile.pbxTenant}
         username={p.profile.pbxUsername}
+        phoneIndex={p.profile.pbxPhoneIndex}
         turnEnabled={p.profile.pbxTurnEnabled}
       />
       {p.profile.ucEnabled && (

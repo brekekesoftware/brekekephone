@@ -7,7 +7,7 @@
 #   and sometimes yarn has cache issue with those repos
 yarn cache clean
 # IMPORTANT: Do not run react-native link, the automation link has issues, we already link them manually
-cd \path\to\test-brekeke-phone
+cd /path/to/test-brekeke-phone
 yarn install
 
 # Start the metro bundler and let it running
@@ -15,12 +15,6 @@ react-native start
 # Error: Unable to resolve module `./index.native` from `.../react-native/...`
 react-native start --reset-cache
 ```
-
-
-### Fonts and other resources
-- Put them in ./res
-- Rename the font files to match the exact the font names, eg: Roboto-LightItalic.ttf
-- Good icon font => https://materialdesignicons.com
 
 
 ### Keystores and other credentials keys
@@ -69,7 +63,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 - Some errors:
   - If we can not run the emulator and it throws an error like: `Emulator: ERROR: x86 emulation currently requires hardware acceleration!`. Try to follow these steps to fix:
     - In Android Studio, go to SDK Manager and make sure the option `Intel x86 Emulator Accelerator` is checked.
-    - Open folder `%USERPROFILE%\AppData\Local\Android\sdk\extras\intel\Hardware_Accelerated_Execution_Manager\`.
+    - Open folder `%USERPROFILE%\AppData\Local\Android\sdk\extras\intel\Hardware_Accelerated_Execution_Manager`.
     - Open `intelhaxm-android.exe`. If it shows that the installation is completed, we need to click the remove button to remove it, then reopen and reinstall it again.
     - When reinstalling, if it shows an error like: `... Intel Virtualization Technology (VT-x) is not turned on`: We need to restart the computer, enter the BIOS and configure the CPU to support Virtualization. After that try to reopen and reinstall `intelhaxm-android.exe` again.
   - The device starts up but the Command Line shows endless loop of `VCPU shutdown request`
@@ -90,7 +84,7 @@ react-native run-android --deviceId=DEVICE_ID
 
 ##### Build the app in release mode and install it in the real device:
 - At the project root execute: `cd android && gradlew clean && gradlew assembleRelease`.
-- After the build is finished, the apk file is located at: `android\app\build\outputs\apk\release`.
+- After the build is finished, the apk file is located at: `android/app/build/outputs/apk/release`.
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 
 
@@ -129,4 +123,8 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Add notification action: https://github.com/holmesal/react-native-ios-notification-actions
 - [ ] Move pbx-auth, sip-auth, uc-auth to auth
 - [x] Minify images
+- [ ] Put images, fonts in ./res
+- [ ] Rename the font files to match the exact the font names, eg: Roboto-LightItalic.ttf
+- [ ] An alternative better icon font: https://materialdesignicons.com
 - [ ] Add phone type in profile
+- [ ] Add global error handler: https://github.com/master-atul/react-native-exception-handler

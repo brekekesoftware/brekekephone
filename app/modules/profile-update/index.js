@@ -20,7 +20,11 @@ const mapAction = action => emit => ({
 });
 
 class View extends Component {
-  state = this.props.profile;
+  constructor(props) {
+    super(props);
+    this.state = props.profile;
+    this.state.pbxPhoneIndex = this.state.pbxPhoneIndex || '4';
+  }
 
   render = () => (
     <UI
@@ -30,6 +34,7 @@ class View extends Component {
       setPBXTenant={this.setPBXTenant}
       setPBXUsername={this.setPBXUsername}
       setPBXPassword={this.setPBXPassword}
+      setPBXPhoneIndex={this.setPBXPhoneIndex}
       setPBXTurnEnabled={this.setPBXTurnEnabled}
       setAddingPark={this.setAddingPark}
       submitAddingPark={this.submitAddingPark}
@@ -45,23 +50,21 @@ class View extends Component {
   setPBXHostname = pbxHostname => {
     this.setState({ pbxHostname });
   };
-
   setPBXPort = pbxPort => {
     this.setState({ pbxPort });
   };
-
   setPBXTenant = pbxTenant => {
     this.setState({ pbxTenant });
   };
-
   setPBXUsername = pbxUsername => {
     this.setState({ pbxUsername });
   };
-
   setPBXPassword = pbxPassword => {
     this.setState({ pbxPassword });
   };
-
+  setPBXPhoneIndex = pbxPhoneIndex => {
+    this.setState({ pbxPhoneIndex });
+  };
   setPBXTurnEnabled = pbxTurnEnabled => {
     this.setState({ pbxTurnEnabled });
   };
@@ -145,6 +148,7 @@ class View extends Component {
     const pbxTenant = this.state.pbxTenant.trim();
     const pbxUsername = this.state.pbxUsername.trim();
     const pbxPassword = this.state.pbxPassword.trim();
+    const pbxPhoneIndex = this.state.pbxPhoneIndex || '4';
     const pbxTurnEnabled = this.state.pbxTurnEnabled;
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
@@ -160,6 +164,7 @@ class View extends Component {
       pbxTenant: pbxTenant,
       pbxUsername: pbxUsername,
       pbxPassword: pbxPassword,
+      pbxPhoneIndex: pbxPhoneIndex,
       pbxTurnEnabled: pbxTurnEnabled,
       parks: parks,
       ucEnabled: this.state.ucEnabled,

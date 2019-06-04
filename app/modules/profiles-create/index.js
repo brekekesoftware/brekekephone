@@ -23,6 +23,7 @@ class View extends Component {
     pbxTenant: '',
     pbxUsername: '',
     pbxPassword: '',
+    pbxPhoneIndex: '4',
     pbxTurnEnabled: false,
     ucEnabled: false,
     ucHostname: '',
@@ -38,6 +39,7 @@ class View extends Component {
       pbxTenant={this.state.pbxTenant}
       pbxUsername={this.state.pbxUsername}
       pbxPassword={this.state.pbxPassword}
+      pbxPhoneIndex={this.state.pbxPhoneIndex}
       pbxTurnEnabled={this.state.pbxTurnEnabled}
       parks={this.state.parks}
       addingPark={this.state.addingPark}
@@ -49,6 +51,7 @@ class View extends Component {
       setPBXTenant={this.setPBXTenant}
       setPBXUsername={this.setPBXUsername}
       setPBXPassword={this.setPBXPassword}
+      setPBXPhoneIndex={this.setPBXPhoneIndex}
       setPBXTurnEnabled={this.setPBXTurnEnabled}
       setAddingPark={this.setAddingPark}
       submitAddingPark={this.submitAddingPark}
@@ -64,23 +67,21 @@ class View extends Component {
   setPBXHostname = pbxHostname => {
     this.setState({ pbxHostname });
   };
-
   setPBXPort = pbxPort => {
     this.setState({ pbxPort });
   };
-
   setPBXTenant = pbxTenant => {
     this.setState({ pbxTenant });
   };
-
   setPBXUsername = pbxUsername => {
     this.setState({ pbxUsername });
   };
-
   setPBXPassword = pbxPassword => {
     this.setState({ pbxPassword });
   };
-
+  setPBXPhoneIndex = pbxPhoneIndex => {
+    this.setState({ pbxPhoneIndex });
+  };
   setPBXTurnEnabled = pbxTurnEnabled => {
     this.setState({ pbxTurnEnabled });
   };
@@ -165,6 +166,7 @@ class View extends Component {
     const pbxTenant = this.state.pbxTenant.trim();
     const pbxUsername = this.state.pbxUsername.trim();
     const pbxPassword = this.state.pbxPassword.trim();
+    const pbxPhoneIndex = this.state.pbxPhoneIndex;
     const pbxTurnEnabled = this.state.pbxTurnEnabled;
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
@@ -180,6 +182,7 @@ class View extends Component {
       pbxTenant: pbxTenant,
       pbxUsername: pbxUsername,
       pbxPassword: pbxPassword,
+      pbxPhoneIndex: pbxPhoneIndex,
       pbxTurnEnabled: pbxTurnEnabled,
       parks: parks,
       ucEnabled: this.state.ucEnabled,

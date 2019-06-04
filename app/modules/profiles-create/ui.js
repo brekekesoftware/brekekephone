@@ -163,31 +163,13 @@ const st = StyleSheet.create({
   },
 });
 
-const webRtcTypes = [
-  {
-    label: 'Standard',
-    key: 'standard',
-  },
-  {
-    label: 'TURN enabled',
-    key: 'turn enabled',
-  },
-  {
-    label: 'TURN only',
-    key: 'turn only',
-  },
-  {
-    label: 'TURN UDP enabled',
-    key: 'turn udp enabled',
-  },
-  {
-    label: 'TURN UDP only',
-    key: 'turn udp only',
-  },
-];
+const phoneIndexes = [1, 2, 3, 4].map(k => ({
+  label: `Phone ${k}`,
+  key: `${k}`,
+}));
 
-const WebRtcTypePickerNative = p => {
-  const selected = webRtcTypes.find(t => t.key === p.value) || webRtcTypes[0];
+const PhoneIndexPickerNative = p => {
+  const selected = phoneIndexes.find(t => t.key === p.value) || phoneIndexes[0];
   return (
     <ModalPicker
       style={st.pickerNative}
@@ -196,7 +178,7 @@ const WebRtcTypePickerNative = p => {
       cancelTextStyle={st.pickerNativeCancelTextStyle}
       backdropPressToClose
       animationType="none"
-      data={webRtcTypes}
+      data={phoneIndexes}
       onChange={t => p.onChange(t.key)}
       selectedKey={selected.key}
     >
@@ -204,23 +186,23 @@ const WebRtcTypePickerNative = p => {
     </ModalPicker>
   );
 };
-const WebRtcTypePickerWeb = p => {
-  p.value = p.value || webRtcTypes[0].key;
+const PhoneIndexPickerWeb = p => {
+  p.value = p.value || phoneIndexes[0].key;
   return (
     <Picker
       style={st.pickerWeb}
       selectedValue={p.value}
       onValueChange={v => p.onChange(v)}
     >
-      {webRtcTypes.map(t => (
+      {phoneIndexes.map(t => (
         <Picker.Item key={t.key} label={t.label} value={t.key} />
       ))}
     </Picker>
   );
 };
 
-export const WebRtcTypePicker =
-  Platform.OS === 'web' ? WebRtcTypePickerWeb : WebRtcTypePickerNative;
+export const PhoneIndexPicker =
+  Platform.OS === 'web' ? PhoneIndexPickerWeb : PhoneIndexPickerNative;
 
 const pure = Component =>
   class extends PureComponent {
@@ -304,6 +286,10 @@ const PBX = pure(p => (
         onSubmitEditing={p.submit}
         password="true"
       />
+    </View>
+    <View style={st.field}>
+      <Text style={st.fieldLabel}>Phone</Text>
+      <PhoneIndexPicker value={p.phoneIndex} onChange={p.setPhoneIndex} />
     </View>
     <View style={st.field}>
       <Text style={st.fieldLabel}>Enable TURN</Text>
@@ -394,12 +380,14 @@ const ProfilesCreate = p => (
         tenant={p.pbxTenant}
         username={p.pbxUsername}
         password={p.pbxPassword}
+        phoneIndex={p.pbxPhoneIndex}
         turnEnabled={p.pbxTurnEnabled}
         setHostname={p.setPBXHostname}
         setPort={p.setPBXPort}
         setTenant={p.setPBXTenant}
         setUsername={p.setPBXUsername}
         setPassword={p.setPBXPassword}
+        setPhoneIndex={p.setPBXPhoneIndex}
         setTurnEnabled={p.setPBXTurnEnabled}
         submit={p.save}
       />

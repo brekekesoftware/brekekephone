@@ -1,4 +1,4 @@
-import { observer } from 'mobx-react/native';
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';

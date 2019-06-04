@@ -5,7 +5,10 @@ import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import * as routerUtils from '../mobx/routerStore';
+import Alert from '../rn/alert';
 import { getPnToken } from '../rn/pn';
+import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
@@ -115,6 +118,9 @@ const mapAction = action => emit => ({
   showToast(message) {
     emit(action.toasts.create({ id: createId(), message }));
   },
+  setAuthUserExtensionProperties(properties) {
+    emit(action.auth.setUserExtensionProperties(properties));
+  },
 });
 
 class ApiProvider extends Component {
@@ -127,14 +133,16 @@ class ApiProvider extends Component {
     runningCallById: {},
     pbxUserById: {},
   };
-
   getChildContext() {
     return { pbx, sip, uc };
   }
+
   componentDidMount() {
     if (Platform.OS !== 'web') {
       SplashScreen.hide();
     }
+    //
+    setApiProvider(this);
     //
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);
@@ -174,6 +182,8 @@ class ApiProvider extends Component {
   }
 
   componentWillUnmount() {
+    setApiProvider(null);
+    //
     pbx.off('connection-started', this.onPBXConnectionStarted);
     pbx.off('connection-stopped', this.onPBXConnectionStopped);
     pbx.off('connection-timeout', this.onPBXConnectionTimeout);
@@ -212,18 +222,110 @@ class ApiProvider extends Component {
     uc.off('file-finished', this.onFileFinished);
   }
 
-  addPnTokenFlag = 0;
-  addPnTokenToPbx = async () => {
+  pbxAndSipStarted = 0;
+  onPbxAndSipStarted = async () => {
+    try {
+      await this._onPbxAndSipStarted();
+    } catch (err) {
+      console.error('onPbxAndSipStarted', err);
+    }
+  };
+  _onPbxAndSipStarted = async () => {
     //
     // To wait until both pbx and sip ready
-    if (this.addPnTokenFlag < 1) {
-      this.addPnTokenFlag += 1;
+    if (this.pbxAndSipStarted < 1) {
+      this.pbxAndSipStarted += 1;
       return;
     }
-    this.addPnTokenFlag = 0;
+    this.pbxAndSipStarted = 0;
     //
-    // TODO change phone type here hard code `3` now
-    const webPhoneId = this.props.userExtensionProperties.phones[3].id;
+    const webPhone = await this.updatePhoneIndex();
+    if (!webPhone) {
+      return;
+    }
+    //
+    this.addPnToken(webPhone);
+  };
+  updatePhoneIndex = async () => {
+    try {
+      return await this._updatePhoneIndex();
+    } catch (err) {
+      console.error('updatePhoneIndex', err);
+      routerUtils.goToProfilesManage();
+      return null;
+    }
+  };
+  _updatePhoneIndex = async () => {
+    //
+    let phoneIndex = this.props.profile.pbxPhoneIndex;
+    phoneIndex = parseInt(phoneIndex) || 4;
+    phoneIndex = phoneIndex - 1;
+    const extProps = this.props.userExtensionProperties;
+    const phone = extProps.phones[phoneIndex];
+    const phoneTypeCorrect = phone.type === 'Web Phone';
+    const hasPhoneId = !!phone.id;
+    //
+    const { pbxTenant, pbxUsername } = this.props.profile;
+    const setExtensionProperties = async () => {
+      await pbx.pal('setExtensionProperties', {
+        tenant: pbxTenant,
+        extension: pbxUsername,
+        properties: {
+          // See ./pbx getExtensionProperties for the detail of parameters
+          pnumber: extProps.phones.map(p => p.id).join(','),
+          [`p${phoneIndex + 1}_ptype`]: phone.type,
+        },
+      });
+      this.props.setAuthUserExtensionProperties(extProps);
+    };
+    //
+    if (phoneTypeCorrect && hasPhoneId) {
+      // Do nothing
+    } else if (phoneTypeCorrect && !hasPhoneId) {
+      phone.id = `${pbxTenant}_${pbxUsername}_webphone`;
+      await setExtensionProperties();
+    } else if (!phoneTypeCorrect && !hasPhoneId) {
+      phone.id = `${pbxTenant}_${pbxUsername}_webphone`;
+      phone.type = 'Web Phone';
+      await setExtensionProperties();
+    } else {
+      return new Promise(resolve => {
+        Alert.alert(
+          'Warning',
+          'This phone index is already in use. Do you want to continue?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                routerUtils.goToProfilesManage();
+                resolve(null);
+              },
+              style: 'cancel',
+            },
+            {
+              text: 'OK',
+              onPress: () => {
+                phone.type = 'Web Phone';
+                setExtensionProperties()
+                  .then(() => {
+                    resolve(phone);
+                  })
+                  .catch(err => {
+                    console.error('setExtensionProperties', err);
+                    resolve(null);
+                  });
+              },
+            },
+          ],
+          {
+            cancelable: false,
+          },
+        );
+      });
+    }
+    return phone;
+  };
+  addPnToken = async webPhone => {
     //
     const t = await getPnToken();
     if (!t) {
@@ -232,17 +334,17 @@ class ApiProvider extends Component {
     //
     if (Platform.OS === 'ios') {
       pbx.addApnsToken({
-        username: webPhoneId,
+        username: webPhone.id,
         device_id: t,
       });
     } else if (Platform.OS === 'android') {
       pbx.addFcmPnToken({
-        username: webPhoneId,
+        username: webPhone.id,
         device_id: t,
       });
     } else if (Platform.OS === 'web') {
       pbx.addWebPnToken({
-        user: webPhoneId,
+        user: webPhone.id,
         endpoint: t.endpoint,
         auth_secret: t.auth,
         key: t.p256dh,
@@ -255,7 +357,7 @@ class ApiProvider extends Component {
       this.props.showToast('Failed to load PBX users');
       console.error(err);
     });
-    setTimeout(this.addPnTokenToPbx, 170);
+    setTimeout(this.onPbxAndSipStarted, 170);
   };
   onPBXConnectionStopped = () => {
     this.props.onPBXConnectionStopped();
@@ -303,7 +405,7 @@ class ApiProvider extends Component {
 
   onSIPConnectionStarted = () => {
     this.props.onSIPConnectionStarted();
-    setTimeout(this.addPnTokenToPbx, 170);
+    setTimeout(this.onPbxAndSipStarted, 170);
   };
   onSIPConnectionStopped = () => {
     this.props.onSIPConnectionStopped();

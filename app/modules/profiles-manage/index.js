@@ -94,6 +94,7 @@ class View extends Component {
       pbxHostname: host,
       pbxPort: port,
       pbxPassword: '',
+      pbxPhoneIndex: '4',
       pbxTurnEnabled: false,
       parks: [],
       ucEnabled: false,

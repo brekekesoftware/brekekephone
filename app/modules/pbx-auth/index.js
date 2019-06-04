@@ -85,6 +85,7 @@ const mapGetter = getter => state => {
       tenant: profile.pbxTenant,
       username: profile.pbxUsername,
       password: profile.pbxPassword,
+      phoneIndex: profile.pbxPhoneIndex,
       turnEnabled: profile.pbxTurnEnabled,
       parks: profile.parks,
       accessToken: profile.accessToken,

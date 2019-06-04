@@ -161,7 +161,6 @@ const mapGetter = getter => state => {
       tenant: profile.pbxTenant,
       username: profile.pbxUsername,
       password: profile.pbxPassword,
-      turnEnabled: profile.pbxTurnEnabled,
     },
   };
 };
