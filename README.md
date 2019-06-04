@@ -126,5 +126,6 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Put images, fonts in ./res
 - [ ] Rename the font files to match the exact the font names, eg: Roboto-LightItalic.ttf
 - [ ] An alternative better icon font: https://materialdesignicons.com
-- [ ] Add phone type in profile
+- [x] Add phone index in profile
 - [ ] Add global error handler: https://github.com/master-atul/react-native-exception-handler
+- [ ] Change `pnmanage add` to `pnmanage set`
