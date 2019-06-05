@@ -3,7 +3,7 @@ pret: pretjs pretjava pretobjc pretxml
 pretjs: js-import-sort prettier
 
 imagemin:
-	make -s git EXT='png|jpg|gif' \
+	make -s git EXT='png|jpg|gif|ico' \
 	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$$()(dirname $$0)';
 
 js-import-sort:
