@@ -323,7 +323,7 @@ class PBX extends EventEmitter {
   addApnsToken = ({ username, device_id }) => {
     return new Promise((resolve, reject) => {
       const params = {
-        command: 'add',
+        command: 'set',
         service_id: '11',
         application_id: 'com.brekeke.phone',
         user_agent: 'react-native',
@@ -338,7 +338,7 @@ class PBX extends EventEmitter {
   addFcmPnToken = ({ username, device_id }) => {
     return new Promise((resolve, reject) => {
       const params = {
-        command: 'add',
+        command: 'set',
         service_id: '12',
         application_id: '22177122297',
         user_agent: 'react-native',
@@ -353,7 +353,7 @@ class PBX extends EventEmitter {
   addWebPnToken = ({ username, endpoint, key, auth_secret }) => {
     return new Promise((resolve, reject) => {
       const params = {
-        command: 'add',
+        command: 'set',
         service_id: '13',
         application_id: '22177122297',
         user_agent: navigator.userAgent,
