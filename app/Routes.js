@@ -38,30 +38,21 @@ import Tabbar from './modules/tabbar';
 import ToastsNotify from './modules/toasts-notify';
 import UCAuth from './modules/uc-auth';
 import UsersBrowse from './modules/users-browse';
-<<<<<<< HEAD
-import PageServers from './component-Signin/PageServers';
 import HomePage from './components-Home/HomePage';
 import PageContact from './components-Contacts/PageContact';
-=======
 import PageServers from "./component-Signin/PageServers";
 import PageProfileCreate from "./components-Profile/PageProfileCreate";
 import PageProfileUpdate from "./components-Profile/PageProfileUpdate";
->>>>>>> remake_profile
+
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <StatusBar />
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-<<<<<<< HEAD
       <Route exact path="/profiles/manage" component={HomePage} />
       <Route exact path="/profiles/create" component={ProfilesCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
-=======
-      <Route exact path="/profiles/manage" component={PageServers} />
-      <Route exact path="/profiles/create" component={PageProfileCreate} />
-      <Route exact path="/profile/:profile/update" component={PageProfileUpdate} />
->>>>>>> remake_profile
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />
       <Route
         path="/auth"
