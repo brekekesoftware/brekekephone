@@ -13,6 +13,11 @@ import APIProvider from './apis';
 import { history } from './mobx/routerStore';
 import * as models from './models';
 
+import {StyleProvider} from 'native-base';
+import getTheme from '../native-base-theme/components';
+import variables from '../native-base-theme/variables/commonColor';
+
+
 const { getter, action, reduce } = combineModels(models);
 
 const persistedReducers = ['profiles', 'recentCalls'];
@@ -31,9 +36,11 @@ const App = () => (
     <PersistGate persistor={storePersistor}>
       <ModelProvider getter={getter} action={action}>
         <APIProvider>
-          <Router history={history}>
-            <Routes />
-          </Router>
+          <StyleProvider style={getTheme(variables)}>
+            <Router history={history}>
+              <Routes />
+            </Router>
+          </StyleProvider>
         </APIProvider>
       </ModelProvider>
     </PersistGate>
