@@ -7412,7 +7412,7 @@ react-native-drawer-layout@1.3.2:
 
 "react-native-fcm@github:brekekesoftware/react-native-fcm":
   version "16.2.4"
-  resolved "https://codeload.github.com/brekekesoftware/react-native-fcm/tar.gz/fc9e1673b0e8b8647f5833ae2700308cfc9a02a3"
+  resolved "https://codeload.github.com/brekekesoftware/react-native-fcm/tar.gz/f9ce0351f68db62b2295a55c44430d0066d0f3ae"
 
 react-native-fs@2.13.3, react-native-fs@^2.13.3:
   version "2.13.3"
