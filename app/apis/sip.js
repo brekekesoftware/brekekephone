@@ -4,6 +4,22 @@ import { Platform } from 'react-native';
 import turnConfig from './turn';
 import './webrtcclient';
 
+const getFrontSourceId = () => {
+  const asyncFn = async () =>
+    window.navigator.mediaDevices.enumerateDevices().then(infos => {
+      let sourceId;
+      infos.forEach(i => {
+        if (i.kind == 'video' && i.facing == 'front') {
+          sourceId = i.id;
+        }
+      });
+      return sourceId;
+    });
+  return asyncFn().catch(err => {
+    console.error('getFrontSourceId', err);
+  });
+};
+
 class CreatingSessions {
   _items;
 
@@ -48,15 +64,15 @@ class CreatingSessions {
 class SIP extends EventEmitter {
   _creatingSessions;
 
-  constructor() {
-    super();
+  init = async () => {
+    const sourceId = await getFrontSourceId();
+    //
     this._creatingSessions = new CreatingSessions();
-
     this.phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
       multiSession: true,
       defaultOptions: {
-        videoClient: {
+        videoOptions: {
           call: {
             mediaConstraints: {
               audio: false,
@@ -67,6 +83,7 @@ class SIP extends EventEmitter {
                   minFrameRate: 0,
                 },
                 facingMode: Platform.OS === 'web' ? undefined : 'user',
+                optional: sourceId ? [{ sourceId }] : [],
               },
             },
           },
@@ -80,6 +97,7 @@ class SIP extends EventEmitter {
                   minFrameRate: 0,
                 },
                 facingMode: Platform.OS === 'web' ? undefined : 'user',
+                optional: sourceId ? [{ sourceId }] : [],
               },
             },
           },
@@ -88,7 +106,9 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener('phoneStatusChanged', ev => {
-      if (!ev) return;
+      if (!ev) {
+        return;
+      }
 
       if (ev.phoneStatus === 'started') {
         return this.emit('connection-started');
@@ -100,7 +120,9 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener('sessionCreated', ev => {
-      if (!ev) return;
+      if (!ev) {
+        return;
+      }
 
       if (ev.rtcSession.direction === 'outgoing') {
         this._creatingSessions.__removeFirst();
@@ -117,7 +139,9 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener('sessionStatusChanged', ev => {
-      if (!ev) return;
+      if (!ev) {
+        return;
+      }
 
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId);
@@ -148,7 +172,9 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener('videoClientSessionCreated', ev => {
-      if (!ev) return;
+      if (!ev) {
+        return;
+      }
 
       const session = this.phone.getSession(ev.sessionId);
       const videoSession =
@@ -165,7 +191,9 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener('videoClientSessionEnded', ev => {
-      if (!ev) return;
+      if (!ev) {
+        return;
+      }
 
       this.emit('session-updated', {
         id: ev.sessionId,
@@ -190,7 +218,7 @@ class SIP extends EventEmitter {
         optional: [],
       },
     };
-  }
+  };
 
   getCreatingSessions() {
     return this._creatingSessions;
@@ -275,4 +303,7 @@ class SIP extends EventEmitter {
   }
 }
 
-export default new SIP();
+const sip = new SIP();
+sip.init();
+
+export default sip;
