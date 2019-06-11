@@ -130,3 +130,7 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Add global error handler: https://github.com/master-atul/react-native-exception-handler
 - [x] Change `pnmanage add` to `pnmanage set`
 - [x] Update app icons
+- [x] Fix ios front camera for webrtc-react-native
+- [x] Fix getInitialNotification for react-native-fcm https://github.com/brekekesoftware/react-native-fcm/commits/master
+- [ ] Full screen notification, like Skype
+- [ ] Fix the fcm issue for some Chinese models. Meanwhile 😅 the community: https://github.com/firebase/quickstart-android/issues/368#issuecomment-451559148
