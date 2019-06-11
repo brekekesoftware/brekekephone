@@ -28,17 +28,22 @@ export const registerPn = async () => {
     FCM.on(Notification, onFcmNotification);
     //
     await FCM.getFCMToken().then(onFcmToken);
+    //
+    const noti = await FCM.getInitialNotification();
+    onFcmNotification(noti);
   } catch (err) {
     console.error('pn.android.registerPn:', err);
   }
 };
 
 const onFcmToken = token => {
-  fcmPnToken = token;
+  if (token) {
+    fcmPnToken = token;
+  }
 };
 
 const onFcmNotification = async noti => {
-  const n = parseCustomNoti(noti);
+  const n = noti && parseCustomNoti(noti);
   if (!n) {
     return;
   }
@@ -69,10 +74,13 @@ const onFcmNotification = async noti => {
 
 const getBadgeNumber = async () => {
   let n = await AsyncStorage.getItem('androidBadgeNumber');
+  if (typeof n === 'string') {
+    n = n.replace(/\D+/g, '');
+  }
   return parseInt(n) || 0;
 };
 const setBadgeNumber = n => {
-  AsyncStorage.setItem('androidBadgeNumber', n);
+  AsyncStorage.setItem('androidBadgeNumber', '' + n);
 };
 export const resetBadgeNumber = () => {
   setBadgeNumber(0);

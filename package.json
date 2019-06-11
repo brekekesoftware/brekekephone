@@ -26,7 +26,7 @@
     "react-native": "0.59.8",
     "react-native-camera": "1.12.0",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
-    "react-native-fcm": "16.2.4",
+    "react-native-fcm": "github:brekekesoftware/react-native-fcm",
     "react-native-fs": "2.13.3",
     "react-native-full-image-picker": "github:brekekesoftware/react-native-full-image-picker",
     "react-native-general-actionsheet": "1.0.3",
