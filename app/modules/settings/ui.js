@@ -266,10 +266,9 @@ const Chat = pure(p => (
       />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldLabelNormal}>Mood</Text>
+      <Text style={st.fieldLabelNormal}>Status note</Text>
       <CustomTextInput
         style={st.fieldInput}
-        placeholder="Type your mood"
         selectTextOnFocus={true}
         value={typeof p.mood === 'string' ? p.mood : ''}
         onChangeText={p.setMood}

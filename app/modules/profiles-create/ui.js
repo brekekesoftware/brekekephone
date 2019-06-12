@@ -292,7 +292,7 @@ const PBX = pure(p => (
       <PhoneIndexPicker value={p.phoneIndex} onChange={p.setPhoneIndex} />
     </View>
     <View style={st.field}>
-      <Text style={st.fieldLabel}>Enable TURN</Text>
+      <Text style={st.fieldLabel}>TURN</Text>
       <Switch
         style={st.fieldSwitch}
         value={p.turnEnabled}
@@ -306,7 +306,7 @@ const UC = pure(p => (
   <Fragment>
     <Divider>UC</Divider>
     <View style={st.field}>
-      <Text style={st.fieldLabel}>Enable UC</Text>
+      <Text style={st.fieldLabel}>UC</Text>
       <Switch
         style={st.fieldSwitch}
         value={p.enabled}
