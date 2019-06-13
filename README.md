@@ -132,5 +132,7 @@ react-native run-android --deviceId=DEVICE_ID
 - [x] Update app icons
 - [x] Fix ios front camera for webrtc-react-native
 - [x] Fix getInitialNotification for react-native-fcm https://github.com/brekekesoftware/react-native-fcm/commits/master
-- [ ] Full screen notification, like Skype
+- [ ] Full screen notification, like Skype: https://github.com/react-native-webrtc/react-native-callkeep
 - [ ] Fix the fcm issue for some android vendor versions. Meanwhile 😅 the community: https://github.com/firebase/quickstart-android/issues/368#issuecomment-451559148
+- [ ] Don't re-connect automatically if the connection is disconnected because if log in from another location, ask if the user want to connect again
+- [ ] Test and check in mobile Wifi settings, if the network has proxy it should work normally
