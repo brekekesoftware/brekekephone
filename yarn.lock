@@ -7445,6 +7445,11 @@ react-native-incall-manager@2.2.0:
   resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-2.2.0.tgz#369c73a58ba1a4deaa4330d52ad542e71ec0f70e"
   integrity sha1-NpxzpYuhpN6qQzDVKtVC5x7A9w4=
 
+react-native-iphone-x-helper@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"
+  integrity sha512-/VbpIEp8tSNNHIvstuA3Swx610whci1Zpc9mqNkqn14DkMbw+ORviln2u0XyHG1kPvvwTNGZY6QpeFwxYaSdbQ==
+
 react-native-keep-awake@2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/react-native-keep-awake/-/react-native-keep-awake-2.0.5.tgz#b1ff5667611c018c44b285b855f32e93b1c16fd9"
@@ -7500,11 +7505,6 @@ react-native-screens@^1.0.0-alpha.11:
 "react-native-splash-screen@github:brekekesoftware/react-native-splash-screen":
   version "3.2.0"
   resolved "https://codeload.github.com/brekekesoftware/react-native-splash-screen/tar.gz/a78ee51c0f89652a2a223ff2bc4ec10928bf2c30"
-
-react-native-status-bar-height@2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.3.1.tgz#b92ce9112c2367290847ac11284d9d84a6330169"
-  integrity sha512-m9nGKYfFn6ljF1abafzF5cFaD9JCzXwj7kNE9CuF+g0TgtItH70eY2uHaCV9moENTftqd5XIS3Cx0mf4WfistA==
 
 react-native-tab-view@^0.0.77:
   version "0.0.77"
