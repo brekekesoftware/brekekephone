@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
@@ -19,7 +18,7 @@ class View extends React.Component {
   }
   componentDidUpdate() {
     if (this.needToAuth()) {
-      this.authDebounced();
+      this.auth();
     }
   }
   componentWillUnmount() {
@@ -41,9 +40,6 @@ class View extends React.Component {
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
   };
-  authDebounced = debounce(this.auth, 5000, {
-    maxWait: 60000,
-  });
 
   onAuthSuccess = () => {
     setCurrentAuthProfile(this.props.profile);

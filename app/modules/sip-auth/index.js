@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
@@ -16,12 +15,12 @@ class View extends React.Component {
 
   componentDidMount() {
     if (this.needToAuth()) {
-      this.authCatched();
+      this.auth();
     }
   }
   componentDidUpdate() {
     if (this.needToAuth()) {
-      this.authDebounced();
+      this.auth();
     }
   }
   componentWillUnmount() {
@@ -42,7 +41,7 @@ class View extends React.Component {
         resolve(phone);
       }, 1000);
     });
-  auth = async () => {
+  _auth = async () => {
     this.context.sip.disconnect();
     this.props.onStarted();
     //
@@ -91,14 +90,11 @@ class View extends React.Component {
       accessToken: sipAccessToken,
       turnEnabled: this.props.pbxTurnEnabled,
     };
-    this.context.sip.connect(connectSipConfig);
+    await this.context.sip.connect(connectSipConfig);
   };
-  authCatched = () => {
-    this.auth().catch(this.onAuthFailure);
+  auth = () => {
+    this._auth().catch(this.onAuthFailure);
   };
-  authDebounced = debounce(this.authCatched, 5000, {
-    maxWait: 60000,
-  });
 
   onAuthFailure = err => {
     if (err && err.message) {
@@ -113,7 +109,7 @@ class View extends React.Component {
         retryable={this.props.retryable}
         failure={this.props.failure}
         abort={routerUtils.goToProfilesManage}
-        retry={this.authCatched}
+        retry={this.auth}
       />
     );
   }
