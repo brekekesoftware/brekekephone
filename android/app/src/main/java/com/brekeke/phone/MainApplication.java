@@ -10,6 +10,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.loudspeaker.LoudSpeakerPackage;
+import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
@@ -36,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
               new KCKeepAwakePackage(),
               new LoudSpeakerPackage(),
               new MainReactPackage(),
+              new ReactNativeExceptionHandlerPackage(),
               new ReactVideoPackage(),
               new RNCameraPackage(),
               new RNFSPackage(),

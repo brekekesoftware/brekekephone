@@ -175,6 +175,7 @@ dependencies {
     }
   }
   compile project(":react-native-document-picker")
+  compile project(":react-native-exception-handler")
   compile project(":react-native-fcm")
   compile project(":react-native-fs")
   compile project(":react-native-incall-manager")

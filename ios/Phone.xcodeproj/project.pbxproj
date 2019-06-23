@@ -46,6 +46,7 @@
 		9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C740745221FFC7400AC17B9 /* libRNCamera.a */; };
 		9C89026D2294771800491DFE /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		9C8C84F32246AE3500C5FB09 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */; };
+		9C91470522BE2E3A00CF23FE /* libReactNativeExceptionHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9146FE22BE2E2300CF23FE /* libReactNativeExceptionHandler.a */; };
 		9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C91651B22205623000DEF18 /* libRNFS.a */; };
 		9C9165FB22205A93000DEF18 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9165D222205A76000DEF18 /* libRCTCameraRoll.a */; };
 		9C9E4AAC21C16C2600BF913A /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */; };
@@ -342,6 +343,13 @@
 			remoteGlobalIDString = ED296FEE214C9CF800B7C4FE;
 			remoteInfo = "jsiexecutor-tvOS";
 		};
+		9C9146FD22BE2E2300CF23FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = ReactNativeExceptionHandler;
+		};
 		9C91651A22205623000DEF18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9C9164EA22205623000DEF18 /* RNFS.xcodeproj */;
@@ -483,6 +491,7 @@
 		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		9C740740221FFC7400AC17B9 /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
 		9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeExceptionHandler.xcodeproj; path = "../node_modules/react-native-exception-handler/ios/ReactNativeExceptionHandler.xcodeproj"; sourceTree = "<group>"; };
 		9C9164EA22205623000DEF18 /* RNFS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		9C9165C522205A76000DEF18 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = "../node_modules/react-native/Libraries/CameraRoll/RCTCameraRoll.xcodeproj"; sourceTree = "<group>"; };
 		9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../app/modules/call-voices/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
@@ -529,6 +538,7 @@
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				846C98DB1F160C4300696596 /* libRCTWebRTC.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
+				9C91470522BE2E3A00CF23FE /* libReactNativeExceptionHandler.a in Frameworks */,
 				9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */,
 				9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */,
 				9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */,
@@ -690,6 +700,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */,
 				74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */,
 				E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -810,6 +821,14 @@
 			isa = PBXGroup;
 			children = (
 				9C740745221FFC7400AC17B9 /* libRNCamera.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9C9146CD22BE2E2300CF23FE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C9146FE22BE2E2300CF23FE /* libReactNativeExceptionHandler.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1021,6 +1040,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 9C9146CD22BE2E2300CF23FE /* Products */;
+					ProjectRef = 9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */;
 				},
 				{
 					ProductGroup = 9C740741221FFC7400AC17B9 /* Products */;
@@ -1329,6 +1352,13 @@
 			fileType = archive.ar;
 			path = "libjsiexecutor-tvOS.a";
 			remoteRef = 9C8C84EC2246AE3500C5FB09 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9C9146FE22BE2E2300CF23FE /* libReactNativeExceptionHandler.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libReactNativeExceptionHandler.a;
+			remoteRef = 9C9146FD22BE2E2300CF23FE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9C91651B22205623000DEF18 /* libRNFS.a */ = {

@@ -5496,9 +5496,9 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
-"jssip@github:brekekesoftware/jssip#brekeke":
+"jssip@github:brekekesoftware/jssip#brekeke-debug":
   version "3.2.15"
-  resolved "https://codeload.github.com/brekekesoftware/jssip/tar.gz/1e8446f930647bf9ebb1c2e642a38684db5729fd"
+  resolved "https://codeload.github.com/brekekesoftware/jssip/tar.gz/590b002a79e533bb1ac0a942476ec1abe688980d"
   dependencies:
     debug "^4.1.0"
     events "^3.0.0"
@@ -7409,6 +7409,11 @@ react-native-drawer-layout@1.3.2:
   integrity sha512-fjO0scqbJUfNu2wuEpvywL7DYLXuCXJ2W/zYhWz986rdLytidbys1QGVvkaszHrb4Y7OqO96mTkgpOcP8KWevw==
   dependencies:
     react-native-dismiss-keyboard "1.0.0"
+
+react-native-exception-handler@2.10.8:
+  version "2.10.8"
+  resolved "https://registry.yarnpkg.com/react-native-exception-handler/-/react-native-exception-handler-2.10.8.tgz#1a7f846592d888d23adaf797e31802585f1d9ff0"
+  integrity sha512-ZN+jwpADRkCUNdad/50k0mZdMoICGrGdtaxgvRU+pNcWRRBAXJhuo4+jY0eQaoVpx1ghycGE6tBu9ka8gL2NOQ==
 
 "react-native-fcm@github:brekekesoftware/react-native-fcm":
   version "16.2.4"
