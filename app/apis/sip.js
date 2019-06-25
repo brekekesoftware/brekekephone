@@ -9,7 +9,7 @@ const getFrontSourceId = () => {
     window.navigator.mediaDevices.enumerateDevices().then(infos => {
       let sourceId;
       infos.forEach(i => {
-        if (i.kind == 'video' && i.facing == 'front') {
+        if (i.kind === 'video' && i.facing === 'front') {
           sourceId = i.id;
         }
       });

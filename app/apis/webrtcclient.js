@@ -16,7 +16,7 @@ if (!Brekeke.WebrtcClient) {
   Brekeke.WebrtcClient = {};
 }
 (function(WebrtcClient) {
-  var WEBRTC_CLIENT_VERSION = '2.0.5.217',
+  var WEBRTC_CLIENT_VERSION = '2.0.6.221',
     Phone,
     Logger,
     jssipHack,
@@ -32,7 +32,8 @@ if (!Brekeke.WebrtcClient) {
    * class Brekeke.WebrtcClient.Phone
    */
   Phone = function(options) {
-    var d;
+    var d,
+      self = this;
 
     /**
      * private fields
@@ -91,6 +92,7 @@ if (!Brekeke.WebrtcClient) {
 
     this.UA_WO_GAIN = 'Firefox';
     this.CHECK_CTX_STATE = false;
+    this.SDP_RA_UPDATEABLE = false;
 
     /**
      * field autoAnswer
@@ -168,11 +170,33 @@ if (!Brekeke.WebrtcClient) {
         });
       };
     }
-    if (
+    var Event_shim = (function() {
+      try {
+        new Event('trial');
+        return true;
+      } catch (ex) {
+        return false;
+      }
+    })()
+      ? Event
+      : typeof Event !== 'undefined' &&
+        typeof document !== 'undefined' &&
+        document.createEvent
+      ? function(type) {
+          // for ie
+          var event = document.createEvent('Event');
+          event.initEvent(type, false, false);
+          return event;
+        }
+      : function(type) {
+          // for event-target-shim
+          this.type = type;
+        };
+    var addsOntrack =
       typeof window === 'object' &&
       window.RTCPeerConnection &&
-      !('ontrack' in window.RTCPeerConnection.prototype)
-    ) {
+      !('ontrack' in window.RTCPeerConnection.prototype);
+    if (addsOntrack) {
       Object.defineProperty(window.RTCPeerConnection.prototype, 'ontrack', {
         get: function() {
           return this._ontrack;
@@ -184,56 +208,88 @@ if (!Brekeke.WebrtcClient) {
           this.addEventListener('track', (this._ontrack = f));
         },
       });
-      var origSetRemoteDescription =
-        window.RTCPeerConnection.prototype.setRemoteDescription;
-      window.RTCPeerConnection.prototype.setRemoteDescription = function() {
-        var pc = this;
-        if (!pc._ontrackpoly) {
-          pc._ontrackpoly = function(e) {
-            if (typeof Event === 'undefined') {
-              return;
-            }
-            // onaddstream does not fire when a track is added to an existing
-            // stream. But stream.onaddtrack is implemented so we use that.
-            e.stream.addEventListener('addtrack', function(te) {
-              var receiver;
-              if (window.RTCPeerConnection.prototype.getReceivers) {
-                receiver = pc.getReceivers().find(function(r) {
-                  return r.track && r.track.id === te.track.id;
-                });
-              } else {
-                receiver = { track: te.track };
-              }
-
-              var event = new Event('track');
-              event.track = te.track;
-              event.receiver = receiver;
-              event.transceiver = { receiver: receiver };
-              event.streams = [e.stream];
-              pc.dispatchEvent(event);
-            });
-            e.stream.getTracks().forEach(function(track) {
-              var receiver;
-              if (window.RTCPeerConnection.prototype.getReceivers) {
-                receiver = pc.getReceivers().find(function(r) {
-                  return r.track && r.track.id === track.id;
-                });
-              } else {
-                receiver = { track: track };
-              }
-              var event = new Event('track');
-              event.track = track;
-              event.receiver = receiver;
-              event.transceiver = { receiver: receiver };
-              event.streams = [e.stream];
-              pc.dispatchEvent(event);
-            });
-          };
-          pc.addEventListener('addstream', pc._ontrackpoly);
-        }
-        return origSetRemoteDescription.apply(pc, arguments);
-      };
     }
+    var origSetRemoteDescription =
+      window.RTCPeerConnection.prototype.setRemoteDescription;
+    window.RTCPeerConnection.prototype.setRemoteDescription = function() {
+      var pc = this;
+      if (addsOntrack && !pc._ontrackpoly) {
+        pc._ontrackpoly = function(e) {
+          // onaddstream does not fire when a track is added to an existing
+          // stream. But stream.onaddtrack is implemented so we use that.
+          e.stream.addEventListener('addtrack', function(te) {
+            var receiver;
+            if (window.RTCPeerConnection.prototype.getReceivers) {
+              receiver = pc.getReceivers().find(function(r) {
+                return r.track && r.track.id === te.track.id;
+              });
+            } else {
+              receiver = { track: te.track };
+            }
+
+            var event = new Event_shim('track');
+            event.track = te.track;
+            event.receiver = receiver;
+            event.transceiver = { receiver: receiver };
+            event.streams = [e.stream];
+            pc.dispatchEvent(event);
+          });
+          e.stream.getTracks().forEach(function(track) {
+            var receiver;
+            if (window.RTCPeerConnection.prototype.getReceivers) {
+              receiver = pc.getReceivers().find(function(r) {
+                return r.track && r.track.id === track.id;
+              });
+            } else {
+              receiver = { track: track };
+            }
+            var event = new Event_shim('track');
+            event.track = track;
+            event.receiver = receiver;
+            event.transceiver = { receiver: receiver };
+            event.streams = [e.stream];
+            pc.dispatchEvent(event);
+          });
+        };
+        pc.addEventListener('addstream', pc._ontrackpoly);
+      }
+      if (
+        self.SDP_RA_UPDATEABLE ||
+        !arguments[0] ||
+        arguments[0].type !== 'answer'
+      ) {
+        return origSetRemoteDescription.apply(pc, arguments);
+      }
+      var signalingState = pc.signalingState;
+      if (pc._mustSkipSetSdpRa) {
+        if (signalingState === 'have-local-offer') {
+          // 200 OK
+          pc._mustSkipSetSdpRa = false;
+        }
+        // skip setRemoteDescription
+        self._logger.log(
+          'debug',
+          'origSetRemoteDescription (' + signalingState + ') skipped',
+        );
+        return Promise.resolve();
+      }
+      return origSetRemoteDescription
+        .apply(pc, arguments)
+        .then(function() {
+          self._logger.log(
+            'debug',
+            'origSetRemoteDescription (' + signalingState + ') OK',
+          );
+          pc._mustSkipSetSdpRa = true;
+        })
+        .catch(function(error) {
+          self._logger.log(
+            'warn',
+            'origSetRemoteDescription (' + signalingState + ') Error: ' + error,
+          );
+          throw error;
+        });
+    };
 
     if (!this._jssipLoadingFailed) {
       // hack jssip
@@ -318,7 +374,7 @@ if (!Brekeke.WebrtcClient) {
 
       if (this._jssipLoadingFailed) {
         this._logger.log('error', 'jssip-3.2.15.js is not loaded');
-        return;
+        throw new Error('jssip-3.2.15.js is not loaded');
       }
 
       // check parameters
@@ -392,7 +448,7 @@ if (!Brekeke.WebrtcClient) {
             ? configuration.register_expires
             : 1296000,
         registrar_server: '',
-        no_answer_timeout: 60,
+        no_answer_timeout: 3600,
         use_preloaded_route: false,
         connection_recovery_min_interval: 2,
         connection_recovery_max_interval: 30,
@@ -424,7 +480,7 @@ if (!Brekeke.WebrtcClient) {
               ? configuration.register_expires
               : 1296000,
           registrar_server: '',
-          no_answer_timeout: 60,
+          no_answer_timeout: 3600,
           use_preloaded_route: false,
           connection_recovery_min_interval: 2,
           connection_recovery_max_interval: 30,
@@ -3017,7 +3073,6 @@ if (!Brekeke.WebrtcClient) {
         data.session.connection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
-        data.session.connection.onaddstream = data.session.connection.ontrack;
       } else {
         // incoming
         data.session.on(
@@ -3318,7 +3373,6 @@ if (!Brekeke.WebrtcClient) {
             this._videoClientRtcSession_ontrack,
             [videoClientSessionId, sessionId],
           );
-          data.session.connection.onaddstream = data.session.connection.ontrack;
         } else {
           // incoming
           data.session.on(
@@ -3686,7 +3740,6 @@ if (!Brekeke.WebrtcClient) {
       var index, stream;
 
       stream = e.streams && e.streams[0];
-      stream = stream || e.stream; // Support old onaddstream
       if (stream) {
         if (this._sessionRemoteStreamsTable[sessionId]) {
           index = this._sessionRemoteStreamsTable[sessionId].indexOf(stream);
@@ -3719,7 +3772,6 @@ if (!Brekeke.WebrtcClient) {
         e.peerconnection.ontrack = by(this, this._rtcSession_ontrack, [
           sessionId,
         ]);
-        e.peerconnection.onaddstream = e.peerconnection.ontrack;
       }
     },
     _rtcSession_responseAfterMakeCallWithVideo: function(
@@ -3801,7 +3853,6 @@ if (!Brekeke.WebrtcClient) {
       var index, stream;
 
       stream = e.streams && e.streams[0];
-      stream = stream || e.stream; // Support old onaddstream
       if (stream) {
         if (this._sessionRemoteStreamsTable[videoClientSessionId]) {
           if (this._sessionTable[sessionId]) {
@@ -3858,7 +3909,6 @@ if (!Brekeke.WebrtcClient) {
           this._videoClientRtcSession_ontrack,
           [videoClientSessionId, sessionId],
         );
-        e.peerconnection.onaddstream = e.peerconnection.ontrack;
       }
     },
 
