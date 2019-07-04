@@ -12,14 +12,20 @@ const UC_CONNECT_STATES = {
 
 const UCAuth = p => (
   <View style={st.main}>
-    {p.connectState === UC_CONNECT_STATES.CONNECTING && (
-      <Text style={st.message}>CONNECTING TO UC</Text>
+    {p.didPleonasticLogin && (
+      <Text style={st.message}>UC SIGNED IN AT ANOTHER LOCATION</Text>
     )}
-    {p.connectState === UC_CONNECT_STATES.CONNECT_FAILED && (
-      <Text style={st.message}>CONNECTING FAILED</Text>
-    )}
+    {!p.didPleonasticLogin &&
+      p.connectState === UC_CONNECT_STATES.CONNECTING && (
+        <Text style={st.message}>CONNECTING TO UC</Text>
+      )}
+    {!p.didPleonasticLogin &&
+      p.connectState === UC_CONNECT_STATES.CONNECT_FAILED && (
+        <Text style={st.message}>UC CONNECTION FAILED</Text>
+      )}
     <View style={st.buttons}>
-      {p.connectState === UC_CONNECT_STATES.CONNECT_FAILED && (
+      {(p.didPleonasticLogin ||
+        p.connectState === UC_CONNECT_STATES.CONNECT_FAILED) && (
         <Btn style={st.retry} onPress={p.retry}>
           <Text style={st.retryText}>Retry</Text>
         </Btn>

@@ -60,7 +60,7 @@ export const st = StyleSheet.create({
 const PBXAuth = p => (
   <View style={st.main}>
     {p.failure || <Text style={st.message}>CONNECTING TO PBX</Text>}
-    {p.failure && <Text style={st.message}>CONNECTING FAILED</Text>}
+    {p.failure && <Text style={st.message}>PBX CONNECTION FAILED</Text>}
     <View style={st.buttons}>
       {p.failure && p.retryable && (
         <Btn style={st.retry} onPress={p.retry}>

@@ -134,5 +134,5 @@ react-native run-android --deviceId=DEVICE_ID
 - [x] Fix getInitialNotification for react-native-fcm https://github.com/brekekesoftware/react-native-fcm/commits/master
 - [ ] Full screen notification, like Skype: https://github.com/react-native-webrtc/react-native-callkeep
 - [ ] Fix the fcm issue for some android vendor versions. Meanwhile 😅 the community: https://github.com/firebase/quickstart-android/issues/368#issuecomment-451559148
-- [ ] Don't re-connect automatically if the connection is disconnected because if log in from another location, ask if the user want to connect again
-- [ ] Test and check in mobile Wifi settings, if the network has proxy it should work normally
+- [x] Don't re-connect automatically if the UC connection is disconnected because of logging in from another location. Ask if the user want to connect again
+- [ ] Check and test in the mobile Wifi settings, if the network has proxy it should work normally

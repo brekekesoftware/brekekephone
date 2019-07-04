@@ -59,18 +59,17 @@ class View extends React.Component {
     if (this._connectState !== UC_CONNECT_STATES.NONE) {
       return false;
     }
+    if (this._didPleonasticLogin || this.state.didPleonasticLogin) {
+      return false;
+    }
     return true;
   };
   auth = () => {
     this.context.uc.disconnect();
     this.props.onStarted();
-    this._setConnectStateForLifecycle(UC_CONNECT_STATES.CONNECTING);
-    let option = undefined;
-    if (this._didPleonasticLogin === true) {
-      option = { modest: true };
-    }
+    this._setStateForLifecycle(UC_CONNECT_STATES.CONNECTING, false);
     this.context.uc
-      .connect(this.props.profile, option)
+      .connect(this.props.profile)
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
   };
@@ -135,6 +134,9 @@ class View extends React.Component {
         abort={routerUtils.goToProfilesManage}
         retry={this.auth}
         connectState={connectState}
+        didPleonasticLogin={
+          this._didPleonasticLogin || this.state.didPleonasticLogin
+        }
       />
     );
   }
