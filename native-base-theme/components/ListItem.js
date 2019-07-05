@@ -136,7 +136,7 @@ export default (variables /*: * */ = variable) => {
           },
           fontWeight: "600"
         },
-        marginLeft: 10,
+        marginLeft: null,   //custom -> 10
         alignItems: null,
         alignSelf: null
       },

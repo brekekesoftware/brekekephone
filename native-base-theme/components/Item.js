@@ -54,7 +54,7 @@ export default (variables /*: * */ = variable) => {
         right: null,
         paddingTop: 5,
         alignSelf: "flex-start",
-        fontSize: variables.inputFontSize - 2
+        fontSize: variables.inputFontSize - 7     //custom -> 2
       },
       "NativeBase.Icon": {
         marginTop: 36

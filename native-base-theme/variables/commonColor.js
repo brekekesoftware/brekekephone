@@ -172,7 +172,7 @@ export default {
   // Icon
   iconFamily: "Ionicons",
   iconFontSize: 28,
-  iconHeaderSize: 24,
+  iconHeaderSize: 32,
 
   // InputGroup
   inputFontSize: 17,

@@ -287,9 +287,9 @@ export default (variables /*: * */ = variable) => {
     },
 
     ".small": {
-      height: 30,
+      height: 25,           //custom -> 30
       "NativeBase.Text": {
-        fontSize: 14
+        fontSize: 10      //custom -> 14
       },
       "NativeBase.Icon": {
         fontSize: 20,

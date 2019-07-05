@@ -252,7 +252,7 @@ export default (variables /*: * */ = variable) => {
         },
         alignSelf: null,
         paddingRight: variables.buttonPadding,
-        paddingLeft: platform === "ios" && platformStyle !== "material" ? 4 : 8
+        paddingLeft: 12, //platform === "ios" && platformStyle !== "material" ? 4 : 8
       },
       flex: platform === "ios" && platformStyle !== "material" ? 1 : 0.4,
       alignSelf: "center",
