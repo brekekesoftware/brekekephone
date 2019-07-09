@@ -249,9 +249,16 @@ class SIP extends EventEmitter {
       '/JsSIP ' +
       jssipVersion;
 
-    // Set turn config
-    this.phone.setDefaultCallOptions(profile.turnEnabled ? turnConfig : {});
-    // console.warn('profile.turnEnabled', profile.turnEnabled, turnConfig);
+    // Set config
+    const config = profile.turnEnabled ? turnConfig : {};
+    if (!config.pcConfig) {
+      config.pcConfig = {};
+    }
+    if (!Array.isArray(config.pcConfig.iceServers)) {
+      config.pcConfig.iceServers = [];
+    }
+    config.pcConfig.bundlePolicy = 'balanced';
+    this.phone.setDefaultCallOptions(config);
 
     this.phone.startWebRTC({
       host: profile.hostname,
