@@ -9,7 +9,7 @@ const st = StyleSheet.create({
     height: '30%',
   },
   containerName: {
-    padding: std.gap.lg,
+    padding: std.gap.lg *2,
   },
   contaiHangUp:{
   	top: '50%',
@@ -25,12 +25,12 @@ class PageCalling extends Component {
         <Header transparent>
           <Left>
             <Button transparent dark>
-              <Icon name='arrow-round-back' />
+              <Icon name='arrow-back' />
             </Button>
           </Left>
           <Right>
             <Button transparent dark>
-              <Icon name='contacts' />
+              <Icon name='group' />
             </Button>
           </Right>
         </Header>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListItem, Content, Left, Button, Icon, Body, Right, Text, List  } from 'native-base';
+import { ListItem, Content, Left, Button, Icon, Body, Right, Text, List,  } from 'native-base';
 import {FlatList} from 'react-native';
 
 
@@ -64,14 +64,14 @@ class CallParkComponent extends Component {
           />
           <ListItem>
             <Body>
-              <Button full small transparent dark>
+              <Button full  transparent dark>
                 <Text> NEW CALL PARK</Text>
               </Button>
             </Body>
           </ListItem>
         </List>
         <Button full iconLeft danger>
-          <Icon name='exit' />
+          <Icon name='exit-to-app' />
           <Text>LOG OUT</Text>
         </Button>
      </Content>

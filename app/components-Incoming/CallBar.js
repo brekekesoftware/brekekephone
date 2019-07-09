@@ -38,25 +38,25 @@ class CallBar extends Component {
       <View style={st.containerCallbar}>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="swap"/>
+            <Icon name="call-split"/>
           </Button>
           <Text style={st.textCallBar}>TRANSFER</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="apps"/>
+            <Icon name="local-parking"/>
           </Button>
           <Text style={st.textCallBar}>PARK</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="videocam"/>
+            <Icon name="video-call"/>
           </Button>
           <Text style={st.textCallBar}>VIDEO</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="volume-low"/>
+            <Icon name="volume-up"/>
           </Button>
           <Text style={st.textCallBar}>MUTE</Text>
         </View>
@@ -64,13 +64,13 @@ class CallBar extends Component {
       <View style={st.containerCallbar}>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="disc"/>
+            <Icon name="fiber-manual-record"/>
           </Button>
           <Text style={st.textCallBar}>RECORDING</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="keypad"/>
+            <Icon name="dialpad"/>
           </Button>
           <Text style={st.textCallBar}>KEYPAD</Text>
         </View>

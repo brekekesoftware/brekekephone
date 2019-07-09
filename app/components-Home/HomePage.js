@@ -16,7 +16,8 @@ class HomePage extends React.Component {
     return (
     	<Container>
     		
-    		<CallPark/>
+    		<PageSetting/>
+    		
       </Container>
     );
   }

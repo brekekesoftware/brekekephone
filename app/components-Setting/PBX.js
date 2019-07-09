@@ -10,7 +10,7 @@ class PbxComponent extends Component {
           </ListItem>       
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon active name="person" />
+            <Icon name="person" />
           </Left>
           <Body>
             <Text note>USERNAME</Text>
@@ -19,7 +19,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon active name="home" />
+            <Icon name="home" />
           </Left>
           <Body>
             <Text note>TENANT</Text>
@@ -28,7 +28,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon active name="desktop" />
+            <Icon name="domain" />
           </Left>
           <Body>
             <Text note>HOST NAME</Text>
@@ -37,7 +37,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon active name="git-network" />
+            <Icon name="usb" />
           </Left>
           <Body>
             <Text note>POST</Text>

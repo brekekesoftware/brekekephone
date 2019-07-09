@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {Icon} from 'native-base';
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -71,7 +72,7 @@ const Main = p => (
       <Text style={st.navbarTitle}>{p.title}</Text>
       {p.onBack && (
         <TouchableOpacity style={st.navbarBack}>
-          <Text style={st.navbarActionBack}>icon_arrow_left</Text>
+          <Icon name="arrow-back"/>
         </TouchableOpacity>
       )}
       {p.onNext && (
@@ -86,6 +87,7 @@ const Main = p => (
       )}
     </View>
     {p.children}
+    
   </View>
 );
 

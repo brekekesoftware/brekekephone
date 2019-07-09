@@ -30,7 +30,7 @@ const User = p => (
         <Icon name="call" />
       </Button>
       <Button transparent dark>
-        <Icon name="information-circle-outline"></Icon> 
+        <Icon name="info"></Icon> 
       </Button>                     
     </Right>
   </ListItem> 

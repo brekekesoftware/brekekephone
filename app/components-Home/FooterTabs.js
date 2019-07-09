@@ -12,7 +12,7 @@ class FooterTabs extends Component {
       <Footer>
         <FooterTab>
           <Button vertical onPress={this.props.pressContacts}>
-            <Icon name="book" />
+            <Icon name="contacts" />
             <Text>CONTACTS</Text>
           </Button>
           <Button badge vertical>
@@ -21,15 +21,15 @@ class FooterTabs extends Component {
             <Text>RECENTS</Text>
           </Button>
           <Button vertical>
-            <Icon name="keypad" />
+            <Icon name="dialpad" />
             <Text>CALL</Text>
           </Button>
           <Button vertical>
-            <Icon name="chatbubbles" />
+            <Icon name="chat-bubble" />
             <Text>CHAT</Text>
           </Button>
           <Button vertical>
-            <Icon name="cog" />
+            <Icon name="settings" />
             <Text>SETTINGS</Text>
           </Button>
         </FooterTab>

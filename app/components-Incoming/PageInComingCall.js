@@ -26,12 +26,12 @@ class PageInComingCall extends Component {
         <Header transparent>
           <Left>
             <Button transparent dark>
-              <Icon name='arrow-round-back' />
+              <Icon name='arrow-back' />
             </Button>
           </Left>
           <Right>
             <Button transparent dark>
-              <Icon name='contacts' />
+              <Icon name='group' />
             </Button>
           </Right>
         </Header>

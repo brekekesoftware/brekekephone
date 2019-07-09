@@ -26,7 +26,7 @@ const User = p => (
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>
-        <Icon name="chatboxes" />
+        <Icon name="chat-bubble" />
       </Button>
       <Button transparent dark>
         <Icon name="call"></Icon> 

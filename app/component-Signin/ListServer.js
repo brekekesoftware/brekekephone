@@ -3,12 +3,11 @@ import {
   FlatList,
   Image, Platform,
   StyleSheet,
-  Text,
   TouchableOpacity as Button,
-  View,
 } from 'react-native';
 
 import Switch from '../components-shared/Switch';
+import {List, ListItem, Left, Body, Text, Icon, View} from 'native-base';
 import { rem, std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -24,7 +23,7 @@ const st = StyleSheet.create({
       web: std.color.shade4,
     }),
     margin: std.gap.lg,
-    marginTop: rem(200),
+    marginTop: "30%",
   },
   containerServer: {
     flex:1,
@@ -37,7 +36,6 @@ const st = StyleSheet.create({
       web: std.color.shade4,
     }),
     margin: std.gap.lg,
-    marginTop: rem(200),
   },
   btnNewServer: {
     padding: std.gap.lg,
@@ -135,7 +133,7 @@ const count_server = 0;
 const NoServer = () => (
   <View style={st.container}>
     <View>
-      <Text style={st.iconserver}>icon_server</Text>
+      <Icon style={st.iconserver} name="phonelink-off"/>
     </View>
     <View>
       <Text style={st.textNoServer}>No Server</Text>
@@ -155,46 +153,52 @@ const NoServer = () => (
 
 const Server = p => (
   <View style={st.containerServer}>
-    <View>
-      <Text style={st.nameserver}>401</Text>
-    </View>
-    <View style={st.tenantcontainer}>
-      <View>
-        <Text style={st.icons}>icon_home</Text>
-      </View>
-      <View style={st.containerText}>
-        <Text style={st.servertitle}>TENANT</Text>
-        <Text style={st.serverinfo}>Nam</Text>
-      </View>
-    </View>
-    <View style={st.hostnamecontainer}>
-      <View>
-        <Text style={st.icons}>icon_target</Text>
-      </View>
-      <View style={st.containerText}>
-        <Text style={st.servertitle}>HOST NAME</Text>
-        <Text style={st.serverinfo}>apps.brekeke.com</Text>
-      </View>
-    </View>
-    <View style={st.portcontainer}>
-      <View>
-        <Text style={st.icons}>icon_share_2</Text>
-      </View>
-      <View style={st.containerText}>
-        <Text style={st.servertitle}>PORT</Text>
-        <Text style={st.serverinfo}>8443</Text>
-      </View>
-    </View>
-    <View>
-      <Switch />
-    </View>
+    <List>     
+      <ListItem thumbnail noBorder>
+        <Left>
+          <Icon name="person" />
+        </Left>
+        <Body>
+          <Text note>USERNAME</Text>
+          <Text>401</Text>
+        </Body>
+      </ListItem>
+      <ListItem thumbnail noBorder>
+        <Left>
+          <Icon name="home" />
+        </Left>
+        <Body>
+          <Text note>TENANT</Text>
+          <Text>Nam</Text>
+        </Body>
+      </ListItem>
+      <ListItem thumbnail noBorder>
+        <Left>
+          <Icon name="domain" />
+        </Left>
+        <Body>
+          <Text note>HOST NAME</Text>
+          <Text>apps.brekeke.com</Text>
+        </Body>
+      </ListItem>
+      <ListItem thumbnail noBorder>
+        <Left>
+          <Icon name="usb" />
+        </Left>
+        <Body>
+          <Text note>POST</Text>
+          <Text>8443</Text>
+        </Body>
+      </ListItem>
+    </List>
+    <Switch />
     <View style={st.btncontainer}>
       <View style={st.btnEditandRemove}>
         <Button>
-          <Text style={st.icons}>icon_trash</Text>
+          <Icon name="delete"/>
         </Button>
         <Button>
-          <Text style={st.icons}>icon_edit_2</Text>
+          <Icon name="create"/>
         </Button>
       </View>
       <Button style={st.btncontainerSignin}>
