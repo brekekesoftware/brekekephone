@@ -136,3 +136,5 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Fix the fcm issue for some android vendor versions. Meanwhile 😅 the community: https://github.com/firebase/quickstart-android/issues/368#issuecomment-451559148
 - [x] Don't re-connect automatically if the UC connection is disconnected because of logging in from another location. Ask if the user want to connect again
 - [ ] Check and test in the mobile Wifi settings, if the network has proxy it should work normally
+- [ ] Handle react-native-keep-awake correctly
+- [ ] Screen should be turned off when calling and cover the ear sensor
