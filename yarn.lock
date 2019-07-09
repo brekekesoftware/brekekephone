@@ -7445,10 +7445,10 @@ react-native-general-actionsheet@1.0.3:
     react-native-pure-navigation-bar "^1.4.6"
     react-native-root-siblings "^3.1.6"
 
-react-native-incall-manager@2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-2.2.0.tgz#369c73a58ba1a4deaa4330d52ad542e71ec0f70e"
-  integrity sha1-NpxzpYuhpN6qQzDVKtVC5x7A9w4=
+react-native-incall-manager@3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-3.2.4.tgz#66ed872d6b727e2f396b6c67f7113180f9cbc8a2"
+  integrity sha512-uEMRt7udYI59LlILrTyIb6AnMCLNiEaxPFrnx9sorajY680Z7TIeOhRIWuO2eCBfwrjg1U7d/6TA7z4nGSs4pA==
 
 react-native-iphone-x-helper@1.2.1:
   version "1.2.1"

@@ -23,6 +23,7 @@
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		27141DD80BEC4685B9D9C2E0 /* feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1C95106384D42D7BBDFB985 /* feather.ttf */; };
 		2CA7EE2DB0E140D38A238382 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 85551F28DB7E4D349CE40F41 /* libz.tbd */; };
+		574EE28822D4FB5E0025AFA2 /* libRNInCallManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 574EE28322D4F9C00025AFA2 /* libRNInCallManager.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8437F373202F82CA00536C99 /* text-bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8437F372202F82B600536C99 /* text-bold.ttf */; };
 		846C98D91F160BF500696596 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846C98D71F160A9500696596 /* WebRTC.framework */; };
@@ -38,8 +39,6 @@
 		84D1D1161EA9B99000BC7305 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10C1EA9B99000BC7305 /* libsqlite3.tbd */; };
 		84D1D1171EA9B99000BC7305 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10D1EA9B99000BC7305 /* libstdc++.tbd */; };
 		84D1D1181EA9B99000BC7305 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10E1EA9B99000BC7305 /* VideoToolbox.framework */; };
-		84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */; };
-		84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */; };
 		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
 		9C36979E2283529F00A3CA04 /* Phone.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 84D1D1191EA9BF6800BC7305 /* Phone.entitlements */; };
 		9C598FE62294FFAF0003D341 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE9F9082293B02300777DDF /* libRCTPushNotification.a */; };
@@ -216,6 +215,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3D3CD9321DE5FBEE00167DC4;
 			remoteInfo = "cxxreact-tvOS";
+		};
+		574EE28222D4F9C00025AFA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 574EE27E22D4F9C00025AFA2 /* RNInCallManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 231CD2561FD68A17004DD25D;
+			remoteInfo = RNInCallManager;
 		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -462,6 +468,7 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		51632CEE6866414D8DE669E7 /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTVideo.xcodeproj; path = "../node_modules/react-native-video/ios/RCTVideo.xcodeproj"; sourceTree = "<group>"; };
+		574EE27E22D4F9C00025AFA2 /* RNInCallManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNInCallManager.xcodeproj; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager.xcodeproj"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		60A48DF5263246A5B72C136B /* text-italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "text-italic.ttf"; path = "../app/fonts/text-italic.ttf"; sourceTree = "<group>"; };
 		68C532534351421E930084E7 /* libSplashScreen.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSplashScreen.a; sourceTree = "<group>"; };
@@ -484,9 +491,6 @@
 		84D1D10D1EA9B99000BC7305 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		84D1D10E1EA9B99000BC7305 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		84D1D1191EA9BF6800BC7305 /* Phone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Phone.entitlements; path = Phone/Phone.entitlements; sourceTree = "<group>"; };
-		84DCA7451ECA0C7C0075F500 /* RNInCallManager-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RNInCallManager-Bridging-Header.h"; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h"; sourceTree = "<group>"; };
-		84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNInCallManager.swift; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager.swift"; sourceTree = "<group>"; };
-		84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNInCallManagerBridge.m; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManagerBridge.m"; sourceTree = "<group>"; };
 		85551F28DB7E4D349CE40F41 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		9C740740221FFC7400AC17B9 /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
@@ -511,6 +515,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				574EE28822D4FB5E0025AFA2 /* libRNInCallManager.a in Frameworks */,
 				84D1D10F1EA9B99000BC7305 /* AudioToolbox.framework in Frameworks */,
 				84D1D1101EA9B99000BC7305 /* AVFoundation.framework in Frameworks */,
 				84D1D1111EA9B99000BC7305 /* CoreAudio.framework in Frameworks */,
@@ -641,7 +646,6 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				84D1D1191EA9BF6800BC7305 /* Phone.entitlements */,
-				84DCA7291ECA0C540075F500 /* RNInCallManager */,
 			);
 			name = Phone;
 			sourceTree = "<group>";
@@ -679,6 +683,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		574EE27F22D4F9C00025AFA2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				574EE28322D4F9C00025AFA2 /* libRNInCallManager.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -700,6 +712,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				574EE27E22D4F9C00025AFA2 /* RNInCallManager.xcodeproj */,
 				9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */,
 				74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */,
 				E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */,
@@ -797,16 +810,6 @@
 				849545A51F9FA25F000E4486 /* libKCKeepAwake.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		84DCA7291ECA0C540075F500 /* RNInCallManager */ = {
-			isa = PBXGroup;
-			children = (
-				84DCA7451ECA0C7C0075F500 /* RNInCallManager-Bridging-Header.h */,
-				84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */,
-				84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */,
-			);
-			name = RNInCallManager;
 			sourceTree = "<group>";
 		};
 		9C31A4AC21D5098F000CB78F /* Products */ = {
@@ -962,6 +965,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -1056,6 +1060,10 @@
 				{
 					ProductGroup = 9C9164EB22205623000DEF18 /* Products */;
 					ProjectRef = 9C9164EA22205623000DEF18 /* RNFS.xcodeproj */;
+				},
+				{
+					ProductGroup = 574EE27F22D4F9C00025AFA2 /* Products */;
+					ProjectRef = 574EE27E22D4F9C00025AFA2 /* RNInCallManager.xcodeproj */;
 				},
 				{
 					ProductGroup = 9C31A4AC21D5098F000CB78F /* Products */;
@@ -1226,6 +1234,13 @@
 			fileType = archive.ar;
 			path = libcxxreact.a;
 			remoteRef = 3DAD3EAA1DF850E9000B6D8A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		574EE28322D4F9C00025AFA2 /* libRNInCallManager.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNInCallManager.a;
+			remoteRef = 574EE28222D4F9C00025AFA2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */ = {
@@ -1496,9 +1511,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
