@@ -39,7 +39,7 @@
     "react-native-permissions": "1.1.1",
     "react-native-progress-circle": "2.0.1",
     "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen",
-    "react-native-video": "4.4.2",
+    "react-native-video": "4.4.3",
     "react-native-voip-push-notification": "1.1.4",
     "react-native-web": "0.11.5",
     "react-native-webrtc": "1.69.2",
@@ -55,11 +55,11 @@
     "url-parse": "1.4.7"
   },
   "devDependencies": {
-    "@babel/core": "7.5.0",
+    "@babel/core": "7.5.4",
     "@babel/plugin-proposal-class-properties": "7.5.0",
     "@babel/plugin-proposal-decorators": "7.4.4",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.3",
-    "@babel/preset-env": "7.5.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.5.4",
+    "@babel/preset-env": "7.5.4",
     "@babel/preset-react": "7.0.0",
     "babel-eslint": "10.x",
     "babel-loader": "8.0.6",
