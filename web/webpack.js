@@ -11,12 +11,7 @@ const stats = {
 
 module.exports = {
   entry: {
-    main: [
-      // js-import-sort doesn't sort it properly
-      //    if we place the polyfill in the index.web.js
-      '@babel/polyfill',
-      path.join(rootDir, 'index.web.js'),
-    ],
+    main: path.join(rootDir, 'index.web.js'),
   },
   output: {
     filename: 'bundle.web.js',
