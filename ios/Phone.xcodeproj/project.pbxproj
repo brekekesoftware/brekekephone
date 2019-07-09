@@ -38,12 +38,11 @@
 		84D1D1161EA9B99000BC7305 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10C1EA9B99000BC7305 /* libsqlite3.tbd */; };
 		84D1D1171EA9B99000BC7305 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10D1EA9B99000BC7305 /* libstdc++.tbd */; };
 		84D1D1181EA9B99000BC7305 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84D1D10E1EA9B99000BC7305 /* VideoToolbox.framework */; };
-		84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */; };
-		84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */; };
 		9C31A4B221D50BE2000CB78F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C31A4B121D50BE1000CB78F /* PushKit.framework */; };
 		9C36979E2283529F00A3CA04 /* Phone.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 84D1D1191EA9BF6800BC7305 /* Phone.entitlements */; };
 		9C598FE62294FFAF0003D341 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE9F9082293B02300777DDF /* libRCTPushNotification.a */; };
 		9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C740745221FFC7400AC17B9 /* libRNCamera.a */; };
+		9C8525C822D5143300E94618 /* libRNInCallManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8525C722D5140B00E94618 /* libRNInCallManager.a */; };
 		9C89026D2294771800491DFE /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		9C8C84F32246AE3500C5FB09 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */; };
 		9C91470522BE2E3A00CF23FE /* libReactNativeExceptionHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9146FE22BE2E2300CF23FE /* libReactNativeExceptionHandler.a */; };
@@ -315,6 +314,13 @@
 			remoteGlobalIDString = 4107012F1ACB723B00C6AA39;
 			remoteInfo = RNCamera;
 		};
+		9C8525C622D5140B00E94618 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 231CD2561FD68A17004DD25D;
+			remoteInfo = RNInCallManager;
+		};
 		9C8C84E62246AE3500C5FB09 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
@@ -484,12 +490,10 @@
 		84D1D10D1EA9B99000BC7305 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		84D1D10E1EA9B99000BC7305 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		84D1D1191EA9BF6800BC7305 /* Phone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Phone.entitlements; path = Phone/Phone.entitlements; sourceTree = "<group>"; };
-		84DCA7451ECA0C7C0075F500 /* RNInCallManager-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RNInCallManager-Bridging-Header.h"; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h"; sourceTree = "<group>"; };
-		84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNInCallManager.swift; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager.swift"; sourceTree = "<group>"; };
-		84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNInCallManagerBridge.m; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManagerBridge.m"; sourceTree = "<group>"; };
 		85551F28DB7E4D349CE40F41 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		9C740740221FFC7400AC17B9 /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
+		9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNInCallManager.xcodeproj; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager.xcodeproj"; sourceTree = "<group>"; };
 		9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeExceptionHandler.xcodeproj; path = "../node_modules/react-native-exception-handler/ios/ReactNativeExceptionHandler.xcodeproj"; sourceTree = "<group>"; };
 		9C9164EA22205623000DEF18 /* RNFS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
@@ -542,6 +546,7 @@
 				9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */,
 				9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */,
 				9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */,
+				9C8525C822D5143300E94618 /* libRNInCallManager.a in Frameworks */,
 				A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */,
 				B0A77634B35A41BDAF7154B5 /* libSplashScreen.a in Frameworks */,
 				84D1D1161EA9B99000BC7305 /* libsqlite3.tbd in Frameworks */,
@@ -641,7 +646,6 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				84D1D1191EA9BF6800BC7305 /* Phone.entitlements */,
-				84DCA7291ECA0C540075F500 /* RNInCallManager */,
 			);
 			name = Phone;
 			sourceTree = "<group>";
@@ -700,6 +704,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */,
 				9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */,
 				74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */,
 				E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */,
@@ -799,16 +804,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		84DCA7291ECA0C540075F500 /* RNInCallManager */ = {
-			isa = PBXGroup;
-			children = (
-				84DCA7451ECA0C7C0075F500 /* RNInCallManager-Bridging-Header.h */,
-				84DCA7461ECA0C7C0075F500 /* RNInCallManager.swift */,
-				84DCA7471ECA0C7C0075F500 /* RNInCallManagerBridge.m */,
-			);
-			name = RNInCallManager;
-			sourceTree = "<group>";
-		};
 		9C31A4AC21D5098F000CB78F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -821,6 +816,14 @@
 			isa = PBXGroup;
 			children = (
 				9C740745221FFC7400AC17B9 /* libRNCamera.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9C8525C322D5140B00E94618 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C8525C722D5140B00E94618 /* libRNInCallManager.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -962,6 +965,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -1056,6 +1060,10 @@
 				{
 					ProductGroup = 9C9164EB22205623000DEF18 /* Products */;
 					ProjectRef = 9C9164EA22205623000DEF18 /* RNFS.xcodeproj */;
+				},
+				{
+					ProductGroup = 9C8525C322D5140B00E94618 /* Products */;
+					ProjectRef = 9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */;
 				},
 				{
 					ProductGroup = 9C31A4AC21D5098F000CB78F /* Products */;
@@ -1326,6 +1334,13 @@
 			remoteRef = 9C740744221FFC7400AC17B9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9C8525C722D5140B00E94618 /* libRNInCallManager.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNInCallManager.a;
+			remoteRef = 9C8525C622D5140B00E94618 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9C8C84E72246AE3500C5FB09 /* libjsi.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1496,9 +1511,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				84DCA7491ECA0C7C0075F500 /* RNInCallManagerBridge.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				84DCA7481ECA0C7C0075F500 /* RNInCallManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
