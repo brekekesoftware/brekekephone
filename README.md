@@ -137,4 +137,5 @@ react-native run-android --deviceId=DEVICE_ID
 - [x] Don't re-connect automatically if the UC connection is disconnected because of logging in from another location. Ask if the user want to connect again
 - [ ] Check and test in the mobile Wifi settings, if the network has proxy it should work normally
 - [ ] Handle react-native-keep-awake correctly
-- [ ] Screen should be turned off when calling and cover the ear sensor
+- [ ] Screen should be turned off when calling and cover the call sensor using incall-manager (It was working but after upgrading to new version it stops working)
+- [ ] VOIP call option select app https://github.com/react-native-webrtc/react-native-callkeep
