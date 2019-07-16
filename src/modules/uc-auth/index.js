@@ -3,7 +3,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import UCClient from '../../apis/ucclient';
+import * as UCClient from 'brekekejs/lib/ucclient';
 import * as routerUtils from '../../mobx/routerStore';
 import UI, { UC_CONNECT_STATES } from './ui';
 

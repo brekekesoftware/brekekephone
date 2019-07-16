@@ -1,7 +1,6 @@
+import UCClient from 'brekekejs/lib/ucclient';
 import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
-
-import UCClient from './ucclient';
 
 class UC extends EventEmitter {
   constructor() {
@@ -419,7 +418,7 @@ class UC extends EventEmitter {
         // Add `form` property because ucclient requires it
         form: 'This is not a form element, see app/apis/uc.js for detail',
         files: [file],
-        __rnFormData: fd, // Will be used in ./ucclient.js _recvRecvFile method
+        __rnFormData: fd, // Will be used in brekekejs/lib/ucclient.js _recvRecvFile method
       };
     }
 

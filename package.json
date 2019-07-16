@@ -3,17 +3,19 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "start": "webpack-dev-server --config=web/webpack.js",
-    "build": "cross-env NODE_ENV=production webpack -p --config=web/webpack.js",
-    "build:dev": "webpack --config=web/webpack.js"
+    "start": "craco start",
+    "build": "craco build",
+    "lint": "eslint .",
+    "pret": "js-import-sort --silent=1 --path src/**/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
   },
   "dependencies": {
+    "brekekejs": "github:brekekesoftware/brekekejs",
     "crypto-js": "3.1.8",
     "eventemitter3": "4.0.0",
     "history": "4.9.0",
     "immutable": "github:brekekesoftware/immutable",
     "jssip": "github:brekekesoftware/jssip#brekeke-debug",
-    "lodash": "4.17.12",
+    "lodash": "4.17.14",
     "mobx": "5.11.0",
     "mobx-react": "6.1.1",
     "mobx-react-router": "4.0.7",
@@ -28,7 +30,7 @@
     "react-native-fcm": "github:brekekesoftware/react-native-fcm",
     "react-native-fs": "2.13.3",
     "react-native-full-image-picker": "github:brekekesoftware/react-native-full-image-picker",
-    "react-native-general-actionsheet": "1.0.3",
+    "react-native-general-actionsheet": "1.0.4",
     "react-native-incall-manager": "3.2.4",
     "react-native-iphone-x-helper": "1.2.1",
     "react-native-keep-awake": "4.0.0",
@@ -42,66 +44,42 @@
     "react-native-webrtc": "1.69.2",
     "react-redux": "7.1.0",
     "react-router": "5.0.1",
-    "redux": "4.0.3",
+    "redux": "4.0.4",
     "redux-model": "github:brekekesoftware/redux-model",
     "redux-persist": "5.10.0",
     "shortid": "2.2.14",
     "striptags": "3.1.1",
-    "sweetalert2": "^8.13.4",
+    "sweetalert2": "^8.13.6",
     "url-parse": "1.4.7"
   },
   "devDependencies": {
-    "@babel/core": "7.5.4",
-    "@babel/plugin-proposal-class-properties": "7.5.0",
+    "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
     "@babel/plugin-proposal-decorators": "7.4.4",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.4",
-    "@babel/preset-env": "7.5.4",
-    "@babel/preset-react": "7.0.0",
-    "babel-eslint": "10.x",
-    "babel-loader": "8.0.6",
-    "copy-webpack-plugin": "5.0.3",
-    "cross-env": "5.2.0",
-    "css-loader": "3.0.0",
-    "eslint": "5.x",
-    "eslint-config-react-app": "4.0.1",
-    "eslint-plugin-flowtype": "2.x",
-    "eslint-plugin-import": "2.x",
-    "eslint-plugin-jsx-a11y": "6.x",
-    "eslint-plugin-react": "7.x",
-    "eslint-plugin-react-hooks": "1.x",
-    "file-loader": "4.0.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.5.4",
+    "@babel/preset-react": "^7.0.0",
+    "@craco/craco": "^5.2.4",
+    "circular-dependency-plugin": "^5.0.2",
     "js-import-sort": "1.2.0",
+    "node-sass": "^4.12.0",
     "prettier": "1.18.2",
-    "style-loader": "0.23.1",
-    "webpack": "4.35.3",
-    "webpack-cli": "3.3.5",
-    "webpack-dev-server": "3.7.2"
-  },
-  "babel": {
-    "presets": [
-      "module:metro-react-native-babel-preset"
-    ],
-    "plugins": [
-      [
-        "@babel/plugin-proposal-decorators",
-        {
-          "legacy": true
-        }
-      ]
-    ]
+    "react-scripts": "^3.0.1"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "parser": "babel-eslint",
+    "settings": {
+      "react": {
+        "version": "latest"
+      }
+    }
   },
   "eslintIgnore": [
     "node_modules/**",
     "android/**",
     "ios/**",
-    "build/**",
-    "jsonrpc.js",
-    "pal.js",
-    "ucclient.js",
-    "webrtcclient.js"
+    "build/**"
   ],
   "prettier": {
     "printWidth": 80,
@@ -113,5 +91,17 @@
     "bracketSpacing": true,
     "jsxBracketSameLine": false,
     "arrowParens": "avoid"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

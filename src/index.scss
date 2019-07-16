@@ -1,23 +1,23 @@
 @font-face {
   font-family: 'RobotoLight';
-  src: url('../app/fonts/text.ttf') format('truetype');
+  src: url('./fonts/text.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'RobotoLight';
-  src: url('../app/fonts/text-bold.ttf') format('truetype');
+  src: url('./fonts/text-bold.ttf') format('truetype');
   font-weight: bold;
 }
 
 @font-face {
   font-family: 'RobotoLight';
-  src: url('../app/fonts/text-italic.ttf') format('truetype');
+  src: url('./fonts/text-italic.ttf') format('truetype');
   font-style: italic;
 }
 
 @font-face {
   font-family: 'feather';
-  src: url('../app/fonts/feather.ttf') format('truetype');
+  src: url('./fonts/feather.ttf') format('truetype');
 }
 
 ::-webkit-scrollbar {

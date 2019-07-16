@@ -1,7 +1,6 @@
+import 'brekekejs/lib/jsonrpc';
+import 'brekekejs/lib/pal';
 import EventEmitter from 'eventemitter3';
-
-import './jsonrpc';
-import './pal';
 
 class PBX extends EventEmitter {
   client = null;

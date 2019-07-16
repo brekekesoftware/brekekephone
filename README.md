@@ -1,6 +1,8 @@
 ### Environment requirement
+
 - Install `yarn` and use it instead of `npm`.
 - Install node packages:
+
 ```sh
 # We may need to clear yarn cache as well
 #   because we use some git repos like jssip or some other forks
@@ -16,16 +18,16 @@ react-native start
 react-native start --reset-cache
 ```
 
-
 ### Keystores and other credentials keys
+
 - You need to contact us to download or generate your own following files:
   - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
   - `app/apis/turn.js`
 
-
 ### Push notification issues
+
 - Android
   - Ensure latest google-servces.json
   - Ensure correct server api key in sip proxy
@@ -33,16 +35,19 @@ react-native start --reset-cache
   - Check General, Info.plist, Phone.entitlements
   - Ensure correct api key (string or file) in sip proxy
 
-
 ### Android
+
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
 - Windows:
+
 ```sh
 %USERPROFILE%\AppData\Local\Android\Sdk\platform-tools
 %USERPROFILE%\AppData\Local\Android\Sdk\tools
 %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin
 ```
+
 - Mac: https://stackoverflow.com/questions/26483370
+
 ```sh
 export ANDROID_HOME=/Users/$USER/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
@@ -52,6 +57,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
 
 ##### Run and debug app in Android Emulator:
+
 - To create a virtual device:
   - Option 1: Using Android Studio: Go to `Tools > AVD Manager` to install a new virtual device.
   - Option 2: Using command line tool: Follow the instruction at: https://developer.android.com/studio/command-line/avdmanager
@@ -72,10 +78,12 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
   - `You have not accepted the license agreements of the following SDK components`: Execute `cd %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin` then `sdkmanager --licenses` then press y and enter for all licenses.
 
 ##### Run and debug app in a real device:
+
 - Prepare with the phone:
   - Go to Settings > Privacy
   - Enable "Unknown Sources (Allow installation of apps from unknown sources)"
 - Then run those commands on the computer:
+
 ```sh
 adb devices
 adb -s DEVICE_ID reverse tcp:8081 tcp:8081
@@ -83,22 +91,24 @@ react-native run-android --deviceId=DEVICE_ID
 ```
 
 ##### Build the app in release mode and install it in the real device:
+
 - At the project root execute: `cd android && gradlew clean && gradlew assembleRelease`.
 - After the build is finished, the apk file is located at: `android/app/build/outputs/apk/release`.
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 
-
 ### iOS
+
 - Start the react native bundle at the project root: `react-native run-ios`.
 - To clear cache: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`.
 - To have the push notification and other permission related to work, we need to uninstall the app first before reinstalling or debugging.
 
 ##### Build iOS app for distribution
+
 - Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution
 
-
 ### TODO
+
 - [x] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)
 - [x] Fix header space is too small so it becomes overflow by the status bar
 - [x] Add a feature to switch to the loud speaker (and back to the front speaker)
