@@ -29,7 +29,7 @@ react-native start --reset-cache
 ### Push notification issues
 
 - Android
-  - Ensure latest google-servces.json
+  - Ensure latest google-services.json
   - Ensure correct server api key in sip proxy
 - iOS
   - Check General, Info.plist, Phone.entitlements
