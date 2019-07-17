@@ -2,6 +2,7 @@
   "name": "BrekekePhone",
   "version": "3.0.0",
   "private": true,
+  "homepage": "/phone",
   "scripts": {
     "start": "craco start",
     "build": "craco build",
