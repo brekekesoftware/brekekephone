@@ -146,7 +146,8 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Fix the fcm issue for some android vendor versions. Meanwhile 😅 the community: https://github.com/firebase/quickstart-android/issues/368#issuecomment-451559148
 - [x] Don't re-connect automatically if the UC connection is disconnected because of logging in from another location. Ask if the user want to connect again
 - [ ] Check and test in the mobile Wifi settings, if the network has proxy it should work normally
+- [ ] Fix the issue with bundlePolicy and iceServers to use the original jssip, should be fixed by set the default option in src/apis/sip `this.phone.setDefaultCallOptions`. But right now the makeCall function overrides the pcConfig (see UC chat history for detail)
 - [ ] Handle react-native-keep-awake correctly
 - [ ] Screen should be turned off when calling and cover the call sensor using incall-manager (It was working but after upgrading to new version it stops working)
 - [ ] VOIP call option select app https://github.com/react-native-webrtc/react-native-callkeep
-- [ ] Open update page if the profile is missing any of the required fields when logging in
+- [x] Open update page if the profile is missing any of the required fields when logging in (tested, it only doesnt work if user press back button on android)
