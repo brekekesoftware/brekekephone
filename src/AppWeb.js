@@ -26,15 +26,17 @@ class AppWeb extends React.Component {
       : `intent://open${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`;
     return (
       <div className="AppWeb">
+        <h1>Brekeke Phone</h1>
         <img src={logoSrc} alt="Brekeke Phone" />
+        <div />
         <a href={appUrl}>
           <div className="AppWeb-Btn app">
-            Open {isIOS ? 'iOS' : 'Android'} App
+            Open in app
           </div>
         </a>
-        <br />
+        <div />
         <a href="./" onClick={this.enableWebVersion}>
-          <div className="AppWeb-Btn web">Open Web directly</div>
+          <div className="AppWeb-Btn web">Open in browser</div>
         </a>
       </div>
     );
