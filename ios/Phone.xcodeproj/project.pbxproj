@@ -1574,7 +1574,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
-				PRODUCT_NAME = Phone;
+				PRODUCT_NAME = "Brekeke Phone";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h";
@@ -1623,7 +1623,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
-				PRODUCT_NAME = Phone;
+				PRODUCT_NAME = "Brekeke Phone";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h";
@@ -1797,7 +1797,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
-				PRODUCT_NAME = Phone;
+				PRODUCT_NAME = "Brekeke Phone";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/../node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager-Bridging-Header.h";
