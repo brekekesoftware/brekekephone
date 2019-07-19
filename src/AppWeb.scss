@@ -1,0 +1,18 @@
+.AppWeb {
+  text-align: center;
+  padding: 2em;
+  &-Btn {
+    padding: 1em 2em;
+    margin-top: 2em;
+    display: inline-block;
+    border-radius: 0.2em;
+    &.app {
+      border: 0.1em solid blue;
+      color: blue;
+    }
+    &.web {
+      border: 0.1em solid red;
+      color: red;
+    }
+  }
+}

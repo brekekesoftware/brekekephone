@@ -187,11 +187,11 @@ const PhoneIndexPickerNative = p => {
   );
 };
 const PhoneIndexPickerWeb = p => {
-  p.value = p.value || phoneIndexes[0].key;
+  const value = p.value || phoneIndexes[0].key;
   return (
     <Picker
       style={st.pickerWeb}
-      selectedValue={p.value}
+      selectedValue={value}
       onValueChange={v => p.onChange(v)}
     >
       {phoneIndexes.map(t => (
