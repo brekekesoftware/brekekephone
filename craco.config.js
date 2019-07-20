@@ -3,24 +3,13 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 module.exports = {
   babel: {
-    presets: [
-      //
-      '@babel/preset-env',
-      '@babel/preset-react',
-    ],
     plugins: [
       ['@babel/plugin-proposal-decorators', { legacy: true }],
       ['@babel/plugin-proposal-class-properties', { loose: true }],
+      '@babel/plugin-transform-react-jsx',
     ],
     loaderOptions: {
-      include: [
-        // The main source directory:
-        path.join(__dirname, './src'),
-        // Other node modules need to be transpiled:
-        /node_modules\/jssip/,
-        /node_modules\/react-native.+/,
-        /node_modules\/react-.+native/,
-      ],
+      exclude: /node_modules\/(?!react-native-).*/,
     },
   },
   webpack: {

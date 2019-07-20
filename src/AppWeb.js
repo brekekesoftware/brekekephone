@@ -1,7 +1,7 @@
-import React from 'react';
-import { observable, action } from 'mobx';
+import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { isIOS, isAndroid } from 'react-device-detect';
+import React from 'react';
+import { isAndroid, isIOS } from 'react-device-detect';
 
 import App from './App';
 import './AppWeb.scss';
@@ -30,9 +30,7 @@ class AppWeb extends React.Component {
         <img src={logoSrc} alt="Brekeke Phone" />
         <div />
         <a href={appUrl}>
-          <div className="AppWeb-Btn app">
-            Open in app
-          </div>
+          <div className="AppWeb-Btn app">Open in app</div>
         </a>
         <div />
         <a href="./" onClick={this.enableWebVersion}>
