@@ -6,8 +6,8 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../mobx/routerStore';
-import Alert from '../rn/alert';
-import { getPnToken } from '../rn/pn';
+import Alert from '../nativeModules/alert';
+import { getPnToken } from '../nativeModules/pushNotification';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';

@@ -4,7 +4,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import LoudSpeaker from '../../modules/calls-manage/LoudSpeaker';
+import LoudSpeaker from '../../components/calls-manage/LoudSpeaker';
 import UI from './ui';
 
 const mapGetter = getter => state => ({

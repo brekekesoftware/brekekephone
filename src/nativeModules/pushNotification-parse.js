@@ -2,11 +2,11 @@ import get from 'lodash/get';
 import { AppState, Platform } from 'react-native';
 
 import * as routerUtils from '../mobx/routerStore';
-import { getCurrentAuthProfile } from '../modules/pbx-auth/getset';
+import { getCurrentAuthProfile } from '../components/pbx-auth/getset';
 import {
   getProfilesManager,
   getProfilesManagerInterval,
-} from '../modules/profiles-manage/getset';
+} from '../components/profiles-manage/getset';
 
 const keysInCustomNoti = [
   'body',
@@ -85,7 +85,7 @@ const parseCustomNoti = n => {
     c.my_custom_data ||
     c.is_local_notification
   ) {
-    // Added from ./pn.android
+    // Added from ./pushNotification.android
     // TODO handle user click
     return null;
   }

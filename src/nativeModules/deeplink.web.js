@@ -10,7 +10,6 @@ export const getUrlParams = () => {
   alreadyHandleFirstOpen = true;
   return Promise.resolve(params);
 };
-// polyfill for native ./deeplink.js
 export const setUrlParams = () => {
-  return;
+  // polyfill for native api
 };

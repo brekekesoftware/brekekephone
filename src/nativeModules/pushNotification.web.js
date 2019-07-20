@@ -22,5 +22,5 @@ export const registerPn = () => {
 };
 
 export const resetBadgeNumber = () => {
-  // polyfill
+  // polyfill for native api
 };

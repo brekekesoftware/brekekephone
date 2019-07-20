@@ -1,7 +1,7 @@
 import { PushNotificationIOS } from 'react-native';
 import VoipPushNotification from 'react-native-voip-push-notification';
 
-import parseCustomNoti from './pn-parseCustomNoti';
+import parseCustomNoti from './pushNotification-parse';
 
 let voipApnsToken = '';
 export const getPnToken = () => {

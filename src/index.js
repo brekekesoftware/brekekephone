@@ -4,7 +4,7 @@ import { AppRegistry } from 'react-native';
 
 import App from './AppWeb';
 import './index.scss';
-import { registerPn } from './rn/pn';
+import { registerPn } from './nativeModules/pushNotification';
 
 setTimeout(registerPn);
 

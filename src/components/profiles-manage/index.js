@@ -3,8 +3,8 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import { getUrlParams, setUrlParams } from '../../rn/deeplink';
-import { resetBadgeNumber } from '../../rn/pn';
+import { getUrlParams, setUrlParams } from '../../nativeModules/deeplink';
+import { resetBadgeNumber } from '../../nativeModules/pushNotification';
 import { setProfilesManager } from './getset';
 import UI from './ui';
 
