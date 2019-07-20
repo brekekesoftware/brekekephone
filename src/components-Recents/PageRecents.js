@@ -15,7 +15,7 @@ import { FlatList } from 'react-native';
 import SearchContact from '../components-Contacts/SearchContact';
 import Users from './Users';
 
-data_demo = [
+const data_demo = [
   {
     imageUrl: 'http://via.placeholder.com/160x160',
     title: 'something',

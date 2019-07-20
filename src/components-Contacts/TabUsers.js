@@ -54,7 +54,7 @@ const User = p => (
   </ListItem>
 );
 
-data_demo = [
+const data_demo = [
   {
     imageUrl: 'http://via.placeholder.com/160x160',
     title: 'something',

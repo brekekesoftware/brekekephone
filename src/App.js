@@ -8,13 +8,13 @@ import { persistReducer, persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import storage from 'redux-persist/lib/storage';
 
-import getTheme from '../native-base-theme/components';
-import variables from '../native-base-theme/variables/commonColor';
 import './-polyfill';
 import Routes from './Routes';
 import APIProvider from './apis';
 import { history } from './mobx/routerStore';
 import * as models from './models';
+import getTheme from './native-base-theme/components';
+import variables from './native-base-theme/variables/commonColor';
 
 const { getter, action, reduce } = combineModels(models);
 
