@@ -1,16 +1,18 @@
 package com.brekeke.phone;
 
 import android.app.Application;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.loudspeaker.LoudSpeakerPackage;
+import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
@@ -19,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.reactnative.camera.RNCameraPackage;
-import com.BV.LinearGradient.LinearGradientPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost =
@@ -36,14 +37,15 @@ public class MainApplication extends Application implements ReactApplication {
               new FIRMessagingPackage(),
               new InCallManagerPackage(),
               new KCKeepAwakePackage(),
+              new LinearGradientPackage(),
               new LoudSpeakerPackage(),
               new MainReactPackage(),
-              new VectorIconsPackage(),
+              new ReactNativeExceptionHandlerPackage(),
               new ReactVideoPackage(),
               new RNCameraPackage(),
               new RNFSPackage(),
               new SplashScreenReactPackage(),
-              new LinearGradientPackage(),
+              new VectorIconsPackage(),
               new WebRTCModulePackage());
         }
 

@@ -117,7 +117,7 @@ android {
   //
   defaultConfig {
     applicationId "com.brekeke.phone"
-    versionCode 30000
+    versionCode 30001
     versionName "3.0.0"
     targetSdkVersion rootProject.ext.targetSdkVersion
     ndk {
@@ -162,6 +162,9 @@ dependencies {
   compile fileTree(include: ["*.jar"], dir: "libs")
   compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
   compile "com.facebook.react:react-native:+"
+  // https://github.com/evollu/react-native-fcm/issues/1111
+  compile "com.google.firebase:firebase-core:16.0.3"
+  compile "com.google.firebase:firebase-messaging:17.6.0"
   //
   compile (project(":react-native-camera")) {
     exclude group: "com.google.android.gms"
@@ -172,6 +175,7 @@ dependencies {
     }
   }
   compile project(":react-native-document-picker")
+  compile project(":react-native-exception-handler")
   compile project(":react-native-fcm")
   compile project(":react-native-fs")
   compile project(":react-native-incall-manager")
