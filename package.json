@@ -7,7 +7,7 @@
     "start": "craco start",
     "build": "craco build",
     "lint": "eslint --ignore-path=.gitignore .",
-    "pret": "js-import-sort --silent=1 --path src/**/*.js --path src/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
+    "pret": "js-import-sort --silent=1 --path src{,/**}/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
   },
   "dependencies": {
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",

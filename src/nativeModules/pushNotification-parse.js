@@ -1,12 +1,12 @@
 import get from 'lodash/get';
 import { AppState, Platform } from 'react-native';
 
-import * as routerUtils from '../mobx/routerStore';
 import { getCurrentAuthProfile } from '../components/pbx-auth/getset';
 import {
   getProfilesManager,
   getProfilesManagerInterval,
 } from '../components/profiles-manage/getset';
+import * as routerUtils from '../mobx/routerStore';
 
 const keysInCustomNoti = [
   'body',

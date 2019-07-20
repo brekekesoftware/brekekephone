@@ -1,8 +1,8 @@
 import { Linking } from 'react-native';
 
-import * as routerUtils from '../mobx/routerStore';
 import { getCurrentAuthProfile } from '../components/pbx-auth/getset';
 import { getProfilesManager } from '../components/profiles-manage/getset';
+import * as routerUtils from '../mobx/routerStore';
 import parse from './deeplink-parse';
 
 // App opened in background mode via Linking
