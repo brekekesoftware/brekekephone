@@ -180,10 +180,10 @@ dependencies {
   compile project(":react-native-fs")
   compile project(":react-native-incall-manager")
   compile project(":react-native-keep-awake")
+  compile project(":react-native-linear-gradient")
   compile project(":react-native-loud-speaker")
   compile project(":react-native-splash-screen")
-  compile project(':react-native-linear-gradient')
-  compile project(':react-native-vector-icons')
+  compile project(":react-native-vector-icons")
   compile project(":react-native-video")
   compile project(":react-native-webrtc")
 }

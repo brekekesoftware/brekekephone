@@ -11,7 +11,7 @@ module.exports = {
       '@babel/plugin-transform-react-jsx',
     ],
     loaderOptions: {
-      exclude: /node_modules\/(?!react-native|native-base|static-container|react-navigation).*(?!node_modules|dist)/,
+      exclude: /node_modules\/(?!react-native|native-base|static-container|react-navigation).*(node_modules|dist)/,
     },
   },
   webpack: {
