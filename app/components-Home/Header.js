@@ -1,6 +1,6 @@
 import React from 'react';
 import FooterTabs from './FooterTabs';
-import { Container, Header, H1, Left, Body } from 'native-base';
+import { Container, Header, H1, Left, Body, Right, Text,Button } from 'native-base';
 
 
 class Headers extends React.Component {
@@ -14,6 +14,11 @@ class Headers extends React.Component {
   			<Left>
   				<H1>{this.props.title}</H1>
   			</Left>
+        <Right>
+          <Button  transparent dark>
+            <Text >NEW</Text>
+          </Button>
+        </Right>
   		</Header>
     );
   }
