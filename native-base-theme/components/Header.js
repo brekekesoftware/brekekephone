@@ -201,16 +201,13 @@ export default (variables /*: * */ = variable) => {
           }
         },
         ".transparent": {
-          marginLeft:
-            platform === "ios" && platformStyle !== "material" ? -3 : 0,
+          //marginLeft:
+          //  platform === "ios" && platformStyle !== "material" ? -3 : 0,
           "NativeBase.Icon": {
             color: variables.toolbarBtnColor,
-            fontSize:
-              platform === "ios" && variables.platformStyle !== "material"
-                ? variables.iconHeaderSize + 1
-                : variables.iconHeaderSize,
+            fontSize: variables.iconHeaderSize - 10, //custom
             marginTop: 0,
-            marginRight: 2,
+            //marginRight: 2,
             marginLeft: 1,
             paddingTop: 1
           },
@@ -254,12 +251,12 @@ export default (variables /*: * */ = variable) => {
         paddingRight: variables.buttonPadding,
         paddingLeft: 12, //platform === "ios" && platformStyle !== "material" ? 4 : 8
       },
-      flex: platform === "ios" && platformStyle !== "material" ? 1 : 0.4,
-      alignSelf: "center",
-      alignItems: "flex-start"
+      //flex: platform === "ios" && platformStyle !== "material" ? 1 : 0.4,
+      //alignSelf: "center",
+      //alignItems: "flex-start"
     },
     "NativeBase.Body": {
-      flex: 1,
+      flex: 0,
       alignItems:
         platform === "ios" && platformStyle !== "material"
           ? "center"
@@ -319,7 +316,7 @@ export default (variables /*: * */ = variable) => {
           borderRadius: 50,
           "NativeBase.Icon": {
             color: variables.toolbarBtnColor,
-            fontSize: variables.iconHeaderSize - 2,
+            fontSize: variables.iconHeaderSize - 10, //custom 2
             marginTop: 0,
             marginLeft: 2,
             marginRight: 0
@@ -371,8 +368,8 @@ export default (variables /*: * */ = variable) => {
     paddingLeft: 10,
       //custom  platform === "ios" && variables.platformStyle !== "material" ? 6 : 10,
     paddingRight: 10,
-    justifyContent: "center",
-    paddingTop: 5,     //custom 
+    justifyContent: "center", //custom "center"
+    //paddingTop: 5,     //custom 
     borderBottomWidth:
       platform === "ios" ? 1 / PixelRatio.getPixelSizeForLayoutSize(1) : 0,
     borderBottomColor: variables.toolbarDefaultBorder,
