@@ -1,3 +1,4 @@
+import { StyleProvider } from 'native-base';
 import React from 'react';
 import { Provider as StoreProvider } from 'react-redux';
 import { Router } from 'react-router';
@@ -12,11 +13,8 @@ import Routes from './Routes';
 import APIProvider from './apis';
 import { history } from './mobx/routerStore';
 import * as models from './models';
-
-import {StyleProvider} from 'native-base';
-import getTheme from '../native-base-theme/components';
-import variables from '../native-base-theme/variables/commonColor';
-
+import getTheme from './native-base-theme/components';
+import variables from './native-base-theme/variables/commonColor';
 
 const { getter, action, reduce } = combineModels(models);
 

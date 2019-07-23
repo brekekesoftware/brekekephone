@@ -6,10 +6,12 @@ module.exports = {
     plugins: [
       ['@babel/plugin-proposal-decorators', { legacy: true }],
       ['@babel/plugin-proposal-class-properties', { loose: true }],
+      ['@babel/plugin-transform-modules-commonjs', { loose: true }],
+      '@babel/plugin-transform-flow-strip-types',
       '@babel/plugin-transform-react-jsx',
     ],
     loaderOptions: {
-      exclude: /node_modules\/(?!react-native-).*/,
+      exclude: /node_modules\/(?!react-native|native-base|static-container|react-navigation).*(node_modules|dist)/,
     },
   },
   webpack: {
