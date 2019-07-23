@@ -117,7 +117,7 @@ android {
   //
   defaultConfig {
     applicationId "com.brekeke.phone"
-    versionCode 30000
+    versionCode 30001
     versionName "3.0.0"
     targetSdkVersion rootProject.ext.targetSdkVersion
     ndk {

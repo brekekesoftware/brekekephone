@@ -1,6 +1,8 @@
 ### Environment requirement
+
 - Install `yarn` and use it instead of `npm`.
 - Install node packages:
+
 ```sh
 # We may need to clear yarn cache as well
 #   because we use some git repos like jssip or some other forks
@@ -16,33 +18,36 @@ react-native start
 react-native start --reset-cache
 ```
 
-
 ### Keystores and other credentials keys
+
 - You need to contact us to download or generate your own following files:
-  - `android/app/google-services.json`
+  - `android/src/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
   - `app/apis/turn.js`
 
-
 ### Push notification issues
+
 - Android
-  - Ensure latest google-servces.json
+  - Ensure latest google-services.json
   - Ensure correct server api key in sip proxy
 - iOS
   - Check General, Info.plist, Phone.entitlements
   - Ensure correct api key (string or file) in sip proxy
 
-
 ### Android
+
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
 - Windows:
+
 ```sh
 %USERPROFILE%\AppData\Local\Android\Sdk\platform-tools
 %USERPROFILE%\AppData\Local\Android\Sdk\tools
 %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin
 ```
+
 - Mac: https://stackoverflow.com/questions/26483370
+
 ```sh
 export ANDROID_HOME=/Users/$USER/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
@@ -52,6 +57,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
 
 ##### Run and debug app in Android Emulator:
+
 - To create a virtual device:
   - Option 1: Using Android Studio: Go to `Tools > AVD Manager` to install a new virtual device.
   - Option 2: Using command line tool: Follow the instruction at: https://developer.android.com/studio/command-line/avdmanager
@@ -72,10 +78,12 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
   - `You have not accepted the license agreements of the following SDK components`: Execute `cd %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin` then `sdkmanager --licenses` then press y and enter for all licenses.
 
 ##### Run and debug app in a real device:
+
 - Prepare with the phone:
   - Go to Settings > Privacy
   - Enable "Unknown Sources (Allow installation of apps from unknown sources)"
 - Then run those commands on the computer:
+
 ```sh
 adb devices
 adb -s DEVICE_ID reverse tcp:8081 tcp:8081
@@ -83,22 +91,24 @@ react-native run-android --deviceId=DEVICE_ID
 ```
 
 ##### Build the app in release mode and install it in the real device:
+
 - At the project root execute: `cd android && gradlew clean && gradlew assembleRelease`.
 - After the build is finished, the apk file is located at: `android/app/build/outputs/apk/release`.
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 
-
 ### iOS
+
 - Start the react native bundle at the project root: `react-native run-ios`.
 - To clear cache: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`.
 - To have the push notification and other permission related to work, we need to uninstall the app first before reinstalling or debugging.
 
 ##### Build iOS app for distribution
+
 - Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution
 
-
 ### TODO
+
 - [x] It goes down when it fails to connect - at least with iOS editon (when we reconnect after the sleep mode)
 - [x] Fix header space is too small so it becomes overflow by the status bar
 - [x] Add a feature to switch to the loud speaker (and back to the front speaker)
@@ -134,5 +144,10 @@ react-native run-android --deviceId=DEVICE_ID
 - [x] Fix getInitialNotification for react-native-fcm https://github.com/brekekesoftware/react-native-fcm/commits/master
 - [ ] Full screen notification, like Skype: https://github.com/react-native-webrtc/react-native-callkeep
 - [ ] Fix the fcm issue for some android vendor versions. Meanwhile 😅 the community: https://github.com/firebase/quickstart-android/issues/368#issuecomment-451559148
-- [ ] Don't re-connect automatically if the connection is disconnected because if log in from another location, ask if the user want to connect again
-- [ ] Test and check in mobile Wifi settings, if the network has proxy it should work normally
+- [x] Don't re-connect automatically if the UC connection is disconnected because of logging in from another location. Ask if the user want to connect again
+- [ ] Check and test in the mobile Wifi settings, if the network has proxy it should work normally
+- [ ] Fix the issue with bundlePolicy and iceServers to use the original jssip, should be fixed by set the default option in src/apis/sip `this.phone.setDefaultCallOptions`. But right now the makeCall function overrides the pcConfig (see UC chat history for detail)
+- [ ] Handle react-native-keep-awake correctly
+- [ ] Screen should be turned off when calling and cover the call sensor using incall-manager (It was working but after upgrading to new version it stops working)
+- [ ] VOIP call option select app https://github.com/react-native-webrtc/react-native-callkeep
+- [x] Open update page if the profile is missing any of the required fields when logging in (tested, it only doesnt work if user press back button on android)

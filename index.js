@@ -1,8 +1,10 @@
+// Main entry for the react-native bundle
+
 import { AppRegistry } from 'react-native';
 
-import App from './app/App';
-import './app/rn/globalError';
-import { registerPn } from './app/rn/pn';
+import App from './src/App';
+import './src/nativeModules/globalError';
+import { registerPn } from './src/nativeModules/pushNotification';
 
 setTimeout(registerPn);
 AppRegistry.registerComponent('App', () => App);
