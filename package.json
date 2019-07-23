@@ -1,0 +1,107 @@
+{
+  "name": "BrekekePhone",
+  "version": "3.0.0",
+  "private": true,
+  "homepage": "/phone",
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "lint": "eslint --ignore-path=.gitignore .",
+    "pret": "js-import-sort --silent=1 --path src{,/**}/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
+  },
+  "dependencies": {
+    "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
+    "crypto-js": "3.1.8",
+    "eventemitter3": "4.0.0",
+    "history": "4.9.0",
+    "immutable": "github:brekekesoftware/immutable#5a11cd2523dcd6a951e447a4dfa6d772a1e655e0",
+    "jssip": "github:brekekesoftware/jssip#93940bcc89214d410a63435d6da00cbfe790313c",
+    "lodash": "4.17.15",
+    "mobx": "5.13.0",
+    "mobx-react": "6.1.1",
+    "mobx-react-router": "4.0.7",
+    "prop-types": "15.7.2",
+    "qs": "6.7.0",
+    "react": "16.8.6",
+    "react-art": "16.8.6",
+    "react-device-detect": "1.6.5",
+    "react-dom": "16.8.6",
+    "react-native": "0.59.9",
+    "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
+    "react-native-exception-handler": "2.10.8",
+    "react-native-fcm": "github:brekekesoftware/react-native-fcm#f9ce0351f68db62b2295a55c44430d0066d0f3ae",
+    "react-native-fs": "2.13.3",
+    "react-native-full-image-picker": "github:brekekesoftware/react-native-full-image-picker#f515715c26b395ce0faa4af9e2840d63d682fc67",
+    "react-native-general-actionsheet": "1.0.4",
+    "react-native-incall-manager": "3.2.4",
+    "react-native-iphone-x-helper": "1.2.1",
+    "react-native-keep-awake": "4.0.0",
+    "react-native-loud-speaker": "1.0.4",
+    "react-native-modal-selector": "1.0.3",
+    "react-native-permissions": "1.2.0",
+    "react-native-progress-circle": "2.0.1",
+    "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen#a78ee51c0f89652a2a223ff2bc4ec10928bf2c30",
+    "react-native-voip-push-notification": "1.1.4",
+    "react-native-web": "0.11.5",
+    "react-native-webrtc": "1.69.2",
+    "react-redux": "7.1.0",
+    "react-router": "5.0.1",
+    "redux": "4.0.4",
+    "redux-model": "github:brekekesoftware/redux-model#6bae619857025792371dd2710c65cce071a5579c",
+    "redux-persist": "5.10.0",
+    "shortid": "2.2.14",
+    "striptags": "3.1.1",
+    "sweetalert2": "8.14.0",
+    "url-parse": "1.4.7"
+  },
+  "devDependencies": {
+    "@babel/core": "7.5.5",
+    "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/plugin-proposal-decorators": "7.4.4",
+    "@babel/plugin-transform-react-jsx": "7.3.0",
+    "@craco/craco": "5.2.4",
+    "circular-dependency-plugin": "5.0.2",
+    "js-import-sort": "1.2.0",
+    "node-sass": "4.12.0",
+    "prettier": "1.18.2",
+    "react-scripts": "3.0.1"
+  },
+  "eslintConfig": {
+    "extends": "react-app",
+    "parser": "babel-eslint",
+    "settings": {
+      "react": {
+        "version": "latest"
+      }
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/**",
+    "android/**",
+    "ios/**",
+    "build/**"
+  ],
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "avoid"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
