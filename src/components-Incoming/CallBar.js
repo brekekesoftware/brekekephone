@@ -38,25 +38,25 @@ class CallBar extends Component {
       <View style={st.containerCallbar}>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="call-split"/>
+            <Icon name="call-split" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>TRANSFER</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="local-parking"/>
+            <Icon name="local-parking" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>PARK</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="video-call"/>
+            <Icon name="video-call" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>VIDEO</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="volume-up"/>
+            <Icon name="volume-up" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>MUTE</Text>
         </View>
@@ -64,19 +64,19 @@ class CallBar extends Component {
       <View style={st.containerCallbar}>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="fiber-manual-record"/>
+            <Icon name="fiber-manual-record" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>RECORDING</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="dialpad"/>
+            <Icon name="dialpad" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>KEYPAD</Text>
         </View>
         <View style={st.conbtnHangUp}>
           <Button transparent dark bordered style={st.btnCallBar} >
-            <Icon name="pause"/>
+            <Icon name="pause" type="MaterialIcons"/>
           </Button>
           <Text style={st.textCallBar}>HOLD</Text>
         </View>

@@ -134,7 +134,7 @@ const count_server = 0;
 const NoServer = () => (
   <View style={st.container}>
     <View>
-      <Icon style={st.iconserver} name="phonelink-off"/>
+      <Icon style={st.iconserver} name="phonelink-off" type="MaterialIcons"/>
     </View>
     <View>
       <Text style={st.textNoServer}>No Server</Text>
@@ -157,7 +157,7 @@ const Server = p => (
     <List>     
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="person" />
+          <Icon name="person" type="MaterialIcons"/>
         </Left>
         <Body>
           <Text note>USERNAME</Text>
@@ -166,7 +166,7 @@ const Server = p => (
       </ListItem>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="home" />
+          <Icon name="home" type="MaterialIcons"/>
         </Left>
         <Body>
           <Text note>TENANT</Text>
@@ -175,7 +175,7 @@ const Server = p => (
       </ListItem>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="domain" />
+          <Icon name="domain" type="MaterialIcons"/>
         </Left>
         <Body>
           <Text note>HOST NAME</Text>
@@ -184,7 +184,7 @@ const Server = p => (
       </ListItem>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="usb" />
+          <Icon name="usb" type="MaterialIcons"/>
         </Left>
         <Body>
           <Text note>POST</Text>
@@ -196,10 +196,10 @@ const Server = p => (
     <View style={st.btncontainer}>
       <View style={st.btnEditandRemove}>
         <Button>
-          <Icon name="delete"/>
+          <Icon name="delete" type="MaterialIcons"/>
         </Button>
         <Button>
-          <Icon name="create"/>
+          <Icon name="create" type="MaterialIcons"/>
         </Button>
       </View>
       <Button style={st.btncontainerSignin}>

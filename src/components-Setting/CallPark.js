@@ -14,7 +14,7 @@ const Park = p => (
       </Left>
       <Right>
         <Button full transparent dark>
-          <Icon name="create" />
+          <Icon name="create" type="MaterialIcons"/>
         </Button>
       </Right>
     </ListItem>
@@ -71,7 +71,7 @@ class CallParkComponent extends Component {
           </ListItem>
         </List>
         <Button full iconLeft danger>
-          <Icon name='exit-to-app' />
+          <Icon name='exit-to-app' type="MaterialIcons"/>
           <Text>LOG OUT</Text>
         </Button>
      </Content>

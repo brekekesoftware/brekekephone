@@ -30,7 +30,7 @@ class User extends Component {
         </Body>
         <Right>
           <Button transparent dark>
-            <Icon name="call" />
+            <Icon name="call" type="MaterialIcons"/>
           </Button>
         </Right>
       </ListItem>

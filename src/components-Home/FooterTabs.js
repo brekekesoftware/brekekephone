@@ -22,26 +22,26 @@ class FooterTabs extends Component {
       <Footer>
         <FooterTab>
           <Button vertical onPress={this.props.pressContacts}>
-            <Icon name="contacts" />
+            <Icon name="contacts" type="MaterialIcons"/>
             <Text>CONTACTS</Text>
           </Button>
           <Button badge vertical>
             <Badge>
               <Text>2</Text>
             </Badge>
-            <Icon name="call" />
+            <Icon name="call" type="MaterialIcons"/>
             <Text>RECENTS</Text>
           </Button>
           <Button vertical>
-            <Icon name="dialpad" />
+            <Icon name="dialpad" type="MaterialIcons"/>
             <Text>CALL</Text>
           </Button>
           <Button vertical>
-            <Icon name="chat" />
+            <Icon name="chat" type="MaterialIcons"/>
             <Text>CHAT</Text>
           </Button>
           <Button vertical>
-            <Icon name="settings" />
+            <Icon name="settings" type="MaterialIcons"/>
             <Text>SETTINGS</Text>
           </Button>
         </FooterTab>

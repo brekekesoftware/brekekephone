@@ -26,12 +26,12 @@ class PageInComingCall extends Component {
         <Header transparent>
           <Left>
             <Button transparent dark>
-              <Icon name='arrow-back' />
+              <Icon name='arrow-back' type="MaterialIcons"/>
             </Button>
           </Left>
           <Right>
             <Button transparent dark>
-              <Icon name='group' />
+              <Icon name='group' type="MaterialIcons"/>
             </Button>
           </Right>
         </Header>

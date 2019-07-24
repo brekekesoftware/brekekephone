@@ -57,10 +57,10 @@ class KeyPad extends Component {
 			  <View style={st.conPhoneCall}>
 			    	<View style={st.btnCall}></View>
 			    	<Button style={st.btnCall} success >
-			    		<Icon name="call"/>
+			    		<Icon name="call" type="MaterialIcons"/>
 	          </Button>
 	          <Button style={st.btnCall} transparent dark >
-	            <Icon name="backspace"/>
+	            <Icon name="backspace" type="MaterialIcons"/>
 	          </Button>
 			    </View>
 			</View>

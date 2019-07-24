@@ -27,7 +27,7 @@ class HangUpComponent extends Component {
       <View style={st.containerHangUp}>
         <View style={st.conHangUp}>
           <Button style={st.btnHangUp} danger >
-            <Icon name="call-end"/>
+            <Icon name="call-end" type="MaterialIcons"/>
           </Button>
           <Text style={st.iconHangup}>HANG UP</Text>
         </View>

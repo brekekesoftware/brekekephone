@@ -45,10 +45,10 @@ const User = p => (
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>
-        <Icon name="chat-bubble" />
+        <Icon name="chat-bubble" type="MaterialIcons"/>
       </Button>
       <Button transparent dark>
-        <Icon name="call"></Icon>
+        <Icon name="call" type="MaterialIcons"/>
       </Button>
     </Right>
   </ListItem>
@@ -108,7 +108,7 @@ class TabUsers extends Component {
           </List>
         </Content>
         <Fab style={st.btnFab}>
-          <Icon name="person-add" />
+          <Icon name="person-add" type="MaterialIcons"/>
         </Fab>
       </Container>
     );

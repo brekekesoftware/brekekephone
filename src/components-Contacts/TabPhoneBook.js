@@ -27,10 +27,10 @@ const User = p => (
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>
-        {/*<Icon name="call"/>*/}
+        <Icon name="call" type="MaterialIcons"/>
       </Button>
       <Button transparent dark>
-        {/*<Icon name="info"/>*/}
+        <Icon name="info" type="MaterialIcons"/>
       </Button>                     
     </Right>
   </ListItem> 
@@ -89,11 +89,11 @@ class TabPhoneBook extends Component {
             />
           </List>
         </Content>
-        {/*<Fab
+        <Fab
           style={st.btnFab}
         >
-         {/*} <Icon name="add" /> 
-        </Fab>*/}
+          <Icon name="add" type="MaterialIcons"/> 
+        </Fab>
       </Container>
     );
   }

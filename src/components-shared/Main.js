@@ -72,7 +72,7 @@ const Main = p => (
       <Text style={st.navbarTitle}>{p.title}</Text>
       {p.onBack && (
         <TouchableOpacity style={st.navbarBack}>
-          <Icon name="arrow-back"/>
+          <Icon name="arrow-back" type="MaterialIcons"/>
         </TouchableOpacity>
       )}
       {p.onNext && (

@@ -19,20 +19,20 @@ class HeaderChat extends React.Component {
   		<Header style={st.container}>
   			<Left>
           <Button transparent dark>
-            <Icon name="arrow-back"/>
+            <Icon name="arrow-back" type="MaterialIcons"/>
           </Button>
   			</Left>
         <Body>
           <Text>Aerald Richards</Text>
-          <Icon name="call"/> 
+          <Icon name="call" type="MaterialIcons"/> 
           <Text note>available</Text>
         </Body>
         <Right>
           <Button  transparent dark>
-            <Icon name="search"/>
+            <Icon name="search" type="MaterialIcons"/>
           </Button>
           <Button transparent dark>
-            <Icon name="call"/>
+            <Icon name="call" type="MaterialIcons"/>
           </Button>
         </Right>
   		</Header>
