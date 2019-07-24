@@ -17,7 +17,9 @@ class HomePage extends React.Component {
   render() {
     return (
     	<Container>
-    		<ChatsDetail/>
+    		<Headers title="Contacs"/>
+    		<PageContact/>
+    		<FooterTabs/>
       </Container>
     );
   }

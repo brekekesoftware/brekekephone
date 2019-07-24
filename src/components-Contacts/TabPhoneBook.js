@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Container, Header, Content, List, Item, Input, ListItem, Left, Body, Right, Thumbnail, Text, Icon, Button, Fab } from 'native-base';
 import {View, TextInput, FlatList, StyleSheet} from 'react-native';
 import { std } from '../styleguide';
@@ -27,16 +27,16 @@ const User = p => (
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>
-        <Icon name="call" />
+        {/*<Icon name="call"/>*/}
       </Button>
       <Button transparent dark>
-        <Icon name="info"></Icon>
+        {/*<Icon name="info"/>*/}
       </Button>                     
     </Right>
   </ListItem> 
 )
 
-data_demo = [
+let data_demo = [
   {
     imageUrl: 'http://via.placeholder.com/160x160',
     title: 'something',
@@ -89,11 +89,11 @@ class TabPhoneBook extends Component {
             />
           </List>
         </Content>
-        <Fab
+        {/*<Fab
           style={st.btnFab}
         >
-          <Icon name="add" />
-        </Fab>
+         {/*} <Icon name="add" /> 
+        </Fab>*/}
       </Container>
     );
   }

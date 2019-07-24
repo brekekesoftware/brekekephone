@@ -38,6 +38,7 @@ import Tabbar from './components/tabbar';
 import ToastsNotify from './components/toasts-notify';
 import UCAuth from './components/uc-auth';
 import UsersBrowse from './components/users-browse';
+import HomePage from './components-Home/HomePage';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>

@@ -174,7 +174,7 @@ export default {
   },
 
   // Icon
-  iconFamily: 'Ionicons',
+  iconFamily: 'MaterialIcons',
   iconFontSize: 1,
   iconHeaderSize: 1,
 

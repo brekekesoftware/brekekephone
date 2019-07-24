@@ -37,7 +37,7 @@ class FooterTabs extends Component {
             <Text>CALL</Text>
           </Button>
           <Button vertical>
-            <Icon name="chat-bubble" />
+            <Icon name="chat" />
             <Text>CHAT</Text>
           </Button>
           <Button vertical>

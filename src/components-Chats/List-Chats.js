@@ -31,7 +31,7 @@ const User = p => (
   </ListItem> 
 )
 
-data_demo = [
+let data_demo = [
   {
     imageUrl: 'http://via.placeholder.com/160x160',
     title: 'something',
