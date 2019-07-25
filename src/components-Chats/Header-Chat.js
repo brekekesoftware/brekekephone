@@ -1,10 +1,14 @@
 import React from 'react';
-import { Header, Left, Body, Right, Text,Button, Icon } from 'native-base';
+import { Header, Left, Body, Right, Text,Button, Icon, View } from 'native-base';
 import {StyleSheet} from 'react-native';
 
 const st = StyleSheet.create({
   container:{
-    height: 40,
+    height: 60,
+  },
+  available: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   }
 })
 
@@ -21,8 +25,10 @@ class HeaderChat extends React.Component {
   			</Left>
         <Body>
           <Text>Aerald Richards</Text>
-          <Icon name="call" type="MaterialIcons"/> 
-          <Text note>available</Text>
+          <View style={st.available}>
+            <Icon name="fiber-manual-record" type="MaterialIcons"/> 
+            <Text note>available</Text>
+          </View>
         </Body>
         <Right>
           <Button  transparent dark>
