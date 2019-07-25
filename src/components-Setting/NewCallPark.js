@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container , Content,  Button, Icon,  Text, Item, Form, Label, Input } from 'native-base';
+import { Container , Content,  Button,  Text, Form } from 'native-base';
 import { TextInput } from '../components-shared/Input';
 
 

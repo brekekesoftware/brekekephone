@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Header, Content, List, Item, Input, ListItem, Left, Body, Right, Thumbnail, Text, Icon, Button, Fab } from 'native-base';
-import {View, TextInput, FlatList, StyleSheet} from 'react-native';
-import { std } from '../styleguide';
+import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text, Icon, Button, Fab } from 'native-base';
+import { FlatList, StyleSheet} from 'react-native';
 import SearchContact from './SearchContact';
 
 
@@ -23,7 +22,7 @@ const User = p => (
     </Left>
     <Body>
       <Text>Aong Bao</Text>
-      <Text note>Phonebook Name</Text>
+      <Text note="true">Phonebook Name</Text>
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>

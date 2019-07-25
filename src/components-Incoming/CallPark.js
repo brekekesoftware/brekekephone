@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListItem, Content, Left, Button, Icon, Body, Right, Text, List  } from 'native-base';
+import { ListItem, Content, Left, Button, Body, Right, Text, List  } from 'native-base';
 import {FlatList} from 'react-native';
 
 

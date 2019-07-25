@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Content, Header, View, Left, Right, H2, Body, Icon, Button, Text } from 'native-base';
+import { Container, Header, View, Left, Right, H2, Icon, Button, Text } from 'native-base';
 import {StyleSheet} from 'react-native';
 import { std } from '../styleguide';
 import HangUpComponent from './HangUp';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Left, Button, Text, Icon, Body, View} from 'native-base';
+import { Button, Text, Icon, View} from 'native-base';
 import {StyleSheet,} from 'react-native';
 import { std } from '../styleguide';
 

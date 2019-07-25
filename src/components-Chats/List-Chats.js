@@ -1,7 +1,6 @@
-import React, { Component, PureComponent } from 'react';
-import { Container, Header, Content, List, Item, Input, ListItem, Left, Body, Right, Thumbnail, Text, Icon, Button, Fab } from 'native-base';
-import {View, TextInput, FlatList, StyleSheet} from 'react-native';
-import { std } from '../styleguide';
+import React, { Component } from 'react';
+import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
+import { FlatList, StyleSheet} from 'react-native';
 import SearchContact from '../components-Contacts/SearchContact';
 
 

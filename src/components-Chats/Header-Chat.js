@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Header, H1, Left, Body, Right, Text,Button, Icon,Title } from 'native-base';
+import { Header, Left, Body, Right, Text,Button, Icon } from 'native-base';
 import {StyleSheet} from 'react-native';
 
 const st = StyleSheet.create({
@@ -10,9 +10,6 @@ const st = StyleSheet.create({
 
 
 class HeaderChat extends React.Component {
-	constructor(props) {
-    super(props);
-  }
 
   render() {
     return (

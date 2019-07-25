@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Content } from 'native-base';
+import { Container } from 'native-base';
 import HeaderChat from './Header-Chat';
 
 class ChatsDetail extends Component {

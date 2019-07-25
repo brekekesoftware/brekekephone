@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Content } from 'native-base';
+import { Container } from 'native-base';
 import KeyPad from './KeyPad';
 import DisplayNumber from './DisplayNumber';
 

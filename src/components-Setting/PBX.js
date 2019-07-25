@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListItem, Left, Button, Icon, Body, Text, List  } from 'native-base';
+import { ListItem, Left, Icon, Body, Text, List  } from 'native-base';
 
 class PbxComponent extends Component {
 	render() {

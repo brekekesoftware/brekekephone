@@ -4,10 +4,7 @@ import {
   Container,
   Content,
   Fab,
-  Header,
   Icon,
-  Input,
-  Item,
   Left,
   List,
   ListItem,
@@ -15,8 +12,8 @@ import {
   Text,
   Thumbnail,
 } from 'native-base';
-import React, { Component, PureComponent } from 'react';
-import { FlatList, StyleSheet, TextInput, View } from 'react-native';
+import React, { Component } from 'react';
+import { FlatList, StyleSheet } from 'react-native';
 
 import SearchContact from './SearchContact';
 

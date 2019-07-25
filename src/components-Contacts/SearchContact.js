@@ -1,5 +1,5 @@
 import { Button, Header, Input, Item, Text } from 'native-base';
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { std } from '../styleguide';

@@ -1,7 +1,4 @@
 import {
-  Container,
-  Header,
-  Icon,
   Tab,
   TabHeading,
   Tabs,
