@@ -29,7 +29,7 @@ class ChatMessages extends React.Component {
   		<Content>
         <List>
           <ListItem thumbnail>
-            <Left>
+            <Left style={st.avatar}>
               <Thumbnail style={st.avatar} small source={{ uri: 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg' }} />
             </Left>
             <Body>
