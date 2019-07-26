@@ -1,14 +1,38 @@
 import React from 'react';
-import { Header, Left, Body, Right, Text,Button, Icon, View } from 'native-base';
+import { Header, Left, Body, Right, Text,Button, Icon, View, H3 } from 'native-base';
 import {StyleSheet} from 'react-native';
+import variable from '../native-base-theme/variables/platform';
+import { std } from '../styleguide';
+
 
 const st = StyleSheet.create({
   container:{
     height: 60,
+    top: 15,
+    right:0,
+    left:0,
+    flexDirection: 'row',
+    borderBottomColor: variable.toolbarDefaultBorder,
+    borderBottomWidth: 1,
   },
   available: {
     flexDirection: 'row',
+    alignItems: 'center',  
+    
+  },
+  right:{
+    flex: 1,
+    alignItems: 'flex-end',
+    flexDirection: 'row',
     justifyContent: 'flex-end',
+  },
+  bodyIcon: {
+    fontSize: 15,
+    color: "#5cb85c",
+
+  },
+  body:{
+    lineHeight: std.gap.sm,
   }
 })
 
@@ -17,28 +41,28 @@ class HeaderChat extends React.Component {
 
   render() {
     return (
-  		<Header style={st.container}>
-  			<Left>
+  		<View style={st.container}>
+  			<View style={st.left}>
           <Button transparent dark>
             <Icon name="arrow-back" type="MaterialIcons"/>
           </Button>
-  			</Left>
-        <Body>
-          <Text>Aerald Richards</Text>
+  			</View>
+        <View style={st.body}>
+          <H3>Aerald Richards</H3>
           <View style={st.available}>
-            <Icon name="fiber-manual-record" type="MaterialIcons"/> 
-            <Text note>available</Text>
+            <Icon style={st.bodyIcon} name="fiber-manual-record" type="MaterialIcons"/> 
+            <Text note>AVAILABLE</Text>
           </View>
-        </Body>
-        <Right>
+        </View>
+        <View style={st.right}>
           <Button  transparent dark>
             <Icon name="search" type="MaterialIcons"/>
           </Button>
           <Button transparent dark>
             <Icon name="call" type="MaterialIcons"/>
           </Button>
-        </Right>
-  		</Header>
+        </View>
+  		</View>
     );
   }
 }

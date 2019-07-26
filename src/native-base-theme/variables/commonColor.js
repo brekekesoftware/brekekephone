@@ -139,7 +139,7 @@ export default {
   },
 
   // Footer
-  footerHeight: 55,
+  footerHeight: 30,       //custom
   footerDefaultBg: '#F8F8F8', //custom
   footerPaddingBottom: 0,
 

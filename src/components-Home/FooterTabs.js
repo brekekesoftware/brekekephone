@@ -11,15 +11,11 @@ import {
 } from 'native-base';
 import React, { Component } from 'react';
 
-import { rem, std } from '../styleguide';
-
 class FooterTabs extends Component {
-  constructor(props) {
-    super(props);
-  }
+  
   render() {
     return (
-      <Footer>
+      <Footer style={{paddingBottom: 0}}>
         <FooterTab>
           <Button vertical onPress={this.props.pressContacts}>
             <Icon name="contacts" type="MaterialIcons"/>
