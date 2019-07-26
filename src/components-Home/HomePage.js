@@ -20,6 +20,7 @@ class HomePage extends React.Component {
     		
     		<ChatsDetail/>
     		
+    		
       </Container>
     );
   }
