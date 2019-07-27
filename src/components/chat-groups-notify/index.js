@@ -1,4 +1,5 @@
 import at from 'lodash/get';
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -8,29 +9,30 @@ import UI from './ui';
 
 const isNotJointed = group => !group.jointed;
 
-const mapGetter = getter => state => ({
-  groupIds: getter.chatGroups
-    .idsByOrder(state)
-    .filter(id => isNotJointed(getter.chatGroups.detailMapById(state)[id])),
-  groupById: getter.chatGroups.detailMapById(state),
-  ucUserById: getter.ucUsers.detailMapById(state),
-});
+@observer
+@createModelView(
+  getter => state => ({
+    groupIds: getter.chatGroups
+      .idsByOrder(state)
+      .filter(id => isNotJointed(getter.chatGroups.detailMapById(state)[id])),
+    groupById: getter.chatGroups.detailMapById(state),
+    ucUserById: getter.ucUsers.detailMapById(state),
+  }),
+  action => emit => ({
+    removeChatGroup(id) {
+      emit(action.chatGroups.remove(id));
+    },
 
-const mapAction = action => emit => ({
-  removeChatGroup(id) {
-    emit(action.chatGroups.remove(id));
-  },
-
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
@@ -93,4 +95,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

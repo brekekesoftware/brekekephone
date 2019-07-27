@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -7,24 +8,25 @@ import UI from './ui';
 
 const isIncoming = call => call.incoming && !call.answered;
 
-const mapGetter = getter => state => ({
-  callIds: getter.runningCalls
-    .idsByOrder(state)
-    .filter(id => isIncoming(getter.runningCalls.detailMapById(state)[id])),
-  callById: getter.runningCalls.detailMapById(state),
-});
-
-const mapAction = action => emit => ({
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    callIds: getter.runningCalls
+      .idsByOrder(state)
+      .filter(id => isIncoming(getter.runningCalls.detailMapById(state)[id])),
+    callById: getter.runningCalls.detailMapById(state),
+  }),
+  action => emit => ({
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -62,4 +64,4 @@ class View extends Component {
   );
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

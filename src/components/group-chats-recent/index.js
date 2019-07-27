@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -6,55 +7,6 @@ import createId from 'shortid';
 import * as routerUtils from '../../mobx/routerStore';
 import stripTags from '../../utils/stripTags';
 import UI from './ui';
-
-const mapGetter = getter => (state, props) => {
-  const duplicatedMap = {};
-
-  return {
-    group: getter.chatGroups.detailMapById(state)[props.match.params.group],
-
-    chatIds: (
-      getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
-    ).filter(id => {
-      if (duplicatedMap[id]) {
-        return false;
-      }
-
-      duplicatedMap[id] = true;
-      return true;
-    }),
-
-    chatById: getter.groupChats.detailMapById(state),
-    ucUserById: getter.ucUsers.detailMapById(state),
-  };
-};
-
-const mapAction = action => emit => ({
-  appendChats(group, chats) {
-    emit(action.groupChats.appendByGroup(group, chats));
-  },
-
-  prependChats(group, chats) {
-    emit(action.groupChats.prependByGroup(group, chats));
-  },
-
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-
-  removeChatGroup(id) {
-    emit(action.chatGroups.remove(id));
-  },
-
-  clearChatsByGroup(group) {
-    emit(action.groupChats.clearByGroup(group));
-  },
-});
 
 const monthName = [
   'Jan',
@@ -102,6 +54,56 @@ const isMiniChat = (chat, prev = {}) =>
   chat.created - prev.created < miniChatDuration;
 const numberOfChatsPerLoad = 50;
 
+@observer
+@createModelView(
+  getter => (state, props) => {
+    const duplicatedMap = {};
+
+    return {
+      group: getter.chatGroups.detailMapById(state)[props.match.params.group],
+
+      chatIds: (
+        getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
+      ).filter(id => {
+        if (duplicatedMap[id]) {
+          return false;
+        }
+
+        duplicatedMap[id] = true;
+        return true;
+      }),
+
+      chatById: getter.groupChats.detailMapById(state),
+      ucUserById: getter.ucUsers.detailMapById(state),
+    };
+  },
+  action => emit => ({
+    appendChats(group, chats) {
+      emit(action.groupChats.appendByGroup(group, chats));
+    },
+
+    prependChats(group, chats) {
+      emit(action.groupChats.prependByGroup(group, chats));
+    },
+
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+
+    removeChatGroup(id) {
+      emit(action.chatGroups.remove(id));
+    },
+
+    clearChatsByGroup(group) {
+      emit(action.groupChats.clearByGroup(group));
+    },
+  }),
+)
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
@@ -387,4 +389,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

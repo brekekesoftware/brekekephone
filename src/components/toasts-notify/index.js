@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
@@ -5,17 +6,18 @@ import UI from './ui';
 
 const TIMEOUT = 2000;
 
-const mapGetter = getter => state => ({
-  toastIds: getter.toasts.idsByOrder(state),
-  toastById: getter.toasts.detailMapById(state),
-});
-
-const mapAction = action => emit => ({
-  removeToast(id) {
-    emit(action.toasts.remove(id));
-  },
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    toastIds: getter.toasts.idsByOrder(state),
+    toastById: getter.toasts.detailMapById(state),
+  }),
+  action => emit => ({
+    removeToast(id) {
+      emit(action.toasts.remove(id));
+    },
+  }),
+)
 class View extends Component {
   timeouts = {};
 
@@ -46,4 +48,4 @@ class View extends Component {
   resolveToast = toast => this.props.toastById[toast];
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

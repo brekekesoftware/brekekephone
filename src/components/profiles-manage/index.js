@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
@@ -8,49 +9,50 @@ import { resetBadgeNumber } from '../../nativeModules/pushNotification';
 import { setProfilesManager } from './getset';
 import UI from './ui';
 
-const mapGetter = getter => (state, props) => ({
-  profileIds: getter.profiles.idsByOrder(state),
-  profileById: getter.profiles.detailMapById(state),
+@observer
+@createModelView(
+  getter => (state, props) => ({
+    profileIds: getter.profiles.idsByOrder(state),
+    profileById: getter.profiles.detailMapById(state),
 
-  callIds: getter.runningCalls.idsByOrder(state).filter(id => {
-    const call = getter.runningCalls.detailMapById(state)[id];
-    return call && call.incoming && !call.answered;
+    callIds: getter.runningCalls.idsByOrder(state).filter(id => {
+      const call = getter.runningCalls.detailMapById(state)[id];
+      return call && call.incoming && !call.answered;
+    }),
+
+    callById: getter.runningCalls.detailMapById(state),
   }),
+  action => emit => ({
+    createProfile(profile) {
+      emit(action.profiles.create(profile));
+    },
 
-  callById: getter.runningCalls.detailMapById(state),
-});
+    updateProfile(profile) {
+      emit(action.profiles.update(profile));
+    },
 
-const mapAction = action => emit => ({
-  createProfile(profile) {
-    emit(action.profiles.create(profile));
-  },
+    removeProfile(id) {
+      emit(action.profiles.remove(id));
+    },
 
-  updateProfile(profile) {
-    emit(action.profiles.update(profile));
-  },
+    setAuthProfile(profile) {
+      emit(action.auth.setProfile(profile));
+    },
 
-  removeProfile(id) {
-    emit(action.profiles.remove(id));
-  },
+    updateCall(call) {
+      emit(action.runningCalls.update(call));
+    },
 
-  setAuthProfile(profile) {
-    emit(action.auth.setProfile(profile));
-  },
-
-  updateCall(call) {
-    emit(action.runningCalls.update(call));
-  },
-
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends Component {
   async componentDidMount() {
     setProfilesManager(this);
@@ -203,4 +205,4 @@ class View extends Component {
   }
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

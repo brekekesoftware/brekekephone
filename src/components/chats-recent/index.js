@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
@@ -6,15 +7,18 @@ import UI from './ui';
 
 const isGroupJointed = group => group.jointed;
 
-const mapGetter = getter => state => ({
-  buddyIds: getter.buddyChats.buddyIdsByRecent(state),
-  buddyById: getter.ucUsers.detailMapById(state),
-  groupIds: getter.chatGroups
-    .idsByOrder(state)
-    .filter(id => isGroupJointed(getter.chatGroups.detailMapById(state)[id])),
-  groupById: getter.chatGroups.detailMapById(state),
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    buddyIds: getter.buddyChats.buddyIdsByRecent(state),
+    buddyById: getter.ucUsers.detailMapById(state),
+    groupIds: getter.chatGroups
+      .idsByOrder(state)
+      .filter(id => isGroupJointed(getter.chatGroups.detailMapById(state)[id])),
+    groupById: getter.chatGroups.detailMapById(state),
+  }),
+  action => emit => ({}),
+)
 class View extends Component {
   render = () => (
     <UI
@@ -29,4 +33,4 @@ class View extends Component {
   );
 }
 
-export default createModelView(mapGetter)(View);
+export default View;

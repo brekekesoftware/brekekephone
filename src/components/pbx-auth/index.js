@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
@@ -7,6 +8,20 @@ import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
+@observer
+@createModelView(
+  getter => state => {},
+  action => emit => ({
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
@@ -65,17 +80,4 @@ class View extends React.Component {
   }
 }
 
-const mapGetter = getter => state => {};
-
-const mapAction = action => emit => ({
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

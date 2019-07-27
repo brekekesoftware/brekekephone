@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -8,27 +9,28 @@ import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  chatsEnabled: (authStore.profile || {}).ucEnabled,
-  runningIds: getter.runningCalls.idsByOrder(state),
-  runningById: getter.runningCalls.detailMapById(state),
-});
+@observer
+@createModelView(
+  getter => state => ({
+    chatsEnabled: (authStore.profile || {}).ucEnabled,
+    runningIds: getter.runningCalls.idsByOrder(state),
+    runningById: getter.runningCalls.detailMapById(state),
+  }),
+  action => emit => ({
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
 
-const mapAction = action => emit => ({
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-
-  updateCall(call) {
-    emit(action.runningCalls.update(call));
-  },
-});
-
+    updateCall(call) {
+      emit(action.runningCalls.update(call));
+    },
+  }),
+)
 class View extends Component {
   state = {
     activecallid: null,
@@ -189,4 +191,4 @@ class View extends Component {
   }
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

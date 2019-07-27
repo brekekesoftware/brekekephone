@@ -1,19 +1,21 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => (state, props) => ({
-  profile: getter.profiles.detailMapById(state)[props.match.params.profile],
-});
-
-const mapAction = action => emit => ({
-  setAuthProfile(profile) {
-    emit(action.auth.setProfile(profile));
-  },
-});
-
+@observer
+@createModelView(
+  getter => (state, props) => ({
+    profile: getter.profiles.detailMapById(state)[props.match.params.profile],
+  }),
+  action => emit => ({
+    setAuthProfile(profile) {
+      emit(action.auth.setProfile(profile));
+    },
+  }),
+)
 class View extends Component {
   state = {
     pbxPassword: this.props.profile ? this.props.profile.pbxPassword : '',
@@ -44,4 +46,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

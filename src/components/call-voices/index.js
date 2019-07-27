@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
@@ -7,19 +8,22 @@ const isIncoming = call => !call.answered && call.incoming;
 const isOutgoing = call => !call.answered && !call.incoming;
 const isAnswered = call => call.answered;
 
-const mapGetter = getter => state => ({
-  incomingCallIds: getter.runningCalls
-    .idsByOrder(state)
-    .filter(id => isIncoming(getter.runningCalls.detailMapById(state)[id])),
-  outgoingCallIds: getter.runningCalls
-    .idsByOrder(state)
-    .filter(id => isOutgoing(getter.runningCalls.detailMapById(state)[id])),
-  answeredCallIds: getter.runningCalls
-    .idsByOrder(state)
-    .filter(id => isAnswered(getter.runningCalls.detailMapById(state)[id])),
-  callById: getter.runningCalls.detailMapById(state),
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    incomingCallIds: getter.runningCalls
+      .idsByOrder(state)
+      .filter(id => isIncoming(getter.runningCalls.detailMapById(state)[id])),
+    outgoingCallIds: getter.runningCalls
+      .idsByOrder(state)
+      .filter(id => isOutgoing(getter.runningCalls.detailMapById(state)[id])),
+    answeredCallIds: getter.runningCalls
+      .idsByOrder(state)
+      .filter(id => isAnswered(getter.runningCalls.detailMapById(state)[id])),
+    callById: getter.runningCalls.detailMapById(state),
+  }),
+  action => emit => ({}),
+)
 class View extends Component {
   render = () => (
     <UI
@@ -33,4 +37,4 @@ class View extends Component {
   resolveCall = id => this.props.callById[id];
 }
 
-export default createModelView(mapGetter, null)(View);
+export default View;

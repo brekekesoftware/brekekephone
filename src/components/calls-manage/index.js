@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -7,32 +8,33 @@ import * as routerUtils from '../../mobx/routerStore';
 import LoudSpeaker from './LoudSpeaker';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  runningIds: getter.runningCalls.idsByOrder(state),
-  runningById: getter.runningCalls.detailMapById(state),
-  parkingIds: getter.parkingCalls.idsByOrder(state),
-  selectedId: getter.callsManaging.selectedId(state),
-});
+@observer
+@createModelView(
+  getter => state => ({
+    runningIds: getter.runningCalls.idsByOrder(state),
+    runningById: getter.runningCalls.detailMapById(state),
+    parkingIds: getter.parkingCalls.idsByOrder(state),
+    selectedId: getter.callsManaging.selectedId(state),
+  }),
+  action => emit => ({
+    updateCall(call) {
+      emit(action.runningCalls.update(call));
+    },
 
-const mapAction = action => emit => ({
-  updateCall(call) {
-    emit(action.runningCalls.update(call));
-  },
+    selectCall(call) {
+      emit(action.callsManaging.setSelectedId(call.id));
+    },
 
-  selectCall(call) {
-    emit(action.callsManaging.setSelectedId(call.id));
-  },
-
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends Component {
   state = {
     prevSelectedId: null,
@@ -319,4 +321,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

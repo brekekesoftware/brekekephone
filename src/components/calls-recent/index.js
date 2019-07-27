@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -6,20 +7,21 @@ import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  callIds: getter.recentCalls.idsMapByProfile(state)[
-    (authStore.profile || {}).id
-  ],
-  callById: getter.recentCalls.detailMapById(state),
-  parkingIds: getter.parkingCalls.idsByOrder(state),
-});
-
-const mapAction = action => d => ({
-  removeCall(id) {
-    d(action.recentCalls.remove(id));
-  },
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    callIds: getter.recentCalls.idsMapByProfile(state)[
+      (authStore.profile || {}).id
+    ],
+    callById: getter.recentCalls.detailMapById(state),
+    parkingIds: getter.parkingCalls.idsByOrder(state),
+  }),
+  action => d => ({
+    removeCall(id) {
+      d(action.recentCalls.remove(id));
+    },
+  }),
+)
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -56,4 +58,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

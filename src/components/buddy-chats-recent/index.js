@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -8,52 +9,6 @@ import stripTags from '../../utils/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 import UI from './ui';
-
-const mapGetter = getter => (state, props) => {
-  const duplicatedMap = {};
-
-  return {
-    buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
-
-    chatIds: (
-      getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy] || []
-    ).filter(id => {
-      if (duplicatedMap[id]) {
-        return false;
-      }
-
-      duplicatedMap[id] = true;
-      return true;
-    }),
-
-    chatById: getter.buddyChats.detailMapById(state),
-    ucUserById: getter.ucUsers.detailMapById(state),
-    fileById: getter.chatFiles.byId(state),
-  };
-};
-
-const mapAction = action => emit => ({
-  appendChats(buddy, chats) {
-    emit(action.buddyChats.appendByBuddy(buddy, chats));
-  },
-
-  prependChats(buddy, chats) {
-    emit(action.buddyChats.prependByBuddy(buddy, chats));
-  },
-
-  createChatFile(file) {
-    emit(action.chatFiles.create(file));
-  },
-
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
 
 const monthName = [
   'Jan',
@@ -102,6 +57,53 @@ const isMiniChat = (chat, prev = {}) =>
   chat.created - prev.created < miniChatDuration;
 const numberOfChatsPerLoad = 50;
 
+@observer
+@createModelView(
+  getter => (state, props) => {
+    const duplicatedMap = {};
+
+    return {
+      buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
+
+      chatIds: (
+        getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy] || []
+      ).filter(id => {
+        if (duplicatedMap[id]) {
+          return false;
+        }
+
+        duplicatedMap[id] = true;
+        return true;
+      }),
+
+      chatById: getter.buddyChats.detailMapById(state),
+      ucUserById: getter.ucUsers.detailMapById(state),
+      fileById: getter.chatFiles.byId(state),
+    };
+  },
+  action => emit => ({
+    appendChats(buddy, chats) {
+      emit(action.buddyChats.appendByBuddy(buddy, chats));
+    },
+
+    prependChats(buddy, chats) {
+      emit(action.buddyChats.prependByBuddy(buddy, chats));
+    },
+
+    createChatFile(file) {
+      emit(action.chatFiles.create(file));
+    },
+
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
@@ -385,4 +387,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

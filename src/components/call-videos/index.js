@@ -1,13 +1,17 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  callIds: getter.runningVideos.idsByOrder(state),
-  callById: getter.runningVideos.detailMapById(state),
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    callIds: getter.runningVideos.idsByOrder(state),
+    callById: getter.runningVideos.detailMapById(state),
+  }),
+  action => emit => ({}),
+)
 class View extends Component {
   render() {
     return <UI callIds={this.props.callIds} resolveCall={this.resolveCall} />;
@@ -23,4 +27,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, null)(View);
+export default View;

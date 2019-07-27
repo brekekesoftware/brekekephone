@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
@@ -6,25 +7,26 @@ import * as routerUtils from '../../mobx/routerStore';
 import { validateHostname, validatePort } from '../../utils/validator';
 import UI from './ui';
 
-const mapGetter = getter => (state, props) => ({
-  profile: getter.profiles.detailMapById(state)[props.match.params.profile],
-});
+@observer
+@createModelView(
+  getter => (state, props) => ({
+    profile: getter.profiles.detailMapById(state)[props.match.params.profile],
+  }),
+  action => emit => ({
+    updateProfile(profile) {
+      emit(action.profiles.update(profile));
+    },
 
-const mapAction = action => emit => ({
-  updateProfile(profile) {
-    emit(action.profiles.update(profile));
-  },
-
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 class View extends Component {
   constructor(props) {
     super(props);
@@ -212,4 +214,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

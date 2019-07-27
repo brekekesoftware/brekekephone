@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -6,21 +7,22 @@ import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  ucEnabled: (authStore.profile || {}).ucEnabled,
-  searchText: getter.usersBrowsing.searchText(state),
-  pbxUserIds: getter.pbxUsers.idsByOrder(state),
-  pbxUserById: getter.pbxUsers.detailMapById(state),
-  ucUserIds: getter.ucUsers.idsByOrder(state),
-  ucUserById: getter.ucUsers.detailMapById(state),
-});
-
-const mapAction = action => emit => ({
-  setSearchText(value) {
-    emit(action.usersBrowsing.setSearchText(value));
-  },
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    ucEnabled: (authStore.profile || {}).ucEnabled,
+    searchText: getter.usersBrowsing.searchText(state),
+    pbxUserIds: getter.pbxUsers.idsByOrder(state),
+    pbxUserById: getter.pbxUsers.detailMapById(state),
+    ucUserIds: getter.ucUsers.idsByOrder(state),
+    ucUserById: getter.ucUsers.detailMapById(state),
+  }),
+  action => emit => ({
+    setSearchText(value) {
+      emit(action.usersBrowsing.setSearchText(value));
+    },
+  }),
+)
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -138,4 +140,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;

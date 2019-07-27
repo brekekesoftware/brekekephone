@@ -9,22 +9,23 @@ import createId from 'shortid';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({});
-
-const mapAction = action => emit => ({
-  showToast(message) {
-    emit(
-      action.toasts.create({
-        id: createId(),
-        message,
-      }),
-    );
-  },
-});
-
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, '');
 
+@observer
+@createModelView(
+  getter => state => ({}),
+  action => emit => ({
+    showToast(message) {
+      emit(
+        action.toasts.create({
+          id: createId(),
+          message,
+        }),
+      );
+    },
+  }),
+)
 @observer
 class View extends Component {
   static contextTypes = {
@@ -345,4 +346,4 @@ class View extends Component {
   };
 }
 
-export default createModelView(mapGetter, mapAction)(View);
+export default View;
