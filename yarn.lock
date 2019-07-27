@@ -6531,9 +6531,9 @@ js-base64@^2.1.8:
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.5.1.tgz#1efa39ef2c5f7980bb1784ade4a8af2de3291121"
   integrity sha512-M7kLczedRMYX4L8Mdh4MzyAMM9O5osx+4FcOQuTvr3A9F2D9S5JXheN0ewNbrvK2UatkTRhL5ejGmGSjNMiZuw==
 
-"js-import-sort@github:namnm/js-import-sort#244bf56099874412930a988379c701000b958e29":
+"js-import-sort@github:namnm/js-import-sort#c727f96b4fc8fb038c07f1fe373ea9f68857717d":
   version "1.2.0"
-  resolved "https://codeload.github.com/namnm/js-import-sort/tar.gz/244bf56099874412930a988379c701000b958e29"
+  resolved "https://codeload.github.com/namnm/js-import-sort/tar.gz/c727f96b4fc8fb038c07f1fe373ea9f68857717d"
   dependencies:
     find-root "^1.1.0"
     for-own "^1.0.0"
@@ -7781,18 +7781,19 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-native-base-shoutem-theme@GeekyAnts/theme#master:
-  version "0.2.3"
-  resolved "https://codeload.github.com/GeekyAnts/theme/tar.gz/51fcc2334ca225bdcc7a4cb2efcacc7bcbf3e2ef"
+native-base-shoutem-theme@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/native-base-shoutem-theme/-/native-base-shoutem-theme-0.3.0.tgz#9431b52cca7af9db2e2d0f5a864acb48d48dc4de"
+  integrity sha512-guf5IKeMaQERJlD/QYlgxnsrxCeKNqC4vGwFyA8OetanxGt+oNxR5SQhLxM28CIS1D4OCqVl+u8znBdlqsIkZQ==
   dependencies:
     hoist-non-react-statics "^1.0.5"
     lodash "4.17.11"
     prop-types "^15.5.10"
 
-native-base@2.13.0:
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/native-base/-/native-base-2.13.0.tgz#b2b3e7355e4787c77383c91dae90e9506b6194f9"
-  integrity sha512-hbRG6faxdVVA536Doi21M+CEPoWFDKaKucjA2Q42qG16vysQ0Bnn6ThJAl9+/RDuMbiWqiLSieaqPzKJ4WnHew==
+native-base@2.13.4:
+  version "2.13.4"
+  resolved "https://registry.yarnpkg.com/native-base/-/native-base-2.13.4.tgz#c1752d0bb016355b088adc5d6790b1dd678864ac"
+  integrity sha512-qgGW8qWFGVRnfPUgEgN/RC+8uM417H2rH+S9V8+Gg/3ef8RYcSc9wrrX2f+OauSvgfvnWwrPeFPzkBNp7iu3PQ==
   dependencies:
     blueimp-md5 "^2.5.0"
     clamp "^1.0.1"
@@ -7802,7 +7803,7 @@ native-base@2.13.0:
     fs-extra "^2.0.0"
     jest-react-native "^18.0.0"
     lodash "^4.17.14"
-    native-base-shoutem-theme GeekyAnts/theme#master
+    native-base-shoutem-theme "0.3.0"
     opencollective-postinstall "^2.0.2"
     print-message "^2.1.0"
     prop-types "^15.5.10"
@@ -9797,10 +9798,10 @@ react-native-exception-handler@2.10.8:
   version "16.2.4"
   resolved "https://codeload.github.com/brekekesoftware/react-native-fcm/tar.gz/f9ce0351f68db62b2295a55c44430d0066d0f3ae"
 
-react-native-fs@2.14.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.14.0.tgz#f3385a8a084bdf7e5e5a5aae9f0898bc26f31314"
-  integrity sha512-vRrdVke3/AK77WTN6aDxcebhXSuuieS4vputRqd0sBQ3CJvgDzN/vu5L1SAy6kzblHru6Pdq/ebfLXlrPjFqAA==
+react-native-fs@2.14.1:
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.14.1.tgz#61c70a865b5b5bcb020dd4e4befd60a2c20c836f"
+  integrity sha512-ZcfiwNP+FBgvv2eRk0B62/NI58mbjszjjYvQlP352HLkUqVsK4Ld6X8fdBO1lZAz6SgitUk8WEc9NEciRIt31g==
   dependencies:
     base-64 "^0.1.0"
     utf8 "^2.1.1"
@@ -9855,10 +9856,10 @@ react-native-keyboard-aware-scroll-view@0.8.0:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-react-native-linear-gradient@2.5.5:
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.5.tgz#efea1f862bde939f6e073a51b4b3ca9e0bb62437"
-  integrity sha512-BoaRqWtQ0Powxrz/4cdkzLQIyV/bwMXCZ+S7fGKSFZr/NtKrOpb9vvyG+d45ufnkuFPbWIqUflFvuLOpf067ag==
+react-native-linear-gradient@2.5.6:
+  version "2.5.6"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.6.tgz#96215cbc5ec7a01247a20890888aa75b834d44a0"
+  integrity sha512-HDwEaXcQIuXXCV70O+bK1rizFong3wj+5Q/jSyifKFLg0VWF95xh8XQgfzXwtq0NggL9vNjPKXa016KuFu+VFg==
 
 react-native-loud-speaker@1.0.4:
   version "1.0.4"
