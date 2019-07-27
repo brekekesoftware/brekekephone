@@ -1,14 +1,4 @@
-import {
-  Badge,
-  Button,
-  Container,
-  Content,
-  Footer,
-  FooterTab,
-  Header,
-  Icon,
-  Text,
-} from 'native-base';
+import { Badge, Button, Footer, FooterTab, Icon, Text } from 'native-base';
 import React, { Component } from 'react';
 
 class FooterTabs extends Component {

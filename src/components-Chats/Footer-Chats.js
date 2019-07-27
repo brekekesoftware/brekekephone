@@ -1,19 +1,6 @@
-import {
-  Button,
-  Footer,
-  FooterTab,
-  Form,
-  Icon,
-  Input,
-  Item,
-  Label,
-  View,
-} from 'native-base';
+import { Button, Form, Icon, Input, Item, Label, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-
-import variable from '../native-base-theme/variables/platform';
-import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   footer: {

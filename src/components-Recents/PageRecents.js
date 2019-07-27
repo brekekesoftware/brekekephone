@@ -1,14 +1,4 @@
-import {
-  Container,
-  Content,
-  Header,
-  Icon,
-  List,
-  Tab,
-  TabHeading,
-  Tabs,
-  Text,
-} from 'native-base';
+import { Container, Content, List } from 'native-base';
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 

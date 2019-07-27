@@ -1,14 +1,4 @@
-import {
-  Body,
-  Button,
-  H3,
-  Header,
-  Icon,
-  Left,
-  Right,
-  Text,
-  View,
-} from 'native-base';
+import { Button, H3, Icon, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
