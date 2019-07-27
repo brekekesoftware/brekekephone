@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
-import HomePage from './components-Home/HomePage';
 import Auth from './components/auth';
 import WithoutStatusBar from './components/auth/WithoutStatusBar';
 import BuddyChatsNotify from './components/buddy-chats-notify';

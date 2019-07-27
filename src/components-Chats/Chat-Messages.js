@@ -2,14 +2,12 @@ import {
   Body,
   Content,
   Form,
-  Icon,
   Input,
   Item,
   Label,
   Left,
   List,
   ListItem,
-  Right,
   Text,
   Thumbnail,
   Title,
@@ -20,7 +18,6 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import variable from '../native-base-theme/variables/platform';
-import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   container: {

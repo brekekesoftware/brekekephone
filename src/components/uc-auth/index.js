@@ -16,6 +16,7 @@ import UI, { UC_CONNECT_STATES } from './ui';
     fillUsers(users) {
       emit(action.ucUsers.refill(users));
     },
+
     showToast(message) {
       emit(
         action.toasts.create({
@@ -24,15 +25,19 @@ import UI, { UC_CONNECT_STATES } from './ui';
         }),
       );
     },
+
     appendBuddyChats(buddy, chats) {
       emit(action.buddyChats.appendByBuddy(buddy, chats));
     },
+
     reinitBuddyChats() {
       emit(action.buddyChats.clearAll());
     },
+
     clearAllGroupChats() {
       emit(action.groupChats.clearAll());
     },
+
     clearAllChatGroups() {
       emit(action.chatGroups.clearAll());
     },
