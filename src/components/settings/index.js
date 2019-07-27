@@ -12,7 +12,12 @@ const mapGetter = getter => state => ({
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -30,6 +35,7 @@ class View extends Component {
 
   componentDidMount() {
     const me = this.context.uc.me();
+
     this.setState({
       chatMood: me.mood,
       chatOffline: me.offline,
@@ -56,6 +62,7 @@ class View extends Component {
 
   onSetChatStatusSuccess = () => {
     const me = this.context.uc.me();
+
     this.setState({
       chatMood: me.mood,
       chatOffline: me.offline,
@@ -66,11 +73,13 @@ class View extends Component {
 
   onSetChatStatusFailure = () => {
     const { showToast } = this.props;
+
     showToast('Failed to change chat status');
   };
 
   setChatOffline = () => {
     const { uc } = this.context;
+
     uc.setOffline(this.state.chatMood)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
@@ -78,6 +87,7 @@ class View extends Component {
 
   setChatOnline = () => {
     const { uc } = this.context;
+
     uc.setOnline(this.state.chatMood)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
@@ -85,13 +95,16 @@ class View extends Component {
 
   setChatBusy = () => {
     const { uc } = this.context;
+
     uc.setBusy(this.state.chatMood)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
   };
 
   setChatMood = chatMood => {
-    this.setState({ chatMood });
+    this.setState({
+      chatMood,
+    });
   };
 
   submitChatMood = () => {

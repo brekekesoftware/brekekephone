@@ -29,6 +29,7 @@ class View extends Component {
 
   initTimeouts() {
     const { toastIds, removeToast } = this.props;
+
     toastIds.forEach(id => {
       if (!this.timeouts[id]) {
         this.timeouts[id] = setTimeout(() => {
@@ -42,7 +43,6 @@ class View extends Component {
   render = () => (
     <UI toastIds={this.props.toastIds} resolveToast={this.resolveToast} />
   );
-
   resolveToast = toast => this.props.toastById[toast];
 }
 

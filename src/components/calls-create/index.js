@@ -14,7 +14,12 @@ const mapGetter = getter => state => ({
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -52,17 +57,22 @@ class View extends Component {
   );
 
   setTarget = target => {
-    this.setState({ target });
+    this.setState({
+      target,
+    });
   };
 
   isMatchUser = id => {
     const { pbxUserById } = this.props;
+
     const searchTextLC = this.state.target.toLowerCase();
-
     const userId = id && id.toLowerCase();
-
     let pbxUserName;
-    const pbxUser = pbxUserById[id] || { name: '' };
+
+    const pbxUser = pbxUserById[id] || {
+      name: '',
+    };
+
     if (pbxUser) {
       pbxUserName = pbxUser.name.toLowerCase();
     } else {
@@ -76,6 +86,7 @@ class View extends Component {
 
   resolveMatch = id => {
     const match = this.props.pbxUserById[id];
+
     return {
       name: match.name,
       number: id,
@@ -91,17 +102,21 @@ class View extends Component {
   };
 
   setVideo = video => {
-    this.setState({ video });
+    this.setState({
+      video,
+    });
   };
 
   create = match => {
     const { target, video } = this.state;
+
     if (!target.trim()) {
       this.props.showToast('No target');
       return;
     }
 
     const { sip } = this.context;
+
     sip.createSession(target, {
       videoEnabled: video,
     });
@@ -116,6 +131,7 @@ class View extends Component {
     }
 
     const { sip } = this.context;
+
     sip.createSession(target, {
       videoEnabled: bVideoEnabled,
     });
@@ -125,11 +141,13 @@ class View extends Component {
 
   callVoice = match => {
     const { target } = this.state;
+
     this.call(target, false);
   };
 
   callVideo = match => {
     const { target } = this.state;
+
     this.call(target, true);
   };
 }

@@ -7,7 +7,7 @@
     "start": "craco start",
     "build": "craco build",
     "lint": "eslint --ignore-path=.gitignore .",
-    "pret": "js-import-sort --silent=1 --path src{,/**}/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
+    "pret": "js-import-sort --silent=1 --path src{,/**,/**/**}/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
   },
   "dependencies": {
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
@@ -60,12 +60,13 @@
     "@babel/core": "7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
     "@babel/plugin-transform-flow-strip-types": "^7.4.4",
     "@babel/plugin-transform-modules-commonjs": "^7.5.0",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@craco/craco": "5.2.4",
     "circular-dependency-plugin": "5.0.2",
-    "js-import-sort": "1.2.0",
+    "js-import-sort": "github:namnm/js-import-sort#244bf56099874412930a988379c701000b958e29",
     "node-sass": "4.12.0",
     "prettier": "1.18.2",
     "react-scripts": "3.0.1"

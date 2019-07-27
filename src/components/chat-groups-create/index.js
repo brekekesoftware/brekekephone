@@ -13,8 +13,14 @@ const mapGetter = getter => state => ({
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
+
   createChatGroup(group) {
     emit(action.chatGroups.create(group));
   },
@@ -44,27 +50,37 @@ class View extends Component {
   );
 
   setName = name => {
-    this.setState({ name });
+    this.setState({
+      name,
+    });
   };
 
   toggleBuddy = buddy => {
     const { members } = this.state;
+
     if (members.includes(buddy)) {
-      this.setState({ members: members.filter(_ => _ !== buddy) });
+      this.setState({
+        members: members.filter(_ => _ !== buddy),
+      });
     } else {
-      this.setState({ members: [...members, buddy] });
+      this.setState({
+        members: [...members, buddy],
+      });
     }
   };
 
   create = () => {
     const { name, members } = this.state;
+
     const { showToast } = this.props;
+
     if (!name.trim()) {
       showToast('Group name is required');
       return;
     }
 
     const { uc } = this.context;
+
     uc.createChatGroup(name, members)
       .then(this.onCreateSuccess)
       .catch(this.onCreateFailure);
@@ -78,7 +94,9 @@ class View extends Component {
 
   onCreateFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     showToast('Failed to create the group chat');
   };
 }

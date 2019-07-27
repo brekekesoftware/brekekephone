@@ -2,12 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
   callIds: getter.recentCalls.idsMapByProfile(state)[
-    (getter.auth.profile(state) || {}).id
+    (authStore.profile || {}).id
   ],
   callById: getter.recentCalls.detailMapById(state),
   parkingIds: getter.parkingCalls.idsByOrder(state),
@@ -45,10 +46,11 @@ class View extends Component {
 
   callBack = id => {
     const { sip } = this.context;
+
     const { callById } = this.props;
+
     const call = callById[id] || {};
     const number = call.partyNumber;
-
     sip.createSession(number);
     routerUtils.goToCallsManage();
   };

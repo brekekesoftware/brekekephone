@@ -19,18 +19,22 @@ const st = {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   tab: {
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
   },
+
   tabIcon: {
     fontFamily: std.font.icon,
+
     fontSize: Platform.select({
       ios: rem(32),
       android: std.iconSize.md,
       web: std.iconSize.md,
     }),
+
     lineHeight: std.iconSize.md + std.gap.md * 2,
     color: std.color.shade5,
   },

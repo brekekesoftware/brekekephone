@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native';
 import Divider from '../components-shared/Divider';
 import { TextInput } from '../components-shared/Input';
 import SwitchStatus from '../components-shared/Switch';
-import mobxClosureSet from '../util/mobxClosureSet';
+import { closureMobxSet } from '../mobx/BaseStore';
 import ButtonNewField from './ButtonNewField';
 import ButtonSave from './ButtonSave';
 import ProfileFormStore from './ProfileFormStore';
@@ -30,7 +30,7 @@ class ProfileForm extends React.Component {
               label="HOST NAME"
               placeholder="Host name"
               value={s.pbxHostname}
-              onChange={mobxClosureSet(s, 'pbxHostname')}
+              onChange={closureMobxSet(s, 'pbxHostname')}
               onSubmit={this.onSubmit}
             />
             <TextInput
@@ -38,14 +38,14 @@ class ProfileForm extends React.Component {
               label="PORT"
               placeholder="Port"
               value={s.pbxPort}
-              onChange={mobxClosureSet(s, 'pbxPort')}
+              onChange={closureMobxSet(s, 'pbxPort')}
               onSubmit={this.onSubmit}
             />
             <TextInput
               label="TENANT"
               placeholder="Tenant"
               value={s.pbxTenant}
-              onChange={mobxClosureSet(s, 'pbxTenant')}
+              onChange={closureMobxSet(s, 'pbxTenant')}
               onSubmit={this.onSubmit}
             />
             <TextInput
@@ -53,7 +53,7 @@ class ProfileForm extends React.Component {
               label="USERNAME"
               placeholder="Username"
               value={s.pbxUsername}
-              onChange={mobxClosureSet(s, 'pbxUsername')}
+              onChange={closureMobxSet(s, 'pbxUsername')}
               onSubmit={this.onSubmit}
             />
             <TextInput
@@ -61,7 +61,7 @@ class ProfileForm extends React.Component {
               label="PASSWORD"
               placeholder="Password"
               value={s.pbxPassword}
-              onChange={mobxClosureSet(s, 'pbxPassword')}
+              onChange={closureMobxSet(s, 'pbxPassword')}
               onSubmit={this.onSubmit}
             />
           </Divider>
@@ -72,7 +72,7 @@ class ProfileForm extends React.Component {
               label="HOST NAME"
               placeholder="Host name"
               value={s.ucHostname}
-              onChange={mobxClosureSet(s, 'ucHostname')}
+              onChange={closureMobxSet(s, 'ucHostname')}
               onSubmit={this.onSubmit}
             />
             <TextInput
@@ -80,7 +80,7 @@ class ProfileForm extends React.Component {
               label="PORT"
               placeholder="Port"
               value={s.ucPort}
-              onChange={mobxClosureSet(s, 'ucPort')}
+              onChange={closureMobxSet(s, 'ucPort')}
               onSubmit={this.onSubmit}
             />
           </Divider>
@@ -90,7 +90,7 @@ class ProfileForm extends React.Component {
               label="PART NUMBER"
               placeholder="Part Number"
               value={s.ucPort}
-              onChange={mobxClosureSet(s, 'ucPort')}
+              onChange={closureMobxSet(s, 'ucPort')}
               onSubmit={this.onSubmit}
             />
           </Divider>

@@ -14,7 +14,12 @@ const mapGetter = getter => (state, props) => ({
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -24,7 +29,10 @@ class View extends Component {
   };
 
   static defaultProps = {
-    group: { members: [] },
+    group: {
+      members: [],
+    },
+
     buddyIds: [],
     buddyById: {},
   };
@@ -46,18 +54,26 @@ class View extends Component {
   );
 
   isNotMember = buddy => !this.props.group.members.includes(buddy);
-
   resolveBuddy = buddy => this.props.buddyById[buddy];
 
   toggleBuddy = buddy => {
     let { selectedBuddy } = this.state;
-    selectedBuddy = { ...selectedBuddy, [buddy]: !selectedBuddy[buddy] };
-    this.setState({ selectedBuddy });
+
+    selectedBuddy = {
+      ...selectedBuddy,
+      [buddy]: !selectedBuddy[buddy],
+    };
+
+    this.setState({
+      selectedBuddy,
+    });
   };
 
   invite = () => {
     const { group, showToast } = this.props;
+
     const { selectedBuddy } = this.state;
+
     const members = Object.keys(selectedBuddy);
 
     if (!members.length) {
@@ -66,6 +82,7 @@ class View extends Component {
     }
 
     const { uc } = this.context;
+
     uc.inviteChatGroupMembers(group.id, members)
       .catch(this.onInviteFailure)
       .then(this.back);
@@ -73,7 +90,9 @@ class View extends Component {
 
   onInviteFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     showToast(err.message || 'Failed with unknown error');
   };
 

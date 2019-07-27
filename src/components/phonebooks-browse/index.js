@@ -7,9 +7,15 @@ import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({});
+
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -44,7 +50,9 @@ class View extends Component {
   loadBooks() {
     const { pbx } = this.context;
 
-    this.setState({ loading: true });
+    this.setState({
+      loading: true,
+    });
 
     pbx
       .getPhonebooks()
@@ -53,7 +61,10 @@ class View extends Component {
   }
 
   onLoadSuccess = books => {
-    this.setState({ books, loading: false });
+    this.setState({
+      books,
+      loading: false,
+    });
   };
 
   onLoadFailure = function(err) {

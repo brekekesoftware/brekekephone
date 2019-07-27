@@ -14,6 +14,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade3,
     flex: 1,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -22,12 +23,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarRightOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -37,11 +40,13 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.action,
   },
+
   profile: {
     backgroundColor: std.color.shade0,
     flexDirection: 'row',
@@ -51,21 +56,25 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   profileInfo: {
     flex: 1,
   },
+
   profileTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   profileSubtitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   profileAction: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
@@ -76,24 +85,29 @@ const st = StyleSheet.create({
     alignItems: 'center',
     marginRight: std.gap.lg,
   },
+
   dangerIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.danger,
   },
+
   actionIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   profiles: {
     flex: 1,
   },
+
   empty: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   emptyMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -158,7 +172,6 @@ const Profiles = p =>
 const ProfilesManage = p => (
   <View style={st.main}>
     <Navbar create={p.create} />
-
     <Profiles
       ids={p.profileIds}
       resolve={p.resolveProfile}

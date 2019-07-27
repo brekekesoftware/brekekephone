@@ -4,22 +4,26 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import stripTags from '../../util/stripTags';
+import stripTags from '../../utils/stripTags';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
   const duplicatedMap = {};
+
   return {
     group: getter.chatGroups.detailMapById(state)[props.match.params.group],
+
     chatIds: (
       getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
     ).filter(id => {
       if (duplicatedMap[id]) {
         return false;
       }
+
       duplicatedMap[id] = true;
       return true;
     }),
+
     chatById: getter.groupChats.detailMapById(state),
     ucUserById: getter.ucUsers.detailMapById(state),
   };
@@ -29,15 +33,24 @@ const mapAction = action => emit => ({
   appendChats(group, chats) {
     emit(action.groupChats.appendByGroup(group, chats));
   },
+
   prependChats(group, chats) {
     emit(action.groupChats.prependByGroup(group, chats));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
+
   removeChatGroup(id) {
     emit(action.chatGroups.remove(id));
   },
+
   clearChatsByGroup(group) {
     emit(action.groupChats.clearByGroup(group));
   },
@@ -75,6 +88,7 @@ const formatTime = time => {
     .getMinutes()
     .toString()
     .padStart(2, '0');
+
   if (isToday(time)) return `${hour}:${min}`;
 
   const month = monthName[time.getMonth()];
@@ -82,12 +96,10 @@ const formatTime = time => {
   return `${month} ${day} - ${hour}:${min}`;
 };
 
-const miniChatDuration = 60000; // 60 seconds
-
+const miniChatDuration = 60000;
 const isMiniChat = (chat, prev = {}) =>
   chat.creator === prev.creator &&
   chat.created - prev.created < miniChatDuration;
-
 const numberOfChatsPerLoad = 50;
 
 class View extends Component {
@@ -97,7 +109,10 @@ class View extends Component {
   };
 
   static defaultProps = {
-    group: { members: [] },
+    group: {
+      members: [],
+    },
+
     chatIds: [],
     chatById: {},
     ucUserById: {},
@@ -112,7 +127,9 @@ class View extends Component {
 
   componentDidMount() {
     const { chatIds } = this.props;
+
     const noChat = !chatIds.length;
+
     if (noChat) this.loadRecent();
   }
 
@@ -139,15 +156,18 @@ class View extends Component {
   );
 
   me = this.context.uc.me();
+
   resolveBuddy = creator => {
     if (creator === this.me.id) return this.me;
 
     const { ucUserById } = this.props;
+
     return ucUserById[creator] || {};
   };
 
   resolveChat = (id, index) => {
     const { chatIds, chatById } = this.props;
+
     const chat = chatById[id];
     const prev = chatById[chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
@@ -155,11 +175,14 @@ class View extends Component {
     const text = stripTags(chat.text);
 
     if (mini) {
-      return { mini: true, created, text };
+      return {
+        mini: true,
+        created,
+        text,
+      };
     }
 
     const creator = this.resolveBuddy(chat.creator);
-
     const creatorName =
       !creator.name || creator.name.length === 0 ? creator.id : creator.name;
 
@@ -173,74 +196,112 @@ class View extends Component {
 
   loadRecent() {
     const { group } = this.props;
+
     const { uc } = this.context;
+
     const max = numberOfChatsPerLoad;
-    const query = { max };
+
+    const query = {
+      max,
+    };
 
     uc.getGroupChats(group.id, query)
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
 
-    this.setState({ loadingRecent: true });
+    this.setState({
+      loadingRecent: true,
+    });
   }
 
   onLoadRecentSuccess = chats => {
     const { group, appendChats } = this.props;
+
     appendChats(group.id, chats.reverse());
-    this.setState({ loadingRecent: false });
+
+    this.setState({
+      loadingRecent: false,
+    });
   };
 
   onLoadRecentFailure = err => {
     console.error(err);
-    this.setState({ loadingRecent: false });
+
+    this.setState({
+      loadingRecent: false,
+    });
+
     const { showToast } = this.props;
+
     showToast('Failed to get recent chats');
   };
 
   loadMore = () => {
     const { group, chatIds, chatById } = this.props;
+
     const { uc } = this.context;
+
     const oldestChat = chatById[chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = numberOfChatsPerLoad;
-    // fix server-side issue
     const end = oldestCreated;
-    const query = { max, end };
+
+    const query = {
+      max,
+      end,
+    };
 
     uc.getGroupChats(group.id, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
 
-    this.setState({ loadingMore: true });
+    this.setState({
+      loadingMore: true,
+    });
   };
 
   onLoadMoreSuccess = chats => {
     const { group, prependChats } = this.props;
+
     prependChats(group.id, chats.reverse());
-    this.setState({ loadingMore: false });
+
+    this.setState({
+      loadingMore: false,
+    });
   };
 
   onLoadMoreFailure = err => {
     const { showToast } = this.props;
+
     showToast('Failed to get more chats');
     console.error(err);
-    this.setState({ loadingMore: false });
+
+    this.setState({
+      loadingMore: false,
+    });
   };
 
   setEditingText = editingText => {
-    this.setState({ editingText });
+    this.setState({
+      editingText,
+    });
   };
 
   submitting = false;
+
   submitEditingText = () => {
     if (this.submitting) {
       return;
     }
+
     const txt = this.state.editingText.trim();
+
     if (!txt) {
       return;
     }
+
     this.submitting = true;
+
     this.context.uc
       .sendGroupChatText(this.props.group.id, txt)
       .then(this.onSubmitEditingTextSuccess)
@@ -249,10 +310,15 @@ class View extends Component {
         this.submitting = false;
       });
   };
+
   onSubmitEditingTextSuccess = chat => {
     this.props.appendChats(this.props.group.id, [chat]);
-    this.setState({ editingText: '' });
+
+    this.setState({
+      editingText: '',
+    });
   };
+
   onSubmitEditingTextFailure = err => {
     console.error(err);
     this.props.showToast('Failed to send the message');
@@ -260,6 +326,7 @@ class View extends Component {
 
   leave = () => {
     const { group } = this.props;
+
     const { uc } = this.context;
 
     uc.leaveChatGroup(group.id)
@@ -289,6 +356,7 @@ class View extends Component {
 
   call = (target, bVideoEnabled) => {
     const { sip } = this.context;
+
     sip.createSession(target, {
       videoEnabled: bVideoEnabled,
     });
@@ -296,19 +364,25 @@ class View extends Component {
 
   callVoiceConference = () => {
     const { group } = this.props;
+
     let target = group.id;
+
     if (!target.startsWith('uc')) {
       target = 'uc' + group.id;
     }
+
     this.call(target, false);
   };
 
   callVideoConference = () => {
     const { group } = this.props;
+
     let target = group.id;
+
     if (!target.startsWith('uc')) {
       target = 'uc' + group.id;
     }
+
     this.call(target, true);
   };
 }

@@ -14,6 +14,7 @@ const allowedToCreateProps = [
   'transferStopped',
   'transferFailure',
 ];
+
 const allowedToUpdateProps = [
   'transferPercent',
   'transferWaiting',
@@ -22,22 +23,27 @@ const allowedToUpdateProps = [
   'transferStopped',
   'transferFailure',
 ];
+
 const validateCreatingFile = file => pickProps(file, allowedToCreateProps);
 const validateUpdatingFile = file => pickProps(file, allowedToUpdateProps);
 
 export default createModel({
   prefix: 'chatFiles',
+
   origin: {
     byId: {},
   },
+
   getter: {
     byId: (state, id) => (id ? state.byId[id] : state.byId),
   },
+
   action: {
     create: (prevState, file) =>
       immutable.on(prevState)(
         immutable.vset(`byId.${file.id}`, validateCreatingFile(file)),
       ),
+
     update: (prevState, file) =>
       immutable.on(prevState)(
         immutable.fset(`byId.${file.id}`, old => ({
@@ -45,6 +51,7 @@ export default createModel({
           ...validateUpdatingFile(file),
         })),
       ),
+
     remove: (prevState, id) =>
       immutable.on(prevState)(
         immutable.fset('byId', ({ [id]: removed, ...rest }) => rest),

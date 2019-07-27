@@ -1,7 +1,15 @@
+import {
+  Body,
+  Button,
+  Content,
+  Left,
+  List,
+  ListItem,
+  Right,
+  Text,
+} from 'native-base';
 import React, { Component } from 'react';
-import { ListItem, Content, Left, Button, Body, Right, Text, List  } from 'native-base';
-import {FlatList} from 'react-native';
-
+import { FlatList } from 'react-native';
 
 const Park = p => (
   <List>
@@ -9,7 +17,7 @@ const Park = p => (
       <Left>
         <Body>
           <Text>{p.name}</Text>
-          <Text note>Extension: {p.extension}</Text>
+          <Text note>Extension:{p.extension}</Text>
         </Body>
       </Left>
       <Right>
@@ -19,7 +27,7 @@ const Park = p => (
       </Right>
     </ListItem>
   </List>
-)
+);
 
 let data_demo = [
   {
@@ -38,21 +46,21 @@ let data_demo = [
     name: 'Park 4',
     extension: '*891',
   },
-]
+];
 
 class CallPark extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       data: data_demo,
     };
   }
 
-
-	render() {
-		return (
+  render() {
+    return (
       <Content>
-        <List>       
+        <List>
           <FlatList
             data={this.state.data}
             renderItem={({ item: rowData }) => {
@@ -60,9 +68,9 @@ class CallPark extends Component {
             }}
           />
         </List>
-     </Content>
-		)
-	}
+      </Content>
+    );
+  }
 }
 
 export default CallPark;

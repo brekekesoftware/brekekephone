@@ -12,7 +12,9 @@ class ServerForm extends React.Component {
       <View>
         {Platform.OS !== 'web' && (
           <LinearGradient
-            style={{ height: '100%' }}
+            style={{
+              height: '100%',
+            }}
             colors={['#74bf53', '#474A48']}
           >
             <MyStatusBar backgroundColor="#74bf53" />

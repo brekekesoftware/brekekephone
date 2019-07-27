@@ -20,8 +20,14 @@ const mapAction = action => emit => ({
   removeChatGroup(id) {
     emit(action.chatGroups.remove(id));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -41,13 +47,20 @@ class View extends Component {
 
   formatGroup = id => {
     const { groupById, ucUserById } = this.props;
+
     const { inviter, name } = groupById[id];
+
     const inviterName = at(ucUserById, `${inviter}.name`);
-    return { name, inviter: inviterName || inviter };
+
+    return {
+      name,
+      inviter: inviterName || inviter,
+    };
   };
 
   reject = group => {
     const { uc } = this.context;
+
     uc.leaveChatGroup(group)
       .then(this.onRejectSuccess)
       .catch(this.onRejectFailure);
@@ -59,18 +72,23 @@ class View extends Component {
 
   onRejectFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     showToast('Failed to reject the group chat');
   };
 
   accept = group => {
     const { uc } = this.context;
+
     uc.joinChatGroup(group).catch(this.onAcceptFailure);
   };
 
   onAcceptFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     showToast('Failed to accept the group chat');
   };
 }

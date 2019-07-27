@@ -19,18 +19,22 @@ const st = {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   tab: {
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
   },
+
   tabIcon: {
     fontFamily: std.font.icon,
+
     fontSize: Platform.select({
       ios: rem(32),
       android: std.iconSize.md,
       web: std.iconSize.md,
     }),
+
     lineHeight: std.iconSize.md + std.gap.md * 2,
     color: std.color.shade5,
   },
@@ -43,12 +47,14 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarLeftOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -58,6 +64,7 @@ const st = {
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarRightOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -67,28 +74,33 @@ const st = {
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   control: {
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: std.gap.lg,
   },
+
   controlCall: {
     alignItems: 'center',
     paddingVertical: std.gap.md,
   },
+
   controlOpts: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   controlOpt: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -100,34 +112,40 @@ const st = {
     marginHorizontal: std.gap.md,
     marginBottom: std.gap.md,
   },
+
   optIconAction: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   optIconDanger: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.danger,
   },
+
   callStatusPlaceholder: {
     width: rem(48),
     height: std.textSize.sm,
     marginVertical: std.gap.sm,
     backgroundColor: std.color.shade3,
   },
+
   callNamePlaceholder: {
     width: rem(96),
     height: std.textSize.md,
     marginVertical: std.gap.md,
     backgroundColor: std.color.shade3,
   },
+
   callNumberPlaceholder: {
     width: rem(64),
     height: std.textSize.sm,
     marginVertical: std.gap.sm,
     backgroundColor: std.color.shade3,
   },
+
   call: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -138,6 +156,7 @@ const st = {
     borderBottomWidth: StyleSheet.hairlineWidth,
     flex: 1,
   },
+
   callSelected: {
     position: 'absolute',
     left: 0,
@@ -146,6 +165,7 @@ const st = {
     width: StyleSheet.hairlineWidth * 5,
     backgroundColor: std.color.active,
   },
+
   callIconIncoming: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -153,6 +173,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconMissed: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -160,6 +181,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconOutgoing: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -167,6 +189,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconTalking: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -174,6 +197,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconHolding: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -181,6 +205,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconParking: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -188,27 +213,32 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callInfo: {
     flex: 1,
   },
+
   callStatus: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   callName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   callNumber: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   callOpt: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
@@ -291,7 +321,6 @@ const RunningItem = p => (
           <Text style={st.optIconAction}>icon_volume_1</Text>
         </Button>
       )}
-
     {p.activecall.answered && !p.activecall.holding && (
       <Button style={st.callOpt} onPress={p.hold}>
         <Text style={st.optIconAction}>icon_pause</Text>

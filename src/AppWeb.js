@@ -9,9 +9,11 @@ import logoSrc from './Icon-180px.png';
 
 @observer
 class AppWeb extends React.Component {
-  @observable useWebVersion = !isIOS && !isAndroid;
+  @observable
+  useWebVersion = !isIOS && !isAndroid;
 
-  @action enableWebVersion = e => {
+  @action
+  enableWebVersion = e => {
     e.preventDefault();
     this.useWebVersion = true;
   };
@@ -20,10 +22,12 @@ class AppWeb extends React.Component {
     if (this.useWebVersion) {
       return <App />;
     }
+
     const q = window.location.search;
     const appUrl = isIOS
       ? `brekekeapp://open${q}`
       : `intent://open${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`;
+
     return (
       <div className="AppWeb">
         <h1>Brekeke Phone</h1>

@@ -13,35 +13,44 @@ const st = StyleSheet.create({
   container: {
     flexDirection: 'column',
   },
+
   btnNewServer: {
     flexDirection: 'row-reverse',
     padding: std.gap.lg,
   },
+
   btnTextTitle: {
     padding: std.gap.lg,
     fontSize: std.textSize.md,
+
     color: Platform.select({
       ios: std.color.shade0,
       android: std.color.shade0,
       web: std.color.shade9,
     }),
   },
+
   containerTitle: {
     padding: std.gap.lg,
   },
+
   textTitle: {
     fontSize: std.textSize.lg + std.gap.md,
     lineHeight: std.iconSize.md + std.gap.md * 2,
     paddingBottom: std.gap.sm,
+
     color: Platform.select({
       ios: std.color.shade0,
       android: std.color.shade0,
       web: std.color.shade9,
     }),
+
     fontWeight: '700',
   },
+
   textCountServer: {
     fontSize: std.textSize.sm,
+
     color: Platform.select({
       ios: std.color.shade0,
       android: std.color.shade0,

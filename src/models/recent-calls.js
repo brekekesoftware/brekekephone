@@ -11,18 +11,22 @@ const allowedToCreateProps = [
   'partyNumber',
   'created',
 ];
+
 const validateCreatingCall = call => pickProps(call, allowedToCreateProps);
 
 export default createModel({
   prefix: 'recentCalls',
+
   origin: {
     idsMapByProfile: {},
     detailMapById: {},
   },
+
   getter: {
     idsMapByProfile: state => state.idsMapByProfile,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     create: (prevState, call) =>
       immutable.on(prevState)(
@@ -32,6 +36,7 @@ export default createModel({
         ]),
         immutable.vset(`detailMapById.${call.id}`, validateCreatingCall(call)),
       ),
+
     remove: (prevState, id) =>
       immutable.on(prevState)(
         immutable.fset(

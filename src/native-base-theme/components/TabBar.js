@@ -1,15 +1,15 @@
-// @flow
-
 import variable from './../variables/platform';
 
-export default (variables /*: * */ = variable) => {
+export default (variables = variable) => {
   const tabBarTheme = {
     '.tabIcon': {
       height: undefined,
     },
+
     '.vertical': {
       height: 60,
     },
+
     'NativeBase.Button': {
       '.transparent': {
         'NativeBase.Text': {
@@ -17,23 +17,28 @@ export default (variables /*: * */ = variable) => {
           color: variables.sTabBarActiveTextColor,
           fontWeight: '400',
         },
+
         'NativeBase.IconNB': {
           color: variables.sTabBarActiveTextColor,
         },
       },
+
       'NativeBase.IconNB': {
         color: variables.sTabBarActiveTextColor,
       },
+
       'NativeBase.Text': {
         fontSize: variables.tabFontSize,
         color: variables.sTabBarActiveTextColor,
         fontWeight: '400',
       },
+
       '.isTabActive': {
         'NativeBase.Text': {
           fontWeight: '900',
         },
       },
+
       flex: 1,
       alignSelf: 'stretch',
       alignItems: 'center',
@@ -42,6 +47,7 @@ export default (variables /*: * */ = variable) => {
       borderBottomColor: 'transparent',
       backgroundColor: variables.tabBgColor,
     },
+
     height: 45,
     flexDirection: 'row',
     justifyContent: 'space-around',

@@ -18,7 +18,9 @@ const IncomingList = p =>
 
 class OutgoingItem extends Component {
   componentDidMount() {
-    InCall.start({ ringback: '_BUNDLE_' });
+    InCall.start({
+      ringback: '_BUNDLE_',
+    });
   }
 
   componentWillUnmount() {

@@ -13,6 +13,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   searchInput: {
     flex: 1,
     fontFamily: std.font.text,

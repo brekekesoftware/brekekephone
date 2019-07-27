@@ -8,14 +8,16 @@ const st = StyleSheet.create({
     paddingTop: std.gap.lg,
     backgroundColor: std.color.shade0,
   },
+
   divider: {
     alignItems: 'center',
     padding: std.gap.lg,
     paddingTop: 2 * std.gap.lg,
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    backgroundColor: std.color.shade3, // same with Main background
+    backgroundColor: std.color.shade3,
   },
+
   title: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,

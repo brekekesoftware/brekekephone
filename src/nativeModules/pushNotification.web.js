@@ -1,12 +1,14 @@
-import uint8ArrayToUrlBase64 from '../util/uint8ArrayToUrlBase64';
+import uint8ArrayToUrlBase64 from '../utils/uint8ArrayToUrlBase64';
 
 export const getPnToken = async () => {
   const sw = await navigator.serviceWorker.ready;
+
   const sub =
     (await sw.pushManager.getSubscription()) ||
     (await sw.pushManager.subscribe({
       userVisibleOnly: true,
     }));
+
   return {
     endpoint: sub.endpoint,
     p256dh: uint8ArrayToUrlBase64(sub.getKey('p256dh')),
@@ -18,9 +20,8 @@ export const registerPn = () => {
   if (!window.Notification || window.Notification.permission === 'granted') {
     return;
   }
+
   Notification.requestPermission();
 };
 
-export const resetBadgeNumber = () => {
-  // polyfill for native api
-};
+export const resetBadgeNumber = () => {};

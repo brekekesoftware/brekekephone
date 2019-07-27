@@ -18,11 +18,13 @@ const st = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
+
   btnContainer: {
     width: '100%',
     alignItems: 'center',
     padding: std.gap.md,
   },
+
   textTitle: {
     padding: std.gap.lg,
     fontSize: std.textSize.sm,

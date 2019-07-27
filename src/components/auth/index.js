@@ -1,39 +1,44 @@
+import { computed } from 'mobx';
+import { observer } from 'mobx-react';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { createModelView } from 'redux-model';
 
+import authStore from '../../mobx/authStore';
 import { rem } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {
     flex: 1,
   },
+
   notSuccess: {
     marginTop: rem(40),
   },
 });
 
-const mapGetter = getter => state => {
-  const profile = getter.auth.profile(state);
-  if (!profile) {
-    return { success: false };
-  }
-  return {
-    success:
-      getter.auth.pbx.success(state) &&
-      getter.auth.sip.success(state) &&
-      (!profile.ucEnabled || getter.auth.uc.success(state)),
-  };
-};
-
+@observer
 class Auth extends React.Component {
+  @computed
+  get success() {
+    const { profile, pbxState, sipState, ucState } = authStore;
+
+    return (
+      profile &&
+      pbxState === 'success' &&
+      sipState === 'success' &&
+      (!profile.ucEnabled || ucState === 'success')
+    );
+  }
+
   render() {
     const s = [st.main];
-    if (!this.props.success) {
+
+    if (!this.success) {
       s.push(st.notSuccess);
     }
+
     return <View style={s}>{this.props.children}</View>;
   }
 }
 
-export default createModelView(mapGetter)(Auth);
+export default Auth;

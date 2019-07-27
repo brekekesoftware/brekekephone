@@ -3,35 +3,49 @@ import pickProps from 'lodash/pick';
 import { createModel } from 'redux-model';
 
 const allowedCreatedProps = ['id', 'name'];
+
 const propDefault = {
   callingTalkers: [],
   ringingTalkers: [],
   talkingTalkers: [],
   holdingTalkers: [],
 };
+
 const validateCreatingUser = user => ({
   ...propDefault,
   ...pickProps(user, allowedCreatedProps),
 });
+
 const reduceUsersToMapById = users =>
-  users.reduce((res, cur) => ({ ...res, [cur.id]: cur }), {});
+  users.reduce(
+    (res, cur) => ({
+      ...res,
+      [cur.id]: cur,
+    }),
+    {},
+  );
+
 const mapUsersToIds = users => users.map(({ id }) => id);
 
 export default createModel({
   prefix: 'pbxUsers',
+
   origin: {
     idsByOrder: [],
     detailMapById: {},
   },
+
   getter: {
     idsByOrder: state => state.idsByOrder,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     refill: (prevState, users) => ({
       idsByOrder: mapUsersToIds(users),
       detailMapById: reduceUsersToMapById(users.map(validateCreatingUser)),
     }),
+
     setTalkerCalling: (prevState, user, talker) =>
       immutable.on(prevState)(
         immutable.fset(`detailMapById.${user}.callingTalkers`, talkers => [
@@ -39,6 +53,7 @@ export default createModel({
           talker,
         ]),
       ),
+
     setTalkerRinging: (prevState, user, talker) =>
       immutable.on(prevState)(
         immutable.fset(`detailMapById.${user}.ringingTalkers`, talkers => [
@@ -46,6 +61,7 @@ export default createModel({
           talker,
         ]),
       ),
+
     setTalkerHolding: (prevState, user, talker) =>
       immutable.on(prevState)(
         immutable.fset(`detailMapById.${user}.holdingTalkers`, talkers => [
@@ -56,6 +72,7 @@ export default createModel({
           talkers.filter(_ => _ !== talker),
         ),
       ),
+
     setTalkerTalking: (prevState, user, talker) =>
       immutable.on(prevState)(
         immutable.fset(`detailMapById.${user}.talkingTalkers`, talkers => [
@@ -72,6 +89,7 @@ export default createModel({
           talkers.filter(_ => _ !== talker),
         ),
       ),
+
     setTalkerHanging: (prevState, user, talker) =>
       immutable.on(prevState)(
         immutable.fset(`detailMapById.${user}.talkingTalkers`, talkers =>

@@ -15,6 +15,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     justifyContent: 'center',
@@ -23,6 +24,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarBack: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -32,18 +34,21 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarTextAction: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   navbarTextNormal: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarSave: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -53,9 +58,11 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   scroll: {
     flex: 1,
   },
+
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -64,12 +71,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   fieldLabel: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   fieldInput: {
     flex: 1,
     fontFamily: std.font.text,

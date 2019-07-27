@@ -13,11 +13,13 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   fieldLabel: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   fieldSwitch: {
     marginLeft: 'auto',
   },

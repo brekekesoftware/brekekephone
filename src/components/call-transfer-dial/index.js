@@ -16,8 +16,14 @@ const mapAction = action => emit => ({
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -56,21 +62,25 @@ class View extends Component {
   );
 
   setAttended = attended => {
-    this.setState({ attended });
+    this.setState({
+      attended,
+    });
   };
 
   setTarget = target => {
-    this.setState({ target });
+    this.setState({
+      target,
+    });
   };
 
   isMatchUser = id => {
     const { pbxUserById } = this.props;
+
     const searchTextLC = this.state.target.toLowerCase();
-
     const userId = id && id.toLowerCase();
-
     let pbxUserName;
     const pbxUser = pbxUserById[id];
+
     if (pbxUser) {
       pbxUserName = pbxUser.name.toLowerCase();
     } else {
@@ -84,6 +94,7 @@ class View extends Component {
 
   resolveMatch = id => {
     const match = this.props.pbxUserById[id];
+
     return {
       name: match.name,
       number: id,
@@ -100,13 +111,16 @@ class View extends Component {
 
   transfer = () => {
     const target = this.state.target;
+
     if (!target.trim()) {
       this.props.showToast('No target');
       return;
     }
 
     const { pbx } = this.context;
+
     const { attended } = this.state;
+
     const promise = attended
       ? pbx.transferTalkerAttended(
           this.props.call.pbxTenant,
@@ -118,16 +132,21 @@ class View extends Component {
           this.props.call.pbxTalkerId,
           this.state.target,
         );
-
     promise.then(this.onTransferSuccess, this.onTransferFailure);
   };
 
   onTransferSuccess = () => {
     const { call } = this.props;
+
     const { attended, target } = this.state;
+
     if (!attended) return routerUtils.goToCallsManage();
 
-    this.props.updateCall({ id: call.id, transfering: target });
+    this.props.updateCall({
+      id: call.id,
+      transfering: target,
+    });
+
     routerUtils.goToCallTransferAttend(call.id);
   };
 
@@ -138,48 +157,56 @@ class View extends Component {
 
   transferBlind = () => {
     const target = this.state.target;
+
     if (!target.trim()) {
       this.props.showToast('No target');
       return;
     }
 
     const { pbx } = this.context;
+
     const promise = pbx.transferTalkerBlind(
       this.props.call.pbxTenant,
       this.props.call.pbxTalkerId,
       this.state.target,
     );
-
     promise.then(this.onTransferSuccess, this.onTransferFailure);
   };
 
   transferAttended = () => {
     const target = this.state.target;
+
     if (!target.trim()) {
       this.props.showToast('No target');
       return;
     }
 
     const { pbx } = this.context;
+
     const promise = pbx.transferTalkerAttended(
       this.props.call.pbxTenant,
       this.props.call.pbxTalkerId,
       this.state.target,
     );
-
     promise.then(this.onTransferSuccess, this.onTransferFailure);
   };
 
   onTransferAttendedForVideoSuccess = () => {
     const { call } = this.props;
+
     const { attended, target } = this.state;
+
     if (!attended) return routerUtils.goToCallsManage();
 
-    this.props.updateCall({ id: call.id, transfering: target });
+    this.props.updateCall({
+      id: call.id,
+      transfering: target,
+    });
 
     routerUtils.goToCallTransferAttend(call.id);
 
     const { sip } = this.context;
+
     sip.enableVideo(call.id);
   };
 
@@ -190,12 +217,14 @@ class View extends Component {
 
   transferAttendedForVideo = () => {
     const target = this.state.target;
+
     if (!target.trim()) {
       this.props.showToast('No target');
       return;
     }
 
     const { pbx } = this.context;
+
     const promise = pbx.transferTalkerAttended(
       this.props.call.pbxTenant,
       this.props.call.pbxTalkerId,

@@ -6,13 +6,10 @@ import ringtone from './incallmanager_ringtone.mp3';
 const IncomingItem = p => (
   <audio key={p.id} autoPlay volume={1} loop src={ringtone} />
 );
-
 const IncomingList = p => p.ids.map(id => <IncomingItem key={id} />);
-
 const OutgoingItem = p => (
   <audio key={p.id} autoPlay volume={1} loop src={ringback} />
 );
-
 const OutgoingList = p => p.ids.map(id => <OutgoingItem key={id} />);
 
 const AnsweredItem = p => (

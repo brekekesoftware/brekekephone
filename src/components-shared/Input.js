@@ -8,16 +8,19 @@ const st = StyleSheet.create({
     padding: std.gap.lg,
     paddingTop: std.gap.lg,
   },
+
   label: {
     paddingBottom: std.gap.md,
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   required: {
     paddingRight: 5,
     color: std.color.danger,
   },
+
   input: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -34,6 +37,7 @@ const st = StyleSheet.create({
 const normalizeInput = Inner => {
   const Outer = p => {
     const { label, required, ...props } = p;
+
     return (
       <View style={st.container}>
         <Text style={st.label}>
@@ -44,6 +48,7 @@ const normalizeInput = Inner => {
       </View>
     );
   };
+
   return Outer;
 };
 

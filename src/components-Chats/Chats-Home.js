@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
 import { Container } from 'native-base';
+import React, { Component } from 'react';
+
 import ListChats from './List-Chats';
 
-
 class ChatsHome extends Component {
-	render() {
-		return (
+  render() {
+    return (
       <Container>
-      	<ListChats/>
+        <ListChats />
       </Container>
-		)
-	}
+    );
+  }
 }
 
 export default ChatsHome;

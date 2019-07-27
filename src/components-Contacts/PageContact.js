@@ -1,9 +1,4 @@
-import {
-  Tab,
-  TabHeading,
-  Tabs,
-  Text,
-} from 'native-base';
+import { Tab, TabHeading, Tabs, Text } from 'native-base';
 import React, { Component } from 'react';
 
 import TabPhoneBook from './TabPhoneBook';

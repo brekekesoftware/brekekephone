@@ -1,68 +1,82 @@
+import {
+  Body,
+  Button,
+  H3,
+  Header,
+  Icon,
+  Left,
+  Right,
+  Text,
+  View,
+} from 'native-base';
 import React from 'react';
-import { Header, Left, Body, Right, Text,Button, Icon, View, H3 } from 'native-base';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+
 import variable from '../native-base-theme/variables/platform';
 import { std } from '../styleguide';
 
-
 const st = StyleSheet.create({
-  container:{
+  container: {
     height: 60,
     top: 15,
-    right:0,
-    left:0,
+    right: 0,
+    left: 0,
     flexDirection: 'row',
     borderBottomColor: variable.toolbarDefaultBorder,
     borderBottomWidth: 1,
   },
+
   available: {
     flexDirection: 'row',
-    alignItems: 'center',  
-    
+    alignItems: 'center',
   },
-  right:{
+
+  right: {
     flex: 1,
     alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
+
   bodyIcon: {
     fontSize: 15,
-    color: "#5cb85c",
-
+    color: '#5cb85c',
   },
-  body:{
-    lineHeight: std.gap.sm,
-  }
-})
 
+  body: {
+    lineHeight: std.gap.sm,
+  },
+});
 
 class HeaderChat extends React.Component {
-
   render() {
     return (
-  		<View style={st.container}>
-  			<View style={st.left}>
+      <View style={st.container}>
+        <View style={st.left}>
           <Button transparent dark>
-            <Icon name="arrow-back" type="MaterialIcons"/>
+            <Icon name="arrow-back" type="MaterialIcons" />
           </Button>
-  			</View>
+        </View>
         <View style={st.body}>
           <H3>Aerald Richards</H3>
           <View style={st.available}>
-            <Icon style={st.bodyIcon} name="fiber-manual-record" type="MaterialIcons"/> 
+            <Icon
+              style={st.bodyIcon}
+              name="fiber-manual-record"
+              type="MaterialIcons"
+            />
             <Text note>AVAILABLE</Text>
           </View>
         </View>
         <View style={st.right}>
-          <Button  transparent dark>
-            <Icon name="search" type="MaterialIcons"/>
+          <Button transparent dark>
+            <Icon name="search" type="MaterialIcons" />
           </Button>
           <Button transparent dark>
-            <Icon name="call" type="MaterialIcons"/>
+            <Icon name="call" type="MaterialIcons" />
           </Button>
         </View>
-  		</View>
+      </View>
     );
   }
 }

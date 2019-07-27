@@ -3,59 +3,60 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import { setCurrentAuthProfile } from './getset';
 import UI from './ui';
 
 class View extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
   };
+
   componentDidMount() {
     if (this.needToAuth()) {
       this.auth();
     }
   }
+
   componentDidUpdate() {
     if (this.needToAuth()) {
       this.auth();
     }
   }
+
   componentWillUnmount() {
-    this.props.onStopped();
+    authStore.set('pbxState', 'stopped');
     this.context.pbx.disconnect();
-    setCurrentAuthProfile(null);
   }
 
   needToAuth = () =>
-    this.props.profile &&
-    !this.props.started &&
-    !this.props.success &&
-    !this.props.failure;
+    authStore.profile &&
+    authStore.pbxState !== 'started' &&
+    authStore.pbxState !== 'success' &&
+    authStore.pbxState !== 'failure';
+
   auth = () => {
     this.context.pbx.disconnect();
-    this.props.onStarted();
-    this.context.pbx
-      .connect(this.props.profile)
-      .then(this.onAuthSuccess)
-      .catch(this.onAuthFailure);
-  };
+    authStore.set('pbxState', 'started');
 
-  onAuthSuccess = () => {
-    setCurrentAuthProfile(this.props.profile);
-    this.props.onSuccess();
-  };
-  onAuthFailure = err => {
-    if (err && err.message) {
-      this.props.showToast(err.message);
-    }
-    this.props.onFailure();
+    this.context.pbx
+      .connect(authStore.profile)
+      .then(() => {
+        authStore.set('pbxState', 'success');
+      })
+      .catch(err => {
+        if (err && err.message) {
+          this.props.showToast(err.message);
+        }
+
+        authStore.set('pbxState', 'failure');
+      });
   };
 
   render() {
-    return this.props.success ? null : (
+    return authStore.pbxState === 'success' ? null : (
       <UI
-        retryable={this.props.retryable}
+        retryable={!!authStore.profile}
         failure={this.props.failure}
         abort={routerUtils.goToProfilesManage}
         retry={this.auth}
@@ -64,46 +65,16 @@ class View extends React.Component {
   }
 }
 
-const mapGetter = getter => state => {
-  const profile = getter.auth.profile(state);
-  if (!profile) {
-    return { retryable: false, failure: true };
-  }
-  return {
-    retryable: true,
-    started: getter.auth.pbx.started(state),
-    stopped: getter.auth.pbx.stopped(state),
-    success: getter.auth.pbx.success(state),
-    failure: getter.auth.pbx.failure(state),
-    profile: {
-      hostname: profile.pbxHostname,
-      port: profile.pbxPort,
-      tenant: profile.pbxTenant,
-      username: profile.pbxUsername,
-      password: profile.pbxPassword,
-      phoneIndex: profile.pbxPhoneIndex,
-      turnEnabled: profile.pbxTurnEnabled,
-      parks: profile.parks,
-      accessToken: profile.accessToken,
-    },
-  };
-};
+const mapGetter = getter => state => {};
 
 const mapAction = action => emit => ({
-  onStarted() {
-    emit(action.auth.pbx.onStarted());
-  },
-  onSuccess() {
-    emit(action.auth.pbx.onSuccess());
-  },
-  onFailure() {
-    emit(action.auth.pbx.onFailure());
-  },
-  onStopped() {
-    emit(action.auth.pbx.onStopped());
-  },
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 

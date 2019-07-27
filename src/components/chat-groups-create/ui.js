@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+
 import {
   Image,
   ScrollView,
@@ -16,6 +17,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -24,12 +26,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarLeftOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -39,6 +43,7 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarRightOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -48,12 +53,14 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   divider: {
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.lg * 2,
@@ -61,11 +68,13 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   dividerTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -74,6 +83,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   fieldInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -83,9 +93,11 @@ const st = StyleSheet.create({
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.md * 2,
   },
+
   buddies: {
     flex: 1,
   },
+
   buddy: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -96,6 +108,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   buddySelected: {
     position: 'absolute',
     left: 0,
@@ -104,9 +117,11 @@ const st = StyleSheet.create({
     width: StyleSheet.hairlineWidth * 5,
     backgroundColor: std.color.active,
   },
+
   buddyStatus: {
     marginRight: std.gap.lg,
   },
+
   buddyAvatar: {
     width: std.iconSize.lg * 2,
     height: std.iconSize.lg * 2,
@@ -114,18 +129,21 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderWidth: StyleSheet.hairlineWidth,
   },
+
   buddyName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   buddyMood: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   buddyOffline: {
     position: 'absolute',
     top: 0,
@@ -137,6 +155,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.shade5,
   },
+
   buddyOnline: {
     position: 'absolute',
     top: 0,
@@ -148,6 +167,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.active,
   },
+
   buddyIdle: {
     position: 'absolute',
     top: 0,
@@ -159,6 +179,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.notice,
   },
+
   buddyBusy: {
     position: 'absolute',
     top: 0,
@@ -199,7 +220,12 @@ const Buddy = pure(p => (
   <Button style={st.buddy} onPress={p.toggle}>
     {p.selected && <View style={st.buddySelected} />}
     <View style={st.buddyStatus}>
-      <Image style={st.buddyAvatar} source={{ uri: p.avatar }} />
+      <Image
+        style={st.buddyAvatar}
+        source={{
+          uri: p.avatar,
+        }}
+      />
       {p.offline && <View style={st.buddyOffline} />}
       {p.online && <View style={st.buddyOnline} />}
       {p.idle && <View style={st.buddyIdle} />}

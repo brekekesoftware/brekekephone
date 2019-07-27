@@ -16,7 +16,12 @@ const mapGetter = getter => state => ({
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -29,15 +34,22 @@ class View extends Component {
     const call = this.props.callById[id];
     return call;
   };
+
   reject = id => {
     const { sip } = this.context;
+
     sip.hangupSession(id);
   };
+
   accept = id => {
     const { sip } = this.context;
+
     const call = this.props.callById[id];
     const videoEnabled = call.remoteVideoEnabled;
-    sip.answerSession(id, { videoEnabled });
+
+    sip.answerSession(id, {
+      videoEnabled,
+    });
   };
 
   render = () => (

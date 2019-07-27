@@ -8,13 +8,16 @@ const getFrontSourceId = () => {
   const asyncFn = async () =>
     window.navigator.mediaDevices.enumerateDevices().then(infos => {
       let sourceId;
+
       infos.forEach(i => {
         if (i.kind === 'video' && i.facing === 'front') {
           sourceId = i.id;
         }
       });
+
       return sourceId;
     });
+
   return asyncFn().catch(err => {
     console.error('getFrontSourceId', err);
   });
@@ -30,7 +33,11 @@ class CreatingSessions {
   __add() {
     const currentTime = new Date().getTime();
     const expireVal = currentTime + 100000;
-    const itm = { expire: expireVal };
+
+    const itm = {
+      expire: expireVal,
+    };
+
     this._items.push(itm);
   }
 
@@ -43,6 +50,7 @@ class CreatingSessions {
 
     for (let i = 0; i < this._items.length; ) {
       const item = this._items[i];
+
       if (currentTime > item.expire) {
         this._items.splice(i, 1);
       } else {
@@ -66,38 +74,58 @@ class SIP extends EventEmitter {
 
   init = async () => {
     const sourceId = await getFrontSourceId();
-    //
     this._creatingSessions = new CreatingSessions();
+
     this.phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
       multiSession: true,
+
       defaultOptions: {
         videoOptions: {
           call: {
             mediaConstraints: {
               audio: false,
+
               video: {
                 mandatory: {
                   minWidth: 0,
                   minHeight: 0,
                   minFrameRate: 0,
                 },
+
                 facingMode: Platform.OS === 'web' ? undefined : 'user',
-                optional: sourceId ? [{ sourceId }] : [],
+
+                optional: sourceId
+                  ? [
+                      {
+                        sourceId,
+                      },
+                    ]
+                  : [],
               },
             },
           },
+
           answer: {
             mediaConstraints: {
               audio: false,
+
               video: {
                 mandatory: {
                   minWidth: 0,
                   minHeight: 0,
                   minFrameRate: 0,
                 },
+
                 facingMode: Platform.OS === 'web' ? undefined : 'user',
-                optional: sourceId ? [{ sourceId }] : [],
+
+                optional: sourceId
+                  ? [
+                      {
+                        sourceId,
+                      },
+                    ]
+                  : [],
               },
             },
           },
@@ -158,6 +186,7 @@ class SIP extends EventEmitter {
         const pbxSessionInfo = ev.incomingMessage.getHeader(
           'X-PBX-Session-Info',
         );
+
         if (typeof pbxSessionInfo === 'string') {
           const infos = pbxSessionInfo.split(';');
           patch.pbxTenant = infos[0];
@@ -167,7 +196,11 @@ class SIP extends EventEmitter {
         }
       }
 
-      this.emit('session-updated', { id: ev.sessionId, ...patch });
+      this.emit('session-updated', {
+        id: ev.sessionId,
+        ...patch,
+      });
+
       this.emit('video-session-updated', ev);
     });
 
@@ -179,10 +212,12 @@ class SIP extends EventEmitter {
       const session = this.phone.getSession(ev.sessionId);
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId];
+
       this.emit('session-updated', {
         id: ev.sessionId,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
       });
+
       this.emit('video-session-created', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
@@ -198,6 +233,7 @@ class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
       });
+
       this.emit('video-session-ended', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
@@ -215,6 +251,7 @@ class SIP extends EventEmitter {
           OfferToReceiveVideo: false,
           _____SKIP_Adapter_fixRTCOfferOptions_____: true,
         },
+
         optional: [],
       },
     };
@@ -226,8 +263,8 @@ class SIP extends EventEmitter {
 
   connect(profile) {
     this._creatingSessions.__clear();
-
     let platformOs = Platform.OS;
+
     if (platformOs === 'ios') {
       platformOs = 'iOS';
     } else if (platformOs === 'android') {
@@ -236,11 +273,9 @@ class SIP extends EventEmitter {
       platformOs = 'Web';
     }
 
-    const jssipVersion = '3.2.15'; // hard code for JsSIP 3.2.15 /Web limited
-
+    const jssipVersion = '3.2.15';
     const appPackageJson = require('../../package.json');
     const appVersion = appPackageJson.version;
-
     const lUseragent =
       'Brekeke Phone for ' +
       platformOs +
@@ -248,15 +283,16 @@ class SIP extends EventEmitter {
       appVersion +
       '/JsSIP ' +
       jssipVersion;
-
-    // Set config
     const config = profile.turnEnabled ? turnConfig : {};
+
     if (!config.pcConfig) {
       config.pcConfig = {};
     }
+
     if (!Array.isArray(config.pcConfig.iceServers)) {
       config.pcConfig.iceServers = [];
     }
+
     config.pcConfig.bundlePolicy = 'balanced';
     this.phone.setDefaultCallOptions(config);
 
@@ -282,7 +318,6 @@ class SIP extends EventEmitter {
       Platform.OS === 'android' || Platform.OS === 'ios'
         ? this._makeCallOptionsForAndoirOrIos
         : null;
-
     this.phone.makeCall(number, options, opts.videoEnabled, undefined, '');
     this._creatingSessions.__add();
   }
@@ -312,5 +347,4 @@ class SIP extends EventEmitter {
 
 const sip = new SIP();
 sip.init();
-
 export default sip;

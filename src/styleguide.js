@@ -5,46 +5,49 @@ export const rem = size => size * scale;
 
 export const std = {
   color: {
-    // shades
-    shade0: '#ffffff', // content background
-    shade1: '#f9f9f9', // topbar, navbar, tabbar, callbar
-    shade2: '#f1f1f1', // subbar
-    shade3: '#efeff4', // screen, divider
-    shade4: '#e2e2e4', // border, line
-    shade5: '#8a8a8f', // secondary text, field label, divider text
+    shade0: '#ffffff',
+    shade1: '#f9f9f9',
+    shade2: '#f1f1f1',
+    shade3: '#efeff4',
+    shade4: '#e2e2e4',
+    shade5: '#8a8a8f',
     shade6: '#5e5e5e',
     shade7: '#4b4b4b',
     shade8: '#393939',
-    shade9: '#262626', // primary text
-    shade10: '#bdbdbd', // button save
-    // accent
+    shade9: '#262626',
+    shade10: '#bdbdbd',
     danger: '#FF2D55',
     notice: '#FF9500',
     notify: '#FEFEFE',
     action: '#007aff',
     active: '#4CD964',
   },
+
   textSize: {
     sm: rem(12),
     md: rem(16),
     lg: rem(20),
   },
+
   iconSize: {
     sm: rem(18),
     md: rem(24),
     lg: rem(26),
   },
+
   gap: {
     sm: rem(4),
     md: rem(8),
     lg: rem(12),
   },
+
   font: {
     text: Platform.select({
       ios: 'RobotoLight',
       web: 'RobotoLight',
       android: 'text-light',
     }),
+
     icon: Platform.select({
       ios: 'feather',
       web: 'feather',

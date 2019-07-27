@@ -6,7 +6,7 @@ import { std } from '../../styleguide';
 const st = StyleSheet.create({
   main: {
     position: 'absolute',
-    top: std.textSize.md + std.gap.md * 4, // topbar height
+    top: std.textSize.md + std.gap.md * 4,
     left: 0,
     bottom: 0,
   },

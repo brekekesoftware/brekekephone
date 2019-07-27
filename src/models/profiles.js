@@ -17,6 +17,7 @@ const allowedToCreateFields = [
   'ucPort',
   'accessToken',
 ];
+
 const validateCreatingData = data => pick(data, allowedToCreateFields);
 
 const allowedToUpdateFields = [
@@ -33,18 +34,22 @@ const allowedToUpdateFields = [
   'ucPort',
   'accessToken',
 ];
+
 const validateUpdatingData = data => pick(data, allowedToUpdateFields);
 
 export default createModel({
   prefix: 'profiles',
+
   origin: {
     idsByOrder: [],
     detailMapById: {},
   },
+
   getter: {
     idsByOrder: state => state.idsByOrder,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     create: (prevState, profile) =>
       immutable.on(prevState)(
@@ -54,6 +59,7 @@ export default createModel({
           validateCreatingData(profile),
         ),
       ),
+
     update: (prevState, profile) =>
       immutable.on(prevState)(
         immutable.fset(`detailMapById.${profile.id}`, old => ({
@@ -61,6 +67,7 @@ export default createModel({
           ...validateUpdatingData(profile),
         })),
       ),
+
     remove: (prevState, id) =>
       immutable.on(prevState)(
         immutable.fset('idsByOrder', ids => ids.filter(_id => _id !== id)),

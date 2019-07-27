@@ -12,6 +12,7 @@ import {
   Text,
   Thumbnail,
 } from 'native-base';
+
 import React, { Component } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
@@ -21,6 +22,7 @@ const st = StyleSheet.create({
   navright: {
     flexDirection: 'row',
   },
+
   btnFab: {
     backgroundColor: '#74bf53',
   },
@@ -42,10 +44,10 @@ const User = p => (
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>
-        <Icon name="chat-bubble" type="MaterialIcons"/>
+        <Icon name="chat-bubble" type="MaterialIcons" />
       </Button>
       <Button transparent dark>
-        <Icon name="call" type="MaterialIcons"/>
+        <Icon name="call" type="MaterialIcons" />
       </Button>
     </Right>
   </ListItem>
@@ -73,6 +75,7 @@ const data_demo = [
 class TabUsers extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       data: data_demo,
     };
@@ -105,7 +108,7 @@ class TabUsers extends Component {
           </List>
         </Content>
         <Fab style={st.btnFab}>
-          <Icon name="person-add" type="MaterialIcons"/>
+          <Icon name="person-add" type="MaterialIcons" />
         </Fab>
       </Container>
     );

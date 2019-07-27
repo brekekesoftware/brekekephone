@@ -7,7 +7,7 @@ import Video from './video';
 const st = {
   mini: {
     position: 'absolute',
-    top: std.textSize.md + std.gap.md * 4, // topbar height
+    top: std.textSize.md + std.gap.md * 4,
     left: std.gap.md,
     justifyContent: 'center',
     alignItems: 'center',
@@ -20,10 +20,16 @@ const st = {
     shadowColor: std.color.shade9,
     shadowRadius: std.gap.md,
     shadowOpacity: 0.24,
-    shadowOffset: { width: 0, height: std.gap.sm },
+
+    shadowOffset: {
+      width: 0,
+      height: std.gap.sm,
+    },
+
     elevation: 3,
     overflow: 'hidden',
   },
+
   full: {
     position: 'absolute',
     top: 0,
@@ -80,12 +86,12 @@ class Mini extends Component {
   onDrop = (ev, gesture) => {
     this.prevLeft += gesture.dx;
     this.prevTop += gesture.dy;
-
     const now = Date.now();
-    // if 2 taps happen in 500ms
+
     if (now - this.prevTap < 500) {
       this.props.onDoubleTap();
     }
+
     this.prevTap = now;
   };
 }
@@ -120,18 +126,20 @@ class Full extends Component {
   onDrop = (ev, gesture) => {
     this.prevLeft += gesture.dx;
     this.prevTop += gesture.dy;
-
     const now = Date.now();
-    // if 2 taps happen in 500ms
+
     if (now - this.prevTap < 500) {
       this.props.onDoubleTap();
     }
+
     this.prevTap = now;
   };
 }
 
 class Control extends Component {
-  state = { full: false };
+  state = {
+    full: false,
+  };
 
   render = () => {
     if (!this.props.enabled) {
@@ -154,5 +162,4 @@ class Control extends Component {
 
 const CallVideos = p =>
   p.callIds.map(id => <Control key={id} {...p.resolveCall(id)} />);
-
 export default CallVideos;

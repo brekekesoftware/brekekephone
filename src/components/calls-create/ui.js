@@ -15,6 +15,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -23,12 +24,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarLeftOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -38,6 +41,7 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarRightOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -47,12 +51,14 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   opt: {
     backgroundColor: std.color.shade0,
     flexDirection: 'row',
@@ -61,15 +67,18 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   optTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   videoSwitch: {
     marginLeft: 'auto',
   },
+
   targetInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -79,6 +88,7 @@ const st = StyleSheet.create({
     height: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   divider: {
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.lg * 2,
@@ -86,15 +96,18 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   dividerTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   matches: {
     flex: 1,
     backgroundColor: std.color.shade0,
   },
+
   match: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -102,51 +115,60 @@ const st = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: std.color.shade4,
   },
+
   matchInfo: {
     flex: 1,
   },
+
   matchCalling: {
     width: std.gap.md,
     height: std.gap.md,
     borderRadius: std.gap.md / 2,
     backgroundColor: std.color.danger,
   },
+
   matchRinging: {
     width: std.gap.md,
     height: std.gap.md,
     borderRadius: std.gap.md / 2,
     backgroundColor: std.color.danger,
   },
+
   matchHolding: {
     width: std.gap.md,
     height: std.gap.md,
     borderRadius: std.gap.md / 2,
     backgroundColor: std.color.notice,
   },
+
   matchTalking: {
     width: std.gap.md,
     height: std.gap.md,
     borderRadius: std.gap.md / 2,
     backgroundColor: std.color.danger,
   },
+
   matchName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade9,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   matchNumber: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
   },
+
   actions: {
     flexDirection: 'row',
     paddingVertical: std.gap.lg,
     alignSelf: 'flex-end',
     marginHorizontal: std.gap.sm,
   },
+
   actionButton: {
     marginLeft: std.gap.md,
   },
@@ -156,12 +178,14 @@ const st = StyleSheet.create({
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   controlOpts: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   controlOpt: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -196,12 +220,6 @@ const Navbar = pure(p => (
     </Button>
   </View>
 ));
-
-// const Divider = pure(({ children }) => (
-//   <View style={st.divider}>
-//     <Text style={st.dividerTitle}>{children}</Text>
-//   </View>
-// ));
 
 const Actions = p => (
   <View style={st.controlOpts}>

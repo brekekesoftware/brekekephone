@@ -1,10 +1,8 @@
-// @flow
-
 import { Platform } from 'react-native';
 
 import variable from './../variables/platform';
 
-export default (variables /*: * */ = variable) => {
+export default (variables = variable) => {
   const platform = variables.platform;
 
   const footerTabTheme = {
@@ -15,14 +13,18 @@ export default (variables /*: * */ = variable) => {
           fontSize: variables.tabBarTextSize,
           lineHeight: 16,
         },
+
         'NativeBase.Icon': {
           color: variables.tabBarActiveTextColor,
         },
+
         'NativeBase.IconNB': {
           color: variables.tabBarActiveTextColor,
         },
+
         backgroundColor: variables.tabActiveBgColor,
       },
+
       flexDirection: null,
       backgroundColor: 'transparent',
       borderColor: null,
@@ -35,6 +37,7 @@ export default (variables /*: * */ = variable) => {
       flex: 1,
       height: variables.footerHeight,
       justifyContent: 'center',
+
       '.badge': {
         'NativeBase.Badge': {
           'NativeBase.Text': {
@@ -42,6 +45,7 @@ export default (variables /*: * */ = variable) => {
             fontWeight: platform === 'ios' ? '600' : undefined,
             lineHeight: 14,
           },
+
           top: -3,
           alignSelf: 'center',
           left: 10,
@@ -50,22 +54,27 @@ export default (variables /*: * */ = variable) => {
           padding: 1.7,
           paddingHorizontal: 3,
         },
+
         'NativeBase.Icon': {
           marginTop: -18,
         },
       },
+
       'NativeBase.Icon': {
         color: variables.tabBarTextColor,
       },
+
       'NativeBase.IconNB': {
         color: variables.tabBarTextColor,
       },
+
       'NativeBase.Text': {
         color: variables.tabBarTextColor,
         fontSize: variables.tabBarTextSize,
         lineHeight: 16,
       },
     },
+
     backgroundColor:
       Platform.OS === 'android' ? variables.footerDefaultBg : undefined,
     flexDirection: 'row',

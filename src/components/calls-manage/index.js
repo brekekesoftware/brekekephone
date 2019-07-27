@@ -18,11 +18,18 @@ const mapAction = action => emit => ({
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
+
   selectCall(call) {
     emit(action.callsManaging.setSelectedId(call.id));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -39,8 +46,10 @@ class View extends Component {
 
   _selectActiveCallWithRoute(props) {
     const runids = props.runningIds;
+
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
+
       if (activeCall) {
         this.props.selectCall(activeCall);
       }
@@ -52,7 +61,9 @@ class View extends Component {
 
   _checkCreatingSessionAndRoute() {
     const { sip } = this.context;
+
     const creatingSessions = sip.getCreatingSessions();
+
     if (creatingSessions.isEmpty()) {
       routerUtils.goToCallsCreate();
     }
@@ -61,6 +72,7 @@ class View extends Component {
   componentWillReceiveProps(nextProps) {
     let runids = nextProps.runningIds;
     const nextSelectedId = nextProps.selectedId;
+
     if (runids && runids.length !== 0) {
       const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
 
@@ -106,8 +118,8 @@ class View extends Component {
     for (let i = 0; i < runids.length; i++) {
       const runid = runids[i];
       const call = props.runningById[runid];
-
       const isActiveCall = call.answered === true;
+
       if (isActiveCall === true) {
         if (!latestCall) {
           latestCall = call;
@@ -156,6 +168,7 @@ class View extends Component {
 
   onOpenLoudSpeaker = () => {
     LoudSpeaker.open(true);
+
     this.props.updateCall({
       id: this.props.selectedId,
       loudspeaker: true,
@@ -164,6 +177,7 @@ class View extends Component {
 
   onCloseLoudSpeaker = () => {
     LoudSpeaker.open(false);
+
     this.props.updateCall({
       id: this.props.selectedId,
       loudspeaker: false,
@@ -172,16 +186,19 @@ class View extends Component {
 
   hangup = () => {
     const { sip } = this.context;
+
     sip.hangupSession(this.props.selectedId);
   };
 
   answer = () => {
     const { sip } = this.context;
+
     sip.answerSession(this.props.selectedId);
   };
 
   hold = () => {
     const { pbx } = this.context;
+
     const call = this.props.runningById[this.props.selectedId];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
@@ -202,6 +219,7 @@ class View extends Component {
 
   unhold = () => {
     const { pbx } = this.context;
+
     const call = this.props.runningById[this.props.selectedId];
     pbx
       .unholdTalker(call.pbxTenant, call.pbxTalkerId)
@@ -222,6 +240,7 @@ class View extends Component {
 
   startRecording = () => {
     const { pbx } = this.context;
+
     const call = this.props.runningById[this.props.selectedId];
     pbx
       .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
@@ -242,6 +261,7 @@ class View extends Component {
 
   stopRecording = () => {
     const { pbx } = this.context;
+
     const call = this.props.runningById[this.props.selectedId];
     pbx
       .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
@@ -262,6 +282,7 @@ class View extends Component {
 
   transfer = () => {
     const call = this.props.runningById[this.props.selectedId];
+
     if (call.transfering) {
       routerUtils.goToCallTransferAttend(call.id);
     } else {
@@ -276,6 +297,7 @@ class View extends Component {
 
   unpark = parkNumber => {
     const { sip } = this.context;
+
     sip.createSession(parkNumber);
   };
 
@@ -286,11 +308,13 @@ class View extends Component {
 
   enableVideo = () => {
     const { sip } = this.context;
+
     sip.enableVideo(this.props.selectedId);
   };
 
   disableVideo = () => {
     const { sip } = this.context;
+
     sip.disableVideo(this.props.selectedId);
   };
 }

@@ -1,17 +1,18 @@
-import React, { Component } from 'react';
 import { Container } from 'native-base';
-import KeyPad from './KeyPad';
+import React, { Component } from 'react';
+
 import DisplayNumber from './DisplayNumber';
+import KeyPad from './KeyPad';
 
 class PagePhoneCall extends Component {
-	render() {
-		return (
+  render() {
+    return (
       <Container>
-          <DisplayNumber/>
-          <KeyPad/>
+        <DisplayNumber />
+        <KeyPad />
       </Container>
-		)
-	}
+    );
+  }
 }
 
 export default PagePhoneCall;

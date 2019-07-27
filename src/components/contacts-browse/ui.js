@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -18,16 +19,19 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   emptyMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   main: {
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -36,12 +40,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarLeftOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -51,6 +57,7 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarRightOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -60,12 +67,14 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   search: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -75,6 +84,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   searchInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -87,6 +97,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.sm,
   },
+
   searchClear: {
     position: 'absolute',
     top: 0,
@@ -95,14 +106,17 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   searchClearIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   contacts: {
     flex: 1,
   },
+
   contact: {
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
@@ -111,6 +125,7 @@ const st = StyleSheet.create({
     overflow: 'hidden',
     margin: std.gap.lg,
   },
+
   contactLoading: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -122,6 +137,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade0,
     opacity: 0.5,
   },
+
   contactHead: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -129,9 +145,11 @@ const st = StyleSheet.create({
     paddingHorizontal: std.gap.lg,
     backgroundColor: std.color.shade1,
   },
+
   contactHeadInfo: {
     flex: 1,
   },
+
   contactAction: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -141,11 +159,13 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderWidth: StyleSheet.hairlineWidth,
   },
+
   contactActionIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   fieldHeadText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -153,6 +173,7 @@ const st = StyleSheet.create({
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   fieldHeadEdit: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -162,6 +183,7 @@ const st = StyleSheet.create({
     height: std.textSize.md + std.gap.md * 2,
     color: std.color.shade5,
   },
+
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -170,11 +192,13 @@ const st = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: std.color.shade2,
   },
+
   fieldIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.shade4,
   },
+
   fieldBodyText: {
     flex: 1,
     fontFamily: std.font.text,
@@ -182,6 +206,7 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     paddingHorizontal: std.gap.lg,
   },
+
   fieldBodyEdit: {
     flex: 1,
     fontFamily: std.font.text,
@@ -189,12 +214,14 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     paddingHorizontal: std.gap.lg,
   },
+
   fieldTBA: {
     height: std.textSize.md,
     width: rem(128),
     backgroundColor: std.color.shade1,
     marginHorizontal: std.gap.lg,
   },
+
   fieldAction: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -204,16 +231,19 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderWidth: StyleSheet.hairlineWidth,
   },
+
   actionIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   loading: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   paging: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -224,6 +254,7 @@ const st = StyleSheet.create({
     borderRadius: std.gap.md,
     margin: std.gap.lg,
   },
+
   pagingText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,

@@ -1,26 +1,24 @@
-import React from 'react';
-import FooterTabs from './FooterTabs';
 import { Container, Content } from 'native-base';
+import React from 'react';
+
+import ChatsDetail from '../components-Chats/Chat-Detail';
+import ChatsHome from '../components-Chats/Chats-Home';
 import PageContact from '../components-Contacts/PageContact';
-import Headers from './Header';
-import PageRecents from '../components-Recents/PageRecents';
-import PageSetting from '../components-Setting/PageSetting';
-import NewCallPark from '../components-Setting/NewCallPark';
-import PagePhoneCall from '../components-Phone/PagePhoneCall';
+import CallPark from '../components-Incoming/CallPark';
 import PageCalling from '../components-Incoming/PageCalling';
 import PageInComingCall from '../components-Incoming/PageInComingCall';
-import CallPark from '../components-Incoming/CallPark';
-import ChatsHome from '../components-Chats/Chats-Home';
-import ChatsDetail from '../components-Chats/Chat-Detail';
+import PagePhoneCall from '../components-Phone/PagePhoneCall';
+import PageRecents from '../components-Recents/PageRecents';
+import NewCallPark from '../components-Setting/NewCallPark';
+import PageSetting from '../components-Setting/PageSetting';
+import FooterTabs from './FooterTabs';
+import Headers from './Header';
 
 class HomePage extends React.Component {
   render() {
     return (
-    	<Container>
-    		
-    		<ChatsDetail/>
-    		
-    		
+      <Container>
+        <ChatsDetail />
       </Container>
     );
   }

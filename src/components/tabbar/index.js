@@ -1,14 +1,20 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
-const mapGetter = getter => state => ({
-  chatsEnabled: (getter.auth.profile(state) || {}).ucEnabled,
-  runningIds: getter.runningCalls.idsByOrder(state),
-});
-
+@observer
+@createModelView(
+  getter => state => ({
+    chatsEnabled: (authStore.profile || {}).ucEnabled,
+    runningIds: getter.runningCalls.idsByOrder(state),
+  }),
+  action => emit => ({}),
+)
+@observer
 class View extends Component {
   render = () => (
     <UI
@@ -24,4 +30,4 @@ class View extends Component {
   );
 }
 
-export default createModelView(mapGetter)(View);
+export default View;

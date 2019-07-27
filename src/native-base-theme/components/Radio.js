@@ -1,10 +1,8 @@
-// @flow
-
 import { Platform } from 'react-native';
 
 import variable from './../variables/platform';
 
-export default (variables /*: * */ = variable) => {
+export default (variables = variable) => {
   const radioTheme = {
     '.selected': {
       'NativeBase.IconNB': {
@@ -16,6 +14,7 @@ export default (variables /*: * */ = variable) => {
         height: Platform.OS === 'ios' ? 20 : undefined,
       },
     },
+
     'NativeBase.IconNB': {
       color: Platform.OS === 'ios' ? 'transparent' : undefined,
       lineHeight:

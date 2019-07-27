@@ -1,4 +1,5 @@
 import React, { Component, Fragment, PureComponent } from 'react';
+
 import {
   ActivityIndicator,
   Image,
@@ -19,6 +20,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -27,12 +29,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarBack: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -42,6 +46,7 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarLeave: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -51,33 +56,47 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarBackText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   navbarLeaveText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.danger,
   },
+
   members: {
     ...Platform.select({
-      web: { flex: 0 },
-      ios: { flexGrow: 0 },
-      android: { flexGrow: 0 },
+      web: {
+        flex: 0,
+      },
+
+      ios: {
+        flexGrow: 0,
+      },
+
+      android: {
+        flexGrow: 0,
+      },
     }),
+
     paddingVertical: std.gap.md,
     backgroundColor: std.color.shade1,
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   member: {
     width: std.iconSize.md * 2 + std.gap.lg * 2,
     alignItems: 'center',
   },
+
   memberAvatar: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
@@ -88,32 +107,38 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginBottom: std.gap.md,
   },
+
   memberName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
     textAlign: 'center',
   },
+
   inviteMemberIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.sm,
     color: std.color.action,
   },
+
   inviteMemberText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.action,
   },
+
   chats: {
     paddingTop: std.gap.lg,
   },
-  // workaround for scrollview bottom padding on native
+
   chatsFoot: {
     height: std.gap.lg,
   },
+
   chat: {
     alignSelf: 'center',
   },
+
   chatAvatar: {
     width: std.textSize.md + std.gap.md * 2,
     height: std.textSize.md + std.gap.md * 2,
@@ -125,6 +150,7 @@ const st = StyleSheet.create({
       std.textSize.sm + std.gap.lg + std.gap.md + (std.gap.lg + std.gap.sm) / 2,
     left: -(std.textSize.md + std.gap.md * 2 + std.gap.md),
   },
+
   chatCreator: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -133,6 +159,7 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     marginBottom: std.gap.md,
   },
+
   chatCreated: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
@@ -141,6 +168,7 @@ const st = StyleSheet.create({
     marginBottom: std.gap.md,
     alignSelf: 'flex-end',
   },
+
   chatBody: {
     width: rem(320),
     padding: std.gap.lg,
@@ -148,12 +176,14 @@ const st = StyleSheet.create({
     borderRadius: std.gap.md,
     marginBottom: std.gap.sm,
   },
+
   chatText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.sm * 2,
     color: std.color.shade9,
   },
+
   edit: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -162,6 +192,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
+
   editTextInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -172,11 +203,13 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.sm,
   },
+
   loadingRecent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loadMore: {
     width: rem(320),
     alignItems: 'center',
@@ -186,6 +219,7 @@ const st = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: std.gap.sm,
   },
+
   loadMoreText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -193,11 +227,13 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   optIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   btnOptIcon: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -208,10 +244,12 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginHorizontal: std.gap.md,
   },
+
   flexRow: {
     flex: 1,
     flexDirection: 'row',
   },
+
   navbarCall: {
     paddingVertical: std.gap.lg,
   },
@@ -236,7 +274,12 @@ const Navbar = pure(p => (
 
 const Member = pure(p => (
   <View style={st.member}>
-    <Image style={st.memberAvatar} source={{ uri: p.avatar }} />
+    <Image
+      style={st.memberAvatar}
+      source={{
+        uri: p.avatar,
+      }}
+    />
     {(() => {
       if (p.name) {
         return (
@@ -304,7 +347,12 @@ const MiniChat = pure(p => (
 
 const FullChat = pure(p => (
   <View style={st.chat}>
-    <Image style={st.chatAvatar} source={{ uri: p.creatorAvatar }} />
+    <Image
+      style={st.chatAvatar}
+      source={{
+        uri: p.creatorAvatar,
+      }}
+    />
     <Text style={st.chatCreated}>{p.created}</Text>
     <View style={st.chatBody}>
       <Text style={st.chatCreator}>{p.creatorName}</Text>
@@ -340,6 +388,7 @@ class Scroll extends Component {
       this.view.scrollToEnd({
         animated: !this._justMounted,
       });
+
       if (this._justMounted) {
         this._justMounted = false;
       }

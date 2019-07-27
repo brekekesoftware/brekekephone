@@ -24,6 +24,7 @@ class View extends Component {
 
   sendKey = key => {
     const { sip } = this.context;
+
     sip.sendDTMF(key, this.props.call.id);
   };
 }

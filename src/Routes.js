@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import HomePage from './components-Home/HomePage';
 import Auth from './components/auth';
 import WithoutStatusBar from './components/auth/WithoutStatusBar';
 import BuddyChatsNotify from './components/buddy-chats-notify';
@@ -38,14 +39,13 @@ import Tabbar from './components/tabbar';
 import ToastsNotify from './components/toasts-notify';
 import UCAuth from './components/uc-auth';
 import UsersBrowse from './components/users-browse';
-import HomePage from './components-Home/HomePage';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <StatusBar />
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-      <Route exact path="/profiles/manage" component={HomePage} />
+      <Route exact path="/profiles/manage" component={ProfilesManage} />
       <Route exact path="/profiles/create" component={ProfilesCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />

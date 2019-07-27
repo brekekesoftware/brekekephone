@@ -4,24 +4,28 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import stripTags from '../../util/stripTags';
+import stripTags from '../../utils/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
   const duplicatedMap = {};
+
   return {
     buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
+
     chatIds: (
       getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy] || []
     ).filter(id => {
       if (duplicatedMap[id]) {
         return false;
       }
+
       duplicatedMap[id] = true;
       return true;
     }),
+
     chatById: getter.buddyChats.detailMapById(state),
     ucUserById: getter.ucUsers.detailMapById(state),
     fileById: getter.chatFiles.byId(state),
@@ -32,14 +36,22 @@ const mapAction = action => emit => ({
   appendChats(buddy, chats) {
     emit(action.buddyChats.appendByBuddy(buddy, chats));
   },
+
   prependChats(buddy, chats) {
     emit(action.buddyChats.prependByBuddy(buddy, chats));
   },
+
   createChatFile(file) {
     emit(action.chatFiles.create(file));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -66,10 +78,8 @@ const isToday = time => {
 };
 
 const formatTime = time => {
-  // Convert yyyy-MM-dd hh:mm:ss to iso date
   time = time.replace(' ', 'T') + 'Z';
   time = new Date(time);
-
   const hour = time
     .getHours()
     .toString()
@@ -86,12 +96,10 @@ const formatTime = time => {
   return `${month} ${day} - ${hour}:${min}`;
 };
 
-const miniChatDuration = 60000; // 60 seconds
-
+const miniChatDuration = 60000;
 const isMiniChat = (chat, prev = {}) =>
   chat.creator === prev.creator &&
   chat.created - prev.created < miniChatDuration;
-
 const numberOfChatsPerLoad = 50;
 
 class View extends Component {
@@ -115,7 +123,9 @@ class View extends Component {
 
   componentDidMount() {
     const { chatIds } = this.props;
+
     const noChat = !chatIds.length;
+
     if (noChat) this.loadRecent();
   }
 
@@ -141,20 +151,24 @@ class View extends Component {
 
   resolveChat = (id, index) => {
     const { chatIds, chatById, fileById } = this.props;
+
     const chat = chatById[id];
     const prev = chatById[chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
-
     const created = chat.created && formatTime(chat.created);
     const file = fileById[chat.file];
     const text = stripTags(chat.text);
 
     if (mini) {
-      return { mini: true, created, text, file };
+      return {
+        mini: true,
+        created,
+        text,
+        file,
+      };
     }
 
     const creator = this.resolveCreator(chat.creator);
-
     const creatorName =
       !creator.name || creator.name.length === 0 ? creator.id : creator.name;
 
@@ -173,81 +187,123 @@ class View extends Component {
     if (creator === this.me.id) return this.me;
 
     const { ucUserById } = this.props;
+
     return ucUserById[creator] || {};
   };
 
   loadRecent() {
     const { buddy } = this.props;
+
     const { uc } = this.context;
+
     const max = numberOfChatsPerLoad;
-    const query = { max };
+
+    const query = {
+      max,
+    };
 
     uc.getBuddyChats(buddy.id, query)
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
 
-    this.setState({ loadingRecent: true });
+    this.setState({
+      loadingRecent: true,
+    });
   }
 
   onLoadRecentSuccess = chats => {
-    this.setState({ loadingRecent: false });
+    this.setState({
+      loadingRecent: false,
+    });
+
     chats = chats.reverse();
+
     const { buddy, appendChats } = this.props;
+
     appendChats(buddy.id, chats);
   };
 
   onLoadRecentFailure = err => {
     console.error(err);
-    this.setState({ loadingRecent: false });
+
+    this.setState({
+      loadingRecent: false,
+    });
+
     const { showToast } = this.props;
+
     showToast('Failed to get recent chats');
   };
 
   loadMore = () => {
     const { buddy, chatIds, chatById } = this.props;
+
     const oldestChat = chatById[chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = numberOfChatsPerLoad;
-    // to fix server-side issue
     const end = oldestCreated;
-    const query = { max, end };
+
+    const query = {
+      max,
+      end,
+    };
+
     const { uc } = this.context;
 
     uc.getBuddyChats(buddy.id, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
 
-    this.setState({ loadingMore: true });
+    this.setState({
+      loadingMore: true,
+    });
   };
 
   onLoadMoreSuccess = chats => {
-    this.setState({ loadingMore: false });
+    this.setState({
+      loadingMore: false,
+    });
+
     chats = chats.reverse();
+
     const { buddy, prependChats } = this.props;
+
     prependChats(buddy.id, chats);
   };
 
   onLoadMoreFailure = err => {
     console.error(err);
-    this.setState({ loadingMore: false });
+
+    this.setState({
+      loadingMore: false,
+    });
+
     const { showToast } = this.props;
+
     showToast('Failed to get more chats');
   };
 
   setEditingText = editingText => {
-    this.setState({ editingText });
+    this.setState({
+      editingText,
+    });
   };
 
   submitting = false;
+
   submitEditingText = () => {
     if (this.submitting) {
       return;
     }
+
     const txt = this.state.editingText.trim();
+
     if (!txt) {
       return;
     }
+
     this.submitting = true;
+
     this.context.uc
       .sendBuddyChatText(this.props.buddy.id, txt)
       .then(this.onSubmitEditingTextSuccess)
@@ -256,10 +312,15 @@ class View extends Component {
         this.submitting = false;
       });
   };
+
   onSubmitEditingTextSuccess = chat => {
     this.props.appendChats(this.props.buddy.id, [chat]);
-    this.setState({ editingText: '' });
+
+    this.setState({
+      editingText: '',
+    });
   };
+
   onSubmitEditingTextFailure = err => {
     console.error(err);
     this.props.showToast('Failed to send the message');
@@ -267,6 +328,7 @@ class View extends Component {
 
   acceptFile = file => {
     const { uc } = this.context;
+
     uc.acceptFile(file.id)
       .then(blob => saveBlob(blob, file.name))
       .catch(this.onAcceptFileFailure);
@@ -274,18 +336,23 @@ class View extends Component {
 
   onAcceptFileFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     err && showToast(err.message);
   };
 
   rejectFile = file => {
     const { uc } = this.context;
+
     uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
 
   onRejectFileFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     err && showToast(err.message);
   };
 
@@ -295,6 +362,7 @@ class View extends Component {
 
   sendFile = file => {
     const { uc } = this.context;
+
     const { buddy } = this.props;
 
     uc.sendFile(buddy.id, file)
@@ -310,7 +378,9 @@ class View extends Component {
 
   onSendFileFailure = err => {
     console.error(err);
+
     const { showToast } = this.props;
+
     err && showToast(err.message);
   };
 }

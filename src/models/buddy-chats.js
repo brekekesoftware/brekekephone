@@ -5,28 +5,40 @@ import { createModel } from 'redux-model';
 const allowedChatProps = ['id', 'created', 'text', 'file', 'creator'];
 const validateChat = chat => pickProps(chat, allowedChatProps);
 const uniqArray = arr => Array.from(new Set(arr));
+
 const reduceChatsToMapById = chats =>
-  chats.reduce((res, cur) => ({ ...res, [cur.id]: cur }), {});
+  chats.reduce(
+    (res, cur) => ({
+      ...res,
+      [cur.id]: cur,
+    }),
+    {},
+  );
+
 const mapChatsToIds = chats => chats.map(({ id }) => id);
 
 export default createModel({
   prefix: 'buddyChats',
+
   origin: {
     buddyIdsByRecent: [],
     idsMapByBuddy: {},
     detailMapById: {},
   },
+
   getter: {
     buddyIdsByRecent: state => state.buddyIdsByRecent,
     idsMapByBuddy: state => state.idsMapByBuddy,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     clearAll: () => ({
       buddyIdsByRecent: [],
       idsMapByBuddy: {},
       detailMapById: {},
     }),
+
     appendByBuddy: (s, buddy, chats = []) =>
       immutable.on(s)(
         immutable.fset('buddyIdsByRecent', ids => uniqArray([buddy, ...ids])),
@@ -39,6 +51,7 @@ export default createModel({
           ...mapChatsToIds(chats),
         ]),
       ),
+
     prependByBuddy: (s, buddy, chats = []) =>
       immutable.on(s)(
         immutable.fset('buddyIdsByRecent', ids => uniqArray([buddy, ...ids])),

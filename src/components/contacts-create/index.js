@@ -11,7 +11,12 @@ const mapGetter = getter => state => ({});
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -61,30 +66,72 @@ class View extends Component {
     />
   );
 
-  setBook = book => routerUtils.goToContactsCreate({ book });
-  setFirstName = firstName => this.setState({ firstName });
-  setLastName = lastName => this.setState({ lastName });
-  setWorkNumber = workNumber => this.setState({ workNumber });
-  setCellNumber = cellNumber => this.setState({ cellNumber });
-  setHomeNumber = homeNumber => this.setState({ homeNumber });
-  setJob = job => this.setState({ job });
-  setCompany = company => this.setState({ company });
-  setAddress = address => this.setState({ address });
-  setEmail = email => this.setState({ email });
+  setBook = book =>
+    routerUtils.goToContactsCreate({
+      book,
+    });
+
+  setFirstName = firstName =>
+    this.setState({
+      firstName,
+    });
+
+  setLastName = lastName =>
+    this.setState({
+      lastName,
+    });
+
+  setWorkNumber = workNumber =>
+    this.setState({
+      workNumber,
+    });
+
+  setCellNumber = cellNumber =>
+    this.setState({
+      cellNumber,
+    });
+
+  setHomeNumber = homeNumber =>
+    this.setState({
+      homeNumber,
+    });
+
+  setJob = job =>
+    this.setState({
+      job,
+    });
+
+  setCompany = company =>
+    this.setState({
+      company,
+    });
+
+  setAddress = address =>
+    this.setState({
+      address,
+    });
+
+  setEmail = email =>
+    this.setState({
+      email,
+    });
 
   save = () => {
     if (!routerUtils.getQuery().book) {
       this.props.showToast('The phonebook name is required');
       return;
     }
+
     if (!this.state.firstName) {
       this.props.showToast('The first name is required');
       return;
     }
+
     if (!this.state.lastName) {
       this.props.showToast('The last name is required');
       return;
     }
+
     this.context.pbx
       .setContact({
         book: routerUtils.getQuery().book,

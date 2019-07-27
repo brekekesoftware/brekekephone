@@ -12,6 +12,7 @@ const st = StyleSheet.create({
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderColor: std.color.shade4,
     },
+
     android: {
       backgroundColor: std.color.shade3,
       borderBottomWidth: StyleSheet.hairlineWidth,

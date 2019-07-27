@@ -1,3 +1,4 @@
+import { Body, Icon, Left, List, ListItem, Text, View } from 'native-base';
 import React from 'react';
 import {
   FlatList,
@@ -8,7 +9,6 @@ import {
 } from 'react-native';
 
 import Switch from '../components-shared/Switch';
-import {List, ListItem, Left, Body, Text, Icon, View} from 'native-base';
 import { rem, std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -18,37 +18,45 @@ const st = StyleSheet.create({
     width: rem(268),
     height: rem(320),
     borderRadius: std.gap.lg,
+
     backgroundColor: Platform.select({
       ios: std.color.shade0,
       android: std.color.shade0,
       web: std.color.shade4,
     }),
+
     margin: std.gap.lg,
-    marginTop: "30%",
+    marginTop: '30%',
   },
+
   containerServer: {
     flex: 1,
     flexDirection: 'column',
     width: rem(240),
     borderRadius: std.gap.lg,
+
     backgroundColor: Platform.select({
       ios: std.color.shade0,
       android: std.color.shade0,
       web: std.color.shade4,
     }),
+
     margin: std.gap.lg,
   },
+
   btnNewServer: {
     padding: std.gap.lg,
     backgroundColor: std.color.shade9,
     borderRadius: std.gap.sm,
     marginTop: std.gap.lg,
   },
+
   textNoServer: {
     fontSize: std.textSize.lg,
     paddingTop: std.gap.lg * 2,
     paddingBottom: std.gap.lg,
   },
+
   btnText: {
     fontSize: std.textSize.sm,
     lineHeight: std.iconSize.md,
@@ -56,6 +64,7 @@ const st = StyleSheet.create({
     paddingRight: std.gap.md,
     paddingLeft: std.gap.md,
   },
+
   description: {
     fontSize: std.textSize.md,
     lineHeight: std.iconSize.md,
@@ -65,63 +74,76 @@ const st = StyleSheet.create({
     paddingLeft: std.gap.sm,
     color: std.color.shade5,
   },
+
   tenantcontainer: {
     flexDirection: 'row',
     paddingLeft: std.gap.lg,
     paddingBottom: std.gap.md,
   },
+
   hostnamecontainer: {
     flexDirection: 'row',
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.md,
     paddingBottom: std.gap.md,
   },
+
   portcontainer: {
     flexDirection: 'row',
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.md,
     paddingBottom: std.gap.md,
   },
+
   icons: {
     fontFamily: std.font.icon,
     fontSize: std.textSize.lg,
     paddingTop: std.gap.lg,
     paddingRight: std.gap.lg,
   },
+
   nameserver: {
     fontSize: std.textSize.md * 2,
     padding: std.gap.lg,
   },
+
   servertitle: {
     fontSize: std.textSize.sm,
   },
+
   serverinfo: {
     fontSize: std.textSize.md,
     lineHeight: std.iconSize.md + std.gap.md,
   },
+
   containerText: {
     paddingLeft: std.gap.lg,
   },
+
   btncontainer: {
     flexDirection: 'row',
   },
+
   btnEditandRemove: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     width: '50%',
     paddingTop: std.gap.sm,
   },
+
   btncontainerSignin: {
     width: '50%',
     alignItems: 'center',
     backgroundColor: std.color.shade9,
     borderBottomRightRadius: std.gap.lg,
   },
+
   btnSignin: {
     paddingTop: std.gap.lg + std.gap.sm,
     paddingBottom: std.gap.lg + +std.gap.sm,
     color: std.color.shade0,
   },
+
   iconserver: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.lg * 3,
@@ -134,7 +156,7 @@ const count_server = 0;
 const NoServer = () => (
   <View style={st.container}>
     <View>
-      <Icon style={st.iconserver} name="phonelink-off" type="MaterialIcons"/>
+      <Icon style={st.iconserver} name="phonelink-off" type="MaterialIcons" />
     </View>
     <View>
       <Text style={st.textNoServer}>No Server</Text>
@@ -154,10 +176,10 @@ const NoServer = () => (
 
 const Server = p => (
   <View style={st.containerServer}>
-    <List>     
+    <List>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="person" type="MaterialIcons"/>
+          <Icon name="person" type="MaterialIcons" />
         </Left>
         <Body>
           <Text note>USERNAME</Text>
@@ -166,7 +188,7 @@ const Server = p => (
       </ListItem>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="home" type="MaterialIcons"/>
+          <Icon name="home" type="MaterialIcons" />
         </Left>
         <Body>
           <Text note>TENANT</Text>
@@ -175,7 +197,7 @@ const Server = p => (
       </ListItem>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="domain" type="MaterialIcons"/>
+          <Icon name="domain" type="MaterialIcons" />
         </Left>
         <Body>
           <Text note>HOST NAME</Text>
@@ -184,7 +206,7 @@ const Server = p => (
       </ListItem>
       <ListItem thumbnail noBorder>
         <Left>
-          <Icon name="usb" type="MaterialIcons"/>
+          <Icon name="usb" type="MaterialIcons" />
         </Left>
         <Body>
           <Text note>POST</Text>
@@ -196,10 +218,10 @@ const Server = p => (
     <View style={st.btncontainer}>
       <View style={st.btnEditandRemove}>
         <Button>
-          <Icon name="delete" type="MaterialIcons"/>
+          <Icon name="delete" type="MaterialIcons" />
         </Button>
         <Button>
-          <Icon name="create" type="MaterialIcons"/>
+          <Icon name="create" type="MaterialIcons" />
         </Button>
       </View>
       <Button style={st.btncontainerSignin}>
@@ -239,6 +261,7 @@ const data = [
 class ListServer extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       data: data,
     };
@@ -254,7 +277,7 @@ class ListServer extends React.Component {
             return <Server />;
           }}
         />
-        {/*<NoServer/>*/}
+        {}
       </View>
     );
   }

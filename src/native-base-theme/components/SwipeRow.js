@@ -1,19 +1,20 @@
-// @flow
-
 import variable from './../variables/platform';
 
-export default (variables /*: * */ = variable) => {
+export default (variables = variable) => {
   const swipeRowTheme = {
     'NativeBase.ListItem': {
       '.list': {
         backgroundColor: '#FFF',
       },
+
       marginLeft: 0,
     },
+
     'NativeBase.Left': {
       flex: 0,
       alignSelf: null,
       alignItems: null,
+
       'NativeBase.Button': {
         flex: 1,
         alignItems: 'center',
@@ -22,10 +23,12 @@ export default (variables /*: * */ = variable) => {
         borderRadius: 0,
       },
     },
+
     'NativeBase.Right': {
       flex: 0,
       alignSelf: null,
       alignItems: null,
+
       'NativeBase.Button': {
         flex: 1,
         alignItems: 'center',
@@ -34,6 +37,7 @@ export default (variables /*: * */ = variable) => {
         borderRadius: 0,
       },
     },
+
     'NativeBase.Button': {
       flex: 1,
       height: null,

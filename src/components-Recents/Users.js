@@ -10,8 +10,6 @@ import {
 } from 'native-base';
 import React, { Component } from 'react';
 
-// to do: icon note
-
 class User extends Component {
   render() {
     return (
@@ -30,7 +28,7 @@ class User extends Component {
         </Body>
         <Right>
           <Button transparent dark>
-            <Icon name="call" type="MaterialIcons"/>
+            <Icon name="call" type="MaterialIcons" />
           </Button>
         </Right>
       </ListItem>

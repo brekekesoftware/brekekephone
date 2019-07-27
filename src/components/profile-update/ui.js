@@ -1,4 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
+
 import {
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +20,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     justifyContent: 'center',
@@ -27,6 +29,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarBack: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -36,18 +39,21 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarSave: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -57,9 +63,11 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   scroll: {
     flex: 1,
   },
+
   divider: {
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.lg * 2,
@@ -67,11 +75,13 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   dividerTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -80,12 +90,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   fieldLabel: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   fieldValueText: {
     flex: 1,
     fontFamily: std.font.text,
@@ -96,12 +108,14 @@ const st = StyleSheet.create({
     height: std.textSize.md + std.gap.md * 2,
     textAlign: 'right',
   },
+
   picker: {
     flex: 1,
     color: std.color.shade9,
     paddingVertical: 0,
     paddingHorizontal: 0,
     width: 200,
+
     ...Platform.select({
       web: {
         fontFamily: std.font.text,
@@ -115,9 +129,11 @@ const st = StyleSheet.create({
       },
     }),
   },
+
   fieldSwitch: {
     marginLeft: 'auto',
   },
+
   parkNumber: {
     flex: 1,
     fontFamily: std.font.text,
@@ -127,27 +143,33 @@ const st = StyleSheet.create({
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.md * 2,
   },
+
   parkAdd: {
     paddingLeft: std.gap.lg,
   },
+
   parkAddIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   parkRemove: {
     paddingLeft: std.gap.lg,
   },
+
   parkRemoveIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.danger,
   },
+
   notFound: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   notFoundMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -186,7 +208,6 @@ const PBX = pure(p => (
       <TextInput
         style={st.fieldValueText}
         placeholder="Required"
-        // keyboardType='email-address'
         keyboardType="default"
         value={p.hostname}
         onChangeText={p.setHostname}

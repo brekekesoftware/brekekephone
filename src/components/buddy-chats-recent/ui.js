@@ -1,4 +1,5 @@
 import React, { Component, Fragment, PureComponent } from 'react';
+
 import {
   ActivityIndicator,
   Image,
@@ -10,6 +11,7 @@ import {
   TouchableOpacity as Button,
   View,
 } from 'react-native';
+
 import Progress from 'react-native-progress-circle';
 
 import { rem, std } from '../../styleguide';
@@ -19,6 +21,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -27,12 +30,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarOptLeft: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -42,23 +47,27 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   chats: {
     flex: 1,
     paddingTop: std.gap.lg,
   },
-  // workaround for scrollview bottom padding on native
+
   chatsFoot: {
     height: std.gap.lg,
   },
+
   chat: {
     alignSelf: 'center',
   },
+
   chatAvatar: {
     width: std.textSize.md + std.gap.md * 2,
     height: std.textSize.md + std.gap.md * 2,
@@ -70,6 +79,7 @@ const st = StyleSheet.create({
       std.textSize.sm + std.gap.lg + std.gap.md + (std.gap.lg + std.gap.sm) / 2,
     left: -(std.textSize.md + std.gap.md * 2 + std.gap.md),
   },
+
   chatCreator: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -78,6 +88,7 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     marginBottom: std.gap.md,
   },
+
   chatCreated: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
@@ -86,6 +97,7 @@ const st = StyleSheet.create({
     marginBottom: std.gap.md,
     alignSelf: 'flex-end',
   },
+
   chatBody: {
     width: rem(320),
     padding: std.gap.lg,
@@ -93,12 +105,14 @@ const st = StyleSheet.create({
     borderRadius: std.gap.md,
     marginBottom: std.gap.sm,
   },
+
   chatText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.sm * 2,
     color: std.color.shade9,
   },
+
   edit: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -107,6 +121,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
+
   editTextInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -115,6 +130,7 @@ const st = StyleSheet.create({
     paddingVertical: std.gap.lg * 2,
     paddingHorizontal: std.gap.lg,
   },
+
   pickFile: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
@@ -126,16 +142,19 @@ const st = StyleSheet.create({
     marginLeft: std.gap.sm,
     marginRight: std.gap.lg,
   },
+
   pickFileIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   loadingRecent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loadMore: {
     width: rem(320),
     alignItems: 'center',
@@ -145,6 +164,7 @@ const st = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: std.gap.sm,
   },
+
   loadMoreText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -152,13 +172,16 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   file: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   fileInfo: {
     flex: 1,
   },
+
   fileName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -166,12 +189,14 @@ const st = StyleSheet.create({
     color: std.color.shade9,
     paddingRight: std.gap.md,
   },
+
   fileSize: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   fileAccept: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
@@ -182,11 +207,13 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     marginLeft: std.gap.lg,
   },
+
   fileAcceptIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   fileReject: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
@@ -196,21 +223,25 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: std.color.shade4,
   },
+
   fileRejectIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.notice,
   },
+
   fileSuccessText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.active,
   },
+
   fileFailureText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.danger,
   },
+
   fileStoppedText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
@@ -295,7 +326,12 @@ const MiniChat = pure(p => (
 
 const FullChat = pure(p => (
   <View style={st.chat}>
-    <Image style={st.chatAvatar} source={{ uri: p.creatorAvatar }} />
+    <Image
+      style={st.chatAvatar}
+      source={{
+        uri: p.creatorAvatar,
+      }}
+    />
     <Text style={st.chatCreated}>{p.created}</Text>
     <View style={st.chatBody}>
       <Text style={st.chatCreator}>{p.creatorName}</Text>
@@ -340,6 +376,7 @@ class Scroll extends Component {
       this.view.scrollToEnd({
         animated: !this._justMounted,
       });
+
       if (this._justMounted) {
         this._justMounted = false;
       }

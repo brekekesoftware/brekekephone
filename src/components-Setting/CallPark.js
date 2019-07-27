@@ -1,7 +1,16 @@
+import {
+  Body,
+  Button,
+  Content,
+  Icon,
+  Left,
+  List,
+  ListItem,
+  Right,
+  Text,
+} from 'native-base';
 import React, { Component } from 'react';
-import { ListItem, Content, Left, Button, Icon, Body, Right, Text, List,  } from 'native-base';
-import {FlatList} from 'react-native';
-
+import { FlatList } from 'react-native';
 
 const Park = p => (
   <List>
@@ -9,17 +18,17 @@ const Park = p => (
       <Left>
         <Body>
           <Text>{p.name}</Text>
-          <Text note>Extension: {p.extension}</Text>
+          <Text note>Extension:{p.extension}</Text>
         </Body>
       </Left>
       <Right>
         <Button full transparent dark>
-          <Icon name="create" type="MaterialIcons"/>
+          <Icon name="create" type="MaterialIcons" />
         </Button>
       </Right>
     </ListItem>
   </List>
-)
+);
 
 let data_demo = [
   {
@@ -38,24 +47,24 @@ let data_demo = [
     name: 'Park 4',
     extension: '*891',
   },
-]
+];
 
 class CallParkComponent extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       data: data_demo,
     };
   }
 
-
-	render() {
-		return (
+  render() {
+    return (
       <Content>
         <List>
           <ListItem itemDivider>
             <Text>CALL PARK</Text>
-          </ListItem>       
+          </ListItem>
           <FlatList
             data={this.state.data}
             renderItem={({ item: rowData }) => {
@@ -64,19 +73,19 @@ class CallParkComponent extends Component {
           />
           <ListItem>
             <Body>
-              <Button full  transparent dark>
-                <Text> NEW CALL PARK</Text>
+              <Button full transparent dark>
+                <Text>NEW CALL PARK</Text>
               </Button>
             </Body>
           </ListItem>
         </List>
         <Button full iconLeft danger>
-          <Icon name='exit-to-app' type="MaterialIcons"/>
+          <Icon name="exit-to-app" type="MaterialIcons" />
           <Text>LOG OUT</Text>
         </Button>
-     </Content>
-		)
-	}
+      </Content>
+    );
+  }
 }
 
 export default CallParkComponent;

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+
 import {
   Image,
   ScrollView,
@@ -16,6 +17,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -24,12 +26,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   search: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -38,6 +42,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   searchInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -50,6 +55,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.sm,
   },
+
   searchClear: {
     position: 'absolute',
     top: 0,
@@ -58,9 +64,11 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   users: {
     flex: 1,
   },
+
   user: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -70,6 +78,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   userAvatar: {
     width: std.iconSize.lg * 2,
     height: std.iconSize.lg * 2,
@@ -78,21 +87,25 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginRight: std.gap.lg,
   },
+
   userBody: {
     flex: 1,
   },
+
   userName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   userMood: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   userOpt: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -103,11 +116,13 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginHorizontal: std.gap.md,
   },
+
   optIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   userCallHolding: {
     position: 'absolute',
     top: 0,
@@ -119,6 +134,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.notice,
   },
+
   userCallTalking: {
     position: 'absolute',
     top: 0,
@@ -130,6 +146,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.danger,
   },
+
   userCallCalling: {
     position: 'absolute',
     top: 0,
@@ -141,6 +158,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.danger,
   },
+
   userCallRinging: {
     position: 'absolute',
     top: 0,
@@ -152,6 +170,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.danger,
   },
+
   userChatOffline: {
     position: 'absolute',
     top: 0,
@@ -163,6 +182,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.shade5,
   },
+
   userChatOnline: {
     position: 'absolute',
     top: 0,
@@ -174,6 +194,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.active,
   },
+
   userChatIdle: {
     position: 'absolute',
     top: 0,
@@ -185,6 +206,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.notice,
   },
+
   userChatBusy: {
     position: 'absolute',
     top: 0,
@@ -196,6 +218,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.danger,
   },
+
   profileSubtitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
@@ -234,7 +257,12 @@ const Search = pure(p => (
 const User = pure(p => (
   <View style={st.user}>
     {p.chatEnabled && (
-      <Image style={st.userAvatar} source={{ uri: p.avatar }} />
+      <Image
+        style={st.userAvatar}
+        source={{
+          uri: p.avatar,
+        }}
+      />
     )}
     <View style={st.userBody}>
       {(() => {

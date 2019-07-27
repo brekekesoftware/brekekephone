@@ -15,6 +15,7 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -23,15 +24,18 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   chats: {
     flex: 1,
   },
+
   chat: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -42,6 +46,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   chatIcon: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -53,17 +58,20 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginRight: std.gap.lg,
   },
+
   buddyAvatar: {
     width: std.iconSize.lg * 2,
     height: std.iconSize.lg * 2,
     borderRadius: std.iconSize.lg,
   },
+
   chatName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   chatOffline: {
     position: 'absolute',
     top: 0,
@@ -75,6 +83,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.shade5,
   },
+
   chatOnline: {
     position: 'absolute',
     top: 0,
@@ -86,6 +95,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.active,
   },
+
   chatIdle: {
     position: 'absolute',
     top: 0,
@@ -97,6 +107,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade0,
     backgroundColor: std.color.notice,
   },
+
   chatBusy: {
     position: 'absolute',
     top: 0,
@@ -108,12 +119,14 @@ const st = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     backgroundColor: std.color.danger,
   },
+
   chatChevronIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
     marginLeft: 'auto',
   },
+
   createGroup: {
     alignItems: 'center',
     paddingVertical: std.gap.lg,
@@ -121,12 +134,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   createGroupText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   groupIcon: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -143,7 +158,12 @@ const Navbar = p => (
 const Buddy = p => (
   <Button style={st.chat} onPress={p.select}>
     <View style={st.chatIcon}>
-      <Image style={st.buddyAvatar} source={{ uri: p.avatar }} />
+      <Image
+        style={st.buddyAvatar}
+        source={{
+          uri: p.avatar,
+        }}
+      />
       {p.offline && <View style={st.chatOffline} />}
       {p.online && <View style={st.chatOnline} />}
       {p.idle && <View style={st.chatIdle} />}

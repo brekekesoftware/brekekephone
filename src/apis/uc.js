@@ -5,9 +5,9 @@ import { Platform } from 'react-native';
 class UC extends EventEmitter {
   constructor() {
     super();
-
     const logger = new UCClient.Logger('all');
     this.client = new UCClient.ChatClient(logger);
+
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
       buddyStatusChanged: this.onUserUpdated,
@@ -139,6 +139,7 @@ class UC extends EventEmitter {
       this.emit('chat-group-revoked', {
         id: ev.conference.conf_id,
       });
+
       return;
     }
 
@@ -207,9 +208,11 @@ class UC extends EventEmitter {
 
   getUsers() {
     const buddyList = this.client.getBuddylist();
+
     if (!buddyList || !Array.isArray(buddyList.user)) {
       return [];
     }
+
     return buddyList.user.map(user => ({
       id: user.user_id,
       avatar: user.profile_image_url,
@@ -233,7 +236,6 @@ class UC extends EventEmitter {
     const readRequiredMessageIds = res.messages
       .filter(msg => msg.requires_read)
       .map(msg => msg.received_text_id);
-
     this.client.readText(readRequiredMessageIds);
 
     return res.messages.map(msg => ({
@@ -258,15 +260,14 @@ class UC extends EventEmitter {
         onerr,
       ),
     );
+
     if (!res || !Array.isArray(res.logs)) {
       return [];
     }
+
     return res.logs.map(log => ({
       id: log.log_id,
-      text:
-        log.ctype === 5 // ctype-file-request
-          ? JSON.parse(log.content).name
-          : log.content,
+      text: log.ctype === 5 ? JSON.parse(log.content).name : log.content,
       creator: log.sender.user_id,
       created: log.ltime,
     }));
@@ -286,9 +287,11 @@ class UC extends EventEmitter {
         onerr,
       ),
     );
+
     if (!res || !Array.isArray(res.logs)) {
       return [];
     }
+
     return res.logs.map(log => ({
       id: log.log_id,
       text: log.content,
@@ -301,7 +304,9 @@ class UC extends EventEmitter {
     return new Promise((onres, onerr) =>
       this.client.sendText(
         text,
-        { user_id: buddy },
+        {
+          user_id: buddy,
+        },
         res =>
           onres({
             id: res.text_id,
@@ -373,9 +378,11 @@ class UC extends EventEmitter {
     return new Promise((onres, onerr) => {
       const xhr = new XMLHttpRequest();
       xhr.responseType = 'blob';
+
       xhr.onload = function(ev) {
         if (this.status === 200) onres(this.response);
       };
+
       this.client.acceptFileWithXhr(file, xhr, onerr);
     });
   }
@@ -389,12 +396,15 @@ class UC extends EventEmitter {
 
   async sendFile(user_id, file) {
     let input = null;
+
     if (Platform.OS === 'web') {
       input = document.createElement('input');
       input.type = 'file';
       input.name = 'file';
+
       input.files = (() => {
         let b = null;
+
         if (window.DataTransfer) {
           b = new DataTransfer();
         } else if (window.ClipboardEvent) {
@@ -403,27 +413,37 @@ class UC extends EventEmitter {
           console.error('Can not set input.files');
           return;
         }
+
         b.items.add(file);
         return b.files;
       })();
+
       const form = document.createElement('form');
       form.appendChild(input);
     } else {
       const fd = new FormData();
+
       fd.append('file', {
         ...file,
         type: 'multipart/form-data',
       });
+
       input = {
-        // Add `form` property because ucclient requires it
         form: 'This is not a form element, see app/apis/uc.js for detail',
         files: [file],
-        __rnFormData: fd, // Will be used in brekekejs/lib/ucclient.js _recvRecvFile method
+        __rnFormData: fd,
       };
     }
 
     const res = await new Promise((onres, onerr) =>
-      this.client.sendFile({ user_id }, input, onres, onerr),
+      this.client.sendFile(
+        {
+          user_id,
+        },
+        input,
+        onres,
+        onerr,
+      ),
     );
 
     return {
@@ -438,6 +458,7 @@ class UC extends EventEmitter {
         transferStopped: res.fileInfo.status === 4 || res.fileInfo.status === 5,
         transferFailure: res.fileInfo.status === 6,
       },
+
       chat: {
         id: res.text_id,
         file: res.fileInfo.file_id,

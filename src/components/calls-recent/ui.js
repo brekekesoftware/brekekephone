@@ -44,6 +44,7 @@ const st = {
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -52,12 +53,14 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarLeftOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -67,6 +70,7 @@ const st = {
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarRightOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -76,22 +80,26 @@ const st = {
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   optIconAction: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   optIconDanger: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.danger,
   },
+
   call: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -101,6 +109,7 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   callIconMissed: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -108,6 +117,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconIncoming: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -115,6 +125,7 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callIconOutgoing: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
@@ -122,27 +133,32 @@ const st = {
     width: std.iconSize.md,
     marginRight: std.gap.lg,
   },
+
   callInfo: {
     flex: 1,
   },
+
   callCreated: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   callName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   callNumber: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   callOpt: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,

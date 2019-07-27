@@ -6,29 +6,26 @@ import parseCustomNoti from './pushNotification-parse';
 const { Notification, RefreshToken } = FCMEvent;
 
 let fcmPnToken = '';
+
 export const getPnToken = () => {
   return Promise.resolve(fcmPnToken);
 };
 
 export const registerPn = async () => {
   try {
-    //
     await FCM.requestPermissions();
-    //
     FCM.enableDirectChannel();
+
     await FCM.createNotificationChannel({
       id: 'default',
       name: 'Brekeke Phone',
       description: 'Brekeke Phone notification channel',
       priority: 'high',
     });
-    //
-    // Register with no remove
+
     FCM.on(RefreshToken, onFcmToken);
     FCM.on(Notification, onFcmNotification);
-    //
     await FCM.getFCMToken().then(onFcmToken);
-    //
     const noti = await FCM.getInitialNotification();
     onFcmNotification(noti);
   } catch (err) {
@@ -44,16 +41,17 @@ const onFcmToken = token => {
 
 const onFcmNotification = async noti => {
   const n = noti && parseCustomNoti(noti);
+
   if (!n) {
     return;
   }
-  //
+
   const title = n.body || JSON.stringify(n);
   const isCall = /call/i.test(title);
   const body = 'Click to ' + (isCall ? 'answer' : 'view');
   const sound = isCall ? 'incallmanager_ringtone.mp3' : undefined;
   const badge = (await getBadgeNumber()) + 1;
-  //
+
   FCM.presentLocalNotification({
     body,
     title,
@@ -74,18 +72,21 @@ const onFcmNotification = async noti => {
 
 const getBadgeNumber = async () => {
   let n = await AsyncStorage.getItem('androidBadgeNumber');
+
   if (typeof n === 'string') {
     n = n.replace(/\D+/g, '');
   }
+
   return parseInt(n) || 0;
 };
+
 const setBadgeNumber = n => {
   AsyncStorage.setItem('androidBadgeNumber', '' + n);
 };
+
 export const resetBadgeNumber = () => {
   setBadgeNumber(0);
-  //
-  // Call presentLocalNotification to reset badge?
+
   FCM.presentLocalNotification({
     body: 'Reset badge',
     number: 0,

@@ -1,19 +1,20 @@
-import React, { Component } from 'react';
 import { Container, Content } from 'native-base';
-import PbxComponent from './PBX';
+import React, { Component } from 'react';
+
 import CallParkComponent from './CallPark';
+import PbxComponent from './PBX';
 
 class PageSetting extends Component {
-	render() {
-		return (
+  render() {
+    return (
       <Container>
         <Content>
-          <PbxComponent/>
-          <CallParkComponent/>
+          <PbxComponent />
+          <CallParkComponent />
         </Content>
       </Container>
-		)
-	}
+    );
+  }
 }
 
 export default PageSetting;

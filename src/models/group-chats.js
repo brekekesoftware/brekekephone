@@ -6,28 +6,40 @@ import { createModel } from 'redux-model';
 const allowedChatProps = ['id', 'created', 'text', 'file', 'creator'];
 const validateChat = chat => pickProps(chat, allowedChatProps);
 const uniqArray = arr => Array.from(new Set(arr));
+
 const reduceChatsToMapById = chats =>
-  chats.reduce((res, cur) => ({ ...res, [cur.id]: cur }), {});
+  chats.reduce(
+    (res, cur) => ({
+      ...res,
+      [cur.id]: cur,
+    }),
+    {},
+  );
+
 const mapChatsToIds = chats => chats.map(({ id }) => id);
 
 export default createModel({
   prefix: 'groupChats',
+
   origin: {
     groupIdsByRecent: [],
     idsMapByGroup: {},
     detailMapById: {},
   },
+
   getter: {
     groupIdsByRecent: state => state.groupIdsByRecent,
     idsMapByGroup: state => state.idsMapByGroup,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     clearAll: () => ({
       groupIdsByRecent: [],
       idsMapByGroup: {},
       detailMapById: {},
     }),
+
     clearByGroup: (prevState, group) =>
       immutable.on(prevState)(
         immutable.fset('groupIdsByRecent', ids =>
@@ -41,6 +53,7 @@ export default createModel({
           map => ({ [group]: removed, ...rest }) => rest,
         ),
       ),
+
     appendByGroup: (prevState, group, chats) =>
       immutable.on(prevState)(
         immutable.fset('groupIdsByRecent', ids => uniqArray([group, ...ids])),
@@ -53,6 +66,7 @@ export default createModel({
           ...mapChatsToIds(chats),
         ]),
       ),
+
     prependByGroup: (prevState, group, chats) =>
       immutable.on(prevState)(
         immutable.fset('groupIdsByRecent', ids => uniqArray([group, ...ids])),

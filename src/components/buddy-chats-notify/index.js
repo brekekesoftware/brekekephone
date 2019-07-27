@@ -6,14 +6,17 @@ import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
   const duplicatedMap = {};
+
   return {
     buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
+
     chatIds: (
       getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy] || []
     ).filter(id => {
       if (duplicatedMap[id]) {
         return false;
       }
+
       duplicatedMap[id] = true;
       return true;
     }),

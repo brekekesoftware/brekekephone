@@ -3,20 +3,30 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => {
   const callId = props.match.params.call;
   const call = getter.runningCalls.detailMapById(state)[callId];
-  const profile = getter.auth.profile(state);
+  const profile = authStore.profile;
   const parks = profile ? profile.parks : [];
-  return { call, parks };
+
+  return {
+    call,
+    parks,
+  };
 };
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -45,7 +55,9 @@ class View extends Component {
   );
 
   selectPark = selectedPark => {
-    this.setState({ selectedPark });
+    this.setState({
+      selectedPark,
+    });
   };
 
   park = () => {
@@ -57,10 +69,11 @@ class View extends Component {
     }
 
     const { pbx } = this.context;
+
     const { call } = this.props;
+
     const tenant = call.pbxTenant;
     const talkerId = call.pbxTalkerId;
-
     pbx
       .parkTalker(tenant, talkerId, selectedPark)
       .then(this.onParkSuccess)

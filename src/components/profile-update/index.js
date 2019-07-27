@@ -3,7 +3,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import { validateHostname, validatePort } from '../../util/validator';
+import { validateHostname, validatePort } from '../../utils/validator';
 import UI from './ui';
 
 const mapGetter = getter => (state, props) => ({
@@ -14,8 +14,14 @@ const mapAction = action => emit => ({
   updateProfile(profile) {
     emit(action.profiles.update(profile));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -48,25 +54,45 @@ class View extends Component {
   );
 
   setPBXHostname = pbxHostname => {
-    this.setState({ pbxHostname });
+    this.setState({
+      pbxHostname,
+    });
   };
+
   setPBXPort = pbxPort => {
-    this.setState({ pbxPort });
+    this.setState({
+      pbxPort,
+    });
   };
+
   setPBXTenant = pbxTenant => {
-    this.setState({ pbxTenant });
+    this.setState({
+      pbxTenant,
+    });
   };
+
   setPBXUsername = pbxUsername => {
-    this.setState({ pbxUsername });
+    this.setState({
+      pbxUsername,
+    });
   };
+
   setPBXPassword = pbxPassword => {
-    this.setState({ pbxPassword });
+    this.setState({
+      pbxPassword,
+    });
   };
+
   setPBXPhoneIndex = pbxPhoneIndex => {
-    this.setState({ pbxPhoneIndex });
+    this.setState({
+      pbxPhoneIndex,
+    });
   };
+
   setPBXTurnEnabled = pbxTurnEnabled => {
-    this.setState({ pbxTurnEnabled });
+    this.setState({
+      pbxTurnEnabled,
+    });
   };
 
   _isStringEmpty = s => {
@@ -88,15 +114,22 @@ class View extends Component {
         }
       }
     }
-    this.setState({ ucEnabled });
+
+    this.setState({
+      ucEnabled,
+    });
   };
 
   setUCHostname = ucHostname => {
-    this.setState({ ucHostname });
+    this.setState({
+      ucHostname,
+    });
   };
 
   setUCPort = ucPort => {
-    this.setState({ ucPort });
+    this.setState({
+      ucPort,
+    });
   };
 
   setAddingPark = addingPark => {
@@ -134,10 +167,12 @@ class View extends Component {
       this.props.showToast('Missing required fields');
       return;
     }
+
     if (!validateHostname(this.state.pbxHostname)) {
       this.props.showToast('Host name is invalid');
       return;
     }
+
     if (!validatePort(this.state.pbxPort)) {
       this.props.showToast('Port is invalid');
       return;
@@ -153,6 +188,7 @@ class View extends Component {
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
     const parks = [];
+
     for (let i = 0; i < this.state.parks.length; i++) {
       parks.push(this.state.parks[i].trim());
     }

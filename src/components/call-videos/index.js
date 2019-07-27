@@ -15,6 +15,7 @@ class View extends Component {
 
   resolveCall = id => {
     const call = this.props.callById[id];
+
     return {
       enabled: call.localVideoEnabled,
       sourceObject: call.remoteVideoStreamObject,

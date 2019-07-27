@@ -30,11 +30,14 @@ class View extends Component {
   );
 
   setPbxPassword = pbxPassword => {
-    this.setState({ pbxPassword });
+    this.setState({
+      pbxPassword,
+    });
   };
 
   signin = () => {
     let { profile } = this.props;
+
     profile.pbxPassword = this.state.pbxPassword;
     this.props.setAuthProfile(profile);
     routerUtils.goToAuth();

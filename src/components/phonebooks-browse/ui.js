@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   ActivityIndicator,
   ScrollView,
@@ -16,16 +17,19 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   emptyMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   main: {
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -34,12 +38,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarRightAction: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -49,15 +55,18 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarActionText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   books: {
     flex: 1,
   },
+
   book: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -68,6 +77,7 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   bookName: {
     flex: 1,
     fontFamily: std.font.text,
@@ -75,11 +85,13 @@ const st = StyleSheet.create({
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   bookChevron: {
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
   },
+
   loading: {
     flex: 1,
     justifyContent: 'center',

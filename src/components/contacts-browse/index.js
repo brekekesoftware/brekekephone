@@ -13,12 +13,16 @@ const mapGetter = getter => state => ({});
 
 const mapAction = action => emit => ({
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
 const numberOfContactsPerPage = 30;
-
 const formatPhoneNumber = number => number.replace(/\D+/g, '');
 
 @observer
@@ -75,7 +79,13 @@ class View extends Component {
 
   setSearchText = searchText => {
     const oldQuery = routerUtils.getQuery();
-    const query = { ...oldQuery, searchText, offset: 0 };
+
+    const query = {
+      ...oldQuery,
+      searchText,
+      offset: 0,
+    };
+
     routerUtils.goToContactsBrowse(query);
     this.loadContacts();
   };
@@ -90,16 +100,19 @@ class View extends Component {
 
   saveContact = id => {
     const contact = this.state.contactById[id];
+
     if (!contact.firstName) {
       this.props.showToast('The first name is required');
       return;
     }
+
     if (!contact.lastName) {
       this.props.showToast('The last name is required');
       return;
     }
 
     const { pbx } = this.context;
+
     this.setState(
       immutable.on(this.state)(
         immutable.vset(`contactById.${id}.loading`, true),
@@ -207,9 +220,11 @@ class View extends Component {
 
   loadContacts = debounce(() => {
     const { pbx } = this.context;
+
     const query = routerUtils.getQuery();
     const book = query.book;
     const shared = query.shared;
+
     const opts = {
       limit: numberOfContactsPerPage,
       offset: query.offset,
@@ -231,8 +246,10 @@ class View extends Component {
   onLoadContactsSuccess = contacts => {
     const contactIds = [];
     const contactById = {};
+
     contacts.forEach(contact => {
       contactIds.push(contact.id);
+
       contactById[contact.id] = {
         ...contact,
         loading: true,
@@ -240,7 +257,11 @@ class View extends Component {
     });
 
     this.setState(
-      { contactIds, contactById, loading: false },
+      {
+        contactIds,
+        contactById,
+        loading: false,
+      },
       this.loadContactDetails,
     );
   };
@@ -264,6 +285,7 @@ class View extends Component {
         this.setState(prevState => ({
           contactById: {
             ...prevState.contactById,
+
             [id]: {
               ...prevState.contactById[id],
               ...detail,
@@ -279,11 +301,14 @@ class View extends Component {
 
   goNextPage = () => {
     const oldQuery = routerUtils.getQuery();
+
     const query = {
       ...oldQuery,
       offset: oldQuery.offset + numberOfContactsPerPage,
     };
+
     routerUtils.goToContactsBrowse(query);
+
     setTimeout(() => {
       this.loadContacts();
       this.loadContacts.flush();
@@ -292,11 +317,14 @@ class View extends Component {
 
   goPrevPage = () => {
     const oldQuery = routerUtils.getQuery();
+
     const query = {
       ...oldQuery,
       offset: oldQuery.offset - numberOfContactsPerPage,
     };
+
     routerUtils.goToContactsBrowse(query);
+
     setTimeout(() => {
       this.loadContacts();
       this.loadContacts.flush();
@@ -305,6 +333,7 @@ class View extends Component {
 
   call = number => {
     const { sip } = this.context;
+
     number = formatPhoneNumber(number);
     sip.createSession(number);
   };

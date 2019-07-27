@@ -12,6 +12,7 @@ const allowedToCreateProps = [
   'remoteVideoStreamObject',
   'createdAt',
 ];
+
 const validateCreatingCall = call => pickProps(call, allowedToCreateProps);
 
 const allowedToUpdateProps = [
@@ -27,30 +28,36 @@ const allowedToUpdateProps = [
   'pbxTalkerId',
   'voiceStreamObject',
   'localVideoEnabled',
-  'remoteVideoStreamURL', //deprecated
+  'remoteVideoStreamURL',
   'remoteVideoStreamObject',
   'remoteVideoEnabled',
 ];
+
 const validateUpdatingCall = call => pickProps(call, allowedToUpdateProps);
 
 export default createModel({
   prefix: 'runningCalls',
+
   origin: {
     idsByOrder: [],
     detailMapById: {},
   },
+
   getter: {
     idsByOrder: state => state.idsByOrder,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     create: function(state, call) {
       const obj = immutable.on(state)(
         immutable.fset('idsByOrder', ids => [...ids, call.id]),
         immutable.vset(`detailMapById.${call.id}`, validateCreatingCall(call)),
       );
+
       return obj;
     },
+
     update: function(state, call) {
       const obj = immutable.on(state)(
         immutable.fset(`detailMapById.${call.id}`, old => ({
@@ -58,13 +65,16 @@ export default createModel({
           ...validateUpdatingCall(call),
         })),
       );
+
       return obj;
     },
+
     remove: function(state, id) {
       const obj = immutable.on(state)(
         immutable.fset('idsByOrder', ids => ids.filter(_id => _id !== id)),
         immutable.fset('detailMapById', ({ [id]: removed, ...rest }) => rest),
       );
+
       return obj;
     },
   },

@@ -13,12 +13,14 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   btnContainer: {
     width: '100%',
     backgroundColor: std.color.shade10,
     alignItems: 'center',
     padding: std.gap.md,
   },
+
   textTitle: {
     padding: std.gap.lg,
     color: std.color.shade0,

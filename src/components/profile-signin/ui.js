@@ -16,16 +16,19 @@ const st = {
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   notFoundMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   main: {
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -34,12 +37,14 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarOptLeft: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -49,6 +54,7 @@ const st = {
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarOptRight: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -58,11 +64,13 @@ const st = {
     bottom: 0,
     paddingLeft: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.action,
   },
+
   divider: {
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.lg * 2,
@@ -70,34 +78,40 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   dividerTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   form: {
     paddingLeft: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   profile: {
     paddingVertical: std.gap.lg,
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   profileTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade9,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   profileCaption: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
   },
+
   passwordInput: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,

@@ -37,6 +37,7 @@ const data_demo = [
 class PageRecents extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       data: data_demo,
     };

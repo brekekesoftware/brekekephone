@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 const mapGetter = getter => state => ({
-  ucEnabled: (getter.auth.profile(state) || {}).ucEnabled,
+  ucEnabled: (authStore.profile || {}).ucEnabled,
   searchText: getter.usersBrowsing.searchText(state),
   pbxUserIds: getter.pbxUsers.idsByOrder(state),
   pbxUserById: getter.pbxUsers.detailMapById(state),
@@ -51,12 +52,12 @@ class View extends Component {
     }
 
     const { pbxUserById, ucUserById, searchText } = this.props;
+
     const searchTextLC = searchText.toLowerCase();
-
     const userId = id && id.toLowerCase();
-
     let pbxUserName;
     const pbxUser = pbxUserById[id];
+
     if (pbxUser) {
       pbxUserName = pbxUser.name;
     } else {
@@ -65,6 +66,7 @@ class View extends Component {
 
     let ucUserName;
     const ucUser = ucUserById[id];
+
     if (ucUser) {
       ucUserName = ucUser.name;
     } else {
@@ -80,18 +82,21 @@ class View extends Component {
 
   getMatchUserIds() {
     const { pbxUserIds, ucUserIds } = this.props;
+
     const userSet = new Set([...pbxUserIds, ...ucUserIds]);
     return Array.from(userSet).filter(this.isMatchUser);
   }
 
   resolveUser = id => {
     const { pbxUserById, ucUserById } = this.props;
+
     const pbxUser = pbxUserById[id] || {
       talkingTalkers: [],
       holdingTalkers: [],
       ringingTalkers: [],
       callingTalkers: [],
     };
+
     const ucUser = ucUserById[id] || {};
 
     return {
@@ -113,15 +118,18 @@ class View extends Component {
 
   callVoice = userId => {
     const { sip } = this.context;
+
     sip.createSession(userId);
     routerUtils.goToCallsManage();
   };
 
   callVideo = userId => {
     const { sip } = this.context;
+
     sip.createSession(userId, {
       videoEnabled: true,
     });
+
     routerUtils.goToCallsManage();
   };
 

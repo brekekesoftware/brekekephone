@@ -13,6 +13,7 @@ export const st = StyleSheet.create({
     borderColor: std.color.shade2,
     backgroundColor: std.color.shade0,
   },
+
   message: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
@@ -20,6 +21,7 @@ export const st = StyleSheet.create({
     color: std.color.shade5,
     margin: std.gap.sm,
   },
+
   buttons: {
     position: 'absolute',
     top: 0,
@@ -27,6 +29,7 @@ export const st = StyleSheet.create({
     margin: std.gap.sm,
     flexDirection: 'row',
   },
+
   abort: {
     marginHorizontal: std.gap.sm,
     borderWidth: StyleSheet.hairlineWidth,
@@ -35,12 +38,14 @@ export const st = StyleSheet.create({
     paddingLeft: std.gap.lg,
     paddingRight: std.gap.lg,
   },
+
   abortText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.danger,
   },
+
   retry: {
     marginHorizontal: std.gap.sm,
     borderWidth: StyleSheet.hairlineWidth,
@@ -49,6 +54,7 @@ export const st = StyleSheet.create({
     paddingLeft: std.gap.lg,
     paddingRight: std.gap.lg,
   },
+
   retryText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,

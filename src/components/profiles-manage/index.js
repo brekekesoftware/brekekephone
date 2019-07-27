@@ -11,10 +11,12 @@ import UI from './ui';
 const mapGetter = getter => (state, props) => ({
   profileIds: getter.profiles.idsByOrder(state),
   profileById: getter.profiles.detailMapById(state),
+
   callIds: getter.runningCalls.idsByOrder(state).filter(id => {
     const call = getter.runningCalls.detailMapById(state)[id];
     return call && call.incoming && !call.answered;
   }),
+
   callById: getter.runningCalls.detailMapById(state),
 });
 
@@ -22,20 +24,30 @@ const mapAction = action => emit => ({
   createProfile(profile) {
     emit(action.profiles.create(profile));
   },
+
   updateProfile(profile) {
     emit(action.profiles.update(profile));
   },
+
   removeProfile(id) {
     emit(action.profiles.remove(id));
   },
+
   setAuthProfile(profile) {
     emit(action.auth.setProfile(profile));
   },
+
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -44,53 +56,60 @@ class View extends Component {
     setProfilesManager(this);
     this.handleUrlParams();
   }
+
   componentWillUnmount() {
     setProfilesManager(null);
     setUrlParams(null);
   }
 
   handleUrlParams = async () => {
-    //
     const urlParams = await getUrlParams();
+
     if (!urlParams) {
       return;
     }
+
     const { tenant, user, _wn, host, port } = urlParams;
+
     if (!user || !tenant) {
       return;
     }
-    //
+
     const u = this.getProfileByCustomNoti({
       tenant,
       to: user,
       pbxHostname: host,
       pbxPort: port,
     });
+
     if (u) {
       if (_wn) {
         u.accessToken = _wn;
       }
+
       if (!u.pbxHostname) {
         u.pbxHostname = host;
       }
+
       if (!u.pbxPort) {
         u.pbxPort = port;
       }
+
       this.props.updateProfile(u);
+
       if (u.pbxPassword || u.accessToken) {
         this.signin(u.id);
       } else {
         routerUtils.goToProfileUpdate(u.id);
       }
+
       return;
     }
-    //
+
     const newU = {
-      //
       id: createId(),
       pbxTenant: tenant,
       pbxUsername: user,
-      //
       pbxHostname: host,
       pbxPort: port,
       pbxPassword: '',
@@ -100,11 +119,11 @@ class View extends Component {
       ucEnabled: false,
       ucHostname: '',
       ucPort: '',
-      //
       accessToken: _wn,
     };
-    //
+
     this.props.createProfile(newU);
+
     if (newU.accessToken) {
       this.signin(newU.id);
     } else {
@@ -113,23 +132,23 @@ class View extends Component {
   };
 
   getProfileByCustomNoti = n => {
-    // Compare utils
     const c = (v1, v2) => !v1 || !v2 || v1 === v2;
     const cp = p =>
       c(n.tenant, p.pbxTenant) &&
       c(n.to, p.pbxUsername) &&
       c(n.pbxHostname, p.pbxHostname) &&
       c(n.pbxPort, p.pbxPort);
-    //
     const ids = Object.keys(this.props.profileById);
+
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];
       const profile = this.props.profileById[id];
+
       if (cp(profile)) {
         return profile;
       }
     }
-    //
+
     return null;
   };
 
@@ -137,10 +156,13 @@ class View extends Component {
     if (!n || !n.tenant || !n.to) {
       return false;
     }
+
     const u = this.getProfileByCustomNoti(n);
+
     if (!u) {
       return false;
     }
+
     return this.signin(u.id);
   };
 
@@ -150,14 +172,17 @@ class View extends Component {
 
   signin = id => {
     const u = this.props.profileById[id];
+
     if (!u) {
       return false;
     }
+
     if (!u.pbxPassword && !u.accessToken) {
       routerUtils.goToProfileUpdate(u.id);
       this.props.showToast('The profile password is empty');
       return true;
     }
+
     this.props.setAuthProfile(u);
     routerUtils.goToAuth();
     resetBadgeNumber();

@@ -1,24 +1,42 @@
+import {
+  Body,
+  Button,
+  Container,
+  Content,
+  Fab,
+  Icon,
+  Left,
+  List,
+  ListItem,
+  Right,
+  Text,
+  Thumbnail,
+} from 'native-base';
+
 import React, { Component } from 'react';
-import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text, Icon, Button, Fab } from 'native-base';
-import { FlatList, StyleSheet} from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
+
 import SearchContact from './SearchContact';
 
-
-
 const st = StyleSheet.create({
-  navright:{
+  navright: {
     flexDirection: 'row',
   },
-  btnFab:{
-    backgroundColor: '#74bf53',
-  }
-})
 
+  btnFab: {
+    backgroundColor: '#74bf53',
+  },
+});
 
 const User = p => (
   <ListItem thumbnail>
     <Left>
-      <Thumbnail source={{ uri: 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg' }} />
+      <Thumbnail
+        source={{
+          uri:
+            'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
+        }}
+      />
     </Left>
     <Body>
       <Text>Aong Bao</Text>
@@ -26,14 +44,14 @@ const User = p => (
     </Body>
     <Right style={st.navright}>
       <Button transparent dark>
-        <Icon name="call" type="MaterialIcons"/>
+        <Icon name="call" type="MaterialIcons" />
       </Button>
       <Button transparent dark>
-        <Icon name="info" type="MaterialIcons"/>
-      </Button>                     
+        <Icon name="info" type="MaterialIcons" />
+      </Button>
     </Right>
-  </ListItem> 
-)
+  </ListItem>
+);
 
 let data_demo = [
   {
@@ -52,11 +70,12 @@ let data_demo = [
     imageUrl: 'http://via.placeholder.com/160x160',
     title: 'something two',
   },
-]
+];
 
 class TabPhoneBook extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       data: data_demo,
     };
@@ -66,11 +85,11 @@ class TabPhoneBook extends Component {
     return (
       <Container>
         <Content>
-          <SearchContact/>
+          <SearchContact />
           <List>
             <ListItem itemDivider>
               <Text>A</Text>
-            </ListItem>         
+            </ListItem>
             <FlatList
               data={this.state.data}
               renderItem={({ item: rowData }) => {
@@ -79,7 +98,7 @@ class TabPhoneBook extends Component {
             />
             <ListItem itemDivider>
               <Text>B</Text>
-            </ListItem>         
+            </ListItem>
             <FlatList
               data={this.state.data}
               renderItem={({ item: rowData }) => {
@@ -88,10 +107,8 @@ class TabPhoneBook extends Component {
             />
           </List>
         </Content>
-        <Fab
-          style={st.btnFab}
-        >
-          <Icon name="add" type="MaterialIcons"/> 
+        <Fab style={st.btnFab}>
+          <Icon name="add" type="MaterialIcons" />
         </Fab>
       </Container>
     );
@@ -99,4 +116,3 @@ class TabPhoneBook extends Component {
 }
 
 export default TabPhoneBook;
-

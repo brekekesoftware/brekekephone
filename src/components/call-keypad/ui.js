@@ -15,16 +15,19 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   noCallMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   main: {
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -33,12 +36,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   navbarLeftOpt: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -48,30 +53,35 @@ const st = StyleSheet.create({
     bottom: 0,
     paddingRight: std.gap.lg,
   },
+
   navbarOptText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.action,
   },
+
   call: {
     alignItems: 'center',
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     marginBottom: std.gap.lg,
   },
+
   callName: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   callNumber: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     color: std.color.shade5,
   },
+
   keypad: {
     alignItems: 'center',
     backgroundColor: std.color.shade0,
@@ -79,9 +89,11 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   keyRow: {
     flexDirection: 'row',
   },
+
   keyCell: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -93,6 +105,7 @@ const st = StyleSheet.create({
     marginBottom: std.gap.lg,
     marginHorizontal: std.gap.md,
   },
+
   keyText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -157,5 +170,4 @@ const NoCall = p => (
 );
 
 const CallKeypad = p => (p.call ? <Main {...p} /> : <NoCall back={p.back} />);
-
 export default CallKeypad;

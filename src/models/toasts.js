@@ -7,14 +7,17 @@ const validateCreatingToast = toast => pickProps(toast, allowedToCreateProps);
 
 export default createModel({
   prefix: 'toasts',
+
   origin: {
     idsByOrder: [],
     detailMapById: {},
   },
+
   getter: {
     idsByOrder: state => state.idsByOrder,
     detailMapById: state => state.detailMapById,
   },
+
   action: {
     create: (prevState, toast) =>
       immutable.on(prevState)(
@@ -24,6 +27,7 @@ export default createModel({
           [toast.id]: validateCreatingToast(toast),
         })),
       ),
+
     remove: (prevState, id) =>
       immutable.on(prevState)(
         immutable.fset('idsByOrder', ids => ids.filter(_id => _id !== id)),

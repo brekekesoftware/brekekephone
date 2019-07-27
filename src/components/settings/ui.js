@@ -17,16 +17,19 @@ const st = {
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   signoutMessage: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade5,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   main: {
     flex: 1,
     backgroundColor: std.color.shade3,
   },
+
   navbar: {
     backgroundColor: std.color.shade1,
     alignItems: 'center',
@@ -35,12 +38,14 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   navbarTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
+
   divider: {
     paddingLeft: std.gap.lg,
     paddingTop: std.gap.lg * 2,
@@ -48,14 +53,17 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   dividerTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
   },
+
   list: {
     flex: 1,
   },
+
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -64,18 +72,21 @@ const st = {
     borderColor: std.color.shade4,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+
   fieldLabelNormal: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade9,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   fieldLabelDanger: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.danger,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   fieldValueText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -83,15 +94,18 @@ const st = {
     lineHeight: std.textSize.md + std.gap.md * 2,
     marginLeft: 'auto',
   },
+
   switch: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 'auto',
   },
+
   switchItemActive: {
     backgroundColor: std.color.action,
     borderColor: std.color.action,
   },
+
   switchItemNormal: {
     alignItems: 'center',
     width: rem(64),
@@ -101,27 +115,32 @@ const st = {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderLeftWidth: StyleSheet.hairlineWidth,
   },
+
   switchItemMostLeft: {
     borderTopLeftRadius: std.gap.sm,
     borderBottomLeftRadius: std.gap.sm,
   },
+
   switchItemMostRight: {
     borderTopRightRadius: std.gap.sm,
     borderBottomRightRadius: std.gap.sm,
     borderRightWidth: StyleSheet.hairlineWidth,
   },
+
   switchItemTextNormal: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.action,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   switchItemTextActive: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     color: std.color.shade0,
     lineHeight: std.textSize.md + std.gap.md * 2,
   },
+
   fieldInput: {
     flex: 1,
     fontFamily: std.font.text,
@@ -171,7 +190,7 @@ const PBXProfile = pure(p => (
     </View>
     <View style={st.field}>
       <Text style={st.fieldLabelNormal}>Phone</Text>
-      <Text style={st.fieldValueText}>Phone {p.phoneIndex}</Text>
+      <Text style={st.fieldValueText}>Phone{p.phoneIndex}</Text>
     </View>
     <View style={st.field}>
       <Text style={st.fieldLabelNormal}>TURN enabled</Text>
@@ -245,6 +264,7 @@ class CustomTextInput extends PureComponent {
 
   onBlur = () => {
     const { onSubmitEditing } = this.props;
+
     if (typeof onSubmitEditing === 'function') {
       onSubmitEditing();
     }
@@ -323,5 +343,4 @@ const SignedOut = p => (
 );
 
 const Settings = p => (p.profile ? <Main {...p} /> : <SignedOut />);
-
 export default Settings;

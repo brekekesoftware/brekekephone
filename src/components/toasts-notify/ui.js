@@ -14,12 +14,15 @@ const st = StyleSheet.create({
     shadowColor: std.color.shade9,
     shadowRadius: rem(8),
     shadowOpacity: 0.24,
+
     shadowOffset: {
       width: 0,
       height: rem(4),
     },
+
     elevation: 3,
   },
+
   notifyTitle: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
@@ -38,5 +41,4 @@ const Notify = p => (
 
 const ToastsNotify = p =>
   p.toastIds.map(id => <Notify key={id} {...p.resolveToast(id)} />);
-
 export default ToastsNotify;

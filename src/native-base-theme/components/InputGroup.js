@@ -1,19 +1,19 @@
-// @flow
-
 import variable from './../variables/platform';
 
-export default (variables /*: * */ = variable) => {
+export default (variables = variable) => {
   const inputGroupTheme = {
     'NativeBase.Icon': {
       fontSize: 24,
       color: variables.sTabBarActiveTextColor,
       paddingHorizontal: 5,
     },
+
     'NativeBase.IconNB': {
       fontSize: 24,
       color: variables.sTabBarActiveTextColor,
       paddingHorizontal: 5,
     },
+
     'NativeBase.Input': {
       height: variables.inputHeightBase,
       color: variables.inputColor,
@@ -23,13 +23,16 @@ export default (variables /*: * */ = variable) => {
       fontSize: variables.inputFontSize,
       lineHeight: variables.inputLineHeight,
     },
+
     '.underline': {
       '.success': {
         borderColor: variables.inputSuccessBorderColor,
       },
+
       '.error': {
         borderColor: variables.inputErrorBorderColor,
       },
+
       paddingLeft: 5,
       borderWidth: variables.borderWidth,
       borderTopWidth: 0,
@@ -37,24 +40,30 @@ export default (variables /*: * */ = variable) => {
       borderLeftWidth: 0,
       borderColor: variables.inputBorderColor,
     },
+
     '.regular': {
       '.success': {
         borderColor: variables.inputSuccessBorderColor,
       },
+
       '.error': {
         borderColor: variables.inputErrorBorderColor,
       },
+
       paddingLeft: 5,
       borderWidth: variables.borderWidth,
       borderColor: variables.inputBorderColor,
     },
+
     '.rounded': {
       '.success': {
         borderColor: variables.inputSuccessBorderColor,
       },
+
       '.error': {
         borderColor: variables.inputErrorBorderColor,
       },
+
       paddingLeft: 5,
       borderWidth: variables.borderWidth,
       borderRadius: variables.inputGroupRoundedBorderRadius,
@@ -65,16 +74,20 @@ export default (variables /*: * */ = variable) => {
       'NativeBase.Icon': {
         color: variables.inputSuccessBorderColor,
       },
+
       'NativeBase.IconNB': {
         color: variables.inputSuccessBorderColor,
       },
+
       '.rounded': {
         borderRadius: 30,
         borderColor: variables.inputSuccessBorderColor,
       },
+
       '.regular': {
         borderColor: variables.inputSuccessBorderColor,
       },
+
       '.underline': {
         borderWidth: variables.borderWidth,
         borderTopWidth: 0,
@@ -82,6 +95,7 @@ export default (variables /*: * */ = variable) => {
         borderLeftWidth: 0,
         borderColor: variables.inputSuccessBorderColor,
       },
+
       borderColor: variables.inputSuccessBorderColor,
     },
 
@@ -89,16 +103,20 @@ export default (variables /*: * */ = variable) => {
       'NativeBase.Icon': {
         color: variables.inputErrorBorderColor,
       },
+
       'NativeBase.IconNB': {
         color: variables.inputErrorBorderColor,
       },
+
       '.rounded': {
         borderRadius: 30,
         borderColor: variables.inputErrorBorderColor,
       },
+
       '.regular': {
         borderColor: variables.inputErrorBorderColor,
       },
+
       '.underline': {
         borderWidth: variables.borderWidth,
         borderTopWidth: 0,
@@ -106,12 +124,15 @@ export default (variables /*: * */ = variable) => {
         borderLeftWidth: 0,
         borderColor: variables.inputErrorBorderColor,
       },
+
       borderColor: variables.inputErrorBorderColor,
     },
+
     '.disabled': {
       'NativeBase.Icon': {
         color: '#384850',
       },
+
       'NativeBase.IconNB': {
         color: '#384850',
       },

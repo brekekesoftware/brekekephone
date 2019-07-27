@@ -14,8 +14,14 @@ const mapAction = action => emit => ({
   updateCall(call) {
     emit(action.runningCalls.update(call));
   },
+
   showToast(message) {
-    emit(action.toasts.create({ id: createId(), message }));
+    emit(
+      action.toasts.create({
+        id: createId(),
+        message,
+      }),
+    );
   },
 });
 
@@ -37,11 +43,13 @@ class View extends Component {
 
   hangup = () => {
     const { sip } = this.context;
+
     sip.hangupSession(this.props.selectedId);
   };
 
   join = () => {
     const { pbx } = this.context;
+
     pbx
       .joinTalkerTransfer(
         this.props.call.pbxTenant,
@@ -55,6 +63,7 @@ class View extends Component {
       id: this.props.call.id,
       transfering: false,
     });
+
     routerUtils.goToCallsManage();
   };
 
@@ -65,6 +74,7 @@ class View extends Component {
 
   stop = () => {
     const { pbx } = this.context;
+
     pbx
       .stopTalkerTransfer(
         this.props.call.pbxTenant,
@@ -78,6 +88,7 @@ class View extends Component {
       id: this.props.call.id,
       transfering: false,
     });
+
     routerUtils.goToCallsManage();
   };
 

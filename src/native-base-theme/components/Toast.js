@@ -1,20 +1,21 @@
-// @flow
-
 import variable from './../variables/platform';
 
-export default (variables /*: * */ = variable) => {
+export default (variables = variable) => {
   const platform = variables.platform;
 
   const toastTheme = {
     '.danger': {
       backgroundColor: variables.brandDanger,
     },
+
     '.warning': {
       backgroundColor: variables.brandWarning,
     },
+
     '.success': {
       backgroundColor: variables.brandSuccess,
     },
+
     backgroundColor: 'rgba(0,0,0,0.8)',
     borderRadius: platform === 'ios' ? 5 : 0,
     flexDirection: 'row',
@@ -22,14 +23,17 @@ export default (variables /*: * */ = variable) => {
     alignItems: 'center',
     padding: 10,
     minHeight: 50,
+
     'NativeBase.Text': {
       color: '#fff',
       flex: 1,
     },
+
     'NativeBase.Button': {
       backgroundColor: 'transparent',
       height: 30,
       elevation: 0,
+
       'NativeBase.Text': {
         fontSize: 14,
       },
