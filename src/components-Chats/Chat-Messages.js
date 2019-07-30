@@ -118,14 +118,6 @@ class ChatMessages extends React.Component {
               </View>
             </Body>
           </ListItem>
-          <ListItem>
-            <Form>
-              <Item inlineLabel>
-                <Label>Message</Label>
-                <Input />
-              </Item>
-            </Form>
-          </ListItem>
         </List>
       </Content>
     );
