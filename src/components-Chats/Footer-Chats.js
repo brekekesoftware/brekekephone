@@ -3,39 +3,31 @@ import { Footer, FooterTab, Button, View, Icon, Form, Item, Input, Label } from 
 import {StyleSheet} from 'react-native';
 import variable from '../native-base-theme/variables/platform';
 import { std } from '../styleguide';
+import {KeyboardAvoidingView} from 'react-native';
 
 const st = StyleSheet.create({
-  // container:{
-  //   marginTop: variable.listItemPadding + 6,
-  // },
-  // item: {
-  //   flexDirection: 'row',
-  //   alignSelf: 'center',
-  //   alignItems: 'flex-start', 
-  //   paddingVertical: variable.listItemPadding + 3,
-  // },
-  // listitem:{
-  //   flexDirection: 'column' ,
-  //   alignItems: 'flex-start',
-  // },
-  // leftAvatar:{
-  //   marginLeft: variable.listItemPadding + 6,
-  //   marginTop: variable.listItemPadding - 5 ,
-  // },
-  // name:{
-  //   textAlign: 'left',
-  // },
-  // bodyTitle:{
-  //   flexDirection: 'row',
-  // },
-  // body:{
-  //   paddingLeft: variable.listItemPadding + 3,
-  //   paddingRight: variable.listItemPadding + 6,
-  // },
   footer:{
     flexDirection: 'row',
+    backgroundColor: std.color.shade1,
+    paddingBottom: 0,
+    // alignItems:  'center',
+    justifyContent: 'space-between' 
 
   },
+  btnLeft:{
+    marginLeft: variable.listItemPadding + 3,
+  },
+  conRight:{
+    flex: 1,
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginRight: variable.listItemPadding + 3
+  },
+  formChat:{
+    width: '55%',
+    paddingLeft: 5,
+  }
 })
 
 
@@ -43,28 +35,28 @@ class FooterChats extends React.Component {
 
   render() {
     return (
-        <View style={{paddingBottom: 0}}>
+      <KeyboardAvoidingView behavior="padding">
           <View style={st.footer}>
-            <Button vertical>
+            <View>
+              <Button  style={st.btnLeft}  success>
               <Icon name="add" type="MaterialIcons"/>
             </Button>
-            <Form>
-              <Item inlineLabel>
-                <Label>Message</Label>
-                <Input />
-              </Item>
+            </View>
+              <Form style={st.formChat}>
+              <Input  placeholder='Message'/>
             </Form>
-          <Button>
-            <Icon name="sentiment-very-satisfied" type="MaterialIcons"/>
-          </Button>
-          <Button>
-            <Icon name="send" type="MaterialIcons"/>
-          </Button> 
+            <View style={st.conRight}>
+              <Button dark  transparent>
+                <Icon name="sentiment-very-satisfied" type="MaterialIcons"/>
+              </Button>
+              <Button   success>
+                <Icon name="send" type="MaterialIcons"/>
+              </Button> 
+            </View>
           </View>
-
-        </View>
+      </KeyboardAvoidingView>
     );
-  }
+}
 }
 
 export default FooterChats;
