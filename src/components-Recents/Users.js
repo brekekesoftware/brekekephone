@@ -1,36 +1,48 @@
 import {
-  Body,
   Button,
   Icon,
-  Left,
   ListItem,
-  Right,
   Text,
   Thumbnail,
+  View,
 } from 'native-base';
 import React, { Component } from 'react';
+import { StyleSheet } from 'react-native';
+
+const st = StyleSheet.create({
+  left:{
+    width: '30%',
+  },
+  body:{
+    width: '40%'
+  },
+  right:{
+    width: '30%',
+    paddingLeft: 15,
+  }
+});
 
 class User extends Component {
   render() {
     return (
-      <ListItem thumbnail>
-        <Left>
+      <ListItem>
+        <View style={st.left}>
           <Thumbnail
             source={{
               uri:
                 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
             }}
           />
-        </Left>
-        <Body>
+        </View>
+        <View style={st.body}>
           <Text>Aong Bao</Text>
           <Text note>Missed at 6/8/2018</Text>
-        </Body>
-        <Right>
+        </View>
+        <View style={st.right}>
           <Button transparent dark>
             <Icon name="call" type="MaterialIcons" />
           </Button>
-        </Right>
+        </View>
       </ListItem>
     );
   }

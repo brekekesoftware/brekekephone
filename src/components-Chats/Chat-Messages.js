@@ -1,11 +1,5 @@
 import {
-  Body,
   Content,
-  Form,
-  Input,
-  Item,
-  Label,
-  Left,
   List,
   ListItem,
   Text,
@@ -89,26 +83,12 @@ class ChatMessages extends React.Component {
               <Text note>02/10/2018</Text>
             </View>
           </ListItem>
-          {}
-          <ListItem thumbnail>
-            <Left>
-              <Thumbnail
-                style={st.avatar}
-                small
-                source={{
-                  uri:
-                    'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
-                }}
-              />
-            </Left>
-            <Body>
-              <View style={st.containerName}>
-                <Title style={st.name}>John Doe</Title>
-                <Text note>2:12 PM</Text>
-              </View>
-              <View>
+        
+          <ListItem style={st.listitem}>
+            <View style={st.item}>
+              <View style={st.left}>
                 <Thumbnail
-                  square
+                  style={st.leftAvatar}
                   small
                   source={{
                     uri:
@@ -116,7 +96,20 @@ class ChatMessages extends React.Component {
                   }}
                 />
               </View>
-            </Body>
+              <View style={st.body}>
+                <View style={st.bodyTitle}>
+                  <Title style={st.name}>Sankhadeep</Title>
+                  <Text note>2:11 PM</Text>
+                </View>
+                <Text numberOfLines={10}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Vestibulum tincidunt mi est, non congue justo auctor sit amet.
+                  Praesent non nisi quis enim luctus imperdiet eu sit amet
+                  lacus.
+                </Text>
+              </View> 
+            </View>
+            
           </ListItem>
         </List>
       </Content>

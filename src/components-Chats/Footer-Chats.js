@@ -1,12 +1,8 @@
 import {
   Button,
-  Footer,
-  FooterTab,
   Form,
   Icon,
   Input,
-  Item,
-  Label,
   View,
 } from 'native-base';
 import React from 'react';

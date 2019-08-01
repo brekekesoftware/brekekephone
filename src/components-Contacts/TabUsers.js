@@ -1,16 +1,14 @@
 import {
-  Body,
   Button,
   Container,
   Content,
   Fab,
   Icon,
-  Left,
   List,
   ListItem,
-  Right,
   Text,
   Thumbnail,
+  View
 } from 'native-base';
 
 import React, { Component } from 'react';
@@ -21,35 +19,42 @@ import SearchContact from './SearchContact';
 const st = StyleSheet.create({
   navright: {
     flexDirection: 'row',
+    width: '30%'
   },
 
   btnFab: {
     backgroundColor: '#74bf53',
   },
+  left:{
+    width: '30%',
+  },
+  body:{
+    width: '40%'
+  },
 });
 
 const User = p => (
-  <ListItem thumbnail>
-    <Left>
+  <ListItem >
+    <View style={st.left}>
       <Thumbnail
         source={{
           uri:
             'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
         }}
       />
-    </Left>
-    <Body>
+    </View>
+    <View style={st.body}>
       <Text>Aong Bao</Text>
       <Text note>302</Text>
-    </Body>
-    <Right style={st.navright}>
+    </View>
+    <View style={st.navright}>
       <Button transparent dark>
         <Icon name="chat-bubble" type="MaterialIcons" />
       </Button>
       <Button transparent dark>
         <Icon name="call" type="MaterialIcons" />
       </Button>
-    </Right>
+    </View>
   </ListItem>
 );
 

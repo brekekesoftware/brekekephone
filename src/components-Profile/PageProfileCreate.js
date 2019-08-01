@@ -1,4 +1,3 @@
-import { Container } from 'native-base';
 import React from 'react';
 
 import Main from '../components-shared/Main';
