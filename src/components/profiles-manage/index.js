@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams, setUrlParams } from '../../nativeModules/deeplink';
 import { resetBadgeNumber } from '../../nativeModules/pushNotification';
@@ -33,10 +34,6 @@ import UI from './ui';
 
     removeProfile(id) {
       emit(action.profiles.remove(id));
-    },
-
-    setAuthProfile(profile) {
-      emit(action.auth.setProfile(profile));
     },
 
     updateCall(call) {
@@ -185,7 +182,7 @@ class View extends Component {
       return true;
     }
 
-    this.props.setAuthProfile(u);
+    authStore.set('profile', u);
     routerUtils.goToAuth();
     resetBadgeNumber();
     return true;
