@@ -28,7 +28,7 @@ export default {
   badgeBg: '#4cc5de',
   badgeColor: '#fff',
   badgePadding: 3,
-  btnFontFamily: 'System',
+  btnFontFamily: 'RobotoLight',    //custom.
   btnDisabledBg: '#b5b5b5',
   buttonPadding: 3,
 
@@ -121,7 +121,7 @@ export default {
   datePickerTextColor: '#000',
   datePickerBg: 'transparent',
   DefaultFontSize: 16,
-  fontFamily: platform === 'ios' ? 'System' : 'Roboto',
+  fontFamily:  'RobotoLight',    //custom.
   fontSizeBase: 15,
 
   get fontSizeH1() {
@@ -231,7 +231,7 @@ export default {
     return this.textColor;
   },
 
-  titleFontfamily: platform === 'ios' ? 'System' : 'Roboto_medium',
+  titleFontfamily: 'RobotoLight',    //custom
   titleFontSize: platform === 'ios' ? 17 : 19,
   subTitleFontSize: platform === 'ios' ? 11 : 14,
   subtitleColor: platform === 'ios' ? '#000' : '#fff',
