@@ -4,13 +4,14 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
 
 @observer
 @createModelView(
   getter => state => ({
-    profile: getter.auth.profile(state),
+    //
   }),
   action => emit => ({
     showToast(message) {
@@ -23,6 +24,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
@@ -48,7 +50,7 @@ class View extends Component {
 
   render = () => (
     <UI
-      profile={this.props.profile}
+      profile={authStore.profile}
       chatOffline={this.state.chatOffline}
       chatOnline={this.state.chatOnline}
       chatBusy={this.state.chatBusy}

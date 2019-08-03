@@ -10,7 +10,9 @@ import UI from './ui';
 
 @observer
 @createModelView(
-  getter => state => {},
+  getter => state => ({
+    //
+  }),
   action => emit => ({
     showToast(message) {
       emit(
