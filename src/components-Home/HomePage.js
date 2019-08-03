@@ -4,6 +4,7 @@ import React from 'react';
 import PageContact from '../components-Contacts/PageContact';
 import Headers from './Header';
 import FooterTabs from './FooterTabs';
+import PageRecents from '../components-Recents/PageRecents';
 
 
 class HomePage extends React.Component {
@@ -11,7 +12,7 @@ class HomePage extends React.Component {
     return (
       <Container>
       	<Headers title="Contacts" />
-        <PageContact />
+        <PageRecents />
         <FooterTabs />
       </Container>
     );

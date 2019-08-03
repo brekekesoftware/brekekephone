@@ -8,6 +8,7 @@ import {
 } from 'native-base';
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
+import Icons from '../components-shared/Icon';
 
 const st = StyleSheet.create({
   left:{
@@ -39,8 +40,8 @@ class User extends Component {
           <Text note>Missed at 6/8/2018</Text>
         </View>
         <View style={st.right}>
-          <Button transparent dark>
-            <Icon name="call" type="MaterialIcons" />
+          <Button>
+            <Icons name="call" />
           </Button>
         </View>
       </ListItem>

@@ -3,7 +3,6 @@ import {
   Container,
   Content,
   Fab,
-  Icon,
   List,
   ListItem,
   Text,
@@ -15,6 +14,7 @@ import React, { Component } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import SearchContact from './SearchContact';
+import Icons from '../components-shared/Icon';
 
 const st = StyleSheet.create({
   navright: {
@@ -48,11 +48,11 @@ const User = p => (
       <Text note="true">Phonebook Name</Text>
     </View>
     <View style={st.navright}>
-      <Button transparent dark>
-        <Icon name="call" type="MaterialIcons" />
+      <Button >
+        <Icons name="call" />
       </Button>
-      <Button transparent dark>
-        <Icon name="info" type="MaterialIcons" />
+      <Button>
+        <Icons name="info" />
       </Button>
     </View>
   </ListItem>
@@ -113,7 +113,7 @@ class TabPhoneBook extends Component {
           </List>
         </Content>
         <Fab style={st.btnFab}>
-          <Icon name="add" type="MaterialIcons" />
+          <Icons name="add" />
         </Fab>
       </Container>
     );

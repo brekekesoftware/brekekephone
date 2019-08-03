@@ -1,5 +1,6 @@
-import { Badge, Button, Footer, FooterTab, Icon, Text } from 'native-base';
+import { Badge, Button, Footer, FooterTab, Text } from 'native-base';
 import React, { Component } from 'react';
+import Icons from '../components-shared/Icon';
 
 class FooterTabs extends Component {
   render() {
@@ -10,27 +11,27 @@ class FooterTabs extends Component {
         }}
       >
         <FooterTab>
-          <Button vertical onPress={this.props.pressContacts}>
-            <Icon name="contacts" type="MaterialIcons" />
+          <Button >
+            <Icons name="contacts" />
             <Text>CONTACTS</Text>
           </Button>
-          <Button badge vertical>
-            <Badge>
+          <Button badge >
+            <Badge brekeke>
               <Text>2</Text>
             </Badge>
-            <Icon name="call" type="MaterialIcons" />
+            <Icons name="call" />
             <Text>RECENTS</Text>
           </Button>
-          <Button vertical>
-            <Icon name="dialpad" type="MaterialIcons" />
+          <Button >
+            <Icons name="dialpad" />
             <Text>CALL</Text>
           </Button>
-          <Button vertical>
-            <Icon name="chat" type="MaterialIcons" />
+          <Button >
+            <Icons name="chat" />
             <Text>CHAT</Text>
           </Button>
-          <Button vertical>
-            <Icon name="settings" type="MaterialIcons" />
+          <Button >
+            <Icons name="settings" />
             <Text>SETTINGS</Text>
           </Button>
         </FooterTab>
