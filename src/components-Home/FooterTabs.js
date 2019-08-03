@@ -1,5 +1,6 @@
 import { Badge, Button, Footer, FooterTab, Text } from 'native-base';
 import React, { Component } from 'react';
+
 import Icons from '../components-shared/Icon';
 
 class FooterTabs extends Component {
@@ -11,26 +12,26 @@ class FooterTabs extends Component {
         }}
       >
         <FooterTab>
-          <Button >
+          <Button>
             <Icons name="contacts" />
             <Text>CONTACTS</Text>
           </Button>
-          <Button badge >
+          <Button badge>
             <Badge brekeke>
               <Text>2</Text>
             </Badge>
             <Icons name="call" />
             <Text>RECENTS</Text>
           </Button>
-          <Button >
+          <Button>
             <Icons name="dialpad" />
             <Text>CALL</Text>
           </Button>
-          <Button >
+          <Button>
             <Icons name="chat" />
             <Text>CHAT</Text>
           </Button>
-          <Button >
+          <Button>
             <Icons name="settings" />
             <Text>SETTINGS</Text>
           </Button>

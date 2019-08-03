@@ -1,10 +1,11 @@
+import './AppWeb.scss';
+
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
 import App from './App';
-import './AppWeb.scss';
 import logoSrc from './Icon-180px.png';
 
 @observer

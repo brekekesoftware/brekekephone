@@ -1,5 +1,4 @@
 import React, { Component, Fragment, PureComponent } from 'react';
-
 import {
   ActivityIndicator,
   Image,

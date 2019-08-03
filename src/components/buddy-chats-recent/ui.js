@@ -1,5 +1,4 @@
 import React, { Component, Fragment, PureComponent } from 'react';
-
 import {
   ActivityIndicator,
   Image,
@@ -11,7 +10,6 @@ import {
   TouchableOpacity as Button,
   View,
 } from 'react-native';
-
 import Progress from 'react-native-progress-circle';
 
 import { rem, std } from '../../styleguide';

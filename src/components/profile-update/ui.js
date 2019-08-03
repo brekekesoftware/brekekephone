@@ -1,5 +1,4 @@
 import React, { Fragment, PureComponent } from 'react';
-
 import {
   KeyboardAvoidingView,
   Platform,

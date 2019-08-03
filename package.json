@@ -6,12 +6,11 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "lint": "eslint --ignore-path=.gitignore .",
-    "pret": "js-import-sort --silent=1 --path src{,/**,/**/**}/*.js && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,js,json,md}\""
+    "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\""
   },
   "dependencies": {
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
-    "circular-json": "^0.5.9",
+    "circular-json": "0.5.9",
     "crypto-js": "3.1.8",
     "eventemitter3": "4.0.0",
     "history": "4.9.0",
@@ -40,7 +39,7 @@
     "react-native-keep-awake": "4.0.0",
     "react-native-linear-gradient": "2.5.6",
     "react-native-loud-speaker": "1.0.4",
-    "react-native-modal-selector": "1.0.3",
+    "react-native-modal-selector": "1.1.0",
     "react-native-permissions": "1.2.0",
     "react-native-progress-circle": "2.0.1",
     "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen#a78ee51c0f89652a2a223ff2bc4ec10928bf2c30",
@@ -54,20 +53,22 @@
     "redux-persist": "5.10.0",
     "shortid": "2.2.14",
     "striptags": "3.1.1",
-    "sweetalert2": "8.14.0",
+    "sweetalert2": "8.15.0",
     "url-parse": "1.4.7"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-decorators": "^7.4.4",
-    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
-    "@babel/plugin-transform-flow-strip-types": "^7.4.4",
-    "@babel/plugin-transform-modules-commonjs": "^7.5.0",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/plugin-proposal-decorators": "7.4.4",
+    "@babel/plugin-proposal-optional-chaining": "7.2.0",
+    "@babel/plugin-transform-flow-strip-types": "7.4.4",
+    "@babel/plugin-transform-modules-commonjs": "7.5.0",
+    "@babel/plugin-transform-react-jsx": "7.3.0",
     "@craco/craco": "5.2.4",
     "circular-dependency-plugin": "5.0.2",
-    "js-import-sort": "github:namnm/js-import-sort#c727f96b4fc8fb038c07f1fe373ea9f68857717d",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-prettier": "3.1.0",
+    "eslint-plugin-simple-import-sort": "4.0.0",
     "node-sass": "4.12.0",
     "prettier": "1.18.2",
     "react-scripts": "3.0.1"
@@ -75,6 +76,20 @@
   "eslintConfig": {
     "extends": "react-app",
     "parser": "babel-eslint",
+    "plugins": [
+      "simple-import-sort",
+      "prettier",
+      "import"
+    ],
+    "rules": {
+      "sort-imports": "off",
+      "simple-import-sort/sort": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+      "import/no-extraneous-dependencies": "error",
+      "prettier/prettier": "error"
+    },
     "settings": {
       "react": {
         "version": "latest"

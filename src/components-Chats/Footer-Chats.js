@@ -1,10 +1,4 @@
-import {
-  Button,
-  Form,
-  Icon,
-  Input,
-  View,
-} from 'native-base';
+import { Button, Form, Icon, Input, View } from 'native-base';
 import React from 'react';
 import { KeyboardAvoidingView, StyleSheet } from 'react-native';
 

@@ -7,34 +7,33 @@ import {
   ListItem,
   Text,
   Thumbnail,
-  View
+  View,
 } from 'native-base';
-
 import React, { Component } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
-import SearchContact from './SearchContact';
 import Icons from '../components-shared/Icon';
+import SearchContact from './SearchContact';
 
 const st = StyleSheet.create({
   navright: {
     flexDirection: 'row',
-    width: '30%'
+    width: '30%',
   },
 
   btnFab: {
     backgroundColor: '#74bf53',
   },
-  left:{
+  left: {
     width: '30%',
   },
-  body:{
-    width: '40%'
+  body: {
+    width: '40%',
   },
 });
 
 const User = p => (
-  <ListItem >
+  <ListItem>
     <View style={st.left}>
       <Thumbnail
         source={{

@@ -1,8 +1,9 @@
+import './-nativeBaseWebPolyfill';
+import './index.scss';
+
 import { AppRegistry } from 'react-native';
 
-import './-nativeBaseWebPolyfill';
 import App from './AppWeb';
-import './index.scss';
 import { registerPn } from './nativeModules/pushNotification';
 
 setTimeout(registerPn);

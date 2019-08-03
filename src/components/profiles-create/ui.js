@@ -1,5 +1,4 @@
 import React, { Fragment, PureComponent } from 'react';
-
 import {
   KeyboardAvoidingView,
   Picker,
@@ -12,7 +11,6 @@ import {
   TouchableOpacity as Button,
   View,
 } from 'react-native';
-
 import ModalPicker from 'react-native-modal-selector';
 
 import { std } from '../../styleguide';

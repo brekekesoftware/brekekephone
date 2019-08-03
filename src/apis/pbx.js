@@ -1,5 +1,6 @@
 import 'brekekejs/lib/jsonrpc';
 import 'brekekejs/lib/pal';
+
 import EventEmitter from 'eventemitter3';
 
 class PBX extends EventEmitter {

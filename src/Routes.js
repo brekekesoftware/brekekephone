@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import HomePage from './components-Home/HomePage';
 import Auth from './components/auth';
 import WithoutStatusBar from './components/auth/WithoutStatusBar';
 import BuddyChatsNotify from './components/buddy-chats-notify';
@@ -38,8 +39,6 @@ import Tabbar from './components/tabbar';
 import ToastsNotify from './components/toasts-notify';
 import UCAuth from './components/uc-auth';
 import UsersBrowse from './components/users-browse';
-import HomePage from './components-Home/HomePage';
-
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>

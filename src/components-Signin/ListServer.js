@@ -2,7 +2,6 @@ import { Body, Icon, Left, List, ListItem, Text, View } from 'native-base';
 import React from 'react';
 import {
   FlatList,
-  Image,
   Platform,
   StyleSheet,
   TouchableOpacity as Button,
@@ -150,8 +149,6 @@ const st = StyleSheet.create({
     paddingTop: std.iconSize.lg,
   },
 });
-
-const count_server = 0;
 
 const NoServer = () => (
   <View style={st.container}>

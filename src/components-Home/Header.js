@@ -9,7 +9,7 @@ class Headers extends React.Component {
           <H1>{this.props.title}</H1>
         </Left>
         <Right>
-          <Button transparent >
+          <Button transparent>
             <Text>NEW</Text>
           </Button>
         </Right>

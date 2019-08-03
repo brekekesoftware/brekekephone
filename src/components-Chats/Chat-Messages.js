@@ -7,7 +7,6 @@ import {
   Title,
   View,
 } from 'native-base';
-
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -83,7 +82,7 @@ class ChatMessages extends React.Component {
               <Text note>02/10/2018</Text>
             </View>
           </ListItem>
-        
+
           <ListItem style={st.listitem}>
             <View style={st.item}>
               <View style={st.left}>
@@ -107,9 +106,8 @@ class ChatMessages extends React.Component {
                   Praesent non nisi quis enim luctus imperdiet eu sit amet
                   lacus.
                 </Text>
-              </View> 
+              </View>
             </View>
-            
           </ListItem>
         </List>
       </Content>

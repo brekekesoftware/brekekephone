@@ -1,3 +1,5 @@
+import './-polyfill';
+
 import { StyleProvider } from 'native-base';
 import React from 'react';
 import { Provider as StoreProvider } from 'react-redux';
@@ -8,12 +10,11 @@ import { persistReducer, persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import storage from 'redux-persist/lib/storage';
 
-import './-polyfill';
-import Routes from './Routes';
 import APIProvider from './apis';
 import { history } from './mobx/routerStore';
 import * as models from './models';
 import nativeBaseStyle from './nativeBaseStyle';
+import Routes from './Routes';
 
 const { getter, action, reduce } = combineModels(models);
 
@@ -27,8 +28,6 @@ const persistConfig = {
 const storeReducer = persistReducer(persistConfig, reduce);
 const store = createStore(storeReducer);
 const storePersistor = persistStore(store);
-
-
 
 const App = () => (
   <StoreProvider store={store}>

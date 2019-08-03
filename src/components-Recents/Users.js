@@ -1,26 +1,20 @@
-import {
-  Button,
-  Icon,
-  ListItem,
-  Text,
-  Thumbnail,
-  View,
-} from 'native-base';
+import { Button, ListItem, Text, Thumbnail, View } from 'native-base';
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
+
 import Icons from '../components-shared/Icon';
 
 const st = StyleSheet.create({
-  left:{
+  left: {
     width: '30%',
   },
-  body:{
-    width: '40%'
+  body: {
+    width: '40%',
   },
-  right:{
+  right: {
     width: '30%',
     paddingLeft: 15,
-  }
+  },
 });
 
 class User extends Component {
