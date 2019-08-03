@@ -44,7 +44,7 @@ const User = p => (
     </View>
     <View style={st.body}>
       <Text>{p.name}</Text>
-      <Text note>302</Text>
+      <Text note>{p.id}</Text>
     </View>
     <View style={st.navright}>
       <Button>
