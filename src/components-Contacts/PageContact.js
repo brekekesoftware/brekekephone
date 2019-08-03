@@ -11,20 +11,20 @@ class PageContact extends Component {
         <Tab
           heading={
             <TabHeading>
+              <Text>USERS</Text>
+            </TabHeading>
+          }
+        >
+          <TabUsers {...this.props} />
+        </Tab>
+        <Tab
+          heading={
+            <TabHeading>
               <Text>PHONEBOOK</Text>
             </TabHeading>
           }
         >
           <TabPhoneBook />
-        </Tab>
-        <Tab
-          heading={
-            <TabHeading>
-              <Text>USERS</Text>
-            </TabHeading>
-          }
-        >
-          <TabUsers />
         </Tab>
       </Tabs>
     );

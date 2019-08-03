@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   Button,
   Container,
@@ -37,13 +38,12 @@ const User = p => (
     <View style={st.left}>
       <Thumbnail
         source={{
-          uri:
-            'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
+          uri: p.avatar,
         }}
       />
     </View>
     <View style={st.body}>
-      <Text>Aong Bao</Text>
+      <Text>{p.name}</Text>
       <Text note>302</Text>
     </View>
     <View style={st.navright}>
@@ -57,58 +57,50 @@ const User = p => (
   </ListItem>
 );
 
-const data_demo = [
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-];
-
 class TabUsers extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: data_demo,
-    };
-  }
-
   render() {
+    const p = this.props;
+    const users = p.userIds.map(p.resolveUser);
+
+    const map = {};
+    users.forEach(u => {
+      u.name = u.name || u.id;
+      let c0 = u.name.charAt(0).toUpperCase();
+      if (!/[A-Z]/.test(c0)) {
+        c0 = '#';
+      }
+      if (!map[c0]) {
+        map[c0] = [];
+      }
+      map[c0].push(u);
+    });
+
+    let groups = Object.keys(map).map(k => ({
+      key: k,
+      users: map[k],
+    }));
+
+    groups = _.orderBy(groups, 'key');
+    groups.forEach(g => {
+      g.users = _.orderBy(g.users, 'name');
+    });
+
     return (
       <Container>
         <Content>
           <SearchContact />
           <List>
-            <ListItem itemDivider>
-              <Text>A</Text>
-            </ListItem>
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <User />;
-              }}
-            />
-            <ListItem itemDivider>
-              <Text>B</Text>
-            </ListItem>
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <User />;
-              }}
-            />
+            {groups.map(g => (
+              <React.Fragment key={g.key}>
+                <ListItem itemDivider>
+                  <Text>{g.key}</Text>
+                </ListItem>
+                <FlatList
+                  data={g.users}
+                  renderItem={({ item: u }) => <User key={u.id} {...u} />}
+                />
+              </React.Fragment>
+            ))}
           </List>
         </Content>
         <Fab style={st.btnFab}>
