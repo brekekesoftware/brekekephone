@@ -11,12 +11,12 @@ class PBX extends EventEmitter {
       return Promise.reject(new Error('PAL client is connected'));
     }
 
-    const wsUri = `wss://${profile.hostname}:${profile.port}/pbx/ws`;
+    const wsUri = `wss://${profile.pbxHostname}:${profile.pbxPort}/pbx/ws`;
 
     const client = window.Brekeke.pbx.getPal(wsUri, {
-      tenant: profile.tenant,
-      login_user: profile.username,
-      login_password: profile.password,
+      tenant: profile.pbxTenant,
+      login_user: profile.pbxUsername,
+      login_password: profile.pbxPassword,
       _wn: profile.accessToken,
       park: profile.parks,
       voicemail: 'self',
