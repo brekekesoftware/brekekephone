@@ -19,6 +19,7 @@ const isIncoming = call => call.incoming && !call.answered;
     //
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,

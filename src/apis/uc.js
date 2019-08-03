@@ -156,11 +156,11 @@ class UC extends EventEmitter {
   connect(profile, option) {
     return new Promise((onres, onerr) =>
       this.client.signIn(
-        `https://${profile.hostname}:${profile.port}`,
-        profile.pathname || 'uc',
-        profile.tenant,
-        profile.username,
-        profile.password,
+        `https://${profile.ucHostname}:${profile.ucPort}`,
+        profile.ucPathname || 'uc',
+        profile.pbxTenant,
+        profile.pbxUsername,
+        profile.pbxPassword,
         option,
         onres,
         onerr,

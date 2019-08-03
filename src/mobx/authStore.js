@@ -1,41 +1,46 @@
-import { observable } from 'mobx';
+import { computed, observable } from 'mobx';
 
 import BaseStore from './BaseStore';
 
-const profileFields = [
-  'id',
-  'pbxHostname',
-  'pbxPort',
-  'pbxTenant',
-  'pbxUsername',
-  'pbxPassword',
-  'pbxPhoneIndex',
-  'pbxTurnEnabled',
-  'parks',
-  'ucEnabled',
-  'ucHostname',
-  'ucPort',
-  'accessToken',
-];
-
 class AuthStore extends BaseStore {
-  @observable
-  pbxState = '';
+  //
+  // started
+  // success
+  // failure
+  // stopped
+  @observable pbxState = '';
+  @observable sipState = '';
+  @observable ucState = '';
+  @observable ucLoginFromAnotherPlace = false;
 
-  @observable
-  sipState = '';
+  @computed get pbxShouldAuth() {
+    return this.profile && (!this.pbxState || this.pbxState === 'stopped');
+  }
+  @computed get sipShouldAuth() {
+    return (
+      this.pbxState === 'success' &&
+      (!this.sipState || this.sipState === 'stopped')
+    );
+  }
 
-  @observable
-  ucState = '';
+  // id
+  // pbxHostname
+  // pbxPort
+  // pbxTenant
+  // pbxUsername
+  // pbxPassword
+  // pbxPhoneIndex
+  // pbxTurnEnabled
+  // parks
+  // ucEnabled
+  // ucHostname
+  // ucPort
+  // ucPathname
+  // accessToken
+  @observable profile = null;
 
-  @observable
-  ucLoginFromAnotherPlace = false;
-
-  @observable
-  profile = null;
-
+  // TODO add documentation
   userExtensionProperties = null;
 }
 
-export { profileFields };
 export default new AuthStore();

@@ -1,3 +1,4 @@
+import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -16,28 +17,20 @@ class View extends React.Component {
   };
 
   componentDidMount() {
-    if (this.needToAuth()) {
-      this.auth();
-    }
-  }
-
-  componentDidUpdate() {
-    if (this.needToAuth()) {
-      this.auth();
-    }
+    this.auth();
+    this.clearObserve = observe(authStore, 'sipShouldAuth', this.auth);
   }
 
   componentWillUnmount() {
-    authStore.set('sipState', 'stopped');
+    this.clearObserve();
     this.context.sip.disconnect();
+    authStore.set('sipState', 'stopped');
   }
 
   needToAuth = () => {
     return (
       authStore.pbxState === 'success' &&
-      authStore.sipState !== 'started' &&
-      authStore.sipState !== 'success' &&
-      authStore.sipState !== 'failure'
+      (!authStore.sipState || authStore.sipState === 'stopped')
     );
   };
 
@@ -69,7 +62,7 @@ class View extends React.Component {
 
     const pbxUserConfig = await this.context.pbx.getUserForSelf(
       authStore.profile?.pbxTenant,
-      authStore.profie?.pbxUsername,
+      authStore.profile?.pbxUsername,
     );
 
     if (!pbxUserConfig) {
@@ -96,25 +89,29 @@ class View extends React.Component {
     }
 
     const connectSipConfig = {
-      hostname: authStore.profie?.pbxHostname,
+      hostname: authStore.profile?.pbxHostname,
       port: sipWSSPort,
       tenant: authStore.profile?.pbxTenant,
       username: webPhone.id,
       accessToken: sipAccessToken,
-      turnEnabled: authStore.profie?.pbxTurnEnabled,
+      turnEnabled: authStore.profile?.pbxTurnEnabled,
     };
-
     await this.context.sip.connect(connectSipConfig);
   };
 
   auth = () => {
-    this._auth().catch(err => {
-      if (err && err.message) {
-        toast.error(err.message);
-      }
-
-      authStore.set('sipState', 'failure');
-    });
+    if (!authStore.sipShouldAuth) {
+      return;
+    }
+    this._auth()
+      .then(() => {
+        authStore.set('sipState', 'success');
+      })
+      .catch(err => {
+        authStore.set('sipState', 'failure');
+        toast.error(`Failed to login to sip server, err: ${err?.message}`);
+        console.error(err);
+      });
   };
 
   render() {

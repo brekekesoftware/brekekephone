@@ -7,7 +7,7 @@ import { createModelView } from 'redux-model';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
-import UI, { UC_CONNECT_STATES } from './ui';
+import UI from './ui';
 
 @observer
 @createModelView(
@@ -38,67 +38,37 @@ class View extends React.Component {
     uc: PropTypes.object.isRequired,
   };
 
-  state = {
-    connectState: UC_CONNECT_STATES.NONE,
-  };
-
   componentDidMount() {
-    this._setStateForLifecycle(UC_CONNECT_STATES.NONE, false);
     this.context.uc.on('connection-stopped', this.onConnectionStopped);
-
-    if (this.needToAutoAuth()) {
-      this.auth();
-    }
+    this.autoAuth();
   }
-
   componentDidUpdate() {
-    if (this.needToAutoAuth()) {
-      this.auth();
-    }
+    this.autoAuth();
   }
 
   componentWillUnmount() {
     this.context.uc.off('connection-stopped', this.onConnectionStopped);
     this.context.uc.disconnect();
-    this._setStateForLifecycle(UC_CONNECT_STATES.NONE, false);
     authStore.set('ucState', 'stopped');
     this.props.reinitBuddyChats();
     this.props.clearAllGroupChats();
     this.props.clearAllChatGroups();
   }
 
-  _setStateForLifecycle = connectState => {
-    this._connectState = connectState;
-
-    this.setState({
-      connectState: connectState,
-    });
-  };
-
-  _setConnectStateForLifecycle = connectState => {
-    this._setStateForLifecycle(connectState);
-  };
-
-  needToAutoAuth = () => {
-    if (!authStore.profile || !authStore.profile.ucEnabled) {
-      return false;
+  autoAuth = () => {
+    const { profile, ucState, ucLoginFromAnotherPlace } = authStore;
+    if (
+      profile?.ucEnabled &&
+      (!ucState || ucState === 'stopped') &&
+      !ucLoginFromAnotherPlace
+    ) {
+      this.auth();
     }
-
-    if (this._connectState !== UC_CONNECT_STATES.NONE) {
-      return false;
-    }
-
-    if (authStore.ucLoginFromAnotherPlace) {
-      return false;
-    }
-
-    return true;
   };
 
   auth = () => {
     this.context.uc.disconnect();
     authStore.set('ucState', 'started');
-    this._setStateForLifecycle(UC_CONNECT_STATES.CONNECTING, false);
     this.context.uc
       .connect(authStore.profile)
       .then(this.onAuthSuccess)
@@ -106,23 +76,20 @@ class View extends React.Component {
   };
 
   onAuthSuccess = () => {
-    authStore.set('ucState', 'success');
     this.loadUsers();
-    this.loadUnreadChats();
-    this._setConnectStateForLifecycle(UC_CONNECT_STATES.CONNECTED);
+    this.loadUnreadChats().then(() => {
+      authStore.set('ucState', 'success');
+    });
   };
 
   onAuthFailure = err => {
     if (err && err.message) {
       toast.error(err.message);
     }
-
     if (err && err.code === UCClient.Errors.ALREADY_SIGNED_IN) {
       authStore.set('ucLoginFromAnotherPlace', false);
     }
-
     authStore.set('ucState', 'failure');
-    this._setStateForLifecycle(UC_CONNECT_STATES.CONNECT_FAILED);
   };
 
   onConnectionStopped = e => {
@@ -130,7 +97,6 @@ class View extends React.Component {
       'ucLoginFromAnotherPlace',
       e.code === UCClient.Errors.PLEONASTIC_LOGIN,
     );
-    this._setStateForLifecycle(UC_CONNECT_STATES.NONE);
   };
 
   loadUsers = () => {
@@ -139,7 +105,7 @@ class View extends React.Component {
   };
 
   loadUnreadChats = () => {
-    this.context.uc
+    return this.context.uc
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure);
@@ -153,28 +119,20 @@ class View extends React.Component {
 
   onLoadUnreadChatsFailure = err => {
     toast.error('Failed to load unread chats');
-
     if (err && err.message) {
       toast.error(err.message);
     }
   };
 
   render() {
-    const connectState = this._connectState;
-
-    if (
-      connectState === UC_CONNECT_STATES.CONNECTED ||
-      !authStore.profile?.ucEnabled
-    ) {
+    if (!authStore.profile?.ucEnabled || authStore.ucState === 'success') {
       return null;
     }
-
     return (
       <UI
         failure={authStore.ucState === 'failure'}
         abort={routerUtils.goToProfilesManage}
         retry={this.auth}
-        connectState={connectState}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
       />
     );

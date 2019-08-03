@@ -25,8 +25,8 @@ class View extends Component {
   };
 
   componentDidMount() {
-    this.loadContacts();
     this.loadContacts.flush();
+    this.loadContacts();
   }
 
   render = () => {
@@ -73,6 +73,7 @@ class View extends Component {
     };
 
     routerUtils.goToContactsBrowse(query);
+    this.loadContacts.flush();
     this.loadContacts();
   };
 
@@ -296,8 +297,8 @@ class View extends Component {
     routerUtils.goToContactsBrowse(query);
 
     setTimeout(() => {
-      this.loadContacts();
       this.loadContacts.flush();
+      this.loadContacts();
     }, 170);
   };
 
@@ -312,8 +313,8 @@ class View extends Component {
     routerUtils.goToContactsBrowse(query);
 
     setTimeout(() => {
-      this.loadContacts();
       this.loadContacts.flush();
+      this.loadContacts();
     }, 170);
   };
 

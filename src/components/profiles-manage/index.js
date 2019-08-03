@@ -37,6 +37,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   async componentDidMount() {
     setProfilesManager(this);

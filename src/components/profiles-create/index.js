@@ -19,6 +19,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   state = {
     pbxHostname: '',

@@ -12,7 +12,9 @@ import UI from './ui';
     chatsEnabled: (authStore.profile || {}).ucEnabled,
     runningIds: getter.runningCalls.idsByOrder(state),
   }),
-  action => emit => ({}),
+  action => emit => ({
+    //
+  }),
 )
 @observer
 class View extends Component {

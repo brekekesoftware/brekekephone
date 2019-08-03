@@ -25,8 +25,11 @@ import UI from './ui';
       }),
     };
   },
-  action => emit => ({}),
+  action => emit => ({
+    //
+  }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,

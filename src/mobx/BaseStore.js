@@ -1,21 +1,16 @@
 import set from 'lodash/set';
 import { runInAction } from 'mobx';
 
-const mobxSet = (store, key, value) => {
-  runInAction(() => {
-    set(store, key, value);
-  });
-};
-
-const closureMobxSet = (store, key) => value => {
-  mobxSet(store, key, value);
-};
-
 class BaseStore {
   set = (key, value) => {
-    mobxSet(this, key, value);
+    runInAction(() => {
+      set(this, key, value);
+    });
+  };
+
+  closureSet = (...args) => value => {
+    this.set(args[0], args.length < 2 ? value : args[1]);
   };
 }
 
-export { mobxSet, closureMobxSet };
 export default BaseStore;

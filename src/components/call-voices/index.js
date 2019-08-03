@@ -22,8 +22,11 @@ const isAnswered = call => call.answered;
       .filter(id => isAnswered(getter.runningCalls.detailMapById(state)[id])),
     callById: getter.runningCalls.detailMapById(state),
   }),
-  action => emit => ({}),
+  action => emit => ({
+    //
+  }),
 )
+@observer
 class View extends Component {
   render = () => (
     <UI

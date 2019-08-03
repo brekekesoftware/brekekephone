@@ -10,7 +10,7 @@ import UI from './ui';
 @observer
 @createModelView(
   getter => state => ({
-    ucEnabled: (authStore.profile || {}).ucEnabled,
+    ucEnabled: authStore.profile?.ucEnabled,
     searchText: getter.usersBrowsing.searchText(state),
     pbxUserIds: getter.pbxUsers.idsByOrder(state),
     pbxUserById: getter.pbxUsers.detailMapById(state),
@@ -23,6 +23,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,

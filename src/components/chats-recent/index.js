@@ -17,8 +17,11 @@ const isGroupJointed = group => group.jointed;
       .filter(id => isGroupJointed(getter.chatGroups.detailMapById(state)[id])),
     groupById: getter.chatGroups.detailMapById(state),
   }),
-  action => emit => ({}),
+  action => emit => ({
+    //
+  }),
 )
+@observer
 class View extends Component {
   render = () => (
     <UI

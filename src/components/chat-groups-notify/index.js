@@ -24,6 +24,7 @@ const isNotJointed = group => !group.jointed;
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,

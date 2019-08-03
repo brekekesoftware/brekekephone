@@ -11,8 +11,11 @@ import UI from './ui';
   getter => (state, props) => ({
     call: getter.runningCalls.detailMapById(state)[props.match.params.call],
   }),
-  action => emit => ({}),
+  action => emit => ({
+    //
+  }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,

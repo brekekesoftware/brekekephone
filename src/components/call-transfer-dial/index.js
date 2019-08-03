@@ -20,6 +20,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,

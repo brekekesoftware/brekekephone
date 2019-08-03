@@ -16,6 +16,8 @@ import * as models from './models';
 import nativeBaseStyle from './nativeBaseStyle';
 import Routes from './Routes';
 
+delete models.__esModule;
+
 const { getter, action, reduce } = combineModels(models);
 
 const persistedReducers = ['profiles', 'recentCalls'];

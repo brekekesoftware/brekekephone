@@ -373,14 +373,11 @@ class ApiProvider extends Component {
   };
 
   loadPbxUsers = async () => {
-    const { profile } = this.props;
-
-    if (!profile) {
+    if (!authStore.profile) {
       return;
     }
-
-    const tenant = profile.pbxTenant;
-    const username = profile.pbxUsername;
+    const tenant = authStore.profile.pbxTenant;
+    const username = authStore.profile.pbxUsername;
     const userIds = await pbx
       .getUsers(tenant)
       .then(ids => ids.filter(id => id !== username));

@@ -95,6 +95,7 @@ const numberOfChatsPerLoad = 50;
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,

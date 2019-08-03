@@ -10,8 +10,11 @@ import UI from './ui';
     callIds: getter.runningVideos.idsByOrder(state),
     callById: getter.runningVideos.detailMapById(state),
   }),
-  action => emit => ({}),
+  action => emit => ({
+    //
+  }),
 )
+@observer
 class View extends Component {
   render() {
     return <UI callIds={this.props.callIds} resolveCall={this.resolveCall} />;

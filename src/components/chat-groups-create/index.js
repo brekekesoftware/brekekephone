@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
@@ -6,6 +7,7 @@ import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
 import UI from './ui';
 
+@observer
 @createModelView(
   getter => state => ({
     buddyIds: getter.ucUsers.idsByOrder(state),
@@ -17,6 +19,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,

@@ -1,8 +1,11 @@
-import _ from 'lodash';
+import merge from 'lodash/merge';
 import getTheme from 'native-base/src/theme/components';
 import variables from 'native-base/src/theme/variables/commonColor';
 
-_.merge(variables, {
+// Update the variables which depend on the platform condition
+// See native-base/src/theme/variables/commonColor.js for detail
+// We will choose ios as the default platform then change the variables as we need
+merge(variables, {
   platform: 'ios',
   cardItemPadding: 10,
   CheckboxRadius: 13,
@@ -13,7 +16,7 @@ _.merge(variables, {
   CheckboxIconMarginTop: undefined,
   CheckboxFontSize: 23 / 0.9,
   brandPrimary: '#fff',
-  fontFamily: 'System',
+  fontFamily: 'RobotoLight',
   toolbarBtnColor: '#007aff',
   toolbarSearchIconSize: 20,
   toolbarBtnTextColor: '#007aff',
@@ -26,14 +29,13 @@ _.merge(variables, {
   segmentActiveTextColor: '#fff',
   segmentBorderColor: '#007aff',
   segmentBorderColorMain: '#a7a6ab',
-  titleFontfamily: 'System',
+  titleFontfamily: 'RobotoLight',
   titleFontSize: 17,
   subTitleFontSize: 11,
   subtitleColor: '#000',
   titleFontColor: '#000',
-  borderRadiusBase: 5,
+  borderRadiusBase: 3,
   inverseTextColor: '#000',
-  iconFamily: 'MaterialIcons',
   toolbarDefaultBg: '#e0e0e0',
   tabDefaultBg: '#e0e0e0',
   get btnTextSize() {
@@ -41,23 +43,27 @@ _.merge(variables, {
   },
 });
 
+// Build the style object from the above variables
 const nativeBaseStyle = getTheme(variables);
 
+// This recursively update the whole style
+// Will be useful for which field we need to update for every components
 const recursiveUpdateStyle = obj => {
   Object.entries(obj).forEach(([k, v]) => {
     if (k === 'fontFamily') {
-      if (v !== 'MaterialIcons') {
-        obj[k] = 'RobotoLight';
-      }
+      obj[k] = 'RobotoLight';
+    } else if (k === 'borderRadius') {
+      obj[k] = 3;
     } else if (v && typeof v === 'object') {
       recursiveUpdateStyle(v);
     }
   });
 };
-
 recursiveUpdateStyle(nativeBaseStyle);
 
-_.merge(nativeBaseStyle, {
+// Other small/accuracy modifications will be put here
+// We should take a look at the default components to see the keys
+merge(nativeBaseStyle, {
   'NativeBase.Header': {
     '.noLeft': {
       'NativeBase.Left': {
@@ -90,7 +96,6 @@ _.merge(nativeBaseStyle, {
         color: '#000',
       },
     },
-
     backgroundColor: '#e0e0e0',
   },
   variables: {
@@ -102,7 +107,5 @@ _.merge(nativeBaseStyle, {
     },
   },
 });
-
-console.warn(nativeBaseStyle);
 
 export default nativeBaseStyle;

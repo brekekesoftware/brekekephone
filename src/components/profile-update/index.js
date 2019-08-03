@@ -18,6 +18,7 @@ import UI from './ui';
     },
   }),
 )
+@observer
 class View extends Component {
   constructor(props) {
     super(props);

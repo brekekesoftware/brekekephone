@@ -1,3 +1,4 @@
+import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -14,43 +15,31 @@ class View extends React.Component {
   };
 
   componentDidMount() {
-    if (this.needToAuth()) {
-      this.auth();
-    }
+    this.auth();
+    this.clearObserve = observe(authStore, 'pbxShouldAuth', this.auth);
   }
-
-  componentDidUpdate() {
-    if (this.needToAuth()) {
-      this.auth();
-    }
-  }
-
   componentWillUnmount() {
-    authStore.set('pbxState', 'stopped');
+    this.clearObserve();
     this.context.pbx.disconnect();
+    authStore.set('pbxState', 'stopped');
   }
-
-  needToAuth = () =>
-    authStore.profile &&
-    authStore.pbxState !== 'started' &&
-    authStore.pbxState !== 'success' &&
-    authStore.pbxState !== 'failure';
 
   auth = () => {
+    if (!authStore.pbxShouldAuth) {
+      return;
+    }
+    //
     this.context.pbx.disconnect();
     authStore.set('pbxState', 'started');
-
+    //
     this.context.pbx
       .connect(authStore.profile)
       .then(() => {
         authStore.set('pbxState', 'success');
       })
       .catch(err => {
-        if (err && err.message) {
-          toast.error(err.message);
-        }
-
         authStore.set('pbxState', 'failure');
+        toast.error(`Failed to login to pbx, err: ${err?.message}`);
       });
   };
 
