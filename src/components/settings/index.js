@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 import toast from '../../nativeModules/toast';
+import UI from './ui';
 
 @observer
 class View extends Component {

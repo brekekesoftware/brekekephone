@@ -7,9 +7,9 @@ import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import { getUrlParams, setUrlParams } from '../../nativeModules/deeplink';
 import { resetBadgeNumber } from '../../nativeModules/pushNotification';
+import toast from '../../nativeModules/toast';
 import { setProfilesManager } from './getset';
 import UI from './ui';
-import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(

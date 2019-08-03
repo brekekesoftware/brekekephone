@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
+import toast from '../../nativeModules/toast';
 import stripTags from '../../utils/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 import UI from './ui';
-import toast from '../../nativeModules/toast';
 
 const monthName = [
   'Jan',
@@ -185,10 +185,8 @@ class View extends Component {
   };
 
   loadRecent() {
-    this.context.uc.getBuddyChats(
-      this.props.buddy.id,
-      { max: numberOfChatsPerLoad },
-    )
+    this.context.uc
+      .getBuddyChats(this.props.buddy.id, { max: numberOfChatsPerLoad })
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
     //
@@ -220,9 +218,7 @@ class View extends Component {
     const max = numberOfChatsPerLoad;
     const end = oldestCreated;
 
-    const query = { max,
-      end,
-    };
+    const query = { max, end };
 
     const { uc } = this.context;
 
@@ -286,7 +282,8 @@ class View extends Component {
   };
 
   acceptFile = file => {
-    this.context.uc.acceptFile(file.id)
+    this.context.uc
+      .acceptFile(file.id)
       .then(blob => saveBlob(blob, file.name))
       .catch(this.onAcceptFileFailure);
   };

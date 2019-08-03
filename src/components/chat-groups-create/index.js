@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 import toast from '../../nativeModules/toast';
+import UI from './ui';
 
 @createModelView(
   getter => state => ({
@@ -68,7 +68,8 @@ class View extends Component {
       return;
     }
 
-    this.context.uc.createChatGroup(name, members)
+    this.context.uc
+      .createChatGroup(name, members)
       .then(this.onCreateSuccess)
       .catch(this.onCreateFailure);
   };

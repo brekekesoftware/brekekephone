@@ -4,9 +4,9 @@ import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
+import toast from '../../nativeModules/toast';
 import stripTags from '../../utils/stripTags';
 import UI from './ui';
-import toast from '../../nativeModules/toast';
 
 const monthName = [
   'Jan',
@@ -218,8 +218,6 @@ class View extends Component {
       loadingRecent: false,
     });
 
-
-
     toast.error('Failed to get recent chats');
   };
 
@@ -258,8 +256,6 @@ class View extends Component {
   };
 
   onLoadMoreFailure = err => {
-
-
     toast.error('Failed to get more chats');
     console.error(err);
 
@@ -330,8 +326,6 @@ class View extends Component {
   };
 
   onLeaveFailure = err => {
-
-
     console.error(err);
     toast.error('Failed to leave the group');
   };

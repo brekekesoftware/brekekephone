@@ -6,8 +6,8 @@ import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import UI, { UC_CONNECT_STATES } from './ui';
 import toast from '../../nativeModules/toast';
+import UI, { UC_CONNECT_STATES } from './ui';
 
 @observer
 @createModelView(

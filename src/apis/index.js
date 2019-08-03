@@ -10,11 +10,11 @@ import authStore from '../mobx/authStore';
 import * as routerUtils from '../mobx/routerStore';
 import Alert from '../nativeModules/alert';
 import { getPnToken } from '../nativeModules/pushNotification';
+import toast from '../nativeModules/toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
-import toast from '../nativeModules/toast';
 
 @observer
 @createModelView(

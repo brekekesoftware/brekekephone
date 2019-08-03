@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
 
-import UI from './ui';
 import toast from '../../nativeModules/toast';
+import UI from './ui';
 
 const isNotJointed = group => !group.jointed;
 
@@ -52,7 +52,8 @@ class View extends Component {
   };
 
   reject = group => {
-    this.context.uc.leaveChatGroup(group)
+    this.context.uc
+      .leaveChatGroup(group)
       .then(this.onRejectSuccess)
       .catch(this.onRejectFailure);
   };

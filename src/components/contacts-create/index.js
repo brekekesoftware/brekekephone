@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 import toast from '../../nativeModules/toast';
+import UI from './ui';
 
 @observer
 class View extends Component {
