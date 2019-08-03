@@ -2,13 +2,13 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import stripTags from '../../utils/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 const monthName = [
   'Jan',
@@ -92,15 +92,6 @@ const numberOfChatsPerLoad = 50;
 
     createChatFile(file) {
       emit(action.chatFiles.create(file));
-    },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
     },
   }),
 )
@@ -186,31 +177,22 @@ class View extends Component {
   me = this.context.uc.me();
 
   resolveCreator = creator => {
-    if (creator === this.me.id) return this.me;
-
+    if (creator === this.me.id) {
+      return this.me;
+    }
     const { ucUserById } = this.props;
-
     return ucUserById[creator] || {};
   };
 
   loadRecent() {
-    const { buddy } = this.props;
-
-    const { uc } = this.context;
-
-    const max = numberOfChatsPerLoad;
-
-    const query = {
-      max,
-    };
-
-    uc.getBuddyChats(buddy.id, query)
+    this.context.uc.getBuddyChats(
+      this.props.buddy.id,
+      { max: numberOfChatsPerLoad },
+    )
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
-
-    this.setState({
-      loadingRecent: true,
-    });
+    //
+    this.setState({ loadingRecent: true });
   }
 
   onLoadRecentSuccess = chats => {
@@ -224,17 +206,10 @@ class View extends Component {
 
     appendChats(buddy.id, chats);
   };
-
   onLoadRecentFailure = err => {
+    this.setState({ loadingRecent: false });
+    toast.error(`Failed to get recent chats, err: ${err?.message}`);
     console.error(err);
-
-    this.setState({
-      loadingRecent: false,
-    });
-
-    const { showToast } = this.props;
-
-    showToast('Failed to get recent chats');
   };
 
   loadMore = () => {
@@ -245,8 +220,7 @@ class View extends Component {
     const max = numberOfChatsPerLoad;
     const end = oldestCreated;
 
-    const query = {
-      max,
+    const query = { max,
       end,
     };
 
@@ -274,38 +248,26 @@ class View extends Component {
   };
 
   onLoadMoreFailure = err => {
-    console.error(err);
-
     this.setState({
       loadingMore: false,
     });
-
-    const { showToast } = this.props;
-
-    showToast('Failed to get more chats');
+    toast.error('Failed to get more chats');
+    console.error(err);
   };
 
   setEditingText = editingText => {
-    this.setState({
-      editingText,
-    });
+    this.setState({ editingText });
   };
 
   submitting = false;
 
   submitEditingText = () => {
-    if (this.submitting) {
-      return;
-    }
-
     const txt = this.state.editingText.trim();
-
-    if (!txt) {
+    if (!txt || this.submitting) {
       return;
     }
-
     this.submitting = true;
-
+    //
     this.context.uc
       .sendBuddyChatText(this.props.buddy.id, txt)
       .then(this.onSubmitEditingTextSuccess)
@@ -314,76 +276,51 @@ class View extends Component {
         this.submitting = false;
       });
   };
-
   onSubmitEditingTextSuccess = chat => {
     this.props.appendChats(this.props.buddy.id, [chat]);
-
-    this.setState({
-      editingText: '',
-    });
+    this.setState({ editingText: '' });
   };
-
   onSubmitEditingTextFailure = err => {
+    toast.error(`Failed to send the message, err: ${err?.message}`);
     console.error(err);
-    this.props.showToast('Failed to send the message');
   };
 
   acceptFile = file => {
-    const { uc } = this.context;
-
-    uc.acceptFile(file.id)
+    this.context.uc.acceptFile(file.id)
       .then(blob => saveBlob(blob, file.name))
       .catch(this.onAcceptFileFailure);
   };
-
   onAcceptFileFailure = err => {
+    toast.error(`Failed to accept file, err: ${err?.message}`);
     console.error(err);
-
-    const { showToast } = this.props;
-
-    err && showToast(err.message);
   };
 
   rejectFile = file => {
-    const { uc } = this.context;
-
-    uc.rejectFile(file.id).catch(this.onRejectFileFailure);
+    this.context.uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
-
   onRejectFileFailure = err => {
+    toast.error(`Failed to reject file, err: ${err?.message}`);
     console.error(err);
-
-    const { showToast } = this.props;
-
-    err && showToast(err.message);
   };
 
   pickFile = () => {
     pickFile(this.sendFile);
   };
-
   sendFile = file => {
     const { uc } = this.context;
-
     const { buddy } = this.props;
-
     uc.sendFile(buddy.id, file)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure);
   };
-
   onSendFileSuccess = res => {
     const buddyId = this.props.buddy.id;
     this.props.appendChats(buddyId, [res.chat]);
     this.props.createChatFile(res.file);
   };
-
   onSendFileFailure = err => {
+    toast.error(`Failed to send file, err: ${err?.message}`);
     console.error(err);
-
-    const { showToast } = this.props;
-
-    err && showToast(err.message);
   };
 }
 

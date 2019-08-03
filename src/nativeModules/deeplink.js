@@ -12,7 +12,6 @@ export const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
     return Promise.resolve(urlParams);
   }
-
   alreadyHandleFirstOpen = true;
   return Linking.getInitialURL().then(parse);
 };
@@ -23,14 +22,13 @@ export const setUrlParams = p => {
 
 Linking.addEventListener('url', e => {
   const p = (urlParams = parse(e.url));
-
   if (!p) {
     return;
   }
-
+  //
   const u = authStore.profile;
   const c = (v1, v2) => !v1 || !v2 || v1 === v2;
-
+  //
   if (
     u &&
     p.user &&
@@ -41,9 +39,8 @@ Linking.addEventListener('url', e => {
   ) {
     return;
   }
-
+  //
   const pm = getProfilesManager();
-
   if (pm) {
     pm.handleUrlParams();
   } else {

@@ -1,28 +1,17 @@
-import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
-@observer
 @createModelView(
   getter => state => ({
     buddyIds: getter.ucUsers.idsByOrder(state),
     buddyById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-
     createChatGroup(group) {
       emit(action.chatGroups.create(group));
     },
@@ -74,16 +63,12 @@ class View extends Component {
   create = () => {
     const { name, members } = this.state;
 
-    const { showToast } = this.props;
-
     if (!name.trim()) {
-      showToast('Group name is required');
+      toast.error('Group name is required');
       return;
     }
 
-    const { uc } = this.context;
-
-    uc.createChatGroup(name, members)
+    this.context.uc.createChatGroup(name, members)
       .then(this.onCreateSuccess)
       .catch(this.onCreateFailure);
   };
@@ -96,10 +81,7 @@ class View extends Component {
 
   onCreateFailure = err => {
     console.error(err);
-
-    const { showToast } = this.props;
-
-    showToast('Failed to create the group chat');
+    toast.error('Failed to create the group chat');
   };
 }
 

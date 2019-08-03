@@ -2,12 +2,12 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import LoudSpeaker from '../../components/calls-manage/LoudSpeaker';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -17,20 +17,12 @@ import UI from './ui';
     runningById: getter.runningCalls.detailMapById(state),
   }),
   action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-
     updateCall(call) {
       emit(action.runningCalls.update(call));
     },
   }),
 )
+@observer
 class View extends Component {
   state = {
     activecallid: null,
@@ -111,7 +103,7 @@ class View extends Component {
 
   onHoldFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to hold the call');
+    toast.error('Failed to hold the call');
   };
 
   unhold = () => {
@@ -138,7 +130,7 @@ class View extends Component {
     const activecallid = this.state.activecallid;
     console.error('onUnholdFailure activecallid=' + activecallid);
     console.error(err);
-    this.props.showToast('Failed to unhold the call');
+    toast.error('Failed to unhold the call');
   };
 
   findActiveCallByRunids_s(runids, props) {

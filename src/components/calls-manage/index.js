@@ -2,11 +2,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import LoudSpeaker from './LoudSpeaker';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -20,21 +20,12 @@ import UI from './ui';
     updateCall(call) {
       emit(action.runningCalls.update(call));
     },
-
     selectCall(call) {
       emit(action.callsManaging.setSelectedId(call.id));
     },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
   }),
 )
+@observer
 class View extends Component {
   state = {
     prevSelectedId: null,
@@ -216,7 +207,7 @@ class View extends Component {
 
   onHoldFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to hold the call');
+    toast.error('Failed to hold the call');
   };
 
   unhold = () => {
@@ -237,7 +228,7 @@ class View extends Component {
 
   onUnholdFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to unhold the call');
+    toast.error('Failed to unhold the call');
   };
 
   startRecording = () => {
@@ -258,7 +249,7 @@ class View extends Component {
 
   onStartRecordingFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to start recording the call');
+    toast.error('Failed to start recording the call');
   };
 
   stopRecording = () => {
@@ -279,7 +270,7 @@ class View extends Component {
 
   onStopRecordingFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to stop recording the call');
+    toast.error('Failed to stop recording the call');
   };
 
   transfer = () => {

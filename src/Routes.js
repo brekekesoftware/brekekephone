@@ -35,7 +35,6 @@ import Settings from './components/settings';
 import SIPAuth from './components/sip-auth';
 import StatusBar from './components/statusbar';
 import Tabbar from './components/tabbar';
-import ToastsNotify from './components/toasts-notify';
 import UCAuth from './components/uc-auth';
 import UsersBrowse from './components/users-browse';
 
@@ -129,7 +128,6 @@ const Routes = () => (
       <Route path="/auth" component={CallsNotify} />
       <Route path="/auth" component={ChatGroupsNotify} />
       <Route path="/auth" component={BuddyChatsNotify} />
-      <ToastsNotify />
     </Notifications>
   </View>
 );

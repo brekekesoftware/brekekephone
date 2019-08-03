@@ -1,29 +1,13 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
-@createModelView(
-  getter => state => ({
-    //
-  }),
-  action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-  }),
-)
 class View extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
@@ -63,7 +47,7 @@ class View extends React.Component {
       })
       .catch(err => {
         if (err && err.message) {
-          this.props.showToast(err.message);
+          toast.error(err.message);
         }
 
         authStore.set('pbxState', 'failure');

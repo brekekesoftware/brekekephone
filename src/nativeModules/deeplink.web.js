@@ -7,7 +7,6 @@ export const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
     return Promise.resolve(null);
   }
-
   alreadyHandleFirstOpen = true;
   return Promise.resolve(params);
 };

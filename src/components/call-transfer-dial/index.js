@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -17,15 +17,6 @@ import UI from './ui';
   action => emit => ({
     updateCall(call) {
       emit(action.runningCalls.update(call));
-    },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
     },
   }),
 )
@@ -115,7 +106,7 @@ class View extends Component {
     const target = this.state.target;
 
     if (!target.trim()) {
-      this.props.showToast('No target');
+      toast.error('No target');
       return;
     }
 
@@ -154,14 +145,14 @@ class View extends Component {
 
   onTransferFailure = err => {
     console.error(err);
-    this.props.showToast('Failed target transfer the call');
+    toast.error('Failed target transfer the call');
   };
 
   transferBlind = () => {
     const target = this.state.target;
 
     if (!target.trim()) {
-      this.props.showToast('No target');
+      toast.error('No target');
       return;
     }
 
@@ -179,7 +170,7 @@ class View extends Component {
     const target = this.state.target;
 
     if (!target.trim()) {
-      this.props.showToast('No target');
+      toast.error('No target');
       return;
     }
 
@@ -214,14 +205,14 @@ class View extends Component {
 
   onTransferAttendedForVideoFailure = err => {
     console.error(err);
-    this.props.showToast('Failed target transfer the call');
+    toast.error('Failed target transfer the call');
   };
 
   transferAttendedForVideo = () => {
     const target = this.state.target;
 
     if (!target.trim()) {
-      this.props.showToast('No target');
+      toast.error('No target');
       return;
     }
 

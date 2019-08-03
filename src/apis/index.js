@@ -14,6 +14,7 @@ import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
+import toast from '../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -25,140 +26,99 @@ import uc from './uc';
     onPBXConnectionTimeout() {
       authStore.set('pbxState', 'stopped');
     },
-
     onPBXConnectionStopped() {
       authStore.set('pbxState', 'stopped');
     },
-
     onSIPConnectionStarted() {
       authStore.set('sipState', 'success');
     },
-
     onSIPConnectionStopped() {
       authStore.set('sipState', 'stopped');
     },
-
     onSIPConnectionTimeout() {
       authStore.set('sipState', 'stopped');
     },
-
     onUCConnectionStopped() {
       authStore.set('ucState', 'stopped');
     },
-
     onUCConnectionTimeout() {
       authStore.set('ucState', 'stopped');
     },
-
     createRunningCall(call) {
       emit(action.runningCalls.create(call));
     },
-
     updateRunningCall(call) {
       emit(action.runningCalls.update(call));
     },
-
     removeRunningCall(call) {
       emit(action.runningCalls.remove(call));
     },
-
     createRunningVideo(call) {
       emit(action.runningVideos.create(call));
     },
-
     updateRunningVideo(call) {
       emit(action.runningVideos.update(call));
     },
-
     removeRunningVideo(call) {
       emit(action.runningVideos.remove(call));
     },
-
     removeRunningVideoByCallid(callid) {
       emit(action.runningVideos.removeByCallid(callid));
     },
-
     createParkingCall(call) {
       emit(action.parkingCalls.create(call));
     },
-
     removeParkingCall(call) {
       emit(action.parkingCalls.remove(call));
     },
-
     fillPbxUsers(users) {
       emit(action.pbxUsers.refill(users));
     },
-
     setPBXUserTalkerCalling(user, talker) {
       emit(action.pbxUsers.setTalkerCalling(user, talker));
     },
-
     setPBXUserTalkerRinging(user, talker) {
       emit(action.pbxUsers.setTalkerRinging(user, talker));
     },
-
     setPBXUserTalkerTalking(user, talker) {
       emit(action.pbxUsers.setTalkerTalking(user, talker));
     },
-
     setPBXUserTalkerHolding(user, talker) {
       emit(action.pbxUsers.setTalkerHolding(user, talker));
     },
-
     setPBXUserTalkerHanging(user, talker) {
       emit(action.pbxUsers.setTalkerHanging(user, talker));
     },
-
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
     },
-
     updateUcUser(user) {
       emit(action.ucUsers.update(user));
     },
-
     appendBuddyChat(buddy, chat) {
       emit(action.buddyChats.appendByBuddy(buddy, [chat]));
     },
-
     appendGroupChat(group, chat) {
       emit(action.groupChats.appendByGroup(group, [chat]));
     },
-
     createChatGroup(group) {
       emit(action.chatGroups.create(group));
     },
-
     updateChatGroup(group) {
       emit(action.chatGroups.update(group));
     },
-
     removeChatGroup(id) {
       emit(action.chatGroups.remove(id));
     },
-
     clearChatsByGroup(group) {
       emit(action.groupChats.clearByGroup(group));
     },
-
     createChatFile(file) {
       emit(action.chatFiles.create(file));
     },
-
     updateChatFile(file) {
       emit(action.chatFiles.update(file));
     },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-
     setAuthUserExtensionProperties(properties) {
       authStore.userExtensionProperties = properties;
     },
@@ -397,7 +357,7 @@ class ApiProvider extends Component {
 
   onPBXConnectionStarted = () => {
     this.loadPbxUsers().catch(err => {
-      this.props.showToast('Failed to load PBX users');
+      toast.error('Failed to load PBX users');
       console.error(err);
     });
 

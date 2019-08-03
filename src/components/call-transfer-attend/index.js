@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -16,17 +16,9 @@ import UI from './ui';
     updateCall(call) {
       emit(action.runningCalls.update(call));
     },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -71,7 +63,7 @@ class View extends Component {
 
   onJoinFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to join the transfer');
+    toast.error('Failed to join the transfer');
   };
 
   stop = () => {
@@ -96,7 +88,7 @@ class View extends Component {
 
   onStopFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to stop the transfer');
+    toast.error('Failed to stop the transfer');
   };
 }
 

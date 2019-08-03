@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 const isNotJointed = group => !group.jointed;
 
@@ -21,15 +21,6 @@ const isNotJointed = group => !group.jointed;
   action => emit => ({
     removeChatGroup(id) {
       emit(action.chatGroups.remove(id));
-    },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
     },
   }),
 )
@@ -61,37 +52,24 @@ class View extends Component {
   };
 
   reject = group => {
-    const { uc } = this.context;
-
-    uc.leaveChatGroup(group)
+    this.context.uc.leaveChatGroup(group)
       .then(this.onRejectSuccess)
       .catch(this.onRejectFailure);
   };
-
   onRejectSuccess = res => {
     this.props.removeChatGroup(res.id);
   };
-
   onRejectFailure = err => {
     console.error(err);
-
-    const { showToast } = this.props;
-
-    showToast('Failed to reject the group chat');
+    toast.error('Failed to reject the group chat');
   };
 
   accept = group => {
-    const { uc } = this.context;
-
-    uc.joinChatGroup(group).catch(this.onAcceptFailure);
+    this.context.uc.joinChatGroup(group).catch(this.onAcceptFailure);
   };
-
   onAcceptFailure = err => {
     console.error(err);
-
-    const { showToast } = this.props;
-
-    showToast('Failed to accept the group chat');
+    toast.error('Failed to accept the group chat');
   };
 }
 

@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import { validateHostname, validatePort } from '../../utils/validator';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -15,15 +15,6 @@ import UI from './ui';
   action => emit => ({
     updateProfile(profile) {
       emit(action.profiles.update(profile));
-    },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
     },
   }),
 )
@@ -166,17 +157,17 @@ class View extends Component {
 
   save = () => {
     if (this.missingRequired()) {
-      this.props.showToast('Missing required fields');
+      toast.error('Missing required fields');
       return;
     }
 
     if (!validateHostname(this.state.pbxHostname)) {
-      this.props.showToast('Host name is invalid');
+      toast.error('Host name is invalid');
       return;
     }
 
     if (!validatePort(this.state.pbxPort)) {
-      this.props.showToast('Port is invalid');
+      toast.error('Port is invalid');
       return;
     }
 

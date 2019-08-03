@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -15,16 +15,10 @@ import UI from './ui';
     buddyById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
+    //
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
@@ -72,14 +66,14 @@ class View extends Component {
   };
 
   invite = () => {
-    const { group, showToast } = this.props;
+    const { group } = this.props;
 
     const { selectedBuddy } = this.state;
 
     const members = Object.keys(selectedBuddy);
 
     if (!members.length) {
-      showToast('No buddy selectedBuddy');
+      toast.error('No buddy selectedBuddy');
       return;
     }
 
@@ -92,10 +86,7 @@ class View extends Component {
 
   onInviteFailure = err => {
     console.error(err);
-
-    const { showToast } = this.props;
-
-    showToast(err.message || 'Failed with unknown error');
+    toast.error(err.message || 'Failed with unknown error');
   };
 
   back = () => {

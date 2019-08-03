@@ -2,11 +2,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import stripTags from '../../utils/stripTags';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 const monthName = [
   'Jan',
@@ -58,21 +58,17 @@ const numberOfChatsPerLoad = 50;
 @createModelView(
   getter => (state, props) => {
     const duplicatedMap = {};
-
     return {
       group: getter.chatGroups.detailMapById(state)[props.match.params.group],
-
       chatIds: (
         getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
       ).filter(id => {
         if (duplicatedMap[id]) {
           return false;
         }
-
         duplicatedMap[id] = true;
         return true;
       }),
-
       chatById: getter.groupChats.detailMapById(state),
       ucUserById: getter.ucUsers.detailMapById(state),
     };
@@ -81,29 +77,18 @@ const numberOfChatsPerLoad = 50;
     appendChats(group, chats) {
       emit(action.groupChats.appendByGroup(group, chats));
     },
-
     prependChats(group, chats) {
       emit(action.groupChats.prependByGroup(group, chats));
     },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-
     removeChatGroup(id) {
       emit(action.chatGroups.remove(id));
     },
-
     clearChatsByGroup(group) {
       emit(action.groupChats.clearByGroup(group));
     },
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
@@ -233,9 +218,9 @@ class View extends Component {
       loadingRecent: false,
     });
 
-    const { showToast } = this.props;
 
-    showToast('Failed to get recent chats');
+
+    toast.error('Failed to get recent chats');
   };
 
   loadMore = () => {
@@ -273,9 +258,9 @@ class View extends Component {
   };
 
   onLoadMoreFailure = err => {
-    const { showToast } = this.props;
 
-    showToast('Failed to get more chats');
+
+    toast.error('Failed to get more chats');
     console.error(err);
 
     this.setState({
@@ -323,7 +308,7 @@ class View extends Component {
 
   onSubmitEditingTextFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to send the message');
+    toast.error('Failed to send the message');
   };
 
   leave = () => {
@@ -345,10 +330,10 @@ class View extends Component {
   };
 
   onLeaveFailure = err => {
-    const { showToast } = this.props;
+
 
     console.error(err);
-    showToast('Failed to leave the group');
+    toast.error('Failed to leave the group');
   };
 
   invite = () => {

@@ -29,14 +29,12 @@ const parse = (...p) => {
           return JSON.parse(i);
         } catch (err) {}
       }
-
       return i;
     })
     .reduce((m, i) => {
       if (!i || typeof i !== 'object') {
         return m;
       }
-
       keysInCustomNoti.forEach(k => {
         const v = i[k];
 
@@ -44,20 +42,17 @@ const parse = (...p) => {
           m[k] = v;
         }
       });
-
       return m;
     }, {});
 };
 
 const parseCustomNoti = n => {
   const u = authStore.profile;
-
   if (u && AppState.currentState === 'active') {
     return null;
   }
-
+  //
   let c = {};
-
   if (Platform.OS === 'android') {
     c = parse(
       n,
@@ -76,15 +71,14 @@ const parseCustomNoti = n => {
       get(n, '_data.custom_notification'),
     );
   }
-
+  //
   if (!c.body) {
     c.body = c.message || c.title;
   }
-
   if (!c.body && !c.to) {
     return null;
   }
-
+  //
   if (
     n.my_custom_data ||
     n.is_local_notification ||
@@ -93,21 +87,19 @@ const parseCustomNoti = n => {
   ) {
     return null;
   }
-
+  //
   const pm = getProfilesManager();
-
   if (pm) {
     pm.signinByCustomNoti(c);
   } else if (!u) {
     routerUtils.goToProfilesManage();
-
     getProfilesManagerInterval().then(pm => {
       if (pm) {
         pm.signinByCustomNoti(c);
       }
     });
   }
-
+  //
   return c;
 };
 

@@ -9,44 +9,31 @@ import { getUrlParams, setUrlParams } from '../../nativeModules/deeplink';
 import { resetBadgeNumber } from '../../nativeModules/pushNotification';
 import { setProfilesManager } from './getset';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
   getter => (state, props) => ({
     profileIds: getter.profiles.idsByOrder(state),
     profileById: getter.profiles.detailMapById(state),
-
     callIds: getter.runningCalls.idsByOrder(state).filter(id => {
       const call = getter.runningCalls.detailMapById(state)[id];
       return call && call.incoming && !call.answered;
     }),
-
     callById: getter.runningCalls.detailMapById(state),
   }),
   action => emit => ({
     createProfile(profile) {
       emit(action.profiles.create(profile));
     },
-
     updateProfile(profile) {
       emit(action.profiles.update(profile));
     },
-
     removeProfile(id) {
       emit(action.profiles.remove(id));
     },
-
     updateCall(call) {
       emit(action.runningCalls.update(call));
-    },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
     },
   }),
 )
@@ -178,7 +165,7 @@ class View extends Component {
 
     if (!u.pbxPassword && !u.accessToken) {
       routerUtils.goToProfileUpdate(u.id);
-      this.props.showToast('The profile password is empty');
+      toast.error('The profile password is empty');
       return true;
     }
 

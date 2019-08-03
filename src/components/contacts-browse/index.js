@@ -3,29 +3,14 @@ import debounce from 'lodash/debounce';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, '');
 
-@observer
-@createModelView(
-  getter => state => ({}),
-  action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-  }),
-)
 @observer
 class View extends Component {
   static contextTypes = {
@@ -103,12 +88,12 @@ class View extends Component {
     const contact = this.state.contactById[id];
 
     if (!contact.firstName) {
-      this.props.showToast('The first name is required');
+      toast.error('The first name is required');
       return;
     }
 
     if (!contact.lastName) {
-      this.props.showToast('The last name is required');
+      toast.error('The last name is required');
       return;
     }
 
@@ -137,7 +122,7 @@ class View extends Component {
       );
 
       console.error(err);
-      this.props.showToast('Failed to save the contact');
+      toast.error('Failed to save the contact');
     };
 
     pbx.setContact(this.state.contactById[id]).then(onSuccess, onFailure);
@@ -269,7 +254,7 @@ class View extends Component {
 
   onLoadContactsFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to load contacts');
+    toast.error('Failed to load contacts');
   };
 
   loadContactDetails = () => {

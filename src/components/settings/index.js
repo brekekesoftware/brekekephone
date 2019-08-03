@@ -1,29 +1,12 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
-@observer
-@createModelView(
-  getter => state => ({
-    //
-  }),
-  action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-  }),
-)
 @observer
 class View extends Component {
   static contextTypes = {
@@ -76,14 +59,11 @@ class View extends Component {
   };
 
   onSetChatStatusFailure = () => {
-    const { showToast } = this.props;
-
-    showToast('Failed to change chat status');
+    toast.error('Failed to change chat status');
   };
 
   setChatOffline = () => {
     const { uc } = this.context;
-
     uc.setOffline(this.state.chatMood)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);

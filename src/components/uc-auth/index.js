@@ -3,41 +3,30 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI, { UC_CONNECT_STATES } from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
-  getter => state => ({}),
+  getter => state => ({
+    //
+  }),
   action => emit => ({
     fillUsers(users) {
       emit(action.ucUsers.refill(users));
     },
-
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-
     appendBuddyChats(buddy, chats) {
       emit(action.buddyChats.appendByBuddy(buddy, chats));
     },
-
     reinitBuddyChats() {
       emit(action.buddyChats.clearAll());
     },
-
     clearAllGroupChats() {
       emit(action.groupChats.clearAll());
     },
-
     clearAllChatGroups() {
       emit(action.chatGroups.clearAll());
     },
@@ -125,7 +114,7 @@ class View extends React.Component {
 
   onAuthFailure = err => {
     if (err && err.message) {
-      this.props.showToast(err.message);
+      toast.error(err.message);
     }
 
     if (err && err.code === UCClient.Errors.ALREADY_SIGNED_IN) {
@@ -163,10 +152,10 @@ class View extends React.Component {
   };
 
   onLoadUnreadChatsFailure = err => {
-    this.props.showToast('Failed to load unread chats');
+    toast.error('Failed to load unread chats');
 
     if (err && err.message) {
-      this.props.showToast(err.message);
+      toast.error(err.message);
     }
   };
 

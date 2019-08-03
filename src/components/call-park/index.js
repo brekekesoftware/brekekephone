@@ -2,11 +2,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
 @observer
 @createModelView(
@@ -22,16 +22,10 @@ import UI from './ui';
     };
   },
   action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
+    //
   }),
 )
+@observer
 class View extends Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
@@ -66,7 +60,7 @@ class View extends Component {
     const { selectedPark } = this.state;
 
     if (!selectedPark) {
-      this.props.showToast('No selected park');
+      toast.error('No selected park');
       return;
     }
 
@@ -87,7 +81,7 @@ class View extends Component {
   };
 
   onParkFailure = err => {
-    this.props.showToast('Failed to park the call');
+    toast.error('Failed to park the call');
     console.error(err);
   };
 }

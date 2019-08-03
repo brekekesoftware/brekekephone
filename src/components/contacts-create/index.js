@@ -1,26 +1,11 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { createModelView } from 'redux-model';
-import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
 import UI from './ui';
+import toast from '../../nativeModules/toast';
 
-@observer
-@createModelView(
-  getter => state => ({}),
-  action => emit => ({
-    showToast(message) {
-      emit(
-        action.toasts.create({
-          id: createId(),
-          message,
-        }),
-      );
-    },
-  }),
-)
 @observer
 class View extends Component {
   static contextTypes = {
@@ -119,17 +104,17 @@ class View extends Component {
 
   save = () => {
     if (!routerUtils.getQuery().book) {
-      this.props.showToast('The phonebook name is required');
+      toast.error('The phonebook name is required');
       return;
     }
 
     if (!this.state.firstName) {
-      this.props.showToast('The first name is required');
+      toast.error('The first name is required');
       return;
     }
 
     if (!this.state.lastName) {
-      this.props.showToast('The last name is required');
+      toast.error('The last name is required');
       return;
     }
 
@@ -156,7 +141,7 @@ class View extends Component {
 
   onSaveFailure = err => {
     console.error(err);
-    this.props.showToast('Failed to save the contact');
+    toast.error('Failed to save the contact');
   };
 }
 
