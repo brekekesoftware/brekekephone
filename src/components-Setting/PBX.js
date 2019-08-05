@@ -1,7 +1,7 @@
-import { Body, Icon, Left, List, ListItem, Text } from 'native-base';
+import { Body, Left, List, ListItem, Text } from 'native-base';
 import React, { Component } from 'react';
-import Icons from '../components-shared/Icon';
 
+import Icons from '../components-shared/Icon';
 
 class PbxComponent extends Component {
   render() {

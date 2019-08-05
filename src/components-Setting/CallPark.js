@@ -2,7 +2,6 @@ import {
   Body,
   Button,
   Content,
-  Icon,
   Left,
   List,
   ListItem,
@@ -11,8 +10,8 @@ import {
 } from 'native-base';
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import Icons from '../components-shared/Icon';
 
+import Icons from '../components-shared/Icon';
 
 const Park = p => (
   <List>

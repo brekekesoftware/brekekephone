@@ -2,8 +2,8 @@ import { Button, Text, View } from 'native-base';
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { std } from '../styleguide';
 import Icons from '../components-shared/Icon';
+import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   keyRow: {
@@ -51,7 +51,7 @@ class KeyPad extends Component {
           {keys.map((row, i) => (
             <View style={st.keyRow} key={i}>
               {row.map(key => (
-                <Button style={st.keyCell}  key={key}>
+                <Button style={st.keyCell} key={key}>
                   <Text style={st.keyText}>{key}</Text>
                 </Button>
               ))}
@@ -64,7 +64,7 @@ class KeyPad extends Component {
             <Icons name="call" />
           </Button>
           <Button style={st.btnCall}>
-            <Icons name="backspace"/>
+            <Icons name="backspace" />
           </Button>
         </View>
       </View>

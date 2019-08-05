@@ -1,15 +1,15 @@
 import {
+  Body,
   Button,
   Container,
   Content,
   Fab,
+  Left,
   List,
   ListItem,
+  Right,
   Text,
   Thumbnail,
-  Left,
-  Body,
-  Right,
 } from 'native-base';
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
@@ -17,11 +17,9 @@ import { FlatList } from 'react-native';
 import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
 
-
-
 const User = p => (
   <ListItem listUser>
-    <Left >
+    <Left>
       <Thumbnail
         source={{
           uri:

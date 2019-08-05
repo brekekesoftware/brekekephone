@@ -1,8 +1,15 @@
-import { Button, ListItem, Text, Thumbnail, Left, Right, Body } from 'native-base';
+import {
+  Body,
+  Button,
+  Left,
+  ListItem,
+  Right,
+  Text,
+  Thumbnail,
+} from 'native-base';
 import React, { Component } from 'react';
 
 import Icons from '../components-shared/Icon';
-
 
 class User extends Component {
   render() {

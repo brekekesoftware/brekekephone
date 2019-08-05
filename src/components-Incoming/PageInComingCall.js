@@ -1,20 +1,19 @@
 import {
   Button,
   Container,
+  Content,
   H2,
   Header,
   Left,
   Right,
   Text,
   View,
-  Content
 } from 'native-base';
 import React, { Component } from 'react';
 
+import Icons from '../components-shared/Icon';
 import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
-import Icons from '../components-shared/Icon';
-
 
 class PageInComingCall extends Component {
   render() {
@@ -22,12 +21,12 @@ class PageInComingCall extends Component {
       <Container>
         <Header transparent>
           <Left>
-            <Button transparent >
+            <Button transparent>
               <Icons name="arrow-back" />
             </Button>
           </Left>
           <Right>
-            <Button transparent >
+            <Button transparent>
               <Icons name="group" />
             </Button>
           </Right>
@@ -37,12 +36,12 @@ class PageInComingCall extends Component {
             <H2>Aerald Richards</H2>
             <Text>VOICE CALLING</Text>
           </Left>
-        <View>
-          <CallBar />
-        </View>
-        <Left leftmgt30>
-          <HangUpComponent />
-        </Left>
+          <View>
+            <CallBar />
+          </View>
+          <Left leftmgt30>
+            <HangUpComponent />
+          </Left>
         </Content>
       </Container>
     );

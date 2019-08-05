@@ -108,99 +108,100 @@ merge(nativeBaseStyle, {
       backgroundColor: '#4cc5de',
     },
   },
-  'NativeBase.ListItem':{
-  	'.listUser':{							// -> components-Recent/Recents.js  + PageContact.
-  		"NativeBase.Left": {
-        flex: 0.25
+  'NativeBase.ListItem': {
+    '.listUser': {
+      // -> components-Recent/Recents + PageContact
+      'NativeBase.Left': {
+        flex: 0.25,
       },
-      "NativeBase.Body": {
-        "NativeBase.Text": {
+      'NativeBase.Body': {
+        'NativeBase.Text': {
           marginLeft: null,
           paddingVertical: 3,
         },
         flex: 1,
         paddingVertical: variables.listItemPadding + 2,
-        marginLeft: variables.listItemPadding + 5
+        marginLeft: variables.listItemPadding + 5,
       },
-      "NativeBase.Right": {
-        "NativeBase.Button": {
-          ".transparent": {
-            "NativeBase.Text": {
+      'NativeBase.Right': {
+        'NativeBase.Button': {
+          '.transparent': {
+            'NativeBase.Text': {
               fontSize: variables.listNoteSize,
-              color: variables.sTabBarActiveTextColor
-            }
+              color: variables.sTabBarActiveTextColor,
+            },
           },
-          height: null
+          height: null,
         },
         flex: 0.25,
-        justifyContent: "center",
-        flexDirection: 'row', 
-        alignSelf: "stretch",
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignSelf: 'stretch',
         paddingRight: variables.listItemPadding + 5,
         paddingVertical: variables.listItemPadding + 5,
       },
-  	},
+    },
   },
-  'NativeBase.Fab':{
-  	'NativeBase.Button':{
-  		backgroundColor: '#74bf53',
-  	}
+  'NativeBase.Fab': {
+    'NativeBase.Button': {
+      backgroundColor: '#74bf53',
+    },
   },
-  'NativeBase.Left':{
-  	'.callBar':{
-  		'NativeBase.Left':{
-  			'NativeBase.Button':{
-  				justifyContent: 'center',
-			    borderRadius: variables.listItemPadding * 4,
-			    width: variables.listItemPadding * 6,
-			    height: variables.listItemPadding * 6,
-  			},
-  			'NativeBase.Text':{
-  				paddingTop: variables.listItemPadding,
-    			fontSize: variables.listItemPadding ,
-  			},
-  			alignItems: 'center',
-    		marginHorizontal: variables.listItemPadding,
-  		},
-  		flexDirection: 'row',
-	    justifyContent: 'center',
-	    marginTop: variables.listItemPadding * 2,
-	    marginLeft: variables.listItemPadding,
-	    marginRight: variables.listItemPadding,
-  	},
-  	'.hangUp':{
-  		'NativeBase.Left':{
-  			'NativeBase.Button':{
-  				justifyContent: 'center',
-			    borderRadius: variables.listItemPadding * 4,
-			    width: variables.listItemPadding * 6,
-			    height: variables.listItemPadding * 6,
-  			},
-  			'NativeBase.Text':{
-  				fontWeight: '700',
-    			paddingTop: variables.listItemPadding,
-  			},
-  			alignItems: 'center',
-    		marginHorizontal: variables.listItemPadding,
-  		},
-  		flexDirection: 'row',
-	    justifyContent: 'center',
-	    marginTop: variables.listItemPadding * 2,
-	    marginLeft: variables.listItemPadding,
-	    marginRight: variables.listItemPadding,
-  	},
-  	'.leftpd18':{
-  		marginLeft: variables.listItemPadding + 12,
-  		marginTop: variables.listItemPadding,
-  		alignSelf: 'flex-start'
-  	},
-  	'.leftmgt100':{
-  		marginTop: '100%',	
-  	},
-  	'.leftmgt30':{
-  		marginTop: '30%',	
-  	}
-  }
+  'NativeBase.Left': {
+    '.callBar': {
+      'NativeBase.Left': {
+        'NativeBase.Button': {
+          justifyContent: 'center',
+          borderRadius: variables.listItemPadding * 4,
+          width: variables.listItemPadding * 6,
+          height: variables.listItemPadding * 6,
+        },
+        'NativeBase.Text': {
+          paddingTop: variables.listItemPadding,
+          fontSize: variables.listItemPadding,
+        },
+        alignItems: 'center',
+        marginHorizontal: variables.listItemPadding,
+      },
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: variables.listItemPadding * 2,
+      marginLeft: variables.listItemPadding,
+      marginRight: variables.listItemPadding,
+    },
+    '.hangUp': {
+      'NativeBase.Left': {
+        'NativeBase.Button': {
+          justifyContent: 'center',
+          borderRadius: variables.listItemPadding * 4,
+          width: variables.listItemPadding * 6,
+          height: variables.listItemPadding * 6,
+        },
+        'NativeBase.Text': {
+          fontWeight: '700',
+          paddingTop: variables.listItemPadding,
+        },
+        alignItems: 'center',
+        marginHorizontal: variables.listItemPadding,
+      },
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: variables.listItemPadding * 2,
+      marginLeft: variables.listItemPadding,
+      marginRight: variables.listItemPadding,
+    },
+    '.leftpd18': {
+      marginLeft: variables.listItemPadding + 12,
+      marginTop: variables.listItemPadding,
+      alignSelf: 'flex-start',
+    },
+    '.leftmgt100': {
+      marginTop: '100%',
+    },
+    '.leftmgt30': {
+      marginTop: '30%',
+    },
+  },
 });
 
 export default nativeBaseStyle;

@@ -1,23 +1,22 @@
 import _ from 'lodash';
 import {
+  Body,
   Button,
   Container,
   Content,
   Fab,
+  Left,
   List,
   ListItem,
+  Right,
   Text,
   Thumbnail,
-  Left,
-  Right,
-  Body
 } from 'native-base';
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 
 import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
-
 
 const User = p => (
   <ListItem listUser>

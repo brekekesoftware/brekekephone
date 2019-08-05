@@ -1,18 +1,17 @@
 import {
   Button,
   Container,
+  Content,
   H2,
   Header,
   Left,
   Right,
   Text,
-  Content,
 } from 'native-base';
 import React, { Component } from 'react';
 
-import HangUpComponent from './HangUp';
 import Icons from '../components-shared/Icon';
-
+import HangUpComponent from './HangUp';
 
 class PageCalling extends Component {
   render() {
@@ -26,7 +25,7 @@ class PageCalling extends Component {
           </Left>
           <Right>
             <Button>
-              <Icons name="group"  />
+              <Icons name="group" />
             </Button>
           </Right>
         </Header>
@@ -36,7 +35,7 @@ class PageCalling extends Component {
             <Text>VOICE CALLING</Text>
           </Left>
           <Left leftmgt100>
-            <HangUpComponent/>
+            <HangUpComponent />
           </Left>
         </Content>
       </Container>
