@@ -8,52 +8,38 @@ import {
   ListItem,
   Text,
   Thumbnail,
-  View,
+  Left,
+  Right,
+  Body
 } from 'native-base';
 import React, { Component } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList } from 'react-native';
 
 import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
 
-const st = StyleSheet.create({
-  navright: {
-    flexDirection: 'row',
-    width: '30%',
-  },
-
-  btnFab: {
-    backgroundColor: '#74bf53',
-  },
-  left: {
-    width: '30%',
-  },
-  body: {
-    width: '40%',
-  },
-});
 
 const User = p => (
-  <ListItem>
-    <View style={st.left}>
+  <ListItem listUser>
+    <Left>
       <Thumbnail
         source={{
           uri: p.avatar,
         }}
       />
-    </View>
-    <View style={st.body}>
+    </Left>
+    <Body>
       <Text>{p.name}</Text>
       <Text note>{p.id}</Text>
-    </View>
-    <View style={st.navright}>
+    </Body>
+    <Right>
       <Button>
         <Icons name="chat-bubble" />
       </Button>
       <Button>
         <Icons name="call" />
       </Button>
-    </View>
+    </Right>
   </ListItem>
 );
 
@@ -103,7 +89,7 @@ class TabUsers extends Component {
             ))}
           </List>
         </Content>
-        <Fab style={st.btnFab}>
+        <Fab>
           <Icons name="person-add" />
         </Fab>
       </Container>

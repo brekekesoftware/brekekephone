@@ -3,31 +3,16 @@ import {
   Container,
   H2,
   Header,
-  Icon,
   Left,
   Right,
   Text,
-  View,
+  Content,
 } from 'native-base';
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
 
-import { std } from '../styleguide';
 import HangUpComponent from './HangUp';
+import Icons from '../components-shared/Icon';
 
-const st = StyleSheet.create({
-  containerDisplay: {
-    height: '30%',
-  },
-
-  containerName: {
-    padding: std.gap.lg * 2,
-  },
-
-  contaiHangUp: {
-    top: '50%',
-  },
-});
 
 class PageCalling extends Component {
   render() {
@@ -35,25 +20,25 @@ class PageCalling extends Component {
       <Container>
         <Header transparent>
           <Left>
-            <Button transparent dark>
-              <Icon name="arrow-back" type="MaterialIcons" />
+            <Button>
+              <Icons name="arrow-back" />
             </Button>
           </Left>
           <Right>
-            <Button transparent dark>
-              <Icon name="group" type="MaterialIcons" />
+            <Button>
+              <Icons name="group"  />
             </Button>
           </Right>
         </Header>
-        <View style={st.containerName}>
-          <H2>Aerald Richards</H2>
-          <Button small success>
+        <Content>
+          <Left leftpd18>
+            <H2>Aerald Richards</H2>
             <Text>VOICE CALLING</Text>
-          </Button>
-        </View>
-        <View style={st.contaiHangUp}>
-          <HangUpComponent />
-        </View>
+          </Left>
+          <Left leftmgt100>
+            <HangUpComponent/>
+          </Left>
+        </Content>
       </Container>
     );
   }

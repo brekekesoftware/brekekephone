@@ -11,6 +11,8 @@ import {
 } from 'native-base';
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
+import Icons from '../components-shared/Icon';
+
 
 const Park = p => (
   <List>
@@ -23,7 +25,7 @@ const Park = p => (
       </Left>
       <Right>
         <Button full transparent dark>
-          <Icon name="create" type="MaterialIcons" />
+          <Icons name="create" />
         </Button>
       </Right>
     </ListItem>
@@ -80,7 +82,7 @@ class CallParkComponent extends Component {
           </ListItem>
         </List>
         <Button full iconLeft danger>
-          <Icon name="exit-to-app" type="MaterialIcons" />
+          <Icons name="exit-to-app" />
           <Text>LOG OUT</Text>
         </Button>
       </Content>

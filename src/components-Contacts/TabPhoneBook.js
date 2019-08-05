@@ -7,53 +7,40 @@ import {
   ListItem,
   Text,
   Thumbnail,
-  View,
+  Left,
+  Body,
+  Right,
 } from 'native-base';
 import React, { Component } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList } from 'react-native';
 
 import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
 
-const st = StyleSheet.create({
-  navright: {
-    flexDirection: 'row',
-    width: '30%',
-  },
 
-  btnFab: {
-    backgroundColor: '#74bf53',
-  },
-  left: {
-    width: '30%',
-  },
-  body: {
-    width: '40%',
-  },
-});
 
 const User = p => (
-  <ListItem>
-    <View style={st.left}>
+  <ListItem listUser>
+    <Left >
       <Thumbnail
         source={{
           uri:
             'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
         }}
       />
-    </View>
-    <View style={st.body}>
+    </Left>
+    <Body>
       <Text>Aong Bao</Text>
       <Text note="true">Phonebook Name</Text>
-    </View>
-    <View style={st.navright}>
+    </Body>
+    <Right>
       <Button>
         <Icons name="call" />
       </Button>
       <Button>
         <Icons name="info" />
       </Button>
-    </View>
+    </Right>
   </ListItem>
 );
 
@@ -111,7 +98,7 @@ class TabPhoneBook extends Component {
             />
           </List>
         </Content>
-        <Fab style={st.btnFab}>
+        <Fab>
           <Icons name="add" />
         </Fab>
       </Container>

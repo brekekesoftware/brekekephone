@@ -1,17 +1,15 @@
 import { Container } from 'native-base';
 import React from 'react';
 
-import PageRecents from '../components-Recents/PageRecents';
-import FooterTabs from './FooterTabs';
-import Headers from './Header';
+import PageInComingCall from '../components-Incoming/PageInComingCall';
 
 class HomePage extends React.Component {
   render() {
     return (
       <Container>
-        <Headers title="Contacts" />
-        <PageRecents />
-        <FooterTabs />
+        {/*<Headers title="Contacts" />*/}
+        <PageInComingCall />
+        {/*<FooterTabs />*/}
       </Container>
     );
   }

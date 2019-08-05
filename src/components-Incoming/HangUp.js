@@ -1,39 +1,20 @@
-import { Button, Icon, Text, View } from 'native-base';
+import { Button, Text, Left } from 'native-base';
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
 
-import { std } from '../styleguide';
+import Icons from '../components-shared/Icon';
 
-const st = StyleSheet.create({
-  containerHangUp: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-
-  btnHangUp: {
-    justifyContent: 'center',
-    borderRadius: std.iconSize.md * 2,
-    width: std.iconSize.md * 3,
-    height: std.iconSize.md * 3,
-  },
-
-  iconHangup: {
-    fontWeight: '700',
-    paddingTop: std.gap.md,
-  },
-});
 
 class HangUpComponent extends Component {
   render() {
     return (
-      <View style={st.containerHangUp}>
-        <View style={st.conHangUp}>
-          <Button style={st.btnHangUp} danger>
-            <Icon name="call-end" type="MaterialIcons" />
-          </Button>
-          <Text style={st.iconHangup}>HANG UP</Text>
-        </View>
-      </View>
+        <Left hangUp>
+          <Left>
+            <Button danger>
+              <Icons name="call-end" />
+            </Button>
+            <Text>HANG UP</Text>
+          </Left>
+        </Left>      
     );
   }
 }

@@ -1,5 +1,7 @@
 import { Body, Icon, Left, List, ListItem, Text } from 'native-base';
 import React, { Component } from 'react';
+import Icons from '../components-shared/Icon';
+
 
 class PbxComponent extends Component {
   render() {
@@ -10,7 +12,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon name="person" type="MaterialIcons" />
+            <Icons name="person" />
           </Left>
           <Body>
             <Text note>USERNAME</Text>
@@ -19,7 +21,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon name="home" type="MaterialIcons" />
+            <Icons name="home" />
           </Left>
           <Body>
             <Text note>TENANT</Text>
@@ -28,7 +30,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon name="domain" type="MaterialIcons" />
+            <Icons name="domain" />
           </Left>
           <Body>
             <Text note>HOST NAME</Text>
@@ -37,7 +39,7 @@ class PbxComponent extends Component {
         </ListItem>
         <ListItem thumbnail noBorder>
           <Left>
-            <Icon name="usb" type="MaterialIcons" />
+            <Icons name="usb" />
           </Left>
           <Body>
             <Text note>POST</Text>
