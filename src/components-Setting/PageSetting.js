@@ -9,7 +9,7 @@ class PageSetting extends Component {
     return (
       <Container>
         <Content>
-          <PbxComponent />
+          <PbxComponent {...this.props} />
           <CallParkComponent />
         </Content>
       </Container>

@@ -5,45 +5,50 @@ import Icons from '../components-shared/Icon';
 
 class PbxComponent extends Component {
   render() {
+    const p = this.props;
+    console.warn('p', p);
+    const profile = p.profile;
+    console.warn(profile);
+
     return (
       <List>
         <ListItem itemDivider>
           <Text>PBX</Text>
         </ListItem>
-        <ListItem thumbnail noBorder>
+        <ListItem listUser noBorder>
           <Left>
             <Icons name="person" />
           </Left>
           <Body>
             <Text note>USERNAME</Text>
-            <Text>401</Text>
+            <Text>{profile.pbxUsername}</Text>
           </Body>
         </ListItem>
-        <ListItem thumbnail noBorder>
+        <ListItem listUser noBorder>
           <Left>
             <Icons name="home" />
           </Left>
           <Body>
             <Text note>TENANT</Text>
-            <Text>Nam</Text>
+            <Text>{profile.pbxTenant}</Text>
           </Body>
         </ListItem>
-        <ListItem thumbnail noBorder>
+        <ListItem listUser noBorder>
           <Left>
             <Icons name="domain" />
           </Left>
           <Body>
             <Text note>HOST NAME</Text>
-            <Text>apps.brekeke.com</Text>
+            <Text>{profile.pbxHostname}</Text>
           </Body>
         </ListItem>
-        <ListItem thumbnail noBorder>
+        <ListItem listUser noBorder>
           <Left>
             <Icons name="usb" />
           </Left>
           <Body>
             <Text note>POST</Text>
-            <Text>8443</Text>
+            <Text>{profile.pbxPort}</Text>
           </Body>
         </ListItem>
       </List>

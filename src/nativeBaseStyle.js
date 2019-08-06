@@ -141,6 +141,32 @@ merge(nativeBaseStyle, {
         paddingVertical: variables.listItemPadding + 5,
       },
     },
+    '.callpark': {
+      'NativeBase.Left': {
+        'NativeBase.Text': {
+          alignSelf: 'flex-start',
+        },
+        flex: 0.5,
+        flexDirection: 'column',
+      },
+      'NativeBase.Right': {
+        'NativeBase.Button': {
+          '.transparent': {
+            'NativeBase.Text': {
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
+            },
+          },
+          height: null,
+        },
+        flex: 0.5,
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        // paddingRight: variables.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 5,
+      },
+    },
   },
   'NativeBase.Fab': {
     'NativeBase.Button': {

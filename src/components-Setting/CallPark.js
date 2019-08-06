@@ -14,21 +14,17 @@ import { FlatList } from 'react-native';
 import Icons from '../components-shared/Icon';
 
 const Park = p => (
-  <List>
-    <ListItem>
-      <Left>
-        <Body>
-          <Text>{p.name}</Text>
-          <Text note>Extension:{p.extension}</Text>
-        </Body>
-      </Left>
-      <Right>
-        <Button full transparent dark>
-          <Icons name="create" />
-        </Button>
-      </Right>
-    </ListItem>
-  </List>
+  <ListItem callpark>
+    <Left>
+      <Text>{p.name}</Text>
+      <Text note>Extension:{p.extension}</Text>
+    </Left>
+    <Right>
+      <Button>
+        <Icons name="create" />
+      </Button>
+    </Right>
+  </ListItem>
 );
 
 let data_demo = [
@@ -60,6 +56,8 @@ class CallParkComponent extends Component {
   }
 
   render() {
+    const p = this.props;
+
     return (
       <Content>
         <List>
@@ -74,13 +72,13 @@ class CallParkComponent extends Component {
           />
           <ListItem>
             <Body>
-              <Button full transparent dark>
+              <Button full>
                 <Text>NEW CALL PARK</Text>
               </Button>
             </Body>
           </ListItem>
         </List>
-        <Button full iconLeft danger>
+        <Button full iconLeft danger onPress={p.signout}>
           <Icons name="exit-to-app" />
           <Text>LOG OUT</Text>
         </Button>
