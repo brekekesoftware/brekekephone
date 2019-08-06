@@ -56,19 +56,13 @@ class View extends React.Component {
   }
 
   autoAuth = () => {
-    const { profile, ucState, ucLoginFromAnotherPlace } = authStore;
-    if (
-      profile?.ucEnabled &&
-      (!ucState || ucState === 'stopped') &&
-      !ucLoginFromAnotherPlace
-    ) {
+    if (authStore.ucShouldAuth) {
       this.auth();
     }
   };
-
   auth = () => {
     this.context.uc.disconnect();
-    authStore.set('ucState', 'started');
+    authStore.set('ucState', 'connecting');
     this.context.uc
       .connect(authStore.profile)
       .then(this.onAuthSuccess)

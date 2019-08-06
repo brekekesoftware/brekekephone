@@ -5,10 +5,7 @@ import Icons from '../components-shared/Icon';
 
 class PbxComponent extends Component {
   render() {
-    const p = this.props;
-    console.warn('p', p);
-    const profile = p.profile;
-    console.warn(profile);
+    const profile = this.props.profile;
 
     return (
       <List>
@@ -21,7 +18,7 @@ class PbxComponent extends Component {
           </Left>
           <Body>
             <Text note>USERNAME</Text>
-            <Text>{profile.pbxUsername}</Text>
+            <Text>{profile?.pbxUsername}</Text>
           </Body>
         </ListItem>
         <ListItem listUser noBorder>
@@ -30,7 +27,7 @@ class PbxComponent extends Component {
           </Left>
           <Body>
             <Text note>TENANT</Text>
-            <Text>{profile.pbxTenant}</Text>
+            <Text>{profile?.pbxTenant}</Text>
           </Body>
         </ListItem>
         <ListItem listUser noBorder>
@@ -39,7 +36,7 @@ class PbxComponent extends Component {
           </Left>
           <Body>
             <Text note>HOST NAME</Text>
-            <Text>{profile.pbxHostname}</Text>
+            <Text>{profile?.pbxHostname}</Text>
           </Body>
         </ListItem>
         <ListItem listUser noBorder>
@@ -48,7 +45,7 @@ class PbxComponent extends Component {
           </Left>
           <Body>
             <Text note>POST</Text>
-            <Text>{profile.pbxPort}</Text>
+            <Text>{profile?.pbxPort}</Text>
           </Body>
         </ListItem>
       </List>

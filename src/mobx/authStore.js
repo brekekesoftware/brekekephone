@@ -3,23 +3,29 @@ import { computed, observable } from 'mobx';
 import BaseStore from './BaseStore';
 
 class AuthStore extends BaseStore {
-  //
-  // started
+  // stopped
+  // connecting
   // success
   // failure
-  // stopped
-  @observable pbxState = '';
-  @observable sipState = '';
-  @observable ucState = '';
+  @observable pbxState = 'stopped';
+  @observable sipState = 'stopped';
+  @observable ucState = 'stopped';
   @observable ucLoginFromAnotherPlace = false;
 
   @computed get pbxShouldAuth() {
-    return this.profile && (!this.pbxState || this.pbxState === 'stopped');
+    return !//
+    (!this.profile || this.pbxState !== 'stopped');
   }
   @computed get sipShouldAuth() {
-    return (
-      this.pbxState === 'success' &&
-      (!this.sipState || this.sipState === 'stopped')
+    return !//
+    (this.pbxState !== 'success' || this.sipState !== 'stopped');
+  }
+  @computed get ucShouldAuth() {
+    return !//
+    (
+      !this.profile?.ucEnabled ||
+      this.ucState !== 'stopped' ||
+      this.ucLoginFromAnotherPlace
     );
   }
 

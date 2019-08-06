@@ -15,8 +15,8 @@ class View extends React.Component {
   };
 
   componentDidMount() {
-    this.auth();
-    this.clearObserve = observe(authStore, 'pbxShouldAuth', this.auth);
+    this.autoAuth();
+    this.clearObserve = observe(authStore, 'pbxShouldAuth', this.autoAuth);
   }
   componentWillUnmount() {
     this.clearObserve();
@@ -25,13 +25,8 @@ class View extends React.Component {
   }
 
   auth = () => {
-    if (!authStore.pbxShouldAuth) {
-      return;
-    }
-    //
     this.context.pbx.disconnect();
-    authStore.set('pbxState', 'started');
-    //
+    authStore.set('pbxState', 'connecting');
     this.context.pbx
       .connect(authStore.profile)
       .then(() => {
@@ -41,6 +36,12 @@ class View extends React.Component {
         authStore.set('pbxState', 'failure');
         toast.error(`Failed to login to pbx, err: ${err?.message}`);
       });
+  };
+  autoAuth = () => {
+    if (!authStore.pbxShouldAuth) {
+      return;
+    }
+    this.auth();
   };
 
   render() {

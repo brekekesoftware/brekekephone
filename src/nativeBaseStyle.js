@@ -52,16 +52,12 @@ const recursiveUpdateStyle = obj => {
   Object.entries(obj).forEach(([k, v]) => {
     if (k === 'fontFamily') {
       obj[k] = 'RobotoLight';
-    } else if (k === 'borderRadius') {
-      obj[k] = 3;
     } else if (v && typeof v === 'object') {
       recursiveUpdateStyle(v);
     }
   });
 };
 recursiveUpdateStyle(nativeBaseStyle);
-
-console.warn(nativeBaseStyle);
 
 // Other small/accuracy modifications will be put here
 // We should take a look at the default components to see the keys
