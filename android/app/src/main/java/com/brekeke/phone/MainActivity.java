@@ -1,4 +1,4 @@
-package com.brekeke.phone;
+package com.brekeke.phonedev;
 
 import android.content.Intent;
 import com.facebook.react.ReactActivity;
