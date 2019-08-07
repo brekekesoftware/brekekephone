@@ -5,6 +5,8 @@ import Icons from '../components-shared/Icon';
 
 class FooterTabs extends Component {
   render() {
+    const p = this.props;
+
     return (
       <Footer
         style={{
@@ -12,7 +14,7 @@ class FooterTabs extends Component {
         }}
       >
         <FooterTab>
-          <Button>
+          <Button onPress={p.pressUsers}>
             <Icons name="contacts" />
             <Text>CONTACTS</Text>
           </Button>
@@ -31,7 +33,7 @@ class FooterTabs extends Component {
             <Icons name="chat" />
             <Text>CHAT</Text>
           </Button>
-          <Button>
+          <Button onPress={p.pressSettings}>
             <Icons name="settings" />
             <Text>SETTINGS</Text>
           </Button>

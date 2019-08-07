@@ -2,9 +2,7 @@ import _ from 'lodash';
 import {
   Body,
   Button,
-  Container,
   Content,
-  Fab,
   Left,
   List,
   ListItem,
@@ -71,27 +69,22 @@ class TabUsers extends Component {
     });
 
     return (
-      <Container>
-        <Content>
-          <SearchContact />
-          <List>
-            {groups.map(g => (
-              <React.Fragment key={g.key}>
-                <ListItem itemDivider>
-                  <Text>{g.key}</Text>
-                </ListItem>
-                <FlatList
-                  data={g.users}
-                  renderItem={({ item: u }) => <User key={u.id} {...u} />}
-                />
-              </React.Fragment>
-            ))}
-          </List>
-        </Content>
-        <Fab>
-          <Icons name="person-add" />
-        </Fab>
-      </Container>
+      <Content>
+        <SearchContact />
+        <List>
+          {groups.map(g => (
+            <React.Fragment key={g.key}>
+              <ListItem itemDivider>
+                <Text>{g.key}</Text>
+              </ListItem>
+              <FlatList
+                data={g.users}
+                renderItem={({ item: u }) => <User key={u.id} {...u} />}
+              />
+            </React.Fragment>
+          ))}
+        </List>
+      </Content>
     );
   }
 }

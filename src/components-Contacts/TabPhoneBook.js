@@ -1,9 +1,7 @@
 import {
   Body,
   Button,
-  Container,
   Content,
-  Fab,
   Left,
   List,
   ListItem,
@@ -72,34 +70,29 @@ class TabPhoneBook extends Component {
 
   render() {
     return (
-      <Container>
-        <Content>
-          <SearchContact />
-          <List>
-            <ListItem itemDivider>
-              <Text>A</Text>
-            </ListItem>
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <User />;
-              }}
-            />
-            <ListItem itemDivider>
-              <Text>B</Text>
-            </ListItem>
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <User />;
-              }}
-            />
-          </List>
-        </Content>
-        <Fab>
-          <Icons name="add" />
-        </Fab>
-      </Container>
+      <Content>
+        <SearchContact />
+        <List>
+          <ListItem itemDivider>
+            <Text>A</Text>
+          </ListItem>
+          <FlatList
+            data={this.state.data}
+            renderItem={({ item: rowData }) => {
+              return <User />;
+            }}
+          />
+          <ListItem itemDivider>
+            <Text>B</Text>
+          </ListItem>
+          <FlatList
+            data={this.state.data}
+            renderItem={({ item: rowData }) => {
+              return <User />;
+            }}
+          />
+        </List>
+      </Content>
     );
   }
 }
