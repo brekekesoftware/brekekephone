@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
+import PageContact from '../../components-Contacts/PageContact';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 
 @observer
 @createModelView(
@@ -24,7 +24,7 @@ import UI from './ui';
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
@@ -38,7 +38,7 @@ class View extends Component {
   };
 
   render = () => (
-    <UI
+    <PageContact
       searchText={this.props.searchText}
       userIds={this.getMatchUserIds()}
       resolveUser={this.resolveUser}

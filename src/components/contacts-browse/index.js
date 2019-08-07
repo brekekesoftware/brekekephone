@@ -2,7 +2,7 @@ import immutable from 'immutable';
 import debounce from 'lodash/debounce';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
@@ -12,7 +12,7 @@ const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, '');
 
 @observer
-class View extends Component {
+class View extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,

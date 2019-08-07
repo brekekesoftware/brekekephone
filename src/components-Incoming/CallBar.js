@@ -1,9 +1,9 @@
 import { Button, Content, Left, Text } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 
-class CallBar extends Component {
+class CallBar extends React.Component {
   render() {
     return (
       <Content>

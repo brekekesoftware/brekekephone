@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -222,7 +222,7 @@ const st = StyleSheet.create({
 });
 
 const pure = Component =>
-  class Pure extends PureComponent {
+  class Pure extends React.PureComponent {
     render = () => <Component {...this.props} />;
   };
 
@@ -236,13 +236,13 @@ const MainNavbar = pure(p => (
 ));
 
 const Call = pure(p => (
-  <Fragment>
+  <React.Fragment>
     <Divider>CALL</Divider>
     <View style={st.call}>
       <Text style={st.partyName}>{p.partyName || p.partyNumber}</Text>
       <Text style={st.partyNumber}>{p.partyNumber}</Text>
     </View>
-  </Fragment>
+  </React.Fragment>
 ));
 
 const Divider = pure(({ children }) => (
@@ -263,7 +263,7 @@ const Actions = p => (
 );
 
 const Target = pure(p => (
-  <Fragment>
+  <React.Fragment>
     <Divider>TARGET</Divider>
     <View style={st.opt}>
       <TextInput
@@ -281,7 +281,7 @@ const Target = pure(p => (
       transferBlind={p.transferBlind}
       transferAttendedForVideo={p.transferAttendedForVideo}
     />
-  </Fragment>
+  </React.Fragment>
 ));
 
 const Match = pure(p => {

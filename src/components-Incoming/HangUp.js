@@ -1,9 +1,9 @@
 import { Button, Left, Text } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 
-class HangUpComponent extends Component {
+class HangUpComponent extends React.Component {
   render() {
     return (
       <Left hangUp>

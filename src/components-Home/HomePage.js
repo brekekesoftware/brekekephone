@@ -7,9 +7,7 @@ class HomePage extends React.Component {
   render() {
     return (
       <Container>
-        {/*<Headers title="Contacts" />*/}
         <PageInComingCall />
-        {/*<FooterTabs />*/}
       </Container>
     );
   }

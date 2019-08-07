@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React from 'react';
 import InCall from 'react-native-incall-manager';
 
-class IncomingItem extends Component {
+class IncomingItem extends React.Component {
   componentDidMount() {
     InCall.startRingtone('_BUNDLE_');
   }
@@ -16,7 +16,7 @@ class IncomingItem extends Component {
 const IncomingList = p =>
   p.ids.map(id => <IncomingItem key={id} {...p.resolve(id)} />);
 
-class OutgoingItem extends Component {
+class OutgoingItem extends React.Component {
   componentDidMount() {
     InCall.start({
       ringback: '_BUNDLE_',
@@ -34,10 +34,10 @@ const OutgoingList = p =>
   p.ids.map(id => <OutgoingItem key={id} {...p.resolve(id)} />);
 
 const CallVoices = p => (
-  <Fragment>
+  <React.Fragment>
     <IncomingList ids={p.incomingCallIds} resolve={p.resolveCall} />
     <OutgoingList ids={p.outgoingCallIds} resolve={p.resolveCall} />
-  </Fragment>
+  </React.Fragment>
 );
 
 export default CallVoices;

@@ -7,11 +7,11 @@ import {
   Text,
   Thumbnail,
 } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 
-class User extends Component {
+class User extends React.Component {
   render() {
     return (
       <ListItem listUser>

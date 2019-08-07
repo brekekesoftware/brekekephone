@@ -206,7 +206,7 @@ const Server = p => (
           <Icon name="usb" type="MaterialIcons" />
         </Left>
         <Body>
-          <Text note>POST</Text>
+          <Text note>PORT</Text>
           <Text>8443</Text>
         </Body>
       </ListItem>

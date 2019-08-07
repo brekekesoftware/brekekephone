@@ -8,7 +8,7 @@ import {
   Right,
   Text,
 } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 import { FlatList } from 'react-native';
 
 const Park = p => (
@@ -48,7 +48,7 @@ let data_demo = [
   },
 ];
 
-class CallPark extends Component {
+class CallPark extends React.Component {
   constructor(props) {
     super(props);
 

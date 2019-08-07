@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -199,7 +199,7 @@ const st = StyleSheet.create({
 });
 
 const pure = Component =>
-  class Pure extends PureComponent {
+  class Pure extends React.PureComponent {
     render = () => <Component {...this.props} />;
   };
 
@@ -233,7 +233,7 @@ const Actions = p => (
 );
 
 const Target = p => (
-  <Fragment>
+  <React.Fragment>
     <View style={st.opt}>
       <TextInput
         style={st.targetInput}
@@ -245,7 +245,7 @@ const Target = p => (
       />
     </View>
     <Actions callVideo={p.callVideo} callVoice={p.callVoice} />
-  </Fragment>
+  </React.Fragment>
 );
 
 const Match = p => (

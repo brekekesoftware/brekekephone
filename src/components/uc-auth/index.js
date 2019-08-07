@@ -1,4 +1,5 @@
 import * as UCClient from 'brekekejs/lib/ucclient';
+import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -41,12 +42,11 @@ class View extends React.Component {
   componentDidMount() {
     this.context.uc.on('connection-stopped', this.onConnectionStopped);
     this.autoAuth();
-  }
-  componentDidUpdate() {
-    this.autoAuth();
+    this.clearObserve = observe(authStore, 'ucShouldAuth', this.autoAuth);
   }
 
   componentWillUnmount() {
+    this.clearObserve();
     this.context.uc.off('connection-stopped', this.onConnectionStopped);
     this.context.uc.disconnect();
     authStore.set('ucState', 'stopped');
@@ -55,18 +55,19 @@ class View extends React.Component {
     this.props.clearAllChatGroups();
   }
 
-  autoAuth = () => {
-    if (authStore.ucShouldAuth) {
-      this.auth();
-    }
-  };
   auth = () => {
     this.context.uc.disconnect();
     authStore.set('ucState', 'connecting');
+    authStore.set('ucLoginFromAnotherPlace', false);
     this.context.uc
       .connect(authStore.profile)
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
+  };
+  autoAuth = () => {
+    if (authStore.ucShouldAuth) {
+      this.auth();
+    }
   };
 
   onAuthSuccess = () => {
@@ -75,18 +76,14 @@ class View extends React.Component {
       authStore.set('ucState', 'success');
     });
   };
-
   onAuthFailure = err => {
-    if (err && err.message) {
-      toast.error(err.message);
-    }
-    if (err && err.code === UCClient.Errors.ALREADY_SIGNED_IN) {
-      authStore.set('ucLoginFromAnotherPlace', false);
-    }
     authStore.set('ucState', 'failure');
+    toast.error(`Failed to connect to UC, err: ${err?.message}`);
+    console.error(err);
   };
 
   onConnectionStopped = e => {
+    authStore.set('ucState', 'failure');
     authStore.set(
       'ucLoginFromAnotherPlace',
       e.code === UCClient.Errors.PLEONASTIC_LOGIN,

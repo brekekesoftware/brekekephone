@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
@@ -96,7 +96,7 @@ const numberOfChatsPerLoad = 50;
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
   };

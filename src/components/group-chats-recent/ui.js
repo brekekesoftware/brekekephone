@@ -1,4 +1,4 @@
-import React, { Component, Fragment, PureComponent } from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -255,7 +255,7 @@ const st = StyleSheet.create({
 });
 
 const pure = Component =>
-  class extends PureComponent {
+  class extends React.PureComponent {
     render = () => <Component {...this.props} />;
   };
 
@@ -364,7 +364,7 @@ const FullChat = pure(p => (
 
 const Chat = p => (p.mini ? <MiniChat {...p} /> : <FullChat {...p} />);
 
-class Scroll extends Component {
+class Scroll extends React.Component {
   _justMounted = true;
   _closeToBottom = true;
 
@@ -443,7 +443,7 @@ const LoadingRecent = () => (
 );
 
 const Main = p => (
-  <Fragment>
+  <React.Fragment>
     <Members
       ids={p.members}
       resolve={p.resolveMember}
@@ -463,7 +463,7 @@ const Main = p => (
       setText={p.setEditingText}
       submitText={p.submitEditingText}
     />
-  </Fragment>
+  </React.Fragment>
 );
 
 const GroupChatsRecent = p => (

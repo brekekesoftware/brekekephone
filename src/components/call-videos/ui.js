@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
 
 import { std } from '../../styleguide';
@@ -42,7 +42,7 @@ const st = {
   },
 };
 
-class Mini extends Component {
+class Mini extends React.Component {
   prevLeft = st.mini.left;
   prevTop = st.mini.top;
   prevTap = Date.now();
@@ -96,7 +96,7 @@ class Mini extends Component {
   };
 }
 
-class Full extends Component {
+class Full extends React.Component {
   prevTap = Date.now();
 
   constructor(props) {
@@ -136,7 +136,7 @@ class Full extends Component {
   };
 }
 
-class Control extends Component {
+class Control extends React.Component {
   state = {
     full: false,
   };

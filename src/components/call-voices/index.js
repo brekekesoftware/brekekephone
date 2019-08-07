@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
 import UI from './ui';
@@ -27,7 +27,7 @@ const isAnswered = call => call.answered;
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   render = () => (
     <UI
       incomingCallIds={this.props.incomingCallIds}

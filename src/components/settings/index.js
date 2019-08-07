@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
@@ -8,7 +8,7 @@ import toast from '../../nativeModules/toast';
 import UI from './ui';
 
 @observer
-class View extends Component {
+class View extends React.Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
   };

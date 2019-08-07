@@ -1,5 +1,5 @@
 import { Button, Form, H2, Input, Item, Text, View } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { std } from '../styleguide';
@@ -30,7 +30,7 @@ const st = StyleSheet.create({
   },
 });
 
-class DisplayNumber extends Component {
+class DisplayNumber extends React.Component {
   render() {
     return (
       <View style={st.containerDisplay}>

@@ -8,12 +8,12 @@ import {
   Right,
   Text,
 } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 import HangUpComponent from './HangUp';
 
-class PageCalling extends Component {
+class PageCalling extends React.Component {
   render() {
     return (
       <Container>

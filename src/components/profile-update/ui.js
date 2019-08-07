@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -177,7 +177,7 @@ const st = StyleSheet.create({
 });
 
 const pure = Component =>
-  class extends PureComponent {
+  class extends React.PureComponent {
     render = () => <Component {...this.props} />;
   };
 
@@ -200,7 +200,7 @@ const Divider = pure(({ children }) => (
 ));
 
 const PBX = pure(p => (
-  <Fragment>
+  <React.Fragment>
     <Divider>PBX</Divider>
     <View style={st.field}>
       <Text style={st.fieldLabel}>Hostname</Text>
@@ -270,11 +270,11 @@ const PBX = pure(p => (
         onValueChange={p.setTurnEnabled}
       />
     </View>
-  </Fragment>
+  </React.Fragment>
 ));
 
 const UC = pure(p => (
-  <Fragment>
+  <React.Fragment>
     <Divider>UC</Divider>
     <View style={st.field}>
       <Text style={st.fieldLabel}>UC</Text>
@@ -306,7 +306,7 @@ const UC = pure(p => (
         onSubmitEditing={p.submit}
       />
     </View>
-  </Fragment>
+  </React.Fragment>
 ));
 
 const Park = pure(p => (
@@ -319,7 +319,7 @@ const Park = pure(p => (
 ));
 
 const Parks = pure(p => (
-  <Fragment>
+  <React.Fragment>
     <Divider>PARKS</Divider>
     <View style={st.field}>
       <TextInput
@@ -338,7 +338,7 @@ const Parks = pure(p => (
     {p.ids.map(id => (
       <Park key={id} number={id} remove={() => p.remove(id)} />
     ))}
-  </Fragment>
+  </React.Fragment>
 ));
 
 const NotFound = p => (

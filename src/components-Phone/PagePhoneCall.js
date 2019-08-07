@@ -1,10 +1,10 @@
 import { Container } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import DisplayNumber from './DisplayNumber';
 import KeyPad from './KeyPad';
 
-class PagePhoneCall extends Component {
+class PagePhoneCall extends React.Component {
   render() {
     return (
       <Container>

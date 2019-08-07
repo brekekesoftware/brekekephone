@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
@@ -22,7 +22,7 @@ const isGroupJointed = group => group.jointed;
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   render = () => (
     <UI
       buddyIds={this.props.buddyIds}

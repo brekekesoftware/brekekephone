@@ -1,7 +1,7 @@
 import at from 'lodash/get';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
 import toast from '../../nativeModules/toast';
@@ -25,7 +25,7 @@ const isNotJointed = group => !group.jointed;
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
   };

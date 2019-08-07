@@ -1,9 +1,9 @@
 import { Container } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import ListChats from './List-Chats';
 
-class ChatsHome extends Component {
+class ChatsHome extends React.Component {
   render() {
     return (
       <Container>

@@ -10,6 +10,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.horcrux.svg.SvgPackage;
 import com.loudspeaker.LoudSpeakerPackage;
 import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -37,15 +38,16 @@ public class MainApplication extends Application implements ReactApplication {
               new FIRMessagingPackage(),
               new InCallManagerPackage(),
               new KCKeepAwakePackage(),
+              new LinearGradientPackage(),
               new LoudSpeakerPackage(),
               new MainReactPackage(),
               new ReactNativeExceptionHandlerPackage(),
-              new VectorIconsPackage(),
               new ReactVideoPackage(),
               new RNCameraPackage(),
               new RNFSPackage(),
               new SplashScreenReactPackage(),
-              new LinearGradientPackage(),
+              new SvgPackage(),
+              new VectorIconsPackage(),
               new WebRTCModulePackage());
         }
 

@@ -9,7 +9,7 @@ import {
   Text,
   Thumbnail,
 } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 import { FlatList } from 'react-native';
 
 import Icons from '../components-shared/Icon';
@@ -59,7 +59,7 @@ let data_demo = [
   },
 ];
 
-class TabPhoneBook extends Component {
+class TabPhoneBook extends React.Component {
   constructor(props) {
     super(props);
 

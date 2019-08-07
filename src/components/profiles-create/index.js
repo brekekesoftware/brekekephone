@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
@@ -20,7 +20,7 @@ import UI from './ui';
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   state = {
     pbxHostname: '',
     pbxPort: '',

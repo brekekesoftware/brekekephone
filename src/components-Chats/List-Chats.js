@@ -9,7 +9,7 @@ import {
   Text,
   Thumbnail,
 } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import SearchContact from '../components-Contacts/SearchContact';
@@ -63,7 +63,7 @@ let data_demo = [
   },
 ];
 
-class ListChats extends Component {
+class ListChats extends React.Component {
   constructor(props) {
     super(props);
 

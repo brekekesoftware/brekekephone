@@ -9,13 +9,13 @@ import {
   Text,
   View,
 } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
 
-class PageInComingCall extends Component {
+class PageInComingCall extends React.Component {
   render() {
     return (
       <Container>

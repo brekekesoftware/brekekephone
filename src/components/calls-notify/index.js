@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
 import UI from './ui';
@@ -20,7 +20,7 @@ const isIncoming = call => call.incoming && !call.answered;
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };

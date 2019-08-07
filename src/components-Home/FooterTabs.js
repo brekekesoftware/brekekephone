@@ -1,12 +1,18 @@
-import { Badge, Button, Footer, FooterTab, Text } from 'native-base';
-import React, { Component } from 'react';
+import {
+  mdiAccountCircleOutline,
+  mdiMessageTextOutline,
+  mdiNumeric,
+  mdiPhoneOutline,
+  mdiSettingsOutline,
+} from '@mdi/js';
+import { Button, Footer, FooterTab, Text } from 'native-base';
+import React from 'react';
 
-import Icons from '../components-shared/Icon';
+import SvgIcon from '../components-shared/SvgIcon';
 
-class FooterTabs extends Component {
+class FooterTabs extends React.Component {
   render() {
     const p = this.props;
-
     return (
       <Footer
         style={{
@@ -15,26 +21,25 @@ class FooterTabs extends Component {
       >
         <FooterTab>
           <Button onPress={p.pressUsers}>
-            <Icons name="contacts" />
+            <SvgIcon path={mdiAccountCircleOutline} />
             <Text>CONTACTS</Text>
           </Button>
-          <Button badge>
-            <Badge brekeke>
-              <Text>2</Text>
-            </Badge>
-            <Icons name="call" />
+          <Button onPress={p.pressCallsManage}>
+            <SvgIcon path={mdiPhoneOutline} />
             <Text>RECENTS</Text>
           </Button>
-          <Button>
-            <Icons name="dialpad" />
+          <Button onPress={p.pressCallsCreate}>
+            <SvgIcon path={mdiNumeric} />
             <Text>CALL</Text>
           </Button>
-          <Button>
-            <Icons name="chat" />
-            <Text>CHAT</Text>
-          </Button>
+          {p.chatsEnabled && (
+            <Button onPress={p.pressChats}>
+              <SvgIcon path={mdiMessageTextOutline} />
+              <Text>CHAT</Text>
+            </Button>
+          )}
           <Button onPress={p.pressSettings}>
-            <Icons name="settings" />
+            <SvgIcon path={mdiSettingsOutline} />
             <Text>SETTINGS</Text>
           </Button>
         </FooterTab>

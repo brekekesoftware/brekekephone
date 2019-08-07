@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import {
   Image,
   ScrollView,
@@ -196,7 +196,7 @@ const st = StyleSheet.create({
 });
 
 const pure = Component =>
-  class extends PureComponent {
+  class extends React.PureComponent {
     render = () => <Component {...this.props} />;
   };
 

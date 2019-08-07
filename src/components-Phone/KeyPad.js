@@ -1,5 +1,5 @@
 import { Button, Text, View } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import Icons from '../components-shared/Icon';
@@ -43,7 +43,7 @@ const keys = [
   ['*', '0', '#'],
 ];
 
-class KeyPad extends Component {
+class KeyPad extends React.Component {
   render() {
     return (
       <View>

@@ -1,9 +1,9 @@
 import { Body, Left, List, ListItem, Text } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 
-class PbxComponent extends Component {
+class PbxComponent extends React.Component {
   render() {
     const profile = this.props.profile;
 
@@ -44,7 +44,7 @@ class PbxComponent extends Component {
             <Icons name="usb" />
           </Left>
           <Body>
-            <Text note>POST</Text>
+            <Text note>PORT</Text>
             <Text>{profile?.pbxPort}</Text>
           </Body>
         </ListItem>

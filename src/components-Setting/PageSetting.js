@@ -1,15 +1,15 @@
 import { Container, Content } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Hearders from '../components-Home/Header';
 import CallParkComponent from './CallPark';
 import PbxComponent from './PBX';
 
-class PageSetting extends Component {
+class PageSettings extends React.Component {
   render() {
     return (
       <Container>
-        <Hearders title="Setting" />
+        <Hearders title="Settings" />
         <Content>
           <PbxComponent {...this.props} />
           <CallParkComponent />
@@ -19,4 +19,4 @@ class PageSetting extends Component {
   }
 }
 
-export default PageSetting;
+export default PageSettings;

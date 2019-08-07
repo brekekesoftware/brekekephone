@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import React from 'react';
 import { Platform } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { createModelView } from 'redux-model';
@@ -23,27 +23,30 @@ import uc from './uc';
     pbxUserById: getter.pbxUsers.detailMapById(state),
   }),
   action => emit => ({
-    onPBXConnectionTimeout() {
-      authStore.set('pbxState', 'stopped');
-    },
     onPBXConnectionStopped() {
-      authStore.set('pbxState', 'stopped');
+      // authStore.set('pbxState', 'stopped');
     },
+    onPBXConnectionTimeout() {
+      authStore.set('pbxState', 'failure');
+    },
+    //
     onSIPConnectionStarted() {
       authStore.set('sipState', 'success');
     },
     onSIPConnectionStopped() {
-      authStore.set('sipState', 'stopped');
+      // authStore.set('sipState', 'stopped');
     },
     onSIPConnectionTimeout() {
-      authStore.set('sipState', 'stopped');
+      authStore.set('sipState', 'failure');
     },
+    //
     onUCConnectionStopped() {
-      authStore.set('ucState', 'stopped');
+      // authStore.set('ucState', 'stopped');
     },
     onUCConnectionTimeout() {
-      authStore.set('ucState', 'stopped');
+      authStore.set('ucState', 'failure');
     },
+    //
     createRunningCall(call) {
       emit(action.runningCalls.create(call));
     },
@@ -125,7 +128,7 @@ import uc from './uc';
   }),
 )
 @observer
-class ApiProvider extends Component {
+class ApiProvider extends React.Component {
   static childContextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,

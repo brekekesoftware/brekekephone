@@ -9,6 +9,7 @@
     "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\""
   },
   "dependencies": {
+    "@mdi/js": "3.8.95",
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
     "circular-json": "0.5.9",
     "crypto-js": "3.1.8",
@@ -44,6 +45,7 @@
     "react-native-progress-circle": "2.0.1",
     "react-native-root-toast": "3.1.2",
     "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen#a78ee51c0f89652a2a223ff2bc4ec10928bf2c30",
+    "react-native-svg": "9.6.2",
     "react-native-voip-push-notification": "1.1.4",
     "react-native-web": "0.11.5",
     "react-native-webrtc": "1.69.2",

@@ -1,5 +1,5 @@
 import { Button, Header, Input, Item, Text } from 'native-base';
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { std } from '../styleguide';
@@ -29,7 +29,7 @@ const st = StyleSheet.create({
 });
 
 const pure = Component =>
-  class extends PureComponent {
+  class extends React.PureComponent {
     render = () => <Component {...this.props} />;
   };
 

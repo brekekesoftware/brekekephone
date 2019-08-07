@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
+import FooterTabs from '../../components-Home/FooterTabs';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 
 @observer
 @createModelView(
@@ -17,9 +17,9 @@ import UI from './ui';
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   render = () => (
-    <UI
+    <FooterTabs
       chatsEnabled={this.props.chatsEnabled}
       pressCallsManage={routerUtils.goToCallsManage}
       pressCallsCreate={routerUtils.goToCallsCreate}

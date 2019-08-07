@@ -1,4 +1,4 @@
-import { Button, H1, Header, Left, Right, Text } from 'native-base';
+import { H1, Header, Left } from 'native-base';
 import React from 'react';
 
 class Headers extends React.Component {
@@ -8,11 +8,6 @@ class Headers extends React.Component {
         <Left>
           <H1>{this.props.title}</H1>
         </Left>
-        <Right>
-          <Button transparent>
-            <Text>NEW</Text>
-          </Button>
-        </Right>
       </Header>
     );
   }

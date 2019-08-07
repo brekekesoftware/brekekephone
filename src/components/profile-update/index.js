@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { Component } from 'react';
+import React from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
@@ -19,7 +19,7 @@ import UI from './ui';
   }),
 )
 @observer
-class View extends Component {
+class View extends React.Component {
   constructor(props) {
     super(props);
     this.state = props.profile;

@@ -1,6 +1,7 @@
 import merge from 'lodash/merge';
 import getTheme from 'native-base/src/theme/components';
 import variables from 'native-base/src/theme/variables/commonColor';
+import { Platform } from 'react-native';
 
 // Update the variables which depend on the platform condition
 // See native-base/src/theme/variables/commonColor.js for detail
@@ -15,8 +16,8 @@ merge(variables, {
   CheckboxIconSize: 21,
   CheckboxIconMarginTop: undefined,
   CheckboxFontSize: 23 / 0.9,
-  brandPrimary: '#fff',
-  fontFamily: 'RobotoLight',
+  brandPrimary: 'white',
+  // fontFamily: 'RobotoLight', // Not working on ios now
   toolbarBtnColor: '#007aff',
   toolbarSearchIconSize: 20,
   toolbarBtnTextColor: '#007aff',
@@ -26,16 +27,16 @@ merge(variables, {
   segmentBackgroundColor: '#F8F8F8',
   segmentActiveBackgroundColor: '#007aff',
   segmentTextColor: '#007aff',
-  segmentActiveTextColor: '#fff',
+  segmentActiveTextColor: 'white',
   segmentBorderColor: '#007aff',
   segmentBorderColorMain: '#a7a6ab',
-  titleFontfamily: 'RobotoLight',
+  titleFontfamily: 'System',
   titleFontSize: 17,
   subTitleFontSize: 11,
-  subtitleColor: '#000',
-  titleFontColor: '#000',
+  subtitleColor: 'black',
+  titleFontColor: 'black',
   borderRadiusBase: 3,
-  inverseTextColor: '#000',
+  inverseTextColor: 'black',
   toolbarDefaultBg: '#e0e0e0',
   tabDefaultBg: '#e0e0e0',
   get btnTextSize() {
@@ -51,7 +52,9 @@ const nativeBaseStyle = getTheme(variables);
 const recursiveUpdateStyle = obj => {
   Object.entries(obj).forEach(([k, v]) => {
     if (k === 'fontFamily') {
-      obj[k] = 'RobotoLight';
+      if (Platform.OS !== 'ios') {
+        obj[k] = 'RobotoLight'; // Not working on ios now
+      }
     } else if (v && typeof v === 'object') {
       recursiveUpdateStyle(v);
     }
@@ -69,32 +72,42 @@ merge(nativeBaseStyle, {
         flex: 1,
       },
     },
+    paddingTop: 0,
+    paddingBottom: 0,
     borderBottomColor: null,
     borderBottomWidth: null,
+    backgroundColor: 'white',
   },
   'NativeBase.TabHeading': {
+    backgroundColor: 'white',
     '.active': {
       'NativeBase.Text': {
-        color: '#000',
+        color: 'black',
       },
     },
     'NativeBase.Text': {
-      color: '#adadad',
+      color: 'gray',
+      fontWeight: 'bold',
+      fontSize: 11,
+    },
+    'NativeBase.Bottom': {
+      height: 2,
     },
   },
   'NativeBase.Footer': {
-    backgroundColor: '#000',
+    backgroundColor: 'white',
   },
   'NativeBase.FooterTab': {
     'NativeBase.Button': {
-      'NativeBase.Icon': {
-        color: '#000',
-      },
       'NativeBase.Text': {
-        color: '#000',
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: 9,
+        paddingLeft: 0,
+        paddingRight: 0,
       },
     },
-    backgroundColor: '#e0e0e0',
+    backgroundColor: 'white',
   },
   variables: {
     topTabBarActiveBorderColor: '#4cc5de',
@@ -115,7 +128,6 @@ merge(nativeBaseStyle, {
           marginLeft: null,
           paddingVertical: 3,
         },
-        flex: 1,
         paddingVertical: variables.listItemPadding + 2,
         marginLeft: variables.listItemPadding + 5,
       },
@@ -159,7 +171,6 @@ merge(nativeBaseStyle, {
         justifyContent: 'flex-end',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        // paddingRight: variables.listItemPadding + 5,
         paddingVertical: variables.listItemPadding + 5,
       },
     },
@@ -200,7 +211,7 @@ merge(nativeBaseStyle, {
           height: variables.listItemPadding * 6,
         },
         'NativeBase.Text': {
-          fontWeight: '700',
+          fontWeight: 'bold',
           paddingTop: variables.listItemPadding,
         },
         alignItems: 'center',

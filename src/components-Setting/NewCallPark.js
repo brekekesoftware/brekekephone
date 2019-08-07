@@ -1,9 +1,9 @@
 import { Button, Container, Content, Form, Text } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 
 import { TextInput } from '../components-shared/Input';
 
-class NewCallPark extends Component {
+class NewCallPark extends React.Component {
   render() {
     return (
       <Container>

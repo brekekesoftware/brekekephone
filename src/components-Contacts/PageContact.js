@@ -1,22 +1,14 @@
-import {
-  Container,
-  Content,
-  Tab,
-  TabHeading,
-  Tabs,
-  Text,
-} from 'native-base';
-import React, { Component } from 'react';
+import { Container, Content, Tab, TabHeading, Tabs, Text } from 'native-base';
+import React from 'react';
 
 import Hearders from '../components-Home/Header';
-import TabPhoneBook from './TabPhoneBook';
 import TabUsers from './TabUsers';
 
-class PageContact extends Component {
+class PageContacts extends React.Component {
   render() {
     return (
       <Container>
-        <Hearders title="Contact" />
+        <Hearders title="Contacts" />
         <Content>
           <Tabs>
             <Tab
@@ -34,9 +26,7 @@ class PageContact extends Component {
                   <Text>PHONEBOOK</Text>
                 </TabHeading>
               }
-            >
-              <TabPhoneBook />
-            </Tab>
+            />
           </Tabs>
         </Content>
       </Container>
@@ -44,4 +34,4 @@ class PageContact extends Component {
   }
 }
 
-export default PageContact;
+export default PageContacts;

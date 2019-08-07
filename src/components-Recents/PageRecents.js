@@ -1,5 +1,5 @@
 import { Container, Content, List } from 'native-base';
-import React, { Component } from 'react';
+import React from 'react';
 import { FlatList } from 'react-native';
 
 import SearchContact from '../components-Contacts/SearchContact';
@@ -24,7 +24,7 @@ const data_demo = [
   },
 ];
 
-class PageRecents extends Component {
+class PageRecents extends React.Component {
   constructor(props) {
     super(props);
 

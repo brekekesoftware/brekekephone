@@ -1,46 +1,19 @@
-import _ from 'lodash';
+import orderBy from 'lodash/orderBy';
 import {
   Body,
   Button,
-  Content,
   Left,
-  List,
   ListItem,
   Right,
   Text,
   Thumbnail,
 } from 'native-base';
-import React, { Component } from 'react';
-import { FlatList } from 'react-native';
+import React from 'react';
 
 import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
 
-const User = p => (
-  <ListItem listUser>
-    <Left>
-      <Thumbnail
-        source={{
-          uri: p.avatar,
-        }}
-      />
-    </Left>
-    <Body>
-      <Text>{p.name}</Text>
-      <Text note>{p.id}</Text>
-    </Body>
-    <Right>
-      <Button>
-        <Icons name="chat-bubble" />
-      </Button>
-      <Button>
-        <Icons name="call" />
-      </Button>
-    </Right>
-  </ListItem>
-);
-
-class TabUsers extends Component {
+class TabUsers extends React.Component {
   render() {
     const p = this.props;
     const users = p.userIds.map(p.resolveUser);
@@ -63,28 +36,45 @@ class TabUsers extends Component {
       users: map[k],
     }));
 
-    groups = _.orderBy(groups, 'key');
+    groups = orderBy(groups, 'key');
     groups.forEach(g => {
-      g.users = _.orderBy(g.users, 'name');
+      g.users = orderBy(g.users, 'name');
     });
 
     return (
-      <Content>
+      <React.Fragment>
         <SearchContact />
-        <List>
-          {groups.map(g => (
-            <React.Fragment key={g.key}>
-              <ListItem itemDivider>
-                <Text>{g.key}</Text>
+        {groups.map(g => (
+          <React.Fragment key={g.key}>
+            <ListItem itemDivider>
+              <Text>{g.key}</Text>
+            </ListItem>
+            {g.users.map(u => (
+              <ListItem key={u.id} listUser>
+                <Left>
+                  <Thumbnail
+                    source={{
+                      uri: u.avatar,
+                    }}
+                  />
+                </Left>
+                <Body>
+                  <Text>{u.name}</Text>
+                  <Text note>{u.id}</Text>
+                </Body>
+                <Right>
+                  <Button>
+                    <Icons name="chat-bubble" />
+                  </Button>
+                  <Button>
+                    <Icons name="call" />
+                  </Button>
+                </Right>
               </ListItem>
-              <FlatList
-                data={g.users}
-                renderItem={({ item: u }) => <User key={u.id} {...u} />}
-              />
-            </React.Fragment>
-          ))}
-        </List>
-      </Content>
+            ))}
+          </React.Fragment>
+        ))}
+      </React.Fragment>
     );
   }
 }

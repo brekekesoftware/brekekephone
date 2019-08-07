@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import ringback from './incallmanager_ringback.mp3';
 import ringtone from './incallmanager_ringtone.mp3';
@@ -29,11 +29,11 @@ const AnsweredList = p =>
   p.ids.map(id => <AnsweredItem key={id} {...p.resolve(id)} />);
 
 const CallVoices = p => (
-  <Fragment>
+  <React.Fragment>
     <IncomingList ids={p.incomingCallIds} resolve={p.resolveCall} />
     <OutgoingList ids={p.outgoingCallIds} resolve={p.resolveCall} />
     <AnsweredList ids={p.answeredCallIds} resolve={p.resolveCall} />
-  </Fragment>
+  </React.Fragment>
 );
 
 export default CallVoices;
