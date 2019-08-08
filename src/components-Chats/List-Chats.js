@@ -25,7 +25,7 @@ const st = StyleSheet.create({
 });
 
 const User = p => (
-  <ListItem onPress={() => ''} thumbnail>
+  <ListItem listChat>
     <Left>
       <Thumbnail
         source={{

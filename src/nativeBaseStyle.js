@@ -65,6 +65,12 @@ recursiveUpdateStyle(nativeBaseStyle);
 // Other small/accuracy modifications will be put here
 // We should take a look at the default components to see the keys
 merge(nativeBaseStyle, {
+  'NativeBase.Button':{
+    shadowColor: null,
+    shadowOffset: null,
+    shadowOpacity: null,
+    shadowRadius: null,
+  },
   'NativeBase.Header': {
     '.noLeft': {
       'NativeBase.Left': {
@@ -142,6 +148,36 @@ merge(nativeBaseStyle, {
           height: null,
         },
         flex: 0.25,
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        paddingRight: variables.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 5,
+      },
+    },
+    '.listChat':{
+      'NativeBase.Left': {
+        flex: 0.25,
+      },
+      'NativeBase.Body': {
+        'NativeBase.Text': {
+          marginLeft: null,
+          paddingVertical: 3,
+        },
+        paddingVertical: variables.listItemPadding + 2,
+        marginLeft: variables.listItemPadding + 5,
+      },
+      'NativeBase.Right': {
+        'NativeBase.Button': {
+          '.transparent': {
+            'NativeBase.Text': {
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
+            },
+          },
+          height: null,
+        },
+        flex: 0.4,
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
@@ -236,5 +272,7 @@ merge(nativeBaseStyle, {
     },
   },
 });
+
+console.warn(nativeBaseStyle);
 
 export default nativeBaseStyle;
