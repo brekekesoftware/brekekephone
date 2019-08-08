@@ -1244,15 +1244,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
-"@mdi/js@3.8.95":
-  version "3.8.95"
-  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-3.8.95.tgz#bc25ef11c475fdc6368dab1588e1ee93f724f286"
-  integrity sha512-oiJlKx33YNJrTiKG70oJq0uEKHr9lGNvWHXIglXOzq57rJ80qr/xst5j7ERPmEBe84ZfPiB6ZxwjpMjkQoifDA==
-
-"@mdi/react@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@mdi/react/-/react-1.2.1.tgz#24279784e080728e953f3c1a71f49c64031dee47"
-  integrity sha512-1IRIVCT07vlLmaZjVtGfyfwCMivg/tCtPj0+r1BKrkoh9z4xLf+M1TD0LhjJPO+4+O0ibW+xrNRvf+boRRtX9A==
+"@mdi/js@3.9.97":
+  version "3.9.97"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-3.9.97.tgz#8bf012999b9f6898692b854a32f6f17c344b125a"
+  integrity sha512-JzX6rDlUcNZHaoUg9sAzdg5Js287tvgRbNmMIyKoJK2ZCP9JupeWTYlpbX4oNJ9Zg9v8YH76WuWLALKOospQgw==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -7652,10 +7647,10 @@ mobx-react-router@4.0.7:
   resolved "https://registry.yarnpkg.com/mobx-react-router/-/mobx-react-router-4.0.7.tgz#d248a0e0525049f0e37e94f2fb1ab09563be4c35"
   integrity sha512-x7eza70EimFyvF0VPyj5X2MYo9jksy61UVwz5ERXWnXVE911XRTL/V2kXiX7fvVtMHzp5m2q/kxBoti9uNixEw==
 
-mobx-react@6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-6.1.1.tgz#24a2c8a3393890fa732b4efd34cc6dcccf6e0e7a"
-  integrity sha512-hjACWCTpxZf9Sv1YgWF/r6HS6Nsly1SYF22qBJeUE3j+FMfoptgjf8Zmcx2d6uzA07Cezwap5Cobq9QYa0MKUw==
+mobx-react@6.1.2:
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-6.1.2.tgz#ed705566edca4baf1c6d87c3eff3dcd17ba09573"
+  integrity sha512-cJJ3Xy9zaX2ucNdXt9gQuzBqL+ZavxxXLQxHKwztYc0fdxEIHXQYHtHr0kh2pSOdEoEJ3kfY8GeUKpOoGmskOg==
   dependencies:
     mobx-react-lite "1.4.0"
 
@@ -9824,10 +9819,10 @@ react-native-loud-speaker@1.0.4:
   resolved "https://registry.yarnpkg.com/react-native-loud-speaker/-/react-native-loud-speaker-1.0.4.tgz#e3cca90a095cfe971f61ce3db4bfc31b64323788"
   integrity sha512-DFiQpzEBmaK0TWSSklKegDJrJ48dh+YAROT/OU2IgUBOM+KvehHbz5tM7T5xdmJzSfpRd5b4F8uDyxXMHbSuHQ==
 
-react-native-modal-selector@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-modal-selector/-/react-native-modal-selector-1.1.0.tgz#3600ca4819ee9b45213e167b933ccb27725230ef"
-  integrity sha512-ioYkGBT4JH1QK0ak90KO28/L5J8NS7Cvu++yVI7k2ag2o6IELv1ERBn+8qpisTRxOZgP2uEpkXoGE71y4aPa+Q==
+react-native-modal-selector@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-modal-selector/-/react-native-modal-selector-1.1.1.tgz#7d319d676610bfa3556047f903edb5ba6d38523a"
+  integrity sha512-Z+xrGWZh7ym+T4wtFFdhT7TlAOlRmyc09KzWWe7TYUqdzb4bWsw+9tG5k53g/Xd6oXG3yKAlxrEisOVlNPffmw==
   dependencies:
     prop-types "^15.5.10"
 

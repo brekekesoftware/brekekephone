@@ -9,7 +9,7 @@
     "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\""
   },
   "dependencies": {
-    "@mdi/js": "3.8.95",
+    "@mdi/js": "3.9.97",
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
     "circular-json": "0.5.9",
     "crypto-js": "3.1.8",
@@ -19,7 +19,7 @@
     "jssip": "github:brekekesoftware/jssip#93940bcc89214d410a63435d6da00cbfe790313c",
     "lodash": "4.17.15",
     "mobx": "5.13.0",
-    "mobx-react": "6.1.1",
+    "mobx-react": "6.1.2",
     "mobx-react-router": "4.0.7",
     "native-base": "2.13.4",
     "prop-types": "15.7.2",
@@ -40,7 +40,7 @@
     "react-native-keep-awake": "4.0.0",
     "react-native-linear-gradient": "2.5.6",
     "react-native-loud-speaker": "1.0.4",
-    "react-native-modal-selector": "1.1.0",
+    "react-native-modal-selector": "1.1.1",
     "react-native-permissions": "1.2.0",
     "react-native-progress-circle": "2.0.1",
     "react-native-root-toast": "3.1.2",
