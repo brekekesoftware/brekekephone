@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import ChatsHome from '../../components-Chats/Chats-Home';
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 
 const isGroupJointed = group => group.jointed;
 
@@ -24,7 +24,7 @@ const isGroupJointed = group => group.jointed;
 @observer
 class View extends React.Component {
   render = () => (
-    <UI
+    <ChatsHome
       buddyIds={this.props.buddyIds}
       buddyById={this.props.buddyById}
       groupIds={this.props.groupIds}

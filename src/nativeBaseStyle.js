@@ -55,6 +55,8 @@ const recursiveUpdateStyle = obj => {
       if (Platform.OS !== 'ios') {
         obj[k] = 'RobotoLight'; // Not working on ios now
       }
+    } else if (k === 'elevation') {
+      obj[k] = 0; // Remove box shadow on android
     } else if (v && typeof v === 'object') {
       recursiveUpdateStyle(v);
     }
@@ -65,12 +67,6 @@ recursiveUpdateStyle(nativeBaseStyle);
 // Other small/accuracy modifications will be put here
 // We should take a look at the default components to see the keys
 merge(nativeBaseStyle, {
-  'NativeBase.Button':{
-    shadowColor: null,
-    shadowOffset: null,
-    shadowOpacity: null,
-    shadowRadius: null,
-  },
   'NativeBase.Header': {
     '.noLeft': {
       'NativeBase.Left': {
@@ -155,7 +151,7 @@ merge(nativeBaseStyle, {
         paddingVertical: variables.listItemPadding + 5,
       },
     },
-    '.listChat':{
+    '.listChat': {
       'NativeBase.Left': {
         flex: 0.25,
       },
@@ -272,7 +268,5 @@ merge(nativeBaseStyle, {
     },
   },
 });
-
-console.warn(nativeBaseStyle);
 
 export default nativeBaseStyle;

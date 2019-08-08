@@ -63,10 +63,10 @@ class TabUsers extends React.Component {
                   <Text note>{u.id}</Text>
                 </Body>
                 <Right>
-                  <Button>
-                    <Icons name="chat-bubble" />
+                  <Button onPress={() => p.chat(u.id)}>
+                    <Icons name="forum" />
                   </Button>
-                  <Button>
+                  <Button onPress={() => p.callVoice(u.id)}>
                     <Icons name="call" />
                   </Button>
                 </Right>
