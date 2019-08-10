@@ -135,7 +135,14 @@ class View extends React.Component {
   submitAddingPark = () => {
     const { addingPark, parks } = this.state;
 
-    if (!addingPark) return;
+    if (!addingPark) {
+      return;
+    }
+
+    if (/[^a-z0-9_]/.test(addingPark)) {
+      this.props.showToast('Invalid park number');
+      return;
+    }
 
     this.setState({
       parks: [addingPark, ...parks.filter(_ => _ !== addingPark)],

@@ -326,7 +326,7 @@ const Parks = pure(p => (
         style={st.parkNumber}
         placeholder="Type park number"
         blurOnSubmit={false}
-        keyboardType="numeric"
+        keyboardType="text"
         value={p.adding}
         onChangeText={p.setAdding}
         onSubmitEditing={p.submitAdding}
