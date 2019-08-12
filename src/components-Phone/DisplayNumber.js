@@ -1,4 +1,4 @@
-import { Button, Form, H2, Input, Item, Text, View } from 'native-base';
+import { Button, H2, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -32,6 +32,8 @@ const st = StyleSheet.create({
 
 class DisplayNumber extends React.Component {
   render() {
+    const p = this.props;
+
     return (
       <View style={st.containerDisplay}>
         <View style={st.containerBtn}>
@@ -44,11 +46,7 @@ class DisplayNumber extends React.Component {
         </View>
         <View style={st.shownumber}>
           <H2 style={st.textH2}>Your number</H2>
-          <Form>
-            <Item>
-              <Input />
-            </Item>
-          </Form>
+          <Text>{p.showNum}</Text>
         </View>
       </View>
     );

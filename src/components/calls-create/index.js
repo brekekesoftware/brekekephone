@@ -30,6 +30,7 @@ class View extends React.Component {
   };
 
   state = {
+    text: '',
     target: '',
     video: false,
   };
@@ -49,8 +50,29 @@ class View extends React.Component {
       callVoice={this.callVoice}
       callVideo={this.callVideo}
       parkingIds={this.props.parkingIds}
+      onPress={this.onPress}
+      showNum={this.showNum}
     />
   );
+
+  onPress = val => {
+    let curText = this.state.text;
+    if (isNaN(val)) {
+      if (val === 'delete') {
+        curText = curText.slice(0, -1);
+      } else {
+        curText += val;
+      }
+    } else {
+      curText += val;
+    }
+    this.setState({ text: curText });
+    this.showNum();
+  };
+
+  showNum = () => {
+    return this.state.text;
+  };
 
   setTarget = target => {
     this.setState({

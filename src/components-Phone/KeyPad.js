@@ -45,13 +45,14 @@ const keys = [
 
 class KeyPad extends React.Component {
   render() {
+    const p = this.props;
     return (
       <View>
         <View>
           {keys.map((row, i) => (
             <View style={st.keyRow} key={i}>
               {row.map(key => (
-                <Button style={st.keyCell} key={key}>
+                <Button style={st.keyCell} onPress={() => p.onPress(key)}>
                   <Text style={st.keyText}>{key}</Text>
                 </Button>
               ))}
@@ -63,7 +64,7 @@ class KeyPad extends React.Component {
           <Button style={st.btnCall} success>
             <Icons name="call" />
           </Button>
-          <Button style={st.btnCall}>
+          <Button style={st.btnCall} onPress={() => p.onPress('delete')}>
             <Icons name="backspace" />
           </Button>
         </View>

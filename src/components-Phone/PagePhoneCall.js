@@ -6,10 +6,12 @@ import KeyPad from './KeyPad';
 
 class PagePhoneCall extends React.Component {
   render() {
+    const p = this.props;
+
     return (
       <Container>
-        <DisplayNumber />
-        <KeyPad />
+        <DisplayNumber showNum={p.showNum} />
+        <KeyPad onPress={p.onPress} />
       </Container>
     );
   }
