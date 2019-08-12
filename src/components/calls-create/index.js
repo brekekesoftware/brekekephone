@@ -51,7 +51,7 @@ class View extends React.Component {
       callVideo={this.callVideo}
       parkingIds={this.props.parkingIds}
       onPress={this.onPress}
-      showNum={this.showNum}
+      showNum={this.state.text}
     />
   );
 
@@ -67,11 +67,6 @@ class View extends React.Component {
       curText += val;
     }
     this.setState({ text: curText });
-    this.showNum();
-  };
-
-  showNum = () => {
-    return this.state.text;
   };
 
   setTarget = target => {
