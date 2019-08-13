@@ -61,7 +61,7 @@ class KeyPad extends React.Component {
         </View>
         <View style={st.conPhoneCall}>
           <View style={st.btnCall}></View>
-          <Button style={st.btnCall} success>
+          <Button style={st.btnCall} success onPress={p.callVoice}>
             <Icons name="call" />
           </Button>
           <Button style={st.btnCall} onPress={() => p.onPress('delete')}>

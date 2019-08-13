@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import PageCalling from '../../components-Incoming/PageCalling';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
 import LoudSpeaker from './LoudSpeaker';
-import UI from './ui';
 
 @observer
 @createModelView(
@@ -133,7 +133,7 @@ class View extends React.Component {
 
   render() {
     return (
-      <UI
+      <PageCalling
         selectedId={this.props.selectedId}
         runningIds={this.props.runningIds}
         runningById={this.props.runningById}

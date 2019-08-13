@@ -5,10 +5,12 @@ import Icons from '../components-shared/Icon';
 
 class HangUpComponent extends React.Component {
   render() {
+    const p = this.props;
+
     return (
       <Left hangUp>
         <Left>
-          <Button danger>
+          <Button danger onPress={p.hangup}>
             <Icons name="call-end" />
           </Button>
           <Text>HANG UP</Text>

@@ -7,19 +7,25 @@ import {
   Left,
   Right,
   Text,
+  View,
 } from 'native-base';
 import React from 'react';
 
 import Icons from '../components-shared/Icon';
+import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
 
 class PageCalling extends React.Component {
   render() {
+    const p = this.props;
+
+    const new_p = { ...p, ...p.runningById[p.selectedId] };
+    console.warn(new_p);
     return (
       <Container>
         <Header transparent>
           <Left>
-            <Button>
+            <Button onPress={p.browseHistory}>
               <Icons name="arrow-back" />
             </Button>
           </Left>
@@ -31,12 +37,24 @@ class PageCalling extends React.Component {
         </Header>
         <Content>
           <Left leftpd18>
-            <H2>Aerald Richards</H2>
+            <H2>{new_p.partyName}</H2>
             <Text>VOICE CALLING</Text>
           </Left>
-          <Left leftmgt100>
-            <HangUpComponent />
-          </Left>
+          {new_p.answered && !new_p.holding && (
+            <View>
+              <CallBar {...new_p} />
+              <Left leftmgt15>
+                <HangUpComponent hangup={new_p.hangup} />
+              </Left>
+            </View>
+          )}
+          {!new_p.answered && !new_p.incoming && (
+            <View>
+              <Left lefttop200>
+                <HangUpComponent hangup={new_p.hangup} />
+              </Left>
+            </View>
+          )}
         </Content>
       </Container>
     );

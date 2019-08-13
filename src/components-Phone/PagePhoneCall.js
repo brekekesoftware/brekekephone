@@ -11,7 +11,7 @@ class PagePhoneCall extends React.Component {
     return (
       <Container>
         <DisplayNumber showNum={p.showNum} />
-        <KeyPad onPress={p.onPress} />
+        <KeyPad onPress={p.onPress} callVoice={p.callVoice} />
       </Container>
     );
   }

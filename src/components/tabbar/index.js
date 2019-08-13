@@ -22,6 +22,7 @@ class View extends React.Component {
     <FooterTabs
       chatsEnabled={this.props.chatsEnabled}
       pressCallsManage={routerUtils.goToCallsManage}
+      pressCallsRecent={routerUtils.goToCallsRecent}
       pressCallsCreate={routerUtils.goToCallsCreate}
       pressSettings={routerUtils.goToSettings}
       pressUsers={routerUtils.goToUsersBrowse}

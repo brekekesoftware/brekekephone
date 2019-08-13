@@ -24,7 +24,7 @@ class FooterTabs extends React.Component {
             <SvgIcon path={mdiAccountCircleOutline} />
             <Text>CONTACTS</Text>
           </Button>
-          <Button onPress={p.pressCallsManage}>
+          <Button onPress={p.pressCallsRecent}>
             <SvgIcon path={mdiPhoneOutline} />
             <Text>RECENTS</Text>
           </Button>

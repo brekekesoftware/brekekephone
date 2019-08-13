@@ -28,6 +28,10 @@ const st = StyleSheet.create({
   textH2: {
     padding: std.gap.lg,
   },
+  showNum: {
+    textAlign: 'center',
+    fontSize: 35,
+  },
 });
 
 class DisplayNumber extends React.Component {
@@ -46,7 +50,7 @@ class DisplayNumber extends React.Component {
         </View>
         <View style={st.shownumber}>
           <H2 style={st.textH2}>Your number</H2>
-          <Text>{p.showNum}</Text>
+          <Text style={st.showNum}>{p.showNum}</Text>
         </View>
       </View>
     );

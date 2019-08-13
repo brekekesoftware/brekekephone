@@ -260,11 +260,11 @@ merge(nativeBaseStyle, {
       marginTop: variables.listItemPadding,
       alignSelf: 'flex-start',
     },
-    '.leftmgt100': {
-      marginTop: '100%',
+    '.leftmgt15': {
+      marginTop: '15%',
     },
-    '.leftmgt30': {
-      marginTop: '30%',
+    '.lefttop200': {
+      top: '200%',
     },
   },
 });

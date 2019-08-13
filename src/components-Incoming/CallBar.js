@@ -1,4 +1,4 @@
-import { Button, Content, Left, Text } from 'native-base';
+import { Button, Left, Text, View } from 'native-base';
 import React from 'react';
 
 import Icons from '../components-shared/Icon';
@@ -6,7 +6,7 @@ import Icons from '../components-shared/Icon';
 class CallBar extends React.Component {
   render() {
     return (
-      <Content>
+      <View>
         <Left callBar>
           <Left>
             <Button transparent dark bordered>
@@ -53,7 +53,7 @@ class CallBar extends React.Component {
             <Text>HOLD</Text>
           </Left>
         </Left>
-      </Content>
+      </View>
     );
   }
 }
