@@ -1,3 +1,4 @@
+import { mdiExitToApp, mdiPencil } from '@mdi/js';
 import {
   Body,
   Button,
@@ -11,7 +12,7 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import Icons from '../components-shared/Icon';
+import SvgIcon from '../components-shared/SvgIcon';
 
 const Park = p => (
   <ListItem callpark>
@@ -21,7 +22,7 @@ const Park = p => (
     </Left>
     <Right>
       <Button>
-        <Icons name="create" />
+        <SvgIcon path={mdiPencil} />
       </Button>
     </Right>
   </ListItem>
@@ -79,7 +80,7 @@ class CallParkComponent extends React.Component {
           </ListItem>
         </List>
         <Button full iconLeft danger onPress={p.signout}>
-          <Icons name="exit-to-app" />
+          <SvgIcon path={mdiExitToApp} />
           <Text>LOG OUT</Text>
         </Button>
       </Content>

@@ -1,7 +1,8 @@
+import { mdiPhoneHangup } from '@mdi/js';
 import { Button, Left, Text } from 'native-base';
 import React from 'react';
 
-import Icons from '../components-shared/Icon';
+import SvgIcon from '../components-shared/SvgIcon';
 
 class HangUpComponent extends React.Component {
   render() {
@@ -11,7 +12,7 @@ class HangUpComponent extends React.Component {
       <Left hangUp>
         <Left>
           <Button danger onPress={p.hangup}>
-            <Icons name="call-end" />
+            <SvgIcon path={mdiPhoneHangup} />
           </Button>
           <Text>HANG UP</Text>
         </Left>

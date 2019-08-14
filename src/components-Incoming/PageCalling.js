@@ -25,7 +25,7 @@ class PageCalling extends React.Component {
       <Container>
         <Header transparent>
           <Left>
-            <Button onPress={p.browseHistory}>
+            <Button onPress={new_p.browseHistory}>
               <Icons name="arrow-back" />
             </Button>
           </Left>
@@ -38,7 +38,8 @@ class PageCalling extends React.Component {
         <Content>
           <Left leftpd18>
             <H2>{new_p.partyName}</H2>
-            <Text>VOICE CALLING</Text>
+            {!new_p.holding && <Text>VOICE CALLING</Text>}
+            {new_p.holding && <Text>HOLDING</Text>}
           </Left>
           {new_p.answered && !new_p.holding && (
             <View>

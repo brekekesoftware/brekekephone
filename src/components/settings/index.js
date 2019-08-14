@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import PageSetting from '../../components-Setting/PageSetting';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
-import UI from './ui';
 
 @observer
 class View extends React.Component {
@@ -32,7 +32,7 @@ class View extends React.Component {
   }
 
   render = () => (
-    <UI
+    <PageSetting
       profile={authStore.profile}
       chatOffline={this.state.chatOffline}
       chatOnline={this.state.chatOnline}

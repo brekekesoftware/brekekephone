@@ -12,7 +12,7 @@ class PageSettings extends React.Component {
         <Hearders title="Settings" />
         <Content>
           <PbxComponent {...this.props} />
-          <CallParkComponent />
+          <CallParkComponent {...this.props} />
         </Content>
       </Container>
     );
