@@ -64,6 +64,7 @@ const recursiveUpdateStyle = obj => {
 };
 recursiveUpdateStyle(nativeBaseStyle);
 
+console.warn(nativeBaseStyle);
 // Other small/accuracy modifications will be put here
 // We should take a look at the default components to see the keys
 merge(nativeBaseStyle, {
@@ -120,6 +121,55 @@ merge(nativeBaseStyle, {
     },
   },
   'NativeBase.ListItem': {
+    '.statusUc': {
+      'NativeBase.Left': {},
+      'NativeBase.Right': {
+        flex: 1,
+        justifyContent: 'flex-end',
+      },
+      borderColor: '#c9c9c9',
+      borderWidth: 1 / 3,
+      backgroundColor: '#ffffff',
+      padding: variables.listItemPadding,
+      marginLeft: null,
+    },
+    '.btnlistServer': {
+      'NativeBase.Left': {
+        'NativeBase.Button': {
+          backgroundColor: '#0000000',
+          borderRadius: null,
+          alignSelf: 'center',
+        },
+        flex: 0.25,
+      },
+      'NativeBase.Body': {
+        'NativeBase.Button': {
+          backgroundColor: '#0000000',
+          borderRadius: null,
+          alignSelf: 'center',
+        },
+        flex: 0.25,
+      },
+      'NativeBase.Right': {
+        'NativeBase.Button': {
+          'NativeBase.Text': {
+            fontWeight: '600',
+            color: '#ffffff',
+          },
+          borderRadius: null,
+
+          backgroundColor: null,
+          alignSelf: 'center',
+        },
+        flex: 0.5,
+        backgroundColor: '#000',
+        borderBottomRightRadius: 15,
+      },
+      marginLeft: null,
+      paddingRight: null,
+      paddingVertical: null,
+      borderBottomWidth: null,
+    },
     '.listUser': {
       // -> components-Recent/Recents + PageContact
       'NativeBase.Left': {
@@ -150,6 +200,36 @@ merge(nativeBaseStyle, {
         paddingRight: variables.listItemPadding + 5,
         paddingVertical: variables.listItemPadding + 5,
       },
+    },
+    '.infoUser': {
+      // -> components-Recent/Recents + PageContact
+      'NativeBase.Left': {
+        flex: 0.25,
+      },
+      'NativeBase.Body': {
+        'NativeBase.Text': {
+          marginLeft: null,
+          paddingVertical: 3,
+        },
+        marginLeft: variables.listItemPadding + 5,
+      },
+      'NativeBase.Right': {
+        'NativeBase.Button': {
+          '.transparent': {
+            'NativeBase.Text': {
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
+            },
+          },
+          height: null,
+        },
+        flex: 0.25,
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        paddingRight: variables.listItemPadding + 5,
+      },
+      borderBottomWidth: null,
     },
     '.listChat': {
       'NativeBase.Left': {
@@ -265,6 +345,80 @@ merge(nativeBaseStyle, {
     },
     '.lefttop200': {
       top: '200%',
+    },
+  },
+  'NativeBase.ViewNB': {
+    '.heaederServer': {
+      'NativeBase.ListItem': {
+        '.end': {
+          justifyContent: 'flex-end',
+        },
+        '.start': {
+          'NativeBase.Left': {
+            'NativeBase.Text': {
+              fontWeight: '600',
+              fontSize: 30,
+              alignSelf: 'flex-start',
+              paddingBottom: variables.listItemPadding,
+            },
+            flexDirection: 'column',
+            alignSelf: 'flex-start',
+          },
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+        },
+        borderBottomWidth: null,
+      },
+    },
+    '.noServer': {
+      'NativeBase.Text': {
+        fontSize: 50,
+      },
+      'NativeBase.ListItem': {
+        '.itemNoServer': {
+          'NativeBase.Body': {
+            'NativeBase.Icon': {
+              fontSize: 50,
+            },
+            'NativeBase.Text': {
+              fontSize: 25,
+              fontWeight: '500',
+              paddingTop: variables.listItemPadding,
+            },
+            'NativeBase.Button': {
+              backgroundColor: '#000000',
+              'NativeBase.Text': {
+                fontWeight: '500',
+                color: '#ffffff',
+              },
+            },
+            alignItems: 'center',
+            paddingTop: variables.listItemPadding,
+          },
+        },
+        borderBottomWidth: null,
+      },
+      backgroundColor: Platform.select({
+        ios: '#ffffff',
+        android: '#ffffff',
+        web: '#e2e2e4',
+      }),
+      width: '80%',
+      marginLeft: variables.listItemPadding,
+      borderRadius: 15,
+      top: '30%',
+      padding: variables.listItemPadding - 5,
+    },
+    '.listServer': {
+      backgroundColor: Platform.select({
+        ios: '#ffffff',
+        android: '#ffffff',
+        web: '#e2e2e4',
+      }),
+      width: '90%',
+      marginLeft: variables.listItemPadding,
+      marginBottom: variables.listItemPadding,
+      borderRadius: 15,
     },
   },
 });

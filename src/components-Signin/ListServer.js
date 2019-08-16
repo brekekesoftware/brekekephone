@@ -1,184 +1,46 @@
-import { Body, Left, List, ListItem, Text, View } from 'native-base';
-import React from 'react';
 import {
-  FlatList,
-  Platform,
-  StyleSheet,
-  TouchableOpacity as Button,
-} from 'react-native';
+  Body,
+  Button,
+  Left,
+  List,
+  ListItem,
+  Right,
+  Switch,
+  Text,
+  View,
+} from 'native-base';
+import React from 'react';
+import { FlatList } from 'react-native';
 
 import Icons from '../components-shared/Icon';
-import SwitchStatus from '../components-shared/Switch';
-import { rem, std } from '../styleguide';
-
-const st = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: rem(268),
-    height: rem(320),
-    borderRadius: std.gap.lg,
-
-    backgroundColor: Platform.select({
-      ios: std.color.shade0,
-      android: std.color.shade0,
-      web: std.color.shade4,
-    }),
-
-    margin: std.gap.lg,
-    marginTop: '30%',
-  },
-
-  containerServer: {
-    flex: 1,
-    flexDirection: 'column',
-    width: rem(240),
-    borderRadius: std.gap.lg,
-
-    backgroundColor: Platform.select({
-      ios: std.color.shade0,
-      android: std.color.shade0,
-      web: std.color.shade4,
-    }),
-
-    margin: std.gap.lg,
-  },
-
-  btnNewServer: {
-    padding: std.gap.lg,
-    backgroundColor: std.color.shade9,
-    borderRadius: std.gap.sm,
-    marginTop: std.gap.lg,
-  },
-
-  textNoServer: {
-    fontSize: std.textSize.lg,
-    paddingTop: std.gap.lg * 2,
-    paddingBottom: std.gap.lg,
-  },
-
-  btnText: {
-    fontSize: std.textSize.sm,
-    lineHeight: std.iconSize.md,
-    color: std.color.shade0,
-    paddingRight: std.gap.md,
-    paddingLeft: std.gap.md,
-  },
-
-  description: {
-    fontSize: std.textSize.md,
-    lineHeight: std.iconSize.md,
-    paddingTop: std.gap.lg,
-    paddingBottom: std.gap.lg,
-    paddingRight: std.gap.sm,
-    paddingLeft: std.gap.sm,
-    color: std.color.shade5,
-  },
-
-  tenantcontainer: {
-    flexDirection: 'row',
-    paddingLeft: std.gap.lg,
-    paddingBottom: std.gap.md,
-  },
-
-  hostnamecontainer: {
-    flexDirection: 'row',
-    paddingLeft: std.gap.lg,
-    paddingTop: std.gap.md,
-    paddingBottom: std.gap.md,
-  },
-
-  portcontainer: {
-    flexDirection: 'row',
-    paddingLeft: std.gap.lg,
-    paddingTop: std.gap.md,
-    paddingBottom: std.gap.md,
-  },
-
-  icons: {
-    fontFamily: std.font.icon,
-    fontSize: std.textSize.lg,
-    paddingTop: std.gap.lg,
-    paddingRight: std.gap.lg,
-  },
-
-  nameserver: {
-    fontSize: std.textSize.md * 2,
-    padding: std.gap.lg,
-  },
-
-  servertitle: {
-    fontSize: std.textSize.sm,
-  },
-
-  serverinfo: {
-    fontSize: std.textSize.md,
-    lineHeight: std.iconSize.md + std.gap.md,
-  },
-
-  containerText: {
-    paddingLeft: std.gap.lg,
-  },
-
-  btncontainer: {
-    flexDirection: 'row',
-  },
-
-  btnEditandRemove: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    width: '50%',
-    paddingTop: std.gap.sm,
-  },
-
-  btncontainerSignin: {
-    width: '50%',
-    alignItems: 'center',
-    backgroundColor: std.color.shade9,
-    borderBottomRightRadius: std.gap.lg,
-  },
-
-  btnSignin: {
-    paddingTop: std.gap.lg + std.gap.sm,
-    paddingBottom: std.gap.lg + +std.gap.sm,
-    color: std.color.shade0,
-  },
-
-  iconserver: {
-    fontFamily: std.font.icon,
-    fontSize: std.iconSize.lg * 3,
-    paddingTop: std.iconSize.lg,
-  },
-  noServericon: {
-    marginTop: 30,
-  },
-});
 
 const NoServer = p => (
-  <View style={st.container}>
-    <View style={st.noServericon}>
-      <Icons style={st.iconserver} name="phonelink-off" />
-    </View>
-    <View>
-      <Text style={st.textNoServer}>No Server</Text>
-    </View>
-    <View>
-      <Text style={st.description} numberOfLines={2}>
+  <View noServer>
+    <ListItem itemNoServer>
+      <Body>
+        <Icons name="phonelink-off" />
+        <Text>No Server</Text>
+      </Body>
+    </ListItem>
+    <ListItem itemNoServer>
+      <Text numberOfLines={4}>
         There is no server created. Tap the button below to make the first one.
       </Text>
-    </View>
-    <View>
-      <Button style={st.btnNewServer} onPress={p.create}>
-        <Text style={st.btnText}>NEW SERVER</Text>
-      </Button>
-    </View>
+    </ListItem>
+    <ListItem itemNoServer>
+      <Body>
+        <Button onPress={p.create}>
+          <Text>NEW SERVER</Text>
+        </Button>
+      </Body>
+    </ListItem>
   </View>
 );
 
 const Server = p => (
-  <View style={st.containerServer}>
+  <View listServer>
     <List>
-      <ListItem listUser noBorder>
+      <ListItem infoUser>
         <Left>
           <Icons name="person" />
         </Left>
@@ -187,7 +49,7 @@ const Server = p => (
           <Text>{p.pbxUsername}</Text>
         </Body>
       </ListItem>
-      <ListItem listUser noBorder>
+      <ListItem infoUser>
         <Left>
           <Icons name="home" />
         </Left>
@@ -196,7 +58,7 @@ const Server = p => (
           <Text>{p.pbxTenant}</Text>
         </Body>
       </ListItem>
-      <ListItem listUser noBorder>
+      <ListItem infoUser>
         <Left>
           <Icons name="domain" />
         </Left>
@@ -205,7 +67,7 @@ const Server = p => (
           <Text>{p.pbxHostname}</Text>
         </Body>
       </ListItem>
-      <ListItem listUser noBorder>
+      <ListItem infoUser>
         <Left>
           <Icons name="usb" />
         </Left>
@@ -214,34 +76,45 @@ const Server = p => (
           <Text>{p.pbxPort}</Text>
         </Body>
       </ListItem>
+      <ListItem statusUc>
+        <Left>
+          <Text>UC STATUS</Text>
+        </Left>
+        <Right>
+          <Switch value={p.ucEnabled} />
+        </Right>
+      </ListItem>
+      <ListItem btnlistServer>
+        <Left>
+          <Button onPress={() => p.remove(p.id)}>
+            <Icons name="delete" />
+          </Button>
+        </Left>
+        <Body>
+          <Button onPress={() => p.update(p.id)}>
+            <Icons name="create" />
+          </Button>
+        </Body>
+        <Right>
+          <Button onPress={() => p.signin(p.id)}>
+            <Text>SIGN IN</Text>
+          </Button>
+        </Right>
+      </ListItem>
     </List>
-    <SwitchStatus statusUC={p.ucEnabled} />
-    <View style={st.btncontainer}>
-      <View style={st.btnEditandRemove}>
-        <Button onPress={() => p.remove(p.id)}>
-          <Icons name="delete" />
-        </Button>
-        <Button onPress={() => p.update(p.id)}>
-          <Icons name="create" />
-        </Button>
-      </View>
-      <Button style={st.btncontainerSignin} onPress={() => p.signin(p.id)}>
-        <Text style={st.btnSignin}>SIGN IN</Text>
-      </Button>
-    </View>
   </View>
 );
 
 class ListServer extends React.Component {
   render() {
     const p = this.props;
-    console.warn(p);
     return (
       <View>
         {p.profileIds.length ? (
           <FlatList
             data={p.profileIds}
             horizontal
+            style={{ top: '10%' }}
             renderItem={({ item: rowData, index }) => {
               return (
                 <Server
