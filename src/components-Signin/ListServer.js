@@ -1,4 +1,4 @@
-import { Body, Icon, Left, List, ListItem, Text, View } from 'native-base';
+import { Body, Left, List, ListItem, Text, View } from 'native-base';
 import React from 'react';
 import {
   FlatList,
@@ -7,7 +7,8 @@ import {
   TouchableOpacity as Button,
 } from 'react-native';
 
-import Switch from '../components-shared/Switch';
+import Icons from '../components-shared/Icon';
+import SwitchStatus from '../components-shared/Switch';
 import { rem, std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -148,12 +149,15 @@ const st = StyleSheet.create({
     fontSize: std.iconSize.lg * 3,
     paddingTop: std.iconSize.lg,
   },
+  noServericon: {
+    marginTop: 30,
+  },
 });
 
-const NoServer = () => (
+const NoServer = p => (
   <View style={st.container}>
-    <View>
-      <Icon style={st.iconserver} name="phonelink-off" type="MaterialIcons" />
+    <View style={st.noServericon}>
+      <Icons style={st.iconserver} name="phonelink-off" />
     </View>
     <View>
       <Text style={st.textNoServer}>No Server</Text>
@@ -164,7 +168,7 @@ const NoServer = () => (
       </Text>
     </View>
     <View>
-      <Button style={st.btnNewServer}>
+      <Button style={st.btnNewServer} onPress={p.create}>
         <Text style={st.btnText}>NEW SERVER</Text>
       </Button>
     </View>
@@ -174,107 +178,84 @@ const NoServer = () => (
 const Server = p => (
   <View style={st.containerServer}>
     <List>
-      <ListItem thumbnail noBorder>
+      <ListItem listUser noBorder>
         <Left>
-          <Icon name="person" type="MaterialIcons" />
+          <Icons name="person" />
         </Left>
         <Body>
           <Text note>USERNAME</Text>
-          <Text>401</Text>
+          <Text>{p.pbxUsername}</Text>
         </Body>
       </ListItem>
-      <ListItem thumbnail noBorder>
+      <ListItem listUser noBorder>
         <Left>
-          <Icon name="home" type="MaterialIcons" />
+          <Icons name="home" />
         </Left>
         <Body>
           <Text note>TENANT</Text>
-          <Text>Nam</Text>
+          <Text>{p.pbxTenant}</Text>
         </Body>
       </ListItem>
-      <ListItem thumbnail noBorder>
+      <ListItem listUser noBorder>
         <Left>
-          <Icon name="domain" type="MaterialIcons" />
+          <Icons name="domain" />
         </Left>
         <Body>
           <Text note>HOST NAME</Text>
-          <Text>apps.brekeke.com</Text>
+          <Text>{p.pbxHostname}</Text>
         </Body>
       </ListItem>
-      <ListItem thumbnail noBorder>
+      <ListItem listUser noBorder>
         <Left>
-          <Icon name="usb" type="MaterialIcons" />
+          <Icons name="usb" />
         </Left>
         <Body>
           <Text note>PORT</Text>
-          <Text>8443</Text>
+          <Text>{p.pbxPort}</Text>
         </Body>
       </ListItem>
     </List>
-    <Switch />
+    <SwitchStatus statusUC={p.ucEnabled} />
     <View style={st.btncontainer}>
       <View style={st.btnEditandRemove}>
-        <Button>
-          <Icon name="delete" type="MaterialIcons" />
+        <Button onPress={() => p.remove(p.id)}>
+          <Icons name="delete" />
         </Button>
-        <Button>
-          <Icon name="create" type="MaterialIcons" />
+        <Button onPress={() => p.update(p.id)}>
+          <Icons name="create" />
         </Button>
       </View>
-      <Button style={st.btncontainerSignin}>
+      <Button style={st.btncontainerSignin} onPress={() => p.signin(p.id)}>
         <Text style={st.btnSignin}>SIGN IN</Text>
       </Button>
     </View>
   </View>
 );
 
-const data = [
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something three',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something four',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something five',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something six',
-  },
-];
-
 class ListServer extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: data,
-    };
-  }
-
   render() {
+    const p = this.props;
+    console.warn(p);
     return (
       <View>
-        <FlatList
-          data={this.state.data}
-          horizontal
-          renderItem={({ item: rowData }) => {
-            return <Server />;
-          }}
-        />
-        {}
+        {p.profileIds.length ? (
+          <FlatList
+            data={p.profileIds}
+            horizontal
+            renderItem={({ item: rowData, index }) => {
+              return (
+                <Server
+                  {...p.resolveProfile(p.profileIds[index])}
+                  remove={p.remove}
+                  update={p.update}
+                  signin={p.signin}
+                />
+              );
+            }}
+          />
+        ) : (
+          <NoServer create={p.create} />
+        )}
       </View>
     );
   }

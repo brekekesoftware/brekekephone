@@ -4,7 +4,7 @@ import ServerForm from './ServerForm';
 
 class PageServers extends React.Component {
   render() {
-    return <ServerForm />;
+    return <ServerForm {...this.props} />;
   }
 }
 

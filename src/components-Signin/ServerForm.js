@@ -18,15 +18,15 @@ class ServerForm extends React.Component {
             colors={['#74bf53', '#474A48']}
           >
             <MyStatusBar backgroundColor="#74bf53" />
-            <Header />
-            <ListServer />
+            <Header {...this.props} />
+            <ListServer {...this.props} />
           </LinearGradient>
         )}
         {Platform.OS === 'web' && (
           <View>
             <MyStatusBar backgroundColor="#74bf53" />
-            <Header />
-            <ListServer />
+            <Header {...this.props} />
+            <ListServer {...this.props} />
           </View>
         )}
       </View>

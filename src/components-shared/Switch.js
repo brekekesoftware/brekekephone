@@ -28,7 +28,7 @@ const st = StyleSheet.create({
 const SwitchStatus = p => (
   <View style={st.container}>
     <Text style={st.fieldLabel}>UC STATUS</Text>
-    <Switch style={st.fieldSwitch} value={true} />
+    <Switch style={st.fieldSwitch} value={p.statusUC} />
   </View>
 );
 

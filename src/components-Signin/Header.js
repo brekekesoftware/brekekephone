@@ -61,16 +61,19 @@ const st = StyleSheet.create({
 
 class Header extends React.Component {
   render() {
+    const p = this.props;
     return (
       <View style={st.container}>
         <View style={st.btnNewServer}>
-          <Button>
+          <Button onPress={p.create}>
             <Text style={st.btnTextTitle}>New</Text>
           </Button>
         </View>
         <View style={st.containerTitle}>
           <Text style={st.textTitle}>Servers</Text>
-          <Text style={st.textCountServer}>0 SERVER IN TOTAL</Text>
+          <Text style={st.textCountServer}>
+            {p.profileIds.length} SERVER IN TOTAL
+          </Text>
         </View>
       </View>
     );
