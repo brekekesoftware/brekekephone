@@ -23,6 +23,7 @@ class PBX extends EventEmitter {
       user: '*',
       status: true,
       secure_login_password: false,
+      phonetype: 'webphone',
     });
 
     client.debugLevel = 2;
