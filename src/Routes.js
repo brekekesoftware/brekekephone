@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import NewCallPark from './components-Setting/NewCallPark';
 import Auth from './components/auth';
 import WithoutStatusBar from './components/auth/WithoutStatusBar';
 import BuddyChatsNotify from './components/buddy-chats-notify';
@@ -99,6 +100,11 @@ const Routes = () => (
             />
             <Route exact path="/auth/chats/recent" component={ChatsRecent} />
             <Route exact path="/auth/settings" component={Settings} />
+            <Route
+              exact
+              path="/auth/settings/:profile/callpark"
+              component={NewCallPark}
+            />
             <Route
               exact
               path="/auth/phonebooks/browse"

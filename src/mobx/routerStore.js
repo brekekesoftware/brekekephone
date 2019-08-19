@@ -105,6 +105,10 @@ export const goToSettings = withTimeout(() => {
   history.push('/auth/settings');
 });
 
+export const goToNewCallPark = withTimeout(profile => {
+  history.push(`/auth/settings/${profile}/callpark`);
+});
+
 export const goToUsersBrowse = withTimeout(() => {
   history.push('/auth/users');
 });

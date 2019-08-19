@@ -20,6 +20,10 @@ class View extends React.Component {
     chatBusy: false,
   };
 
+  componentWillReceiveProps(nextProps) {
+    console.warn('acgd', nextProps);
+  }
+
   componentDidMount() {
     const me = this.context.uc.me();
 

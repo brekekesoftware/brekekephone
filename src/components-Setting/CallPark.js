@@ -1,4 +1,5 @@
 import { mdiExitToApp, mdiPencil } from '@mdi/js';
+import { observer } from 'mobx-react';
 import {
   Body,
   Button,
@@ -13,6 +14,7 @@ import React from 'react';
 import { FlatList } from 'react-native';
 
 import SvgIcon from '../components-shared/SvgIcon';
+import * as routerUtils from '../mobx/routerStore';
 
 const Park = p => (
   <ListItem callpark>
@@ -28,37 +30,12 @@ const Park = p => (
   </ListItem>
 );
 
-let data_demo = [
-  {
-    name: 'Park 1',
-    extension: '*827',
-  },
-  {
-    name: 'Park 2',
-    extension: '*714',
-  },
-  {
-    name: 'Park 3',
-    extension: '*615',
-  },
-  {
-    name: 'Park 4',
-    extension: '*891',
-  },
-];
-
+@observer
 class CallParkComponent extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: data_demo,
-    };
-  }
-
   render() {
     const p = this.props;
-
+    const { profile } = p;
+    console.warn(this.props);
     return (
       <Content>
         <List>
@@ -66,20 +43,23 @@ class CallParkComponent extends React.Component {
             <Text>CALL PARK</Text>
           </ListItem>
           <FlatList
-            data={this.state.data}
+            data={profile?.parks}
             renderItem={({ item: rowData }) => {
-              return <Park name={rowData.name} extension={rowData.extension} />;
+              return <Park name={rowData} extension="" />;
             }}
           />
           <ListItem>
             <Body>
-              <Button full>
+              <Button
+                full
+                onPress={() => routerUtils.goToNewCallPark(profile?.id)}
+              >
                 <Text>NEW CALL PARK</Text>
               </Button>
             </Body>
           </ListItem>
         </List>
-        <Button full iconLeft danger onPress={p.signout}>
+        <Button full iconLeft danger onPress={p?.signout}>
           <SvgIcon path={mdiExitToApp} />
           <Text>LOG OUT</Text>
         </Button>
