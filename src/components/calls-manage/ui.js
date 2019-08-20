@@ -489,7 +489,6 @@ const CallsManage = p => (
     ) : (
       <ControlPlaceholder />
     )}
-    {console.warn(p.runningById[p.selectedId])}
     <ScrollView style={st.main}>
       <RunningList
         ids={p.runningIds}

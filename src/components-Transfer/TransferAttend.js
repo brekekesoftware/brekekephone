@@ -1,31 +1,25 @@
-import orderBy from 'lodash/orderBy';
 import {
-  Body,
   Button,
   Container,
   Content,
   H2,
   Header,
+  Icon,
   Left,
-  ListItem,
-  Right,
   Text,
   Thumbnail,
   View,
 } from 'native-base';
 import React from 'react';
 
-import Icons from '../components-shared/Icon';
-
 class TransferAttend extends React.Component {
   render() {
-    const p = this.props;
     return (
       <Container>
         <Header transparent>
           <Left>
             <Button>
-              <Icons name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
         </Header>
@@ -45,7 +39,7 @@ class TransferAttend extends React.Component {
               <H2>Duan Huynh</H2>
             </View>
             <View center>
-              <Icons name="arrow-forward" />
+              <Icon type="MaterialIcons" name="arrow-forward" />
             </View>
             <View center>
               <Thumbnail

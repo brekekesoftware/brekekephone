@@ -1,6 +1,7 @@
 import {
   Body,
   Button,
+  Icon,
   Left,
   ListItem,
   Right,
@@ -8,8 +9,6 @@ import {
   Thumbnail,
 } from 'native-base';
 import React from 'react';
-
-import Icons from '../components-shared/Icon';
 
 class User extends React.Component {
   render() {
@@ -29,7 +28,7 @@ class User extends React.Component {
         </Body>
         <Right>
           <Button>
-            <Icons name="call" />
+            <Icon type="MaterialIcons" name="call" />
           </Button>
         </Right>
       </ListItem>

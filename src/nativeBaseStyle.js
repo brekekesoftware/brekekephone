@@ -64,7 +64,6 @@ const recursiveUpdateStyle = obj => {
 };
 recursiveUpdateStyle(nativeBaseStyle);
 
-console.warn(nativeBaseStyle);
 // Other small/accuracy modifications will be put here
 // We should take a look at the default components to see the keys
 merge(nativeBaseStyle, {

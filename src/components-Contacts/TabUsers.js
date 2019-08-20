@@ -2,6 +2,7 @@ import orderBy from 'lodash/orderBy';
 import {
   Body,
   Button,
+  Icon,
   Left,
   ListItem,
   Right,
@@ -10,7 +11,6 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
 
 class TabUsers extends React.Component {
@@ -64,10 +64,10 @@ class TabUsers extends React.Component {
                 </Body>
                 <Right>
                   <Button onPress={() => p.chat(u.id)}>
-                    <Icons name="forum" />
+                    <Icon type="MaterialIcons" name="forum" />
                   </Button>
                   <Button onPress={() => p.callVoice(u.id)}>
-                    <Icons name="call" />
+                    <Icon type="MaterialIcons" name="call" />
                   </Button>
                 </Right>
               </ListItem>

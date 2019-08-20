@@ -35,7 +35,6 @@ class CallParkComponent extends React.Component {
   render() {
     const p = this.props;
     const { profile } = p;
-    console.warn(this.props);
     return (
       <Content>
         <List>

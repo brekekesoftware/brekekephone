@@ -4,6 +4,7 @@ import {
   Content,
   H2,
   Header,
+  Icon,
   Left,
   Right,
   Text,
@@ -11,27 +12,24 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import Icons from '../components-shared/Icon';
 import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
 
 class PageCalling extends React.Component {
   render() {
     const p = this.props;
-
     const new_p = { ...p, ...p.runningById[p.selectedId] };
-    console.warn(new_p);
     return (
       <Container>
         <Header transparent>
           <Left>
             <Button onPress={new_p.browseHistory}>
-              <Icons name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Right>
             <Button>
-              <Icons name="group" />
+              <Icon type="MaterialIcons" name="group" />
             </Button>
           </Right>
         </Header>

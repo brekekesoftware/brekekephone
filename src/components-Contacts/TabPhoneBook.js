@@ -2,6 +2,7 @@ import {
   Body,
   Button,
   Content,
+  Icon,
   Left,
   List,
   ListItem,
@@ -12,7 +13,6 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import Icons from '../components-shared/Icon';
 import SearchContact from './SearchContact';
 
 const User = p => (
@@ -31,10 +31,10 @@ const User = p => (
     </Body>
     <Right>
       <Button>
-        <Icons name="call" />
+        <Icon type="MaterialIcons" name="call" />
       </Button>
       <Button>
-        <Icons name="info" />
+        <Icon type="MaterialIcons" name="info" />
       </Button>
     </Right>
   </ListItem>

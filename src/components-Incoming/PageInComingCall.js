@@ -4,6 +4,7 @@ import {
   Content,
   H2,
   Header,
+  Icon,
   Left,
   Right,
   Text,
@@ -11,7 +12,6 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import Icons from '../components-shared/Icon';
 import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
 
@@ -22,12 +22,12 @@ class PageInComingCall extends React.Component {
         <Header transparent>
           <Left>
             <Button transparent>
-              <Icons name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Right>
             <Button transparent>
-              <Icons name="group" />
+              <Icon type="MaterialIcons" name="group" />
             </Button>
           </Right>
         </Header>

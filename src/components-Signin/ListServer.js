@@ -1,6 +1,7 @@
 import {
   Body,
   Button,
+  Icon,
   Left,
   List,
   ListItem,
@@ -12,13 +13,11 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import Icons from '../components-shared/Icon';
-
 const NoServer = p => (
   <View noServer>
     <ListItem itemNoServer>
       <Body>
-        <Icons name="phonelink-off" />
+        <Icon type="MaterialIcons" name="phonelink-off" />
         <Text>No Server</Text>
       </Body>
     </ListItem>
@@ -42,7 +41,7 @@ const Server = p => (
     <List>
       <ListItem infoUser>
         <Left>
-          <Icons name="person" />
+          <Icon type="MaterialIcons" name="person" />
         </Left>
         <Body>
           <Text note>USERNAME</Text>
@@ -51,7 +50,7 @@ const Server = p => (
       </ListItem>
       <ListItem infoUser>
         <Left>
-          <Icons name="home" />
+          <Icon type="MaterialIcons" name="home" />
         </Left>
         <Body>
           <Text note>TENANT</Text>
@@ -60,7 +59,7 @@ const Server = p => (
       </ListItem>
       <ListItem infoUser>
         <Left>
-          <Icons name="domain" />
+          <Icon type="MaterialIcons" name="domain" />
         </Left>
         <Body>
           <Text note>HOST NAME</Text>
@@ -69,7 +68,7 @@ const Server = p => (
       </ListItem>
       <ListItem infoUser>
         <Left>
-          <Icons name="usb" />
+          <Icon type="MaterialIcons" name="usb" />
         </Left>
         <Body>
           <Text note>PORT</Text>
@@ -87,12 +86,12 @@ const Server = p => (
       <ListItem btnlistServer>
         <Left>
           <Button onPress={() => p.remove(p.id)}>
-            <Icons name="delete" />
+            <Icon type="MaterialIcons" name="delete" />
           </Button>
         </Left>
         <Body>
           <Button onPress={() => p.update(p.id)}>
-            <Icons name="create" />
+            <Icon type="MaterialIcons" name="create" />
           </Button>
         </Body>
         <Right>

@@ -4,6 +4,7 @@ import {
   Button,
   Container,
   Content,
+  Icon,
   Left,
   ListItem,
   Right,
@@ -14,14 +15,12 @@ import React from 'react';
 
 import SearchContact from '../components-Contacts/SearchContact';
 import Headers from '../components-Home/Header';
-import Icons from '../components-shared/Icon';
 
 class TransferDial extends React.Component {
   render() {
     const p = this.props;
-    console.warn('p', p);
     const users = p.matchIds.map(p.resolveMatch);
-    console.warn('user', users);
+
     const map = {};
     users.forEach(u => {
       u.name = u.name || u.id;
@@ -44,7 +43,7 @@ class TransferDial extends React.Component {
     groups.forEach(g => {
       g.users = orderBy(g.users, 'name');
     });
-    console.warn(groups);
+
     return (
       <Container>
         <React.Fragment>
@@ -71,10 +70,10 @@ class TransferDial extends React.Component {
                     </Body>
                     <Right>
                       <Button onPress={() => p.transferAttended(u.number)}>
-                        <Icons name="phone-forwarded" />
+                        <Icon type="MaterialIcons" name="phone-forwarded" />
                       </Button>
                       <Button onPress={() => p.transferBlind(u.number)}>
-                        <Icons name="call" />
+                        <Icon type="MaterialIcons" name="call" />
                       </Button>
                     </Right>
                   </ListItem>

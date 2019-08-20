@@ -1,8 +1,7 @@
-import { Button, Text, View } from 'native-base';
+import { Button, Icon, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import Icons from '../components-shared/Icon';
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -62,10 +61,10 @@ class KeyPad extends React.Component {
         <View style={st.conPhoneCall}>
           <View style={st.btnCall}></View>
           <Button style={st.btnCall} success onPress={p.callVoice}>
-            <Icons name="call" />
+            <Icon type="MaterialIcons" name="call" />
           </Button>
           <Button style={st.btnCall} onPress={() => p.onPress('delete')}>
-            <Icons name="backspace" />
+            <Icon type="MaterialIcons" name="backspace" />
           </Button>
         </View>
       </View>
