@@ -17,7 +17,7 @@ merge(variables, {
   CheckboxIconMarginTop: undefined,
   CheckboxFontSize: 23 / 0.9,
   brandPrimary: 'white',
-  // fontFamily: 'RobotoLight', // Not working on ios now
+  // fontFamily: 'Roboto', // Should respect font
   toolbarBtnColor: '#007aff',
   toolbarSearchIconSize: 20,
   toolbarBtnTextColor: '#007aff',
@@ -52,8 +52,8 @@ const nativeBaseStyle = getTheme(variables);
 const recursiveUpdateStyle = obj => {
   Object.entries(obj).forEach(([k, v]) => {
     if (k === 'fontFamily') {
-      if (Platform.OS !== 'ios') {
-        obj[k] = 'RobotoLight'; // Not working on ios now
+      if (Platform.OS === 'web') {
+        obj[k] = 'Roboto';
       }
     } else if (k === 'elevation') {
       obj[k] = 0; // Remove box shadow on android

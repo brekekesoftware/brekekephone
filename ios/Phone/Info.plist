@@ -45,10 +45,6 @@
     <key>UIAppFonts</key>
     <array>
       <string>Ionicons.ttf</string>
-      <string>icon.ttf</string>
-      <string>text.ttf</string>
-      <string>text-italic.ttf</string>
-      <string>feather.ttf</string>
       <string>AntDesign.ttf</string>
       <string>Entypo.ttf</string>
       <string>EvilIcons.ttf</string>
