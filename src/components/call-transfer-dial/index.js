@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import TransferDial from '../../components-Transfer/TransferDial';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
-import UI from './ui';
 
 @observer
 @createModelView(
@@ -13,6 +13,7 @@ import UI from './ui';
     call: getter.runningCalls.detailMapById(state)[props.match.params.call],
     pbxUserIds: getter.pbxUsers.idsByOrder(state),
     pbxUserById: getter.pbxUsers.detailMapById(state),
+    ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     updateCall(call) {
@@ -30,6 +31,7 @@ class View extends React.Component {
   static defaultProps = {
     pbxUserIds: [],
     pbxUserById: {},
+    ucUserById: {},
   };
 
   state = {
@@ -38,7 +40,7 @@ class View extends React.Component {
   };
 
   render = () => (
-    <UI
+    <TransferDial
       call={this.props.call}
       attended={this.state.attended}
       target={this.state.target}
@@ -88,9 +90,13 @@ class View extends React.Component {
 
   resolveMatch = id => {
     const match = this.props.pbxUserById[id];
+    const { ucUserById } = this.props;
+
+    const ucUser = ucUserById[id] || {};
 
     return {
       name: match.name,
+      avatar: ucUser.avatar,
       number: id,
       calling: !!match.callingTalkers.length,
       ringing: !!match.ringingTalkers.length,
@@ -129,10 +135,10 @@ class View extends React.Component {
     promise.then(this.onTransferSuccess, this.onTransferFailure);
   };
 
-  onTransferSuccess = () => {
+  onTransferSuccess = target => {
     const { call } = this.props;
 
-    const { attended, target } = this.state;
+    const { attended } = this.state;
 
     if (!attended) return routerUtils.goToCallsManage();
 
@@ -149,9 +155,7 @@ class View extends React.Component {
     toast.error('Failed target transfer the call');
   };
 
-  transferBlind = () => {
-    const target = this.state.target;
-
+  transferBlind = target => {
     if (!target.trim()) {
       toast.error('No target');
       return;
@@ -162,14 +166,12 @@ class View extends React.Component {
     const promise = pbx.transferTalkerBlind(
       this.props.call.pbxTenant,
       this.props.call.pbxTalkerId,
-      this.state.target,
+      target,
     );
-    promise.then(this.onTransferSuccess, this.onTransferFailure);
+    promise.then(this.onTransferSuccess(target), this.onTransferFailure);
   };
 
-  transferAttended = () => {
-    const target = this.state.target;
-
+  transferAttended = target => {
     if (!target.trim()) {
       toast.error('No target');
       return;
@@ -180,15 +182,15 @@ class View extends React.Component {
     const promise = pbx.transferTalkerAttended(
       this.props.call.pbxTenant,
       this.props.call.pbxTalkerId,
-      this.state.target,
+      target,
     );
-    promise.then(this.onTransferSuccess, this.onTransferFailure);
+    promise.then(this.onTransferSuccess(target), this.onTransferFailure);
   };
 
-  onTransferAttendedForVideoSuccess = () => {
+  onTransferAttendedForVideoSuccess = target => {
     const { call } = this.props;
 
-    const { attended, target } = this.state;
+    const { attended } = this.state;
 
     if (!attended) return routerUtils.goToCallsManage();
 
@@ -209,9 +211,7 @@ class View extends React.Component {
     toast.error('Failed target transfer the call');
   };
 
-  transferAttendedForVideo = () => {
-    const target = this.state.target;
-
+  transferAttendedForVideo = target => {
     if (!target.trim()) {
       toast.error('No target');
       return;
@@ -222,11 +222,11 @@ class View extends React.Component {
     const promise = pbx.transferTalkerAttended(
       this.props.call.pbxTenant,
       this.props.call.pbxTalkerId,
-      this.state.target,
+      target,
     );
 
     promise.then(
-      this.onTransferAttendedForVideoSuccess,
+      this.onTransferAttendedForVideoSuccess(target),
       this.onTransferAttendedForVideoFailure,
     );
   };

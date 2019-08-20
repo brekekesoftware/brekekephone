@@ -420,6 +420,21 @@ merge(nativeBaseStyle, {
       marginBottom: variables.listItemPadding,
       borderRadius: 15,
     },
+    '.av_transfer': {
+      'NativeBase.ViewNB': {
+        '.center': {
+          alignSelf: 'center',
+          alignItems: 'center',
+          lineHeight: 10,
+        },
+      },
+
+      'NativeBase.Body': {},
+      'NativeBase.Right': {},
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginHorizontal: variables.listItemPadding,
+    },
   },
 });
 
