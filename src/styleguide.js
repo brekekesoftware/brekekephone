@@ -43,9 +43,9 @@ export const std = {
 
   font: {
     text: Platform.select({
-      ios: 'RobotoLight',
-      web: 'RobotoLight',
-      android: 'text-light',
+      ios: 'System',
+      web: 'Roboto',
+      android: 'Roboto',
     }),
 
     icon: Platform.select({
