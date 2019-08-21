@@ -1,7 +1,14 @@
 import {
+  mdiAccount,
+  mdiDelete,
+  mdiDesktopClassic,
+  mdiHome,
+  mdiPencil,
+  mdiUsb,
+} from '@mdi/js';
+import {
   Body,
   Button,
-  Icon,
   Left,
   List,
   ListItem,
@@ -13,11 +20,13 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
+import SvgIcon from '../components-shared/SvgIcon';
+
 const NoServer = p => (
   <View noServer>
     <ListItem itemNoServer>
       <Body>
-        <Icon type="MaterialIcons" name="phonelink-off" />
+        <SvgIcon path={mdiDesktopClassic} />
         <Text>No Server</Text>
       </Body>
     </ListItem>
@@ -41,7 +50,7 @@ const Server = p => (
     <List>
       <ListItem infoUser>
         <Left>
-          <Icon type="MaterialIcons" name="person" />
+          <SvgIcon path={mdiAccount} />
         </Left>
         <Body>
           <Text note>USERNAME</Text>
@@ -50,7 +59,7 @@ const Server = p => (
       </ListItem>
       <ListItem infoUser>
         <Left>
-          <Icon type="MaterialIcons" name="home" />
+          <SvgIcon path={mdiHome} />
         </Left>
         <Body>
           <Text note>TENANT</Text>
@@ -59,7 +68,7 @@ const Server = p => (
       </ListItem>
       <ListItem infoUser>
         <Left>
-          <Icon type="MaterialIcons" name="domain" />
+          <SvgIcon path={mdiDesktopClassic} />
         </Left>
         <Body>
           <Text note>HOST NAME</Text>
@@ -68,7 +77,7 @@ const Server = p => (
       </ListItem>
       <ListItem infoUser>
         <Left>
-          <Icon type="MaterialIcons" name="usb" />
+          <SvgIcon path={mdiUsb} />
         </Left>
         <Body>
           <Text note>PORT</Text>
@@ -86,12 +95,12 @@ const Server = p => (
       <ListItem btnlistServer>
         <Left>
           <Button onPress={() => p.remove(p.id)}>
-            <Icon type="MaterialIcons" name="delete" />
+            <SvgIcon path={mdiDelete} />
           </Button>
         </Left>
         <Body>
           <Button onPress={() => p.update(p.id)}>
-            <Icon type="MaterialIcons" name="create" />
+            <SvgIcon path={mdiPencil} />
           </Button>
         </Body>
         <Right>

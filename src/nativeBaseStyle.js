@@ -138,6 +138,7 @@ merge(nativeBaseStyle, {
           backgroundColor: '#0000000',
           borderRadius: null,
           alignSelf: 'center',
+          paddingLeft: variables.listItemPadding,
         },
         flex: 0.25,
       },
@@ -191,6 +192,7 @@ merge(nativeBaseStyle, {
             },
           },
           height: null,
+          paddingHorizontal: variables.listItemPadding,
         },
         flex: 0.25,
         justifyContent: 'center',
@@ -372,6 +374,7 @@ merge(nativeBaseStyle, {
     '.noServer': {
       'NativeBase.Text': {
         fontSize: 50,
+        textAlign: 'center',
       },
       'NativeBase.ListItem': {
         '.itemNoServer': {
@@ -425,14 +428,36 @@ merge(nativeBaseStyle, {
           alignSelf: 'center',
           alignItems: 'center',
           lineHeight: 10,
+          'NativeBase.Text': {
+            paddingVertical: variables.listItemPadding,
+            textAlign: 'center',
+          },
         },
+        '.btncall': {
+          'NativeBase.Button': {
+            justifyContent: 'center',
+            borderRadius: variables.listItemPadding * 2,
+            width: variables.listItemPadding * 4,
+            height: variables.listItemPadding * 4,
+          },
+          'NativeBase.ViewNB': {
+            'NativeBase.Text': {
+              paddingTop: variables.listItemPadding,
+              fontSize: variables.listItemPadding,
+              textAlign: 'center',
+              alignSelf: 'center',
+            },
+          },
+          marginTop: 100,
+        },
+        alignItems: 'center',
+        marginHorizontal: variables.listItemPadding,
+        top: '30%',
       },
-
-      'NativeBase.Body': {},
-      'NativeBase.Right': {},
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginHorizontal: variables.listItemPadding,
+      top: '50%',
     },
   },
 });

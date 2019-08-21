@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import TransferAttend from '../../components-Transfer/TransferAttend';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
-import UI from './ui';
 
 @observer
 @createModelView(
   getter => (state, props) => ({
     call: getter.runningCalls.detailMapById(state)[props.match.params.call],
+    ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     updateCall(call) {
@@ -25,15 +26,31 @@ class View extends React.Component {
     pbx: PropTypes.object.isRequired,
   };
 
+  static defaultProps = {
+    ucUserById: {},
+  };
+
   render = () => (
-    <UI
+    <TransferAttend
       call={this.props.call}
       back={routerUtils.goToCallsManage}
       join={this.join}
       stop={this.stop}
       hangup={this.hangup}
+      resolveMatch={this.resolveMatch}
     />
   );
+
+  resolveMatch = id => {
+    const { ucUserById } = this.props;
+
+    const ucUser = ucUserById[id] || {};
+
+    return {
+      avatar: ucUser.avatar,
+      number: id,
+    };
+  };
 
   hangup = () => {
     const { sip } = this.context;

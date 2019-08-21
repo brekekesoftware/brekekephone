@@ -1,8 +1,8 @@
+import { mdiMessage, mdiPhone } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import {
   Body,
   Button,
-  Icon,
   Left,
   ListItem,
   Right,
@@ -11,6 +11,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
+import SvgIcon from '../components-shared/SvgIcon';
 import SearchContact from './SearchContact';
 
 class TabUsers extends React.Component {
@@ -64,10 +65,10 @@ class TabUsers extends React.Component {
                 </Body>
                 <Right>
                   <Button onPress={() => p.chat(u.id)}>
-                    <Icon type="MaterialIcons" name="forum" />
+                    <SvgIcon path={mdiMessage} />
                   </Button>
                   <Button onPress={() => p.callVoice(u.id)}>
-                    <Icon type="MaterialIcons" name="call" />
+                    <SvgIcon path={mdiPhone} />
                   </Button>
                 </Right>
               </ListItem>
