@@ -9,7 +9,7 @@
     "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\""
   },
   "dependencies": {
-    "@mdi/js": "4.0.96",
+    "@mdi/js": "4.1.95",
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
     "circular-json": "0.5.9",
     "crypto-js": "3.1.8",
@@ -56,7 +56,7 @@
     "redux-persist": "5.10.0",
     "shortid": "2.2.14",
     "striptags": "3.1.1",
-    "sweetalert2": "8.16.2",
+    "sweetalert2": "8.16.3",
     "url-parse": "1.4.7"
   },
   "devDependencies": {

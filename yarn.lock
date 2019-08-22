@@ -1084,10 +1084,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
-"@mdi/js@4.0.96":
-  version "4.0.96"
-  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.0.96.tgz#bf79ba5b3e605a18ebc353dae427b75bd0bb9931"
-  integrity sha512-ivH9FeVkJn7Yh8K3nW36E9mpZJgyydgskE4EL3E6vPIuVoMfShNOdY0dt2vmOXY2GpItYH6syp6LdVuCFWjNVw==
+"@mdi/js@4.1.95":
+  version "4.1.95"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.1.95.tgz#2339bc40766c7c030e8b1ee3738117bfa695bcc5"
+  integrity sha512-yWJrAa7rAzGEAQQ4gvb6dpzoOXF+bvQI53TQaV4YNWDoCVkfJD6tIGbou06UJH+ZFZ6Rlo7kA+xWn4E3kPJlvw==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -11954,10 +11954,10 @@ svgo@^1.0.0, svgo@^1.2.2:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-sweetalert2@8.16.2:
-  version "8.16.2"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-8.16.2.tgz#3ebc47a4f76b31e7d1d2b9a3b524f5c822a8776f"
-  integrity sha512-x0QMDnRbxETUi28Aiv/ucLCvLKc/vzE03wIqzJ0c6wy2xINJ+tFht3vZ+5QLZAiLHRoA0uPO54oq4+hSqUVHzw==
+sweetalert2@8.16.3:
+  version "8.16.3"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-8.16.3.tgz#9b06566b2a203f7ee678a60885f10afccfcc6952"
+  integrity sha512-GfnVLht6OJGUcKnrIILaMbjhn2LvFDIG2MchUviWTa0vJCZoX9cfjWyZsOrOh+g/jRN/+D6V8UXXZJ6rRcN82w==
 
 symbol-observable@^1.1.0, symbol-observable@^1.2.0:
   version "1.2.0"
