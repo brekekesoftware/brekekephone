@@ -10,7 +10,6 @@ import {
   Body,
   Button,
   Left,
-  List,
   ListItem,
   Right,
   Switch,
@@ -47,69 +46,67 @@ const NoServer = p => (
 
 const Server = p => (
   <View listServer>
-    <List>
-      <ListItem infoUser>
-        <Left>
-          <SvgIcon path={mdiAccount} />
-        </Left>
-        <Body>
-          <Text note>USERNAME</Text>
-          <Text>{p.pbxUsername}</Text>
-        </Body>
-      </ListItem>
-      <ListItem infoUser>
-        <Left>
-          <SvgIcon path={mdiHome} />
-        </Left>
-        <Body>
-          <Text note>TENANT</Text>
-          <Text>{p.pbxTenant}</Text>
-        </Body>
-      </ListItem>
-      <ListItem infoUser>
-        <Left>
-          <SvgIcon path={mdiDesktopClassic} />
-        </Left>
-        <Body>
-          <Text note>HOST NAME</Text>
-          <Text>{p.pbxHostname}</Text>
-        </Body>
-      </ListItem>
-      <ListItem infoUser>
-        <Left>
-          <SvgIcon path={mdiUsb} />
-        </Left>
-        <Body>
-          <Text note>PORT</Text>
-          <Text>{p.pbxPort}</Text>
-        </Body>
-      </ListItem>
-      <ListItem statusUc>
-        <Left>
-          <Text>UC STATUS</Text>
-        </Left>
-        <Right>
-          <Switch value={p.ucEnabled} />
-        </Right>
-      </ListItem>
-      <ListItem btnlistServer>
-        <Left>
-          <Button onPress={() => p.remove(p.id)}>
-            <SvgIcon path={mdiDelete} />
-          </Button>
-        </Left>
-        <Body>
-          <Button onPress={() => p.update(p.id)}>
-            <SvgIcon path={mdiPencil} />
-          </Button>
-        </Body>
-        <Right>
-          <Button onPress={() => p.signin(p.id)}>
-            <Text>SIGN IN</Text>
-          </Button>
-        </Right>
-      </ListItem>
-    </List>
+    <ListItem infoUser>
+      <Left>
+        <SvgIcon path={mdiAccount} />
+      </Left>
+      <Body>
+        <Text note>USERNAME</Text>
+        <Text>{p.pbxUsername}</Text>
+      </Body>
+    </ListItem>
+    <ListItem infoUser>
+      <Left>
+        <SvgIcon path={mdiHome} />
+      </Left>
+      <Body>
+        <Text note>TENANT</Text>
+        <Text>{p.pbxTenant}</Text>
+      </Body>
+    </ListItem>
+    <ListItem infoUser>
+      <Left>
+        <SvgIcon path={mdiDesktopClassic} />
+      </Left>
+      <Body>
+        <Text note>HOST NAME</Text>
+        <Text>{p.pbxHostname}</Text>
+      </Body>
+    </ListItem>
+    <ListItem infoUser>
+      <Left>
+        <SvgIcon path={mdiUsb} />
+      </Left>
+      <Body>
+        <Text note>PORT</Text>
+        <Text>{p.pbxPort}</Text>
+      </Body>
+    </ListItem>
+    <ListItem statusUc>
+      <Left>
+        <Text>UC STATUS</Text>
+      </Left>
+      <Right>
+        <Switch value={p.ucEnabled} />
+      </Right>
+    </ListItem>
+    <ListItem btnlistServer>
+      <Left>
+        <Button onPress={() => p.remove(p.id)}>
+          <SvgIcon path={mdiDelete} />
+        </Button>
+      </Left>
+      <Body>
+        <Button onPress={() => p.update(p.id)}>
+          <SvgIcon path={mdiPencil} />
+        </Button>
+      </Body>
+      <Right>
+        <Button onPress={() => p.signin(p.id)}>
+          <Text>SIGN IN</Text>
+        </Button>
+      </Right>
+    </ListItem>
   </View>
 );
 

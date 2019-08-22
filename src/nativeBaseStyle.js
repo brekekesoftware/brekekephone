@@ -176,9 +176,19 @@ merge(nativeBaseStyle, {
         flex: 0.25,
       },
       'NativeBase.Body': {
+        'NativeBase.ViewNB': {
+          'NativeBase.Text': {
+            paddingLeft: 5,
+          },
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingTop: 5,
+        },
         'NativeBase.Text': {
           marginLeft: null,
           paddingVertical: 3,
+          fontSize: 18,
+          fontWeight: '400',
         },
         paddingVertical: variables.listItemPadding + 2,
         marginLeft: variables.listItemPadding + 5,
@@ -355,7 +365,7 @@ merge(nativeBaseStyle, {
           justifyContent: 'flex-end',
         },
         '.start': {
-          'NativeBase.Left': {
+          'NativeBase.ViewNB': {
             'NativeBase.Text': {
               fontWeight: '600',
               fontSize: 30,
@@ -408,7 +418,7 @@ merge(nativeBaseStyle, {
       width: '80%',
       marginLeft: variables.listItemPadding,
       borderRadius: 15,
-      top: '30%',
+      marginTop: '15%',
       padding: variables.listItemPadding - 5,
     },
     '.listServer': {

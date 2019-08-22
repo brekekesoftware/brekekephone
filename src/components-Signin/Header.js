@@ -1,4 +1,4 @@
-import { Button, Left, ListItem, Right, Text, View } from 'native-base';
+import { Button, ListItem, Right, Text, View } from 'native-base';
 import React from 'react';
 
 class Header extends React.Component {
@@ -8,18 +8,18 @@ class Header extends React.Component {
       <View heaederServer>
         <ListItem end>
           <Right>
-            {p.profileIds.length !== 0 ? (
+            {p.profileIds.length !== 0 && (
               <Button onPress={p.create}>
                 <Text>New</Text>
               </Button>
-            ) : null}
+            )}
           </Right>
         </ListItem>
         <ListItem start>
-          <Left>
+          <View>
             <Text>Servers</Text>
             <Text note>{p.profileIds.length} SERVER IN TOTAL</Text>
-          </Left>
+          </View>
         </ListItem>
       </View>
     );

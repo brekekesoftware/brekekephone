@@ -1,51 +1,27 @@
-import { Container, Content, List } from 'native-base';
+import { Container, Content } from 'native-base';
 import React from 'react';
-import { FlatList } from 'react-native';
 
 import SearchContact from '../components-Contacts/SearchContact';
+import Headers from '../components-Home/Header';
 import Users from './Users';
 
-const data_demo = [
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-];
-
 class PageRecents extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: data_demo,
-    };
-  }
-
   render() {
+    const p = this.props;
     return (
       <Container>
+        <Headers title="Recent" />
+        <SearchContact />
         <Content>
-          <SearchContact />
-          <List>
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <Users />;
-              }}
+          {p.callIds.map(id => (
+            <Users
+              key={id}
+              {...p.resolveCall(id)}
+              resolveUser={p.resolveUser}
+              callBack={() => p.callBack(id)}
+              remove={() => p.removeCall(id)}
             />
-          </List>
+          ))}
         </Content>
       </Container>
     );

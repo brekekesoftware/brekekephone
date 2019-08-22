@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import UI from './ui';
 
 @observer
 @createModelView(
   getter => state => ({
+    ucUserById: getter.ucUsers.detailMapById(state),
     callIds: getter.recentCalls.idsMapByProfile(state)[
       (authStore.profile || {}).id
     ],
@@ -31,10 +32,11 @@ class View extends React.Component {
   static defaultProps = {
     callIds: [],
     callById: {},
+    ucUserById: {},
   };
 
   render = () => (
-    <UI
+    <PageRecents
       callIds={this.props.callIds}
       resolveCall={this.resolveCall}
       removeCall={this.props.removeCall}
@@ -42,6 +44,7 @@ class View extends React.Component {
       gotoCallsManage={routerUtils.goToCallsManage}
       gotoCallsCreate={routerUtils.goToCallsCreate}
       parkingIds={this.props.parkingIds}
+      resolveUser={this.resolveUser}
     />
   );
 
@@ -56,6 +59,14 @@ class View extends React.Component {
     const number = call.partyNumber;
     sip.createSession(number);
     routerUtils.goToCallsManage();
+  };
+
+  resolveUser = id => {
+    const { ucUserById } = this.props;
+    const ucUser = ucUserById[id] || {};
+    return {
+      avatar: ucUser.avatar,
+    };
   };
 }
 

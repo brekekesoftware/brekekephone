@@ -1,34 +1,82 @@
+import { mdiPhone, mdiPhoneMissed } from '@mdi/js';
 import {
   Body,
   Button,
-  Icon,
   Left,
   ListItem,
   Right,
   Text,
   Thumbnail,
+  View,
 } from 'native-base';
 import React from 'react';
 
+import SvgIcon from '../components-shared/SvgIcon';
+
+const monthName = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+const formatTime = time => {
+  time = new Date(time);
+  const month = monthName[time.getMonth()];
+  const day = time.getDate();
+  const hour = time
+    .getHours()
+    .toString()
+    .padStart(2, '0');
+  const min = time
+    .getMinutes()
+    .toString()
+    .padStart(2, '0');
+  return `${month} ${day} - ${hour}:${min}`;
+};
+
 class User extends React.Component {
   render() {
+    const p = this.props;
+    const user = p.resolveUser(p.partyNumber);
     return (
       <ListItem listUser>
         <Left>
-          <Thumbnail
-            source={{
-              uri:
-                'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
-            }}
-          />
+          <Thumbnail source={{ uri: user.avatar }} />
         </Left>
         <Body>
-          <Text>Aong Bao</Text>
-          <Text note>Missed at 6/8/2018</Text>
+          <Text>{p.partyName || p.partyNumber}</Text>
+
+          {p.incoming && p.answered && (
+            <View>
+              <SvgIcon path={mdiPhoneMissed} />
+              <Text note>at {formatTime(p.created)}</Text>
+            </View>
+          )}
+          {p.incoming && !p.answered && (
+            <View>
+              <SvgIcon path={mdiPhoneMissed} />
+              <Text note>Missed at {formatTime(p.created)}</Text>
+            </View>
+          )}
+          {!p.incoming && (
+            <View>
+              <SvgIcon path={mdiPhoneMissed} />
+              <Text note>Outgoing at {formatTime(p.created)}</Text>
+            </View>
+          )}
         </Body>
         <Right>
-          <Button>
-            <Icon type="MaterialIcons" name="call" />
+          <Button onPress={p.callBack}>
+            <SvgIcon path={mdiPhone} />
           </Button>
         </Right>
       </ListItem>
