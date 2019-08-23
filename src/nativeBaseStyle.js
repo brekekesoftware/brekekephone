@@ -74,6 +74,34 @@ merge(nativeBaseStyle, {
         flex: 1,
       },
     },
+    '.headerChat': {
+      'NativeBase.Left': {
+        flex: 0.25,
+        paddingLeft: variables.listItemPadding,
+      },
+      'NativeBase.Body': {
+        'NativeBase.Text': {
+          fontWeight: '600',
+          fontSize: 18,
+        },
+        'NativeBase.ViewNB': {
+          paddingTop: variables.listItemPadding - 5,
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+        flex: 0.5,
+        alignItems: 'flex-start',
+        paddingTop: variables.listItemPadding - 5,
+      },
+      'NativeBase.Right': {
+        flex: 0.25,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+      },
+      justifyContent: 'space-between',
+      paddingVertical: 10,
+      borderBottomWidth: 1 / 3,
+    },
     paddingTop: 0,
     paddingBottom: 0,
     borderBottomColor: null,
@@ -169,6 +197,35 @@ merge(nativeBaseStyle, {
       paddingRight: null,
       paddingVertical: null,
       borderBottomWidth: null,
+    },
+    '.chat': {
+      'NativeBase.Left': {
+        flex: 0.2,
+      },
+      'NativeBase.Body': {
+        'NativeBase.ViewNB': {
+          'NativeBase.Text': {
+            '.note': {
+              fontSize: 12,
+              paddingLeft: variables.listItemPadding,
+              fontWeight: 'normal',
+            },
+            paddingRight: 10,
+            fontSize: 18,
+            fontWeight: '600',
+          },
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingTop: 5,
+        },
+        'NativeBase.Text': {
+          marginLeft: null,
+          fontSize: 18,
+          fontWeight: '400',
+        },
+        flex: 0.8,
+        marginLeft: variables.listItemPadding + 5,
+      },
     },
     '.listUser': {
       // -> components-Recent/Recents + PageContact

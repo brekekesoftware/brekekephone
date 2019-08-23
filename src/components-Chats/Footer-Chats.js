@@ -1,8 +1,8 @@
 import { Button, Form, Icon, Input, View } from 'native-base';
+import variable from 'native-base/src/theme/variables/commonColor';
 import React from 'react';
 import { KeyboardAvoidingView, StyleSheet } from 'react-native';
 
-import variable from '../native-base-theme/variables/platform';
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({

@@ -1,18 +1,14 @@
 import {
   Body,
-  Container,
   Content,
   Left,
-  List,
   ListItem,
   Right,
   Text,
   Thumbnail,
 } from 'native-base';
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-
-import SearchContact from '../components-Contacts/SearchContact';
+import { StyleSheet } from 'react-native';
 
 const st = StyleSheet.create({
   navright: {
@@ -25,17 +21,18 @@ const st = StyleSheet.create({
 });
 
 const User = p => (
-  <ListItem listChat>
+  <ListItem listChat onPress={p.select}>
     <Left>
-      <Thumbnail
-        source={{
-          uri:
-            'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
-        }}
-      />
+      <Thumbnail source={{ uri: p.avatar }} />
     </Left>
     <Body>
-      <Text>Aerald Richards</Text>
+      {(() => {
+        if (p.name) {
+          return <Text>{p.name}</Text>;
+        } else {
+          return <Text>{p.id}</Text>;
+        }
+      })()}
       <Text note>Tell me more about…</Text>
     </Body>
     <Right style={st.navright}>
@@ -44,55 +41,15 @@ const User = p => (
   </ListItem>
 );
 
-let data_demo = [
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
-  },
-  {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
-  },
-];
-
 class ListChats extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: data_demo,
-    };
-  }
-
   render() {
+    const p = this.props;
     return (
-      <Container>
-        <Content>
-          <SearchContact />
-          <List>
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <User />;
-              }}
-            />
-            <FlatList
-              data={this.state.data}
-              renderItem={({ item: rowData }) => {
-                return <User />;
-              }}
-            />
-          </List>
-        </Content>
-      </Container>
+      <Content>
+        {p.ids.map(id => (
+          <User key={id} {...p.byid[id]} select={() => p.select(id)} />
+        ))}
+      </Content>
     );
   }
 }

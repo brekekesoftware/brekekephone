@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import ChatsDetail from '../../components-Chats/Chat-Detail';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../nativeModules/toast';
 import stripTags from '../../utils/stripTags';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
-import UI from './ui';
 
 const monthName = [
   'Jan',
@@ -124,7 +124,7 @@ class View extends React.Component {
   }
 
   render = () => (
-    <UI
+    <ChatsDetail
       hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
       loadingRecent={this.state.loadingRecent}
       loadingMore={this.state.loadingMore}

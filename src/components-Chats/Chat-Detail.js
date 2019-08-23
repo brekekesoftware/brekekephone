@@ -7,9 +7,14 @@ import HeaderChat from './Header-Chat';
 
 class ChatsDetail extends React.Component {
   render() {
+    const p = this.props;
     return (
       <Container>
-        <HeaderChat />
+        <HeaderChat
+          ibuddyName={p.buddyName}
+          buddyId={p.buddyId}
+          back={p.back}
+        />
         <ChatMessages />
         <FooterChats />
       </Container>
