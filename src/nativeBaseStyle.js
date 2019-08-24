@@ -78,6 +78,7 @@ merge(nativeBaseStyle, {
       'NativeBase.Left': {
         flex: 0.25,
         paddingLeft: variables.listItemPadding,
+        paddingVertical: variables.listItemPadding - 5,
       },
       'NativeBase.Body': {
         'NativeBase.Text': {
@@ -91,16 +92,18 @@ merge(nativeBaseStyle, {
         },
         flex: 0.5,
         alignItems: 'flex-start',
-        paddingTop: variables.listItemPadding - 5,
+        paddingVertical: variables.listItemPadding - 5,
       },
       'NativeBase.Right': {
         flex: 0.25,
         flexDirection: 'row',
         justifyContent: 'flex-end',
+        paddingVertical: variables.listItemPadding - 5,
       },
       justifyContent: 'space-between',
       paddingVertical: 10,
       borderBottomWidth: 1 / 3,
+      height: 80,
     },
     paddingTop: 0,
     paddingBottom: 0,
@@ -126,6 +129,25 @@ merge(nativeBaseStyle, {
   },
   'NativeBase.Footer': {
     backgroundColor: 'white',
+    '.footerChat': {
+      'NativeBase.Left': {
+        'NativeBase.Button': {
+          width: 45,
+          height: 45,
+        },
+        flex: 0.2,
+        paddingLeft: variables.listItemPadding,
+      },
+      'NativeBase.Body': {
+        flex: 0.5,
+      },
+      'NativeBase.Right': {
+        flex: 0.3,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+      },
+      justifyContent: 'flex-start',
+    },
   },
   'NativeBase.FooterTab': {
     'NativeBase.Button': {
@@ -211,19 +233,18 @@ merge(nativeBaseStyle, {
               fontWeight: 'normal',
             },
             paddingRight: 10,
-            fontSize: 18,
-            fontWeight: '600',
+            fontSize: 14,
           },
           flexDirection: 'row',
           alignItems: 'center',
-          paddingTop: 5,
         },
         'NativeBase.Text': {
           marginLeft: null,
-          fontSize: 18,
-          fontWeight: '400',
+          paddingTop: 7,
+          fontSize: 16,
         },
         flex: 0.8,
+        alignSelf: 'flex-start',
         marginLeft: variables.listItemPadding + 5,
       },
     },

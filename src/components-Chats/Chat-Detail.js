@@ -15,8 +15,21 @@ class ChatsDetail extends React.Component {
           buddyId={p.buddyId}
           back={p.back}
         />
-        <ChatMessages />
-        <FooterChats />
+        <ChatMessages
+          hasMore={p.hasMore}
+          loadingMore={p.loadingMore}
+          ids={p.chatIds}
+          resolve={p.resolveChat}
+          loadMore={p.loadMore}
+          acceptFile={p.acceptFile}
+          rejectFile={p.rejectFile}
+        />
+        <FooterChats
+          text={p.editingText}
+          setText={p.setEditingText}
+          submitText={p.submitEditingText}
+          pickFile={p.pickFile}
+        />
       </Container>
     );
   }

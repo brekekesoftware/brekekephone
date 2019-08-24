@@ -1,59 +1,39 @@
-import { Button, Form, Icon, Input, View } from 'native-base';
-import variable from 'native-base/src/theme/variables/commonColor';
+import { mdiEmoticonOutline, mdiPlay, mdiPlus } from '@mdi/js';
+import { Body, Button, Footer, Form, Input, Left, Right } from 'native-base';
 import React from 'react';
-import { KeyboardAvoidingView, StyleSheet } from 'react-native';
 
-import { std } from '../styleguide';
-
-const st = StyleSheet.create({
-  footer: {
-    flexDirection: 'row',
-    backgroundColor: std.color.shade1,
-    paddingBottom: 0,
-    justifyContent: 'space-between',
-  },
-
-  btnLeft: {
-    marginLeft: variable.listItemPadding + 3,
-  },
-
-  conRight: {
-    flex: 1,
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginRight: variable.listItemPadding + 3,
-  },
-
-  formChat: {
-    width: '55%',
-    paddingLeft: 5,
-  },
-});
+import SvgIcon from '../components-shared/SvgIcon';
 
 class FooterChats extends React.Component {
   render() {
+    const p = this.props;
     return (
-      <KeyboardAvoidingView behavior="padding">
-        <View style={st.footer}>
-          <View>
-            <Button style={st.btnLeft} success>
-              <Icon name="add" type="MaterialIcons" />
-            </Button>
-          </View>
-          <Form style={st.formChat}>
-            <Input placeholder="Message" />
+      <Footer footerChat>
+        <Left>
+          <Button onPress={p.pickFile}>
+            <SvgIcon path={mdiPlus} />
+          </Button>
+        </Left>
+        <Body>
+          <Form>
+            <Input
+              placeholder="Type your message"
+              blurOnSubmit={false}
+              value={p.text}
+              onChangeText={p.setText}
+              onSubmitEditing={p.submitText}
+            />
           </Form>
-          <View style={st.conRight}>
-            <Button dark transparent>
-              <Icon name="sentiment-very-satisfied" type="MaterialIcons" />
-            </Button>
-            <Button success>
-              <Icon name="send" type="MaterialIcons" />
-            </Button>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+        </Body>
+        <Right>
+          <Button>
+            <SvgIcon path={mdiEmoticonOutline} />
+          </Button>
+          <Button>
+            <SvgIcon path={mdiPlay} />
+          </Button>
+        </Right>
+      </Footer>
     );
   }
 }
