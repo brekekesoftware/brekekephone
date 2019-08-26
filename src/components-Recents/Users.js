@@ -1,16 +1,8 @@
 import { mdiPhone, mdiPhoneMissed } from '@mdi/js';
-import {
-  Body,
-  Button,
-  Left,
-  ListItem,
-  Right,
-  Text,
-  Thumbnail,
-  View,
-} from 'native-base';
+import { Body, Button, Left, ListItem, Right, Text, View } from 'native-base';
 import React from 'react';
 
+import Avatar from '../components-shared/Avatar';
 import SvgIcon from '../components-shared/SvgIcon';
 
 const monthName = [
@@ -50,7 +42,12 @@ class User extends React.Component {
     return (
       <ListItem listUser>
         <Left>
-          <Thumbnail source={{ uri: user.avatar }} />
+          <Avatar
+            source={user.avatar}
+            online={user.online}
+            offline={user.offline}
+            busy={user.busy}
+          />
         </Left>
         <Body>
           <Text>{p.partyName || p.partyNumber}</Text>

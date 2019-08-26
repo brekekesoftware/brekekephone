@@ -132,6 +132,7 @@ class View extends React.Component {
       buddyId={this.props.buddy.id}
       chatIds={this.props.chatIds}
       resolveChat={this.resolveChat}
+      resolveCreator={this.resolveCreator}
       editingText={this.state.editingText}
       setEditingText={this.setEditingText}
       submitEditingText={this.submitEditingText}
@@ -169,6 +170,10 @@ class View extends React.Component {
     return {
       creatorName: creatorName,
       creatorAvatar: creator.avatar,
+      // online: creator.online,
+      // offline: creator.offline,
+      // idle: creator.idle,
+      // busy: creator.busy,
       text,
       file,
       created,

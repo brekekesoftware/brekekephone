@@ -11,7 +11,7 @@ class FooterChats extends React.Component {
       <Footer footerChat>
         <Left>
           <Button onPress={p.pickFile}>
-            <SvgIcon path={mdiPlus} />
+            <SvgIcon path={mdiPlus} bgcolor="#74bf53" />
           </Button>
         </Left>
         <Body>

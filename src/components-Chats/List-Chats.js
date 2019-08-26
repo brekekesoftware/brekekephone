@@ -1,14 +1,8 @@
-import {
-  Body,
-  Content,
-  Left,
-  ListItem,
-  Right,
-  Text,
-  Thumbnail,
-} from 'native-base';
+import { Body, Content, Left, ListItem, Right, Text } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
+import Avatar from '../components-shared/Avatar';
 
 const st = StyleSheet.create({
   navright: {
@@ -23,7 +17,12 @@ const st = StyleSheet.create({
 const User = p => (
   <ListItem listChat onPress={p.select}>
     <Left>
-      <Thumbnail source={{ uri: p.avatar }} />
+      <Avatar
+        source={p.avatar}
+        online={p.online}
+        offline={p.offline}
+        busy={p.busy}
+      />
     </Left>
     <Body>
       {(() => {

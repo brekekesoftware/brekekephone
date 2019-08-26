@@ -14,6 +14,7 @@ import Progress from 'react-native-progress-circle';
 
 import SvgIcon from '../components-shared/SvgIcon';
 import { std } from '../styleguide';
+import Scroll from './Scroll';
 
 const File = p => (
   <View>
@@ -52,30 +53,33 @@ const File = p => (
 );
 
 const Chat = p => (
-  <ListItem chat>
-    <Left>
-      <Thumbnail source={{ uri: p.creatorAvatar }} />
-    </Left>
-    <Body>
-      <View>
-        <Text>{p.creatorName}</Text>
-        <Text note>{p.created}</Text>
-      </View>
-      {!!p.text && <Text numberOfLines={999}>{p.text}</Text>}
-      {!!p.file && (
-        <File
-          {...p.file}
-          accept={() => p.acceptFile(p.file)}
-          reject={() => p.rejectFile(p.file)}
-        />
-      )}
-    </Body>
-  </ListItem>
+  <Scroll>
+    <ListItem chat>
+      <Left>
+        <Thumbnail source={{ uri: p.creatorAvatar }} />
+      </Left>
+      <Body>
+        <View>
+          <Text>{p.creatorName}</Text>
+          <Text note>{p.created}</Text>
+        </View>
+        {!!p.text && <Text numberOfLines={999}>{p.text}</Text>}
+        {!!p.file && (
+          <File
+            {...p.file}
+            accept={() => p.acceptFile(p.file)}
+            reject={() => p.rejectFile(p.file)}
+          />
+        )}
+      </Body>
+    </ListItem>
+  </Scroll>
 );
 
 class ChatMessages extends React.Component {
   render() {
     const p = this.props;
+    console.warn('p', p);
     return (
       <Content>
         {p.ids.map((id, index) => (

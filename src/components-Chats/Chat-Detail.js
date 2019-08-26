@@ -13,7 +13,9 @@ class ChatsDetail extends React.Component {
         <HeaderChat
           ibuddyName={p.buddyName}
           buddyId={p.buddyId}
+          resolve={p.resolveChat}
           back={p.back}
+          resolveCreator={p.resolveCreator}
         />
         <ChatMessages
           hasMore={p.hasMore}

@@ -1,16 +1,9 @@
 import { mdiMessage, mdiPhone } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
-import {
-  Body,
-  Button,
-  Left,
-  ListItem,
-  Right,
-  Text,
-  Thumbnail,
-} from 'native-base';
+import { Body, Button, Left, ListItem, Right, Text } from 'native-base';
 import React from 'react';
 
+import Avatar from '../components-shared/Avatar';
 import SvgIcon from '../components-shared/SvgIcon';
 import SearchContact from './SearchContact';
 
@@ -18,7 +11,6 @@ class TabUsers extends React.Component {
   render() {
     const p = this.props;
     const users = p.userIds.map(p.resolveUser);
-
     const map = {};
     users.forEach(u => {
       u.name = u.name || u.id;
@@ -53,10 +45,11 @@ class TabUsers extends React.Component {
             {g.users.map(u => (
               <ListItem key={u.id} listUser>
                 <Left>
-                  <Thumbnail
-                    source={{
-                      uri: u.avatar,
-                    }}
+                  <Avatar
+                    source={u.avatar}
+                    online={u.chatOnline}
+                    offline={u.chatOffline}
+                    busy={u.chatBusy}
                   />
                 </Left>
                 <Body>
