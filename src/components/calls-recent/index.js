@@ -64,7 +64,6 @@ class View extends React.Component {
   resolveUser = id => {
     const { ucUserById } = this.props;
     const ucUser = ucUserById[id] || {};
-    console.warn('ucUser', ucUser);
     return {
       avatar: ucUser.avatar,
       online: ucUser.online,

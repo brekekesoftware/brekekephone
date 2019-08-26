@@ -79,7 +79,6 @@ const Chat = p => (
 class ChatMessages extends React.Component {
   render() {
     const p = this.props;
-    console.warn('p', p);
     return (
       <Content>
         {p.ids.map((id, index) => (

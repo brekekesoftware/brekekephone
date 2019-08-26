@@ -170,10 +170,6 @@ class View extends React.Component {
     return {
       creatorName: creatorName,
       creatorAvatar: creator.avatar,
-      // online: creator.online,
-      // offline: creator.offline,
-      // idle: creator.idle,
-      // busy: creator.busy,
       text,
       file,
       created,
