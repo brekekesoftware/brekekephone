@@ -68,12 +68,6 @@ class View extends React.Component {
     routerUtils.goToCallsManage();
   };
 
-  userCallIds() {
-    const users = [];
-    this.props.callIds.map(id => users.push(this.resolveCall(id)));
-    return users;
-  }
-
   resolveUser = id => {
     const { ucUserById } = this.props;
     const ucUser = ucUserById[id] || {};
