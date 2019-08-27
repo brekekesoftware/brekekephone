@@ -105,6 +105,20 @@ merge(nativeBaseStyle, {
       borderBottomWidth: 1 / 3,
       height: 80,
     },
+    '.search': {
+      'NativeBase.Item': {
+        'NativeBase.Input': {
+          flex: 1,
+          paddingVertical: 0,
+        },
+      },
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#f1f1f1',
+      // padding: std.gap.lg,
+      borderColor: '#e2e2e4',
+      // borderBottomWidth: StyleSheet.hairlineWidth,
+    },
     paddingTop: 0,
     paddingBottom: 0,
     borderBottomColor: null,
@@ -546,6 +560,9 @@ merge(nativeBaseStyle, {
       justifyContent: 'space-between',
       marginHorizontal: variables.listItemPadding,
       top: '50%',
+    },
+    '.center': {
+      alignItems: 'center',
     },
   },
 });

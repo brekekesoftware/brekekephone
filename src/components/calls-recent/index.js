@@ -11,6 +11,7 @@ import * as routerUtils from '../../mobx/routerStore';
 @createModelView(
   getter => state => ({
     ucUserById: getter.ucUsers.detailMapById(state),
+    searchText: getter.usersBrowsing.searchText(state),
     callIds: getter.recentCalls.idsMapByProfile(state)[
       (authStore.profile || {}).id
     ],
@@ -21,6 +22,9 @@ import * as routerUtils from '../../mobx/routerStore';
     removeCall(id) {
       d(action.recentCalls.remove(id));
     },
+    setSearchText(value) {
+      d(action.usersBrowsing.setSearchText(value));
+    },
   }),
 )
 @observer
@@ -30,6 +34,7 @@ class View extends React.Component {
   };
 
   static defaultProps = {
+    searchText: '',
     callIds: [],
     callById: {},
     ucUserById: {},
@@ -37,7 +42,6 @@ class View extends React.Component {
 
   render = () => (
     <PageRecents
-      callIds={this.props.callIds}
       resolveCall={this.resolveCall}
       removeCall={this.props.removeCall}
       callBack={this.callBack}
@@ -45,6 +49,9 @@ class View extends React.Component {
       gotoCallsCreate={routerUtils.goToCallsCreate}
       parkingIds={this.props.parkingIds}
       resolveUser={this.resolveUser}
+      searchText={this.props.searchText}
+      setSearchText={this.setSearchText}
+      callIds={this.getMatchUserIds()}
     />
   );
 
@@ -61,6 +68,12 @@ class View extends React.Component {
     routerUtils.goToCallsManage();
   };
 
+  userCallIds() {
+    const users = [];
+    this.props.callIds.map(id => users.push(this.resolveCall(id)));
+    return users;
+  }
+
   resolveUser = id => {
     const { ucUserById } = this.props;
     const ucUser = ucUserById[id] || {};
@@ -72,6 +85,23 @@ class View extends React.Component {
       busy: ucUser.busy,
     };
   };
+
+  setSearchText = value => {
+    this.props.setSearchText(value);
+  };
+
+  isMatchUser = id => {
+    if (!id) {
+      return false;
+    }
+    const { callById, searchText } = this.props;
+    const callUser = callById[id];
+    if (callUser.partyNumber.includes(searchText)) {
+      return callUser.id;
+    }
+  };
+
+  getMatchUserIds = () => this.props.callIds.filter(this.isMatchUser);
 }
 
 export default View;

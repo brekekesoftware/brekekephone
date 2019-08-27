@@ -36,7 +36,7 @@ class TabUsers extends React.Component {
 
     return (
       <React.Fragment>
-        <SearchContact />
+        <SearchContact value={p.searchText} setValue={p.setSearchText} />
         {groups.map(g => (
           <React.Fragment key={g.key}>
             <ListItem itemDivider>

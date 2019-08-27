@@ -11,7 +11,7 @@ class PageRecents extends React.Component {
     return (
       <Container>
         <Headers title="Recent" />
-        <SearchContact />
+        <SearchContact value={p.searchText} setValue={p.setSearchText} />
         <Content>
           {p.callIds.map(id => (
             <Users
