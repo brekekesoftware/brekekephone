@@ -1,4 +1,12 @@
-import { Body, Content, Left, ListItem, Right, Text } from 'native-base';
+import {
+  Body,
+  Button,
+  Content,
+  Left,
+  ListItem,
+  Right,
+  Text,
+} from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -45,6 +53,9 @@ class ListChats extends React.Component {
     const p = this.props;
     return (
       <Content>
+        <Button onPress={p.createGroup}>
+          <Text>Create group</Text>
+        </Button>
         {p.ids.map(id => (
           <User key={id} {...p.byid[id]} select={() => p.select(id)} />
         ))}

@@ -11,6 +11,7 @@ const isGroupJointed = group => group.jointed;
 @createModelView(
   getter => state => ({
     buddyIds: getter.buddyChats.buddyIdsByRecent(state),
+    searchText: getter.usersBrowsing.searchText(state),
     buddyById: getter.ucUsers.detailMapById(state),
     groupIds: getter.chatGroups
       .idsByOrder(state)
@@ -18,22 +19,56 @@ const isGroupJointed = group => group.jointed;
     groupById: getter.chatGroups.detailMapById(state),
   }),
   action => emit => ({
-    //
+    setSearchText(value) {
+      emit(action.usersBrowsing.setSearchText(value));
+    },
   }),
 )
 @observer
 class View extends React.Component {
+  static defaultProps = {
+    searchText: '',
+    buddyIds: [],
+    buddyById: {},
+    groupIds: [],
+    groupById: {},
+  };
+
   render = () => (
     <ChatsHome
-      buddyIds={this.props.buddyIds}
+      buddyIds={this.getMatchIds()}
       buddyById={this.props.buddyById}
       groupIds={this.props.groupIds}
       groupById={this.props.groupById}
       selectBuddy={routerUtils.goToBuddyChatsRecent}
       selectGroup={routerUtils.goToChatGroupsRecent}
       createGroup={routerUtils.goToChatGroupsCreate}
+      searchText={this.props.searchText}
+      setSearchText={this.setSearchText}
     />
   );
+
+  setSearchText = value => {
+    this.props.setSearchText(value);
+  };
+
+  isMatchUser = id => {
+    if (!id) {
+      return false;
+    }
+    const { buddyById, searchText } = this.props;
+    const userId = id && id.toLowerCase();
+    let chatUserName;
+    const chatUser = buddyById[id];
+    if (chatUser) {
+      chatUserName = chatUser.name.toLowerCase();
+    } else {
+      chatUserName = '';
+    }
+    return userId.includes(searchText) || chatUserName.includes(searchText);
+  };
+
+  getMatchIds = () => this.props.buddyIds.filter(this.isMatchUser);
 }
 
 export default View;

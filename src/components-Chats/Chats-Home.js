@@ -11,8 +11,13 @@ class ChatsHome extends React.Component {
     return (
       <Container>
         <Headers title="Chats" />
-        <SearchContact />
-        <ListChats ids={p.buddyIds} byid={p.buddyById} select={p.selectBuddy} />
+        <SearchContact value={p.searchText} setValue={p.setSearchText} />
+        <ListChats
+          ids={p.buddyIds}
+          byid={p.buddyById}
+          select={p.selectBuddy}
+          createGroup={p.createGroup}
+        />
       </Container>
     );
   }

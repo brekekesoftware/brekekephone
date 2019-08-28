@@ -9,7 +9,7 @@ const SvgIcon = p => (
     style={{
       width: p.width || 24,
       height: p.height || 24,
-      backgroundColor: p.bgcolor,
+      // backgroundColor: p.bgcolor,
     }}
   >
     <Path d={p.path} fill={p.color} />

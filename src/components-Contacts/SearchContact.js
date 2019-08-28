@@ -16,8 +16,8 @@ class SearchContact extends React.Component {
             onChangeText={p.setValue}
           />
           {!!p.value && (
-            <Button onPress={() => p.setValue('')}>
-              <SvgIcon path={mdiClose} />
+            <Button transparent onPress={() => p.setValue('')}>
+              <SvgIcon path={mdiClose} width="18" height="18" />
             </Button>
           )}
         </Item>
