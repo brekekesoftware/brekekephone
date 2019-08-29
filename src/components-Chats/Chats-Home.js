@@ -8,7 +8,6 @@ import ListChats from './List-Chats';
 class ChatsHome extends React.Component {
   render() {
     const p = this.props;
-    console.warn('home p', p);
     return (
       <Container>
         <Headers title="Chats" />
