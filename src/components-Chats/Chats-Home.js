@@ -8,15 +8,19 @@ import ListChats from './List-Chats';
 class ChatsHome extends React.Component {
   render() {
     const p = this.props;
+    console.warn('home p', p);
     return (
       <Container>
         <Headers title="Chats" />
         <SearchContact value={p.searchText} setValue={p.setSearchText} />
         <ListChats
-          ids={p.buddyIds}
-          byid={p.buddyById}
-          select={p.selectBuddy}
+          userids={p.buddyIds}
+          userbyid={p.buddyById}
+          userselect={p.selectBuddy}
           createGroup={p.createGroup}
+          groupids={p.groupIds}
+          groupbyid={p.groupById}
+          groupselect={p.selectGroup}
         />
       </Container>
     );

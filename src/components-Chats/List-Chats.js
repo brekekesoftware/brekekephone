@@ -48,6 +48,28 @@ const User = p => (
   </ListItem>
 );
 
+const Group = p => (
+  <ListItem listChat onPress={p.select}>
+    <Left>
+      <Avatar
+        source={p.avatar}
+        online={p.online}
+        offline={p.offline}
+        busy={p.busy}
+      />
+    </Left>
+    <Body>
+      {(() => {
+        if (p.name) {
+          return <Text>{p.name}</Text>;
+        } else {
+          return <Text>{p.id}</Text>;
+        }
+      })()}
+    </Body>
+  </ListItem>
+);
+
 class ListChats extends React.Component {
   render() {
     const p = this.props;
@@ -56,8 +78,15 @@ class ListChats extends React.Component {
         <Button onPress={p.createGroup}>
           <Text>Create group</Text>
         </Button>
-        {p.ids.map(id => (
-          <User key={id} {...p.byid[id]} select={() => p.select(id)} />
+        {p.userids.map(id => (
+          <User key={id} {...p.userbyid[id]} select={() => p.userselect(id)} />
+        ))}
+        {p.groupids.map(id => (
+          <Group
+            key={id}
+            {...p.groupbyid[id]}
+            select={() => p.groupselect(id)}
+          />
         ))}
       </Content>
     );

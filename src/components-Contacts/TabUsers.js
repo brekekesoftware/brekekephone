@@ -1,13 +1,23 @@
-import { mdiMessage, mdiPhone } from '@mdi/js';
+import { mdiMessage, mdiPhone, mdiVideo } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
-import { Body, Button, Left, ListItem, Right, Text } from 'native-base';
+import { Body, Button, Left, ListItem, Right, Text, View } from 'native-base';
 import React from 'react';
+import { Platform } from 'react-native';
 
 import Avatar from '../components-shared/Avatar';
+import Modal from '../components-shared/NativeModal';
 import SvgIcon from '../components-shared/SvgIcon';
 import SearchContact from './SearchContact';
 
 class TabUsers extends React.Component {
+  state = {
+    isModalVisible: false,
+    id: '',
+  };
+
+  toggleModal = id => {
+    this.setState({ isModalVisible: !this.state.isModalVisible, id: id });
+  };
   render() {
     const p = this.props;
     const users = p.userIds.map(p.resolveUser);
@@ -60,14 +70,58 @@ class TabUsers extends React.Component {
                   <Button onPress={() => p.chat(u.id)}>
                     <SvgIcon path={mdiMessage} />
                   </Button>
-                  <Button onPress={() => p.callVoice(u.id)}>
-                    <SvgIcon path={mdiPhone} />
-                  </Button>
+                  {Platform.OS !== 'web' && (
+                    <Button onPress={() => this.toggleModal(u.id)}>
+                      <SvgIcon path={mdiPhone} />
+                    </Button>
+                  )}
+                  {Platform.OS === 'web' && (
+                    <Button onPress={() => p.callVoice(u.id)}>
+                      <SvgIcon path={mdiPhone} />
+                    </Button>
+                  )}
                 </Right>
               </ListItem>
             ))}
           </React.Fragment>
         ))}
+        {Platform.OS !== 'web' && (
+          <View style={{ flex: 1 }}>
+            <Modal
+              isVisible={this.state.isModalVisible}
+              onSwipeComplete={() => this.setState({ isModalVisible: null })}
+              swipeDirection={['up', 'left', 'right', 'down']}
+              style={{ justifyContent: 'flex-end', margin: 0 }}
+            >
+              <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                <View style={{ backgroundColor: '#ffffff' }}>
+                  <ListItem listUser onPress={() => p.callVoice(this.state.id)}>
+                    <Left>
+                      <SvgIcon path={mdiPhone} />
+                    </Left>
+                    <Body>
+                      <Text>VOICE CALLING</Text>
+                    </Body>
+                  </ListItem>
+                  <ListItem listUser onPress={() => p.callVideo(this.state.id)}>
+                    <Left>
+                      <SvgIcon path={mdiVideo} />
+                    </Left>
+                    <Body>
+                      <Text>VIDEO CALLING</Text>
+                    </Body>
+                  </ListItem>
+                  <ListItem listUser>
+                    <Left></Left>
+                    <Body>
+                      <Text>CANCEL</Text>
+                    </Body>
+                  </ListItem>
+                </View>
+              </View>
+            </Modal>
+          </View>
+        )}
       </React.Fragment>
     );
   }

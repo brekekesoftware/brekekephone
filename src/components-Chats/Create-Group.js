@@ -56,7 +56,7 @@ class CreateGroup extends React.Component {
               label="NEW GROUP"
               placeholder="Group name"
               value={p.name}
-              onChangeText={p.setName}
+              onChange={p.setName}
             />
           </Form>
           <Button full success onPress={p.create}>
