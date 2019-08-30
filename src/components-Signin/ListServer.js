@@ -17,8 +17,9 @@ import {
   View,
 } from 'native-base';
 import React from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, Platform } from 'react-native';
 
+import Modal from '../components-shared/NativeModal';
 import SvgIcon from '../components-shared/SvgIcon';
 
 const NoServer = p => (
@@ -91,11 +92,20 @@ const Server = p => (
       </Right>
     </ListItem>
     <ListItem btnlistServer>
-      <Left>
-        <Button onPress={() => p.remove(p.id)}>
-          <SvgIcon path={mdiDelete} />
-        </Button>
-      </Left>
+      {Platform.OS !== 'web' && (
+        <Left>
+          <Button onPress={() => p.toggleModal(p.id)}>
+            <SvgIcon path={mdiDelete} />
+          </Button>
+        </Left>
+      )}
+      {Platform.OS === 'web' && (
+        <Left>
+          <Button onPress={() => p.remove(p.id)}>
+            <SvgIcon path={mdiDelete} />
+          </Button>
+        </Left>
+      )}
       <Body>
         <Button onPress={() => p.update(p.id)}>
           <SvgIcon path={mdiPencil} />
@@ -127,12 +137,36 @@ class ListServer extends React.Component {
                   remove={p.remove}
                   update={p.update}
                   signin={p.signin}
+                  toggleModal={p.toggleModal}
                 />
               );
             }}
           />
         ) : (
           <NoServer create={p.create} />
+        )}
+        {Platform.OS !== 'web' && (
+          <View style={{ flex: 1 }}>
+            <Modal isVisible={p.isModalVisible}>
+              <View removeServer>
+                <View>
+                  <Text>Remove server</Text>
+                  <Text note numberOfLines={4}>
+                    Are you sure to remove this server. This server will be
+                    removed permenantly
+                  </Text>
+                  <View>
+                    <Button cancel onPress={p.exitModal}>
+                      <Text>CANCEL</Text>
+                    </Button>
+                    <Button remove onPress={() => p.remove(p.idserver)}>
+                      <Text>REMOVE</Text>
+                    </Button>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          </View>
         )}
       </View>
     );

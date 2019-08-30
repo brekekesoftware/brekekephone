@@ -37,6 +37,11 @@ class View extends React.Component {
     ucUserById: {},
   };
 
+  state = {
+    isModalVisible: false,
+    id: '',
+  };
+
   render = () => (
     <PageContact
       searchText={this.props.searchText}
@@ -46,8 +51,20 @@ class View extends React.Component {
       callVideo={this.callVideo}
       chat={routerUtils.goToBuddyChatsRecent}
       setSearchText={this.setSearchText}
+      toggleModal={this.toggleModal}
+      isModalVisible={this.state.isModalVisible}
+      exitModal={this.exitModal}
+      iduser={this.state.id}
     />
   );
+
+  toggleModal = id => {
+    this.setState({ isModalVisible: !this.state.isModalVisible, id: id });
+  };
+
+  exitModal = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
 
   isMatchUser = id => {
     if (!id) {

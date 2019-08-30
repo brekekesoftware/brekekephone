@@ -10,14 +10,6 @@ import SvgIcon from '../components-shared/SvgIcon';
 import SearchContact from './SearchContact';
 
 class TabUsers extends React.Component {
-  state = {
-    isModalVisible: false,
-    id: '',
-  };
-
-  toggleModal = id => {
-    this.setState({ isModalVisible: !this.state.isModalVisible, id: id });
-  };
   render() {
     const p = this.props;
     const users = p.userIds.map(p.resolveUser);
@@ -71,7 +63,7 @@ class TabUsers extends React.Component {
                     <SvgIcon path={mdiMessage} />
                   </Button>
                   {Platform.OS !== 'web' && (
-                    <Button onPress={() => this.toggleModal(u.id)}>
+                    <Button onPress={() => p.toggleModal(u.id)}>
                       <SvgIcon path={mdiPhone} />
                     </Button>
                   )}
@@ -88,14 +80,13 @@ class TabUsers extends React.Component {
         {Platform.OS !== 'web' && (
           <View style={{ flex: 1 }}>
             <Modal
-              isVisible={this.state.isModalVisible}
-              onSwipeComplete={() => this.setState({ isModalVisible: null })}
+              isVisible={p.isModalVisible}
               swipeDirection={['up', 'left', 'right', 'down']}
               style={{ justifyContent: 'flex-end', margin: 0 }}
             >
-              <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                <View style={{ backgroundColor: '#ffffff' }}>
-                  <ListItem listUser onPress={() => p.callVoice(this.state.id)}>
+              <View callModal>
+                <View>
+                  <ListItem listUser onPress={() => p.callVoice(p.iduser)}>
                     <Left>
                       <SvgIcon path={mdiPhone} />
                     </Left>
@@ -103,7 +94,7 @@ class TabUsers extends React.Component {
                       <Text>VOICE CALLING</Text>
                     </Body>
                   </ListItem>
-                  <ListItem listUser onPress={() => p.callVideo(this.state.id)}>
+                  <ListItem listUser onPress={() => p.callVideo(p.iduser)}>
                     <Left>
                       <SvgIcon path={mdiVideo} />
                     </Left>
@@ -111,7 +102,7 @@ class TabUsers extends React.Component {
                       <Text>VIDEO CALLING</Text>
                     </Body>
                   </ListItem>
-                  <ListItem listUser>
+                  <ListItem listUser onPress={p.exitModal}>
                     <Left></Left>
                     <Body>
                       <Text>CANCEL</Text>

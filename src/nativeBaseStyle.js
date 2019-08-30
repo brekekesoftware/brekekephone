@@ -524,6 +524,51 @@ merge(nativeBaseStyle, {
       marginBottom: variables.listItemPadding,
       borderRadius: 15,
     },
+    '.removeServer': {
+      'NativeBase.ViewNB': {
+        'NativeBase.Text': {
+          padding: variables.listItemPadding,
+          fontSize: 18,
+          fontWeight: '400',
+        },
+        'NativeBase.ViewNB': {
+          'NativeBase.Button': {
+            '.cancel': {
+              'NativeBase.Text': {
+                fontSize: 14,
+                fontWeight: '400',
+                color: '#ffffff',
+              },
+              backgroundColor: '#212121',
+              marginRight: variables.listItemPadding,
+            },
+            '.remove': {
+              'NativeBase.Text': {
+                fontSize: 14,
+                fontWeight: '400',
+                color: '#ffffff',
+              },
+              backgroundColor: '#74bf53',
+            },
+          },
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          marginRight: variables.listItemPadding,
+          marginTop: variables.listItemPadding,
+        },
+        backgroundColor: '#ffffff',
+        padding: variables.listItemPadding,
+      },
+      flex: 1,
+      justifyContent: 'center',
+    },
+    '.callModal': {
+      'NativeBase.ViewNB': {
+        backgroundColor: '#ffffff',
+      },
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
     '.av_transfer': {
       'NativeBase.ViewNB': {
         '.center': {

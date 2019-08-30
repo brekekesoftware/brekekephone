@@ -39,6 +39,11 @@ import { setProfilesManager } from './getset';
 )
 @observer
 class View extends React.Component {
+  state = {
+    isModalVisible: false,
+    id: '',
+  };
+
   async componentDidMount() {
     setProfilesManager(this);
     this.handleUrlParams();
@@ -48,6 +53,14 @@ class View extends React.Component {
     setProfilesManager(null);
     setUrlParams(null);
   }
+
+  toggleModal = id => {
+    this.setState({ isModalVisible: !this.state.isModalVisible, id: id });
+  };
+
+  exitModal = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
 
   handleUrlParams = async () => {
     const urlParams = await getUrlParams();
@@ -176,6 +189,11 @@ class View extends React.Component {
     return true;
   };
 
+  remove = id => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+    this.props.removeProfile(id);
+  };
+
   render() {
     return (
       <PageServers
@@ -184,7 +202,11 @@ class View extends React.Component {
         create={routerUtils.goToProfilesCreate}
         update={routerUtils.goToProfileUpdate}
         signin={this.signin}
-        remove={this.props.removeProfile}
+        remove={this.remove}
+        toggleModal={this.toggleModal}
+        isModalVisible={this.state.isModalVisible}
+        exitModal={this.exitModal}
+        idserver={this.state.id}
       />
     );
   }
