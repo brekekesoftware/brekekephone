@@ -1,11 +1,24 @@
-import { Container, Content, Tab, TabHeading, Tabs, Text } from 'native-base';
+import { mdiAccountPlusOutline } from '@mdi/js';
+import {
+  Container,
+  Content,
+  Fab,
+  Icon,
+  Tab,
+  TabHeading,
+  Tabs,
+  Text,
+  View,
+} from 'native-base';
 import React from 'react';
 
 import Hearders from '../components-Home/Header';
+import SvgIcon from '../components-shared/SvgIcon';
 import TabUsers from './TabUsers';
 
 class PageContacts extends React.Component {
   render() {
+    const p = this.props;
     return (
       <Container>
         <Hearders title="Contacts" />
@@ -18,7 +31,7 @@ class PageContacts extends React.Component {
                 </TabHeading>
               }
             >
-              <TabUsers {...this.props} />
+              <TabUsers {...p} />
             </Tab>
             <Tab
               heading={
@@ -29,6 +42,17 @@ class PageContacts extends React.Component {
             />
           </Tabs>
         </Content>
+
+        <Fab
+          active={p.activeFab}
+          direction="up"
+          containerStyle={{}}
+          style={{ backgroundColor: '#74bf53' }}
+          position="bottomRight"
+          containerStyle={{}}
+        >
+          <SvgIcon path={mdiAccountPlusOutline} />
+        </Fab>
       </Container>
     );
   }

@@ -40,6 +40,7 @@ class View extends React.Component {
   state = {
     isModalVisible: false,
     id: '',
+    activeFab: false,
   };
 
   render = () => (
@@ -55,6 +56,7 @@ class View extends React.Component {
       isModalVisible={this.state.isModalVisible}
       exitModal={this.exitModal}
       iduser={this.state.id}
+      activeFab={this.state.activeFab}
     />
   );
 
