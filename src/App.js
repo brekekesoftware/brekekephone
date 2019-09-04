@@ -13,8 +13,8 @@ import storage from 'redux-persist/lib/storage';
 import APIProvider from './apis';
 import { history } from './mobx/routerStore';
 import * as models from './models';
-import nativeBaseStyle from './nativeBaseStyle';
 import Routes from './Routes';
+import nativeBaseTheme from './style/nativeBaseTheme';
 
 delete models.__esModule;
 
@@ -36,7 +36,7 @@ const App = () => (
     <PersistGate persistor={storePersistor}>
       <ModelProvider getter={getter} action={action}>
         <APIProvider>
-          <StyleProvider style={nativeBaseStyle}>
+          <StyleProvider style={nativeBaseTheme}>
             <Router history={history}>
               <Routes />
             </Router>

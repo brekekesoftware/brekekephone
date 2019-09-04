@@ -6,7 +6,7 @@ import React from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
 import App from './App';
-import logoSrc from './Icon-180px.png';
+import logoSrc from './assets/icon.png';
 
 @observer
 class AppWeb extends React.Component {

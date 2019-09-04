@@ -3,36 +3,39 @@ import { Button, Text, View } from 'native-base';
 import React from 'react';
 
 import SvgIcon from '../components-shared/SvgIcon';
-import { registerStyle } from '../nativeBaseStyle';
+import registerStyle from '../style/registerStyle';
 
 registerStyle(v => ({
-  'NativeBase.ViewNB': {
-    '.AppHeader': {
+  View: {
+    AppHeader: {
       position: 'relative',
       overflow: 'hidden',
       padding: v.padding,
     },
   },
-  'NativeBase.Text': {
-    '.AppHeader_Text': {
+  Text: {
+    AppHeader_Text: {
       fontWeight: 'bold',
       fontSize: '2em',
     },
-    '.AppHeader_SubText': {
+    AppHeader_SubText: {
       fontWeight: 'bold',
       fontSize: '0.8em',
       opacity: 0.7,
     },
   },
-  'NativeBase.Button': {
-    '.AppHeader_CreateBtn': {
+  Button: {
+    AppHeader_CreateBtn: {
       position: 'absolute',
-      top: 15,
+      top: v.padding,
       right: v.padding,
       borderRadius: '100%',
       backgroundColor: 'white',
-      width: 55,
-      height: 55,
+      width: 50,
+      height: 50,
+    },
+    AppHeader_CreateBtnGreen: {
+      backgroundColor: v.brekekeGreen,
     },
   },
 }));
@@ -41,10 +44,24 @@ const AppHeader = p => (
   <View AppHeader>
     <Text AppHeader_Text>{p.text}</Text>
     <Text AppHeader_SubText>{p.subText || ' '}</Text>
-    <Button AppHeader_CreateBtn onPress={p.onCreateBtnPress}>
-      <SvgIcon path={mdiPlus} flex="1" />
-    </Button>
+    {p.onCreateBtnPress && (
+      <Button
+        AppHeader_CreateBtn
+        AppHeader_CreateBtnGreen={p.createBtnGreen}
+        onPress={p.onCreateBtnPress}
+      >
+        <SvgIcon
+          path={mdiPlus}
+          flex="1"
+          color={p.createBtnGreen ? 'white' : 'black'}
+        />
+      </Button>
+    )}
   </View>
 );
+
+AppHeader.defaultProps = {
+  createBtnGreen: true,
+};
 
 export default AppHeader;

@@ -3,13 +3,13 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
-import PageServers from '../../components-Signin/PageServers';
-import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import { getUrlParams, setUrlParams } from '../../shared/deeplink';
-import { resetBadgeNumber } from '../../shared/pushNotification';
-import toast from '../../shared/toast';
+import authStore from '../mobx/authStore';
+import * as routerUtils from '../mobx/routerStore';
+import { getUrlParams, setUrlParams } from '../shared/deeplink';
+import { resetBadgeNumber } from '../shared/pushNotification';
+import toast from '../shared/toast';
 import { setProfilesManager } from './getset';
+import PageSigninUI from './PageSigninUI';
 
 @observer
 @createModelView(
@@ -196,7 +196,7 @@ class View extends React.Component {
 
   render() {
     return (
-      <PageServers
+      <PageSigninUI
         profileIds={this.props.profileIds}
         resolveProfile={this.resolveProfile}
         create={routerUtils.goToProfilesCreate}

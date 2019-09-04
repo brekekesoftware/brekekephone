@@ -151,3 +151,4 @@ react-native run-android --deviceId=DEVICE_ID
 - [ ] Screen should be turned off when calling and cover the call sensor using incall-manager (It was working but after upgrading to new version it stops working)
 - [ ] VOIP call option select app https://github.com/react-native-webrtc/react-native-callkeep
 - [x] Open update page if the profile is missing any of the required fields when logging in (tested, it only doesnt work if user press back button on android)
+- [ ] Debug and fix JsSIP error `RTCSession.connection.addTrack is not a function`

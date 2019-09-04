@@ -1,72 +1,31 @@
 import merge from 'lodash/merge';
 import getTheme from 'native-base/src/theme/components';
-import variables from 'native-base/src/theme/variables/commonColor';
 import { Platform } from 'react-native';
 
-// Update the variables which depend on the platform condition
-// See native-base/src/theme/variables/commonColor.js for detail
-// We will choose ios as the default platform then change the variables as we need
-merge(variables, {
-  platform: 'ios',
-  cardItemPadding: 10,
-  CheckboxRadius: 13,
-  CheckboxBorderWidth: 1,
-  CheckboxPaddingLeft: 4,
-  CheckboxPaddingBottom: 0,
-  CheckboxIconSize: 21,
-  CheckboxIconMarginTop: undefined,
-  CheckboxFontSize: 23 / 0.9,
-  brandPrimary: 'white',
-  // fontFamily: 'Roboto', // Should respect font
-  toolbarBtnColor: '#007aff',
-  toolbarSearchIconSize: 20,
-  toolbarBtnTextColor: '#007aff',
-  toolbarDefaultBorder: '#a7a6ab',
-  radioBtnSize: 25,
-  radioBtnLineHeight: 29,
-  segmentBackgroundColor: '#F8F8F8',
-  segmentActiveBackgroundColor: '#007aff',
-  segmentTextColor: '#007aff',
-  segmentActiveTextColor: 'white',
-  segmentBorderColor: '#007aff',
-  segmentBorderColorMain: '#a7a6ab',
-  titleFontfamily: 'System',
-  titleFontSize: 17,
-  subTitleFontSize: 11,
-  subtitleColor: 'black',
-  titleFontColor: 'black',
-  borderRadiusBase: 3,
-  inverseTextColor: 'black',
-  toolbarDefaultBg: '#e0e0e0',
-  tabDefaultBg: '#e0e0e0',
-  get btnTextSize() {
-    return this.fontSizeBase * 1.1;
-  },
-});
+import variables from './variables';
 
-// Build the style object from the above variables
-const nativeBaseStyle = getTheme(variables);
+const nativeBaseTheme = getTheme(variables);
 
 // This recursively update the whole style
 // Will be useful for which field we need to update for every components
-const recursiveUpdateStyle = obj => {
-  Object.entries(obj).forEach(([k, v]) => {
-    if (k === 'fontFamily') {
+const recursiveUpdateStyle = o => {
+  Object.entries(o).forEach(([k, v]) => {
+    if (k.toLowerCase().endsWith('fontfamily')) {
       if (Platform.OS === 'web') {
-        obj[k] = 'Roboto';
+        o[k] = 'Roboto';
       }
     } else if (k === 'elevation') {
-      obj[k] = 0; // Remove box shadow on android
+      o[k] = 0; // Remove box shadow on android
     } else if (v && typeof v === 'object') {
       recursiveUpdateStyle(v);
     }
   });
 };
-recursiveUpdateStyle(nativeBaseStyle);
+recursiveUpdateStyle(nativeBaseTheme);
 
 // Other small/accuracy modifications will be put here
 // We should take a look at the default components to see the keys
-merge(nativeBaseStyle, {
+merge(nativeBaseTheme, {
   'NativeBase.Header': {
     '.noLeft': {
       'NativeBase.Left': {
@@ -590,5 +549,4 @@ merge(nativeBaseStyle, {
   },
 });
 
-export const registerStyle = fn => merge(nativeBaseStyle, fn(variables));
-export default nativeBaseStyle;
+export default nativeBaseTheme;

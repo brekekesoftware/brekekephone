@@ -31,20 +31,20 @@ import PhonebooksBrowse from './components/phonebooks-browse';
 import ProfileSignin from './components/profile-signin';
 import ProfileUpdate from './components/profile-update';
 import ProfilesCreate from './components/profiles-create';
-import ProfilesManage from './components/profiles-manage';
 import Settings from './components/settings';
 import SIPAuth from './components/sip-auth';
 import StatusBar from './components/statusbar';
 import Tabbar from './components/tabbar';
 import UCAuth from './components/uc-auth';
 import UsersBrowse from './components/users-browse';
+import PageSignin from './PageSignin/PageSignin';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <StatusBar />
     <WithoutStatusBar>
       <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-      <Route exact path="/profiles/manage" component={ProfilesManage} />
+      <Route exact path="/profiles/manage" component={PageSignin} />
       <Route exact path="/profiles/create" component={ProfilesCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route exact path="/profile/:profile/signin" component={ProfileSignin} />

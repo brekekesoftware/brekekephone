@@ -1,6 +1,6 @@
 const validateHostname = hostname => {
   return !(
-    /[^\w-.]/.test(hostname) || // any special character exclude - and . => invalid
+    /[^\w-.]/.test(hostname) || // any special character except - . => invalid
     /^[-.]/.test(hostname) || // special character at the beginning => invalid
     /[-.]$/.test(hostname) || // special character at the end => invalid
     /\.{2,}/.test(hostname) || // two dots near to each other => invalid

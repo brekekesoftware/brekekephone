@@ -57,21 +57,21 @@
 // Roboto font for web
 @font-face {
   font-family: 'Roboto';
-  src: url('./fonts/Roboto-Regular.ttf') format('truetype');
+  src: url('./assets/Roboto-Regular.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Roboto';
-  src: url('./fonts/Roboto-Bold.ttf') format('truetype');
+  src: url('./assets/Roboto-Bold.ttf') format('truetype');
   font-weight: bold;
 }
 @font-face {
   font-family: 'Roboto';
-  src: url('./fonts/Roboto-RegularItalic.ttf') format('truetype');
+  src: url('./assets/Roboto-RegularItalic.ttf') format('truetype');
   font-style: italic;
 }
 @font-face {
   font-family: 'Roboto';
-  src: url('./fonts/Roboto-BoldItalic.ttf') format('truetype');
+  src: url('./assets/Roboto-BoldItalic.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
 }
