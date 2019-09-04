@@ -7,6 +7,7 @@ import * as routerUtils from '../mobx/routerStore';
 import AppHeader from '../shared/AppHeader';
 import { setUrlParams } from '../shared/deeplink';
 import LinearGradient from '../shared/LinearGradient';
+import StatusBar from '../shared/StatusBar';
 import v from '../style/variables';
 import SigninProfileItem, { NoServer } from './SigninProfileItem';
 
@@ -15,14 +16,13 @@ const s = StyleSheet.create({
     flex: 1,
   },
   ListServer: {
-    marginBottom: 2 * v.padding,
     paddingTop: 3 * v.padding,
-    paddingLeft: v.padding,
+    marginBottom: 2 * v.padding,
   },
 });
 
 @observer
-class View extends React.Component {
+class PageSignin extends React.Component {
   componentDidMount() {
     authStore.handleUrlParams();
   }
@@ -34,6 +34,7 @@ class View extends React.Component {
     const l = authStore.allProfiles.length;
     return (
       <LinearGradient style={s.PageSignin} colors={[v.brekekeGreen, '#2a2a2a']}>
+        <StatusBar transparent />
         <AppHeader
           text="Servers"
           subText={`${l} SERVER${l > 1 ? 'S' : ''} IN TOTAL`}
@@ -42,12 +43,13 @@ class View extends React.Component {
         />
         {!!l && (
           <FlatList
-            data={authStore.allProfiles}
             horizontal
             style={s.ListServer}
-            renderItem={({ item }) => (
-              <SigninProfileItem key={item.id} {...item} />
+            data={authStore.allProfiles}
+            renderItem={({ item, index }) => (
+              <SigninProfileItem last={index === l - 1} {...item} />
             )}
+            keyExtractor={item => item.id}
           />
         )}
         {!l && <NoServer />}
@@ -56,4 +58,4 @@ class View extends React.Component {
   }
 }
 
-export default View;
+export default PageSignin;

@@ -1,6 +1,6 @@
-import { AsyncStorage } from 'react-native';
 import FCM, { FCMEvent } from 'react-native-fcm';
 
+import AsyncStorage from '../shared/AsyncStorage';
 import parseCustomNoti from './pushNotification-parse';
 
 const { Notification, RefreshToken } = FCMEvent;

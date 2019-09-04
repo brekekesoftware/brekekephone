@@ -9,6 +9,18 @@ import toast from '../shared/toast';
 import BaseStore from './BaseStore';
 import * as routerUtils from './routerStore';
 
+const compareField = (p1, p2, field) => {
+  const v1 = p1[field];
+  const v2 = p2[field];
+  return !v1 || !v2 || v1 === v2;
+};
+const compareProfile = (p1, p2) =>
+  p1.pbxUsername && // Must have pbxUsername
+  compareField(p1, p2, 'pbxUsername') &&
+  compareField(p1, p2, 'pbxTenant') &&
+  compareField(p1, p2, 'pbxHostname') &&
+  compareField(p1, p2, 'pbxPort');
+
 class AuthStore extends BaseStore {
   // stopped
   // connecting
@@ -65,12 +77,19 @@ class AuthStore extends BaseStore {
 
   @observable allProfiles = [];
   loadProfilesFromLocalStorage = async () => {
-    const arr = await AsyncStorage.getItem('authStore.allProfiles');
+    let arr = await AsyncStorage.getItem('authStore.allProfiles');
+    if (arr && !Array.isArray(arr)) {
+      try {
+        arr = JSON.parse(arr);
+      } catch (err) {
+        arr = null;
+      }
+    }
     this.set('allProfiles', arr || []);
   };
   saveProfilesToLocalStorage = async (arr = this.allProfiles) => {
     try {
-      await AsyncStorage.setItem('authStore.allProfiles', arr);
+      await AsyncStorage.setItem('authStore.allProfiles', JSON.stringify(arr));
     } catch (err) {
       console.error('authStore.set.allProfiles:', err);
       toast.error('Can not save profiles to local storage');
@@ -86,15 +105,13 @@ class AuthStore extends BaseStore {
       return;
     }
     this.allProfiles[i] = Object.assign(this.allProfiles[i], profile);
+    this.allProfiles = [...this.allProfiles];
     this.saveProfilesToLocalStorage();
   };
   @action removeProfile = id => {
     Alert.alert('Remove profile', 'Do you want to remove this profile?', [
       {
         text: 'Cancel',
-        onPress: () => {
-          //
-        },
       },
       {
         text: 'Ok',
@@ -113,20 +130,7 @@ class AuthStore extends BaseStore {
   userExtensionProperties = null;
 
   findProfile = p => {
-    if (!p?.pbxUsername) {
-      return null;
-    }
-    const compareField = (p1, p2, field) => {
-      const v1 = p1[field];
-      const v2 = p2[field];
-      return !v1 || !v2 || v1 === v2;
-    };
-    const compareProfile = _p =>
-      compareField(p, _p, 'pbxUsername') &&
-      compareField(p, _p, 'pbxTenant') &&
-      compareField(p, _p, 'pbxHostname') &&
-      compareField(p, _p, 'pbxPort');
-    return this.profiles.find(compareProfile);
+    return this.allProfiles.find(_p => compareProfile(_p, p));
   };
 
   handleUrlParams = async () => {
@@ -202,4 +206,8 @@ class AuthStore extends BaseStore {
   };
 }
 
-export default new AuthStore();
+const authStore = new AuthStore();
+authStore.loadProfilesFromLocalStorage();
+
+export { compareProfile };
+export default authStore;

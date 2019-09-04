@@ -1,14 +1,9 @@
 import get from 'lodash/get';
 import { AppState, Platform } from 'react-native';
 
-import {
-  getProfilesManager,
-  getProfilesManagerInterval,
-} from '../components/profiles-manage/getset';
 import authStore from '../mobx/authStore';
-import * as routerUtils from '../mobx/routerStore';
 
-const keysInCustomNoti = [
+const keysInCustomNotification = [
   'body',
   'message',
   'title',
@@ -35,9 +30,8 @@ const parse = (...p) => {
       if (!i || typeof i !== 'object') {
         return m;
       }
-      keysInCustomNoti.forEach(k => {
+      keysInCustomNotification.forEach(k => {
         const v = i[k];
-
         if (!(k in m) && v) {
           m[k] = v;
         }
@@ -47,8 +41,7 @@ const parse = (...p) => {
 };
 
 const parseCustomNoti = n => {
-  const u = authStore.profile;
-  if (u && AppState.currentState === 'active') {
+  if (authStore.profile && AppState.currentState === 'active') {
     return null;
   }
   //
@@ -88,18 +81,7 @@ const parseCustomNoti = n => {
     return null;
   }
   //
-  const pm = getProfilesManager();
-  if (pm) {
-    pm.signinByCustomNoti(c);
-  } else if (!u) {
-    routerUtils.goToProfilesManage();
-    getProfilesManagerInterval().then(pm => {
-      if (pm) {
-        pm.signinByCustomNoti(c);
-      }
-    });
-  }
-  //
+  authStore.signinByNotification(c);
   return c;
 };
 

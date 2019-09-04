@@ -16,11 +16,11 @@ registerStyle(v => ({
   Text: {
     AppHeader_Text: {
       fontWeight: 'bold',
-      fontSize: '2em',
+      fontSize: 2.5 * v.fontSizeBase,
     },
     AppHeader_SubText: {
-      fontSize: '0.7em',
-      opacity: 0.7,
+      fontSize: 0.8 * v.fontSizeBase,
+      color: v.brekekeShade8,
     },
   },
   Button: {
@@ -28,13 +28,13 @@ registerStyle(v => ({
       position: 'absolute',
       top: v.padding,
       right: v.padding,
-      borderRadius: '100%',
+      borderRadius: 100,
       backgroundColor: 'white',
       width: 50,
       height: 50,
     },
     AppHeader_CreateBtnGreen: {
-      backgroundColor: v.brekekeGreen,
+      backgroundColor: v.brekekeDarkGreen,
     },
   },
 }));
@@ -51,7 +51,7 @@ const AppHeader = p => (
       >
         <SvgIcon
           path={mdiPlus}
-          flex="1"
+          width="100%"
           color={p.createBtnGreen ? 'white' : 'black'}
         />
       </Button>

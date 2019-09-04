@@ -1,8 +1,8 @@
 package com.brekeke.phonedev;
 
 import android.app.Application;
-import com.brentvatne.react.ReactVideoPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;

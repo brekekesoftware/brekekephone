@@ -45,6 +45,7 @@ merge(variables, {
 // Add our own style props here
 merge(variables, {
   brekekeGreen: '#74bf53',
+  brekekeDarkGreen: '#65af45',
   brekekeShade0: '#ffffff',
   brekekeShade1: '#f9f9f9',
   brekekeShade2: '#f1f1f1',
@@ -55,6 +56,7 @@ merge(variables, {
   brekekeShade7: '#4b4b4b',
   brekekeShade8: '#393939',
   brekekeShade9: '#262626',
+  brekekeBorderRadius: 3,
 });
 
 export default variables;

@@ -92,6 +92,7 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
+  font-size: 13px;
 }
 * {
   outline: none !important;
@@ -115,4 +116,8 @@ input {
 ::-webkit-scrollbar-thumb {
   background-color: grey;
   -webkit-border-radius: 0 !important;
+}
+
+body.swal2-height-auto.swal2-height-auto {
+  height: 100% !important;
 }

@@ -1,4 +1,3 @@
-export { default as profiles } from './profiles';
 export { default as runningCalls } from './running-calls';
 export { default as runningVideos } from './running-videos';
 export { default as parkingCalls } from './parking-calls';

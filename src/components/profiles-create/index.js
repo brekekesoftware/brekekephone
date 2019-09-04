@@ -1,24 +1,13 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
+import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
 import toast from '../../shared/toast';
 import { validateHostname, validatePort } from '../../shared/validator';
 import UI from './ui';
 
-@observer
-@createModelView(
-  getter => (state, props) => ({
-    //
-  }),
-  action => emit => ({
-    createProfile(profile) {
-      emit(action.profiles.create(profile));
-    },
-  }),
-)
 @observer
 class View extends React.Component {
   state = {
@@ -161,7 +150,7 @@ class View extends React.Component {
     }
 
     if (/[^a-z0-9_]/.test(addingPark)) {
-      this.props.showToast('Invalid park number');
+      toast.error('Invalid park number');
       return;
     }
 
@@ -215,7 +204,7 @@ class View extends React.Component {
       parks.push(this.state.parks[i].trim());
     }
 
-    this.props.createProfile({
+    authStore.createProfile({
       id: createId(),
       pbxHostname: pbxHostname,
       pbxPort: pbxPort,

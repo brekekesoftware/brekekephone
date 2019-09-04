@@ -1,28 +1,28 @@
 import { observer } from 'mobx-react';
 import { Button, Container, Content, Form, Text } from 'native-base';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import Headers from '../components-Home/Header';
 import { TextInput } from '../components-shared/Input';
+import authStore from '../mobx/authStore';
 import * as routerUtils from '../mobx/routerStore';
+import toast from '../shared/toast';
 
 @observer
-@createModelView(
-  getter => (state, props) => ({
-    profile: getter.profiles.detailMapById(state)[props.match.params.profile],
-  }),
-  action => emit => ({
-    updateProfile(profile) {
-      emit(action.profiles.update(profile));
-    },
-  }),
-)
-@observer
 class NewCallPark extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = props.profile;
+  state = {
+    ...authStore.allProfiles.find(
+      p => p.id === this.props.match.params.profile,
+    ),
+  };
+  componentDidUpdate(prevProps) {
+    const id = this.props.match.params.profile;
+    const prevId = prevProps.match.params.profile;
+    if (id !== prevId) {
+      this.setState({
+        ...authStore.allProfiles.find(p => p.id === id),
+      });
+    }
   }
 
   render() {
@@ -61,7 +61,7 @@ class NewCallPark extends React.Component {
     }
 
     if (/[^a-z0-9_]/.test(addingPark)) {
-      this.props.showToast('Invalid park number');
+      toast.error('Invalid park number');
       return;
     }
 
@@ -89,13 +89,13 @@ class NewCallPark extends React.Component {
     }
 
     if (/[^a-z0-9_]/.test(addingPark)) {
-      this.props.showToast('Invalid park number');
+      toast.error('Invalid park number');
       return;
     }
 
     const _parks = [addingPark, ...parks.filter(_ => _ !== addingPark)];
 
-    this.props.updateProfile({
+    authStore.updateProfile({
       id: this.state.id,
       pbxHostname: pbxHostname,
       pbxPort: pbxPort,

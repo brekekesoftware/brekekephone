@@ -21,11 +21,14 @@ registerStyle(v => ({
     SigninProfileItem: {
       position: 'relative',
       backgroundColor: 'white',
-      marginRight: v.padding,
       marginBottom: v.padding,
-      borderRadius: 2,
+      marginLeft: v.padding,
+      borderRadius: v.brekekeBorderRadius,
       width: 280,
-      '.empty': {
+      '.last': {
+        marginRight: v.padding,
+      },
+      '.noServer': {
         flex: 1,
         marginLeft: v.padding,
         marginBottom: 3 * v.padding,
@@ -50,11 +53,13 @@ registerStyle(v => ({
       right: v.padding,
       display: 'flex',
       flexDirection: 'row',
+      borderRadius: v.brekekeBorderRadius,
+      overflow: 'hidden',
     },
   },
   Text: {
     SigninProfileItem_FieldName: {
-      fontSize: '0.7em',
+      fontSize: 0.7 * v.fontSizeBase,
       color: v.brekekeShade7,
     },
     SigninProfileItem_FieldValue: {
@@ -63,20 +68,19 @@ registerStyle(v => ({
     SigninProfileItem_BtnTxt: {
       flex: 1,
       fontWeight: 'bold',
-      fontSize: '0.7em',
       textAlign: 'center',
       color: 'white',
     },
     SigninProfileItem_NoServerTxt: {
       fontWeight: 'bold',
-      fontSize: '1.2em',
+      fontSize: 1.2 * v.fontSizeBase,
     },
   },
   Switch: {
     SigninProfileItem_UC: {
       position: 'absolute',
       top: 1.5 * v.padding,
-      right: v.padding,
+      right: 0,
     },
   },
   Button: {
@@ -92,11 +96,12 @@ registerStyle(v => ({
       },
       '.signin': {
         width: '50%',
-        backgroundColor: v.brekekeGreen,
+        backgroundColor: v.brekekeDarkGreen,
       },
       '.create': {
         width: '100%',
-        backgroundColor: v.brekekeGreen,
+        backgroundColor: v.brekekeDarkGreen,
+        borderRadius: v.brekekeBorderRadius,
       },
     },
   },
@@ -107,13 +112,10 @@ const s = StyleSheet.create({
     top: v.padding,
     right: v.padding,
   },
-  BtnIcon: {
-    margin: 'auto',
-  },
 });
 
 const SigninProfileItem = p => (
-  <View SigninProfileItem>
+  <View SigninProfileItem last={p.last}>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>USERNAME</Text>
       <Text SigninProfileItem_FieldValue>{p.pbxUsername || '\u00A0'}</Text>
@@ -136,8 +138,19 @@ const SigninProfileItem = p => (
     </View>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>UC</Text>
-      <Text SigninProfileItem_FieldValue>{p.ucEnabled ? 'On' : 'Off'}</Text>
-      <Switch SigninProfileItem_UC value={p.ucEnabled} />
+      <Text SigninProfileItem_FieldValue>
+        {p.ucEnabled ? 'Enabled' : 'Disabled'}
+      </Text>
+      <Switch
+        SigninProfileItem_UC
+        value={p.ucEnabled}
+        onValueChange={ucEnabled => {
+          authStore.updateProfile({
+            id: p.id,
+            ucEnabled,
+          });
+        }}
+      />
     </View>
     <View SigninProfileItem_Btns>
       <Button
@@ -145,14 +158,14 @@ const SigninProfileItem = p => (
         remove
         onPress={() => authStore.removeProfile(p.id)}
       >
-        <SvgIcon path={mdiClose} style={s.BtnIcon} color="red" />
+        <SvgIcon path={mdiClose} width="100%" color="red" />
       </Button>
       <Button
         SigninProfileItem_Btn
         update
-        onPress={() => authStore.updateProfile(p.id)}
+        onPress={() => routerUtils.goToProfileUpdate(p.id)}
       >
-        <SvgIcon path={mdiFocusFieldHorizontal} style={s.BtnIcon} />
+        <SvgIcon path={mdiFocusFieldHorizontal} width="100%" />
       </Button>
       <Button
         SigninProfileItem_Btn
@@ -165,8 +178,8 @@ const SigninProfileItem = p => (
   </View>
 );
 
-const NoServer = p => (
-  <View SigninProfileItem empty>
+const NoServer = () => (
+  <View SigninProfileItem noServer>
     <Text SigninProfileItem_NoServerTxt>No server</Text>
     <Text note>There is no server created</Text>
     <Text note>Tap the below button to create one</Text>
@@ -176,7 +189,7 @@ const NoServer = p => (
         create
         onPress={routerUtils.goToProfilesCreate}
       >
-        <Text SigninProfileItem_BtnTxt>CREATE NEW SERVER</Text>
+        <Text SigninProfileItem_BtnTxt>Create New Server</Text>
       </Button>
     </View>
   </View>

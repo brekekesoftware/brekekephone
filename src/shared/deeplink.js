@@ -1,8 +1,6 @@
 import { Linking } from 'react-native';
 
-import { getProfilesManager } from '../components/profiles-manage/getset';
-import authStore from '../mobx/authStore';
-import * as routerUtils from '../mobx/routerStore';
+import authStore, { compareProfile } from '../mobx/authStore';
 import parse from './deeplink-parse';
 
 let alreadyHandleFirstOpen = false;
@@ -22,28 +20,18 @@ export const setUrlParams = p => {
 
 Linking.addEventListener('url', e => {
   const p = (urlParams = parse(e.url));
-  if (!p) {
-    return;
-  }
-  //
-  const u = authStore.profile;
-  const c = (v1, v2) => !v1 || !v2 || v1 === v2;
-  //
+  // Check against the current user
   if (
-    u &&
-    p.user &&
-    c(p.host, u.pbxHostname) &&
-    c(p.port, u.pbxPort) &&
-    c(p.user, u.pbxUsername) &&
-    c(p.tenant, u.pbxTenant)
+    !p ||
+    !authStore.profile ||
+    compareProfile(authStore.profile, {
+      pbxHostname: p.host,
+      pbxPort: p.port,
+      pbxUsername: p.user,
+      pbxTenant: p.tenant,
+    })
   ) {
     return;
   }
-  //
-  const pm = getProfilesManager();
-  if (pm) {
-    pm.handleUrlParams();
-  } else {
-    routerUtils.goToProfilesManage();
-  }
+  authStore.handleUrlParams();
 });
