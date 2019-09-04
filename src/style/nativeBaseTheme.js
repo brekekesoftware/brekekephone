@@ -155,44 +155,6 @@ merge(nativeBaseTheme, {
       padding: variables.listItemPadding,
       marginLeft: null,
     },
-    '.btnlistServer': {
-      'NativeBase.Left': {
-        'NativeBase.Button': {
-          backgroundColor: '#0000000',
-          borderRadius: null,
-          alignSelf: 'center',
-          paddingLeft: variables.listItemPadding,
-        },
-        flex: 0.25,
-      },
-      'NativeBase.Body': {
-        'NativeBase.Button': {
-          backgroundColor: '#0000000',
-          borderRadius: null,
-          alignSelf: 'center',
-        },
-        flex: 0.25,
-      },
-      'NativeBase.Right': {
-        'NativeBase.Button': {
-          'NativeBase.Text': {
-            fontWeight: '600',
-            color: '#ffffff',
-          },
-          borderRadius: null,
-
-          backgroundColor: null,
-          alignSelf: 'center',
-        },
-        flex: 0.5,
-        backgroundColor: '#000',
-        borderBottomRightRadius: 15,
-      },
-      marginLeft: null,
-      paddingRight: null,
-      paddingVertical: null,
-      borderBottomWidth: null,
-    },
     '.chat': {
       'NativeBase.Left': {
         flex: 0.2,
@@ -410,57 +372,6 @@ merge(nativeBaseTheme, {
     },
   },
   'NativeBase.ViewNB': {
-    '.noServer': {
-      'NativeBase.Text': {
-        fontSize: 50,
-        textAlign: 'center',
-      },
-      'NativeBase.ListItem': {
-        '.itemNoServer': {
-          'NativeBase.Body': {
-            'NativeBase.Icon': {
-              fontSize: 50,
-            },
-            'NativeBase.Text': {
-              fontSize: 25,
-              fontWeight: '500',
-              paddingTop: variables.listItemPadding,
-            },
-            'NativeBase.Button': {
-              backgroundColor: '#000000',
-              'NativeBase.Text': {
-                fontWeight: '500',
-                color: '#ffffff',
-              },
-            },
-            alignItems: 'center',
-            paddingTop: variables.listItemPadding,
-          },
-        },
-        borderBottomWidth: null,
-      },
-      backgroundColor: Platform.select({
-        ios: '#ffffff',
-        android: '#ffffff',
-        web: '#e2e2e4',
-      }),
-      width: '80%',
-      marginLeft: variables.listItemPadding,
-      borderRadius: 15,
-      marginTop: '15%',
-      padding: variables.listItemPadding - 5,
-    },
-    '.listServer': {
-      backgroundColor: Platform.select({
-        ios: '#ffffff',
-        android: '#ffffff',
-        web: '#e2e2e4',
-      }),
-      width: '90%',
-      marginLeft: variables.listItemPadding,
-      marginBottom: variables.listItemPadding,
-      borderRadius: 15,
-    },
     '.removeServer': {
       'NativeBase.ViewNB': {
         'NativeBase.Text': {

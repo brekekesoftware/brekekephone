@@ -19,8 +19,7 @@ registerStyle(v => ({
       fontSize: '2em',
     },
     AppHeader_SubText: {
-      fontWeight: 'bold',
-      fontSize: '0.8em',
+      fontSize: '0.7em',
       opacity: 0.7,
     },
   },
