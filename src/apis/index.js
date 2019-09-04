@@ -8,9 +8,9 @@ import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
 import * as routerUtils from '../mobx/routerStore';
-import Alert from '../nativeModules/alert';
-import { getPnToken } from '../nativeModules/pushNotification';
-import toast from '../nativeModules/toast';
+import Alert from '../shared/alert';
+import { getPushNotificationToken } from '../shared/pushNotification';
+import toast from '../shared/toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
@@ -332,7 +332,7 @@ class ApiProvider extends React.Component {
   };
 
   addPnToken = async webPhone => {
-    const t = await getPnToken();
+    const t = await getPushNotificationToken();
 
     if (!t) {
       return;

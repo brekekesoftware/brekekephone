@@ -5,11 +5,11 @@ import parseCustomNoti from './pushNotification-parse';
 
 let voipApnsToken = '';
 
-export const getPnToken = () => {
+export const getPushNotificationToken = () => {
   return Promise.resolve(voipApnsToken);
 };
 
-export const registerPn = () => {
+export const registerPushNotification = () => {
   VoipPushNotification.addEventListener('register', onVoipRegister);
   VoipPushNotification.addEventListener('notification', onVoipNotification);
   VoipPushNotification.requestPermissions();

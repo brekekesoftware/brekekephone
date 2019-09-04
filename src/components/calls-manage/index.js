@@ -5,7 +5,7 @@ import { createModelView } from 'redux-model';
 
 import PageCalling from '../../components-Incoming/PageCalling';
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 import LoudSpeaker from './LoudSpeaker';
 
 @observer

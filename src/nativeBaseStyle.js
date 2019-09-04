@@ -451,28 +451,6 @@ merge(nativeBaseStyle, {
     },
   },
   'NativeBase.ViewNB': {
-    '.heaederServer': {
-      'NativeBase.ListItem': {
-        '.end': {
-          justifyContent: 'flex-end',
-        },
-        '.start': {
-          'NativeBase.ViewNB': {
-            'NativeBase.Text': {
-              fontWeight: '600',
-              fontSize: 30,
-              alignSelf: 'flex-start',
-              paddingBottom: variables.listItemPadding,
-            },
-            flexDirection: 'column',
-            alignSelf: 'flex-start',
-          },
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-        },
-        borderBottomWidth: null,
-      },
-    },
     '.noServer': {
       'NativeBase.Text': {
         fontSize: 50,
@@ -612,4 +590,5 @@ merge(nativeBaseStyle, {
   },
 });
 
+export const registerStyle = fn => merge(nativeBaseStyle, fn(variables));
 export default nativeBaseStyle;

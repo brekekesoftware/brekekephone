@@ -7,11 +7,11 @@ const { Notification, RefreshToken } = FCMEvent;
 
 let fcmPnToken = '';
 
-export const getPnToken = () => {
+export const getPushNotificationToken = () => {
   return Promise.resolve(fcmPnToken);
 };
 
-export const registerPn = async () => {
+export const registerPushNotification = async () => {
   try {
     await FCM.requestPermissions();
     FCM.enableDirectChannel();
@@ -29,7 +29,7 @@ export const registerPn = async () => {
     const noti = await FCM.getInitialNotification();
     onFcmNotification(noti);
   } catch (err) {
-    console.error('pn.android.registerPn:', err);
+    console.error('pushNotification.android:registerPushNotification:', err);
   }
 };
 

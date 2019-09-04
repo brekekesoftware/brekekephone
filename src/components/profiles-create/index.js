@@ -4,8 +4,8 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
-import { validateHostname, validatePort } from '../../utils/validator';
+import toast from '../../shared/toast';
+import { validateHostname, validatePort } from '../../shared/validator';
 import UI from './ui';
 
 @observer

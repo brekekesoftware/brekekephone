@@ -1,35 +1,23 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
 
+import LinearGradient from '../shared/LinearGradient';
 import Header from './Header';
-import LinearGradient from './LinearGradient';
 import ListServer from './ListServer';
 import MyStatusBar from './StatusBar';
 
 class ServerForm extends React.Component {
   render() {
     return (
-      <View>
-        {Platform.OS !== 'web' && (
-          <LinearGradient
-            style={{
-              height: '100%',
-            }}
-            colors={['#74bf53', '#474A48']}
-          >
-            <MyStatusBar backgroundColor="#74bf53" />
-            <Header {...this.props} />
-            <ListServer {...this.props} />
-          </LinearGradient>
-        )}
-        {Platform.OS === 'web' && (
-          <View>
-            <MyStatusBar backgroundColor="#74bf53" />
-            <Header {...this.props} />
-            <ListServer {...this.props} />
-          </View>
-        )}
-      </View>
+      <LinearGradient
+        style={{
+          height: '100%',
+        }}
+        colors={['#74bf53', '#474A48']}
+      >
+        <MyStatusBar backgroundColor="#74bf53" />
+        <Header {...this.props} />
+        <ListServer {...this.props} />
+      </LinearGradient>
     );
   }
 }

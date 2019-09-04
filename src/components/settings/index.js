@@ -5,7 +5,7 @@ import React from 'react';
 import PageSetting from '../../components-Setting/PageSetting';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 
 @observer
 class View extends React.Component {

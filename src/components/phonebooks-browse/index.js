@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 import UI from './ui';
 
 class View extends React.Component {

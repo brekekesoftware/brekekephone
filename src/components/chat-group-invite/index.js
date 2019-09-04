@@ -4,7 +4,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 import UI from './ui';
 
 @observer

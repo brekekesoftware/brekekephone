@@ -6,9 +6,9 @@ import createId from 'shortid';
 import PageServers from '../../components-Signin/PageServers';
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import { getUrlParams, setUrlParams } from '../../nativeModules/deeplink';
-import { resetBadgeNumber } from '../../nativeModules/pushNotification';
-import toast from '../../nativeModules/toast';
+import { getUrlParams, setUrlParams } from '../../shared/deeplink';
+import { resetBadgeNumber } from '../../shared/pushNotification';
+import toast from '../../shared/toast';
 import { setProfilesManager } from './getset';
 
 @observer

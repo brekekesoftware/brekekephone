@@ -5,7 +5,7 @@ import { createModelView } from 'redux-model';
 
 import TransferAttend from '../../components-Transfer/TransferAttend';
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 
 @observer
 @createModelView(

@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
-import stripTags from '../../utils/stripTags';
+import stripTags from '../../shared/stripTags';
+import toast from '../../shared/toast';
 import UI from './ui';
 
 const monthName = [

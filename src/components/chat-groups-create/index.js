@@ -5,7 +5,7 @@ import { createModelView } from 'redux-model';
 
 import CreateGroup from '../../components-Chats/Create-Group';
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 
 @observer
 @createModelView(

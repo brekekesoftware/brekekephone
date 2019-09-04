@@ -5,7 +5,7 @@ import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
+import toast from '../../shared/toast';
 import UI from './ui';
 
 @observer

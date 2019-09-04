@@ -3,12 +3,10 @@ import {
   Container,
   Content,
   Fab,
-  Icon,
   Tab,
   TabHeading,
   Tabs,
   Text,
-  View,
 } from 'native-base';
 import React from 'react';
 
@@ -49,7 +47,6 @@ class PageContacts extends React.Component {
           containerStyle={{}}
           style={{ backgroundColor: '#74bf53' }}
           position="bottomRight"
-          containerStyle={{}}
         >
           <SvgIcon path={mdiAccountPlusOutline} />
         </Fab>

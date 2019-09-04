@@ -47,17 +47,13 @@ export default createModel({
     update: function(state, ev) {
       if (ev.withVideo) {
         state.localVideoEnabledByCallid[ev.sessionId] = ev.withVideo;
-
-        for (const key in state.detailMapById) {
-          let detailData = state.detailMapById[key];
-          const sessionid = detailData.id;
-
+        Object.entries(state.detailMapById).forEach(([k, v]) => {
+          const sessionid = v.id;
           if (ev.sessionId !== sessionid) {
-            continue;
+            return;
           }
-
-          detailData.localVideoEnabled = ev.withVideo;
-        }
+          v.localVideoEnabled = ev.withVideo;
+        });
       }
 
       state = {
@@ -97,26 +93,20 @@ export default createModel({
     removeByCallid: function(state, callid) {
       delete state.localVideoEnabledByCallid[callid];
 
-      for (const key in state.detailMapById) {
-        let detailData = state.detailMapById[key];
-
-        if (detailData.id !== callid) {
-          continue;
+      Object.entries(state.detailMapById).forEach(([k, v]) => {
+        if (v.id !== callid) {
+          return;
         }
-
-        const tgtVideoSessionId = detailData.videoSessionId;
-
+        const tgtVideoSessionId = v.videoSessionId;
         for (let n = 0; n < state.idsByOrder.length; n++) {
           const videoSessionId = state.idsByOrder[n];
-
           if (videoSessionId === tgtVideoSessionId) {
             state.idsByOrder.splice(n, 1);
             break;
           }
         }
-
-        delete state.detailMapById[key];
-      }
+        delete state.detailMapById[k];
+      });
 
       state = {
         idsByOrder: state.idsByOrder,

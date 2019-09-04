@@ -5,8 +5,8 @@ import { createModelView } from 'redux-model';
 
 import ChatsDetail from '../../components-Chats/Chat-Detail';
 import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../nativeModules/toast';
-import stripTags from '../../utils/stripTags';
+import stripTags from '../../shared/stripTags';
+import toast from '../../shared/toast';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 

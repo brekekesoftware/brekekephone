@@ -4,7 +4,7 @@ const uint8ArrayToUrlBase64 = arr => {
     .replace(/[+/]/g, '-');
 };
 
-export const getPnToken = async () => {
+export const getPushNotificationToken = async () => {
   const sw = await navigator.serviceWorker.ready;
   const sub =
     (await sw.pushManager.getSubscription()) ||
@@ -18,7 +18,7 @@ export const getPnToken = async () => {
   };
 };
 
-export const registerPn = () => {
+export const registerPushNotification = () => {
   if (!window.Notification || window.Notification.permission === 'granted') {
     return;
   }
