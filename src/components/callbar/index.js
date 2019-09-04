@@ -5,8 +5,8 @@ import { createModelView } from 'redux-model';
 
 import LoudSpeaker from '../../components/calls-manage/LoudSpeaker';
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -38,12 +38,12 @@ class View extends React.Component {
     <UI
       activecallid={this.state.activecallid}
       chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={routerUtils.goToCallsManage}
-      pressCallsCreate={routerUtils.goToCallsCreate}
-      pressSettings={routerUtils.goToSettings}
-      pressUsers={routerUtils.goToUsersBrowse}
-      pressChats={routerUtils.goToChatsRecent}
-      pressBooks={routerUtils.goToPhonebooksBrowse}
+      pressCallsManage={routerStore.goToCallsManage}
+      pressCallsCreate={routerStore.goToCallsCreate}
+      pressSettings={routerStore.goToSettings}
+      pressUsers={routerStore.goToUsersBrowse}
+      pressChats={routerStore.goToChatsRecent}
+      pressBooks={routerStore.goToPhonebooksBrowse}
       runningIds={this.props.runningIds}
       runningById={this.props.runningById}
       hangup={this.hangup}

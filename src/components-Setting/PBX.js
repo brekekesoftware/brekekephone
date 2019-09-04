@@ -2,7 +2,7 @@ import { mdiAccount, mdiDesktopClassic, mdiHome, mdiUsb } from '@mdi/js';
 import { Body, Left, List, ListItem, Text } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class PbxComponent extends React.Component {
   render() {

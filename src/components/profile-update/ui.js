@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import { std } from '../../styleguide';
+import { std } from '../../-/styleguide';
 import { PhoneIndexPicker } from '../profiles-create/ui';
 
 const st = StyleSheet.create({

@@ -4,7 +4,7 @@ import { createModelView } from 'redux-model';
 
 import FooterTabs from '../../components-Home/FooterTabs';
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 
 @observer
 @createModelView(
@@ -21,13 +21,13 @@ class View extends React.Component {
   render = () => (
     <FooterTabs
       chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={routerUtils.goToCallsManage}
-      pressCallsRecent={routerUtils.goToCallsRecent}
-      pressCallsCreate={routerUtils.goToCallsCreate}
-      pressSettings={routerUtils.goToSettings}
-      pressUsers={routerUtils.goToUsersBrowse}
-      pressChats={routerUtils.goToChatsRecent}
-      pressBooks={routerUtils.goToPhonebooksBrowse}
+      pressCallsManage={routerStore.goToCallsManage}
+      pressCallsRecent={routerStore.goToCallsRecent}
+      pressCallsCreate={routerStore.goToCallsCreate}
+      pressSettings={routerStore.goToSettings}
+      pressUsers={routerStore.goToUsersBrowse}
+      pressChats={routerStore.goToChatsRecent}
+      pressBooks={routerStore.goToPhonebooksBrowse}
       runningIds={this.props.runningIds}
     />
   );

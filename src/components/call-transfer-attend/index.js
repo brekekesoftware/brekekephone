@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import TransferAttend from '../../components-Transfer/TransferAttend';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 
 @observer
 @createModelView(
@@ -33,7 +33,7 @@ class View extends React.Component {
   render = () => (
     <TransferAttend
       call={this.props.call}
-      back={routerUtils.goToCallsManage}
+      back={routerStore.goToCallsManage}
       join={this.join}
       stop={this.stop}
       hangup={this.hangup}
@@ -75,7 +75,7 @@ class View extends React.Component {
       transfering: false,
     });
 
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   onJoinFailure = err => {
@@ -100,7 +100,7 @@ class View extends React.Component {
       transfering: false,
     });
 
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   onStopFailure = err => {

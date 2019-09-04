@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -27,7 +27,7 @@ class View extends React.Component {
 
   render = () => (
     <UI
-      book={routerUtils.getQuery().book || ''}
+      book={routerStore.getQuery().book || ''}
       firstName={this.state.firstName}
       lastName={this.state.lastName}
       workNumber={this.state.workNumber}
@@ -37,7 +37,7 @@ class View extends React.Component {
       company={this.state.company}
       address={this.state.address}
       email={this.state.email}
-      back={routerUtils.goToPhonebooksBrowse}
+      back={routerStore.goToPhonebooksBrowse}
       save={this.save}
       setBook={this.setBook}
       setFirstName={this.setFirstName}
@@ -53,7 +53,7 @@ class View extends React.Component {
   );
 
   setBook = book =>
-    routerUtils.goToContactsCreate({
+    routerStore.goToContactsCreate({
       book,
     });
 
@@ -103,7 +103,7 @@ class View extends React.Component {
     });
 
   save = () => {
-    if (!routerUtils.getQuery().book) {
+    if (!routerStore.getQuery().book) {
       toast.error('The phonebook name is required');
       return;
     }
@@ -120,7 +120,7 @@ class View extends React.Component {
 
     this.context.pbx
       .setContact({
-        book: routerUtils.getQuery().book,
+        book: routerStore.getQuery().book,
         firstName: this.state.firstName,
         lastName: this.state.lastName,
         workNumber: this.state.workNumber,
@@ -136,7 +136,7 @@ class View extends React.Component {
   };
 
   onSaveSuccess = () => {
-    routerUtils.goToPhonebooksBrowse();
+    routerStore.goToPhonebooksBrowse();
   };
 
   onSaveFailure = err => {

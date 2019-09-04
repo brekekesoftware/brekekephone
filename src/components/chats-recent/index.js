@@ -3,7 +3,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import ChatsHome from '../../components-Chats/Chats-Home';
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 
 const isGroupJointed = group => group.jointed;
 
@@ -40,9 +40,9 @@ class View extends React.Component {
       buddyById={this.props.buddyById}
       groupIds={this.props.groupIds}
       groupById={this.props.groupById}
-      selectBuddy={routerUtils.goToBuddyChatsRecent}
-      selectGroup={routerUtils.goToChatGroupsRecent}
-      createGroup={routerUtils.goToChatGroupsCreate}
+      selectBuddy={routerStore.goToBuddyChatsRecent}
+      selectGroup={routerStore.goToChatGroupsRecent}
+      createGroup={routerStore.goToChatGroupsCreate}
       searchText={this.props.searchText}
       setSearchText={this.setSearchText}
     />

@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import PagePhoneCall from '../../components-Phone/PagePhoneCall';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 
 @observer
 @createModelView(
@@ -45,8 +45,8 @@ class View extends React.Component {
       selectMatch={this.selectMatch}
       setVideo={this.setVideo}
       create={this.create}
-      calls={routerUtils.goToCallsManage}
-      recent={routerUtils.goToCallsRecent}
+      calls={routerStore.goToCallsManage}
+      recent={routerStore.goToCallsRecent}
       callVoice={this.callVoice}
       callVideo={this.callVideo}
       parkingIds={this.props.parkingIds}
@@ -134,7 +134,7 @@ class View extends React.Component {
       videoEnabled: video,
     });
 
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   call = (target, bVideoEnabled) => {
@@ -149,7 +149,7 @@ class View extends React.Component {
       videoEnabled: bVideoEnabled,
     });
 
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   callVoice = match => {

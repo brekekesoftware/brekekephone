@@ -4,8 +4,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 const numberOfContactsPerPage = 30;
@@ -32,15 +32,15 @@ class View extends React.Component {
   render = () => {
     return (
       <UI
-        hasPrevPage={routerUtils.getQuery().offset >= numberOfContactsPerPage}
+        hasPrevPage={routerStore.getQuery().offset >= numberOfContactsPerPage}
         hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
-        searchText={routerUtils.getQuery().searchText}
+        searchText={routerStore.getQuery().searchText}
         loading={this.state.loading}
         contactIds={this.state.contactIds}
         resolveContact={this.resolveContact}
-        book={routerUtils.getQuery().book}
-        shared={routerUtils.getQuery().shared === 'true'}
-        back={routerUtils.goToPhonebooksBrowse}
+        book={routerStore.getQuery().book}
+        shared={routerStore.getQuery().shared === 'true'}
+        back={routerStore.goToPhonebooksBrowse}
         goNextPage={this.goNextPage}
         goPrevPage={this.goPrevPage}
         setSearchText={this.setSearchText}
@@ -64,7 +64,7 @@ class View extends React.Component {
   resolveContact = id => this.state.contactById[id];
 
   setSearchText = searchText => {
-    const oldQuery = routerUtils.getQuery();
+    const oldQuery = routerStore.getQuery();
 
     const query = {
       ...oldQuery,
@@ -72,7 +72,7 @@ class View extends React.Component {
       offset: 0,
     };
 
-    routerUtils.goToContactsBrowse(query);
+    routerStore.goToContactsBrowse(query);
     this.loadContacts.flush();
     this.loadContacts();
   };
@@ -208,7 +208,7 @@ class View extends React.Component {
   loadContacts = debounce(() => {
     const { pbx } = this.context;
 
-    const query = routerUtils.getQuery();
+    const query = routerStore.getQuery();
     const book = query.book;
     const shared = query.shared;
 
@@ -287,14 +287,14 @@ class View extends React.Component {
   };
 
   goNextPage = () => {
-    const oldQuery = routerUtils.getQuery();
+    const oldQuery = routerStore.getQuery();
 
     const query = {
       ...oldQuery,
       offset: oldQuery.offset + numberOfContactsPerPage,
     };
 
-    routerUtils.goToContactsBrowse(query);
+    routerStore.goToContactsBrowse(query);
 
     setTimeout(() => {
       this.loadContacts.flush();
@@ -303,14 +303,14 @@ class View extends React.Component {
   };
 
   goPrevPage = () => {
-    const oldQuery = routerUtils.getQuery();
+    const oldQuery = routerStore.getQuery();
 
     const query = {
       ...oldQuery,
       offset: oldQuery.offset - numberOfContactsPerPage,
     };
 
-    routerUtils.goToContactsBrowse(query);
+    routerStore.goToContactsBrowse(query);
 
     setTimeout(() => {
       this.loadContacts.flush();
@@ -326,8 +326,8 @@ class View extends React.Component {
   };
 
   create = () => {
-    routerUtils.goToContactsCreate({
-      book: routerUtils.getQuery().book,
+    routerStore.goToContactsCreate({
+      book: routerStore.getQuery().book,
     });
   };
 }

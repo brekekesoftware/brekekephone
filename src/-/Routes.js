@@ -2,46 +2,43 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
-import NewCallPark from './components-Setting/NewCallPark';
-import Auth from './components/auth';
-import WithoutStatusBar from './components/auth/WithoutStatusBar';
-import BuddyChatsNotify from './components/buddy-chats-notify';
-import BuddyChatsRecent from './components/buddy-chats-recent';
-import CallKeypad from './components/call-keypad';
-import CallPark from './components/call-park';
-import CallTransferAttend from './components/call-transfer-attend';
-import CallTransferDial from './components/call-transfer-dial';
-import CallVideos from './components/call-videos';
-import CallVoices from './components/call-voices';
-import Callbar from './components/callbar';
-import CallsCreate from './components/calls-create';
-import CallsManage from './components/calls-manage';
-import CallsNotify from './components/calls-notify';
-import CallsRecent from './components/calls-recent';
-import ChatGroupInvite from './components/chat-group-invite';
-import ChatGroupsCreate from './components/chat-groups-create';
-import ChatGroupsNotify from './components/chat-groups-notify';
-import ChatsRecent from './components/chats-recent';
-import ContactsBrowse from './components/contacts-browse';
-import ContactsCreate from './components/contacts-create';
-import GroupChatsRecent from './components/group-chats-recent';
-import Notifications from './components/notifications';
-import PBXAuth from './components/pbx-auth';
-import PhonebooksBrowse from './components/phonebooks-browse';
-import ProfileUpdate from './components/profile-update';
-import ProfilesCreate from './components/profiles-create';
-import Settings from './components/settings';
-import SIPAuth from './components/sip-auth';
-import Tabbar from './components/tabbar';
-import UCAuth from './components/uc-auth';
-import UsersBrowse from './components/users-browse';
-import PageSignin from './PageSignin/PageSignin';
+import NewCallPark from '../components-Setting/NewCallPark';
+import Auth from '../components/auth';
+import WithoutStatusBar from '../components/auth/WithoutStatusBar';
+import BuddyChatsNotify from '../components/buddy-chats-notify';
+import BuddyChatsRecent from '../components/buddy-chats-recent';
+import CallKeypad from '../components/call-keypad';
+import CallPark from '../components/call-park';
+import CallTransferAttend from '../components/call-transfer-attend';
+import CallTransferDial from '../components/call-transfer-dial';
+import CallVideos from '../components/call-videos';
+import CallVoices from '../components/call-voices';
+import Callbar from '../components/callbar';
+import CallsCreate from '../components/calls-create';
+import CallsManage from '../components/calls-manage';
+import CallsNotify from '../components/calls-notify';
+import CallsRecent from '../components/calls-recent';
+import ChatGroupInvite from '../components/chat-group-invite';
+import ChatGroupsCreate from '../components/chat-groups-create';
+import ChatGroupsNotify from '../components/chat-groups-notify';
+import ChatsRecent from '../components/chats-recent';
+import ContactsBrowse from '../components/contacts-browse';
+import ContactsCreate from '../components/contacts-create';
+import GroupChatsRecent from '../components/group-chats-recent';
+import Notifications from '../components/notifications';
+import PBXAuth from '../components/pbx-auth';
+import PhonebooksBrowse from '../components/phonebooks-browse';
+import ProfileUpdate from '../components/profile-update';
+import ProfilesCreate from '../components/profiles-create';
+import Settings from '../components/settings';
+import SIPAuth from '../components/sip-auth';
+import Tabbar from '../components/tabbar';
+import UCAuth from '../components/uc-auth';
+import UsersBrowse from '../components/users-browse';
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <WithoutStatusBar>
-      <Route exact path="/" render={() => <Redirect to="/profiles/manage" />} />
-      <Route exact path="/profiles/manage" component={PageSignin} />
       <Route exact path="/profiles/create" component={ProfilesCreate} />
       <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route

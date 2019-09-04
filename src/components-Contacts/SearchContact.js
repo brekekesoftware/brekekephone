@@ -2,7 +2,7 @@ import { mdiClose } from '@mdi/js';
 import { Button, Header, Input, Item } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class SearchContact extends React.Component {
   render() {

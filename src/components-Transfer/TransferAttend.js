@@ -13,7 +13,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class TransferAttend extends React.Component {
   render() {

@@ -5,8 +5,8 @@ import React from 'react';
 import Headers from '../components-Home/Header';
 import { TextInput } from '../components-shared/Input';
 import authStore from '../mobx/authStore';
-import * as routerUtils from '../mobx/routerStore';
-import toast from '../shared/toast';
+import routerStore from '../mobx/routerStore';
+import toast from '../shared/Toast';
 
 @observer
 class NewCallPark extends React.Component {
@@ -110,7 +110,7 @@ class NewCallPark extends React.Component {
       ucPort: ucPort,
     });
 
-    routerUtils.goToSettings();
+    routerStore.goToSettings();
   };
 }
 

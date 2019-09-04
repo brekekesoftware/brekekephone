@@ -13,8 +13,8 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import SvgIcon from '../components-shared/SvgIcon';
-import * as routerUtils from '../mobx/routerStore';
+import routerStore from '../mobx/routerStore';
+import SvgIcon from '../shared/SvgIcon';
 
 const Park = p => (
   <ListItem callpark>
@@ -51,7 +51,7 @@ class CallParkComponent extends React.Component {
             <Body>
               <Button
                 full
-                onPress={() => routerUtils.goToNewCallPark(profile?.id)}
+                onPress={() => routerStore.goToNewCallPark(profile?.id)}
               >
                 <Text>NEW CALL PARK</Text>
               </Button>

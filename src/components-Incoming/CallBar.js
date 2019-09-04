@@ -15,7 +15,7 @@ import { Button, Left, Text, View } from 'native-base';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class CallBar extends React.Component {
   render() {

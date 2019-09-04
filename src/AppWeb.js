@@ -10,11 +10,8 @@ import logoSrc from './assets/icon.png';
 
 @observer
 class AppWeb extends React.Component {
-  @observable
-  useWebVersion = !isIOS && !isAndroid;
-
-  @action
-  enableWebVersion = e => {
+  @observable useWebVersion = !isIOS && !isAndroid;
+  @action enableWebVersion = e => {
     e.preventDefault();
     this.useWebVersion = true;
   };

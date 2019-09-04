@@ -5,11 +5,11 @@ import parseCustomNoti from './pushNotification-parse';
 
 let voipApnsToken = '';
 
-export const getPushNotificationToken = () => {
+const getPushNotificationToken = () => {
   return Promise.resolve(voipApnsToken);
 };
 
-export const registerPushNotification = () => {
+const registerPushNotification = () => {
   VoipPushNotification.addEventListener('register', onVoipRegister);
   VoipPushNotification.addEventListener('notification', onVoipNotification);
   VoipPushNotification.requestPermissions();
@@ -42,6 +42,8 @@ const onVoipNotification = noti => {
   });
 };
 
-export const resetBadgeNumber = () => {
+const resetBadgeNumber = () => {
   PushNotificationIOS.setApplicationIconBadgeNumber(0);
 };
+
+export { getPushNotificationToken, registerPushNotification, resetBadgeNumber };

@@ -2,7 +2,7 @@ import { mdiArrowLeft, mdiMagnify, mdiPhone, mdiRecord } from '@mdi/js';
 import { Body, Button, Header, Left, Right, Text, View } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class HeaderChat extends React.Component {
   render() {

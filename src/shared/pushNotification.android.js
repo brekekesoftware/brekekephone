@@ -7,11 +7,11 @@ const { Notification, RefreshToken } = FCMEvent;
 
 let fcmPnToken = '';
 
-export const getPushNotificationToken = () => {
+const getPushNotificationToken = () => {
   return Promise.resolve(fcmPnToken);
 };
 
-export const registerPushNotification = async () => {
+const registerPushNotification = async () => {
   try {
     await FCM.requestPermissions();
     FCM.enableDirectChannel();
@@ -81,7 +81,7 @@ const setBadgeNumber = n => {
   AsyncStorage.setItem('androidBadgeNumber', '' + n);
 };
 
-export const resetBadgeNumber = () => {
+const resetBadgeNumber = () => {
   setBadgeNumber(0);
   FCM.presentLocalNotification({
     body: 'Reset badge',
@@ -98,3 +98,5 @@ export const resetBadgeNumber = () => {
     is_local_notification: 'local_notification',
   });
 };
+
+export { getPushNotificationToken, registerPushNotification, resetBadgeNumber };

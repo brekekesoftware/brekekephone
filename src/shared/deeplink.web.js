@@ -3,7 +3,7 @@ import parse from './deeplink-parse';
 let alreadyHandleFirstOpen = false;
 const params = parse(window.location);
 
-export const getUrlParams = () => {
+const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
     return Promise.resolve(null);
   }
@@ -11,4 +11,8 @@ export const getUrlParams = () => {
   return Promise.resolve(params);
 };
 
-export const setUrlParams = () => {};
+const setUrlParams = () => {
+  // Polyfill
+};
+
+export { getUrlParams, setUrlParams };

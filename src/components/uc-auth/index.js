@@ -6,8 +6,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -122,7 +122,7 @@ class View extends React.Component {
     return (
       <UI
         failure={authStore.ucState === 'failure'}
-        abort={routerUtils.goToProfilesManage}
+        abort={routerStore.goToProfilesManage}
         retry={this.auth}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
       />

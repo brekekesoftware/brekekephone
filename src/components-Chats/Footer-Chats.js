@@ -2,7 +2,7 @@ import { mdiEmoticonOutline, mdiPlay, mdiPlus } from '@mdi/js';
 import { Body, Button, Footer, Form, Input, Left, Right } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class FooterChats extends React.Component {
   render() {

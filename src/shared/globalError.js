@@ -1,30 +1,13 @@
 import { setJSExceptionHandler } from 'react-native-exception-handler';
 
-import Alert from './alert';
+import prompt from './prompt';
 
 const onGlobalJSError = err => {
   if (!err) {
     return;
   }
   console.error('onGlobalJSError', err);
-  Alert.alert(
-    `Error: ${err.name}`,
-    err.message,
-    [
-      {
-        text: 'Cancel',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {
-        text: 'OK',
-        onPress: () => {},
-      },
-    ],
-    {
-      cancelable: true,
-    },
-  );
+  prompt(`Error: ${err.name}`, err.message);
 };
 
 setJSExceptionHandler(onGlobalJSError, true);

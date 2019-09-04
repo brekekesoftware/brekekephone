@@ -2,7 +2,7 @@ import { Button, H2, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { std } from '../styleguide';
+import { std } from '../-/styleguide';
 
 const st = StyleSheet.create({
   containerDisplay: {

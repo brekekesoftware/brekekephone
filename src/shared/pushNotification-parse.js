@@ -15,7 +15,7 @@ const keysInCustomNotification = [
   'is_local_notification',
 ];
 
-const parse = (...p) => {
+const _parse = (...p) => {
   return p
     .filter(i => !!i)
     .map(i => {
@@ -40,14 +40,14 @@ const parse = (...p) => {
     }, {});
 };
 
-const parseCustomNoti = n => {
+const parse = n => {
   if (authStore.profile && AppState.currentState === 'active') {
     return null;
   }
   //
   let c = {};
   if (Platform.OS === 'android') {
-    c = parse(
+    c = _parse(
       n,
       get(n, 'fcm'),
       get(n, 'data'),
@@ -57,7 +57,7 @@ const parseCustomNoti = n => {
       get(n, 'data.custom_notification'),
     );
   } else if (Platform.OS === 'ios') {
-    c = parse(
+    c = _parse(
       n,
       get(n, '_data'),
       get(n, '_alert'),
@@ -85,4 +85,4 @@ const parseCustomNoti = n => {
   return c;
 };
 
-export default parseCustomNoti;
+export default parse;

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 import UI from './ui';
 
 @observer
@@ -24,7 +24,7 @@ class View extends React.Component {
   render = () => (
     <UI
       call={this.props.call}
-      back={routerUtils.goToCallsManage}
+      back={routerStore.goToCallsManage}
       sendKey={this.sendKey}
     />
   );

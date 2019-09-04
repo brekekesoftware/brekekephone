@@ -3,7 +3,7 @@ import { Thumbnail, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 const st = StyleSheet.create({
   status: {

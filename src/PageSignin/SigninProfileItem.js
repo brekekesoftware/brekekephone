@@ -8,15 +8,14 @@ import {
 } from '@mdi/js';
 import { Button, Switch, Text, View } from 'native-base';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import SvgIcon from '../components-shared/SvgIcon';
 import authStore from '../mobx/authStore';
-import * as routerUtils from '../mobx/routerStore';
-import registerStyle from '../style/registerStyle';
-import v from '../style/variables';
+import routerStore from '../mobx/routerStore';
+import registerStyle from '../shared/registerStyle';
+import SvgIcon from '../shared/SvgIcon';
 
-registerStyle(v => ({
+const s = registerStyle(v => ({
   View: {
     SigninProfileItem: {
       position: 'relative',
@@ -105,37 +104,40 @@ registerStyle(v => ({
       },
     },
   },
-}));
-const s = StyleSheet.create({
-  Icon: {
+  _SigninProfileItem_Icon: {
     position: 'absolute',
     top: v.padding,
     right: v.padding,
   },
-});
+}));
 
 const SigninProfileItem = p => (
   <View SigninProfileItem last={p.last}>
-    <View SigninProfileItem_Field>
-      <Text SigninProfileItem_FieldName>USERNAME</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxUsername || '\u00A0'}</Text>
-      <SvgIcon path={mdiAccountCircleOutline} style={s.Icon} />
-    </View>
-    <View SigninProfileItem_Field>
-      <Text SigninProfileItem_FieldName>TENANT</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxTenant || '\u00A0'}</Text>
-      <SvgIcon path={mdiWebpack} style={s.Icon} />
-    </View>
-    <View SigninProfileItem_Field>
-      <Text SigninProfileItem_FieldName>HOSTNAME</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxHostname || '\u00A0'}</Text>
-      <SvgIcon path={mdiWebBox} style={s.Icon} />
-    </View>
-    <View SigninProfileItem_Field>
-      <Text SigninProfileItem_FieldName>PORT</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxPort || '\u00A0'}</Text>
-      <SvgIcon path={mdiServerNetwork} style={s.Icon} />
-    </View>
+    <TouchableOpacity onPress={() => routerStore.goToProfileUpdate(p.id)}>
+      <View SigninProfileItem_Field>
+        <Text SigninProfileItem_FieldName>USERNAME</Text>
+        <Text SigninProfileItem_FieldValue>{p.pbxUsername || '\u00A0'}</Text>
+        <SvgIcon
+          path={mdiAccountCircleOutline}
+          style={s._SigninProfileItem_Icon}
+        />
+      </View>
+      <View SigninProfileItem_Field>
+        <Text SigninProfileItem_FieldName>TENANT</Text>
+        <Text SigninProfileItem_FieldValue>{p.pbxTenant || '\u00A0'}</Text>
+        <SvgIcon path={mdiWebpack} style={s._SigninProfileItem_Icon} />
+      </View>
+      <View SigninProfileItem_Field>
+        <Text SigninProfileItem_FieldName>HOSTNAME</Text>
+        <Text SigninProfileItem_FieldValue>{p.pbxHostname || '\u00A0'}</Text>
+        <SvgIcon path={mdiWebBox} style={s._SigninProfileItem_Icon} />
+      </View>
+      <View SigninProfileItem_Field>
+        <Text SigninProfileItem_FieldName>PORT</Text>
+        <Text SigninProfileItem_FieldValue>{p.pbxPort || '\u00A0'}</Text>
+        <SvgIcon path={mdiServerNetwork} style={s._SigninProfileItem_Icon} />
+      </View>
+    </TouchableOpacity>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>UC</Text>
       <Text SigninProfileItem_FieldValue>
@@ -163,7 +165,7 @@ const SigninProfileItem = p => (
       <Button
         SigninProfileItem_Btn
         update
-        onPress={() => routerUtils.goToProfileUpdate(p.id)}
+        onPress={() => routerStore.goToProfileUpdate(p.id)}
       >
         <SvgIcon path={mdiFocusFieldHorizontal} width="100%" />
       </Button>
@@ -187,7 +189,7 @@ const NoServer = () => (
       <Button
         SigninProfileItem_Btn
         create
-        onPress={routerUtils.goToProfilesCreate}
+        onPress={routerStore.goToProfilesCreate}
       >
         <Text SigninProfileItem_BtnTxt>Create New Server</Text>
       </Button>

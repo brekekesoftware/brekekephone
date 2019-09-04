@@ -5,8 +5,8 @@ import React from 'react';
 
 import getApiProvider from '../../apis/getApiProvider';
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -110,7 +110,7 @@ class View extends React.Component {
       <UI
         retryable={!!authStore.profile}
         failure={!authStore.profile || authStore.sipState === 'failure'}
-        abort={routerUtils.goToProfilesManage}
+        abort={routerStore.goToProfilesManage}
         retry={this.auth}
       />
     );

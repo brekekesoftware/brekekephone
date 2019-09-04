@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -46,7 +46,7 @@ class View extends React.Component {
       selectedPark={this.state.selectedPark}
       selectPark={this.selectPark}
       park={this.park}
-      back={routerUtils.goToCallsManage}
+      back={routerStore.goToCallsManage}
     />
   );
 
@@ -77,7 +77,7 @@ class View extends React.Component {
   };
 
   onParkSuccess = () => {
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   onParkFailure = err => {

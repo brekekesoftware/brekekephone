@@ -2,8 +2,8 @@ import { mdiPlus } from '@mdi/js';
 import { Button, Text, View } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
-import registerStyle from '../style/registerStyle';
+import registerStyle from './registerStyle';
+import SvgIcon from './SvgIcon';
 
 registerStyle(v => ({
   View: {

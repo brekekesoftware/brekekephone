@@ -3,7 +3,7 @@ import { Body, Button, Left, ListItem, Right, Text, View } from 'native-base';
 import React from 'react';
 
 import Avatar from '../components-shared/Avatar';
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 const monthName = [
   'Jan',

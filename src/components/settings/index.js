@@ -4,8 +4,8 @@ import React from 'react';
 
 import PageSetting from '../../components-Setting/PageSetting';
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 
 @observer
 class View extends React.Component {
@@ -43,7 +43,7 @@ class View extends React.Component {
       setChatBusy={this.setChatBusy}
       setChatMood={this.setChatMood}
       submitChatMood={this.submitChatMood}
-      signout={routerUtils.goToProfilesManage}
+      signout={routerStore.goToProfilesManage}
     />
   );
 

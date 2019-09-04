@@ -12,8 +12,8 @@ import {
 import React from 'react';
 import Progress from 'react-native-progress-circle';
 
-import SvgIcon from '../components-shared/SvgIcon';
-import { std } from '../styleguide';
+import { std } from '../-/styleguide';
+import SvgIcon from '../shared/SvgIcon';
 import Scroll from './Scroll';
 
 const File = p => (

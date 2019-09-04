@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
-import toast from '../../shared/toast';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 const isNotJointed = group => !group.jointed;

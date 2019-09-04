@@ -1,31 +1,6 @@
-import merge from 'lodash/merge';
-import getTheme from 'native-base/src/theme/components';
-import { Platform } from 'react-native';
+import registerStyle from '../shared/registerStyle';
 
-import variables from './variables';
-
-const nativeBaseTheme = getTheme(variables);
-
-// This recursively update the whole style
-// Will be useful for which field we need to update for every components
-const recursiveUpdateStyle = o => {
-  Object.entries(o).forEach(([k, v]) => {
-    if (k.toLowerCase().endsWith('fontfamily')) {
-      if (Platform.OS === 'web') {
-        o[k] = 'Roboto';
-      }
-    } else if (k === 'elevation') {
-      o[k] = 0; // Remove box shadow on android
-    } else if (v && typeof v === 'object') {
-      recursiveUpdateStyle(v);
-    }
-  });
-};
-recursiveUpdateStyle(nativeBaseTheme);
-
-// Other small/accuracy modifications will be put here
-// We should take a look at the default components to see the keys
-merge(nativeBaseTheme, {
+registerStyle(v => ({
   'NativeBase.Header': {
     '.noLeft': {
       'NativeBase.Left': {
@@ -36,8 +11,8 @@ merge(nativeBaseTheme, {
     '.headerChat': {
       'NativeBase.Left': {
         flex: 0.25,
-        paddingLeft: variables.listItemPadding,
-        paddingVertical: variables.listItemPadding - 5,
+        paddingLeft: v.listItemPadding,
+        paddingVertical: v.listItemPadding - 5,
       },
       'NativeBase.Body': {
         'NativeBase.Text': {
@@ -45,19 +20,19 @@ merge(nativeBaseTheme, {
           fontSize: 18,
         },
         'NativeBase.ViewNB': {
-          paddingTop: variables.listItemPadding - 5,
+          paddingTop: v.listItemPadding - 5,
           flexDirection: 'row',
           alignItems: 'center',
         },
         flex: 0.5,
         alignItems: 'flex-start',
-        paddingVertical: variables.listItemPadding - 5,
+        paddingVertical: v.listItemPadding - 5,
       },
       'NativeBase.Right': {
         flex: 0.25,
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        paddingVertical: variables.listItemPadding - 5,
+        paddingVertical: v.listItemPadding - 5,
       },
       justifyContent: 'space-between',
       paddingVertical: 10,
@@ -109,7 +84,7 @@ merge(nativeBaseTheme, {
           height: 45,
         },
         flex: 0.2,
-        paddingLeft: variables.listItemPadding,
+        paddingLeft: v.listItemPadding,
       },
       'NativeBase.Body': {
         flex: 0.5,
@@ -134,7 +109,7 @@ merge(nativeBaseTheme, {
     },
     backgroundColor: 'white',
   },
-  variables: {
+  v: {
     topTabBarActiveBorderColor: '#4cc5de',
   },
   'NativeBase.Badge': {
@@ -152,7 +127,7 @@ merge(nativeBaseTheme, {
       borderColor: '#c9c9c9',
       borderWidth: 1 / 3,
       backgroundColor: '#ffffff',
-      padding: variables.listItemPadding,
+      padding: v.listItemPadding,
       marginLeft: null,
     },
     '.chat': {
@@ -164,7 +139,7 @@ merge(nativeBaseTheme, {
           'NativeBase.Text': {
             '.note': {
               fontSize: 12,
-              paddingLeft: variables.listItemPadding,
+              paddingLeft: v.listItemPadding,
               fontWeight: 'normal',
             },
             paddingRight: 10,
@@ -180,7 +155,7 @@ merge(nativeBaseTheme, {
         },
         flex: 0.8,
         alignSelf: 'flex-start',
-        marginLeft: variables.listItemPadding + 5,
+        marginLeft: v.listItemPadding + 5,
       },
     },
     '.listUser': {
@@ -203,26 +178,26 @@ merge(nativeBaseTheme, {
           fontSize: 18,
           fontWeight: '400',
         },
-        paddingVertical: variables.listItemPadding + 2,
-        marginLeft: variables.listItemPadding + 5,
+        paddingVertical: v.listItemPadding + 2,
+        marginLeft: v.listItemPadding + 5,
       },
       'NativeBase.Right': {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: variables.listNoteSize,
-              color: variables.sTabBarActiveTextColor,
+              fontSize: v.listNoteSize,
+              color: v.sTabBarActiveTextColor,
             },
           },
           height: null,
-          paddingHorizontal: variables.listItemPadding,
+          paddingHorizontal: v.listItemPadding,
         },
         flex: 0.25,
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingRight: variables.listItemPadding + 5,
-        paddingVertical: variables.listItemPadding + 5,
+        paddingRight: v.listItemPadding + 5,
+        paddingVertical: v.listItemPadding + 5,
       },
     },
     '.infoUser': {
@@ -235,14 +210,14 @@ merge(nativeBaseTheme, {
           marginLeft: null,
           paddingVertical: 3,
         },
-        marginLeft: variables.listItemPadding + 5,
+        marginLeft: v.listItemPadding + 5,
       },
       'NativeBase.Right': {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: variables.listNoteSize,
-              color: variables.sTabBarActiveTextColor,
+              fontSize: v.listNoteSize,
+              color: v.sTabBarActiveTextColor,
             },
           },
           height: null,
@@ -251,7 +226,7 @@ merge(nativeBaseTheme, {
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingRight: variables.listItemPadding + 5,
+        paddingRight: v.listItemPadding + 5,
       },
       borderBottomWidth: null,
     },
@@ -264,15 +239,15 @@ merge(nativeBaseTheme, {
           marginLeft: null,
           paddingVertical: 3,
         },
-        paddingVertical: variables.listItemPadding + 2,
-        marginLeft: variables.listItemPadding + 5,
+        paddingVertical: v.listItemPadding + 2,
+        marginLeft: v.listItemPadding + 5,
       },
       'NativeBase.Right': {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: variables.listNoteSize,
-              color: variables.sTabBarActiveTextColor,
+              fontSize: v.listNoteSize,
+              color: v.sTabBarActiveTextColor,
             },
           },
           height: null,
@@ -281,8 +256,8 @@ merge(nativeBaseTheme, {
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingRight: variables.listItemPadding + 5,
-        paddingVertical: variables.listItemPadding + 5,
+        paddingRight: v.listItemPadding + 5,
+        paddingVertical: v.listItemPadding + 5,
       },
     },
     '.callpark': {
@@ -297,8 +272,8 @@ merge(nativeBaseTheme, {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: variables.listNoteSize,
-              color: variables.sTabBarActiveTextColor,
+              fontSize: v.listNoteSize,
+              color: v.sTabBarActiveTextColor,
             },
           },
           height: null,
@@ -307,7 +282,7 @@ merge(nativeBaseTheme, {
         justifyContent: 'flex-end',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingVertical: variables.listItemPadding + 5,
+        paddingVertical: v.listItemPadding + 5,
       },
     },
   },
@@ -321,47 +296,47 @@ merge(nativeBaseTheme, {
       'NativeBase.Left': {
         'NativeBase.Button': {
           justifyContent: 'center',
-          borderRadius: variables.listItemPadding * 4,
-          width: variables.listItemPadding * 6,
-          height: variables.listItemPadding * 6,
+          borderRadius: v.listItemPadding * 4,
+          width: v.listItemPadding * 6,
+          height: v.listItemPadding * 6,
         },
         'NativeBase.Text': {
-          paddingTop: variables.listItemPadding,
-          fontSize: variables.listItemPadding,
+          paddingTop: v.listItemPadding,
+          fontSize: v.listItemPadding,
         },
         alignItems: 'center',
-        marginHorizontal: variables.listItemPadding,
+        marginHorizontal: v.listItemPadding,
       },
       flexDirection: 'row',
       justifyContent: 'center',
-      marginTop: variables.listItemPadding * 2,
-      marginLeft: variables.listItemPadding,
-      marginRight: variables.listItemPadding,
+      marginTop: v.listItemPadding * 2,
+      marginLeft: v.listItemPadding,
+      marginRight: v.listItemPadding,
     },
     '.hangUp': {
       'NativeBase.Left': {
         'NativeBase.Button': {
           justifyContent: 'center',
-          borderRadius: variables.listItemPadding * 4,
-          width: variables.listItemPadding * 6,
-          height: variables.listItemPadding * 6,
+          borderRadius: v.listItemPadding * 4,
+          width: v.listItemPadding * 6,
+          height: v.listItemPadding * 6,
         },
         'NativeBase.Text': {
           fontWeight: 'bold',
-          paddingTop: variables.listItemPadding,
+          paddingTop: v.listItemPadding,
         },
         alignItems: 'center',
-        marginHorizontal: variables.listItemPadding,
+        marginHorizontal: v.listItemPadding,
       },
       flexDirection: 'row',
       justifyContent: 'center',
-      marginTop: variables.listItemPadding * 2,
-      marginLeft: variables.listItemPadding,
-      marginRight: variables.listItemPadding,
+      marginTop: v.listItemPadding * 2,
+      marginLeft: v.listItemPadding,
+      marginRight: v.listItemPadding,
     },
     '.leftpd18': {
-      marginLeft: variables.listItemPadding + 12,
-      marginTop: variables.listItemPadding,
+      marginLeft: v.listItemPadding + 12,
+      marginTop: v.listItemPadding,
       alignSelf: 'flex-start',
     },
     '.leftmgt15': {
@@ -375,7 +350,7 @@ merge(nativeBaseTheme, {
     '.removeServer': {
       'NativeBase.ViewNB': {
         'NativeBase.Text': {
-          padding: variables.listItemPadding,
+          padding: v.listItemPadding,
           fontSize: 18,
           fontWeight: '400',
         },
@@ -388,7 +363,7 @@ merge(nativeBaseTheme, {
                 color: '#ffffff',
               },
               backgroundColor: '#212121',
-              marginRight: variables.listItemPadding,
+              marginRight: v.listItemPadding,
             },
             '.remove': {
               'NativeBase.Text': {
@@ -401,11 +376,11 @@ merge(nativeBaseTheme, {
           },
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          marginRight: variables.listItemPadding,
-          marginTop: variables.listItemPadding,
+          marginRight: v.listItemPadding,
+          marginTop: v.listItemPadding,
         },
         backgroundColor: '#ffffff',
-        padding: variables.listItemPadding,
+        padding: v.listItemPadding,
       },
       flex: 1,
       justifyContent: 'center',
@@ -424,21 +399,21 @@ merge(nativeBaseTheme, {
           alignItems: 'center',
           lineHeight: 10,
           'NativeBase.Text': {
-            paddingVertical: variables.listItemPadding,
+            paddingVertical: v.listItemPadding,
             textAlign: 'center',
           },
         },
         '.btncall': {
           'NativeBase.Button': {
             justifyContent: 'center',
-            borderRadius: variables.listItemPadding * 2,
-            width: variables.listItemPadding * 4,
-            height: variables.listItemPadding * 4,
+            borderRadius: v.listItemPadding * 2,
+            width: v.listItemPadding * 4,
+            height: v.listItemPadding * 4,
           },
           'NativeBase.ViewNB': {
             'NativeBase.Text': {
-              paddingTop: variables.listItemPadding,
-              fontSize: variables.listItemPadding,
+              paddingTop: v.listItemPadding,
+              fontSize: v.listItemPadding,
               textAlign: 'center',
               alignSelf: 'center',
             },
@@ -446,18 +421,16 @@ merge(nativeBaseTheme, {
           marginTop: 100,
         },
         alignItems: 'center',
-        marginHorizontal: variables.listItemPadding,
+        marginHorizontal: v.listItemPadding,
         top: '30%',
       },
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginHorizontal: variables.listItemPadding,
+      marginHorizontal: v.listItemPadding,
       top: '50%',
     },
     '.center': {
       alignItems: 'center',
     },
   },
-});
-
-export default nativeBaseTheme;
+}));

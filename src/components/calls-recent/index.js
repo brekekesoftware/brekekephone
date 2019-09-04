@@ -5,7 +5,7 @@ import { createModelView } from 'redux-model';
 
 import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 
 @observer
 @createModelView(
@@ -45,8 +45,8 @@ class View extends React.Component {
       resolveCall={this.resolveCall}
       removeCall={this.props.removeCall}
       callBack={this.callBack}
-      gotoCallsManage={routerUtils.goToCallsManage}
-      gotoCallsCreate={routerUtils.goToCallsCreate}
+      gotoCallsManage={routerStore.goToCallsManage}
+      gotoCallsCreate={routerStore.goToCallsCreate}
       parkingIds={this.props.parkingIds}
       resolveUser={this.resolveUser}
       searchText={this.props.searchText}
@@ -65,7 +65,7 @@ class View extends React.Component {
     const call = callById[id] || {};
     const number = call.partyNumber;
     sip.createSession(number);
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   resolveUser = id => {

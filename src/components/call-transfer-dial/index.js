@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import TransferDial from '../../components-Transfer/TransferDial';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 
 @observer
 @createModelView(
@@ -50,7 +50,7 @@ class View extends React.Component {
       setAttended={this.setAttended}
       setTarget={this.setTarget}
       transfer={this.transfer}
-      back={routerUtils.goToCallsManage}
+      back={routerStore.goToCallsManage}
       transferAttended={this.transferAttended}
       transferBlind={this.transferBlind}
       transferAttendedForVideo={this.transferAttendedForVideo}
@@ -140,14 +140,14 @@ class View extends React.Component {
 
     const { attended } = this.state;
 
-    if (!attended) return routerUtils.goToCallsManage();
+    if (!attended) return routerStore.goToCallsManage();
 
     this.props.updateCall({
       id: call.id,
       transfering: target,
     });
 
-    routerUtils.goToCallTransferAttend(call.id);
+    routerStore.goToCallTransferAttend(call.id);
   };
 
   onTransferFailure = err => {
@@ -192,14 +192,14 @@ class View extends React.Component {
 
     const { attended } = this.state;
 
-    if (!attended) return routerUtils.goToCallsManage();
+    if (!attended) return routerStore.goToCallsManage();
 
     this.props.updateCall({
       id: call.id,
       transfering: target,
     });
 
-    routerUtils.goToCallTransferAttend(call.id);
+    routerStore.goToCallTransferAttend(call.id);
 
     const { sip } = this.context;
 

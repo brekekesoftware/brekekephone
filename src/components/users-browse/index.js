@@ -5,7 +5,7 @@ import { createModelView } from 'redux-model';
 
 import PageContact from '../../components-Contacts/PageContact';
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 
 @observer
 @createModelView(
@@ -50,7 +50,7 @@ class View extends React.Component {
       resolveUser={this.resolveUser}
       callVoice={this.callVoice}
       callVideo={this.callVideo}
-      chat={routerUtils.goToBuddyChatsRecent}
+      chat={routerStore.goToBuddyChatsRecent}
       setSearchText={this.setSearchText}
       toggleModal={this.toggleModal}
       isModalVisible={this.state.isModalVisible}
@@ -142,7 +142,7 @@ class View extends React.Component {
     const { sip } = this.context;
 
     sip.createSession(userId);
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   callVideo = userId => {
@@ -152,7 +152,7 @@ class View extends React.Component {
       videoEnabled: true,
     });
 
-    routerUtils.goToCallsManage();
+    routerStore.goToCallsManage();
   };
 
   setSearchText = value => {

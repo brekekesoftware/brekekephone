@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import PageCalling from '../../components-Incoming/PageCalling';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import LoudSpeaker from './LoudSpeaker';
 
 @observer
@@ -58,7 +58,7 @@ class View extends React.Component {
     const creatingSessions = sip.getCreatingSessions();
 
     if (creatingSessions.isEmpty()) {
-      routerUtils.goToCallsCreate();
+      routerStore.goToCallsCreate();
     }
   }
 
@@ -138,8 +138,8 @@ class View extends React.Component {
         runningIds={this.props.runningIds}
         runningById={this.props.runningById}
         parkingIds={this.props.parkingIds}
-        browseHistory={routerUtils.goToCallsRecent}
-        create={routerUtils.goToCallsCreate}
+        browseHistory={routerStore.goToCallsRecent}
+        create={routerStore.goToCallsCreate}
         select={this.props.selectCall}
         hangup={this.hangup}
         answer={this.answer}
@@ -277,15 +277,15 @@ class View extends React.Component {
     const call = this.props.runningById[this.props.selectedId];
 
     if (call.transfering) {
-      routerUtils.goToCallTransferAttend(call.id);
+      routerStore.goToCallTransferAttend(call.id);
     } else {
-      routerUtils.goToCallTransferDial(call.id);
+      routerStore.goToCallTransferDial(call.id);
     }
   };
 
   dtmf = () => {
     const call = this.props.runningById[this.props.selectedId];
-    routerUtils.goToCallKeypad(call.id);
+    routerStore.goToCallKeypad(call.id);
   };
 
   unpark = parkNumber => {
@@ -296,7 +296,7 @@ class View extends React.Component {
 
   park = () => {
     const call = this.props.runningById[this.props.selectedId];
-    routerUtils.goToCallPark(call.id);
+    routerStore.goToCallPark(call.id);
   };
 
   enableVideo = () => {

@@ -3,8 +3,8 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
-import registerStyle from '../style/registerStyle';
-import v from '../style/variables';
+import registerStyle from './registerStyle';
+import v from './variables';
 
 registerStyle(v => ({
   View: {
@@ -16,10 +16,6 @@ registerStyle(v => ({
         ios: {
           height: getStatusBarHeight(true),
         },
-        web: {
-          height: 0,
-          borderBottomWidth: 0,
-        },
       }),
       '.transparent': {
         backgroundColor: 'transparent',
@@ -29,13 +25,14 @@ registerStyle(v => ({
   },
 }));
 
-const MyStatusBar = p => (
-  <View MyStatusBar transparent={p.transparent}>
-    <StatusBar
-      backgroundColor={p.transparent ? 'transparent' : v.brekekeShade3}
-      barStyle="dark-content"
-    />
-  </View>
-);
+const MyStatusBar = p =>
+  Platform.OS === 'web' ? null : (
+    <View MyStatusBar transparent={p.transparent}>
+      <StatusBar
+        backgroundColor={p.transparent ? 'transparent' : v.brekekeShade3}
+        barStyle="dark-content"
+      />
+    </View>
+  );
 
 export default MyStatusBar;

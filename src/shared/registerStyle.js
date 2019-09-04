@@ -5,6 +5,10 @@ import variables from './variables';
 
 const autoAddPrefix = s =>
   Object.entries(s).reduce((o, [k, v]) => {
+    if (k.charAt(0) === '_') {
+      o[k] = v;
+      return o;
+    }
     if (k === 'View') {
       k = 'ViewNB';
     }
@@ -28,7 +32,7 @@ const registerStyle = style => {
     style = style(variables);
   }
   merge(nativeBaseTheme, autoAddPrefix(style));
-  return style;
+  return nativeBaseTheme;
 };
 
 export default registerStyle;

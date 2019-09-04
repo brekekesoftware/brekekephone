@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 
 import Avatar from '../components-shared/Avatar';
 import Modal from '../components-shared/NativeModal';
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 import SearchContact from './SearchContact';
 
 class TabUsers extends React.Component {

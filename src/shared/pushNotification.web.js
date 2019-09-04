@@ -4,7 +4,7 @@ const uint8ArrayToUrlBase64 = arr => {
     .replace(/[+/]/g, '-');
 };
 
-export const getPushNotificationToken = async () => {
+const getPushNotificationToken = async () => {
   const sw = await navigator.serviceWorker.ready;
   const sub =
     (await sw.pushManager.getSubscription()) ||
@@ -18,13 +18,15 @@ export const getPushNotificationToken = async () => {
   };
 };
 
-export const registerPushNotification = () => {
+const registerPushNotification = () => {
   if (!window.Notification || window.Notification.permission === 'granted') {
     return;
   }
   Notification.requestPermission();
 };
 
-export const resetBadgeNumber = () => {
+const resetBadgeNumber = () => {
   // Polyfill
 };
+
+export { getPushNotificationToken, registerPushNotification, resetBadgeNumber };

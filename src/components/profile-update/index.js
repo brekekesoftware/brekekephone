@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import authStore from '../../mobx/authStore';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import { validateHostname, validatePort } from '../../shared/validator';
 import UI from './ui';
 
@@ -46,7 +46,7 @@ class View extends React.Component {
       setUCPort={this.setUCPort}
       removePark={this.removePark}
       save={this.save}
-      back={routerUtils.goToProfilesManage}
+      back={routerStore.goToProfilesManage}
     />
   );
 
@@ -212,7 +212,7 @@ class View extends React.Component {
       ucPort: ucPort,
     });
 
-    routerUtils.goToProfilesManage();
+    routerStore.goToProfilesManage();
   };
 }
 

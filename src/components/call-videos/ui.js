@@ -1,7 +1,7 @@
 import React from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
 
-import { std } from '../../styleguide';
+import { std } from '../../-/styleguide';
 import Video from './video';
 
 const st = {

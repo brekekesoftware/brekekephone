@@ -8,7 +8,7 @@ import {
 import { Button, Footer, FooterTab, Text } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class FooterTabs extends React.Component {
   render() {

@@ -4,9 +4,9 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import ChatsDetail from '../../components-Chats/Chat-Detail';
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 import stripTags from '../../shared/stripTags';
-import toast from '../../shared/toast';
+import toast from '../../shared/Toast';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 
@@ -140,7 +140,7 @@ class View extends React.Component {
       acceptFile={this.acceptFile}
       rejectFile={this.rejectFile}
       pickFile={this.pickFile}
-      back={routerUtils.goToChatsRecent}
+      back={routerStore.goToChatsRecent}
     />
   );
 

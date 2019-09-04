@@ -7,10 +7,10 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
-import * as routerUtils from '../mobx/routerStore';
-import Alert from '../shared/alert';
+import routerStore from '../mobx/routerStore';
+import Alert from '../shared/Alert';
 import { getPushNotificationToken } from '../shared/pushNotification';
-import toast from '../shared/toast';
+import toast from '../shared/Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
@@ -250,7 +250,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerUtils.goToProfilesManage();
+      routerStore.goToProfilesManage();
       return null;
     }
   };
@@ -298,7 +298,7 @@ class ApiProvider extends React.Component {
               text: 'Cancel',
 
               onPress: () => {
-                routerUtils.goToProfilesManage();
+                routerStore.goToProfilesManage();
                 resolve(null);
               },
 

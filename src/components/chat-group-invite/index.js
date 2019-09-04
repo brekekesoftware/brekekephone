@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -90,7 +90,7 @@ class View extends React.Component {
   };
 
   back = () => {
-    routerUtils.goToChatGroupsRecent(this.props.group.id);
+    routerStore.goToChatGroupsRecent(this.props.group.id);
   };
 }
 

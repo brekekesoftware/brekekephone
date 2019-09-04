@@ -15,7 +15,7 @@ import React from 'react';
 import Headers from '../components-Home/Header';
 import Avatar from '../components-shared/Avatar';
 import { TextInput } from '../components-shared/Input';
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 const User = p => (
   <ListItem listChat onPress={p.toggle}>

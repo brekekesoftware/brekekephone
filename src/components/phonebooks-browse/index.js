@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 class View extends React.Component {
@@ -24,12 +24,12 @@ class View extends React.Component {
       loading={this.state.loading}
       books={this.state.books}
       selectBook={b =>
-        routerUtils.goToContactsBrowse({
+        routerStore.goToContactsBrowse({
           book: b.name,
           shared: b.shared,
         })
       }
-      create={() => routerUtils.goToContactsCreate()}
+      create={() => routerStore.goToContactsCreate()}
     />
   );
 

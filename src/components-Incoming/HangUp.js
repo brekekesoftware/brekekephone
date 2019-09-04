@@ -2,7 +2,7 @@ import { mdiPhoneHangup } from '@mdi/js';
 import { Button, Left, Text } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 
 class HangUpComponent extends React.Component {
   render() {

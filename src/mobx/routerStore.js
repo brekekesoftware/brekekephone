@@ -4,111 +4,66 @@ import qs from 'qs';
 import { Platform } from 'react-native';
 
 const routerStore = new RouterStore();
-
 const history = syncHistoryWithStore(
   Platform.OS === 'web' ? createHashHistory() : createMemoryHistory(),
   routerStore,
 );
 
+// Wait and push history to fix some strange issues with router
+const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
+
+Object.assign(routerStore, {
+  getQuery: () => qs.parse(routerStore.location.search.replace(/^\?*/, '')),
+  goToAuth: withTimeout(() => history.push('/auth')),
+  goToBuddyChatsRecent: withTimeout(buddy =>
+    history.push(`/auth/chats/buddy/${buddy}/recent`),
+  ),
+  goToCallKeypad: withTimeout(call =>
+    history.push(`/auth/call/${call}/keypad`),
+  ),
+  goToCallPark: withTimeout(call => history.push(`/auth/call/${call}/park`)),
+  goToCallsCreate: withTimeout(() => history.push('/auth/calls/create')),
+  goToCallsManage: withTimeout(() => history.push('/auth/calls/manage')),
+  goToCallsRecent: withTimeout(() => history.push('/auth/calls/recent')),
+  goToCallTransferAttend: withTimeout(call =>
+    history.push(`/auth/call/${call}/transfer/attend`),
+  ),
+  goToCallTransferDial: withTimeout(call =>
+    history.push(`/auth/call/${call}/transfer/dial`),
+  ),
+  goToChatGroupInvite: withTimeout(group =>
+    history.push(`/auth/chat-group/${group}/invite`),
+  ),
+  goToChatGroupsCreate: withTimeout(() =>
+    history.push('/auth/chat-groups/create'),
+  ),
+  goToChatGroupsRecent: withTimeout(group =>
+    history.push(`/auth/chats/group/${group}/recent`),
+  ),
+  goToChatsRecent: withTimeout(() => history.push('/auth/chats/recent')),
+  goToContactsBrowse: withTimeout(query =>
+    history.push(`/auth/contacts/browse?${qs.stringify(query)}`),
+  ),
+  goToContactsCreate: withTimeout(query =>
+    history.push(`/auth/contacts/create?${qs.stringify(query)}`),
+  ),
+  goToPhonebooksBrowse: withTimeout(() =>
+    history.push('/auth/phonebooks/browse'),
+  ),
+  goToProfilesCreate: withTimeout(() => history.push('/profiles/create')),
+  goToProfileSignin: withTimeout(profile =>
+    history.push(`/profile/${profile}/signin`),
+  ),
+  goToProfilesManage: withTimeout(() => history.push('/profiles/manage')),
+  goToProfileUpdate: withTimeout(profile =>
+    history.push(`/profile/${profile}/update`),
+  ),
+  goToSettings: withTimeout(() => history.push('/auth/settings')),
+  goToNewCallPark: withTimeout(profile =>
+    history.push(`/auth/settings/${profile}/callpark`),
+  ),
+  goToUsersBrowse: withTimeout(() => history.push('/auth/users')),
+});
+
 export { history };
 export default routerStore;
-export const getQuery = () =>
-  qs.parse(routerStore.location.search.replace(/^\?*/, ''));
-
-const withTimeout = fn => (...args) => {
-  setTimeout(() => {
-    fn(...args);
-  }, 17);
-};
-
-export const goToAuth = withTimeout(() => {
-  history.push('/auth');
-});
-
-export const goToBuddyChatsRecent = withTimeout(buddy => {
-  history.push(`/auth/chats/buddy/${buddy}/recent`);
-});
-
-export const goToCallKeypad = withTimeout(call => {
-  history.push(`/auth/call/${call}/keypad`);
-});
-
-export const goToCallPark = withTimeout(call => {
-  history.push(`/auth/call/${call}/park`);
-});
-
-export const goToCallsCreate = withTimeout(() => {
-  history.push('/auth/calls/create');
-});
-
-export const goToCallsManage = withTimeout(() => {
-  history.push('/auth/calls/manage');
-});
-
-export const goToCallsRecent = withTimeout(() => {
-  history.push('/auth/calls/recent');
-});
-
-export const goToCallTransferAttend = withTimeout(call => {
-  history.push(`/auth/call/${call}/transfer/attend`);
-});
-
-export const goToCallTransferDial = withTimeout(call => {
-  history.push(`/auth/call/${call}/transfer/dial`);
-});
-
-export const goToChatGroupInvite = withTimeout(group => {
-  history.push(`/auth/chat-group/${group}/invite`);
-});
-
-export const goToChatGroupsCreate = withTimeout(() => {
-  history.push('/auth/chat-groups/create');
-});
-
-export const goToChatGroupsRecent = withTimeout(group => {
-  history.push(`/auth/chats/group/${group}/recent`);
-});
-
-export const goToChatsRecent = withTimeout(() => {
-  history.push('/auth/chats/recent');
-});
-
-export const goToContactsBrowse = withTimeout(query => {
-  history.push(`/auth/contacts/browse?${qs.stringify(query)}`);
-});
-
-export const goToContactsCreate = withTimeout(query => {
-  history.push(`/auth/contacts/create?${qs.stringify(query)}`);
-});
-
-export const goToPhonebooksBrowse = withTimeout(() => {
-  history.push('/auth/phonebooks/browse');
-});
-
-export const goToProfilesCreate = withTimeout(() => {
-  history.push('/profiles/create');
-});
-
-export const goToProfileSignin = withTimeout(profile => {
-  history.push(`/profile/${profile}/signin`);
-});
-
-export const goToProfilesManage = withTimeout(() => {
-  history.push('/profiles/manage');
-});
-
-export const goToProfileUpdate = withTimeout(profile => {
-  history.push(`/profile/${profile}/update`);
-});
-
-export const goToSettings = withTimeout(() => {
-  history.push('/auth/settings');
-});
-
-export const goToNewCallPark = withTimeout(profile => {
-  history.push(`/auth/settings/${profile}/callpark`);
-});
-
-export const goToUsersBrowse = withTimeout(() => {
-  history.push('/auth/users');
-});

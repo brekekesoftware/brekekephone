@@ -1,51 +1,21 @@
-import './-polyfill';
+import './shared/polyfill';
 
 import { StyleProvider } from 'native-base';
 import React from 'react';
-import { Provider as StoreProvider } from 'react-redux';
-import { Router } from 'react-router';
-import { createStore } from 'redux';
-import { combineModels, ModelProvider } from 'redux-model';
-import { persistReducer, persistStore } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
+import { Route, Router } from 'react-router';
 
-import APIProvider from './apis';
+import AppOld from './-/AppOld';
 import { history } from './mobx/routerStore';
-import * as models from './models';
-import Routes from './Routes';
-import nativeBaseTheme from './style/nativeBaseTheme';
-
-delete models.__esModule;
-
-const { getter, action, reduce } = combineModels(models);
-
-const persistedReducers = ['profiles', 'recentCalls'];
-const persistConfig = {
-  key: 'brekeke-phone',
-  storage,
-  whitelist: persistedReducers,
-  version: '3.0.0',
-};
-const storeReducer = persistReducer(persistConfig, reduce);
-const store = createStore(storeReducer);
-const storePersistor = persistStore(store);
+import PageSignin from './PageSignin/PageSignin';
+import nativeBaseTheme from './shared/nativeBaseTheme';
 
 const App = () => (
-  <StoreProvider store={store}>
-    <PersistGate persistor={storePersistor}>
-      <ModelProvider getter={getter} action={action}>
-        <APIProvider>
-          <StyleProvider style={nativeBaseTheme}>
-            <Router history={history}>
-              <Routes />
-            </Router>
-          </StyleProvider>
-        </APIProvider>
-      </ModelProvider>
-    </PersistGate>
-  </StoreProvider>
+  <StyleProvider style={nativeBaseTheme}>
+    <Router history={history}>
+      <Route exact path="/" component={PageSignin} />
+      <AppOld />
+    </Router>
+  </StyleProvider>
 );
 
-export { store };
 export default App;

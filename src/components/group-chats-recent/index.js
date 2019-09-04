@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
-import * as routerUtils from '../../mobx/routerStore';
+import routerStore from '../../mobx/routerStore';
 import stripTags from '../../shared/stripTags';
-import toast from '../../shared/toast';
+import toast from '../../shared/Toast';
 import UI from './ui';
 
 const monthName = [
@@ -134,7 +134,7 @@ class View extends React.Component {
       setEditingText={this.setEditingText}
       submitEditingText={this.submitEditingText}
       loadMore={this.loadMore}
-      back={routerUtils.goToChatsRecent}
+      back={routerStore.goToChatsRecent}
       leave={this.leave}
       invite={this.invite}
       callVoiceConference={this.callVoiceConference}
@@ -322,7 +322,7 @@ class View extends React.Component {
 
     this.props.removeChatGroup(group.id);
     this.props.clearChatsByGroup(group.id);
-    routerUtils.goToChatsRecent();
+    routerStore.goToChatsRecent();
   };
 
   onLeaveFailure = err => {
@@ -332,7 +332,7 @@ class View extends React.Component {
 
   invite = () => {
     const groupId = this.props.group.id;
-    routerUtils.goToChatGroupInvite(groupId);
+    routerStore.goToChatGroupInvite(groupId);
   };
 
   call = (target, bVideoEnabled) => {

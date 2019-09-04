@@ -1,13 +1,13 @@
 import { action, computed, observable } from 'mobx';
 import shortid from 'shortid';
 
-import Alert from '../shared/alert';
 import AsyncStorage from '../shared/AsyncStorage';
 import { getUrlParams } from '../shared/deeplink';
+import prompt from '../shared/prompt';
 import { resetBadgeNumber } from '../shared/pushNotification';
-import toast from '../shared/toast';
+import toast from '../shared/Toast';
 import BaseStore from './BaseStore';
-import * as routerUtils from './routerStore';
+import routerStore from './routerStore';
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field];
@@ -65,12 +65,12 @@ class AuthStore extends BaseStore {
       return false;
     }
     if (!p.pbxPassword && !p.accessToken) {
-      routerUtils.goToProfileUpdate(p.id);
+      routerStore.goToProfileUpdate(p.id);
       toast.error('The profile password is empty');
       return true;
     }
     this.profile = p;
-    routerUtils.goToAuth();
+    routerStore.goToAuth();
     resetBadgeNumber();
     return true;
   };
@@ -109,17 +109,9 @@ class AuthStore extends BaseStore {
     this.saveProfilesToLocalStorage();
   };
   @action removeProfile = id => {
-    Alert.alert('Remove profile', 'Do you want to remove this profile?', [
-      {
-        text: 'Cancel',
-      },
-      {
-        text: 'Ok',
-        onPress: () => {
-          this._removeProfile(id);
-        },
-      },
-    ]);
+    prompt('Remove profile', 'Do you want to remove this profile?', () => {
+      this._removeProfile(id);
+    });
   };
   @action _removeProfile = id => {
     this.allProfiles = this.allProfiles.filter(p => p.id !== id);
@@ -164,7 +156,7 @@ class AuthStore extends BaseStore {
       if (p.pbxPassword || p.accessToken) {
         this.signin(p.id);
       } else {
-        routerUtils.goToProfileUpdate(p.id);
+        routerStore.goToProfileUpdate(p.id);
       }
       return;
     }
@@ -189,7 +181,7 @@ class AuthStore extends BaseStore {
     if (newP.accessToken) {
       this.signin(newP.id);
     } else {
-      routerUtils.goToProfileUpdate(newP.id);
+      routerStore.goToProfileUpdate(newP.id);
     }
   };
 

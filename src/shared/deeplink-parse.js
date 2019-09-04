@@ -1,7 +1,7 @@
 import qs from 'qs';
 import Url from 'url-parse';
 
-export default location => {
+const parse = location => {
   if (!location) {
     return null;
   }
@@ -37,3 +37,5 @@ export default location => {
   //
   return params;
 };
+
+export default parse;

@@ -6,7 +6,7 @@ import parse from './deeplink-parse';
 let alreadyHandleFirstOpen = false;
 let urlParams = null;
 
-export const getUrlParams = () => {
+const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
     return Promise.resolve(urlParams);
   }
@@ -14,7 +14,7 @@ export const getUrlParams = () => {
   return Linking.getInitialURL().then(parse);
 };
 
-export const setUrlParams = p => {
+const setUrlParams = p => {
   urlParams = p;
 };
 
@@ -35,3 +35,5 @@ Linking.addEventListener('url', e => {
   }
   authStore.handleUrlParams();
 });
+
+export { getUrlParams, setUrlParams };

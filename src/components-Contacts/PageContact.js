@@ -11,7 +11,7 @@ import {
 import React from 'react';
 
 import Hearders from '../components-Home/Header';
-import SvgIcon from '../components-shared/SvgIcon';
+import SvgIcon from '../shared/SvgIcon';
 import TabUsers from './TabUsers';
 
 class PageContacts extends React.Component {

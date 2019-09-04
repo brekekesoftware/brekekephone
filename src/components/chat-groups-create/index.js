@@ -4,8 +4,8 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import CreateGroup from '../../components-Chats/Create-Group';
-import * as routerUtils from '../../mobx/routerStore';
-import toast from '../../shared/toast';
+import routerStore from '../../mobx/routerStore';
+import toast from '../../shared/Toast';
 
 @observer
 @createModelView(
@@ -37,7 +37,7 @@ class View extends React.Component {
       name={this.state.name}
       members={this.state.members}
       setName={this.setName}
-      back={routerUtils.goToChatsRecent}
+      back={routerStore.goToChatsRecent}
       toggleBuddy={this.toggleBuddy}
       create={this.create}
     />
@@ -80,7 +80,7 @@ class View extends React.Component {
   onCreateSuccess = group => {
     this.props.createChatGroup(group);
     this.context.uc.joinChatGroup(group.id);
-    routerUtils.goToChatsRecent();
+    routerStore.goToChatsRecent();
   };
 
   onCreateFailure = err => {

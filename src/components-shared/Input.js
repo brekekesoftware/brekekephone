@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput as TextInputOg, View } from 'react-native';
 
-import { std } from '../styleguide';
+import { std } from '../-/styleguide';
 
 const st = StyleSheet.create({
   container: {

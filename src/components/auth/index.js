@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { rem } from '../../-/styleguide';
 import authStore from '../../mobx/authStore';
-import { rem } from '../../styleguide';
 
 const st = StyleSheet.create({
   main: {

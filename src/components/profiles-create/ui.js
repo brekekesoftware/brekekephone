@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import ModalPicker from 'react-native-modal-selector';
 
-import { std } from '../../styleguide';
+import { std } from '../../-/styleguide';
 
 const st = StyleSheet.create({
   main: {
