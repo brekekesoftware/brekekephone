@@ -22,7 +22,9 @@ import UI from './ui';
 class View extends React.Component {
   constructor(props) {
     super(props);
-    this.state = props.profile;
+    this.state = {
+      ...props.profile,
+    };
     this.state.pbxPhoneIndex = this.state.pbxPhoneIndex || '4';
   }
 

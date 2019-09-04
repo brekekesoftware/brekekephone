@@ -335,7 +335,7 @@ const Parks = pure(p => (
         <Text style={st.parkAddIcon}>icon_plus</Text>
       </Button>
     </View>
-    {p.ids.map(id => (
+    {p.ids?.map(id => (
       <Park key={id} number={id} remove={() => p.remove(id)} />
     ))}
   </React.Fragment>

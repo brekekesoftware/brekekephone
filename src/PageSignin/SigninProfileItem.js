@@ -11,6 +11,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import SvgIcon from '../components-shared/SvgIcon';
+import authStore from '../mobx/authStore';
+import * as routerUtils from '../mobx/routerStore';
 import registerStyle from '../style/registerStyle';
 import v from '../style/variables';
 
@@ -114,22 +116,22 @@ const SigninProfileItem = p => (
   <View SigninProfileItem>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>USERNAME</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxUsername}</Text>
+      <Text SigninProfileItem_FieldValue>{p.pbxUsername || '\u00A0'}</Text>
       <SvgIcon path={mdiAccountCircleOutline} style={s.Icon} />
     </View>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>TENANT</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxTenant}</Text>
+      <Text SigninProfileItem_FieldValue>{p.pbxTenant || '\u00A0'}</Text>
       <SvgIcon path={mdiWebpack} style={s.Icon} />
     </View>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>HOSTNAME</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxHostname}</Text>
+      <Text SigninProfileItem_FieldValue>{p.pbxHostname || '\u00A0'}</Text>
       <SvgIcon path={mdiWebBox} style={s.Icon} />
     </View>
     <View SigninProfileItem_Field>
       <Text SigninProfileItem_FieldName>PORT</Text>
-      <Text SigninProfileItem_FieldValue>{p.pbxPort}</Text>
+      <Text SigninProfileItem_FieldValue>{p.pbxPort || '\u00A0'}</Text>
       <SvgIcon path={mdiServerNetwork} style={s.Icon} />
     </View>
     <View SigninProfileItem_Field>
@@ -138,13 +140,25 @@ const SigninProfileItem = p => (
       <Switch SigninProfileItem_UC value={p.ucEnabled} />
     </View>
     <View SigninProfileItem_Btns>
-      <Button SigninProfileItem_Btn remove onPress={() => p.remove(p.id)}>
+      <Button
+        SigninProfileItem_Btn
+        remove
+        onPress={() => authStore.removeProfile(p.id)}
+      >
         <SvgIcon path={mdiClose} style={s.BtnIcon} color="red" />
       </Button>
-      <Button SigninProfileItem_Btn update onPress={() => p.update(p.id)}>
+      <Button
+        SigninProfileItem_Btn
+        update
+        onPress={() => authStore.updateProfile(p.id)}
+      >
         <SvgIcon path={mdiFocusFieldHorizontal} style={s.BtnIcon} />
       </Button>
-      <Button SigninProfileItem_Btn signin onPress={() => p.signin(p.id)}>
+      <Button
+        SigninProfileItem_Btn
+        signin
+        onPress={() => authStore.signin(p.id)}
+      >
         <Text SigninProfileItem_BtnTxt>SIGN IN</Text>
       </Button>
     </View>
@@ -157,7 +171,11 @@ const NoServer = p => (
     <Text note>There is no server created</Text>
     <Text note>Tap the below button to create one</Text>
     <View SigninProfileItem_Btns>
-      <Button SigninProfileItem_Btn create onPress={p.create}>
+      <Button
+        SigninProfileItem_Btn
+        create
+        onPress={routerUtils.goToProfilesCreate}
+      >
         <Text SigninProfileItem_BtnTxt>CREATE NEW SERVER</Text>
       </Button>
     </View>
