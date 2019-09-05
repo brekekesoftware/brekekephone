@@ -28,7 +28,8 @@ const s = registerStyle(v => ({
         marginRight: v.padding,
       },
       '.noServer': {
-        flex: 1,
+        height: '70%',
+        minHeight: 320,
         marginVertical: 3 * v.padding,
         marginLeft: v.padding,
         padding: v.padding,
