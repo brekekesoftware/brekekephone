@@ -122,7 +122,7 @@ class View extends React.Component {
     return (
       <UI
         failure={authStore.ucState === 'failure'}
-        abort={routerStore.goToProfilesManage}
+        abort={routerStore.goToSigninPage}
         retry={this.auth}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
       />

@@ -1,3 +1,5 @@
+import './polyfill.web';
+
 import {
   mediaDevices,
   MediaStream,
@@ -6,6 +8,9 @@ import {
   RTCPeerConnection,
   RTCSessionDescription,
 } from 'react-native-webrtc';
+
+window.URL = window.URL || {};
+window.URL.createObjectURL = stream => stream.toURL();
 
 window.RTCPeerConnection = window.RTCPeerConnection || RTCPeerConnection;
 window.RTCIceCandidate = window.RTCIceCandidate || RTCIceCandidate;

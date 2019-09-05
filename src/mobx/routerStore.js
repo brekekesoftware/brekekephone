@@ -14,6 +14,8 @@ const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
 
 Object.assign(routerStore, {
   getQuery: () => qs.parse(routerStore.location.search.replace(/^\?*/, '')),
+  goToSigninPage: withTimeout(() => history.push('/')),
+
   goToAuth: withTimeout(() => history.push('/auth')),
   goToBuddyChatsRecent: withTimeout(buddy =>
     history.push(`/auth/chats/buddy/${buddy}/recent`),
@@ -54,7 +56,6 @@ Object.assign(routerStore, {
   goToProfileSignin: withTimeout(profile =>
     history.push(`/profile/${profile}/signin`),
   ),
-  goToProfilesManage: withTimeout(() => history.push('/profiles/manage')),
   goToProfileUpdate: withTimeout(profile =>
     history.push(`/profile/${profile}/update`),
   ),

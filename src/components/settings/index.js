@@ -43,7 +43,7 @@ class View extends React.Component {
       setChatBusy={this.setChatBusy}
       setChatMood={this.setChatMood}
       submitChatMood={this.submitChatMood}
-      signout={routerStore.goToProfilesManage}
+      signout={routerStore.goToSigninPage}
     />
   );
 

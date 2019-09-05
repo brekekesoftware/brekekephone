@@ -2,7 +2,7 @@ import './shared/polyfill';
 
 import { StyleProvider } from 'native-base';
 import React from 'react';
-import { Route, Router } from 'react-router';
+import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
 import { history } from './mobx/routerStore';
@@ -12,8 +12,10 @@ import nativeBaseTheme from './shared/nativeBaseTheme';
 const App = () => (
   <StyleProvider style={nativeBaseTheme}>
     <Router history={history}>
-      <Route exact path="/" component={PageSignin} />
-      <AppOld />
+      <Switch>
+        <Route exact path="/" component={PageSignin} />
+        <Route component={AppOld} />
+      </Switch>
     </Router>
   </StyleProvider>
 );

@@ -46,7 +46,7 @@ class View extends React.Component {
       setUCPort={this.setUCPort}
       removePark={this.removePark}
       save={this.save}
-      back={routerStore.goToProfilesManage}
+      back={routerStore.goToSigninPage}
     />
   );
 
@@ -212,7 +212,7 @@ class View extends React.Component {
       ucPort: ucPort,
     });
 
-    routerStore.goToProfilesManage();
+    routerStore.goToSigninPage();
   };
 }
 

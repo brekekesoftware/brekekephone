@@ -11,12 +11,13 @@ registerStyle(v => ({
       position: 'relative',
       overflow: 'hidden',
       padding: v.padding,
+      paddingBottom: 3 * v.padding,
     },
   },
   Text: {
     AppHeader_Text: {
       fontWeight: 'bold',
-      fontSize: 2.5 * v.fontSizeBase,
+      fontSize: 2 * v.fontSizeBase,
     },
     AppHeader_SubText: {
       fontSize: 0.8 * v.fontSizeBase,
@@ -28,13 +29,13 @@ registerStyle(v => ({
       position: 'absolute',
       top: v.padding,
       right: v.padding,
-      borderRadius: 100,
-      backgroundColor: 'white',
       width: 50,
       height: 50,
-    },
-    AppHeader_CreateBtnGreen: {
+      borderRadius: 50,
       backgroundColor: v.brekekeDarkGreen,
+      '.white': {
+        backgroundColor: 'white',
+      },
     },
   },
 }));
@@ -44,23 +45,15 @@ const AppHeader = p => (
     <Text AppHeader_Text>{p.text}</Text>
     <Text AppHeader_SubText>{p.subText || ' '}</Text>
     {p.onCreateBtnPress && (
-      <Button
-        AppHeader_CreateBtn
-        AppHeader_CreateBtnGreen={p.createBtnGreen}
-        onPress={p.onCreateBtnPress}
-      >
+      <Button AppHeader_CreateBtn white={p.white} onPress={p.onCreateBtnPress}>
         <SvgIcon
           path={mdiPlus}
           width="100%"
-          color={p.createBtnGreen ? 'white' : 'black'}
+          color={p.white ? 'black' : 'white'}
         />
       </Button>
     )}
   </View>
 );
-
-AppHeader.defaultProps = {
-  createBtnGreen: true,
-};
 
 export default AppHeader;

@@ -250,7 +250,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerStore.goToProfilesManage();
+      routerStore.goToSigninPage();
       return null;
     }
   };
@@ -298,7 +298,7 @@ class ApiProvider extends React.Component {
               text: 'Cancel',
 
               onPress: () => {
-                routerStore.goToProfilesManage();
+                routerStore.goToSigninPage();
                 resolve(null);
               },
 

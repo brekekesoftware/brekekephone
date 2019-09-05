@@ -47,10 +47,10 @@ class PageSignin extends React.Component {
       >
         <StatusBar transparent />
         <AppHeader
+          white
           text="Servers"
           subText={`${l} SERVER${l > 1 ? 'S' : ''} IN TOTAL`}
           onCreateBtnPress={routerStore.goToProfilesCreate}
-          createBtnGreen={false}
         />
         <View PageSignin_Spacing />
         {!!l && (

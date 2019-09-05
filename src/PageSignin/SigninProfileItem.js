@@ -1,7 +1,7 @@
 import {
   mdiAccountCircleOutline,
   mdiClose,
-  mdiFocusFieldHorizontal,
+  mdiDotsHorizontalCircleOutline,
   mdiServerNetwork,
   mdiWebBox,
   mdiWebpack,
@@ -29,19 +29,17 @@ const s = registerStyle(v => ({
       },
       '.noServer': {
         flex: 1,
+        marginVertical: 3 * v.padding,
         marginLeft: v.padding,
-        marginBottom: 3 * v.padding,
-        marginTop: 3 * v.padding,
         padding: v.padding,
       },
     },
     SigninProfileItem_Field: {
       position: 'relative',
-      marginLeft: v.padding,
-      marginRight: v.padding,
-      padding: v.padding / 2,
+      marginHorizontal: v.padding,
       paddingTop: v.padding,
       paddingBottom: v.padding / 3,
+      paddingHorizontal: v.padding / 2,
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderColor: v.brekekeShade4,
     },
@@ -167,7 +165,7 @@ const SigninProfileItem = p => (
         update
         onPress={() => routerStore.goToProfileUpdate(p.id)}
       >
-        <SvgIcon path={mdiFocusFieldHorizontal} width="100%" />
+        <SvgIcon path={mdiDotsHorizontalCircleOutline} width="100%" />
       </Button>
       <Button
         SigninProfileItem_Btn

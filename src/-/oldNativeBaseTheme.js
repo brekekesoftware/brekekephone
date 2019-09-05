@@ -1,6 +1,10 @@
-import registerStyle from '../shared/registerStyle';
+import merge from 'lodash/merge';
+import { Platform } from 'react-native';
 
-registerStyle(v => ({
+import nativeBaseTheme from '../shared/nativeBaseTheme';
+import variables from '../shared/variables';
+
+merge(nativeBaseTheme, {
   'NativeBase.Header': {
     '.noLeft': {
       'NativeBase.Left': {
@@ -11,8 +15,8 @@ registerStyle(v => ({
     '.headerChat': {
       'NativeBase.Left': {
         flex: 0.25,
-        paddingLeft: v.listItemPadding,
-        paddingVertical: v.listItemPadding - 5,
+        paddingLeft: variables.listItemPadding,
+        paddingVertical: variables.listItemPadding - 5,
       },
       'NativeBase.Body': {
         'NativeBase.Text': {
@@ -20,19 +24,19 @@ registerStyle(v => ({
           fontSize: 18,
         },
         'NativeBase.ViewNB': {
-          paddingTop: v.listItemPadding - 5,
+          paddingTop: variables.listItemPadding - 5,
           flexDirection: 'row',
           alignItems: 'center',
         },
         flex: 0.5,
         alignItems: 'flex-start',
-        paddingVertical: v.listItemPadding - 5,
+        paddingVertical: variables.listItemPadding - 5,
       },
       'NativeBase.Right': {
         flex: 0.25,
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        paddingVertical: v.listItemPadding - 5,
+        paddingVertical: variables.listItemPadding - 5,
       },
       justifyContent: 'space-between',
       paddingVertical: 10,
@@ -84,7 +88,7 @@ registerStyle(v => ({
           height: 45,
         },
         flex: 0.2,
-        paddingLeft: v.listItemPadding,
+        paddingLeft: variables.listItemPadding,
       },
       'NativeBase.Body': {
         flex: 0.5,
@@ -109,7 +113,7 @@ registerStyle(v => ({
     },
     backgroundColor: 'white',
   },
-  v: {
+  variables: {
     topTabBarActiveBorderColor: '#4cc5de',
   },
   'NativeBase.Badge': {
@@ -127,8 +131,46 @@ registerStyle(v => ({
       borderColor: '#c9c9c9',
       borderWidth: 1 / 3,
       backgroundColor: '#ffffff',
-      padding: v.listItemPadding,
+      padding: variables.listItemPadding,
       marginLeft: null,
+    },
+    '.btnlistServer': {
+      'NativeBase.Left': {
+        'NativeBase.Button': {
+          backgroundColor: '#0000000',
+          borderRadius: null,
+          alignSelf: 'center',
+          paddingLeft: variables.listItemPadding,
+        },
+        flex: 0.25,
+      },
+      'NativeBase.Body': {
+        'NativeBase.Button': {
+          backgroundColor: '#0000000',
+          borderRadius: null,
+          alignSelf: 'center',
+        },
+        flex: 0.25,
+      },
+      'NativeBase.Right': {
+        'NativeBase.Button': {
+          'NativeBase.Text': {
+            fontWeight: '600',
+            color: '#ffffff',
+          },
+          borderRadius: null,
+
+          backgroundColor: null,
+          alignSelf: 'center',
+        },
+        flex: 0.5,
+        backgroundColor: '#000',
+        borderBottomRightRadius: 15,
+      },
+      marginLeft: null,
+      paddingRight: null,
+      paddingVertical: null,
+      borderBottomWidth: null,
     },
     '.chat': {
       'NativeBase.Left': {
@@ -139,7 +181,7 @@ registerStyle(v => ({
           'NativeBase.Text': {
             '.note': {
               fontSize: 12,
-              paddingLeft: v.listItemPadding,
+              paddingLeft: variables.listItemPadding,
               fontWeight: 'normal',
             },
             paddingRight: 10,
@@ -155,7 +197,7 @@ registerStyle(v => ({
         },
         flex: 0.8,
         alignSelf: 'flex-start',
-        marginLeft: v.listItemPadding + 5,
+        marginLeft: variables.listItemPadding + 5,
       },
     },
     '.listUser': {
@@ -178,26 +220,26 @@ registerStyle(v => ({
           fontSize: 18,
           fontWeight: '400',
         },
-        paddingVertical: v.listItemPadding + 2,
-        marginLeft: v.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 2,
+        marginLeft: variables.listItemPadding + 5,
       },
       'NativeBase.Right': {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: v.listNoteSize,
-              color: v.sTabBarActiveTextColor,
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
             },
           },
           height: null,
-          paddingHorizontal: v.listItemPadding,
+          paddingHorizontal: variables.listItemPadding,
         },
         flex: 0.25,
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingRight: v.listItemPadding + 5,
-        paddingVertical: v.listItemPadding + 5,
+        paddingRight: variables.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 5,
       },
     },
     '.infoUser': {
@@ -210,14 +252,14 @@ registerStyle(v => ({
           marginLeft: null,
           paddingVertical: 3,
         },
-        marginLeft: v.listItemPadding + 5,
+        marginLeft: variables.listItemPadding + 5,
       },
       'NativeBase.Right': {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: v.listNoteSize,
-              color: v.sTabBarActiveTextColor,
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
             },
           },
           height: null,
@@ -226,7 +268,7 @@ registerStyle(v => ({
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingRight: v.listItemPadding + 5,
+        paddingRight: variables.listItemPadding + 5,
       },
       borderBottomWidth: null,
     },
@@ -239,15 +281,15 @@ registerStyle(v => ({
           marginLeft: null,
           paddingVertical: 3,
         },
-        paddingVertical: v.listItemPadding + 2,
-        marginLeft: v.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 2,
+        marginLeft: variables.listItemPadding + 5,
       },
       'NativeBase.Right': {
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: v.listNoteSize,
-              color: v.sTabBarActiveTextColor,
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
             },
           },
           height: null,
@@ -256,8 +298,8 @@ registerStyle(v => ({
         justifyContent: 'center',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingRight: v.listItemPadding + 5,
-        paddingVertical: v.listItemPadding + 5,
+        paddingRight: variables.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 5,
       },
     },
     '.callpark': {
@@ -272,8 +314,8 @@ registerStyle(v => ({
         'NativeBase.Button': {
           '.transparent': {
             'NativeBase.Text': {
-              fontSize: v.listNoteSize,
-              color: v.sTabBarActiveTextColor,
+              fontSize: variables.listNoteSize,
+              color: variables.sTabBarActiveTextColor,
             },
           },
           height: null,
@@ -282,7 +324,7 @@ registerStyle(v => ({
         justifyContent: 'flex-end',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        paddingVertical: v.listItemPadding + 5,
+        paddingVertical: variables.listItemPadding + 5,
       },
     },
   },
@@ -296,47 +338,47 @@ registerStyle(v => ({
       'NativeBase.Left': {
         'NativeBase.Button': {
           justifyContent: 'center',
-          borderRadius: v.listItemPadding * 4,
-          width: v.listItemPadding * 6,
-          height: v.listItemPadding * 6,
+          borderRadius: variables.listItemPadding * 4,
+          width: variables.listItemPadding * 6,
+          height: variables.listItemPadding * 6,
         },
         'NativeBase.Text': {
-          paddingTop: v.listItemPadding,
-          fontSize: v.listItemPadding,
+          paddingTop: variables.listItemPadding,
+          fontSize: variables.listItemPadding,
         },
         alignItems: 'center',
-        marginHorizontal: v.listItemPadding,
+        marginHorizontal: variables.listItemPadding,
       },
       flexDirection: 'row',
       justifyContent: 'center',
-      marginTop: v.listItemPadding * 2,
-      marginLeft: v.listItemPadding,
-      marginRight: v.listItemPadding,
+      marginTop: variables.listItemPadding * 2,
+      marginLeft: variables.listItemPadding,
+      marginRight: variables.listItemPadding,
     },
     '.hangUp': {
       'NativeBase.Left': {
         'NativeBase.Button': {
           justifyContent: 'center',
-          borderRadius: v.listItemPadding * 4,
-          width: v.listItemPadding * 6,
-          height: v.listItemPadding * 6,
+          borderRadius: variables.listItemPadding * 4,
+          width: variables.listItemPadding * 6,
+          height: variables.listItemPadding * 6,
         },
         'NativeBase.Text': {
           fontWeight: 'bold',
-          paddingTop: v.listItemPadding,
+          paddingTop: variables.listItemPadding,
         },
         alignItems: 'center',
-        marginHorizontal: v.listItemPadding,
+        marginHorizontal: variables.listItemPadding,
       },
       flexDirection: 'row',
       justifyContent: 'center',
-      marginTop: v.listItemPadding * 2,
-      marginLeft: v.listItemPadding,
-      marginRight: v.listItemPadding,
+      marginTop: variables.listItemPadding * 2,
+      marginLeft: variables.listItemPadding,
+      marginRight: variables.listItemPadding,
     },
     '.leftpd18': {
-      marginLeft: v.listItemPadding + 12,
-      marginTop: v.listItemPadding,
+      marginLeft: variables.listItemPadding + 12,
+      marginTop: variables.listItemPadding,
       alignSelf: 'flex-start',
     },
     '.leftmgt15': {
@@ -347,10 +389,61 @@ registerStyle(v => ({
     },
   },
   'NativeBase.ViewNB': {
+    '.noServer': {
+      'NativeBase.Text': {
+        fontSize: 50,
+        textAlign: 'center',
+      },
+      'NativeBase.ListItem': {
+        '.itemNoServer': {
+          'NativeBase.Body': {
+            'NativeBase.Icon': {
+              fontSize: 50,
+            },
+            'NativeBase.Text': {
+              fontSize: 25,
+              fontWeight: '500',
+              paddingTop: variables.listItemPadding,
+            },
+            'NativeBase.Button': {
+              backgroundColor: '#000000',
+              'NativeBase.Text': {
+                fontWeight: '500',
+                color: '#ffffff',
+              },
+            },
+            alignItems: 'center',
+            paddingTop: variables.listItemPadding,
+          },
+        },
+        borderBottomWidth: null,
+      },
+      backgroundColor: Platform.select({
+        ios: '#ffffff',
+        android: '#ffffff',
+        web: '#e2e2e4',
+      }),
+      width: '80%',
+      marginLeft: variables.listItemPadding,
+      borderRadius: 15,
+      marginTop: '15%',
+      padding: variables.listItemPadding - 5,
+    },
+    '.listServer': {
+      backgroundColor: Platform.select({
+        ios: '#ffffff',
+        android: '#ffffff',
+        web: '#e2e2e4',
+      }),
+      width: '90%',
+      marginLeft: variables.listItemPadding,
+      marginBottom: variables.listItemPadding,
+      borderRadius: 15,
+    },
     '.removeServer': {
       'NativeBase.ViewNB': {
         'NativeBase.Text': {
-          padding: v.listItemPadding,
+          padding: variables.listItemPadding,
           fontSize: 18,
           fontWeight: '400',
         },
@@ -363,7 +456,7 @@ registerStyle(v => ({
                 color: '#ffffff',
               },
               backgroundColor: '#212121',
-              marginRight: v.listItemPadding,
+              marginRight: variables.listItemPadding,
             },
             '.remove': {
               'NativeBase.Text': {
@@ -376,11 +469,11 @@ registerStyle(v => ({
           },
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          marginRight: v.listItemPadding,
-          marginTop: v.listItemPadding,
+          marginRight: variables.listItemPadding,
+          marginTop: variables.listItemPadding,
         },
         backgroundColor: '#ffffff',
-        padding: v.listItemPadding,
+        padding: variables.listItemPadding,
       },
       flex: 1,
       justifyContent: 'center',
@@ -399,21 +492,21 @@ registerStyle(v => ({
           alignItems: 'center',
           lineHeight: 10,
           'NativeBase.Text': {
-            paddingVertical: v.listItemPadding,
+            paddingVertical: variables.listItemPadding,
             textAlign: 'center',
           },
         },
         '.btncall': {
           'NativeBase.Button': {
             justifyContent: 'center',
-            borderRadius: v.listItemPadding * 2,
-            width: v.listItemPadding * 4,
-            height: v.listItemPadding * 4,
+            borderRadius: variables.listItemPadding * 2,
+            width: variables.listItemPadding * 4,
+            height: variables.listItemPadding * 4,
           },
           'NativeBase.ViewNB': {
             'NativeBase.Text': {
-              paddingTop: v.listItemPadding,
-              fontSize: v.listItemPadding,
+              paddingTop: variables.listItemPadding,
+              fontSize: variables.listItemPadding,
               textAlign: 'center',
               alignSelf: 'center',
             },
@@ -421,16 +514,16 @@ registerStyle(v => ({
           marginTop: 100,
         },
         alignItems: 'center',
-        marginHorizontal: v.listItemPadding,
+        marginHorizontal: variables.listItemPadding,
         top: '30%',
       },
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginHorizontal: v.listItemPadding,
+      marginHorizontal: variables.listItemPadding,
       top: '50%',
     },
     '.center': {
       alignItems: 'center',
     },
   },
-}));
+});
