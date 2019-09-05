@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import stripTags from '../../shared/stripTags';
 import toast from '../../shared/Toast';
@@ -70,7 +71,6 @@ const numberOfChatsPerLoad = 50;
         return true;
       }),
       chatById: getter.groupChats.detailMapById(state),
-      ucUserById: getter.ucUsers.detailMapById(state),
     };
   },
   action => emit => ({
@@ -102,7 +102,6 @@ class View extends React.Component {
 
     chatIds: [],
     chatById: {},
-    ucUserById: {},
   };
 
   state = {
@@ -148,10 +147,7 @@ class View extends React.Component {
 
   resolveBuddy = creator => {
     if (creator === this.me.id) return this.me;
-
-    const { ucUserById } = this.props;
-
-    return ucUserById[creator] || {};
+    return contactStore.getUCUser(creator) || {};
   };
 
   resolveChat = (id, index) => {

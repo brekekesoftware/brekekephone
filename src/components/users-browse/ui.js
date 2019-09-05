@@ -87,7 +87,7 @@ const st = StyleSheet.create({
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
-  userMood: {
+  userStatusText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
@@ -248,8 +248,8 @@ const User = pure(p => (
       })()}
       <Text style={st.profileSubtitle}>{p.id}</Text>
       {(() => {
-        if (p.mood) {
-          return <Text style={st.userMood}>{p.mood}</Text>;
+        if (p.statusText) {
+          return <Text style={st.userStatusText}>{p.statusText}</Text>;
         }
       })()}
     </View>

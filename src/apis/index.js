@@ -77,9 +77,6 @@ import uc from './uc';
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
     },
-    updateUCUser(user) {
-      emit(action.ucUsers.update(user));
-    },
     appendBuddyChat(buddy, chat) {
       emit(action.buddyChats.appendByBuddy(buddy, [chat]));
     },
@@ -255,7 +252,7 @@ class ApiProvider extends React.Component {
         },
       });
 
-      authStore.userExtensionProperties = extProps;
+      authStore.set('userExtensionProperties', extProps);
     };
 
     if (phoneTypeCorrect && hasPhoneId) {
@@ -448,7 +445,7 @@ class ApiProvider extends React.Component {
   };
 
   onUCUserUpdated = ev => {
-    this.props.updateUCUser(ev);
+    contactStore.updateUCUser(ev);
   };
 
   onBuddyChatCreated = chat => {

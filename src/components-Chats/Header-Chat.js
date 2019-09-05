@@ -7,7 +7,7 @@ import SvgIcon from '../shared/SvgIcon';
 class HeaderChat extends React.Component {
   render() {
     const p = this.props;
-    const status = p.resolveCreator(p.buddyId);
+    const u = p.resolveCreator(p.buddyId);
     return (
       <Header headerChat>
         <Left>
@@ -24,19 +24,19 @@ class HeaderChat extends React.Component {
             }
           })()}
 
-          {status.online && (
+          {u.status === 'online' && (
             <View>
               <SvgIcon path={mdiRecord} color="#74bf53" />
               <Text note>AVAILABLE</Text>
             </View>
           )}
-          {status.busy && (
+          {u.status === 'busy' && (
             <View>
               <SvgIcon path={mdiRecord} color="#FF2D55" />
               <Text note>BUSY</Text>
             </View>
           )}
-          {status.offline && (
+          {u.status === 'offline' && (
             <View>
               <SvgIcon path={mdiRecord} color="#8a8a8f" />
               <Text note>OFFLINE</Text>

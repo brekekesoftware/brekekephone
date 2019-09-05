@@ -2,6 +2,14 @@ import UCClient from 'brekekejs/lib/ucclient';
 import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
 
+const evCodeMapStatus = {
+  '0': 'offline',
+  '1': 'online',
+  '2': 'idle',
+  '3': 'busy',
+};
+const getStatusFromCode = code => evCodeMapStatus[code] || evCodeMapStatus['0'];
+
 class UC extends EventEmitter {
   constructor() {
     super();
@@ -32,11 +40,8 @@ class UC extends EventEmitter {
       id: ev.user_id,
       name: ev.name,
       avatar: ev.profile_image_url,
-      offline: ev.status === 0,
-      online: ev.status === 1,
-      idle: ev.status === 2,
-      busy: ev.status === 3,
-      mood: ev.display,
+      status: getStatusFromCode(ev.status),
+      statusText: ev.display,
     });
   };
 
@@ -180,29 +185,26 @@ class UC extends EventEmitter {
       id: profile.user_id,
       name: profile.name,
       avatar: profile.profile_image_url,
-      offline: status.status === 0,
-      online: status.status === 1,
-      idle: status.status === 2,
-      busy: status.status === 3,
-      mood: status.display,
+      status: getStatusFromCode(status.status),
+      statusText: status.display,
     };
   }
 
-  setOffline(mood) {
+  setOffline(statusText) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(0, mood, onres, onerr),
+      this.client.changeStatus(0, statusText, onres, onerr),
     );
   }
 
-  setOnline(mood) {
+  setOnline(statusText) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(1, mood, onres, onerr),
+      this.client.changeStatus(1, statusText, onres, onerr),
     );
   }
 
-  setBusy(mood) {
+  setBusy(statusText) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(3, mood, onres, onerr),
+      this.client.changeStatus(3, statusText, onres, onerr),
     );
   }
 
@@ -217,11 +219,8 @@ class UC extends EventEmitter {
       id: user.user_id,
       name: user.name,
       avatar: user.profile_image_url,
-      offline: user.status === 0,
-      online: user.status === 1,
-      idle: user.status === 2,
-      busy: user.status === 3,
-      mood: user.display,
+      status: getStatusFromCode(user.status),
+      statusText: user.display,
     }));
   }
 

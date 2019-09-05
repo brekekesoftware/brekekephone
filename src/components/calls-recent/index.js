@@ -5,13 +5,12 @@ import { createModelView } from 'redux-model';
 
 import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
 @observer
 @createModelView(
   getter => state => ({
-    ucUserById: getter.ucUsers.detailMapById(state),
-    searchText: getter.usersBrowsing.searchText(state),
     callIds: getter.recentCalls.idsMapByProfile(state)[
       (authStore.profile || {}).id
     ],
@@ -22,9 +21,6 @@ import routerStore from '../../mobx/routerStore';
     removeCall(id) {
       d(action.recentCalls.remove(id));
     },
-    setSearchText(value) {
-      d(action.usersBrowsing.setSearchText(value));
-    },
   }),
 )
 @observer
@@ -34,10 +30,8 @@ class View extends React.Component {
   };
 
   static defaultProps = {
-    searchText: '',
     callIds: [],
     callById: {},
-    ucUserById: {},
   };
 
   render() {
@@ -50,8 +44,8 @@ class View extends React.Component {
         gotoCallsCreate={routerStore.goToCallsCreate}
         parkingIds={this.props.parkingIds}
         resolveUser={this.resolveUser}
-        searchText={this.props.searchText}
-        setSearchText={this.setSearchText}
+        searchText={contactStore.searchText}
+        setSearchText={contactStore.setFn('searchText')}
         callIds={this.getMatchUserIds()}
       />
     );
@@ -71,28 +65,20 @@ class View extends React.Component {
   };
 
   resolveUser = id => {
-    const { ucUserById } = this.props;
-    const ucUser = ucUserById[id] || {};
+    const ucUser = contactStore.getUCUser(id) || {};
     return {
       avatar: ucUser.avatar,
-      online: ucUser.online,
-      offline: ucUser.offline,
-      idle: ucUser.idle,
-      busy: ucUser.busy,
+      status: ucUser.status,
     };
-  };
-
-  setSearchText = value => {
-    this.props.setSearchText(value);
   };
 
   isMatchUser = id => {
     if (!id) {
       return false;
     }
-    const { callById, searchText } = this.props;
+    const { callById } = this.props;
     const callUser = callById[id];
-    if (callUser.partyNumber.includes(searchText)) {
+    if (callUser.partyNumber.includes(contactStore.searchText)) {
       return callUser.id;
     }
   };

@@ -4,6 +4,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import TransferAttend from '../../components-Transfer/TransferAttend';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 
@@ -11,7 +12,6 @@ import toast from '../../shared/Toast';
 @createModelView(
   getter => (state, props) => ({
     call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-    ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     updateCall(call) {
@@ -24,10 +24,6 @@ class View extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
     pbx: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    ucUserById: {},
   };
 
   render() {
@@ -44,9 +40,7 @@ class View extends React.Component {
   }
 
   resolveMatch = id => {
-    const { ucUserById } = this.props;
-
-    const ucUser = ucUserById[id] || {};
+    const ucUser = contactStore.getUCUser(id) || {};
 
     return {
       avatar: ucUser.avatar,

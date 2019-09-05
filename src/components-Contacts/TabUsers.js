@@ -47,12 +47,7 @@ class TabUsers extends React.Component {
             {g.users.map(u => (
               <ListItem key={u.id} listUser>
                 <Left>
-                  <Avatar
-                    source={u.avatar}
-                    online={u.chatOnline}
-                    offline={u.chatOffline}
-                    busy={u.chatBusy}
-                  />
+                  <Avatar source={u.avatar} status={u.status} />
                 </Left>
                 <Body>
                   <Text>{u.name}</Text>

@@ -26,15 +26,14 @@ class View extends React.Component {
     authStore.set('sipState', 'stopped');
   }
 
-  getWebPhone = () => {
-    return new Promise(resolve => {
+  getWebPhone = () =>
+    new Promise(resolve => {
       setTimeout(async () => {
         const api = getApiProvider();
         const phone = api && (await api.updatePhoneIndex());
         resolve(phone);
       }, 1000);
     });
-  };
 
   _auth = async () => {
     this.context.sip.disconnect();
@@ -60,7 +59,7 @@ class View extends React.Component {
       console.error('Invalid PBX user config');
       return;
     }
-    authStore.userExtensionProperties = pbxUserConfig;
+    authStore.set('userExtensionProperties', pbxUserConfig);
     //
     const language = pbxUserConfig.language;
     void language;

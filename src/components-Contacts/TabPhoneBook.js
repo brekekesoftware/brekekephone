@@ -78,18 +78,14 @@ class TabPhoneBook extends React.Component {
           </ListItem>
           <FlatList
             data={this.state.data}
-            renderItem={({ item: rowData }) => {
-              return <User />;
-            }}
+            renderItem={({ item: rowData }) => <User />}
           />
           <ListItem itemDivider>
             <Text>B</Text>
           </ListItem>
           <FlatList
             data={this.state.data}
-            renderItem={({ item: rowData }) => {
-              return <User />;
-            }}
+            renderItem={({ item: rowData }) => <User />}
           />
         </List>
       </Content>

@@ -1,9 +1,9 @@
-import at from 'lodash/get';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import contactStore from '../../mobx/contactStore';
 import toast from '../../shared/Toast';
 import UI from './ui';
 
@@ -16,7 +16,6 @@ const isNotJointed = group => !group.jointed;
       .idsByOrder(state)
       .filter(id => isNotJointed(getter.chatGroups.detailMapById(state)[id])),
     groupById: getter.chatGroups.detailMapById(state),
-    ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     removeChatGroup(id) {
@@ -42,11 +41,11 @@ class View extends React.Component {
   }
 
   formatGroup = id => {
-    const { groupById, ucUserById } = this.props;
+    const { groupById } = this.props;
 
     const { inviter, name } = groupById[id];
 
-    const inviterName = at(ucUserById, `${inviter}.name`);
+    const inviterName = contactStore.getUCUser(inviter)?.name;
 
     return {
       name,

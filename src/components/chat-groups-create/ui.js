@@ -136,7 +136,7 @@ const st = StyleSheet.create({
     color: std.color.shade9,
   },
 
-  buddyMood: {
+  buddyStatusText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
@@ -227,10 +227,10 @@ const Buddy = pure(p => (
           uri: p.avatar,
         }}
       />
-      {p.offline && <View style={st.buddyOffline} />}
-      {p.online && <View style={st.buddyOnline} />}
-      {p.idle && <View style={st.buddyIdle} />}
-      {p.busy && <View style={st.buddyBusy} />}
+      {p.status === 'offline' && <View style={st.buddyOffline} />}
+      {p.status === 'online' && <View style={st.buddyOnline} />}
+      {p.status === 'idle' && <View style={st.buddyIdle} />}
+      {p.status === 'busy' && <View style={st.buddyBusy} />}
     </View>
     <View>
       {(() => {
@@ -240,7 +240,7 @@ const Buddy = pure(p => (
           return <Text style={st.buddyName}>{p.id}</Text>;
         }
       })()}
-      <Text style={st.buddyMood}>{p.mood}</Text>
+      <Text style={st.buddyStatusText}>{p.statusText}</Text>
     </View>
   </Button>
 ));

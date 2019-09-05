@@ -1,5 +1,4 @@
 import merge from 'lodash/merge';
-import { Platform } from 'react-native';
 
 import nativeBaseTheme from '../shared/nativeBaseTheme';
 import variables from '../shared/variables';
@@ -53,9 +52,8 @@ merge(nativeBaseTheme, {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: '#f1f1f1',
-      // padding: std.gap.lg,
       borderColor: '#e2e2e4',
-      // borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomWidth: StyleSheet.hairlineWidth,
     },
     paddingTop: 0,
     paddingBottom: 0,
@@ -133,44 +131,6 @@ merge(nativeBaseTheme, {
       backgroundColor: '#ffffff',
       padding: variables.listItemPadding,
       marginLeft: null,
-    },
-    '.btnlistServer': {
-      'NativeBase.Left': {
-        'NativeBase.Button': {
-          backgroundColor: '#0000000',
-          borderRadius: null,
-          alignSelf: 'center',
-          paddingLeft: variables.listItemPadding,
-        },
-        flex: 0.25,
-      },
-      'NativeBase.Body': {
-        'NativeBase.Button': {
-          backgroundColor: '#0000000',
-          borderRadius: null,
-          alignSelf: 'center',
-        },
-        flex: 0.25,
-      },
-      'NativeBase.Right': {
-        'NativeBase.Button': {
-          'NativeBase.Text': {
-            fontWeight: '600',
-            color: '#ffffff',
-          },
-          borderRadius: null,
-
-          backgroundColor: null,
-          alignSelf: 'center',
-        },
-        flex: 0.5,
-        backgroundColor: '#000',
-        borderBottomRightRadius: 15,
-      },
-      marginLeft: null,
-      paddingRight: null,
-      paddingVertical: null,
-      borderBottomWidth: null,
     },
     '.chat': {
       'NativeBase.Left': {
@@ -389,95 +349,6 @@ merge(nativeBaseTheme, {
     },
   },
   'NativeBase.ViewNB': {
-    '.noServer': {
-      'NativeBase.Text': {
-        fontSize: 50,
-        textAlign: 'center',
-      },
-      'NativeBase.ListItem': {
-        '.itemNoServer': {
-          'NativeBase.Body': {
-            'NativeBase.Icon': {
-              fontSize: 50,
-            },
-            'NativeBase.Text': {
-              fontSize: 25,
-              fontWeight: '500',
-              paddingTop: variables.listItemPadding,
-            },
-            'NativeBase.Button': {
-              backgroundColor: '#000000',
-              'NativeBase.Text': {
-                fontWeight: '500',
-                color: '#ffffff',
-              },
-            },
-            alignItems: 'center',
-            paddingTop: variables.listItemPadding,
-          },
-        },
-        borderBottomWidth: null,
-      },
-      backgroundColor: Platform.select({
-        ios: '#ffffff',
-        android: '#ffffff',
-        web: '#e2e2e4',
-      }),
-      width: '80%',
-      marginLeft: variables.listItemPadding,
-      borderRadius: 15,
-      marginTop: '15%',
-      padding: variables.listItemPadding - 5,
-    },
-    '.listServer': {
-      backgroundColor: Platform.select({
-        ios: '#ffffff',
-        android: '#ffffff',
-        web: '#e2e2e4',
-      }),
-      width: '90%',
-      marginLeft: variables.listItemPadding,
-      marginBottom: variables.listItemPadding,
-      borderRadius: 15,
-    },
-    '.removeServer': {
-      'NativeBase.ViewNB': {
-        'NativeBase.Text': {
-          padding: variables.listItemPadding,
-          fontSize: 18,
-          fontWeight: '400',
-        },
-        'NativeBase.ViewNB': {
-          'NativeBase.Button': {
-            '.cancel': {
-              'NativeBase.Text': {
-                fontSize: 14,
-                fontWeight: '400',
-                color: '#ffffff',
-              },
-              backgroundColor: '#212121',
-              marginRight: variables.listItemPadding,
-            },
-            '.remove': {
-              'NativeBase.Text': {
-                fontSize: 14,
-                fontWeight: '400',
-                color: '#ffffff',
-              },
-              backgroundColor: '#74bf53',
-            },
-          },
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          marginRight: variables.listItemPadding,
-          marginTop: variables.listItemPadding,
-        },
-        backgroundColor: '#ffffff',
-        padding: variables.listItemPadding,
-      },
-      flex: 1,
-      justifyContent: 'center',
-    },
     '.callModal': {
       'NativeBase.ViewNB': {
         backgroundColor: '#ffffff',

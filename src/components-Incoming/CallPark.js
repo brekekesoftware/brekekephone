@@ -63,9 +63,9 @@ class CallPark extends React.Component {
         <List>
           <FlatList
             data={this.state.data}
-            renderItem={({ item: rowData }) => {
-              return <Park name={rowData.name} extension={rowData.extension} />;
-            }}
+            renderItem={({ item: rowData }) => (
+              <Park name={rowData.name} extension={rowData.extension} />
+            )}
           />
         </List>
       </Content>

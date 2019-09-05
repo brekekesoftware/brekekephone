@@ -1,8 +1,10 @@
-import { action, observable } from 'mobx';
+import { observable } from 'mobx';
 
 import BaseStore from './BaseStore';
 
 class ContactStore extends BaseStore {
+  @observable searchText = '';
+
   // id
   // name
   // talkers?[]
@@ -16,7 +18,7 @@ class ContactStore extends BaseStore {
   getPBXUser = id => {
     return this.pbxUsers.find(u => u.id === id);
   };
-  @action setTalkerStatus = (userId, talkerId, status) => {
+  setTalkerStatus = (userId, talkerId, status) => {
     const user = this.getPBXUser(userId);
     if (!user) {
       return;
@@ -37,7 +39,7 @@ class ContactStore extends BaseStore {
         talker.status = status;
       }
     }
-    this.pbxUsers = [...this.pbxUsers];
+    this.set('pbxUsers', [...this.pbxUsers]);
   };
 
   // id
@@ -53,13 +55,13 @@ class ContactStore extends BaseStore {
   getUCUser = id => {
     return this.ucUsers.find(u => u.id === id);
   };
-  @action updateUCUser = _u => {
+  updateUCUser = _u => {
     const u = this.getUCUser(_u.id);
     if (!u) {
       return;
     }
     Object.assign(u, _u);
-    this.ucUsers = [...this.ucUsers];
+    this.set('ucUsers', [...this.ucUsers]);
   };
 }
 

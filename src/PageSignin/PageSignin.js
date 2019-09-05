@@ -17,9 +17,11 @@ const s = registerStyle(v => ({
   _PageSignin: {
     flex: 1,
     display: 'flex',
+    minHeight: 550,
   },
   _PageSignin_ListServers: {
-    height: 320,
+    height: '70%',
+    minHeight: 320,
     marginBottom: 2 * v.padding,
   },
   View: {
@@ -50,7 +52,7 @@ class PageSignin extends React.Component {
           white
           text="Servers"
           subText={`${l} SERVER${l > 1 ? 'S' : ''} IN TOTAL`}
-          onCreateBtnPress={routerStore.goToProfilesCreate}
+          onCreateBtnPress={!!l && routerStore.goToProfilesCreate}
         />
         <View PageSignin_Spacing />
         {!!l && (
