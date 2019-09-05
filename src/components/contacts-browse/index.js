@@ -29,7 +29,7 @@ class View extends React.Component {
     this.loadContacts();
   }
 
-  render = () => {
+  render() {
     return (
       <UI
         hasPrevPage={routerStore.getQuery().offset >= numberOfContactsPerPage}
@@ -59,7 +59,7 @@ class View extends React.Component {
         create={this.create}
       />
     );
-  };
+  }
 
   resolveContact = id => this.state.contactById[id];
 

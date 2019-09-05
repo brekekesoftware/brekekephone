@@ -11,7 +11,6 @@ import routerStore from '../../mobx/routerStore';
 @observer
 @createModelView(
   getter => state => ({
-    searchText: getter.usersBrowsing.searchText(state),
     callIds: getter.recentCalls.idsMapByProfile(state)[
       (authStore.profile || {}).id
     ],
@@ -22,9 +21,6 @@ import routerStore from '../../mobx/routerStore';
     removeCall(id) {
       d(action.recentCalls.remove(id));
     },
-    setSearchText(value) {
-      d(action.usersBrowsing.setSearchText(value));
-    },
   }),
 )
 @observer
@@ -34,7 +30,6 @@ class View extends React.Component {
   };
 
   static defaultProps = {
-    searchText: '',
     callIds: [],
     callById: {},
   };
@@ -49,8 +44,8 @@ class View extends React.Component {
         gotoCallsCreate={routerStore.goToCallsCreate}
         parkingIds={this.props.parkingIds}
         resolveUser={this.resolveUser}
-        searchText={this.props.searchText}
-        setSearchText={this.setSearchText}
+        searchText={contactStore.searchText}
+        setSearchText={contactStore.setFn('searchText')}
         callIds={this.getMatchUserIds()}
       />
     );
@@ -77,17 +72,13 @@ class View extends React.Component {
     };
   };
 
-  setSearchText = value => {
-    this.props.setSearchText(value);
-  };
-
   isMatchUser = id => {
     if (!id) {
       return false;
     }
-    const { callById, searchText } = this.props;
+    const { callById } = this.props;
     const callUser = callById[id];
-    if (callUser.partyNumber.includes(searchText)) {
+    if (callUser.partyNumber.includes(contactStore.searchText)) {
       return callUser.id;
     }
   };

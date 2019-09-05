@@ -308,15 +308,13 @@ const Match = pure(p => {
   );
 });
 
-const Matches = pure(p => {
-  return (
-    <ScrollView style={st.matches}>
-      {p.ids.map(id => (
-        <Match key={id} {...p.resolve(id)} select={p.select} />
-      ))}
-    </ScrollView>
-  );
-});
+const Matches = pure(p => (
+  <ScrollView style={st.matches}>
+    {p.ids.map(id => (
+      <Match key={id} {...p.resolve(id)} select={p.select} />
+    ))}
+  </ScrollView>
+));
 
 const Main = function(p) {
   return (

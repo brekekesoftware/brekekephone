@@ -7,5 +7,4 @@ export { default as buddyChats } from './buddy-chats';
 export { default as groupChats } from './group-chats';
 export { default as chatGroups } from './chat-groups';
 export { default as chatFiles } from './chat-files';
-export { default as usersBrowsing } from './users-browsing';
 export { default as callsManaging } from './calls-managing';

@@ -2,7 +2,6 @@ import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import PageContact from '../../components-Contacts/PageContact';
 import authStore from '../../mobx/authStore';
@@ -10,24 +9,9 @@ import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
 @observer
-@createModelView(
-  getter => state => ({
-    searchText: getter.usersBrowsing.searchText(state),
-  }),
-  action => emit => ({
-    setSearchText(value) {
-      emit(action.usersBrowsing.setSearchText(value));
-    },
-  }),
-)
-@observer
 class View extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    searchText: '',
   };
 
   state = {
@@ -39,13 +23,13 @@ class View extends React.Component {
   render() {
     return (
       <PageContact
-        searchText={this.props.searchText}
+        searchText={contactStore.searchText}
         userIds={this.getMatchUserIds()}
         resolveUser={this.resolveUser}
         callVoice={this.callVoice}
         callVideo={this.callVideo}
         chat={routerStore.goToBuddyChatsRecent}
-        setSearchText={this.setSearchText}
+        setSearchText={contactStore.setFn('searchText')}
         toggleModal={this.toggleModal}
         isModalVisible={this.state.isModalVisible}
         exitModal={this.exitModal}
@@ -67,33 +51,30 @@ class View extends React.Component {
     if (!id) {
       return false;
     }
-
-    const { searchText } = this.props;
-
-    const searchTextLC = searchText.toLowerCase();
-    const userId = id && id.toLowerCase();
+    let userId = id;
     let pbxUserName;
     const pbxUser = contactStore.getPBXUser(id);
-
     if (pbxUser) {
       pbxUserName = pbxUser.name;
     } else {
       pbxUserName = '';
     }
-
     let ucUserName;
     const ucUser = contactStore.getUCUser(id);
-
     if (ucUser) {
       ucUserName = ucUser.name;
     } else {
       ucUserName = '';
     }
-
+    //
+    userId = userId.toLowerCase();
+    pbxUserName = pbxUserName.toLowerCase();
+    ucUserName = ucUserName.toLowerCase();
+    const txt = contactStore.searchText.toLowerCase();
     return (
-      userId.includes(searchTextLC) ||
-      pbxUserName.includes(searchTextLC) ||
-      ucUserName.includes(searchTextLC)
+      userId.includes(txt) ||
+      pbxUserName.includes(txt) ||
+      ucUserName.includes(txt)
     );
   };
 
@@ -145,10 +126,6 @@ class View extends React.Component {
     });
 
     routerStore.goToCallsManage();
-  };
-
-  setSearchText = value => {
-    this.props.setSearchText(value);
   };
 }
 

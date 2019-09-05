@@ -15,8 +15,8 @@ const keysInCustomNotification = [
   'is_local_notification',
 ];
 
-const _parse = (...p) => {
-  return p
+const _parse = (...p) =>
+  p
     .filter(i => !!i)
     .map(i => {
       if (typeof i === 'string') {
@@ -38,7 +38,6 @@ const _parse = (...p) => {
       });
       return m;
     }, {});
-};
 
 const parse = n => {
   if (authStore.profile && AppState.currentState === 'active') {

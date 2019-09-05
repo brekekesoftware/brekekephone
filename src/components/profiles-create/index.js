@@ -101,20 +101,10 @@ class View extends React.Component {
     });
   };
 
-  _isStringEmpty = s => {
-    return !s && 0 === s.length;
-  };
-
   setUCEnabled = ucEnabled => {
     if (ucEnabled) {
-      if (
-        this._isStringEmpty(this.state.ucHostname) &&
-        this._isStringEmpty(this.state.ucPort)
-      ) {
-        if (
-          !this._isStringEmpty(this.state.pbxHostname) &&
-          !this._isStringEmpty(this.state.pbxPort)
-        ) {
+      if (!this.state.ucHostname && !this.state.ucPort) {
+        if (!this.state.pbxHostname && !this.state.pbxPort) {
           this.setUCHostname(this.state.pbxHostname);
           this.setUCPort(this.state.pbxPort);
         }

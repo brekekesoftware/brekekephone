@@ -93,12 +93,11 @@ class View extends React.Component {
     contactStore.set('ucUsers', users);
   };
 
-  loadUnreadChats = () => {
-    return this.context.uc
+  loadUnreadChats = () =>
+    this.context.uc
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure);
-  };
 
   onLoadUnreadChatsSuccess = chats => {
     chats.forEach(chat => {

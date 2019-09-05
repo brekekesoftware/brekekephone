@@ -372,8 +372,8 @@ class PBX extends EventEmitter {
     });
   }
 
-  addApnsToken = ({ username, device_id }) => {
-    return new Promise((resolve, reject) => {
+  addApnsToken = ({ username, device_id }) =>
+    new Promise((resolve, reject) => {
       const params = {
         command: 'set',
         service_id: '11',
@@ -382,15 +382,13 @@ class PBX extends EventEmitter {
         username,
         device_id,
       };
-
       this.client.pnmanage(params, resolve, reject);
     }).catch(err => {
       console.error('addApnsToken:', err);
     });
-  };
 
-  addFcmPnToken = ({ username, device_id }) => {
-    return new Promise((resolve, reject) => {
+  addFcmPnToken = ({ username, device_id }) =>
+    new Promise((resolve, reject) => {
       const params = {
         command: 'set',
         service_id: '12',
@@ -399,15 +397,13 @@ class PBX extends EventEmitter {
         username,
         device_id,
       };
-
       this.client.pnmanage(params, resolve, reject);
     }).catch(err => {
       console.error('addFcmPnToken:', err);
     });
-  };
 
-  addWebPnToken = ({ username, endpoint, key, auth_secret }) => {
-    return new Promise((resolve, reject) => {
+  addWebPnToken = ({ username, endpoint, key, auth_secret }) =>
+    new Promise((resolve, reject) => {
       const params = {
         command: 'set',
         service_id: '13',
@@ -418,12 +414,10 @@ class PBX extends EventEmitter {
         auth_secret,
         key,
       };
-
       this.client.pnmanage(params, resolve, reject);
     }).catch(err => {
       console.error('addWebPnToken:', err);
     });
-  };
 }
 
 export default new PBX();

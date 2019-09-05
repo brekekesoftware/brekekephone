@@ -12,22 +12,18 @@ const isGroupJointed = group => group.jointed;
 @createModelView(
   getter => state => ({
     buddyIds: getter.buddyChats.buddyIdsByRecent(state),
-    searchText: getter.usersBrowsing.searchText(state),
     groupIds: getter.chatGroups
       .idsByOrder(state)
       .filter(id => isGroupJointed(getter.chatGroups.detailMapById(state)[id])),
     groupById: getter.chatGroups.detailMapById(state),
   }),
   action => emit => ({
-    setSearchText(value) {
-      emit(action.usersBrowsing.setSearchText(value));
-    },
+    //
   }),
 )
 @observer
 class View extends React.Component {
   static defaultProps = {
-    searchText: '',
     buddyIds: [],
     groupIds: [],
     groupById: {},
@@ -46,30 +42,28 @@ class View extends React.Component {
         selectBuddy={routerStore.goToBuddyChatsRecent}
         selectGroup={routerStore.goToChatGroupsRecent}
         createGroup={routerStore.goToChatGroupsCreate}
-        searchText={this.props.searchText}
-        setSearchText={this.setSearchText}
+        searchText={contactStore.searchText}
+        setSearchText={contactStore.setFn('searchText')}
       />
     );
   }
-
-  setSearchText = value => {
-    this.props.setSearchText(value);
-  };
 
   isMatchUser = id => {
     if (!id) {
       return false;
     }
-    const { searchText } = this.props;
-    const userId = id && id.toLowerCase();
-    let chatUserName;
+    let userId = id;
+    let ucUserName;
     const chatUser = contactStore.getUCUser(id);
     if (chatUser) {
-      chatUserName = chatUser.name.toLowerCase();
+      ucUserName = chatUser.name.toLowerCase();
     } else {
-      chatUserName = '';
+      ucUserName = '';
     }
-    return userId.includes(searchText) || chatUserName.includes(searchText);
+    userId = userId.toLowerCase();
+    ucUserName = ucUserName.toLowerCase();
+    const txt = contactStore.searchText.toLowerCase();
+    return userId.includes(txt) || ucUserName.includes(txt);
   };
 
   getMatchIds = () => this.props.buddyIds.filter(this.isMatchUser);

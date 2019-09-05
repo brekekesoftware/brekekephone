@@ -1,8 +1,7 @@
-const uint8ArrayToUrlBase64 = arr => {
-  return window
+const uint8ArrayToUrlBase64 = arr =>
+  window
     .btoa(String.fromCharCode.apply(null, new Uint8Array(arr)))
     .replace(/[+/]/g, '-');
-};
 
 const getPushNotificationToken = async () => {
   const sw = await navigator.serviceWorker.ready;

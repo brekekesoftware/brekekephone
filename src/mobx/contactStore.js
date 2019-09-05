@@ -3,6 +3,8 @@ import { action, observable } from 'mobx';
 import BaseStore from './BaseStore';
 
 class ContactStore extends BaseStore {
+  @observable searchText = '';
+
   // id
   // name
   // talkers?[]
