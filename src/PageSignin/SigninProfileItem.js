@@ -77,7 +77,7 @@ const s = registerStyle(v => ({
     SigninProfileItem_UC: {
       position: 'absolute',
       top: 1.5 * v.padding,
-      right: 0,
+      right: v.padding / 3,
     },
   },
   Button: {
@@ -136,22 +136,22 @@ const SigninProfileItem = p => (
         <SvgIcon path={mdiServerNetwork} style={s._SigninProfileItem_Icon} />
       </View>
     </TouchableOpacity>
-    <View SigninProfileItem_Field>
-      <Text SigninProfileItem_FieldName>UC</Text>
-      <Text SigninProfileItem_FieldValue>
-        {p.ucEnabled ? 'Enabled' : 'Disabled'}
-      </Text>
-      <Switch
-        SigninProfileItem_UC
-        value={p.ucEnabled}
-        onValueChange={ucEnabled => {
-          authStore.updateProfile({
-            id: p.id,
-            ucEnabled,
-          });
-        }}
-      />
-    </View>
+    <TouchableOpacity
+      onPress={() => {
+        authStore.updateProfile({
+          id: p.id,
+          ucEnabled: !p.ucEnabled,
+        });
+      }}
+    >
+      <View SigninProfileItem_Field>
+        <Text SigninProfileItem_FieldName>UC</Text>
+        <Text SigninProfileItem_FieldValue>
+          {p.ucEnabled ? 'Enabled' : 'Disabled'}
+        </Text>
+        <Switch SigninProfileItem_UC value={p.ucEnabled} />
+      </View>
+    </TouchableOpacity>
     <View SigninProfileItem_Btns>
       <Button
         SigninProfileItem_Btn

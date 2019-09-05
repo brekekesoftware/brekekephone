@@ -10,7 +10,7 @@ const allowedToCreateProps = [
   'online',
   'idle',
   'busy',
-  'mood',
+  'statusText',
 ];
 const validateCreatingUser = user => pickProps(user, allowedToCreateProps);
 const allowedToUpdateProps = [
@@ -20,7 +20,7 @@ const allowedToUpdateProps = [
   'online',
   'idle',
   'busy',
-  'mood',
+  'statusText',
 ];
 const validateUpdatingUser = user => pickProps(user, allowedToUpdateProps);
 

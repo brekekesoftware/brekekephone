@@ -28,7 +28,7 @@ registerStyle(v => ({
     AppHeader_CreateBtn: {
       position: 'absolute',
       top: v.padding,
-      right: v.padding,
+      right: v.padding / 3,
       width: 50,
       height: 50,
       borderRadius: 50,

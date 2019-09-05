@@ -121,7 +121,7 @@ class View extends React.Component {
     return {
       id: id,
       name: pbxUser.name || ucUser.name,
-      mood: ucUser.mood,
+      statusText: ucUser.statusText,
       avatar: ucUser.avatar,
       callTalking: !!pbxUser.talkers?.filter(t => t.status === 'calling')
         .length,

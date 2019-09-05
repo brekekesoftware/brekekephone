@@ -36,7 +36,7 @@ class UC extends EventEmitter {
       online: ev.status === 1,
       idle: ev.status === 2,
       busy: ev.status === 3,
-      mood: ev.display,
+      statusText: ev.display,
     });
   };
 
@@ -184,25 +184,25 @@ class UC extends EventEmitter {
       online: status.status === 1,
       idle: status.status === 2,
       busy: status.status === 3,
-      mood: status.display,
+      statusText: status.display,
     };
   }
 
-  setOffline(mood) {
+  setOffline(statusText) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(0, mood, onres, onerr),
+      this.client.changeStatus(0, statusText, onres, onerr),
     );
   }
 
-  setOnline(mood) {
+  setOnline(statusText) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(1, mood, onres, onerr),
+      this.client.changeStatus(1, statusText, onres, onerr),
     );
   }
 
-  setBusy(mood) {
+  setBusy(statusText) {
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(3, mood, onres, onerr),
+      this.client.changeStatus(3, statusText, onres, onerr),
     );
   }
 
@@ -221,7 +221,7 @@ class UC extends EventEmitter {
       online: user.status === 1,
       idle: user.status === 2,
       busy: user.status === 3,
-      mood: user.display,
+      statusText: user.display,
     }));
   }
 

@@ -14,7 +14,7 @@ class View extends React.Component {
   };
 
   state = {
-    chatMood: false,
+    statusText: false,
     chatOffline: false,
     chatOnline: false,
     chatBusy: false,
@@ -24,7 +24,7 @@ class View extends React.Component {
     const me = this.context.uc.me();
 
     this.setState({
-      chatMood: me.mood,
+      statusText: me.statusText,
       chatOffline: me.offline,
       chatOnline: me.online,
       chatBusy: me.busy,
@@ -38,12 +38,12 @@ class View extends React.Component {
         chatOffline={this.state.chatOffline}
         chatOnline={this.state.chatOnline}
         chatBusy={this.state.chatBusy}
-        chatMood={this.state.chatMood}
+        statusText={this.state.statusText}
         setChatOnline={this.setChatOnline}
         setChatOffline={this.setChatOffline}
         setChatBusy={this.setChatBusy}
-        setChatMood={this.setChatMood}
-        submitChatMood={this.submitChatMood}
+        setStatusText={this.setStatusText}
+        submitStatusText={this.submitStatusText}
         signout={routerStore.goToSigninPage}
       />
     );
@@ -53,7 +53,7 @@ class View extends React.Component {
     const me = this.context.uc.me();
 
     this.setState({
-      chatMood: me.mood,
+      statusText: me.statusText,
       chatOffline: me.offline,
       chatOnline: me.online,
       chatBusy: me.busy,
@@ -66,7 +66,7 @@ class View extends React.Component {
 
   setChatOffline = () => {
     const { uc } = this.context;
-    uc.setOffline(this.state.chatMood)
+    uc.setOffline(this.state.statusText)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
   };
@@ -74,7 +74,7 @@ class View extends React.Component {
   setChatOnline = () => {
     const { uc } = this.context;
 
-    uc.setOnline(this.state.chatMood)
+    uc.setOnline(this.state.statusText)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
   };
@@ -82,18 +82,18 @@ class View extends React.Component {
   setChatBusy = () => {
     const { uc } = this.context;
 
-    uc.setBusy(this.state.chatMood)
+    uc.setBusy(this.state.statusText)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
   };
 
-  setChatMood = chatMood => {
+  setStatusText = statusText => {
     this.setState({
-      chatMood,
+      statusText,
     });
   };
 
-  submitChatMood = () => {
+  submitStatusText = () => {
     const { chatOffline, chatOnline, chatBusy } = this.state;
 
     if (chatOffline) {

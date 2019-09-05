@@ -139,7 +139,7 @@ const st = StyleSheet.create({
     color: std.color.shade9,
   },
 
-  buddyMood: {
+  buddyStatusText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
@@ -243,7 +243,7 @@ const Buddy = pure(p => (
           return <Text style={st.buddyName}>{p.id}</Text>;
         }
       })()}
-      <Text style={st.buddyMood}>{p.mood}</Text>
+      <Text style={st.buddyStatusText}>{p.statusText}</Text>
     </View>
   </Button>
 ));
