@@ -147,10 +147,10 @@ const Buddy = p => (
           uri: p.avatar,
         }}
       />
-      {p.offline && <View style={st.chatOffline} />}
-      {p.online && <View style={st.chatOnline} />}
-      {p.idle && <View style={st.chatIdle} />}
-      {p.busy && <View style={st.chatBusy} />}
+      {p.status === 'offline' && <View style={st.chatOffline} />}
+      {p.status === 'online' && <View style={st.chatOnline} />}
+      {p.status === 'idle' && <View style={st.chatIdle} />}
+      {p.status === 'busy' && <View style={st.chatBusy} />}
     </View>
     {(() => {
       if (p.name) {

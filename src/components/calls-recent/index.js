@@ -5,12 +5,12 @@ import { createModelView } from 'redux-model';
 
 import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
 @observer
 @createModelView(
   getter => state => ({
-    ucUserById: getter.ucUsers.detailMapById(state),
     searchText: getter.usersBrowsing.searchText(state),
     callIds: getter.recentCalls.idsMapByProfile(state)[
       (authStore.profile || {}).id
@@ -37,7 +37,6 @@ class View extends React.Component {
     searchText: '',
     callIds: [],
     callById: {},
-    ucUserById: {},
   };
 
   render() {
@@ -71,14 +70,10 @@ class View extends React.Component {
   };
 
   resolveUser = id => {
-    const { ucUserById } = this.props;
-    const ucUser = ucUserById[id] || {};
+    const ucUser = contactStore.getUCUser(id) || {};
     return {
       avatar: ucUser.avatar,
-      online: ucUser.online,
-      offline: ucUser.offline,
-      idle: ucUser.idle,
-      busy: ucUser.busy,
+      status: ucUser.status,
     };
   };
 

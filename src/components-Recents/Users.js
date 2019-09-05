@@ -42,12 +42,7 @@ class User extends React.Component {
     return (
       <ListItem listUser>
         <Left>
-          <Avatar
-            source={user.avatar}
-            online={user.online}
-            offline={user.offline}
-            busy={user.busy}
-          />
+          <Avatar source={user.avatar} status={user.status} />
         </Left>
         <Body>
           <Text>{p.partyName || p.partyNumber}</Text>

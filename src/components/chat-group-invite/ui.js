@@ -230,10 +230,10 @@ const Buddy = pure(p => (
           uri: p.avatar,
         }}
       />
-      {p.offline && <View style={st.buddyOffline} />}
-      {p.online && <View style={st.buddyOnline} />}
-      {p.idle && <View style={st.buddyIdle} />}
-      {p.busy && <View style={st.buddyBusy} />}
+      {p.status === 'offline' && <View style={st.buddyOffline} />}
+      {p.status === 'online' && <View style={st.buddyOnline} />}
+      {p.status === 'idle' && <View style={st.buddyIdle} />}
+      {p.status === 'busy' && <View style={st.buddyBusy} />}
     </View>
     <View>
       {(() => {

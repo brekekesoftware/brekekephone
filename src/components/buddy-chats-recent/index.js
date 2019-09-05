@@ -4,6 +4,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import ChatsDetail from '../../components-Chats/Chat-Detail';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import stripTags from '../../shared/stripTags';
 import toast from '../../shared/Toast';
@@ -63,8 +64,6 @@ const numberOfChatsPerLoad = 50;
     const duplicatedMap = {};
 
     return {
-      buddy: getter.ucUsers.detailMapById(state)[props.match.params.buddy],
-
       chatIds: (
         getter.buddyChats.idsMapByBuddy(state)[props.match.params.buddy] || []
       ).filter(id => {
@@ -77,17 +76,16 @@ const numberOfChatsPerLoad = 50;
       }),
 
       chatById: getter.buddyChats.detailMapById(state),
-      ucUserById: getter.ucUsers.detailMapById(state),
       fileById: getter.chatFiles.byId(state),
     };
   },
   action => emit => ({
-    appendChats(buddy, chats) {
-      emit(action.buddyChats.appendByBuddy(buddy, chats));
+    appendChats(id, chats) {
+      emit(action.buddyChats.appendByBuddy(id, chats));
     },
 
-    prependChats(buddy, chats) {
-      emit(action.buddyChats.prependByBuddy(buddy, chats));
+    prependChats(id, chats) {
+      emit(action.buddyChats.prependByBuddy(id, chats));
     },
 
     createChatFile(file) {
@@ -102,10 +100,8 @@ class View extends React.Component {
   };
 
   static defaultProps = {
-    buddy: {},
     chatIds: [],
     chatById: {},
-    ucUserById: {},
     fileById: {},
   };
 
@@ -124,13 +120,14 @@ class View extends React.Component {
   }
 
   render() {
+    const u = contactStore.getUCUser(this.props.match.params.buddy);
     return (
       <ChatsDetail
         hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
         loadingRecent={this.state.loadingRecent}
         loadingMore={this.state.loadingMore}
-        buddyName={this.props.buddy.name}
-        buddyId={this.props.buddy.id}
+        buddyName={u?.name}
+        buddyId={this.props.match.params.buddy}
         chatIds={this.props.chatIds}
         resolveChat={this.resolveChat}
         resolveCreator={this.resolveCreator}
@@ -184,13 +181,14 @@ class View extends React.Component {
     if (creator === this.me.id) {
       return this.me;
     }
-    const { ucUserById } = this.props;
-    return ucUserById[creator] || {};
+    return contactStore.getUCUser(creator) || {};
   };
 
   loadRecent() {
     this.context.uc
-      .getBuddyChats(this.props.buddy.id, { max: numberOfChatsPerLoad })
+      .getBuddyChats(this.props.match.params.buddy, {
+        max: numberOfChatsPerLoad,
+      })
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
     //
@@ -204,9 +202,10 @@ class View extends React.Component {
 
     chats = chats.reverse();
 
-    const { buddy, appendChats } = this.props;
+    const { appendChats } = this.props;
+    const u = contactStore.getUCUser(this.props.match.params.buddy);
 
-    appendChats(buddy.id, chats);
+    appendChats(u?.id, chats);
   };
   onLoadRecentFailure = err => {
     this.setState({ loadingRecent: false });
@@ -215,7 +214,7 @@ class View extends React.Component {
   };
 
   loadMore = () => {
-    const { buddy, chatIds, chatById } = this.props;
+    const { chatIds, chatById } = this.props;
 
     const oldestChat = chatById[chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
@@ -225,8 +224,9 @@ class View extends React.Component {
     const query = { max, end };
 
     const { uc } = this.context;
+    const u = contactStore.getUCUser(this.props.match.params.buddy);
 
-    uc.getBuddyChats(buddy.id, query)
+    uc.getBuddyChats(u?.id, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
 
@@ -239,12 +239,10 @@ class View extends React.Component {
     this.setState({
       loadingMore: false,
     });
-
     chats = chats.reverse();
-
-    const { buddy, prependChats } = this.props;
-
-    prependChats(buddy.id, chats);
+    const { prependChats } = this.props;
+    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    prependChats(u?.id, chats);
   };
 
   onLoadMoreFailure = err => {
@@ -269,7 +267,7 @@ class View extends React.Component {
     this.submitting = true;
     //
     this.context.uc
-      .sendBuddyChatText(this.props.buddy.id, txt)
+      .sendBuddyChatText(this.props.match.params.buddy, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
@@ -277,7 +275,7 @@ class View extends React.Component {
       });
   };
   onSubmitEditingTextSuccess = chat => {
-    this.props.appendChats(this.props.buddy.id, [chat]);
+    this.props.appendChats(this.props.match.params.buddy, [chat]);
     this.setState({ editingText: '' });
   };
   onSubmitEditingTextFailure = err => {
@@ -309,13 +307,13 @@ class View extends React.Component {
   };
   sendFile = file => {
     const { uc } = this.context;
-    const { buddy } = this.props;
-    uc.sendFile(buddy.id, file)
+    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    uc.sendFile(u?.id, file)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure);
   };
   onSendFileSuccess = res => {
-    const buddyId = this.props.buddy.id;
+    const buddyId = this.props.match.params.buddy;
     this.props.appendChats(buddyId, [res.chat]);
     this.props.createChatFile(res.file);
   };

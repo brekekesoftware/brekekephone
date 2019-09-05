@@ -12,7 +12,6 @@ import toast from '../../shared/Toast';
 @createModelView(
   getter => (state, props) => ({
     call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-    ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     updateCall(call) {
@@ -25,10 +24,6 @@ class View extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
     pbx: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    ucUserById: {},
   };
 
   state = {
@@ -88,9 +83,8 @@ class View extends React.Component {
 
   resolveMatch = id => {
     const match = contactStore.getPBXUser(id);
-    const { ucUserById } = this.props;
 
-    const ucUser = ucUserById[id] || {};
+    const ucUser = contactStore.getUCUser(id) || {};
 
     return {
       name: match.name,

@@ -3,6 +3,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import ChatsHome from '../../components-Chats/Chats-Home';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
 const isGroupJointed = group => group.jointed;
@@ -12,7 +13,6 @@ const isGroupJointed = group => group.jointed;
   getter => state => ({
     buddyIds: getter.buddyChats.buddyIdsByRecent(state),
     searchText: getter.usersBrowsing.searchText(state),
-    buddyById: getter.ucUsers.detailMapById(state),
     groupIds: getter.chatGroups
       .idsByOrder(state)
       .filter(id => isGroupJointed(getter.chatGroups.detailMapById(state)[id])),
@@ -29,7 +29,6 @@ class View extends React.Component {
   static defaultProps = {
     searchText: '',
     buddyIds: [],
-    buddyById: {},
     groupIds: [],
     groupById: {},
   };
@@ -38,7 +37,10 @@ class View extends React.Component {
     return (
       <ChatsHome
         buddyIds={this.getMatchIds()}
-        buddyById={this.props.buddyById}
+        buddyById={contactStore.ucUsers.reduce((m, u) => {
+          m[u.id] = u;
+          return m;
+        }, {})}
         groupIds={this.props.groupIds}
         groupById={this.props.groupById}
         selectBuddy={routerStore.goToBuddyChatsRecent}
@@ -58,10 +60,10 @@ class View extends React.Component {
     if (!id) {
       return false;
     }
-    const { buddyById, searchText } = this.props;
+    const { searchText } = this.props;
     const userId = id && id.toLowerCase();
     let chatUserName;
-    const chatUser = buddyById[id];
+    const chatUser = contactStore.getUCUser(id);
     if (chatUser) {
       chatUserName = chatUser.name.toLowerCase();
     } else {

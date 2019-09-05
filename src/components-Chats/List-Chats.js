@@ -25,12 +25,7 @@ const st = StyleSheet.create({
 const User = p => (
   <ListItem listChat onPress={p.select}>
     <Left>
-      <Avatar
-        source={p.avatar}
-        online={p.online}
-        offline={p.offline}
-        busy={p.busy}
-      />
+      <Avatar source={p.avatar} status={p.status} />
     </Left>
     <Body>
       {(() => {
@@ -51,12 +46,7 @@ const User = p => (
 const Group = p => (
   <ListItem listChat onPress={p.select}>
     <Left>
-      <Avatar
-        source={p.avatar}
-        online={p.online}
-        offline={p.offline}
-        busy={p.busy}
-      />
+      <Avatar source={p.avatar} status={p.status} />
     </Left>
     <Body>
       {(() => {

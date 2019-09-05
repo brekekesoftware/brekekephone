@@ -6,6 +6,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 import UI from './ui';
@@ -16,9 +17,6 @@ import UI from './ui';
     //
   }),
   action => emit => ({
-    fillUsers(users) {
-      emit(action.ucUsers.refill(users));
-    },
     appendBuddyChats(buddy, chats) {
       emit(action.buddyChats.appendByBuddy(buddy, chats));
     },
@@ -92,7 +90,7 @@ class View extends React.Component {
 
   loadUsers = () => {
     const users = this.context.uc.getUsers();
-    this.props.fillUsers(users);
+    contactStore.set('ucUsers', users);
   };
 
   loadUnreadChats = () => {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 import UI from './ui';
@@ -11,8 +12,6 @@ import UI from './ui';
 @createModelView(
   getter => (state, props) => ({
     group: getter.chatGroups.detailMapById(state)[props.match.params.group],
-    buddyIds: getter.ucUsers.idsByOrder(state),
-    buddyById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     //
@@ -28,9 +27,6 @@ class View extends React.Component {
     group: {
       members: [],
     },
-
-    buddyIds: [],
-    buddyById: {},
   };
 
   state = {
@@ -41,7 +37,7 @@ class View extends React.Component {
     return (
       <UI
         groupName={this.props.group.name}
-        buddies={this.props.buddyIds.filter(this.isNotMember)}
+        buddies={contactStore.ucUsers.map(u => u.id).filter(this.isNotMember)}
         selectedBuddy={this.state.selectedBuddy}
         resolveBuddy={this.resolveBuddy}
         toggleBuddy={this.toggleBuddy}
@@ -52,7 +48,7 @@ class View extends React.Component {
   }
 
   isNotMember = buddy => !this.props.group.members.includes(buddy);
-  resolveBuddy = buddy => this.props.buddyById[buddy];
+  resolveBuddy = buddy => contactStore.getUCUser(buddy);
 
   toggleBuddy = buddy => {
     let { selectedBuddy } = this.state;

@@ -12,10 +12,7 @@ import routerStore from '../../mobx/routerStore';
 @observer
 @createModelView(
   getter => state => ({
-    ucEnabled: authStore.profile?.ucEnabled,
     searchText: getter.usersBrowsing.searchText(state),
-    ucUserIds: getter.ucUsers.idsByOrder(state),
-    ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
     setSearchText(value) {
@@ -31,8 +28,6 @@ class View extends React.Component {
 
   static defaultProps = {
     searchText: '',
-    ucUserIds: [],
-    ucUserById: {},
   };
 
   state = {
@@ -73,7 +68,7 @@ class View extends React.Component {
       return false;
     }
 
-    const { ucUserById, searchText } = this.props;
+    const { searchText } = this.props;
 
     const searchTextLC = searchText.toLowerCase();
     const userId = id && id.toLowerCase();
@@ -87,7 +82,7 @@ class View extends React.Component {
     }
 
     let ucUserName;
-    const ucUser = ucUserById[id];
+    const ucUser = contactStore.getUCUser(id);
 
     if (ucUser) {
       ucUserName = ucUser.name;
@@ -103,20 +98,16 @@ class View extends React.Component {
   };
 
   getMatchUserIds() {
-    const { ucUserIds } = this.props;
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
-      ...ucUserIds,
+      ...contactStore.ucUsers.map(u => u.id),
     ]);
     return userIds.filter(this.isMatchUser);
   }
 
   resolveUser = id => {
-    const { ucUserById } = this.props;
-
     const pbxUser = contactStore.getPBXUser(id) || {};
-
-    const ucUser = ucUserById[id] || {};
+    const ucUser = contactStore.getUCUser(id) || {};
 
     return {
       id: id,
@@ -131,11 +122,11 @@ class View extends React.Component {
         .length,
       callCalling: !!pbxUser.talkers?.filter(t => t.status === 'holding')
         .length,
-      chatOffline: ucUser.offline,
-      chatOnline: ucUser.online,
-      chatIdle: ucUser.idle,
-      chatBusy: ucUser.busy,
-      chatEnabled: this.props.ucEnabled,
+      chatOffline: ucUser.status === 'offline',
+      chatOnline: ucUser.status === 'online',
+      chatIdle: ucUser.status === 'idle',
+      chatBusy: ucUser.status === 'busy',
+      chatEnabled: authStore.profile?.ucEnabled,
     };
   };
 

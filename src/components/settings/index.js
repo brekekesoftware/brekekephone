@@ -25,9 +25,9 @@ class View extends React.Component {
 
     this.setState({
       statusText: me.statusText,
-      chatOffline: me.offline,
-      chatOnline: me.online,
-      chatBusy: me.busy,
+      chatOffline: me.status === 'offline',
+      chatOnline: me.status === 'online',
+      chatBusy: me.status === 'busy',
     });
   }
 
@@ -54,9 +54,9 @@ class View extends React.Component {
 
     this.setState({
       statusText: me.statusText,
-      chatOffline: me.offline,
-      chatOnline: me.online,
-      chatBusy: me.busy,
+      chatOffline: me.status === 'offline',
+      chatOnline: me.status === 'online',
+      chatBusy: me.status === 'busy',
     });
   };
 

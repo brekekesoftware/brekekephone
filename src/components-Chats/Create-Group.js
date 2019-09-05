@@ -20,12 +20,7 @@ import SvgIcon from '../shared/SvgIcon';
 const User = p => (
   <ListItem listChat onPress={p.toggle}>
     <Left>
-      <Avatar
-        source={p.avatar}
-        online={p.online}
-        offline={p.offline}
-        busy={p.busy}
-      />
+      <Avatar source={p.avatar} status={p.status} />
     </Left>
     <Body>
       {(() => {

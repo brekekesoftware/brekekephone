@@ -4,14 +4,14 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import CreateGroup from '../../components-Chats/Create-Group';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 
 @observer
 @createModelView(
   getter => state => ({
-    buddyIds: getter.ucUsers.idsByOrder(state),
-    buddyById: getter.ucUsers.detailMapById(state),
+    //
   }),
   action => emit => ({
     createChatGroup(group) {
@@ -33,8 +33,11 @@ class View extends React.Component {
   render() {
     return (
       <CreateGroup
-        buddyIds={this.props.buddyIds}
-        buddyById={this.props.buddyById}
+        buddyIds={contactStore.ucUsers.map(u => u.id)}
+        buddyById={contactStore.ucUsers.reduce((m, u) => {
+          m[u.id] = u;
+          return m;
+        }, {})}
         name={this.state.name}
         members={this.state.members}
         setName={this.setName}
