@@ -4,14 +4,13 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import PagePhoneCall from '../../components-Phone/PagePhoneCall';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 
 @observer
 @createModelView(
   getter => state => ({
-    pbxUserIds: getter.pbxUsers.idsByOrder(state),
-    pbxUserById: getter.pbxUsers.detailMapById(state),
     parkingIds: getter.parkingCalls.idsByOrder(state),
   }),
   action => emit => ({
@@ -24,36 +23,33 @@ class View extends React.Component {
     sip: PropTypes.object.isRequired,
   };
 
-  static defaultProps = {
-    pbxUserIds: [],
-    pbxUserById: {},
-  };
-
   state = {
     text: '',
     target: '',
     video: false,
   };
 
-  render = () => (
-    <PagePhoneCall
-      target={this.state.target}
-      matchIds={this.getMatchIds()}
-      video={this.state.video}
-      resolveMatch={this.resolveMatch}
-      setTarget={this.setTarget}
-      selectMatch={this.selectMatch}
-      setVideo={this.setVideo}
-      create={this.create}
-      calls={routerStore.goToCallsManage}
-      recent={routerStore.goToCallsRecent}
-      callVoice={this.callVoice}
-      callVideo={this.callVideo}
-      parkingIds={this.props.parkingIds}
-      onPress={this.onPress}
-      showNum={this.state.target}
-    />
-  );
+  render() {
+    return (
+      <PagePhoneCall
+        target={this.state.target}
+        matchIds={this.getMatchIds()}
+        video={this.state.video}
+        resolveMatch={this.resolveMatch}
+        setTarget={this.setTarget}
+        selectMatch={this.selectMatch}
+        setVideo={this.setVideo}
+        create={this.create}
+        calls={routerStore.goToCallsManage}
+        recent={routerStore.goToCallsRecent}
+        callVoice={this.callVoice}
+        callVideo={this.callVideo}
+        parkingIds={this.props.parkingIds}
+        onPress={this.onPress}
+        showNum={this.state.target}
+      />
+    );
+  }
 
   onPress = val => {
     let curText = this.state.target;
@@ -76,13 +72,11 @@ class View extends React.Component {
   };
 
   isMatchUser = id => {
-    const { pbxUserById } = this.props;
-
     const searchTextLC = this.state.target.toLowerCase();
     const userId = id && id.toLowerCase();
     let pbxUserName;
 
-    const pbxUser = pbxUserById[id] || {
+    const pbxUser = contactStore.getPBXUser(id) || {
       name: '',
     };
 
@@ -95,18 +89,19 @@ class View extends React.Component {
     return userId.includes(searchTextLC) || pbxUserName.includes(searchTextLC);
   };
 
-  getMatchIds = () => this.props.pbxUserIds.filter(this.isMatchUser);
+  getMatchIds = () =>
+    contactStore.pbxUsers.map(u => u.id).filter(this.isMatchUser);
 
   resolveMatch = id => {
-    const match = this.props.pbxUserById[id];
+    const match = contactStore.getPBXUser(id);
 
     return {
       name: match.name,
       number: id,
-      calling: !!match.callingTalkers.length,
-      ringing: !!match.ringingTalkers.length,
-      talking: !!match.talkingTalkers.length,
-      holding: !!match.holdingTalkers.length,
+      calling: !!match.talkers?.filter(t => t.status === 'calling').length,
+      ringing: !!match.talkers?.filter(t => t.status === 'ringing').length,
+      talking: !!match.talkers?.filter(t => t.status === 'talking').length,
+      holding: !!match.talkers?.filter(t => t.status === 'holding').length,
     };
   };
 

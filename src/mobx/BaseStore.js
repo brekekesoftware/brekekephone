@@ -7,7 +7,6 @@ class BaseStore {
       set(this, key, value);
     });
   };
-
   closureSet = (...args) => value => {
     this.set(args[0], args.length < 2 ? value : args[1]);
   };

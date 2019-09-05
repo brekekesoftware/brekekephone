@@ -34,19 +34,21 @@ class View extends React.Component {
     groupById: {},
   };
 
-  render = () => (
-    <ChatsHome
-      buddyIds={this.getMatchIds()}
-      buddyById={this.props.buddyById}
-      groupIds={this.props.groupIds}
-      groupById={this.props.groupById}
-      selectBuddy={routerStore.goToBuddyChatsRecent}
-      selectGroup={routerStore.goToChatGroupsRecent}
-      createGroup={routerStore.goToChatGroupsCreate}
-      searchText={this.props.searchText}
-      setSearchText={this.setSearchText}
-    />
-  );
+  render() {
+    return (
+      <ChatsHome
+        buddyIds={this.getMatchIds()}
+        buddyById={this.props.buddyById}
+        groupIds={this.props.groupIds}
+        groupById={this.props.groupById}
+        selectBuddy={routerStore.goToBuddyChatsRecent}
+        selectGroup={routerStore.goToChatGroupsRecent}
+        createGroup={routerStore.goToChatGroupsCreate}
+        searchText={this.props.searchText}
+        setSearchText={this.setSearchText}
+      />
+    );
+  }
 
   setSearchText = value => {
     this.props.setSearchText(value);

@@ -4,6 +4,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import TransferDial from '../../components-Transfer/TransferDial';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 
@@ -11,8 +12,6 @@ import toast from '../../shared/Toast';
 @createModelView(
   getter => (state, props) => ({
     call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-    pbxUserIds: getter.pbxUsers.idsByOrder(state),
-    pbxUserById: getter.pbxUsers.detailMapById(state),
     ucUserById: getter.ucUsers.detailMapById(state),
   }),
   action => emit => ({
@@ -29,8 +28,6 @@ class View extends React.Component {
   };
 
   static defaultProps = {
-    pbxUserIds: [],
-    pbxUserById: {},
     ucUserById: {},
   };
 
@@ -39,23 +36,25 @@ class View extends React.Component {
     target: '',
   };
 
-  render = () => (
-    <TransferDial
-      call={this.props.call}
-      attended={this.state.attended}
-      target={this.state.target}
-      matchIds={this.getMatchIds()}
-      resolveMatch={this.resolveMatch}
-      selectMatch={this.selectMatch}
-      setAttended={this.setAttended}
-      setTarget={this.setTarget}
-      transfer={this.transfer}
-      back={routerStore.goToCallsManage}
-      transferAttended={this.transferAttended}
-      transferBlind={this.transferBlind}
-      transferAttendedForVideo={this.transferAttendedForVideo}
-    />
-  );
+  render() {
+    return (
+      <TransferDial
+        call={this.props.call}
+        attended={this.state.attended}
+        target={this.state.target}
+        matchIds={this.getMatchIds()}
+        resolveMatch={this.resolveMatch}
+        selectMatch={this.selectMatch}
+        setAttended={this.setAttended}
+        setTarget={this.setTarget}
+        transfer={this.transfer}
+        back={routerStore.goToCallsManage}
+        transferAttended={this.transferAttended}
+        transferBlind={this.transferBlind}
+        transferAttendedForVideo={this.transferAttendedForVideo}
+      />
+    );
+  }
 
   setAttended = attended => {
     this.setState({
@@ -70,12 +69,10 @@ class View extends React.Component {
   };
 
   isMatchUser = id => {
-    const { pbxUserById } = this.props;
-
     const searchTextLC = this.state.target.toLowerCase();
     const userId = id && id.toLowerCase();
     let pbxUserName;
-    const pbxUser = pbxUserById[id];
+    const pbxUser = contactStore.getPBXUser(id);
 
     if (pbxUser) {
       pbxUserName = pbxUser.name.toLowerCase();
@@ -86,10 +83,11 @@ class View extends React.Component {
     return userId.includes(searchTextLC) || pbxUserName.includes(searchTextLC);
   };
 
-  getMatchIds = () => this.props.pbxUserIds.filter(this.isMatchUser);
+  getMatchIds = () =>
+    contactStore.pbxUsers.map(u => u.id).filter(this.isMatchUser);
 
   resolveMatch = id => {
-    const match = this.props.pbxUserById[id];
+    const match = contactStore.getPBXUser(id);
     const { ucUserById } = this.props;
 
     const ucUser = ucUserById[id] || {};
@@ -98,10 +96,10 @@ class View extends React.Component {
       name: match.name,
       avatar: ucUser.avatar,
       number: id,
-      calling: !!match.callingTalkers.length,
-      ringing: !!match.ringingTalkers.length,
-      talking: !!match.talkingTalkers.length,
-      holding: !!match.holdingTalkers.length,
+      calling: !!match.talkers?.filter(t => t.status === 'calling').length,
+      ringing: !!match.talkers?.filter(t => t.status === 'ringing').length,
+      talking: !!match.talkers?.filter(t => t.status === 'talking').length,
+      holding: !!match.talkers?.filter(t => t.status === 'holding').length,
     };
   };
 

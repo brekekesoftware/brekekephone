@@ -31,21 +31,23 @@ class View extends React.Component {
     });
   }
 
-  render = () => (
-    <PageSetting
-      profile={authStore.profile}
-      chatOffline={this.state.chatOffline}
-      chatOnline={this.state.chatOnline}
-      chatBusy={this.state.chatBusy}
-      chatMood={this.state.chatMood}
-      setChatOnline={this.setChatOnline}
-      setChatOffline={this.setChatOffline}
-      setChatBusy={this.setChatBusy}
-      setChatMood={this.setChatMood}
-      submitChatMood={this.submitChatMood}
-      signout={routerStore.goToSigninPage}
-    />
-  );
+  render() {
+    return (
+      <PageSetting
+        profile={authStore.profile}
+        chatOffline={this.state.chatOffline}
+        chatOnline={this.state.chatOnline}
+        chatBusy={this.state.chatBusy}
+        chatMood={this.state.chatMood}
+        setChatOnline={this.setChatOnline}
+        setChatOffline={this.setChatOffline}
+        setChatBusy={this.setChatBusy}
+        setChatMood={this.setChatMood}
+        submitChatMood={this.submitChatMood}
+        signout={routerStore.goToSigninPage}
+      />
+    );
+  }
 
   onSetChatStatusSuccess = () => {
     const me = this.context.uc.me();

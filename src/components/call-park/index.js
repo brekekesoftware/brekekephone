@@ -39,16 +39,18 @@ class View extends React.Component {
     selectedPark: null,
   };
 
-  render = () => (
-    <UI
-      call={this.props.call}
-      parks={this.props.parks}
-      selectedPark={this.state.selectedPark}
-      selectPark={this.selectPark}
-      park={this.park}
-      back={routerStore.goToCallsManage}
-    />
-  );
+  render() {
+    return (
+      <UI
+        call={this.props.call}
+        parks={this.props.parks}
+        selectedPark={this.state.selectedPark}
+        selectPark={this.selectPark}
+        park={this.park}
+        back={routerStore.goToCallsManage}
+      />
+    );
+  }
 
   selectPark = selectedPark => {
     this.setState({

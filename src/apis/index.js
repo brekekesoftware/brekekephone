@@ -7,6 +7,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
+import contactStore from '../mobx/contactStore';
 import routerStore from '../mobx/routerStore';
 import Alert from '../shared/Alert';
 import { getPushNotificationToken } from '../shared/pushNotification';
@@ -20,7 +21,6 @@ import uc from './uc';
 @createModelView(
   getter => state => ({
     runningCallById: getter.runningCalls.detailMapById(state),
-    pbxUserById: getter.pbxUsers.detailMapById(state),
   }),
   action => emit => ({
     onPBXConnectionStopped() {
@@ -74,28 +74,10 @@ import uc from './uc';
     removeParkingCall(call) {
       emit(action.parkingCalls.remove(call));
     },
-    fillPbxUsers(users) {
-      emit(action.pbxUsers.refill(users));
-    },
-    setPBXUserTalkerCalling(user, talker) {
-      emit(action.pbxUsers.setTalkerCalling(user, talker));
-    },
-    setPBXUserTalkerRinging(user, talker) {
-      emit(action.pbxUsers.setTalkerRinging(user, talker));
-    },
-    setPBXUserTalkerTalking(user, talker) {
-      emit(action.pbxUsers.setTalkerTalking(user, talker));
-    },
-    setPBXUserTalkerHolding(user, talker) {
-      emit(action.pbxUsers.setTalkerHolding(user, talker));
-    },
-    setPBXUserTalkerHanging(user, talker) {
-      emit(action.pbxUsers.setTalkerHanging(user, talker));
-    },
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
     },
-    updateUcUser(user) {
+    updateUCUser(user) {
       emit(action.ucUsers.update(user));
     },
     appendBuddyChat(buddy, chat) {
@@ -122,9 +104,6 @@ import uc from './uc';
     updateChatFile(file) {
       emit(action.chatFiles.update(file));
     },
-    setAuthUserExtensionProperties(properties) {
-      authStore.userExtensionProperties = properties;
-    },
   }),
 )
 @observer
@@ -137,7 +116,6 @@ class ApiProvider extends React.Component {
 
   static defaultProps = {
     runningCallById: {},
-    pbxUserById: {},
   };
 
   getChildContext() {
@@ -174,7 +152,7 @@ class ApiProvider extends React.Component {
     sip.on('video-session-updated', this.onSIPVideoSessionUpdated);
     sip.on('video-session-ended', this.onSIPVideoSessionEnded);
     uc.on('connection-stopped', this.onUCConnectionStopped);
-    uc.on('user-updated', this.onUcUserUpdated);
+    uc.on('user-updated', this.onUCUserUpdated);
     uc.on('buddy-chat-created', this.onBuddyChatCreated);
     uc.on('group-chat-created', this.onGroupChatCreated);
     uc.on('chat-group-invited', this.onChatGroupInvited);
@@ -208,7 +186,7 @@ class ApiProvider extends React.Component {
     sip.off('video-session-ended', this.onSIPVideoSessionEnded);
     uc.off('connection-stopped', this.onUCConnectionStopped);
     uc.off('connection-timeout', this.onUCConnectionTimeout);
-    uc.off('user-updated', this.onUcUserUpdated);
+    uc.off('user-updated', this.onUCUserUpdated);
     uc.off('buddy-chat-created', this.onBuddyChatCreated);
     uc.off('group-chat-created', this.onGroupChatCreated);
     uc.off('chat-group-invited', this.onChatGroupInvited);
@@ -221,15 +199,15 @@ class ApiProvider extends React.Component {
 
   pbxAndSipStarted = 0;
 
-  onPbxAndSipStarted = async () => {
+  onPBXAndSipStarted = async () => {
     try {
-      await this._onPbxAndSipStarted();
+      await this._onPBXAndSipStarted();
     } catch (err) {
-      console.error('onPbxAndSipStarted', err);
+      console.error('onPBXAndSipStarted', err);
     }
   };
 
-  _onPbxAndSipStarted = async () => {
+  _onPBXAndSipStarted = async () => {
     if (this.pbxAndSipStarted < 1) {
       this.pbxAndSipStarted += 1;
       return;
@@ -277,7 +255,7 @@ class ApiProvider extends React.Component {
         },
       });
 
-      this.props.setAuthUserExtensionProperties(extProps);
+      authStore.userExtensionProperties = extProps;
     };
 
     if (phoneTypeCorrect && hasPhoneId) {
@@ -359,12 +337,12 @@ class ApiProvider extends React.Component {
   };
 
   onPBXConnectionStarted = () => {
-    this.loadPbxUsers().catch(err => {
+    this.loadPBXUsers().catch(err => {
       toast.error('Failed to load PBX users');
       console.error(err);
     });
 
-    setTimeout(this.onPbxAndSipStarted, 170);
+    setTimeout(this.onPBXAndSipStarted, 170);
   };
 
   onPBXConnectionStopped = () => {
@@ -375,7 +353,7 @@ class ApiProvider extends React.Component {
     this.props.onPBXConnectionTimeout();
   };
 
-  loadPbxUsers = async () => {
+  loadPBXUsers = async () => {
     if (!authStore.profile) {
       return;
     }
@@ -385,27 +363,23 @@ class ApiProvider extends React.Component {
       .getUsers(tenant)
       .then(ids => ids.filter(id => id !== username));
     const users = await pbx.getOtherUsers(tenant, userIds);
-    this.props.fillPbxUsers(users);
+    contactStore.set('pbxUsers', users);
   };
 
   onPBXUserCalling = ev => {
-    this.props.setPBXUserTalkerCalling(ev.user, ev.talker);
+    contactStore.setTalkerStatus(ev.user, ev.talker, 'calling');
   };
-
   onPBXUserRinging = ev => {
-    this.props.setPBXUserTalkerRinging(ev.user, ev.talker);
+    contactStore.setTalkerStatus(ev.user, ev.talker, 'ringing');
   };
-
   onPBXUserTalking = ev => {
-    this.props.setPBXUserTalkerTalking(ev.user, ev.talker);
+    contactStore.setTalkerStatus(ev.user, ev.talker, 'talking');
   };
-
   onPBXUserHolding = ev => {
-    this.props.setPBXUserTalkerHolding(ev.user, ev.talker);
+    contactStore.setTalkerStatus(ev.user, ev.talker, 'holding');
   };
-
   onPBXUserHanging = ev => {
-    this.props.setPBXUserTalkerHanging(ev.user, ev.talker);
+    contactStore.setTalkerStatus(ev.user, ev.talker, '');
   };
 
   onPBXParkStarted = park => {
@@ -418,7 +392,7 @@ class ApiProvider extends React.Component {
 
   onSIPConnectionStarted = () => {
     this.props.onSIPConnectionStarted();
-    setTimeout(this.onPbxAndSipStarted, 170);
+    setTimeout(this.onPBXAndSipStarted, 170);
   };
 
   onSIPConnectionStopped = () => {
@@ -437,9 +411,7 @@ class ApiProvider extends React.Component {
     }
 
     if (!call.partyName) {
-      const { pbxUserById } = this.props;
-
-      const pbxUser = pbxUserById[number];
+      const pbxUser = contactStore.getPBXUser(number);
       call.partyName = pbxUser ? pbxUser.name : 'Unnamed';
     }
 
@@ -475,8 +447,8 @@ class ApiProvider extends React.Component {
     this.props.onUCConnectionTimeout();
   };
 
-  onUcUserUpdated = ev => {
-    this.props.updateUcUser(ev);
+  onUCUserUpdated = ev => {
+    this.props.updateUCUser(ev);
   };
 
   onBuddyChatCreated = chat => {

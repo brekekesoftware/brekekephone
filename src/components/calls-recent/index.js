@@ -40,20 +40,22 @@ class View extends React.Component {
     ucUserById: {},
   };
 
-  render = () => (
-    <PageRecents
-      resolveCall={this.resolveCall}
-      removeCall={this.props.removeCall}
-      callBack={this.callBack}
-      gotoCallsManage={routerStore.goToCallsManage}
-      gotoCallsCreate={routerStore.goToCallsCreate}
-      parkingIds={this.props.parkingIds}
-      resolveUser={this.resolveUser}
-      searchText={this.props.searchText}
-      setSearchText={this.setSearchText}
-      callIds={this.getMatchUserIds()}
-    />
-  );
+  render() {
+    return (
+      <PageRecents
+        resolveCall={this.resolveCall}
+        removeCall={this.props.removeCall}
+        callBack={this.callBack}
+        gotoCallsManage={routerStore.goToCallsManage}
+        gotoCallsCreate={routerStore.goToCallsCreate}
+        parkingIds={this.props.parkingIds}
+        resolveUser={this.resolveUser}
+        searchText={this.props.searchText}
+        setSearchText={this.setSearchText}
+        callIds={this.getMatchUserIds()}
+      />
+    );
+  }
 
   resolveCall = id => this.props.callById[id];
 

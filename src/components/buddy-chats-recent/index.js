@@ -123,26 +123,28 @@ class View extends React.Component {
     if (noChat) this.loadRecent();
   }
 
-  render = () => (
-    <ChatsDetail
-      hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
-      loadingRecent={this.state.loadingRecent}
-      loadingMore={this.state.loadingMore}
-      buddyName={this.props.buddy.name}
-      buddyId={this.props.buddy.id}
-      chatIds={this.props.chatIds}
-      resolveChat={this.resolveChat}
-      resolveCreator={this.resolveCreator}
-      editingText={this.state.editingText}
-      setEditingText={this.setEditingText}
-      submitEditingText={this.submitEditingText}
-      loadMore={this.loadMore}
-      acceptFile={this.acceptFile}
-      rejectFile={this.rejectFile}
-      pickFile={this.pickFile}
-      back={routerStore.goToChatsRecent}
-    />
-  );
+  render() {
+    return (
+      <ChatsDetail
+        hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
+        loadingRecent={this.state.loadingRecent}
+        loadingMore={this.state.loadingMore}
+        buddyName={this.props.buddy.name}
+        buddyId={this.props.buddy.id}
+        chatIds={this.props.chatIds}
+        resolveChat={this.resolveChat}
+        resolveCreator={this.resolveCreator}
+        editingText={this.state.editingText}
+        setEditingText={this.setEditingText}
+        submitEditingText={this.submitEditingText}
+        loadMore={this.loadMore}
+        acceptFile={this.acceptFile}
+        rejectFile={this.rejectFile}
+        pickFile={this.pickFile}
+        back={routerStore.goToChatsRecent}
+      />
+    );
+  }
 
   resolveChat = (id, index) => {
     const { chatIds, chatById, fileById } = this.props;

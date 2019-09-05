@@ -30,14 +30,16 @@ class View extends React.Component {
     uc: PropTypes.object.isRequired,
   };
 
-  render = () => (
-    <UI
-      groups={this.props.groupIds}
-      formatGroup={this.formatGroup}
-      accept={this.accept}
-      reject={this.reject}
-    />
-  );
+  render() {
+    return (
+      <UI
+        groups={this.props.groupIds}
+        formatGroup={this.formatGroup}
+        accept={this.accept}
+        reject={this.reject}
+      />
+    );
+  }
 
   formatGroup = id => {
     const { groupById, ucUserById } = this.props;

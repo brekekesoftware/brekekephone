@@ -122,7 +122,7 @@ merge(nativeBaseTheme, {
     },
   },
   'NativeBase.ListItem': {
-    '.statusUc': {
+    '.statusUC': {
       'NativeBase.Left': {},
       'NativeBase.Right': {
         flex: 1,

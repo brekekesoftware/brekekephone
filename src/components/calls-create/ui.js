@@ -174,7 +174,9 @@ const st = StyleSheet.create({
 });
 const pure = Component =>
   class Pure extends React.PureComponent {
-    render = () => <Component {...this.props} />;
+    render() {
+      return <Component {...this.props} />;
+    }
   };
 const Navbar = pure(p => (
   <View style={st.navbar}>

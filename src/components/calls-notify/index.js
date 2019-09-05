@@ -47,14 +47,16 @@ class View extends React.Component {
     });
   };
 
-  render = () => (
-    <UI
-      callIds={this.props.callIds}
-      resolveCall={this.resolveCall}
-      accept={this.accept}
-      reject={this.reject}
-    />
-  );
+  render() {
+    return (
+      <UI
+        callIds={this.props.callIds}
+        resolveCall={this.resolveCall}
+        accept={this.accept}
+        reject={this.reject}
+      />
+    );
+  }
 }
 
 export default View;

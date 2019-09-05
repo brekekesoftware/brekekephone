@@ -25,37 +25,39 @@ class View extends React.Component {
     addingPark: '',
   };
 
-  render = () => (
-    <UI
-      pbxHostname={this.state.pbxHostname}
-      pbxPort={this.state.pbxPort}
-      pbxTenant={this.state.pbxTenant}
-      pbxUsername={this.state.pbxUsername}
-      pbxPassword={this.state.pbxPassword}
-      pbxPhoneIndex={this.state.pbxPhoneIndex}
-      pbxTurnEnabled={this.state.pbxTurnEnabled}
-      parks={this.state.parks}
-      addingPark={this.state.addingPark}
-      ucEnabled={this.state.ucEnabled}
-      ucHostname={this.state.ucHostname}
-      ucPort={this.state.ucPort}
-      setPBXHostname={this.setPBXHostname}
-      setPBXPort={this.setPBXPort}
-      setPBXTenant={this.setPBXTenant}
-      setPBXUsername={this.setPBXUsername}
-      setPBXPassword={this.setPBXPassword}
-      setPBXPhoneIndex={this.setPBXPhoneIndex}
-      setPBXTurnEnabled={this.setPBXTurnEnabled}
-      setAddingPark={this.setAddingPark}
-      submitAddingPark={this.submitAddingPark}
-      setUCEnabled={this.setUCEnabled}
-      setUCHostname={this.setUCHostname}
-      setUCPort={this.setUCPort}
-      removePark={this.removePark}
-      save={this.save}
-      back={routerStore.goToSigninPage}
-    />
-  );
+  render() {
+    return (
+      <UI
+        pbxHostname={this.state.pbxHostname}
+        pbxPort={this.state.pbxPort}
+        pbxTenant={this.state.pbxTenant}
+        pbxUsername={this.state.pbxUsername}
+        pbxPassword={this.state.pbxPassword}
+        pbxPhoneIndex={this.state.pbxPhoneIndex}
+        pbxTurnEnabled={this.state.pbxTurnEnabled}
+        parks={this.state.parks}
+        addingPark={this.state.addingPark}
+        ucEnabled={this.state.ucEnabled}
+        ucHostname={this.state.ucHostname}
+        ucPort={this.state.ucPort}
+        setPBXHostname={this.setPBXHostname}
+        setPBXPort={this.setPBXPort}
+        setPBXTenant={this.setPBXTenant}
+        setPBXUsername={this.setPBXUsername}
+        setPBXPassword={this.setPBXPassword}
+        setPBXPhoneIndex={this.setPBXPhoneIndex}
+        setPBXTurnEnabled={this.setPBXTurnEnabled}
+        setAddingPark={this.setAddingPark}
+        submitAddingPark={this.submitAddingPark}
+        setUCEnabled={this.setUCEnabled}
+        setUCHostname={this.setUCHostname}
+        setUCPort={this.setUCPort}
+        removePark={this.removePark}
+        save={this.save}
+        back={routerStore.goToSigninPage}
+      />
+    );
+  }
 
   setPBXHostname = pbxHostname => {
     this.setState({

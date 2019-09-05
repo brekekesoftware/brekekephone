@@ -31,12 +31,12 @@ class UC extends EventEmitter {
     this.emit('user-updated', {
       id: ev.user_id,
       name: ev.name,
-      mood: ev.display,
+      avatar: ev.profile_image_url,
       offline: ev.status === 0,
       online: ev.status === 1,
       idle: ev.status === 2,
       busy: ev.status === 3,
-      avatar: ev.profile_image_url,
+      mood: ev.display,
     });
   };
 
@@ -179,12 +179,12 @@ class UC extends EventEmitter {
     return {
       id: profile.user_id,
       name: profile.name,
-      mood: status.display,
       avatar: profile.profile_image_url,
       offline: status.status === 0,
       online: status.status === 1,
       idle: status.status === 2,
       busy: status.status === 3,
+      mood: status.display,
     };
   }
 
@@ -215,11 +215,12 @@ class UC extends EventEmitter {
 
     return buddyList.user.map(user => ({
       id: user.user_id,
-      avatar: user.profile_image_url,
       name: user.name,
+      avatar: user.profile_image_url,
       offline: user.status === 0,
       online: user.status === 1,
-      busy: user.status === 2,
+      idle: user.status === 2,
+      busy: user.status === 3,
       mood: user.display,
     }));
   }

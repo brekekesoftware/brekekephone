@@ -1,7 +1,7 @@
 import {
   mdiAccountCircleOutline,
   mdiClose,
-  mdiDotsHorizontalCircleOutline,
+  mdiDotsHorizontal,
   mdiServerNetwork,
   mdiWebBox,
   mdiWebpack,
@@ -165,7 +165,7 @@ const SigninProfileItem = p => (
         update
         onPress={() => routerStore.goToProfileUpdate(p.id)}
       >
-        <SvgIcon path={mdiDotsHorizontalCircleOutline} width="100%" />
+        <SvgIcon path={mdiDotsHorizontal} width="100%" />
       </Button>
       <Button
         SigninProfileItem_Btn

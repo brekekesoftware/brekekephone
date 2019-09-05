@@ -4,7 +4,7 @@ import React from 'react';
 
 import SvgIcon from '../shared/SvgIcon';
 
-class PbxComponent extends React.Component {
+class PBX extends React.Component {
   render() {
     const profile = this.props.profile;
 
@@ -54,4 +54,4 @@ class PbxComponent extends React.Component {
   }
 }
 
-export default PbxComponent;
+export default PBX;

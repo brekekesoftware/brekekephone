@@ -3,7 +3,7 @@ import React from 'react';
 
 import Hearders from '../components-Home/Header';
 import CallParkComponent from './CallPark';
-import PbxComponent from './PBX';
+import PBXComponent from './PBX';
 
 class PageSettings extends React.Component {
   render() {
@@ -11,7 +11,7 @@ class PageSettings extends React.Component {
       <Container>
         <Hearders title="Settings" />
         <Content>
-          <PbxComponent {...this.props} />
+          <PBXComponent {...this.props} />
           <CallParkComponent {...this.props} />
         </Content>
       </Container>

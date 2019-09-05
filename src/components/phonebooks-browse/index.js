@@ -19,19 +19,21 @@ class View extends React.Component {
     this.loadBooks();
   }
 
-  render = () => (
-    <UI
-      loading={this.state.loading}
-      books={this.state.books}
-      selectBook={b =>
-        routerStore.goToContactsBrowse({
-          book: b.name,
-          shared: b.shared,
-        })
-      }
-      create={() => routerStore.goToContactsCreate()}
-    />
-  );
+  render() {
+    return (
+      <UI
+        loading={this.state.loading}
+        books={this.state.books}
+        selectBook={b =>
+          routerStore.goToContactsBrowse({
+            book: b.name,
+            shared: b.shared,
+          })
+        }
+        create={() => routerStore.goToContactsCreate()}
+      />
+    );
+  }
 
   loadBooks() {
     const { pbx } = this.context;

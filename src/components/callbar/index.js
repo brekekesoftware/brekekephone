@@ -34,26 +34,28 @@ class View extends React.Component {
     pbx: PropTypes.object.isRequired,
   };
 
-  render = () => (
-    <UI
-      activecallid={this.state.activecallid}
-      chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={routerStore.goToCallsManage}
-      pressCallsCreate={routerStore.goToCallsCreate}
-      pressSettings={routerStore.goToSettings}
-      pressUsers={routerStore.goToUsersBrowse}
-      pressChats={routerStore.goToChatsRecent}
-      pressBooks={routerStore.goToPhonebooksBrowse}
-      runningIds={this.props.runningIds}
-      runningById={this.props.runningById}
-      hangup={this.hangup}
-      hold={this.hold}
-      unhold={this.unhold}
-      pathname={this.props.location.pathname}
-      onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-      onCloseLoudSpeaker={this.onCloseLoudSpeaker}
-    />
-  );
+  render() {
+    return (
+      <UI
+        activecallid={this.state.activecallid}
+        chatsEnabled={this.props.chatsEnabled}
+        pressCallsManage={routerStore.goToCallsManage}
+        pressCallsCreate={routerStore.goToCallsCreate}
+        pressSettings={routerStore.goToSettings}
+        pressUsers={routerStore.goToUsersBrowse}
+        pressChats={routerStore.goToChatsRecent}
+        pressBooks={routerStore.goToPhonebooksBrowse}
+        runningIds={this.props.runningIds}
+        runningById={this.props.runningById}
+        hangup={this.hangup}
+        hold={this.hold}
+        unhold={this.unhold}
+        pathname={this.props.location.pathname}
+        onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+        onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+      />
+    );
+  }
 
   onOpenLoudSpeaker = () => {
     const activecallid = this.state.activecallid;

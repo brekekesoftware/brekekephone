@@ -1,3 +1,4 @@
+import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -5,6 +6,7 @@ import { createModelView } from 'redux-model';
 
 import PageContact from '../../components-Contacts/PageContact';
 import authStore from '../../mobx/authStore';
+import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
 @observer
@@ -12,8 +14,6 @@ import routerStore from '../../mobx/routerStore';
   getter => state => ({
     ucEnabled: authStore.profile?.ucEnabled,
     searchText: getter.usersBrowsing.searchText(state),
-    pbxUserIds: getter.pbxUsers.idsByOrder(state),
-    pbxUserById: getter.pbxUsers.detailMapById(state),
     ucUserIds: getter.ucUsers.idsByOrder(state),
     ucUserById: getter.ucUsers.detailMapById(state),
   }),
@@ -31,8 +31,6 @@ class View extends React.Component {
 
   static defaultProps = {
     searchText: '',
-    pbxUserIds: [],
-    pbxUserById: {},
     ucUserIds: [],
     ucUserById: {},
   };
@@ -43,22 +41,24 @@ class View extends React.Component {
     activeFab: false,
   };
 
-  render = () => (
-    <PageContact
-      searchText={this.props.searchText}
-      userIds={this.getMatchUserIds()}
-      resolveUser={this.resolveUser}
-      callVoice={this.callVoice}
-      callVideo={this.callVideo}
-      chat={routerStore.goToBuddyChatsRecent}
-      setSearchText={this.setSearchText}
-      toggleModal={this.toggleModal}
-      isModalVisible={this.state.isModalVisible}
-      exitModal={this.exitModal}
-      iduser={this.state.id}
-      activeFab={this.state.activeFab}
-    />
-  );
+  render() {
+    return (
+      <PageContact
+        searchText={this.props.searchText}
+        userIds={this.getMatchUserIds()}
+        resolveUser={this.resolveUser}
+        callVoice={this.callVoice}
+        callVideo={this.callVideo}
+        chat={routerStore.goToBuddyChatsRecent}
+        setSearchText={this.setSearchText}
+        toggleModal={this.toggleModal}
+        isModalVisible={this.state.isModalVisible}
+        exitModal={this.exitModal}
+        iduser={this.state.id}
+        activeFab={this.state.activeFab}
+      />
+    );
+  }
 
   toggleModal = id => {
     this.setState({ isModalVisible: !this.state.isModalVisible, id: id });
@@ -73,12 +73,12 @@ class View extends React.Component {
       return false;
     }
 
-    const { pbxUserById, ucUserById, searchText } = this.props;
+    const { ucUserById, searchText } = this.props;
 
     const searchTextLC = searchText.toLowerCase();
     const userId = id && id.toLowerCase();
     let pbxUserName;
-    const pbxUser = pbxUserById[id];
+    const pbxUser = contactStore.getPBXUser(id);
 
     if (pbxUser) {
       pbxUserName = pbxUser.name;
@@ -103,21 +103,18 @@ class View extends React.Component {
   };
 
   getMatchUserIds() {
-    const { pbxUserIds, ucUserIds } = this.props;
-
-    const userSet = new Set([...pbxUserIds, ...ucUserIds]);
-    return Array.from(userSet).filter(this.isMatchUser);
+    const { ucUserIds } = this.props;
+    const userIds = uniq([
+      ...contactStore.pbxUsers.map(u => u.id),
+      ...ucUserIds,
+    ]);
+    return userIds.filter(this.isMatchUser);
   }
 
   resolveUser = id => {
-    const { pbxUserById, ucUserById } = this.props;
+    const { ucUserById } = this.props;
 
-    const pbxUser = pbxUserById[id] || {
-      talkingTalkers: [],
-      holdingTalkers: [],
-      ringingTalkers: [],
-      callingTalkers: [],
-    };
+    const pbxUser = contactStore.getPBXUser(id) || {};
 
     const ucUser = ucUserById[id] || {};
 
@@ -126,10 +123,14 @@ class View extends React.Component {
       name: pbxUser.name || ucUser.name,
       mood: ucUser.mood,
       avatar: ucUser.avatar,
-      callTalking: !!pbxUser.talkingTalkers.length,
-      callHolding: !!pbxUser.holdingTalkers.length,
-      callRinging: !!pbxUser.ringingTalkers.length,
-      callCalling: !!pbxUser.callingTalkers.length,
+      callTalking: !!pbxUser.talkers?.filter(t => t.status === 'calling')
+        .length,
+      callHolding: !!pbxUser.talkers?.filter(t => t.status === 'ringing')
+        .length,
+      callRinging: !!pbxUser.talkers?.filter(t => t.status === 'talking')
+        .length,
+      callCalling: !!pbxUser.talkers?.filter(t => t.status === 'holding')
+        .length,
       chatOffline: ucUser.offline,
       chatOnline: ucUser.online,
       chatIdle: ucUser.idle,

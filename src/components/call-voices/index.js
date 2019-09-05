@@ -28,14 +28,16 @@ const isAnswered = call => call.answered;
 )
 @observer
 class View extends React.Component {
-  render = () => (
-    <UI
-      incomingCallIds={this.props.incomingCallIds}
-      outgoingCallIds={this.props.outgoingCallIds}
-      answeredCallIds={this.props.answeredCallIds}
-      resolveCall={this.resolveCall}
-    />
-  );
+  render() {
+    return (
+      <UI
+        incomingCallIds={this.props.incomingCallIds}
+        outgoingCallIds={this.props.outgoingCallIds}
+        answeredCallIds={this.props.answeredCallIds}
+        resolveCall={this.resolveCall}
+      />
+    );
+  }
 
   resolveCall = id => this.props.callById[id];
 }

@@ -30,18 +30,20 @@ class View extends React.Component {
     members: [],
   };
 
-  render = () => (
-    <CreateGroup
-      buddyIds={this.props.buddyIds}
-      buddyById={this.props.buddyById}
-      name={this.state.name}
-      members={this.state.members}
-      setName={this.setName}
-      back={routerStore.goToChatsRecent}
-      toggleBuddy={this.toggleBuddy}
-      create={this.create}
-    />
-  );
+  render() {
+    return (
+      <CreateGroup
+        buddyIds={this.props.buddyIds}
+        buddyById={this.props.buddyById}
+        name={this.state.name}
+        members={this.state.members}
+        setName={this.setName}
+        back={routerStore.goToChatsRecent}
+        toggleBuddy={this.toggleBuddy}
+        create={this.create}
+      />
+    );
+  }
 
   setName = name => {
     this.setState({

@@ -249,7 +249,9 @@ const st = StyleSheet.create({
 
 const pure = Component =>
   class extends React.PureComponent {
-    render = () => <Component {...this.props} />;
+    render() {
+      return <Component {...this.props} />;
+    }
   };
 
 const Navbar = pure(p => (
@@ -355,15 +357,17 @@ class Scroll extends React.Component {
   _justMounted = true;
   _closeToBottom = true;
 
-  render = () => (
-    <ScrollView
-      {...this.props}
-      scrollEventThrottle={120}
-      ref={this.setViewRef}
-      onContentSizeChange={this.onContentSizeChange}
-      onScroll={this.onScroll}
-    />
-  );
+  render() {
+    return (
+      <ScrollView
+        {...this.props}
+        scrollEventThrottle={120}
+        ref={this.setViewRef}
+        onContentSizeChange={this.onContentSizeChange}
+        onScroll={this.onScroll}
+      />
+    );
+  }
 
   setViewRef = ref => {
     this.view = ref;

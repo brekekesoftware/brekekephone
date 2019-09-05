@@ -11,16 +11,14 @@ import toast from '../shared/Toast';
 @observer
 class NewCallPark extends React.Component {
   state = {
-    ...authStore.allProfiles.find(
-      p => p.id === this.props.match.params.profile,
-    ),
+    ...authStore.getProfile(this.props.match.params.profile),
   };
   componentDidUpdate(prevProps) {
     const id = this.props.match.params.profile;
     const prevId = prevProps.match.params.profile;
     if (id !== prevId) {
       this.setState({
-        ...authStore.allProfiles.find(p => p.id === id),
+        ...authStore.getProfile(id),
       });
     }
   }

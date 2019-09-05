@@ -18,19 +18,21 @@ import routerStore from '../../mobx/routerStore';
 )
 @observer
 class View extends React.Component {
-  render = () => (
-    <FooterTabs
-      chatsEnabled={this.props.chatsEnabled}
-      pressCallsManage={routerStore.goToCallsManage}
-      pressCallsRecent={routerStore.goToCallsRecent}
-      pressCallsCreate={routerStore.goToCallsCreate}
-      pressSettings={routerStore.goToSettings}
-      pressUsers={routerStore.goToUsersBrowse}
-      pressChats={routerStore.goToChatsRecent}
-      pressBooks={routerStore.goToPhonebooksBrowse}
-      runningIds={this.props.runningIds}
-    />
-  );
+  render() {
+    return (
+      <FooterTabs
+        chatsEnabled={this.props.chatsEnabled}
+        pressCallsManage={routerStore.goToCallsManage}
+        pressCallsRecent={routerStore.goToCallsRecent}
+        pressCallsCreate={routerStore.goToCallsCreate}
+        pressSettings={routerStore.goToSettings}
+        pressUsers={routerStore.goToUsersBrowse}
+        pressChats={routerStore.goToChatsRecent}
+        pressBooks={routerStore.goToPhonebooksBrowse}
+        runningIds={this.props.runningIds}
+      />
+    );
+  }
 }
 
 export default View;

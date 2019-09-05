@@ -35,7 +35,9 @@ class View extends React.Component {
     uc: PropTypes.object.isRequired,
   };
 
-  render = () => <UI />;
+  render() {
+    return <UI />;
+  }
 }
 
 export default View;

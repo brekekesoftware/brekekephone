@@ -25,32 +25,34 @@ class View extends React.Component {
     email: '',
   };
 
-  render = () => (
-    <UI
-      book={routerStore.getQuery().book || ''}
-      firstName={this.state.firstName}
-      lastName={this.state.lastName}
-      workNumber={this.state.workNumber}
-      cellNumber={this.state.cellNumber}
-      homeNumber={this.state.homeNumber}
-      job={this.state.job}
-      company={this.state.company}
-      address={this.state.address}
-      email={this.state.email}
-      back={routerStore.goToPhonebooksBrowse}
-      save={this.save}
-      setBook={this.setBook}
-      setFirstName={this.setFirstName}
-      setLastName={this.setLastName}
-      setWorkNumber={this.setWorkNumber}
-      setCellNumber={this.setCellNumber}
-      setHomeNumber={this.setHomeNumber}
-      setJob={this.setJob}
-      setCompany={this.setCompany}
-      setAddress={this.setAddress}
-      setEmail={this.setEmail}
-    />
-  );
+  render() {
+    return (
+      <UI
+        book={routerStore.getQuery().book || ''}
+        firstName={this.state.firstName}
+        lastName={this.state.lastName}
+        workNumber={this.state.workNumber}
+        cellNumber={this.state.cellNumber}
+        homeNumber={this.state.homeNumber}
+        job={this.state.job}
+        company={this.state.company}
+        address={this.state.address}
+        email={this.state.email}
+        back={routerStore.goToPhonebooksBrowse}
+        save={this.save}
+        setBook={this.setBook}
+        setFirstName={this.setFirstName}
+        setLastName={this.setLastName}
+        setWorkNumber={this.setWorkNumber}
+        setCellNumber={this.setCellNumber}
+        setHomeNumber={this.setHomeNumber}
+        setJob={this.setJob}
+        setCompany={this.setCompany}
+        setAddress={this.setAddress}
+        setEmail={this.setEmail}
+      />
+    );
+  }
 
   setBook = book =>
     routerStore.goToContactsCreate({

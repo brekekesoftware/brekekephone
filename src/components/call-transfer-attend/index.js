@@ -30,16 +30,18 @@ class View extends React.Component {
     ucUserById: {},
   };
 
-  render = () => (
-    <TransferAttend
-      call={this.props.call}
-      back={routerStore.goToCallsManage}
-      join={this.join}
-      stop={this.stop}
-      hangup={this.hangup}
-      resolveMatch={this.resolveMatch}
-    />
-  );
+  render() {
+    return (
+      <TransferAttend
+        call={this.props.call}
+        back={routerStore.goToCallsManage}
+        join={this.join}
+        stop={this.stop}
+        hangup={this.hangup}
+        resolveMatch={this.resolveMatch}
+      />
+    );
+  }
 
   resolveMatch = id => {
     const { ucUserById } = this.props;

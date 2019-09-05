@@ -10,9 +10,7 @@ import UI from './ui';
 @observer
 class View extends React.Component {
   state = {
-    ...authStore.allProfiles.find(
-      p => p.id === this.props.match.params.profile,
-    ),
+    ...authStore.getProfile(this.props.match.params.profile),
   };
 
   constructor(props) {
@@ -24,31 +22,33 @@ class View extends React.Component {
     const prevId = prevProps.match.params.profile;
     if (id !== prevId) {
       this.setState({
-        ...authStore.allProfiles.find(p => p.id === id),
+        ...authStore.getProfile(id),
       });
     }
   }
 
-  render = () => (
-    <UI
-      profile={this.state}
-      setPBXHostname={this.setPBXHostname}
-      setPBXPort={this.setPBXPort}
-      setPBXTenant={this.setPBXTenant}
-      setPBXUsername={this.setPBXUsername}
-      setPBXPassword={this.setPBXPassword}
-      setPBXPhoneIndex={this.setPBXPhoneIndex}
-      setPBXTurnEnabled={this.setPBXTurnEnabled}
-      setAddingPark={this.setAddingPark}
-      submitAddingPark={this.submitAddingPark}
-      setUCEnabled={this.setUCEnabled}
-      setUCHostname={this.setUCHostname}
-      setUCPort={this.setUCPort}
-      removePark={this.removePark}
-      save={this.save}
-      back={routerStore.goToSigninPage}
-    />
-  );
+  render() {
+    return (
+      <UI
+        profile={this.state}
+        setPBXHostname={this.setPBXHostname}
+        setPBXPort={this.setPBXPort}
+        setPBXTenant={this.setPBXTenant}
+        setPBXUsername={this.setPBXUsername}
+        setPBXPassword={this.setPBXPassword}
+        setPBXPhoneIndex={this.setPBXPhoneIndex}
+        setPBXTurnEnabled={this.setPBXTurnEnabled}
+        setAddingPark={this.setAddingPark}
+        submitAddingPark={this.submitAddingPark}
+        setUCEnabled={this.setUCEnabled}
+        setUCHostname={this.setUCHostname}
+        setUCPort={this.setUCPort}
+        removePark={this.removePark}
+        save={this.save}
+        back={routerStore.goToSigninPage}
+      />
+    );
+  }
 
   setPBXHostname = pbxHostname => {
     this.setState({

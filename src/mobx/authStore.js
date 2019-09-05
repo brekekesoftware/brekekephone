@@ -22,10 +22,10 @@ const compareProfile = (p1, p2) =>
   compareField(p1, p2, 'pbxPort');
 
 class AuthStore extends BaseStore {
-  // stopped
-  // connecting
-  // success
-  // failure
+  // 'stopped'
+  // 'connecting'
+  // 'success'
+  // 'failure'
   @observable pbxState = 'stopped';
   @observable sipState = 'stopped';
   @observable ucState = 'stopped';
@@ -60,7 +60,7 @@ class AuthStore extends BaseStore {
   // accessToken
   @observable profile = null;
   @action signin = id => {
-    const p = this.allProfiles.find(p => p.id === id);
+    const p = this.getProfile(id);
     if (!p) {
       return false;
     }
@@ -95,16 +95,22 @@ class AuthStore extends BaseStore {
       toast.error('Can not save profiles to local storage');
     }
   };
-  @action createProfile = profile => {
-    this.allProfiles.push(profile);
+  getProfile = id => {
+    return this.allProfiles.find(p => p.id === id);
+  };
+  findProfile = _p => {
+    return this.allProfiles.find(p => compareProfile(p, _p));
+  };
+  @action createProfile = _p => {
+    this.allProfiles.push(_p);
     this.saveProfilesToLocalStorage();
   };
-  @action updateProfile = profile => {
-    const i = this.allProfiles.findIndex(p => p.id === profile.id);
-    if (i < 0) {
+  @action updateProfile = _p => {
+    const p = this.getProfile(_p.id);
+    if (!p) {
       return;
     }
-    this.allProfiles[i] = Object.assign(this.allProfiles[i], profile);
+    Object.assign(p, _p);
     this.allProfiles = [...this.allProfiles];
     this.saveProfilesToLocalStorage();
   };
@@ -116,13 +122,6 @@ class AuthStore extends BaseStore {
   @action _removeProfile = id => {
     this.allProfiles = this.allProfiles.filter(p => p.id !== id);
     this.saveProfilesToLocalStorage();
-  };
-
-  // TODO add documentation
-  userExtensionProperties = null;
-
-  findProfile = p => {
-    return this.allProfiles.find(_p => compareProfile(_p, p));
   };
 
   handleUrlParams = async () => {
@@ -193,9 +192,17 @@ class AuthStore extends BaseStore {
     });
   };
   signinByNotification = n => {
-    const p = this.findProfile(n);
+    const p = this.findProfileFromNotification(n);
     return p && this.signin(p);
   };
+
+  // id
+  // name
+  // language
+  // phones[]
+  //   id
+  //   type
+  userExtensionProperties = null;
 }
 
 const authStore = new AuthStore();

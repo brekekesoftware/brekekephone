@@ -120,27 +120,29 @@ class View extends React.Component {
     if (noChat) this.loadRecent();
   }
 
-  render = () => (
-    <UI
-      hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
-      groupName={this.props.group.name}
-      members={this.props.group.members}
-      resolveMember={this.resolveBuddy}
-      loadingRecent={this.state.loadingRecent}
-      loadingMore={this.state.loadingMore}
-      chatIds={this.props.chatIds}
-      resolveChat={this.resolveChat}
-      editingText={this.state.editingText}
-      setEditingText={this.setEditingText}
-      submitEditingText={this.submitEditingText}
-      loadMore={this.loadMore}
-      back={routerStore.goToChatsRecent}
-      leave={this.leave}
-      invite={this.invite}
-      callVoiceConference={this.callVoiceConference}
-      callVideoConference={this.callVideoConference}
-    />
-  );
+  render() {
+    return (
+      <UI
+        hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
+        groupName={this.props.group.name}
+        members={this.props.group.members}
+        resolveMember={this.resolveBuddy}
+        loadingRecent={this.state.loadingRecent}
+        loadingMore={this.state.loadingMore}
+        chatIds={this.props.chatIds}
+        resolveChat={this.resolveChat}
+        editingText={this.state.editingText}
+        setEditingText={this.setEditingText}
+        submitEditingText={this.submitEditingText}
+        loadMore={this.loadMore}
+        back={routerStore.goToChatsRecent}
+        leave={this.leave}
+        invite={this.invite}
+        callVoiceConference={this.callVoiceConference}
+        callVideoConference={this.callVideoConference}
+      />
+    );
+  }
 
   me = this.context.uc.me();
 
