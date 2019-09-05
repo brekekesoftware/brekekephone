@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { computed, observable } from 'mobx';
 import shortid from 'shortid';
 
 import AsyncStorage from '../shared/AsyncStorage';
@@ -14,12 +14,15 @@ const compareField = (p1, p2, field) => {
   const v2 = p2[field];
   return !v1 || !v2 || v1 === v2;
 };
-const compareProfile = (p1, p2) =>
-  p1.pbxUsername && // Must have pbxUsername
-  compareField(p1, p2, 'pbxUsername') &&
-  compareField(p1, p2, 'pbxTenant') &&
-  compareField(p1, p2, 'pbxHostname') &&
-  compareField(p1, p2, 'pbxPort');
+const compareProfile = (p1, p2) => {
+  return (
+    p1.pbxUsername && // Must have pbxUsername
+    compareField(p1, p2, 'pbxUsername') &&
+    compareField(p1, p2, 'pbxTenant') &&
+    compareField(p1, p2, 'pbxHostname') &&
+    compareField(p1, p2, 'pbxPort')
+  );
+};
 
 class AuthStore extends BaseStore {
   // 'stopped'
@@ -59,7 +62,7 @@ class AuthStore extends BaseStore {
   // ucPathname
   // accessToken
   @observable profile = null;
-  @action signin = id => {
+  signin = id => {
     const p = this.getProfile(id);
     if (!p) {
       return false;
@@ -69,7 +72,7 @@ class AuthStore extends BaseStore {
       toast.error('The profile password is empty');
       return true;
     }
-    this.profile = p;
+    this.set('profile', p);
     routerStore.goToAuth();
     resetBadgeNumber();
     return true;
@@ -101,26 +104,26 @@ class AuthStore extends BaseStore {
   findProfile = _p => {
     return this.allProfiles.find(p => compareProfile(p, _p));
   };
-  @action createProfile = _p => {
+  createProfile = _p => {
     this.allProfiles.push(_p);
     this.saveProfilesToLocalStorage();
   };
-  @action updateProfile = _p => {
+  updateProfile = _p => {
     const p = this.getProfile(_p.id);
     if (!p) {
       return;
     }
     Object.assign(p, _p);
-    this.allProfiles = [...this.allProfiles];
+    this.set('allProfiles', [...this.allProfiles]);
     this.saveProfilesToLocalStorage();
   };
-  @action removeProfile = id => {
+  removeProfile = id => {
     prompt('Remove profile', 'Do you want to remove this profile?', () => {
       this._removeProfile(id);
     });
   };
-  @action _removeProfile = id => {
-    this.allProfiles = this.allProfiles.filter(p => p.id !== id);
+  _removeProfile = id => {
+    this.set('allProfiles', this.allProfiles.filter(p => p.id !== id));
     this.saveProfilesToLocalStorage();
   };
 

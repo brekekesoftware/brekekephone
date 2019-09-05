@@ -252,7 +252,7 @@ class ApiProvider extends React.Component {
         },
       });
 
-      authStore.userExtensionProperties = extProps;
+      authStore.set('userExtensionProperties', extProps);
     };
 
     if (phoneTypeCorrect && hasPhoneId) {

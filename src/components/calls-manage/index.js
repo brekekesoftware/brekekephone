@@ -4,6 +4,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import PageCalling from '../../components-Incoming/PageCalling';
+import callStore from '../../mobx/callStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 import LoudSpeaker from './LoudSpeaker';
@@ -14,14 +15,10 @@ import LoudSpeaker from './LoudSpeaker';
     runningIds: getter.runningCalls.idsByOrder(state),
     runningById: getter.runningCalls.detailMapById(state),
     parkingIds: getter.parkingCalls.idsByOrder(state),
-    selectedId: getter.callsManaging.selectedId(state),
   }),
   action => emit => ({
     updateCall(call) {
       emit(action.runningCalls.update(call));
-    },
-    selectCall(call) {
-      emit(action.callsManaging.setSelectedId(call.id));
     },
   }),
 )
@@ -44,7 +41,7 @@ class View extends React.Component {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
 
       if (activeCall) {
-        this.props.selectCall(activeCall);
+        callStore.set('selectedId', activeCall);
       }
     } else if (props.parkingIds && props.parkingIds.length !== 0) {
     } else {
@@ -62,16 +59,14 @@ class View extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    let runids = nextProps.runningIds;
-    const nextSelectedId = nextProps.selectedId;
-
+  componentDidUpdate() {
+    let runids = this.props.runningIds;
+    const nextSelectedId = callStore.selectedId;
     if (runids && runids.length !== 0) {
       const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
-
       if (!nextSelectedId || isSelectedIdInactive) {
-        const call = this.findNewestCallByRunids_s(runids, nextProps);
-        this.props.selectCall(call);
+        const call = this.findNewestCallByRunids_s(runids, this.props);
+        callStore.set('selectedId', call);
       }
     } else {
       this._checkCreatingSessionAndRoute();
@@ -134,13 +129,13 @@ class View extends React.Component {
   render() {
     return (
       <PageCalling
-        selectedId={this.props.selectedId}
+        selectedId={callStore.selectedId}
         runningIds={this.props.runningIds}
         runningById={this.props.runningById}
         parkingIds={this.props.parkingIds}
         browseHistory={routerStore.goToCallsRecent}
         create={routerStore.goToCallsCreate}
-        select={this.props.selectCall}
+        select={callStore.setFn('selectedId')}
         hangup={this.hangup}
         answer={this.answer}
         hold={this.hold}
@@ -163,7 +158,7 @@ class View extends React.Component {
     LoudSpeaker.open(true);
 
     this.props.updateCall({
-      id: this.props.selectedId,
+      id: callStore.selectedId,
       loudspeaker: true,
     });
   };
@@ -172,7 +167,7 @@ class View extends React.Component {
     LoudSpeaker.open(false);
 
     this.props.updateCall({
-      id: this.props.selectedId,
+      id: callStore.selectedId,
       loudspeaker: false,
     });
   };
@@ -180,19 +175,19 @@ class View extends React.Component {
   hangup = () => {
     const { sip } = this.context;
 
-    sip.hangupSession(this.props.selectedId);
+    sip.hangupSession(callStore.selectedId);
   };
 
   answer = () => {
     const { sip } = this.context;
 
-    sip.answerSession(this.props.selectedId);
+    sip.answerSession(callStore.selectedId);
   };
 
   hold = () => {
     const { pbx } = this.context;
 
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onHoldSuccess, this.onHoldFailure);
@@ -200,7 +195,7 @@ class View extends React.Component {
 
   onHoldSuccess = () => {
     this.props.updateCall({
-      id: this.props.selectedId,
+      id: callStore.selectedId,
       holding: true,
     });
   };
@@ -213,7 +208,7 @@ class View extends React.Component {
   unhold = () => {
     const { pbx } = this.context;
 
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
     pbx
       .unholdTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onUnholdSuccess, this.onUnholdFailure);
@@ -221,7 +216,7 @@ class View extends React.Component {
 
   onUnholdSuccess = () => {
     this.props.updateCall({
-      id: this.props.selectedId,
+      id: callStore.selectedId,
       holding: false,
     });
   };
@@ -234,7 +229,7 @@ class View extends React.Component {
   startRecording = () => {
     const { pbx } = this.context;
 
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
     pbx
       .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStartRecordingSuccess, this.onStartRecordingFailure);
@@ -242,7 +237,7 @@ class View extends React.Component {
 
   onStartRecordingSuccess = () => {
     this.props.updateCall({
-      id: this.props.selectedId,
+      id: callStore.selectedId,
       recording: true,
     });
   };
@@ -255,7 +250,7 @@ class View extends React.Component {
   stopRecording = () => {
     const { pbx } = this.context;
 
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
     pbx
       .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStopRecordingSuccess, this.onStopRecordingFailure);
@@ -263,7 +258,7 @@ class View extends React.Component {
 
   onStopRecordingSuccess = () => {
     this.props.updateCall({
-      id: this.props.selectedId,
+      id: callStore.selectedId,
       recording: false,
     });
   };
@@ -274,7 +269,7 @@ class View extends React.Component {
   };
 
   transfer = () => {
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
 
     if (call.transfering) {
       routerStore.goToCallTransferAttend(call.id);
@@ -284,7 +279,7 @@ class View extends React.Component {
   };
 
   dtmf = () => {
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
     routerStore.goToCallKeypad(call.id);
   };
 
@@ -295,20 +290,20 @@ class View extends React.Component {
   };
 
   park = () => {
-    const call = this.props.runningById[this.props.selectedId];
+    const call = this.props.runningById[callStore.selectedId];
     routerStore.goToCallPark(call.id);
   };
 
   enableVideo = () => {
     const { sip } = this.context;
 
-    sip.enableVideo(this.props.selectedId);
+    sip.enableVideo(callStore.selectedId);
   };
 
   disableVideo = () => {
     const { sip } = this.context;
 
-    sip.disableVideo(this.props.selectedId);
+    sip.disableVideo(callStore.selectedId);
   };
 }
 
