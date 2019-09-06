@@ -8,40 +8,31 @@ export class CallStore extends BaseStore {
   @observable selectedId = '';
 
   // id
-  // type
-  //   'outgoing'
-  //   'incoming'
-  // status
-  //   'connected'
-  //   'not_connected'
+  // incoming
+  // answered
   // partyNumber
+  // partyName
   // createdAt
-  @observable recentCalls = [];
+  @observable recents = [];
 
   // id
-  // type
-  //   'outgoing'
-  //   'incoming'
-  // status
-  //   'ringing'
-  //   'answered'
-  //   'holding'
-  // isRecording
-  // isTransferring
-  // partyUCUserId
-  // partyPBXUserId
-  // partyPBXTenant
+  // incoming
+  // answered
+  // holding
+  // recording
+  // transferring
+  // partyNumber
+  // partyName
+  // partyPBXUserId <- pbxTalkerId
+  // partyPBXTenant <- pbxTenant
   // createdAt
-  // voice{}
-  //   muted = false
-  //   streamObject
-  // video{} = null when voice call
-  //   sessionId
-  //   localMuted = false
-  //   remoteMuted = false
-  //   remoteStreamURL
-  //   remoteStreamObject
-  @observable runningCalls = [];
+  // voiceStreamObject
+  // videoSessionId
+  // localVideoEnabled
+  // remoteVideoStreamURL
+  // remoteVideoStreamObject
+  // remoteVideoEnabled
+  @observable runnings = [];
 
   @observable isLoudSpeakerOn = false; // TODO get and watch it from RN loud speaker
   initLoudSpeaker = async () => {
