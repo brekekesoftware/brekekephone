@@ -1,7 +1,5 @@
 import './AppWeb.scss';
 
-import { action, observable } from 'mobx';
-import { observer } from 'mobx-react';
 import React from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
@@ -13,16 +11,19 @@ import imgLogoAndroid from './assets/logo_android.png';
 import imgLogoApple from './assets/logo_apple.png';
 import imgLogoWeb from './assets/web_browser.png';
 
-@observer
 class AppWeb extends React.Component {
-  @observable useWebVersion = !isIOS && !isAndroid;
-  @action enableWebVersion = e => {
+  state = {
+    useWebVersion: !isIOS && !isAndroid,
+  };
+  enableWebVersion = e => {
     e.preventDefault();
-    this.useWebVersion = true;
+    this.setState({
+      useWebVersion: true,
+    });
   };
 
   render() {
-    if (this.useWebVersion) {
+    if (this.state.useWebVersion) {
       return <App />;
     }
 
@@ -30,7 +31,6 @@ class AppWeb extends React.Component {
     const appUrl = isIOS
       ? `brekekeapp://open${q}`
       : `intent://open${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`;
-
     return (
       <div className="AppWeb">
         <div class="AppWeb-Image">
@@ -47,22 +47,18 @@ class AppWeb extends React.Component {
         <div />
         <a href={appUrl}>
           <div class="AppWeb-Btn app">
-            <img src={imgLogoApple} alt="Brekeke Phone" />
-            <h4>Open IOS App</h4>
+            <img
+              src={isIOS ? imgLogoApple : imgLogoAndroid}
+              alt="Brekeke Phone"
+            />
+            <h4>Open in app</h4>
           </div>
         </a>
         <div />
-        <a href={appUrl}>
-          <div class="AppWeb-Btn app">
-            <img src={imgLogoAndroid} alt="Brekeke Phone" />
-            <h4>Open Android App</h4>
-          </div>
-        </a>
-        <div />
-        <a href="./" onClick={this.enableWebVersion}>
+        <a href="." onClick={this.enableWebVersion}>
           <div class="AppWeb-Btn web">
             <img src={imgLogoWeb} alt="Brekeke Phone" />
-            <h4>Open Web Directly</h4>
+            <h4>Open in browser</h4>
           </div>
         </a>
       </div>

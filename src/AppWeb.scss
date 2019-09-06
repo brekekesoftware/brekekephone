@@ -8,7 +8,7 @@
     margin-top: 2em;
     border-radius: 0.2em;
     &.app {
-      border: 0.1em solid;
+      border: 1px solid black;
       background-color: black;
       color: white;
       width: 13.5em;
@@ -16,7 +16,7 @@
       align-items: center;
     }
     &.web {
-      border: 0.1em solid;
+      border: 1px solid white;
       background-color: white;
       color: black;
       width: 13.5em;
