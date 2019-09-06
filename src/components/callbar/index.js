@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
-import LoudSpeaker from '../../components/calls-manage/LoudSpeaker';
 import authStore from '../../mobx/authStore';
 import routerStore from '../../mobx/routerStore';
+import LoudSpeaker from '../../shared/LoudSpeaker';
 import toast from '../../shared/Toast';
 import UI from './ui';
 

@@ -16,6 +16,8 @@ const allowedToCreateProps = [
 const validateCreatingCall = call => pickProps(call, allowedToCreateProps);
 
 const allowedToUpdateProps = [
+  'id',
+  'createdAt',
   'incoming',
   'answered',
   'holding',

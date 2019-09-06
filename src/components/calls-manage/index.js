@@ -6,8 +6,8 @@ import { createModelView } from 'redux-model';
 import PageCalling from '../../components-Incoming/PageCalling';
 import callStore from '../../mobx/callStore';
 import routerStore from '../../mobx/routerStore';
+import LoudSpeaker from '../../shared/LoudSpeaker';
 import toast from '../../shared/Toast';
-import LoudSpeaker from './LoudSpeaker';
 
 @observer
 @createModelView(
