@@ -11,8 +11,9 @@ class CallStore extends BaseStore {
   //	'answered'
   // partyNumber
   // created
-  //@observable recentCalls = [];
+  @observable recentCalls = [];
 
+  // videoSessionId = null when voicecall
   // id
   // status:
   //	'incoming'
@@ -21,12 +22,18 @@ class CallStore extends BaseStore {
   // partyName
   // partyNumber
   // recording
-  // localVideoEnabled
   // loudspeaker
   // pbxTenant
   // pbxTalkerId
-  //
-  // @observable runningCalls = [];
+  // transfering
+  // =======
+  // localVideoEnabled
+  // voiceStreamObject
+  // remoteVideoStreamURL
+  // remoteVideoStreamObject
+  // remoteVideoEnabled
+  // createdAt
+  @observable runningCalls = [];
 }
 
 export default new CallStore();
