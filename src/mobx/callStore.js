@@ -35,28 +35,23 @@ export class CallStore extends BaseStore {
   // remoteVideoEnabled
   @observable runnings = [];
 
-  @observable isLoudSpeakerOn = false; // TODO get and watch it from RN loud speaker
-  initLoudSpeaker = async () => {
-    if (Platform.OS === 'web') {
-      return;
+  @observable isLoudSpeakerOn = false;
+  initLoudSpeaker = () => {
+    if (Platform.OS !== 'web') {
+      LoudSpeaker.open(false);
     }
-    const data = await LoudSpeaker.about();
-    console.error(data); // TODO
-    this.set('isLoudSpeakerOn', data);
   };
   enableLoudSpeaker = () => {
-    if (Platform.OS === 'web') {
-      return;
+    if (Platform.OS !== 'web') {
+      LoudSpeaker.open(true);
+      this.set('isLoudSpeakerOn', true);
     }
-    LoudSpeaker.open(true);
-    this.set('isLoudSpeakerOn', true);
   };
   disableLoudSpeaker = () => {
-    if (Platform.OS === 'web') {
-      return;
+    if (Platform.OS !== 'web') {
+      LoudSpeaker.open(false);
+      this.set('isLoudSpeakerOn', false);
     }
-    LoudSpeaker.open(false);
-    this.set('isLoudSpeakerOn', false);
   };
 }
 
