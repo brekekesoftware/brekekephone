@@ -21,6 +21,7 @@ export class CallStore extends BaseStore {
   // holding
   // recording
   // transferring
+  // parking <- from parkingCalls TODO fix all references
   // partyNumber
   // partyName
   // partyPBXUserId <- pbxTalkerId
