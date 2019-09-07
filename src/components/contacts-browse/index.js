@@ -1,5 +1,5 @@
-import immutable from 'immutable';
 import debounce from 'lodash/debounce';
+import set from 'lodash/set';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -78,11 +78,8 @@ class View extends React.Component {
   };
 
   editContact = id => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.editing`, true),
-      ),
-    );
+    set(this.state, `contactById.${id}.editing`, true);
+    this.setState(this.state);
   };
 
   saveContact = id => {
@@ -100,27 +97,18 @@ class View extends React.Component {
 
     const { pbx } = this.context;
 
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.loading`, true),
-      ),
-    );
+    set(this.state, `contactById.${id}.loading`, true);
+    this.setState(this.state);
 
     const onSuccess = () => {
-      this.setState(
-        immutable.on(this.state)(
-          immutable.vset(`contactById.${id}.loading`, false),
-          immutable.vset(`contactById.${id}.editing`, false),
-        ),
-      );
+      set(this.state, `contactById.${id}.loading`, false);
+      set(this.state, `contactById.${id}.editing`, false);
+      this.setState(this.state);
     };
 
     const onFailure = err => {
-      this.setState(
-        immutable.on(this.state)(
-          immutable.vset(`contactById.${id}.loading`, false),
-        ),
-      );
+      set(this.state, `contactById.${id}.loading`, false);
+      this.setState(this.state);
 
       console.error(err);
       Toast.error('Failed to save the contact');
@@ -130,79 +118,58 @@ class View extends React.Component {
   };
 
   setContactFirstName = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.firstName`, val),
-        immutable.vset(
-          `contactById.${id}.name`,
-          val + ' ' + this.state.contactById[id].lastName,
-        ),
-      ),
+    set(this.state, `contactById.${id}.firstName`, val);
+    set(
+      this.state,
+      `contactById.${id}.name`,
+      val + ' ' + this.state.contactById[id].lastName,
     );
+    this.setState(this.state);
   };
 
   setContactLastName = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.lastName`, val),
-        immutable.vset(
-          `contactById.${id}.name`,
-          this.state.contactById[id].firstName + ' ' + val,
-        ),
-      ),
+    set(this.state, `contactById.${id}.lastName`, val);
+    set(
+      this.state,
+      `contactById.${id}.name`,
+      this.state.contactById[id].firstName + ' ' + val,
     );
+    this.setState(this.state);
   };
 
   setContactJob = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(immutable.vset(`contactById.${id}.job`, val)),
-    );
+    set(this.state, `contactById.${id}.job`, val);
+    this.setState(this.state);
   };
 
   setContactCompany = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.company`, val),
-      ),
-    );
+    set(this.state, `contactById.${id}.company`, val);
+    this.setState(this.state);
   };
 
   setContactAddress = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.address`, val),
-      ),
-    );
+    set(this.state, `contactById.${id}.address`, val);
+    this.setState(this.state);
   };
 
   setContactWorkNumber = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.workNumber`, val),
-      ),
-    );
+    set(this.state, `contactById.${id}.workNumber`, val);
+    this.setState(this.state);
   };
 
   setContactCellNumber = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.cellNumber`, val),
-      ),
-    );
+    set(this.state, `contactById.${id}.cellNumber`, val);
+    this.setState(this.state);
   };
 
   setContactHomeNumber = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(
-        immutable.vset(`contactById.${id}.homeNumber`, val),
-      ),
-    );
+    set(this.state, `contactById.${id}.homeNumber`, val);
+    this.setState(this.state);
   };
 
   setContactEmail = (id, val) => {
-    this.setState(
-      immutable.on(this.state)(immutable.vset(`contactById.${id}.email`, val)),
-    );
+    set(this.state, `contactById.${id}.email`, val);
+    this.setState(this.state);
   };
 
   loadContacts = debounce(() => {

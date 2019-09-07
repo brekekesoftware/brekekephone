@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
@@ -19,17 +18,6 @@ import pbx from './pbx';
 import sip from './sip';
 import uc from './uc';
 
-@observer
-@createModelView(
-  getter => state => ({
-    //
-  }),
-  action => emit => ({
-    createRecentCall(call) {
-      emit(action.recentCalls.create(call));
-    },
-  }),
-)
 @observer
 class ApiProvider extends React.Component {
   static childContextTypes = {
@@ -349,13 +337,12 @@ class ApiProvider extends React.Component {
 
   onSIPSessionStopped = id => {
     const call = callStore.getRunningCall(id);
-    this.props.createRecentCall({
+    authStore.pushRecentCall({
       id: createId(),
       incoming: call.incoming,
       answered: call.answered,
       partyName: call.partyName,
       partyNumber: call.partyNumber,
-      profile: authStore.profile.id,
       created: Date.now(),
     });
     callStore.removeRunning(call.id);

@@ -1,44 +1,25 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
 import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
+import Toast from '../../shared/Toast';
 
-@observer
-@createModelView(
-  getter => state => ({
-    callIds: getter.recentCalls.idsMapByProfile(state)[
-      (authStore.profile || {}).id
-    ],
-    callById: getter.recentCalls.detailMapById(state),
-  }),
-  action => d => ({
-    removeCall(id) {
-      d(action.recentCalls.remove(id));
-    },
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
 
-  static defaultProps = {
-    callIds: [],
-    callById: {},
-  };
-
   render() {
     return (
       <PageRecents
         resolveCall={this.resolveCall}
-        removeCall={this.props.removeCall}
+        removeCall={authStore.removeRecentCall}
         callBack={this.callBack}
         gotoCallsManage={routerStore.goToCallsManage}
         gotoCallsCreate={routerStore.goToCallsCreate}
@@ -51,17 +32,18 @@ class View extends React.Component {
     );
   }
 
-  resolveCall = id => this.props.callById[id];
-
+  resolveCall = id => {
+    return authStore.profile.recentCalls?.find(c => c.id === id);
+  };
   callBack = id => {
-    const { sip } = this.context;
-
-    const { callById } = this.props;
-
-    const call = callById[id] || {};
-    const number = call.partyNumber;
-    sip.createSession(number);
-    routerStore.goToCallsManage();
+    const number = authStore.profile.recentCalls?.find(c => c.id === id)
+      ?.partyNumber;
+    if (number) {
+      this.context.sip.createSession(number);
+      routerStore.goToCallsManage();
+    } else {
+      Toast.error('Could not find number from store to call');
+    }
   };
 
   resolveUser = id => {
@@ -72,18 +54,14 @@ class View extends React.Component {
     };
   };
 
-  isMatchUser = id => {
-    if (!id) {
-      return false;
-    }
-    const { callById } = this.props;
-    const callUser = callById[id];
-    if (callUser.partyNumber.includes(contactStore.searchText)) {
-      return callUser.id;
+  isMatchUser = call => {
+    if (call.partyNumber.includes(contactStore.searchText)) {
+      return call.id;
     }
   };
 
-  getMatchUserIds = () => this.props.callIds.filter(this.isMatchUser);
+  getMatchUserIds = () =>
+    authStore.profile.recentCalls.filter(this.isMatchUser).map(c => c.id);
 }
 
 export default View;

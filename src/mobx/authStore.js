@@ -35,7 +35,7 @@ class AuthStore extends BaseStore {
   @observable ucState = 'stopped';
   @observable ucLoginFromAnotherPlace = false;
   @computed get pbxShouldAuth() {
-    return !(!this.profile || this.pbxState !== 'stopped');
+    return !(!this.signedInId || this.pbxState !== 'stopped');
   }
   @computed get sipShouldAuth() {
     return !(this.pbxState !== 'success' || this.sipState !== 'stopped');
@@ -62,6 +62,13 @@ class AuthStore extends BaseStore {
   // ucPort
   // ucPathname
   // accessToken
+  // recentCalls?[]
+  //    id
+  //    incoming
+  //    answered
+  //    partyName
+  //    partyNumber
+  //    created
   @observable profiles = [];
   loadProfilesFromLocalStorage = async () => {
     let arr = await AsyncStorage.getItem('authStore.profiles');
@@ -105,6 +112,18 @@ class AuthStore extends BaseStore {
   @action _removeProfile = id => {
     this.profiles = this.profiles.filter(p => p.id !== id);
     this.saveProfilesToLocalStorage();
+  };
+  pushRecentCall = call => {
+    this.upsert({
+      id: this.signedInId,
+      recentCalls: [...(this.profile?.recentCalls || []), call],
+    });
+  };
+  removeRecentCall = id => {
+    this.upsert({
+      id: this.signedInId,
+      recentCalls: this.profile?.recentCalls?.filter(c => c.id === id),
+    });
   };
   //
   @computed get _profilesMap() {

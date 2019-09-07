@@ -11,14 +11,6 @@ export class CallStore extends BaseStore {
   // id
   // incoming
   // answered
-  // partyNumber
-  // partyName
-  // created
-  @observable recents = [];
-
-  // id
-  // incoming
-  // answered
   // holding
   // recording
   // transferring
