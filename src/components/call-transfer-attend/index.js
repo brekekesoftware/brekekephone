@@ -1,24 +1,13 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import TransferAttend from '../../components-Transfer/TransferAttend';
+import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 
-@observer
-@createModelView(
-  getter => (state, props) => ({
-    call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-  }),
-  action => emit => ({
-    updateCall(call) {
-      emit(action.runningCalls.update(call));
-    },
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
@@ -29,7 +18,7 @@ class View extends React.Component {
   render() {
     return (
       <TransferAttend
-        call={this.props.call}
+        call={callStore.getRunningCall(this.props.match.params.call)}
         back={routerStore.goToCallsManage}
         join={this.join}
         stop={this.stop}
@@ -56,18 +45,16 @@ class View extends React.Component {
 
   join = () => {
     const { pbx } = this.context;
+    const call = callStore.getRunningCall(this.props.match.params.call);
 
     pbx
-      .joinTalkerTransfer(
-        this.props.call.pbxTenant,
-        this.props.call.pbxTalkerId,
-      )
+      .joinTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
       .then(this.onJoinSuccess, this.onJoinFailure);
   };
 
   onJoinSuccess = () => {
-    this.props.updateCall({
-      id: this.props.call.id,
+    callStore.upsertRunning({
+      id: this.props.match.params.call,
       transfering: false,
     });
 
@@ -76,23 +63,20 @@ class View extends React.Component {
 
   onJoinFailure = err => {
     console.error(err);
-    toast.error('Failed to join the transfer');
+    Toast.error('Failed to join the transfer');
   };
 
   stop = () => {
     const { pbx } = this.context;
-
+    const call = callStore.getRunningCall(this.props.match.params.call);
     pbx
-      .stopTalkerTransfer(
-        this.props.call.pbxTenant,
-        this.props.call.pbxTalkerId,
-      )
+      .stopTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStopSuccess, this.onStopFailure);
   };
 
   onStopSuccess = () => {
-    this.props.updateCall({
-      id: this.props.call.id,
+    callStore.upsertRunning({
+      id: this.props.match.params.call,
       transfering: false,
     });
 
@@ -101,7 +85,7 @@ class View extends React.Component {
 
   onStopFailure = err => {
     console.error(err);
-    toast.error('Failed to stop the transfer');
+    Toast.error('Failed to stop the transfer');
   };
 }
 

@@ -1,40 +1,18 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
+import callStore from '../../mobx/callStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
-@observer
-@createModelView(
-  getter => (state, props) => {
-    const callId = props.match.params.call;
-    const call = getter.runningCalls.detailMapById(state)[callId];
-    const profile = authStore.profile;
-    const parks = profile ? profile.parks : [];
-
-    return {
-      call,
-      parks,
-    };
-  },
-  action => emit => ({
-    //
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
   };
-
-  static defaultProps = {
-    parks: [],
-  };
-
   state = {
     selectedPark: null,
   };
@@ -42,8 +20,8 @@ class View extends React.Component {
   render() {
     return (
       <UI
-        call={this.props.call}
-        parks={this.props.parks}
+        call={callStore.getRunningCall(this.props.match.params.call)}
+        parks={authStore.profile?.parks || []}
         selectedPark={this.state.selectedPark}
         selectPark={this.selectPark}
         park={this.park}
@@ -62,13 +40,13 @@ class View extends React.Component {
     const { selectedPark } = this.state;
 
     if (!selectedPark) {
-      toast.error('No selected park');
+      Toast.error('No selected park');
       return;
     }
 
     const { pbx } = this.context;
 
-    const { call } = this.props;
+    const call = callStore.getRunningCall(this.props.match.params.call);
 
     const tenant = call.pbxTenant;
     const talkerId = call.pbxTalkerId;
@@ -83,7 +61,7 @@ class View extends React.Component {
   };
 
   onParkFailure = err => {
-    toast.error('Failed to park the call');
+    Toast.error('Failed to park the call');
     console.error(err);
   };
 }

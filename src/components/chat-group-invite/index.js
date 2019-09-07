@@ -5,7 +5,7 @@ import React from 'react';
 import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -55,7 +55,7 @@ class View extends React.Component {
     const members = Object.keys(selectedBuddy);
 
     if (!members.length) {
-      toast.error('No buddy selectedBuddy');
+      Toast.error('No buddy selectedBuddy');
       return;
     }
 
@@ -68,7 +68,7 @@ class View extends React.Component {
 
   onInviteFailure = err => {
     console.error(err);
-    toast.error(err.message || 'Failed with unknown error');
+    Toast.error(err.message || 'Failed with unknown error');
   };
 
   back = () => {

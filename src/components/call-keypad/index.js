@@ -1,20 +1,11 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
+import callStore from '../../mobx/callStore';
 import routerStore from '../../mobx/routerStore';
 import UI from './ui';
 
-@observer
-@createModelView(
-  getter => (state, props) => ({
-    call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-  }),
-  action => emit => ({
-    //
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
@@ -24,7 +15,7 @@ class View extends React.Component {
   render() {
     return (
       <UI
-        call={this.props.call}
+        call={callStore.getRunningCall(this.props.match.params.call)}
         back={routerStore.goToCallsManage}
         sendKey={this.sendKey}
       />
@@ -34,7 +25,7 @@ class View extends React.Component {
   sendKey = key => {
     const { sip } = this.context;
 
-    sip.sendDTMF(key, this.props.call.id);
+    sip.sendDTMF(key, this.props.match.params.call);
   };
 }
 

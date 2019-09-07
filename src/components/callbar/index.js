@@ -1,29 +1,22 @@
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
+import callStore from '../../mobx/callStore';
 import routerStore from '../../mobx/routerStore';
+import arrToMap from '../../shared/arrToMap';
 import LoudSpeaker from '../../shared/LoudSpeaker';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
-@createModelView(
-  getter => state => ({
-    chatsEnabled: (authStore.profile || {}).ucEnabled,
-    runningIds: getter.runningCalls.idsByOrder(state),
-    runningById: getter.runningCalls.detailMapById(state),
-  }),
-  action => emit => ({
-    updateCall(call) {
-      emit(action.runningCalls.update(call));
-    },
-  }),
-)
-@observer
 class View extends React.Component {
+  @computed get callById() {
+    return arrToMap(callStore.runnings, 'id', c => c);
+  }
+
   state = {
     activecallid: null,
     activecall: null,
@@ -38,15 +31,15 @@ class View extends React.Component {
     return (
       <UI
         activecallid={this.state.activecallid}
-        chatsEnabled={this.props.chatsEnabled}
+        chatsEnabled={authStore.profile?.ucEnabled}
         pressCallsManage={routerStore.goToCallsManage}
         pressCallsCreate={routerStore.goToCallsCreate}
         pressSettings={routerStore.goToSettings}
         pressUsers={routerStore.goToUsersBrowse}
         pressChats={routerStore.goToChatsRecent}
         pressBooks={routerStore.goToPhonebooksBrowse}
-        runningIds={this.props.runningIds}
-        runningById={this.props.runningById}
+        runningIds={callStore.runnings.map(c => c.id)}
+        runningById={this.callById}
         hangup={this.hangup}
         hold={this.hold}
         unhold={this.unhold}
@@ -61,7 +54,7 @@ class View extends React.Component {
     const activecallid = this.state.activecallid;
     LoudSpeaker.open(true);
 
-    this.props.updateCall({
+    callStore.upsertRunning({
       id: activecallid,
       loudspeaker: true,
     });
@@ -71,7 +64,7 @@ class View extends React.Component {
     const activecallid = this.state.activecallid;
     LoudSpeaker.open(false);
 
-    this.props.updateCall({
+    callStore.upsertRunning({
       id: activecallid,
       loudspeaker: false,
     });
@@ -88,7 +81,7 @@ class View extends React.Component {
     const { pbx } = this.context;
 
     const activecallid = this.state.activecallid;
-    const call = this.props.runningById[activecallid];
+    const call = this.callById[activecallid];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onHoldSuccess, this.onHoldFailure);
@@ -97,7 +90,7 @@ class View extends React.Component {
   onHoldSuccess = () => {
     const activecallid = this.state.activecallid;
 
-    this.props.updateCall({
+    callStore.upsertRunning({
       id: activecallid,
       holding: true,
     });
@@ -105,7 +98,7 @@ class View extends React.Component {
 
   onHoldFailure = err => {
     console.error(err);
-    toast.error('Failed to hold the call');
+    Toast.error('Failed to hold the call');
   };
 
   unhold = () => {
@@ -113,7 +106,7 @@ class View extends React.Component {
 
     const { pbx } = this.context;
 
-    const call = this.props.runningById[activecallid];
+    const call = this.callById[activecallid];
     pbx
       .unholdTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onUnholdSuccess, this.onUnholdFailure);
@@ -122,7 +115,7 @@ class View extends React.Component {
   onUnholdSuccess = () => {
     const activecallid = this.state.activecallid;
 
-    this.props.updateCall({
+    callStore.upsertRunning({
       id: activecallid,
       holding: false,
     });
@@ -132,7 +125,7 @@ class View extends React.Component {
     const activecallid = this.state.activecallid;
     console.error('onUnholdFailure activecallid=' + activecallid);
     console.error(err);
-    toast.error('Failed to unhold the call');
+    Toast.error('Failed to unhold the call');
   };
 
   findActiveCallByRunids_s(runids, props) {
@@ -144,7 +137,7 @@ class View extends React.Component {
 
     for (let i = 0; i < runids.length; i++) {
       const runid = runids[i];
-      const call = props.runningById[runid];
+      const call = this.callById[runid];
       const isActiveCall = call.answered === true;
 
       if (isActiveCall === true) {

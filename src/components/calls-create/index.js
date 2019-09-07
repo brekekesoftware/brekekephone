@@ -1,22 +1,13 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import PagePhoneCall from '../../components-Phone/PagePhoneCall';
+import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 
-@observer
-@createModelView(
-  getter => state => ({
-    parkingIds: getter.parkingCalls.idsByOrder(state),
-  }),
-  action => emit => ({
-    //
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
@@ -44,7 +35,7 @@ class View extends React.Component {
         recent={routerStore.goToCallsRecent}
         callVoice={this.callVoice}
         callVideo={this.callVideo}
-        parkingIds={this.props.parkingIds}
+        parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         onPress={this.onPress}
         showNum={this.state.target}
       />
@@ -119,7 +110,7 @@ class View extends React.Component {
     const { target, video } = this.state;
 
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 
@@ -134,7 +125,7 @@ class View extends React.Component {
 
   call = (target, bVideoEnabled) => {
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 

@@ -16,7 +16,6 @@ import routerStore from '../../mobx/routerStore';
       (authStore.profile || {}).id
     ],
     callById: getter.recentCalls.detailMapById(state),
-    // parkingIds: getter.parkingCalls.idsByOrder(state),
   }),
   action => d => ({
     removeCall(id) {
@@ -36,11 +35,6 @@ class View extends React.Component {
   };
 
   render() {
-    console.warn('sf', callStore.recents);
-    console.warn('sf', this.props.callIds);
-    console.warn('sf', this.getMatchUserIds());
-    console.warn('proops', this.props);
-
     return (
       <PageRecents
         resolveCall={this.resolveCall}
@@ -48,7 +42,7 @@ class View extends React.Component {
         callBack={this.callBack}
         gotoCallsManage={routerStore.goToCallsManage}
         gotoCallsCreate={routerStore.goToCallsCreate}
-        parkingIds={this.props.parkingIds}
+        parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         resolveUser={this.resolveUser}
         searchText={contactStore.searchText}
         setSearchText={contactStore.setFn('searchText')}
@@ -57,7 +51,7 @@ class View extends React.Component {
     );
   }
 
-  resolveCall = id => {};
+  resolveCall = id => this.props.callById[id];
 
   callBack = id => {
     const { sip } = this.context;

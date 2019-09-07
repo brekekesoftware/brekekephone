@@ -5,7 +5,7 @@ import React from 'react';
 
 import authStore from '../../mobx/authStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -34,7 +34,7 @@ class View extends React.Component {
       })
       .catch(err => {
         authStore.set('pbxState', 'failure');
-        toast.error(`Failed to login to pbx, err: ${err?.message}`);
+        Toast.error(`Failed to login to pbx, err: ${err?.message}`);
       });
   };
   autoAuth = () => {

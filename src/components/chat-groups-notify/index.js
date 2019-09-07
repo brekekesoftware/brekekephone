@@ -4,7 +4,7 @@ import React from 'react';
 
 import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -44,7 +44,7 @@ class View extends React.Component {
   };
   onRejectFailure = err => {
     console.error(err);
-    toast.error('Failed to reject the group chat');
+    Toast.error('Failed to reject the group chat');
   };
 
   accept = group => {
@@ -52,7 +52,7 @@ class View extends React.Component {
   };
   onAcceptFailure = err => {
     console.error(err);
-    toast.error('Failed to accept the group chat');
+    Toast.error('Failed to accept the group chat');
   };
 }
 

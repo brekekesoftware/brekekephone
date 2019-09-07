@@ -4,7 +4,7 @@ import createId from 'shortid';
 
 import authStore from '../../mobx/authStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import { validateHostname, validatePort } from '../../shared/validator';
 import UI from './ui';
 
@@ -142,7 +142,7 @@ class View extends React.Component {
     }
 
     if (/[^a-z0-9_]/.test(addingPark)) {
-      toast.error('Invalid park number');
+      Toast.error('Invalid park number');
       return;
     }
 
@@ -167,17 +167,17 @@ class View extends React.Component {
 
   save = () => {
     if (this.missingRequired()) {
-      toast.error('Missing required fields');
+      Toast.error('Missing required fields');
       return;
     }
 
     if (!validateHostname(this.state.pbxHostname)) {
-      toast.error('Host name is invalid');
+      Toast.error('Host name is invalid');
       return;
     }
 
     if (!validatePort(this.state.pbxPort)) {
-      toast.error('Port is invalid');
+      Toast.error('Port is invalid');
       return;
     }
 

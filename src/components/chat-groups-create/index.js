@@ -6,7 +6,7 @@ import CreateGroup from '../../components-Chats/Create-Group';
 import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 
 @observer
 class View extends React.Component {
@@ -61,7 +61,7 @@ class View extends React.Component {
     const { name, members } = this.state;
 
     if (!name.trim()) {
-      toast.error('Group name is required');
+      Toast.error('Group name is required');
       return;
     }
 
@@ -79,7 +79,7 @@ class View extends React.Component {
 
   onCreateFailure = err => {
     console.error(err);
-    toast.error('Failed to create the group chat');
+    Toast.error('Failed to create the group chat');
   };
 }
 
