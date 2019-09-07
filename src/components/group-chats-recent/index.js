@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createModelView } from 'redux-model';
 
+import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import stripTags from '../../shared/stripTags';
@@ -60,7 +61,6 @@ const numberOfChatsPerLoad = 50;
   getter => (state, props) => {
     const duplicatedMap = {};
     return {
-      group: getter.chatGroups.detailMapById(state)[props.match.params.group],
       chatIds: (
         getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
       ).filter(id => {
@@ -80,12 +80,6 @@ const numberOfChatsPerLoad = 50;
     prependChats(group, chats) {
       emit(action.groupChats.prependByGroup(group, chats));
     },
-    removeChatGroup(id) {
-      emit(action.chatGroups.remove(id));
-    },
-    clearChatsByGroup(group) {
-      emit(action.groupChats.clearByGroup(group));
-    },
   }),
 )
 @observer
@@ -96,10 +90,6 @@ class View extends React.Component {
   };
 
   static defaultProps = {
-    group: {
-      members: [],
-    },
-
     chatIds: [],
     chatById: {},
   };
@@ -120,11 +110,12 @@ class View extends React.Component {
   }
 
   render() {
+    const g = chatStore.getGroup(this.props.match.params.group);
     return (
       <UI
         hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
-        groupName={this.props.group.name}
-        members={this.props.group.members}
+        groupName={g.name}
+        members={g.members || []}
         resolveMember={this.resolveBuddy}
         loadingRecent={this.state.loadingRecent}
         loadingMore={this.state.loadingMore}
@@ -180,8 +171,6 @@ class View extends React.Component {
   };
 
   loadRecent() {
-    const { group } = this.props;
-
     const { uc } = this.context;
 
     const max = numberOfChatsPerLoad;
@@ -190,7 +179,7 @@ class View extends React.Component {
       max,
     };
 
-    uc.getGroupChats(group.id, query)
+    uc.getGroupChats(this.props.match.params.group, query)
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
 
@@ -200,10 +189,7 @@ class View extends React.Component {
   }
 
   onLoadRecentSuccess = chats => {
-    const { group, appendChats } = this.props;
-
-    appendChats(group.id, chats.reverse());
-
+    this.props.appendChats(this.props.match.params.group, chats.reverse());
     this.setState({
       loadingRecent: false,
     });
@@ -220,7 +206,7 @@ class View extends React.Component {
   };
 
   loadMore = () => {
-    const { group, chatIds, chatById } = this.props;
+    const { chatIds, chatById } = this.props;
 
     const { uc } = this.context;
 
@@ -234,7 +220,7 @@ class View extends React.Component {
       end,
     };
 
-    uc.getGroupChats(group.id, query)
+    uc.getGroupChats(this.props.match.params.group, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
 
@@ -244,10 +230,8 @@ class View extends React.Component {
   };
 
   onLoadMoreSuccess = chats => {
-    const { group, prependChats } = this.props;
-
-    prependChats(group.id, chats.reverse());
-
+    const { prependChats } = this.props;
+    prependChats(this.props.match.params.group, chats.reverse());
     this.setState({
       loadingMore: false,
     });
@@ -306,20 +290,14 @@ class View extends React.Component {
   };
 
   leave = () => {
-    const { group } = this.props;
-
     const { uc } = this.context;
-
-    uc.leaveChatGroup(group.id)
+    uc.leaveChatGroup(this.props.match.params.group)
       .then(this.onLeaveSuccess)
       .catch(this.onLeaveFailure);
   };
 
   onLeaveSuccess = () => {
-    const { group } = this.props;
-
-    this.props.removeChatGroup(group.id);
-    this.props.clearChatsByGroup(group.id);
+    chatStore.removeGroup(this.props.match.params.group);
     routerStore.goToChatsRecent();
   };
 
@@ -329,8 +307,7 @@ class View extends React.Component {
   };
 
   invite = () => {
-    const groupId = this.props.group.id;
-    routerStore.goToChatGroupInvite(groupId);
+    routerStore.goToChatGroupInvite(this.props.match.params.group);
   };
 
   call = (target, bVideoEnabled) => {
@@ -342,26 +319,18 @@ class View extends React.Component {
   };
 
   callVoiceConference = () => {
-    const { group } = this.props;
-
-    let target = group.id;
-
+    let target = this.props.match.params.group;
     if (!target.startsWith('uc')) {
-      target = 'uc' + group.id;
+      target = 'uc' + this.props.match.params.group;
     }
-
     this.call(target, false);
   };
 
   callVideoConference = () => {
-    const { group } = this.props;
-
-    let target = group.id;
-
+    let target = this.props.match.params.group;
     if (!target.startsWith('uc')) {
-      target = 'uc' + group.id;
+      target = 'uc' + this.props.match.params.group;
     }
-
     this.call(target, true);
   };
 }

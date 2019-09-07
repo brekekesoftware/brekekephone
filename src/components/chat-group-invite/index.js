@@ -1,32 +1,17 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
+import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
-@createModelView(
-  getter => (state, props) => ({
-    group: getter.chatGroups.detailMapById(state)[props.match.params.group],
-  }),
-  action => emit => ({
-    //
-  }),
-)
-@observer
 class View extends React.Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    group: {
-      members: [],
-    },
   };
 
   state = {
@@ -36,7 +21,7 @@ class View extends React.Component {
   render() {
     return (
       <UI
-        groupName={this.props.group.name}
+        groupName={chatStore.getGroup(this.props.match.params.group).name}
         buddies={contactStore.ucUsers.map(u => u.id).filter(this.isNotMember)}
         selectedBuddy={this.state.selectedBuddy}
         resolveBuddy={this.resolveBuddy}
@@ -47,7 +32,8 @@ class View extends React.Component {
     );
   }
 
-  isNotMember = buddy => !this.props.group.members.includes(buddy);
+  isNotMember = buddy =>
+    !chatStore.getGroup(this.props.match.params.group).members?.includes(buddy);
   resolveBuddy = buddy => contactStore.getUCUser(buddy);
 
   toggleBuddy = buddy => {
@@ -64,8 +50,6 @@ class View extends React.Component {
   };
 
   invite = () => {
-    const { group } = this.props;
-
     const { selectedBuddy } = this.state;
 
     const members = Object.keys(selectedBuddy);
@@ -77,7 +61,7 @@ class View extends React.Component {
 
     const { uc } = this.context;
 
-    uc.inviteChatGroupMembers(group.id, members)
+    uc.inviteChatGroupMembers(this.props.match.params.group, members)
       .catch(this.onInviteFailure)
       .then(this.back);
   };
@@ -88,7 +72,7 @@ class View extends React.Component {
   };
 
   back = () => {
-    routerStore.goToChatGroupsRecent(this.props.group.id);
+    routerStore.goToChatGroupsRecent(this.props.match.params.group);
   };
 }
 
