@@ -1,6 +1,7 @@
 import { computed, observable } from 'mobx';
 import shortid from 'shortid';
 
+import arrToMap from '../shared/arrToMap';
 import AsyncStorage from '../shared/AsyncStorage';
 import { getUrlParams } from '../shared/deeplink';
 import prompt from '../shared/prompt';
@@ -61,8 +62,63 @@ class AuthStore extends BaseStore {
   // ucPort
   // ucPathname
   // accessToken
-  @observable profile = null;
-  signin = id => {
+  @observable profiles = [];
+  @computed get profilesMap() {
+    return arrToMap(this.profiles, 'id', p => p);
+  }
+  loadProfilesFromLocalStorage = async () => {
+    let arr = await AsyncStorage.getItem('authStore.profiles');
+    if (arr && !Array.isArray(arr)) {
+      try {
+        arr = JSON.parse(arr);
+      } catch (err) {
+        arr = null;
+      }
+    }
+    this.set('profiles', arr || []);
+  };
+  saveProfilesToLocalStorage = async (arr = this.profiles) => {
+    try {
+      await AsyncStorage.setItem('authStore.profiles', JSON.stringify(arr));
+    } catch (err) {
+      console.error('authStore.set.profiles:', err);
+      toast.error('Can not save profiles to local storage');
+    }
+  };
+  getProfile = id => {
+    return this.profilesMap[id];
+  };
+  findProfile = _p => {
+    return this.profiles.find(p => compareProfile(p, _p));
+  };
+  createProfile = _p => {
+    this.set('profiles', [...this.profile, _p]);
+    this.saveProfilesToLocalStorage();
+  };
+  updateProfile = _p => {
+    const p = this.getProfile(_p.id);
+    if (!p) {
+      return;
+    }
+    Object.assign(p, _p);
+    this.set('profiles', [...this.profiles]);
+    this.saveProfilesToLocalStorage();
+  };
+  removeProfile = id => {
+    prompt('Remove profile', 'Do you want to remove this profile?', () => {
+      this._removeProfile(id);
+    });
+  };
+  _removeProfile = id => {
+    this.set('profiles', this.profiles.filter(p => p.id !== id));
+    this.saveProfilesToLocalStorage();
+  };
+
+  @observable signedInId = null;
+  @computed get profile() {
+    return this.getProfile(this.signedInId);
+  }
+  signIn = id => {
     const p = this.getProfile(id);
     if (!p) {
       return false;
@@ -72,59 +128,10 @@ class AuthStore extends BaseStore {
       toast.error('The profile password is empty');
       return true;
     }
-    this.set('profile', p);
+    this.set('signedInId', p.id);
     routerStore.goToAuth();
     resetBadgeNumber();
     return true;
-  };
-
-  @observable allProfiles = [];
-  loadProfilesFromLocalStorage = async () => {
-    let arr = await AsyncStorage.getItem('authStore.allProfiles');
-    if (arr && !Array.isArray(arr)) {
-      try {
-        arr = JSON.parse(arr);
-      } catch (err) {
-        arr = null;
-      }
-    }
-    this.set('allProfiles', arr || []);
-  };
-  saveProfilesToLocalStorage = async (arr = this.allProfiles) => {
-    try {
-      await AsyncStorage.setItem('authStore.allProfiles', JSON.stringify(arr));
-    } catch (err) {
-      console.error('authStore.set.allProfiles:', err);
-      toast.error('Can not save profiles to local storage');
-    }
-  };
-  getProfile = id => {
-    return this.allProfiles.find(p => p.id === id);
-  };
-  findProfile = _p => {
-    return this.allProfiles.find(p => compareProfile(p, _p));
-  };
-  createProfile = _p => {
-    this.allProfiles.push(_p);
-    this.saveProfilesToLocalStorage();
-  };
-  updateProfile = _p => {
-    const p = this.getProfile(_p.id);
-    if (!p) {
-      return;
-    }
-    Object.assign(p, _p);
-    this.set('allProfiles', [...this.allProfiles]);
-    this.saveProfilesToLocalStorage();
-  };
-  removeProfile = id => {
-    prompt('Remove profile', 'Do you want to remove this profile?', () => {
-      this._removeProfile(id);
-    });
-  };
-  _removeProfile = id => {
-    this.set('allProfiles', this.allProfiles.filter(p => p.id !== id));
-    this.saveProfilesToLocalStorage();
   };
 
   handleUrlParams = async () => {
@@ -156,7 +163,7 @@ class AuthStore extends BaseStore {
       }
       this.updateProfile(p);
       if (p.pbxPassword || p.accessToken) {
-        this.signin(p.id);
+        this.signIn(p.id);
       } else {
         routerStore.goToProfileUpdate(p.id);
       }
@@ -181,7 +188,7 @@ class AuthStore extends BaseStore {
     //
     this.createProfile(newP);
     if (newP.accessToken) {
-      this.signin(newP.id);
+      this.signIn(newP.id);
     } else {
       routerStore.goToProfileUpdate(newP.id);
     }
@@ -196,7 +203,7 @@ class AuthStore extends BaseStore {
   };
   signinByNotification = n => {
     const p = this.findProfileFromNotification(n);
-    return p && this.signin(p);
+    return p && this.signIn(p.id);
   };
 
   // id

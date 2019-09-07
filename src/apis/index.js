@@ -8,6 +8,7 @@ import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
 import callStore from '../mobx/callStore';
+import chatStore from '../mobx/chatStore';
 import contactStore from '../mobx/contactStore';
 import routerStore from '../mobx/routerStore';
 import Alert from '../shared/Alert';
@@ -77,9 +78,6 @@ import uc from './uc';
     },
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
-    },
-    appendBuddyChat(buddy, chat) {
-      emit(action.buddyChats.appendByBuddy(buddy, [chat]));
     },
     appendGroupChat(group, chat) {
       emit(action.groupChats.appendByGroup(group, [chat]));
@@ -253,7 +251,7 @@ class ApiProvider extends React.Component {
         },
       });
 
-      authStore.set('userExtensionProperties', extProps);
+      authStore.userExtensionProperties = extProps;
     };
 
     if (phoneTypeCorrect && hasPhoneId) {
@@ -423,7 +421,7 @@ class ApiProvider extends React.Component {
   onSIPSessionStopped = id => {
     const call = this.props.runningCallById[id];
 
-    callStore.set('recents', {
+    this.props.createRecentCall({
       id: createId(),
       incoming: call.incoming,
       answered: call.answered,
@@ -432,7 +430,6 @@ class ApiProvider extends React.Component {
       profile: authStore.profile.id,
       created: Date.now(),
     });
-    console.warn('recent', callStore.recents);
 
     this.props.removeRunningCall(call.id);
     this.props.removeRunningVideoByCallid(call.id);
@@ -451,7 +448,7 @@ class ApiProvider extends React.Component {
   };
 
   onBuddyChatCreated = chat => {
-    this.props.appendBuddyChat(chat.creator, chat);
+    chatStore.pushMessages(chat.creator, chat);
   };
 
   onGroupChatCreated = chat => {

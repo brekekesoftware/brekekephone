@@ -3,6 +3,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import ChatsHome from '../../components-Chats/Chats-Home';
+import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
@@ -11,7 +12,6 @@ const isGroupJointed = group => group.jointed;
 @observer
 @createModelView(
   getter => state => ({
-    buddyIds: getter.buddyChats.buddyIdsByRecent(state),
     groupIds: getter.chatGroups
       .idsByOrder(state)
       .filter(id => isGroupJointed(getter.chatGroups.detailMapById(state)[id])),
@@ -24,7 +24,6 @@ const isGroupJointed = group => group.jointed;
 @observer
 class View extends React.Component {
   static defaultProps = {
-    buddyIds: [],
     groupIds: [],
     groupById: {},
   };
@@ -66,7 +65,8 @@ class View extends React.Component {
     return userId.includes(txt) || ucUserName.includes(txt);
   };
 
-  getMatchIds = () => this.props.buddyIds.filter(this.isMatchUser);
+  getMatchIds = () =>
+    chatStore.threadIdsOrderedByRecent.filter(this.isMatchUser);
 }
 
 export default View;

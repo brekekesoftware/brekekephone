@@ -41,7 +41,7 @@ class PageSignin extends React.Component {
   }
 
   render() {
-    const l = authStore.allProfiles.length;
+    const l = authStore.profiles.length;
     return (
       <LinearGradient
         style={s._PageSignin}
@@ -59,7 +59,7 @@ class PageSignin extends React.Component {
           <FlatList
             horizontal
             style={s._PageSignin_ListServers}
-            data={authStore.allProfiles}
+            data={authStore.profiles}
             renderItem={({ item, index }) => (
               <SigninProfileItem last={index === l - 1} {...item} />
             )}
