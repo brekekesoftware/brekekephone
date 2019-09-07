@@ -6,6 +6,7 @@ import React from 'react';
 import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
+import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
@@ -17,12 +18,6 @@ import UI from './ui';
     //
   }),
   action => emit => ({
-    appendBuddyChats(buddy, chats) {
-      emit(action.buddyChats.appendByBuddy(buddy, chats));
-    },
-    reinitBuddyChats() {
-      emit(action.buddyChats.clearAll());
-    },
     clearAllGroupChats() {
       emit(action.groupChats.clearAll());
     },
@@ -48,7 +43,6 @@ class View extends React.Component {
     this.context.uc.off('connection-stopped', this.onConnectionStopped);
     this.context.uc.disconnect();
     authStore.set('ucState', 'stopped');
-    this.props.reinitBuddyChats();
     this.props.clearAllGroupChats();
     this.props.clearAllChatGroups();
   }
@@ -101,7 +95,7 @@ class View extends React.Component {
 
   onLoadUnreadChatsSuccess = chats => {
     chats.forEach(chat => {
-      this.props.appendBuddyChats(chat.creator, [chat]);
+      chatStore.pushMessages(chat.creator, [chat]);
     });
   };
 

@@ -7,6 +7,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
+import chatStore from '../mobx/chatStore';
 import contactStore from '../mobx/contactStore';
 import routerStore from '../mobx/routerStore';
 import Alert from '../shared/Alert';
@@ -76,9 +77,6 @@ import uc from './uc';
     },
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
-    },
-    appendBuddyChat(buddy, chat) {
-      emit(action.buddyChats.appendByBuddy(buddy, [chat]));
     },
     appendGroupChat(group, chat) {
       emit(action.groupChats.appendByGroup(group, [chat]));
@@ -252,7 +250,7 @@ class ApiProvider extends React.Component {
         },
       });
 
-      authStore.set('userExtensionProperties', extProps);
+      authStore.userExtensionProperties = extProps;
     };
 
     if (phoneTypeCorrect && hasPhoneId) {
@@ -449,7 +447,7 @@ class ApiProvider extends React.Component {
   };
 
   onBuddyChatCreated = chat => {
-    this.props.appendBuddyChat(chat.creator, chat);
+    chatStore.pushMessages(chat.creator, chat);
   };
 
   onGroupChatCreated = chat => {

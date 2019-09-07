@@ -59,7 +59,7 @@ class View extends React.Component {
       console.error('Invalid PBX user config');
       return;
     }
-    authStore.set('userExtensionProperties', pbxUserConfig);
+    authStore.userExtensionProperties = pbxUserConfig;
     //
     const language = pbxUserConfig.language;
     void language;

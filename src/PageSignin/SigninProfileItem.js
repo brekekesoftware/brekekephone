@@ -92,7 +92,7 @@ const s = registerStyle(v => ({
       '.update': {
         backgroundColor: v.brekekeShade2,
       },
-      '.signin': {
+      '.signIn': {
         width: '50%',
         backgroundColor: v.brekekeDarkGreen,
       },
@@ -170,8 +170,8 @@ const SigninProfileItem = p => (
       </Button>
       <Button
         SigninProfileItem_Btn
-        signin
-        onPress={() => authStore.signin(p.id)}
+        signIn
+        onPress={() => authStore.signIn(p.id)}
       >
         <Text SigninProfileItem_BtnTxt>SIGN IN</Text>
       </Button>
