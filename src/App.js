@@ -6,7 +6,7 @@ import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
 import { history } from './mobx/routerStore';
-import PageSignIn from './PageSignIn/PageSignIn';
+import PageSignIn from './PageSignin/PageSignIn';
 import nativeBaseTheme from './shared/nativeBaseTheme';
 
 const App = () => (
