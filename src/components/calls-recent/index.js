@@ -5,6 +5,7 @@ import { createModelView } from 'redux-model';
 
 import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
+import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
@@ -15,7 +16,6 @@ import routerStore from '../../mobx/routerStore';
       (authStore.profile || {}).id
     ],
     callById: getter.recentCalls.detailMapById(state),
-    parkingIds: getter.parkingCalls.idsByOrder(state),
   }),
   action => d => ({
     removeCall(id) {
@@ -42,7 +42,7 @@ class View extends React.Component {
         callBack={this.callBack}
         gotoCallsManage={routerStore.goToCallsManage}
         gotoCallsCreate={routerStore.goToCallsCreate}
-        parkingIds={this.props.parkingIds}
+        parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         resolveUser={this.resolveUser}
         searchText={contactStore.searchText}
         setSearchText={contactStore.setFn('searchText')}

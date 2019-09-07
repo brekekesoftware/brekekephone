@@ -1,6 +1,7 @@
-import { observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { Platform } from 'react-native';
 
+import arrToMap from '../shared/arrToMap';
 import LoudSpeaker from '../shared/LoudSpeaker';
 import BaseStore from './BaseStore';
 
@@ -12,7 +13,7 @@ export class CallStore extends BaseStore {
   // answered
   // partyNumber
   // partyName
-  // createdAt
+  // created
   @observable recents = [];
 
   // id
@@ -21,11 +22,11 @@ export class CallStore extends BaseStore {
   // holding
   // recording
   // transferring
-  // parking <- from parkingCalls TODO fix all references
+  // parking => new TODO need to implement and test
   // partyNumber
   // partyName
-  // partyPBXUserId <- pbxTalkerId
-  // partyPBXTenant <- pbxTenant
+  // pbxTalkerId => TODO rename to partyPBXUserId
+  // pbxTenant => TODO rename to partyPBXTenant
   // createdAt
   // voiceStreamObject
   // videoSessionId
@@ -34,6 +35,25 @@ export class CallStore extends BaseStore {
   // remoteVideoStreamObject
   // remoteVideoEnabled
   @observable runnings = [];
+  upsertRunning = _c => {
+    const c = this.getRunningCall(_c.id);
+    if (c) {
+      Object.assign(c, _c);
+      this.set('runnings', [...this.runnings]);
+    } else {
+      this.set('runnings', [...this.runnings, _c]);
+    }
+  };
+  @action removeRunning = id => {
+    this.runnings = this.runnings.filter(c => c.id !== id);
+  };
+  //
+  @computed get _runningsMap() {
+    return arrToMap(this.runnings, 'id', c => c);
+  }
+  getRunningCall = id => {
+    return this._runningsMap[id];
+  };
 
   @observable isLoudSpeakerOn = false;
   initLoudSpeaker = () => {

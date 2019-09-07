@@ -21,12 +21,12 @@ class ChatStore extends BaseStore {
       k => this.messagesByThreadId[k].created,
     );
   }
-  pushMessages = (threadId, newMessages) => {
-    if (!Array.isArray(newMessages)) {
-      newMessages = [newMessages];
+  pushMessages = (threadId, _m) => {
+    if (!Array.isArray(_m)) {
+      _m = [_m];
     }
     const messages = this.messagesByThreadId[threadId] || [];
-    messages.push(...newMessages);
+    messages.push(..._m);
     this.set(
       `messagesByThreadId.${threadId}`,
       sortBy(uniq(messages, 'id'), 'created'),
@@ -49,8 +49,8 @@ class ChatStore extends BaseStore {
     const f = this.filesMap[_f.id];
     this.set(`filesMap.${_f.id}`, f ? Object.assign(f, _f) : _f);
   };
-  @action removeFile = fileId => {
-    delete this.filesMap[fileId];
+  @action removeFile = id => {
+    delete this.filesMap[id];
   };
 
   // id
@@ -68,16 +68,16 @@ class ChatStore extends BaseStore {
     }
     this.set('groups', [...this.groups]);
   };
-  @action removeGroup = groupId => {
-    delete this.messagesByThreadId[groupId];
-    this.groups = this.groups.filter(g => g.id !== groupId);
+  @action removeGroup = id => {
+    delete this.messagesByThreadId[id];
+    this.groups = this.groups.filter(g => g.id !== id);
   };
   //
   @computed get _groupsMap() {
     return arrToMap(this.groups, 'id', g => g);
   }
-  getGroup = groupId => {
-    return this._groupsMap[groupId];
+  getGroup = id => {
+    return this._groupsMap[id];
   };
 }
 

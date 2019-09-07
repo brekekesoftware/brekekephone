@@ -7,6 +7,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
+import callStore from '../mobx/callStore';
 import chatStore from '../mobx/chatStore';
 import contactStore from '../mobx/contactStore';
 import routerStore from '../mobx/routerStore';
@@ -44,12 +45,6 @@ import uc from './uc';
     },
     removeRunningVideoByCallid(callid) {
       emit(action.runningVideos.removeByCallid(callid));
-    },
-    createParkingCall(call) {
-      emit(action.parkingCalls.create(call));
-    },
-    removeParkingCall(call) {
-      emit(action.parkingCalls.remove(call));
     },
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
@@ -333,11 +328,16 @@ class ApiProvider extends React.Component {
   };
 
   onPBXParkStarted = park => {
-    this.props.createParkingCall(park);
+    callStore.upsertRunning({
+      id: park,
+      parking: true,
+    });
   };
-
   onPBXParkStopped = park => {
-    this.props.removeParkingCall(park);
+    callStore.upsertRunning({
+      id: park,
+      parking: false,
+    });
   };
 
   onSIPConnectionStarted = () => {

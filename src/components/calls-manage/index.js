@@ -14,7 +14,6 @@ import toast from '../../shared/Toast';
   getter => state => ({
     runningIds: getter.runningCalls.idsByOrder(state),
     runningById: getter.runningCalls.detailMapById(state),
-    parkingIds: getter.parkingCalls.idsByOrder(state),
   }),
   action => emit => ({
     updateCall(call) {
@@ -39,13 +38,18 @@ class View extends React.Component {
 
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
-
       if (activeCall) {
         callStore.set('selectedId', activeCall);
       }
-    } else if (props.parkingIds && props.parkingIds.length !== 0) {
     } else {
-      this._checkCreatingSessionAndRoute();
+      const parkingIds = callStore.runnings
+        .filter(c => c.parking)
+        .map(c => c.id);
+      if (parkingIds.length !== 0) {
+        // ???
+      } else {
+        this._checkCreatingSessionAndRoute();
+      }
     }
   }
 
@@ -132,7 +136,7 @@ class View extends React.Component {
         selectedId={callStore.selectedId}
         runningIds={this.props.runningIds}
         runningById={this.props.runningById}
-        parkingIds={this.props.parkingIds}
+        parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         browseHistory={routerStore.goToCallsRecent}
         create={routerStore.goToCallsCreate}
         select={callStore.setFn('selectedId')}

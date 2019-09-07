@@ -93,7 +93,7 @@ class AuthStore extends BaseStore {
       Object.assign(p, _p);
       this.set('profiles', [...this.profiles]);
     } else {
-      this.set('profiles', [...this.profile, _p]);
+      this.set('profiles', [...this.profiles, _p]);
     }
     this.saveProfilesToLocalStorage();
   };
