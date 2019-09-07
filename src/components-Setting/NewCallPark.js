@@ -4,8 +4,8 @@ import React from 'react';
 
 import Headers from '../components-Home/Header';
 import { TextInput } from '../components-shared/Input';
-import authStore from '../mobx/authStore';
-import routerStore from '../mobx/routerStore';
+import authStore from '../shared/authStore';
+import routerStore from '../shared/routerStore';
 import Toast from '../shared/Toast';
 
 @observer

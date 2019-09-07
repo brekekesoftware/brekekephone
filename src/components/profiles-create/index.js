@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import createId from 'shortid';
 
-import authStore from '../../mobx/authStore';
-import routerStore from '../../mobx/routerStore';
+import authStore from '../../shared/authStore';
+import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
 import { validateHostname, validatePort } from '../../shared/validator';
 import UI from './ui';

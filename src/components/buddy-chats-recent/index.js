@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import ChatsDetail from '../../components-Chats/Chat-Detail';
-import chatStore from '../../mobx/chatStore';
-import contactStore from '../../mobx/contactStore';
-import routerStore from '../../mobx/routerStore';
 import arrToMap from '../../shared/arrToMap';
+import chatStore from '../../shared/chatStore';
+import contactStore from '../../shared/contactStore';
+import pickFile from '../../shared/pickFile';
+import routerStore from '../../shared/routerStore';
+import saveBlob from '../../shared/saveBlob';
 import stripTags from '../../shared/stripTags';
 import Toast from '../../shared/Toast';
-import pickFile from './pickFile';
-import saveBlob from './saveBlob';
 
 const monthName = [
   'Jan',

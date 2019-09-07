@@ -571,8 +571,8 @@
 		9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeExceptionHandler.xcodeproj; path = "../node_modules/react-native-exception-handler/ios/ReactNativeExceptionHandler.xcodeproj"; sourceTree = "<group>"; };
 		9C9164EA22205623000DEF18 /* RNFS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		9C9165C522205A76000DEF18 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = "../node_modules/react-native/Libraries/CameraRoll/RCTCameraRoll.xcodeproj"; sourceTree = "<group>"; };
-		9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../src/components/call-voices/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
-		9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../src/components/call-voices/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
+		9C9E4A7A21C16C2500BF913A /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = "../src/shared/incallmanager_ringback.mp3"; sourceTree = "<group>"; };
+		9C9E4AAB21C16C2600BF913A /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = "../src/shared/incallmanager_ringtone.mp3"; sourceTree = "<group>"; };
 		9CB4D206231FFC3400B39C6A /* RNCAsyncStorage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCAsyncStorage.xcodeproj; path = "../node_modules/@react-native-community/async-storage/ios/RNCAsyncStorage.xcodeproj"; sourceTree = "<group>"; };
 		9CBEF46522FB4510007E3898 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
 		9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDocumentPicker.xcodeproj; path = "../node_modules/react-native-document-picker/ios/RNDocumentPicker.xcodeproj"; sourceTree = "<group>"; };
@@ -1779,7 +1779,6 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)/**",
-					"$(SRCROOT)/../node_modules/react-native-permissions/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
@@ -1792,7 +1791,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
-					"$(SRCROOT)/../node_modules/react-native-permissions/**",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1829,7 +1827,6 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)/**",
-					"$(SRCROOT)/../node_modules/react-native-permissions/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
@@ -1842,7 +1839,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
-					"$(SRCROOT)/../node_modules/react-native-permissions/**",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2004,7 +2000,6 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)/**",
-					"$(SRCROOT)/../node_modules/react-native-permissions/**",
 					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/**",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
@@ -2017,7 +2012,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)/**",
 					"$(SRCROOT)/../node_modules/react-native-webrtc/**",
-					"$(SRCROOT)/../node_modules/react-native-permissions/**",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",

@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import FooterTabs from '../../components-Home/FooterTabs';
-import authStore from '../../mobx/authStore';
-import callStore from '../../mobx/callStore';
-import routerStore from '../../mobx/routerStore';
+import authStore from '../../shared/authStore';
+import callStore from '../../shared/callStore';
+import routerStore from '../../shared/routerStore';
 
 @observer
 class View extends React.Component {

@@ -2,16 +2,15 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
 import createId from 'shortid';
 
-import authStore from '../mobx/authStore';
-import callStore from '../mobx/callStore';
-import chatStore from '../mobx/chatStore';
-import contactStore from '../mobx/contactStore';
-import routerStore from '../mobx/routerStore';
 import Alert from '../shared/Alert';
+import authStore from '../shared/authStore';
+import callStore from '../shared/callStore';
+import chatStore from '../shared/chatStore';
+import contactStore from '../shared/contactStore';
 import { getPushNotificationToken } from '../shared/pushNotification';
+import routerStore from '../shared/routerStore';
 import Toast from '../shared/Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
@@ -35,10 +34,6 @@ class ApiProvider extends React.Component {
   }
 
   componentDidMount() {
-    if (Platform.OS !== 'web') {
-      SplashScreen.hide();
-    }
-
     setApiProvider(this);
     pbx.on('connection-started', this.onPBXConnectionStarted);
     pbx.on('connection-stopped', this.onPBXConnectionStopped);

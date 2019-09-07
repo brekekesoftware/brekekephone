@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../../mobx/callStore';
-import routerStore from '../../mobx/routerStore';
+import callStore from '../../shared/callStore';
+import routerStore from '../../shared/routerStore';
 import UI from './ui';
 
 @observer

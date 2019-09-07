@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { rem } from '../../-/styleguide';
-import authStore from '../../mobx/authStore';
+import authStore from '../../shared/authStore';
 
 const st = StyleSheet.create({
   main: {

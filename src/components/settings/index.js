@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import PageSetting from '../../components-Setting/PageSetting';
-import authStore from '../../mobx/authStore';
-import routerStore from '../../mobx/routerStore';
+import authStore from '../../shared/authStore';
+import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
 
 @observer

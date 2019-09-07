@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import TransferAttend from '../../components-Transfer/TransferAttend';
-import callStore from '../../mobx/callStore';
-import contactStore from '../../mobx/contactStore';
-import routerStore from '../../mobx/routerStore';
+import callStore from '../../shared/callStore';
+import contactStore from '../../shared/contactStore';
+import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
 
 @observer

@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import PageCalling from '../../components-Incoming/PageCalling';
-import callStore from '../../mobx/callStore';
-import routerStore from '../../mobx/routerStore';
 import arrToMap from '../../shared/arrToMap';
+import callStore from '../../shared/callStore';
 import LoudSpeaker from '../../shared/LoudSpeaker';
+import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
 
 @observer

@@ -1,14 +1,14 @@
 import { action, computed, observable } from 'mobx';
 import shortid from 'shortid';
 
-import arrToMap from '../shared/arrToMap';
-import AsyncStorage from '../shared/AsyncStorage';
-import { getUrlParams } from '../shared/deeplink';
-import prompt from '../shared/prompt';
-import { resetBadgeNumber } from '../shared/pushNotification';
-import Toast from '../shared/Toast';
+import arrToMap from './arrToMap';
+import AsyncStorage from './AsyncStorage';
 import BaseStore from './BaseStore';
+import { getUrlParams } from './deeplink';
+import prompt from './prompt';
+import { resetBadgeNumber } from './pushNotification';
 import routerStore from './routerStore';
+import Toast from './Toast';
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field];
@@ -203,6 +203,7 @@ class AuthStore extends BaseStore {
       ucHostname: '',
       ucPort: '',
       accessToken: _wn,
+      recentCalls: [],
     };
     //
     this.upsertProfile(newP);

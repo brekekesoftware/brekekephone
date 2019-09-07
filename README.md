@@ -153,3 +153,6 @@ react-native run-android --deviceId=DEVICE_ID
 - [x] Open update page if the profile is missing any of the required fields when logging in (tested, it only doesnt work if user press back button on android)
 - [ ] Debug and fix JsSIP error `RTCSession.connection.addTrack is not a function`
 - [ ] Splash screen stretched on simulator iPhoneX
+- [ ] Remove react-native-vector-icons and fonts
+- [ ] Consider between react-native-general-actionsheet and react-native-modal-selector
+- [ ] Handle error in saveBlob and pickFile

@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import PageContact from '../../components-Contacts/PageContact';
-import authStore from '../../mobx/authStore';
-import contactStore from '../../mobx/contactStore';
-import routerStore from '../../mobx/routerStore';
+import authStore from '../../shared/authStore';
+import contactStore from '../../shared/contactStore';
+import routerStore from '../../shared/routerStore';
 
 @observer
 class View extends React.Component {

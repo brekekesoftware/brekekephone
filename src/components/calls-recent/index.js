@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import PageRecents from '../../components-Recents/PageRecents';
-import authStore from '../../mobx/authStore';
-import callStore from '../../mobx/callStore';
-import contactStore from '../../mobx/contactStore';
-import routerStore from '../../mobx/routerStore';
+import authStore from '../../shared/authStore';
+import callStore from '../../shared/callStore';
+import contactStore from '../../shared/contactStore';
+import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
 
 @observer

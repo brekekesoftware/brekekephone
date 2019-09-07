@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native';
 import Divider from '../components-shared/Divider';
 import { TextInput } from '../components-shared/Input';
 import SwitchStatus from '../components-shared/Switch';
-import { closureMobxSet } from '../mobx/BaseStore';
+import { closureMobxSet } from '../shared/BaseStore';
 import ButtonNewField from './ButtonNewField';
 import ButtonSave from './ButtonSave';
 import ProfileFormStore from './ProfileFormStore';

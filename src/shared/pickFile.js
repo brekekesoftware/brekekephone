@@ -3,7 +3,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-full-image-picker';
 import ActionSheet from 'react-native-general-actionsheet';
-import createId from 'shortid';
+import shortid from 'shortid';
 
 ActionSheet.useActionSheetIOS = true;
 ImagePicker.AlbumView.autoConvertPath = true;
@@ -17,7 +17,6 @@ const actionSheetOptions = {
     'More...',
     'Cancel',
   ],
-
   destructiveButtonIndex: 4,
   cancelButtonIndex: 4,
 };
@@ -53,58 +52,46 @@ const pickFile = async cb => {
   const i = await new Promise(resolve => {
     ActionSheet.showActionSheetWithOptions(actionSheetOptions, resolve);
   });
-
   const fn = actionSheetHandlers[i];
-
   if (!fn) {
     return;
   }
-
+  //
   let file = null;
-
   try {
     file = await fn();
   } catch (err) {
     if (DocumentPicker.isCancel(err)) {
       return;
     }
-
     console.error(err);
   }
-
-  if (!file) {
+  if (!file?.uri) {
     return;
   }
-
-  const { uri } = file;
-
-  if (!uri) {
-    return;
-  }
-
+  //
   const getName = p =>
     p &&
     p
       .split(/[\\/]/g)
       .pop()
       .replace(/\?.+$/, '');
-  let name = file.fileName || file.filename || file.name || getName(uri);
+  let name = file.fileName || file.filename || file.name || getName(file.uri);
   let size = file.fileSize || file.filesize || file.size || 0;
-
   if (!size) {
     try {
-      const stat = await RNFS.stat(uri);
+      const stat = await RNFS.stat(file.uri);
       name = getName(stat.originalFilepath || stat.path) || name;
       size = stat.size;
     } catch (err) {}
   }
-
+  //
   let ext = name
     .split('.')
     .pop()
     .replace(/\?.+$/, '');
-
   if (Platform.OS === 'ios' && ext === name) {
+    name = shortid();
     switch (file.type) {
       case 'image':
         ext = 'jpg';
@@ -118,19 +105,13 @@ const pickFile = async cb => {
       default:
         break;
     }
-
-    name = createId();
   }
-
+  //
   if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
     name = name + '.' + ext;
   }
-
-  cb({
-    uri,
-    name,
-    size,
-  });
+  //
+  cb({ uri: file.uri, name, size });
 };
 
 export default pickFile;

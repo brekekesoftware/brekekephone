@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import chatStore from '../../mobx/chatStore';
-import contactStore from '../../mobx/contactStore';
+import chatStore from '../../shared/chatStore';
+import contactStore from '../../shared/contactStore';
 import Toast from '../../shared/Toast';
 import UI from './ui';
 

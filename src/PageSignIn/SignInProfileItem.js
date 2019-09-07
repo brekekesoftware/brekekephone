@@ -10,9 +10,9 @@ import { Button, Switch, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import authStore from '../mobx/authStore';
-import routerStore from '../mobx/routerStore';
+import authStore from '../shared/authStore';
 import registerStyle from '../shared/registerStyle';
+import routerStore from '../shared/routerStore';
 import SvgIcon from '../shared/SvgIcon';
 
 const s = registerStyle(v => ({

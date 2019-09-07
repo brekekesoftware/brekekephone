@@ -36,7 +36,7 @@ import SIPAuth from '../components/sip-auth';
 import Tabbar from '../components/tabbar';
 import UCAuth from '../components/uc-auth';
 import UsersBrowse from '../components/users-browse';
-import routerStore, { history } from '../mobx/routerStore';
+import routerStore, { history } from '../shared/routerStore';
 
 // Wait and push history to fix some strange issues with router
 const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);

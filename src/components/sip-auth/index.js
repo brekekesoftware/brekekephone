@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import getApiProvider from '../../apis/getApiProvider';
-import authStore from '../../mobx/authStore';
-import routerStore from '../../mobx/routerStore';
+import authStore from '../../shared/authStore';
+import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
 import UI from './ui';
 
