@@ -25,30 +25,6 @@ import uc from './uc';
     runningCallById: getter.runningCalls.detailMapById(state),
   }),
   action => emit => ({
-    onPBXConnectionStopped() {
-      // authStore.set('pbxState', 'stopped');
-    },
-    onPBXConnectionTimeout() {
-      authStore.set('pbxState', 'failure');
-    },
-    //
-    onSIPConnectionStarted() {
-      authStore.set('sipState', 'success');
-    },
-    onSIPConnectionStopped() {
-      // authStore.set('sipState', 'stopped');
-    },
-    onSIPConnectionTimeout() {
-      authStore.set('sipState', 'failure');
-    },
-    //
-    onUCConnectionStopped() {
-      // authStore.set('ucState', 'stopped');
-    },
-    onUCConnectionTimeout() {
-      authStore.set('ucState', 'failure');
-    },
-    //
     createRunningCall(call) {
       emit(action.runningCalls.create(call));
     },
@@ -78,27 +54,6 @@ import uc from './uc';
     },
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
-    },
-    appendGroupChat(group, chat) {
-      emit(action.groupChats.appendByGroup(group, [chat]));
-    },
-    createChatGroup(group) {
-      emit(action.chatGroups.create(group));
-    },
-    updateChatGroup(group) {
-      emit(action.chatGroups.update(group));
-    },
-    removeChatGroup(id) {
-      emit(action.chatGroups.remove(id));
-    },
-    clearChatsByGroup(group) {
-      emit(action.groupChats.clearByGroup(group));
-    },
-    createChatFile(file) {
-      emit(action.chatFiles.create(file));
-    },
-    updateChatFile(file) {
-      emit(action.chatFiles.update(file));
     },
   }),
 )
@@ -224,7 +179,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerStore.goToSigninPage();
+      routerStore.goToPageSignIn();
       return null;
     }
   };
@@ -272,7 +227,7 @@ class ApiProvider extends React.Component {
               text: 'Cancel',
 
               onPress: () => {
-                routerStore.goToSigninPage();
+                routerStore.goToPageSignIn();
                 resolve(null);
               },
 
@@ -342,11 +297,11 @@ class ApiProvider extends React.Component {
   };
 
   onPBXConnectionStopped = () => {
-    this.props.onPBXConnectionStopped();
+    // authStore.set('pbxState', 'stopped');
   };
 
   onPBXConnectionTimeout = () => {
-    this.props.onPBXConnectionTimeout();
+    authStore.set('pbxState', 'failure');
   };
 
   loadPBXUsers = async () => {
@@ -387,16 +342,16 @@ class ApiProvider extends React.Component {
   };
 
   onSIPConnectionStarted = () => {
-    this.props.onSIPConnectionStarted();
+    authStore.set('sipState', 'success');
     setTimeout(this.onPBXAndSipStarted, 170);
   };
 
   onSIPConnectionStopped = () => {
-    this.props.onSIPConnectionStopped();
+    // authStore.set('sipState', 'stopped');
   };
 
   onSIPConnectionTimeout = () => {
-    this.props.onSIPConnectionTimeout();
+    authStore.set('sipState', 'failure');
   };
 
   onSIPSessionStarted = call => {
@@ -436,11 +391,11 @@ class ApiProvider extends React.Component {
   };
 
   onUCConnectionStopped = () => {
-    this.props.onUCConnectionStopped();
+    // authStore.set('ucState', 'stopped');
   };
 
   onUCConnectionTimeout = () => {
-    this.props.onUCConnectionTimeout();
+    authStore.set('ucState', 'failure');
   };
 
   onUCUserUpdated = ev => {
@@ -450,34 +405,29 @@ class ApiProvider extends React.Component {
   onBuddyChatCreated = chat => {
     chatStore.pushMessages(chat.creator, chat);
   };
-
   onGroupChatCreated = chat => {
-    this.props.appendGroupChat(chat.group, chat);
+    chat.isGroup = true;
+    chatStore.pushMessages(chat.group, chat);
   };
 
   onChatGroupInvited = group => {
-    this.props.createChatGroup(group);
+    chatStore.upsertGroup(group);
   };
-
   onChatGroupUpdated = group => {
-    this.props.updateChatGroup(group);
+    chatStore.upsertGroup(group);
   };
-
   onChatGroupRevoked = group => {
-    this.props.removeChatGroup(group.id);
-    this.props.clearChatsByGroup(group.id);
+    chatStore.removeGroup(group.id);
   };
 
   onFileReceived = file => {
-    this.props.createChatFile(file);
+    chatStore.upsertFile(file);
   };
-
   onFileProgress = file => {
-    this.props.updateChatFile(file);
+    chatStore.upsertFile(file);
   };
-
   onFileFinished = file => {
-    this.props.updateChatFile(file);
+    chatStore.upsertFile(file);
   };
 
   onSIPVideoSessionCreated = ev => {

@@ -3,7 +3,6 @@ import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import authStore from '../../mobx/authStore';
 import chatStore from '../../mobx/chatStore';
@@ -12,20 +11,6 @@ import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 import UI from './ui';
 
-@observer
-@createModelView(
-  getter => state => ({
-    //
-  }),
-  action => emit => ({
-    clearAllGroupChats() {
-      emit(action.groupChats.clearAll());
-    },
-    clearAllChatGroups() {
-      emit(action.chatGroups.clearAll());
-    },
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
@@ -43,8 +28,6 @@ class View extends React.Component {
     this.context.uc.off('connection-stopped', this.onConnectionStopped);
     this.context.uc.disconnect();
     authStore.set('ucState', 'stopped');
-    this.props.clearAllGroupChats();
-    this.props.clearAllChatGroups();
   }
 
   auth = () => {
@@ -113,7 +96,7 @@ class View extends React.Component {
     return (
       <UI
         failure={authStore.ucState === 'failure'}
-        abort={routerStore.goToSigninPage}
+        abort={routerStore.goToPageSignIn}
         retry={this.auth}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
       />

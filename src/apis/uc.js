@@ -2,13 +2,26 @@ import UCClient from 'brekekejs/lib/ucclient';
 import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
 
-const evCodeMapStatus = {
+const codeMapUserStatus = {
   '0': 'offline',
   '1': 'online',
   '2': 'idle',
   '3': 'busy',
 };
-const getStatusFromCode = code => evCodeMapStatus[code] || evCodeMapStatus['0'];
+const getUserStatusFromCode = code =>
+  codeMapUserStatus[code] || codeMapUserStatus['0'];
+
+const codeMapFileState = {
+  '0': 'waiting',
+  '1': 'waiting',
+  '2': 'started',
+  '3': 'success',
+  '4': 'stopped',
+  '5': 'stopped',
+  '6': 'failure',
+};
+const getFileStateFromCode = code =>
+  codeMapFileState[code] || codeMapFileState['0'];
 
 class UC extends EventEmitter {
   constructor() {
@@ -40,7 +53,7 @@ class UC extends EventEmitter {
       id: ev.user_id,
       name: ev.name,
       avatar: ev.profile_image_url,
-      status: getStatusFromCode(ev.status),
+      status: getUserStatusFromCode(ev.status),
       statusText: ev.display,
     });
   };
@@ -72,12 +85,8 @@ class UC extends EventEmitter {
       name: ev.fileInfo.name,
       size: ev.fileInfo.size,
       incoming: true,
+      state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
-      transferWaiting: ev.fileInfo.status === 0 || ev.fileInfo.status === 1,
-      transferStarted: ev.fileInfo.status === 2,
-      transferSuccess: ev.fileInfo.status === 3,
-      transferStopped: ev.fileInfo.status === 4 || ev.fileInfo.status === 5,
-      transferFailure: ev.fileInfo.status === 6,
     };
 
     this.emit('file-received', file);
@@ -103,12 +112,8 @@ class UC extends EventEmitter {
 
     this.emit('file-progress', {
       id: ev.fileInfo.file_id,
+      state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
-      transferWaiting: ev.fileInfo.status === 0 || ev.fileInfo.status === 1,
-      transferStarted: ev.fileInfo.status === 2,
-      transferSuccess: ev.fileInfo.status === 3,
-      transferStopped: ev.fileInfo.status === 4 || ev.fileInfo.status === 5,
-      transferFailure: ev.fileInfo.status === 6,
     });
   };
 
@@ -117,12 +122,8 @@ class UC extends EventEmitter {
 
     this.emit('file-finished', {
       id: ev.fileInfo.file_id,
+      state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
-      transferWaiting: ev.fileInfo.status === 0 || ev.fileInfo.status === 1,
-      transferStarted: ev.fileInfo.status === 2,
-      transferSuccess: ev.fileInfo.status === 3,
-      transferStopped: ev.fileInfo.status === 4 || ev.fileInfo.status === 5,
-      transferFailure: ev.fileInfo.status === 6,
     });
   };
 
@@ -185,7 +186,7 @@ class UC extends EventEmitter {
       id: profile.user_id,
       name: profile.name,
       avatar: profile.profile_image_url,
-      status: getStatusFromCode(status.status),
+      status: getUserStatusFromCode(status.status),
       statusText: status.display,
     };
   }
@@ -219,7 +220,7 @@ class UC extends EventEmitter {
       id: user.user_id,
       name: user.name,
       avatar: user.profile_image_url,
-      status: getStatusFromCode(user.status),
+      status: getUserStatusFromCode(user.status),
       statusText: user.display,
     }));
   }
@@ -451,12 +452,8 @@ class UC extends EventEmitter {
         id: res.fileInfo.file_id,
         name: res.fileInfo.name,
         size: res.fileInfo.size,
+        state: getFileStateFromCode(res.fileInfo.status),
         transferPercent: res.fileInfo.progress,
-        transferWaiting: res.fileInfo.status === 0 || res.fileInfo.status === 1,
-        transferStarted: res.fileInfo.status === 2,
-        transferSuccess: res.fileInfo.status === 3,
-        transferStopped: res.fileInfo.status === 4 || res.fileInfo.status === 5,
-        transferFailure: res.fileInfo.status === 6,
       },
 
       chat: {

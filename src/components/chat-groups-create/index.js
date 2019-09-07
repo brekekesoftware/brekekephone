@@ -1,24 +1,13 @@
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import CreateGroup from '../../components-Chats/Create-Group';
+import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import toast from '../../shared/Toast';
 
-@observer
-@createModelView(
-  getter => state => ({
-    //
-  }),
-  action => emit => ({
-    createChatGroup(group) {
-      emit(action.chatGroups.create(group));
-    },
-  }),
-)
 @observer
 class View extends React.Component {
   static contextTypes = {
@@ -83,7 +72,7 @@ class View extends React.Component {
   };
 
   onCreateSuccess = group => {
-    this.props.createChatGroup(group);
+    chatStore.upsertGroup(group);
     this.context.uc.joinChatGroup(group.id);
     routerStore.goToChatsRecent();
   };

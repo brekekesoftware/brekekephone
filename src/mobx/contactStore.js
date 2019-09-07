@@ -1,5 +1,6 @@
-import { observable } from 'mobx';
+import { computed, observable } from 'mobx';
 
+import arrToMap from '../shared/arrToMap';
 import BaseStore from './BaseStore';
 
 class ContactStore extends BaseStore {
@@ -15,9 +16,6 @@ class ContactStore extends BaseStore {
   //     'talking'
   //     'holding'
   @observable pbxUsers = [];
-  getPBXUser = id => {
-    return this.pbxUsers.find(u => u.id === id);
-  };
   setTalkerStatus = (userId, talkerId, status) => {
     const user = this.getPBXUser(userId);
     if (!user) {
@@ -41,6 +39,13 @@ class ContactStore extends BaseStore {
     }
     this.set('pbxUsers', [...this.pbxUsers]);
   };
+  //
+  @computed get _pbxUsersMap() {
+    return arrToMap(this.pbxUsers, 'id', u => u);
+  }
+  getPBXUser = id => {
+    return this._pbxUsersMap[id];
+  };
 
   // id
   // name
@@ -52,9 +57,6 @@ class ContactStore extends BaseStore {
   //   'busy'
   // statusText
   @observable ucUsers = [];
-  getUCUser = id => {
-    return this.ucUsers.find(u => u.id === id);
-  };
   updateUCUser = _u => {
     const u = this.getUCUser(_u.id);
     if (!u) {
@@ -62,6 +64,12 @@ class ContactStore extends BaseStore {
     }
     Object.assign(u, _u);
     this.set('ucUsers', [...this.ucUsers]);
+  };
+  @computed get _ucUsersMap() {
+    return arrToMap(this.ucUsers, 'id', u => u);
+  }
+  getUCUser = id => {
+    return this._ucUsersMap[id];
   };
 }
 

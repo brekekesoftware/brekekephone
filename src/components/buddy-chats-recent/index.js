@@ -2,7 +2,6 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import ChatsDetail from '../../components-Chats/Chat-Detail';
 import chatStore from '../../mobx/chatStore';
@@ -62,19 +61,6 @@ const isMiniChat = (chat, prev = {}) =>
 const numberOfChatsPerLoad = 50;
 
 @observer
-@createModelView(
-  getter => (state, props) => {
-    return {
-      fileById: getter.chatFiles.byId(state),
-    };
-  },
-  action => emit => ({
-    createChatFile(file) {
-      emit(action.chatFiles.create(file));
-    },
-  }),
-)
-@observer
 class View extends React.Component {
   @computed get chatIds() {
     return (
@@ -90,10 +76,6 @@ class View extends React.Component {
   }
   static contextTypes = {
     uc: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    fileById: {},
   };
 
   state = {
@@ -133,13 +115,11 @@ class View extends React.Component {
   }
 
   resolveChat = (id, index) => {
-    const { fileById } = this.props;
-
     const chat = this.chatById[id];
     const prev = this.chatById[this.chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
     const created = chat.created && formatTime(chat.created);
-    const file = fileById[chat.file];
+    const file = chatStore.filesMap[chat.file];
     const text = stripTags(chat.text);
 
     if (mini) {
@@ -297,7 +277,7 @@ class View extends React.Component {
   onSendFileSuccess = res => {
     const buddyId = this.props.match.params.buddy;
     chatStore.pushMessages(buddyId, res.chat);
-    this.props.createChatFile(res.file);
+    chatStore.upsertFile(res.file);
   };
   onSendFileFailure = err => {
     toast.error(`Failed to send file, err: ${err?.message}`);

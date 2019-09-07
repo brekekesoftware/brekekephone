@@ -11,28 +11,28 @@ import LinearGradient from '../shared/LinearGradient';
 import registerStyle from '../shared/registerStyle';
 import StatusBar from '../shared/StatusBar';
 import v from '../shared/variables';
-import SigninProfileItem, { NoServer } from './SigninProfileItem';
+import SignInProfileItem, { NoServer } from './SignInProfileItem';
 
 const s = registerStyle(v => ({
-  _PageSignin: {
+  _PageSignIn: {
     flex: 1,
     display: 'flex',
     minHeight: 550,
   },
-  _PageSignin_ListServers: {
+  _PageSignIn_ListServers: {
     height: '70%',
     minHeight: 320,
     marginBottom: 2 * v.padding,
   },
   View: {
-    PageSignin_Spacing: {
+    PageSignIn_Spacing: {
       flex: 1,
     },
   },
 }));
 
 @observer
-class PageSignin extends React.Component {
+class PageSignIn extends React.Component {
   componentDidMount() {
     authStore.handleUrlParams();
   }
@@ -44,7 +44,7 @@ class PageSignin extends React.Component {
     const l = authStore.profiles.length;
     return (
       <LinearGradient
-        style={s._PageSignin}
+        style={s._PageSignIn}
         colors={[v.brekekeGreen, '#2a2a2a']}
       >
         <StatusBar transparent />
@@ -54,14 +54,14 @@ class PageSignin extends React.Component {
           subText={`${l} SERVER${l > 1 ? 'S' : ''} IN TOTAL`}
           onCreateBtnPress={!!l && routerStore.goToProfilesCreate}
         />
-        <View PageSignin_Spacing />
+        <View PageSignIn_Spacing />
         {!!l && (
           <FlatList
             horizontal
-            style={s._PageSignin_ListServers}
+            style={s._PageSignIn_ListServers}
             data={authStore.profiles}
             renderItem={({ item, index }) => (
-              <SigninProfileItem last={index === l - 1} {...item} />
+              <SignInProfileItem last={index === l - 1} {...item} />
             )}
             keyExtractor={item => item.id}
           />
@@ -72,4 +72,4 @@ class PageSignin extends React.Component {
   }
 }
 
-export default PageSignin;
+export default PageSignIn;

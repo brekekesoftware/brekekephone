@@ -22,20 +22,20 @@ const File = p => (
       <Text>{p.name}</Text>
       <Text>{p.size}</Text>
     </View>
-    {p.transferWaiting && (
+    {p.state === 'waiting' && (
       <Button onPress={p.reject}>
         <SvgIcon path={mdiClose} />
       </Button>
     )}
-    {p.incoming && p.transferWaiting && (
+    {p.incoming && p.state === 'waiting' && (
       <Button onPress={p.accept}>
         <SvgIcon path={mdiCheck} />
       </Button>
     )}
-    {p.transferStarted && (
+    {p.state === 'started' && (
       <Button onPress={p.reject}>
         <Progress
-          percent={p.transferPercent}
+          percent={p.state === 'percent'}
           radius={std.iconSize.md}
           borderWidth={StyleSheet.hairlineWidth * 2}
           color={std.color.notice}
@@ -46,9 +46,9 @@ const File = p => (
         </Progress>
       </Button>
     )}
-    {p.transferSuccess && <Text>Success</Text>}
-    {p.transferFailure && <Text>Failed</Text>}
-    {p.transferStopped && <Text>Canceled</Text>}
+    {p.state === 'success' && <Text>Success</Text>}
+    {p.state === 'failure' && <Text>Failed</Text>}
+    {p.state === 'stopped' && <Text>Canceled</Text>}
   </View>
 );
 

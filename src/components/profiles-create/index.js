@@ -54,7 +54,7 @@ class View extends React.Component {
         setUCPort={this.setUCPort}
         removePark={this.removePark}
         save={this.save}
-        back={routerStore.goToSigninPage}
+        back={routerStore.goToPageSignIn}
       />
     );
   }
@@ -196,7 +196,7 @@ class View extends React.Component {
       parks.push(this.state.parks[i].trim());
     }
 
-    authStore.createProfile({
+    authStore.upsertProfile({
       id: createId(),
       pbxHostname: pbxHostname,
       pbxPort: pbxPort,
@@ -211,7 +211,7 @@ class View extends React.Component {
       ucPort: ucPort,
     });
 
-    routerStore.goToSigninPage();
+    routerStore.goToPageSignIn();
   };
 }
 
