@@ -54,12 +54,6 @@ import uc from './uc';
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
     },
-    appendGroupChat(group, chat) {
-      emit(action.groupChats.appendByGroup(group, [chat]));
-    },
-    clearChatsByGroup(group) {
-      emit(action.groupChats.clearByGroup(group));
-    },
     createChatFile(file) {
       emit(action.chatFiles.create(file));
     },
@@ -416,9 +410,9 @@ class ApiProvider extends React.Component {
   onBuddyChatCreated = chat => {
     chatStore.pushMessages(chat.creator, chat);
   };
-
   onGroupChatCreated = chat => {
-    this.props.appendGroupChat(chat.group, chat);
+    chat.isGroup = true;
+    chatStore.pushMessages(chat.group, chat);
   };
 
   onChatGroupInvited = group => {

@@ -1,11 +1,12 @@
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
+import arrToMap from '../../shared/arrToMap';
 import stripTags from '../../shared/stripTags';
 import toast from '../../shared/Toast';
 import UI from './ui';
@@ -57,41 +58,23 @@ const isMiniChat = (chat, prev = {}) =>
 const numberOfChatsPerLoad = 50;
 
 @observer
-@createModelView(
-  getter => (state, props) => {
-    const duplicatedMap = {};
-    return {
-      chatIds: (
-        getter.groupChats.idsMapByGroup(state)[props.match.params.group] || []
-      ).filter(id => {
-        if (duplicatedMap[id]) {
-          return false;
-        }
-        duplicatedMap[id] = true;
-        return true;
-      }),
-      chatById: getter.groupChats.detailMapById(state),
-    };
-  },
-  action => emit => ({
-    appendChats(group, chats) {
-      emit(action.groupChats.appendByGroup(group, chats));
-    },
-    prependChats(group, chats) {
-      emit(action.groupChats.prependByGroup(group, chats));
-    },
-  }),
-)
 @observer
 class View extends React.Component {
+  @computed get chatIds() {
+    return (
+      chatStore.messagesByThreadId[this.props.match.params.group] || []
+    ).map(m => m.id);
+  }
+  @computed get chatById() {
+    return arrToMap(
+      chatStore.messagesByThreadId[this.props.match.params.group] || [],
+      'id',
+      m => m,
+    );
+  }
   static contextTypes = {
     uc: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    chatIds: [],
-    chatById: {},
   };
 
   state = {
@@ -102,9 +85,7 @@ class View extends React.Component {
   };
 
   componentDidMount() {
-    const { chatIds } = this.props;
-
-    const noChat = !chatIds.length;
+    const noChat = !this.chatIds.length;
 
     if (noChat) this.loadRecent();
   }
@@ -113,13 +94,13 @@ class View extends React.Component {
     const g = chatStore.getGroup(this.props.match.params.group);
     return (
       <UI
-        hasMore={this.props.chatIds.length > 0 && !this.state.loadingMore}
+        hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
         groupName={g.name}
         members={g.members || []}
         resolveMember={this.resolveBuddy}
         loadingRecent={this.state.loadingRecent}
         loadingMore={this.state.loadingMore}
-        chatIds={this.props.chatIds}
+        chatIds={this.chatIds}
         resolveChat={this.resolveChat}
         editingText={this.state.editingText}
         setEditingText={this.setEditingText}
@@ -142,10 +123,8 @@ class View extends React.Component {
   };
 
   resolveChat = (id, index) => {
-    const { chatIds, chatById } = this.props;
-
-    const chat = chatById[id];
-    const prev = chatById[chatIds[index - 1]] || {};
+    const chat = this.chatById[id];
+    const prev = this.chatById[this.chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
     const created = formatTime(chat.created);
     const text = stripTags(chat.text);
@@ -189,7 +168,7 @@ class View extends React.Component {
   }
 
   onLoadRecentSuccess = chats => {
-    this.props.appendChats(this.props.match.params.group, chats.reverse());
+    chatStore.pushMessages(this.props.match.params.group, chats.reverse());
     this.setState({
       loadingRecent: false,
     });
@@ -206,11 +185,8 @@ class View extends React.Component {
   };
 
   loadMore = () => {
-    const { chatIds, chatById } = this.props;
-
     const { uc } = this.context;
-
-    const oldestChat = chatById[chatIds[0]] || {};
+    const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = numberOfChatsPerLoad;
     const end = oldestCreated;
@@ -230,8 +206,7 @@ class View extends React.Component {
   };
 
   onLoadMoreSuccess = chats => {
-    const { prependChats } = this.props;
-    prependChats(this.props.match.params.group, chats.reverse());
+    chatStore.pushMessages(this.props.match.params.group, chats.reverse());
     this.setState({
       loadingMore: false,
     });
@@ -277,7 +252,7 @@ class View extends React.Component {
   };
 
   onSubmitEditingTextSuccess = chat => {
-    this.props.appendChats(this.props.group.id, [chat]);
+    chatStore.pushMessages(this.props.group.id, [chat]);
 
     this.setState({
       editingText: '',

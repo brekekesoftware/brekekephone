@@ -9,9 +9,12 @@ class ChatStore extends BaseStore {
   // id
   // text
   // file
+  // isGroup => new TODO consider to keep this? also in apis/index.js
   // created => TODO update to createdAt apis/uc
   // creator => TODO update to ucUserId apis/uc
-  @observable messagesByThreadId = {}; // threadId can be `ucUserId` or `groupId`
+  @observable messagesByThreadId = {};
+  // threadId can be `ucUserId` or `groupId`
+  // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
     return sortBy(
       Object.keys(this.messagesByThreadId),
