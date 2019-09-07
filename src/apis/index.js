@@ -7,6 +7,7 @@ import { createModelView } from 'redux-model';
 import createId from 'shortid';
 
 import authStore from '../mobx/authStore';
+import callStore from '../mobx/callStore';
 import contactStore from '../mobx/contactStore';
 import routerStore from '../mobx/routerStore';
 import Alert from '../shared/Alert';
@@ -422,7 +423,7 @@ class ApiProvider extends React.Component {
   onSIPSessionStopped = id => {
     const call = this.props.runningCallById[id];
 
-    this.props.createRecentCall({
+    callStore.set('recents', {
       id: createId(),
       incoming: call.incoming,
       answered: call.answered,
@@ -431,6 +432,7 @@ class ApiProvider extends React.Component {
       profile: authStore.profile.id,
       created: Date.now(),
     });
+    console.warn('recent', callStore.recents);
 
     this.props.removeRunningCall(call.id);
     this.props.removeRunningVideoByCallid(call.id);

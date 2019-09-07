@@ -14,6 +14,9 @@ export class CallStore extends BaseStore {
   // partyName
   // createdAt
   @observable recents = [];
+  // getRecents = id => {
+  //   return this.recents.find(u => u.id === id);
+  // };
 
   // id
   // incoming

@@ -5,6 +5,7 @@ import { createModelView } from 'redux-model';
 
 import PageRecents from '../../components-Recents/PageRecents';
 import authStore from '../../mobx/authStore';
+import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 
@@ -35,6 +36,11 @@ class View extends React.Component {
   };
 
   render() {
+    console.warn('sf', callStore.recents);
+    console.warn('sf', this.props.callIds);
+    console.warn('sf', this.getMatchUserIds());
+    console.warn('proops', this.props);
+
     return (
       <PageRecents
         resolveCall={this.resolveCall}
@@ -51,7 +57,7 @@ class View extends React.Component {
     );
   }
 
-  resolveCall = id => this.props.callById[id];
+  resolveCall = id => {};
 
   callBack = id => {
     const { sip } = this.context;
