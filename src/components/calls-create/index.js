@@ -6,7 +6,7 @@ import PagePhoneCall from '../../components-Phone/PagePhoneCall';
 import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 
 @observer
 class View extends React.Component {
@@ -110,7 +110,7 @@ class View extends React.Component {
     const { target, video } = this.state;
 
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 
@@ -125,7 +125,7 @@ class View extends React.Component {
 
   call = (target, bVideoEnabled) => {
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 

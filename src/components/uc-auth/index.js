@@ -8,7 +8,7 @@ import authStore from '../../mobx/authStore';
 import chatStore from '../../mobx/chatStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -53,7 +53,7 @@ class View extends React.Component {
   };
   onAuthFailure = err => {
     authStore.set('ucState', 'failure');
-    toast.error(`Failed to connect to UC, err: ${err?.message}`);
+    Toast.error(`Failed to connect to UC, err: ${err?.message}`);
     console.error(err);
   };
 
@@ -83,9 +83,9 @@ class View extends React.Component {
   };
 
   onLoadUnreadChatsFailure = err => {
-    toast.error('Failed to load unread chats');
+    Toast.error('Failed to load unread chats');
     if (err && err.message) {
-      toast.error(err.message);
+      Toast.error(err.message);
     }
   };
 

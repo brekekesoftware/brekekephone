@@ -6,7 +6,7 @@ import AsyncStorage from '../shared/AsyncStorage';
 import { getUrlParams } from '../shared/deeplink';
 import prompt from '../shared/prompt';
 import { resetBadgeNumber } from '../shared/pushNotification';
-import toast from '../shared/Toast';
+import Toast from '../shared/Toast';
 import BaseStore from './BaseStore';
 import routerStore from './routerStore';
 
@@ -81,7 +81,7 @@ class AuthStore extends BaseStore {
       await AsyncStorage.setItem('authStore.profiles', JSON.stringify(arr));
     } catch (err) {
       console.error('authStore.set.profiles:', err);
-      toast.error('Can not save profiles to local storage');
+      Toast.error('Can not save profiles to local storage');
     }
   };
   findProfile = _p => {
@@ -125,7 +125,7 @@ class AuthStore extends BaseStore {
     }
     if (!p.pbxPassword && !p.accessToken) {
       routerStore.goToProfileUpdate(p.id);
-      toast.error('The profile password is empty');
+      Toast.error('The profile password is empty');
       return true;
     }
     this.set('signedInId', p.id);

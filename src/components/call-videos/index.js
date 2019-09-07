@@ -1,27 +1,24 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
+import callStore from '../../mobx/callStore';
 import UI from './ui';
 
 @observer
-@createModelView(
-  getter => state => ({
-    callIds: getter.runningVideos.idsByOrder(state),
-    callById: getter.runningVideos.detailMapById(state),
-  }),
-  action => emit => ({
-    //
-  }),
-)
-@observer
 class View extends React.Component {
   render() {
-    return <UI callIds={this.props.callIds} resolveCall={this.resolveCall} />;
+    return (
+      <UI
+        callIds={callStore.runnings
+          .filter(c => c.videoSessionId)
+          .map(c => c.id)}
+        resolveCall={this.resolveCall}
+      />
+    );
   }
 
   resolveCall = id => {
-    const call = this.props.callById[id];
+    const call = callStore.getRunningCall(id);
 
     return {
       enabled: call.localVideoEnabled,

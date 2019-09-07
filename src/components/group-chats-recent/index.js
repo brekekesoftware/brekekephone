@@ -8,7 +8,7 @@ import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import arrToMap from '../../shared/arrToMap';
 import stripTags from '../../shared/stripTags';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 const monthName = [
@@ -181,7 +181,7 @@ class View extends React.Component {
       loadingRecent: false,
     });
 
-    toast.error('Failed to get recent chats');
+    Toast.error('Failed to get recent chats');
   };
 
   loadMore = () => {
@@ -213,7 +213,7 @@ class View extends React.Component {
   };
 
   onLoadMoreFailure = err => {
-    toast.error('Failed to get more chats');
+    Toast.error('Failed to get more chats');
     console.error(err);
 
     this.setState({
@@ -261,7 +261,7 @@ class View extends React.Component {
 
   onSubmitEditingTextFailure = err => {
     console.error(err);
-    toast.error('Failed to send the message');
+    Toast.error('Failed to send the message');
   };
 
   leave = () => {
@@ -278,7 +278,7 @@ class View extends React.Component {
 
   onLeaveFailure = err => {
     console.error(err);
-    toast.error('Failed to leave the group');
+    Toast.error('Failed to leave the group');
   };
 
   invite = () => {

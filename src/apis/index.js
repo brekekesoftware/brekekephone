@@ -13,7 +13,7 @@ import contactStore from '../mobx/contactStore';
 import routerStore from '../mobx/routerStore';
 import Alert from '../shared/Alert';
 import { getPushNotificationToken } from '../shared/pushNotification';
-import toast from '../shared/Toast';
+import Toast from '../shared/Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
@@ -22,30 +22,9 @@ import uc from './uc';
 @observer
 @createModelView(
   getter => state => ({
-    runningCallById: getter.runningCalls.detailMapById(state),
+    //
   }),
   action => emit => ({
-    createRunningCall(call) {
-      emit(action.runningCalls.create(call));
-    },
-    updateRunningCall(call) {
-      emit(action.runningCalls.update(call));
-    },
-    removeRunningCall(call) {
-      emit(action.runningCalls.remove(call));
-    },
-    createRunningVideo(call) {
-      emit(action.runningVideos.create(call));
-    },
-    updateRunningVideo(call) {
-      emit(action.runningVideos.update(call));
-    },
-    removeRunningVideo(call) {
-      emit(action.runningVideos.remove(call));
-    },
-    removeRunningVideoByCallid(callid) {
-      emit(action.runningVideos.removeByCallid(callid));
-    },
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
     },
@@ -57,10 +36,6 @@ class ApiProvider extends React.Component {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
     uc: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    runningCallById: {},
   };
 
   getChildContext() {
@@ -283,7 +258,7 @@ class ApiProvider extends React.Component {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      toast.error('Failed to load PBX users');
+      Toast.error('Failed to load PBX users');
       console.error(err);
     });
 
@@ -365,16 +340,15 @@ class ApiProvider extends React.Component {
       call.partyName = pbxUser ? pbxUser.name : 'Unnamed';
     }
 
-    this.props.createRunningCall(call);
+    callStore.upsertRunning(call);
   };
 
   onSIPSessionUpdated = call => {
-    this.props.updateRunningCall(call);
+    callStore.upsertRunning(call);
   };
 
   onSIPSessionStopped = id => {
-    const call = this.props.runningCallById[id];
-
+    const call = callStore.getRunningCall(id);
     this.props.createRecentCall({
       id: createId(),
       incoming: call.incoming,
@@ -384,9 +358,7 @@ class ApiProvider extends React.Component {
       profile: authStore.profile.id,
       created: Date.now(),
     });
-
-    this.props.removeRunningCall(call.id);
-    this.props.removeRunningVideoByCallid(call.id);
+    callStore.removeRunning(call.id);
   };
 
   onUCConnectionStopped = () => {
@@ -430,11 +402,11 @@ class ApiProvider extends React.Component {
   };
 
   onSIPVideoSessionCreated = ev => {
-    this.props.createRunningVideo(ev);
+    callStore.upsertRunning(ev);
   };
 
   onSIPVideoSessionUpdated = ev => {
-    this.props.updateRunningVideo(ev);
+    callStore.upsertRunning(ev);
   };
 
   onSIPVideoSessionEnded = ev => {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 @observer
@@ -106,17 +106,17 @@ class View extends React.Component {
 
   save = () => {
     if (!routerStore.getQuery().book) {
-      toast.error('The phonebook name is required');
+      Toast.error('The phonebook name is required');
       return;
     }
 
     if (!this.state.firstName) {
-      toast.error('The first name is required');
+      Toast.error('The first name is required');
       return;
     }
 
     if (!this.state.lastName) {
-      toast.error('The last name is required');
+      Toast.error('The last name is required');
       return;
     }
 
@@ -143,7 +143,7 @@ class View extends React.Component {
 
   onSaveFailure = err => {
     console.error(err);
-    toast.error('Failed to save the contact');
+    Toast.error('Failed to save the contact');
   };
 }
 

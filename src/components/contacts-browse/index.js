@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import UI from './ui';
 
 const numberOfContactsPerPage = 30;
@@ -89,12 +89,12 @@ class View extends React.Component {
     const contact = this.state.contactById[id];
 
     if (!contact.firstName) {
-      toast.error('The first name is required');
+      Toast.error('The first name is required');
       return;
     }
 
     if (!contact.lastName) {
-      toast.error('The last name is required');
+      Toast.error('The last name is required');
       return;
     }
 
@@ -123,7 +123,7 @@ class View extends React.Component {
       );
 
       console.error(err);
-      toast.error('Failed to save the contact');
+      Toast.error('Failed to save the contact');
     };
 
     pbx.setContact(this.state.contactById[id]).then(onSuccess, onFailure);
@@ -255,7 +255,7 @@ class View extends React.Component {
 
   onLoadContactsFailure = err => {
     console.error(err);
-    toast.error('Failed to load contacts');
+    Toast.error('Failed to load contacts');
   };
 
   loadContactDetails = () => {

@@ -1,26 +1,19 @@
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createModelView } from 'redux-model';
 
 import TransferDial from '../../components-Transfer/TransferDial';
+import callStore from '../../mobx/callStore';
 import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 
 @observer
-@createModelView(
-  getter => (state, props) => ({
-    call: getter.runningCalls.detailMapById(state)[props.match.params.call],
-  }),
-  action => emit => ({
-    updateCall(call) {
-      emit(action.runningCalls.update(call));
-    },
-  }),
-)
-@observer
 class View extends React.Component {
+  @computed get call() {
+    return callStore.getRunningCall(this.props.match.params.call);
+  }
   static contextTypes = {
     sip: PropTypes.object.isRequired,
     pbx: PropTypes.object.isRequired,
@@ -34,7 +27,7 @@ class View extends React.Component {
   render() {
     return (
       <TransferDial
-        call={this.props.call}
+        call={this.call}
         attended={this.state.attended}
         target={this.state.target}
         matchIds={this.getMatchIds()}
@@ -105,7 +98,7 @@ class View extends React.Component {
     const target = this.state.target;
 
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 
@@ -115,49 +108,47 @@ class View extends React.Component {
 
     const promise = attended
       ? pbx.transferTalkerAttended(
-          this.props.call.pbxTenant,
-          this.props.call.pbxTalkerId,
+          this.call.pbxTenant,
+          this.call.pbxTalkerId,
           this.state.target,
         )
       : pbx.transferTalkerBlind(
-          this.props.call.pbxTenant,
-          this.props.call.pbxTalkerId,
+          this.call.pbxTenant,
+          this.call.pbxTalkerId,
           this.state.target,
         );
     promise.then(this.onTransferSuccess, this.onTransferFailure);
   };
 
   onTransferSuccess = target => {
-    const { call } = this.props;
-
     const { attended } = this.state;
 
     if (!attended) return routerStore.goToCallsManage();
 
-    this.props.updateCall({
-      id: call.id,
+    callStore.upsertRunning({
+      id: this.call.id,
       transfering: target,
     });
 
-    routerStore.goToCallTransferAttend(call.id);
+    routerStore.goToCallTransferAttend(this.call.id);
   };
 
   onTransferFailure = err => {
     console.error(err);
-    toast.error('Failed target transfer the call');
+    Toast.error('Failed target transfer the call');
   };
 
   transferBlind = target => {
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 
     const { pbx } = this.context;
 
     const promise = pbx.transferTalkerBlind(
-      this.props.call.pbxTenant,
-      this.props.call.pbxTalkerId,
+      this.call.pbxTenant,
+      this.call.pbxTalkerId,
       target,
     );
     promise.then(this.onTransferSuccess(target), this.onTransferFailure);
@@ -165,55 +156,53 @@ class View extends React.Component {
 
   transferAttended = target => {
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 
     const { pbx } = this.context;
 
     const promise = pbx.transferTalkerAttended(
-      this.props.call.pbxTenant,
-      this.props.call.pbxTalkerId,
+      this.call.pbxTenant,
+      this.call.pbxTalkerId,
       target,
     );
     promise.then(this.onTransferSuccess(target), this.onTransferFailure);
   };
 
   onTransferAttendedForVideoSuccess = target => {
-    const { call } = this.props;
-
     const { attended } = this.state;
 
     if (!attended) return routerStore.goToCallsManage();
 
-    this.props.updateCall({
-      id: call.id,
+    callStore.upsertRunning({
+      id: this.call.id,
       transfering: target,
     });
 
-    routerStore.goToCallTransferAttend(call.id);
+    routerStore.goToCallTransferAttend(this.call.id);
 
     const { sip } = this.context;
 
-    sip.enableVideo(call.id);
+    sip.enableVideo(this.call.id);
   };
 
   onTransferAttendedForVideoFailure = err => {
     console.error(err);
-    toast.error('Failed target transfer the call');
+    Toast.error('Failed target transfer the call');
   };
 
   transferAttendedForVideo = target => {
     if (!target.trim()) {
-      toast.error('No target');
+      Toast.error('No target');
       return;
     }
 
     const { pbx } = this.context;
 
     const promise = pbx.transferTalkerAttended(
-      this.props.call.pbxTenant,
-      this.props.call.pbxTalkerId,
+      this.call.pbxTenant,
+      this.call.pbxTalkerId,
       target,
     );
 

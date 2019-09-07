@@ -9,7 +9,7 @@ import contactStore from '../../mobx/contactStore';
 import routerStore from '../../mobx/routerStore';
 import arrToMap from '../../shared/arrToMap';
 import stripTags from '../../shared/stripTags';
-import toast from '../../shared/Toast';
+import Toast from '../../shared/Toast';
 import pickFile from './pickFile';
 import saveBlob from './saveBlob';
 
@@ -174,7 +174,7 @@ class View extends React.Component {
   };
   onLoadRecentFailure = err => {
     this.setState({ loadingRecent: false });
-    toast.error(`Failed to get recent chats, err: ${err?.message}`);
+    Toast.error(`Failed to get recent chats, err: ${err?.message}`);
     console.error(err);
   };
 
@@ -211,7 +211,7 @@ class View extends React.Component {
     this.setState({
       loadingMore: false,
     });
-    toast.error('Failed to get more chats');
+    Toast.error('Failed to get more chats');
     console.error(err);
   };
 
@@ -241,7 +241,7 @@ class View extends React.Component {
     this.setState({ editingText: '' });
   };
   onSubmitEditingTextFailure = err => {
-    toast.error(`Failed to send the message, err: ${err?.message}`);
+    Toast.error(`Failed to send the message, err: ${err?.message}`);
     console.error(err);
   };
 
@@ -252,7 +252,7 @@ class View extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    toast.error(`Failed to accept file, err: ${err?.message}`);
+    Toast.error(`Failed to accept file, err: ${err?.message}`);
     console.error(err);
   };
 
@@ -260,7 +260,7 @@ class View extends React.Component {
     this.context.uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    toast.error(`Failed to reject file, err: ${err?.message}`);
+    Toast.error(`Failed to reject file, err: ${err?.message}`);
     console.error(err);
   };
 
@@ -280,7 +280,7 @@ class View extends React.Component {
     chatStore.upsertFile(res.file);
   };
   onSendFileFailure = err => {
-    toast.error(`Failed to send file, err: ${err?.message}`);
+    Toast.error(`Failed to send file, err: ${err?.message}`);
     console.error(err);
   };
 }
