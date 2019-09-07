@@ -275,20 +275,20 @@ const File = pure(p => (
       <Text style={st.fileName}>{p.name}</Text>
       <Text style={st.fileSize}>{p.size}</Text>
     </View>
-    {p.transferWaiting && (
+    {p.state === 'waiting' && (
       <Button style={st.fileReject} onPress={p.reject}>
         <Text style={st.fileRejectIcon}>icon_x</Text>
       </Button>
     )}
-    {p.incoming && p.transferWaiting && (
+    {p.incoming && p.state === 'waiting' && (
       <Button style={st.fileAccept} onPress={p.accept}>
         <Text style={st.fileAcceptIcon}>icon_check</Text>
       </Button>
     )}
-    {p.transferStarted && (
+    {p.state === 'started' && (
       <Button style={st.fileReject} onPress={p.reject}>
         <Progress
-          percent={p.transferPercent}
+          percent={p.state === 'percent'}
           radius={std.iconSize.md}
           borderWidth={StyleSheet.hairlineWidth * 2}
           color={std.color.notice}
@@ -299,9 +299,9 @@ const File = pure(p => (
         </Progress>
       </Button>
     )}
-    {p.transferSuccess && <Text style={st.fileSuccessText}>Success</Text>}
-    {p.transferFailure && <Text style={st.fileFailureText}>Failed</Text>}
-    {p.transferStopped && <Text style={st.fileStoppedText}>Canceled</Text>}
+    {p.state === 'success' && <Text style={st.fileSuccessText}>Success</Text>}
+    {p.state === 'failure' && <Text style={st.fileFailureText}>Failed</Text>}
+    {p.state === 'stopped' && <Text style={st.fileStoppedText}>Canceled</Text>}
   </View>
 ));
 

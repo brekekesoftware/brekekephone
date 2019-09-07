@@ -13,7 +13,7 @@ const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
 
 // Add router navigation helper
 Object.assign(routerStore, {
-  goToSigninPage: withTimeout(() => history.push('/')),
+  goToPageSignIn: withTimeout(() => history.push('/')),
 });
 
 export { history };

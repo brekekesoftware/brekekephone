@@ -6,14 +6,14 @@ import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
 import { history } from './mobx/routerStore';
-import PageSignin from './PageSignin/PageSignin';
+import PageSignIn from './PageSignIn/PageSignIn';
 import nativeBaseTheme from './shared/nativeBaseTheme';
 
 const App = () => (
   <StyleProvider style={nativeBaseTheme}>
     <Router history={history}>
       <Switch>
-        <Route exact path="/" component={PageSignin} />
+        <Route exact path="/" component={PageSignIn} />
         <Route component={AppOld} />
       </Switch>
     </Router>

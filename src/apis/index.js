@@ -54,12 +54,6 @@ import uc from './uc';
     createRecentCall(call) {
       emit(action.recentCalls.create(call));
     },
-    createChatFile(file) {
-      emit(action.chatFiles.create(file));
-    },
-    updateChatFile(file) {
-      emit(action.chatFiles.update(file));
-    },
   }),
 )
 @observer
@@ -184,7 +178,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerStore.goToSigninPage();
+      routerStore.goToPageSignIn();
       return null;
     }
   };
@@ -232,7 +226,7 @@ class ApiProvider extends React.Component {
               text: 'Cancel',
 
               onPress: () => {
-                routerStore.goToSigninPage();
+                routerStore.goToPageSignIn();
                 resolve(null);
               },
 
@@ -426,15 +420,13 @@ class ApiProvider extends React.Component {
   };
 
   onFileReceived = file => {
-    this.props.createChatFile(file);
+    chatStore.upsertFile(file);
   };
-
   onFileProgress = file => {
-    this.props.updateChatFile(file);
+    chatStore.upsertFile(file);
   };
-
   onFileFinished = file => {
-    this.props.updateChatFile(file);
+    chatStore.upsertFile(file);
   };
 
   onSIPVideoSessionCreated = ev => {

@@ -1,4 +1,4 @@
-import { computed, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import shortid from 'shortid';
 
 import arrToMap from '../shared/arrToMap';
@@ -63,9 +63,6 @@ class AuthStore extends BaseStore {
   // ucPathname
   // accessToken
   @observable profiles = [];
-  @computed get profilesMap() {
-    return arrToMap(this.profiles, 'id', p => p);
-  }
   loadProfilesFromLocalStorage = async () => {
     let arr = await AsyncStorage.getItem('authStore.profiles');
     if (arr && !Array.isArray(arr)) {
@@ -75,7 +72,9 @@ class AuthStore extends BaseStore {
         arr = null;
       }
     }
-    this.set('profiles', arr || []);
+    if (arr) {
+      this.set('profiles', arr);
+    }
   };
   saveProfilesToLocalStorage = async (arr = this.profiles) => {
     try {
@@ -85,23 +84,17 @@ class AuthStore extends BaseStore {
       toast.error('Can not save profiles to local storage');
     }
   };
-  getProfile = id => {
-    return this.profilesMap[id];
-  };
   findProfile = _p => {
     return this.profiles.find(p => compareProfile(p, _p));
   };
-  createProfile = _p => {
-    this.set('profiles', [...this.profile, _p]);
-    this.saveProfilesToLocalStorage();
-  };
-  updateProfile = _p => {
+  upsertProfile = _p => {
     const p = this.getProfile(_p.id);
-    if (!p) {
-      return;
+    if (p) {
+      Object.assign(p, _p);
+      this.set('profiles', [...this.profiles]);
+    } else {
+      this.set('profiles', [...this.profile, _p]);
     }
-    Object.assign(p, _p);
-    this.set('profiles', [...this.profiles]);
     this.saveProfilesToLocalStorage();
   };
   removeProfile = id => {
@@ -109,9 +102,16 @@ class AuthStore extends BaseStore {
       this._removeProfile(id);
     });
   };
-  _removeProfile = id => {
-    this.set('profiles', this.profiles.filter(p => p.id !== id));
+  @action _removeProfile = id => {
+    this.profiles = this.profiles.filter(p => p.id !== id);
     this.saveProfilesToLocalStorage();
+  };
+  //
+  @computed get _profilesMap() {
+    return arrToMap(this.profiles, 'id', p => p);
+  }
+  getProfile = id => {
+    return this._profilesMap[id];
   };
 
   @observable signedInId = null;
@@ -161,7 +161,7 @@ class AuthStore extends BaseStore {
       if (!p.pbxPort) {
         p.pbxPort = port;
       }
-      this.updateProfile(p);
+      this.upsertProfile(p);
       if (p.pbxPassword || p.accessToken) {
         this.signIn(p.id);
       } else {
@@ -186,7 +186,7 @@ class AuthStore extends BaseStore {
       accessToken: _wn,
     };
     //
-    this.createProfile(newP);
+    this.upsertProfile(newP);
     if (newP.accessToken) {
       this.signIn(newP.id);
     } else {

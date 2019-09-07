@@ -17,7 +17,7 @@ import SvgIcon from '../shared/SvgIcon';
 
 const s = registerStyle(v => ({
   View: {
-    SigninProfileItem: {
+    SignInProfileItem: {
       position: 'relative',
       backgroundColor: 'white',
       marginBottom: v.padding,
@@ -35,7 +35,7 @@ const s = registerStyle(v => ({
         padding: v.padding,
       },
     },
-    SigninProfileItem_Field: {
+    SignInProfileItem_Field: {
       position: 'relative',
       marginHorizontal: v.padding,
       paddingTop: v.padding,
@@ -44,7 +44,7 @@ const s = registerStyle(v => ({
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderColor: v.brekekeShade4,
     },
-    SigninProfileItem_Btns: {
+    SignInProfileItem_Btns: {
       position: 'absolute',
       bottom: v.padding,
       left: v.padding,
@@ -56,33 +56,33 @@ const s = registerStyle(v => ({
     },
   },
   Text: {
-    SigninProfileItem_FieldName: {
+    SignInProfileItem_FieldName: {
       fontSize: 0.7 * v.fontSizeBase,
       color: v.brekekeShade7,
     },
-    SigninProfileItem_FieldValue: {
+    SignInProfileItem_FieldValue: {
       fontWeight: 'bold',
     },
-    SigninProfileItem_BtnTxt: {
+    SignInProfileItem_BtnTxt: {
       flex: 1,
       fontWeight: 'bold',
       textAlign: 'center',
       color: 'white',
     },
-    SigninProfileItem_NoServerTxt: {
+    SignInProfileItem_NoServerTxt: {
       fontWeight: 'bold',
       fontSize: 1.2 * v.fontSizeBase,
     },
   },
   Switch: {
-    SigninProfileItem_UC: {
+    SignInProfileItem_UC: {
       position: 'absolute',
       top: 1.5 * v.padding,
       right: v.padding / 3,
     },
   },
   Button: {
-    SigninProfileItem_Btn: {
+    SignInProfileItem_Btn: {
       borderRadius: 0,
       textAlign: 'center',
       width: '25%',
@@ -103,98 +103,98 @@ const s = registerStyle(v => ({
       },
     },
   },
-  _SigninProfileItem_Icon: {
+  _SignInProfileItem_Icon: {
     position: 'absolute',
     top: v.padding,
     right: v.padding,
   },
 }));
 
-const SigninProfileItem = p => (
-  <View SigninProfileItem last={p.last}>
+const SignInProfileItem = p => (
+  <View SignInProfileItem last={p.last}>
     <TouchableOpacity onPress={() => routerStore.goToProfileUpdate(p.id)}>
-      <View SigninProfileItem_Field>
-        <Text SigninProfileItem_FieldName>USERNAME</Text>
-        <Text SigninProfileItem_FieldValue>{p.pbxUsername || '\u00A0'}</Text>
+      <View SignInProfileItem_Field>
+        <Text SignInProfileItem_FieldName>USERNAME</Text>
+        <Text SignInProfileItem_FieldValue>{p.pbxUsername || '\u00A0'}</Text>
         <SvgIcon
           path={mdiAccountCircleOutline}
-          style={s._SigninProfileItem_Icon}
+          style={s._SignInProfileItem_Icon}
         />
       </View>
-      <View SigninProfileItem_Field>
-        <Text SigninProfileItem_FieldName>TENANT</Text>
-        <Text SigninProfileItem_FieldValue>{p.pbxTenant || '\u00A0'}</Text>
-        <SvgIcon path={mdiWebpack} style={s._SigninProfileItem_Icon} />
+      <View SignInProfileItem_Field>
+        <Text SignInProfileItem_FieldName>TENANT</Text>
+        <Text SignInProfileItem_FieldValue>{p.pbxTenant || '\u00A0'}</Text>
+        <SvgIcon path={mdiWebpack} style={s._SignInProfileItem_Icon} />
       </View>
-      <View SigninProfileItem_Field>
-        <Text SigninProfileItem_FieldName>HOSTNAME</Text>
-        <Text SigninProfileItem_FieldValue>{p.pbxHostname || '\u00A0'}</Text>
-        <SvgIcon path={mdiWebBox} style={s._SigninProfileItem_Icon} />
+      <View SignInProfileItem_Field>
+        <Text SignInProfileItem_FieldName>HOSTNAME</Text>
+        <Text SignInProfileItem_FieldValue>{p.pbxHostname || '\u00A0'}</Text>
+        <SvgIcon path={mdiWebBox} style={s._SignInProfileItem_Icon} />
       </View>
-      <View SigninProfileItem_Field>
-        <Text SigninProfileItem_FieldName>PORT</Text>
-        <Text SigninProfileItem_FieldValue>{p.pbxPort || '\u00A0'}</Text>
-        <SvgIcon path={mdiServerNetwork} style={s._SigninProfileItem_Icon} />
+      <View SignInProfileItem_Field>
+        <Text SignInProfileItem_FieldName>PORT</Text>
+        <Text SignInProfileItem_FieldValue>{p.pbxPort || '\u00A0'}</Text>
+        <SvgIcon path={mdiServerNetwork} style={s._SignInProfileItem_Icon} />
       </View>
     </TouchableOpacity>
     <TouchableOpacity
       onPress={() => {
-        authStore.updateProfile({
+        authStore.upsertProfile({
           id: p.id,
           ucEnabled: !p.ucEnabled,
         });
       }}
     >
-      <View SigninProfileItem_Field>
-        <Text SigninProfileItem_FieldName>UC</Text>
-        <Text SigninProfileItem_FieldValue>
+      <View SignInProfileItem_Field>
+        <Text SignInProfileItem_FieldName>UC</Text>
+        <Text SignInProfileItem_FieldValue>
           {p.ucEnabled ? 'Enabled' : 'Disabled'}
         </Text>
-        <Switch SigninProfileItem_UC value={p.ucEnabled} />
+        <Switch SignInProfileItem_UC value={p.ucEnabled} />
       </View>
     </TouchableOpacity>
-    <View SigninProfileItem_Btns>
+    <View SignInProfileItem_Btns>
       <Button
-        SigninProfileItem_Btn
+        SignInProfileItem_Btn
         remove
         onPress={() => authStore.removeProfile(p.id)}
       >
         <SvgIcon path={mdiClose} width="100%" color="red" />
       </Button>
       <Button
-        SigninProfileItem_Btn
+        SignInProfileItem_Btn
         update
         onPress={() => routerStore.goToProfileUpdate(p.id)}
       >
         <SvgIcon path={mdiDotsHorizontal} width="100%" />
       </Button>
       <Button
-        SigninProfileItem_Btn
+        SignInProfileItem_Btn
         signIn
         onPress={() => authStore.signIn(p.id)}
       >
-        <Text SigninProfileItem_BtnTxt>SIGN IN</Text>
+        <Text SignInProfileItem_BtnTxt>SIGN IN</Text>
       </Button>
     </View>
   </View>
 );
 
 const NoServer = () => (
-  <View SigninProfileItem noServer>
-    <Text SigninProfileItem_NoServerTxt>No server</Text>
+  <View SignInProfileItem noServer>
+    <Text SignInProfileItem_NoServerTxt>No server</Text>
     <Text note>There is no server created</Text>
     <Text note>Tap the below button to create one</Text>
-    <View SigninProfileItem_Btns>
+    <View SignInProfileItem_Btns>
       <Button
-        SigninProfileItem_Btn
+        SignInProfileItem_Btn
         create
         onPress={routerStore.goToProfilesCreate}
       >
-        <Text SigninProfileItem_BtnTxt>Create New Server</Text>
+        <Text SignInProfileItem_BtnTxt>Create New Server</Text>
       </Button>
     </View>
   </View>
 );
 
 export { NoServer };
-export default SigninProfileItem;
+export default SignInProfileItem;

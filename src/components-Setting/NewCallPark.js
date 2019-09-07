@@ -93,7 +93,7 @@ class NewCallPark extends React.Component {
 
     const _parks = [addingPark, ...parks.filter(_ => _ !== addingPark)];
 
-    authStore.updateProfile({
+    authStore.upsertProfile({
       id: this.state.id,
       pbxHostname: pbxHostname,
       pbxPort: pbxPort,

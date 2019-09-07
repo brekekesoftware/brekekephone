@@ -9,7 +9,7 @@ class ChatStore extends BaseStore {
   // id
   // text
   // file
-  // isGroup => new TODO consider to keep this? also in apis/index.js
+  // isGroup => new TODO consider to keep this? also in apis/index
   // created => TODO update to createdAt apis/uc
   // creator => TODO update to ucUserId apis/uc
   @observable messagesByThreadId = {};
@@ -35,12 +35,32 @@ class ChatStore extends BaseStore {
 
   // id
   // name
+  // incoming
+  // size
+  // state
+  //   'waiting'
+  //   'started'
+  //   'success'
+  //   'stopped'
+  //   'failure'
+  // transferPercent
+  @observable filesMap = {};
+  upsertFile = _f => {
+    const f = this.filesMap[_f.id];
+    this.set(`filesMap.${_f.id}`, f ? Object.assign(f, _f) : _f);
+  };
+  @action removeFile = fileId => {
+    delete this.filesMap[fileId];
+  };
+
+  // id
+  // name
   // inviter
   // jointed
   // members
   @observable groups = [];
   upsertGroup = _g => {
-    const g = this.groups.find(g => g.id === _g.id);
+    const g = this.getGroup(_g.id);
     if (g) {
       Object.assign(g, _g);
     } else {
@@ -52,8 +72,7 @@ class ChatStore extends BaseStore {
     delete this.messagesByThreadId[groupId];
     this.groups = this.groups.filter(g => g.id !== groupId);
   };
-  // Support the old methods
-  // TODO remove them later
+  //
   @computed get _groupsMap() {
     return arrToMap(this.groups, 'id', g => g);
   }
