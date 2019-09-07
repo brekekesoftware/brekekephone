@@ -2,12 +2,13 @@ import { setJSExceptionHandler } from 'react-native-exception-handler';
 
 import prompt from './prompt';
 
-const onGlobalJSError = err => {
-  if (!err) {
-    return;
-  }
-  console.error('onGlobalJSError', err);
-  prompt(`Error: ${err.name}`, err.message);
-};
-
-setJSExceptionHandler(onGlobalJSError, true);
+if (process.env.NODE_ENV === 'production') {
+  const onGlobalJSError = err => {
+    if (!err) {
+      return;
+    }
+    prompt(`Error: ${err.name}`, err.message);
+    console.error('onGlobalJSError', err);
+  };
+  setJSExceptionHandler(onGlobalJSError, true);
+}

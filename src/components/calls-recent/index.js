@@ -16,7 +16,7 @@ import routerStore from '../../mobx/routerStore';
       (authStore.profile || {}).id
     ],
     callById: getter.recentCalls.detailMapById(state),
-    parkingIds: getter.parkingCalls.idsByOrder(state),
+    // parkingIds: getter.parkingCalls.idsByOrder(state),
   }),
   action => d => ({
     removeCall(id) {

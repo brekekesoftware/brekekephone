@@ -1,7 +1,5 @@
 export { default as runningCalls } from './running-calls';
 export { default as runningVideos } from './running-videos';
-export { default as parkingCalls } from './parking-calls';
-export { default as makingCalls } from './making-calls';
 export { default as recentCalls } from './recent-calls';
 export { default as buddyChats } from './buddy-chats';
 export { default as groupChats } from './group-chats';
