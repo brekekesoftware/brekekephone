@@ -1203,6 +1203,11 @@
   resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.3.95.tgz#79e3253eeaa6e0cf02733c4c1f65c801d9d4b42c"
   integrity sha512-dYJX1q1aDBIpHtTReCnmL4zigvmEPuXdVsw3Sn7190+k8vWaAc8UWMOlMag7S+Ym1C+jeO1S7zE5fdb1gBOB5A==
 
+"@mdi/react@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@mdi/react/-/react-1.2.1.tgz#24279784e080728e953f3c1a71f49c64031dee47"
+  integrity sha512-1IRIVCT07vlLmaZjVtGfyfwCMivg/tCtPj0+r1BKrkoh9z4xLf+M1TD0LhjJPO+4+O0ibW+xrNRvf+boRRtX9A==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

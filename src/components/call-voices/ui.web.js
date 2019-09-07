@@ -1,7 +1,7 @@
 import React from 'react';
 
-import ringback from '../../shared/incallmanager_ringback.mp3';
-import ringtone from '../../shared/incallmanager_ringtone.mp3';
+import ringback from '../../assets/incallmanager_ringback.mp3';
+import ringtone from '../../assets/incallmanager_ringtone.mp3';
 
 const IncomingItem = p => (
   <audio key={p.id} autoPlay volume={1} loop src={ringtone} />
