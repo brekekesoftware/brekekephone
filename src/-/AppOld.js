@@ -2,7 +2,7 @@ import './oldNativeBaseTheme';
 
 import React from 'react';
 
-import ApiProvider from '../apis';
+import ApiProvider from './apis';
 import Routes from './Routes';
 
 const App = () => (

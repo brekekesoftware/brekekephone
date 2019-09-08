@@ -1,8 +1,8 @@
 // import merge from 'lodash/merge';
 // import { StyleSheet } from 'react-native';
 
-// import nativeBaseTheme from '../shared/nativeBaseTheme';
-// import variables from '../shared/variables';
+// import nativeBaseTheme from '../../shared/nativeBaseTheme';
+// import variables from '../../shared/variables';
 
 // merge(nativeBaseTheme, {
 //   'NativeBase.Header': {
