@@ -26,7 +26,7 @@ class View extends React.Component {
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         resolveUser={this.resolveUser}
         searchText={contactStore.searchText}
-        setSearchText={contactStore.setFn('searchText')}
+        setSearchText={contactStore.setF('searchText')}
         callIds={this.getMatchUserIds()}
       />
     );

@@ -20,7 +20,7 @@ registerStyle(v => ({
   Text: {
     AppHeader_Text: {
       fontWeight: 'bold',
-      fontSize: 1.7 * v.fontSizeBase,
+      fontSize: 2 * v.fontSizeBase,
     },
     AppHeader_SubText: {
       fontSize: 0.9 * v.fontSizeBase,

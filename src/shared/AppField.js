@@ -19,14 +19,17 @@ const s = registerStyle(v => ({
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderColor: v.brekekeShade4,
       '.disabled': {
-        backgroundColor: v.brekekeShade2,
+        backgroundColor: v.brekekeShade1,
       },
+    },
+    AppField_Inner: {
+      position: 'static',
     },
   },
   Text: {
     AppField_Name: {
       position: 'relative',
-      fontSize: 0.7 * v.fontSizeBase,
+      fontSize: 0.8 * v.fontSizeBase,
       color: v.brekekeShade7,
     },
     AppField_Value: {
@@ -45,8 +48,8 @@ const s = registerStyle(v => ({
     AppField_Btn: {
       position: 'absolute',
       top: 15,
-      right: 0,
-      width: 50,
+      right: 5,
+      width: 40,
       height: 30,
       borderRadius: v.brekekeBorderRadius,
       '.create': {
@@ -73,8 +76,25 @@ const s = registerStyle(v => ({
     paddingLeft: 7,
     paddingRight: 40,
     fontWeight: 'bold',
+    fontSize: v.fontSizeBase,
+    fontFamily: 'inherit',
+  },
+  _AppField_TextInputFocusing: {
+    backgroundColor: transparentize(0.9, v.brekekeGreen),
   },
 }));
+
+const TextInputWithFocusStyle = React.forwardRef((p, ref) => {
+  const [focusing, setFocusing] = React.useState(false);
+  return (
+    <TextInput
+      {...p}
+      style={[p.style, focusing && s._AppField_TextInputFocusing]}
+      onFocus={() => setFocusing(true)}
+      onBlur={() => setFocusing(false)}
+    />
+  );
+});
 
 const defaultValueRender = {
   Switch: v => (v ? 'Enabled' : 'Disabled'),
@@ -87,16 +107,18 @@ const renderAppField = p => {
   const valueRender = p.valueRender || defaultValueRender[p.type];
   const iconRender = p.iconRender || defaultIconRender[p.type];
   return (
-    <View AppField disabled={p.disabled} pointerEvents={p.disabled && null}>
-      {p.inputElement}
-      <Text AppField_Name pointerEvents={p.inputElement && 'none'}>
-        {p.name}
-      </Text>
-      <Text AppField_Value pointerEvents={p.inputElement && 'none'}>
-        {(!p.inputElement &&
-          ((valueRender && valueRender(p.value)) || p.value)) ||
-          '\u00A0'}
-      </Text>
+    <View AppField disabled={p.disabled}>
+      <View AppField_Inner pointerEvents={p.disabled && 'none'}>
+        {p.inputElement}
+        <Text AppField_Name pointerEvents={p.inputElement && 'none'}>
+          {p.name}
+        </Text>
+        <Text AppField_Value pointerEvents={p.inputElement && 'none'}>
+          {(!p.inputElement &&
+            ((valueRender && valueRender(p.value)) || p.value)) ||
+            '\u00A0'}
+        </Text>
+      </View>
       {(iconRender && iconRender(p.value)) ||
         (p.icon && (
           <SvgIcon
@@ -141,10 +163,13 @@ const AppField = p => {
       ),
     };
   }
-  if (!p.onValueChange) {
+  if (!p.onValueChange || p.disabled) {
     return renderAppField(p);
   }
   if (p.type === 'Switch') {
+    if (p.disabled) {
+      return renderAppField(p);
+    }
     return (
       <TouchableOpacity onPress={() => p.onValueChange(!p.value)}>
         {renderAppField(p)}
@@ -154,7 +179,7 @@ const AppField = p => {
     return renderAppField({
       ...p,
       inputElement: (
-        <TextInput
+        <TextInputWithFocusStyle
           style={s._AppField_TextInput}
           onChangeText={p.onValueChange}
           onSubmitEditing={p.onCreateBtnPress}

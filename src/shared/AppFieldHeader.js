@@ -6,7 +6,7 @@ import registerStyle from './registerStyle';
 registerStyle(v => ({
   View: {
     AppFieldHeader: {
-      backgroundColor: v.brekekeShade1,
+      backgroundColor: v.brekekeShade3,
       padding: v.padding,
       marginHorizontal: -v.padding,
       '.hasMargin': {
@@ -17,7 +17,7 @@ registerStyle(v => ({
   Text: {
     AppFieldHeader_Txt: {
       fontWeight: 'bold',
-      fontSize: 0.7 * v.fontSizeBase,
+      fontSize: 0.8 * v.fontSizeBase,
     },
   },
 }));

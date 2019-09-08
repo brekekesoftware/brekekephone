@@ -16,7 +16,6 @@ import AppFieldHeader from '../shared/AppFieldHeader';
 import AppFooter from '../shared/AppFooter';
 import AppHeader from '../shared/AppHeader';
 import { genEmptyProfile } from '../shared/authStore';
-import routerStore from '../shared/routerStore';
 
 @observer
 class FormCreateProfile extends React.Component {
@@ -27,29 +26,30 @@ class FormCreateProfile extends React.Component {
   @observable addingPark = '';
 
   componentDidUpdate(prevProps) {
-    const p = this.props.updatingProfile;
-    if (this.props.isUpdate && p?.id !== prevProps.updatingProfile?.id) {
+    if (
+      this.props.isUpdate &&
+      this.props.updatingProfile?.id !== prevProps.updatingProfile?.id
+    ) {
       runInAction(() => {
-        Object.assign(this.profile, p);
+        Object.assign(this.profile, this.props.updatingProfile);
       });
     }
   }
 
-  get = key => this.profile[key];
-  @action set = (key, value) => {
-    if (key === 'ucEnabled') {
-      if (!this.profile.ucHostname && !this.profile.ucPort) {
-        this.profile.ucHostname = this.profile.pbxHostname;
-        this.profile.ucPort = this.profile.pbxPort;
+  setF = k =>
+    action(v => {
+      this.profile[k] = v;
+      const { ucHostname, ucPort, pbxHostname, pbxPort } = this.profile;
+      if (k === 'ucEnabled' && !ucHostname && !ucPort) {
+        this.profile.ucHostname = pbxHostname;
+        this.profile.ucPort = pbxPort;
       }
-    }
-    this.profile[key] = value;
-  };
-  fset = key => value => {
-    this.set(key, value);
-  };
+    });
 
-  @action onParkCreate = () => {
+  @action addingParkOnChange = v => {
+    this.addingPark = v;
+  };
+  @action addingParkOnCreate = () => {
     this.addingPark = this.addingPark.trim();
     if (!this.addingPark) {
       return;
@@ -57,110 +57,129 @@ class FormCreateProfile extends React.Component {
     this.profile.parks.push(this.addingPark);
     this.addingPark = '';
   };
-  onParkRemoveFn = i =>
+  onParkRemoveF = i =>
     action(() => {
       this.profile.parks = this.profile.parks.filter((p, _i) => _i !== i);
     });
 
+  onSaveBtnPress = () => {
+    // TODO validate
+    this.props.onSaveBtnPress(this.profile);
+  };
+
   render() {
-    const { isUpdate, updatingProfile: p } = this.props;
-    const goBack = routerStore.goBackFn(routerStore.goToPageSignIn);
-    const g = this.get;
-    const f = this.fset;
+    const {
+      pbxUsername,
+      pbxPassword,
+      pbxTenant,
+      pbxHostname,
+      pbxPort,
+      pbxPhoneIndex,
+      turnEnabled,
+      ucEnabled,
+      ucHostname,
+      ucPort,
+      parks,
+    } = this.profile;
+    const { isUpdate, updatingProfile } = this.props;
     return (
       <React.Fragment>
         <AppHeader
-          onBackBtnPress={goBack}
+          onBackBtnPress={this.props.onBackBtnPress}
           text={`${isUpdate ? 'Edit' : 'New'} Server`}
           subText={
             isUpdate
-              ? p
-                ? p.pbxUsername
+              ? updatingProfile
+                ? updatingProfile.pbxUsername
                 : 'Server profile not found'
               : 'Create a new sign in profile'
           }
         />
-        {!(isUpdate && !p) && (
+        {!(isUpdate && !updatingProfile) && (
           <AppBody hasFooter>
             <AppFieldHeader text="PBX" />
             <AppField
               autoFocus
               name="USERNAME"
               icon={mdiAccountCircleOutline}
-              value={g('pbxUsername')}
-              onValueChange={f('pbxUsername')}
+              value={pbxUsername}
+              onValueChange={this.setF('pbxUsername')}
             />
             <AppField
               secureTextEntry
               autoComplete={`${isUpdate ? 'current' : 'new'}-password`}
               name="PASSWORD"
               icon={mdiTextboxPassword}
-              value={g('pbxPassword')}
-              onValueChange={f('pbxPassword')}
+              value={pbxPassword}
+              onValueChange={this.setF('pbxPassword')}
             />
             <AppField
               name="TENANT"
               icon={mdiWebpack}
-              value={g('pbxTenant')}
-              onValueChange={f('pbxTenant')}
+              value={pbxTenant}
+              onValueChange={this.setF('pbxTenant')}
             />
             <AppField
               name="HOSTNAME"
               icon={mdiWebBox}
-              value={g('pbxHostname')}
-              onValueChange={f('pbxHostname')}
+              value={pbxHostname}
+              onValueChange={this.setF('pbxHostname')}
             />
             <AppField
               name="PORT"
               icon={mdiServerNetwork}
-              value={g('pbxPort')}
-              onValueChange={f('pbxPort')}
+              value={pbxPort}
+              onValueChange={this.setF('pbxPort')}
             />
             <AppField
               type="Switch"
               name="TURN"
-              value={g('turnEnabled')}
-              onValueChange={f('turnEnabled')}
+              value={turnEnabled}
+              onValueChange={this.setF('turnEnabled')}
             />
             <AppFieldHeader text="UC" hasMargin />
             <AppField
               type="Switch"
               name="UC"
-              value={g('ucEnabled')}
-              onValueChange={f('ucEnabled')}
+              value={ucEnabled}
+              onValueChange={this.setF('ucEnabled')}
             />
             <AppField
-              disabled={!g('ucEnabled')}
+              disabled={!ucEnabled}
               name="HOSTNAME"
               icon={mdiWebBox}
-              value={g('ucHostname')}
-              onValueChange={f('ucHostname')}
+              value={ucHostname}
+              onValueChange={this.setF('ucHostname')}
             />
             <AppField
-              disabled={!g('ucEnabled')}
+              disabled={!ucEnabled}
               name="PORT"
               icon={mdiServerNetwork}
-              value={g('ucPort')}
-              onValueChange={f('ucPort')}
+              value={ucPort}
+              onValueChange={this.setF('ucPort')}
             />
             <AppFieldHeader text="PARKS" hasMargin />
-            {g('parks').map((p, i) => (
+            {parks.map((p, i) => (
               <AppField
-                key={p + '-i-' + i}
-                name={`Park ${i + 1}`}
+                disabled
+                key={`park-i${i}-${p}`}
+                name={`PARK ${i + 1}`}
                 value={p}
-                onRemoveBtnPress={this.onParkRemoveFn(i)}
+                onRemoveBtnPress={this.onParkRemoveF(i)}
               />
             ))}
             <AppField
-              name="Type new park here"
+              name="NEW PARK"
               value={this.addingPark}
-              onValueChange={action(v => (this.addingPark = v))}
-              onCreateBtnPress={this.onParkCreate}
+              onValueChange={this.addingParkOnChange}
+              onCreateBtnPress={this.addingParkOnCreate}
             />
           </AppBody>
         )}
-        <AppFooter />
+        <AppFooter
+          onBackBtnPress={this.props.onBackBtnPress}
+          onSaveBtnPress={this.onSaveBtnPress}
+        />
       </React.Fragment>
     );
   }

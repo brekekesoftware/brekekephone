@@ -134,7 +134,7 @@ class View extends React.Component {
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         browseHistory={routerStore.goToCallsRecent}
         create={routerStore.goToCallsCreate}
-        select={callStore.setFn('selectedId')}
+        select={callStore.setF('selectedId')}
         hangup={this.hangup}
         answer={this.answer}
         hold={this.hold}

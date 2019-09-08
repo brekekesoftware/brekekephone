@@ -29,7 +29,7 @@ class View extends React.Component {
         callVoice={this.callVoice}
         callVideo={this.callVideo}
         chat={routerStore.goToBuddyChatsRecent}
-        setSearchText={contactStore.setFn('searchText')}
+        setSearchText={contactStore.setF('searchText')}
         toggleModal={this.toggleModal}
         isModalVisible={this.state.isModalVisible}
         exitModal={this.exitModal}

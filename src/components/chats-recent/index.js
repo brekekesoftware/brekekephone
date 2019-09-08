@@ -23,7 +23,7 @@ class View extends React.Component {
         selectGroup={routerStore.goToChatGroupsRecent}
         createGroup={routerStore.goToChatGroupsCreate}
         searchText={contactStore.searchText}
-        setSearchText={contactStore.setFn('searchText')}
+        setSearchText={contactStore.setF('searchText')}
       />
     );
   }
