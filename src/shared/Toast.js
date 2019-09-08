@@ -1,5 +1,7 @@
 import RnToast from 'react-native-root-toast';
 
+import v from './variables';
+
 let rnToastInstance = null;
 
 const Toast = {
@@ -25,7 +27,7 @@ const Toast = {
   error: (message, opt) => {
     Toast.show(message, {
       ...opt,
-      backgroundColor: 'red',
+      backgroundColor: v.brekekeDanger,
     });
   },
 };

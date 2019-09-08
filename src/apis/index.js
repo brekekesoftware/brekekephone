@@ -151,17 +151,16 @@ class ApiProvider extends React.Component {
       await pbx.pal('setExtensionProperties', {
         tenant: pbxTenant,
         extension: pbxUsername,
-
         properties: {
           pnumber: extProps.phones.map(p => p.id).join(','),
           [`p${phoneIndex + 1}_ptype`]: phone.type,
         },
       });
-
       authStore.userExtensionProperties = extProps;
     };
 
     if (phoneTypeCorrect && hasPhoneId) {
+      // Good to go
     } else if (phoneTypeCorrect && !hasPhoneId) {
       phone.id = `${pbxTenant}_${pbxUsername}_webphone`;
       await setExtensionProperties();
@@ -177,20 +176,16 @@ class ApiProvider extends React.Component {
           [
             {
               text: 'Cancel',
-
+              style: 'cancel',
               onPress: () => {
                 routerStore.goToPageSignIn();
                 resolve(null);
               },
-
-              style: 'cancel',
             },
             {
               text: 'OK',
-
               onPress: () => {
                 phone.type = 'Web Phone';
-
                 setExtensionProperties()
                   .then(() => {
                     resolve(phone);
@@ -249,7 +244,7 @@ class ApiProvider extends React.Component {
   };
 
   onPBXConnectionStopped = () => {
-    // authStore.set('pbxState', 'stopped');
+    authStore.set('pbxState', 'stopped');
   };
 
   onPBXConnectionTimeout = () => {
@@ -304,7 +299,7 @@ class ApiProvider extends React.Component {
   };
 
   onSIPConnectionStopped = () => {
-    // authStore.set('sipState', 'stopped');
+    authStore.set('sipState', 'stopped');
   };
 
   onSIPConnectionTimeout = () => {
@@ -344,7 +339,7 @@ class ApiProvider extends React.Component {
   };
 
   onUCConnectionStopped = () => {
-    // authStore.set('ucState', 'stopped');
+    authStore.set('ucState', 'stopped');
   };
 
   onUCConnectionTimeout = () => {

@@ -46,6 +46,7 @@ merge(variables, {
 merge(variables, {
   brekekeGreen: '#74bf53',
   brekekeDarkGreen: '#65af45',
+  brekekeDanger: '#f12d55',
   brekekeShade0: '#ffffff',
   brekekeShade1: '#f9f9f9',
   brekekeShade2: '#f1f1f1',

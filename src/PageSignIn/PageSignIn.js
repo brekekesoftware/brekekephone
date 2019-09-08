@@ -49,10 +49,10 @@ class PageSignIn extends React.Component {
       >
         <StatusBar transparent />
         <AppHeader
-          white
+          createBtnWhite
           text="Servers"
-          subText={`${l} SERVER${l > 1 ? 'S' : ''} IN TOTAL`}
-          onCreateBtnPress={!!l && routerStore.goToProfilesCreate}
+          subText={`${l} server${l > 1 ? 's' : ''} in total`}
+          onCreateBtnPress={!!l && routerStore.goToPageCreateProfile}
         />
         <View PageSignIn_Spacing />
         {!!l && (

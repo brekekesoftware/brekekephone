@@ -1,6 +1,6 @@
 import { Linking } from 'react-native';
 
-import authStore, { compareProfile } from '../shared/authStore';
+import authStore, { compareProfile } from './authStore';
 import parse from './deeplink-parse';
 
 let alreadyHandleFirstOpen = false;

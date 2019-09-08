@@ -52,74 +52,69 @@ class PBX extends EventEmitter {
       console.error(err);
     };
 
-    this.client.notify_serverstatus = ev => {
-      if (!ev) {
+    this.client.notify_serverstatus = e => {
+      if (!e) {
         return;
       }
-
-      if (ev.status === 'active') {
+      if (e.status === 'active') {
         return this.emit('connection-started');
       }
-
-      if (ev.status === 'inactive') {
+      if (e.status === 'inactive') {
         return this.emit('connection-stopped');
       }
     };
 
-    this.client.notify_park = ev => {
-      if (!ev) {
+    this.client.notify_park = e => {
+      if (!e?.park) {
         return;
       }
-
-      if (ev.status === 'on' && ev.park) {
-        return this.emit('park-started', ev.park);
+      if (e.status === 'on') {
+        return this.emit('park-started', e.park);
       }
-
-      if (ev.status === 'off' && ev.park) {
-        return this.emit('park-stopped', ev.park);
+      if (e.status === 'off') {
+        return this.emit('park-stopped', e.park);
       }
     };
 
-    this.client.notify_voicemail = ev => {
-      if (!ev) {
+    this.client.notify_voicemail = e => {
+      if (!e) {
         return;
       }
-
-      this.emit('voicemail-updated', ev);
+      this.emit('voicemail-updated', e);
     };
 
-    this.client.notify_status = ev => {
-      if (!ev) {
+    this.client.notify_status = e => {
+      if (!e) {
         return;
       }
 
-      switch (ev.status) {
+      switch (e.status) {
         case '14':
         case '2':
         case '36':
           return this.emit('user-talking', {
-            user: ev.user,
-            talker: ev.talker_id,
+            user: e.user,
+            talker: e.talker_id,
           });
         case '35':
           return this.emit('user-holding', {
-            user: ev.user,
-            talker: ev.talker_id,
+            user: e.user,
+            talker: e.talker_id,
           });
         case '-1':
           return this.emit('user-hanging', {
-            user: ev.user,
-            talker: ev.talker_id,
+            user: e.user,
+            talker: e.talker_id,
           });
         case '1':
           return this.emit('user-calling', {
-            user: ev.user,
-            talker: ev.talker_id,
+            user: e.user,
+            talker: e.talker_id,
           });
         case '65':
           return this.emit('user-ringing', {
-            user: ev.user,
-            talker: ev.talker_id,
+            user: e.user,
+            talker: e.talker_id,
           });
         default:
           return;

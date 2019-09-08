@@ -25,6 +25,23 @@ const compareProfile = (p1, p2) => {
   );
 };
 
+const genEmptyProfile = () => ({
+  id: shortid(),
+  pbxTenant: '',
+  pbxUsername: '',
+  pbxHostname: '',
+  pbxPort: '',
+  pbxPassword: '',
+  pbxPhoneIndex: '4',
+  pbxTurnEnabled: false,
+  parks: [],
+  ucEnabled: false,
+  ucHostname: '',
+  ucPort: '',
+  accessToken: '',
+  recentCalls: [],
+});
+
 class AuthStore extends BaseStore {
   // 'stopped'
   // 'connecting'
@@ -143,7 +160,7 @@ class AuthStore extends BaseStore {
       return false;
     }
     if (!p.pbxPassword && !p.accessToken) {
-      routerStore.goToProfileUpdate(p.id);
+      routerStore.goToPageUpdateProfile(p.id);
       Toast.error('The profile password is empty');
       return true;
     }
@@ -184,33 +201,25 @@ class AuthStore extends BaseStore {
       if (p.pbxPassword || p.accessToken) {
         this.signIn(p.id);
       } else {
-        routerStore.goToProfileUpdate(p.id);
+        routerStore.goToPageUpdateProfile(p.id);
       }
       return;
     }
     //
     const newP = {
-      id: shortid(),
+      ...genEmptyProfile(),
       pbxTenant: tenant,
       pbxUsername: user,
       pbxHostname: host,
       pbxPort: port,
-      pbxPassword: '',
-      pbxPhoneIndex: '4',
-      pbxTurnEnabled: false,
-      parks: [],
-      ucEnabled: false,
-      ucHostname: '',
-      ucPort: '',
       accessToken: _wn,
-      recentCalls: [],
     };
     //
     this.upsertProfile(newP);
     if (newP.accessToken) {
       this.signIn(newP.id);
     } else {
-      routerStore.goToProfileUpdate(newP.id);
+      routerStore.goToPageUpdateProfile(newP.id);
     }
   };
 
@@ -238,5 +247,5 @@ class AuthStore extends BaseStore {
 const authStore = new AuthStore();
 authStore.loadProfilesFromLocalStorage();
 
-export { compareProfile };
+export { compareProfile, genEmptyProfile };
 export default authStore;

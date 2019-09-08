@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import { AppState, Platform } from 'react-native';
 
-import authStore from '../shared/authStore';
+import authStore from './authStore';
 
 const keysInCustomNotification = [
   'body',

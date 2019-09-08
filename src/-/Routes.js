@@ -29,8 +29,6 @@ import GroupChatsRecent from '../components/group-chats-recent';
 import Notifications from '../components/notifications';
 import PBXAuth from '../components/pbx-auth';
 import PhonebooksBrowse from '../components/phonebooks-browse';
-import ProfileUpdate from '../components/profile-update';
-import ProfilesCreate from '../components/profiles-create';
 import Settings from '../components/settings';
 import SIPAuth from '../components/sip-auth';
 import Tabbar from '../components/tabbar';
@@ -79,12 +77,8 @@ Object.assign(routerStore, {
   goToPhonebooksBrowse: withTimeout(() =>
     history.push('/auth/phonebooks/browse'),
   ),
-  goToProfilesCreate: withTimeout(() => history.push('/profiles/create')),
   goToProfileSignin: withTimeout(profile =>
     history.push(`/profile/${profile}/signin`),
-  ),
-  goToProfileUpdate: withTimeout(profile =>
-    history.push(`/profile/${profile}/update`),
   ),
   goToSettings: withTimeout(() => history.push('/auth/settings')),
   goToNewCallPark: withTimeout(profile =>
@@ -96,8 +90,6 @@ Object.assign(routerStore, {
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <WithoutStatusBar>
-      <Route exact path="/profiles/create" component={ProfilesCreate} />
-      <Route exact path="/profile/:profile/update" component={ProfileUpdate} />
       <Route
         path="/auth"
         render={() => (
