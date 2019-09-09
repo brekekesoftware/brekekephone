@@ -38,7 +38,7 @@ merge(variables, {
   toolbarDefaultBg: '#e0e0e0',
   tabDefaultBg: '#e0e0e0',
   get btnTextSize() {
-    return this.fontSizeBase * 1.1;
+    return this.fontSizeBase;
   },
 });
 
@@ -46,6 +46,8 @@ merge(variables, {
 merge(variables, {
   brekekeGreen: '#74bf53',
   brekekeDarkGreen: '#65af45',
+  brekekeDanger: '#f12d55',
+  brekekeAction: '#007aff',
   brekekeShade0: '#ffffff',
   brekekeShade1: '#f9f9f9',
   brekekeShade2: '#f1f1f1',

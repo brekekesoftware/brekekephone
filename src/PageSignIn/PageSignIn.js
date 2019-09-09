@@ -3,12 +3,12 @@ import { View } from 'native-base';
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import authStore from '../mobx/authStore';
-import routerStore from '../mobx/routerStore';
 import AppHeader from '../shared/AppHeader';
+import authStore from '../shared/authStore';
 import { setUrlParams } from '../shared/deeplink';
 import LinearGradient from '../shared/LinearGradient';
 import registerStyle from '../shared/registerStyle';
+import routerStore from '../shared/routerStore';
 import StatusBar from '../shared/StatusBar';
 import v from '../shared/variables';
 import SignInProfileItem, { NoServer } from './SignInProfileItem';
@@ -49,10 +49,10 @@ class PageSignIn extends React.Component {
       >
         <StatusBar transparent />
         <AppHeader
-          white
+          createBtnWhite
           text="Servers"
-          subText={`${l} SERVER${l > 1 ? 'S' : ''} IN TOTAL`}
-          onCreateBtnPress={!!l && routerStore.goToProfilesCreate}
+          subText={`${l} server${l > 1 ? 's' : ''} in total`}
+          onCreateBtnPress={!!l && routerStore.goToPageCreateProfile}
         />
         <View PageSignIn_Spacing />
         {!!l && (

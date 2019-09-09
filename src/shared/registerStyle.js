@@ -11,6 +11,8 @@ const autoAddPrefix = s =>
     }
     if (k === 'View') {
       k = 'ViewNB';
+    } else if (k === 'Picker') {
+      k = 'PickerNB';
     }
     if (!k.startsWith('NativeBase.')) {
       k = 'NativeBase.' + k;

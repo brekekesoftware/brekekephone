@@ -13,6 +13,8 @@ const recursiveUpdateStyle = o => {
       if (Platform.OS === 'web') {
         o[k] = 'Roboto';
       }
+    } else if (k === 'fontSize') {
+      o[k] = variables.fontSizeBase;
     } else if (k === 'elevation') {
       o[k] = 0; // Remove box shadow on android
     } else if (v && typeof v === 'object') {
