@@ -21,8 +21,6 @@ class View extends React.Component {
   };
 
   render() {
-    console.warn('pbx', contactStore.pbxUsers);
-    console.warn('uc', contactStore.ucUsers);
     return (
       <PageContact
         searchText={contactStore.searchText}
