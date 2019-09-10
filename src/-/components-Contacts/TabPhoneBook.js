@@ -1,8 +1,8 @@
+import { mdiInformationOutline, mdiPhone } from '@mdi/js';
 import {
   Body,
   Button,
   Content,
-  Icon,
   Left,
   List,
   ListItem,
@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
+import SvgIcon from '../../shared/SvgIcon';
 import SearchContact from './SearchContact';
 
 const User = p => (
@@ -31,10 +32,10 @@ const User = p => (
     </Body>
     <Right>
       <Button>
-        <Icon type="MaterialIcons" name="call" />
+        <SvgIcon path={mdiPhone} />
       </Button>
       <Button>
-        <Icon type="MaterialIcons" name="info" />
+        <SvgIcon path={mdiInformationOutline} />
       </Button>
     </Right>
   </ListItem>

@@ -1,3 +1,4 @@
+import { mdiAccountGroup, mdiArrowLeft } from '@mdi/js';
 import {
   Button,
   Container,
@@ -12,6 +13,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
+import SvgIcon from '../../shared/SvgIcon';
 import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
 
@@ -22,12 +24,12 @@ class PageInComingCall extends React.Component {
         <Header transparent>
           <Left>
             <Button transparent>
-              <Icon type="MaterialIcons" name="arrow-back" />
+              <SvgIcon path={mdiArrowLeft} />
             </Button>
           </Left>
           <Right>
             <Button transparent>
-              <Icon type="MaterialIcons" name="group" />
+              <SvgIcon path={mdiAccountGroup} />
             </Button>
           </Right>
         </Header>

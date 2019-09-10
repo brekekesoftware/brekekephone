@@ -1,11 +1,16 @@
-import { mdiPhoneForward, mdiPhoneHangup, mdiPhoneOff } from '@mdi/js';
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiPhoneForward,
+  mdiPhoneHangup,
+  mdiPhoneOff,
+} from '@mdi/js';
 import {
   Button,
   Container,
   Content,
   H2,
   Header,
-  Icon,
   Left,
   Text,
   Thumbnail,
@@ -27,7 +32,7 @@ class TransferAttend extends React.Component {
         <Header transparent>
           <Left>
             <Button onPress={p.back}>
-              <Icon type="MaterialIcons" name="arrow-back" />
+              <SvgIcon path={mdiArrowLeft} />
             </Button>
           </Left>
         </Header>
@@ -42,7 +47,7 @@ class TransferAttend extends React.Component {
               <H2>{call?.partyName}</H2>
             </View>
             <View center>
-              <Icon type="MaterialIcons" name="arrow-forward" />
+              <SvgIcon path={mdiArrowRight} />
             </View>
             <View center>
               <Thumbnail source={{ uri: usertarget?.avatar }} />

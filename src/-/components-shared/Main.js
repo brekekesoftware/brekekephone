@@ -1,7 +1,8 @@
-import { Icon } from 'native-base';
+import { mdiArrowLeft } from '@mdi/js';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import SvgIcon from '../../shared/SvgIcon';
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -81,7 +82,7 @@ const Main = p => (
       <Text style={st.navbarTitle}>{p.title}</Text>
       {p.onBack && (
         <TouchableOpacity style={st.navbarBack}>
-          <Icon name="arrow-back" type="MaterialIcons" />
+          <SvgIcon path={mdiArrowLeft} />
         </TouchableOpacity>
       )}
       {p.onNext && (
