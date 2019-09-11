@@ -28,14 +28,8 @@ Rn.TextInput = forwardRef((p, ref) => {
     <RnTextInput
       {...p}
       style={[p.style, focusing && s.TextInput__focusing]}
-      onFocus={flow(
-        () => setFocusing(true),
-        p.onFocus,
-      )}
-      onBlur={flow(
-        () => setFocusing(false),
-        p.onBlur,
-      )}
+      onFocus={flow([() => setFocusing(true), p.onFocus].filter(f => f))}
+      onBlur={flow([() => setFocusing(false), p.onBlur].filter(f => f))}
     />
   );
 });
