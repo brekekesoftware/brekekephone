@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import arrToMap from '../../shared/arrToMap';
 import chatStore from '../../shared/chatStore';
 import contactStore from '../../shared/contactStore';
 import routerStore from '../../shared/routerStore';
+import arrToMap from '../../utils/arrToMap';
 import ChatsHome from '../components-Chats/Chats-Home';
 
 @observer

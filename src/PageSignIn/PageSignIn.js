@@ -7,10 +7,10 @@ import AppHeader from '../shared/AppHeader';
 import authStore from '../shared/authStore';
 import { setUrlParams } from '../shared/deeplink';
 import LinearGradient from '../shared/LinearGradient';
-import registerStyle from '../shared/registerStyle';
 import routerStore from '../shared/routerStore';
 import StatusBar from '../shared/StatusBar';
-import v from '../shared/variables';
+import registerStyle from '../style/registerStyle';
+import v from '../style/variables';
 import SignInProfileItem, { NoServer } from './SignInProfileItem';
 
 const s = registerStyle(v => ({

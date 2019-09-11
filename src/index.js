@@ -11,7 +11,7 @@ import { AppRegistry } from 'react-native';
 import App from './App';
 import brandSrc from './assets/brand.png';
 import iconSrc from './assets/icon.png';
-import { registerPushNotification } from './utils/pushNotification';
+import { registerPushNotification } from './shared/pushNotification';
 
 const AppSelection = () => {
   const [browser, setBrowser] = useState(!isIOS && !isAndroid);

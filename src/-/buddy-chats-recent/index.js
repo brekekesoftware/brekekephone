@@ -3,14 +3,13 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import arrToMap from '../../shared/arrToMap';
 import chatStore from '../../shared/chatStore';
 import contactStore from '../../shared/contactStore';
 import pickFile from '../../shared/pickFile';
 import routerStore from '../../shared/routerStore';
 import saveBlob from '../../shared/saveBlob';
-import stripTags from '../../shared/stripTags';
 import Toast from '../../shared/Toast';
+import arrToMap from '../../utils/arrToMap';
 import ChatsDetail from '../components-Chats/Chat-Detail';
 
 const monthName = [
@@ -120,7 +119,7 @@ class View extends React.Component {
     const mini = isMiniChat(chat, prev);
     const created = chat.created && formatTime(chat.created);
     const file = chatStore.filesMap[chat.file];
-    const text = stripTags(chat.text);
+    const text = chat.text;
 
     if (mini) {
       return {

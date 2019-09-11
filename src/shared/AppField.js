@@ -5,9 +5,9 @@ import { transparentize } from 'polished';
 import React from 'react';
 import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
-import registerStyle from './registerStyle';
+import registerStyle from '../style/registerStyle';
+import v from '../style/variables';
 import SvgIcon from './SvgIcon';
-import v from './variables';
 
 const s = registerStyle(v => ({
   View: {

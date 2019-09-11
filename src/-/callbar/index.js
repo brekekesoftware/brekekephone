@@ -3,12 +3,12 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import arrToMap from '../../shared/arrToMap';
 import authStore from '../../shared/authStore';
 import callStore from '../../shared/callStore';
 import LoudSpeaker from '../../shared/LoudSpeaker';
 import routerStore from '../../shared/routerStore';
 import Toast from '../../shared/Toast';
+import arrToMap from '../../utils/arrToMap';
 import UI from './ui';
 
 @observer

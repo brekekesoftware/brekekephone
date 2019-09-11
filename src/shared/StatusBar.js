@@ -3,8 +3,8 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
-import registerStyle from './registerStyle';
-import v from './variables';
+import registerStyle from '../style/registerStyle';
+import v from '../style/variables';
 
 registerStyle(v => ({
   View: {

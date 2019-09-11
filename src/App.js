@@ -1,4 +1,4 @@
-import './shared/polyfill';
+import './utils/polyfill';
 
 import { StyleProvider } from 'native-base';
 import React from 'react';
@@ -8,10 +8,10 @@ import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
 import PageCreateProfile from './PageCreateProfile/PageCreateProfile';
-import PageSignIn from './PageSignin/PageSignIn';
+import PageSignIn from './PageSignIn/PageSignIn';
 import PageUpdateProfile from './PageUpdateProfile/PageUpdateProfile';
-import nativeBaseTheme from './shared/nativeBaseTheme';
 import { history } from './shared/routerStore';
+import nativeBaseTheme from './style/nativeBaseTheme';
 
 class App extends React.Component {
   componentDidMount() {

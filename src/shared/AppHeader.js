@@ -2,7 +2,7 @@ import { mdiKeyboardBackspace, mdiPlus } from '@mdi/js';
 import { Button, Text, View } from 'native-base';
 import React from 'react';
 
-import registerStyle from './registerStyle';
+import registerStyle from '../style/registerStyle';
 import SvgIcon from './SvgIcon';
 
 registerStyle(v => ({

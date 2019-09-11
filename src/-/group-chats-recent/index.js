@@ -3,12 +3,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import arrToMap from '../../shared/arrToMap';
 import chatStore from '../../shared/chatStore';
 import contactStore from '../../shared/contactStore';
 import routerStore from '../../shared/routerStore';
-import stripTags from '../../shared/stripTags';
 import Toast from '../../shared/Toast';
+import arrToMap from '../../utils/arrToMap';
 import UI from './ui';
 
 const monthName = [
@@ -127,7 +126,7 @@ class View extends React.Component {
     const prev = this.chatById[this.chatIds[index - 1]] || {};
     const mini = isMiniChat(chat, prev);
     const created = formatTime(chat.created);
-    const text = stripTags(chat.text);
+    const text = chat.text;
 
     if (mini) {
       return {

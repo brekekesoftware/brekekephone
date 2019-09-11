@@ -1,7 +1,7 @@
 import { View } from 'native-base';
 import React from 'react';
 
-import registerStyle from './registerStyle';
+import registerStyle from '../style/registerStyle';
 
 registerStyle(v => ({
   View: {

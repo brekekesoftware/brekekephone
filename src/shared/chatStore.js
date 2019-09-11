@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy';
 import uniq from 'lodash/uniq';
 import { action, computed, observable } from 'mobx';
 
-import arrToMap from './arrToMap';
+import arrToMap from '../utils/arrToMap';
 import BaseStore from './BaseStore';
 
 class ChatStore extends BaseStore {

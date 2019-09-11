@@ -1,57 +1,9 @@
-@font-face {
-  font-family: 'AntDesign';
-  src: url('~react-native-vector-icons/Fonts/AntDesign.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Entypo';
-  src: url('~react-native-vector-icons/Fonts/Entypo.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'EvilIcons';
-  src: url('~react-native-vector-icons/Fonts/EvilIcons.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Feather';
-  src: url('~react-native-vector-icons/Fonts/Feather.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('~react-native-vector-icons/Fonts/FontAwesome.ttf')
-    format('truetype');
-}
-@font-face {
-  font-family: 'Foundation';
-  src: url('~react-native-vector-icons/Fonts/Foundation.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Ionicons';
-  src: url('~react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'MaterialCommunityIcons';
-  src: url('~react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')
-    format('truetype');
-}
-@font-face {
-  font-family: 'MaterialIcons';
-  src: url('~react-native-vector-icons/Fonts/MaterialIcons.ttf')
-    format('truetype');
-}
-@font-face {
-  font-family: 'Octicons';
-  src: url('~react-native-vector-icons/Fonts/Octicons.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'SimpleLineIcons';
-  src: url('~react-native-vector-icons/Fonts/SimpleLineIcons.ttf')
-    format('truetype');
-}
-@font-face {
-  font-family: 'Zocial';
-  src: url('~react-native-vector-icons/Fonts/Zocial.ttf') format('truetype');
-}
-
 $brekekeGreen: #74bf53;
+$fontFamily: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC',
+  'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial',
+  'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+$fontSize: 13px;
+
 html,
 body,
 #root {
@@ -59,13 +11,10 @@ body,
   flex-direction: column;
   position: relative;
   width: 100%;
-  min-width: 320px;
   height: 100%;
-  font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica',
-    'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol';
-  font-size: 13px;
+  min-width: 320px;
+  font-family: $fontFamily;
+  font-size: $fontSize;
 }
 ::-webkit-scrollbar {
   width: 3px;

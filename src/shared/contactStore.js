@@ -1,6 +1,6 @@
 import { computed, observable } from 'mobx';
 
-import arrToMap from './arrToMap';
+import arrToMap from '../utils/arrToMap';
 import BaseStore from './BaseStore';
 
 class ContactStore extends BaseStore {

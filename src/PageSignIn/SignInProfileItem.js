@@ -13,8 +13,8 @@ import { TouchableOpacity } from 'react-native';
 import AppField from '../shared/AppField';
 import AppFooterButtons from '../shared/AppFooterButtons';
 import authStore from '../shared/authStore';
-import registerStyle from '../shared/registerStyle';
 import routerStore from '../shared/routerStore';
+import registerStyle from '../style/registerStyle';
 
 registerStyle(v => ({
   View: {
