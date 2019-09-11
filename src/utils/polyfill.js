@@ -1,4 +1,4 @@
-import './polyfill.web';
+import './polyfill-shared';
 
 import {
   mediaDevices,

@@ -9,7 +9,7 @@
     "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\""
   },
   "dependencies": {
-    "@mdi/js": "4.3.95",
+    "@mdi/js": "4.4.95",
     "@react-native-community/async-storage": "1.6.1",
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
     "circular-json": "0.5.9",
@@ -18,6 +18,7 @@
     "es7-shim": "6.0.0",
     "eventemitter3": "4.0.0",
     "history": "4.9.0",
+    "immer": "3.2.0",
     "jssip": "github:brekekesoftware/jssip#93940bcc89214d410a63435d6da00cbfe790313c",
     "lodash": "4.17.15",
     "mobx": "5.13.0",
@@ -29,7 +30,9 @@
     "qs": "6.8.0",
     "react": "16.9.0",
     "react-native": "0.59.9",
+    "react-native-awesome-alerts": "1.2.0",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
+    "react-native-dropdown": "github:alinz/react-native-dropdown#236e2125027ac15fb1889a7be89adf911abf94d2",
     "react-native-exception-handler": "2.10.8",
     "react-native-fcm": "github:brekekesoftware/react-native-fcm#f9ce0351f68db62b2295a55c44430d0066d0f3ae",
     "react-native-fs": "2.14.1",
@@ -39,7 +42,6 @@
     "react-native-iphone-x-helper": "1.2.1",
     "react-native-keep-awake": "4.0.0",
     "react-native-linear-gradient": "2.5.6",
-    "react-native-loud-speaker": "1.0.4",
     "react-native-modal": "11.3.1",
     "react-native-modal-selector": "1.1.1",
     "react-native-progress-circle": "2.0.1",
@@ -50,8 +52,8 @@
     "react-native-webrtc": "1.75.0",
     "react-router": "5.0.1",
     "shortid": "2.2.15",
-    "striptags": "3.1.1",
-    "url-parse": "1.4.7"
+    "url-parse": "1.4.7",
+    "validatorjs": "3.17.1"
   },
   "devDependencies": {
     "@mdi/react": "1.2.1",

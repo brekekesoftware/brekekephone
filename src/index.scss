@@ -1,5 +1,3 @@
-//
-// react-native-vector-icons for native-base
 @font-face {
   font-family: 'AntDesign';
   src: url('~react-native-vector-icons/Fonts/AntDesign.ttf') format('truetype');
@@ -53,59 +51,22 @@
   src: url('~react-native-vector-icons/Fonts/Zocial.ttf') format('truetype');
 }
 
-//
-// Roboto font for web
-@font-face {
-  font-family: 'Roboto';
-  src: url('./assets/Roboto-Regular.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Roboto';
-  src: url('./assets/Roboto-Bold.ttf') format('truetype');
-  font-weight: bold;
-}
-@font-face {
-  font-family: 'Roboto';
-  src: url('./assets/Roboto-RegularItalic.ttf') format('truetype');
-  font-style: italic;
-}
-@font-face {
-  font-family: 'Roboto';
-  src: url('./assets/Roboto-BoldItalic.ttf') format('truetype');
-  font-weight: bold;
-  font-style: italic;
-}
-html,
-body {
-  font-family: 'Roboto', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI',
-    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue',
-    'Helvetica', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol'; // Add fallback
-}
-
-//
-// Other fix for react-native-web to normalize the different between the environments
+$brekekeGreen: #74bf53;
 html,
 body,
 #root {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   width: 100%;
   min-width: 320px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica',
+    'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol';
   font-size: 13px;
 }
-* {
-  outline: none !important;
-}
-div {
-  display: flex;
-  box-sizing: border-box;
-}
-input {
-  align-self: stretch;
-}
-
 ::-webkit-scrollbar {
   width: 3px;
   height: 3px;
@@ -118,10 +79,83 @@ input {
   background-color: grey;
   -webkit-border-radius: 0 !important;
 }
+* {
+  outline: none !important;
+}
 
 body.swal2-height-auto.swal2-height-auto {
   height: 100% !important;
 }
 .swal2-styled:focus {
   box-shadow: none !important;
+}
+
+//
+.AppSelection {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: $brekekeGreen;
+  background-image: linear-gradient($brekekeGreen, darken(white, 80%));
+  padding-top: 250px;
+  //
+  img {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+  }
+  .icon {
+    width: 80px;
+  }
+  .brand {
+    width: 150px;
+  }
+  //
+  .spacing {
+    height: 10px;
+  }
+  .btns {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .btns-inner {
+    display: block;
+    padding: 30px 0;
+  }
+  .btn {
+    position: relative;
+    width: 260px;
+    padding: 15px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 1.1em;
+    svg {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      top: 11px;
+      right: 10px;
+    }
+    &.app {
+      background-color: black;
+      color: white;
+      svg {
+        fill: white;
+      }
+    }
+    &.browser {
+      background-color: white;
+      color: black;
+    }
+  }
+  a {
+    text-decoration: none !important;
+  }
 }

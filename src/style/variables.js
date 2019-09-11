@@ -29,6 +29,7 @@ merge(variables, {
   segmentBorderColor: '#007aff',
   segmentBorderColorMain: '#a7a6ab',
   // titleFontfamily: 'Roboto', // Should respect font
+  fontSizeBase: 13,
   titleFontSize: 17,
   subTitleFontSize: 11,
   subtitleColor: 'black',
