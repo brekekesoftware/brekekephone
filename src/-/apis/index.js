@@ -4,14 +4,14 @@ import React from 'react';
 import { Platform } from 'react-native';
 import createId from 'shortid';
 
-import Alert from '../../shared/Alert';
-import authStore from '../../shared/authStore';
-import callStore from '../../shared/callStore';
-import chatStore from '../../shared/chatStore';
-import contactStore from '../../shared/contactStore';
-import { getPushNotificationToken } from '../../shared/pushNotification';
-import routerStore from '../../shared/routerStore';
-import Toast from '../../shared/Toast';
+import Alert from '../../---shared/Alert';
+import authStore from '../../---shared/authStore';
+import callStore from '../../---shared/callStore';
+import chatStore from '../../---shared/chatStore';
+import contactStore from '../../---shared/contactStore';
+import { getPushNotificationToken } from '../../---shared/pushNotification';
+import routerStore from '../../---shared/routerStore';
+import Toast from '../../---shared/Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
@@ -131,7 +131,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerStore.goToPageSignIn();
+      routerStore.goToPageProfileSignIn();
       return null;
     }
   };
@@ -178,7 +178,7 @@ class ApiProvider extends React.Component {
               text: 'Cancel',
               style: 'cancel',
               onPress: () => {
-                routerStore.goToPageSignIn();
+                routerStore.goToPageProfileSignIn();
                 resolve(null);
               },
             },

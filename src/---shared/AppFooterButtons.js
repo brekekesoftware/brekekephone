@@ -3,9 +3,9 @@ import { Button, Text, View } from 'native-base';
 import { transparentize } from 'polished';
 import React from 'react';
 
-import registerStyle from '../style/registerStyle';
-import v from '../style/variables';
-import SvgIcon from './SvgIcon';
+import registerStyle from '../---style/registerStyle';
+import v from '../---style/variables';
+import SvgIcon from '../shared/SvgIcon';
 
 registerStyle(v => ({
   View: {

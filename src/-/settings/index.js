@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../../shared/authStore';
-import routerStore from '../../shared/routerStore';
-import Toast from '../../shared/Toast';
+import authStore from '../../---shared/authStore';
+import routerStore from '../../---shared/routerStore';
+import Toast from '../../---shared/Toast';
 import PageSetting from '../components-Setting/PageSetting';
 
 @observer
@@ -44,7 +44,7 @@ class View extends React.Component {
         setChatBusy={this.setChatBusy}
         setStatusText={this.setStatusText}
         submitStatusText={this.submitStatusText}
-        signout={routerStore.goToPageSignIn}
+        signout={routerStore.goToPageProfileSignIn}
       />
     );
   }

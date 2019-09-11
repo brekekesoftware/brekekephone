@@ -44,7 +44,7 @@ const goBack = fn => {
 Object.assign(routerStore, {
   goBack,
   goBackFn: fn => () => goBack(fn),
-  goToPageSignIn: withTimeout(() => history.push(`/`)),
+  goToPageProfileSignIn: withTimeout(() => history.push(`/`)),
   goToPageCreateProfile: withTimeout(() => history.push(`/create-profile`)),
   goToPageUpdateProfile: withTimeout(id =>
     history.push(`/update-profile/${id}`),

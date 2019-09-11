@@ -13,7 +13,7 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import routerStore from '../../shared/routerStore';
+import routerStore from '../../---shared/routerStore';
 import SvgIcon from '../../shared/SvgIcon';
 
 const Park = p => (

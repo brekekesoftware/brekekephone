@@ -1,38 +1,29 @@
-import { View } from 'native-base';
 import React from 'react';
-import { Platform, StatusBar, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
-import registerStyle from '../style/registerStyle';
-import v from '../style/variables';
+import v from '../variables';
 
-registerStyle(v => ({
-  View: {
-    MyStatusBar: {
-      backgroundColor: v.brekekeShade3,
-      borderColor: v.brekekeShade4,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      ...Platform.select({
-        ios: {
-          height: getStatusBarHeight(true),
-        },
-      }),
-      '.transparent': {
-        backgroundColor: 'transparent',
-        borderColor: 'transparent',
+const s = StyleSheet.create({
+  StatusBar: {
+    backgroundColor: v.brekekeShade2,
+    borderColor: v.brekekeShade3,
+    borderBottomWidth: 1,
+    ...Platform.select({
+      ios: {
+        height: getStatusBarHeight(true),
       },
-    },
+    }),
   },
-}));
+  StatusBar__transparent: {
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+  },
+});
 
-const MyStatusBar = p =>
+const StatusBar = p =>
   Platform.OS === 'web' ? null : (
-    <View MyStatusBar transparent={p.transparent}>
-      <StatusBar
-        backgroundColor={p.transparent ? 'transparent' : v.brekekeShade3}
-        barStyle="dark-content"
-      />
-    </View>
+    <View style={[s.StatusBar, p.transparent && s.StatusBar__transparent]} />
   );
 
-export default MyStatusBar;
+export default StatusBar;

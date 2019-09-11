@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import authStore from '../../shared/authStore';
-import callStore from '../../shared/callStore';
-import routerStore from '../../shared/routerStore';
+import authStore from '../../---shared/authStore';
+import callStore from '../../---shared/callStore';
+import routerStore from '../../---shared/routerStore';
 import FooterTabs from '../components-Home/FooterTabs';
 
 @observer

@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import FormCreateProfile from '../PageCreateProfile/FormCreateProfile';
-import authStore from '../shared/authStore';
-import routerStore from '../shared/routerStore';
+import authStore from '../---shared/authStore';
+import routerStore from '../---shared/routerStore';
+import FormCreateProfile from './FormCreateProfile';
 
 const PageUpdateProfile = observer(p => {
-  const goBack = routerStore.goBackFn(routerStore.goToPageSignIn);
+  const goBack = routerStore.goBackFn(routerStore.goToPageProfileSignIn);
   return (
     <FormCreateProfile
       isUpdate

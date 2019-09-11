@@ -1,7 +1,7 @@
 import { View } from 'native-base';
 import React from 'react';
 
-import registerStyle from '../style/registerStyle';
+import registerStyle from '../---style/registerStyle';
 import AppFooterButtons from './AppFooterButtons';
 
 registerStyle(v => ({

@@ -5,7 +5,6 @@ import {
   Content,
   H2,
   Header,
-  Icon,
   Left,
   Right,
   Text,

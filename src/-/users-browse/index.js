@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../../shared/authStore';
-import contactStore from '../../shared/contactStore';
-import routerStore from '../../shared/routerStore';
+import authStore from '../../---shared/authStore';
+import contactStore from '../../---shared/contactStore';
+import routerStore from '../../---shared/routerStore';
 import PageContact from '../components-Contacts/PageContact';
 
 @observer

@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import { Button, Container, Content, Form, Text } from 'native-base';
 import React from 'react';
 
-import authStore from '../../shared/authStore';
-import routerStore from '../../shared/routerStore';
-import Toast from '../../shared/Toast';
+import authStore from '../../---shared/authStore';
+import routerStore from '../../---shared/routerStore';
+import Toast from '../../---shared/Toast';
 import Headers from '../components-Home/Header';
 import { TextInput } from '../components-shared/Input';
 

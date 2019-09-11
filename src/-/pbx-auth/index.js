@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../../shared/authStore';
-import routerStore from '../../shared/routerStore';
-import Toast from '../../shared/Toast';
+import authStore from '../../---shared/authStore';
+import routerStore from '../../---shared/routerStore';
+import Toast from '../../---shared/Toast';
 import UI from './ui';
 
 @observer
@@ -49,7 +49,7 @@ class View extends React.Component {
       <UI
         retryable={!!authStore.profile}
         failure={this.props.failure}
-        abort={routerStore.goToPageSignIn}
+        abort={routerStore.goToPageProfileSignIn}
         retry={this.auth}
       />
     );

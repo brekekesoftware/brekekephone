@@ -10,11 +10,11 @@ import { Button, Text, View } from 'native-base';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import AppField from '../shared/AppField';
-import AppFooterButtons from '../shared/AppFooterButtons';
-import authStore from '../shared/authStore';
-import routerStore from '../shared/routerStore';
-import registerStyle from '../style/registerStyle';
+import AppField from '../---shared/AppField';
+import AppFooterButtons from '../---shared/AppFooterButtons';
+import authStore from '../---shared/authStore';
+import routerStore from '../---shared/routerStore';
+import registerStyle from '../---style/registerStyle';
 
 registerStyle(v => ({
   View: {

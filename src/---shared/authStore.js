@@ -1,7 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import shortid from 'shortid';
 
-import arrToMap from '../utils/arrToMap';
+import arrToMap from '../---utils/arrToMap';
 import AsyncStorage from './AsyncStorage';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';

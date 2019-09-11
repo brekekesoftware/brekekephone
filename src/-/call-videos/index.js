@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import callStore from '../../shared/callStore';
+import callStore from '../../---shared/callStore';
 import UI from './ui';
 
 @observer

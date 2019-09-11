@@ -10,12 +10,12 @@ import { action, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import AppBody from '../shared/AppBody';
-import AppField from '../shared/AppField';
-import AppFieldHeader from '../shared/AppFieldHeader';
-import AppFooter from '../shared/AppFooter';
-import AppHeader from '../shared/AppHeader';
-import { genEmptyProfile } from '../shared/authStore';
+import AppBody from '../---shared/AppBody';
+import AppField from '../---shared/AppField';
+import AppFieldHeader from '../---shared/AppFieldHeader';
+import AppFooter from '../---shared/AppFooter';
+import AppHeader from '../---shared/AppHeader';
+import { genEmptyProfile } from '../---shared/authStore';
 
 @observer
 class FormCreateProfile extends React.Component {

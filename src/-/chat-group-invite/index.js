@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import chatStore from '../../shared/chatStore';
-import contactStore from '../../shared/contactStore';
-import routerStore from '../../shared/routerStore';
-import Toast from '../../shared/Toast';
+import chatStore from '../../---shared/chatStore';
+import contactStore from '../../---shared/contactStore';
+import routerStore from '../../---shared/routerStore';
+import Toast from '../../---shared/Toast';
 import UI from './ui';
 
 @observer

@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../../shared/callStore';
-import LoudSpeaker from '../../shared/LoudSpeaker';
-import routerStore from '../../shared/routerStore';
-import Toast from '../../shared/Toast';
-import arrToMap from '../../utils/arrToMap';
+import callStore from '../../---shared/callStore';
+import LoudSpeaker from '../../---shared/LoudSpeaker';
+import routerStore from '../../---shared/routerStore';
+import Toast from '../../---shared/Toast';
+import arrToMap from '../../---utils/arrToMap';
 import PageCalling from '../components-Incoming/PageCalling';
 
 @observer
