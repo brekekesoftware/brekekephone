@@ -8,7 +8,7 @@ import routerStore from '../---shared/routerStore';
 import v from '../---style/variables';
 import Layout from '../shared/Layout';
 import LinearGradient from '../shared/LinearGradient';
-import SignInProfileItem, { NoServer } from './SignInProfileItem';
+import ProfileSignInItem, { NoServer } from './ProfileSignInItem';
 
 const s = StyleSheet.create({
   PageProfileSignIn: {
@@ -48,7 +48,7 @@ class PageProfileSignIn extends React.Component {
             transparent: true,
             title: 'Servers',
             description: `${l} server${l > 1 ? 's' : ''} in total`,
-            onPlusBtnPress: !!l && routerStore.goToPageCreateProfile,
+            onPlusBtnPress: !!l && routerStore.goToPageProfileCreate,
           }}
         >
           <View style={s.PageProfileSignIn_Spacing} />
@@ -58,7 +58,7 @@ class PageProfileSignIn extends React.Component {
               style={s.PageProfileSignIn_ListServers}
               data={authStore.profiles}
               renderItem={({ item, index }) => (
-                <SignInProfileItem last={index === l - 1} {...item} />
+                <ProfileSignInItem last={index === l - 1} {...item} />
               )}
               keyExtractor={item => item.id}
             />

@@ -18,7 +18,7 @@ import registerStyle from '../---style/registerStyle';
 
 registerStyle(v => ({
   View: {
-    SignInProfileItem: {
+    ProfileSignInItem: {
       position: 'relative',
       backgroundColor: 'white',
       marginBottom: v.padding,
@@ -37,7 +37,7 @@ registerStyle(v => ({
         padding: v.padding,
       },
     },
-    SignInProfileItem_Btns: {
+    ProfileSignInItem_Btns: {
       position: 'absolute',
       bottom: v.padding,
       left: v.padding,
@@ -45,11 +45,11 @@ registerStyle(v => ({
     },
   },
   Text: {
-    SignInProfileItem_NoServer: {
+    ProfileSignInItem_NoServer: {
       fontWeight: 'bold',
       fontSize: 1.2 * v.fontSizeBase,
     },
-    SignInProfileItem_CreateNewServerBtnTxt: {
+    ProfileSignInItem_CreateNewServerBtnTxt: {
       flex: 1,
       fontWeight: 'bold',
       textAlign: 'center',
@@ -57,7 +57,7 @@ registerStyle(v => ({
     },
   },
   Button: {
-    SignInProfileItem_CreateNewServerBtn: {
+    ProfileSignInItem_CreateNewServerBtn: {
       textAlign: 'center',
       backgroundColor: v.brekekeDarkGreen,
       borderRadius: v.brekekeBorderRadius,
@@ -65,9 +65,9 @@ registerStyle(v => ({
   },
 }));
 
-const SignInProfileItem = p => (
-  <View SignInProfileItem last={p.last}>
-    <TouchableOpacity onPress={() => routerStore.goToPageUpdateProfile(p.id)}>
+const ProfileSignInItem = p => (
+  <View ProfileSignInItem last={p.last}>
+    <TouchableOpacity onPress={() => routerStore.goToPageProfileUpdate(p.id)}>
       <AppField
         name="USERNAME"
         value={p.pbxUsername}
@@ -83,11 +83,11 @@ const SignInProfileItem = p => (
       value={p.ucEnabled}
       onValueChange={v => authStore.upsertProfile({ id: p.id, ucEnabled: v })}
     />
-    <View SignInProfileItem_Btns>
+    <View ProfileSignInItem_Btns>
       <AppFooterButtons
         onBackBtnPress={() => authStore.removeProfile(p.id)}
         backIcon={mdiClose}
-        onResetBtnPress={() => routerStore.goToPageUpdateProfile(p.id)}
+        onResetBtnPress={() => routerStore.goToPageProfileUpdate(p.id)}
         resetIcon={mdiDotsHorizontal}
         onSaveBtnPress={() => authStore.signIn(p.id)}
         saveText="SIGN IN"
@@ -97,21 +97,21 @@ const SignInProfileItem = p => (
 );
 
 const NoServer = () => (
-  <View SignInProfileItem noServer>
-    <Text SignInProfileItem_NoServer>No server</Text>
+  <View ProfileSignInItem noServer>
+    <Text ProfileSignInItem_NoServer>No server</Text>
     <Text note>There is no server created</Text>
     <Text note>Tap the below button to create one</Text>
-    <View SignInProfileItem_Btns>
+    <View ProfileSignInItem_Btns>
       <Button
-        SignInProfileItem_CreateNewServerBtn
+        ProfileSignInItem_CreateNewServerBtn
         create
-        onPress={routerStore.goToPageCreateProfile}
+        onPress={routerStore.goToPageProfileCreate}
       >
-        <Text SignInProfileItem_CreateNewServerBtnTxt>CREATE NEW SERVER</Text>
+        <Text ProfileSignInItem_CreateNewServerBtnTxt>CREATE NEW SERVER</Text>
       </Button>
     </View>
   </View>
 );
 
 export { NoServer };
-export default SignInProfileItem;
+export default ProfileSignInItem;

@@ -160,7 +160,7 @@ class AuthStore extends BaseStore {
       return false;
     }
     if (!p.pbxPassword && !p.accessToken) {
-      routerStore.goToPageUpdateProfile(p.id);
+      routerStore.goToPageProfileUpdate(p.id);
       Toast.error('The profile password is empty');
       return true;
     }
@@ -201,7 +201,7 @@ class AuthStore extends BaseStore {
       if (p.pbxPassword || p.accessToken) {
         this.signIn(p.id);
       } else {
-        routerStore.goToPageUpdateProfile(p.id);
+        routerStore.goToPageProfileUpdate(p.id);
       }
       return;
     }
@@ -219,7 +219,7 @@ class AuthStore extends BaseStore {
     if (newP.accessToken) {
       this.signIn(newP.id);
     } else {
-      routerStore.goToPageUpdateProfile(newP.id);
+      routerStore.goToPageProfileUpdate(newP.id);
     }
   };
 

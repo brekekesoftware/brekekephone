@@ -18,7 +18,7 @@ import AppHeader from '../---shared/AppHeader';
 import { genEmptyProfile } from '../---shared/authStore';
 
 @observer
-class FormCreateProfile extends React.Component {
+class ProfileCreateForm extends React.Component {
   @observable profile = {
     ...genEmptyProfile(),
     ...cloneDeep(this.props.updatingProfile),
@@ -185,4 +185,4 @@ class FormCreateProfile extends React.Component {
   }
 }
 
-export default FormCreateProfile;
+export default ProfileCreateForm;

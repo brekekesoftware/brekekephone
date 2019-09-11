@@ -10,9 +10,9 @@ import { Route, Router, Switch } from 'react-router';
 import { history } from './---shared/routerStore';
 import nativeBaseTheme from './---style/nativeBaseTheme';
 import AppOld from './-/AppOld';
-import PageCreateProfile from './-profile/PageCreateProfile';
+import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
-import PageUpdateProfile from './-profile/PageUpdateProfile';
+import PageProfileUpdate from './-profile/PageProfileUpdate';
 
 class App extends React.Component {
   componentDidMount() {
@@ -26,8 +26,8 @@ class App extends React.Component {
         <Router history={history}>
           <Switch>
             <Route exact path="/" component={PageProfileSignIn} />
-            <Route path="/create-profile" component={PageCreateProfile} />
-            <Route path="/update-profile/:id" component={PageUpdateProfile} />
+            <Route path="/create-profile" component={PageProfileCreate} />
+            <Route path="/update-profile/:id" component={PageProfileUpdate} />
             <Route component={AppOld} />
           </Switch>
         </Router>

@@ -3,12 +3,12 @@ import React from 'react';
 
 import authStore from '../---shared/authStore';
 import routerStore from '../---shared/routerStore';
-import FormCreateProfile from './FormCreateProfile';
+import ProfileCreateForm from './ProfileCreateForm';
 
-const PageUpdateProfile = observer(p => {
+const PageProfileUpdate = observer(p => {
   const goBack = routerStore.goBackFn(routerStore.goToPageProfileSignIn);
   return (
-    <FormCreateProfile
+    <ProfileCreateForm
       isUpdate
       updatingProfile={authStore.getProfile(p.match.params.id)}
       onBackBtnPress={goBack}
@@ -20,4 +20,4 @@ const PageUpdateProfile = observer(p => {
   );
 });
 
-export default PageUpdateProfile;
+export default PageProfileUpdate;
