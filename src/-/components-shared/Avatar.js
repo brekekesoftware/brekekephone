@@ -3,7 +3,7 @@ import { Thumbnail, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 const st = StyleSheet.create({
   status: {
@@ -21,17 +21,17 @@ class Avatar extends React.Component {
         <Thumbnail source={{ uri: p.source }} />
         {p.status === 'online' && (
           <View style={st.status}>
-            <SvgIcon path={mdiRecord} color="#74bf53" />
+            <Icon path={mdiRecord} color="#74bf53" />
           </View>
         )}
         {p.status === 'offline' && (
           <View style={st.status}>
-            <SvgIcon path={mdiRecord} color="#8a8a8f" />
+            <Icon path={mdiRecord} color="#8a8a8f" />
           </View>
         )}
         {p.status === 'busy' && (
           <View style={st.status}>
-            <SvgIcon path={mdiRecord} color="#FF2D55" />
+            <Icon path={mdiRecord} color="#FF2D55" />
           </View>
         )}
       </View>

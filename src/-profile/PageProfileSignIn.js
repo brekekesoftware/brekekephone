@@ -6,16 +6,11 @@ import authStore from '../---shared/authStore';
 import { setUrlParams } from '../---shared/deeplink';
 import routerStore from '../---shared/routerStore';
 import v from '../---style/variables';
+import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
-import LinearGradient from '../shared/LinearGradient';
 import ProfileSignInItem, { NoServer } from './ProfileSignInItem';
 
 const s = StyleSheet.create({
-  PageProfileSignIn: {
-    display: 'flex',
-    height: '100%',
-    minHeight: 550,
-  },
   PageProfileSignIn_ListServers: {
     height: '70%',
     minHeight: 320,
@@ -39,10 +34,7 @@ class PageProfileSignIn extends React.Component {
   render() {
     const l = authStore.profiles.length;
     return (
-      <LinearGradient
-        style={s.PageProfileSignIn}
-        colors={[v.brekekeGreen, '#2a2a2a']}
-      >
+      <BrekekeGradient>
         <Layout
           header={{
             transparent: true,
@@ -65,7 +57,7 @@ class PageProfileSignIn extends React.Component {
           )}
           {!l && <NoServer />}
         </Layout>
-      </LinearGradient>
+      </BrekekeGradient>
     );
   }
 }

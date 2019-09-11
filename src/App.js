@@ -13,6 +13,7 @@ import AppOld from './-/AppOld';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
+import Page404 from './shared/Page404';
 
 class App extends React.Component {
   componentDidMount() {
@@ -28,7 +29,8 @@ class App extends React.Component {
             <Route exact path="/" component={PageProfileSignIn} />
             <Route path="/create-profile" component={PageProfileCreate} />
             <Route path="/update-profile/:id" component={PageProfileUpdate} />
-            <Route component={AppOld} />
+            <Route path="/auth" component={AppOld} />
+            <Route component={Page404} />
           </Switch>
         </Router>
       </StyleProvider>

@@ -4,7 +4,7 @@ import { Body, Button, Left, ListItem, Right, Text, View } from 'native-base';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import Avatar from '../components-shared/Avatar';
 import Modal from '../components-shared/NativeModal';
 import SearchContact from './SearchContact';
@@ -55,16 +55,16 @@ class TabUsers extends React.Component {
                 </Body>
                 <Right>
                   <Button onPress={() => p.chat(u.id)}>
-                    <SvgIcon path={mdiMessage} />
+                    <Icon path={mdiMessage} />
                   </Button>
                   {Platform.OS !== 'web' && (
                     <Button onPress={() => p.toggleModal(u.id)}>
-                      <SvgIcon path={mdiPhone} />
+                      <Icon path={mdiPhone} />
                     </Button>
                   )}
                   {Platform.OS === 'web' && (
                     <Button onPress={() => p.callVoice(u.id)}>
-                      <SvgIcon path={mdiPhone} />
+                      <Icon path={mdiPhone} />
                     </Button>
                   )}
                 </Right>
@@ -83,7 +83,7 @@ class TabUsers extends React.Component {
                 <View>
                   <ListItem listUser onPress={() => p.callVoice(p.iduser)}>
                     <Left>
-                      <SvgIcon path={mdiPhone} />
+                      <Icon path={mdiPhone} />
                     </Left>
                     <Body>
                       <Text>VOICE CALLING</Text>
@@ -91,7 +91,7 @@ class TabUsers extends React.Component {
                   </ListItem>
                   <ListItem listUser onPress={() => p.callVideo(p.iduser)}>
                     <Left>
-                      <SvgIcon path={mdiVideo} />
+                      <Icon path={mdiVideo} />
                     </Left>
                     <Body>
                       <Text>VIDEO CALLING</Text>

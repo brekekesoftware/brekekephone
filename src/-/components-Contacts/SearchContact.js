@@ -2,7 +2,7 @@ import { mdiClose } from '@mdi/js';
 import { Button, Header, Input, Item } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 class SearchContact extends React.Component {
   render() {
@@ -17,7 +17,7 @@ class SearchContact extends React.Component {
           />
           {!!p.value && (
             <Button transparent onPress={() => p.setValue('')}>
-              <SvgIcon path={mdiClose} width="18" height="18" />
+              <Icon path={mdiClose} width="18" height="18" />
             </Button>
           )}
         </Item>

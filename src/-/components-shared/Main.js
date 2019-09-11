@@ -2,7 +2,7 @@ import { mdiArrowLeft } from '@mdi/js';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -82,7 +82,7 @@ const Main = p => (
       <Text style={st.navbarTitle}>{p.title}</Text>
       {p.onBack && (
         <TouchableOpacity style={st.navbarBack}>
-          <SvgIcon path={mdiArrowLeft} />
+          <Icon path={mdiArrowLeft} />
         </TouchableOpacity>
       )}
       {p.onNext && (

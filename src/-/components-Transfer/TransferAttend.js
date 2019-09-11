@@ -18,7 +18,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 class TransferAttend extends React.Component {
   render() {
@@ -32,7 +32,7 @@ class TransferAttend extends React.Component {
         <Header transparent>
           <Left>
             <Button onPress={p.back}>
-              <SvgIcon path={mdiArrowLeft} />
+              <Icon path={mdiArrowLeft} />
             </Button>
           </Left>
         </Header>
@@ -47,7 +47,7 @@ class TransferAttend extends React.Component {
               <H2>{call?.partyName}</H2>
             </View>
             <View center>
-              <SvgIcon path={mdiArrowRight} />
+              <Icon path={mdiArrowRight} />
             </View>
             <View center>
               <Thumbnail source={{ uri: usertarget?.avatar }} />
@@ -58,7 +58,7 @@ class TransferAttend extends React.Component {
           <View av_transfer>
             <View btncall>
               <Button bordered dark transparent onPress={p.hangup}>
-                <SvgIcon path={mdiPhoneOff} />
+                <Icon path={mdiPhoneOff} />
               </Button>
               <View>
                 <Text>CANCEL</Text>
@@ -67,7 +67,7 @@ class TransferAttend extends React.Component {
             </View>
             <View btncall>
               <Button bordered danger onPress={p.stop}>
-                <SvgIcon path={mdiPhoneHangup} />
+                <Icon path={mdiPhoneHangup} />
               </Button>
               <View>
                 <Text>END CALL &</Text>
@@ -76,7 +76,7 @@ class TransferAttend extends React.Component {
             </View>
             <View btncall>
               <Button bordered dark onPress={p.join}>
-                <SvgIcon path={mdiPhoneForward} />
+                <Icon path={mdiPhoneForward} />
               </Button>
               <View>
                 <Text>CONFERENCE</Text>

@@ -7,7 +7,7 @@ import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import registerStyle from '../---style/registerStyle';
 import v from '../---style/variables';
-import SvgIcon from '../shared/SvgIcon';
+import Icon from '../shared/Icon';
 
 const s = registerStyle(v => ({
   View: {
@@ -121,7 +121,7 @@ const renderAppField = p => {
       </View>
       {(iconRender && iconRender(p.value)) ||
         (p.icon && (
-          <SvgIcon
+          <Icon
             path={p.icon}
             style={s._AppField_Icon}
             pointerEvents={p.inputElement && 'none'}
@@ -136,7 +136,7 @@ const AppField = p => {
       ...p,
       iconRender: () => (
         <Button AppField_Btn create onPress={p.onCreateBtnPress}>
-          <SvgIcon
+          <Icon
             style={s._AppField_CreateRemoveIcon}
             path={mdiPlus}
             width="100%"
@@ -152,7 +152,7 @@ const AppField = p => {
       ...p,
       iconRender: () => (
         <Button AppField_Btn remove onPress={p.onRemoveBtnPress}>
-          <SvgIcon
+          <Icon
             style={s._AppField_CreateRemoveIcon}
             path={mdiClose}
             width="100%"

@@ -2,7 +2,7 @@ import { mdiAccount, mdiDesktopClassic, mdiHome, mdiUsb } from '@mdi/js';
 import { Body, Left, List, ListItem, Text } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 class PBX extends React.Component {
   render() {
@@ -15,7 +15,7 @@ class PBX extends React.Component {
         </ListItem>
         <ListItem listUser noBorder>
           <Left>
-            <SvgIcon path={mdiAccount} />
+            <Icon path={mdiAccount} />
           </Left>
           <Body>
             <Text note>USERNAME</Text>
@@ -24,7 +24,7 @@ class PBX extends React.Component {
         </ListItem>
         <ListItem listUser noBorder>
           <Left>
-            <SvgIcon path={mdiHome} />
+            <Icon path={mdiHome} />
           </Left>
           <Body>
             <Text note>TENANT</Text>
@@ -33,7 +33,7 @@ class PBX extends React.Component {
         </ListItem>
         <ListItem listUser noBorder>
           <Left>
-            <SvgIcon path={mdiDesktopClassic} />
+            <Icon path={mdiDesktopClassic} />
           </Left>
           <Body>
             <Text note>HOST NAME</Text>
@@ -42,7 +42,7 @@ class PBX extends React.Component {
         </ListItem>
         <ListItem listUser noBorder>
           <Left>
-            <SvgIcon path={mdiUsb} />
+            <Icon path={mdiUsb} />
           </Left>
           <Body>
             <Text note>PORT</Text>

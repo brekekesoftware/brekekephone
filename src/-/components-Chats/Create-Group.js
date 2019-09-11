@@ -12,7 +12,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import Headers from '../components-Home/Header';
 import Avatar from '../components-shared/Avatar';
 import { TextInput } from '../components-shared/Input';
@@ -43,7 +43,7 @@ class CreateGroup extends React.Component {
         <Content>
           <View center>
             <Button>
-              <SvgIcon width="50" height="50" path={mdiPlusCircleOutline} />
+              <Icon width="50" height="50" path={mdiPlusCircleOutline} />
             </Button>
           </View>
           <Form>

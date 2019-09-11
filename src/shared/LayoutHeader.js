@@ -2,7 +2,7 @@ import { mdiKeyboardBackspace, mdiPlus } from '@mdi/js';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import SvgIcon from '../shared/SvgIcon';
+import Icon from '../shared/Icon';
 import v from '../variables';
 import StatusBar from './StatusBar';
 
@@ -72,7 +72,7 @@ const Header = p => (
         ]}
         onPress={p.onPlusBtnPress}
       >
-        <SvgIcon path={mdiPlus} color={p.transparent ? 'black' : 'white'} />
+        <Icon path={mdiPlus} color={p.transparent ? 'black' : 'white'} />
       </TouchableOpacity>
     )}
     {p.onBackBtnPress && (
@@ -80,7 +80,7 @@ const Header = p => (
         style={s.LayoutHeader_BackBtn}
         onPress={p.onBackBtnPress}
       >
-        <SvgIcon path={mdiKeyboardBackspace} />
+        <Icon path={mdiKeyboardBackspace} />
       </TouchableOpacity>
     )}
   </View>

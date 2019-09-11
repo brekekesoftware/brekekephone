@@ -2,7 +2,7 @@ import { mdiPhone, mdiPhoneMissed } from '@mdi/js';
 import { Body, Button, Left, ListItem, Right, Text, View } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import Avatar from '../components-shared/Avatar';
 
 const monthName = [
@@ -49,26 +49,26 @@ class User extends React.Component {
 
           {p.incoming && p.answered && (
             <View>
-              <SvgIcon path={mdiPhoneMissed} />
+              <Icon path={mdiPhoneMissed} />
               <Text note>at {formatTime(p.created)}</Text>
             </View>
           )}
           {p.incoming && !p.answered && (
             <View>
-              <SvgIcon path={mdiPhoneMissed} />
+              <Icon path={mdiPhoneMissed} />
               <Text note>Missed at {formatTime(p.created)}</Text>
             </View>
           )}
           {!p.incoming && (
             <View>
-              <SvgIcon path={mdiPhoneMissed} />
+              <Icon path={mdiPhoneMissed} />
               <Text note>Outgoing at {formatTime(p.created)}</Text>
             </View>
           )}
         </Body>
         <Right>
           <Button onPress={p.callBack}>
-            <SvgIcon path={mdiPhone} />
+            <Icon path={mdiPhone} />
           </Button>
         </Right>
       </ListItem>

@@ -3,7 +3,7 @@ import { Button, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import { std } from '../styleguide';
 
 const st = StyleSheet.create({
@@ -63,10 +63,10 @@ class KeyPad extends React.Component {
         <View style={st.conPhoneCall}>
           <View style={st.btnCall}></View>
           <Button style={st.btnCall} success onPress={p.callVoice}>
-            <SvgIcon path={mdiPhone} />
+            <Icon path={mdiPhone} />
           </Button>
           <Button style={st.btnCall} onPress={() => p.onPress('delete')}>
-            <SvgIcon path={mdiBackspace} />
+            <Icon path={mdiBackspace} />
           </Button>
         </View>
       </View>

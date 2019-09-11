@@ -10,7 +10,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import Hearders from '../components-Home/Header';
 import TabUsers from './TabUsers';
 
@@ -48,7 +48,7 @@ class PageContacts extends React.Component {
           style={{ backgroundColor: '#74bf53' }}
           position="bottomRight"
         >
-          <SvgIcon path={mdiAccountPlusOutline} />
+          <Icon path={mdiAccountPlusOutline} />
         </Fab>
       </Container>
     );

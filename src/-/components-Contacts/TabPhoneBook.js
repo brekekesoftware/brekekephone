@@ -13,7 +13,7 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import SearchContact from './SearchContact';
 
 const User = p => (
@@ -32,10 +32,10 @@ const User = p => (
     </Body>
     <Right>
       <Button>
-        <SvgIcon path={mdiPhone} />
+        <Icon path={mdiPhone} />
       </Button>
       <Button>
-        <SvgIcon path={mdiInformationOutline} />
+        <Icon path={mdiInformationOutline} />
       </Button>
     </Right>
   </ListItem>

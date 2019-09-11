@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import v from '../variables';
-import SvgIcon from './SvgIcon';
+import Icon from './Icon';
 
 const s = StyleSheet.create({
   ActionButtons: {
@@ -43,13 +43,13 @@ const ActionButtons = p => (
       style={[s.ActionButtons_Btn, s.ActionButtons_Btn__back]}
       onPress={p.onBackBtnPress}
     >
-      <SvgIcon path={p.backIcon || mdiKeyboardBackspace} color={v.brekekeRed} />
+      <Icon path={p.backIcon || mdiKeyboardBackspace} color={v.brekekeRed} />
     </TouchableOpacity>
     <TouchableOpacity
       style={[s.ActionButtons_Btn, s.ActionButtons_Btn__reset]}
       onPress={p.onResetBtnPress}
     >
-      <SvgIcon path={p.resetIcon || mdiCached} />
+      <Icon path={p.resetIcon || mdiCached} />
     </TouchableOpacity>
     <TouchableOpacity
       style={[s.ActionButtons_Btn, s.ActionButtons_Btn__save]}

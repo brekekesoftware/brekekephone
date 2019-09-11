@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import Progress from 'react-native-progress-circle';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import { std } from '../styleguide';
 import Scroll from './Scroll';
 
@@ -24,12 +24,12 @@ const File = p => (
     </View>
     {p.state === 'waiting' && (
       <Button onPress={p.reject}>
-        <SvgIcon path={mdiClose} />
+        <Icon path={mdiClose} />
       </Button>
     )}
     {p.incoming && p.state === 'waiting' && (
       <Button onPress={p.accept}>
-        <SvgIcon path={mdiCheck} />
+        <Icon path={mdiCheck} />
       </Button>
     )}
     {p.state === 'started' && (
@@ -42,7 +42,7 @@ const File = p => (
           shadowColor={std.color.shade4}
           bgColor={std.color.shade0}
         >
-          <SvgIcon path={mdiClose} />
+          <Icon path={mdiClose} />
         </Progress>
       </Button>
     )}

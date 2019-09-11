@@ -12,7 +12,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import CallBar from './CallBar';
 import HangUpComponent from './HangUp';
 
@@ -23,12 +23,12 @@ class PageInComingCall extends React.Component {
         <Header transparent>
           <Left>
             <Button transparent>
-              <SvgIcon path={mdiArrowLeft} />
+              <Icon path={mdiArrowLeft} />
             </Button>
           </Left>
           <Right>
             <Button transparent>
-              <SvgIcon path={mdiAccountGroup} />
+              <Icon path={mdiAccountGroup} />
             </Button>
           </Right>
         </Header>

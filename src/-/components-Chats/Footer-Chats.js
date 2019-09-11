@@ -2,7 +2,7 @@ import { mdiEmoticonOutline, mdiPlay, mdiPlus } from '@mdi/js';
 import { Body, Button, Footer, Form, Input, Left, Right } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 class FooterChats extends React.Component {
   render() {
@@ -11,7 +11,7 @@ class FooterChats extends React.Component {
       <Footer footerChat>
         <Left>
           <Button onPress={p.pickFile}>
-            <SvgIcon path={mdiPlus} bgcolor="#74bf53" />
+            <Icon path={mdiPlus} bgcolor="#74bf53" />
           </Button>
         </Left>
         <Body>
@@ -27,10 +27,10 @@ class FooterChats extends React.Component {
         </Body>
         <Right>
           <Button>
-            <SvgIcon path={mdiEmoticonOutline} />
+            <Icon path={mdiEmoticonOutline} />
           </Button>
           <Button>
-            <SvgIcon path={mdiPlay} />
+            <Icon path={mdiPlay} />
           </Button>
         </Right>
       </Footer>

@@ -15,7 +15,7 @@ import { Button, Left, Text, View } from 'native-base';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 class CallBar extends React.Component {
   render() {
@@ -27,7 +27,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && (
             <Left>
               <Button transparent dark bordered onPress={p.transfer}>
-                <SvgIcon path={mdiCallSplit} />
+                <Icon path={mdiCallSplit} />
               </Button>
               <Text>TRANSFER</Text>
             </Left>
@@ -35,7 +35,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && (
             <Left>
               <Button transparent dark bordered onPress={p.park}>
-                <SvgIcon path={mdiAlphaPCircleOutline} />
+                <Icon path={mdiAlphaPCircleOutline} />
               </Button>
               <Text>PARK</Text>
             </Left>
@@ -43,7 +43,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && !p.localVideoEnabled && (
             <Left>
               <Button transparent dark bordered onPress={p.enableVideo}>
-                <SvgIcon path={mdiVideoOutline} />
+                <Icon path={mdiVideoOutline} />
               </Button>
               <Text>VIDEO</Text>
             </Left>
@@ -51,7 +51,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && p.localVideoEnabled && (
             <Left>
               <Button transparent dark bordered onPress={p.disableVideo}>
-                <SvgIcon path={mdiVideoOffOutline} />
+                <Icon path={mdiVideoOffOutline} />
               </Button>
               <Text>VIDEO</Text>
             </Left>
@@ -59,7 +59,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== 'web' && (
             <Left>
               <Button transparent dark bordered onPress={p.onOpenLoudSpeaker}>
-                <SvgIcon path={mdiVolumeHigh} />
+                <Icon path={mdiVolumeHigh} />
               </Button>
               <Text>SPEAKER</Text>
             </Left>
@@ -67,7 +67,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && p.loudspeaker && Platform.OS !== 'web' && (
             <Left>
               <Button transparent dark bordered onPress={p.onCloseLoudSpeaker}>
-                <SvgIcon path={mdiVolumeMedium} />
+                <Icon path={mdiVolumeMedium} />
               </Button>
               <Text>SPEAKER</Text>
             </Left>
@@ -75,7 +75,7 @@ class CallBar extends React.Component {
           {p.answered && p.holding && (
             <Left>
               <Button transparent dark bordered onPress={p.unhold}>
-                <SvgIcon path={mdiPlayCircleOutline} />
+                <Icon path={mdiPlayCircleOutline} />
               </Button>
               <Text>UNHOLD</Text>
             </Left>
@@ -85,7 +85,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && !p.recording && (
             <Left>
               <Button transparent dark bordered onPress={p.startRecording}>
-                <SvgIcon path={mdiRecordCircleOutline} />
+                <Icon path={mdiRecordCircleOutline} />
               </Button>
               <Text>RECORDING</Text>
             </Left>
@@ -93,7 +93,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && p.recording && (
             <Left>
               <Button transparent dark bordered onPress={p.stopRecording}>
-                <SvgIcon path={mdiRecord} />
+                <Icon path={mdiRecord} />
               </Button>
               <Text>RECORDING</Text>
             </Left>
@@ -101,7 +101,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && (
             <Left>
               <Button transparent dark bordered onPress={p.dtmf}>
-                <SvgIcon path={mdiDialpad} />
+                <Icon path={mdiDialpad} />
               </Button>
               <Text>KEYPAD</Text>
             </Left>
@@ -109,7 +109,7 @@ class CallBar extends React.Component {
           {p.answered && !p.holding && (
             <Left>
               <Button transparent dark bordered onPress={p.hold}>
-                <SvgIcon path={mdiPauseCircleOutline} />
+                <Icon path={mdiPauseCircleOutline} />
               </Button>
               <Text>HOLD</Text>
             </Left>

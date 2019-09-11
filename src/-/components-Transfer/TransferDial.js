@@ -13,7 +13,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 import SearchContact from '../components-Contacts/SearchContact';
 import Headers from '../components-Home/Header';
 
@@ -71,10 +71,10 @@ class TransferDial extends React.Component {
                     </Body>
                     <Right>
                       <Button onPress={() => p.transferAttended(u.number)}>
-                        <SvgIcon path={mdiPhoneForward} />
+                        <Icon path={mdiPhoneForward} />
                       </Button>
                       <Button onPress={() => p.transferBlind(u.number)}>
-                        <SvgIcon path={mdiPhone} />
+                        <Icon path={mdiPhone} />
                       </Button>
                     </Right>
                   </ListItem>

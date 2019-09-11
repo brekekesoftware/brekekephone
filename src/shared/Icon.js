@@ -3,19 +3,19 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 const s = StyleSheet.create({
-  SvgIcon: {
+  Icon: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
 });
 
-const SvgIcon = ({ size = 24, path, color, ...p }) => (
-  <View {...p} style={[s.SvgIcon, p.style]}>
+const Icon = ({ size = 24, path, color, ...p }) => (
+  <View {...p} style={[s.Icon, p.style]}>
     <Svg viewBox="0 0 24 24" width={size} height={size}>
       <Path d={path} fill={color} />
     </Svg>
   </View>
 );
 
-export default SvgIcon;
+export default Icon;

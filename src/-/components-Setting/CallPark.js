@@ -14,7 +14,7 @@ import React from 'react';
 import { FlatList } from 'react-native';
 
 import routerStore from '../../---shared/routerStore';
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 const Park = p => (
   <ListItem callpark>
@@ -24,7 +24,7 @@ const Park = p => (
     </Left>
     <Right>
       <Button>
-        <SvgIcon path={mdiPencil} />
+        <Icon path={mdiPencil} />
       </Button>
     </Right>
   </ListItem>
@@ -59,7 +59,7 @@ class CallParkComponent extends React.Component {
           </ListItem>
         </List>
         <Button full iconLeft danger onPress={p?.signout}>
-          <SvgIcon path={mdiExitToApp} />
+          <Icon path={mdiExitToApp} />
           <Text>LOG OUT</Text>
         </Button>
       </Content>

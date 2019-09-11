@@ -8,7 +8,7 @@ import {
 import { Button, Footer, FooterTab, Text } from 'native-base';
 import React from 'react';
 
-import SvgIcon from '../../shared/SvgIcon';
+import Icon from '../../shared/Icon';
 
 class FooterTabs extends React.Component {
   render() {
@@ -21,25 +21,25 @@ class FooterTabs extends React.Component {
       >
         <FooterTab>
           <Button onPress={p.pressUsers}>
-            <SvgIcon path={mdiAccountCircleOutline} />
+            <Icon path={mdiAccountCircleOutline} />
             <Text>CONTACTS</Text>
           </Button>
           <Button onPress={p.pressCallsRecent}>
-            <SvgIcon path={mdiPhoneOutline} />
+            <Icon path={mdiPhoneOutline} />
             <Text>RECENTS</Text>
           </Button>
           <Button onPress={p.pressCallsCreate}>
-            <SvgIcon path={mdiNumeric} />
+            <Icon path={mdiNumeric} />
             <Text>CALL</Text>
           </Button>
           {p.chatsEnabled && (
             <Button onPress={p.pressChats}>
-              <SvgIcon path={mdiMessageTextOutline} />
+              <Icon path={mdiMessageTextOutline} />
               <Text>CHAT</Text>
             </Button>
           )}
           <Button onPress={p.pressSettings}>
-            <SvgIcon path={mdiSettingsOutline} />
+            <Icon path={mdiSettingsOutline} />
             <Text>SETTINGS</Text>
           </Button>
         </FooterTab>
