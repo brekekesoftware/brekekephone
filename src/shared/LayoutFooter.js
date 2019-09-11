@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import v from '../variables';
 import ActionButtons from './ActionButtons';
 
 const s = StyleSheet.create({

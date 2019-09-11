@@ -10,9 +10,9 @@ import { action, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import AppField from '../---shared/AppField';
-import AppFieldHeader from '../---shared/AppFieldHeader';
 import { genEmptyProfile } from '../---shared/authStore';
+import AppField from '../shared/Field';
+import FieldGroupHeader from '../shared/FieldGroupHeader';
 import Layout from '../shared/Layout';
 
 @observer
@@ -98,7 +98,7 @@ class ProfileCreateForm extends React.Component {
       >
         {!(isUpdate && !updatingProfile) && (
           <React.Fragment>
-            <AppFieldHeader text="PBX" />
+            <FieldGroupHeader title="PBX" />
             <AppField
               autoFocus
               name="USERNAME"
@@ -138,7 +138,7 @@ class ProfileCreateForm extends React.Component {
               value={turnEnabled}
               onValueChange={this.setF('turnEnabled')}
             />
-            <AppFieldHeader text="UC" hasMargin />
+            <FieldGroupHeader title="UC" hasMargin />
             <AppField
               type="Switch"
               name="UC"
@@ -159,7 +159,7 @@ class ProfileCreateForm extends React.Component {
               value={ucPort}
               onValueChange={this.setF('ucPort')}
             />
-            <AppFieldHeader text="PARKS" hasMargin />
+            <FieldGroupHeader title="PARKS" hasMargin />
             {parks.map((p, i) => (
               <AppField
                 disabled

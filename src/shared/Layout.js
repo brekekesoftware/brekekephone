@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import v from '../variables';
 import LayoutFooter from './LayoutFooter';
 import LayoutHeader from './LayoutHeader';
 
