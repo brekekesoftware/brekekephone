@@ -36,7 +36,7 @@ const s = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 50,
-    backgroundColor: v.brekekeDarkGreen,
+    backgroundColor: v.brekekeGreenBtn,
   },
   LayoutHeader_PlusBtn__white: {
     backgroundColor: 'white',
