@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { ScrollView } from 'react-native';
 
-import { closureMobxSet } from '../../---shared/BaseStore';
+import { closureMobxSet } from '../BaseStore';
 import Divider from '../components-shared/Divider';
 import { TextInput } from '../components-shared/Input';
 import SwitchStatus from '../components-shared/Switch';

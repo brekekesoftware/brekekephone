@@ -3,14 +3,14 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import chatStore from '../../---shared/chatStore';
-import contactStore from '../../---shared/contactStore';
-import pickFile from '../../---shared/pickFile';
-import routerStore from '../../---shared/routerStore';
-import saveBlob from '../../---shared/saveBlob';
-import Toast from '../../---shared/Toast';
-import arrToMap from '../../---utils/arrToMap';
+import arrToMap from '../arrToMap';
+import chatStore from '../chatStore';
 import ChatsDetail from '../components-Chats/Chat-Detail';
+import contactStore from '../contactStore';
+import pickFile from '../pickFile';
+import routerStore from '../routerStore';
+import saveBlob from '../saveBlob';
+import Toast from '../Toast';
 
 const monthName = [
   'Jan',

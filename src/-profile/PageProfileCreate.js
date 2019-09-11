@@ -1,7 +1,7 @@
 import React from 'react';
 
-import authStore from '../---shared/authStore';
-import routerStore from '../---shared/routerStore';
+import authStore from '../-/authStore';
+import routerStore from '../-/routerStore';
 import ProfileCreateForm from './ProfileCreateForm';
 
 const PageProfileCreate = () => {

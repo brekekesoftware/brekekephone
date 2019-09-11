@@ -3,7 +3,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
-import routerStore, { history } from '../---shared/routerStore';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
@@ -30,6 +29,7 @@ import GroupChatsRecent from './group-chats-recent';
 import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
+import routerStore, { history } from './routerStore';
 import Settings from './settings';
 import SIPAuth from './sip-auth';
 import Tabbar from './tabbar';

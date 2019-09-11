@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-import { rem, std } from '../../-/styleguide';
+import { rem, std } from '../styleguide';
 
 const st = StyleSheet.create({
   main: {

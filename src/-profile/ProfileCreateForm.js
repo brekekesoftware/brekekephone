@@ -10,7 +10,7 @@ import { action, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { genEmptyProfile } from '../---shared/authStore';
+import { genEmptyProfile } from '../-/authStore';
 import AppField from '../shared/Field';
 import FieldGroupHeader from '../shared/FieldGroupHeader';
 import Layout from '../shared/Layout';

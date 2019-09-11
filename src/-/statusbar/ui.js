@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
-import { std } from '../../-/styleguide';
+import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   bar: Platform.select({

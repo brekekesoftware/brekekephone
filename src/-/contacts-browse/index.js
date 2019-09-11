@@ -4,8 +4,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import routerStore from '../../---shared/routerStore';
-import Toast from '../../---shared/Toast';
+import routerStore from '../routerStore';
+import Toast from '../Toast';
 import UI from './ui';
 
 const numberOfContactsPerPage = 30;

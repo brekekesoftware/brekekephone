@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../../---shared/authStore';
-import callStore from '../../---shared/callStore';
-import routerStore from '../../---shared/routerStore';
-import Toast from '../../---shared/Toast';
+import authStore from '../authStore';
+import callStore from '../callStore';
+import routerStore from '../routerStore';
+import Toast from '../Toast';
 import UI from './ui';
 
 @observer

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import routerStore from '../---shared/routerStore';
+import routerStore from '../-/routerStore';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 

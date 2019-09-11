@@ -1,7 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { Platform } from 'react-native';
 
-import arrToMap from '../---utils/arrToMap';
+import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 import LoudSpeaker from './LoudSpeaker';
 

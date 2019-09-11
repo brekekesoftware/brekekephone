@@ -1,4 +1,3 @@
-import './---utils/polyfill';
 import './polyfill';
 
 import { StyleProvider } from 'native-base';
@@ -7,9 +6,9 @@ import { Platform } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { Route, Router, Switch } from 'react-router';
 
-import { history } from './---shared/routerStore';
-import nativeBaseTheme from './---style/nativeBaseTheme';
 import AppOld from './-/AppOld';
+import nativeBaseTheme from './-/nativeBaseTheme';
+import { history } from './-/routerStore';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import Progress from 'react-native-progress-circle';
 
-import { rem, std } from '../../-/styleguide';
+import { rem, std } from '../styleguide';
 
 const st = StyleSheet.create({
   main: {

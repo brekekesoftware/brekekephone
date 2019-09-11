@@ -9,8 +9,8 @@ import {
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import authStore from '../---shared/authStore';
-import routerStore from '../---shared/routerStore';
+import authStore from '../-/authStore';
+import routerStore from '../-/routerStore';
 import ActionButtons from '../shared/ActionButtons';
 import Field from '../shared/Field';
 import v from '../variables';

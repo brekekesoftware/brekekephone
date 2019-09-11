@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import chatStore from '../../---shared/chatStore';
-import contactStore from '../../---shared/contactStore';
-import routerStore from '../../---shared/routerStore';
-import arrToMap from '../../---utils/arrToMap';
+import arrToMap from '../arrToMap';
+import chatStore from '../chatStore';
 import ChatsHome from '../components-Chats/Chats-Home';
+import contactStore from '../contactStore';
+import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {

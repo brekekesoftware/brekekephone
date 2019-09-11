@@ -13,8 +13,8 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import routerStore from '../../---shared/routerStore';
 import Icon from '../../shared/Icon';
+import routerStore from '../routerStore';
 
 const Park = p => (
   <ListItem callpark>

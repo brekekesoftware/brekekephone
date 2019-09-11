@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 import { AppRegistry } from 'react-native';
 
-import { registerPushNotification } from './---shared/pushNotification';
+import { registerPushNotification } from './-/pushNotification';
 import App from './App';
 import brandSrc from './assets/brand.png';
 import iconSrc from './assets/icon.png';

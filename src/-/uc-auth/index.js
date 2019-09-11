@@ -4,11 +4,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../../---shared/authStore';
-import chatStore from '../../---shared/chatStore';
-import contactStore from '../../---shared/contactStore';
-import routerStore from '../../---shared/routerStore';
-import Toast from '../../---shared/Toast';
+import authStore from '../authStore';
+import chatStore from '../chatStore';
+import contactStore from '../contactStore';
+import routerStore from '../routerStore';
+import Toast from '../Toast';
 import UI from './ui';
 
 @observer

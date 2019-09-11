@@ -2,11 +2,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../../---shared/callStore';
-import contactStore from '../../---shared/contactStore';
-import routerStore from '../../---shared/routerStore';
-import Toast from '../../---shared/Toast';
+import callStore from '../callStore';
 import TransferAttend from '../components-Transfer/TransferAttend';
+import contactStore from '../contactStore';
+import routerStore from '../routerStore';
+import Toast from '../Toast';
 
 @observer
 class View extends React.Component {

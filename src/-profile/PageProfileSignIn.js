@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import authStore from '../---shared/authStore';
-import { setUrlParams } from '../---shared/deeplink';
-import routerStore from '../---shared/routerStore';
-import v from '../---style/variables';
+import authStore from '../-/authStore';
+import { setUrlParams } from '../-/deeplink';
+import routerStore from '../-/routerStore';
+import v from '../-/variables';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
