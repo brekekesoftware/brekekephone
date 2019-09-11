@@ -1,10 +1,10 @@
+import { mdiPhone, mdiPhoneForward } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import {
   Body,
   Button,
   Container,
   Content,
-  Icon,
   Left,
   ListItem,
   Right,
@@ -13,6 +13,7 @@ import {
 } from 'native-base';
 import React from 'react';
 
+import SvgIcon from '../../shared/SvgIcon';
 import SearchContact from '../components-Contacts/SearchContact';
 import Headers from '../components-Home/Header';
 
@@ -70,10 +71,10 @@ class TransferDial extends React.Component {
                     </Body>
                     <Right>
                       <Button onPress={() => p.transferAttended(u.number)}>
-                        <Icon type="MaterialIcons" name="phone-forwarded" />
+                        <SvgIcon path={mdiPhoneForward} />
                       </Button>
                       <Button onPress={() => p.transferBlind(u.number)}>
-                        <Icon type="MaterialIcons" name="call" />
+                        <SvgIcon path={mdiPhone} />
                       </Button>
                     </Right>
                   </ListItem>

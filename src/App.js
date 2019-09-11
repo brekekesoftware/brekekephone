@@ -8,7 +8,7 @@ import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
 import PageCreateProfile from './PageCreateProfile/PageCreateProfile';
-import PageSignIn from './PageSignIn/PageSignIn';
+import PageSignIn from './PageSignin/PageSignIn';
 import PageUpdateProfile from './PageUpdateProfile/PageUpdateProfile';
 import nativeBaseTheme from './shared/nativeBaseTheme';
 import { history } from './shared/routerStore';
