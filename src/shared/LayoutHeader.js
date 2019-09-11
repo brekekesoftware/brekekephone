@@ -24,11 +24,10 @@ const s = StyleSheet.create({
   },
   LayoutHeader_Title: {
     fontWeight: 'bold',
-    fontSize: 2 * v.fontSize,
+    fontSize: 2.2 * v.fontSize,
   },
   LayoutHeader_Description: {
-    fontSize: 0.9 * v.fontSize,
-    color: v.brekekeShade8,
+    color: v.brekekeShade7,
   },
   LayoutHeader_PlusBtn: {
     position: 'absolute',
