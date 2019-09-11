@@ -13,6 +13,7 @@ const s = StyleSheet.create({
     overflow: 'hidden',
   },
   ActionButtons_Btn: {
+    paddingVertical: 8,
     borderRadius: 0,
     width: '25%',
   },
@@ -20,7 +21,7 @@ const s = StyleSheet.create({
     backgroundColor: v.fn.transparentize(0.9, v.brekekeRed),
   },
   ActionButtons_Btn__reset: {
-    backgroundColor: v.brekekeShade1,
+    backgroundColor: v.brekekeShade0,
   },
   ActionButtons_Btn__save: {
     width: '50%',
@@ -31,6 +32,7 @@ const s = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: 'white',
+    lineHeight: 24, // Icon height
   },
 });
 

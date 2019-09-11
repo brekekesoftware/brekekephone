@@ -76,7 +76,10 @@ const Header = p => (
       </TouchableOpacity>
     )}
     {p.onBackBtnPress && (
-      <TouchableOpacity style={s.Header_BackBtn} onPress={p.onBackBtnPress}>
+      <TouchableOpacity
+        style={s.LayoutHeader_BackBtn}
+        onPress={p.onBackBtnPress}
+      >
         <SvgIcon path={mdiKeyboardBackspace} />
       </TouchableOpacity>
     )}

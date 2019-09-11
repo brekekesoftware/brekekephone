@@ -11,8 +11,8 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     display: 'block',
-    paddingVertical: v.padding / 2,
-    paddingHorizontal: v.padding,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     backgroundColor: 'white',
   },
   LayoutFooter_Btns: {

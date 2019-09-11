@@ -10,12 +10,10 @@ import { action, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import AppBody from '../---shared/AppBody';
 import AppField from '../---shared/AppField';
 import AppFieldHeader from '../---shared/AppFieldHeader';
-import AppFooter from '../---shared/AppFooter';
-import AppHeader from '../---shared/AppHeader';
 import { genEmptyProfile } from '../---shared/authStore';
+import Layout from '../shared/Layout';
 
 @observer
 class ProfileCreateForm extends React.Component {
@@ -83,20 +81,23 @@ class ProfileCreateForm extends React.Component {
     } = this.profile;
     const { isUpdate, updatingProfile } = this.props;
     return (
-      <React.Fragment>
-        <AppHeader
-          onBackBtnPress={this.props.onBackBtnPress}
-          text={`${isUpdate ? 'Edit' : 'New'} Server`}
-          subText={
-            isUpdate
-              ? updatingProfile
-                ? updatingProfile.pbxUsername
-                : 'Server profile not found'
-              : 'Create a new sign in profile'
-          }
-        />
+      <Layout
+        header={{
+          onBackBtnPress: this.props.onBackBtnPress,
+          title: `${isUpdate ? 'Edit' : 'New'} Server`,
+          description: isUpdate
+            ? updatingProfile
+              ? updatingProfile.pbxUsername
+              : 'Server profile not found'
+            : 'Create a new sign in profile',
+        }}
+        footer={{
+          onBackBtnPress: this.props.onBackBtnPress,
+          onSaveBtnPress: this.onSaveBtnPress,
+        }}
+      >
         {!(isUpdate && !updatingProfile) && (
-          <AppBody hasFooter>
+          <React.Fragment>
             <AppFieldHeader text="PBX" />
             <AppField
               autoFocus
@@ -174,13 +175,9 @@ class ProfileCreateForm extends React.Component {
               onValueChange={this.addingParkOnChange}
               onCreateBtnPress={this.addingParkOnCreate}
             />
-          </AppBody>
+          </React.Fragment>
         )}
-        <AppFooter
-          onBackBtnPress={this.props.onBackBtnPress}
-          onSaveBtnPress={this.onSaveBtnPress}
-        />
-      </React.Fragment>
+      </Layout>
     );
   }
 }

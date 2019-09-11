@@ -7,7 +7,7 @@ import LayoutHeader from './LayoutHeader';
 
 const s = StyleSheet.create({
   Layout: {
-    padding: v.padding,
+    padding: 15,
     flex: 1,
   },
   Layout__noPadding: {

@@ -21,9 +21,9 @@ const v = {
   brekekeShade9: fn.darken(0.1 + 0.9, 'white'),
   //
   brekekeGreen: '#74bf53',
-  brekekeGreenBtn: fn.darken(0.2, '#74bf53'),
+  brekekeGreenBtn: fn.darken(0.1, '#74bf53'),
   brekekeRed: '#f12d55',
-  brekekeRedBtn: fn.darken(0.2, '#f12d55'),
+  brekekeRedBtn: fn.darken(0.1, '#f12d55'),
 };
 
 export default v;

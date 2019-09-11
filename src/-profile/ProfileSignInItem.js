@@ -11,10 +11,10 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import AppField from '../---shared/AppField';
-import AppFooterButtons from '../---shared/AppFooterButtons';
 import authStore from '../---shared/authStore';
 import routerStore from '../---shared/routerStore';
 import registerStyle from '../---style/registerStyle';
+import ActionButtons from '../shared/ActionButtons';
 
 registerStyle(v => ({
   View: {
@@ -84,7 +84,7 @@ const ProfileSignInItem = p => (
       onValueChange={v => authStore.upsertProfile({ id: p.id, ucEnabled: v })}
     />
     <View ProfileSignInItem_Btns>
-      <AppFooterButtons
+      <ActionButtons
         onBackBtnPress={() => authStore.removeProfile(p.id)}
         backIcon={mdiClose}
         onResetBtnPress={() => routerStore.goToPageProfileUpdate(p.id)}
