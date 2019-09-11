@@ -1,71 +1,67 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import omit from 'lodash/omit';
-import { Button, Switch, Text, View } from 'native-base';
-import { transparentize } from 'polished';
 import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import registerStyle from '../---style/registerStyle';
-import v from '../---style/variables';
 import Icon from '../shared/Icon';
+import v from '../variables';
 
-const s = registerStyle(v => ({
-  View: {
-    AppField: {
-      position: 'relative',
-      paddingTop: v.padding,
-      paddingBottom: 5,
-      paddingHorizontal: 7,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderColor: v.brekekeShade4,
-      '.disabled': {
-        backgroundColor: v.brekekeShade1,
-      },
-    },
-    AppField_Inner: {
-      position: 'static',
-    },
+const s = StyleSheet.create({
+  Field: {
+    position: 'relative',
+    paddingTop: 15,
+    paddingBottom: 5,
+    paddingHorizontal: 7,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: v.brekekeShade2,
   },
-  Text: {
-    AppField_Name: {
-      position: 'relative',
-      fontSize: 0.8 * v.fontSizeBase,
-      color: v.brekekeShade7,
-    },
-    AppField_Value: {
-      position: 'relative',
-      fontWeight: 'bold',
-    },
+  Field__disabled: {
+    backgroundColor: v.brekekeShade0,
   },
-  Switch: {
-    AppField_Switch: {
-      position: 'absolute',
-      top: 22,
-      right: 5,
-    },
+  Field_Inner: {
+    position: 'static',
   },
-  Button: {
-    AppField_Btn: {
-      position: 'absolute',
-      top: 15,
-      right: 5,
-      width: 40,
-      height: 30,
-      borderRadius: v.brekekeBorderRadius,
-      '.create': {
-        backgroundColor: transparentize(0.9, v.brekekeGreen),
-      },
-      '.remove': {
-        backgroundColor: transparentize(0.9, v.brekekeDanger),
-      },
-    },
+  Field_Name: {
+    position: 'relative',
+    fontSize: v.fontSizeSmall,
+    color: v.brekekeShade6,
   },
-  _AppField_Icon: {
+  Field_Value: {
+    position: 'relative',
+    fontWeight: 'bold',
+  },
+  Field_Switch: {
     position: 'absolute',
-    top: v.padding,
-    right: v.padding,
+    top: 22,
+    right: 5,
   },
-  _AppField_TextInput: {
+  Field_Btn: {
+    position: 'absolute',
+    top: 15,
+    right: 5,
+    width: 40,
+    height: 30,
+    borderRadius: v.borderRadius,
+  },
+  Field_Btn__create: {
+    backgroundColor: v.fn.transparentize(0.9, v.brekekeGreen),
+  },
+  Field_Btn__remove: {
+    backgroundColor: v.fn.transparentize(0.9, v.brekekeRed),
+  },
+  Field_Icon: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+  },
+  Field_TextInput: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -76,20 +72,20 @@ const s = registerStyle(v => ({
     paddingLeft: 7,
     paddingRight: 40,
     fontWeight: 'bold',
-    fontSize: v.fontSizeBase,
+    fontSize: v.fontSize,
     fontFamily: 'inherit',
   },
-  _AppField_TextInputFocusing: {
-    backgroundColor: transparentize(0.9, v.brekekeGreen),
+  Field_TextInputFocusing: {
+    backgroundColor: v.fn.transparentize(0.9, v.brekekeGreen),
   },
-}));
+});
 
 const TextInputWithFocusStyle = React.forwardRef((p, ref) => {
   const [focusing, setFocusing] = React.useState(false);
   return (
     <TextInput
       {...p}
-      style={[p.style, focusing && s._AppField_TextInputFocusing]}
+      style={[p.style, focusing && s.Field_TextInputFocusing]}
       onFocus={() => setFocusing(true)}
       onBlur={() => setFocusing(false)}
     />
@@ -100,20 +96,20 @@ const defaultValueRender = {
   Switch: v => (v ? 'Enabled' : 'Disabled'),
 };
 const defaultIconRender = {
-  Switch: v => <Switch AppField_Switch pointerEvents="none" value={v} />,
+  Switch: v => <Switch style={s.Field_Switch} pointerEvents="none" value={v} />,
 };
 
-const renderAppField = p => {
+const renderField = p => {
   const valueRender = p.valueRender || defaultValueRender[p.type];
   const iconRender = p.iconRender || defaultIconRender[p.type];
   return (
-    <View AppField disabled={p.disabled}>
-      <View AppField_Inner pointerEvents={p.disabled && 'none'}>
+    <View style={[s.Field, p.disabled && s.Field__disabled]}>
+      <View style={s.Field_Inner} pointerEvents={p.disabled && 'none'}>
         {p.inputElement}
-        <Text AppField_Name pointerEvents={p.inputElement && 'none'}>
+        <Text style={s.Field_Name} pointerEvents={p.inputElement && 'none'}>
           {p.name}
         </Text>
-        <Text AppField_Value pointerEvents={p.inputElement && 'none'}>
+        <Text style={s.Field_Value} pointerEvents={p.inputElement && 'none'}>
           {(!p.inputElement &&
             ((valueRender && valueRender(p.value)) || p.value)) ||
             '\u00A0'}
@@ -123,27 +119,29 @@ const renderAppField = p => {
         (p.icon && (
           <Icon
             path={p.icon}
-            style={s._AppField_Icon}
+            style={s.Field_Icon}
             pointerEvents={p.inputElement && 'none'}
           />
         ))}
     </View>
   );
 };
-const AppField = p => {
+const Field = p => {
   if (p.onCreateBtnPress) {
     p = {
       ...p,
       iconRender: () => (
-        <Button AppField_Btn create onPress={p.onCreateBtnPress}>
+        <TouchableOpacity
+          style={[s.Field_Btn, s.Field_Btn__create]}
+          onPress={p.onCreateBtnPress}
+        >
           <Icon
-            style={s._AppField_CreateRemoveIcon}
+            style={s.Field_CreateRemoveIcon}
             path={mdiPlus}
-            width="100%"
-            height={18}
+            size={18}
             fill={v.brekekeGreen}
           />
-        </Button>
+        </TouchableOpacity>
       ),
     };
   }
@@ -151,36 +149,38 @@ const AppField = p => {
     p = {
       ...p,
       iconRender: () => (
-        <Button AppField_Btn remove onPress={p.onRemoveBtnPress}>
+        <TouchableOpacity
+          style={[s.Field_Btn, s.Field_Btn__remove]}
+          onPress={p.onRemoveBtnPress}
+        >
           <Icon
-            style={s._AppField_CreateRemoveIcon}
+            style={s.Field_CreateRemoveIcon}
             path={mdiClose}
-            width="100%"
-            height={15}
-            fill={v.brekekeDanger}
+            size={15}
+            fill={v.brekekeRed}
           />
-        </Button>
+        </TouchableOpacity>
       ),
     };
   }
   if (!p.onValueChange || p.disabled) {
-    return renderAppField(p);
+    return renderField(p);
   }
   if (p.type === 'Switch') {
     if (p.disabled) {
-      return renderAppField(p);
+      return renderField(p);
     }
     return (
       <TouchableOpacity onPress={() => p.onValueChange(!p.value)}>
-        {renderAppField(p)}
+        {renderField(p)}
       </TouchableOpacity>
     );
   } else {
-    return renderAppField({
+    return renderField({
       ...p,
       inputElement: (
         <TextInputWithFocusStyle
-          style={s._AppField_TextInput}
+          style={s.Field_TextInput}
           onChangeText={p.onValueChange}
           onSubmitEditing={p.onCreateBtnPress}
           {...omit(p, [
@@ -199,4 +199,4 @@ const AppField = p => {
   }
 };
 
-export default AppField;
+export default Field;
