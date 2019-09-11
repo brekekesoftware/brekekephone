@@ -8,7 +8,7 @@ import routerStore from '../---shared/routerStore';
 import v from '../---style/variables';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
-import ProfileSignInItem, { NoServer } from './ProfileSignInItem';
+import ProfileSignInItem from './ProfileSignInItem';
 
 const s = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -55,7 +55,7 @@ class PageProfileSignIn extends React.Component {
               keyExtractor={item => item.id}
             />
           )}
-          {!l && <NoServer />}
+          {!l && <ProfileSignInItem empty />}
         </Layout>
       </BrekekeGradient>
     );

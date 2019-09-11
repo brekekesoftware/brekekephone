@@ -6,112 +6,89 @@ import {
   mdiWebBox,
   mdiWebpack,
 } from '@mdi/js';
-import { Button, Text, View } from 'native-base';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import authStore from '../---shared/authStore';
 import routerStore from '../---shared/routerStore';
-import registerStyle from '../---style/registerStyle';
 import ActionButtons from '../shared/ActionButtons';
-import AppField from '../shared/Field';
+import Field from '../shared/Field';
+import v from '../variables';
 
-registerStyle(v => ({
-  View: {
-    ProfileSignInItem: {
-      position: 'relative',
-      backgroundColor: 'white',
-      marginBottom: v.padding,
-      marginLeft: v.padding,
-      borderRadius: v.brekekeBorderRadius,
-      paddingHorizontal: v.padding,
-      width: 280,
-      '.last': {
-        marginRight: v.padding,
-      },
-      '.noServer': {
-        height: '70%',
-        minHeight: 320,
-        marginVertical: 3 * v.padding,
-        marginLeft: v.padding,
-        padding: v.padding,
-      },
-    },
-    ProfileSignInItem_Btns: {
-      position: 'absolute',
-      bottom: v.padding,
-      left: v.padding,
-      right: v.padding,
-    },
+const s = StyleSheet.create({
+  ProfileSignInItem: {
+    position: 'relative',
+    backgroundColor: 'white',
+    marginBottom: 15,
+    marginLeft: 15,
+    borderRadius: v.borderRadius,
+    paddingHorizontal: 15,
+    width: 280,
   },
-  Text: {
-    ProfileSignInItem_NoServer: {
-      fontWeight: 'bold',
-      fontSize: 1.2 * v.fontSizeBase,
-    },
-    ProfileSignInItem_CreateNewServerBtnTxt: {
-      flex: 1,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color: 'white',
-    },
+  ProfileSignInItem__last: {
+    marginRight: 15,
   },
-  Button: {
-    ProfileSignInItem_CreateNewServerBtn: {
-      textAlign: 'center',
-      backgroundColor: v.brekekeDarkGreen,
-      borderRadius: v.brekekeBorderRadius,
-    },
+  ProfileSignInItem__empty: {
+    height: '70%',
+    minHeight: 320,
+    marginVertical: 45,
+    marginLeft: 15,
+    padding: 15,
   },
-}));
+  ProfileSignInItem_Btns: {
+    position: 'absolute',
+    bottom: 15,
+    left: 15,
+    right: 15,
+  },
+  ProfileSignInItem_EmptyTitle: {
+    fontWeight: 'bold',
+    fontSize: 1.5 * v.fontSize,
+  },
+});
 
-const ProfileSignInItem = p => (
-  <View ProfileSignInItem last={p.last}>
-    <TouchableOpacity onPress={() => routerStore.goToPageProfileUpdate(p.id)}>
-      <AppField
-        name="USERNAME"
-        value={p.pbxUsername}
-        icon={mdiAccountCircleOutline}
-      />
-      <AppField name="TENANT" value={p.pbxTenant} icon={mdiWebpack} />
-      <AppField name="HOSTNAME" value={p.pbxHostname} icon={mdiWebBox} />
-      <AppField name="PORT" value={p.pbxPort} icon={mdiServerNetwork} />
-    </TouchableOpacity>
-    <AppField
-      type="Switch"
-      name="UC"
-      value={p.ucEnabled}
-      onValueChange={v => authStore.upsertProfile({ id: p.id, ucEnabled: v })}
-    />
-    <View ProfileSignInItem_Btns>
-      <ActionButtons
-        onBackBtnPress={() => authStore.removeProfile(p.id)}
-        backIcon={mdiClose}
-        onResetBtnPress={() => routerStore.goToPageProfileUpdate(p.id)}
-        resetIcon={mdiDotsHorizontal}
-        onSaveBtnPress={() => authStore.signIn(p.id)}
-        saveText="SIGN IN"
-      />
+const ProfileSignInItem = p =>
+  p.empty ? (
+    <View style={[s.ProfileSignInItem, s.ProfileSignInItem__empty]}>
+      <Text style={[s.ProfileSignInItem_EmptyTitle]}>No server</Text>
+      <Text>There is no server created</Text>
+      <Text>Tap the below button to create one</Text>
+      <View style={s.ProfileSignInItem_Btns}>
+        <ActionButtons
+          onSaveBtnPress={routerStore.goToPageProfileCreate}
+          saveText="CREATE NEW SERVER"
+        />
+      </View>
     </View>
-  </View>
-);
-
-const NoServer = () => (
-  <View ProfileSignInItem noServer>
-    <Text ProfileSignInItem_NoServer>No server</Text>
-    <Text note>There is no server created</Text>
-    <Text note>Tap the below button to create one</Text>
-    <View ProfileSignInItem_Btns>
-      <Button
-        ProfileSignInItem_CreateNewServerBtn
-        create
-        onPress={routerStore.goToPageProfileCreate}
-      >
-        <Text ProfileSignInItem_CreateNewServerBtnTxt>CREATE NEW SERVER</Text>
-      </Button>
+  ) : (
+    <View style={[s.ProfileSignInItem, p.last && s.ProfileSignInItem__last]}>
+      <TouchableOpacity onPress={() => routerStore.goToPageProfileUpdate(p.id)}>
+        <Field
+          name="USERNAME"
+          value={p.pbxUsername}
+          icon={mdiAccountCircleOutline}
+        />
+        <Field name="TENANT" value={p.pbxTenant} icon={mdiWebpack} />
+        <Field name="HOSTNAME" value={p.pbxHostname} icon={mdiWebBox} />
+        <Field name="PORT" value={p.pbxPort} icon={mdiServerNetwork} />
+      </TouchableOpacity>
+      <Field
+        type="Switch"
+        name="UC"
+        value={p.ucEnabled}
+        onValueChange={v => authStore.upsertProfile({ id: p.id, ucEnabled: v })}
+      />
+      <View style={s.ProfileSignInItem_Btns}>
+        <ActionButtons
+          onBackBtnPress={() => authStore.removeProfile(p.id)}
+          backIcon={mdiClose}
+          onRefreshBtnPress={() => routerStore.goToPageProfileUpdate(p.id)}
+          refreshIcon={mdiDotsHorizontal}
+          onSaveBtnPress={() => authStore.signIn(p.id)}
+          saveText="SIGN IN"
+        />
+      </View>
     </View>
-  </View>
-);
+  );
 
-export { NoServer };
 export default ProfileSignInItem;
