@@ -6,7 +6,13 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\""
+    "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\"",
+    "pretobjc": "yarn git-ls | egrep -h '.(h|m)$' | xargs clang-format -i -style=file",
+    "pretjava": "yarn git-ls | egrep -h '.(java)$' | xargs google-java-format -i",
+    "pretxml": "yarn git-ls | egrep -h '.(xml|xib|xccheme|xcworkspacedata|plist)$' | xargs -L1 bash -c 'xmllint --format --output $0 $0'",
+    "imagemin": "yarn git-ls | egrep -h '.(png|jpg|gif|ico)$' | xargs -L1 bash -c 'imagemin $0 --out-dir $(dirname $0)'",
+    "git-ls": "bash -c 'comm -3 <(git ls-files) <(git ls-files -d)'",
+    "pret-all": "yarn pret && yarn pretobjc && yarn pretjava && yarn pretxml && yarn imagemin"
   },
   "dependencies": {
     "@mdi/js": "4.4.95",
