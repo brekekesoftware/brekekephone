@@ -60,6 +60,9 @@ class ProfileCreateForm extends React.Component {
       this.profile.parks = this.profile.parks.filter((p, _i) => _i !== i);
     });
 
+  onRefreshBtnPress = () => {
+    // TODO
+  };
   onSaveBtnPress = () => {
     // TODO validate
     this.props.onSaveBtnPress(this.profile);
@@ -93,6 +96,7 @@ class ProfileCreateForm extends React.Component {
         }}
         footer={{
           onBackBtnPress: this.props.onBackBtnPress,
+          onRefreshBtnPress: this.onRefreshBtnPress,
           onSaveBtnPress: this.onSaveBtnPress,
         }}
       >
