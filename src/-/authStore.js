@@ -2,8 +2,8 @@ import { action, computed, observable } from 'mobx';
 import shortid from 'shortid';
 
 import g from '../global';
+import AsyncStorage from '../native/AsyncStorage';
 import arrToMap from './arrToMap';
-import AsyncStorage from './AsyncStorage';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
 import { resetBadgeNumber } from './pushNotification';
