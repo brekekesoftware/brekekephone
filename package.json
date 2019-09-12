@@ -24,7 +24,6 @@
     "es7-shim": "6.0.0",
     "eventemitter3": "4.0.0",
     "history": "4.10.0",
-    "immer": "4.0.0",
     "jssip": "github:brekekesoftware/jssip#93940bcc89214d410a63435d6da00cbfe790313c",
     "lodash": "4.17.15",
     "mobx": "5.13.0",

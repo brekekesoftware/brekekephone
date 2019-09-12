@@ -1,5 +1,6 @@
 import './polyfill';
 
+import { configure } from 'mobx';
 import React from 'react';
 import { Platform } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
@@ -19,6 +20,7 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
+configure({ enforceActions: 'always' });
 
 class App extends React.Component {
   componentDidMount() {
