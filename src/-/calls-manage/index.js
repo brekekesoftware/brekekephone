@@ -2,12 +2,12 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
+import InCallManager from 'react-native-incall-manager';
 
 import g from '../../global';
 import arrToMap from '../arrToMap';
 import callStore from '../callStore';
 import PageCalling from '../components-Incoming/PageCalling';
-import LoudSpeaker from '../LoudSpeaker';
 
 @observer
 class View extends React.Component {
@@ -153,7 +153,7 @@ class View extends React.Component {
   }
 
   onOpenLoudSpeaker = () => {
-    LoudSpeaker.open(true);
+    InCallManager.setForceSpeakerphoneOn(true);
 
     callStore.upsertRunning({
       id: callStore.selectedId,
@@ -162,7 +162,7 @@ class View extends React.Component {
   };
 
   onCloseLoudSpeaker = () => {
-    LoudSpeaker.open(false);
+    InCallManager.setForceSpeakerphoneOn(false);
 
     callStore.upsertRunning({
       id: callStore.selectedId,

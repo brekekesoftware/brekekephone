@@ -2,12 +2,12 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
+import InCallManager from 'react-native-incall-manager';
 
 import g from '../../global';
 import arrToMap from '../arrToMap';
 import authStore from '../authStore';
 import callStore from '../callStore';
-import LoudSpeaker from '../LoudSpeaker';
 import UI from './ui';
 
 @observer
@@ -51,7 +51,7 @@ class View extends React.Component {
 
   onOpenLoudSpeaker = () => {
     const activecallid = this.state.activecallid;
-    LoudSpeaker.open(true);
+    InCallManager.setForceSpeakerphoneOn(true);
 
     callStore.upsertRunning({
       id: activecallid,
@@ -61,7 +61,7 @@ class View extends React.Component {
 
   onCloseLoudSpeaker = () => {
     const activecallid = this.state.activecallid;
-    LoudSpeaker.open(false);
+    InCallManager.setForceSpeakerphoneOn(false);
 
     callStore.upsertRunning({
       id: activecallid,
