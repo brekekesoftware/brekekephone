@@ -1,7 +1,10 @@
 import get from 'lodash/get';
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
-import authStore from './authStore';
+let checker = null;
+const setChecker = fn => {
+  checker = fn;
+};
 
 const keysInCustomNotification = [
   'body',
@@ -38,49 +41,52 @@ const _parse = (...p) =>
       });
       return m;
     }, {});
-const parse = n => {
-  if (authStore.profile && AppState.currentState === 'active') {
-    return null;
-  }
-  //
-  let c = {};
+
+const parse = raw => {
+  let n = {};
   if (Platform.OS === 'android') {
-    c = _parse(
-      n,
-      get(n, 'fcm'),
-      get(n, 'data'),
-      get(n, 'alert'),
-      get(n, 'data.alert'),
-      get(n, 'custom_notification'),
-      get(n, 'data.custom_notification'),
+    n = _parse(
+      raw,
+      get(raw, 'fcm'),
+      get(raw, 'data'),
+      get(raw, 'alert'),
+      get(raw, 'data.alert'),
+      get(raw, 'custom_notification'),
+      get(raw, 'data.custom_notification'),
     );
   } else if (Platform.OS === 'ios') {
-    c = _parse(
-      n,
-      get(n, '_data'),
-      get(n, '_alert'),
-      get(n, '_data.custom_notification'),
+    n = _parse(
+      raw,
+      get(raw, '_data'),
+      get(raw, '_alert'),
+      get(raw, '_data.custom_notification'),
     );
+  } else {
+    // TODO handle web
   }
   //
-  if (!c.body) {
-    c.body = c.message || c.title;
+  if (!n.body) {
+    n.body = n.message || n.title;
   }
-  if (!c.body && !c.to) {
+  if (!n.body && !n.to) {
     return null;
   }
   //
+  // Local noti from ./PushNotification.android.js
   if (
+    raw.my_custom_data ||
+    raw.is_local_notification ||
     n.my_custom_data ||
-    n.is_local_notification ||
-    c.my_custom_data ||
-    c.is_local_notification
+    n.is_local_notification
   ) {
     return null;
   }
+  if (checker && !checker(n)) {
+    return null;
+  }
   //
-  authStore.signinByNotification(c);
-  return c;
+  return n;
 };
 
+export { setChecker };
 export default parse;

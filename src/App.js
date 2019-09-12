@@ -2,11 +2,12 @@ import './polyfill';
 
 import { configure } from 'mobx';
 import React from 'react';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
+import authStore from './-/authStore';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
@@ -22,7 +23,14 @@ registerOnUnhandledError(unexpectedErr => {
 });
 configure({ enforceActions: 'always' });
 
-setTimeout(PushNotification.register);
+PushNotification.register(n => {
+  // TODO handle this better (ask user to switch)
+  if (authStore.profile && AppState.currentState === 'active') {
+    return false;
+  }
+  authStore.signinByNotification(n);
+  return true;
+});
 
 class App extends React.Component {
   componentDidMount() {

@@ -1,7 +1,7 @@
 import { PushNotificationIOS } from 'react-native';
 import VoipPushNotification from 'react-native-voip-push-notification';
 
-import parse from './PushNotification-parse';
+import parse, { setChecker } from './PushNotification-parse';
 
 let voipApnsToken = '';
 const onToken = t => {
@@ -11,9 +11,6 @@ const onToken = t => {
 };
 const onNotification = n => {
   n = n && parse(n);
-  if (!n) {
-    return;
-  }
   //
   const alertBody = n.body || JSON.stringify(n);
   const isCall = /call/i.test(alertBody);
@@ -33,7 +30,8 @@ const onNotification = n => {
 };
 
 const PushNotification = {
-  register: () => {
+  register: fn => {
+    setChecker(fn);
     VoipPushNotification.addEventListener('register', onToken);
     VoipPushNotification.addEventListener('notification', onNotification);
     VoipPushNotification.requestPermissions();

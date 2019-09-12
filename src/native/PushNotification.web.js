@@ -1,13 +1,16 @@
+import { setChecker } from './PushNotification-parse';
+
 const uint8ArrayToUrlBase64 = arr =>
   window
     .btoa(String.fromCharCode.apply(null, new Uint8Array(arr)))
     .replace(/[+/]/g, '-');
 
 const PushNotification = {
-  register: () => {
+  register: fn => {
     if (!window.Notification || window.Notification.permission === 'granted') {
       return;
     }
+    setChecker(fn);
     window.Notification.requestPermission();
   },
   getToken: async () => {
