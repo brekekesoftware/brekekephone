@@ -2,12 +2,12 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import PageRecents from '../components-Recents/PageRecents';
 import contactStore from '../contactStore';
 import routerStore from '../routerStore';
-import Toast from '../Toast';
 
 @observer
 class View extends React.Component {
@@ -42,7 +42,7 @@ class View extends React.Component {
       this.context.sip.createSession(number);
       routerStore.goToCallsManage();
     } else {
-      Toast.error('Could not find number from store to call');
+      g.showError({ message: 'Could not find number from store to call' });
     }
   };
 

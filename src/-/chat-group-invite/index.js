@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
 import routerStore from '../routerStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -55,7 +55,7 @@ class View extends React.Component {
     const members = Object.keys(selectedBuddy);
 
     if (!members.length) {
-      Toast.error('No buddy selectedBuddy');
+      g.showError({ message: 'No buddy selectedBuddy' });
       return;
     }
 
@@ -68,7 +68,7 @@ class View extends React.Component {
 
   onInviteFailure = err => {
     console.error(err);
-    Toast.error(err.message || 'Failed with unknown error');
+    g.showError({ message: err.message || 'with unknown error' });
   };
 
   back = () => {

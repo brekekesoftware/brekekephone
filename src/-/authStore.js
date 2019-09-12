@@ -8,7 +8,6 @@ import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
 import { resetBadgeNumber } from './pushNotification';
 import routerStore from './routerStore';
-import Toast from './Toast';
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field];
@@ -105,7 +104,7 @@ class AuthStore extends BaseStore {
       await AsyncStorage.setItem('authStore.profiles', JSON.stringify(arr));
     } catch (err) {
       console.error('authStore.set.profiles:', err);
-      Toast.error('Can not save profiles to local storage');
+      g.showError({ message: 'Can not save profiles to local storage' });
     }
   };
   findProfile = _p => {
@@ -165,7 +164,7 @@ class AuthStore extends BaseStore {
     }
     if (!p.pbxPassword && !p.accessToken) {
       routerStore.goToPageProfileUpdate(p.id);
-      Toast.error('The profile password is empty');
+      g.showError({ message: 'The profile password is empty' });
       return true;
     }
     this.set('signedInId', p.id);

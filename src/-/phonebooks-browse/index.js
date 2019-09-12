@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import routerStore from '../routerStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 class View extends React.Component {
@@ -57,7 +57,7 @@ class View extends React.Component {
 
   onLoadFailure = function(err) {
     console.error(err);
-    err && Toast.error(err.message);
+    g.showError(err.message);
   };
 }
 

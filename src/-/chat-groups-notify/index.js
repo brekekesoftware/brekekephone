@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -44,7 +44,7 @@ class View extends React.Component {
   };
   onRejectFailure = err => {
     console.error(err);
-    Toast.error('Failed to reject the group chat');
+    g.showError({ message: 'reject the group chat' });
   };
 
   accept = group => {
@@ -52,7 +52,7 @@ class View extends React.Component {
   };
   onAcceptFailure = err => {
     console.error(err);
-    Toast.error('Failed to accept the group chat');
+    g.showError({ message: 'accept the group chat' });
   };
 }
 

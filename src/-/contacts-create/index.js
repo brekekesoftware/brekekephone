@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import routerStore from '../routerStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -106,17 +106,17 @@ class View extends React.Component {
 
   save = () => {
     if (!routerStore.getQuery().book) {
-      Toast.error('The phonebook name is required');
+      g.showError({ message: 'The phonebook name is required' });
       return;
     }
 
     if (!this.state.firstName) {
-      Toast.error('The first name is required');
+      g.showError({ message: 'The first name is required' });
       return;
     }
 
     if (!this.state.lastName) {
-      Toast.error('The last name is required');
+      g.showError({ message: 'The last name is required' });
       return;
     }
 
@@ -143,7 +143,7 @@ class View extends React.Component {
 
   onSaveFailure = err => {
     console.error(err);
-    Toast.error('Failed to save the contact');
+    g.showError({ message: 'save the contact' });
   };
 }
 

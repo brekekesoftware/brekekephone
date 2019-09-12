@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import arrToMap from '../arrToMap';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
 import routerStore from '../routerStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 const monthName = [
@@ -180,7 +180,7 @@ class View extends React.Component {
       loadingRecent: false,
     });
 
-    Toast.error('Failed to get recent chats');
+    g.showError({ message: 'get recent chats' });
   };
 
   loadMore = () => {
@@ -212,7 +212,7 @@ class View extends React.Component {
   };
 
   onLoadMoreFailure = err => {
-    Toast.error('Failed to get more chats');
+    g.showError({ message: 'get more chats' });
     console.error(err);
 
     this.setState({
@@ -260,7 +260,7 @@ class View extends React.Component {
 
   onSubmitEditingTextFailure = err => {
     console.error(err);
-    Toast.error('Failed to send the message');
+    g.showError({ message: 'send the message' });
   };
 
   leave = () => {
@@ -277,7 +277,7 @@ class View extends React.Component {
 
   onLeaveFailure = err => {
     console.error(err);
-    Toast.error('Failed to leave the group');
+    g.showError({ message: 'leave the group' });
   };
 
   invite = () => {
