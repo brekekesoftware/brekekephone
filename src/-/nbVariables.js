@@ -2,7 +2,7 @@ import merge from 'lodash/merge';
 import variables from 'native-base/src/theme/variables/commonColor';
 
 // Update the variables which depend on the platform condition
-// See native-base/src/theme/variables/commonColor.js for detail
+// See native-base/src/theme/nbVariables/commonColor.js for detail
 // We will choose ios as the default platform then change the variables as we need
 merge(variables, {
   platform: 'ios',

@@ -1,11 +1,11 @@
-import './oldNativeBaseTheme';
+import './nbTheme_';
 
 import { StyleProvider } from 'native-base';
 import React from 'react';
 import * as Rn from 'react-native';
 
 import ApiProvider from './apis';
-import nativeBaseTheme from './nativeBaseTheme';
+import nativeBaseTheme from './nbTheme';
 import Routes from './Routes';
 
 // polyfill for native-base

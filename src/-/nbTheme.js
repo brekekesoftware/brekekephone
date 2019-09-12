@@ -1,7 +1,7 @@
 import getTheme from 'native-base/src/theme/components';
 import { Platform } from 'react-native';
 
-import variables from './variables';
+import variables from './nbVariables';
 
 const nativeBaseTheme = getTheme(variables);
 

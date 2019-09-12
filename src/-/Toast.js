@@ -1,6 +1,6 @@
 import RnToast from 'react-native-root-toast';
 
-import v from './variables';
+import v from './nbVariables';
 
 let rnToastInstance = null;
 
