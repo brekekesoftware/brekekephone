@@ -1,4 +1,4 @@
-import { computed, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 
 import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
@@ -57,14 +57,14 @@ class ContactStore extends BaseStore {
   //   'busy'
   // statusText
   @observable ucUsers = [];
-  updateUCUser = _u => {
+  updateUCUser = action(_u => {
     const u = this.getUCUser(_u.id);
     if (!u) {
       return;
     }
     Object.assign(u, _u);
     this.set('ucUsers', [...this.ucUsers]);
-  };
+  });
   @computed get _ucUsersMap() {
     return arrToMap(this.ucUsers, 'id', u => u);
   }

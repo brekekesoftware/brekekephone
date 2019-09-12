@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import callStore from '../callStore';
 import TransferDial from '../components-Transfer/TransferDial';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 
 @observer
@@ -36,7 +36,7 @@ class View extends React.Component {
         setAttended={this.setAttended}
         setTarget={this.setTarget}
         transfer={this.transfer}
-        back={routerStore.goToCallsManage}
+        back={g.goToCallsManage}
         transferAttended={this.transferAttended}
         transferBlind={this.transferBlind}
         transferAttendedForVideo={this.transferAttendedForVideo}
@@ -123,14 +123,14 @@ class View extends React.Component {
   onTransferSuccess = target => {
     const { attended } = this.state;
 
-    if (!attended) return routerStore.goToCallsManage();
+    if (!attended) return g.goToCallsManage();
 
     callStore.upsertRunning({
       id: this.call.id,
       transfering: target,
     });
 
-    routerStore.goToCallTransferAttend(this.call.id);
+    g.goToCallTransferAttend(this.call.id);
   };
 
   onTransferFailure = err => {
@@ -173,14 +173,14 @@ class View extends React.Component {
   onTransferAttendedForVideoSuccess = target => {
     const { attended } = this.state;
 
-    if (!attended) return routerStore.goToCallsManage();
+    if (!attended) return g.goToCallsManage();
 
     callStore.upsertRunning({
       id: this.call.id,
       transfering: target,
     });
 
-    routerStore.goToCallTransferAttend(this.call.id);
+    g.goToCallTransferAttend(this.call.id);
 
     const { sip } = this.context;
 

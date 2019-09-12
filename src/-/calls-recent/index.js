@@ -2,11 +2,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import PageRecents from '../components-Recents/PageRecents';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 
 @observer
@@ -21,8 +21,8 @@ class View extends React.Component {
         resolveCall={this.resolveCall}
         removeCall={authStore.removeRecentCall}
         callBack={this.callBack}
-        gotoCallsManage={routerStore.goToCallsManage}
-        gotoCallsCreate={routerStore.goToCallsCreate}
+        gotoCallsManage={g.goToCallsManage}
+        gotoCallsCreate={g.goToCallsCreate}
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         resolveUser={this.resolveUser}
         searchText={contactStore.searchText}
@@ -40,7 +40,7 @@ class View extends React.Component {
       ?.partyNumber;
     if (number) {
       this.context.sip.createSession(number);
-      routerStore.goToCallsManage();
+      g.goToCallsManage();
     } else {
       Toast.error('Could not find number from store to call');
     }

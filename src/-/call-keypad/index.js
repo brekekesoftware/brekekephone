@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import callStore from '../callStore';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 @observer
@@ -16,7 +16,7 @@ class View extends React.Component {
     return (
       <UI
         call={callStore.getRunningCall(this.props.match.params.call)}
-        back={routerStore.goToCallsManage}
+        back={g.goToCallsManage}
         sendKey={this.sendKey}
       />
     );

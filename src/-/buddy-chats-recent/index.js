@@ -3,12 +3,12 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import arrToMap from '../arrToMap';
 import chatStore from '../chatStore';
 import ChatsDetail from '../components-Chats/Chat-Detail';
 import contactStore from '../contactStore';
 import pickFile from '../pickFile';
-import routerStore from '../routerStore';
 import saveBlob from '../saveBlob';
 import Toast from '../Toast';
 
@@ -108,7 +108,7 @@ class View extends React.Component {
         acceptFile={this.acceptFile}
         rejectFile={this.rejectFile}
         pickFile={this.pickFile}
-        back={routerStore.goToChatsRecent}
+        back={g.goToChatsRecent}
       />
     );
   }

@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import authStore from '../authStore';
 import callStore from '../callStore';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 import UI from './ui';
 
@@ -25,7 +25,7 @@ class View extends React.Component {
         selectedPark={this.state.selectedPark}
         selectPark={this.selectPark}
         park={this.park}
-        back={routerStore.goToCallsManage}
+        back={g.goToCallsManage}
       />
     );
   }
@@ -57,7 +57,7 @@ class View extends React.Component {
   };
 
   onParkSuccess = () => {
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 
   onParkFailure = err => {

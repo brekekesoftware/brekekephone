@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 import UI from './ui';
 
@@ -72,7 +72,7 @@ class View extends React.Component {
   };
 
   back = () => {
-    routerStore.goToChatGroupsRecent(this.props.match.params.group);
+    g.goToChatGroupsRecent(this.props.match.params.group);
   };
 }
 

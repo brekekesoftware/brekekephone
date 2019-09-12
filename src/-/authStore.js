@@ -7,7 +7,6 @@ import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
 import { resetBadgeNumber } from './pushNotification';
-import routerStore from './routerStore';
 import Toast from './Toast';
 
 const compareField = (p1, p2, field) => {
@@ -164,12 +163,12 @@ class AuthStore extends BaseStore {
       return false;
     }
     if (!p.pbxPassword && !p.accessToken) {
-      routerStore.goToPageProfileUpdate(p.id);
+      g.goToProfileUpdate(p.id);
       Toast.error('The profile password is empty');
       return true;
     }
     this.set('signedInId', p.id);
-    routerStore.goToAuth();
+    g.goToAuth();
     resetBadgeNumber();
     return true;
   };
@@ -205,7 +204,7 @@ class AuthStore extends BaseStore {
       if (p.pbxPassword || p.accessToken) {
         this.signIn(p.id);
       } else {
-        routerStore.goToPageProfileUpdate(p.id);
+        g.goToProfileUpdate(p.id);
       }
       return;
     }
@@ -223,7 +222,7 @@ class AuthStore extends BaseStore {
     if (newP.accessToken) {
       this.signIn(newP.id);
     } else {
-      routerStore.goToPageProfileUpdate(newP.id);
+      g.goToProfileUpdate(newP.id);
     }
   };
 

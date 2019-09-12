@@ -7,7 +7,6 @@ import SplashScreen from 'react-native-splash-screen';
 import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
-import { history } from './-/routerStore';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
@@ -30,7 +29,7 @@ class App extends React.Component {
   }
   render() {
     return (
-      <Router history={history}>
+      <Router history={g.router.history}>
         <Switch>
           <Route exact path="/" component={PageProfileSignIn} />
           <Route path="/create-profile" component={PageProfileCreate} />

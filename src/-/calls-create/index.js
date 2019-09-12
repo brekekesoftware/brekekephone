@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import callStore from '../callStore';
 import PagePhoneCall from '../components-Phone/PagePhoneCall';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 
 @observer
@@ -31,8 +31,8 @@ class View extends React.Component {
         selectMatch={this.selectMatch}
         setVideo={this.setVideo}
         create={this.create}
-        calls={routerStore.goToCallsManage}
-        recent={routerStore.goToCallsRecent}
+        calls={g.goToCallsManage}
+        recent={g.goToCallsRecent}
         callVoice={this.callVoice}
         callVideo={this.callVideo}
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
@@ -120,7 +120,7 @@ class View extends React.Component {
       videoEnabled: video,
     });
 
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 
   call = (target, bVideoEnabled) => {
@@ -135,7 +135,7 @@ class View extends React.Component {
       videoEnabled: bVideoEnabled,
     });
 
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 
   callVoice = match => {

@@ -2,10 +2,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import callStore from '../callStore';
 import TransferAttend from '../components-Transfer/TransferAttend';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 
 @observer
@@ -19,7 +19,7 @@ class View extends React.Component {
     return (
       <TransferAttend
         call={callStore.getRunningCall(this.props.match.params.call)}
-        back={routerStore.goToCallsManage}
+        back={g.goToCallsManage}
         join={this.join}
         stop={this.stop}
         hangup={this.hangup}
@@ -58,7 +58,7 @@ class View extends React.Component {
       transfering: false,
     });
 
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 
   onJoinFailure = err => {
@@ -80,7 +80,7 @@ class View extends React.Component {
       transfering: false,
     });
 
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 
   onStopFailure = err => {

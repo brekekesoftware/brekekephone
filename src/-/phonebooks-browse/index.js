@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import routerStore from '../routerStore';
+import g from '../../global';
 import Toast from '../Toast';
 import UI from './ui';
 
@@ -25,12 +25,12 @@ class View extends React.Component {
         loading={this.state.loading}
         books={this.state.books}
         selectBook={b =>
-          routerStore.goToContactsBrowse({
+          g.goToContactsBrowse({
             book: b.name,
             shared: b.shared,
           })
         }
-        create={() => routerStore.goToContactsCreate()}
+        create={() => g.goToContactsCreate()}
       />
     );
   }

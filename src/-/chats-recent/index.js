@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import g from '../../global';
 import arrToMap from '../arrToMap';
 import chatStore from '../chatStore';
 import ChatsHome from '../components-Chats/Chats-Home';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {
@@ -19,9 +19,9 @@ class View extends React.Component {
         }, {})}
         groupIds={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
         groupById={arrToMap(chatStore.groups, 'id', g => g)}
-        selectBuddy={routerStore.goToBuddyChatsRecent}
-        selectGroup={routerStore.goToChatGroupsRecent}
-        createGroup={routerStore.goToChatGroupsCreate}
+        selectBuddy={g.goToBuddyChatsRecent}
+        selectGroup={g.goToChatGroupsRecent}
+        createGroup={g.goToChatGroupsCreate}
         searchText={contactStore.searchText}
         setSearchText={contactStore.setF('searchText')}
       />

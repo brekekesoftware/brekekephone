@@ -10,7 +10,6 @@ import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
 import { getPushNotificationToken } from '../pushNotification';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
@@ -131,7 +130,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerStore.goToPageProfileSignIn();
+      g.goToProfileSignIn();
       return null;
     }
   };
@@ -186,7 +185,7 @@ class ApiProvider extends React.Component {
               });
           },
           onDismiss: () => {
-            routerStore.goToPageProfileSignIn();
+            g.goToProfileSignIn();
             resolve(null);
           },
         });

@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import arrToMap from '../arrToMap';
 import callStore from '../callStore';
 import PageCalling from '../components-Incoming/PageCalling';
 import LoudSpeaker from '../LoudSpeaker';
-import routerStore from '../routerStore';
 import Toast from '../Toast';
 
 @observer
@@ -54,7 +54,7 @@ class View extends React.Component {
     const creatingSessions = sip.getCreatingSessions();
 
     if (creatingSessions.isEmpty()) {
-      routerStore.goToCallsCreate();
+      g.goToCallsCreate();
     }
   }
 
@@ -132,8 +132,8 @@ class View extends React.Component {
         runningIds={this.runningIds}
         runningById={this.runningById}
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
-        browseHistory={routerStore.goToCallsRecent}
-        create={routerStore.goToCallsCreate}
+        browseHistory={g.goToCallsRecent}
+        create={g.goToCallsCreate}
         select={callStore.setF('selectedId')}
         hangup={this.hangup}
         answer={this.answer}
@@ -271,15 +271,15 @@ class View extends React.Component {
     const call = this.runningById[callStore.selectedId];
 
     if (call.transfering) {
-      routerStore.goToCallTransferAttend(call.id);
+      g.goToCallTransferAttend(call.id);
     } else {
-      routerStore.goToCallTransferDial(call.id);
+      g.goToCallTransferDial(call.id);
     }
   };
 
   dtmf = () => {
     const call = this.runningById[callStore.selectedId];
-    routerStore.goToCallKeypad(call.id);
+    g.goToCallKeypad(call.id);
   };
 
   unpark = parkNumber => {
@@ -290,7 +290,7 @@ class View extends React.Component {
 
   park = () => {
     const call = this.runningById[callStore.selectedId];
-    routerStore.goToCallPark(call.id);
+    g.goToCallPark(call.id);
   };
 
   enableVideo = () => {
