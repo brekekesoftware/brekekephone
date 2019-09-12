@@ -10,7 +10,6 @@ import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import Toast from '../Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
@@ -224,7 +223,7 @@ class ApiProvider extends React.Component {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      Toast.error('Failed to load PBX users');
+      g.showError({ message: 'load PBX users' });
       console.error(err);
     });
 

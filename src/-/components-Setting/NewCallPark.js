@@ -6,7 +6,6 @@ import g from '../../global';
 import authStore from '../authStore';
 import Headers from '../components-Home/Header';
 import { TextInput } from '../components-shared/Input';
-import Toast from '../Toast';
 
 @observer
 class NewCallPark extends React.Component {
@@ -59,7 +58,7 @@ class NewCallPark extends React.Component {
     }
 
     if (/[^a-z0-9_]/.test(addingPark)) {
-      Toast.error('Invalid park number');
+      g.showError({ message: 'Invalid park number' });
       return;
     }
 
@@ -87,7 +86,7 @@ class NewCallPark extends React.Component {
     }
 
     if (/[^a-z0-9_]/.test(addingPark)) {
-      Toast.error('Invalid park number');
+      g.showError({ message: 'Invalid park number' });
       return;
     }
 

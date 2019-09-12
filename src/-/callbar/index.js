@@ -8,7 +8,6 @@ import arrToMap from '../arrToMap';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import LoudSpeaker from '../LoudSpeaker';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -98,7 +97,7 @@ class View extends React.Component {
 
   onHoldFailure = err => {
     console.error(err);
-    Toast.error('Failed to hold the call');
+    g.showError({ message: 'hold the call' });
   };
 
   unhold = () => {
@@ -125,7 +124,7 @@ class View extends React.Component {
     const activecallid = this.state.activecallid;
     console.error('onUnholdFailure activecallid=' + activecallid);
     console.error(err);
-    Toast.error('Failed to unhold the call');
+    g.showError({ message: 'unhold the call' });
   };
 
   findActiveCallByRunids_s(runids, props) {

@@ -5,7 +5,6 @@ import React from 'react';
 import g from '../../global';
 import authStore from '../authStore';
 import PageSetting from '../components-Setting/PageSetting';
-import Toast from '../Toast';
 
 @observer
 class View extends React.Component {
@@ -61,7 +60,7 @@ class View extends React.Component {
   };
 
   onSetChatStatusFailure = () => {
-    Toast.error('Failed to change chat status');
+    g.showError({ message: 'change chat status' });
   };
 
   setChatOffline = () => {

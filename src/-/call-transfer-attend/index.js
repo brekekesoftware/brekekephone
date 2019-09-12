@@ -6,7 +6,6 @@ import g from '../../global';
 import callStore from '../callStore';
 import TransferAttend from '../components-Transfer/TransferAttend';
 import contactStore from '../contactStore';
-import Toast from '../Toast';
 
 @observer
 class View extends React.Component {
@@ -63,7 +62,7 @@ class View extends React.Component {
 
   onJoinFailure = err => {
     console.error(err);
-    Toast.error('Failed to join the transfer');
+    g.showError({ message: 'join the transfer' });
   };
 
   stop = () => {
@@ -85,7 +84,7 @@ class View extends React.Component {
 
   onStopFailure = err => {
     console.error(err);
-    Toast.error('Failed to stop the transfer');
+    g.showError({ message: 'stop the transfer' });
   };
 }
 

@@ -7,7 +7,6 @@ import g from '../../global';
 import callStore from '../callStore';
 import TransferDial from '../components-Transfer/TransferDial';
 import contactStore from '../contactStore';
-import Toast from '../Toast';
 
 @observer
 class View extends React.Component {
@@ -98,7 +97,7 @@ class View extends React.Component {
     const target = this.state.target;
 
     if (!target.trim()) {
-      Toast.error('No target');
+      g.showError({ message: 'No target' });
       return;
     }
 
@@ -135,12 +134,12 @@ class View extends React.Component {
 
   onTransferFailure = err => {
     console.error(err);
-    Toast.error('Failed target transfer the call');
+    g.showError({ message: 'target transfer the call' });
   };
 
   transferBlind = target => {
     if (!target.trim()) {
-      Toast.error('No target');
+      g.showError({ message: 'No target' });
       return;
     }
 
@@ -156,7 +155,7 @@ class View extends React.Component {
 
   transferAttended = target => {
     if (!target.trim()) {
-      Toast.error('No target');
+      g.showError({ message: 'No target' });
       return;
     }
 
@@ -189,12 +188,12 @@ class View extends React.Component {
 
   onTransferAttendedForVideoFailure = err => {
     console.error(err);
-    Toast.error('Failed target transfer the call');
+    g.showError({ message: 'target transfer the call' });
   };
 
   transferAttendedForVideo = target => {
     if (!target.trim()) {
-      Toast.error('No target');
+      g.showError({ message: 'No target' });
       return;
     }
 

@@ -5,7 +5,6 @@ import React from 'react';
 import g from '../../global';
 import authStore from '../authStore';
 import callStore from '../callStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -40,7 +39,7 @@ class View extends React.Component {
     const { selectedPark } = this.state;
 
     if (!selectedPark) {
-      Toast.error('No selected park');
+      g.showError({ message: 'No selected park' });
       return;
     }
 
@@ -61,7 +60,7 @@ class View extends React.Component {
   };
 
   onParkFailure = err => {
-    Toast.error('Failed to park the call');
+    g.showError({ message: 'park the call' });
     console.error(err);
   };
 }

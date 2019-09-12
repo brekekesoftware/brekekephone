@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import Toast from '../Toast';
 import UI from './ui';
 
 const numberOfContactsPerPage = 30;
@@ -86,12 +85,12 @@ class View extends React.Component {
     const contact = this.state.contactById[id];
 
     if (!contact.firstName) {
-      Toast.error('The first name is required');
+      g.showError({ message: 'The first name is required' });
       return;
     }
 
     if (!contact.lastName) {
-      Toast.error('The last name is required');
+      g.showError({ message: 'The last name is required' });
       return;
     }
 
@@ -111,7 +110,7 @@ class View extends React.Component {
       this.setState(this.state);
 
       console.error(err);
-      Toast.error('Failed to save the contact');
+      g.showError({ message: 'save the contact' });
     };
 
     pbx.setContact(this.state.contactById[id]).then(onSuccess, onFailure);
@@ -222,7 +221,7 @@ class View extends React.Component {
 
   onLoadContactsFailure = err => {
     console.error(err);
-    Toast.error('Failed to load contacts');
+    g.showError({ message: 'load contacts' });
   };
 
   loadContactDetails = () => {

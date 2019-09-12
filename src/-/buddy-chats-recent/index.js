@@ -10,7 +10,6 @@ import ChatsDetail from '../components-Chats/Chat-Detail';
 import contactStore from '../contactStore';
 import pickFile from '../pickFile';
 import saveBlob from '../saveBlob';
-import Toast from '../Toast';
 
 const monthName = [
   'Jan',
@@ -173,7 +172,7 @@ class View extends React.Component {
   };
   onLoadRecentFailure = err => {
     this.setState({ loadingRecent: false });
-    Toast.error(`Failed to get recent chats, err: ${err?.message}`);
+    g.showError({ message: 'get recent chats' });
     console.error(err);
   };
 
@@ -210,7 +209,7 @@ class View extends React.Component {
     this.setState({
       loadingMore: false,
     });
-    Toast.error('Failed to get more chats');
+    g.showError({ message: 'get more chats' });
     console.error(err);
   };
 
@@ -240,7 +239,7 @@ class View extends React.Component {
     this.setState({ editingText: '' });
   };
   onSubmitEditingTextFailure = err => {
-    Toast.error(`Failed to send the message, err: ${err?.message}`);
+    g.showError({ message: 'send the message' });
     console.error(err);
   };
 
@@ -251,7 +250,7 @@ class View extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    Toast.error(`Failed to accept file, err: ${err?.message}`);
+    g.showError({ message: 'accept file' });
     console.error(err);
   };
 
@@ -259,7 +258,7 @@ class View extends React.Component {
     this.context.uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    Toast.error(`Failed to reject file, err: ${err?.message}`);
+    g.showError({ message: 'reject file' });
     console.error(err);
   };
 
@@ -279,7 +278,7 @@ class View extends React.Component {
     chatStore.upsertFile(res.file);
   };
   onSendFileFailure = err => {
-    Toast.error(`Failed to send file, err: ${err?.message}`);
+    g.showError({ message: 'send file' });
     console.error(err);
   };
 }

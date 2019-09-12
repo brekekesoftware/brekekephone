@@ -6,7 +6,6 @@ import g from '../../global';
 import callStore from '../callStore';
 import PagePhoneCall from '../components-Phone/PagePhoneCall';
 import contactStore from '../contactStore';
-import Toast from '../Toast';
 
 @observer
 class View extends React.Component {
@@ -110,7 +109,7 @@ class View extends React.Component {
     const { target, video } = this.state;
 
     if (!target.trim()) {
-      Toast.error('No target');
+      g.showError({ message: 'No target' });
       return;
     }
 
@@ -125,7 +124,7 @@ class View extends React.Component {
 
   call = (target, bVideoEnabled) => {
     if (!target.trim()) {
-      Toast.error('No target');
+      g.showError({ message: 'No target' });
       return;
     }
 

@@ -6,7 +6,6 @@ import React from 'react';
 import g from '../../global';
 import getApiProvider from '../apis/getApiProvider';
 import authStore from '../authStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -93,7 +92,7 @@ class View extends React.Component {
       })
       .catch(err => {
         authStore.set('sipState', 'failure');
-        Toast.error(`Failed to login to sip server, err: ${err?.message}`);
+        g.showError({ message: `login to sip server, err: ${err?.message}` });
         console.error(err);
       });
   };

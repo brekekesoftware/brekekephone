@@ -8,7 +8,6 @@ import g from '../../global';
 import authStore from '../authStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import Toast from '../Toast';
 import UI from './ui';
 
 @observer
@@ -53,7 +52,7 @@ class View extends React.Component {
   };
   onAuthFailure = err => {
     authStore.set('ucState', 'failure');
-    Toast.error(`Failed to connect to UC, err: ${err?.message}`);
+    g.showError({ message: 'connect to UC' });
     console.error(err);
   };
 
@@ -83,9 +82,9 @@ class View extends React.Component {
   };
 
   onLoadUnreadChatsFailure = err => {
-    Toast.error('Failed to load unread chats');
+    g.showError({ message: 'load unread chats' });
     if (err && err.message) {
-      Toast.error(err.message);
+      g.showError(err.message);
     }
   };
 

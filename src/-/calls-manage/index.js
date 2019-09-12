@@ -8,7 +8,6 @@ import arrToMap from '../arrToMap';
 import callStore from '../callStore';
 import PageCalling from '../components-Incoming/PageCalling';
 import LoudSpeaker from '../LoudSpeaker';
-import Toast from '../Toast';
 
 @observer
 class View extends React.Component {
@@ -201,7 +200,7 @@ class View extends React.Component {
 
   onHoldFailure = err => {
     console.error(err);
-    Toast.error('Failed to hold the call');
+    g.showError({ message: 'hold the call' });
   };
 
   unhold = () => {
@@ -222,7 +221,7 @@ class View extends React.Component {
 
   onUnholdFailure = err => {
     console.error(err);
-    Toast.error('Failed to unhold the call');
+    g.showError({ message: 'unhold the call' });
   };
 
   startRecording = () => {
@@ -243,7 +242,7 @@ class View extends React.Component {
 
   onStartRecordingFailure = err => {
     console.error(err);
-    Toast.error('Failed to start recording the call');
+    g.showError({ message: 'start recording the call' });
   };
 
   stopRecording = () => {
@@ -264,7 +263,7 @@ class View extends React.Component {
 
   onStopRecordingFailure = err => {
     console.error(err);
-    Toast.error('Failed to stop recording the call');
+    g.showError({ message: 'stop recording the call' });
   };
 
   transfer = () => {
