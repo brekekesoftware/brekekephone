@@ -6,7 +6,6 @@ import React from 'react';
 import g from '../../global';
 import getApiProvider from '../apis/getApiProvider';
 import authStore from '../authStore';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 @observer
@@ -109,7 +108,7 @@ class View extends React.Component {
       <UI
         retryable={!!authStore.profile}
         failure={!authStore.profile || authStore.sipState === 'failure'}
-        abort={routerStore.goToPageProfileSignIn}
+        abort={g.goToProfileSignIn}
         retry={this.auth}
       />
     );

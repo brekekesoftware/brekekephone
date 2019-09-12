@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import g from '../global';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
@@ -29,7 +30,6 @@ import GroupChatsRecent from './group-chats-recent';
 import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
-import routerStore, { history } from './routerStore';
 import Settings from './settings';
 import SIPAuth from './sip-auth';
 import Tabbar from './tabbar';
@@ -39,52 +39,62 @@ import UsersBrowse from './users-browse';
 // Wait and push history to fix some strange issues with router
 const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
 
-Object.assign(routerStore, {
-  getQuery: () => qs.parse(routerStore.location.search.replace(/^\?*/, '')),
-  goToAuth: withTimeout(() => history.push('/auth')),
+Object.assign(g, {
+  getQuery: () => qs.parse(g.router.location.search.replace(/^\?*/, '')),
+  goToAuth: withTimeout(() => g.router.history.push('/auth')),
   goToBuddyChatsRecent: withTimeout(buddy =>
-    history.push(`/auth/chats/buddy/${buddy}/recent`),
+    g.router.history.push(`/auth/chats/buddy/${buddy}/recent`),
   ),
   goToCallKeypad: withTimeout(call =>
-    history.push(`/auth/call/${call}/keypad`),
+    g.router.history.push(`/auth/call/${call}/keypad`),
   ),
-  goToCallPark: withTimeout(call => history.push(`/auth/call/${call}/park`)),
-  goToCallsCreate: withTimeout(() => history.push('/auth/calls/create')),
-  goToCallsManage: withTimeout(() => history.push('/auth/calls/manage')),
-  goToCallsRecent: withTimeout(() => history.push('/auth/calls/recent')),
+  goToCallPark: withTimeout(call =>
+    g.router.history.push(`/auth/call/${call}/park`),
+  ),
+  goToCallsCreate: withTimeout(() =>
+    g.router.history.push('/auth/calls/create'),
+  ),
+  goToCallsManage: withTimeout(() =>
+    g.router.history.push('/auth/calls/manage'),
+  ),
+  goToCallsRecent: withTimeout(() =>
+    g.router.history.push('/auth/calls/recent'),
+  ),
   goToCallTransferAttend: withTimeout(call =>
-    history.push(`/auth/call/${call}/transfer/attend`),
+    g.router.history.push(`/auth/call/${call}/transfer/attend`),
   ),
   goToCallTransferDial: withTimeout(call =>
-    history.push(`/auth/call/${call}/transfer/dial`),
+    g.router.history.push(`/auth/call/${call}/transfer/dial`),
   ),
   goToChatGroupInvite: withTimeout(group =>
-    history.push(`/auth/chat-group/${group}/invite`),
+    g.router.history.push(`/auth/chat-group/${group}/invite`),
   ),
   goToChatGroupsCreate: withTimeout(() =>
-    history.push('/auth/chat-groups/create'),
+    g.router.history.push('/auth/chat-groups/create'),
   ),
   goToChatGroupsRecent: withTimeout(group =>
-    history.push(`/auth/chats/group/${group}/recent`),
+    g.router.history.push(`/auth/chats/group/${group}/recent`),
   ),
-  goToChatsRecent: withTimeout(() => history.push('/auth/chats/recent')),
+  goToChatsRecent: withTimeout(() =>
+    g.router.history.push('/auth/chats/recent'),
+  ),
   goToContactsBrowse: withTimeout(query =>
-    history.push(`/auth/contacts/browse?${qs.stringify(query)}`),
+    g.router.history.push(`/auth/contacts/browse?${qs.stringify(query)}`),
   ),
   goToContactsCreate: withTimeout(query =>
-    history.push(`/auth/contacts/create?${qs.stringify(query)}`),
+    g.router.history.push(`/auth/contacts/create?${qs.stringify(query)}`),
   ),
   goToPhonebooksBrowse: withTimeout(() =>
-    history.push('/auth/phonebooks/browse'),
+    g.router.history.push('/auth/phonebooks/browse'),
   ),
   goToProfileSignin: withTimeout(profile =>
-    history.push(`/profile/${profile}/signin`),
+    g.router.history.push(`/profile/${profile}/signin`),
   ),
-  goToSettings: withTimeout(() => history.push('/auth/settings')),
+  goToSettings: withTimeout(() => g.router.history.push('/auth/settings')),
   goToNewCallPark: withTimeout(profile =>
-    history.push(`/auth/settings/${profile}/callpark`),
+    g.router.history.push(`/auth/settings/${profile}/callpark`),
   ),
-  goToUsersBrowse: withTimeout(() => history.push('/auth/users')),
+  goToUsersBrowse: withTimeout(() => g.router.history.push('/auth/users')),
 });
 
 const Routes = () => (

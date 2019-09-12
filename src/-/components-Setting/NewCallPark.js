@@ -6,7 +6,6 @@ import g from '../../global';
 import authStore from '../authStore';
 import Headers from '../components-Home/Header';
 import { TextInput } from '../components-shared/Input';
-import routerStore from '../routerStore';
 
 @observer
 class NewCallPark extends React.Component {
@@ -108,7 +107,7 @@ class NewCallPark extends React.Component {
       ucPort: ucPort,
     });
 
-    routerStore.goToSettings();
+    g.goToSettings();
   };
 }
 

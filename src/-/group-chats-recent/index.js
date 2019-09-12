@@ -7,7 +7,6 @@ import g from '../../global';
 import arrToMap from '../arrToMap';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 const monthName = [
@@ -105,7 +104,7 @@ class View extends React.Component {
         setEditingText={this.setEditingText}
         submitEditingText={this.submitEditingText}
         loadMore={this.loadMore}
-        back={routerStore.goToChatsRecent}
+        back={g.goToChatsRecent}
         leave={this.leave}
         invite={this.invite}
         callVoiceConference={this.callVoiceConference}
@@ -272,7 +271,7 @@ class View extends React.Component {
 
   onLeaveSuccess = () => {
     chatStore.removeGroup(this.props.match.params.group);
-    routerStore.goToChatsRecent();
+    g.goToChatsRecent();
   };
 
   onLeaveFailure = err => {
@@ -281,7 +280,7 @@ class View extends React.Component {
   };
 
   invite = () => {
-    routerStore.goToChatGroupInvite(this.props.match.params.group);
+    g.goToChatGroupInvite(this.props.match.params.group);
   };
 
   call = (target, bVideoEnabled) => {

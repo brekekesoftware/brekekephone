@@ -17,16 +17,16 @@ import g from './_';
 extendObservable(g, {
   pendingAlerts: [],
   dismissAlert: () => {
-    g.setViaImmer('pendingAlerts', dr => dr.shift());
+    g.setFn('pendingAlerts', a => a.shift());
   },
   showPrompt: prompt => {
-    g.setViaImmer('pendingAlerts', dr => dr.push({ prompt }));
+    g.setFn('pendingAlerts', a => a.push({ prompt }));
   },
   showError: error => {
-    g.setViaImmer('pendingAlerts', dr => dr.push({ error }));
+    g.setFn('pendingAlerts', a => a.push({ error }));
   },
   showLoading: loading => {
     loading = loading || true;
-    g.setViaImmer('pendingAlerts', dr => dr.push({ loading }));
+    g.setFn('pendingAlerts', a => a.push({ loading }));
   },
 });

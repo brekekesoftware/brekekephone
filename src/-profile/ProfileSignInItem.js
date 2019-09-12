@@ -10,7 +10,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import authStore from '../-/authStore';
-import routerStore from '../-/routerStore';
+import g from '../global';
 import ActionButtons from '../shared/ActionButtons';
 import Field from '../shared/Field';
 import v from '../variables';
@@ -55,14 +55,14 @@ const ProfileSignInItem = p =>
       <Text>Tap the below button to create one</Text>
       <View style={s.ProfileSignInItem_Btns}>
         <ActionButtons
-          onSaveBtnPress={routerStore.goToPageProfileCreate}
+          onSaveBtnPress={g.goToProfileCreate}
           saveText="CREATE NEW SERVER"
         />
       </View>
     </View>
   ) : (
     <View style={[s.ProfileSignInItem, p.last && s.ProfileSignInItem__last]}>
-      <TouchableOpacity onPress={() => routerStore.goToPageProfileUpdate(p.id)}>
+      <TouchableOpacity onPress={() => g.goToProfileUpdate(p.id)}>
         <Field
           name="USERNAME"
           value={p.pbxUsername}
@@ -82,7 +82,7 @@ const ProfileSignInItem = p =>
         <ActionButtons
           onBackBtnPress={() => authStore.removeProfile(p.id)}
           backIcon={mdiClose}
-          onRefreshBtnPress={() => routerStore.goToPageProfileUpdate(p.id)}
+          onRefreshBtnPress={() => g.goToProfileUpdate(p.id)}
           refreshIcon={mdiDotsHorizontal}
           onSaveBtnPress={() => authStore.signIn(p.id)}
           saveText="SIGN IN"

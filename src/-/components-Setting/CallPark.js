@@ -13,8 +13,8 @@ import {
 import React from 'react';
 import { FlatList } from 'react-native';
 
+import g from '../../global';
 import Icon from '../../shared/Icon';
-import routerStore from '../routerStore';
 
 const Park = p => (
   <ListItem callpark>
@@ -49,10 +49,7 @@ class CallParkComponent extends React.Component {
           />
           <ListItem>
             <Body>
-              <Button
-                full
-                onPress={() => routerStore.goToNewCallPark(profile?.id)}
-              >
+              <Button full onPress={() => g.goToNewCallPark(profile?.id)}>
                 <Text>NEW CALL PARK</Text>
               </Button>
             </Body>

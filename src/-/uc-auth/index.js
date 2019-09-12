@@ -8,7 +8,6 @@ import g from '../../global';
 import authStore from '../authStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 @observer
@@ -96,7 +95,7 @@ class View extends React.Component {
     return (
       <UI
         failure={authStore.ucState === 'failure'}
-        abort={routerStore.goToPageProfileSignIn}
+        abort={g.goToProfileSignIn}
         retry={this.auth}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
       />

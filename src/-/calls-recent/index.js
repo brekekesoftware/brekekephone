@@ -7,7 +7,6 @@ import authStore from '../authStore';
 import callStore from '../callStore';
 import PageRecents from '../components-Recents/PageRecents';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {
@@ -21,8 +20,8 @@ class View extends React.Component {
         resolveCall={this.resolveCall}
         removeCall={authStore.removeRecentCall}
         callBack={this.callBack}
-        gotoCallsManage={routerStore.goToCallsManage}
-        gotoCallsCreate={routerStore.goToCallsCreate}
+        gotoCallsManage={g.goToCallsManage}
+        gotoCallsCreate={g.goToCallsCreate}
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         resolveUser={this.resolveUser}
         searchText={contactStore.searchText}
@@ -40,7 +39,7 @@ class View extends React.Component {
       ?.partyNumber;
     if (number) {
       this.context.sip.createSession(number);
-      routerStore.goToCallsManage();
+      g.goToCallsManage();
     } else {
       g.showError({ message: 'Could not find number from store to call' });
     }

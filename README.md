@@ -15,7 +15,7 @@ yarn
 react-native start
 ```
 
-- If it has some strange errors, we may need to reset cache as well
+- If it has some strange errors, we may need to delete node_module then reset cache as well
 
 ```sh
 yarn cache clean && yarn --check-files && react-native start --reset-cache

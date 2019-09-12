@@ -5,12 +5,11 @@ import { Platform } from 'react-native';
 import createId from 'shortid';
 
 import g from '../../global';
+import PushNotification from '../../native/PushNotification';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import { getPushNotificationToken } from '../pushNotification';
-import routerStore from '../routerStore';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
 import sip from './sip';
@@ -130,7 +129,7 @@ class ApiProvider extends React.Component {
       return await this._updatePhoneIndex();
     } catch (err) {
       console.error('updatePhoneIndex', err);
-      routerStore.goToPageProfileSignIn();
+      g.goToProfileSignIn();
       return null;
     }
   };
@@ -185,7 +184,7 @@ class ApiProvider extends React.Component {
               });
           },
           onDismiss: () => {
-            routerStore.goToPageProfileSignIn();
+            g.goToProfileSignIn();
             resolve(null);
           },
         });
@@ -196,7 +195,7 @@ class ApiProvider extends React.Component {
   };
 
   addPnToken = async webPhone => {
-    const t = await getPushNotificationToken();
+    const t = await PushNotification.getToken();
 
     if (!t) {
       return;

@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import g from '../../global';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import FooterTabs from '../components-Home/FooterTabs';
-import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {
@@ -12,13 +12,13 @@ class View extends React.Component {
     return (
       <FooterTabs
         chatsEnabled={authStore.profile?.ucEnabled}
-        pressCallsManage={routerStore.goToCallsManage}
-        pressCallsRecent={routerStore.goToCallsRecent}
-        pressCallsCreate={routerStore.goToCallsCreate}
-        pressSettings={routerStore.goToSettings}
-        pressUsers={routerStore.goToUsersBrowse}
-        pressChats={routerStore.goToChatsRecent}
-        pressBooks={routerStore.goToPhonebooksBrowse}
+        pressCallsManage={g.goToCallsManage}
+        pressCallsRecent={g.goToCallsRecent}
+        pressCallsCreate={g.goToCallsCreate}
+        pressSettings={g.goToSettings}
+        pressUsers={g.goToUsersBrowse}
+        pressChats={g.goToChatsRecent}
+        pressBooks={g.goToPhonebooksBrowse}
         runningIds={callStore.runnings.map(c => c.id)}
       />
     );

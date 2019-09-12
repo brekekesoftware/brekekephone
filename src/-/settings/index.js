@@ -5,7 +5,6 @@ import React from 'react';
 import g from '../../global';
 import authStore from '../authStore';
 import PageSetting from '../components-Setting/PageSetting';
-import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {
@@ -44,7 +43,7 @@ class View extends React.Component {
         setChatBusy={this.setChatBusy}
         setStatusText={this.setStatusText}
         submitStatusText={this.submitStatusText}
-        signout={routerStore.goToPageProfileSignIn}
+        signout={g.goToProfileSignIn}
       />
     );
   }

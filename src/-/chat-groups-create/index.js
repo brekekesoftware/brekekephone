@@ -6,7 +6,6 @@ import g from '../../global';
 import chatStore from '../chatStore';
 import CreateGroup from '../components-Chats/Create-Group';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {
@@ -30,7 +29,7 @@ class View extends React.Component {
         name={this.state.name}
         members={this.state.members}
         setName={this.setName}
-        back={routerStore.goToChatsRecent}
+        back={g.goToChatsRecent}
         toggleBuddy={this.toggleBuddy}
         create={this.create}
       />
@@ -74,7 +73,7 @@ class View extends React.Component {
   onCreateSuccess = group => {
     chatStore.upsertGroup(group);
     this.context.uc.joinChatGroup(group.id);
-    routerStore.goToChatsRecent();
+    g.goToChatsRecent();
   };
 
   onCreateFailure = err => {

@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import g from '../../global';
 import authStore from '../authStore';
 import PageContact from '../components-Contacts/PageContact';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 
 @observer
 class View extends React.Component {
@@ -28,7 +28,7 @@ class View extends React.Component {
         resolveUser={this.resolveUser}
         callVoice={this.callVoice}
         callVideo={this.callVideo}
-        chat={routerStore.goToBuddyChatsRecent}
+        chat={g.goToBuddyChatsRecent}
         setSearchText={contactStore.setF('searchText')}
         toggleModal={this.toggleModal}
         isModalVisible={this.state.isModalVisible}
@@ -115,7 +115,7 @@ class View extends React.Component {
     const { sip } = this.context;
 
     sip.createSession(userId);
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 
   callVideo = userId => {
@@ -125,7 +125,7 @@ class View extends React.Component {
       videoEnabled: true,
     });
 
-    routerStore.goToCallsManage();
+    g.goToCallsManage();
   };
 }
 

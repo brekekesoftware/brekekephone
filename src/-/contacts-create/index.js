@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 @observer
@@ -28,7 +27,7 @@ class View extends React.Component {
   render() {
     return (
       <UI
-        book={routerStore.getQuery().book || ''}
+        book={g.getQuery().book || ''}
         firstName={this.state.firstName}
         lastName={this.state.lastName}
         workNumber={this.state.workNumber}
@@ -38,7 +37,7 @@ class View extends React.Component {
         company={this.state.company}
         address={this.state.address}
         email={this.state.email}
-        back={routerStore.goToPhonebooksBrowse}
+        back={g.goToPhonebooksBrowse}
         save={this.save}
         setBook={this.setBook}
         setFirstName={this.setFirstName}
@@ -55,7 +54,7 @@ class View extends React.Component {
   }
 
   setBook = book =>
-    routerStore.goToContactsCreate({
+    g.goToContactsCreate({
       book,
     });
 
@@ -105,7 +104,7 @@ class View extends React.Component {
     });
 
   save = () => {
-    if (!routerStore.getQuery().book) {
+    if (!g.getQuery().book) {
       g.showError({ message: 'The phonebook name is required' });
       return;
     }
@@ -122,7 +121,7 @@ class View extends React.Component {
 
     this.context.pbx
       .setContact({
-        book: routerStore.getQuery().book,
+        book: g.getQuery().book,
         firstName: this.state.firstName,
         lastName: this.state.lastName,
         workNumber: this.state.workNumber,
@@ -138,7 +137,7 @@ class View extends React.Component {
   };
 
   onSaveSuccess = () => {
-    routerStore.goToPhonebooksBrowse();
+    g.goToPhonebooksBrowse();
   };
 
   onSaveFailure = err => {

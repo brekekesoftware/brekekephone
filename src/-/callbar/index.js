@@ -8,7 +8,6 @@ import arrToMap from '../arrToMap';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import LoudSpeaker from '../LoudSpeaker';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 @observer
@@ -32,12 +31,12 @@ class View extends React.Component {
       <UI
         activecallid={this.state.activecallid}
         chatsEnabled={authStore.profile?.ucEnabled}
-        pressCallsManage={routerStore.goToCallsManage}
-        pressCallsCreate={routerStore.goToCallsCreate}
-        pressSettings={routerStore.goToSettings}
-        pressUsers={routerStore.goToUsersBrowse}
-        pressChats={routerStore.goToChatsRecent}
-        pressBooks={routerStore.goToPhonebooksBrowse}
+        pressCallsManage={g.goToCallsManage}
+        pressCallsCreate={g.goToCallsCreate}
+        pressSettings={g.goToSettings}
+        pressUsers={g.goToUsersBrowse}
+        pressChats={g.goToChatsRecent}
+        pressBooks={g.goToPhonebooksBrowse}
         runningIds={callStore.runnings.map(c => c.id)}
         runningById={this.callById}
         hangup={this.hangup}

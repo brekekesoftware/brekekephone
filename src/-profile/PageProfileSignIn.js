@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import authStore from '../-/authStore';
 import { setUrlParams } from '../-/deeplink';
-import routerStore from '../-/routerStore';
+import g from '../global';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
@@ -40,7 +40,7 @@ class PageProfileSignIn extends React.Component {
             transparent: true,
             title: 'Servers',
             description: `${l} server${l > 1 ? 's' : ''} in total`,
-            onPlusBtnPress: !!l && routerStore.goToPageProfileCreate,
+            onPlusBtnPress: !!l && g.goToProfileCreate,
           }}
         >
           <View style={s.PageProfileSignIn_Spacing} />

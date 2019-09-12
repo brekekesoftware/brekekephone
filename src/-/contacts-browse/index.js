@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 const numberOfContactsPerPage = 30;
@@ -32,15 +31,15 @@ class View extends React.Component {
   render() {
     return (
       <UI
-        hasPrevPage={routerStore.getQuery().offset >= numberOfContactsPerPage}
+        hasPrevPage={g.getQuery().offset >= numberOfContactsPerPage}
         hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
-        searchText={routerStore.getQuery().searchText}
+        searchText={g.getQuery().searchText}
         loading={this.state.loading}
         contactIds={this.state.contactIds}
         resolveContact={this.resolveContact}
-        book={routerStore.getQuery().book}
-        shared={routerStore.getQuery().shared === 'true'}
-        back={routerStore.goToPhonebooksBrowse}
+        book={g.getQuery().book}
+        shared={g.getQuery().shared === 'true'}
+        back={g.goToPhonebooksBrowse}
         goNextPage={this.goNextPage}
         goPrevPage={this.goPrevPage}
         setSearchText={this.setSearchText}
@@ -64,7 +63,7 @@ class View extends React.Component {
   resolveContact = id => this.state.contactById[id];
 
   setSearchText = searchText => {
-    const oldQuery = routerStore.getQuery();
+    const oldQuery = g.getQuery();
 
     const query = {
       ...oldQuery,
@@ -72,7 +71,7 @@ class View extends React.Component {
       offset: 0,
     };
 
-    routerStore.goToContactsBrowse(query);
+    g.goToContactsBrowse(query);
     this.loadContacts.flush();
     this.loadContacts();
   };
@@ -175,7 +174,7 @@ class View extends React.Component {
   loadContacts = debounce(() => {
     const { pbx } = this.context;
 
-    const query = routerStore.getQuery();
+    const query = g.getQuery();
     const book = query.book;
     const shared = query.shared;
 
@@ -254,14 +253,14 @@ class View extends React.Component {
   };
 
   goNextPage = () => {
-    const oldQuery = routerStore.getQuery();
+    const oldQuery = g.getQuery();
 
     const query = {
       ...oldQuery,
       offset: oldQuery.offset + numberOfContactsPerPage,
     };
 
-    routerStore.goToContactsBrowse(query);
+    g.goToContactsBrowse(query);
 
     setTimeout(() => {
       this.loadContacts.flush();
@@ -270,14 +269,14 @@ class View extends React.Component {
   };
 
   goPrevPage = () => {
-    const oldQuery = routerStore.getQuery();
+    const oldQuery = g.getQuery();
 
     const query = {
       ...oldQuery,
       offset: oldQuery.offset - numberOfContactsPerPage,
     };
 
-    routerStore.goToContactsBrowse(query);
+    g.goToContactsBrowse(query);
 
     setTimeout(() => {
       this.loadContacts.flush();
@@ -293,8 +292,8 @@ class View extends React.Component {
   };
 
   create = () => {
-    routerStore.goToContactsCreate({
-      book: routerStore.getQuery().book,
+    g.goToContactsCreate({
+      book: g.getQuery().book,
     });
   };
 }

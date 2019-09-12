@@ -9,7 +9,6 @@ import chatStore from '../chatStore';
 import ChatsDetail from '../components-Chats/Chat-Detail';
 import contactStore from '../contactStore';
 import pickFile from '../pickFile';
-import routerStore from '../routerStore';
 import saveBlob from '../saveBlob';
 
 const monthName = [
@@ -108,7 +107,7 @@ class View extends React.Component {
         acceptFile={this.acceptFile}
         rejectFile={this.rejectFile}
         pickFile={this.pickFile}
-        back={routerStore.goToChatsRecent}
+        back={g.goToChatsRecent}
       />
     );
   }

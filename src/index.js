@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 import { AppRegistry } from 'react-native';
 
-import { registerPushNotification } from './-/pushNotification';
 import App from './App';
 import brandSrc from './assets/brand.png';
 import iconSrc from './assets/icon.png';
@@ -46,7 +45,6 @@ const AppSelection = () => {
   );
 };
 
-setTimeout(registerPushNotification);
 AppRegistry.registerComponent('App', () => AppSelection);
 AppRegistry.runApplication('App', {
   rootTag: document.getElementById('root'),

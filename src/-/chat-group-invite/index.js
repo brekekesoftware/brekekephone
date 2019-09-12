@@ -5,7 +5,6 @@ import React from 'react';
 import g from '../../global';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import routerStore from '../routerStore';
 import UI from './ui';
 
 @observer
@@ -72,7 +71,7 @@ class View extends React.Component {
   };
 
   back = () => {
-    routerStore.goToChatGroupsRecent(this.props.match.params.group);
+    g.goToChatGroupsRecent(this.props.match.params.group);
   };
 }
 

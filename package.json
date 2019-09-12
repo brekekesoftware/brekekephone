@@ -24,7 +24,6 @@
     "es7-shim": "6.0.0",
     "eventemitter3": "4.0.0",
     "history": "4.10.0",
-    "immer": "4.0.0",
     "jssip": "github:brekekesoftware/jssip#93940bcc89214d410a63435d6da00cbfe790313c",
     "lodash": "4.17.15",
     "mobx": "5.13.0",
@@ -65,8 +64,7 @@
     "react-art": "16.9.0",
     "react-device-detect": "1.7.5",
     "react-dom": "16.9.0",
-    "react-native-web": "0.11.7",
-    "sweetalert2": "8.17.1"
+    "react-native-web": "0.11.7"
   },
   "optionalDependencies": {
     "@babel/core": "7.6.0",
