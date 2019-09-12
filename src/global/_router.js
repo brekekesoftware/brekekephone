@@ -4,8 +4,8 @@ import { Platform } from 'react-native';
 
 import g from './_';
 
-const r = new RouterStore();
 const h = Platform.OS === 'web' ? createHashHistory() : createMemoryHistory();
+const r = new RouterStore();
 syncHistoryWithStore(h, r);
 
 // https://stackoverflow.com/a/24056766

@@ -3,10 +3,10 @@ import shortid from 'shortid';
 
 import g from '../global';
 import AsyncStorage from '../native/AsyncStorage';
+import PushNotification from '../native/PushNotification';
 import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
-import { resetBadgeNumber } from './pushNotification';
 import Toast from './Toast';
 
 const compareField = (p1, p2, field) => {
@@ -169,7 +169,7 @@ class AuthStore extends BaseStore {
     }
     this.set('signedInId', p.id);
     g.goToAuth();
-    resetBadgeNumber();
+    PushNotification.resetBadgeNumber();
     return true;
   };
 

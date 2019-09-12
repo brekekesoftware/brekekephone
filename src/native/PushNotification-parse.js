@@ -38,7 +38,6 @@ const _parse = (...p) =>
       });
       return m;
     }, {});
-
 const parse = n => {
   if (authStore.profile && AppState.currentState === 'active') {
     return null;

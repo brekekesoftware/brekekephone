@@ -1,26 +1,16 @@
 import { PushNotificationIOS } from 'react-native';
 import VoipPushNotification from 'react-native-voip-push-notification';
 
-import parseCustomNoti from './pushNotification-parse';
+import parse from './PushNotification-parse';
 
 let voipApnsToken = '';
-
-const getPushNotificationToken = () => {
-  return Promise.resolve(voipApnsToken);
+const onToken = t => {
+  if (t) {
+    voipApnsToken = t;
+  }
 };
-
-const registerPushNotification = () => {
-  VoipPushNotification.addEventListener('register', onVoipRegister);
-  VoipPushNotification.addEventListener('notification', onVoipNotification);
-  VoipPushNotification.requestPermissions();
-};
-
-const onVoipRegister = token => {
-  voipApnsToken = token;
-};
-
-const onVoipNotification = noti => {
-  const n = parseCustomNoti(noti);
+const onNotification = n => {
+  n = n && parse(n);
   if (!n) {
     return;
   }
@@ -42,8 +32,18 @@ const onVoipNotification = noti => {
   });
 };
 
-const resetBadgeNumber = () => {
-  PushNotificationIOS.setApplicationIconBadgeNumber(0);
+const PushNotification = {
+  register: () => {
+    VoipPushNotification.addEventListener('register', onToken);
+    VoipPushNotification.addEventListener('notification', onNotification);
+    VoipPushNotification.requestPermissions();
+  },
+  getToken: () => {
+    return Promise.resolve(voipApnsToken);
+  },
+  resetBadgeNumber: () => {
+    PushNotificationIOS.setApplicationIconBadgeNumber(0);
+  },
 };
 
-export { getPushNotificationToken, registerPushNotification, resetBadgeNumber };
+export default PushNotification;

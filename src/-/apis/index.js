@@ -5,11 +5,11 @@ import { Platform } from 'react-native';
 import createId from 'shortid';
 
 import g from '../../global';
+import PushNotification from '../../native/PushNotification';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import { getPushNotificationToken } from '../pushNotification';
 import Toast from '../Toast';
 import { setApiProvider } from './getApiProvider';
 import pbx from './pbx';
@@ -196,7 +196,7 @@ class ApiProvider extends React.Component {
   };
 
   addPnToken = async webPhone => {
-    const t = await getPushNotificationToken();
+    const t = await PushNotification.getToken();
 
     if (!t) {
       return;

@@ -11,6 +11,7 @@ import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
 import g from './global';
+import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import Page404 from './shared/Page404';
 import RootAlerts from './shared/RootAlerts';
@@ -20,6 +21,8 @@ registerOnUnhandledError(unexpectedErr => {
   return false;
 });
 configure({ enforceActions: 'always' });
+
+setTimeout(PushNotification.register);
 
 class App extends React.Component {
   componentDidMount() {
