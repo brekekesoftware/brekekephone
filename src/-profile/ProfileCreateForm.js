@@ -131,6 +131,7 @@ class ProfileCreateForm extends React.Component {
               onValueChange={this.setF('pbxHostname')}
             />
             <AppField
+              keyboardType="numeric"
               name="PORT"
               icon={mdiServerNetwork}
               value={pbxPort}
@@ -157,6 +158,7 @@ class ProfileCreateForm extends React.Component {
               onValueChange={this.setF('ucHostname')}
             />
             <AppField
+              keyboardType="numeric"
               disabled={!ucEnabled}
               name="PORT"
               icon={mdiServerNetwork}

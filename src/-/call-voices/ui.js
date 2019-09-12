@@ -1,13 +1,14 @@
 import React from 'react';
-import InCall from 'react-native-incall-manager';
+
+import IncallManager from '../../native/IncallManager';
 
 class IncomingItem extends React.Component {
   componentDidMount() {
-    InCall.startRingtone('_BUNDLE_');
+    IncallManager.startRingtone('_BUNDLE_');
   }
 
   componentWillUnmount() {
-    InCall.stopRingtone();
+    IncallManager.stopRingtone();
   }
 
   render() {
@@ -20,13 +21,13 @@ const IncomingList = p =>
 
 class OutgoingItem extends React.Component {
   componentDidMount() {
-    InCall.start({
+    IncallManager.start({
       ringback: '_BUNDLE_',
     });
   }
 
   componentWillUnmount() {
-    InCall.stopRingback();
+    IncallManager.stopRingback();
   }
 
   render() {

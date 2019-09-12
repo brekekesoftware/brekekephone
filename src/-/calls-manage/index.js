@@ -2,9 +2,10 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import InCallManager from 'react-native-incall-manager';
+import { Platform } from 'react-native';
 
 import g from '../../global';
+import IncallManager from '../../native/IncallManager';
 import arrToMap from '../arrToMap';
 import callStore from '../callStore';
 import PageCalling from '../components-Incoming/PageCalling';
@@ -153,7 +154,9 @@ class View extends React.Component {
   }
 
   onOpenLoudSpeaker = () => {
-    InCallManager.setForceSpeakerphoneOn(true);
+    if (Platform.OS !== 'web') {
+      IncallManager.setForceSpeakerphoneOn(true);
+    }
 
     callStore.upsertRunning({
       id: callStore.selectedId,
@@ -162,7 +165,9 @@ class View extends React.Component {
   };
 
   onCloseLoudSpeaker = () => {
-    InCallManager.setForceSpeakerphoneOn(false);
+    if (Platform.OS !== 'web') {
+      IncallManager.setForceSpeakerphoneOn(false);
+    }
 
     callStore.upsertRunning({
       id: callStore.selectedId,
