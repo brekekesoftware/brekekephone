@@ -70,7 +70,6 @@
 		CEED883698CF4337A39AF870 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AB5C3F0D3A9C44F9B18787F9 /* FontAwesome5_Regular.ttf */; };
 		D1CD68A158BB4BF1A0D9DF2A /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 55D8FAD811D845B490742219 /* MaterialIcons.ttf */; };
 		E207C1EE2292B9AD00BAC02D /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E207C1E62292B93600BAC02D /* libBVLinearGradient.a */; };
-		E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E255C6C32251B8F100BA5410 /* libLoudSpeaker.a */; };
 		E2617AD52297E76800294F88 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = E2617A9F2297E76800294F88 /* Fonts */; };
 		E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F63568131D9F4F2CAC6E9C5E /* libKCKeepAwake.a */; };
 		E67B4BA6BD2B48EE8F5E50D2 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4ED164E0237F407CA3CA57B8 /* SimpleLineIcons.ttf */; };
@@ -477,13 +476,6 @@
 			remoteGlobalIDString = 3D7682761D8E76B80014119E;
 			remoteInfo = SplashScreen;
 		};
-		E255C6C22251B8F100BA5410 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = LoudSpeaker;
-		};
 		E2617B272297E9D500294F88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D6013D63519946E4B4318980 /* RNVectorIcons.xcodeproj */;
@@ -599,7 +591,6 @@
 				9CB4D249231FFCB700B39C6A /* libRNCAsyncStorage.a in Frameworks */,
 				9CBEF4A722FB452C007E3898 /* libRNSVG.a in Frameworks */,
 				E207C1EE2292B9AD00BAC02D /* libBVLinearGradient.a in Frameworks */,
-				E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */,
 				9C8C84F32246AE3500C5FB09 /* JavaScriptCore.framework in Frameworks */,
 				9C9165FB22205A93000DEF18 /* libRCTCameraRoll.a in Frameworks */,
 				9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */,
@@ -619,7 +610,6 @@
 				84D1D1151EA9B99000BC7305 /* libc.tbd in Frameworks */,
 				9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */,
 				E30FDAC95B2B435BB3FC1893 /* libKCKeepAwake.a in Frameworks */,
-				E255C6F22251B9B700BA5410 /* libLoudSpeaker.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				9C89026D2294771800491DFE /* libRCTAnimation.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
@@ -816,7 +806,6 @@
 				9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */,
 				74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */,
 				E207C1E02292B93600BAC02D /* BVLinearGradient.xcodeproj */,
-				E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */,
@@ -1034,14 +1023,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E255C6BE2251B8F100BA5410 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E255C6C32251B8F100BA5410 /* libLoudSpeaker.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E2617B232297E9D500294F88 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1127,10 +1108,6 @@
 				{
 					ProductGroup = 849545A11F9FA25F000E4486 /* Products */;
 					ProjectRef = 74C97A436E5B4CB29CF2B7F8 /* KCKeepAwake.xcodeproj */;
-				},
-				{
-					ProductGroup = E255C6BE2251B8F100BA5410 /* Products */;
-					ProjectRef = E255C6BD2251B8F100BA5410 /* LoudSpeaker.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -1642,13 +1619,6 @@
 			fileType = archive.ar;
 			path = libSplashScreen.a;
 			remoteRef = E23481EA227DB4FD00133B58 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E255C6C32251B8F100BA5410 /* libLoudSpeaker.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libLoudSpeaker.a;
-			remoteRef = E255C6C22251B8F100BA5410 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E2617B282297E9D500294F88 /* libRNVectorIcons.a */ = {

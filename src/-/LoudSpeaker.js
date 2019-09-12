@@ -1,3 +1,4 @@
-import LoudSpeaker from 'react-native-loud-speaker';
-
-export default LoudSpeaker;
+// TODO use react-native-incall-manager
+export default {
+  open: () => null,
+};

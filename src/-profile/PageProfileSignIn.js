@@ -5,7 +5,6 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import authStore from '../-/authStore';
 import { setUrlParams } from '../-/deeplink';
 import routerStore from '../-/routerStore';
-import v from '../-/variables';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
@@ -36,6 +35,7 @@ class PageProfileSignIn extends React.Component {
     return (
       <BrekekeGradient>
         <Layout
+          noPadding
           header={{
             transparent: true,
             title: 'Servers',

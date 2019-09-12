@@ -75,21 +75,6 @@ const s = StyleSheet.create({
     fontSize: v.fontSize,
     fontFamily: 'inherit',
   },
-  Field_TextInputFocusing: {
-    backgroundColor: v.fn.transparentize(0.9, v.brekekeGreen),
-  },
-});
-
-const TextInputWithFocusStyle = React.forwardRef((p, ref) => {
-  const [focusing, setFocusing] = React.useState(false);
-  return (
-    <TextInput
-      {...p}
-      style={[p.style, focusing && s.Field_TextInputFocusing]}
-      onFocus={() => setFocusing(true)}
-      onBlur={() => setFocusing(false)}
-    />
-  );
 });
 
 const defaultValueRender = {
@@ -104,12 +89,18 @@ const renderField = p => {
   const iconRender = p.iconRender || defaultIconRender[p.type];
   return (
     <View style={[s.Field, p.disabled && s.Field__disabled]}>
-      <View style={s.Field_Inner} pointerEvents={p.disabled && 'none'}>
+      <View style={s.Field_Inner} pointerEvents={p.disabled ? 'none' : null}>
         {p.inputElement}
-        <Text style={s.Field_Name} pointerEvents={p.inputElement && 'none'}>
+        <Text
+          style={s.Field_Name}
+          pointerEvents={p.inputElement ? 'none' : null}
+        >
           {p.name}
         </Text>
-        <Text style={s.Field_Value} pointerEvents={p.inputElement && 'none'}>
+        <Text
+          style={s.Field_Value}
+          pointerEvents={p.inputElement ? 'none' : null}
+        >
           {(!p.inputElement &&
             ((valueRender && valueRender(p.value)) || p.value)) ||
             '\u00A0'}
@@ -120,7 +111,7 @@ const renderField = p => {
           <Icon
             path={p.icon}
             style={s.Field_Icon}
-            pointerEvents={p.inputElement && 'none'}
+            pointerEvents={p.inputElement ? 'none' : null}
           />
         ))}
     </View>
@@ -179,7 +170,7 @@ const Field = p => {
     return renderField({
       ...p,
       inputElement: (
-        <TextInputWithFocusStyle
+        <TextInput
           style={s.Field_TextInput}
           onChangeText={p.onValueChange}
           onSubmitEditing={p.onCreateBtnPress}

@@ -24,7 +24,7 @@ const s = StyleSheet.create({
   },
   LayoutHeader_Title: {
     fontWeight: 'bold',
-    fontSize: 2.2 * v.fontSize,
+    fontSize: 2.1 * v.fontSize,
   },
   LayoutHeader_Description: {
     color: v.brekekeShade7,

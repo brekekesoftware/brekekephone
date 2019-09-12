@@ -84,7 +84,7 @@ class ProfileCreateForm extends React.Component {
       <Layout
         header={{
           onBackBtnPress: this.props.onBackBtnPress,
-          title: `${isUpdate ? 'Edit' : 'New'} Server`,
+          title: `${isUpdate ? 'Update' : 'New'} Server`,
           description: isUpdate
             ? updatingProfile
               ? updatingProfile.pbxUsername

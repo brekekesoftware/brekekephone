@@ -11,7 +11,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.horcrux.svg.SvgPackage;
-import com.loudspeaker.LoudSpeakerPackage;
 import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
@@ -41,7 +40,6 @@ public class MainApplication extends Application implements ReactApplication {
               new InCallManagerPackage(),
               new KCKeepAwakePackage(),
               new LinearGradientPackage(),
-              new LoudSpeakerPackage(),
               new MainReactPackage(),
               new ReactNativeExceptionHandlerPackage(),
               new ReactVideoPackage(),
