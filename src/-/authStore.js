@@ -1,11 +1,11 @@
 import { action, computed, observable } from 'mobx';
 import shortid from 'shortid';
 
+import g from '../global';
 import arrToMap from './arrToMap';
 import AsyncStorage from './AsyncStorage';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
-import prompt from './prompt';
 import { resetBadgeNumber } from './pushNotification';
 import routerStore from './routerStore';
 import Toast from './Toast';
@@ -122,8 +122,12 @@ class AuthStore extends BaseStore {
     this.saveProfilesToLocalStorage();
   };
   removeProfile = id => {
-    prompt('Remove profile', 'Do you want to remove this profile?', () => {
-      this._removeProfile(id);
+    g.showPrompt({
+      title: 'Remove profile',
+      message: 'Do you want to remove this profile?',
+      onConfirm: () => {
+        this._removeProfile(id);
+      },
     });
   };
   @action _removeProfile = id => {

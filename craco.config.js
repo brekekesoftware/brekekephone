@@ -9,6 +9,8 @@ module.exports = {
       '@babel/plugin-proposal-optional-chaining',
       '@babel/plugin-transform-flow-strip-types',
       '@babel/plugin-transform-react-jsx',
+      '@babel/plugin-proposal-export-default-from',
+      '@babel/plugin-proposal-export-namespace-from',
     ],
     loaderOptions: {
       exclude: /node_modules\/(?!react-native|native-base).*(node_modules|dist)/,

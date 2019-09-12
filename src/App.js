@@ -12,7 +12,15 @@ import { history } from './-/routerStore';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
+import g from './global';
+import registerOnUnhandledError from './native/registerOnUnhandledError';
 import Page404 from './shared/Page404';
+import RootAlerts from './shared/RootAlerts';
+
+registerOnUnhandledError(unexpectedErr => {
+  g.showError({ unexpectedErr });
+  return false;
+});
 
 class App extends React.Component {
   componentDidMount() {
@@ -22,8 +30,8 @@ class App extends React.Component {
   }
   render() {
     return (
-      <StyleProvider style={nativeBaseTheme}>
-        <Router history={history}>
+      <Router history={history}>
+        <StyleProvider style={nativeBaseTheme}>
           <Switch>
             <Route exact path="/" component={PageProfileSignIn} />
             <Route path="/create-profile" component={PageProfileCreate} />
@@ -31,8 +39,9 @@ class App extends React.Component {
             <Route path="/auth" component={AppOld} />
             <Route component={Page404} />
           </Switch>
-        </Router>
-      </StyleProvider>
+        </StyleProvider>
+        <RootAlerts />
+      </Router>
     );
   }
 }

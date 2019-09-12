@@ -41,7 +41,7 @@ const s = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: 'white',
-    fontSize: v.fontSizeBtn,
+    fontSize: v.fontSizeSmall,
     lineHeight: 24, // Icon height
   },
 });

@@ -4,7 +4,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import createId from 'shortid';
 
-import Alert from '../Alert';
+import g from '../../global';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
@@ -170,37 +170,26 @@ class ApiProvider extends React.Component {
       await setExtensionProperties();
     } else {
       return new Promise(resolve => {
-        Alert.alert(
-          'Warning',
-          'This phone index is already in use. Do you want to continue?',
-          [
-            {
-              text: 'Cancel',
-              style: 'cancel',
-              onPress: () => {
-                routerStore.goToPageProfileSignIn();
+        g.showPrompt({
+          title: 'Warning',
+          message:
+            'This phone index is already in use. Do you want to continue?',
+          onConfirm: () => {
+            phone.type = 'Web Phone';
+            setExtensionProperties()
+              .then(() => {
+                resolve(phone);
+              })
+              .catch(err => {
+                console.error('setExtensionProperties', err);
                 resolve(null);
-              },
-            },
-            {
-              text: 'OK',
-              onPress: () => {
-                phone.type = 'Web Phone';
-                setExtensionProperties()
-                  .then(() => {
-                    resolve(phone);
-                  })
-                  .catch(err => {
-                    console.error('setExtensionProperties', err);
-                    resolve(null);
-                  });
-              },
-            },
-          ],
-          {
-            cancelable: false,
+              });
           },
-        );
+          onDismiss: () => {
+            routerStore.goToPageProfileSignIn();
+            resolve(null);
+          },
+        });
       });
     }
 
