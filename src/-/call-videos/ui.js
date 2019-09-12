@@ -1,5 +1,5 @@
 import React from 'react';
-import { PanResponder, StyleSheet, View } from 'react-native';
+import { PanResponder, View } from 'react-native';
 
 import { std } from '../styleguide';
 import Video from './video';
@@ -15,7 +15,7 @@ const st = {
     height: std.iconSize.lg * 6,
     backgroundColor: 'black',
     borderRadius: std.iconSize.lg * 3,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade9,
     shadowColor: std.color.shade9,
     shadowRadius: std.gap.md,

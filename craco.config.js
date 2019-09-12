@@ -19,6 +19,7 @@ module.exports = {
   webpack: {
     alias: {
       'react-native': 'react-native-web',
+      'react-native-svg': 'react-native-svg-web',
     },
     configure: {
       resolve: {

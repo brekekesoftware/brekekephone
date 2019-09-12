@@ -99,4 +99,4 @@ const PushNotification = {
   },
 };
 
-export default Notification;
+export default PushNotification;

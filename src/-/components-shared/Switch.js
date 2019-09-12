@@ -11,7 +11,7 @@ const st = StyleSheet.create({
     paddingTop: std.gap.md,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   fieldLabel: {

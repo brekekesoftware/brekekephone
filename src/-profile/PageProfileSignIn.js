@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
 
 import authStore from '../-/authStore';
 import { setUrlParams } from '../-/deeplink';
 import g from '../global';
+import { FlatList, StyleSheet, View } from '../native/Rn';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
@@ -36,6 +36,7 @@ class PageProfileSignIn extends React.Component {
     return (
       <BrekekeGradient>
         <Layout
+          noScroll
           header={{
             transparent: true,
             title: 'Servers',

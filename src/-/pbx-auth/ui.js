@@ -9,7 +9,7 @@ export const st = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderColor: std.color.shade2,
     backgroundColor: std.color.shade0,
   },
@@ -32,7 +32,7 @@ export const st = StyleSheet.create({
 
   abort: {
     marginHorizontal: std.gap.sm,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.danger,
     borderRadius: std.gap.sm,
     paddingLeft: std.gap.lg,
@@ -48,7 +48,7 @@ export const st = StyleSheet.create({
 
   retry: {
     marginHorizontal: std.gap.sm,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.action,
     borderRadius: std.gap.sm,
     paddingLeft: std.gap.lg,

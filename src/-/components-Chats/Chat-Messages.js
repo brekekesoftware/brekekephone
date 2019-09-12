@@ -37,7 +37,7 @@ const File = p => (
         <Progress
           percent={p.state === 'percent'}
           radius={std.iconSize.md}
-          borderWidth={StyleSheet.hairlineWidth * 2}
+          borderWidth={1 * 2}
           color={std.color.notice}
           shadowColor={std.color.shade4}
           bgColor={std.color.shade0}

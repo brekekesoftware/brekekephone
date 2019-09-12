@@ -1,5 +1,4 @@
 import merge from 'lodash/merge';
-import { StyleSheet } from 'react-native';
 
 import nativeBaseTheme from './nbTheme';
 import variables from './nbVariables';
@@ -54,7 +53,7 @@ merge(nativeBaseTheme, {
       alignItems: 'center',
       backgroundColor: '#f1f1f1',
       borderColor: '#e2e2e4',
-      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomWidth: 1,
     },
     paddingTop: 0,
     paddingBottom: 0,

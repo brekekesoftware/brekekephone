@@ -37,7 +37,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -81,7 +81,7 @@ const st = StyleSheet.create({
     paddingVertical: std.gap.md,
     paddingHorizontal: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   searchInput: {
@@ -119,7 +119,7 @@ const st = StyleSheet.create({
   contact: {
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderRadius: std.gap.lg,
     overflow: 'hidden',
     margin: std.gap.lg,
@@ -156,7 +156,7 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
 
   contactActionIcon: {
@@ -188,7 +188,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     height: std.iconSize.md * 2 + std.gap.md * 2,
     paddingHorizontal: std.gap.lg,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderColor: std.color.shade2,
   },
 
@@ -228,7 +228,7 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
 
   actionIcon: {
@@ -249,7 +249,7 @@ const st = StyleSheet.create({
     padding: std.gap.lg,
     backgroundColor: std.color.shade1,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderRadius: std.gap.md,
     margin: std.gap.lg,
   },

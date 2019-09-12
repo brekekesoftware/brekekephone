@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 const v = {
   fn,
-  fontSize: 13,
+  fontSize: 14,
   fontSizeSmall: 11,
   fontWeight: 'normal',
   fontFamily: Platform.OS === 'web' ? 'inherit' : undefined,

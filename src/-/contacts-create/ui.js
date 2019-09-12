@@ -22,7 +22,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarBack: {
@@ -69,7 +69,7 @@ const st = StyleSheet.create({
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   fieldLabel: {

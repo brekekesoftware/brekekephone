@@ -21,7 +21,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
   navbarTitle: {
     fontFamily: std.font.text,
@@ -59,7 +59,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     padding: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
   optTitle: {
     fontFamily: std.font.text,
@@ -84,7 +84,7 @@ const st = StyleSheet.create({
     paddingTop: std.gap.lg * 2,
     paddingBottom: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
   dividerTitle: {
     fontFamily: std.font.text,
@@ -99,7 +99,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: std.gap.lg,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderColor: std.color.shade4,
   },
   matchInfo: {
@@ -168,7 +168,7 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     margin: std.gap.md,
   },
 });

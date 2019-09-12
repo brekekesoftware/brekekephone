@@ -9,13 +9,13 @@ const st = StyleSheet.create({
     ios: {
       height: getStatusBarHeight(true),
       backgroundColor: std.color.shade3,
-      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomWidth: 1,
       borderColor: std.color.shade4,
     },
 
     android: {
       backgroundColor: std.color.shade3,
-      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomWidth: 1,
       borderColor: std.color.shade4,
     },
   }),

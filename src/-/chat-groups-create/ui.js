@@ -23,7 +23,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -65,7 +65,7 @@ const st = StyleSheet.create({
     paddingTop: std.gap.lg * 2,
     paddingBottom: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   dividerTitle: {
@@ -80,7 +80,7 @@ const st = StyleSheet.create({
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   fieldInput: {
@@ -105,7 +105,7 @@ const st = StyleSheet.create({
     paddingVertical: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   buddySelected: {
@@ -113,7 +113,7 @@ const st = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    width: StyleSheet.hairlineWidth * 5,
+    width: 1 * 5,
     backgroundColor: std.color.active,
   },
 
@@ -126,7 +126,7 @@ const st = StyleSheet.create({
     height: std.iconSize.lg * 2,
     borderRadius: std.iconSize.lg,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
 
   buddyName: {
@@ -150,7 +150,7 @@ const st = StyleSheet.create({
     width: std.gap.lg,
     height: std.gap.lg,
     borderRadius: std.gap.lg / 2,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade0,
     backgroundColor: std.color.shade5,
   },
@@ -162,7 +162,7 @@ const st = StyleSheet.create({
     width: std.gap.lg,
     height: std.gap.lg,
     borderRadius: std.gap.lg / 2,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade0,
     backgroundColor: std.color.active,
   },
@@ -174,7 +174,7 @@ const st = StyleSheet.create({
     width: std.gap.lg,
     height: std.gap.lg,
     borderRadius: std.gap.lg / 2,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade0,
     backgroundColor: std.color.notice,
   },
@@ -186,7 +186,7 @@ const st = StyleSheet.create({
     width: std.gap.lg,
     height: std.gap.lg,
     borderRadius: std.gap.lg / 2,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade0,
     backgroundColor: std.color.danger,
   },

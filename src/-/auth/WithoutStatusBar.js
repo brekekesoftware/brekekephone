@@ -5,7 +5,6 @@ import { getBottomSpace } from 'react-native-iphone-x-helper';
 const st = StyleSheet.create({
   main: {
     flex: 1,
-    position: 'relative',
     paddingBottom: getBottomSpace(),
   },
 });

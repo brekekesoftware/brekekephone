@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity as Button,
-  View,
-} from 'react-native';
+import { Platform, Text, TouchableOpacity as Button, View } from 'react-native';
 
 import { rem, std } from '../styleguide';
 
@@ -16,8 +10,8 @@ const st = {
     alignItems: 'center',
     backgroundColor: std.color.shade1,
     borderColor: std.color.shade4,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
 
   tab: {
@@ -45,7 +39,7 @@ const st = {
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -85,7 +79,7 @@ const st = {
   control: {
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     marginBottom: std.gap.lg,
   },
 
@@ -108,7 +102,7 @@ const st = {
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     marginHorizontal: std.gap.md,
     marginBottom: std.gap.md,
   },
@@ -153,7 +147,7 @@ const st = {
     paddingVertical: std.gap.sm,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     flex: 1,
   },
 
@@ -162,7 +156,7 @@ const st = {
     left: 0,
     top: 0,
     bottom: 0,
-    width: StyleSheet.hairlineWidth * 5,
+    width: 1 * 5,
     backgroundColor: std.color.active,
   },
 
@@ -244,7 +238,7 @@ const st = {
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: std.gap.lg,

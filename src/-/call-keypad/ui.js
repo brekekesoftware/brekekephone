@@ -34,7 +34,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -87,7 +87,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade0,
     paddingTop: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   keyRow: {
@@ -101,7 +101,7 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade3,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     marginBottom: std.gap.lg,
     marginHorizontal: std.gap.md,
   },

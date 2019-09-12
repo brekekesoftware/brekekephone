@@ -1,7 +1,7 @@
 import { createHashHistory, createMemoryHistory } from 'history';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
-import { Platform } from 'react-native';
 
+import { Platform } from '../native/Rn';
 import g from './_';
 
 const h = Platform.OS === 'web' ? createHashHistory() : createMemoryHistory();

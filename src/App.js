@@ -2,7 +2,6 @@ import './polyfill';
 
 import { configure } from 'mobx';
 import React from 'react';
-import { AppState, Platform } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { Route, Router, Switch } from 'react-router';
 
@@ -14,6 +13,7 @@ import PageProfileUpdate from './-profile/PageProfileUpdate';
 import g from './global';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
+import { AppState, Platform } from './native/Rn';
 import Page404 from './shared/Page404';
 import RootAlerts from './shared/RootAlerts';
 

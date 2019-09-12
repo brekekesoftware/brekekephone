@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity as Button,
-  View,
-} from 'react-native';
+import { Platform, Text, TouchableOpacity as Button, View } from 'react-native';
 
 import { rem, std } from '../styleguide';
 
@@ -16,8 +10,8 @@ const st = {
     alignItems: 'center',
     backgroundColor: std.color.shade1,
     borderColor: std.color.shade4,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
   tab: {
     justifyContent: 'center',

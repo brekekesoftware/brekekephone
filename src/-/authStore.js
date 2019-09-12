@@ -121,7 +121,7 @@ class AuthStore extends BaseStore {
   });
   removeProfile = id => {
     g.showPrompt({
-      title: 'Remove profile',
+      title: 'Remove server',
       message: 'Do you want to remove this profile?',
       onConfirm: () => {
         this._removeProfile(id);

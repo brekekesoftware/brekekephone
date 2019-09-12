@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity as Button,
   View,
@@ -22,7 +21,7 @@ const st = {
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -62,7 +61,7 @@ const st = {
   control: {
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     marginBottom: std.gap.lg,
     paddingVertical: std.gap.sm,
   },
@@ -86,7 +85,7 @@ const st = {
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
 
   optIconAction: {
@@ -129,7 +128,7 @@ const st = {
     paddingVertical: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   callSelected: {
@@ -137,7 +136,7 @@ const st = {
     left: 0,
     top: 0,
     bottom: 0,
-    width: StyleSheet.hairlineWidth * 5,
+    width: 1 * 5,
     backgroundColor: std.color.active,
   },
 
@@ -211,7 +210,7 @@ const st = {
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: std.gap.lg,

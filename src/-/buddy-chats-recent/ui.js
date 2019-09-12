@@ -26,7 +26,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -71,7 +71,7 @@ const st = StyleSheet.create({
     height: std.textSize.md + std.gap.md * 2,
     borderRadius: std.textSize.md / 2 + std.gap.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     position: 'absolute',
     top:
       std.textSize.sm + std.gap.lg + std.gap.md + (std.gap.lg + std.gap.sm) / 2,
@@ -117,7 +117,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
   },
 
   editTextInput: {
@@ -135,7 +135,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: std.iconSize.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade4,
     marginLeft: std.gap.sm,
     marginRight: std.gap.lg,
@@ -168,7 +168,7 @@ const st = StyleSheet.create({
     fontSize: std.textSize.md,
     color: std.color.action,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   file: {
@@ -201,7 +201,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: std.iconSize.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade4,
     marginLeft: std.gap.lg,
   },
@@ -218,7 +218,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: std.iconSize.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: std.color.shade4,
   },
 
@@ -290,7 +290,7 @@ const File = pure(p => (
         <Progress
           percent={p.state === 'percent'}
           radius={std.iconSize.md}
-          borderWidth={StyleSheet.hairlineWidth * 2}
+          borderWidth={1 * 2}
           color={std.color.notice}
           shadowColor={std.color.shade4}
           bgColor={std.color.shade0}

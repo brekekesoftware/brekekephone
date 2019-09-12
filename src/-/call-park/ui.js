@@ -35,7 +35,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -77,7 +77,7 @@ const st = StyleSheet.create({
     paddingTop: std.gap.lg * 2,
     paddingBottom: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   dividerTitle: {
@@ -115,7 +115,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     padding: std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   parkSelected: {
@@ -123,7 +123,7 @@ const st = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    width: StyleSheet.hairlineWidth * 5,
+    width: 1 * 5,
     backgroundColor: std.color.active,
   },
 

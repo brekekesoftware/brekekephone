@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
+import { StyleSheet, View } from '../native/Rn';
 import ActionButtons from './ActionButtons';
 
 const s = StyleSheet.create({

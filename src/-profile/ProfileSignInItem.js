@@ -7,17 +7,16 @@ import {
   mdiWebpack,
 } from '@mdi/js';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import authStore from '../-/authStore';
 import g from '../global';
+import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import ActionButtons from '../shared/ActionButtons';
 import Field from '../shared/Field';
 import v from '../variables';
 
 const s = StyleSheet.create({
   ProfileSignInItem: {
-    position: 'relative',
     backgroundColor: 'white',
     marginBottom: 15,
     marginLeft: 15,
@@ -43,7 +42,7 @@ const s = StyleSheet.create({
   },
   ProfileSignInItem_EmptyTitle: {
     fontWeight: 'bold',
-    fontSize: 1.5 * v.fontSize,
+    fontSize: 1.2 * v.fontSize,
   },
 });
 

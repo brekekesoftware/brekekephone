@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 
 import LinearGradient from '../native/LinearGradient';
+import { StyleSheet } from '../native/Rn';
 import v from '../variables';
 
 const s = StyleSheet.create({

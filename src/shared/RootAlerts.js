@@ -1,15 +1,14 @@
 import flow from 'lodash/flow';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 import g from '../global';
+import { StyleSheet } from '../native/Rn';
 import v from '../variables';
 
 const s = StyleSheet.create({
   RootAlerts: {
-    position: 'relative',
     width: 300,
     shadowColor: v.fn.transparentize(0.8, 'black'),
     shadowOpacity: 0.8,
@@ -34,7 +33,7 @@ const s = StyleSheet.create({
   RootAlerts_Btn: {
     position: 'absolute',
     top: -10,
-    right: -145,
+    left: 35,
     borderRadius: v.borderRadius,
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -42,13 +41,15 @@ const s = StyleSheet.create({
     width: 100,
   },
   RootAlerts_Btn__cancel: {
+    left: 'auto',
     right: -35,
     backgroundColor: v.brekekeShade8,
   },
   RootAlerts_BtnTxt: {
-    fontWeight: 'bold',
-    textAlign: 'center',
     fontSize: v.fontSizeSmall,
+    fontWeight: 'bold',
+    fontFamily: v.fontFamily,
+    textAlign: 'center',
   },
 });
 

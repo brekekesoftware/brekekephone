@@ -26,7 +26,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   navbarTitle: {
@@ -88,7 +88,7 @@ const st = StyleSheet.create({
     paddingVertical: std.gap.md,
     backgroundColor: std.color.shade1,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   member: {
@@ -103,7 +103,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     marginBottom: std.gap.md,
   },
 
@@ -143,7 +143,7 @@ const st = StyleSheet.create({
     height: std.textSize.md + std.gap.md * 2,
     borderRadius: std.textSize.md / 2 + std.gap.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     position: 'absolute',
     top:
       std.textSize.sm + std.gap.lg + std.gap.md + (std.gap.lg + std.gap.sm) / 2,
@@ -189,7 +189,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
   },
 
   editTextInput: {
@@ -224,7 +224,7 @@ const st = StyleSheet.create({
     fontSize: std.textSize.md,
     color: std.color.action,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
 
   optIcon: {
@@ -240,7 +240,7 @@ const st = StyleSheet.create({
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     marginHorizontal: std.gap.md,
   },
 

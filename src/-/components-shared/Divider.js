@@ -14,7 +14,7 @@ const st = StyleSheet.create({
     padding: std.gap.lg,
     paddingTop: 2 * std.gap.lg,
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     backgroundColor: std.color.shade3,
   },
 

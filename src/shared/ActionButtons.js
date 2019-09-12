@@ -1,7 +1,7 @@
 import { mdiCached, mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import v from '../variables';
 import Icon from './Icon';
 

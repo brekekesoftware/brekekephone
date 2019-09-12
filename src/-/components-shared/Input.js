@@ -26,7 +26,7 @@ const st = StyleSheet.create({
     fontSize: std.textSize.md,
     height: std.textSize.md + std.gap.lg * 2,
     borderColor: std.color.shade4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderRadius: 3,
     padding: std.gap.lg,
     color: std.color.shade9,

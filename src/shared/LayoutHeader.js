@@ -1,10 +1,15 @@
 import { mdiKeyboardBackspace, mdiPlus } from '@mdi/js';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../native/Rn';
 import Icon from '../shared/Icon';
 import v from '../variables';
-import StatusBar from './StatusBar';
 
 const s = StyleSheet.create({
   LayoutHeader: {
@@ -12,29 +17,30 @@ const s = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+  },
+  LayoutHeader_Inner: {
     padding: 15,
     backgroundColor: 'white',
-    overflow: 'hidden',
   },
-  LayoutHeader__hasBackBtn: {
+  LayoutHeader_Inner__hasBackBtn: {
     paddingLeft: 55,
   },
-  LayoutHeader__compact: {
+  LayoutHeader_Inner__compact: {
     paddingVertical: 10,
     shadowColor: 'black',
     shadowOpacity: 0.15,
     shadowRadius: 5,
     elevation: 5,
   },
-  LayoutHeader__transparent: {
+  LayoutHeader_Inner__transparent: {
     backgroundColor: 'transparent',
   },
   LayoutHeader_Title: {
     fontWeight: 'bold',
-    fontSize: 2.1 * v.fontSize,
+    fontSize: 1.9 * v.fontSize,
   },
   LayoutHeader_Title__compact: {
-    fontSize: 1.5 * v.fontSize,
+    fontSize: 1.2 * v.fontSize,
     lineHeight: 20,
   },
   LayoutHeader_Description: {
@@ -77,51 +83,56 @@ const s = StyleSheet.create({
 });
 
 const Header = p => (
-  <View
-    style={[
-      s.LayoutHeader,
-      !!p.onBackBtnPress && s.LayoutHeader__hasBackBtn,
-      p.compact && s.LayoutHeader__compact,
-      p.transparent && s.LayoutHeader__transparent,
-    ]}
-  >
+  <View style={s.LayoutHeader}>
     <StatusBar transparent={p.transparent} />
-    <Text
-      style={[s.LayoutHeader_Title, p.compact && s.LayoutHeader_Title__compact]}
-    >
-      {p.title}
-    </Text>
-    <Text
+    <View
       style={[
-        s.LayoutHeader_Description,
-        p.compact && s.LayoutHeader_Description__compact,
+        s.LayoutHeader_Inner,
+        !!p.onBackBtnPress && s.LayoutHeader_Inner__hasBackBtn,
+        p.compact && s.LayoutHeader_Inner__compact,
+        p.transparent && s.LayoutHeader_Inner__transparent,
       ]}
     >
-      {p.description || '\u200a'}
-    </Text>
-    {p.onCreateBtnPress && (
-      <TouchableOpacity
+      <Text
         style={[
-          s.LayoutHeader_CreateBtn,
-          p.transparent && s.LayoutHeader_CreateBtn__white,
-          p.compact && s.LayoutHeader_CreateBtn__compact,
+          s.LayoutHeader_Title,
+          p.compact && s.LayoutHeader_Title__compact,
         ]}
-        onPress={p.onCreateBtnPress}
       >
-        <Icon path={mdiPlus} color={p.transparent ? 'black' : 'white'} />
-      </TouchableOpacity>
-    )}
-    {p.onBackBtnPress && (
-      <TouchableOpacity
+        {p.title}
+      </Text>
+      <Text
         style={[
-          s.LayoutHeader_BackBtn,
-          p.compact && s.LayoutHeader_BackBtn__compact,
+          s.LayoutHeader_Description,
+          p.compact && s.LayoutHeader_Description__compact,
         ]}
-        onPress={p.onBackBtnPress}
       >
-        <Icon path={mdiKeyboardBackspace} />
-      </TouchableOpacity>
-    )}
+        {p.description || '\u200a'}
+      </Text>
+      {p.onCreateBtnPress && (
+        <TouchableOpacity
+          style={[
+            s.LayoutHeader_CreateBtn,
+            p.transparent && s.LayoutHeader_CreateBtn__white,
+            p.compact && s.LayoutHeader_CreateBtn__compact,
+          ]}
+          onPress={p.onCreateBtnPress}
+        >
+          <Icon path={mdiPlus} color={p.transparent ? 'black' : 'white'} />
+        </TouchableOpacity>
+      )}
+      {p.onBackBtnPress && (
+        <TouchableOpacity
+          style={[
+            s.LayoutHeader_BackBtn,
+            p.compact && s.LayoutHeader_BackBtn__compact,
+          ]}
+          onPress={p.onBackBtnPress}
+        >
+          <Icon path={mdiKeyboardBackspace} />
+        </TouchableOpacity>
+      )}
+    </View>
   </View>
 );
 

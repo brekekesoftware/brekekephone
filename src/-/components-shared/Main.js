@@ -15,7 +15,7 @@ const st = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: std.color.shade4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     paddingVertical: std.gap.sm,
     backgroundColor: std.color.shade1,
   },

@@ -1,6 +1,7 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import omit from 'lodash/omit';
 import React from 'react';
+
 import {
   StyleSheet,
   Switch,
@@ -8,39 +9,47 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-
+} from '../native/Rn';
 import Icon from '../shared/Icon';
 import v from '../variables';
 
 const s = StyleSheet.create({
   Field: {
-    position: 'relative',
-    paddingTop: 15,
-    paddingBottom: 5,
-    paddingHorizontal: 7,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: v.brekekeShade2,
+    borderBottomWidth: 1,
+    borderColor: v.brekekeShade1,
+    height: 50,
+    alignItems: 'stretch',
   },
   Field__disabled: {
     backgroundColor: v.brekekeShade0,
   },
-  Field_Inner: {
-    position: 'static',
-  },
   Field_Name: {
-    position: 'relative',
+    position: 'absolute',
+    top: 15,
+    left: 7,
     fontSize: v.fontSizeSmall,
     color: v.brekekeShade6,
   },
-  Field_Value: {
-    position: 'relative',
+  Field_TextInput: {
+    width: '100%',
+    height: 50,
+    paddingTop: 28,
+    paddingBottom: 5,
+    paddingLeft: 7,
+    paddingRight: 40,
     fontWeight: 'bold',
+  },
+  Field_TextInput__value: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    borderBottomWidth: 1,
+    borderColor: v.brekekeShade1,
   },
   Field_Switch: {
     position: 'absolute',
     top: 22,
-    right: 5,
+    right: 11,
   },
   Field_Btn: {
     position: 'absolute',
@@ -61,62 +70,39 @@ const s = StyleSheet.create({
     top: 15,
     right: 15,
   },
-  Field_TextInput: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    paddingTop: 28,
-    paddingBottom: 5,
-    paddingLeft: 7,
-    paddingRight: 40,
-    fontWeight: 'bold',
-    fontSize: v.fontSize,
-    fontFamily: 'inherit',
-  },
 });
 
-const defaultValueRender = {
-  Switch: v => (v ? 'Enabled' : 'Disabled'),
-};
-const defaultIconRender = {
-  Switch: v => <Switch style={s.Field_Switch} pointerEvents="none" value={v} />,
-};
-
-const renderField = p => {
-  const valueRender = p.valueRender || defaultValueRender[p.type];
-  const iconRender = p.iconRender || defaultIconRender[p.type];
-  return (
-    <View style={[s.Field, p.disabled && s.Field__disabled]}>
-      <View style={s.Field_Inner} pointerEvents={p.disabled ? 'none' : null}>
+const renderField = p => (
+  <View>
+    <View>
+      <View
+        style={[s.Field, p.disabled && s.Field__disabled]}
+        pointerEvents={p.disabled ? 'none' : null}
+      >
         {p.inputElement}
-        <Text
-          style={s.Field_Name}
-          pointerEvents={p.inputElement ? 'none' : null}
-        >
-          {p.name}
-        </Text>
-        <Text
-          style={s.Field_Value}
-          pointerEvents={p.inputElement ? 'none' : null}
-        >
-          {(!p.inputElement &&
-            ((valueRender && valueRender(p.value)) || p.value)) ||
-            '\u00A0'}
-        </Text>
       </View>
-      {(iconRender && iconRender(p.value)) ||
-        (p.icon && (
-          <Icon
-            path={p.icon}
-            style={s.Field_Icon}
-            pointerEvents={p.inputElement ? 'none' : null}
-          />
-        ))}
+      <Text style={s.Field_Name} pointerEvents={p.inputElement ? 'none' : null}>
+        {p.name}
+      </Text>
+      <Text
+        style={[s.Field_TextInput, s.Field_TextInput__value]}
+        pointerEvents={p.inputElement ? 'none' : null}
+      >
+        {(!p.inputElement &&
+          ((p.valueRender && p.valueRender(p.value)) || p.value)) ||
+          '\u00A0'}
+      </Text>
     </View>
-  );
-};
+    {(p.iconRender && p.iconRender(p.value)) ||
+      (p.icon && (
+        <Icon
+          path={p.icon}
+          style={s.Field_Icon}
+          pointerEvents={p.inputElement ? 'none' : null}
+        />
+      ))}
+  </View>
+);
 const Field = p => {
   if (p.onCreateBtnPress) {
     p = {
@@ -158,6 +144,13 @@ const Field = p => {
     return renderField(p);
   }
   if (p.type === 'Switch') {
+    p = {
+      ...p,
+      valueRender: v => (v ? 'Enabled' : 'Disabled'),
+      iconRender: v => (
+        <Switch style={s.Field_Switch} pointerEvents="none" enabled={v} />
+      ),
+    };
     if (p.disabled) {
       return renderField(p);
     }
