@@ -1,9 +1,7 @@
 import { action, computed, observable } from 'mobx';
-import { Platform } from 'react-native';
 
 import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
-import LoudSpeaker from './LoudSpeaker';
 
 export class CallStore extends BaseStore {
   @observable selectedId = '';
@@ -46,28 +44,8 @@ export class CallStore extends BaseStore {
   getRunningCall = id => {
     return this._runningsMap[id];
   };
-
-  @observable isLoudSpeakerOn = false;
-  initLoudSpeaker = () => {
-    if (Platform.OS !== 'web') {
-      LoudSpeaker.open(false);
-    }
-  };
-  enableLoudSpeaker = () => {
-    if (Platform.OS !== 'web') {
-      LoudSpeaker.open(true);
-      this.set('isLoudSpeakerOn', true);
-    }
-  };
-  disableLoudSpeaker = () => {
-    if (Platform.OS !== 'web') {
-      LoudSpeaker.open(false);
-      this.set('isLoudSpeakerOn', false);
-    }
-  };
 }
 
 const callStore = new CallStore();
-callStore.initLoudSpeaker();
 
 export default callStore;
