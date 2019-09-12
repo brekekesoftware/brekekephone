@@ -110,7 +110,7 @@ class AuthStore extends BaseStore {
   findProfile = _p => {
     return this.profiles.find(p => compareProfile(p, _p));
   };
-  upsertProfile = _p => {
+  upsertProfile = action(_p => {
     const p = this.getProfile(_p.id);
     if (p) {
       Object.assign(p, _p);
@@ -119,7 +119,7 @@ class AuthStore extends BaseStore {
       this.set('profiles', [...this.profiles, _p]);
     }
     this.saveProfilesToLocalStorage();
-  };
+  });
   removeProfile = id => {
     g.showPrompt({
       title: 'Remove profile',

@@ -6,7 +6,6 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   BrekekeGradient: {
-    display: 'flex',
     height: '100%',
     minHeight: 550,
   },

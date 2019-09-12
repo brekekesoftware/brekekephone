@@ -7,7 +7,7 @@ import Icon from './Icon';
 
 const s = StyleSheet.create({
   ActionButtons: {
-    display: 'flex',
+    width: '100%',
     flexDirection: 'row',
     borderRadius: v.borderRadius,
     overflow: 'hidden',

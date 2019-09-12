@@ -5,18 +5,17 @@ import ActionButtons from './ActionButtons';
 
 const s = StyleSheet.create({
   LayoutFooter: {
-    position: 'fixed',
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    display: 'block',
     paddingVertical: 8,
     paddingHorizontal: 15,
     backgroundColor: 'white',
   },
   LayoutFooter_Btns: {
-    display: 'block',
     flexDirection: 'row',
+    width: '100%',
     minWidth: 260,
     maxWidth: 380,
     marginHorizontal: 'auto',

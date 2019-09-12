@@ -1,33 +1,54 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { Fragment, useState } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import LayoutFooter from './LayoutFooter';
 import LayoutHeader from './LayoutHeader';
 
 const s = StyleSheet.create({
   Layout: {
+    position: 'absolute',
+    top: 0,
+    bottom: 71,
+    left: 0,
+    right: 0,
     padding: 15,
-    flex: 1,
+    paddingTop: 100,
   },
-  Layout__noPadding: {
-    padding: 0,
+  Layout__noHeader: {
+    paddingTop: 15,
+    top: 0,
   },
-  Layout_HeaderSpace: {
-    height: 100,
+  Layout__noFooter: {
+    bottom: 0,
   },
-  Layout_FooterSpace: {
-    height: 60,
+  Layout_Inner: {
+    flexGrow: 1,
   },
 });
 
-const Layout = p => (
-  <View style={[s.Layout, p.noPadding && s.Layout__noPadding]}>
-    {p.header && <View style={s.Layout_HeaderSpace} />}
-    {p.children}
-    {p.footer && <View style={s.Layout_FooterSpace} />}
-    {p.footer && <LayoutFooter {...p.footer} />}
-    {p.header && <LayoutHeader {...p.header} />}
-  </View>
-);
+const Layout = p => {
+  const [headerOverflow, setOverflow] = useState(false);
+  return (
+    <Fragment>
+      <ScrollView
+        style={[
+          s.Layout,
+          !p.header && s.Layout__noHeader,
+          !p.footer && s.Layout__noFooter,
+        ]}
+        contentContainerStyle={s.Layout_Inner}
+        onScroll={e => {
+          setOverflow(e.nativeEvent.contentOffset.y > 60);
+        }}
+        scrollEventThrottle={17}
+        showsVerticalScrollIndicator={false}
+      >
+        {p.children}
+      </ScrollView>
+      {p.footer && <LayoutFooter {...p.footer} />}
+      {p.header && <LayoutHeader {...p.header} compact={headerOverflow} />}
+    </Fragment>
+  );
+};
 
 export default Layout;

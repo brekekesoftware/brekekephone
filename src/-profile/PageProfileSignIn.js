@@ -14,6 +14,7 @@ const s = StyleSheet.create({
     height: '70%',
     minHeight: 320,
     marginBottom: 30,
+    marginHorizontal: -15,
   },
   PageProfileSignIn_Spacing: {
     flex: 1,
@@ -35,12 +36,11 @@ class PageProfileSignIn extends React.Component {
     return (
       <BrekekeGradient>
         <Layout
-          noPadding
           header={{
             transparent: true,
             title: 'Servers',
             description: `${l} server${l > 1 ? 's' : ''} in total`,
-            onPlusBtnPress: !!l && g.goToProfileCreate,
+            onCreateBtnPress: !!l && g.goToProfileCreate,
           }}
         >
           <View style={s.PageProfileSignIn_Spacing} />
