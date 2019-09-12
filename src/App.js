@@ -23,8 +23,10 @@ registerOnUnhandledError(unexpectedErr => {
 });
 configure({ enforceActions: 'always' });
 
+// TODO g.showPrompt then register
+// [Violation] Only request notification permission in response to a user gesture
 PushNotification.register(n => {
-  // TODO handle this better (ask user to switch)
+  // TODO handle this better (ask user to switch between accounts)
   if (authStore.profile && AppState.currentState === 'active') {
     return false;
   }
