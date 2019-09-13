@@ -66,8 +66,12 @@ class ProfileCreateForm extends React.Component {
     });
   };
 
+  onBackBtnPress = () => {
+    // TODO check for unchanged
+    this.props.onBackBtnPress();
+  };
   onRefreshBtnPress = () => {
-    // TODO
+    // TODO check for unchanged
   };
   onSaveBtnPress = () => {
     // TODO validate
@@ -92,7 +96,7 @@ class ProfileCreateForm extends React.Component {
     return (
       <Layout
         header={{
-          onBackBtnPress: this.props.onBackBtnPress,
+          onBackBtnPress: this.onBackBtnPress,
           title: `${isUpdate ? 'Update' : 'New'} Server`,
           description: isUpdate
             ? u
@@ -101,7 +105,7 @@ class ProfileCreateForm extends React.Component {
             : 'Create a new sign in profile',
         }}
         footer={{
-          onBackBtnPress: this.props.onBackBtnPress,
+          onBackBtnPress: this.onBackBtnPress,
           onRefreshBtnPress: this.onRefreshBtnPress,
           onSaveBtnPress: this.onSaveBtnPress,
         }}
