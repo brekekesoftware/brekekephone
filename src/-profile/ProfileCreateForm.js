@@ -68,34 +68,22 @@ class ProfileCreateForm extends React.Component {
   };
 
   onBackBtnPress = () => {
-    if (this.props.isUpdate) {
-      if (isEqual(this.profile, this.props.updatingProfile)) {
-        this.props.onBackBtnPress();
-      } else {
-        g.showPrompt({
-          title: 'Exit',
-          message: `Do you want to discard changes?`,
-          onConfirm: action(() => {
-            this.props.onBackBtnPress();
-          }),
-        });
-      }
-    } else {
-      const genProfile = genEmptyProfile();
-      const { id } = this.profile;
-      genProfile.id = id;
-      if (isEqual(this.profile, genProfile)) {
-        this.props.onBackBtnPress();
-      } else {
-        g.showPrompt({
-          title: 'Exit',
-          message: `Do you want to discard changes?`,
-          onConfirm: action(() => {
-            this.props.onBackBtnPress();
-          }),
-        });
-      }
+    const { isUpdate, updatingProfile } = this.props;
+    const p = isUpdate
+      ? updatingProfile
+      : {
+          ...genEmptyProfile(),
+          id: this.profile.id,
+        };
+    if (!p || isEqual(this.profile, p)) {
+      this.props.onBackBtnPress();
+      return;
     }
+    g.showPrompt({
+      title: 'Unsaved Changes',
+      message: `Do you want to discard unsaved changes?`,
+      onConfirm: this.props.onBackBtnPress,
+    });
   };
   onRefreshBtnPress = () => {
     // TODO check for unchanged
