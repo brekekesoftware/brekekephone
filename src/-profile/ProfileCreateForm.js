@@ -6,6 +6,7 @@ import {
   mdiWebpack,
 } from '@mdi/js';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import { action, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -67,8 +68,34 @@ class ProfileCreateForm extends React.Component {
   };
 
   onBackBtnPress = () => {
-    // TODO check for unchanged
-    this.props.onBackBtnPress();
+    if (this.props.isUpdate) {
+      if (isEqual(this.profile, this.props.updatingProfile)) {
+        this.props.onBackBtnPress();
+      } else {
+        g.showPrompt({
+          title: 'Exit',
+          message: `Do you want to discard changes?`,
+          onConfirm: action(() => {
+            this.props.onBackBtnPress();
+          }),
+        });
+      }
+    } else {
+      const genProfile = genEmptyProfile();
+      const { id } = this.profile;
+      genProfile.id = id;
+      if (isEqual(this.profile, genProfile)) {
+        this.props.onBackBtnPress();
+      } else {
+        g.showPrompt({
+          title: 'Exit',
+          message: `Do you want to discard changes?`,
+          onConfirm: action(() => {
+            this.props.onBackBtnPress();
+          }),
+        });
+      }
+    }
   };
   onRefreshBtnPress = () => {
     // TODO check for unchanged
