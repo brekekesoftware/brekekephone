@@ -73,6 +73,14 @@ const ProfileSignInItem = p =>
       </TouchableOpacity>
       <Field
         type="Switch"
+        name="PUSH NOTIFICATION"
+        value={p.pushNotificationEnabled}
+        onValueChange={v =>
+          authStore.upsertProfile({ id: p.id, pushNotificationEnabled: v })
+        }
+      />
+      <Field
+        type="Switch"
         name="UC"
         value={p.ucEnabled}
         onValueChange={v => authStore.upsertProfile({ id: p.id, ucEnabled: v })}

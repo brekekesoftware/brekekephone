@@ -82,7 +82,7 @@ class View extends React.Component {
       tenant: authStore.profile?.pbxTenant,
       username: webPhone.id,
       accessToken: sipAccessToken,
-      turnEnabled: authStore.profile?.pbxTurnEnabled,
+      pbxTurnEnabled: authStore.profile?.pbxTurnEnabled,
     });
   };
   auth = () => {

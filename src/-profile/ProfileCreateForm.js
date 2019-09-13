@@ -118,7 +118,8 @@ class ProfileCreateForm extends React.Component {
       pbxHostname,
       pbxPort,
       pbxPhoneIndex,
-      turnEnabled,
+      pbxTurnEnabled,
+      pushNotificationEnabled,
       ucEnabled,
       ucHostname,
       ucPort,
@@ -181,8 +182,14 @@ class ProfileCreateForm extends React.Component {
               <Field
                 type="Switch"
                 name="TURN"
-                value={turnEnabled}
-                onValueChange={this.setF('turnEnabled')}
+                value={pbxTurnEnabled}
+                onValueChange={this.setF('pbxTurnEnabled')}
+              />
+              <Field
+                type="Switch"
+                name="PUSH NOTIFICATION"
+                value={pushNotificationEnabled}
+                onValueChange={this.setF('pushNotificationEnabled')}
               />
             </FieldGroup>
             <FieldGroup title="UC" hasMargin>

@@ -148,12 +148,12 @@ const Field = p => {
       <TouchableOpacity onPress={() => p.onValueChange(!p.value)}>
         {renderField({
           ...p,
-          valueRender: _v => (_v ? 'Enabled' : 'Disabled'),
-          iconRender: _v => (
+          valueRender: e => (e ? 'Enabled' : 'Disabled'),
+          iconRender: e => (
             <Switch
               style={s.Field_Switch}
               pointerEvents={v.pEvents(true)}
-              enabled={_v}
+              enabled={e}
             />
           ),
         })}

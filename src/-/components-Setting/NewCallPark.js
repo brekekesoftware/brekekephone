@@ -76,6 +76,7 @@ class NewCallPark extends React.Component {
     const pbxPassword = this.state.pbxPassword.trim();
     const pbxPhoneIndex = this.state.pbxPhoneIndex || '4';
     const pbxTurnEnabled = this.state.pbxTurnEnabled;
+    const pushNotificationEnabled = this.state.pushNotificationEnabled;
     const ucHostname = this.state.ucHostname.trim();
     const ucPort = this.state.ucPort.trim();
 
@@ -101,6 +102,7 @@ class NewCallPark extends React.Component {
       pbxPassword: pbxPassword,
       pbxPhoneIndex: pbxPhoneIndex,
       pbxTurnEnabled: pbxTurnEnabled,
+      pushNotificationEnabled,
       parks: _parks,
       ucEnabled: this.state.ucEnabled,
       ucHostname: ucHostname,

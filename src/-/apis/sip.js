@@ -284,7 +284,7 @@ class SIP extends EventEmitter {
       appVersion +
       '/JsSIP ' +
       jssipVersion;
-    const config = profile.turnEnabled ? turnConfig : {};
+    const config = profile.pbxTurnEnabled ? turnConfig : {};
 
     if (!config.pcConfig) {
       config.pcConfig = {};

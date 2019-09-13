@@ -32,6 +32,7 @@ const genEmptyProfile = () => ({
   pbxPassword: '',
   pbxPhoneIndex: '4',
   pbxTurnEnabled: false,
+  pushNotificationEnabled: true,
   parks: [],
   ucEnabled: false,
   ucHostname: '',
@@ -71,6 +72,7 @@ class AuthStore extends BaseStore {
   // pbxPassword
   // pbxPhoneIndex
   // pbxTurnEnabled
+  // pushNotificationEnabled
   // parks
   // ucEnabled
   // ucHostname
