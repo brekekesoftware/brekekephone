@@ -1,10 +1,9 @@
-import { createHashHistory, createMemoryHistory } from 'history';
+import { createMemoryHistory } from 'history';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 
-import { Platform } from '../native/Rn';
 import g from './_';
 
-const h = Platform.OS === 'web' ? createHashHistory() : createMemoryHistory();
+const h = createMemoryHistory();
 const r = new RouterStore();
 syncHistoryWithStore(h, r);
 
@@ -24,15 +23,28 @@ const goBack = fn => {
   }, 100);
 };
 
+const wrap = fn => (...args) => {
+  if (g.isRouterAnimating) {
+    return;
+  }
+  g.waitKeyboard(fn)(...args);
+};
+
 Object.assign(g, {
   router: r,
+  isRouterAnimating: false,
   goToProfileSignIn: () => h.push(`/`),
   goToProfileCreate: () => h.push(`/create-profile`),
   goToProfileUpdate: id => h.push(`/update-profile/${id}`),
 });
-Object.entries(g).forEach(([k, v]) => {
-  if (/^goTo/.test(k)) {
-    // Add backTo for all goTo helpers
-    g[k.replace(/^go/, 'back')] = () => goBack(v);
-  }
+
+setTimeout(() => {
+  // wait until all global functions assigned
+  Object.entries(g).forEach(([k, v]) => {
+    if (/^goTo/.test(k)) {
+      // Add backTo for all goTo helpers
+      g[k] = wrap(v);
+      g[k.replace(/^go/, 'back')] = wrap(() => goBack(v));
+    }
+  });
 });

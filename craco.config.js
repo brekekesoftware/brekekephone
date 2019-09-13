@@ -20,6 +20,7 @@ module.exports = {
     alias: {
       'react-native': 'react-native-web',
       'react-native-svg': 'react-native-svg-web',
+      'react-router-native': 'react-router-dom',
     },
     configure: {
       resolve: {

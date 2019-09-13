@@ -56,6 +56,9 @@
     "react-native-voip-push-notification": "1.1.4",
     "react-native-webrtc": "1.75.0",
     "react-router": "5.0.1",
+    "react-router-dom": "5.0.1",
+    "react-router-native": "5.0.1",
+    "react-router-native-stack": "github:hookedjs/react-router-native-stack#b5e300b79c17ac93dc864e685c430b1d6c7cb9d8",
     "shortid": "2.2.15",
     "url-parse": "1.4.7",
     "validatorjs": "3.17.1"

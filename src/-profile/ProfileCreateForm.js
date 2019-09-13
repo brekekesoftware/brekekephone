@@ -147,7 +147,6 @@ class ProfileCreateForm extends React.Component {
           <React.Fragment>
             <FieldGroup title="PBX">
               <Field
-                autoFocus
                 name="USERNAME"
                 icon={mdiAccountCircleOutline}
                 value={pbxUsername}
