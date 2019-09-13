@@ -67,7 +67,7 @@ const RootAlerts = observer(() => {
     showConfirmButton: true,
   };
   if (prompt) {
-    const { title, message, onConfirm, onDismiss } = prompt;
+    const { title, message, onConfirm, onDismiss, ...rest } = prompt;
     const onConfirmPressed = flow(
       ...[g.dismissAlert, ...(onConfirm ? [onConfirm] : [])],
     );
@@ -82,9 +82,10 @@ const RootAlerts = observer(() => {
       onCancelPressed,
       onConfirmPressed,
       onDismiss: onCancelPressed,
+      ...rest,
     });
   } else if (error) {
-    const { message: msg, err, unexpectedErr } = error;
+    const { message: msg, err, unexpectedErr, ...rest } = error;
     // TODO render err/unexpectedErr
     void err;
     const message = unexpectedErr
@@ -97,6 +98,7 @@ const RootAlerts = observer(() => {
       onCancelPressed: g.dismissAlert,
       onConfirmPressed: g.dismissAlert,
       onDismiss: g.dismissAlert,
+      ...rest,
     });
   } else if (loading) {
     // TODO
