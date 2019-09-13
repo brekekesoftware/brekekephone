@@ -9,6 +9,7 @@ const s = StyleSheet.create({
     fontSize: v.fontSize,
     fontWeight: v.fontWeight,
     fontFamily: v.fontFamily,
+    color: v.color,
   },
 });
 

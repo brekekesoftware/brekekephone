@@ -77,16 +77,16 @@ const renderField = p => (
     <View>
       <View
         style={[s.Field, p.disabled && s.Field__disabled]}
-        pointerEvents={p.disabled ? 'none' : null}
+        pointerEvents={v.pEvents(p.disabled)}
       >
         {p.inputElement}
       </View>
-      <Text style={s.Field_Name} pointerEvents={p.inputElement ? 'none' : null}>
+      <Text style={s.Field_Name} pointerEvents={v.pEvents(p.inputElement)}>
         {p.name}
       </Text>
       <Text
         style={[s.Field_TextInput, s.Field_TextInput__value]}
-        pointerEvents={p.inputElement ? 'none' : null}
+        pointerEvents={v.pEvents(p.inputElement)}
       >
         {(!p.inputElement &&
           ((p.valueRender && p.valueRender(p.value)) || p.value)) ||
@@ -98,7 +98,7 @@ const renderField = p => (
         <Icon
           path={p.icon}
           style={s.Field_Icon}
-          pointerEvents={p.inputElement ? 'none' : null}
+          pointerEvents={v.pEvents(p.inputElement)}
         />
       ))}
   </View>
@@ -148,9 +148,13 @@ const Field = p => {
       <TouchableOpacity onPress={() => p.onValueChange(!p.value)}>
         {renderField({
           ...p,
-          valueRender: v => (v ? 'Enabled' : 'Disabled'),
-          iconRender: v => (
-            <Switch style={s.Field_Switch} pointerEvents="none" enabled={v} />
+          valueRender: _v => (_v ? 'Enabled' : 'Disabled'),
+          iconRender: _v => (
+            <Switch
+              style={s.Field_Switch}
+              pointerEvents={v.pEvents(true)}
+              enabled={_v}
+            />
           ),
         })}
       </TouchableOpacity>
@@ -172,6 +176,7 @@ const Field = p => {
           'onValueChange',
           'onCreateBtnPress',
           'onRemoveBtnPress',
+          'disabled',
         ])}
       />
     ),

@@ -44,10 +44,13 @@ const v = {
   //
   boxShadow: {
     shadowColor: 'black',
-    shadowOpacity: 0.6,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 2,
   },
+  pEvents: cond =>
+    cond ? (Platform.OS === 'android' ? 'box-none' : 'none') : null,
 };
 
 export default v;

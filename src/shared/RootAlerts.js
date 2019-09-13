@@ -42,9 +42,12 @@ const s = StyleSheet.create({
     width: 100,
   },
   RootAlerts_Btn__cancel: {
-    left: 'auto',
+    left: null,
     right: -35,
     backgroundColor: v.revBg,
+  },
+  RootAlerts_Btn__hidden: {
+    display: 'none',
   },
   RootAlerts_BtnTxt: {
     fontSize: v.fontSizeSmall,
@@ -59,7 +62,10 @@ const RootAlerts = observer(() => {
     return null;
   }
   const { prompt, error, loading } = g.pendingAlerts[0];
-  let aaProps = null;
+  let p = {
+    showCancelButton: true,
+    showConfirmButton: true,
+  };
   if (prompt) {
     const { title, message, onConfirm, onDismiss } = prompt;
     const onConfirmPressed = flow(
@@ -68,17 +74,15 @@ const RootAlerts = observer(() => {
     const onCancelPressed = flow(
       ...[g.dismissAlert, ...(onDismiss ? [onDismiss] : [])],
     );
-    aaProps = {
+    Object.assign(p, {
       title,
       message,
-      showCancelButton: true,
-      showConfirmButton: true,
       cancelText: 'CANCEL',
       confirmText: 'REMOVE',
       onCancelPressed,
       onConfirmPressed,
       onDismiss: onCancelPressed,
-    };
+    });
   } else if (error) {
     const { message: msg, err, unexpectedErr } = error;
     // TODO render err/unexpectedErr
@@ -86,15 +90,14 @@ const RootAlerts = observer(() => {
     const message = unexpectedErr
       ? 'An unexpected error occurred'
       : `Failed to ${msg}`;
-    aaProps = {
+    Object.assign(p, {
       title: 'Error',
       message,
-      showCancelButton: false,
-      showConfirmButton: true,
       confirmText: 'OK',
+      onCancelPressed: g.dismissAlert,
       onConfirmPressed: g.dismissAlert,
       onDismiss: g.dismissAlert,
-    };
+    });
   } else if (loading) {
     // TODO
   } else {
@@ -109,12 +112,16 @@ const RootAlerts = observer(() => {
       contentContainerStyle={s.RootAlerts}
       titleStyle={s.RootAlerts_Title}
       messageStyle={s.RootAlerts_Message}
-      cancelButtonStyle={[s.RootAlerts_Btn, s.RootAlerts_Btn__cancel]}
+      cancelButtonStyle={[
+        s.RootAlerts_Btn,
+        s.RootAlerts_Btn__cancel,
+        !p.cancelText && s.RootAlerts_Btn__hidden,
+      ]}
       confirmButtonColor={v.mainDarkBg}
       confirmButtonStyle={s.RootAlerts_Btn}
       cancelButtonTextStyle={s.RootAlerts_BtnTxt}
       confirmButtonTextStyle={s.RootAlerts_BtnTxt}
-      {...aaProps}
+      {...p}
     />
   );
 });

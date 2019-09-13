@@ -11,8 +11,9 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import { genEmptyProfile } from '../-/authStore';
-import AppField from '../shared/Field';
-import FieldGroupHeader from '../shared/FieldGroupHeader';
+import g from '../global';
+import Field from '../shared/Field';
+import FieldGroup from '../shared/FieldGroup';
 import Layout from '../shared/Layout';
 
 @observer
@@ -55,10 +56,15 @@ class ProfileCreateForm extends React.Component {
     this.profile.parks.push(this.addingPark);
     this.addingPark = '';
   };
-  onParkRemoveF = i =>
-    action(() => {
-      this.profile.parks = this.profile.parks.filter((p, _i) => _i !== i);
+  closureOnParkRemove = i => () => {
+    g.showPrompt({
+      title: `Remove Park: ${this.profile.parks[i]}`,
+      message: `Do you want to remove this park?`,
+      onConfirm: action(() => {
+        this.profile.parks = this.profile.parks.filter((p, _i) => _i !== i);
+      }),
     });
+  };
 
   onRefreshBtnPress = () => {
     // TODO
@@ -102,85 +108,87 @@ class ProfileCreateForm extends React.Component {
       >
         {!(isUpdate && !u) && (
           <React.Fragment>
-            <FieldGroupHeader title="PBX" />
-            <AppField
-              autoFocus
-              name="USERNAME"
-              icon={mdiAccountCircleOutline}
-              value={pbxUsername}
-              onValueChange={this.setF('pbxUsername')}
-            />
-            <AppField
-              secureTextEntry
-              autoComplete={`${isUpdate ? 'current' : 'new'}-password`}
-              name="PASSWORD"
-              icon={mdiTextboxPassword}
-              value={pbxPassword}
-              onValueChange={this.setF('pbxPassword')}
-            />
-            <AppField
-              name="TENANT"
-              icon={mdiWebpack}
-              value={pbxTenant}
-              onValueChange={this.setF('pbxTenant')}
-            />
-            <AppField
-              name="HOSTNAME"
-              icon={mdiWebBox}
-              value={pbxHostname}
-              onValueChange={this.setF('pbxHostname')}
-            />
-            <AppField
-              keyboardType="numeric"
-              name="PORT"
-              icon={mdiServerNetwork}
-              value={pbxPort}
-              onValueChange={this.setF('pbxPort')}
-            />
-            <AppField
-              type="Switch"
-              name="TURN"
-              value={turnEnabled}
-              onValueChange={this.setF('turnEnabled')}
-            />
-            <FieldGroupHeader title="UC" hasMargin />
-            <AppField
-              type="Switch"
-              name="UC"
-              value={ucEnabled}
-              onValueChange={this.setF('ucEnabled')}
-            />
-            <AppField
-              disabled={!ucEnabled}
-              name="HOSTNAME"
-              icon={mdiWebBox}
-              value={ucHostname}
-              onValueChange={this.setF('ucHostname')}
-            />
-            <AppField
-              keyboardType="numeric"
-              disabled={!ucEnabled}
-              name="PORT"
-              icon={mdiServerNetwork}
-              value={ucPort}
-              onValueChange={this.setF('ucPort')}
-            />
-            <FieldGroupHeader title="PARKS" hasMargin />
-            {parks.map((p, i) => (
-              <AppField
-                disabled
-                key={`park-i${i}-${p}`}
-                name={`PARK ${i + 1}`}
-                value={p}
-                onRemoveBtnPress={this.onParkRemoveF(i)}
+            <FieldGroup title="PBX">
+              <Field
+                autoFocus
+                name="USERNAME"
+                icon={mdiAccountCircleOutline}
+                value={pbxUsername}
+                onValueChange={this.setF('pbxUsername')}
               />
-            ))}
-            <AppField
-              name="NEW PARK"
-              value={this.addingPark}
-              onValueChange={this.addingParkOnChange}
-              onCreateBtnPress={this.addingParkOnCreate}
-            />
+              <Field
+                secureTextEntry
+                name="PASSWORD"
+                icon={mdiTextboxPassword}
+                value={pbxPassword}
+                onValueChange={this.setF('pbxPassword')}
+              />
+              <Field
+                name="TENANT"
+                icon={mdiWebpack}
+                value={pbxTenant}
+                onValueChange={this.setF('pbxTenant')}
+              />
+              <Field
+                name="HOSTNAME"
+                icon={mdiWebBox}
+                value={pbxHostname}
+                onValueChange={this.setF('pbxHostname')}
+              />
+              <Field
+                keyboardType="numeric"
+                name="PORT"
+                icon={mdiServerNetwork}
+                value={pbxPort}
+                onValueChange={this.setF('pbxPort')}
+              />
+              <Field
+                type="Switch"
+                name="TURN"
+                value={turnEnabled}
+                onValueChange={this.setF('turnEnabled')}
+              />
+            </FieldGroup>
+            <FieldGroup title="UC" hasMargin>
+              <Field
+                type="Switch"
+                name="UC"
+                value={ucEnabled}
+                onValueChange={this.setF('ucEnabled')}
+              />
+              <Field
+                disabled={!ucEnabled}
+                name="HOSTNAME"
+                icon={mdiWebBox}
+                value={ucHostname}
+                onValueChange={this.setF('ucHostname')}
+              />
+              <Field
+                keyboardType="numeric"
+                disabled={!ucEnabled}
+                name="PORT"
+                icon={mdiServerNetwork}
+                value={ucPort}
+                onValueChange={this.setF('ucPort')}
+              />
+            </FieldGroup>
+            <FieldGroup title="PARKS" hasMargin>
+              {parks.map((p, i) => (
+                <Field
+                  disabled
+                  key={`park-i${i}-${p}`}
+                  name={`PARK ${i + 1}`}
+                  value={p}
+                  onRemoveBtnPress={this.closureOnParkRemove(i)}
+                />
+              ))}
+              <Field
+                name="NEW PARK"
+                value={this.addingPark}
+                onValueChange={this.addingParkOnChange}
+                onCreateBtnPress={this.addingParkOnCreate}
+              />
+            </FieldGroup>
           </React.Fragment>
         )}
       </Layout>

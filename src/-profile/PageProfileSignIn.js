@@ -14,7 +14,6 @@ const s = StyleSheet.create({
     height: '70%',
     minHeight: 320,
     marginBottom: 30,
-    marginHorizontal: -15,
   },
   PageProfileSignIn_Spacing: {
     flex: 1,

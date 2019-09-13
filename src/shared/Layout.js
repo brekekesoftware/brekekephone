@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 import { ScrollView, StatusBar, StyleSheet, View } from '../native/Rn';
 import LayoutFooter from './LayoutFooter';
@@ -7,21 +6,10 @@ import LayoutHeader from './LayoutHeader';
 
 const s = StyleSheet.create({
   Layout: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  Layout_Outer: {
-    flex: 1,
-  },
-  Layout_Inner: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 15,
   },
-  Layout_InnerScroll: {
+  Layout_Scroll: {
     flexGrow: 1,
   },
   Layout_HeaderSpacing: {
@@ -39,13 +27,13 @@ const Layout = p => {
   if (p.noScroll) {
     Container = View;
     containerProps = {
-      style: s.Layout_Inner,
+      style: s.Layout,
     };
   } else {
     Container = ScrollView;
     containerProps = {
-      style: s.Layout_Inner,
-      contentContainerStyle: [s.Layout_InnerScroll],
+      style: s.Layout,
+      contentContainerStyle: [s.Layout_Scroll],
       onScroll: e => {
         const o = e.nativeEvent.contentOffset.y > 60;
         if (o !== headerOverflow) {
@@ -57,19 +45,16 @@ const Layout = p => {
     };
   }
   return (
-    <View style={s.Layout}>
-      <View style={s.Layout_Outer}>
-        <Container {...containerProps}>
-          <StatusBar transparent />
-          {p.header && <View style={s.Layout_HeaderSpacing} />}
-          {p.children}
-          {p.footer && <View style={s.Layout_FooterSpacing} />}
-        </Container>
-        {p.footer && <LayoutFooter {...p.footer} />}
-        {p.header && <LayoutHeader {...p.header} compact={headerOverflow} />}
-      </View>
-      <KeyboardSpacer />
-    </View>
+    <React.Fragment>
+      <Container {...containerProps}>
+        <StatusBar transparent />
+        {p.header && <View style={s.Layout_HeaderSpacing} />}
+        {p.children}
+        {p.footer && <View style={s.Layout_FooterSpacing} />}
+      </Container>
+      {p.footer && <LayoutFooter {...p.footer} />}
+      {p.header && <LayoutHeader {...p.header} compact={headerOverflow} />}
+    </React.Fragment>
   );
 };
 

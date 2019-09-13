@@ -10,6 +10,7 @@ const s = StyleSheet.create({
     fontSize: v.fontSize,
     fontWeight: v.fontWeight,
     fontFamily: v.fontFamily,
+    color: v.color,
   },
   RnTextInput__focusing: {
     backgroundColor: v.mainTranBg,

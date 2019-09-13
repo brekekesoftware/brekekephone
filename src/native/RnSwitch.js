@@ -24,7 +24,7 @@ const s = StyleSheet.create({
     ...v.boxShadow,
   },
   RnSwitch_Circle__enabled: {
-    left: 'auto',
+    left: null,
     right: -1,
     backgroundColor: v.mainDarkBg,
   },
