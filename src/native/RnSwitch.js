@@ -7,11 +7,11 @@ const s = StyleSheet.create({
   RnSwitch: {
     height: 12,
     width: 32,
-    backgroundColor: v.brekekeShade0,
+    backgroundColor: v.fn.darken(0.05, v.hoverBg),
     borderRadius: 12,
   },
   RnSwitch__enabled: {
-    backgroundColor: v.brekekeGreen,
+    backgroundColor: v.mainBg,
   },
   RnSwitch_Circle: {
     position: 'absolute',
@@ -20,12 +20,13 @@ const s = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 18,
-    backgroundColor: v.brekekeShade1,
+    backgroundColor: v.fn.darken(0.05, v.borderBg),
+    ...v.boxShadow,
   },
   RnSwitch_Circle__enabled: {
     left: 'auto',
     right: -1,
-    backgroundColor: v.brekekeGreenBtn,
+    backgroundColor: v.mainDarkBg,
   },
 });
 

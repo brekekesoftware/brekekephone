@@ -10,25 +10,26 @@ import v from '../variables';
 const s = StyleSheet.create({
   RootAlerts: {
     width: 300,
-    shadowColor: v.fn.transparentize(0.8, 'black'),
-    shadowOpacity: 0.8,
-    shadowRadius: 15,
-    elevation: 5,
     borderRadius: v.borderRadius,
     padding: 10,
     paddingBottom: 40,
+    ...v.boxShadow,
   },
   RootAlerts_Title: {
     alignSelf: 'flex-start',
     paddingVertical: 0,
     paddingHorizontal: 0,
     marginBottom: 5,
+    fontSize: v.fontSizeSubTitle,
     fontWeight: 'bold',
+    color: v.color,
   },
   RootAlerts_Message: {
     alignSelf: 'flex-start',
     padding: 0,
     marginBottom: 30,
+    fontSize: v.fontSize,
+    color: v.color,
   },
   RootAlerts_Btn: {
     position: 'absolute',
@@ -37,13 +38,13 @@ const s = StyleSheet.create({
     borderRadius: v.borderRadius,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: v.brekekeGreenBtn,
+    backgroundColor: v.mainDarkBg,
     width: 100,
   },
   RootAlerts_Btn__cancel: {
     left: 'auto',
     right: -35,
-    backgroundColor: v.brekekeShade8,
+    backgroundColor: v.revBg,
   },
   RootAlerts_BtnTxt: {
     fontSize: v.fontSizeSmall,
@@ -109,7 +110,7 @@ const RootAlerts = observer(() => {
       titleStyle={s.RootAlerts_Title}
       messageStyle={s.RootAlerts_Message}
       cancelButtonStyle={[s.RootAlerts_Btn, s.RootAlerts_Btn__cancel]}
-      confirmButtonColor={v.brekekeGreenBtn}
+      confirmButtonColor={v.mainDarkBg}
       confirmButtonStyle={s.RootAlerts_Btn}
       cancelButtonTextStyle={s.RootAlerts_BtnTxt}
       confirmButtonTextStyle={s.RootAlerts_BtnTxt}

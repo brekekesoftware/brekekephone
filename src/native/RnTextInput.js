@@ -12,7 +12,7 @@ const s = StyleSheet.create({
     fontFamily: v.fontFamily,
   },
   RnTextInput__focusing: {
-    backgroundColor: v.fn.transparentize(0.9, v.brekekeGreen),
+    backgroundColor: v.mainTranBg,
   },
 });
 

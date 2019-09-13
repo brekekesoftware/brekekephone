@@ -6,8 +6,8 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   RnStatusBar: {
-    backgroundColor: v.brekekeShade0,
-    borderColor: v.brekekeShade3,
+    backgroundColor: v.hoverBg,
+    borderColor: v.borderBg,
     borderBottomWidth: 1,
     ...Platform.select({
       ios: {
@@ -24,7 +24,7 @@ const s = StyleSheet.create({
 const RnStatusBar = p =>
   Platform.OS === 'web' ? null : (
     <View style={[s.RnStatusBar, p.transparent && s.RnStatusBar__transparent]}>
-      <StatusBar backgroundColor={v.brekekeShade0} barStyle="dark-content" />
+      <StatusBar backgroundColor={v.hoverBg} barStyle="dark-content" />
     </View>
   );
 

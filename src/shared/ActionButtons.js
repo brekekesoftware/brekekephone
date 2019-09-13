@@ -18,14 +18,14 @@ const s = StyleSheet.create({
     paddingVertical: 8,
   },
   ActionButtons_Btn__back: {
-    backgroundColor: v.fn.transparentize(0.9, v.brekekeRed),
+    backgroundColor: v.redTranBg,
   },
   ActionButtons_Btn__refresh: {
-    backgroundColor: v.brekekeShade0,
+    backgroundColor: v.hoverBg,
   },
   ActionButtons_Btn__save: {
     width: '50%',
-    backgroundColor: v.brekekeGreenBtn,
+    backgroundColor: v.mainDarkBg,
   },
   ActionButtons_Btn__33: {
     width: '33%',
@@ -40,7 +40,7 @@ const s = StyleSheet.create({
     flex: 1,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'white',
+    color: v.revColor,
     fontSize: v.fontSizeSmall,
     lineHeight: 24, // Icon height
   },
@@ -57,7 +57,7 @@ const ActionButtons = p => (
         ]}
         onPress={p.onBackBtnPress}
       >
-        <Icon path={p.backIcon || mdiKeyboardBackspace} color={v.brekekeRed} />
+        <Icon path={p.backIcon || mdiKeyboardBackspace} color={v.redBg} />
       </TouchableOpacity>
     )}
     {p.onRefreshBtnPress && (

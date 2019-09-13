@@ -82,15 +82,15 @@ class ProfileCreateForm extends React.Component {
       ucPort,
       parks,
     } = this.profile;
-    const { isUpdate, updatingProfile } = this.props;
+    const { isUpdate, updatingProfile: u } = this.props;
     return (
       <Layout
         header={{
           onBackBtnPress: this.props.onBackBtnPress,
           title: `${isUpdate ? 'Update' : 'New'} Server`,
           description: isUpdate
-            ? updatingProfile
-              ? updatingProfile.pbxUsername
+            ? u
+              ? `${u.pbxUsername} - ${u.pbxHostname}`
               : 'Server profile not found'
             : 'Create a new sign in profile',
         }}
@@ -100,7 +100,7 @@ class ProfileCreateForm extends React.Component {
           onSaveBtnPress: this.onSaveBtnPress,
         }}
       >
-        {!(isUpdate && !updatingProfile) && (
+        {!(isUpdate && !u) && (
           <React.Fragment>
             <FieldGroupHeader title="PBX" />
             <AppField

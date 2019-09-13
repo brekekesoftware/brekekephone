@@ -16,19 +16,19 @@ import v from '../variables';
 const s = StyleSheet.create({
   Field: {
     borderBottomWidth: 1,
-    borderColor: v.brekekeShade1,
+    borderColor: v.borderBg,
     height: 50,
     alignItems: 'stretch',
   },
   Field__disabled: {
-    backgroundColor: v.brekekeShade0,
+    backgroundColor: v.hoverBg,
   },
   Field_Name: {
     position: 'absolute',
-    top: 15,
+    top: 13,
     left: 7,
     fontSize: v.fontSizeSmall,
-    color: v.brekekeShade6,
+    color: v.subColor,
   },
   Field_TextInput: {
     width: '100%',
@@ -44,7 +44,7 @@ const s = StyleSheet.create({
     top: 0,
     left: 0,
     borderBottomWidth: 1,
-    borderColor: v.brekekeShade1,
+    borderColor: v.borderBg,
   },
   Field_Switch: {
     position: 'absolute',
@@ -53,17 +53,17 @@ const s = StyleSheet.create({
   },
   Field_Btn: {
     position: 'absolute',
-    top: 15,
+    top: 11,
     right: 5,
     width: 40,
     height: 30,
     borderRadius: v.borderRadius,
   },
   Field_Btn__create: {
-    backgroundColor: v.fn.transparentize(0.9, v.brekekeGreen),
+    backgroundColor: v.mainTranBg,
   },
   Field_Btn__remove: {
-    backgroundColor: v.fn.transparentize(0.9, v.brekekeRed),
+    backgroundColor: v.redTranBg,
   },
   Field_Icon: {
     position: 'absolute',
@@ -116,7 +116,7 @@ const Field = p => {
             style={s.Field_CreateRemoveIcon}
             path={mdiPlus}
             size={18}
-            fill={v.brekekeGreen}
+            color={v.mainDarkBg}
           />
         </TouchableOpacity>
       ),
@@ -134,7 +134,7 @@ const Field = p => {
             style={s.Field_CreateRemoveIcon}
             path={mdiClose}
             size={15}
-            fill={v.brekekeRed}
+            color={v.redDarkBg}
           />
         </TouchableOpacity>
       ),
@@ -144,43 +144,38 @@ const Field = p => {
     return renderField(p);
   }
   if (p.type === 'Switch') {
-    p = {
-      ...p,
-      valueRender: v => (v ? 'Enabled' : 'Disabled'),
-      iconRender: v => (
-        <Switch style={s.Field_Switch} pointerEvents="none" enabled={v} />
-      ),
-    };
-    if (p.disabled) {
-      return renderField(p);
-    }
     return (
       <TouchableOpacity onPress={() => p.onValueChange(!p.value)}>
-        {renderField(p)}
+        {renderField({
+          ...p,
+          valueRender: v => (v ? 'Enabled' : 'Disabled'),
+          iconRender: v => (
+            <Switch style={s.Field_Switch} pointerEvents="none" enabled={v} />
+          ),
+        })}
       </TouchableOpacity>
     );
-  } else {
-    return renderField({
-      ...p,
-      inputElement: (
-        <TextInput
-          style={s.Field_TextInput}
-          onChangeText={p.onValueChange}
-          onSubmitEditing={p.onCreateBtnPress}
-          {...omit(p, [
-            'type',
-            'name',
-            'valueRender',
-            'icon',
-            'iconRender',
-            'onValueChange',
-            'onCreateBtnPress',
-            'onRemoveBtnPress',
-          ])}
-        />
-      ),
-    });
   }
+  return renderField({
+    ...p,
+    inputElement: (
+      <TextInput
+        style={s.Field_TextInput}
+        onChangeText={p.onValueChange}
+        onSubmitEditing={p.onCreateBtnPress}
+        {...omit(p, [
+          'type',
+          'name',
+          'valueRender',
+          'icon',
+          'iconRender',
+          'onValueChange',
+          'onCreateBtnPress',
+          'onRemoveBtnPress',
+        ])}
+      />
+    ),
+  });
 };
 
 export default Field;

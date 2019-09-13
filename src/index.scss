@@ -1,4 +1,4 @@
-$brekekeGreen: #74bf53;
+$mainBg: #74bf53;
 $fontFamily: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC',
   'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial',
   'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
@@ -41,8 +41,8 @@ body,
   right: 0;
   display: flex;
   flex-direction: column;
-  background-color: $brekekeGreen;
-  background-image: linear-gradient($brekekeGreen, darken(white, 80%));
+  background-color: $mainBg;
+  background-image: linear-gradient($mainBg, darken(white, 80%));
   padding-top: 250px;
   //
   img {

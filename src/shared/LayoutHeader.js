@@ -20,31 +20,28 @@ const s = StyleSheet.create({
   },
   LayoutHeader_Inner: {
     padding: 15,
-    backgroundColor: 'white',
+    backgroundColor: v.bg,
   },
   LayoutHeader_Inner__hasBackBtn: {
     paddingLeft: 55,
   },
   LayoutHeader_Inner__compact: {
     paddingVertical: 10,
-    shadowColor: 'black',
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 5,
+    ...v.boxShadow,
   },
   LayoutHeader_Inner__transparent: {
     backgroundColor: 'transparent',
   },
   LayoutHeader_Title: {
     fontWeight: 'bold',
-    fontSize: 1.9 * v.fontSize,
+    fontSize: v.fontSizeTitle,
   },
   LayoutHeader_Title__compact: {
-    fontSize: 1.2 * v.fontSize,
+    fontSize: v.fontSizeSubTitle,
     lineHeight: 20,
   },
   LayoutHeader_Description: {
-    color: v.brekekeShade7,
+    color: v.subColor,
   },
   LayoutHeader_Description__compact: {
     display: 'none',
@@ -56,10 +53,10 @@ const s = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 50,
-    backgroundColor: v.brekekeGreenBtn,
+    backgroundColor: v.mainDarkBg,
   },
   LayoutHeader_CreateBtn__white: {
-    backgroundColor: 'white',
+    backgroundColor: v.bg,
   },
   LayoutHeader_CreateBtn__compact: {
     top: 0,

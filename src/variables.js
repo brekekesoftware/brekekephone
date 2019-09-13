@@ -3,28 +3,51 @@ import { Platform } from 'react-native';
 
 const v = {
   fn,
+  //
   fontSize: 14,
-  fontSizeSmall: 11,
+  get fontSizeTitle() {
+    return 1.8 * v.fontSize;
+  },
+  get fontSizeSubTitle() {
+    return 1.2 * v.fontSize;
+  },
+  get fontSizeSmall() {
+    return 0.8 * v.fontSize;
+  },
   fontWeight: 'normal',
   fontFamily: Platform.OS === 'web' ? 'inherit' : undefined,
   //
   borderRadius: 3,
   //
-  brekekeShade0: fn.darken(0.1 + 0.0, 'white'),
-  brekekeShade1: fn.darken(0.1 + 0.1, 'white'),
-  brekekeShade2: fn.darken(0.1 + 0.2, 'white'),
-  brekekeShade3: fn.darken(0.1 + 0.3, 'white'),
-  brekekeShade4: fn.darken(0.1 + 0.4, 'white'),
-  brekekeShade5: fn.darken(0.1 + 0.5, 'white'),
-  brekekeShade6: fn.darken(0.1 + 0.6, 'white'),
-  brekekeShade7: fn.darken(0.1 + 0.7, 'white'),
-  brekekeShade8: fn.darken(0.1 + 0.8, 'white'),
-  brekekeShade9: fn.darken(0.1 + 0.9, 'white'),
+  bg: 'white',
+  revBg: fn.darken(0.9, 'white'),
+  color: 'black',
+  revColor: 'white',
+  hoverBg: fn.darken(0.05, 'white'),
+  subColor: fn.darken(0.75, 'white'),
+  borderBg: fn.darken(0.15, 'white'),
   //
-  brekekeGreen: '#74bf53',
-  brekekeGreenBtn: fn.darken(0.1, '#74bf53'),
-  brekekeRed: '#f12d55',
-  brekekeRedBtn: fn.darken(0.1, '#f12d55'),
+  mainBg: '#74bf53',
+  get mainDarkBg() {
+    return fn.darken(0.1, v.mainBg);
+  },
+  get mainTranBg() {
+    return fn.lighten(0.4, v.mainBg);
+  },
+  redBg: '#f12d55',
+  get redDarkBg() {
+    return fn.darken(0.1, v.redBg);
+  },
+  get redTranBg() {
+    return fn.lighten(0.4, v.redBg);
+  },
+  //
+  boxShadow: {
+    shadowColor: 'black',
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 2,
+  },
 };
 
 export default v;

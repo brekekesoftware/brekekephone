@@ -15,7 +15,7 @@ const BrekekeGradient = p => (
   <LinearGradient
     {...p}
     style={[s.BrekekeGradient, p.style]}
-    colors={[v.brekekeGreen, v.brekekeShade7]}
+    colors={[v.mainBg, v.revBg]}
   />
 );
 

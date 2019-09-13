@@ -17,7 +17,7 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   ProfileSignInItem: {
-    backgroundColor: 'white',
+    backgroundColor: v.bg,
     marginBottom: 15,
     marginLeft: 15,
     borderRadius: v.borderRadius,
@@ -42,7 +42,7 @@ const s = StyleSheet.create({
   },
   ProfileSignInItem_EmptyTitle: {
     fontWeight: 'bold',
-    fontSize: 1.2 * v.fontSize,
+    fontSize: v.fontSizeSubTitle,
   },
 });
 

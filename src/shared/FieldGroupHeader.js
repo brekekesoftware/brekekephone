@@ -5,7 +5,7 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   FieldGroupHeader: {
-    backgroundColor: v.brekekeShade1,
+    backgroundColor: v.borderBg,
     padding: 15,
     marginHorizontal: -15,
   },
