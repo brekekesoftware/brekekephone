@@ -23,16 +23,8 @@ const goBack = fn => {
   }, 100);
 };
 
-const wrap = fn => (...args) => {
-  if (g.isRouterAnimating) {
-    return;
-  }
-  g.waitKeyboard(fn)(...args);
-};
-
 Object.assign(g, {
   router: r,
-  isRouterAnimating: false,
   goToProfileSignIn: () => h.push(`/`),
   goToProfileCreate: () => h.push(`/create-profile`),
   goToProfileUpdate: id => h.push(`/update-profile/${id}`),
@@ -44,8 +36,8 @@ setTimeout(() => {
   Object.entries(g).forEach(([k, v]) => {
     if (/^goTo/.test(k)) {
       // Add backTo for all goTo helpers
-      g[k] = wrap(v);
-      g[k.replace(/^go/, 'back')] = wrap(() => goBack(v));
+      g[k] = g.waitKeyboard(v);
+      g[k.replace(/^go/, 'back')] = g.waitKeyboard(() => goBack(v));
     }
   });
 });
