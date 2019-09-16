@@ -29,6 +29,7 @@ Object.assign(g, {
   goToProfileSignIn: () => h.push(`/`),
   goToProfileCreate: () => h.push(`/create-profile`),
   goToProfileUpdate: id => h.push(`/update-profile/${id}`),
+  goToSettings: () => h.push(`/auth/settings`),
 });
 Object.entries(g).forEach(([k, v]) => {
   if (/^goTo/.test(k)) {

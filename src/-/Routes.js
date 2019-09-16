@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import PageSetting from '../-setting/PageSetting';
 import g from '../global';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
@@ -30,7 +31,6 @@ import GroupChatsRecent from './group-chats-recent';
 import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
-import Settings from './settings';
 import SIPAuth from './sip-auth';
 import Tabbar from './tabbar';
 import UCAuth from './uc-auth';
@@ -151,7 +151,7 @@ const Routes = () => (
               component={ChatGroupInvite}
             />
             <Route exact path="/auth/chats/recent" component={ChatsRecent} />
-            <Route exact path="/auth/settings" component={Settings} />
+            <Route exact path="/auth/settings" component={PageSetting} />
             <Route
               exact
               path="/auth/settings/:profile/callpark"

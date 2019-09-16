@@ -106,8 +106,14 @@ class ProfileCreateForm extends React.Component {
     });
   };
   onSaveBtnPress = () => {
-    // TODO validate
-    this.props.onSaveBtnPress(this.profile);
+    if (this.hasUnsavedChanges()) {
+      g.showPrompt({
+        title: `Save Profile`,
+        message: `Do you want to save profile?`,
+        onConfirm: () => this.props.onSaveBtnPress(this.profile),
+        confirmText: 'SAVE',
+      });
+    }
   };
 
   render() {
@@ -125,12 +131,14 @@ class ProfileCreateForm extends React.Component {
       ucPort,
       parks,
     } = this.profile;
-    const { isUpdate, updatingProfile: u } = this.props;
+    const { isUpdate, updatingProfile: u, updateFromSetting } = this.props;
     return (
       <Layout
         header={{
           onBackBtnPress: this.onBackBtnPress,
-          title: `${isUpdate ? 'Update' : 'New'} Server`,
+          title: updateFromSetting
+            ? 'Settings'
+            : `${isUpdate ? 'Update' : 'New'} Server`,
           description: isUpdate
             ? u
               ? `${u.pbxUsername} - ${u.pbxHostname}`
@@ -138,7 +146,7 @@ class ProfileCreateForm extends React.Component {
             : 'Create a new sign in profile',
         }}
         footer={{
-          onBackBtnPress: this.onBackBtnPress,
+          onBackBtnPress: updateFromSetting ? null : this.onBackBtnPress,
           onRefreshBtnPress: this.onRefreshBtnPress,
           onSaveBtnPress: this.onSaveBtnPress,
         }}
