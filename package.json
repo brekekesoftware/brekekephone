@@ -39,6 +39,7 @@
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
     "react-native-dropdown": "github:alinz/react-native-dropdown#236e2125027ac15fb1889a7be89adf911abf94d2",
     "react-native-exception-handler": "2.10.8",
+    "react-native-fast-image": "7.0.2",
     "react-native-fcm": "github:brekekesoftware/react-native-fcm#f9ce0351f68db62b2295a55c44430d0066d0f3ae",
     "react-native-fs": "2.14.1",
     "react-native-full-image-picker": "github:brekekesoftware/react-native-full-image-picker#f515715c26b395ce0faa4af9e2840d63d682fc67",

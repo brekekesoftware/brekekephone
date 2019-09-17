@@ -11,11 +11,18 @@ const PageSetting = observer(p => (
     updateFromSetting
     updatingProfile={authStore.profile}
     onSaveBtnPress={p => {
-      authStore.upsertProfile(p);
-      g.goToProfileSignIn();
-      setTimeout(() => {
-        authStore.signIn(p.id);
-      }, 300);
+      // authStore.upsertProfile(p);
+      // showPromptUpProfile(p);
+      g.showPrompt({
+        title: `Save Profile`,
+        message:
+          'Do you want to update your profile,\n you need to sign out and then sign in again?',
+        onConfirm: () => {
+          authStore.upsertProfile(p);
+          g.goToProfileSignIn();
+        },
+        confirmText: 'SAVE',
+      });
     }}
   />
 ));

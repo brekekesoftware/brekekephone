@@ -30,6 +30,7 @@ const s = StyleSheet.create({
     marginBottom: 30,
     fontSize: v.fontSize,
     color: v.color,
+    whiteSpace: 'unset',
   },
   RootAlerts_Btn: {
     position: 'absolute',

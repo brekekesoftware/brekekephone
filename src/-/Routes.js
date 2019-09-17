@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import PageContact from '../-contact/PageContact';
 import PageSetting from '../-setting/PageSetting';
 import g from '../global';
 import Auth from './auth';
@@ -24,7 +25,6 @@ import ChatGroupInvite from './chat-group-invite';
 import ChatGroupsCreate from './chat-groups-create';
 import ChatGroupsNotify from './chat-groups-notify';
 import ChatsRecent from './chats-recent';
-import NewCallPark from './components-Setting/NewCallPark';
 import ContactsBrowse from './contacts-browse';
 import ContactsCreate from './contacts-create';
 import GroupChatsRecent from './group-chats-recent';
@@ -34,7 +34,6 @@ import PhonebooksBrowse from './phonebooks-browse';
 import SIPAuth from './sip-auth';
 import Tabbar from './tabbar';
 import UCAuth from './uc-auth';
-import UsersBrowse from './users-browse';
 
 // Wait and push history to fix some strange issues with router
 const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
@@ -91,9 +90,6 @@ Object.assign(g, {
     g.router.history.push(`/profile/${profile}/signin`),
   ),
   goToSettings: withTimeout(() => g.router.history.push('/auth/settings')),
-  goToNewCallPark: withTimeout(profile =>
-    g.router.history.push(`/auth/settings/${profile}/callpark`),
-  ),
   goToUsersBrowse: withTimeout(() => g.router.history.push('/auth/users')),
 });
 
@@ -129,7 +125,7 @@ const Routes = () => (
               component={CallKeypad}
             />
             <Route exact path="/auth/call/:call/park" component={CallPark} />
-            <Route exact path="/auth/users" component={UsersBrowse} />
+            <Route exact path="/auth/users" component={PageContact} />
             <Route
               exact
               path="/auth/chats/buddy/:buddy/recent"
@@ -152,11 +148,6 @@ const Routes = () => (
             />
             <Route exact path="/auth/chats/recent" component={ChatsRecent} />
             <Route exact path="/auth/settings" component={PageSetting} />
-            <Route
-              exact
-              path="/auth/settings/:profile/callpark"
-              component={NewCallPark}
-            />
             <Route
               exact
               path="/auth/phonebooks/browse"

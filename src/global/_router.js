@@ -36,6 +36,7 @@ Object.assign(g, {
   goToProfileSignIn: () => h.push(`/`),
   goToProfileCreate: () => h.push(`/create-profile`),
   goToProfileUpdate: id => h.push(`/update-profile/${id}`),
+  goToContactUsers: () => h.push(`/auth/users`),
   goToSettings: () => h.push(`/auth/settings`),
 });
 

@@ -107,12 +107,7 @@ class ProfileCreateForm extends React.Component {
   };
   onSaveBtnPress = () => {
     if (this.hasUnsavedChanges()) {
-      g.showPrompt({
-        title: `Save Profile`,
-        message: `Do you want to save profile?`,
-        onConfirm: () => this.props.onSaveBtnPress(this.profile),
-        confirmText: 'SAVE',
-      });
+      this.props.onSaveBtnPress(this.profile);
     }
   };
 
