@@ -23,7 +23,7 @@
     "es6-shim": "0.35.5",
     "es7-shim": "6.0.0",
     "eventemitter3": "4.0.0",
-    "history": "4.10.0",
+    "history": "4.10.1",
     "jssip": "github:brekekesoftware/jssip#93940bcc89214d410a63435d6da00cbfe790313c",
     "lodash": "4.17.15",
     "mobx": "5.13.0",
@@ -59,7 +59,6 @@
     "react-router": "5.0.1",
     "react-router-dom": "5.0.1",
     "react-router-native": "5.0.1",
-    "react-router-native-stack": "github:hookedjs/react-router-native-stack#b5e300b79c17ac93dc864e685c430b1d6c7cb9d8",
     "shortid": "2.2.15",
     "url-parse": "1.4.7",
     "validatorjs": "3.17.1"
@@ -67,9 +66,9 @@
   "devDependencies": {
     "@mdi/react": "1.2.1",
     "react-art": "16.9.0",
-    "react-device-detect": "1.9.7",
+    "react-device-detect": "1.9.9",
     "react-dom": "16.9.0",
-    "react-native-svg-web": "^1.0.1",
+    "react-native-svg-web": "1.0.1",
     "react-native-web": "0.11.7"
   },
   "optionalDependencies": {
@@ -82,7 +81,7 @@
     "@babel/plugin-transform-flow-strip-types": "7.4.4",
     "@babel/plugin-transform-modules-commonjs": "7.6.0",
     "@babel/plugin-transform-react-jsx": "7.3.0",
-    "@craco/craco": "5.4.0",
+    "@craco/craco": "5.5.0",
     "circular-dependency-plugin": "5.2.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-prettier": "3.1.0",

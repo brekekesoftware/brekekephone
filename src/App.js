@@ -4,8 +4,7 @@ import { configure } from 'mobx';
 import React from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
-import { Route, Router } from 'react-router';
-import Stack from 'react-router-native-stack';
+import { Route, Router, Switch } from 'react-router';
 
 import AppOld from './-/AppOld';
 import authStore from './-/authStore';
@@ -62,13 +61,13 @@ class App extends React.Component {
       <View style={s.App}>
         <View style={s.App_Inner}>
           <Router history={g.router.history}>
-            <Stack isAnimating={v => (g.isRouterAnimating = v)}>
+            <Switch>
               <Route exact path="/" component={PageProfileSignIn} />
               <Route path="/create-profile" component={PageProfileCreate} />
               <Route path="/update-profile/:id" component={PageProfileUpdate} />
               <Route path="/auth" component={AppOld} />
               <Route component={Page404} />
-            </Stack>
+            </Switch>
           </Router>
           <RootAlerts />
         </View>
