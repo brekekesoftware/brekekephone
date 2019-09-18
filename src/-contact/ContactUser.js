@@ -102,7 +102,7 @@ class ContactUser extends React.Component {
   render() {
     const users = this.getMatchUserIds().map(this.resolveUser);
     const map = {};
-    console.warn('uses', users);
+
     users.forEach(u => {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
@@ -134,8 +134,9 @@ class ContactUser extends React.Component {
         <React.Fragment>
           {groups.map(g => (
             <FieldGroup title={g.key}>
-              {g.users.map(u => (
+              {g.users.map((u, i) => (
                 <Item
+                  last={i === g.users.length - 1}
                   name={u.name}
                   avatar={u.avatar}
                   icon={[mdiPhone, mdiInformation]}

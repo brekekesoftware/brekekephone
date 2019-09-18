@@ -4,6 +4,7 @@ import android.app.Application;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
+import com.dylanvann.fastimage.FastImageViewPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -41,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
               new KCKeepAwakePackage(),
               new LinearGradientPackage(),
               new MainReactPackage(),
+              new FastImageViewPackage(),
               new ReactNativeExceptionHandlerPackage(),
               new ReactVideoPackage(),
               new RNCameraPackage(),

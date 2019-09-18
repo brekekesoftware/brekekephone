@@ -88,27 +88,8 @@ class ProfileCreateForm extends React.Component {
       confirmText: 'DISCARD',
     });
   };
-  onRefreshBtnPress = () => {
-    if (!this.hasUnsavedChanges()) {
-      // TODO show toast
-      return;
-    }
-    g.showPrompt({
-      title: `Discard Unsaved`,
-      message: `Do you want to discard unsaved changes?`,
-      onConfirm: action(() => {
-        Object.assign(
-          this.profile,
-          this.props.isUpdate ? this.props.updatingProfile : genEmptyProfile(),
-        );
-      }),
-      confirmText: 'DISCARD',
-    });
-  };
   onSaveBtnPress = () => {
-    if (this.hasUnsavedChanges()) {
-      this.props.onSaveBtnPress(this.profile);
-    }
+    this.props.onSaveBtnPress(this.profile, this.hasUnsavedChanges());
   };
 
   render() {
@@ -126,27 +107,26 @@ class ProfileCreateForm extends React.Component {
       ucPort,
       parks,
     } = this.profile;
-    const { isUpdate, updatingProfile: u, updateFromSetting } = this.props;
+    const { isUpdate, isUpdateFromSetting, updatingProfile } = this.props;
     return (
       <Layout
         header={{
           onBackBtnPress: this.onBackBtnPress,
-          title: updateFromSetting
+          title: isUpdateFromSetting
             ? 'Settings'
             : `${isUpdate ? 'Update' : 'New'} Server`,
           description: isUpdate
-            ? u
-              ? `${u.pbxUsername} - ${u.pbxHostname}`
+            ? updatingProfile
+              ? `${updatingProfile.pbxUsername} - ${updatingProfile.pbxHostname}`
               : 'Server profile not found'
             : 'Create a new sign in profile',
         }}
         footer={{
-          onBackBtnPress: updateFromSetting ? null : this.onBackBtnPress,
-          onRefreshBtnPress: this.onRefreshBtnPress,
+          onBackBtnPress: this.onBackBtnPress,
           onSaveBtnPress: this.onSaveBtnPress,
         }}
       >
-        {!(isUpdate && !u) && (
+        {!(isUpdate && !updatingProfile) && (
           <React.Fragment>
             <FieldGroup title="PBX">
               <Field

@@ -8,11 +8,13 @@ import g from '../global';
 const PageSetting = observer(p => (
   <ProfileCreateForm
     isUpdate
-    updateFromSetting
+    isUpdateFromSetting
     updatingProfile={authStore.profile}
-    onSaveBtnPress={p => {
-      // authStore.upsertProfile(p);
-      // showPromptUpProfile(p);
+    onBackBtnPress={g.backToContactPage}
+    onSaveBtnPress={(p, hasUnsavedChanges) => {
+      if (!hasUnsavedChanges) {
+        g.backToContactPage();
+      }
       g.showPrompt({
         title: `Save Profile`,
         message:
@@ -20,6 +22,7 @@ const PageSetting = observer(p => (
         onConfirm: () => {
           authStore.upsertProfile(p);
           g.goToProfileSignIn();
+          setTimeout(() => authStore.signIn(p.id), 300);
         },
         confirmText: 'SAVE',
       });

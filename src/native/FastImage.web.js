@@ -1,1 +1,3 @@
-export default () => null;
+import { Image } from 'react-native';
+
+export default Image;

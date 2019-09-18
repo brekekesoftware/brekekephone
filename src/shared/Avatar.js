@@ -21,7 +21,7 @@ const s = StyleSheet.create({
 
 const Avatar = p => (
   <View>
-    <FastImage style={s.Image} source={{ uri: p.source }} />
+    <FastImage style={s.Image} source={p.source} />
     {p.status === 'online' && (
       <View style={s.Image__status}>
         <Icon path={mdiRecord} color="#74bf53" />

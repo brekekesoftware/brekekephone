@@ -13,6 +13,9 @@ const s = StyleSheet.create({
     height: 80,
     alignItems: 'stretch',
   },
+  Item__last: {
+    borderBottomWidth: 0,
+  },
   Item_Name: {
     position: 'absolute',
     top: 20,
@@ -33,7 +36,7 @@ const s = StyleSheet.create({
 
 const renderItem = p => (
   <View>
-    <View style={s.Item}>
+    <View style={[s.Item, p.last && s.Item__last]}>
       <View>
         <Avatar source={{ uri: p.avatar }} />
       </View>
