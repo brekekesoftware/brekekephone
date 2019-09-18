@@ -123,19 +123,8 @@
       "import/no-duplicates": "error",
       "import/no-extraneous-dependencies": "error",
       "prettier/prettier": "error"
-    },
-    "settings": {
-      "react": {
-        "version": "latest"
-      }
     }
   },
-  "eslintIgnore": [
-    "android/**",
-    "ios/**",
-    "node_modules/**",
-    "build/**"
-  ],
   "prettier": {
     "printWidth": 80,
     "tabWidth": 2,
@@ -147,16 +136,5 @@
     "jsxBracketSameLine": false,
     "arrowParens": "avoid"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "browserslist": "ie 10-11"
 }
