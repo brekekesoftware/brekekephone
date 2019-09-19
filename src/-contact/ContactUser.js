@@ -11,6 +11,7 @@ import g from '../global';
 import FieldGroup from '../shared/FieldGroup';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
+import Search from '../shared/Search';
 
 @observer
 class ContactUser extends React.Component {
@@ -124,23 +125,26 @@ class ContactUser extends React.Component {
     groups.forEach(g => {
       g.users = orderBy(g.users, 'name');
     });
-
+    console.warn('user', users);
     return (
       <Layout
         header={{
           title: 'Contact',
         }}
       >
+        <Search
+          value={contactStore.searchText}
+          onValueChange={contactStore.setF('searchText')}
+        />
         <React.Fragment>
           {groups.map(g => (
             <FieldGroup title={g.key}>
               {g.users.map((u, i) => (
                 <Item
                   last={i === g.users.length - 1}
-                  name={u.name}
-                  avatar={u.avatar}
                   icon={[mdiPhone, mdiInformation]}
                   function={[() => this.callVoice(u.id), () => null]}
+                  {...u}
                 />
               ))}
             </FieldGroup>

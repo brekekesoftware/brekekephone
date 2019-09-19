@@ -13,10 +13,10 @@ class SearchContact extends React.Component {
           <Input
             placeholder="Search name, phone number..."
             value={p.value}
-            onChangeText={p.setValue}
+            onChangeText={p.onValueChange}
           />
           {!!p.value && (
-            <Button transparent onPress={() => p.setValue('')}>
+            <Button transparent onPress={() => p.onValueChange('')}>
               <Icon path={mdiClose} width="18" height="18" />
             </Button>
           )}

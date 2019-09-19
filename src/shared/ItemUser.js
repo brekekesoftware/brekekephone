@@ -37,9 +37,7 @@ const s = StyleSheet.create({
 const renderItem = p => (
   <View>
     <View style={[s.Item, p.last && s.Item__last]}>
-      <View>
-        <Avatar source={{ uri: p.avatar }} />
-      </View>
+      <Avatar source={{ uri: p.avatar }} {...p} />
       <Text style={s.Item_Name}>{p.name}</Text>
     </View>
     <View style={s.Item_Icon}>

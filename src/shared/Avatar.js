@@ -6,36 +6,33 @@ import FastImage from '../native/FastImage';
 import Icon from './Icon';
 
 const s = StyleSheet.create({
-  Image: {
+  Avatar: {
+    flexDirection: 'row',
+  },
+  Avatar_Image: {
     width: 50,
     height: 50,
     top: 13,
     borderRadius: 25,
   },
-  Image__status: {
+  Avatar_Image__status: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    top: 40,
+    left: 30,
   },
 });
 
 const Avatar = p => (
-  <View>
-    <FastImage style={s.Image} source={p.source} />
-    {p.status === 'online' && (
-      <View style={s.Image__status}>
-        <Icon path={mdiRecord} color="#74bf53" />
-      </View>
+  <View style={s.Avatar}>
+    <FastImage style={s.Avatar_Image} source={p.source} />
+    {p.chatOnline && (
+      <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#74bf53" />
     )}
-    {p.status === 'offline' && (
-      <View style={s.Image__status}>
-        <Icon path={mdiRecord} color="#8a8a8f" />
-      </View>
+    {p.chatOffline && (
+      <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#8a8a8f" />
     )}
-    {p.status === 'busy' && (
-      <View style={s.Image__status}>
-        <Icon path={mdiRecord} color="#FF2D55" />
-      </View>
+    {p.chatBusy && (
+      <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#FF2D55" />
     )}
   </View>
 );
