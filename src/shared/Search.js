@@ -2,6 +2,7 @@ import { mdiClose } from '@mdi/js';
 import React from 'react';
 
 import { StyleSheet, TextInput, TouchableOpacity, View } from '../native/Rn';
+import v from '../variables';
 import Icon from './Icon';
 
 const s = StyleSheet.create({
@@ -9,15 +10,17 @@ const s = StyleSheet.create({
     height: 50,
   },
   Search_TextInput: {
-    padding: 10,
+    paddingTop: 5,
+    paddingHorizontal: 10,
   },
   Search_TextInput__pd: {
     padding: 10,
+    ...v.boxShadow,
   },
   Search_BtnClose: {
     position: 'absolute',
     right: 15,
-    top: 20,
+    top: 15,
   },
 });
 
@@ -37,7 +40,7 @@ const Search = p => (
         transparent
         onPress={() => p.onValueChange('')}
       >
-        <Icon path={mdiClose} width="18" height="18" />
+        <Icon path={mdiClose} size={18} />
       </TouchableOpacity>
     )}
   </View>

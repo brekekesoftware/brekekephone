@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
 import PageContact from '../-contact/PageContact';
+import Recent from '../-recent/PageRecent';
 import PageSetting from '../-setting/PageSetting';
 import g from '../global';
 import Auth from './auth';
@@ -20,7 +21,6 @@ import Callbar from './callbar';
 import CallsCreate from './calls-create';
 import CallsManage from './calls-manage';
 import CallsNotify from './calls-notify';
-import CallsRecent from './calls-recent';
 import ChatGroupInvite from './chat-group-invite';
 import ChatGroupsCreate from './chat-groups-create';
 import ChatGroupsNotify from './chat-groups-notify';
@@ -108,7 +108,7 @@ const Routes = () => (
             />
             <Route exact path="/auth/calls/manage" component={CallsManage} />
             <Route exact path="/auth/calls/create" component={CallsCreate} />
-            <Route exact path="/auth/calls/recent" component={CallsRecent} />
+            <Route exact path="/auth/calls/recent" component={Recent} />
             <Route
               exact
               path="/auth/call/:call/transfer/dial"

@@ -1,3 +1,4 @@
+import { mdiPhoneMissed } from '@mdi/js';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -23,6 +24,17 @@ const s = StyleSheet.create({
     fontSize: v.fontSizeSubTitle,
     color: v.subColor,
   },
+  Item_Detail: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 50,
+    left: 70,
+    fontSize: v.fontSizeSmall,
+    color: v.subColor,
+  },
+  Item_Detail_Text: {
+    paddingLeft: 10,
+  },
   Item_Icon: {
     position: 'absolute',
     flexDirection: 'row',
@@ -38,7 +50,20 @@ const renderItem = p => (
   <View>
     <View style={[s.Item, p.last && s.Item__last]}>
       <Avatar source={{ uri: p.avatar }} {...p} />
-      <Text style={s.Item_Name}>{p.name}</Text>
+      <Text style={s.Item_Name}>{p.name || p.partyNumber}</Text>
+      {p.detail && (
+        <View style={s.Item_Detail}>
+          {p.incoming && p.answered && (
+            // TODO: change icon to match with status phone.
+            <Icon path={mdiPhoneMissed} size={18} />
+          )}
+          {p.incoming && !p.answered && (
+            <Icon path={mdiPhoneMissed} size={18} />
+          )}
+          {!p.incoming && <Icon path={mdiPhoneMissed} size={18} />}
+          <Text style={s.Item_Detail_Text}>at {p.formatTime(p.created)}</Text>
+        </View>
+      )}
     </View>
     <View style={s.Item_Icon}>
       {p.icon &&
