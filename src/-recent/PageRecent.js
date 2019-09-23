@@ -62,7 +62,6 @@ class Recent extends React.Component {
     authStore.profile.recentCalls.filter(this.isMatchUser).map(c => c.id);
 
   render() {
-    console.warn('user', authStore.profile.recentCalls);
     const users = this.getMatchUserIds();
     return (
       <Layout
