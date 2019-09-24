@@ -6,7 +6,6 @@ import { Redirect, Route } from 'react-router';
 import PageContact from '../-contact/PageContact';
 import PagePhone from '../-phone/PagePhone';
 import Recent from '../-recent/PageRecent';
-import PageSetting from '../-setting/PageSetting';
 import g from '../global';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
@@ -89,7 +88,6 @@ Object.assign(g, {
   goToProfileSignin: withTimeout(profile =>
     g.router.history.push(`/profile/${profile}/signin`),
   ),
-  goToSettings: withTimeout(() => g.router.history.push('/auth/settings')),
   goToUsersBrowse: withTimeout(() => g.router.history.push('/auth/users')),
 });
 
@@ -147,7 +145,6 @@ const Routes = () => (
               component={ChatGroupInvite}
             />
             <Route exact path="/auth/chats/recent" component={ChatsRecent} />
-            <Route exact path="/auth/settings" component={PageSetting} />
             <Route
               exact
               path="/auth/phonebooks/browse"

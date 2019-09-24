@@ -52,7 +52,7 @@ const s = StyleSheet.create({
     right: 5,
     width: 50,
     height: 50,
-    borderRadius: 50,
+    borderRadius: 25,
     backgroundColor: v.mainDarkBg,
   },
   LayoutHeader_CreateBtn__white: {

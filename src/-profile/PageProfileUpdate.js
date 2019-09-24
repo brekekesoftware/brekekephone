@@ -8,6 +8,7 @@ import ProfileCreateForm from './ProfileCreateForm';
 const PageProfileUpdate = observer(p => (
   <ProfileCreateForm
     isUpdate
+    title="Update Server"
     updatingProfile={authStore.getProfile(p.match.params.id)}
     onBackBtnPress={g.backToProfileSignIn}
     onSaveBtnPress={p => {

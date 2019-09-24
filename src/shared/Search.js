@@ -9,26 +9,27 @@ const s = StyleSheet.create({
   Search: {
     height: 50,
   },
-  Search_TextInput: {
+  Search_TextInputOuter: {
     paddingTop: 5,
     paddingHorizontal: 10,
   },
-  Search_TextInput__pd: {
+  Search_TextInput: {
     padding: 10,
     ...v.boxShadow,
   },
   Search_BtnClose: {
     position: 'absolute',
-    right: 15,
-    top: 15,
+    right: 10,
+    top: 5,
+    padding: 10,
   },
 });
 
 const Search = p => (
   <View style={s.Search}>
-    <View style={s.Search_TextInput}>
+    <View style={s.Search_TextInputOuter}>
       <TextInput
-        style={s.Search_TextInput__pd}
+        style={s.Search_TextInput}
         placeholder="Search name, phone number..."
         value={p.value}
         onChangeText={p.onValueChange}
@@ -40,7 +41,7 @@ const Search = p => (
         transparent
         onPress={() => p.onValueChange('')}
       >
-        <Icon path={mdiClose} size={18} />
+        <Icon path={mdiClose} size={17} />
       </TouchableOpacity>
     )}
   </View>

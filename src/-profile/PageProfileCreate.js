@@ -6,6 +6,7 @@ import ProfileCreateForm from './ProfileCreateForm';
 
 const PageProfileCreate = () => (
   <ProfileCreateForm
+    title="New Server"
     onBackBtnPress={g.backToProfileSignIn}
     onSaveBtnPress={p => {
       authStore.upsertProfile(p);

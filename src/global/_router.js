@@ -1,9 +1,9 @@
-import { createMemoryHistory } from 'history';
+import { createHashHistory, createMemoryHistory } from 'history';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 
 import g from './_';
 
-const h = createMemoryHistory();
+const h = createHashHistory();
 const r = new RouterStore();
 syncHistoryWithStore(h, r);
 
@@ -28,8 +28,8 @@ Object.assign(g, {
   goToProfileSignIn: () => h.push(`/`),
   goToProfileCreate: () => h.push(`/create-profile`),
   goToProfileUpdate: id => h.push(`/update-profile/${id}`),
+  goToProfileCurrent: () => h.push(`/auth/current-profile`),
   goToContactUsers: () => h.push(`/auth/users`),
-  goToSettings: () => h.push(`/auth/settings`),
 });
 
 setTimeout(() => {

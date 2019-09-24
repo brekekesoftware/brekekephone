@@ -15,7 +15,7 @@ class View extends React.Component {
         pressCallsManage={g.goToCallsManage}
         pressCallsRecent={g.goToCallsRecent}
         pressCallsCreate={g.goToCallsCreate}
-        pressSettings={g.goToSettings}
+        pressSettings={g.goToProfileCurrent}
         pressUsers={g.goToUsersBrowse}
         pressChats={g.goToChatsRecent}
         pressBooks={g.goToPhonebooksBrowse}

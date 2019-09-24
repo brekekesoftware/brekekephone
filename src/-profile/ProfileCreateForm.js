@@ -107,14 +107,12 @@ class ProfileCreateForm extends React.Component {
       ucPort,
       parks,
     } = this.profile;
-    const { isUpdate, isUpdateFromSetting, updatingProfile } = this.props;
+    const { isUpdate, updatingProfile } = this.props;
     return (
       <Layout
         header={{
           onBackBtnPress: this.onBackBtnPress,
-          title: isUpdateFromSetting
-            ? 'Settings'
-            : `${isUpdate ? 'Update' : 'New'} Server`,
+          title: this.props.title,
           description: isUpdate
             ? updatingProfile
               ? `${updatingProfile.pbxUsername} - ${updatingProfile.pbxHostname}`

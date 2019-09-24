@@ -5,18 +5,18 @@ import authStore from '../-/authStore';
 import ProfileCreateForm from '../-profile/ProfileCreateForm';
 import g from '../global';
 
-const PageSetting = observer(p => (
+const PageProfileCurrent = observer(p => (
   <ProfileCreateForm
     isUpdate
-    isUpdateFromSetting
+    title="Current Server"
     updatingProfile={authStore.profile}
-    onBackBtnPress={g.backToContactPage}
+    onBackBtnPress={g.backToContactsBrowse}
     onSaveBtnPress={(p, hasUnsavedChanges) => {
       if (!hasUnsavedChanges) {
-        g.backToContactPage();
+        g.backToContactsBrowse();
       }
       g.showPrompt({
-        title: `Save Profile`,
+        title: `Save Server`,
         message:
           'Do you want to update your profile,\n you need to sign out and then sign in again?',
         onConfirm: () => {
@@ -30,4 +30,4 @@ const PageSetting = observer(p => (
   />
 ));
 
-export default PageSetting;
+export default PageProfileCurrent;

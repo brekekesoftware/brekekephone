@@ -34,7 +34,7 @@ class View extends React.Component {
         chatsEnabled={authStore.profile?.ucEnabled}
         pressCallsManage={g.goToCallsManage}
         pressCallsCreate={g.goToCallsCreate}
-        pressSettings={g.goToSettings}
+        pressSettings={g.goToProfileCurrent}
         pressUsers={g.goToUsersBrowse}
         pressChats={g.goToChatsRecent}
         pressBooks={g.goToPhonebooksBrowse}
