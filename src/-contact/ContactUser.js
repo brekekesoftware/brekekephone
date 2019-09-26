@@ -1,4 +1,4 @@
-import { mdiInformation, mdiPhone } from '@mdi/js';
+import { mdiChat, mdiPhone } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
@@ -125,7 +125,6 @@ class ContactUser extends React.Component {
     groups.forEach(g => {
       g.users = orderBy(g.users, 'name');
     });
-    console.warn('user', users);
     return (
       <Layout
         header={{
@@ -137,13 +136,16 @@ class ContactUser extends React.Component {
           onValueChange={contactStore.setF('searchText')}
         />
         <React.Fragment>
-          {groups.map(g => (
-            <FieldGroup title={g.key}>
-              {g.users.map((u, i) => (
+          {groups.map(_g => (
+            <FieldGroup title={_g.key}>
+              {_g.users.map((u, i) => (
                 <Item
-                  last={i === g.users.length - 1}
-                  icon={[mdiPhone, mdiInformation]}
-                  function={[() => this.callVoice(u.id), () => null]}
+                  last={i === _g.users.length - 1}
+                  icon={[mdiPhone, mdiChat]}
+                  function={[
+                    () => this.callVoice(u.id),
+                    () => g.goToBuddyChatsRecent(u.id),
+                  ]}
                   {...u}
                 />
               ))}
