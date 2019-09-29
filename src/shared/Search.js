@@ -18,7 +18,7 @@ const s = StyleSheet.create({
     ...v.boxShadow,
   },
   Search_BtnClose: {
-    position: 'absolute',
+    position: `absolute`,
     right: 10,
     top: 5,
     padding: 10,
@@ -39,7 +39,7 @@ const Search = p => (
       <TouchableOpacity
         style={s.Search_BtnClose}
         transparent
-        onPress={() => p.onValueChange('')}
+        onPress={() => p.onValueChange(``)}
       >
         <Icon path={mdiClose} size={17} />
       </TouchableOpacity>

@@ -54,7 +54,7 @@ class View extends React.Component {
     const members = Object.keys(selectedBuddy);
 
     if (!members.length) {
-      g.showError({ message: 'No buddy selectedBuddy' });
+      g.showError({ message: `No buddy selectedBuddy` });
       return;
     }
 
@@ -67,7 +67,7 @@ class View extends React.Component {
 
   onInviteFailure = err => {
     console.error(err);
-    g.showError({ message: err.message || 'with unknown error' });
+    g.showError({ message: err.message || `with unknown error` });
   };
 
   back = () => {

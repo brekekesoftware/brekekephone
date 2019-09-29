@@ -120,6 +120,7 @@ android {
     versionCode 30001
     versionName "3.0.0"
     targetSdkVersion rootProject.ext.targetSdkVersion
+    multiDexEnabled true
     ndk {
       abiFilters "armeabi-v7a", "x86"
     }
@@ -181,7 +182,6 @@ dependencies {
   compile project(":react-native-fcm")
   compile project(":react-native-fs")
   compile project(":react-native-incall-manager")
-  compile project(":react-native-keep-awake")
   compile project(":react-native-linear-gradient")
   compile project(":react-native-splash-screen")
   compile project(":react-native-svg")

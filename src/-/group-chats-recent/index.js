@@ -10,18 +10,18 @@ import contactStore from '../contactStore';
 import UI from './ui';
 
 const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  `Jan`,
+  `Feb`,
+  `Mar`,
+  `Apr`,
+  `May`,
+  `Jun`,
+  `Jul`,
+  `Aug`,
+  `Sep`,
+  `Oct`,
+  `Nov`,
+  `Dec`,
 ];
 
 const isToday = time => {
@@ -36,11 +36,11 @@ const formatTime = time => {
   const hour = time
     .getHours()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   const min = time
     .getMinutes()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
 
   if (isToday(time)) return `${hour}:${min}`;
 
@@ -66,7 +66,7 @@ class View extends React.Component {
   @computed get chatById() {
     return arrToMap(
       chatStore.messagesByThreadId[this.props.match.params.group] || [],
-      'id',
+      `id`,
       m => m,
     );
   }
@@ -76,10 +76,10 @@ class View extends React.Component {
   };
 
   state = {
-    target: '',
+    target: ``,
     loadingRecent: false,
     loadingMore: false,
-    editingText: '',
+    editingText: ``,
   };
 
   componentDidMount() {
@@ -179,7 +179,7 @@ class View extends React.Component {
       loadingRecent: false,
     });
 
-    g.showError({ message: 'get recent chats' });
+    g.showError({ message: `get recent chats` });
   };
 
   loadMore = () => {
@@ -211,7 +211,7 @@ class View extends React.Component {
   };
 
   onLoadMoreFailure = err => {
-    g.showError({ message: 'get more chats' });
+    g.showError({ message: `get more chats` });
     console.error(err);
 
     this.setState({
@@ -253,13 +253,13 @@ class View extends React.Component {
     chatStore.pushMessages(this.props.group.id, [chat]);
 
     this.setState({
-      editingText: '',
+      editingText: ``,
     });
   };
 
   onSubmitEditingTextFailure = err => {
     console.error(err);
-    g.showError({ message: 'send the message' });
+    g.showError({ message: `send the message` });
   };
 
   leave = () => {
@@ -276,7 +276,7 @@ class View extends React.Component {
 
   onLeaveFailure = err => {
     console.error(err);
-    g.showError({ message: 'leave the group' });
+    g.showError({ message: `leave the group` });
   };
 
   invite = () => {
@@ -293,16 +293,16 @@ class View extends React.Component {
 
   callVoiceConference = () => {
     let target = this.props.match.params.group;
-    if (!target.startsWith('uc')) {
-      target = 'uc' + this.props.match.params.group;
+    if (!target.startsWith(`uc`)) {
+      target = `uc` + this.props.match.params.group;
     }
     this.call(target, false);
   };
 
   callVideoConference = () => {
     let target = this.props.match.params.group;
-    if (!target.startsWith('uc')) {
-      target = 'uc' + this.props.match.params.group;
+    if (!target.startsWith(`uc`)) {
+      target = `uc` + this.props.match.params.group;
     }
     this.call(target, true);
   };

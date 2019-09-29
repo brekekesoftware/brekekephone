@@ -15,7 +15,7 @@ const s = StyleSheet.create({
     padding: 15,
   },
   FieldGroup_TitleText: {
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     fontSize: v.fontSizeSmall,
   },
 });

@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import v from '../variables';
@@ -14,7 +14,7 @@ const s = StyleSheet.create({
     backgroundColor: v.mainBg,
   },
   RnSwitch_Circle: {
-    position: 'absolute',
+    position: `absolute`,
     top: -3,
     left: -1,
     width: 18,
@@ -30,14 +30,10 @@ const s = StyleSheet.create({
   },
 });
 
-const RnSwitch = forwardRef(({ enabled, style, ...p }, ref) => (
-  <View
-    ref={ref}
-    {...p}
-    style={[s.RnSwitch, enabled && s.RnSwitch__enabled, style]}
-  >
+const RnSwitch = ({ enabled, style, ...p }) => (
+  <View {...p} style={[s.RnSwitch, enabled && s.RnSwitch__enabled, style]}>
     <View style={[s.RnSwitch_Circle, enabled && s.RnSwitch_Circle__enabled]} />
   </View>
-));
+);
 
 export default RnSwitch;

@@ -6,19 +6,19 @@ import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   containerDisplay: {
-    height: '30%',
+    height: `30%`,
   },
 
   containerBtn: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: `row`,
+    justifyContent: `flex-end`,
     padding: std.gap.lg,
   },
 
   shownumber: {
     marginTop: std.gap.lg,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
+    flexDirection: `column`,
+    justifyContent: `flex-end`,
   },
 
   btnCall: {
@@ -29,7 +29,7 @@ const st = StyleSheet.create({
     padding: std.gap.lg,
   },
   showNum: {
-    textAlign: 'center',
+    textAlign: `center`,
     fontSize: 35,
   },
 });

@@ -16,14 +16,16 @@ const s = StyleSheet.create({
     }),
   },
   RnStatusBar__transparent: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
+    backgroundColor: `transparent`,
+    borderColor: `transparent`,
   },
 });
 
-const RnStatusBar = p =>
-  Platform.OS === 'web' ? null : (
-    <View style={[s.RnStatusBar, p.transparent && s.RnStatusBar__transparent]}>
+const RnStatusBar = props =>
+  Platform.OS === `web` ? null : (
+    <View
+      style={[s.RnStatusBar, props.transparent && s.RnStatusBar__transparent]}
+    >
       <StatusBar backgroundColor={v.hoverBg} barStyle="dark-content" />
     </View>
   );

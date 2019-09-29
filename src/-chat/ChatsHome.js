@@ -13,12 +13,12 @@ class ChatsHome extends React.Component {
     return (
       <Layout
         header={{
-          title: 'Chats',
+          title: `Chats`,
         }}
       >
         <Search
           value={contactStore.searchText}
-          onValueChange={contactStore.setF('searchText')}
+          onValueChange={contactStore.setF(`searchText`)}
         />
         <ListUsers
           userids={this.getMatchIds()}
@@ -29,7 +29,7 @@ class ChatsHome extends React.Component {
           userselect={g.goToBuddyChatsRecent}
           createGroup={g.goToChatGroupsCreate}
           groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
-          groupbyid={arrToMap(chatStore.groups, 'id', g => g)}
+          groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
           groupselect={g.goToChatGroupsRecent}
         />
       </Layout>
@@ -46,7 +46,7 @@ class ChatsHome extends React.Component {
     if (chatUser) {
       ucUserName = chatUser.name.toLowerCase();
     } else {
-      ucUserName = '';
+      ucUserName = ``;
     }
     userId = userId.toLowerCase();
     ucUserName = ucUserName.toLowerCase();

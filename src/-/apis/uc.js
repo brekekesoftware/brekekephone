@@ -3,30 +3,30 @@ import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
 
 const codeMapUserStatus = {
-  '0': 'offline',
-  '1': 'online',
-  '2': 'idle',
-  '3': 'busy',
+  '0': `offline`,
+  '1': `online`,
+  '2': `idle`,
+  '3': `busy`,
 };
 const getUserStatusFromCode = code =>
-  codeMapUserStatus[code] || codeMapUserStatus['0'];
+  codeMapUserStatus[code] || codeMapUserStatus[`0`];
 
 const codeMapFileState = {
-  '0': 'waiting',
-  '1': 'waiting',
-  '2': 'started',
-  '3': 'success',
-  '4': 'stopped',
-  '5': 'stopped',
-  '6': 'failure',
+  '0': `waiting`,
+  '1': `waiting`,
+  '2': `started`,
+  '3': `success`,
+  '4': `stopped`,
+  '5': `stopped`,
+  '6': `failure`,
 };
 const getFileStateFromCode = code =>
-  codeMapFileState[code] || codeMapFileState['0'];
+  codeMapFileState[code] || codeMapFileState[`0`];
 
 class UC extends EventEmitter {
   constructor() {
     super();
-    const logger = new UCClient.Logger('all');
+    const logger = new UCClient.Logger(`all`);
     this.client = new UCClient.ChatClient(logger);
 
     this.client.setEventListeners({
@@ -43,13 +43,13 @@ class UC extends EventEmitter {
   }
 
   onConnectionStopped = ev => {
-    this.emit('connection-stopped', ev);
+    this.emit(`connection-stopped`, ev);
   };
 
   onUserUpdated = ev => {
     if (!ev) return;
 
-    this.emit('user-updated', {
+    this.emit(`user-updated`, {
       id: ev.user_id,
       name: ev.name,
       avatar: ev.profile_image_url,
@@ -62,14 +62,14 @@ class UC extends EventEmitter {
     if (!ev || !ev.sender) return;
 
     ev.conf_id
-      ? this.emit('group-chat-created', {
+      ? this.emit(`group-chat-created`, {
           id: ev.received_text_id,
           group: ev.conf_id,
           text: ev.text,
           creator: ev.sender.user_id,
           created: ev.sent_ltime,
         })
-      : this.emit('buddy-chat-created', {
+      : this.emit(`buddy-chat-created`, {
           id: ev.received_text_id,
           text: ev.text,
           creator: ev.sender.user_id,
@@ -89,17 +89,17 @@ class UC extends EventEmitter {
       transferPercent: ev.fileInfo.progress,
     };
 
-    this.emit('file-received', file);
+    this.emit(`file-received`, file);
 
     ev.conf_id
-      ? this.emit('group-chat-created', {
+      ? this.emit(`group-chat-created`, {
           id: ev.text_id,
           creator: ev.fileInfo.target.user_id,
           group: ev.conf_id,
           file: file.id,
           created: ev.sent_ltime,
         })
-      : this.emit('buddy-chat-created', {
+      : this.emit(`buddy-chat-created`, {
           id: ev.text_id,
           creator: ev.fileInfo.target.user_id,
           file: file.id,
@@ -110,7 +110,7 @@ class UC extends EventEmitter {
   onFileProgress = ev => {
     if (!ev || !ev.fileInfo) return;
 
-    this.emit('file-progress', {
+    this.emit(`file-progress`, {
       id: ev.fileInfo.file_id,
       state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
@@ -120,7 +120,7 @@ class UC extends EventEmitter {
   onFileFinished = ev => {
     if (!ev || !ev.fileInfo) return;
 
-    this.emit('file-finished', {
+    this.emit(`file-finished`, {
       id: ev.fileInfo.file_id,
       state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
@@ -130,7 +130,7 @@ class UC extends EventEmitter {
   onGroupInvited = ev => {
     if (!ev || !ev.conference) return;
 
-    this.emit('chat-group-invited', {
+    this.emit(`chat-group-invited`, {
       id: ev.conference.conf_id,
       name: ev.conference.subject,
       inviter: ev.conference.from.user_id,
@@ -142,14 +142,14 @@ class UC extends EventEmitter {
     if (!ev || !ev.conference) return;
 
     if (ev.conference.conf_status === 0) {
-      this.emit('chat-group-revoked', {
+      this.emit(`chat-group-revoked`, {
         id: ev.conference.conf_id,
       });
 
       return;
     }
 
-    this.emit('chat-group-updated', {
+    this.emit(`chat-group-updated`, {
       id: ev.conference.conf_id,
       name: ev.conference.subject,
       jointed: ev.conference.conf_status === 2,
@@ -163,7 +163,7 @@ class UC extends EventEmitter {
     return new Promise((onres, onerr) =>
       this.client.signIn(
         `https://${profile.ucHostname}:${profile.ucPort}`,
-        profile.ucPathname || 'uc',
+        profile.ucPathname || `uc`,
         profile.pbxTenant,
         profile.pbxUsername,
         profile.pbxPassword,
@@ -378,7 +378,7 @@ class UC extends EventEmitter {
   acceptFile(file) {
     return new Promise((onres, onerr) => {
       const xhr = new XMLHttpRequest();
-      xhr.responseType = 'blob';
+      xhr.responseType = `blob`;
 
       xhr.onload = function(ev) {
         if (this.status === 200) onres(this.response);
@@ -398,10 +398,10 @@ class UC extends EventEmitter {
   async sendFile(user_id, file) {
     let input = null;
 
-    if (Platform.OS === 'web') {
-      input = document.createElement('input');
-      input.type = 'file';
-      input.name = 'file';
+    if (Platform.OS === `web`) {
+      input = document.createElement(`input`);
+      input.type = `file`;
+      input.name = `file`;
 
       input.files = (() => {
         let b = null;
@@ -409,9 +409,9 @@ class UC extends EventEmitter {
         if (window.DataTransfer) {
           b = new DataTransfer();
         } else if (window.ClipboardEvent) {
-          b = new ClipboardEvent('').clipboardData;
+          b = new ClipboardEvent(``).clipboardData;
         } else {
-          console.error('Can not set input.files');
+          console.error(`Can not set input.files`);
           return;
         }
 
@@ -419,18 +419,18 @@ class UC extends EventEmitter {
         return b.files;
       })();
 
-      const form = document.createElement('form');
+      const form = document.createElement(`form`);
       form.appendChild(input);
     } else {
       const fd = new FormData();
 
-      fd.append('file', {
+      fd.append(`file`, {
         ...file,
-        type: 'multipart/form-data',
+        type: `multipart/form-data`,
       });
 
       input = {
-        form: 'This is not a form element, see app/apis/uc.js for detail',
+        form: `This is not a form element, see app/apis/uc.js for detail`,
         files: [file],
         __rnFormData: fd,
       };

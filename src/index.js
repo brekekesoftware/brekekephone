@@ -1,20 +1,26 @@
-// Main entry for the create-react-app browser bundle
+// Main entry for the create-react-app web bundle
 
 import './index.scss';
 
-import { mdiAndroidHead, mdiApple, mdiWebBox } from '@mdi/js';
+import { mdiAndroidHead, mdiApple, mdiWeb } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useState } from 'react';
+import { observer } from 'mobx-react';
+import React from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
-import { AppRegistry } from 'react-native';
 
 import App from './App';
 import brandSrc from './assets/brand.png';
 import iconSrc from './assets/icon.png';
+import { AppRegistry } from './native/Rn';
+import useStore from './shared/useStore';
 
-const AppSelection = () => {
-  const [browser, setBrowser] = useState(!isIOS && !isAndroid);
-  if (browser) {
+const AppSelection = observer(() => {
+  const $ = useStore(() => ({
+    observable: {
+      isBrowser: !isIOS && !isAndroid,
+    },
+  }));
+  if ($.isBrowser) {
     return <App />;
   }
   const q = window.location.search;
@@ -30,22 +36,22 @@ const AppSelection = () => {
         <div className="btns-inner">
           <a href={appUrl}>
             <div className="btn app">
-              Open in app
+              OPEN IN APP
               <Icon path={isIOS ? mdiApple : mdiAndroidHead} />
             </div>
           </a>
           <div className="spacing" />
-          <div className="btn browser" onClick={() => setBrowser(true)}>
-            Open in browser
-            <Icon path={mdiWebBox} />
+          <div className="btn browser" onClick={() => $.set(`isBrowser`, true)}>
+            OPEN IN BROWSER
+            <Icon path={mdiWeb} />
           </div>
         </div>
       </div>
     </div>
   );
-};
+});
 
-AppRegistry.registerComponent('App', () => AppSelection);
-AppRegistry.runApplication('App', {
-  rootTag: document.getElementById('root'),
+AppRegistry.registerComponent(`App`, () => AppSelection);
+AppRegistry.runApplication(`App`, {
+  rootTag: document.getElementById(`root`),
 });

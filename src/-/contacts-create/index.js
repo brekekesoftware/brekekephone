@@ -13,21 +13,21 @@ class View extends React.Component {
 
   state = {
     saving: false,
-    firtName: '',
-    lastName: '',
-    workNumber: '',
-    cellNumber: '',
-    homeNumber: '',
-    job: '',
-    company: '',
-    address: '',
-    email: '',
+    firtName: ``,
+    lastName: ``,
+    workNumber: ``,
+    cellNumber: ``,
+    homeNumber: ``,
+    job: ``,
+    company: ``,
+    address: ``,
+    email: ``,
   };
 
   render() {
     return (
       <UI
-        book={g.getQuery().book || ''}
+        book={g.getQuery().book || ``}
         firstName={this.state.firstName}
         lastName={this.state.lastName}
         workNumber={this.state.workNumber}
@@ -105,17 +105,17 @@ class View extends React.Component {
 
   save = () => {
     if (!g.getQuery().book) {
-      g.showError({ message: 'The phonebook name is required' });
+      g.showError({ message: `The phonebook name is required` });
       return;
     }
 
     if (!this.state.firstName) {
-      g.showError({ message: 'The first name is required' });
+      g.showError({ message: `The first name is required` });
       return;
     }
 
     if (!this.state.lastName) {
-      g.showError({ message: 'The last name is required' });
+      g.showError({ message: `The last name is required` });
       return;
     }
 
@@ -142,7 +142,7 @@ class View extends React.Component {
 
   onSaveFailure = err => {
     console.error(err);
-    g.showError({ message: 'save the contact' });
+    g.showError({ message: `save the contact` });
   };
 }
 

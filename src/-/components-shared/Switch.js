@@ -5,8 +5,8 @@ import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     padding: std.gap.lg,
     paddingTop: std.gap.md,
     backgroundColor: std.color.shade0,
@@ -21,7 +21,7 @@ const st = StyleSheet.create({
   },
 
   fieldSwitch: {
-    marginLeft: 'auto',
+    marginLeft: `auto`,
   },
 });
 

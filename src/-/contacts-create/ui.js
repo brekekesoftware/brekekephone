@@ -18,17 +18,17 @@ const st = StyleSheet.create({
 
   navbar: {
     backgroundColor: std.color.shade1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
   },
 
   navbarBack: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: `center`,
+    alignItems: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -50,9 +50,9 @@ const st = StyleSheet.create({
   },
 
   navbarSave: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: `center`,
+    alignItems: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -64,8 +64,8 @@ const st = StyleSheet.create({
   },
 
   field: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
@@ -87,7 +87,7 @@ const st = StyleSheet.create({
     paddingVertical: 0,
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.md * 2,
-    textAlign: 'right',
+    textAlign: `right`,
   },
 });
 

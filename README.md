@@ -87,7 +87,7 @@ react-native run-android --deviceId=DEVICE_ID
 
 ##### Build app in release mode and install it in a real device:
 
-- At the project root execute: `cd android && gradlew clean && gradlew assembleRelease`
+- At the project root execute: `cd android && ./gradlew clean && ./gradlew assembleRelease`
 - After the build is finished, the apk file is located at: `android/app/build/outputs/apk/release`. We can upload the apk file to our server or to Google Play Dashboard for a new release
 - To enable LogCat: https://stackoverflow.com/questions/25610936
 

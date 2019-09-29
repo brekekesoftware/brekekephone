@@ -7,7 +7,7 @@ import Icon from './Icon';
 
 const s = StyleSheet.create({
   Avatar: {
-    flexDirection: 'row',
+    flexDirection: `row`,
   },
   Avatar_Image: {
     width: 50,
@@ -16,7 +16,7 @@ const s = StyleSheet.create({
     borderRadius: 25,
   },
   Avatar_Image__status: {
-    position: 'absolute',
+    position: `absolute`,
     top: 40,
     left: 30,
   },
@@ -25,13 +25,13 @@ const s = StyleSheet.create({
 const Avatar = p => (
   <View style={s.Avatar}>
     <FastImage style={s.Avatar_Image} source={p.source} />
-    {(p.chatOnline || p.status === 'online') && (
+    {(p.chatOnline || p.status === `online`) && (
       <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#74bf53" />
     )}
-    {(p.chatOffline || p.status === 'offline') && (
+    {(p.chatOffline || p.status === `offline`) && (
       <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#8a8a8f" />
     )}
-    {(p.chatBusy || p.status === 'busy') && (
+    {(p.chatBusy || p.status === `busy`) && (
       <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#FF2D55" />
     )}
   </View>

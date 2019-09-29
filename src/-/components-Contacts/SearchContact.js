@@ -16,7 +16,7 @@ class SearchContact extends React.Component {
             onChangeText={p.onValueChange}
           />
           {!!p.value && (
-            <Button transparent onPress={() => p.onValueChange('')}>
+            <Button transparent onPress={() => p.onValueChange(``)}>
               <Icon path={mdiClose} width="18" height="18" />
             </Button>
           )}

@@ -44,7 +44,7 @@ class View extends React.Component {
   };
   onRejectFailure = err => {
     console.error(err);
-    g.showError({ message: 'reject the group chat' });
+    g.showError({ message: `reject the group chat` });
   };
 
   accept = group => {
@@ -52,7 +52,7 @@ class View extends React.Component {
   };
   onAcceptFailure = err => {
     console.error(err);
-    g.showError({ message: 'accept the group chat' });
+    g.showError({ message: `accept the group chat` });
   };
 }
 

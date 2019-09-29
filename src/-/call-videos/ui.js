@@ -6,14 +6,14 @@ import Video from './video';
 
 const st = {
   mini: {
-    position: 'absolute',
+    position: `absolute`,
     top: std.textSize.md + std.gap.md * 4,
     left: std.gap.md,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.lg * 6,
     height: std.iconSize.lg * 6,
-    backgroundColor: 'black',
+    backgroundColor: `black`,
     borderRadius: std.iconSize.lg * 3,
     borderWidth: 1,
     borderColor: std.color.shade9,
@@ -27,18 +27,18 @@ const st = {
     },
 
     elevation: 3,
-    overflow: 'hidden',
+    overflow: `hidden`,
   },
 
   full: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     left: 0,
     bottom: 0,
     right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
+    justifyContent: `center`,
+    alignItems: `center`,
+    backgroundColor: `black`,
   },
 };
 

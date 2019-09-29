@@ -33,69 +33,69 @@ class ApiProvider extends React.Component {
 
   componentDidMount() {
     setApiProvider(this);
-    pbx.on('connection-started', this.onPBXConnectionStarted);
-    pbx.on('connection-stopped', this.onPBXConnectionStopped);
-    pbx.on('connection-timeout', this.onPBXConnectionTimeout);
-    pbx.on('park-started', this.onPBXParkStarted);
-    pbx.on('park-stopped', this.onPBXParkStopped);
-    pbx.on('user-calling', this.onPBXUserCalling);
-    pbx.on('user-ringing', this.onPBXUserRinging);
-    pbx.on('user-talking', this.onPBXUserTalking);
-    pbx.on('user-holding', this.onPBXUserHolding);
-    pbx.on('user-hanging', this.onPBXUserHanging);
-    sip.on('connection-started', this.onSIPConnectionStarted);
-    sip.on('connection-stopped', this.onSIPConnectionStopped);
-    sip.on('connection-timeout', this.onSIPConnectionTimeout);
-    sip.on('session-started', this.onSIPSessionStarted);
-    sip.on('session-updated', this.onSIPSessionUpdated);
-    sip.on('session-stopped', this.onSIPSessionStopped);
-    sip.on('video-session-created', this.onSIPVideoSessionCreated);
-    sip.on('video-session-updated', this.onSIPVideoSessionUpdated);
-    sip.on('video-session-ended', this.onSIPVideoSessionEnded);
-    uc.on('connection-stopped', this.onUCConnectionStopped);
-    uc.on('user-updated', this.onUCUserUpdated);
-    uc.on('buddy-chat-created', this.onBuddyChatCreated);
-    uc.on('group-chat-created', this.onGroupChatCreated);
-    uc.on('chat-group-invited', this.onChatGroupInvited);
-    uc.on('chat-group-revoked', this.onChatGroupRevoked);
-    uc.on('chat-group-updated', this.onChatGroupUpdated);
-    uc.on('file-received', this.onFileReceived);
-    uc.on('file-progress', this.onFileProgress);
-    uc.on('file-finished', this.onFileFinished);
+    pbx.on(`connection-started`, this.onPBXConnectionStarted);
+    pbx.on(`connection-stopped`, this.onPBXConnectionStopped);
+    pbx.on(`connection-timeout`, this.onPBXConnectionTimeout);
+    pbx.on(`park-started`, this.onPBXParkStarted);
+    pbx.on(`park-stopped`, this.onPBXParkStopped);
+    pbx.on(`user-calling`, this.onPBXUserCalling);
+    pbx.on(`user-ringing`, this.onPBXUserRinging);
+    pbx.on(`user-talking`, this.onPBXUserTalking);
+    pbx.on(`user-holding`, this.onPBXUserHolding);
+    pbx.on(`user-hanging`, this.onPBXUserHanging);
+    sip.on(`connection-started`, this.onSIPConnectionStarted);
+    sip.on(`connection-stopped`, this.onSIPConnectionStopped);
+    sip.on(`connection-timeout`, this.onSIPConnectionTimeout);
+    sip.on(`session-started`, this.onSIPSessionStarted);
+    sip.on(`session-updated`, this.onSIPSessionUpdated);
+    sip.on(`session-stopped`, this.onSIPSessionStopped);
+    sip.on(`video-session-created`, this.onSIPVideoSessionCreated);
+    sip.on(`video-session-updated`, this.onSIPVideoSessionUpdated);
+    sip.on(`video-session-ended`, this.onSIPVideoSessionEnded);
+    uc.on(`connection-stopped`, this.onUCConnectionStopped);
+    uc.on(`user-updated`, this.onUCUserUpdated);
+    uc.on(`buddy-chat-created`, this.onBuddyChatCreated);
+    uc.on(`group-chat-created`, this.onGroupChatCreated);
+    uc.on(`chat-group-invited`, this.onChatGroupInvited);
+    uc.on(`chat-group-revoked`, this.onChatGroupRevoked);
+    uc.on(`chat-group-updated`, this.onChatGroupUpdated);
+    uc.on(`file-received`, this.onFileReceived);
+    uc.on(`file-progress`, this.onFileProgress);
+    uc.on(`file-finished`, this.onFileFinished);
   }
 
   componentWillUnmount() {
     setApiProvider(null);
-    pbx.off('connection-started', this.onPBXConnectionStarted);
-    pbx.off('connection-stopped', this.onPBXConnectionStopped);
-    pbx.off('connection-timeout', this.onPBXConnectionTimeout);
-    pbx.off('park-started', this.onPBXParkStarted);
-    pbx.off('park-stopped', this.onPBXParkStopped);
-    pbx.off('user-calling', this.onPBXUserCalling);
-    pbx.off('user-ringing', this.onPBXUserRinging);
-    pbx.off('user-talking', this.onPBXUserTalking);
-    pbx.off('user-holding', this.onPBXUserHolding);
-    pbx.off('user-hanging', this.onPBXUserHanging);
-    sip.off('connection-started', this.onSIPConnectionStarted);
-    sip.off('connection-stopped', this.onSIPConnectionStopped);
-    sip.off('connection-timeout', this.onSIPConnectionTimeout);
-    sip.off('session-started', this.onSIPSessionStarted);
-    sip.off('session-updated', this.onSIPSessionUpdated);
-    sip.off('session-stopped', this.onSIPSessionStopped);
-    sip.off('video-session-created', this.onSIPVideoSessionCreated);
-    sip.off('video-session-updated', this.onSIPVideoSessionUpdated);
-    sip.off('video-session-ended', this.onSIPVideoSessionEnded);
-    uc.off('connection-stopped', this.onUCConnectionStopped);
-    uc.off('connection-timeout', this.onUCConnectionTimeout);
-    uc.off('user-updated', this.onUCUserUpdated);
-    uc.off('buddy-chat-created', this.onBuddyChatCreated);
-    uc.off('group-chat-created', this.onGroupChatCreated);
-    uc.off('chat-group-invited', this.onChatGroupInvited);
-    uc.off('chat-group-revoked', this.onChatGroupRevoked);
-    uc.off('chat-group-updated', this.onChatGroupUpdated);
-    uc.off('file-received', this.onFileReceived);
-    uc.off('file-progress', this.onFileProgress);
-    uc.off('file-finished', this.onFileFinished);
+    pbx.off(`connection-started`, this.onPBXConnectionStarted);
+    pbx.off(`connection-stopped`, this.onPBXConnectionStopped);
+    pbx.off(`connection-timeout`, this.onPBXConnectionTimeout);
+    pbx.off(`park-started`, this.onPBXParkStarted);
+    pbx.off(`park-stopped`, this.onPBXParkStopped);
+    pbx.off(`user-calling`, this.onPBXUserCalling);
+    pbx.off(`user-ringing`, this.onPBXUserRinging);
+    pbx.off(`user-talking`, this.onPBXUserTalking);
+    pbx.off(`user-holding`, this.onPBXUserHolding);
+    pbx.off(`user-hanging`, this.onPBXUserHanging);
+    sip.off(`connection-started`, this.onSIPConnectionStarted);
+    sip.off(`connection-stopped`, this.onSIPConnectionStopped);
+    sip.off(`connection-timeout`, this.onSIPConnectionTimeout);
+    sip.off(`session-started`, this.onSIPSessionStarted);
+    sip.off(`session-updated`, this.onSIPSessionUpdated);
+    sip.off(`session-stopped`, this.onSIPSessionStopped);
+    sip.off(`video-session-created`, this.onSIPVideoSessionCreated);
+    sip.off(`video-session-updated`, this.onSIPVideoSessionUpdated);
+    sip.off(`video-session-ended`, this.onSIPVideoSessionEnded);
+    uc.off(`connection-stopped`, this.onUCConnectionStopped);
+    uc.off(`connection-timeout`, this.onUCConnectionTimeout);
+    uc.off(`user-updated`, this.onUCUserUpdated);
+    uc.off(`buddy-chat-created`, this.onBuddyChatCreated);
+    uc.off(`group-chat-created`, this.onGroupChatCreated);
+    uc.off(`chat-group-invited`, this.onChatGroupInvited);
+    uc.off(`chat-group-revoked`, this.onChatGroupRevoked);
+    uc.off(`chat-group-updated`, this.onChatGroupUpdated);
+    uc.off(`file-received`, this.onFileReceived);
+    uc.off(`file-progress`, this.onFileProgress);
+    uc.off(`file-finished`, this.onFileFinished);
   }
 
   pbxAndSipStarted = 0;
@@ -104,7 +104,7 @@ class ApiProvider extends React.Component {
     try {
       await this._onPBXAndSipStarted();
     } catch (err) {
-      console.error('onPBXAndSipStarted', err);
+      console.error(`onPBXAndSipStarted`, err);
     }
   };
 
@@ -128,8 +128,8 @@ class ApiProvider extends React.Component {
     try {
       return await this._updatePhoneIndex();
     } catch (err) {
-      console.error('updatePhoneIndex', err);
-      g.goToProfileSignIn();
+      console.error(`updatePhoneIndex`, err);
+      g.goToPageProfileSignIn();
       return null;
     }
   };
@@ -140,17 +140,17 @@ class ApiProvider extends React.Component {
     phoneIndex = phoneIndex - 1;
     const extProps = authStore.userExtensionProperties;
     const phone = extProps.phones[phoneIndex];
-    const phoneTypeCorrect = phone.type === 'Web Phone';
+    const phoneTypeCorrect = phone.type === `Web Phone`;
     const hasPhoneId = !!phone.id;
 
     const { pbxTenant, pbxUsername } = authStore.profile;
 
     const setExtensionProperties = async () => {
-      await pbx.pal('setExtensionProperties', {
+      await pbx.pal(`setExtensionProperties`, {
         tenant: pbxTenant,
         extension: pbxUsername,
         properties: {
-          pnumber: extProps.phones.map(p => p.id).join(','),
+          pnumber: extProps.phones.map(p => p.id).join(`,`),
           [`p${phoneIndex + 1}_ptype`]: phone.type,
         },
       });
@@ -164,27 +164,26 @@ class ApiProvider extends React.Component {
       await setExtensionProperties();
     } else if (!phoneTypeCorrect && !hasPhoneId) {
       phone.id = `${pbxTenant}_${pbxUsername}_webphone`;
-      phone.type = 'Web Phone';
+      phone.type = `Web Phone`;
       await setExtensionProperties();
     } else {
       return new Promise(resolve => {
         g.showPrompt({
-          title: 'Warning',
-          message:
-            'This phone index is already in use. Do you want to continue?',
+          title: `Warning`,
+          message: `This phone index is already in use. Do you want to continue?`,
           onConfirm: () => {
-            phone.type = 'Web Phone';
+            phone.type = `Web Phone`;
             setExtensionProperties()
               .then(() => {
                 resolve(phone);
               })
               .catch(err => {
-                console.error('setExtensionProperties', err);
+                console.error(`setExtensionProperties`, err);
                 resolve(null);
               });
           },
           onDismiss: () => {
-            g.goToProfileSignIn();
+            g.goToPageProfileSignIn();
             resolve(null);
           },
         });
@@ -201,17 +200,17 @@ class ApiProvider extends React.Component {
       return;
     }
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === `ios`) {
       pbx.addApnsToken({
         username: webPhone.id,
         device_id: t,
       });
-    } else if (Platform.OS === 'android') {
+    } else if (Platform.OS === `android`) {
       pbx.addFcmPnToken({
         username: webPhone.id,
         device_id: t,
       });
-    } else if (Platform.OS === 'web') {
+    } else if (Platform.OS === `web`) {
       pbx.addWebPnToken({
         user: webPhone.id,
         endpoint: t.endpoint,
@@ -223,7 +222,7 @@ class ApiProvider extends React.Component {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      g.showError({ message: 'load PBX users' });
+      g.showError({ message: `load PBX users` });
       console.error(err);
     });
 
@@ -231,11 +230,11 @@ class ApiProvider extends React.Component {
   };
 
   onPBXConnectionStopped = () => {
-    authStore.set('pbxState', 'stopped');
+    authStore.set(`pbxState`, `stopped`);
   };
 
   onPBXConnectionTimeout = () => {
-    authStore.set('pbxState', 'failure');
+    authStore.set(`pbxState`, `failure`);
   };
 
   loadPBXUsers = async () => {
@@ -248,23 +247,23 @@ class ApiProvider extends React.Component {
       .getUsers(tenant)
       .then(ids => ids.filter(id => id !== username));
     const users = await pbx.getOtherUsers(tenant, userIds);
-    contactStore.set('pbxUsers', users);
+    contactStore.set(`pbxUsers`, users);
   };
 
   onPBXUserCalling = ev => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'calling');
+    contactStore.setTalkerStatus(ev.user, ev.talker, `calling`);
   };
   onPBXUserRinging = ev => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'ringing');
+    contactStore.setTalkerStatus(ev.user, ev.talker, `ringing`);
   };
   onPBXUserTalking = ev => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'talking');
+    contactStore.setTalkerStatus(ev.user, ev.talker, `talking`);
   };
   onPBXUserHolding = ev => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'holding');
+    contactStore.setTalkerStatus(ev.user, ev.talker, `holding`);
   };
   onPBXUserHanging = ev => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, '');
+    contactStore.setTalkerStatus(ev.user, ev.talker, ``);
   };
 
   onPBXParkStarted = park => {
@@ -281,28 +280,28 @@ class ApiProvider extends React.Component {
   };
 
   onSIPConnectionStarted = () => {
-    authStore.set('sipState', 'success');
+    authStore.set(`sipState`, `success`);
     setTimeout(this.onPBXAndSipStarted, 170);
   };
 
   onSIPConnectionStopped = () => {
-    authStore.set('sipState', 'stopped');
+    authStore.set(`sipState`, `stopped`);
   };
 
   onSIPConnectionTimeout = () => {
-    authStore.set('sipState', 'failure');
+    authStore.set(`sipState`, `failure`);
   };
 
   onSIPSessionStarted = call => {
     const number = call.partyNumber;
 
-    if (number === '8') {
-      call.partyName = 'Voicemails';
+    if (number === `8`) {
+      call.partyName = `Voicemails`;
     }
 
     if (!call.partyName) {
       const pbxUser = contactStore.getPBXUser(number);
-      call.partyName = pbxUser ? pbxUser.name : 'Unnamed';
+      call.partyName = pbxUser ? pbxUser.name : `Unnamed`;
     }
 
     callStore.upsertRunning(call);
@@ -326,11 +325,11 @@ class ApiProvider extends React.Component {
   };
 
   onUCConnectionStopped = () => {
-    authStore.set('ucState', 'stopped');
+    authStore.set(`ucState`, `stopped`);
   };
 
   onUCConnectionTimeout = () => {
-    authStore.set('ucState', 'failure');
+    authStore.set(`ucState`, `failure`);
   };
 
   onUCUserUpdated = ev => {

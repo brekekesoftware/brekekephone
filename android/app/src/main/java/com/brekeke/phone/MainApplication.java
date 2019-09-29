@@ -3,7 +3,6 @@ package com.brekeke.phonedev;
 import android.app.Application;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.brentvatne.react.ReactVideoPackage;
-import com.corbt.keepawake.KCKeepAwakePackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
@@ -39,7 +38,6 @@ public class MainApplication extends Application implements ReactApplication {
               new DocumentPickerPackage(),
               new FIRMessagingPackage(),
               new InCallManagerPackage(),
-              new KCKeepAwakePackage(),
               new LinearGradientPackage(),
               new MainReactPackage(),
               new FastImageViewPackage(),

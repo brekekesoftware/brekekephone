@@ -17,22 +17,22 @@ class View extends React.Component {
   };
 
   componentDidMount() {
-    this.context.uc.on('connection-stopped', this.onConnectionStopped);
+    this.context.uc.on(`connection-stopped`, this.onConnectionStopped);
     this.autoAuth();
-    this.clearObserve = observe(authStore, 'ucShouldAuth', this.autoAuth);
+    this.clearObserve = observe(authStore, `ucShouldAuth`, this.autoAuth);
   }
 
   componentWillUnmount() {
     this.clearObserve();
-    this.context.uc.off('connection-stopped', this.onConnectionStopped);
+    this.context.uc.off(`connection-stopped`, this.onConnectionStopped);
     this.context.uc.disconnect();
-    authStore.set('ucState', 'stopped');
+    authStore.set(`ucState`, `stopped`);
   }
 
   auth = () => {
     this.context.uc.disconnect();
-    authStore.set('ucState', 'connecting');
-    authStore.set('ucLoginFromAnotherPlace', false);
+    authStore.set(`ucState`, `connecting`);
+    authStore.set(`ucLoginFromAnotherPlace`, false);
     this.context.uc
       .connect(authStore.profile)
       .then(this.onAuthSuccess)
@@ -47,26 +47,26 @@ class View extends React.Component {
   onAuthSuccess = () => {
     this.loadUsers();
     this.loadUnreadChats().then(() => {
-      authStore.set('ucState', 'success');
+      authStore.set(`ucState`, `success`);
     });
   };
   onAuthFailure = err => {
-    authStore.set('ucState', 'failure');
-    g.showError({ message: 'connect to UC' });
+    authStore.set(`ucState`, `failure`);
+    g.showError({ message: `connect to UC` });
     console.error(err);
   };
 
   onConnectionStopped = e => {
-    authStore.set('ucState', 'failure');
+    authStore.set(`ucState`, `failure`);
     authStore.set(
-      'ucLoginFromAnotherPlace',
+      `ucLoginFromAnotherPlace`,
       e.code === UCClient.Errors.PLEONASTIC_LOGIN,
     );
   };
 
   loadUsers = () => {
     const users = this.context.uc.getUsers();
-    contactStore.set('ucUsers', users);
+    contactStore.set(`ucUsers`, users);
   };
 
   loadUnreadChats = () =>
@@ -82,20 +82,20 @@ class View extends React.Component {
   };
 
   onLoadUnreadChatsFailure = err => {
-    g.showError({ message: 'load unread chats' });
+    g.showError({ message: `load unread chats` });
     if (err && err.message) {
       g.showError(err.message);
     }
   };
 
   render() {
-    if (!authStore.profile?.ucEnabled || authStore.ucState === 'success') {
+    if (!authStore.profile?.ucEnabled || authStore.ucState === `success`) {
       return null;
     }
     return (
       <UI
-        failure={authStore.ucState === 'failure'}
-        abort={g.goToProfileSignIn}
+        failure={authStore.ucState === `failure`}
+        abort={g.goToPageProfileSignIn}
         retry={this.auth}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
       />

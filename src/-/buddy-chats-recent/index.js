@@ -12,18 +12,18 @@ import pickFile from '../pickFile';
 import saveBlob from '../saveBlob';
 
 const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  `Jan`,
+  `Feb`,
+  `Mar`,
+  `Apr`,
+  `May`,
+  `Jun`,
+  `Jul`,
+  `Aug`,
+  `Sep`,
+  `Oct`,
+  `Nov`,
+  `Dec`,
 ];
 
 const isToday = time => {
@@ -34,16 +34,16 @@ const isToday = time => {
 };
 
 const formatTime = time => {
-  time = time.replace(' ', 'T') + 'Z';
+  time = time.replace(` `, `T`) + `Z`;
   time = new Date(time);
   const hour = time
     .getHours()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   const min = time
     .getMinutes()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
 
   if (isToday(time)) return `${hour}:${min}`;
 
@@ -68,7 +68,7 @@ class View extends React.Component {
   @computed get chatById() {
     return arrToMap(
       chatStore.messagesByThreadId[this.props.match.params.buddy] || [],
-      'id',
+      `id`,
       m => m,
     );
   }
@@ -79,7 +79,7 @@ class View extends React.Component {
   state = {
     loadingRecent: false,
     loadingMore: false,
-    editingText: '',
+    editingText: ``,
   };
 
   componentDidMount() {
@@ -172,8 +172,7 @@ class View extends React.Component {
   };
   onLoadRecentFailure = err => {
     this.setState({ loadingRecent: false });
-    g.showError({ message: 'get recent chats' });
-    console.error(err);
+    g.showError({ err, message: `get recent chats` });
   };
 
   loadMore = () => {
@@ -209,8 +208,7 @@ class View extends React.Component {
     this.setState({
       loadingMore: false,
     });
-    g.showError({ message: 'get more chats' });
-    console.error(err);
+    g.showError({ err, message: `get more chats` });
   };
 
   setEditingText = editingText => {
@@ -236,11 +234,10 @@ class View extends React.Component {
   };
   onSubmitEditingTextSuccess = chat => {
     chatStore.pushMessages(this.props.match.params.buddy, chat);
-    this.setState({ editingText: '' });
+    this.setState({ editingText: `` });
   };
   onSubmitEditingTextFailure = err => {
-    g.showError({ message: 'send the message' });
-    console.error(err);
+    g.showError({ err, message: `send the message` });
   };
 
   acceptFile = file => {
@@ -250,16 +247,14 @@ class View extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({ message: 'accept file' });
-    console.error(err);
+    g.showError({ err, message: `accept file` });
   };
 
   rejectFile = file => {
     this.context.uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({ message: 'reject file' });
-    console.error(err);
+    g.showError({ err, message: `reject file` });
   };
 
   pickFile = () => {
@@ -278,8 +273,7 @@ class View extends React.Component {
     chatStore.upsertFile(res.file);
   };
   onSendFileFailure = err => {
-    g.showError({ message: 'send file' });
-    console.error(err);
+    g.showError({ err, message: `send file` });
   };
 }
 

@@ -7,17 +7,17 @@ import parse, { setChecker } from './PushNotification-parse';
 const { Notification, RefreshToken } = FCMEvent;
 
 const getBadgeNumber = async () => {
-  let n = await AsyncStorage.getItem('androidBadgeNumber');
-  if (typeof n === 'string') {
-    n = n.replace(/\D+/g, '');
+  let n = await AsyncStorage.getItem(`androidBadgeNumber`);
+  if (typeof n === `string`) {
+    n = n.replace(/\D+/g, ``);
   }
   return parseInt(n) || 0;
 };
 const setBadgeNumber = n => {
-  AsyncStorage.setItem('androidBadgeNumber', '' + n);
+  AsyncStorage.setItem(`androidBadgeNumber`, `` + n);
 };
 
-let fcmPnToken = '';
+let fcmPnToken = ``;
 const onToken = t => {
   if (t) {
     fcmPnToken = t;
@@ -31,8 +31,8 @@ const onNotification = async n => {
   //
   const title = n.body || JSON.stringify(n);
   const isCall = /call/i.test(title);
-  const body = 'Click to ' + (isCall ? 'answer' : 'view');
-  const sound = isCall ? 'incallmanager_ringtone.mp3' : undefined;
+  const body = `Click to ` + (isCall ? `answer` : `view`);
+  const sound = isCall ? `incallmanager_ringtone.mp3` : undefined;
   const badge = (await getBadgeNumber()) + 1;
   //
   FCM.presentLocalNotification({
@@ -40,16 +40,16 @@ const onNotification = async n => {
     title,
     sound,
     number: badge,
-    priority: 'low',
+    priority: `low`,
     show_in_foreground: true,
     local_notification: true,
     wake_screen: true,
     ongoing: false,
     lights: true,
-    channel: 'default',
-    icon: 'ic_launcher',
-    my_custom_data: 'local_notification',
-    is_local_notification: 'local_notification',
+    channel: `default`,
+    icon: `ic_launcher`,
+    my_custom_data: `local_notification`,
+    is_local_notification: `local_notification`,
   });
 };
 
@@ -63,10 +63,10 @@ const PushNotification = {
       await FCM.requestPermissions();
       FCM.enableDirectChannel();
       await FCM.createNotificationChannel({
-        id: 'default',
-        name: 'Brekeke Phone',
-        description: 'Brekeke Phone notification channel',
-        priority: 'low',
+        id: `default`,
+        name: `Brekeke Phone`,
+        description: `Brekeke Phone notification channel`,
+        priority: `low`,
       });
       FCM.on(RefreshToken, onToken);
       FCM.on(Notification, onNotification);
@@ -75,7 +75,7 @@ const PushNotification = {
       onNotification(n);
     } catch (err) {
       g.showError({
-        message: 'register push notification',
+        message: `register push notification`,
         err,
       });
     }
@@ -83,18 +83,18 @@ const PushNotification = {
   resetBadgeNumber: () => {
     setBadgeNumber(0);
     FCM.presentLocalNotification({
-      body: 'Reset badge',
+      body: `Reset badge`,
       number: 0,
-      priority: 'low',
+      priority: `low`,
       show_in_foreground: false,
       local_notification: true,
       wake_screen: false,
       ongoing: false,
       lights: false,
-      channel: 'default',
-      icon: 'ic_launcher',
-      my_custom_data: 'local_notification',
-      is_local_notification: 'local_notification',
+      channel: `default`,
+      icon: `ic_launcher`,
+      my_custom_data: `local_notification`,
+      is_local_notification: `local_notification`,
     });
   },
 };

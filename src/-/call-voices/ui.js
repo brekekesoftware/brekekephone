@@ -4,7 +4,7 @@ import IncallManager from '../../native/IncallManager';
 
 class IncomingItem extends React.Component {
   componentDidMount() {
-    IncallManager.startRingtone('_BUNDLE_');
+    IncallManager.startRingtone(`_BUNDLE_`);
   }
 
   componentWillUnmount() {
@@ -22,7 +22,7 @@ const IncomingList = p =>
 class OutgoingItem extends React.Component {
   componentDidMount() {
     IncallManager.start({
-      ringback: '_BUNDLE_',
+      ringback: `_BUNDLE_`,
     });
   }
 

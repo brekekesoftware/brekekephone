@@ -20,7 +20,7 @@ class View extends React.Component {
 
   state = {
     attended: true,
-    target: '',
+    target: ``,
   };
 
   render() {
@@ -64,7 +64,7 @@ class View extends React.Component {
     if (pbxUser) {
       pbxUserName = pbxUser.name.toLowerCase();
     } else {
-      pbxUserName = '';
+      pbxUserName = ``;
     }
 
     return userId.includes(searchTextLC) || pbxUserName.includes(searchTextLC);
@@ -82,10 +82,10 @@ class View extends React.Component {
       name: match.name,
       avatar: ucUser.avatar,
       number: id,
-      calling: !!match.talkers?.filter(t => t.status === 'calling').length,
-      ringing: !!match.talkers?.filter(t => t.status === 'ringing').length,
-      talking: !!match.talkers?.filter(t => t.status === 'talking').length,
-      holding: !!match.talkers?.filter(t => t.status === 'holding').length,
+      calling: !!match.talkers?.filter(t => t.status === `calling`).length,
+      ringing: !!match.talkers?.filter(t => t.status === `ringing`).length,
+      talking: !!match.talkers?.filter(t => t.status === `talking`).length,
+      holding: !!match.talkers?.filter(t => t.status === `holding`).length,
     };
   };
 
@@ -97,7 +97,10 @@ class View extends React.Component {
     const target = this.state.target;
 
     if (!target.trim()) {
-      g.showError({ message: 'No target' });
+      g.showError({
+        err: new Error(`Target is empty`),
+        message: `start transfer`,
+      });
       return;
     }
 
@@ -133,13 +136,15 @@ class View extends React.Component {
   };
 
   onTransferFailure = err => {
-    console.error(err);
-    g.showError({ message: 'target transfer the call' });
+    g.showError({ err, message: `target transfer the call` });
   };
 
   transferBlind = target => {
     if (!target.trim()) {
-      g.showError({ message: 'No target' });
+      g.showError({
+        err: new Error(`Target is empty`),
+        message: `start transfer`,
+      });
       return;
     }
 
@@ -155,7 +160,10 @@ class View extends React.Component {
 
   transferAttended = target => {
     if (!target.trim()) {
-      g.showError({ message: 'No target' });
+      g.showError({
+        err: new Error(`Target is empty`),
+        message: `start transfer`,
+      });
       return;
     }
 
@@ -187,13 +195,15 @@ class View extends React.Component {
   };
 
   onTransferAttendedForVideoFailure = err => {
-    console.error(err);
-    g.showError({ message: 'target transfer the call' });
+    g.showError({ err, message: `target transfer the call` });
   };
 
   transferAttendedForVideo = target => {
     if (!target.trim()) {
-      g.showError({ message: 'No target' });
+      g.showError({
+        err: new Error(`Target is empty`),
+        message: `start transfer`,
+      });
       return;
     }
 

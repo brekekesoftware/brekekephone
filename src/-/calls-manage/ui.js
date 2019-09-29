@@ -17,8 +17,8 @@ const st = {
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -32,9 +32,9 @@ const st = {
   },
 
   navbarLeftOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -42,9 +42,9 @@ const st = {
   },
 
   navbarRightOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -67,20 +67,20 @@ const st = {
   },
 
   controlCall: {
-    alignItems: 'center',
+    alignItems: `center`,
     paddingVertical: std.gap.md,
   },
 
   controlOpts: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: `row`,
+    flexWrap: `wrap`,
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   controlOpt: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
@@ -122,8 +122,8 @@ const st = {
   },
 
   call: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     paddingLeft: std.gap.lg,
     paddingVertical: std.gap.lg,
     backgroundColor: std.color.shade0,
@@ -132,7 +132,7 @@ const st = {
   },
 
   callSelected: {
-    position: 'absolute',
+    position: `absolute`,
     left: 0,
     top: 0,
     bottom: 0,
@@ -211,21 +211,21 @@ const st = {
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
     borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     marginRight: std.gap.lg,
   },
 
   actionIcon: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   tipText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
-    textAlign: 'center',
+    textAlign: `center`,
     color: std.color.shade5,
   },
 };
@@ -359,7 +359,7 @@ const Control = p => (
           </Text>
         </View>
       )}
-      {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== 'web' && (
+      {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== `web` && (
         <View style={st.actionIcon}>
           <Button style={st.controlOpt} onPress={p.onOpenLoudSpeaker}>
             <Text style={st.optIconAction}>icon_volume_2</Text>
@@ -369,7 +369,7 @@ const Control = p => (
           </Text>
         </View>
       )}
-      {p.answered && !p.holding && p.loudspeaker && Platform.OS !== 'web' && (
+      {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
         <View style={st.actionIcon}>
           <Button style={st.controlOpt} onPress={p.onCloseLoudSpeaker}>
             <Text style={st.optIconAction}>icon_volume_1</Text>

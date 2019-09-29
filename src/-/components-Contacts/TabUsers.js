@@ -18,7 +18,7 @@ class TabUsers extends React.Component {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
-        c0 = '#';
+        c0 = `#`;
       }
       if (!map[c0]) {
         map[c0] = [];
@@ -31,9 +31,9 @@ class TabUsers extends React.Component {
       users: map[k],
     }));
 
-    groups = orderBy(groups, 'key');
+    groups = orderBy(groups, `key`);
     groups.forEach(g => {
-      g.users = orderBy(g.users, 'name');
+      g.users = orderBy(g.users, `name`);
     });
 
     return (
@@ -57,12 +57,12 @@ class TabUsers extends React.Component {
                   <Button onPress={() => p.chat(u.id)}>
                     <Icon path={mdiMessage} />
                   </Button>
-                  {Platform.OS !== 'web' && (
+                  {Platform.OS !== `web` && (
                     <Button onPress={() => p.toggleModal(u.id)}>
                       <Icon path={mdiPhone} />
                     </Button>
                   )}
-                  {Platform.OS === 'web' && (
+                  {Platform.OS === `web` && (
                     <Button onPress={() => p.callVoice(u.id)}>
                       <Icon path={mdiPhone} />
                     </Button>
@@ -72,12 +72,12 @@ class TabUsers extends React.Component {
             ))}
           </React.Fragment>
         ))}
-        {Platform.OS !== 'web' && (
+        {Platform.OS !== `web` && (
           <View style={{ flex: 1 }}>
             <Modal
               isVisible={p.isModalVisible}
-              swipeDirection={['up', 'left', 'right', 'down']}
-              style={{ justifyContent: 'flex-end', margin: 0 }}
+              swipeDirection={[`up`, `left`, `right`, `down`]}
+              style={{ justifyContent: `flex-end`, margin: 0 }}
             >
               <View callModal>
                 <View>

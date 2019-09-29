@@ -5,22 +5,22 @@ export const rem = size => size * scale;
 
 export const std = {
   color: {
-    shade0: '#ffffff',
-    shade1: '#f9f9f9',
-    shade2: '#f1f1f1',
-    shade3: '#efeff4',
-    shade4: '#e2e2e4',
-    shade5: '#8a8a8f',
-    shade6: '#5e5e5e',
-    shade7: '#4b4b4b',
-    shade8: '#393939',
-    shade9: '#262626',
-    shade10: '#bdbdbd',
-    danger: '#FF2D55',
-    notice: '#FF9500',
-    notify: '#FEFEFE',
-    action: '#007aff',
-    active: '#4CD964',
+    shade0: `#ffffff`,
+    shade1: `#f9f9f9`,
+    shade2: `#f1f1f1`,
+    shade3: `#efeff4`,
+    shade4: `#e2e2e4`,
+    shade5: `#8a8a8f`,
+    shade6: `#5e5e5e`,
+    shade7: `#4b4b4b`,
+    shade8: `#393939`,
+    shade9: `#262626`,
+    shade10: `#bdbdbd`,
+    danger: `#FF2D55`,
+    notice: `#FF9500`,
+    notify: `#FEFEFE`,
+    action: `#007aff`,
+    active: `#4CD964`,
   },
 
   textSize: {
@@ -43,15 +43,15 @@ export const std = {
 
   font: {
     text: Platform.select({
-      ios: 'System',
-      web: 'Roboto',
-      android: 'Roboto',
+      ios: `System`,
+      web: `Roboto`,
+      android: `Roboto`,
     }),
 
     icon: Platform.select({
-      ios: 'feather',
-      web: 'feather',
-      android: 'feather',
+      ios: `feather`,
+      web: `feather`,
+      android: `feather`,
     }),
   },
 };
@@ -65,11 +65,11 @@ TextInput.defaultProps = {
   ...TextInput.defaultProps,
   numberOfLines: 1,
   autoCorrect: false,
-  autoCapitalize: 'none',
-  underlineColorAndroid: 'transparent',
+  autoCapitalize: `none`,
+  underlineColorAndroid: `transparent`,
 };
 
 KeyboardAvoidingView.defaultProps = {
   ...KeyboardAvoidingView.defaultProps,
-  behavior: Platform.OS === 'ios' ? 'padding' : null,
+  behavior: Platform.OS === `ios` ? `padding` : null,
 };

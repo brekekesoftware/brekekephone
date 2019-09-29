@@ -16,24 +16,24 @@ const s = StyleSheet.create({
     ...v.boxShadow,
   },
   RootAlerts_Title: {
-    alignSelf: 'flex-start',
+    alignSelf: `flex-start`,
     paddingVertical: 0,
     paddingHorizontal: 0,
     marginBottom: 5,
     fontSize: v.fontSizeSubTitle,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     color: v.color,
   },
   RootAlerts_Message: {
-    alignSelf: 'flex-start',
+    alignSelf: `flex-start`,
     padding: 0,
     marginBottom: 30,
     fontSize: v.fontSize,
     color: v.color,
-    whiteSpace: 'unset',
+    whiteSpace: `unset`,
   },
   RootAlerts_Btn: {
-    position: 'absolute',
+    position: `absolute`,
     top: -10,
     left: 35,
     borderRadius: v.borderRadius,
@@ -48,13 +48,13 @@ const s = StyleSheet.create({
     backgroundColor: v.revBg,
   },
   RootAlerts_Btn__hidden: {
-    display: 'none',
+    display: `none`,
   },
   RootAlerts_BtnTxt: {
     fontSize: v.fontSizeSmall,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     fontFamily: v.fontFamily,
-    textAlign: 'center',
+    textAlign: `center`,
   },
 });
 
@@ -78,8 +78,8 @@ const RootAlerts = observer(() => {
     Object.assign(p, {
       title,
       message,
-      cancelText: 'CANCEL',
-      confirmText: 'REMOVE',
+      cancelText: `CANCEL`,
+      confirmText: `REMOVE`,
       onCancelPressed,
       onConfirmPressed,
       onDismiss: onCancelPressed,
@@ -90,12 +90,12 @@ const RootAlerts = observer(() => {
     // TODO render err/unexpectedErr
     void err;
     const message = unexpectedErr
-      ? 'An unexpected error occurred'
+      ? `An unexpected error occurred`
       : `Failed to ${msg}`;
     Object.assign(p, {
-      title: 'Error',
+      title: `Error`,
       message,
-      confirmText: 'OK',
+      confirmText: `OK`,
       onCancelPressed: g.dismissAlert,
       onConfirmPressed: g.dismissAlert,
       onDismiss: g.dismissAlert,

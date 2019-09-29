@@ -1,9 +1,8 @@
-import { action, computed, observable } from 'mobx';
-import shortid from 'shortid';
+import { computed, observable } from 'mobx';
 
 import g from '../global';
-import AsyncStorage from '../native/AsyncStorage';
 import PushNotification from '../native/PushNotification';
+import { getAppOld } from './AppOld_';
 import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
@@ -16,123 +15,38 @@ const compareField = (p1, p2, field) => {
 const compareProfile = (p1, p2) => {
   return (
     p1.pbxUsername && // Must have pbxUsername
-    compareField(p1, p2, 'pbxUsername') &&
-    compareField(p1, p2, 'pbxTenant') &&
-    compareField(p1, p2, 'pbxHostname') &&
-    compareField(p1, p2, 'pbxPort')
+    compareField(p1, p2, `pbxUsername`) &&
+    compareField(p1, p2, `pbxTenant`) &&
+    compareField(p1, p2, `pbxHostname`) &&
+    compareField(p1, p2, `pbxPort`)
   );
 };
-
-const genEmptyProfile = () => ({
-  id: shortid(),
-  pbxTenant: '',
-  pbxUsername: '',
-  pbxHostname: '',
-  pbxPort: '',
-  pbxPassword: '',
-  pbxPhoneIndex: '4',
-  pbxTurnEnabled: false,
-  pushNotificationEnabled: true,
-  parks: [],
-  ucEnabled: false,
-  ucHostname: '',
-  ucPort: '',
-  accessToken: '',
-  recentCalls: [],
-});
 
 class AuthStore extends BaseStore {
   // 'stopped'
   // 'connecting'
   // 'success'
   // 'failure'
-  @observable pbxState = 'stopped';
-  @observable sipState = 'stopped';
-  @observable ucState = 'stopped';
+  @observable pbxState = `stopped`;
+  @observable sipState = `stopped`;
+  @observable ucState = `stopped`;
   @observable ucLoginFromAnotherPlace = false;
   @computed get pbxShouldAuth() {
-    return !(!this.signedInId || this.pbxState !== 'stopped');
+    return !(!this.signedInId || this.pbxState !== `stopped`);
   }
   @computed get sipShouldAuth() {
-    return !(this.pbxState !== 'success' || this.sipState !== 'stopped');
+    return !(this.pbxState !== `success` || this.sipState !== `stopped`);
   }
   @computed get ucShouldAuth() {
     return !(
       !this.profile?.ucEnabled ||
-      this.ucState !== 'stopped' ||
+      this.ucState !== `stopped` ||
       this.ucLoginFromAnotherPlace
     );
   }
 
-  // id
-  // pbxHostname
-  // pbxPort
-  // pbxTenant
-  // pbxUsername
-  // pbxPassword
-  // pbxPhoneIndex
-  // pbxTurnEnabled
-  // pushNotificationEnabled
-  // parks
-  // ucEnabled
-  // ucHostname
-  // ucPort
-  // ucPathname
-  // accessToken
-  // recentCalls?[]
-  //    id
-  //    incoming
-  //    answered
-  //    partyName
-  //    partyNumber
-  //    created
-  @observable profiles = [];
-  loadProfilesFromLocalStorage = async () => {
-    let arr = await AsyncStorage.getItem('authStore.profiles');
-    if (arr && !Array.isArray(arr)) {
-      try {
-        arr = JSON.parse(arr);
-      } catch (err) {
-        arr = null;
-      }
-    }
-    if (arr) {
-      this.set('profiles', arr);
-    }
-  };
-  saveProfilesToLocalStorage = async (arr = this.profiles) => {
-    try {
-      await AsyncStorage.setItem('authStore.profiles', JSON.stringify(arr));
-    } catch (err) {
-      console.error('authStore.set.profiles:', err);
-      g.showError({ message: 'Can not save profiles to local storage' });
-    }
-  };
   findProfile = _p => {
-    return this.profiles.find(p => compareProfile(p, _p));
-  };
-  upsertProfile = action(_p => {
-    const p = this.getProfile(_p.id);
-    if (p) {
-      Object.assign(p, _p);
-      this.set('profiles', [...this.profiles]);
-    } else {
-      this.set('profiles', [...this.profiles, _p]);
-    }
-    this.saveProfilesToLocalStorage();
-  });
-  removeProfile = id => {
-    g.showPrompt({
-      title: 'Remove Server',
-      message: 'Do you want to remove this profile?',
-      onConfirm: () => {
-        this._removeProfile(id);
-      },
-    });
-  };
-  @action _removeProfile = id => {
-    this.profiles = this.profiles.filter(p => p.id !== id);
-    this.saveProfilesToLocalStorage();
+    return g.profiles.find(p => compareProfile(p, _p));
   };
   pushRecentCall = call => {
     this.upsert({
@@ -148,7 +62,7 @@ class AuthStore extends BaseStore {
   };
   //
   @computed get _profilesMap() {
-    return arrToMap(this.profiles, 'id', p => p);
+    return arrToMap(g.profiles, `id`, p => p);
   }
   getProfile = id => {
     return this._profilesMap[id];
@@ -164,13 +78,16 @@ class AuthStore extends BaseStore {
       return false;
     }
     if (!p.pbxPassword && !p.accessToken) {
-      g.goToProfileUpdate(p.id);
-      g.showError({ message: 'The profile password is empty' });
+      g.goToPageProfileUpdate(p.id);
+      g.showError({ message: `The profile password is empty` });
       return true;
     }
-    this.set('signedInId', p.id);
-    g.goToAuth();
+    this.set(`signedInId`, p.id);
     PushNotification.resetBadgeNumber();
+    g.openStack({
+      isRoot: true,
+      Component: getAppOld(),
+    });
     return true;
   };
 
@@ -205,13 +122,13 @@ class AuthStore extends BaseStore {
       if (p.pbxPassword || p.accessToken) {
         this.signIn(p.id);
       } else {
-        g.goToProfileUpdate(p.id);
+        g.goToPageProfileUpdate(p.id);
       }
       return;
     }
     //
     const newP = {
-      ...genEmptyProfile(),
+      ...g.genEmptyProfile(),
       pbxTenant: tenant,
       pbxUsername: user,
       pbxHostname: host,
@@ -223,7 +140,7 @@ class AuthStore extends BaseStore {
     if (newP.accessToken) {
       this.signIn(newP.id);
     } else {
-      g.goToProfileUpdate(newP.id);
+      g.goToPageProfileUpdate(newP.id);
     }
   };
 
@@ -249,7 +166,6 @@ class AuthStore extends BaseStore {
 }
 
 const authStore = new AuthStore();
-authStore.loadProfilesFromLocalStorage();
 
-export { compareProfile, genEmptyProfile };
+export { compareProfile };
 export default authStore;

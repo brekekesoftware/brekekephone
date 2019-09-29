@@ -3,11 +3,11 @@ import { setChecker } from './PushNotification-parse';
 const uint8ArrayToUrlBase64 = arr =>
   window
     .btoa(String.fromCharCode.apply(null, new Uint8Array(arr)))
-    .replace(/[+/]/g, '-');
+    .replace(/[+/]/g, `-`);
 
 const PushNotification = {
   register: fn => {
-    if (!window.Notification || window.Notification.permission === 'granted') {
+    if (!window.Notification || window.Notification.permission === `granted`) {
       return;
     }
     setChecker(fn);
@@ -22,8 +22,8 @@ const PushNotification = {
       }));
     return {
       endpoint: sub.endpoint,
-      p256dh: uint8ArrayToUrlBase64(sub.getKey('p256dh')),
-      auth: uint8ArrayToUrlBase64(sub.getKey('auth')),
+      p256dh: uint8ArrayToUrlBase64(sub.getKey(`p256dh`)),
+      auth: uint8ArrayToUrlBase64(sub.getKey(`auth`)),
     };
   },
   resetBadgeNumber: () => {
