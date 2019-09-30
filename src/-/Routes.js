@@ -5,6 +5,7 @@ import { Redirect, Route } from 'react-router';
 
 import ChatsHome from '../-chat/ChatsHome';
 import PageContact from '../-contact/PageContact';
+import PageCalling from '../-incoming/PageCalling';
 import PagePhone from '../-phone/PagePhone';
 import Recent from '../-recent/PageRecent';
 import g from '../global';
@@ -19,7 +20,6 @@ import CallTransferDial from './call-transfer-dial';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import Callbar from './callbar';
-import CallsManage from './calls-manage';
 import CallsNotify from './calls-notify';
 import ChatGroupInvite from './chat-group-invite';
 import ChatGroupsCreate from './chat-groups-create';
@@ -104,7 +104,7 @@ const Routes = () => (
               path="/auth"
               render={() => <Redirect to="/auth/users" />}
             />
-            <Route exact path="/auth/calls/manage" component={CallsManage} />
+            <Route exact path="/auth/calls/manage" component={PageCalling} />
             <Route exact path="/auth/calls/create" component={PagePhone} />
             <Route exact path="/auth/calls/recent" component={Recent} />
             <Route

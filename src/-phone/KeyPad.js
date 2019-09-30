@@ -11,7 +11,6 @@ const s = StyleSheet.create({
   },
   KeyPad_Number: {
     flexDirection: 'row',
-    // justifyContent: 'space-around',
   },
   KeyPad_NumberTxt: {
     fontSize: v.fontSizeTitle,
