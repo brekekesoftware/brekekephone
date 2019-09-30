@@ -18,13 +18,16 @@ const s = StyleSheet.create({
   RootAlert: {
     alignItems: `center`,
     justifyContent: `center`,
+    flexDirection: `row`,
   },
   RootAlert_Backdrop: {
     backgroundColor: g.layerBg,
   },
   RootAlert_Modal: {
+    alignSelf: `flex-end`,
     width: `90%`,
     maxWidth: g.maxModalWidth,
+    marginBottom: 15,
     borderRadius: g.borderRadius,
     padding: 15,
     backgroundColor: g.bg,

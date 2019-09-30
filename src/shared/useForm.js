@@ -9,8 +9,6 @@ import Field from '../shared/Field';
 import arrToMap, { mapToMap } from '../utils/arrToMap';
 import useStore from './useStore';
 
-const RnForm = Platform.OS === `web` ? `form` : React.Fragment;
-
 const useForm = () => {
   const $ = useStore($ => ({
     observable: {
@@ -51,8 +49,10 @@ const useForm = () => {
     render: observer(props => {
       $.props = props;
       const { $: $parent, k, fields } = $.props;
+      const RnForm = Platform.OS === `web` ? `form` : React.Fragment;
+      const formProps = Platform.OS === `web` ? { onSubmit: $.submit } : null;
       return (
-        <RnForm onSubmit={Platform.OS === `web` ? $.submit : null}>
+        <RnForm {...formProps}>
           {fields.map((f, i) => (
             <Field
               key={i}
