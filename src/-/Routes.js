@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
+import ChatDetail from '../-chat/ChatDetail';
 import ChatsHome from '../-chat/ChatsHome';
 import PageContact from '../-contact/PageContact';
 import PageCalling from '../-incoming/PageCalling';
@@ -12,7 +13,6 @@ import g from '../global';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
-import BuddyChatsRecent from './buddy-chats-recent';
 import CallKeypad from './call-keypad';
 import CallPark from './call-park';
 import CallTransferAttend from './call-transfer-attend';
@@ -127,7 +127,7 @@ const Routes = () => (
             <Route
               exact
               path="/auth/chats/buddy/:buddy/recent"
-              component={BuddyChatsRecent}
+              component={ChatDetail}
             />
             <Route
               exact

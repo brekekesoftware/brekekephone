@@ -52,7 +52,7 @@ const s = StyleSheet.create({
 const CallBar = p => (
   <Layout>
     <View style={s.CallBar_Txt}>
-      <Text style={s.CallBar_Txt__Name}>Duan Huynh</Text>
+      <Text style={s.CallBar_Txt__Name}>Alan Walker</Text>
       <Text>00:05</Text>
     </View>
     <View style={[s.CallBar_Btn, s.CallBar_Btn__top70]}>

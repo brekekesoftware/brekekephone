@@ -35,7 +35,7 @@ class PageCalling extends React.Component {
         }}
       >
         <View style={s.Calling_Txt}>
-          <Text style={s.Calling_Txt__Name}>Duan Huynh</Text>
+          <Text style={s.Calling_Txt__Name}>Alan Walker</Text>
           <Text>00:05</Text>
         </View>
         <View style={s.Calling_Btn__Hangup}>
