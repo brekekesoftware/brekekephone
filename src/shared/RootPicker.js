@@ -1,9 +1,12 @@
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '@mdi/js';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import g from '../global';
 import {
+  Animated,
+  Dimensions,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +20,8 @@ const s = StyleSheet.create({
     flexDirection: `row`,
     alignItems: `center`,
     justifyContent: `center`,
+  },
+  Picker_Backdrop: {
     backgroundColor: g.layerBg,
   },
   Picker_Inner: {
@@ -65,30 +70,62 @@ const s = StyleSheet.create({
   },
 });
 
-const RootPicker = observer(
-  () =>
-    g.currentPicker && (
-      <View style={[StyleSheet.absoluteFill, s.Picker]}>
+const Picker = p => {
+  const [opacity] = useState(new Animated.Value(0));
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: Platform.OS !== `web`,
+    }).start();
+  }, [opacity]);
+
+  const [translateY] = useState(
+    new Animated.Value(Dimensions.get(`screen`).height),
+  );
+  useEffect(() => {
+    Animated.timing(translateY, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: Platform.OS !== `web`,
+    }).start();
+  }, [translateY]);
+
+  return (
+    <View style={[StyleSheet.absoluteFill, s.Picker]}>
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          s.Picker_Backdrop,
+          {
+            opacity: opacity,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
           onPress={g.dismissPicker}
         />
-        <ScrollView style={s.Picker_Inner}>
+      </Animated.View>
+      <ScrollView style={s.Picker_Inner}>
+        <Animated.View
+          style={{
+            transform: [{ translateY }],
+          }}
+        >
           <View style={s.Picker_Options}>
-            {g.currentPicker.options.map((o, i) => {
-              const isSelected =
-                `${g.currentPicker.selectedKey}` === `${o.key}`;
+            {p.options.map((o, i) => {
+              const isSelected = `${p.selectedKey}` === `${o.key}`;
               return (
                 <TouchableOpacity
                   key={i}
                   style={[
                     s.Picker_Option,
-                    i + 1 === g.currentPicker.options.length &&
-                      s.Picker_Option__last,
+                    i + 1 === p.options.length && s.Picker_Option__last,
                     isSelected && s.Picker_Option__selected,
                   ]}
                   onPress={() => {
-                    g.currentPicker.onSelect(o.key);
+                    p.onSelect(o.key);
                     g.dismissPicker();
                   }}
                 >
@@ -112,13 +149,18 @@ const RootPicker = observer(
             onPress={g.dismissPicker}
           >
             <Text style={s.Picker_Text__cancel}>
-              {g.currentPicker.cancelLabel || `Cancel`}
+              {p.cancelLabel || `Cancel`}
             </Text>
             <Icon path={mdiClose} style={s.Picker_Icon} color={g.redDarkBg} />
           </TouchableOpacity>
-        </ScrollView>
-      </View>
-    ),
+        </Animated.View>
+      </ScrollView>
+    </View>
+  );
+};
+
+const RootPicker = observer(
+  () => g.currentPicker && <Picker {...g.currentPicker} />,
 );
 
 export default RootPicker;

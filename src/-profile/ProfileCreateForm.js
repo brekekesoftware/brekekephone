@@ -103,7 +103,7 @@ const ProfileCreateForm = observer(props => {
             label: `PBX`,
           },
           {
-            autoFocus: true,
+            // autoFocus: true, // TODO Animation issue
             name: `pbxUsername`,
             label: `USERNAME`,
             rule: `required`,

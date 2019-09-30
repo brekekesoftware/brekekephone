@@ -1,16 +1,26 @@
 import flow from 'lodash/flow';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
+import {
+  Animated,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../native/Rn';
 import useStore from './useStore';
 
 const s = StyleSheet.create({
   RootAlert: {
-    backgroundColor: g.layerBg,
     alignItems: `center`,
     justifyContent: `center`,
+  },
+  RootAlert_Backdrop: {
+    backgroundColor: g.layerBg,
   },
   RootAlert_Modal: {
     width: `90%`,
@@ -80,11 +90,27 @@ const ErrorDetail = observer(props => {
   return <Text small>{props.err.message}</Text>;
 });
 
-const RootAlert = observer(() => {
-  if (!g.alertsCount) {
-    return null;
-  }
-  const { prompt, error, loading } = g.alerts[0];
+const Alert = ({ prompt, error, loading }) => {
+  const [opacity] = useState(new Animated.Value(0));
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: Platform.OS !== `web`,
+    }).start();
+  }, [opacity]);
+
+  const [translateY] = useState(
+    new Animated.Value(Dimensions.get(`screen`).height),
+  );
+  useEffect(() => {
+    Animated.timing(translateY, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: Platform.OS !== `web`,
+    }).start();
+  }, [translateY]);
+
   const p = {};
   if (prompt) {
     const { title, message, onConfirm, onDismiss, ...rest } = prompt;
@@ -129,8 +155,31 @@ const RootAlert = observer(() => {
   }
   return (
     <View style={[StyleSheet.absoluteFill, s.RootAlert]}>
-      <TouchableOpacity style={StyleSheet.absoluteFill} onPress={p.onDismiss} />
-      <View style={s.RootAlert_Modal}>
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          s.RootAlert_Backdrop,
+          {
+            opacity: opacity,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={StyleSheet.absoluteFill}
+          onPress={p.onDismiss}
+        />
+      </Animated.View>
+      <Animated.View
+        style={[
+          s.RootAlert_Modal,
+          {
+            transform: [
+              { translateY },
+              // { scale: opacity },
+            ],
+          },
+        ]}
+      >
         <Text subTitle>{p.title}</Text>
         {p.message}
         <View style={s.RootAlert_Btns}>
@@ -150,9 +199,16 @@ const RootAlert = observer(() => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
+};
+
+const RootAlert = observer(() => {
+  if (!g.alertsCount) {
+    return null;
+  }
+  return <Alert {...g.alerts[0]} />;
 });
 
 export default RootAlert;
