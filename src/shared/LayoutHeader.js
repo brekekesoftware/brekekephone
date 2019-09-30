@@ -211,7 +211,7 @@ const Header = props => {
         >
           {props.description || `\u200a`}
         </Text>
-        {(props.onCreateBtnPress || true) && (
+        {props.onCreateBtnPress && (
           <TouchableOpacity
             style={s.LayoutHeader_CreateBtn}
             onPress={props.onCreateBtnPress}
