@@ -23,7 +23,7 @@ const s = StyleSheet.create({
 });
 
 const Avatar = p => (
-  <View style={s.Avatar}>
+  <View style={[s.Avatar, p.style]}>
     <FastImage style={s.Avatar_Image} source={p.source} />
     {(p.chatOnline || p.status === `online`) && (
       <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#74bf53" />

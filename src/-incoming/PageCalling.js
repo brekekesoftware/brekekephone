@@ -9,7 +9,7 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   Calling_Txt: {
-    position: 'absolute',
+    position: `absolute`,
     left: 20,
     top: 70,
   },
@@ -17,12 +17,12 @@ const s = StyleSheet.create({
     fontSize: v.fontSizeTitle,
   },
   Calling_Btn__Hangup: {
-    position: 'absolute',
+    position: `absolute`,
     bottom: 25,
     left: 0,
     right: 0,
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    marginLeft: `auto`,
+    marginRight: `auto`,
   },
 });
 

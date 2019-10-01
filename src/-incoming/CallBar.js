@@ -22,9 +22,9 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   CallBar_Btn: {
-    flexDirection: 'row',
-    position: 'absolute',
-    alignSelf: 'center',
+    flexDirection: `row`,
+    position: `absolute`,
+    alignSelf: `center`,
   },
   CallBar_Btn__top70: {
     top: 70,
@@ -33,19 +33,19 @@ const s = StyleSheet.create({
     top: 150,
   },
   CallBar_Txt: {
-    position: 'absolute',
+    position: `absolute`,
     left: 20,
   },
   CallBar_Txt__Name: {
     fontSize: v.fontSizeTitle,
   },
   CallBar_Btn__Hangup: {
-    position: 'absolute',
+    position: `absolute`,
     bottom: 15,
     left: 0,
     right: 0,
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    marginLeft: `auto`,
+    marginRight: `auto`,
   },
 });
 
@@ -88,7 +88,7 @@ const CallBar = p => (
           name="VIDEO"
         />
       )}
-      {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== 'web' && (
+      {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
           onPress={p.onOpenLoudSpeaker}
           size={40}
@@ -96,7 +96,7 @@ const CallBar = p => (
           name="SPEAKER"
         />
       )}
-      {p.answered && !p.holding && p.loudspeaker && Platform.OS !== 'web' && (
+      {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
           onPress={p.onCloseLoudSpeaker}
           size={40}

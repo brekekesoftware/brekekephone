@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 
 const s = StyleSheet.create({
   ButtonIcon: {
-    alignItems: 'center',
+    alignItems: `center`,
     marginHorizontal: 10,
   },
   ButtonIcon_Btn: {
