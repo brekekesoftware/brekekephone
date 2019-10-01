@@ -6,7 +6,6 @@ import g from '../global';
 import {
   Animated,
   Dimensions,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -76,7 +75,6 @@ const Picker = p => {
     Animated.timing(opacity, {
       toValue: 1,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
   }, [opacity]);
 
@@ -87,7 +85,6 @@ const Picker = p => {
     Animated.timing(translateY, {
       toValue: 0,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
   }, [translateY]);
 

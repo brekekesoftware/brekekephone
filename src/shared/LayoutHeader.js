@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import g from '../global';
 import {
   Animated,
-  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -104,7 +103,6 @@ const Header = props => {
     Animated.timing(paddingVertical, {
       toValue: props.compact ? 10 : 15,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(paddingVertical).stop();
   }, [paddingVertical, props.compact]);
@@ -114,7 +112,6 @@ const Header = props => {
     Animated.timing(titleFontSize, {
       toValue: props.compact ? g.fontSizeSubTitle : g.fontSizeTitle,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(titleFontSize).stop();
   }, [titleFontSize, props.compact]);
@@ -124,7 +121,6 @@ const Header = props => {
     Animated.timing(titleLineHeight, {
       toValue: props.compact ? 20 : g.lineHeightTitle,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(titleLineHeight).stop();
   }, [titleLineHeight, props.compact]);
@@ -134,7 +130,6 @@ const Header = props => {
     Animated.timing(backBtnHeight, {
       toValue: props.compact ? 40 : 70,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(backBtnHeight).stop();
   }, [backBtnHeight, props.compact]);
@@ -144,7 +139,6 @@ const Header = props => {
     Animated.timing(backBtnPadding, {
       toValue: props.compact ? 5 : 20,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(backBtnPadding).stop();
   }, [backBtnPadding, props.compact]);
@@ -154,7 +148,6 @@ const Header = props => {
     Animated.timing(createBtnOuterTop, {
       toValue: props.compact ? 0 : 11,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(createBtnOuterTop).stop();
   }, [createBtnOuterTop, props.compact]);
@@ -163,7 +156,6 @@ const Header = props => {
     Animated.timing(createBtnOuterHeight, {
       toValue: props.compact ? 40 : 50,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(createBtnOuterHeight).stop();
   }, [createBtnOuterHeight, props.compact]);
@@ -172,7 +164,6 @@ const Header = props => {
     Animated.timing(createBtnInnerTop, {
       toValue: props.compact ? -5 : 0,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
     return () => Animated.timing(createBtnInnerTop).stop();
   }, [createBtnInnerTop, props.compact]);

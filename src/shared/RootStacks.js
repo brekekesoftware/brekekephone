@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 
 import g from '../global';
-import { Animated, Dimensions, Platform, StyleSheet, View } from '../native/Rn';
+import { Animated, Dimensions, StyleSheet, View } from '../native/Rn';
 
 const s = StyleSheet.create({
   Stack: {
@@ -18,7 +18,6 @@ const Stack = ({ Component, ...p }) => {
     Animated.timing(translateX, {
       toValue: 0,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
   }, [translateX]);
   const OuterComponent = p.isRoot ? View : Animated.View;

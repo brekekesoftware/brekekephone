@@ -6,7 +6,6 @@ import g from '../global';
 import {
   Animated,
   Dimensions,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -99,7 +98,6 @@ const Alert = ({ prompt, error, loading }) => {
     Animated.timing(opacity, {
       toValue: 1,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
   }, [opacity]);
 
@@ -110,7 +108,6 @@ const Alert = ({ prompt, error, loading }) => {
     Animated.timing(translateY, {
       toValue: 0,
       duration: 150,
-      useNativeDriver: Platform.OS !== `web`,
     }).start();
   }, [translateY]);
 
@@ -208,7 +205,7 @@ const Alert = ({ prompt, error, loading }) => {
 };
 
 const RootAlert = observer(() => {
-  if (!g.alertsCount) {
+  if (!g.alertsCount || !g.alerts[0]) {
     return null;
   }
   return <Alert {...g.alerts[0]} />;
