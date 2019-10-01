@@ -7,22 +7,22 @@ const setChecker = fn => {
 };
 
 const keysInCustomNotification = [
-  'body',
-  'message',
-  'title',
-  'tenant',
-  'to',
-  'pbxHostname',
-  'pbxPort',
-  'my_custom_data',
-  'is_local_notification',
+  `body`,
+  `message`,
+  `title`,
+  `tenant`,
+  `to`,
+  `pbxHostname`,
+  `pbxPort`,
+  `my_custom_data`,
+  `is_local_notification`,
 ];
 
 const _parse = (...p) =>
   p
     .filter(i => !!i)
     .map(i => {
-      if (typeof i === 'string') {
+      if (typeof i === `string`) {
         try {
           return JSON.parse(i);
         } catch (err) {}
@@ -30,7 +30,7 @@ const _parse = (...p) =>
       return i;
     })
     .reduce((m, i) => {
-      if (!i || typeof i !== 'object') {
+      if (!i || typeof i !== `object`) {
         return m;
       }
       keysInCustomNotification.forEach(k => {
@@ -44,22 +44,22 @@ const _parse = (...p) =>
 
 const parse = raw => {
   let n = {};
-  if (Platform.OS === 'android') {
+  if (Platform.OS === `android`) {
     n = _parse(
       raw,
-      get(raw, 'fcm'),
-      get(raw, 'data'),
-      get(raw, 'alert'),
-      get(raw, 'data.alert'),
-      get(raw, 'custom_notification'),
-      get(raw, 'data.custom_notification'),
+      get(raw, `fcm`),
+      get(raw, `data`),
+      get(raw, `alert`),
+      get(raw, `data.alert`),
+      get(raw, `custom_notification`),
+      get(raw, `data.custom_notification`),
     );
-  } else if (Platform.OS === 'ios') {
+  } else if (Platform.OS === `ios`) {
     n = _parse(
       raw,
-      get(raw, '_data'),
-      get(raw, '_alert'),
-      get(raw, '_data.custom_notification'),
+      get(raw, `_data`),
+      get(raw, `_alert`),
+      get(raw, `_data.custom_notification`),
     );
   } else {
     // TODO handle web

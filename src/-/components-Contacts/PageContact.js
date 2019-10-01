@@ -45,7 +45,7 @@ class PageContacts extends React.Component {
           active={p.activeFab}
           direction="up"
           containerStyle={{}}
-          style={{ backgroundColor: '#74bf53' }}
+          style={{ backgroundColor: `#74bf53` }}
           position="bottomRight"
         >
           <Icon path={mdiAccountPlusOutline} />

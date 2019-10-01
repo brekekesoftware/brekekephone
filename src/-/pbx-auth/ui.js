@@ -5,7 +5,7 @@ import { std } from '../styleguide';
 
 export const st = StyleSheet.create({
   main: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     left: 0,
     right: 0,
@@ -23,11 +23,11 @@ export const st = StyleSheet.create({
   },
 
   buttons: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     margin: std.gap.sm,
-    flexDirection: 'row',
+    flexDirection: `row`,
   },
 
   abort: {

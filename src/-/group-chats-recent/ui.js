@@ -22,8 +22,8 @@ const st = StyleSheet.create({
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -37,9 +37,9 @@ const st = StyleSheet.create({
   },
 
   navbarBack: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -47,9 +47,9 @@ const st = StyleSheet.create({
   },
 
   navbarLeave: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -93,14 +93,14 @@ const st = StyleSheet.create({
 
   member: {
     width: std.iconSize.md * 2 + std.gap.lg * 2,
-    alignItems: 'center',
+    alignItems: `center`,
   },
 
   memberAvatar: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
     borderWidth: 1,
@@ -111,7 +111,7 @@ const st = StyleSheet.create({
     fontFamily: std.font.text,
     fontSize: std.textSize.sm,
     color: std.color.shade5,
-    textAlign: 'center',
+    textAlign: `center`,
   },
 
   inviteMemberIcon: {
@@ -135,7 +135,7 @@ const st = StyleSheet.create({
   },
 
   chat: {
-    alignSelf: 'center',
+    alignSelf: `center`,
   },
 
   chatAvatar: {
@@ -144,7 +144,7 @@ const st = StyleSheet.create({
     borderRadius: std.textSize.md / 2 + std.gap.md,
     borderColor: std.color.shade4,
     borderWidth: 1,
-    position: 'absolute',
+    position: `absolute`,
     top:
       std.textSize.sm + std.gap.lg + std.gap.md + (std.gap.lg + std.gap.sm) / 2,
     left: -(std.textSize.md + std.gap.md * 2 + std.gap.md),
@@ -153,7 +153,7 @@ const st = StyleSheet.create({
   chatCreator: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     lineHeight: std.textSize.md + std.gap.sm * 2,
     color: std.color.shade5,
     marginBottom: std.gap.md,
@@ -165,7 +165,7 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     marginTop: std.gap.lg,
     marginBottom: std.gap.md,
-    alignSelf: 'flex-end',
+    alignSelf: `flex-end`,
   },
 
   chatBody: {
@@ -184,9 +184,9 @@ const st = StyleSheet.create({
   },
 
   edit: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: `row`,
+    justifyContent: `center`,
+    alignItems: `center`,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
     borderTopWidth: 1,
@@ -205,17 +205,17 @@ const st = StyleSheet.create({
 
   loadingRecent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   loadMore: {
     width: rem(320),
-    alignItems: 'center',
+    alignItems: `center`,
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.md,
-    alignSelf: 'center',
+    alignSelf: `center`,
     marginBottom: std.gap.sm,
   },
 
@@ -234,8 +234,8 @@ const st = StyleSheet.create({
   },
 
   btnOptIcon: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
@@ -246,7 +246,7 @@ const st = StyleSheet.create({
 
   flexRow: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: `row`,
   },
 
   navbarCall: {

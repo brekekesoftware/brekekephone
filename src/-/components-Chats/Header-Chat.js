@@ -24,19 +24,19 @@ class HeaderChat extends React.Component {
             }
           })()}
 
-          {u.status === 'online' && (
+          {u.status === `online` && (
             <View>
               <Icon path={mdiRecord} color="#74bf53" />
               <Text note>AVAILABLE</Text>
             </View>
           )}
-          {u.status === 'busy' && (
+          {u.status === `busy` && (
             <View>
               <Icon path={mdiRecord} color="#FF2D55" />
               <Text note>BUSY</Text>
             </View>
           )}
-          {u.status === 'offline' && (
+          {u.status === `offline` && (
             <View>
               <Icon path={mdiRecord} color="#8a8a8f" />
               <Text note>OFFLINE</Text>

@@ -22,8 +22,8 @@ const st = StyleSheet.create({
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -37,9 +37,9 @@ const st = StyleSheet.create({
   },
 
   navbarOptLeft: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -63,7 +63,7 @@ const st = StyleSheet.create({
   },
 
   chat: {
-    alignSelf: 'center',
+    alignSelf: `center`,
   },
 
   chatAvatar: {
@@ -72,7 +72,7 @@ const st = StyleSheet.create({
     borderRadius: std.textSize.md / 2 + std.gap.md,
     borderColor: std.color.shade4,
     borderWidth: 1,
-    position: 'absolute',
+    position: `absolute`,
     top:
       std.textSize.sm + std.gap.lg + std.gap.md + (std.gap.lg + std.gap.sm) / 2,
     left: -(std.textSize.md + std.gap.md * 2 + std.gap.md),
@@ -81,7 +81,7 @@ const st = StyleSheet.create({
   chatCreator: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     lineHeight: std.textSize.md + std.gap.sm * 2,
     color: std.color.shade5,
     marginBottom: std.gap.md,
@@ -93,7 +93,7 @@ const st = StyleSheet.create({
     color: std.color.shade5,
     marginTop: std.gap.lg,
     marginBottom: std.gap.md,
-    alignSelf: 'flex-end',
+    alignSelf: `flex-end`,
   },
 
   chatBody: {
@@ -112,9 +112,9 @@ const st = StyleSheet.create({
   },
 
   edit: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: `row`,
+    justifyContent: `center`,
+    alignItems: `center`,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
     borderTopWidth: 1,
@@ -132,8 +132,8 @@ const st = StyleSheet.create({
   pickFile: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     borderRadius: std.iconSize.md,
     borderWidth: 1,
     borderColor: std.color.shade4,
@@ -149,17 +149,17 @@ const st = StyleSheet.create({
 
   loadingRecent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   loadMore: {
     width: rem(320),
-    alignItems: 'center',
+    alignItems: `center`,
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.md,
-    alignSelf: 'center',
+    alignSelf: `center`,
     marginBottom: std.gap.sm,
   },
 
@@ -172,8 +172,8 @@ const st = StyleSheet.create({
   },
 
   file: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
   },
 
   fileInfo: {
@@ -198,8 +198,8 @@ const st = StyleSheet.create({
   fileAccept: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     borderRadius: std.iconSize.md,
     borderWidth: 1,
     borderColor: std.color.shade4,
@@ -215,8 +215,8 @@ const st = StyleSheet.create({
   fileReject: {
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     borderRadius: std.iconSize.md,
     borderWidth: 1,
     borderColor: std.color.shade4,
@@ -275,20 +275,20 @@ const File = pure(p => (
       <Text style={st.fileName}>{p.name}</Text>
       <Text style={st.fileSize}>{p.size}</Text>
     </View>
-    {p.state === 'waiting' && (
+    {p.state === `waiting` && (
       <Button style={st.fileReject} onPress={p.reject}>
         <Text style={st.fileRejectIcon}>icon_x</Text>
       </Button>
     )}
-    {p.incoming && p.state === 'waiting' && (
+    {p.incoming && p.state === `waiting` && (
       <Button style={st.fileAccept} onPress={p.accept}>
         <Text style={st.fileAcceptIcon}>icon_check</Text>
       </Button>
     )}
-    {p.state === 'started' && (
+    {p.state === `started` && (
       <Button style={st.fileReject} onPress={p.reject}>
         <Progress
-          percent={p.state === 'percent'}
+          percent={p.state === `percent`}
           radius={std.iconSize.md}
           borderWidth={1 * 2}
           color={std.color.notice}
@@ -299,9 +299,9 @@ const File = pure(p => (
         </Progress>
       </Button>
     )}
-    {p.state === 'success' && <Text style={st.fileSuccessText}>Success</Text>}
-    {p.state === 'failure' && <Text style={st.fileFailureText}>Failed</Text>}
-    {p.state === 'stopped' && <Text style={st.fileStoppedText}>Canceled</Text>}
+    {p.state === `success` && <Text style={st.fileSuccessText}>Success</Text>}
+    {p.state === `failure` && <Text style={st.fileFailureText}>Failed</Text>}
+    {p.state === `stopped` && <Text style={st.fileStoppedText}>Canceled</Text>}
   </View>
 ));
 

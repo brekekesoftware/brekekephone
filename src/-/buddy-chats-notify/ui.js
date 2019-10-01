@@ -5,12 +5,12 @@ import { rem, std } from '../styleguide';
 
 const st = StyleSheet.create({
   notify: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     width: rem(320),
     backgroundColor: std.color.notify,
     marginBottom: std.gap.lg,
-    alignSelf: 'flex-start',
+    alignSelf: `flex-start`,
     borderTopRightRadius: std.gap.lg,
     borderBottomRightRadius: std.gap.lg,
     shadowColor: std.color.shade9,
@@ -53,8 +53,8 @@ const st = StyleSheet.create({
   },
 
   accept: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.lg * 2,
     height: std.iconSize.lg * 2,
     borderWidth: 1,
@@ -70,8 +70,8 @@ const st = StyleSheet.create({
   },
 
   reject: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.lg * 2,
     height: std.iconSize.lg * 2,
     borderWidth: 1,

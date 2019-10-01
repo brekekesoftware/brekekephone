@@ -18,8 +18,8 @@ const st = StyleSheet.create({
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -33,9 +33,9 @@ const st = StyleSheet.create({
   },
 
   navbarLeftOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -43,9 +43,9 @@ const st = StyleSheet.create({
   },
 
   navbarRightOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -74,8 +74,8 @@ const st = StyleSheet.create({
   },
 
   field: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     padding: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
@@ -95,8 +95,8 @@ const st = StyleSheet.create({
   },
 
   buddy: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     paddingLeft: std.gap.lg,
     paddingRight: std.gap.sm,
     paddingVertical: std.gap.lg,
@@ -106,7 +106,7 @@ const st = StyleSheet.create({
   },
 
   buddySelected: {
-    position: 'absolute',
+    position: `absolute`,
     left: 0,
     top: 0,
     bottom: 0,
@@ -115,8 +115,8 @@ const st = StyleSheet.create({
   },
 
   buddyAvatar: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     width: std.iconSize.lg * 2 + 1 * 2,
     height: std.iconSize.lg * 2 + 1 * 2,
     borderRadius: std.iconSize.lg,
@@ -147,7 +147,7 @@ const st = StyleSheet.create({
   },
 
   buddyOffline: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -159,7 +159,7 @@ const st = StyleSheet.create({
   },
 
   buddyOnline: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -171,7 +171,7 @@ const st = StyleSheet.create({
   },
 
   buddyIdle: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -183,7 +183,7 @@ const st = StyleSheet.create({
   },
 
   buddyBusy: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -230,10 +230,10 @@ const Buddy = pure(p => (
           uri: p.avatar,
         }}
       />
-      {p.status === 'offline' && <View style={st.buddyOffline} />}
-      {p.status === 'online' && <View style={st.buddyOnline} />}
-      {p.status === 'idle' && <View style={st.buddyIdle} />}
-      {p.status === 'busy' && <View style={st.buddyBusy} />}
+      {p.status === `offline` && <View style={st.buddyOffline} />}
+      {p.status === `online` && <View style={st.buddyOnline} />}
+      {p.status === `idle` && <View style={st.buddyIdle} />}
+      {p.status === `busy` && <View style={st.buddyBusy} />}
     </View>
     <View>
       {(() => {

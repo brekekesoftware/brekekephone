@@ -4,7 +4,7 @@ import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 
 export class CallStore extends BaseStore {
-  @observable selectedId = '';
+  @observable selectedId = ``;
 
   // id
   // incoming
@@ -29,9 +29,9 @@ export class CallStore extends BaseStore {
     const c = this.getRunningCall(_c.id);
     if (c) {
       Object.assign(c, _c);
-      this.set('runnings', [...this.runnings]);
+      this.set(`runnings`, [...this.runnings]);
     } else {
-      this.set('runnings', [...this.runnings, _c]);
+      this.set(`runnings`, [...this.runnings, _c]);
     }
   };
   @action removeRunning = id => {
@@ -39,7 +39,7 @@ export class CallStore extends BaseStore {
   };
   //
   @computed get _runningsMap() {
-    return arrToMap(this.runnings, 'id', c => c);
+    return arrToMap(this.runnings, `id`, c => c);
   }
   getRunningCall = id => {
     return this._runningsMap[id];

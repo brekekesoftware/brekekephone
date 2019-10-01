@@ -10,18 +10,18 @@ import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
 const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  `Jan`,
+  `Feb`,
+  `Mar`,
+  `Apr`,
+  `May`,
+  `Jun`,
+  `Jul`,
+  `Aug`,
+  `Sep`,
+  `Oct`,
+  `Nov`,
+  `Dec`,
 ];
 
 const formatTime = time => {
@@ -31,11 +31,11 @@ const formatTime = time => {
   const hour = time
     .getHours()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   const min = time
     .getMinutes()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   return `${month} ${day} - ${hour}:${min}`;
 };
 
@@ -54,7 +54,7 @@ class Recent extends React.Component {
       this.context.sip.createSession(number);
       g.goToCallsManage();
     } else {
-      g.showError({ message: 'Could not find number from store to call' });
+      g.showError({ message: `Could not find number from store to call` });
     }
   };
 
@@ -66,7 +66,7 @@ class Recent extends React.Component {
     return (
       <Layout
         header={{
-          title: 'Recent',
+          title: `Recent`,
         }}
       >
         <Search />

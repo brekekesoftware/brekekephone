@@ -8,7 +8,7 @@ import g from '../../global';
 import UI from './ui';
 
 const numberOfContactsPerPage = 30;
-const formatPhoneNumber = number => number.replace(/\D+/g, '');
+const formatPhoneNumber = number => number.replace(/\D+/g, ``);
 
 @observer
 class View extends React.Component {
@@ -38,7 +38,7 @@ class View extends React.Component {
         contactIds={this.state.contactIds}
         resolveContact={this.resolveContact}
         book={g.getQuery().book}
-        shared={g.getQuery().shared === 'true'}
+        shared={g.getQuery().shared === `true`}
         back={g.goToPhonebooksBrowse}
         goNextPage={this.goNextPage}
         goPrevPage={this.goPrevPage}
@@ -85,12 +85,12 @@ class View extends React.Component {
     const contact = this.state.contactById[id];
 
     if (!contact.firstName) {
-      g.showError({ message: 'The first name is required' });
+      g.showError({ message: `The first name is required` });
       return;
     }
 
     if (!contact.lastName) {
-      g.showError({ message: 'The last name is required' });
+      g.showError({ message: `The last name is required` });
       return;
     }
 
@@ -110,7 +110,7 @@ class View extends React.Component {
       this.setState(this.state);
 
       console.error(err);
-      g.showError({ message: 'save the contact' });
+      g.showError({ message: `save the contact` });
     };
 
     pbx.setContact(this.state.contactById[id]).then(onSuccess, onFailure);
@@ -121,7 +121,7 @@ class View extends React.Component {
     set(
       this.state,
       `contactById.${id}.name`,
-      val + ' ' + this.state.contactById[id].lastName,
+      val + ` ` + this.state.contactById[id].lastName,
     );
     this.setState(this.state);
   };
@@ -131,7 +131,7 @@ class View extends React.Component {
     set(
       this.state,
       `contactById.${id}.name`,
-      this.state.contactById[id].firstName + ' ' + val,
+      this.state.contactById[id].firstName + ` ` + val,
     );
     this.setState(this.state);
   };
@@ -221,7 +221,7 @@ class View extends React.Component {
 
   onLoadContactsFailure = err => {
     console.error(err);
-    g.showError({ message: 'load contacts' });
+    g.showError({ message: `load contacts` });
   };
 
   loadContactDetails = () => {

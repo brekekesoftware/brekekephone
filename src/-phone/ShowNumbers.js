@@ -5,14 +5,14 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   ShowNumbers: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     left: 0,
     right: 0,
   },
   ShowNumbers_Btn: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: `row`,
+    position: `absolute`,
     top: 10,
     right: 10,
   },
@@ -27,7 +27,7 @@ const s = StyleSheet.create({
     backgroundColor: v.mainDarkBg,
   },
   ShowNumbers_Display: {
-    position: 'absolute',
+    position: `absolute`,
     top: 45,
     left: 20,
   },
@@ -48,7 +48,7 @@ const ShowNumber = p => (
     </View>
     <View style={s.ShowNumbers_Display}>
       <Text style={s.ShowNumbers_DisplayTxt}>
-        {p.showNum !== '' ? p.showNum : 'Your number'}
+        {p.showNum !== `` ? p.showNum : `Your number`}
       </Text>
     </View>
   </View>

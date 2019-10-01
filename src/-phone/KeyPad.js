@@ -10,20 +10,20 @@ const s = StyleSheet.create({
     top: 120,
   },
   KeyPad_Number: {
-    flexDirection: 'row',
+    flexDirection: `row`,
   },
   KeyPad_NumberTxt: {
     fontSize: v.fontSizeTitle,
-    fontWeight: '600',
+    fontWeight: `600`,
   },
   KeyPad_NumberBtn: {
-    textAlign: 'center',
-    width: '33.3%',
+    textAlign: `center`,
+    width: `33.3%`,
     paddingVertical: 20,
   },
   KeyPad_Btn: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: `row`,
+    justifyContent: `space-between`,
   },
 
   KeyPad_Btn__call: {
@@ -34,10 +34,10 @@ const s = StyleSheet.create({
 });
 
 const keys = [
-  ['1', '2', '3'],
-  ['4', '5', '6'],
-  ['7', '8', '9'],
-  ['*', '0', '#'],
+  [`1`, `2`, `3`],
+  [`4`, `5`, `6`],
+  [`7`, `8`, `9`],
+  [`*`, `0`, `#`],
 ];
 
 const KeyPad = p => (
@@ -67,7 +67,7 @@ const KeyPad = p => (
       </TouchableOpacity>
       <TouchableOpacity
         style={s.KeyPad_NumberBtn}
-        onPress={() => p.onPress('delete')}
+        onPress={() => p.onPress(`delete`)}
       >
         <Icon path={mdiBackspace} />
       </TouchableOpacity>

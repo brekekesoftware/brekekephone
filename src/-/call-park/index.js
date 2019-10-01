@@ -39,7 +39,10 @@ class View extends React.Component {
     const { selectedPark } = this.state;
 
     if (!selectedPark) {
-      g.showError({ message: 'No selected park' });
+      g.showError({
+        err: new Error(`No selected park`),
+        message: `start new park`,
+      });
       return;
     }
 
@@ -60,8 +63,7 @@ class View extends React.Component {
   };
 
   onParkFailure = err => {
-    g.showError({ message: 'park the call' });
-    console.error(err);
+    g.showError({ err, message: `park the call` });
   };
 }
 

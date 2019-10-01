@@ -1,21 +1,21 @@
 import React from 'react';
+import LinearGradient from 'react-native-linear-gradient';
 
-import LinearGradient from '../native/LinearGradient';
+import g from '../global';
 import { StyleSheet } from '../native/Rn';
-import v from '../variables';
 
 const s = StyleSheet.create({
   BrekekeGradient: {
-    height: '100%',
+    height: `100%`,
     minHeight: 550,
   },
 });
 
-const BrekekeGradient = p => (
+const BrekekeGradient = props => (
   <LinearGradient
-    {...p}
-    style={[s.BrekekeGradient, p.style]}
-    colors={[v.mainBg, v.revBg]}
+    {...props}
+    style={[s.BrekekeGradient, props.style]}
+    colors={[g.mainBg, g.revBg]}
   />
 );
 

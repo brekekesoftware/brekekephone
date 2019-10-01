@@ -1,62 +1,75 @@
 import { mdiKeyboardBackspace, mdiPlus } from '@mdi/js';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
+import g from '../global';
 import {
+  Animated,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from '../native/Rn';
-import Icon from '../shared/Icon';
-import v from '../variables';
+import Icon from './Icon';
 
 const s = StyleSheet.create({
   LayoutHeader: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     left: 0,
     right: 0,
   },
   LayoutHeader_Inner: {
     padding: 15,
-    backgroundColor: v.bg,
+    backgroundColor: g.bg,
   },
   LayoutHeader_Inner__hasBackBtn: {
-    paddingLeft: 55,
+    paddingLeft: 50,
   },
   LayoutHeader_Inner__compact: {
-    paddingVertical: 10,
-    ...v.boxShadow,
+    ...g.boxShadow,
   },
   LayoutHeader_Inner__transparent: {
-    backgroundColor: 'transparent',
+    backgroundColor: `transparent`,
   },
   LayoutHeader_Title: {
-    fontWeight: 'bold',
-    fontSize: v.fontSizeTitle,
+    fontSize: g.fontSizeTitle,
+    lineHeight: g.lineHeightTitle,
+    fontWeight: `bold`,
   },
   LayoutHeader_Title__compact: {
-    fontSize: v.fontSizeSubTitle,
+    fontSize: g.fontSizeSubTitle,
     lineHeight: 20,
   },
   LayoutHeader_Description: {
-    color: v.subColor,
+    color: g.subColor,
   },
   LayoutHeader_Description__compact: {
-    display: 'none',
+    display: `none`,
   },
   LayoutHeader_CreateBtn: {
-    position: 'absolute',
-    top: 11,
+    position: `absolute`,
+    top: 0,
     right: 5,
+  },
+  LayoutHeader_CreateBtnOuter: {
+    position: `absolute`,
+    top: 11,
+    right: 0,
+    width: 50,
+    height: 50,
+    overflow: `hidden`,
+  },
+  LayoutHeader_CreateBtnInner: {
+    position: `absolute`,
+    right: 0,
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: v.mainDarkBg,
+    backgroundColor: g.mainDarkBg,
   },
   LayoutHeader_CreateBtn__white: {
-    backgroundColor: v.bg,
+    backgroundColor: g.bg,
   },
   LayoutHeader_CreateBtn__compact: {
     top: 0,
@@ -64,7 +77,12 @@ const s = StyleSheet.create({
     borderRadius: 0,
   },
   LayoutHeader_BackBtn: {
-    position: 'absolute',
+    position: `absolute`,
+    top: 0,
+    left: 0,
+  },
+  LayoutHeader_BackBtnInner: {
+    position: `absolute`,
     top: 0,
     left: 0,
     width: 50,
@@ -79,58 +97,163 @@ const s = StyleSheet.create({
   },
 });
 
-const Header = p => (
-  <View style={s.LayoutHeader}>
-    <StatusBar transparent={p.transparent} />
-    <View
-      style={[
-        s.LayoutHeader_Inner,
-        !!p.onBackBtnPress && s.LayoutHeader_Inner__hasBackBtn,
-        p.compact && s.LayoutHeader_Inner__compact,
-        p.transparent && s.LayoutHeader_Inner__transparent,
-      ]}
-    >
-      <Text
+const Header = props => {
+  const [paddingVertical] = useState(new Animated.Value(15));
+  useEffect(() => {
+    Animated.timing(paddingVertical, {
+      toValue: props.compact ? 10 : 15,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(paddingVertical).stop();
+  }, [paddingVertical, props.compact]);
+
+  const [titleFontSize] = useState(new Animated.Value(g.fontSizeTitle));
+  useEffect(() => {
+    Animated.timing(titleFontSize, {
+      toValue: props.compact ? g.fontSizeSubTitle : g.fontSizeTitle,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(titleFontSize).stop();
+  }, [titleFontSize, props.compact]);
+
+  const [titleLineHeight] = useState(new Animated.Value(g.lineHeightTitle));
+  useEffect(() => {
+    Animated.timing(titleLineHeight, {
+      toValue: props.compact ? 20 : g.lineHeightTitle,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(titleLineHeight).stop();
+  }, [titleLineHeight, props.compact]);
+
+  const [backBtnHeight] = useState(new Animated.Value(70));
+  useEffect(() => {
+    Animated.timing(backBtnHeight, {
+      toValue: props.compact ? 40 : 70,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(backBtnHeight).stop();
+  }, [backBtnHeight, props.compact]);
+
+  const [backBtnPadding] = useState(new Animated.Value(20));
+  useEffect(() => {
+    Animated.timing(backBtnPadding, {
+      toValue: props.compact ? 5 : 20,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(backBtnPadding).stop();
+  }, [backBtnPadding, props.compact]);
+
+  const [createBtnOuterTop] = useState(new Animated.Value(11));
+  useEffect(() => {
+    Animated.timing(createBtnOuterTop, {
+      toValue: props.compact ? 0 : 11,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(createBtnOuterTop).stop();
+  }, [createBtnOuterTop, props.compact]);
+  const [createBtnOuterHeight] = useState(new Animated.Value(50));
+  useEffect(() => {
+    Animated.timing(createBtnOuterHeight, {
+      toValue: props.compact ? 40 : 50,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(createBtnOuterHeight).stop();
+  }, [createBtnOuterHeight, props.compact]);
+  const [createBtnInnerTop] = useState(new Animated.Value(0));
+  useEffect(() => {
+    Animated.timing(createBtnInnerTop, {
+      toValue: props.compact ? -5 : 0,
+      duration: 150,
+    }).start();
+    return () => Animated.timing(createBtnInnerTop).stop();
+  }, [createBtnInnerTop, props.compact]);
+
+  return (
+    <View style={s.LayoutHeader}>
+      <StatusBar transparent={props.transparent} />
+      <Animated.View
         style={[
-          s.LayoutHeader_Title,
-          p.compact && s.LayoutHeader_Title__compact,
+          s.LayoutHeader_Inner,
+          !!props.onBackBtnPress && s.LayoutHeader_Inner__hasBackBtn,
+          props.compact && s.LayoutHeader_Inner__compact,
+          props.transparent && s.LayoutHeader_Inner__transparent,
+          {
+            paddingVertical,
+          },
         ]}
       >
-        {p.title}
-      </Text>
-      <Text
-        style={[
-          s.LayoutHeader_Description,
-          p.compact && s.LayoutHeader_Description__compact,
-        ]}
-      >
-        {p.description || '\u200a'}
-      </Text>
-      {p.onCreateBtnPress && (
-        <TouchableOpacity
+        <Animated.Text
           style={[
-            s.LayoutHeader_CreateBtn,
-            p.transparent && s.LayoutHeader_CreateBtn__white,
-            p.compact && s.LayoutHeader_CreateBtn__compact,
+            s.LayoutHeader_Title,
+            props.compact && s.LayoutHeader_Title__compact,
+            {
+              fontSize: titleFontSize,
+              lineHeight: titleLineHeight,
+            },
           ]}
-          onPress={p.onCreateBtnPress}
         >
-          <Icon path={mdiPlus} color={p.transparent ? 'black' : 'white'} />
-        </TouchableOpacity>
-      )}
-      {p.onBackBtnPress && (
-        <TouchableOpacity
+          {props.title}
+        </Animated.Text>
+        <Text
           style={[
-            s.LayoutHeader_BackBtn,
-            p.compact && s.LayoutHeader_BackBtn__compact,
+            s.LayoutHeader_Description,
+            props.compact && s.LayoutHeader_Description__compact,
           ]}
-          onPress={p.onBackBtnPress}
         >
-          <Icon path={mdiKeyboardBackspace} />
-        </TouchableOpacity>
-      )}
+          {props.description || `\u200a`}
+        </Text>
+        {props.onCreateBtnPress && (
+          <TouchableOpacity
+            style={s.LayoutHeader_CreateBtn}
+            onPress={props.onCreateBtnPress}
+          >
+            <Animated.View
+              style={[
+                s.LayoutHeader_CreateBtnOuter,
+                {
+                  top: createBtnOuterTop,
+                  height: createBtnOuterHeight,
+                },
+              ]}
+            >
+              <Animated.View
+                style={[
+                  s.LayoutHeader_CreateBtnInner,
+                  props.transparent && s.LayoutHeader_CreateBtn__white,
+                  {
+                    top: createBtnInnerTop,
+                  },
+                ]}
+              >
+                <Icon
+                  path={mdiPlus}
+                  color={props.transparent ? `black` : `white`}
+                />
+              </Animated.View>
+            </Animated.View>
+          </TouchableOpacity>
+        )}
+        {props.onBackBtnPress && (
+          <TouchableOpacity
+            style={s.LayoutHeader_BackBtn}
+            onPress={props.onBackBtnPress}
+          >
+            <Animated.View
+              style={[
+                s.LayoutHeader_BackBtnInner,
+                {
+                  height: backBtnHeight,
+                  paddingVertical: backBtnPadding,
+                },
+              ]}
+            >
+              <Icon path={mdiKeyboardBackspace} />
+            </Animated.View>
+          </TouchableOpacity>
+        )}
+      </Animated.View>
     </View>
-  </View>
-);
+  );
+};
 
 export default Header;

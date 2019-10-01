@@ -12,8 +12,8 @@ const st = StyleSheet.create({
   },
 
   navbar: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
     paddingVertical: std.gap.sm,
@@ -21,7 +21,7 @@ const st = StyleSheet.create({
   },
 
   navbarBack: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     bottom: 0,
     left: std.gap.lg,
@@ -29,7 +29,7 @@ const st = StyleSheet.create({
   },
 
   navbarNext: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     bottom: 0,
     right: std.gap.lg,
@@ -40,7 +40,7 @@ const st = StyleSheet.create({
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
     lineHeight: std.textSize.md + std.gap.md * 2,
-    fontWeight: '700',
+    fontWeight: `700`,
     color: std.color.shade9,
   },
 
@@ -60,7 +60,7 @@ const st = StyleSheet.create({
   },
 
   navbarReset: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     bottom: 0,
     right: std.gap.lg,
@@ -71,7 +71,7 @@ const st = StyleSheet.create({
     fontFamily: std.font.text,
     lineHeight: std.textSize.sm + std.gap.sm * 2,
     paddingTop: std.gap.lg,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     paddingBottom: std.gap.lg,
   },
 });
@@ -87,7 +87,7 @@ const Main = p => (
       )}
       {p.onNext && (
         <TouchableOpacity style={st.navbarNext}>
-          <Text style={st.navbarAction}>{p.nextLabel || 'Next'}</Text>
+          <Text style={st.navbarAction}>{p.nextLabel || `Next`}</Text>
         </TouchableOpacity>
       )}
       {p.onReset && (

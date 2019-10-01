@@ -3,7 +3,7 @@ import VoipPushNotification from 'react-native-voip-push-notification';
 
 import parse, { setChecker } from './PushNotification-parse';
 
-let voipApnsToken = '';
+let voipApnsToken = ``;
 const onToken = t => {
   if (t) {
     voipApnsToken = t;
@@ -14,8 +14,8 @@ const onNotification = n => {
   //
   const alertBody = n.body || JSON.stringify(n);
   const isCall = /call/i.test(alertBody);
-  const alertAction = isCall ? 'Answer' : 'View';
-  const soundName = isCall ? 'incallmanager_ringtone.mp3' : undefined;
+  const alertAction = isCall ? `Answer` : `View`;
+  const soundName = isCall ? `incallmanager_ringtone.mp3` : undefined;
   //
   PushNotificationIOS.getApplicationIconBadgeNumber(n => {
     n = (n || 0) + 1;
@@ -32,8 +32,8 @@ const onNotification = n => {
 const PushNotification = {
   register: fn => {
     setChecker(fn);
-    VoipPushNotification.addEventListener('register', onToken);
-    VoipPushNotification.addEventListener('notification', onNotification);
+    VoipPushNotification.addEventListener(`register`, onToken);
+    VoipPushNotification.addEventListener(`notification`, onNotification);
     VoipPushNotification.requestPermissions();
   },
   getToken: () => {

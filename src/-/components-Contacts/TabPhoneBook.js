@@ -21,8 +21,7 @@ const User = p => (
     <Left>
       <Thumbnail
         source={{
-          uri:
-            'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg',
+          uri: `https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg`,
         }}
       />
     </Left>
@@ -43,20 +42,20 @@ const User = p => (
 
 let data_demo = [
   {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
+    imageUrl: `http://via.placeholder.com/160x160`,
+    title: `something`,
   },
   {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
+    imageUrl: `http://via.placeholder.com/160x160`,
+    title: `something two`,
   },
   {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something',
+    imageUrl: `http://via.placeholder.com/160x160`,
+    title: `something`,
   },
   {
-    imageUrl: 'http://via.placeholder.com/160x160',
-    title: 'something two',
+    imageUrl: `http://via.placeholder.com/160x160`,
+    title: `something two`,
   },
 ];
 

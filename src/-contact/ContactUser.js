@@ -36,18 +36,18 @@ class ContactUser extends React.Component {
       name: pbxUser.name || ucUser.name,
       statusText: ucUser.statusText,
       avatar: ucUser.avatar,
-      callTalking: !!pbxUser.talkers?.filter(t => t.status === 'calling')
+      callTalking: !!pbxUser.talkers?.filter(t => t.status === `calling`)
         .length,
-      callHolding: !!pbxUser.talkers?.filter(t => t.status === 'ringing')
+      callHolding: !!pbxUser.talkers?.filter(t => t.status === `ringing`)
         .length,
-      callRinging: !!pbxUser.talkers?.filter(t => t.status === 'talking')
+      callRinging: !!pbxUser.talkers?.filter(t => t.status === `talking`)
         .length,
-      callCalling: !!pbxUser.talkers?.filter(t => t.status === 'holding')
+      callCalling: !!pbxUser.talkers?.filter(t => t.status === `holding`)
         .length,
-      chatOffline: ucUser.status === 'offline',
-      chatOnline: ucUser.status === 'online',
-      chatIdle: ucUser.status === 'idle',
-      chatBusy: ucUser.status === 'busy',
+      chatOffline: ucUser.status === `offline`,
+      chatOnline: ucUser.status === `online`,
+      chatIdle: ucUser.status === `idle`,
+      chatBusy: ucUser.status === `busy`,
       chatEnabled: authStore.profile?.ucEnabled,
     };
   };
@@ -62,14 +62,14 @@ class ContactUser extends React.Component {
     if (pbxUser) {
       pbxUserName = pbxUser.name;
     } else {
-      pbxUserName = '';
+      pbxUserName = ``;
     }
     let ucUserName;
     const ucUser = contactStore.getUCUser(id);
     if (ucUser) {
       ucUserName = ucUser.name;
     } else {
-      ucUserName = '';
+      ucUserName = ``;
     }
     //
     userId = userId.toLowerCase();
@@ -108,7 +108,7 @@ class ContactUser extends React.Component {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
-        c0 = '#';
+        c0 = `#`;
       }
       if (!map[c0]) {
         map[c0] = [];
@@ -121,19 +121,19 @@ class ContactUser extends React.Component {
       users: map[k],
     }));
 
-    groups = orderBy(groups, 'key');
+    groups = orderBy(groups, `key`);
     groups.forEach(g => {
-      g.users = orderBy(g.users, 'name');
+      g.users = orderBy(g.users, `name`);
     });
     return (
       <Layout
         header={{
-          title: 'Contact',
+          title: `Contact`,
         }}
       >
         <Search
           value={contactStore.searchText}
-          onValueChange={contactStore.setF('searchText')}
+          onValueChange={contactStore.setF(`searchText`)}
         />
         <React.Fragment>
           {groups.map(_g => (

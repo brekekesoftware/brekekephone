@@ -25,7 +25,7 @@ class View extends React.Component {
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         resolveUser={this.resolveUser}
         searchText={contactStore.searchText}
-        setSearchText={contactStore.setF('searchText')}
+        setSearchText={contactStore.setF(`searchText`)}
         callIds={this.getMatchUserIds()}
       />
     );
@@ -41,7 +41,10 @@ class View extends React.Component {
       this.context.sip.createSession(number);
       g.goToCallsManage();
     } else {
-      g.showError({ message: 'Could not find number from store to call' });
+      g.showError({
+        err: new Error(`Could not find number from store to call`),
+        message: `start call back`,
+      });
     }
   };
 

@@ -17,8 +17,8 @@ const st = StyleSheet.create({
   },
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -33,8 +33,8 @@ const st = StyleSheet.create({
     flex: 1,
   },
   chat: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     paddingLeft: std.gap.lg,
     paddingRight: std.gap.sm,
     paddingVertical: std.gap.lg,
@@ -43,8 +43,8 @@ const st = StyleSheet.create({
     borderBottomWidth: 1,
   },
   chatIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     width: std.iconSize.lg * 2 + 1 * 2,
     height: std.iconSize.lg * 2 + 1 * 2,
     borderRadius: std.iconSize.lg,
@@ -65,7 +65,7 @@ const st = StyleSheet.create({
     color: std.color.shade9,
   },
   chatOffline: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -76,7 +76,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade5,
   },
   chatOnline: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -87,7 +87,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.active,
   },
   chatIdle: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -98,7 +98,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.notice,
   },
   chatBusy: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -112,10 +112,10 @@ const st = StyleSheet.create({
     fontFamily: std.font.icon,
     fontSize: std.iconSize.md,
     color: std.color.action,
-    marginLeft: 'auto',
+    marginLeft: `auto`,
   },
   createGroup: {
-    alignItems: 'center',
+    alignItems: `center`,
     paddingVertical: std.gap.lg,
     backgroundColor: std.color.shade0,
     borderColor: std.color.shade4,
@@ -147,10 +147,10 @@ const Buddy = p => (
           uri: p.avatar,
         }}
       />
-      {p.status === 'offline' && <View style={st.chatOffline} />}
-      {p.status === 'online' && <View style={st.chatOnline} />}
-      {p.status === 'idle' && <View style={st.chatIdle} />}
-      {p.status === 'busy' && <View style={st.chatBusy} />}
+      {p.status === `offline` && <View style={st.chatOffline} />}
+      {p.status === `online` && <View style={st.chatOnline} />}
+      {p.status === `idle` && <View style={st.chatIdle} />}
+      {p.status === `busy` && <View style={st.chatBusy} />}
     </View>
     {(() => {
       if (p.name) {

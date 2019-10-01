@@ -1,222 +1,214 @@
-import {
-  mdiAccountCircleOutline,
-  mdiServerNetwork,
-  mdiTextboxPassword,
-  mdiWebBox,
-  mdiWebpack,
-} from '@mdi/js';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
-import { action, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { genEmptyProfile } from '../-/authStore';
 import g from '../global';
-import Field from '../shared/Field';
-import FieldGroup from '../shared/FieldGroup';
+import { Text, View } from '../native/Rn';
 import Layout from '../shared/Layout';
+import useForm from '../shared/useForm';
+import useStore from '../shared/useStore';
 
-@observer
-class ProfileCreateForm extends React.Component {
-  @observable profile = {
-    ...genEmptyProfile(),
-    ...cloneDeep(this.props.updatingProfile),
-  };
-  @observable addingPark = '';
-
-  componentDidUpdate(prevProps) {
-    if (
-      this.props.isUpdate &&
-      this.props.updatingProfile?.id !== prevProps.updatingProfile?.id
-    ) {
-      runInAction(() => {
-        Object.assign(this.profile, this.props.updatingProfile);
+const ProfileCreateForm = observer(props => {
+  const $ = useStore(() => ({
+    observable: {
+      profile: {
+        ...g.genEmptyProfile(),
+        ...cloneDeep(props.updatingProfile),
+      },
+      addingPark: ``,
+    },
+    //
+    onAddingParkSubmit: () => {
+      $.set(`profile`, p => {
+        $.addingPark = $.addingPark.trim();
+        if ($.addingPark) {
+          p.parks.push($.addingPark);
+          $.addingPark = ``;
+        }
+        return p;
       });
-    }
-  }
-
-  setF = k =>
-    action(v => {
-      this.profile[k] = v;
-      const { ucHostname, ucPort, pbxHostname, pbxPort } = this.profile;
-      if (k === 'ucEnabled' && !ucHostname && !ucPort) {
-        this.profile.ucHostname = pbxHostname;
-        this.profile.ucPort = pbxPort;
-      }
-    });
-
-  @action addingParkOnChange = v => {
-    this.addingPark = v;
-  };
-  @action addingParkOnCreate = () => {
-    this.addingPark = this.addingPark.trim();
-    if (!this.addingPark) {
-      return;
-    }
-    this.profile.parks.push(this.addingPark);
-    this.addingPark = '';
-  };
-  closureOnParkRemove = i => () => {
-    g.showPrompt({
-      title: `Remove Park: ${this.profile.parks[i]}`,
-      message: `Do you want to remove this park?`,
-      onConfirm: action(() => {
-        this.profile.parks = this.profile.parks.filter((p, _i) => _i !== i);
-      }),
-    });
-  };
-
-  hasUnsavedChanges = () => {
-    const { isUpdate, updatingProfile } = this.props;
-    const p = isUpdate
-      ? updatingProfile
-      : Object.assign(genEmptyProfile(), {
-          id: this.profile.id,
-        });
-    return p && !isEqual(this.profile, p);
-  };
-  onBackBtnPress = () => {
-    if (!this.hasUnsavedChanges()) {
-      this.props.onBackBtnPress();
-      return;
-    }
-    g.showPrompt({
-      title: `Discard Unsaved`,
-      message: `Do you want to discard unsaved changes and go back?`,
-      onConfirm: this.props.onBackBtnPress,
-      confirmText: 'DISCARD',
-    });
-  };
-  onSaveBtnPress = () => {
-    this.props.onSaveBtnPress(this.profile, this.hasUnsavedChanges());
-  };
-
-  render() {
-    const {
-      pbxUsername,
-      pbxPassword,
-      pbxTenant,
-      pbxHostname,
-      pbxPort,
-      pbxPhoneIndex,
-      pbxTurnEnabled,
-      pushNotificationEnabled,
-      ucEnabled,
-      ucHostname,
-      ucPort,
-      parks,
-    } = this.profile;
-    const { isUpdate, updatingProfile } = this.props;
-    return (
-      <Layout
-        header={{
-          onBackBtnPress: this.onBackBtnPress,
-          title: this.props.title,
-          description: isUpdate
-            ? updatingProfile
-              ? `${updatingProfile.pbxUsername} - ${updatingProfile.pbxHostname}`
-              : 'Server profile not found'
-            : 'Create a new sign in profile',
-        }}
-        footer={{
-          onBackBtnPress: this.onBackBtnPress,
-          onSaveBtnPress: this.onSaveBtnPress,
-        }}
-      >
-        {!(isUpdate && !updatingProfile) && (
+    },
+    onAddingParkRemove: i => {
+      g.showPrompt({
+        title: `Remove Park`,
+        message: (
           <React.Fragment>
-            <FieldGroup title="PBX">
-              <Field
-                name="USERNAME"
-                icon={mdiAccountCircleOutline}
-                value={pbxUsername}
-                onValueChange={this.setF('pbxUsername')}
-              />
-              <Field
-                secureTextEntry
-                name="PASSWORD"
-                icon={mdiTextboxPassword}
-                value={pbxPassword}
-                onValueChange={this.setF('pbxPassword')}
-              />
-              <Field
-                name="TENANT"
-                icon={mdiWebpack}
-                value={pbxTenant}
-                onValueChange={this.setF('pbxTenant')}
-              />
-              <Field
-                name="HOSTNAME"
-                icon={mdiWebBox}
-                value={pbxHostname}
-                onValueChange={this.setF('pbxHostname')}
-              />
-              <Field
-                keyboardType="numeric"
-                name="PORT"
-                icon={mdiServerNetwork}
-                value={pbxPort}
-                onValueChange={this.setF('pbxPort')}
-              />
-              <Field
-                type="Switch"
-                name="TURN"
-                value={pbxTurnEnabled}
-                onValueChange={this.setF('pbxTurnEnabled')}
-              />
-              <Field
-                type="Switch"
-                name="PUSH NOTIFICATION"
-                value={pushNotificationEnabled}
-                onValueChange={this.setF('pushNotificationEnabled')}
-              />
-            </FieldGroup>
-            <FieldGroup title="UC" hasMargin>
-              <Field
-                type="Switch"
-                name="UC"
-                value={ucEnabled}
-                onValueChange={this.setF('ucEnabled')}
-              />
-              <Field
-                disabled={!ucEnabled}
-                name="HOSTNAME"
-                icon={mdiWebBox}
-                value={ucHostname}
-                onValueChange={this.setF('ucHostname')}
-              />
-              <Field
-                keyboardType="numeric"
-                disabled={!ucEnabled}
-                name="PORT"
-                icon={mdiServerNetwork}
-                value={ucPort}
-                onValueChange={this.setF('ucPort')}
-              />
-            </FieldGroup>
-            <FieldGroup title="PARKS" hasMargin>
-              {parks.map((p, i) => (
-                <Field
-                  disabled
-                  key={`park-i${i}-${p}`}
-                  name={`PARK ${i + 1}`}
-                  value={p}
-                  onRemoveBtnPress={this.closureOnParkRemove(i)}
-                />
-              ))}
-              <Field
-                name="NEW PARK"
-                value={this.addingPark}
-                onValueChange={this.addingParkOnChange}
-                onCreateBtnPress={this.addingParkOnCreate}
-              />
-            </FieldGroup>
+            <View>
+              <Text small>
+                Park {i + 1}: {$.profile.parks[i]}
+              </Text>
+            </View>
+            <Text>Do you want to remove this park?</Text>
           </React.Fragment>
-        )}
-      </Layout>
-    );
-  }
-}
+        ),
+        onConfirm: () => {
+          $.set(`profile`, p => {
+            p.parks = p.parks.filter((p, _i) => _i !== i);
+            return p;
+          });
+        },
+      });
+    },
+    //
+    hasUnsavedChanges: () => {
+      const p = props.updatingProfile || g.genEmptyProfile();
+      if (!props.updatingProfile) {
+        Object.assign(p, {
+          id: $.profile.id,
+        });
+      }
+      return !isEqual($.profile, p);
+    },
+    onBackBtnPress: () => {
+      if (!$.hasUnsavedChanges()) {
+        props.onBack();
+        return;
+      }
+      g.showPrompt({
+        title: `Discard Changes`,
+        message: `Do you want to discard all unsaved changes and go back?`,
+        onConfirm: props.onBack,
+        confirmText: `DISCARD`,
+      });
+    },
+    onValidSubmit: () => {
+      props.onSave($.profile, $.hasUnsavedChanges());
+    },
+  }));
+  const [Form, submitForm, revalidate] = useForm();
+  return (
+    <Layout
+      header={{
+        onBackBtnPress: $.onBackBtnPress,
+        title: props.title,
+        description: props.updatingProfile
+          ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
+          : `Create a new sign in profile`,
+      }}
+      footer={{
+        actions: {
+          onBackBtnPress: $.onBackBtnPress,
+          onSaveBtnPress: submitForm,
+        },
+      }}
+    >
+      <Form
+        $={$}
+        k="profile"
+        onValidSubmit={$.onValidSubmit}
+        fields={[
+          {
+            isGroup: true,
+            label: `PBX`,
+          },
+          {
+            // autoFocus: true, // TODO Animation issue
+            name: `pbxUsername`,
+            label: `USERNAME`,
+            rule: `required`,
+          },
+          {
+            secureTextEntry: true,
+            name: `pbxPassword`,
+            label: `PASSWORD`,
+            rule: `required`,
+          },
+          {
+            name: `pbxTenant`,
+            label: `TENANT`,
+            rule: `required`,
+          },
+          {
+            name: `pbxHostname`,
+            label: `HOSTNAME`,
+            rule: `required|hostname`,
+          },
+          {
+            keyboardType: `numeric`,
+            name: `pbxPort`,
+            label: `PORT`,
+            rule: `required|port`,
+          },
+          {
+            type: `Picker`,
+            name: `pbxPhoneIndex`,
+            label: `PHONE`,
+            options: [1, 2, 3, 4].map(v => ({
+              key: `${v}`,
+              label: `Phone ${v}`,
+            })),
+          },
+          {
+            type: `Switch`,
+            name: `pbxTurnEnabled`,
+            label: `TURN`,
+          },
+          {
+            type: `Switch`,
+            name: `pushNotificationEnabled`,
+            label: `PUSH NOTIFICATION`,
+          },
+          {
+            isGroup: true,
+            label: `UC`,
+            hasMargin: true,
+          },
+          {
+            type: `Switch`,
+            name: `ucEnabled`,
+            label: `UC`,
+            onValueChange: v => {
+              $.set(`profile`, p => {
+                if (v && !p.ucHostname && !p.ucPort) {
+                  p.ucHostname = p.pbxHostname;
+                  p.ucPort = p.pbxPort;
+                  // TODO
+                  // revalidate('ucHostname', 'ucPort');
+                  revalidate(`ucHostname`, p.ucHostname);
+                  revalidate(`ucPort`, p.ucPort);
+                }
+                p.ucEnabled = v;
+                return p;
+              });
+            },
+          },
+          {
+            disabled: !$.profile.ucEnabled,
+            name: `ucHostname`,
+            label: `HOSTNAME`,
+            rule: `required|hostname`,
+          },
+          {
+            keyboardType: `numeric`,
+            disabled: !$.profile.ucEnabled,
+            name: `ucPort`,
+            label: `PORT`,
+            rule: `required|port`,
+          },
+          {
+            isGroup: true,
+            label: `PARKS`,
+            hasMargin: true,
+          },
+          ...$.profile.parks.map((p, i) => ({
+            disabled: true,
+            name: `parks[${i}]:${p}`,
+            value: p,
+            label: `PARK ${i + 1}`,
+            onRemoveBtnPress: () => $.onAddingParkRemove(i),
+          })),
+          {
+            name: `parks[new]`,
+            label: `NEW PARK`,
+            value: $.addingPark,
+            onValueChange: v => $.set(`addingPark`, v),
+            onCreateBtnPress: $.onAddingParkSubmit,
+          },
+        ]}
+      />
+    </Layout>
+  );
+});
 
 export default ProfileCreateForm;

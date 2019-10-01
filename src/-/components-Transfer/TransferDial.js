@@ -27,7 +27,7 @@ class TransferDial extends React.Component {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
-        c0 = '#';
+        c0 = `#`;
       }
       if (!map[c0]) {
         map[c0] = [];
@@ -40,9 +40,9 @@ class TransferDial extends React.Component {
       users: map[k],
     }));
 
-    groups = orderBy(groups, 'key');
+    groups = orderBy(groups, `key`);
     groups.forEach(g => {
-      g.users = orderBy(g.users, 'name');
+      g.users = orderBy(g.users, `name`);
     });
 
     return (

@@ -9,8 +9,8 @@ const Page404 = () => (
     <Layout
       header={{
         transparent: true,
-        title: '404',
-        description: 'The link visited is not found or invalid',
+        title: `404`,
+        description: `The link visited is not found or invalid`,
         onBackBtnPress: g.backToProfileSignIn,
       }}
     />

@@ -4,7 +4,7 @@ import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 
 class ContactStore extends BaseStore {
-  @observable searchText = '';
+  @observable searchText = ``;
 
   // id
   // name
@@ -37,11 +37,11 @@ class ContactStore extends BaseStore {
         talker.status = status;
       }
     }
-    this.set('pbxUsers', [...this.pbxUsers]);
+    this.set(`pbxUsers`, [...this.pbxUsers]);
   };
   //
   @computed get _pbxUsersMap() {
-    return arrToMap(this.pbxUsers, 'id', u => u);
+    return arrToMap(this.pbxUsers, `id`, u => u);
   }
   getPBXUser = id => {
     return this._pbxUsersMap[id];
@@ -63,10 +63,10 @@ class ContactStore extends BaseStore {
       return;
     }
     Object.assign(u, _u);
-    this.set('ucUsers', [...this.ucUsers]);
+    this.set(`ucUsers`, [...this.ucUsers]);
   });
   @computed get _ucUsersMap() {
-    return arrToMap(this.ucUsers, 'id', u => u);
+    return arrToMap(this.ucUsers, `id`, u => u);
   }
   getUCUser = id => {
     return this._ucUsersMap[id];

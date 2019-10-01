@@ -1,32 +1,26 @@
-import flow from 'lodash/flow';
-import React, { forwardRef, useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import React, { forwardRef } from 'react';
+import { Platform, StyleSheet, TextInput } from 'react-native';
 
 import v from '../variables';
 
 const s = StyleSheet.create({
   RnTextInput: {
-    position: 'relative',
+    position: `relative`,
     fontSize: v.fontSize,
     fontWeight: v.fontWeight,
     fontFamily: v.fontFamily,
     color: v.color,
   },
-  RnTextInput__focusing: {
-    backgroundColor: v.mainTranBg,
-  },
 });
 
-const RnTextInput = forwardRef((p, ref) => {
-  const [focusing, setFocusing] = useState(false);
-  return (
-    <TextInput
-      {...p}
-      style={[s.RnTextInput, p.style, focusing && s.RnTextInput__focusing]}
-      onFocus={flow([() => setFocusing(true), p.onFocus].filter(f => f))}
-      onBlur={flow([() => setFocusing(false), p.onBlur].filter(f => f))}
-    />
-  );
-});
+const RnTextInput = forwardRef((props, ref) => (
+  <TextInput
+    ref={ref}
+    autoCapitalize="none"
+    {...props}
+    style={[s.RnTextInput, props.style]}
+    keyboardType={Platform.OS === `web` ? null : props.keyboardType}
+  />
+));
 
 export default RnTextInput;

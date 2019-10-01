@@ -15,24 +15,24 @@ class View extends React.Component {
 
   componentDidMount() {
     this.autoAuth();
-    this.clearObserve = observe(authStore, 'pbxShouldAuth', this.autoAuth);
+    this.clearObserve = observe(authStore, `pbxShouldAuth`, this.autoAuth);
   }
   componentWillUnmount() {
     this.clearObserve();
     this.context.pbx.disconnect();
-    authStore.set('pbxState', 'stopped');
+    authStore.set(`pbxState`, `stopped`);
   }
 
   auth = () => {
     this.context.pbx.disconnect();
-    authStore.set('pbxState', 'connecting');
+    authStore.set(`pbxState`, `connecting`);
     this.context.pbx
       .connect(authStore.profile)
       .then(() => {
-        authStore.set('pbxState', 'success');
+        authStore.set(`pbxState`, `success`);
       })
       .catch(err => {
-        authStore.set('pbxState', 'failure');
+        authStore.set(`pbxState`, `failure`);
         g.showError({ message: `login to pbx, err: ${err?.message}` });
       });
   };
@@ -44,11 +44,11 @@ class View extends React.Component {
   };
 
   render() {
-    return authStore.pbxState === 'success' ? null : (
+    return authStore.pbxState === `success` ? null : (
       <UI
         retryable={!!authStore.profile}
         failure={this.props.failure}
-        abort={g.goToProfileSignIn}
+        abort={g.goToPageProfileSignIn}
         retry={this.auth}
       />
     );

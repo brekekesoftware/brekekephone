@@ -18,8 +18,8 @@ const st = StyleSheet.create({
   },
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -31,8 +31,8 @@ const st = StyleSheet.create({
     color: std.color.shade9,
   },
   search: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     backgroundColor: std.color.shade2,
     padding: std.gap.md,
     borderColor: std.color.shade4,
@@ -46,24 +46,24 @@ const st = StyleSheet.create({
     paddingHorizontal: std.gap.lg,
     height: std.textSize.md + std.gap.lg * 2,
     color: std.color.shade9,
-    textAlign: 'center',
+    textAlign: `center`,
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.sm,
   },
   searchClear: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: std.gap.lg,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
   users: {
     flex: 1,
   },
   user: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     paddingLeft: std.gap.lg,
     paddingVertical: std.gap.lg,
     backgroundColor: std.color.shade0,
@@ -94,8 +94,8 @@ const st = StyleSheet.create({
     color: std.color.shade5,
   },
   userOpt: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
@@ -109,7 +109,7 @@ const st = StyleSheet.create({
     color: std.color.action,
   },
   userCallHolding: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -120,7 +120,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.notice,
   },
   userCallTalking: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -131,7 +131,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.danger,
   },
   userCallCalling: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -142,7 +142,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.danger,
   },
   userCallRinging: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -153,7 +153,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.danger,
   },
   userChatOffline: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -164,7 +164,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.shade5,
   },
   userChatOnline: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -175,7 +175,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.active,
   },
   userChatIdle: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -186,7 +186,7 @@ const st = StyleSheet.create({
     backgroundColor: std.color.notice,
   },
   userChatBusy: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: 0,
     width: std.gap.lg,
@@ -226,7 +226,7 @@ const Search = pure(p => (
       onChangeText={p.setValue}
     />
     {!!p.value && (
-      <Button style={st.searchClear} onPress={() => p.setValue('')}>
+      <Button style={st.searchClear} onPress={() => p.setValue(``)}>
         <Text style={st.optIcon}>icon_x_circle</Text>
       </Button>
     )}

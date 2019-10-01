@@ -14,8 +14,8 @@ const st = StyleSheet.create({
   noCall: {
     flex: 1,
     backgroundColor: std.color.shade3,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   noCallMessage: {
@@ -32,8 +32,8 @@ const st = StyleSheet.create({
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -47,9 +47,9 @@ const st = StyleSheet.create({
   },
 
   navbarLeftOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -57,9 +57,9 @@ const st = StyleSheet.create({
   },
 
   navbarRightOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -94,8 +94,8 @@ const st = StyleSheet.create({
 
   opt: {
     backgroundColor: std.color.shade0,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     padding: std.gap.lg,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -109,7 +109,7 @@ const st = StyleSheet.create({
   },
 
   attendedSwitch: {
-    marginLeft: 'auto',
+    marginLeft: `auto`,
   },
 
   targetInput: {
@@ -142,8 +142,8 @@ const st = StyleSheet.create({
   },
 
   match: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     padding: std.gap.lg,
     borderBottomWidth: 1,
     borderColor: std.color.shade4,
@@ -202,15 +202,15 @@ const st = StyleSheet.create({
   },
 
   controlOpts: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: `row`,
+    flexWrap: `wrap`,
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   controlOpt: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,

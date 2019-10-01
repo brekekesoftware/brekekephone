@@ -14,7 +14,7 @@ import UI from './ui';
 @observer
 class View extends React.Component {
   @computed get callById() {
-    return arrToMap(callStore.runnings, 'id', c => c);
+    return arrToMap(callStore.runnings, `id`, c => c);
   }
 
   state = {
@@ -34,7 +34,7 @@ class View extends React.Component {
         chatsEnabled={authStore.profile?.ucEnabled}
         pressCallsManage={g.goToCallsManage}
         pressCallsCreate={g.goToCallsCreate}
-        pressSettings={g.goToProfileCurrent}
+        pressSettings={g.goToPageProfileCurrent}
         pressUsers={g.goToUsersBrowse}
         pressChats={g.goToChatsRecent}
         pressBooks={g.goToPhonebooksBrowse}
@@ -52,7 +52,7 @@ class View extends React.Component {
 
   onOpenLoudSpeaker = () => {
     const activecallid = this.state.activecallid;
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(true);
     }
 
@@ -64,7 +64,7 @@ class View extends React.Component {
 
   onCloseLoudSpeaker = () => {
     const activecallid = this.state.activecallid;
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(false);
     }
 
@@ -101,8 +101,7 @@ class View extends React.Component {
   };
 
   onHoldFailure = err => {
-    console.error(err);
-    g.showError({ message: 'hold the call' });
+    g.showError({ err, message: `hold the call` });
   };
 
   unhold = () => {
@@ -126,10 +125,7 @@ class View extends React.Component {
   };
 
   onUnholdFailure = err => {
-    const activecallid = this.state.activecallid;
-    console.error('onUnholdFailure activecallid=' + activecallid);
-    console.error(err);
-    g.showError({ message: 'unhold the call' });
+    g.showError({ err, message: `unhold the call` });
   };
 
   findActiveCallByRunids_s(runids, props) {

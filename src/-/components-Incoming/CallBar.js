@@ -56,7 +56,7 @@ class CallBar extends React.Component {
               <Text>VIDEO</Text>
             </Left>
           )}
-          {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== 'web' && (
+          {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== `web` && (
             <Left>
               <Button transparent dark bordered onPress={p.onOpenLoudSpeaker}>
                 <Icon path={mdiVolumeHigh} />
@@ -64,7 +64,7 @@ class CallBar extends React.Component {
               <Text>SPEAKER</Text>
             </Left>
           )}
-          {p.answered && !p.holding && p.loudspeaker && Platform.OS !== 'web' && (
+          {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
             <Left>
               <Button transparent dark bordered onPress={p.onCloseLoudSpeaker}>
                 <Icon path={mdiVolumeMedium} />

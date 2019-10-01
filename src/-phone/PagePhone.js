@@ -13,15 +13,15 @@ class PagePhone extends React.Component {
   };
 
   state = {
-    text: '',
-    target: '',
+    text: ``,
+    target: ``,
     video: false,
   };
 
   onPress = val => {
     let curText = this.state.target;
     if (isNaN(val)) {
-      if (val === 'delete') {
+      if (val === `delete`) {
         curText = curText.slice(0, -1);
       } else {
         curText += val;
@@ -44,13 +44,13 @@ class PagePhone extends React.Component {
     let pbxUserName;
 
     const pbxUser = contactStore.getPBXUser(id) || {
-      name: '',
+      name: ``,
     };
 
     if (pbxUser) {
       pbxUserName = pbxUser.name.toLowerCase();
     } else {
-      pbxUserName = '';
+      pbxUserName = ``;
     }
 
     return userId.includes(searchTextLC) || pbxUserName.includes(searchTextLC);
@@ -65,10 +65,10 @@ class PagePhone extends React.Component {
     return {
       name: match.name,
       number: id,
-      calling: !!match.talkers?.filter(t => t.status === 'calling').length,
-      ringing: !!match.talkers?.filter(t => t.status === 'ringing').length,
-      talking: !!match.talkers?.filter(t => t.status === 'talking').length,
-      holding: !!match.talkers?.filter(t => t.status === 'holding').length,
+      calling: !!match.talkers?.filter(t => t.status === `calling`).length,
+      ringing: !!match.talkers?.filter(t => t.status === `ringing`).length,
+      talking: !!match.talkers?.filter(t => t.status === `talking`).length,
+      holding: !!match.talkers?.filter(t => t.status === `holding`).length,
     };
   };
 
@@ -86,7 +86,7 @@ class PagePhone extends React.Component {
     const { target, video } = this.state;
 
     if (!target.trim()) {
-      g.showError({ message: 'No target' });
+      g.showError({ message: `No target` });
       return;
     }
 
@@ -101,7 +101,7 @@ class PagePhone extends React.Component {
 
   call = (target, bVideoEnabled) => {
     if (!target.trim()) {
-      g.showError({ message: 'No target' });
+      g.showError({ message: `No target` });
       return;
     }
 

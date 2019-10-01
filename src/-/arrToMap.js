@@ -1,6 +1,6 @@
 import get from 'lodash/get';
 
-const f = v => typeof v === 'function';
+const f = v => typeof v === `function`;
 
 const arrToMap = (arr, k, v) => {
   return arr.reduce((m, item, i) => {

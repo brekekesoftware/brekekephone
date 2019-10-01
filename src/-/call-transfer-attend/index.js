@@ -61,8 +61,7 @@ class View extends React.Component {
   };
 
   onJoinFailure = err => {
-    console.error(err);
-    g.showError({ message: 'join the transfer' });
+    g.showError({ err, message: `join the transfer` });
   };
 
   stop = () => {
@@ -83,8 +82,7 @@ class View extends React.Component {
   };
 
   onStopFailure = err => {
-    console.error(err);
-    g.showError({ message: 'stop the transfer' });
+    g.showError({ err, message: `stop the transfer` });
   };
 }
 

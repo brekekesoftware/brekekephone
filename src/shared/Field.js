@@ -1,8 +1,13 @@
-import { mdiClose, mdiPlus } from '@mdi/js';
+import { mdiCardsDiamond, mdiClose, mdiPlus } from '@mdi/js';
+import flow from 'lodash/flow';
 import omit from 'lodash/omit';
-import React from 'react';
+import { observer } from 'mobx-react';
+import React, { useRef } from 'react';
 
+import g from '../global';
 import {
+  Keyboard,
+  Platform,
   StyleSheet,
   Switch,
   Text,
@@ -10,177 +15,284 @@ import {
   TouchableOpacity,
   View,
 } from '../native/Rn';
-import Icon from '../shared/Icon';
-import v from '../variables';
+import Icon from './Icon';
+import useStore from './useStore';
 
 const s = StyleSheet.create({
   Field: {
     borderBottomWidth: 1,
-    borderColor: v.borderBg,
-    height: 50,
-    alignItems: 'stretch',
+    borderColor: g.borderBg,
+    alignItems: `stretch`,
+    marginHorizontal: 15,
+  },
+  Field__focusing: {
+    backgroundColor: g.mainTransBg,
   },
   Field__disabled: {
-    backgroundColor: v.hoverBg,
+    backgroundColor: g.hoverBg,
   },
-  Field_Name: {
-    position: 'absolute',
-    top: 13,
-    left: 7,
-    fontSize: v.fontSizeSmall,
-    color: v.subColor,
+  Field__group: {
+    marginHorizontal: 0,
+    backgroundColor: g.borderBg,
+    padding: 15,
+  },
+  Field__groupMargin: {
+    marginTop: 30,
+  },
+  Field_Label: {
+    paddingTop: 13,
+    paddingBottom: 0,
+    paddingLeft: 7,
+    color: g.subColor,
+    fontWeight: g.fontWeight,
+    ...Platform.select({
+      web: {
+        // Fix form auto fill style on web
+        position: `absolute`,
+        top: 0,
+        left: 0,
+        right: 0,
+      },
+    }),
   },
   Field_TextInput: {
-    width: '100%',
-    height: 50,
-    paddingTop: 28,
-    paddingBottom: 5,
+    width: `100%`,
+    paddingTop: 1,
+    paddingBottom: 3,
     paddingLeft: 7,
     paddingRight: 40,
-    fontWeight: 'bold',
-  },
-  Field_TextInput__value: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
+    fontWeight: `bold`,
+    overflow: `hidden`,
+    ...Platform.select({
+      android: {
+        lineHeight: g.lineHeight,
+        paddingTop: 0,
+        paddingBottom: 1,
+      },
+      web: {
+        // Fix form auto fill style on web
+        paddingTop: 28,
+      },
+    }),
   },
   Field_Switch: {
-    position: 'absolute',
+    position: `absolute`,
     top: 22,
     right: 11,
   },
   Field_Btn: {
-    position: 'absolute',
+    position: `absolute`,
     top: 11,
     right: 5,
     width: 40,
     height: 30,
-    borderRadius: v.borderRadius,
+    borderRadius: g.borderRadius,
   },
   Field_Btn__create: {
-    backgroundColor: v.mainTranBg,
+    backgroundColor: g.mainTransBg,
   },
   Field_Btn__remove: {
-    backgroundColor: v.redTranBg,
+    backgroundColor: g.redTransBg,
   },
   Field_Icon: {
-    position: 'absolute',
+    position: `absolute`,
     top: 15,
     right: 15,
   },
+  Field_Error: {
+    alignItems: `center`,
+    justifyContent: `center`,
+  },
+  Field_ErrorInner: {
+    alignSelf: `flex-start`,
+    marginVertical: 2,
+    marginHorizontal: 15,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    backgroundColor: g.redBg,
+    borderRadius: g.borderRadius,
+  },
+  Field_ErrorIcon: {
+    position: `absolute`,
+    top: -8,
+    left: 2,
+  },
+  Field_ErrorLabel: {
+    color: g.revColor,
+  },
 });
 
-const renderField = p => (
-  <View>
-    <View>
+const Field = observer(({ ...props }) => {
+  if (props.isGroup) {
+    return (
       <View
-        style={[s.Field, p.disabled && s.Field__disabled]}
-        pointerEvents={v.pEvents(p.disabled)}
+        style={[
+          s.Field,
+          s.Field__group,
+          props.hasMargin && s.Field__groupMargin,
+        ]}
       >
-        {p.inputElement}
+        <Text small>{props.label}</Text>
       </View>
-      <Text style={s.Field_Name} pointerEvents={v.pEvents(p.inputElement)}>
-        {p.name}
-      </Text>
-      <Text
-        style={[s.Field_TextInput, s.Field_TextInput__value]}
-        pointerEvents={v.pEvents(p.inputElement)}
-      >
-        {(!p.inputElement &&
-          ((p.valueRender && p.valueRender(p.value)) || p.value)) ||
-          '\u00A0'}
-      </Text>
-    </View>
-    {(p.iconRender && p.iconRender(p.value)) ||
-      (p.icon && (
-        <Icon
-          path={p.icon}
-          style={s.Field_Icon}
-          pointerEvents={v.pEvents(p.inputElement)}
-        />
-      ))}
-  </View>
-);
-const Field = p => {
-  if (p.onCreateBtnPress) {
-    p = {
-      ...p,
+    );
+  }
+  const $ = useStore(() => ({
+    observable: {
+      isFocusing: false,
+    },
+  }));
+  const inputRef = useRef();
+  if (!inputRef.current && $.isFocusing) {
+    $.set(`isFocusing`, false);
+  }
+  if (props.onCreateBtnPress) {
+    Object.assign(props, {
       iconRender: () => (
         <TouchableOpacity
           style={[s.Field_Btn, s.Field_Btn__create]}
-          onPress={p.onCreateBtnPress}
+          onPress={props.onCreateBtnPress}
         >
           <Icon
             style={s.Field_CreateRemoveIcon}
             path={mdiPlus}
             size={18}
-            color={v.mainDarkBg}
+            color={g.mainDarkBg}
           />
         </TouchableOpacity>
       ),
-    };
+    });
   }
-  if (p.onRemoveBtnPress) {
-    p = {
-      ...p,
+  if (props.onRemoveBtnPress) {
+    Object.assign(props, {
       iconRender: () => (
         <TouchableOpacity
           style={[s.Field_Btn, s.Field_Btn__remove]}
-          onPress={p.onRemoveBtnPress}
+          onPress={props.onRemoveBtnPress}
         >
           <Icon
             style={s.Field_CreateRemoveIcon}
             path={mdiClose}
             size={15}
-            color={v.redDarkBg}
+            color={g.redDarkBg}
           />
         </TouchableOpacity>
       ),
-    };
+    });
   }
-  if (!p.onValueChange || p.disabled) {
-    return renderField(p);
+  if (props.onValueChange && !props.disabled) {
+    if (props.type === `Switch`) {
+      Object.assign(props, {
+        valueRender: v => (v ? `Enabled` : `Disabled`),
+        iconRender: v => <Switch style={s.Field_Switch} enabled={v} />,
+        onTouchPress: () => {
+          props.onValueChange(!props.value);
+          Keyboard.dismiss();
+        },
+      });
+    } else if (props.type === `Picker`) {
+      Object.assign(props, {
+        valueRender: v => props.options.find(o => o.key === v)?.label || v,
+        onTouchPress: () => {
+          g.openPicker({
+            options: props.options,
+            selectedKey: props.value,
+            onSelect: props.onValueChange,
+          });
+          Keyboard.dismiss();
+        },
+      });
+    } else {
+      Object.assign(props, {
+        inputElement: (
+          <TextInput
+            ref={inputRef}
+            {...omit(props, [
+              `type`,
+              `label`,
+              `valueRender`,
+              `icon`,
+              `iconRender`,
+              `onValueChange`,
+              `onCreateBtnPress`,
+              `onRemoveBtnPress`,
+              `disabled`,
+              `error`,
+            ])}
+            style={[s.Field_TextInput, props.style]}
+            onChangeText={props.onValueChange}
+            onSubmitEditing={flow(
+              [props.onCreateBtnPress, props.onSubmitEditing].filter(f => f),
+            )}
+            onFocus={flow(
+              [() => $.set(`isFocusing`, true), props.onFocus].filter(f => f),
+            )}
+            onBlur={flow(
+              [() => $.set(`isFocusing`, false), props.onBlur].filter(f => f),
+            )}
+          />
+        ),
+        onTouchPress: () => inputRef.current?.focus(),
+      });
+    }
   }
-  if (p.type === 'Switch') {
-    return (
-      <TouchableOpacity onPress={() => p.onValueChange(!p.value)}>
-        {renderField({
-          ...p,
-          valueRender: e => (e ? 'Enabled' : 'Disabled'),
-          iconRender: e => (
-            <Switch
-              style={s.Field_Switch}
-              pointerEvents={v.pEvents(true)}
-              enabled={e}
+  const Container = props.onTouchPress ? TouchableOpacity : View;
+  const label = (
+    <Text small style={s.Field_Label}>
+      {props.label}
+    </Text>
+  );
+  return (
+    <React.Fragment>
+      <Container
+        onPress={props.onTouchPress}
+        style={[
+          s.Field,
+          $.isFocusing && s.Field__focusing,
+          props.disabled && s.Field__disabled,
+        ]}
+      >
+        {/* Fix form auto fill style on web */}
+        {Platform.OS !== `web` && label}
+        {props.inputElement || (
+          // Fix input pointerEvents not work on android
+          <View pointerEvents="none">
+            <TextInput
+              style={s.Field_TextInput}
+              value={
+                (props.valueRender && props.valueRender(props.value)) ||
+                props.value ||
+                `\u00A0`
+              }
             />
-          ),
-        })}
-      </TouchableOpacity>
-    );
-  }
-  return renderField({
-    ...p,
-    inputElement: (
-      <TextInput
-        style={s.Field_TextInput}
-        onChangeText={p.onValueChange}
-        onSubmitEditing={p.onCreateBtnPress}
-        {...omit(p, [
-          'type',
-          'name',
-          'valueRender',
-          'icon',
-          'iconRender',
-          'onValueChange',
-          'onCreateBtnPress',
-          'onRemoveBtnPress',
-          'disabled',
-        ])}
-      />
-    ),
-  });
-};
+            <View style={StyleSheet.absoluteFill} />
+          </View>
+        )}
+        {/* Fix form auto fill style on web */}
+        {Platform.OS === `web` && label}
+        {(props.iconRender && props.iconRender(props.value)) ||
+          (props.icon && (
+            <Icon path={props.icon} style={s.Field_Icon} pointerEvents="none" />
+          ))}
+      </Container>
+      {props.error && (
+        <TouchableOpacity
+          style={s.Field_Error}
+          onPress={() => inputRef.current?.focus()}
+        >
+          <View style={s.Field_ErrorInner}>
+            <Icon
+              style={s.Field_ErrorIcon}
+              path={mdiCardsDiamond}
+              color={g.redBg}
+            />
+            <Text small style={s.Field_ErrorLabel}>
+              {props.error}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </React.Fragment>
+  );
+});
 
 export default Field;

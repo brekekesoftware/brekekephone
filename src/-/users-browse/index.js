@@ -16,7 +16,7 @@ class View extends React.Component {
 
   state = {
     isModalVisible: false,
-    id: '',
+    id: ``,
     activeFab: false,
   };
 
@@ -29,7 +29,7 @@ class View extends React.Component {
         callVoice={this.callVoice}
         callVideo={this.callVideo}
         chat={g.goToBuddyChatsRecent}
-        setSearchText={contactStore.setF('searchText')}
+        setSearchText={contactStore.setF(`searchText`)}
         toggleModal={this.toggleModal}
         isModalVisible={this.state.isModalVisible}
         exitModal={this.exitModal}
@@ -57,14 +57,14 @@ class View extends React.Component {
     if (pbxUser) {
       pbxUserName = pbxUser.name;
     } else {
-      pbxUserName = '';
+      pbxUserName = ``;
     }
     let ucUserName;
     const ucUser = contactStore.getUCUser(id);
     if (ucUser) {
       ucUserName = ucUser.name;
     } else {
-      ucUserName = '';
+      ucUserName = ``;
     }
     //
     userId = userId.toLowerCase();
@@ -95,18 +95,18 @@ class View extends React.Component {
       name: pbxUser.name || ucUser.name,
       statusText: ucUser.statusText,
       avatar: ucUser.avatar,
-      callTalking: !!pbxUser.talkers?.filter(t => t.status === 'calling')
+      callTalking: !!pbxUser.talkers?.filter(t => t.status === `calling`)
         .length,
-      callHolding: !!pbxUser.talkers?.filter(t => t.status === 'ringing')
+      callHolding: !!pbxUser.talkers?.filter(t => t.status === `ringing`)
         .length,
-      callRinging: !!pbxUser.talkers?.filter(t => t.status === 'talking')
+      callRinging: !!pbxUser.talkers?.filter(t => t.status === `talking`)
         .length,
-      callCalling: !!pbxUser.talkers?.filter(t => t.status === 'holding')
+      callCalling: !!pbxUser.talkers?.filter(t => t.status === `holding`)
         .length,
-      chatOffline: ucUser.status === 'offline',
-      chatOnline: ucUser.status === 'online',
-      chatIdle: ucUser.status === 'idle',
-      chatBusy: ucUser.status === 'busy',
+      chatOffline: ucUser.status === `offline`,
+      chatOnline: ucUser.status === `online`,
+      chatIdle: ucUser.status === `idle`,
+      chatBusy: ucUser.status === `busy`,
       chatEnabled: authStore.profile?.ucEnabled,
     };
   };

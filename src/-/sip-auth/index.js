@@ -17,12 +17,12 @@ class View extends React.Component {
 
   componentDidMount() {
     this.autoAuth();
-    this.clearObserve = observe(authStore, 'sipShouldAuth', this.autoAuth);
+    this.clearObserve = observe(authStore, `sipShouldAuth`, this.autoAuth);
   }
   componentWillUnmount() {
     this.clearObserve();
     this.context.sip.disconnect();
-    authStore.set('sipState', 'stopped');
+    authStore.set(`sipState`, `stopped`);
   }
 
   getWebPhone = () =>
@@ -36,17 +36,17 @@ class View extends React.Component {
 
   _auth = async () => {
     this.context.sip.disconnect();
-    authStore.set('sipState', 'connecting');
+    authStore.set(`sipState`, `connecting`);
     //
     const pbxConfig = await this.context.pbx.getConfig();
     if (!pbxConfig) {
-      console.error('Invalid PBX config');
+      console.error(`Invalid PBX config`);
       return;
     }
     //
-    const sipWSSPort = pbxConfig['sip.wss.port'];
+    const sipWSSPort = pbxConfig[`sip.wss.port`];
     if (!sipWSSPort) {
-      console.error('Invalid SIP WSS port');
+      console.error(`Invalid SIP WSS port`);
       return;
     }
     //
@@ -55,7 +55,7 @@ class View extends React.Component {
       authStore.profile?.pbxUsername,
     );
     if (!pbxUserConfig) {
-      console.error('Invalid PBX user config');
+      console.error(`Invalid PBX user config`);
       return;
     }
     authStore.userExtensionProperties = pbxUserConfig;
@@ -72,7 +72,7 @@ class View extends React.Component {
       webPhone.id,
     );
     if (!sipAccessToken) {
-      console.error('Invalid SIP access token');
+      console.error(`Invalid SIP access token`);
       return;
     }
     //
@@ -88,10 +88,10 @@ class View extends React.Component {
   auth = () => {
     this._auth()
       .then(() => {
-        authStore.set('sipState', 'success');
+        authStore.set(`sipState`, `success`);
       })
       .catch(err => {
-        authStore.set('sipState', 'failure');
+        authStore.set(`sipState`, `failure`);
         g.showError({ message: `login to sip server, err: ${err?.message}` });
         console.error(err);
       });
@@ -104,11 +104,11 @@ class View extends React.Component {
   };
 
   render() {
-    return authStore.sipState === 'success' ? null : (
+    return authStore.sipState === `success` ? null : (
       <UI
         retryable={!!authStore.profile}
-        failure={!authStore.profile || authStore.sipState === 'failure'}
-        abort={g.goToProfileSignIn}
+        failure={!authStore.profile || authStore.sipState === `failure`}
+        abort={g.goToPageProfileSignIn}
         retry={this.auth}
       />
     );

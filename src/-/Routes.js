@@ -30,6 +30,7 @@ import GroupChatsRecent from './group-chats-recent';
 import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
+import router from './routerStore';
 import SIPAuth from './sip-auth';
 import Tabbar from './tabbar';
 import UCAuth from './uc-auth';
@@ -38,142 +39,115 @@ import UCAuth from './uc-auth';
 const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
 
 Object.assign(g, {
-  getQuery: () => qs.parse(g.router.location.search.replace(/^\?*/, '')),
-  goToAuth: withTimeout(() => g.router.history.push('/auth')),
+  getQuery: () => qs.parse(router.location.search.replace(/^\?*/, ``)),
+});
+Object.assign(router, {
+  goToAuth: withTimeout(() => router.history.push(`/`)),
   goToBuddyChatsRecent: withTimeout(buddy =>
-    g.router.history.push(`/auth/chats/buddy/${buddy}/recent`),
+    router.history.push(`/chats/buddy/${buddy}/recent`),
   ),
   goToCallKeypad: withTimeout(call =>
-    g.router.history.push(`/auth/call/${call}/keypad`),
+    router.history.push(`/call/${call}/keypad`),
   ),
-  goToCallPark: withTimeout(call =>
-    g.router.history.push(`/auth/call/${call}/park`),
-  ),
-  goToCallsCreate: withTimeout(() =>
-    g.router.history.push('/auth/calls/create'),
-  ),
-  goToCallsManage: withTimeout(() =>
-    g.router.history.push('/auth/calls/manage'),
-  ),
-  goToCallsRecent: withTimeout(() =>
-    g.router.history.push('/auth/calls/recent'),
-  ),
+  goToCallPark: withTimeout(call => router.history.push(`/call/${call}/park`)),
+  goToCallsCreate: withTimeout(() => router.history.push(`/calls/create`)),
+  goToCallsManage: withTimeout(() => router.history.push(`/calls/manage`)),
+  goToCallsRecent: withTimeout(() => router.history.push(`/calls/recent`)),
   goToCallTransferAttend: withTimeout(call =>
-    g.router.history.push(`/auth/call/${call}/transfer/attend`),
+    router.history.push(`/call/${call}/transfer/attend`),
   ),
   goToCallTransferDial: withTimeout(call =>
-    g.router.history.push(`/auth/call/${call}/transfer/dial`),
+    router.history.push(`/call/${call}/transfer/dial`),
   ),
   goToChatGroupInvite: withTimeout(group =>
-    g.router.history.push(`/auth/chat-group/${group}/invite`),
+    router.history.push(`/chat-group/${group}/invite`),
   ),
   goToChatGroupsCreate: withTimeout(() =>
-    g.router.history.push('/auth/chat-groups/create'),
+    router.history.push(`/chat-groups/create`),
   ),
   goToChatGroupsRecent: withTimeout(group =>
-    g.router.history.push(`/auth/chats/group/${group}/recent`),
+    router.history.push(`/chats/group/${group}/recent`),
   ),
-  goToChatsRecent: withTimeout(() =>
-    g.router.history.push('/auth/chats/recent'),
-  ),
+  goToChatsRecent: withTimeout(() => router.history.push(`/chats/recent`)),
   goToContactsBrowse: withTimeout(query =>
-    g.router.history.push(`/auth/contacts/browse?${qs.stringify(query)}`),
+    router.history.push(`/contacts/browse?${qs.stringify(query)}`),
   ),
   goToContactsCreate: withTimeout(query =>
-    g.router.history.push(`/auth/contacts/create?${qs.stringify(query)}`),
+    router.history.push(`/contacts/create?${qs.stringify(query)}`),
   ),
   goToPhonebooksBrowse: withTimeout(() =>
-    g.router.history.push('/auth/phonebooks/browse'),
+    router.history.push(`/phonebooks/browse`),
   ),
-  goToProfileSignin: withTimeout(profile =>
-    g.router.history.push(`/profile/${profile}/signin`),
-  ),
-  goToUsersBrowse: withTimeout(() => g.router.history.push('/auth/users')),
+  goToUsersBrowse: withTimeout(() => router.history.push(`/users`)),
 });
 
 const Routes = () => (
   <View style={StyleSheet.absoluteFill}>
     <WithoutStatusBar>
       <Route
-        path="/auth"
+        path="/"
         render={() => (
           <Auth>
-            <Route path="/auth" component={Callbar} />
+            <Route path="/" component={Callbar} />
+            <Route exact path="/" render={() => <Redirect to="/users" />} />
+            <Route exact path="/calls/manage" component={PageCalling} />
+            <Route exact path="/calls/create" component={PagePhone} />
+            <Route exact path="/calls/recent" component={Recent} />
             <Route
               exact
-              path="/auth"
-              render={() => <Redirect to="/auth/users" />}
-            />
-            <Route exact path="/auth/calls/manage" component={PageCalling} />
-            <Route exact path="/auth/calls/create" component={PagePhone} />
-            <Route exact path="/auth/calls/recent" component={Recent} />
-            <Route
-              exact
-              path="/auth/call/:call/transfer/dial"
+              path="/call/:call/transfer/dial"
               component={CallTransferDial}
             />
             <Route
               exact
-              path="/auth/call/:call/transfer/attend"
+              path="/call/:call/transfer/attend"
               component={CallTransferAttend}
             />
+            <Route exact path="/call/:call/keypad" component={CallKeypad} />
+            <Route exact path="/call/:call/park" component={CallPark} />
+            <Route exact path="/users" component={PageContact} />
             <Route
               exact
-              path="/auth/call/:call/keypad"
-              component={CallKeypad}
-            />
-            <Route exact path="/auth/call/:call/park" component={CallPark} />
-            <Route exact path="/auth/users" component={PageContact} />
-            <Route
-              exact
-              path="/auth/chats/buddy/:buddy/recent"
+              path="/chats/buddy/:buddy/recent"
               component={ChatDetail}
             />
             <Route
               exact
-              path="/auth/chats/group/:group/recent"
+              path="/chats/group/:group/recent"
               component={GroupChatsRecent}
             />
             <Route
               exact
-              path="/auth/chat-groups/create"
+              path="/chat-groups/create"
               component={ChatGroupsCreate}
             />
             <Route
               exact
-              path="/auth/chat-group/:group/invite"
+              path="/chat-group/:group/invite"
               component={ChatGroupInvite}
             />
-            <Route exact path="/auth/chats/recent" component={ChatsHome} />
+            <Route exact path="/chats/recent" component={ChatsHome} />
             <Route
               exact
-              path="/auth/phonebooks/browse"
+              path="/phonebooks/browse"
               component={PhonebooksBrowse}
             />
-            <Route
-              exact
-              path="/auth/contacts/browse"
-              component={ContactsBrowse}
-            />
-            <Route
-              exact
-              path="/auth/contacts/create"
-              component={ContactsCreate}
-            />
+            <Route exact path="/contacts/browse" component={ContactsBrowse} />
+            <Route exact path="/contacts/create" component={ContactsCreate} />
           </Auth>
         )}
       />
-      <Route path="/auth" component={PBXAuth} />
-      <Route path="/auth" component={SIPAuth} />
-      <Route path="/auth" component={UCAuth} />
-      <Route path="/auth" component={CallVoices} />
-      <Route path="/auth" component={CallVideos} />
-      <Route path="/auth" component={Tabbar} />
+      <Route path="/" component={PBXAuth} />
+      <Route path="/" component={SIPAuth} />
+      <Route path="/" component={UCAuth} />
+      <Route path="/" component={CallVoices} />
+      <Route path="/" component={CallVideos} />
+      <Route path="/" component={Tabbar} />
     </WithoutStatusBar>
     <Notifications>
-      <Route path="/auth" component={CallsNotify} />
-      <Route path="/auth" component={ChatGroupsNotify} />
-      <Route path="/auth" component={BuddyChatsNotify} />
+      <Route path="/" component={CallsNotify} />
+      <Route path="/" component={ChatGroupsNotify} />
+      <Route path="/" component={BuddyChatsNotify} />
     </Notifications>
   </View>
 );

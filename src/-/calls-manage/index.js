@@ -16,7 +16,7 @@ class View extends React.Component {
     return callStore.runnings.map(c => c.id);
   }
   @computed get runningById() {
-    return arrToMap(callStore.runnings, 'id', c => c);
+    return arrToMap(callStore.runnings, `id`, c => c);
   }
   state = {
     prevSelectedId: null,
@@ -34,7 +34,7 @@ class View extends React.Component {
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
       if (activeCall) {
-        callStore.set('selectedId', activeCall);
+        callStore.set(`selectedId`, activeCall);
       }
     } else {
       const parkingIds = callStore.runnings
@@ -65,7 +65,7 @@ class View extends React.Component {
       const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
       if (!nextSelectedId || isSelectedIdInactive) {
         const call = this.findNewestCallByRunids_s(runids, this.props);
-        callStore.set('selectedId', call);
+        callStore.set(`selectedId`, call);
       }
     } else {
       this._checkCreatingSessionAndRoute();
@@ -134,7 +134,7 @@ class View extends React.Component {
         parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
         browseHistory={g.goToCallsRecent}
         create={g.goToCallsCreate}
-        select={callStore.setF('selectedId')}
+        select={callStore.setF(`selectedId`)}
         hangup={this.hangup}
         answer={this.answer}
         hold={this.hold}
@@ -154,7 +154,7 @@ class View extends React.Component {
   }
 
   onOpenLoudSpeaker = () => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(true);
     }
 
@@ -165,7 +165,7 @@ class View extends React.Component {
   };
 
   onCloseLoudSpeaker = () => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(false);
     }
 
@@ -204,8 +204,7 @@ class View extends React.Component {
   };
 
   onHoldFailure = err => {
-    console.error(err);
-    g.showError({ message: 'hold the call' });
+    g.showError({ err, message: `hold the call` });
   };
 
   unhold = () => {
@@ -225,8 +224,7 @@ class View extends React.Component {
   };
 
   onUnholdFailure = err => {
-    console.error(err);
-    g.showError({ message: 'unhold the call' });
+    g.showError({ err, message: `unhold the call` });
   };
 
   startRecording = () => {
@@ -246,8 +244,7 @@ class View extends React.Component {
   };
 
   onStartRecordingFailure = err => {
-    console.error(err);
-    g.showError({ message: 'start recording the call' });
+    g.showError({ err, message: `start recording the call` });
   };
 
   stopRecording = () => {
@@ -267,8 +264,7 @@ class View extends React.Component {
   };
 
   onStopRecordingFailure = err => {
-    console.error(err);
-    g.showError({ message: 'stop recording the call' });
+    g.showError({ err, message: `stop recording the call` });
   };
 
   transfer = () => {

@@ -14,11 +14,11 @@ import Avatar from '../components-shared/Avatar';
 
 const st = StyleSheet.create({
   navright: {
-    flexDirection: 'row',
+    flexDirection: `row`,
   },
 
   btnFab: {
-    backgroundColor: '#74bf53',
+    backgroundColor: `#74bf53`,
   },
 });
 

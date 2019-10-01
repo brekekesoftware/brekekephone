@@ -9,18 +9,18 @@ import {
 import { std } from '../styleguide';
 
 const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  `Jan`,
+  `Feb`,
+  `Mar`,
+  `Apr`,
+  `May`,
+  `Jun`,
+  `Jul`,
+  `Aug`,
+  `Sep`,
+  `Oct`,
+  `Nov`,
+  `Dec`,
 ];
 
 const formatTime = time => {
@@ -30,11 +30,11 @@ const formatTime = time => {
   const hour = time
     .getHours()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   const min = time
     .getMinutes()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   return `${month} ${day} - ${hour}:${min}`;
 };
 
@@ -46,8 +46,8 @@ const st = {
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -61,9 +61,9 @@ const st = {
   },
 
   navbarLeftOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -71,9 +71,9 @@ const st = {
   },
 
   navbarRightOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -100,8 +100,8 @@ const st = {
   },
 
   call: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     paddingLeft: std.gap.lg,
     paddingVertical: std.gap.lg,
     backgroundColor: std.color.shade0,
@@ -164,8 +164,8 @@ const st = {
     borderRadius: std.iconSize.md,
     borderColor: std.color.shade4,
     borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     marginRight: std.gap.lg,
   },
 };

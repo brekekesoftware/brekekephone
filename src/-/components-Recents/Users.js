@@ -6,18 +6,18 @@ import Icon from '../../shared/Icon';
 import Avatar from '../components-shared/Avatar';
 
 const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  `Jan`,
+  `Feb`,
+  `Mar`,
+  `Apr`,
+  `May`,
+  `Jun`,
+  `Jul`,
+  `Aug`,
+  `Sep`,
+  `Oct`,
+  `Nov`,
+  `Dec`,
 ];
 
 const formatTime = time => {
@@ -27,11 +27,11 @@ const formatTime = time => {
   const hour = time
     .getHours()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   const min = time
     .getMinutes()
     .toString()
-    .padStart(2, '0');
+    .padStart(2, `0`);
   return `${month} ${day} - ${hour}:${min}`;
 };
 

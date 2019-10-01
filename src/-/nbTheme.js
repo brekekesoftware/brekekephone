@@ -9,13 +9,13 @@ const nativeBaseTheme = getTheme(variables);
 // Will be useful for which field we need to update for every components
 const recursiveUpdateStyle = o => {
   Object.entries(o).forEach(([k, v]) => {
-    if (k.toLowerCase().endsWith('fontfamily')) {
-      if (Platform.OS === 'web') {
-        o[k] = 'inherit';
+    if (k.toLowerCase().endsWith(`fontfamily`)) {
+      if (Platform.OS === `web`) {
+        o[k] = `inherit`;
       }
-    } else if (k === 'elevation') {
+    } else if (k === `elevation`) {
       o[k] = 0; // Remove box shadow on android
-    } else if (v && typeof v === 'object') {
+    } else if (v && typeof v === `object`) {
       recursiveUpdateStyle(v);
     }
   });

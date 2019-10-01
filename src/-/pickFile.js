@@ -11,11 +11,11 @@ ImagePicker.AlbumListView.autoConvertPath = true;
 
 const actionSheetOptions = {
   options: [
-    'Select from photo library',
-    'Take a new photo',
-    'Take a new video',
-    'More...',
-    'Cancel',
+    `Select from photo library`,
+    `Take a new photo`,
+    `Take a new video`,
+    `More...`,
+    `Cancel`,
   ],
   destructiveButtonIndex: 4,
   cancelButtonIndex: 4,
@@ -75,7 +75,7 @@ const pickFile = async cb => {
     p
       .split(/[\\/]/g)
       .pop()
-      .replace(/\?.+$/, '');
+      .replace(/\?.+$/, ``);
   let name = file.fileName || file.filename || file.name || getName(file.uri);
   let size = file.fileSize || file.filesize || file.size || 0;
   if (!size) {
@@ -87,20 +87,20 @@ const pickFile = async cb => {
   }
   //
   let ext = name
-    .split('.')
+    .split(`.`)
     .pop()
-    .replace(/\?.+$/, '');
-  if (Platform.OS === 'ios' && ext === name) {
+    .replace(/\?.+$/, ``);
+  if (Platform.OS === `ios` && ext === name) {
     name = shortid();
     switch (file.type) {
-      case 'image':
-        ext = 'jpg';
+      case `image`:
+        ext = `jpg`;
         break;
-      case 'video':
-        ext = 'mp4';
+      case `video`:
+        ext = `mp4`;
         break;
-      case 'audio':
-        ext = 'mp3';
+      case `audio`:
+        ext = `mp3`;
         break;
       default:
         break;
@@ -108,7 +108,7 @@ const pickFile = async cb => {
   }
   //
   if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
-    name = name + '.' + ext;
+    name = name + `.` + ext;
   }
   //
   cb({ uri: file.uri, name, size });

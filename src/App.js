@@ -1,85 +1,66 @@
 import './polyfill';
+import './utils/validator';
+import './-/AppOld';
 
-import { configure } from 'mobx';
-import React from 'react';
+// import { configure } from 'mobx';
+import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
-import { Route, Router, Switch } from 'react-router';
 
-import AppOld from './-/AppOld';
-import authStore from './-/authStore';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileCurrent from './-profile/PageProfileCurrent';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
 import g from './global';
-import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
-import { AppState, Platform, StyleSheet, View } from './native/Rn';
-import Page404 from './shared/Page404';
-import RootAlerts from './shared/RootAlerts';
-import v from './variables';
+import { Platform, StyleSheet, View } from './native/Rn';
+import RootAlert from './shared/RootAlert';
+import RootPicker from './shared/RootPicker';
+import RootStacks from './shared/RootStacks';
 
 registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
-configure({ enforceActions: 'always' });
+// configure({ enforceActions: `always` });
 
-// TODO g.showPrompt then register
-// [Violation] Only request notification permission in response to a user gesture
-PushNotification.register(n => {
-  // TODO handle this better (ask user to switch between accounts)
-  if (authStore.profile && AppState.currentState === 'active') {
-    return false;
-  }
-  authStore.signinByNotification(n);
-  return true;
+g.registerStacks({
+  isRoot: true,
+  PageProfileSignIn,
+});
+g.registerStacks({
+  PageProfileCreate,
+  PageProfileUpdate,
+  PageProfileCurrent,
 });
 
 const s = StyleSheet.create({
   App: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: v.bg,
+    backgroundColor: g.bg,
   },
   App_Inner: {
     flex: 1,
   },
 });
 
-class App extends React.Component {
-  componentDidMount() {
-    if (Platform.OS !== 'web') {
+const App = () => {
+  useEffect(() => {
+    if (Platform.OS !== `web`) {
       SplashScreen.hide();
     }
-  }
-  render() {
-    return (
-      <View style={s.App}>
-        <View style={s.App_Inner}>
-          <Router history={g.router.history}>
-            <Switch>
-              <Route exact path="/" component={PageProfileSignIn} />
-              <Route path="/create-profile" component={PageProfileCreate} />
-              <Route path="/update-profile/:id" component={PageProfileUpdate} />
-              <Route
-                path="/auth/current-profile"
-                component={PageProfileCurrent}
-              />
-              <Route path="/auth" component={AppOld} />
-              <Route component={Page404} />
-            </Switch>
-          </Router>
-          <RootAlerts />
-        </View>
-        {Platform.OS === 'ios' && <KeyboardSpacer />}
+    g.loadProfilesFromLocalStorage();
+    g.goToPageProfileSignIn();
+  }, []);
+  return (
+    <View style={[StyleSheet.absoluteFill, s.App]}>
+      <View style={s.App_Inner}>
+        <RootStacks />
+        <RootPicker />
+        <RootAlert />
       </View>
-    );
-  }
-}
+      {Platform.OS === `ios` && <KeyboardSpacer />}
+    </View>
+  );
+};
 
 export default App;

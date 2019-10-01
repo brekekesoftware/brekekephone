@@ -29,7 +29,7 @@ class ChatStore extends BaseStore {
     messages.push(..._m);
     this.set(
       `messagesByThreadId.${threadId}`,
-      sortBy(uniq(messages, 'id'), 'created'),
+      sortBy(uniq(messages, `id`), `created`),
     );
   };
 
@@ -66,7 +66,7 @@ class ChatStore extends BaseStore {
     } else {
       this.groups.push(_g);
     }
-    this.set('groups', [...this.groups]);
+    this.set(`groups`, [...this.groups]);
   };
   @action removeGroup = id => {
     delete this.messagesByThreadId[id];
@@ -74,7 +74,7 @@ class ChatStore extends BaseStore {
   };
   //
   @computed get _groupsMap() {
-    return arrToMap(this.groups, 'id', g => g);
+    return arrToMap(this.groups, `id`, g => g);
   }
   getGroup = id => {
     return this._groupsMap[id];

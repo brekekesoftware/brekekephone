@@ -10,7 +10,7 @@ const st = StyleSheet.create({
   },
 
   divider: {
-    alignItems: 'center',
+    alignItems: `center`,
     padding: std.gap.lg,
     paddingTop: 2 * std.gap.lg,
     borderColor: std.color.shade4,

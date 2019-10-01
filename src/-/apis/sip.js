@@ -11,7 +11,7 @@ const getFrontSourceId = () => {
       let sourceId;
 
       infos.forEach(i => {
-        if (i.kind === 'video' && i.facing === 'front') {
+        if (i.kind === `video` && i.facing === `front`) {
           sourceId = i.id;
         }
       });
@@ -20,7 +20,7 @@ const getFrontSourceId = () => {
     });
 
   return asyncFn().catch(err => {
-    console.error('getFrontSourceId', err);
+    console.error(`getFrontSourceId`, err);
   });
 };
 
@@ -78,7 +78,7 @@ class SIP extends EventEmitter {
     this._creatingSessions = new CreatingSessions();
 
     this.phone = new window.Brekeke.WebrtcClient.Phone({
-      logLevel: 'all',
+      logLevel: `all`,
       multiSession: true,
 
       defaultOptions: {
@@ -94,7 +94,7 @@ class SIP extends EventEmitter {
                   minFrameRate: 0,
                 },
 
-                facingMode: Platform.OS === 'web' ? undefined : 'user',
+                facingMode: Platform.OS === `web` ? undefined : `user`,
 
                 optional: sourceId
                   ? [
@@ -118,7 +118,7 @@ class SIP extends EventEmitter {
                   minFrameRate: 0,
                 },
 
-                facingMode: Platform.OS === 'web' ? undefined : 'user',
+                facingMode: Platform.OS === `web` ? undefined : `user`,
 
                 optional: sourceId
                   ? [
@@ -134,32 +134,32 @@ class SIP extends EventEmitter {
       },
     });
 
-    this.phone.addEventListener('phoneStatusChanged', ev => {
+    this.phone.addEventListener(`phoneStatusChanged`, ev => {
       if (!ev) {
         return;
       }
 
-      if (ev.phoneStatus === 'started') {
-        return this.emit('connection-started');
+      if (ev.phoneStatus === `started`) {
+        return this.emit(`connection-started`);
       }
 
-      if (ev.phoneStatus === 'stopped') {
-        return this.emit('connection-stopped');
+      if (ev.phoneStatus === `stopped`) {
+        return this.emit(`connection-stopped`);
       }
     });
 
-    this.phone.addEventListener('sessionCreated', ev => {
+    this.phone.addEventListener(`sessionCreated`, ev => {
       if (!ev) {
         return;
       }
 
-      if (ev.rtcSession.direction === 'outgoing') {
+      if (ev.rtcSession.direction === `outgoing`) {
         this._creatingSessions.__removeFirst();
       }
 
-      this.emit('session-started', {
+      this.emit(`session-started`, {
         id: ev.sessionId,
-        incoming: ev.rtcSession.direction === 'incoming',
+        incoming: ev.rtcSession.direction === `incoming`,
         partyNumber: ev.rtcSession.remote_identity.uri.user,
         partyName: ev.rtcSession.remote_identity.display_name,
         remoteVideoEnabled: ev.remoteWithVideo,
@@ -167,17 +167,17 @@ class SIP extends EventEmitter {
       });
     });
 
-    this.phone.addEventListener('sessionStatusChanged', ev => {
+    this.phone.addEventListener(`sessionStatusChanged`, ev => {
       if (!ev) {
         return;
       }
 
-      if (ev.sessionStatus === 'terminated') {
-        return this.emit('session-stopped', ev.sessionId);
+      if (ev.sessionStatus === `terminated`) {
+        return this.emit(`session-stopped`, ev.sessionId);
       }
 
       const patch = {
-        answered: ev.sessionStatus === 'connected',
+        answered: ev.sessionStatus === `connected`,
         remoteVideoEnabled: ev.remoteWithVideo,
         voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo,
@@ -185,11 +185,11 @@ class SIP extends EventEmitter {
 
       if (ev.incomingMessage) {
         const pbxSessionInfo = ev.incomingMessage.getHeader(
-          'X-PBX-Session-Info',
+          `X-PBX-Session-Info`,
         );
 
-        if (typeof pbxSessionInfo === 'string') {
-          const infos = pbxSessionInfo.split(';');
+        if (typeof pbxSessionInfo === `string`) {
+          const infos = pbxSessionInfo.split(`;`);
           patch.pbxTenant = infos[0];
           patch.pbxRoomId = infos[1];
           patch.pbxTalkerId = infos[2];
@@ -197,15 +197,15 @@ class SIP extends EventEmitter {
         }
       }
 
-      this.emit('session-updated', {
+      this.emit(`session-updated`, {
         id: ev.sessionId,
         ...patch,
       });
 
-      this.emit('video-session-updated', ev);
+      this.emit(`video-session-updated`, ev);
     });
 
-    this.phone.addEventListener('videoClientSessionCreated', ev => {
+    this.phone.addEventListener(`videoClientSessionCreated`, ev => {
       if (!ev) {
         return;
       }
@@ -214,34 +214,34 @@ class SIP extends EventEmitter {
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId];
 
-      this.emit('session-updated', {
+      this.emit(`session-updated`, {
         id: ev.sessionId,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
       });
 
-      this.emit('video-session-created', {
+      this.emit(`video-session-created`, {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
       });
     });
 
-    this.phone.addEventListener('videoClientSessionEnded', ev => {
+    this.phone.addEventListener(`videoClientSessionEnded`, ev => {
       if (!ev) {
         return;
       }
 
-      this.emit('session-updated', {
+      this.emit(`session-updated`, {
         id: ev.sessionId,
       });
 
-      this.emit('video-session-ended', {
+      this.emit(`video-session-ended`, {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
       });
     });
 
-    this.phone.addEventListener('rtcErrorOccurred', ev => {
+    this.phone.addEventListener(`rtcErrorOccurred`, ev => {
       console.error(ev);
     });
 
@@ -266,23 +266,23 @@ class SIP extends EventEmitter {
     this._creatingSessions.__clear();
     let platformOs = Platform.OS;
 
-    if (platformOs === 'ios') {
-      platformOs = 'iOS';
-    } else if (platformOs === 'android') {
-      platformOs = 'Android';
-    } else if (platformOs === 'web') {
-      platformOs = 'Web';
+    if (platformOs === `ios`) {
+      platformOs = `iOS`;
+    } else if (platformOs === `android`) {
+      platformOs = `Android`;
+    } else if (platformOs === `web`) {
+      platformOs = `Web`;
     }
 
-    const jssipVersion = '3.2.15';
-    const appPackageJson = require('../../../package.json');
+    const jssipVersion = `3.2.15`;
+    const appPackageJson = require(`../../../package.json`);
     const appVersion = appPackageJson.version;
     const lUseragent =
-      'Brekeke Phone for ' +
+      `Brekeke Phone for ` +
       platformOs +
-      ' ' +
+      ` ` +
       appVersion +
-      '/JsSIP ' +
+      `/JsSIP ` +
       jssipVersion;
     const config = profile.pbxTurnEnabled ? turnConfig : {};
 
@@ -294,7 +294,7 @@ class SIP extends EventEmitter {
       config.pcConfig.iceServers = [];
     }
 
-    config.pcConfig.bundlePolicy = 'balanced';
+    config.pcConfig.bundlePolicy = `balanced`;
     this.phone.setDefaultCallOptions(config);
 
     this.phone.startWebRTC({
@@ -316,10 +316,10 @@ class SIP extends EventEmitter {
 
   createSession(number, opts = {}) {
     const options =
-      Platform.OS === 'android' || Platform.OS === 'ios'
+      Platform.OS === `android` || Platform.OS === `ios`
         ? this._makeCallOptionsForAndoirOrIos
         : null;
-    this.phone.makeCall(number, options, opts.videoEnabled, undefined, '');
+    this.phone.makeCall(number, options, opts.videoEnabled, undefined, ``);
     this._creatingSessions.__add();
   }
 

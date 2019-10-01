@@ -24,9 +24,9 @@ class Auth extends React.Component {
 
     return (
       profile &&
-      pbxState === 'success' &&
-      sipState === 'success' &&
-      (!profile.ucEnabled || ucState === 'success')
+      pbxState === `success` &&
+      sipState === `success` &&
+      (!profile.ucEnabled || ucState === `success`)
     );
   }
 

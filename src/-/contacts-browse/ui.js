@@ -15,8 +15,8 @@ import { rem, std } from '../styleguide';
 const st = StyleSheet.create({
   empty: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   emptyMessage: {
@@ -33,8 +33,8 @@ const st = StyleSheet.create({
 
   navbar: {
     backgroundColor: std.color.shade1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: `center`,
+    justifyContent: `center`,
     paddingVertical: std.gap.sm,
     borderColor: std.color.shade4,
     borderBottomWidth: 1,
@@ -48,9 +48,9 @@ const st = StyleSheet.create({
   },
 
   navbarLeftOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     left: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -58,9 +58,9 @@ const st = StyleSheet.create({
   },
 
   navbarRightOpt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: `center`,
+    justifyContent: `center`,
+    position: `absolute`,
     right: std.gap.lg,
     top: 0,
     bottom: 0,
@@ -75,8 +75,8 @@ const st = StyleSheet.create({
   },
 
   search: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     backgroundColor: std.color.shade2,
     paddingVertical: std.gap.md,
     paddingHorizontal: std.gap.lg,
@@ -92,18 +92,18 @@ const st = StyleSheet.create({
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.lg * 2,
     color: std.color.shade9,
-    textAlign: 'center',
+    textAlign: `center`,
     backgroundColor: std.color.shade0,
     borderRadius: std.gap.sm,
   },
 
   searchClear: {
-    position: 'absolute',
+    position: `absolute`,
     top: 0,
     right: std.gap.lg + std.gap.sm,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   searchClearIcon: {
@@ -121,14 +121,14 @@ const st = StyleSheet.create({
     borderColor: std.color.shade4,
     borderWidth: 1,
     borderRadius: std.gap.lg,
-    overflow: 'hidden',
+    overflow: `hidden`,
     margin: std.gap.lg,
   },
 
   contactLoading: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: `center`,
+    alignItems: `center`,
+    position: `absolute`,
     top: 0,
     right: 0,
     bottom: 0,
@@ -138,8 +138,8 @@ const st = StyleSheet.create({
   },
 
   contactHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     height: std.textSize.md * 2 + std.gap.md * 6,
     paddingHorizontal: std.gap.lg,
     backgroundColor: std.color.shade1,
@@ -150,8 +150,8 @@ const st = StyleSheet.create({
   },
 
   contactAction: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
@@ -168,7 +168,7 @@ const st = StyleSheet.create({
   fieldHeadText: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     lineHeight: std.textSize.md + std.gap.md * 2,
     color: std.color.shade9,
   },
@@ -176,7 +176,7 @@ const st = StyleSheet.create({
   fieldHeadEdit: {
     fontFamily: std.font.text,
     fontSize: std.textSize.md,
-    fontWeight: 'bold',
+    fontWeight: `bold`,
     paddingVertical: 0,
     paddingHorizontal: 0,
     height: std.textSize.md + std.gap.md * 2,
@@ -184,8 +184,8 @@ const st = StyleSheet.create({
   },
 
   field: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: `row`,
+    alignItems: `center`,
     height: std.iconSize.md * 2 + std.gap.md * 2,
     paddingHorizontal: std.gap.lg,
     borderBottomWidth: 1,
@@ -222,8 +222,8 @@ const st = StyleSheet.create({
   },
 
   fieldAction: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     width: std.iconSize.md * 2,
     height: std.iconSize.md * 2,
     borderRadius: std.iconSize.md,
@@ -239,13 +239,13 @@ const st = StyleSheet.create({
 
   loading: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
   },
 
   paging: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: `center`,
+    alignItems: `center`,
     padding: std.gap.lg,
     backgroundColor: std.color.shade1,
     borderColor: std.color.shade4,
@@ -274,7 +274,7 @@ const Navbar = pure(p => (
       <Text style={st.navbarOptText}>Back</Text>
     </Button>
     <Text style={st.navbarTitle}>
-      {p.book} {p.shared && '(Shared)'}
+      {p.book} {p.shared && `(Shared)`}
     </Text>
     {p.canCreate && (
       <Button style={st.navbarRightOpt} onPress={p.create}>
@@ -293,7 +293,7 @@ const Search = pure(p => (
       onChangeText={p.setValue}
     />
     {!!p.value && (
-      <Button style={st.searchClear} onPress={() => p.setValue('')}>
+      <Button style={st.searchClear} onPress={() => p.setValue(``)}>
         <Text style={st.searchClearIcon}>icon_x_circle</Text>
       </Button>
     )}

@@ -14,7 +14,7 @@ class View extends React.Component {
   };
 
   state = {
-    name: '',
+    name: ``,
     members: [],
   };
 
@@ -60,7 +60,7 @@ class View extends React.Component {
     const { name, members } = this.state;
 
     if (!name.trim()) {
-      g.showError({ message: 'Group name is required' });
+      g.showError({ message: `Group name is required` });
       return;
     }
 
@@ -78,7 +78,7 @@ class View extends React.Component {
 
   onCreateFailure = err => {
     console.error(err);
-    g.showError({ message: 'create the group chat' });
+    g.showError({ message: `create the group chat` });
   };
 }
 

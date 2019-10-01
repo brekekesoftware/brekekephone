@@ -18,12 +18,12 @@ class View extends React.Component {
           return m;
         }, {})}
         groupIds={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
-        groupById={arrToMap(chatStore.groups, 'id', g => g)}
+        groupById={arrToMap(chatStore.groups, `id`, g => g)}
         selectBuddy={g.goToBuddyChatsRecent}
         selectGroup={g.goToChatGroupsRecent}
         createGroup={g.goToChatGroupsCreate}
         searchText={contactStore.searchText}
-        setSearchText={contactStore.setF('searchText')}
+        setSearchText={contactStore.setF(`searchText`)}
       />
     );
   }
@@ -38,7 +38,7 @@ class View extends React.Component {
     if (chatUser) {
       ucUserName = chatUser.name.toLowerCase();
     } else {
-      ucUserName = '';
+      ucUserName = ``;
     }
     userId = userId.toLowerCase();
     ucUserName = ucUserName.toLowerCase();

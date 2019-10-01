@@ -18,7 +18,7 @@ const setUrlParams = p => {
   urlParams = p;
 };
 
-Linking.addEventListener('url', e => {
+Linking.addEventListener(`url`, e => {
   const p = (urlParams = parse(e.url));
   // Check against the current user
   if (

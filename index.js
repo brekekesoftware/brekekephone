@@ -3,4 +3,4 @@
 import App from './src/App';
 import { AppRegistry } from './src/native/Rn';
 
-AppRegistry.registerComponent('App', () => App);
+AppRegistry.registerComponent(`App`, () => App);

@@ -8,14 +8,14 @@ import { std } from '../styleguide';
 
 const st = StyleSheet.create({
   keyRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: `row`,
+    justifyContent: `space-around`,
   },
 
   keyCell: {
-    justifyContent: 'center',
-    width: '33.3%',
-    height: '100%',
+    justifyContent: `center`,
+    width: `33.3%`,
+    height: `100%`,
   },
 
   keyText: {
@@ -25,12 +25,12 @@ const st = StyleSheet.create({
 
   conPhoneCall: {
     paddingTop: std.iconSize.md,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: `row`,
+    justifyContent: `space-around`,
   },
 
   btnCall: {
-    justifyContent: 'center',
+    justifyContent: `center`,
     borderRadius: std.iconSize.md * 2,
     width: std.iconSize.md * 3,
     height: std.iconSize.md * 3,
@@ -38,10 +38,10 @@ const st = StyleSheet.create({
 });
 
 const keys = [
-  ['1', '2', '3'],
-  ['4', '5', '6'],
-  ['7', '8', '9'],
-  ['*', '0', '#'],
+  [`1`, `2`, `3`],
+  [`4`, `5`, `6`],
+  [`7`, `8`, `9`],
+  [`*`, `0`, `#`],
 ];
 
 class KeyPad extends React.Component {
@@ -65,7 +65,7 @@ class KeyPad extends React.Component {
           <Button style={st.btnCall} success onPress={p.callVoice}>
             <Icon path={mdiPhone} />
           </Button>
-          <Button style={st.btnCall} onPress={() => p.onPress('delete')}>
+          <Button style={st.btnCall} onPress={() => p.onPress(`delete`)}>
             <Icon path={mdiBackspace} />
           </Button>
         </View>

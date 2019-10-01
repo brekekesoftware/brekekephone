@@ -1,6 +1,12 @@
-import './_alert';
-import './_keyboard';
-import './_picker';
-import './_router';
+import './__alert';
+import './__keyboard';
+import './__picker';
+import './__stacker';
+import './_profiles';
 
-export default from './_';
+import v from '../variables';
+import $ from './_';
+
+$.extends(v);
+
+export default $;
