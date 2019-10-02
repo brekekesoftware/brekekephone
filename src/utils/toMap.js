@@ -1,6 +1,6 @@
 import get from 'lodash/get';
 
-const arrToMap = (arr, k, v) =>
+export const arrToMap = (arr, k, v) =>
   arr.reduce(
     (m, item, i) => ({
       ...m,
@@ -9,12 +9,9 @@ const arrToMap = (arr, k, v) =>
     }),
     {},
   );
-const mapToMap = (map, k, v) =>
+export const mapToMap = (map, k, v) =>
   arrToMap(
     Object.keys(map),
     typeof k === `function` ? k : ki => (k ? get(map[ki], k) : ki),
     typeof v === `function` ? v : ki => (v ? get(map[ki], v) : true),
   );
-
-export { mapToMap };
-export default arrToMap;

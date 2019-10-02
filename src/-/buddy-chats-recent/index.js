@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import arrToMap from '../arrToMap';
+import { arrToMap } from '../../utils/toMap';
 import chatStore from '../chatStore';
 import ChatsDetail from '../components-Chats/Chat-Detail';
 import contactStore from '../contactStore';

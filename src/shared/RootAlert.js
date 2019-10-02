@@ -1,6 +1,6 @@
 import flow from 'lodash/flow';
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import g from '../global';
 import {
@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from '../native/Rn';
+import { useAnimationOnDidMount } from '../utils/animation';
 import useStore from './useStore';
 
 const s = StyleSheet.create({
@@ -92,29 +93,14 @@ const ErrorDetail = observer(props => {
   return <Text small>{props.err.message}</Text>;
 });
 
-const Alert = ({ prompt, error, loading }) => {
-  const [opacity] = useState(new Animated.Value(0));
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 150,
-    }).start();
-  }, [opacity]);
-
-  const [translateY] = useState(
-    new Animated.Value(Dimensions.get(`screen`).height),
-  );
-  useEffect(() => {
-    Animated.timing(translateY, {
-      toValue: 0,
-      duration: 150,
-    }).start();
-  }, [translateY]);
-
-  const p = {};
+const Alert = ({ prompt, error, loading, ...props }) => {
+  const a = useAnimationOnDidMount({
+    opacity: [0, 1],
+    translateY: [Dimensions.get(`screen`).height, 0],
+  });
   if (prompt) {
     const { title, message, onConfirm, onDismiss, ...rest } = prompt;
-    Object.assign(p, {
+    Object.assign(props, {
       title,
       message:
         typeof message === `string` ? (
@@ -130,7 +116,7 @@ const Alert = ({ prompt, error, loading }) => {
     });
   } else if (error) {
     const { message, err, unexpectedErr, ...rest } = error;
-    Object.assign(p, {
+    Object.assign(props, {
       title: `Error`,
       message: (
         <React.Fragment>
@@ -159,43 +145,38 @@ const Alert = ({ prompt, error, loading }) => {
         style={[
           StyleSheet.absoluteFill,
           s.RootAlert_Backdrop,
-          {
-            opacity: opacity,
-          },
+          { opacity: a.opacity },
         ]}
       >
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
-          onPress={p.onDismiss}
+          onPress={props.onDismiss}
         />
       </Animated.View>
       <Animated.View
         style={[
           s.RootAlert_Modal,
           {
-            transform: [
-              { translateY },
-              // { scale: opacity },
-            ],
+            transform: [{ translateY: a.translateY }],
           },
         ]}
       >
-        <Text subTitle>{p.title}</Text>
-        {p.message}
+        <Text subTitle>{props.title}</Text>
+        {props.message}
         <View style={s.RootAlert_Btns}>
-          {p.dismissText && (
+          {props.dismissText && (
             <TouchableOpacity
               style={[s.RootAlert_Btn, s.RootAlert_Btn__cancel]}
-              onPress={p.onDismiss}
+              onPress={props.onDismiss}
             >
               <Text small style={s.RootAlert_BtnTxt}>
-                {p.dismissText}
+                {props.dismissText}
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={s.RootAlert_Btn} onPress={p.onConfirm}>
+          <TouchableOpacity style={s.RootAlert_Btn} onPress={props.onConfirm}>
             <Text small style={s.RootAlert_BtnTxt}>
-              {p.confirmText}
+              {props.confirmText}
             </Text>
           </TouchableOpacity>
         </View>

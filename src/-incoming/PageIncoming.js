@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import arrToMap from '../-/arrToMap';
 import callStore from '../-/callStore';
 import g from '../global';
 import IncallManager from '../native/IncallManager';
 import Layout from '../shared/Layout';
+import { arrToMap } from '../utils/toMap';
 import CallBar from './CallBar';
 
 @observer

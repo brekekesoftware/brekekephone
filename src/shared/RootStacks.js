@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import g from '../global';
 import { Animated, Dimensions, StyleSheet, View } from '../native/Rn';
+import { useAnimationOnDidMount } from '../utils/animation';
 
 const s = StyleSheet.create({
   Stack: {
@@ -11,30 +12,18 @@ const s = StyleSheet.create({
 });
 
 const Stack = ({ Component, ...p }) => {
-  const [translateX] = useState(
-    new Animated.Value(Dimensions.get(`screen`).width),
-  );
-  useEffect(() => {
-    Animated.timing(translateX, {
-      toValue: 0,
-      duration: 150,
-    }).start();
-  }, [translateX]);
+  const a = useAnimationOnDidMount({
+    translateX: [Dimensions.get(`screen`).width, 0],
+  });
   const OuterComponent = p.isRoot ? View : Animated.View;
   return (
     <OuterComponent
       style={[
         StyleSheet.absoluteFill,
         s.Stack,
-        !p.isRoot
-          ? {
-              transform: [
-                {
-                  translateX,
-                },
-              ],
-            }
-          : null,
+        !p.isRoot && {
+          transform: [{ translateX: a.translateX }],
+        },
       ]}
     >
       <Component {...p} />

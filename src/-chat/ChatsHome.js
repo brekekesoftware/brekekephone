@@ -1,11 +1,11 @@
 import React from 'react';
 
-import arrToMap from '../-/arrToMap';
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
+import { arrToMap } from '../utils/toMap';
 import ListUsers from './ListUsers';
 
 class ChatsHome extends React.Component {

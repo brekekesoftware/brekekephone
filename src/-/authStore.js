@@ -2,8 +2,8 @@ import { computed, observable } from 'mobx';
 
 import g from '../global';
 import PushNotification from '../native/PushNotification';
+import { arrToMap } from '../utils/toMap';
 import { getAppOld } from './AppOld_';
-import arrToMap from './arrToMap';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
 

@@ -1,7 +1,7 @@
 import shortid from 'shortid';
 
 import AsyncStorage from '../native/AsyncStorage';
-import arrToMap from '../utils/arrToMap';
+import { arrToMap } from '../utils/toMap';
 import $ from './_';
 
 $.extends({

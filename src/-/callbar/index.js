@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 
 import g from '../../global';
 import IncallManager from '../../native/IncallManager';
-import arrToMap from '../arrToMap';
+import { arrToMap } from '../../utils/toMap';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import UI from './ui';

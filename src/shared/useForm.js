@@ -6,7 +6,7 @@ import Validator from 'validatorjs';
 
 import { Platform } from '../native/Rn';
 import Field from '../shared/Field';
-import arrToMap, { mapToMap } from '../utils/arrToMap';
+import { arrToMap, mapToMap } from '../utils/toMap';
 import useStore from './useStore';
 
 const useForm = () => {

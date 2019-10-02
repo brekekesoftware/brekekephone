@@ -1,6 +1,6 @@
 import { action, computed, observable } from 'mobx';
 
-import arrToMap from './arrToMap';
+import { arrToMap } from '../utils/toMap';
 import BaseStore from './BaseStore';
 
 export class CallStore extends BaseStore {

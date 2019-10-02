@@ -3,13 +3,13 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import arrToMap from '../-/arrToMap';
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import pickFile from '../-/pickFile';
 import saveBlob from '../-/saveBlob';
 import g from '../global';
 import Layout from '../shared/Layout';
+import { arrToMap } from '../utils/toMap';
 import Message from './Message';
 
 const monthName = [

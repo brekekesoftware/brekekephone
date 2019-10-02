@@ -1,5 +1,5 @@
 import { mdiKeyboardBackspace, mdiPlus } from '@mdi/js';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import g from '../global';
 import {
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from '../native/Rn';
+import { useAnimation } from '../utils/animation';
 import Icon from './Icon';
 
 const s = StyleSheet.create({
@@ -36,10 +37,6 @@ const s = StyleSheet.create({
     fontSize: g.fontSizeTitle,
     lineHeight: g.lineHeightTitle,
     fontWeight: `bold`,
-  },
-  LayoutHeader_Title__compact: {
-    fontSize: g.fontSizeSubTitle,
-    lineHeight: 20,
   },
   LayoutHeader_Description: {
     color: g.subColor,
@@ -71,11 +68,6 @@ const s = StyleSheet.create({
   LayoutHeader_CreateBtn__white: {
     backgroundColor: g.bg,
   },
-  LayoutHeader_CreateBtn__compact: {
-    top: 0,
-    height: 40,
-    borderRadius: 0,
-  },
   LayoutHeader_BackBtn: {
     position: `absolute`,
     top: 0,
@@ -91,104 +83,40 @@ const s = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 0,
   },
-  LayoutHeader_BackBtn__compact: {
-    height: 40,
-    paddingVertical: 5,
-  },
 });
 
 const Header = props => {
-  const [paddingVertical] = useState(new Animated.Value(15));
-  useEffect(() => {
-    Animated.timing(paddingVertical, {
-      toValue: props.compact ? 10 : 15,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(paddingVertical).stop();
-  }, [paddingVertical, props.compact]);
-
-  const [titleFontSize] = useState(new Animated.Value(g.fontSizeTitle));
-  useEffect(() => {
-    Animated.timing(titleFontSize, {
-      toValue: props.compact ? g.fontSizeSubTitle : g.fontSizeTitle,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(titleFontSize).stop();
-  }, [titleFontSize, props.compact]);
-
-  const [titleLineHeight] = useState(new Animated.Value(g.lineHeightTitle));
-  useEffect(() => {
-    Animated.timing(titleLineHeight, {
-      toValue: props.compact ? 20 : g.lineHeightTitle,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(titleLineHeight).stop();
-  }, [titleLineHeight, props.compact]);
-
-  const [backBtnHeight] = useState(new Animated.Value(70));
-  useEffect(() => {
-    Animated.timing(backBtnHeight, {
-      toValue: props.compact ? 40 : 70,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(backBtnHeight).stop();
-  }, [backBtnHeight, props.compact]);
-
-  const [backBtnPadding] = useState(new Animated.Value(20));
-  useEffect(() => {
-    Animated.timing(backBtnPadding, {
-      toValue: props.compact ? 5 : 20,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(backBtnPadding).stop();
-  }, [backBtnPadding, props.compact]);
-
-  const [createBtnOuterTop] = useState(new Animated.Value(11));
-  useEffect(() => {
-    Animated.timing(createBtnOuterTop, {
-      toValue: props.compact ? 0 : 11,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(createBtnOuterTop).stop();
-  }, [createBtnOuterTop, props.compact]);
-  const [createBtnOuterHeight] = useState(new Animated.Value(50));
-  useEffect(() => {
-    Animated.timing(createBtnOuterHeight, {
-      toValue: props.compact ? 40 : 50,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(createBtnOuterHeight).stop();
-  }, [createBtnOuterHeight, props.compact]);
-  const [createBtnInnerTop] = useState(new Animated.Value(0));
-  useEffect(() => {
-    Animated.timing(createBtnInnerTop, {
-      toValue: props.compact ? -5 : 0,
-      duration: 150,
-    }).start();
-    return () => Animated.timing(createBtnInnerTop).stop();
-  }, [createBtnInnerTop, props.compact]);
-
+  const a = useAnimation(props.compact, {
+    headerInnerPaddingVertical: [15, 10],
+    titleFontSize: [g.fontSizeTitle, g.fontSizeSubTitle],
+    titleLineHeight: [g.lineHeightTitle, 20],
+    createBtnOuterTop: [11, 0],
+    createBtnOuterHeight: [50, 40],
+    createBtnInnerTop: [0, -5],
+    backBtnHeight: [70, 40],
+    backBtnPadding: [20, 5],
+  });
   return (
-    <View style={s.LayoutHeader}>
+    <View
+      style={[s.LayoutHeader, props.compact && s.LayoutHeader_Inner__compact]}
+    >
       <StatusBar transparent={props.transparent} />
       <Animated.View
         style={[
           s.LayoutHeader_Inner,
           !!props.onBackBtnPress && s.LayoutHeader_Inner__hasBackBtn,
-          props.compact && s.LayoutHeader_Inner__compact,
           props.transparent && s.LayoutHeader_Inner__transparent,
           {
-            paddingVertical,
+            paddingVertical: a.headerInnerPaddingVertical,
           },
         ]}
       >
         <Animated.Text
           style={[
             s.LayoutHeader_Title,
-            props.compact && s.LayoutHeader_Title__compact,
             {
-              fontSize: titleFontSize,
-              lineHeight: titleLineHeight,
+              fontSize: a.titleFontSize,
+              lineHeight: a.titleLineHeight,
             },
           ]}
         >
@@ -211,8 +139,8 @@ const Header = props => {
               style={[
                 s.LayoutHeader_CreateBtnOuter,
                 {
-                  top: createBtnOuterTop,
-                  height: createBtnOuterHeight,
+                  top: a.createBtnOuterTop,
+                  height: a.createBtnOuterHeight,
                 },
               ]}
             >
@@ -221,7 +149,7 @@ const Header = props => {
                   s.LayoutHeader_CreateBtnInner,
                   props.transparent && s.LayoutHeader_CreateBtn__white,
                   {
-                    top: createBtnInnerTop,
+                    top: a.createBtnInnerTop,
                   },
                 ]}
               >
@@ -242,8 +170,8 @@ const Header = props => {
               style={[
                 s.LayoutHeader_BackBtnInner,
                 {
-                  height: backBtnHeight,
-                  paddingVertical: backBtnPadding,
+                  height: a.backBtnHeight,
+                  paddingVertical: a.backBtnPadding,
                 },
               ]}
             >

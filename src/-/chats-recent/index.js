@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import g from '../../global';
-import arrToMap from '../arrToMap';
+import { arrToMap } from '../../utils/toMap';
 import chatStore from '../chatStore';
 import ChatsHome from '../components-Chats/Chats-Home';
 import contactStore from '../contactStore';
