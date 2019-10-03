@@ -83,6 +83,7 @@ class ChatDetail extends React.Component {
     loadingMore: false,
     editingText: ``,
     showImage: ``,
+    fileType: ``,
   };
 
   componentDidMount() {
@@ -111,11 +112,14 @@ class ChatDetail extends React.Component {
         {this.chatIds.map((id, index) => (
           <Message
             last={index === this.chatIds.length - 1}
-            urlImage={this.state.showImage}
             hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
             loadingMore={this.state.loadingMore}
             {...this.resolveChat(id, index)}
             loadMore={this.loadMore}
+            acceptFile={this.acceptFile}
+            rejectFile={this.rejectFile}
+            showImage={this.state.showImage}
+            fileType={this.state.fileType}
           />
         ))}
       </Layout>
@@ -273,9 +277,10 @@ class ChatDetail extends React.Component {
 
   blob = file => {
     const reader = new FileReader();
+    const fileType = file.type.split(`/`)[0];
     reader.onload = async () => {
       const url = reader.result;
-      this.setState({ showImage: url });
+      this.setState({ showImage: url, fileType: fileType });
     };
     reader.readAsDataURL(file);
   };

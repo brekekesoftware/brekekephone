@@ -33,7 +33,6 @@ const RnText = forwardRef(
   ({ title, subTitle, small, style, ...props }, ref) => (
     <Text
       ref={ref}
-      {...props}
       style={[
         s.RnText,
         title && s.RnText__title,
@@ -42,6 +41,7 @@ const RnText = forwardRef(
         style,
       ]}
       numberOfLines={999} // TODO remove native-base
+      {...props}
     />
   ),
 );
