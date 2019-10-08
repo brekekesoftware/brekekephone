@@ -50,7 +50,7 @@ const renderItem = p => (
   <View>
     <View style={[s.Item, p.last && s.Item__last]}>
       <Avatar source={{ uri: p.avatar }} {...p} />
-      <Text style={s.Item_Name}>{p.name || p.partyNumber}</Text>
+      <Text style={s.Item_Name}>{p.name || p.partyNumber || p.id}</Text>
       {p.detail && (
         <View style={s.Item_Detail}>
           {p.incoming && p.answered && (

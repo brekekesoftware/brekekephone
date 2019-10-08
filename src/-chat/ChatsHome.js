@@ -14,6 +14,7 @@ class ChatsHome extends React.Component {
       <Layout
         header={{
           title: `Chats`,
+          onCreateBtnPress: g.goToChatGroupsCreate,
         }}
       >
         <Search

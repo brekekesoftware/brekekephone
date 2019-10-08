@@ -5,6 +5,7 @@ import { Redirect, Route } from 'react-router';
 
 import ChatDetail from '../-chat/ChatDetail';
 import ChatsHome from '../-chat/ChatsHome';
+import CreateGroup from '../-chat/CreateGroup';
 import PageContact from '../-contact/PageContact';
 import PageCalling from '../-incoming/PageCalling';
 import PagePhone from '../-phone/PagePhone';
@@ -22,7 +23,6 @@ import CallVoices from './call-voices';
 import Callbar from './callbar';
 import CallsNotify from './calls-notify';
 import ChatGroupInvite from './chat-group-invite';
-import ChatGroupsCreate from './chat-groups-create';
 import ChatGroupsNotify from './chat-groups-notify';
 import ContactsBrowse from './contacts-browse';
 import ContactsCreate from './contacts-create';
@@ -116,11 +116,7 @@ const Routes = () => (
               path="/chats/group/:group/recent"
               component={GroupChatsRecent}
             />
-            <Route
-              exact
-              path="/chat-groups/create"
-              component={ChatGroupsCreate}
-            />
+            <Route exact path="/chat-groups/create" component={CreateGroup} />
             <Route
               exact
               path="/chat-group/:group/invite"
