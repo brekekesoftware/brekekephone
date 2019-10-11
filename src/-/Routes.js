@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Redirect, Route } from 'react-router';
 
 import ChatDetail from '../-chat/ChatDetail';
+import ChatGroupDetail from '../-chat/ChatGroupDetail';
 import ChatsHome from '../-chat/ChatsHome';
 import CreateGroup from '../-chat/CreateGroup';
 import PageContact from '../-contact/PageContact';
@@ -26,7 +27,6 @@ import ChatGroupInvite from './chat-group-invite';
 import ChatGroupsNotify from './chat-groups-notify';
 import ContactsBrowse from './contacts-browse';
 import ContactsCreate from './contacts-create';
-import GroupChatsRecent from './group-chats-recent';
 import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
@@ -114,7 +114,7 @@ const Routes = () => (
             <Route
               exact
               path="/chats/group/:group/recent"
-              component={GroupChatsRecent}
+              component={ChatGroupDetail}
             />
             <Route exact path="/chat-groups/create" component={CreateGroup} />
             <Route
