@@ -13,12 +13,8 @@ const ListUsers = p => (
         </TouchableOpacity>
       ))}
       {p.groupids.map(id => (
-        <TouchableOpacity onPress={() => p.userselect(id)}>
-          <Item
-            key={id}
-            {...p.groupbyid[id]}
-            select={() => p.groupselect(id)}
-          />
+        <TouchableOpacity onPress={() => p.groupselect(id)}>
+          <Item key={id} {...p.groupbyid[id]} />
         </TouchableOpacity>
       ))}
     </FieldGroup>

@@ -14,6 +14,9 @@ const s = StyleSheet.create({
     height: 80,
     alignItems: `stretch`,
   },
+  Item__Bgr: {
+    backgroundColor: v.hoverBg,
+  },
   Item__last: {
     borderBottomWidth: 0,
   },
@@ -44,11 +47,19 @@ const s = StyleSheet.create({
   Item_Icon__pd: {
     paddingLeft: 20,
   },
+  Item__Selected: {
+    position: `absolute`,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 10,
+    backgroundColor: v.mainDarkBg,
+  },
 });
 
 const renderItem = p => (
   <View>
-    <View style={[s.Item, p.last && s.Item__last]}>
+    <View style={[s.Item, p.last && s.Item__last, p.selected && s.Item__Bgr]}>
       <Avatar source={{ uri: p.avatar }} {...p} />
       <Text style={s.Item_Name}>{p.name || p.partyNumber || p.id}</Text>
       {p.detail && (
@@ -65,6 +76,7 @@ const renderItem = p => (
         </View>
       )}
     </View>
+    {p.selected && <View style={s.Item__Selected} />}
     <View style={s.Item_Icon}>
       {p.icon &&
         p.icon.map((v, i) => (

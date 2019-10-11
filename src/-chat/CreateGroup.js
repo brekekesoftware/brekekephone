@@ -24,18 +24,22 @@ const s = StyleSheet.create({
     padding: 10,
     ...v.boxShadow,
   },
-  CreateGroup_TextInputOuter: {
+  CreateGroup_Outer: {
     paddingTop: 5,
     paddingHorizontal: 10,
   },
   CreateGroup_BtnSave: {
-    left: 15,
+    marginTop: 15,
     padding: 10,
+    borderRadius: v.borderRadius,
+    backgroundColor: g.mainDarkBg,
+  },
+  CreateGroup_BtnText: {
+    alignItems: `center`,
   },
   CreateGroup_Text: {
-    left: 15,
-    padding: 15,
-    fontSize: v.fontSizeSubTitle,
+    marginTop: 15,
+    fontSize: v.fontSizeTitle,
   },
 });
 
@@ -61,7 +65,6 @@ class CreateGroup extends React.Component {
   };
 
   render() {
-    const p = this.props;
     return (
       <Layout
         header={{
@@ -69,19 +72,18 @@ class CreateGroup extends React.Component {
           title: `New Group`,
         }}
       >
-        <View style={s.CreateGroup_TextInputOuter}>
+        <View style={s.CreateGroup_Outer}>
           <TextInput
             style={s.CreateGroup_TextInput}
             placeholder="Group name"
             value={this.state.name}
             onChangeText={this.setName}
           />
+          <TouchableOpacity style={s.CreateGroup_BtnSave} onPress={this.create}>
+            <Text style={s.CreateGroup_BtnText}>SAVE</Text>
+          </TouchableOpacity>
+          <Text style={s.CreateGroup_Text}>Members</Text>
         </View>
-
-        <TouchableOpacity style={s.CreateGroup_BtnSave} onPress={p.create}>
-          <Text>SAVE</Text>
-        </TouchableOpacity>
-        <Text style={s.CreateGroup_Text}>Members</Text>
         <React.Fragment>
           <FieldGroup>
             {this.buddyIds.map(id => (
