@@ -52,7 +52,7 @@ const s = StyleSheet.create({
   LayoutHeader_VideoCallBtn: {
     position: `absolute`,
     top: 0,
-    right: 35,
+    right: 60,
   },
   LayoutHeader_VideoCallBtnInner: {
     position: `absolute`,
@@ -65,7 +65,7 @@ const s = StyleSheet.create({
   LayoutHeader_VoiceCallBtn: {
     position: `absolute`,
     top: 0,
-    right: 65,
+    right: 115,
   },
   LayoutHeader_VoiceCallBtnInner: {
     position: `absolute`,
@@ -194,8 +194,8 @@ const Header = props => {
         )}
         {props.onVoiceCallBtnPress && (
           <TouchableOpacity
-            style={s.LayoutHeader_CreateBtn}
-            onPress={props.onCreateBtnPress}
+            style={s.LayoutHeader_VoiceCallBtn}
+            onPress={props.onVoiceCallBtnPress}
           >
             <Animated.View
               style={[
@@ -226,7 +226,7 @@ const Header = props => {
         {props.onVideoCallBtnPress && (
           <TouchableOpacity
             style={s.LayoutHeader_VideoCallBtn}
-            onPress={props.onCreateBtnPress}
+            onPress={props.onVideoCallBtnPress}
           >
             <Animated.View
               style={[

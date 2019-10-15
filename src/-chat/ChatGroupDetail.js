@@ -94,7 +94,7 @@ class ChatGroupDetail extends React.Component {
       <Layout
         header={{
           onBackBtnPress: g.goToChatsRecent,
-          onCreateBtnPress: g.goToChatGroupsCreate,
+          onCreateBtnPress: this.invite,
           onVideoCallBtnPress: this.callVideoConference,
           onVoiceCallBtnPress: this.callVoiceConference,
           title: gr?.name,

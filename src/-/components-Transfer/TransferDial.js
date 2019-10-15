@@ -14,7 +14,6 @@ import {
 import React from 'react';
 
 import Icon from '../../shared/Icon';
-import SearchContact from '../components-Contacts/SearchContact';
 import Headers from '../components-Home/Header';
 
 class TransferDial extends React.Component {
@@ -49,7 +48,6 @@ class TransferDial extends React.Component {
       <Container>
         <React.Fragment>
           <Headers title="Transfer call" />
-          <SearchContact />
           <Content>
             {groups.map(g => (
               <React.Fragment key={g.key}>

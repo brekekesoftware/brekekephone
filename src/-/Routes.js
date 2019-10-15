@@ -7,6 +7,7 @@ import ChatDetail from '../-chat/ChatDetail';
 import ChatGroupDetail from '../-chat/ChatGroupDetail';
 import ChatsHome from '../-chat/ChatsHome';
 import CreateGroup from '../-chat/CreateGroup';
+import GroupChatInvite from '../-chat/GroupChatInvite';
 import PageContact from '../-contact/PageContact';
 import PageCalling from '../-incoming/PageCalling';
 import PagePhone from '../-phone/PagePhone';
@@ -23,7 +24,6 @@ import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import Callbar from './callbar';
 import CallsNotify from './calls-notify';
-import ChatGroupInvite from './chat-group-invite';
 import ChatGroupsNotify from './chat-groups-notify';
 import ContactsBrowse from './contacts-browse';
 import ContactsCreate from './contacts-create';
@@ -120,7 +120,7 @@ const Routes = () => (
             <Route
               exact
               path="/chat-group/:group/invite"
-              component={ChatGroupInvite}
+              component={GroupChatInvite}
             />
             <Route exact path="/chats/recent" component={ChatsHome} />
             <Route
