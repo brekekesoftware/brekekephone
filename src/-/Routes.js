@@ -12,14 +12,14 @@ import PageContact from '../-contact/PageContact';
 import PageCalling from '../-incoming/PageCalling';
 import PagePhone from '../-phone/PagePhone';
 import Recent from '../-recent/PageRecent';
+import TransferAttend from '../-transfer/TransferAttend';
+import TransferDial from '../-transfer/TransferDial';
 import g from '../global';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
 import CallKeypad from './call-keypad';
 import CallPark from './call-park';
-import CallTransferAttend from './call-transfer-attend';
-import CallTransferDial from './call-transfer-dial';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import Callbar from './callbar';
@@ -96,12 +96,12 @@ const Routes = () => (
             <Route
               exact
               path="/call/:call/transfer/dial"
-              component={CallTransferDial}
+              component={TransferDial}
             />
             <Route
               exact
               path="/call/:call/transfer/attend"
-              component={CallTransferAttend}
+              component={TransferAttend}
             />
             <Route exact path="/call/:call/keypad" component={CallKeypad} />
             <Route exact path="/call/:call/park" component={CallPark} />
