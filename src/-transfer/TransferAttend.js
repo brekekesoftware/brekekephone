@@ -21,6 +21,48 @@ const s = StyleSheet.create({
   TransferAttend: {
     flexDirection: `row`,
   },
+  TransferAttend__spaceAround: {
+    justifyContent: `space-around`,
+  },
+  TransferAttend_Spacing: {
+    flex: 1,
+    maxHeight: `40%`,
+  },
+  TransferAttend_Info: {
+    position: `absolute`,
+    alignItems: `center`,
+  },
+  TransferAttend_InfoFrom: {
+    left: 20,
+    top: 30,
+  },
+  TransferAttend_InfoTo: {
+    right: 20,
+    top: 30,
+  },
+  TransferAttend_InfoArr: {
+    marginLeft: `auto`,
+    marginRight: `auto`,
+    top: 60,
+  },
+
+  TransferAttend_BtnOuter: {
+    flexDirection: `column`,
+    alignItems: `center`,
+  },
+  TransferAttend_Txt__pdt20: {
+    paddingTop: 20,
+  },
+  TransferAttend_Txt__pdt10: {
+    paddingTop: 10,
+  },
+  TransferAttend_Btn: {
+    borderWidth: 1,
+    borderRadius: 25,
+    padding: 5,
+    width: 50,
+    height: 50,
+  },
 });
 
 @observer
@@ -44,46 +86,50 @@ class TransferAttend extends React.Component {
         }}
       >
         <View style={s.TransferAttend}>
-          <View>
+          <View style={[s.TransferAttend_Info, s.TransferAttend_InfoFrom]}>
             <Avatar source={{ uri: usersource?.avatar }} />
-            <Text>From</Text>
+            <Text style={s.TransferAttend_Txt__pdt20}>From</Text>
             <Text>{this.call?.partyName}</Text>
           </View>
-          <View>
+          <View style={s.TransferAttend_InfoArr}>
             <Icon path={mdiArrowRight} />
           </View>
-          <View>
+          <View style={[s.TransferAttend_Info, s.TransferAttend_InfoTo]}>
             <Avatar source={{ uri: usertarget?.avatar }} />
-            <Text>To</Text>
+            <Text style={s.TransferAttend_Txt__pdt20}>To</Text>
             <Text>{this.call?.transfering}</Text>
           </View>
         </View>
-        <View>
-          <View>
-            <TouchableOpacity onPress={this.hangup}>
+        <View style={s.TransferAttend_Spacing} />
+        <View style={[s.TransferAttend, s.TransferAttend__spaceAround]}>
+          <View style={s.TransferAttend_BtnOuter}>
+            <TouchableOpacity
+              style={[s.TransferAttend_Btn]}
+              onPress={this.hangup}
+            >
               <Icon path={mdiPhoneOff} />
             </TouchableOpacity>
-            <View>
-              <Text>CANCEL</Text>
-              <Text>TRANSFER</Text>
-            </View>
+            <Text style={s.TransferAttend_Txt__pdt10}>CANCEL</Text>
+            <Text>TRANSFER</Text>
           </View>
-          <View>
-            <TouchableOpacity onPress={this.stop}>
+          <View style={s.TransferAttend_BtnOuter}>
+            <TouchableOpacity
+              style={[s.TransferAttend_Btn]}
+              onPress={this.stop}
+            >
               <Icon path={mdiPhoneHangup} />
             </TouchableOpacity>
-            <View>
-              <Text>END CALL &</Text>
-              <Text>COMPLETE TRANSFER</Text>
-            </View>
+            <Text style={s.TransferAttend_Txt__pdt10}>END CALL &</Text>
+            <Text>COMPLETE TRANSFER</Text>
           </View>
-          <View>
-            <TouchableOpacity onPress={this.join}>
+          <View style={s.TransferAttend_BtnOuter}>
+            <TouchableOpacity
+              style={[s.TransferAttend_Btn]}
+              onPress={this.join}
+            >
               <Icon path={mdiPhoneForward} />
             </TouchableOpacity>
-            <View>
-              <Text>CONFERENCE</Text>
-            </View>
+            <Text style={s.TransferAttend_Txt__pdt10}>CONFERENCE</Text>
           </View>
         </View>
       </Layout>

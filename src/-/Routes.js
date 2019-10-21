@@ -15,6 +15,7 @@ import Recent from '../-recent/PageRecent';
 import TransferAttend from '../-transfer/TransferAttend';
 import TransferDial from '../-transfer/TransferDial';
 import g from '../global';
+import FooterTab from '../shared/FooterTab';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
@@ -32,7 +33,6 @@ import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
 import router from './routerStore';
 import SIPAuth from './sip-auth';
-import Tabbar from './tabbar';
 import UCAuth from './uc-auth';
 
 // Wait and push history to fix some strange issues with router
@@ -138,7 +138,7 @@ const Routes = () => (
       <Route path="/" component={UCAuth} />
       <Route path="/" component={CallVoices} />
       <Route path="/" component={CallVideos} />
-      <Route path="/" component={Tabbar} />
+      <Route path="/" component={FooterTab} />
     </WithoutStatusBar>
     <Notifications>
       <Route path="/" component={CallsNotify} />
