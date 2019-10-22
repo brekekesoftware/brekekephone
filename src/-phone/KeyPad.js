@@ -15,11 +15,11 @@ const s = StyleSheet.create({
   KeyPad_NumberTxt: {
     fontSize: v.fontSizeTitle,
     fontWeight: `600`,
+    textAlign: `center`,
+    paddingVertical: 20,
   },
   KeyPad_NumberBtn: {
-    textAlign: `center`,
     width: `33.3%`,
-    paddingVertical: 20,
   },
   KeyPad_Btn: {
     flexDirection: `row`,
@@ -30,6 +30,7 @@ const s = StyleSheet.create({
     backgroundColor: v.mainDarkBg,
     width: 64,
     borderRadius: 30,
+    paddingVertical: 20,
   },
 });
 

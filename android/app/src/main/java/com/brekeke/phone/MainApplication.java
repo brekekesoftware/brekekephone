@@ -12,7 +12,6 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.horcrux.svg.SvgPackage;
 import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.rnfs.RNFSPackage;
@@ -47,7 +46,6 @@ public class MainApplication extends Application implements ReactApplication {
               new RNFSPackage(),
               new SplashScreenReactPackage(),
               new SvgPackage(),
-              new VectorIconsPackage(),
               new WebRTCModulePackage());
         }
 

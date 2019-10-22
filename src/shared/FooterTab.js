@@ -20,7 +20,6 @@ const s = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 55,
     backgroundColor: g.bg,
     borderTopWidth: 1 / 3,
     borderColor: `#cbcbcb`,
@@ -32,6 +31,7 @@ const s = StyleSheet.create({
   FooterTab_Actions: {
     flexDirection: `row`,
     alignSelf: `stretch`,
+    paddingBottom: 15,
   },
   FooterTab_Btn: {
     borderRadius: 0,
@@ -40,7 +40,7 @@ const s = StyleSheet.create({
     alignItems: `center`,
   },
   FooterTab_Txt: {
-    fontSize: 12,
+    fontSize: 10,
   },
 });
 

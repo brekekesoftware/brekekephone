@@ -5,44 +5,52 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   ShowNumbers: {
-    position: `absolute`,
-    top: 0,
-    left: 0,
-    right: 0,
+    flexDirection: `column`,
   },
-  ShowNumbers_Btn: {
+  ShowNumbers_BtnOuter: {
     flexDirection: `row`,
-    position: `absolute`,
-    top: 10,
-    right: 10,
   },
   ShowNumbers_BtnTxt: {
     fontSize: v.fontSizeSmall,
   },
-  ShowNumbers_Btn__call: {
+  ShowNumbers_Btn: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    marginLeft: 5,
     borderRadius: 3,
     backgroundColor: v.mainDarkBg,
   },
+  ShowNumbers_Btn__callpark: {
+    position: `absolute`,
+    top: 10,
+    right: 120,
+  },
+  ShowNumbers_Btn__voicecall: {
+    position: `absolute`,
+    top: 10,
+    right: 10,
+  },
   ShowNumbers_Display: {
     position: `absolute`,
-    top: 45,
+    top: 65,
     left: 20,
   },
   ShowNumbers_DisplayTxt: {
     fontSize: 32,
+    paddingVertical: 15,
   },
 });
 
 const ShowNumber = p => (
   <View style={s.ShowNumbers}>
-    <View style={s.ShowNumbers_Btn}>
-      <TouchableOpacity style={s.ShowNumbers_Btn__call}>
+    <View style={s.ShowNumbers_BtnOuter}>
+      <TouchableOpacity
+        style={[s.ShowNumbers_Btn, s.ShowNumbers_Btn__callpark]}
+      >
         <Text style={s.ShowNumbers_BtnTxt}>CALL PARK (1)</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={s.ShowNumbers_Btn__call}>
+      <TouchableOpacity
+        style={[s.ShowNumbers_Btn, s.ShowNumbers_Btn__voicecall]}
+      >
         <Text style={s.ShowNumbers_BtnTxt}>VOICEMAIL (2)</Text>
       </TouchableOpacity>
     </View>

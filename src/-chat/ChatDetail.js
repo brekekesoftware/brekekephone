@@ -107,6 +107,9 @@ class ChatDetail extends React.Component {
             setText: this.setEditingText,
             submitText: this.submitEditingText,
           },
+          style: {
+            bottom: 35,
+          },
         }}
       >
         {this.chatIds.map((id, index) => (
