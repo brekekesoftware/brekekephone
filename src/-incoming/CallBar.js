@@ -1,23 +1,21 @@
 import {
-  mdiAlphaPCircleOutline,
+  mdiAlphaPCircle,
   mdiCallSplit,
   mdiDialpad,
-  mdiPauseCircleOutline,
-  mdiPhoneHangup,
-  mdiPlayCircleOutline,
+  mdiPauseCircle,
+  mdiPlayCircle,
   mdiRecord,
-  mdiRecordCircleOutline,
-  mdiVideoOffOutline,
-  mdiVideoOutline,
+  mdiRecordCircle,
+  mdiVideo,
+  mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
 } from '@mdi/js';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import { StyleSheet, Text, View } from '../native/Rn';
+import { StyleSheet, View } from '../native/Rn';
 import ButtonIcon from '../shared/ButtonIcon';
-import Layout from '../shared/Layout';
 import v from '../variables';
 
 const s = StyleSheet.create({
@@ -50,11 +48,7 @@ const s = StyleSheet.create({
 });
 
 const CallBar = p => (
-  <Layout>
-    <View style={s.CallBar_Txt}>
-      <Text style={s.CallBar_Txt__Name}>Alan Walker</Text>
-      <Text>00:05</Text>
-    </View>
+  <View>
     <View style={[s.CallBar_Btn, s.CallBar_Btn__top70]}>
       {p.answered && !p.holding && (
         <ButtonIcon
@@ -68,7 +62,7 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.park}
           size={40}
-          path={mdiAlphaPCircleOutline}
+          path={mdiAlphaPCircle}
           name="PARK"
         />
       )}
@@ -76,7 +70,7 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.enableVideo}
           size={40}
-          path={mdiVideoOutline}
+          path={mdiVideo}
           name="VIDEO"
         />
       )}
@@ -84,7 +78,7 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.disableVideo}
           size={40}
-          path={mdiVideoOffOutline}
+          path={mdiVideoOff}
           name="VIDEO"
         />
       )}
@@ -110,7 +104,7 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.startRecording}
           size={40}
-          path={mdiRecordCircleOutline}
+          path={mdiRecordCircle}
           name="RECORDING"
         />
       )}
@@ -134,7 +128,7 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.hold}
           size={40}
-          path={mdiPauseCircleOutline}
+          path={mdiPauseCircle}
           name="HOLD"
         />
       )}
@@ -142,20 +136,12 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.unhold}
           size={40}
-          path={mdiPlayCircleOutline}
+          path={mdiPlayCircle}
           name="UNHOLD"
         />
       )}
     </View>
-    <View style={s.CallBar_Btn__Hangup}>
-      <ButtonIcon
-        onPress={p.hangup}
-        size={40}
-        path={mdiPhoneHangup}
-        name="HANG UP"
-      />
-    </View>
-  </Layout>
+  </View>
 );
 
 export default CallBar;

@@ -1,3 +1,4 @@
+import { mdiPhoneHangup } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
@@ -7,9 +8,22 @@ import { Platform } from 'react-native';
 import callStore from '../-/callStore';
 import g from '../global';
 import IncallManager from '../native/IncallManager';
+import { StyleSheet, View } from '../native/Rn';
+import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import CallBar from './CallBar';
+
+const s = StyleSheet.create({
+  PageIncoming_Btn__Hangup: {
+    position: `absolute`,
+    bottom: 100,
+    left: 0,
+    right: 0,
+    marginLeft: `auto`,
+    marginRight: `auto`,
+  },
+});
 
 @observer
 class PageIncoming extends React.Component {
@@ -31,11 +45,10 @@ class PageIncoming extends React.Component {
 
   _selectActiveCallWithRoute(props) {
     const runids = this.runningIds;
-
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
       if (activeCall) {
-        callStore.set(`selectedId`, activeCall);
+        callStore.set(`selectedId`, activeCall.id);
       }
     } else {
       const parkingIds = callStore.runnings
@@ -66,7 +79,7 @@ class PageIncoming extends React.Component {
       const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
       if (!nextSelectedId || isSelectedIdInactive) {
         const call = this.findNewestCallByRunids_s(runids, this.props);
-        callStore.set(`selectedId`, call);
+        callStore.set(`selectedId`, call.id);
       }
     } else {
       this._checkCreatingSessionAndRoute();
@@ -127,21 +140,19 @@ class PageIncoming extends React.Component {
   }
 
   render() {
+    const u = this.runningById[callStore.selectedId];
     return (
       <Layout
         header={{
           onBackBtnPress: g.goToCallsRecent,
+          title: u?.partyName,
         }}
       >
         <CallBar
-          selectedId={callStore.selectedId}
-          runningIds={this.runningIds}
-          runningById={this.runningById}
+          {...u}
           parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
           browseHistory={g.goToCallsRecent}
           create={g.goToCallsCreate}
-          select={callStore.setF(`selectedId`)}
-          hangup={this.hangup}
           answer={this.answer}
           hold={this.hold}
           unhold={this.unhold}
@@ -156,6 +167,14 @@ class PageIncoming extends React.Component {
           onOpenLoudSpeaker={this.onOpenLoudSpeaker}
           onCloseLoudSpeaker={this.onCloseLoudSpeaker}
         />
+        <View style={s.PageIncoming_Btn__Hangup}>
+          <ButtonIcon
+            onPress={this.hangup}
+            size={40}
+            path={mdiPhoneHangup}
+            name="HANG UP"
+          />
+        </View>
       </Layout>
     );
   }
@@ -186,6 +205,7 @@ class PageIncoming extends React.Component {
     const { sip } = this.context;
 
     sip.hangupSession(callStore.selectedId);
+    g.goToCallsRecent();
   };
 
   answer = () => {

@@ -9,7 +9,7 @@ import ChatsHome from '../-chat/ChatsHome';
 import CreateGroup from '../-chat/CreateGroup';
 import GroupChatInvite from '../-chat/GroupChatInvite';
 import PageContact from '../-contact/PageContact';
-import PageCalling from '../-incoming/PageCalling';
+import PageIncoming from '../-incoming/PageIncoming';
 import PagePhone from '../-phone/PagePhone';
 import Recent from '../-recent/PageRecent';
 import TransferAttend from '../-transfer/TransferAttend';
@@ -19,7 +19,6 @@ import FooterTab from '../shared/FooterTab';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
-import CallKeypad from './call-keypad';
 import CallPark from './call-park';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
@@ -90,7 +89,7 @@ const Routes = () => (
           <Auth>
             <Route path="/" component={Callbar} />
             <Route exact path="/" render={() => <Redirect to="/users" />} />
-            <Route exact path="/calls/manage" component={PageCalling} />
+            <Route exact path="/calls/manage" component={PageIncoming} />
             <Route exact path="/calls/create" component={PagePhone} />
             <Route exact path="/calls/recent" component={Recent} />
             <Route
@@ -103,7 +102,7 @@ const Routes = () => (
               path="/call/:call/transfer/attend"
               component={TransferAttend}
             />
-            <Route exact path="/call/:call/keypad" component={CallKeypad} />
+            <Route exact path="/call/:call/keypad" component={PagePhone} />
             <Route exact path="/call/:call/park" component={CallPark} />
             <Route exact path="/users" component={PageContact} />
             <Route
