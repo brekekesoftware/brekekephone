@@ -108,10 +108,10 @@ android {
       keyPassword DEV_KEY_PASSWORD
     }
     release {
-      storeFile file(RELEASE_STORE_FILE)
-      keyAlias RELEASE_KEY_ALIAS
-      storePassword RELEASE_STORE_PASSWORD
-      keyPassword RELEASE_KEY_PASSWORD
+      storeFile file("../keystores/release.keystore")
+      storePassword "my-release-keyPw"
+      keyAlias "my-key-alias"
+      keyPassword "my-release-keyPw"
     }
   }
   //
