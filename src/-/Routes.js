@@ -10,6 +10,8 @@ import CreateGroup from '../-chat/CreateGroup';
 import GroupChatInvite from '../-chat/GroupChatInvite';
 import PageContact from '../-contact/PageContact';
 import PageIncoming from '../-incoming/PageIncoming';
+import CallNotify from '../-notify/CallNotify';
+import ChatGroupInvite from '../-notify/ChatGroupInvite';
 import PagePhone from '../-phone/PagePhone';
 import Recent from '../-recent/PageRecent';
 import TransferAttend from '../-transfer/TransferAttend';
@@ -23,8 +25,6 @@ import CallPark from './call-park';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import Callbar from './callbar';
-import CallsNotify from './calls-notify';
-import ChatGroupsNotify from './chat-groups-notify';
 import ContactsBrowse from './contacts-browse';
 import ContactsCreate from './contacts-create';
 import Notifications from './notifications';
@@ -140,8 +140,8 @@ const Routes = () => (
       <Route path="/" component={FooterTab} />
     </WithoutStatusBar>
     <Notifications>
-      <Route path="/" component={CallsNotify} />
-      <Route path="/" component={ChatGroupsNotify} />
+      <Route path="/" component={CallNotify} />
+      <Route path="/" component={ChatGroupInvite} />
       <Route path="/" component={BuddyChatsNotify} />
     </Notifications>
   </View>

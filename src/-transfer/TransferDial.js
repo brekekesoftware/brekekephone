@@ -28,7 +28,7 @@ class TransferDial extends React.Component {
   };
 
   render() {
-    const users = this.getMatchIds.map(this.resolveMatch);
+    const users = this.getMatchIds().map(this.resolveMatch);
     const map = {};
 
     users.forEach(u => {
@@ -56,6 +56,7 @@ class TransferDial extends React.Component {
     return (
       <Layout
         header={{
+          onBackBtnPress: g.goToCallsManage,
           title: `Transfer call`,
         }}
       >
