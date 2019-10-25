@@ -14,12 +14,14 @@ module.exports = {
       `@babel/plugin-proposal-export-namespace-from`,
     ],
     loaderOptions: {
-      exclude: /node_modules\/(?!react-native|native-base).*(node_modules|dist)/,
+      exclude: /node_modules\/(((?!react-native).+)|(.+(node_modules|dist)))/,
     },
   },
   webpack: {
     alias: {
+      '@react-native-community/async-storage': `react-native-web/dist/exports/AsyncStorage`,
       'react-native': `react-native-web`,
+      'react-native-fast-image': `react-native-web/dist/exports/Image`,
       'react-native-linear-gradient': `react-native-web-linear-gradient`,
       'react-native-svg': `react-native-svg-web`,
       'react-router-native': `react-router-dom`,
@@ -27,7 +29,7 @@ module.exports = {
     configure: {
       resolve: {
         extensions: [
-          // Add .web.js first to resolve
+          // Try to resolve `.web.js` before `.js`
           `.web.js`,
           `.js`,
         ],
