@@ -6,24 +6,26 @@ import { mapToMap } from '../utils/toMap';
 const animationOption = {
   duration: 150,
 };
-export const setAnimationOption = opt => {
-  Object.assign(animationOption, opt);
+
+export const useAnimatedValue = v => {
+  const r = useRef();
+  if (!r.current) {
+    r.current = new Animated.Value(v);
+  }
+  return r.current;
 };
 
 export const useAnimation = (enabled, props) => {
-  const r = useRef();
-  if (!r.current) {
-    r.current = new Animated.Value(0);
-  }
+  const v = useAnimatedValue(0);
   useEffect(() => {
-    Animated.timing(r.current, {
+    Animated.timing(v, {
       ...animationOption,
       toValue: enabled ? 1 : 0,
     }).start();
-    return () => Animated.timing(r.current).stop();
-  }, [enabled]);
+    return () => Animated.timing(v).stop();
+  }, [enabled, v]);
   return mapToMap(props, null, k =>
-    r.current.interpolate({
+    v.interpolate({
       inputRange: [0, 1],
       outputRange: props[k],
     }),

@@ -14,7 +14,7 @@ module.exports = {
       `@babel/plugin-proposal-export-namespace-from`,
     ],
     loaderOptions: {
-      exclude: /node_modules\/(((?!react-native).+)|(.+(node_modules|dist)))/,
+      exclude: /node_modules\/(?!react-native).*(node_modules|dist)/,
     },
   },
   webpack: {
