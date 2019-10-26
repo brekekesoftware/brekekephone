@@ -22,7 +22,7 @@ const s = StyleSheet.create({
 const PageProfileSignIn = observer(() => {
   const l = g.profiles.length;
   return (
-    <BrekekeGradient>
+    <BrekekeGradient colors={[g.mainBg, g.revBg]}>
       <Layout
         noScroll
         header={{

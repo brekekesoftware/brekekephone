@@ -28,7 +28,7 @@ const s = StyleSheet.create({
     top: 70,
   },
   CallBar_Btn__top150: {
-    top: 150,
+    top: 165,
   },
   CallBar_Txt: {
     position: `absolute`,
@@ -54,6 +54,10 @@ const CallBar = p => (
         <ButtonIcon
           onPress={p.transfer}
           size={40}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           path={mdiCallSplit}
           name="TRANSFER"
         />
@@ -61,6 +65,10 @@ const CallBar = p => (
       {p.answered && !p.holding && (
         <ButtonIcon
           onPress={p.park}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiAlphaPCircle}
           name="PARK"
@@ -69,6 +77,10 @@ const CallBar = p => (
       {p.answered && !p.holding && !p.localVideoEnabled && (
         <ButtonIcon
           onPress={p.enableVideo}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiVideo}
           name="VIDEO"
@@ -77,6 +89,10 @@ const CallBar = p => (
       {p.answered && !p.holding && p.localVideoEnabled && (
         <ButtonIcon
           onPress={p.disableVideo}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiVideoOff}
           name="VIDEO"
@@ -85,6 +101,10 @@ const CallBar = p => (
       {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
           onPress={p.onOpenLoudSpeaker}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiVolumeHigh}
           name="SPEAKER"
@@ -93,6 +113,10 @@ const CallBar = p => (
       {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
           onPress={p.onCloseLoudSpeaker}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiVolumeMedium}
           name="SPEAKER"
@@ -103,6 +127,10 @@ const CallBar = p => (
       {p.answered && !p.holding && !p.recording && (
         <ButtonIcon
           onPress={p.startRecording}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiRecordCircle}
           name="RECORDING"
@@ -111,6 +139,10 @@ const CallBar = p => (
       {p.answered && !p.holding && p.recording && (
         <ButtonIcon
           onPress={p.stopRecording}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiRecord}
           name="RECORDING"
@@ -119,6 +151,10 @@ const CallBar = p => (
       {p.answered && !p.holding && (
         <ButtonIcon
           onPress={p.dtmf}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiDialpad}
           name="KEYPAD"
@@ -127,6 +163,10 @@ const CallBar = p => (
       {p.answered && !p.holding && (
         <ButtonIcon
           onPress={p.hold}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiPauseCircle}
           name="HOLD"
@@ -135,6 +175,10 @@ const CallBar = p => (
       {p.answered && p.holding && (
         <ButtonIcon
           onPress={p.unhold}
+          noborder
+          color={v.color}
+          bgcolor={v.revColor}
+          Textcolor={v.revColor}
           size={40}
           path={mdiPlayCircle}
           name="UNHOLD"

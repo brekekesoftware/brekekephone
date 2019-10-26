@@ -9,9 +9,11 @@ import callStore from '../-/callStore';
 import g from '../global';
 import IncallManager from '../native/IncallManager';
 import { StyleSheet, View } from '../native/Rn';
+import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
+import v from '../variables';
 import CallBar from './CallBar';
 
 const s = StyleSheet.create({
@@ -142,40 +144,52 @@ class PageIncoming extends React.Component {
   render() {
     const u = this.runningById[callStore.selectedId];
     return (
-      <Layout
-        header={{
-          onBackBtnPress: g.goToCallsRecent,
-          title: u?.partyName,
-        }}
-      >
-        <CallBar
-          {...u}
-          parkingIds={callStore.runnings.filter(c => c.parking).map(c => c.id)}
-          browseHistory={g.goToCallsRecent}
-          create={g.goToCallsCreate}
-          answer={this.answer}
-          hold={this.hold}
-          unhold={this.unhold}
-          startRecording={this.startRecording}
-          stopRecording={this.stopRecording}
-          transfer={this.transfer}
-          dtmf={this.dtmf}
-          unpark={this.unpark}
-          park={this.park}
-          enableVideo={this.enableVideo}
-          disableVideo={this.disableVideo}
-          onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-          onCloseLoudSpeaker={this.onCloseLoudSpeaker}
-        />
-        <View style={s.PageIncoming_Btn__Hangup}>
-          <ButtonIcon
-            onPress={this.hangup}
-            size={40}
-            path={mdiPhoneHangup}
-            name="HANG UP"
+      <BrekekeGradient colors={[v.callBg, v.revBg]}>
+        <Layout
+          noScroll
+          header={{
+            transparent: true,
+            onBackBtnPress: g.goToCallsRecent,
+            title: u?.partyName,
+            titleColor: v.revColor,
+            backBtnColor: v.revColor,
+          }}
+        >
+          <CallBar
+            {...u}
+            parkingIds={callStore.runnings
+              .filter(c => c.parking)
+              .map(c => c.id)}
+            browseHistory={g.goToCallsRecent}
+            create={g.goToCallsCreate}
+            answer={this.answer}
+            hold={this.hold}
+            unhold={this.unhold}
+            startRecording={this.startRecording}
+            stopRecording={this.stopRecording}
+            transfer={this.transfer}
+            dtmf={this.dtmf}
+            unpark={this.unpark}
+            park={this.park}
+            enableVideo={this.enableVideo}
+            disableVideo={this.disableVideo}
+            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+            onCloseLoudSpeaker={this.onCloseLoudSpeaker}
           />
-        </View>
-      </Layout>
+          <View style={s.PageIncoming_Btn__Hangup}>
+            <ButtonIcon
+              onPress={this.hangup}
+              size={40}
+              noborder
+              bgcolor={v.redBg}
+              color={v.revColor}
+              Textcolor={v.revColor}
+              path={mdiPhoneHangup}
+              name="HANG UP"
+            />
+          </View>
+        </Layout>
+      </BrekekeGradient>
     );
   }
 

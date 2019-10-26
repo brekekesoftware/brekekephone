@@ -39,6 +39,7 @@ const v = {
   borderBg: fn.darken(0.15, `white`),
   layerBg: fn.transparentize(0.2, `black`),
   //
+  callBg: `#32648a`,
   mainBg: `#74bf53`,
   get mainDarkBg() {
     return fn.darken(0.12, v.mainBg);
