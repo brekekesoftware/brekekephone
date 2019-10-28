@@ -9,11 +9,12 @@ const s = StyleSheet.create({
   },
   ButtonIcon_Btn: {
     borderWidth: 1,
-    padding: 5,
+    padding: 10,
   },
   ButtonIcon_Name: {
     fontSize: 14,
     paddingTop: 5,
+    fontWeight: `500`,
   },
 });
 
@@ -21,13 +22,23 @@ const ButtonIcon = ({ size = 24, path, color, ...p }) => (
   <View style={s.ButtonIcon}>
     <TouchableOpacity
       onPress={p.onPress}
-      style={[s.ButtonIcon_Btn, p.style, { borderRadius: size }]}
+      style={[
+        s.ButtonIcon_Btn,
+        p.style,
+        { borderRadius: size },
+        { backgroundColor: p.bgcolor },
+        p.noborder && { borderWidth: 0 },
+      ]}
     >
       <Svg viewBox="0 0 24 24" width={size} height={size}>
         <Path d={path} fill={color} />
       </Svg>
     </TouchableOpacity>
-    {p.name && <Text style={s.ButtonIcon_Name}>{p.name}</Text>}
+    {p.name && (
+      <Text style={[s.ButtonIcon_Name, p.Textcolor && { color: p.Textcolor }]}>
+        {p.name}
+      </Text>
+    )}
   </View>
 );
 

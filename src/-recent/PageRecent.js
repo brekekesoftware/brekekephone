@@ -63,6 +63,7 @@ class Recent extends React.Component {
 
   render() {
     const users = this.getMatchUserIds();
+
     return (
       <Layout
         header={{

@@ -35,7 +35,6 @@ const s = StyleSheet.create({
 });
 
 const Notify = observer(p => {
-  console.warn(`p`, p);
   return (
     <View style={s.Notify}>
       {p.type === `call` && (

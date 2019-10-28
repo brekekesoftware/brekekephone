@@ -148,6 +148,7 @@ const Header = props => {
             {
               fontSize: a.titleFontSize,
               lineHeight: a.titleLineHeight,
+              color: props.titleColor,
             },
           ]}
         >
@@ -268,7 +269,7 @@ const Header = props => {
                 },
               ]}
             >
-              <Icon path={mdiKeyboardBackspace} />
+              <Icon path={mdiKeyboardBackspace} color={props.backBtnColor} />
             </Animated.View>
           </TouchableOpacity>
         )}
