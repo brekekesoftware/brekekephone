@@ -3,6 +3,7 @@ import './__keyboard';
 import './__picker';
 import './__stacker';
 import './_profiles';
+import './alert';
 
 import v from '../variables';
 import $ from './_';
