@@ -3,8 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import Progress from 'react-native-progress-circle';
 
-import FastImage from '../native/FastImage';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
 import Icon from '../shared/Icon';
 import v from '../variables';
@@ -75,7 +74,7 @@ const s = StyleSheet.create({
 const File = p => (
   <View style={s.Message_File}>
     {p.source && p.fileType === `image` && (
-      <FastImage style={s.Message_File__Image} source={p.source} />
+      <Image style={s.Message_File__Image} source={p.source} />
     )}
     {p.fileType !== `image` && (
       <View>

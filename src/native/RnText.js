@@ -40,7 +40,6 @@ const RnText = forwardRef(
         small && s.RnText__small,
         style,
       ]}
-      numberOfLines={999} // TODO remove native-base
       {...props}
     />
   ),

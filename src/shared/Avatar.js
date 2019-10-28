@@ -1,8 +1,7 @@
 import { mdiRecord } from '@mdi/js';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import FastImage from '../native/FastImage';
+import { Image, StyleSheet, View } from '../native/Rn';
 import Icon from './Icon';
 
 const s = StyleSheet.create({
@@ -24,7 +23,7 @@ const s = StyleSheet.create({
 
 const Avatar = p => (
   <View style={[s.Avatar, p.style]}>
-    <FastImage style={s.Avatar_Image} source={p.source} />
+    <Image style={s.Avatar_Image} source={p.source} />
     {(p.chatOnline || p.status === `online`) && (
       <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#74bf53" />
     )}

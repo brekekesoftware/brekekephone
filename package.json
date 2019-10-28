@@ -55,7 +55,6 @@
     "validatorjs": "3.17.1"
   },
   "devDependencies": {
-    "@mdi/react": "1.2.1",
     "react-art": "16.11.0",
     "react-device-detect": "1.9.10",
     "react-dom": "16.11.0",
@@ -81,7 +80,6 @@
     "eslint-plugin-simple-import-sort": "4.0.0",
     "husky": "3.0.9",
     "lint-staged": "9.4.2",
-    "node-sass": "4.13.0",
     "prettier": "1.18.2",
     "react-scripts": "3.2.0"
   },

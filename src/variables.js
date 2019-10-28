@@ -25,7 +25,10 @@ const v = {
     return 0.8 * v.lineHeight;
   },
   fontWeight: `normal`,
-  fontFamily: Platform.OS === `web` ? `inherit` : undefined,
+  fontFamily:
+    Platform.OS === `web`
+      ? `'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'`
+      : undefined,
   //
   borderRadius: 3,
   maxModalWidth: 380,
