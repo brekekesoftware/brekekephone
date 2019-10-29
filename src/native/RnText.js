@@ -27,20 +27,59 @@ const s = StyleSheet.create({
     lineHeight: v.lineHeightSmall,
     fontWeight: `bold`,
   },
+  RnText__black: {
+    color: `black`,
+  },
+  RnText__white: {
+    color: `white`,
+  },
+  RnText__normal: {
+    fontWeight: `normal`,
+  },
+  RnText__bold: {
+    fontWeight: `bold`,
+  },
+  RnText__center: {
+    textAlign: `center`,
+  },
+  RnText__right: {
+    textAlign: `right`,
+  },
 });
 
 const RnText = forwardRef(
-  ({ title, subTitle, small, style, ...props }, ref) => (
+  (
+    {
+      black,
+      bold,
+      center,
+      normal,
+      right,
+      small,
+      subTitle,
+      title,
+      white,
+      ...props
+    },
+    ref,
+  ) => (
     <Text
       ref={ref}
+      numberOfLines={999}
+      {...props}
       style={[
         s.RnText,
         title && s.RnText__title,
         subTitle && s.RnText__subTitle,
         small && s.RnText__small,
-        style,
+        black && s.RnText__black,
+        white && s.RnText__white,
+        normal && s.RnText__normal,
+        bold && s.RnText__bold,
+        center && s.RnText__center,
+        right && s.RnText__right,
+        props.style,
       ]}
-      {...props}
     />
   ),
 );

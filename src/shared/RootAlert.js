@@ -24,10 +24,8 @@ const s = StyleSheet.create({
     backgroundColor: g.layerBg,
   },
   RootAlert_Modal: {
-    alignSelf: `flex-end`,
     width: `90%`,
     maxWidth: g.maxModalWidth,
-    marginBottom: 15,
     borderRadius: g.borderRadius,
     padding: 15,
     backgroundColor: g.bg,
