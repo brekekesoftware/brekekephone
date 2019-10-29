@@ -14,7 +14,7 @@ import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import v from '../variables';
-import CallBar from './CallBar';
+import CallManage from './CallManage';
 
 const s = StyleSheet.create({
   PageIncoming_Btn__Hangup: {
@@ -155,7 +155,7 @@ class PageIncoming extends React.Component {
             backBtnColor: v.revColor,
           }}
         >
-          <CallBar
+          <CallManage
             {...u}
             parkingIds={callStore.runnings
               .filter(c => c.parking)
