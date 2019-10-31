@@ -130,6 +130,7 @@ class ContactUser extends React.Component {
         header={{
           title: `Contact`,
         }}
+        footer={{}}
       >
         <Search
           value={contactStore.searchText}

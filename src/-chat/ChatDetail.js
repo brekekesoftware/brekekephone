@@ -102,14 +102,12 @@ class ChatDetail extends React.Component {
         footer={{
           actions: {
             selectFile: this.pickFile,
-            inputChat: true,
+
             text: this.state.editingText,
             setText: this.setEditingText,
             submitText: this.submitEditingText,
           },
-          style: {
-            bottom: 35,
-          },
+          LayoutChat: true,
         }}
       >
         {this.chatIds.map((id, index) => (

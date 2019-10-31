@@ -19,7 +19,8 @@ const s = StyleSheet.create({
     overflow: `hidden`,
   },
   FooterActions_Input: {
-    paddingHorizontal: 5,
+    padding: 10,
+    width: `100%`,
   },
   FooterActions_Btn: {
     borderRadius: 0,
@@ -86,7 +87,7 @@ const FooterActions = props => (
         <Icon path={mdiPlus} color={g.layerBg} />
       </TouchableOpacity>
     )}
-    {props.inputChat && (
+    {props.LayoutChat && (
       <TextInput
         style={[s.FooterActions_Input]}
         placeholder="Message"
@@ -107,7 +108,7 @@ const FooterActions = props => (
         <Icon path={props.refreshIcon || mdiCached} />
       </TouchableOpacity>
     )}
-    {!props.inputChat && (
+    {!props.LayoutChat && (
       <TouchableOpacity
         style={[
           s.FooterActions_Btn,

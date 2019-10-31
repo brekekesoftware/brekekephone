@@ -1,4 +1,5 @@
 import React from 'react';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
 
 import g from '../global';
 import { StyleSheet, View } from '../native/Rn';
@@ -17,6 +18,9 @@ const s = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
   },
+  LayoutFooter__hasActionsInputChat: {
+    bottom: 68 - getBottomSpace(),
+  },
   LayoutFooter_Actions: {
     flexDirection: `row`,
     width: `100%`,
@@ -26,11 +30,18 @@ const s = StyleSheet.create({
   },
 });
 
-const LayoutFooter = ({ style, actions }) => (
-  <View style={[s.LayoutFooter, actions && s.LayoutFooter__hasActions, style]}>
+const LayoutFooter = ({ style, actions, LayoutChat }) => (
+  <View
+    style={[
+      s.LayoutFooter,
+      actions && s.LayoutFooter__hasActions,
+      LayoutChat && s.LayoutFooter__hasActionsInputChat,
+      style,
+    ]}
+  >
     {actions && (
       <View style={s.LayoutFooter_Actions}>
-        <FooterActions {...actions} />
+        <FooterActions {...actions} LayoutChat={LayoutChat} />
       </View>
     )}
   </View>

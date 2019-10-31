@@ -44,7 +44,6 @@ const s = StyleSheet.create({
   },
 });
 
-//Todo: fix error footer override list user
 @observer
 class FooterTab extends React.Component {
   render() {

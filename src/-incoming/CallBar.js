@@ -1,12 +1,12 @@
 import {
-  mdiPauseCircleOutline,
+  mdiPause,
   mdiPhone,
-  mdiPhoneHangupOutline,
+  mdiPhoneHangup,
   mdiPhoneInTalkOutline,
   mdiPhoneMissedOutline,
   mdiPhoneOutgoingOutline,
   mdiPhonePausedOutline,
-  mdiPlayCircleOutline,
+  mdiPlay,
   mdiVolumeHigh,
   mdiVolumeMedium,
 } from '@mdi/js';
@@ -28,6 +28,7 @@ import {
 import ButtonIcon from '../shared/ButtonIcon';
 import Icon from '../shared/Icon';
 import { arrToMap } from '../utils/toMap';
+import v from '../variables';
 
 const s = StyleSheet.create({
   CallBar: {
@@ -35,52 +36,91 @@ const s = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+    borderBottomWidth: 1,
+    borderColor: v.hoverBg,
+    backgroundColor: v.hoverBg,
+    zIndex: 10, // hot fix: callbar is hidden. -> TODO: fix it.
   },
   CallBar_Outer: {
     flexDirection: `row`,
+    padding: 5,
+    alignItems: `center`,
+  },
+  CallBar_Icon: {
+    flex: 1,
+  },
+  CallBar_Info: {
+    flex: 2,
+  },
+
+  CallBar_BtnCall: {
+    flex: 5,
+    flexDirection: `row`,
+    justifyContent: `flex-end`,
   },
 });
 
 const RunningItem = p => (
   <TouchableOpacity style={s.CallBar_Outer} onPress={p.pressCallsManage}>
-    {!p.activecall.answered && p.activecall.incoming && (
-      <Icon path={mdiPhoneInTalkOutline} />
-    )}
-    {p.activecall.incoming && !p.activecall.answered && (
-      <Icon path={mdiPhoneMissedOutline} />
-    )}
-    {!p.activecall.answered && !p.activecall.incoming && (
-      <Icon path={mdiPhoneOutgoingOutline} />
-    )}
-    {p.activecall.answered && p.activecall.holding && (
-      <Icon path={mdiPhonePausedOutline} />
-    )}
-    {p.activecall.answered && !p.activecall.holding && <Icon path={mdiPhone} />}
-    <View>
+    <View style={s.CallBar_Icon}>
+      {!p.activecall.answered && p.activecall.incoming && (
+        <Icon path={mdiPhoneInTalkOutline} color={v.mainBg} />
+      )}
+      {p.activecall.incoming && !p.activecall.answered && (
+        <Icon path={mdiPhoneMissedOutline} color={v.redBg} />
+      )}
+      {!p.activecall.answered && !p.activecall.incoming && (
+        <Icon path={mdiPhoneOutgoingOutline} color={v.mainBg} />
+      )}
+      {p.activecall.answered && p.activecall.holding && (
+        <Icon path={mdiPhonePausedOutline} color={v.borderBg} />
+      )}
+      {p.activecall.answered && !p.activecall.holding && (
+        <Icon path={mdiPhone} color={v.mainBg} />
+      )}
+    </View>
+    <View style={s.CallBar_Info}>
       <Text>{p.activecall.partyName || p.activecall.partyNumber}</Text>
       <Text>{p.activecall.partyNumber}</Text>
     </View>
-    {p.activecall.answered && p.activecall.holding && (
-      <ButtonIcon onPress={p.unhold} path={mdiPlayCircleOutline} />
-    )}
-    {!p.activecall.holding && (
-      <ButtonIcon onPress={p.hangup} path={mdiPhoneHangupOutline} />
-    )}
-    {p.activecall.answered &&
-      !p.activecall.holding &&
-      !p.activecall.loudspeaker &&
-      Platform.OS !== `web` && (
-        <ButtonIcon onPress={p.onOpenLoudSpeaker} path={mdiVolumeHigh} />
+    <View style={s.CallBar_BtnCall}>
+      {p.activecall.answered && p.activecall.holding && (
+        <ButtonIcon
+          onPress={p.unhold}
+          path={mdiPlay}
+          color={v.callBg}
+          bdcolor={v.borderBg}
+        />
       )}
-    {p.activecall.answered &&
-      !p.activecall.holding &&
-      p.activecall.loudspeaker &&
-      Platform.OS !== `web` && (
-        <ButtonIcon onPress={p.onCloseLoudSpeaker} path={mdiVolumeMedium} />
+      {!p.activecall.holding && (
+        <ButtonIcon
+          onPress={p.hangup}
+          path={mdiPhoneHangup}
+          color={v.redBg}
+          bdcolor={v.borderBg}
+        />
       )}
-    {p.activecall.answered && !p.activecall.holding && (
-      <ButtonIcon onPress={p.hold} path={mdiPauseCircleOutline} />
-    )}
+      {p.activecall.answered &&
+        !p.activecall.holding &&
+        !p.activecall.loudspeaker &&
+        Platform.OS !== `web` && (
+          <ButtonIcon onPress={p.onOpenLoudSpeaker} path={mdiVolumeHigh} />
+        )}
+      {p.activecall.answered &&
+        !p.activecall.holding &&
+        p.activecall.loudspeaker &&
+        Platform.OS !== `web` && (
+          <ButtonIcon onPress={p.onCloseLoudSpeaker} path={mdiVolumeMedium} />
+        )}
+      {p.activecall.answered && !p.activecall.holding && (
+        <ButtonIcon
+          onPress={p.hold}
+          color={v.callBg}
+          path={mdiPause}
+          bdcolor={v.borderBg}
+        />
+      )}
+    </View>
   </TouchableOpacity>
 );
 
@@ -103,8 +143,7 @@ class Callbar extends React.Component {
   render() {
     const bVisible =
       this.state.activecallid &&
-      this.props.location.pathname !== `/auth/calls/manage`;
-    console.warn(`bvi`, bVisible);
+      this.props.location.pathname !== `/calls/manage`;
     return (
       <View style={s.CallBar}>
         {bVisible && (
@@ -202,9 +241,7 @@ class Callbar extends React.Component {
   };
 
   findActiveCallByRunids_s(runids, props) {
-    console.warn(`len`, runids.length);
     if (!runids || !runids.length) {
-      console.warn(`vao cai null`);
       return null;
     }
 

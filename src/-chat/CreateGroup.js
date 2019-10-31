@@ -71,6 +71,7 @@ class CreateGroup extends React.Component {
           onBackBtnPress: g.goToChatsRecent,
           title: `New Group`,
         }}
+        footer={{}}
       >
         <View style={s.CreateGroup_Outer}>
           <TextInput
@@ -86,9 +87,10 @@ class CreateGroup extends React.Component {
         </View>
         <React.Fragment>
           <FieldGroup>
-            {this.buddyIds.map(id => (
+            {this.buddyIds.map((id, i) => (
               <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
                 <ItemUser
+                  last={i === this.buddyIds.length - 1}
                   key={id}
                   {...this.buddyById[id]}
                   selected={this.state.members.includes(id)}

@@ -28,6 +28,7 @@ const ButtonIcon = ({ size = 24, path, color, ...p }) => (
         { borderRadius: size },
         { backgroundColor: p.bgcolor },
         p.noborder && { borderWidth: 0 },
+        { borderColor: p.bdcolor },
       ]}
     >
       <Svg viewBox="0 0 24 24" width={size} height={size}>

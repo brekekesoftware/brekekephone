@@ -101,11 +101,11 @@ class ChatGroupDetail extends React.Component {
         }}
         footer={{
           actions: {
-            inputChat: true,
             text: this.state.editingText,
             setText: this.setEditingText,
             submitText: this.submitEditingText,
           },
+          LayoutChat: true,
         }}
       >
         {this.chatIds.map((id, index) => (

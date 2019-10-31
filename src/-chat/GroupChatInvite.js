@@ -33,6 +33,7 @@ const s = StyleSheet.create({
   },
   GroupInvite_GroupName: {
     fontSize: v.fontSizeTitle,
+    padding: 5,
   },
   GroupInvite_Text: {
     marginTop: 15,
@@ -60,6 +61,7 @@ class GroupChatInvite extends React.Component {
           onBackBtnPress: this.back,
           title: `Inviting Group member`,
         }}
+        footer={{}}
       >
         <View style={s.GroupInvite_Outer}>
           <Text style={s.GroupInvite_GroupName}>
@@ -72,9 +74,10 @@ class GroupChatInvite extends React.Component {
         </View>
         <React.Fragment>
           <FieldGroup>
-            {this.buddyIds.map(id => (
+            {this.buddyIds.map((id, i) => (
               <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
                 <ItemUser
+                  last={i === this.buddyIds.length - 1}
                   key={id}
                   {...this.resolveBuddy(id)}
                   selected={this.state.selectedBuddy[id]}

@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import React from 'react';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
 
 import { ScrollView, StatusBar, StyleSheet, View } from '../native/Rn';
 import LayoutFooter from './LayoutFooter';
@@ -18,7 +19,10 @@ const s = StyleSheet.create({
     height: 94, // 79+15
   },
   Layout_FooterSpacing: {
-    height: 71, // 56+15
+    height: 71 - getBottomSpace(), // 56+15
+  },
+  Layout_FooterSpacing__hasInputChat: {
+    height: 127 - getBottomSpace(), // 56*2+15
   },
 });
 
@@ -54,7 +58,14 @@ const Layout = observer(props => {
         <StatusBar transparent />
         {props.header && <View style={s.Layout_HeaderSpacing} />}
         {props.children}
-        {props.footer && <View style={s.Layout_FooterSpacing} />}
+        {props.footer && (
+          <View
+            style={[
+              s.Layout_FooterSpacing,
+              props.footer.LayoutChat && s.Layout_FooterSpacing__hasInputChat,
+            ]}
+          />
+        )}
       </Container>
       {props.footer && <LayoutFooter {...props.footer} />}
       {props.header && (
