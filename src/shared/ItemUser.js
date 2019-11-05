@@ -72,7 +72,7 @@ const renderItem = p => (
             <Icon path={mdiPhoneMissed} size={18} />
           )}
           {!p.incoming && <Icon path={mdiPhoneMissed} size={18} />}
-          <Text style={s.Item_Detail_Text}>at {p.formatTime(p.created)}</Text>
+          <Text style={s.Item_Detail_Text}>at {p.created}</Text>
         </View>
       )}
     </View>

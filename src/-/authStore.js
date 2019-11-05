@@ -1,6 +1,7 @@
 import { computed, observable } from 'mobx';
 
 import g from '../global';
+import $ from '../global/_';
 import PushNotification from '../native/PushNotification';
 import { arrToMap } from '../utils/toMap';
 import { getAppOld } from './AppOld_';
@@ -49,13 +50,13 @@ class AuthStore extends BaseStore {
     return g.profiles.find(p => compareProfile(p, _p));
   };
   pushRecentCall = call => {
-    this.upsert({
+    $.upsert(`profiles`, {
       id: this.signedInId,
       recentCalls: [...(this.profile?.recentCalls || []), call],
     });
   };
   removeRecentCall = id => {
-    this.upsert({
+    $.upsert(`profiles`, {
       id: this.signedInId,
       recentCalls: this.profile?.recentCalls?.filter(c => c.id === id),
     });

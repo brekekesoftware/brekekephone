@@ -51,6 +51,14 @@ const Layout = observer(props => {
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
     };
+    if (props.isChat) {
+      let containerPropsChat = {
+        ref: props.isChat.ref,
+        onContentSizeChange: props.isChat.onContentSizeChange,
+        onScroll: props.isChat.onScroll,
+      };
+      containerProps = { ...containerProps, ...containerPropsChat };
+    }
   }
   return (
     <React.Fragment>

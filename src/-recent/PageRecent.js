@@ -9,36 +9,6 @@ import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
-const monthName = [
-  `Jan`,
-  `Feb`,
-  `Mar`,
-  `Apr`,
-  `May`,
-  `Jun`,
-  `Jul`,
-  `Aug`,
-  `Sep`,
-  `Oct`,
-  `Nov`,
-  `Dec`,
-];
-
-const formatTime = time => {
-  time = new Date(time);
-  const month = monthName[time.getMonth()];
-  const day = time.getDate();
-  const hour = time
-    .getHours()
-    .toString()
-    .padStart(2, `0`);
-  const min = time
-    .getMinutes()
-    .toString()
-    .padStart(2, `0`);
-  return `${month} ${day} - ${hour}:${min}`;
-};
-
 @observer
 class Recent extends React.Component {
   isMatchUser = call => {
@@ -63,7 +33,6 @@ class Recent extends React.Component {
 
   render() {
     const users = this.getMatchUserIds();
-
     return (
       <Layout
         header={{
@@ -79,7 +48,6 @@ class Recent extends React.Component {
                 icon={[mdiPhone]}
                 function={[() => this.callBack(u.id)]}
                 detail={true}
-                formatTime={formatTime}
                 {...u}
               />
             ))}

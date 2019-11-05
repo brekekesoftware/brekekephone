@@ -8,56 +8,11 @@ import contactStore from '../-/contactStore';
 import pickFile from '../-/pickFile';
 import saveBlob from '../-/saveBlob';
 import g from '../global';
+import formatTime from '../shared/FormatTime';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import Message from './Message';
-
-const monthName = [
-  `Jan`,
-  `Feb`,
-  `Mar`,
-  `Apr`,
-  `May`,
-  `Jun`,
-  `Jul`,
-  `Aug`,
-  `Sep`,
-  `Oct`,
-  `Nov`,
-  `Dec`,
-];
-
-const isToday = time => {
-  const now = new Date();
-  const beginOfToday = now.setHours(0, 0, 0, 0);
-  const endOfTday = now.setHours(23, 59, 59, 999);
-  return time >= beginOfToday && time <= endOfTday;
-};
-
-const formatTime = time => {
-  time = time.replace(` `, `T`) + `Z`;
-  time = new Date(time);
-  const hour = time
-    .getHours()
-    .toString()
-    .padStart(2, `0`);
-  const min = time
-    .getMinutes()
-    .toString()
-    .padStart(2, `0`);
-
-  if (isToday(time)) return `${hour}:${min}`;
-
-  const month = monthName[time.getMonth()];
-  const day = time.getDate();
-  return `${month} ${day} - ${hour}:${min}`;
-};
-
-const miniChatDuration = 60000;
-const isMiniChat = (chat, prev = {}) =>
-  chat.creator === prev.creator &&
-  chat.created - prev.created < miniChatDuration;
-const numberOfChatsPerLoad = 50;
+import m from './MiniChat';
 
 @observer
 class ChatDetail extends React.Component {
@@ -109,6 +64,11 @@ class ChatDetail extends React.Component {
           },
           LayoutChat: true,
         }}
+        isChat={{
+          ref: this.setViewRef,
+          onContentSizeChange: this.onContentSizeChange,
+          onScroll: this.onScroll,
+        }}
       >
         {this.chatIds.map((id, index) => (
           <Message
@@ -127,10 +87,38 @@ class ChatDetail extends React.Component {
     );
   }
 
+  setViewRef = ref => {
+    this.view = ref;
+  };
+
+  onContentSizeChange = () => {
+    if (this._closeToBottom) {
+      this.view.scrollToEnd({
+        animated: !this._justMounted,
+      });
+
+      if (this._justMounted) {
+        this._justMounted = false;
+      }
+    }
+  };
+
+  onScroll = ev => {
+    ev = ev.nativeEvent;
+    const layoutSize = ev.layoutMeasurement;
+    const layoutHeight = layoutSize.height;
+    const contentOffset = ev.contentOffset;
+    const contentSize = ev.contentSize;
+    const contentHeight = contentSize.height;
+    const paddingToBottom = 20;
+    this._closeToBottom =
+      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom;
+  };
+
   resolveChat = (id, index) => {
     const chat = this.chatById[id];
     const prev = this.chatById[this.chatIds[index - 1]] || {};
-    const mini = isMiniChat(chat, prev);
+    const mini = m.isMiniChat(chat, prev);
     const created = chat.created && formatTime(chat.created);
     const file = chatStore.filesMap[chat.file];
     const text = chat.text;
@@ -169,7 +157,7 @@ class ChatDetail extends React.Component {
   loadRecent() {
     this.context.uc
       .getBuddyChats(this.props.match.params.buddy, {
-        max: numberOfChatsPerLoad,
+        max: m.numberOfChatsPerLoad,
       })
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
@@ -193,7 +181,7 @@ class ChatDetail extends React.Component {
   loadMore = () => {
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
-    const max = numberOfChatsPerLoad;
+    const max = m.numberOfChatsPerLoad;
     const end = oldestCreated;
 
     const query = { max, end };

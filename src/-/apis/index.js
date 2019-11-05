@@ -313,13 +313,14 @@ class ApiProvider extends React.Component {
 
   onSIPSessionStopped = id => {
     const call = callStore.getRunningCall(id);
+    const time = new Date();
     authStore.pushRecentCall({
       id: createId(),
       incoming: call.incoming,
       answered: call.answered,
       partyName: call.partyName,
       partyNumber: call.partyNumber,
-      created: Date.now(),
+      created: `${time.getHours()}:${time.getMinutes()}`,
     });
     callStore.removeRunning(call.id);
   };

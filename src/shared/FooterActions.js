@@ -91,6 +91,7 @@ const FooterActions = props => (
       <TextInput
         style={[s.FooterActions_Input]}
         placeholder="Message"
+        blurOnSubmit={false}
         value={props.text}
         onChangeText={props.setText}
         onSubmitEditing={props.submitText}

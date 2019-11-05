@@ -104,13 +104,21 @@ const RunningItem = p => (
         !p.activecall.holding &&
         !p.activecall.loudspeaker &&
         Platform.OS !== `web` && (
-          <ButtonIcon onPress={p.onOpenLoudSpeaker} path={mdiVolumeHigh} />
+          <ButtonIcon
+            onPress={p.onOpenLoudSpeaker}
+            path={mdiVolumeHigh}
+            bdcolor={v.borderBg}
+          />
         )}
       {p.activecall.answered &&
         !p.activecall.holding &&
         p.activecall.loudspeaker &&
         Platform.OS !== `web` && (
-          <ButtonIcon onPress={p.onCloseLoudSpeaker} path={mdiVolumeMedium} />
+          <ButtonIcon
+            onPress={p.onCloseLoudSpeaker}
+            path={mdiVolumeMedium}
+            bdcolor={v.borderBg}
+          />
         )}
       {p.activecall.answered && !p.activecall.holding && (
         <ButtonIcon
