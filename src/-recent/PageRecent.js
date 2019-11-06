@@ -1,16 +1,22 @@
 import { mdiPhone } from '@mdi/js';
 import { observer } from 'mobx-react';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
+import FieldGroup from '../shared/FieldGroup';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
 @observer
 class Recent extends React.Component {
+  static contextTypes = {
+    sip: PropTypes.object.isRequired,
+  };
+
   isMatchUser = call => {
     if (call.partyNumber.includes(contactStore.searchText)) {
       return call.id;
@@ -28,8 +34,17 @@ class Recent extends React.Component {
     }
   };
 
+  getAvatar = id => {
+    const ucUser = contactStore.getUCUser(id) || {};
+
+    return {
+      id: id,
+      avatar: ucUser.avatar,
+    };
+  };
+
   getMatchUserIds = () =>
-    authStore.profile.recentCalls.filter(this.isMatchUser).map(c => c.id);
+    authStore.profile.recentCalls.filter(this.isMatchUser);
 
   render() {
     const users = this.getMatchUserIds();
@@ -41,16 +56,19 @@ class Recent extends React.Component {
       >
         <Search />
         <React.Fragment>
-          {users.length !== 0 &&
-            users.map((u, i) => (
-              <Item
-                last={i === users.length - 1}
-                icon={[mdiPhone]}
-                function={[() => this.callBack(u.id)]}
-                detail={true}
-                {...u}
-              />
-            ))}
+          <FieldGroup>
+            {users.length !== 0 &&
+              users.map((u, i) => (
+                <Item
+                  last={i === users.length - 1}
+                  icon={[mdiPhone]}
+                  function={[() => this.callBack(u.id)]}
+                  detail={true}
+                  {...this.getAvatar(u.partyNumber)}
+                  {...u}
+                />
+              ))}
+          </FieldGroup>
         </React.Fragment>
       </Layout>
     );

@@ -1,4 +1,4 @@
-import { mdiPhoneMissed } from '@mdi/js';
+import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -66,12 +66,14 @@ const renderItem = p => (
         <View style={s.Item_Detail}>
           {p.incoming && p.answered && (
             // TODO: change icon to match with status phone.
-            <Icon path={mdiPhoneMissed} size={18} />
+            <Icon path={mdiPhoneIncoming} size={18} color={v.callBg} />
           )}
           {p.incoming && !p.answered && (
-            <Icon path={mdiPhoneMissed} size={18} />
+            <Icon path={mdiPhoneMissed} size={18} color={v.redBg} />
           )}
-          {!p.incoming && <Icon path={mdiPhoneMissed} size={18} />}
+          {!p.incoming && (
+            <Icon path={mdiPhoneOutgoing} size={18} color={v.mainBg} />
+          )}
           <Text style={s.Item_Detail_Text}>at {p.created}</Text>
         </View>
       )}

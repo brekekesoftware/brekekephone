@@ -152,15 +152,16 @@ class Callbar extends React.Component {
     const bVisible =
       this.state.activecallid &&
       this.props.location.pathname !== `/calls/manage`;
+    const activecall = this.callById[this.state.activecallid];
     return (
       <View style={s.CallBar}>
-        {bVisible && (
+        {bVisible && activecall && (
           <RunningItem
             hangup={this.hangup}
             hold={this.hold}
             unhold={this.unhold}
             activecallid={this.state.activecallid}
-            activecall={this.callById[this.state.activecallid]}
+            activecall={activecall}
             pressCallsManage={g.goToCallsManage}
             onOpenLoudSpeaker={this.onOpenLoudSpeaker}
             onCloseLoudSpeaker={this.onCloseLoudSpeaker}

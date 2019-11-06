@@ -50,7 +50,7 @@ class PageIncoming extends React.Component {
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
       if (activeCall) {
-        callStore.set(`selectedId`, activeCall.id);
+        callStore.set(`selectedId`, activeCall);
       }
     } else {
       const parkingIds = callStore.runnings
@@ -98,11 +98,10 @@ class PageIncoming extends React.Component {
     for (let i = 0; i < runids.length; i++) {
       const runid = runids[i];
       const call = this.runningById[runid];
-
       if (!latestCall) {
         latestCall = call;
       } else {
-        if (call.createdAt > latestCall.createdAt) {
+        if (call.createdAt > latestCall.createdAt || !latestCall.createdAt) {
           latestCall = call;
         }
       }
