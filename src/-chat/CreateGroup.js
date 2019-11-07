@@ -38,7 +38,7 @@ const s = StyleSheet.create({
     alignItems: `center`,
   },
   CreateGroup_Text: {
-    marginTop: 15,
+    paddingTop: 15,
     fontSize: v.fontSizeTitle,
   },
 });

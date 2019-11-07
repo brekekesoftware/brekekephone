@@ -65,14 +65,13 @@ const renderItem = p => (
       {p.detail && (
         <View style={s.Item_Detail}>
           {p.incoming && p.answered && (
-            // TODO: change icon to match with status phone.
-            <Icon path={mdiPhoneIncoming} size={18} color={v.callBg} />
+            <Icon path={mdiPhoneIncoming} noFlex size={18} color={v.callBg} />
           )}
           {p.incoming && !p.answered && (
-            <Icon path={mdiPhoneMissed} size={18} color={v.redBg} />
+            <Icon path={mdiPhoneMissed} noFlex size={18} color={v.redBg} />
           )}
           {!p.incoming && (
-            <Icon path={mdiPhoneOutgoing} size={18} color={v.mainBg} />
+            <Icon path={mdiPhoneOutgoing} noFlex size={18} color={v.mainBg} />
           )}
           <Text style={s.Item_Detail_Text}>at {p.created}</Text>
         </View>

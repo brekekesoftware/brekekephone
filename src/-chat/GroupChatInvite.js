@@ -36,7 +36,7 @@ const s = StyleSheet.create({
     padding: 5,
   },
   GroupInvite_Text: {
-    marginTop: 15,
+    paddingTop: 15,
     fontSize: v.fontSizeTitle,
   },
 });

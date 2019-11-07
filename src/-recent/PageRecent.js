@@ -54,7 +54,10 @@ class Recent extends React.Component {
           title: `Recent`,
         }}
       >
-        <Search />
+        <Search
+          value={contactStore.searchText}
+          onValueChange={contactStore.setF(`searchText`)}
+        />
         <React.Fragment>
           <FieldGroup>
             {users.length !== 0 &&
