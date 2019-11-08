@@ -13,6 +13,7 @@ import Callbar from '../-incoming/CallBar';
 import PageIncoming from '../-incoming/PageIncoming';
 import CallNotify from '../-notify/CallNotify';
 import ChatGroupInvite from '../-notify/ChatGroupInvite';
+import CallPark from '../-phone/CallPark';
 import PagePhone from '../-phone/PagePhone';
 import Recent from '../-recent/PageRecent';
 import TransferAttend from '../-transfer/TransferAttend';
@@ -22,7 +23,6 @@ import FooterTab from '../shared/FooterTab';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import BuddyChatsNotify from './buddy-chats-notify';
-import CallPark from './call-park';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import ContactsBrowse from './contacts-browse';
@@ -48,7 +48,7 @@ Object.assign(router, {
   goToCallKeypad: withTimeout(call =>
     router.history.push(`/call/${call}/keypad`),
   ),
-  goToCallPark: withTimeout(call => router.history.push(`/call/${call}/park`)),
+  goToCallPark: withTimeout(() => router.history.push(`/call/park`)),
   goToCallsCreate: withTimeout(() => router.history.push(`/calls/create`)),
   goToCallsManage: withTimeout(() => router.history.push(`/calls/manage`)),
   goToCallsRecent: withTimeout(() => router.history.push(`/calls/recent`)),
@@ -103,7 +103,7 @@ const Routes = () => (
               component={TransferAttend}
             />
             <Route exact path="/call/:call/keypad" component={PagePhone} />
-            <Route exact path="/call/:call/park" component={CallPark} />
+            <Route exact path="/call/park" component={CallPark} />
             <Route exact path="/users" component={PageContact} />
             <Route
               exact

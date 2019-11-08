@@ -24,7 +24,7 @@ class CallNotify extends React.Component {
       videoEnabled,
     });
   };
-  //Todo: fix not hide notify when reject
+
   reject = id => {
     this.context.sip.hangupSession(id);
   };

@@ -26,6 +26,7 @@ const s = StyleSheet.create({
     left: 70,
     fontSize: v.fontSizeSubTitle,
     color: v.subColor,
+    fontWeight: `600`,
   },
   Item_Detail: {
     flexDirection: `row`,
@@ -55,25 +56,38 @@ const s = StyleSheet.create({
     width: 10,
     backgroundColor: v.mainDarkBg,
   },
+  Item__noAvatar: {
+    left: 5,
+  },
+  Item__pdLeft0: {
+    paddingLeft: 0,
+  },
 });
 
 const renderItem = p => (
   <View>
     <View style={[s.Item, p.last && s.Item__last, p.selected && s.Item__Bgr]}>
-      <Avatar source={{ uri: p.avatar }} {...p} />
-      <Text style={s.Item_Name}>{p.name || p.partyNumber || p.id}</Text>
+      {p.avatar && <Avatar source={{ uri: p.avatar }} {...p} />}
+      <Text style={[s.Item_Name, !p.avatar && s.Item__noAvatar]}>
+        {p.name || p.partyNumber || p.id}
+      </Text>
       {p.detail && (
-        <View style={s.Item_Detail}>
+        <View style={[s.Item_Detail, !p.avatar && s.Item__noAvatar]}>
           {p.incoming && p.answered && (
             <Icon path={mdiPhoneIncoming} noFlex size={18} color={v.callBg} />
           )}
           {p.incoming && !p.answered && (
             <Icon path={mdiPhoneMissed} noFlex size={18} color={v.redBg} />
           )}
-          {!p.incoming && (
+          {!p.incoming && !p.park && (
             <Icon path={mdiPhoneOutgoing} noFlex size={18} color={v.mainBg} />
           )}
-          <Text style={s.Item_Detail_Text}>at {p.created}</Text>
+          {p.created && <Text style={s.Item_Detail_Text}>at {p.created}</Text>}
+          {p.park && (
+            <Text style={[s.Item_Detail_Text, !p.avatar && s.Item__pdLeft0]}>
+              {p.park}
+            </Text>
+          )}
         </View>
       )}
     </View>
