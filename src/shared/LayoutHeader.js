@@ -193,6 +193,37 @@ const Header = props => {
             </Animated.View>
           </TouchableOpacity>
         )}
+        {props.onParkBtnPress && (
+          <TouchableOpacity
+            style={s.LayoutHeader_CreateBtn}
+            onPress={props.onParkBtnPress}
+          >
+            <Animated.View
+              style={[
+                s.LayoutHeader_CreateBtnOuter,
+                {
+                  top: a.createBtnOuterTop,
+                  height: a.createBtnOuterHeight,
+                },
+              ]}
+            >
+              <Animated.View
+                style={[
+                  s.LayoutHeader_CreateBtnInner,
+                  props.transparent && s.LayoutHeader_CreateBtn__white,
+                  {
+                    top: a.createBtnInnerTop,
+                  },
+                ]}
+              >
+                <Icon
+                  path={mdiPhone}
+                  color={props.transparent ? `black` : `white`}
+                />
+              </Animated.View>
+            </Animated.View>
+          </TouchableOpacity>
+        )}
         {props.onVoiceCallBtnPress && (
           <TouchableOpacity
             style={s.LayoutHeader_VoiceCallBtn}

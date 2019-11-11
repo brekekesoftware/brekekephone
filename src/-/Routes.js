@@ -48,7 +48,9 @@ Object.assign(router, {
   goToCallKeypad: withTimeout(call =>
     router.history.push(`/call/${call}/keypad`),
   ),
-  goToCallPark: withTimeout(() => router.history.push(`/call/park`)),
+  goToCallPark: withTimeout(screen =>
+    router.history.push(`/call/${screen}/park`),
+  ),
   goToCallsCreate: withTimeout(() => router.history.push(`/calls/create`)),
   goToCallsManage: withTimeout(() => router.history.push(`/calls/manage`)),
   goToCallsRecent: withTimeout(() => router.history.push(`/calls/recent`)),
@@ -103,7 +105,7 @@ const Routes = () => (
               component={TransferAttend}
             />
             <Route exact path="/call/:call/keypad" component={PagePhone} />
-            <Route exact path="/call/park" component={CallPark} />
+            <Route exact path="/call/:screen/park" component={CallPark} />
             <Route exact path="/users" component={PageContact} />
             <Route
               exact

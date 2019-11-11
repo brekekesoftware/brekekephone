@@ -333,8 +333,7 @@ class PageIncoming extends React.Component {
   };
 
   park = () => {
-    const call = this.runningById[callStore.selectedId];
-    g.goToCallPark(call.id);
+    g.goToCallPark(`call_manage`);
   };
 
   enableVideo = () => {

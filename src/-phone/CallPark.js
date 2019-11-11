@@ -19,6 +19,7 @@ class CallPark extends React.Component {
 
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
+    sip: PropTypes.object.isRequired,
   };
 
   state = {
@@ -26,11 +27,16 @@ class CallPark extends React.Component {
   };
 
   render() {
+    const screen = this.props.match.params.screen;
+    const goBack =
+      screen === `page_phone` ? g.goToCallKeypad : g.goToCallsManage;
+    console.warn(`goback`, goBack);
     return (
       <Layout
         header={{
           title: `Call Park`,
-          onBackBtnPress: g.goToCallKeypad,
+          onBackBtnPress: goBack,
+          onParkBtnPress: this.park,
         }}
       >
         <React.Fragment>
@@ -72,14 +78,22 @@ class CallPark extends React.Component {
 
     const { pbx } = this.context;
 
-    const call = callStore.getRunningCall(this.props.match.params.call);
+    if (callStore.selectedId) {
+      const call = callStore.getRunningCall(callStore.selectedId);
+      const tenant = call.pbxTenant;
+      const talkerId = call.pbxTalkerId;
+      pbx
+        .parkTalker(tenant, talkerId, selectedPark)
+        .then(this.onParkSuccess)
+        .catch(this.onParkFailure);
+    } else {
+      const { sip } = this.context;
+      sip.createSession(selectedPark, {
+        videoEnabled: false,
+      });
 
-    const tenant = call.pbxTenant;
-    const talkerId = call.pbxTalkerId;
-    pbx
-      .parkTalker(tenant, talkerId, selectedPark)
-      .then(this.onParkSuccess)
-      .catch(this.onParkFailure);
+      g.goToCallsManage();
+    }
   };
 
   onParkSuccess = () => {

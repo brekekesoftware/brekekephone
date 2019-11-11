@@ -35,6 +35,7 @@ export class CallStore extends BaseStore {
     }
   };
   @action removeRunning = id => {
+    this.set(`selectedId`, ``);
     this.runnings = this.runnings.filter(c => c.id !== id);
   };
   //
