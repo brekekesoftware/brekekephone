@@ -6,7 +6,7 @@ import React from 'react';
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
-import formatTime from '../shared/FormatTime';
+import formatTime from '../shared/formatTime';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import Message from './Message';
