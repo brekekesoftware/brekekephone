@@ -23,11 +23,9 @@ import g from '../global';
 import FooterTab from '../shared/FooterTab';
 import Auth from './auth';
 import WithoutStatusBar from './auth/WithoutStatusBar';
-import BuddyChatsNotify from './buddy-chats-notify';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import ContactsBrowse from './contacts-browse';
-import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
 import router from './routerStore';
@@ -144,12 +142,9 @@ const Routes = () => (
       <Route path="/" component={CallVoices} />
       <Route path="/" component={CallVideos} />
       <Route path="/" component={FooterTab} />
-    </WithoutStatusBar>
-    <Notifications>
       <Route path="/" component={CallNotify} />
       <Route path="/" component={ChatGroupInvite} />
-      <Route path="/" component={BuddyChatsNotify} />
-    </Notifications>
+    </WithoutStatusBar>
   </View>
 );
 
