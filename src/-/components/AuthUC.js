@@ -8,10 +8,10 @@ import g from '../../global';
 import authStore from '../authStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import UI from './ui';
+import AuthUCUI from './AuthUCUI';
 
 @observer
-class View extends React.Component {
+class AuthUC extends React.Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
   };
@@ -93,7 +93,7 @@ class View extends React.Component {
       return null;
     }
     return (
-      <UI
+      <AuthUCUI
         failure={authStore.ucState === `failure`}
         abort={g.goToPageProfileSignIn}
         retry={this.auth}
@@ -103,4 +103,4 @@ class View extends React.Component {
   }
 }
 
-export default View;
+export default AuthUC;

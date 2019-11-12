@@ -28,7 +28,7 @@ const AnsweredItem = p => (
 const AnsweredList = p =>
   p.ids.map(id => <AnsweredItem key={id} {...p.resolve(id)} />);
 
-const CallVoices = p => (
+const CallVoicesUI = p => (
   <React.Fragment>
     <IncomingList ids={p.incomingCallIds} resolve={p.resolveCall} />
     <OutgoingList ids={p.outgoingCallIds} resolve={p.resolveCall} />
@@ -36,4 +36,4 @@ const CallVoices = p => (
   </React.Fragment>
 );
 
-export default CallVoices;
+export default CallVoicesUI;

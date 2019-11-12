@@ -2,13 +2,13 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import callStore from '../callStore';
-import UI from './ui';
+import CallVideosUI from './CallVideosUI';
 
 @observer
-class View extends React.Component {
+class CallVideos extends React.Component {
   render() {
     return (
-      <UI
+      <CallVideosUI
         callIds={callStore.runnings
           .filter(c => c.videoSessionId)
           .map(c => c.id)}
@@ -27,4 +27,4 @@ class View extends React.Component {
   };
 }
 
-export default View;
+export default CallVideos;

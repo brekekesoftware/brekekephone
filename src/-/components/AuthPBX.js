@@ -5,10 +5,10 @@ import React from 'react';
 
 import g from '../../global';
 import authStore from '../authStore';
-import UI from './ui';
+import AuthPBXUI from './AuthPBXUI';
 
 @observer
-class View extends React.Component {
+class AuthPBX extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
   };
@@ -45,7 +45,7 @@ class View extends React.Component {
 
   render() {
     return authStore.pbxState === `success` ? null : (
-      <UI
+      <AuthPBXUI
         retryable={!!authStore.profile}
         failure={this.props.failure}
         abort={g.goToPageProfileSignIn}
@@ -55,4 +55,4 @@ class View extends React.Component {
   }
 }
 
-export default View;
+export default AuthPBX;

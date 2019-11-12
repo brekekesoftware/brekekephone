@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import UI from './ui';
+import ContactsBrowseUI from './ContactsBrowseUI';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
 
 @observer
-class View extends React.Component {
+class ContactsBrowse extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
@@ -30,7 +30,7 @@ class View extends React.Component {
 
   render() {
     return (
-      <UI
+      <ContactsBrowseUI
         hasPrevPage={g.getQuery().offset >= numberOfContactsPerPage}
         hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
         searchText={g.getQuery().searchText}
@@ -298,4 +298,4 @@ class View extends React.Component {
   };
 }
 
-export default View;
+export default ContactsBrowse;

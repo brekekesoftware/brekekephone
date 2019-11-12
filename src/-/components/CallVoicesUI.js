@@ -38,11 +38,11 @@ class OutgoingItem extends React.Component {
 const OutgoingList = p =>
   p.ids.map(id => <OutgoingItem key={id} {...p.resolve(id)} />);
 
-const CallVoices = p => (
+const CallVoicesUI = p => (
   <React.Fragment>
     <IncomingList ids={p.incomingCallIds} resolve={p.resolveCall} />
     <OutgoingList ids={p.outgoingCallIds} resolve={p.resolveCall} />
   </React.Fragment>
 );
 
-export default CallVoices;
+export default CallVoicesUI;

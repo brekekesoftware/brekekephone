@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import UI from './ui';
+import PhonebooksBrowseUI from './PhonebooksBrowseUI';
 
-class View extends React.Component {
+class PhonebooksBrowse extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
   };
@@ -20,7 +20,7 @@ class View extends React.Component {
 
   render() {
     return (
-      <UI
+      <PhonebooksBrowseUI
         loading={this.state.loading}
         books={this.state.books}
         selectBook={b =>
@@ -60,4 +60,4 @@ class View extends React.Component {
   };
 }
 
-export default View;
+export default PhonebooksBrowse;

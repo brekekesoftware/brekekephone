@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../../global';
-import getApiProvider from '../apis/getApiProvider';
 import authStore from '../authStore';
-import UI from './ui';
+import AuthSIPUI from './AuthSIPUI';
+import getApiProvider from './getApiProvider';
 
 @observer
-class View extends React.Component {
+class AuthSIP extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
@@ -105,7 +105,7 @@ class View extends React.Component {
 
   render() {
     return authStore.sipState === `success` ? null : (
-      <UI
+      <AuthSIPUI
         retryable={!!authStore.profile}
         failure={!authStore.profile || authStore.sipState === `failure`}
         abort={g.goToPageProfileSignIn}
@@ -115,4 +115,4 @@ class View extends React.Component {
   }
 }
 
-export default View;
+export default AuthSIP;

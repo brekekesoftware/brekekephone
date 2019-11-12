@@ -2,7 +2,7 @@ import React from 'react';
 import { PanResponder, View } from 'react-native';
 
 import { std } from '../styleguide';
-import Video from './video';
+import VideoPlayer from './VideoPlayer';
 
 const st = {
   mini: {
@@ -66,7 +66,7 @@ class Mini extends React.Component {
         style={st.mini}
         {...this.panResponder.panHandlers}
       >
-        <Video sourceObject={this.props.sourceObject} />
+        <VideoPlayer sourceObject={this.props.sourceObject} />
       </View>
     );
   }
@@ -118,7 +118,7 @@ class Full extends React.Component {
         style={st.full}
         {...this.panResponder.panHandlers}
       >
-        <Video sourceObject={this.props.sourceObject} />
+        <VideoPlayer sourceObject={this.props.sourceObject} />
       </View>
     );
   }

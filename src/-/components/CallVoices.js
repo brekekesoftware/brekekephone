@@ -2,17 +2,17 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import callStore from '../callStore';
-import UI from './ui';
+import CallVoicesUI from './CallVoicesUI';
 
 const isIncoming = call => !call.answered && call.incoming;
 const isOutgoing = call => !call.answered && !call.incoming;
 const isAnswered = call => call.answered;
 
 @observer
-class View extends React.Component {
+class CallVoices extends React.Component {
   render() {
     return (
-      <UI
+      <CallVoicesUI
         incomingCallIds={callStore.runnings
           .filter(c => isIncoming(c))
           .map(c => c.id)}
@@ -28,4 +28,4 @@ class View extends React.Component {
   }
 }
 
-export default View;
+export default CallVoices;

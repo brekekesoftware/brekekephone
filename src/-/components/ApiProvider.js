@@ -6,14 +6,14 @@ import createId from 'shortid';
 
 import g from '../../global';
 import PushNotification from '../../native/PushNotification';
+import pbx from '../apis/pbx';
+import sip from '../apis/sip';
+import uc from '../apis/uc';
 import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
 import { setApiProvider } from './getApiProvider';
-import pbx from './pbx';
-import sip from './sip';
-import uc from './uc';
 
 @observer
 class ApiProvider extends React.Component {

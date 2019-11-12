@@ -136,7 +136,7 @@ const Loading = () => (
   </View>
 );
 
-const PhonebooksBrowse = p => (
+const PhonebooksBrowseUI = p => (
   <View style={st.main}>
     <Navbar create={p.create} />
     {p.books.length ? (
@@ -149,4 +149,4 @@ const PhonebooksBrowse = p => (
   </View>
 );
 
-export default PhonebooksBrowse;
+export default PhonebooksBrowseUI;

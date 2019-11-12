@@ -541,7 +541,7 @@ const Loading = () => (
   </View>
 );
 
-const ContactsBrowse = p => (
+const ContactsBrowseUI = p => (
   <KeyboardAvoidingView style={st.main}>
     <Navbar
       canCreate={!p.shared}
@@ -581,4 +581,4 @@ const ContactsBrowse = p => (
   </KeyboardAvoidingView>
 );
 
-export default ContactsBrowse;
+export default ContactsBrowseUI;
