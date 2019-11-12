@@ -6,7 +6,7 @@ import React from 'react';
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
-import FieldGroup from '../shared/FieldGroup';
+import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
@@ -58,21 +58,18 @@ class Recent extends React.Component {
           value={contactStore.searchText}
           onValueChange={contactStore.setF(`searchText`)}
         />
-        <React.Fragment>
-          <FieldGroup>
-            {users.length !== 0 &&
-              users.map((u, i) => (
-                <Item
-                  last={i === users.length - 1}
-                  icon={[mdiPhone]}
-                  function={[() => this.callBack(u.id)]}
-                  detail={true}
-                  {...this.getAvatar(u.partyNumber)}
-                  {...u}
-                />
-              ))}
-          </FieldGroup>
-        </React.Fragment>
+        <Field isGroup />
+        {users.length !== 0 &&
+          users.map((u, i) => (
+            <Item
+              last={i === users.length - 1}
+              icon={[mdiPhone]}
+              function={[() => this.callBack(u.id)]}
+              detail={true}
+              {...this.getAvatar(u.partyNumber)}
+              {...u}
+            />
+          ))}
       </Layout>
     );
   }

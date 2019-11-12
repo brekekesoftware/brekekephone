@@ -8,7 +8,7 @@ import React from 'react';
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
-import FieldGroup from '../shared/FieldGroup';
+import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
@@ -136,23 +136,22 @@ class ContactUser extends React.Component {
           value={contactStore.searchText}
           onValueChange={contactStore.setF(`searchText`)}
         />
-        <React.Fragment>
-          {groups.map(_g => (
-            <FieldGroup title={_g.key}>
-              {_g.users.map((u, i) => (
-                <Item
-                  last={i === _g.users.length - 1}
-                  icon={[mdiPhone, mdiChat]}
-                  function={[
-                    () => this.callVoice(u.id),
-                    () => g.goToBuddyChatsRecent(u.id),
-                  ]}
-                  {...u}
-                />
-              ))}
-            </FieldGroup>
-          ))}
-        </React.Fragment>
+        {groups.map(_g => (
+          <React.Fragment>
+            <Field isGroup label={_g.key} />
+            {_g.users.map((u, i) => (
+              <Item
+                last={i === _g.users.length - 1}
+                icon={[mdiPhone, mdiChat]}
+                function={[
+                  () => this.callVoice(u.id),
+                  () => g.goToBuddyChatsRecent(u.id),
+                ]}
+                {...u}
+              />
+            ))}
+          </React.Fragment>
+        ))}
       </Layout>
     );
   }

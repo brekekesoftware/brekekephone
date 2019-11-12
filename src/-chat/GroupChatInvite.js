@@ -7,7 +7,7 @@ import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
-import FieldGroup from '../shared/FieldGroup';
+import Field from '../shared/Field';
 import ItemUser from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import v from '../variables';
@@ -72,20 +72,17 @@ class GroupChatInvite extends React.Component {
           </TouchableOpacity>
           <Text style={s.GroupInvite_Text}>Members</Text>
         </View>
-        <React.Fragment>
-          <FieldGroup>
-            {this.buddyIds.map((id, i) => (
-              <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
-                <ItemUser
-                  last={i === this.buddyIds.length - 1}
-                  key={id}
-                  {...this.resolveBuddy(id)}
-                  selected={this.state.selectedBuddy[id]}
-                />
-              </TouchableOpacity>
-            ))}
-          </FieldGroup>
-        </React.Fragment>
+        <Field isGroup />
+        {this.buddyIds.map((id, i) => (
+          <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
+            <ItemUser
+              last={i === this.buddyIds.length - 1}
+              key={id}
+              {...this.resolveBuddy(id)}
+              selected={this.state.selectedBuddy[id]}
+            />
+          </TouchableOpacity>
+        ))}
       </Layout>
     );
   }

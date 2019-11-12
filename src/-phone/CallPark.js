@@ -7,7 +7,7 @@ import authStore from '../-/authStore';
 import callStore from '../-/callStore';
 import g from '../global';
 import { TouchableOpacity } from '../native/Rn';
-import FieldGroup from '../shared/FieldGroup';
+import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 
@@ -30,7 +30,6 @@ class CallPark extends React.Component {
     const screen = this.props.match.params.screen;
     const goBack =
       screen === `page_phone` ? g.goToCallKeypad : g.goToCallsManage;
-    console.warn(`goback`, goBack);
     return (
       <Layout
         header={{
@@ -39,22 +38,19 @@ class CallPark extends React.Component {
           onParkBtnPress: this.park,
         }}
       >
-        <React.Fragment>
-          <FieldGroup>
-            {this.parkIds.length !== 0 &&
-              this.parkIds.map((u, i) => (
-                <TouchableOpacity onPress={() => this.selectPark(u)}>
-                  <Item
-                    last={i === this.parkIds.length - 1}
-                    name={`Parked ${i + 1}`}
-                    detail={true}
-                    park={`Extension *${u}`}
-                    selected={this.state.selectedPark === u}
-                  />
-                </TouchableOpacity>
-              ))}
-          </FieldGroup>
-        </React.Fragment>
+        <Field isGroup />
+        {this.parkIds.length !== 0 &&
+          this.parkIds.map((u, i) => (
+            <TouchableOpacity onPress={() => this.selectPark(u)}>
+              <Item
+                last={i === this.parkIds.length - 1}
+                name={`Parked ${i + 1}`}
+                detail={true}
+                park={`Extension *${u}`}
+                selected={this.state.selectedPark === u}
+              />
+            </TouchableOpacity>
+          ))}
       </Layout>
     );
   }
