@@ -9,6 +9,7 @@ import ChatsHome from '../-chat/ChatsHome';
 import CreateGroup from '../-chat/CreateGroup';
 import GroupChatInvite from '../-chat/GroupChatInvite';
 import PageContact from '../-contact/PageContact';
+import PageContactCreate from '../-contact/PageContactCreate';
 import Callbar from '../-incoming/CallBar';
 import PageIncoming from '../-incoming/PageIncoming';
 import CallNotify from '../-notify/CallNotify';
@@ -26,7 +27,6 @@ import BuddyChatsNotify from './buddy-chats-notify';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
 import ContactsBrowse from './contacts-browse';
-import ContactsCreate from './contacts-create';
 import Notifications from './notifications';
 import PBXAuth from './pbx-auth';
 import PhonebooksBrowse from './phonebooks-browse';
@@ -130,7 +130,11 @@ const Routes = () => (
               component={PhonebooksBrowse}
             />
             <Route exact path="/contacts/browse" component={ContactsBrowse} />
-            <Route exact path="/contacts/create" component={ContactsCreate} />
+            <Route
+              exact
+              path="/contacts/create"
+              component={PageContactCreate}
+            />
           </Auth>
         )}
       />

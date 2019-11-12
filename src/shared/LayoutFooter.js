@@ -30,12 +30,13 @@ const s = StyleSheet.create({
   },
 });
 
-const LayoutFooter = ({ style, actions, LayoutChat }) => (
+const LayoutFooter = ({ style, actions, LayoutChat, PhoneBook }) => (
   <View
     style={[
       s.LayoutFooter,
       actions && s.LayoutFooter__hasActions,
       LayoutChat && s.LayoutFooter__hasActionsInputChat,
+      PhoneBook && s.LayoutFooter__hasActionsInputChat,
       style,
     ]}
   >

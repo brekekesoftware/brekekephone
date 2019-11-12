@@ -71,6 +71,7 @@ const Layout = observer(props => {
             style={[
               s.Layout_FooterSpacing,
               props.footer.LayoutChat && s.Layout_FooterSpacing__hasInputChat,
+              props.footer.PhoneBook && s.Layout_FooterSpacing__hasInputChat,
             ]}
           />
         )}
