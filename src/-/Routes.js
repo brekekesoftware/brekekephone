@@ -21,7 +21,7 @@ import TransferAttend from '../-transfer/TransferAttend';
 import TransferDial from '../-transfer/TransferDial';
 import g from '../global';
 import FooterTab from '../shared/FooterTab';
-import Auth from './auth';
+import AuthContainer from './auth/AuthContainer';
 import WithoutStatusBar from './auth/WithoutStatusBar';
 import CallVideos from './call-videos';
 import CallVoices from './call-voices';
@@ -86,7 +86,7 @@ const Routes = () => (
       <Route
         path="/"
         render={() => (
-          <Auth>
+          <AuthContainer>
             <Route path="/" component={Callbar} />
             <Route exact path="/" render={() => <Redirect to="/users" />} />
             <Route exact path="/calls/manage" component={PageIncoming} />
@@ -133,7 +133,7 @@ const Routes = () => (
               path="/contacts/create"
               component={PageContactCreate}
             />
-          </Auth>
+          </AuthContainer>
         )}
       />
       <Route path="/" component={PBXAuth} />

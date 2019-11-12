@@ -10,18 +10,15 @@ const st = StyleSheet.create({
   main: {
     flex: 1,
   },
-
   notSuccess: {
     marginTop: rem(40),
   },
 });
 
 @observer
-class Auth extends React.Component {
-  @computed
-  get success() {
+class AuthContainer extends React.Component {
+  @computed get success() {
     const { profile, pbxState, sipState, ucState } = authStore;
-
     return (
       profile &&
       pbxState === `success` &&
@@ -29,16 +26,13 @@ class Auth extends React.Component {
       (!profile.ucEnabled || ucState === `success`)
     );
   }
-
   render() {
     const s = [st.main];
-
     if (!this.success) {
       s.push(st.notSuccess);
     }
-
     return <View style={s}>{this.props.children}</View>;
   }
 }
 
-export default Auth;
+export default AuthContainer;
