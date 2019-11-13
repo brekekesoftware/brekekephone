@@ -7,16 +7,12 @@ const animationOption = {
   duration: 150,
 };
 
-export const useAnimatedValue = v => {
+export const useAnimation = (enabled, props) => {
   const r = useRef();
   if (!r.current) {
-    r.current = new Animated.Value(v);
+    r.current = new Animated.Value(0);
   }
-  return r.current;
-};
-
-export const useAnimation = (enabled, props) => {
-  const v = useAnimatedValue(0);
+  const v = r.current;
   useEffect(() => {
     Animated.timing(v, {
       ...animationOption,
