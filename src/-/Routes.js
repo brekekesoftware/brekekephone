@@ -9,13 +9,13 @@ import ChatsHome from '../-chat/ChatsHome';
 import CreateGroup from '../-chat/CreateGroup';
 import GroupChatInvite from '../-chat/GroupChatInvite';
 import PageContact from '../-contact/PageContact';
-import PageContactCreate from '../-contact/PageContactCreate';
 import Callbar from '../-incoming/CallBar';
 import PageIncoming from '../-incoming/PageIncoming';
 import CallNotify from '../-notify/CallNotify';
 import ChatGroupInvite from '../-notify/ChatGroupInvite';
 import CallPark from '../-phone/CallPark';
 import PagePhone from '../-phone/PagePhone';
+import PagePhoneBookCreate from '../-phonebook/PagePhoneBookCreate';
 import Recent from '../-recent/PageRecent';
 import TransferAttend from '../-transfer/TransferAttend';
 import TransferDial from '../-transfer/TransferDial';
@@ -133,7 +133,7 @@ const Routes = () => (
             <Route
               exact
               path="/contacts/create"
-              component={PageContactCreate}
+              component={PagePhoneBookCreate}
             />
           </Auth>
         )}

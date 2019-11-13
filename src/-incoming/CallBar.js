@@ -209,7 +209,8 @@ class Callbar extends React.Component {
     const call = this.callById[activecallid];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onHoldSuccess, this.onHoldFailure);
+      .then(this.onHoldSuccess)
+      .catch(this.onHoldFailure);
   };
 
   onHoldSuccess = () => {
@@ -233,7 +234,8 @@ class Callbar extends React.Component {
     const call = this.callById[activecallid];
     pbx
       .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onUnholdSuccess, this.onUnholdFailure);
+      .then(this.onUnholdSuccess)
+      .catch(this.onUnholdFailure);
   };
 
   onUnholdSuccess = () => {

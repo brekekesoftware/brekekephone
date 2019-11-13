@@ -233,7 +233,8 @@ class PageIncoming extends React.Component {
     const call = this.runningById[callStore.selectedId];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onHoldSuccess, this.onHoldFailure);
+      .then(this.onHoldSuccess)
+      .catch(this.onHoldFailure);
   };
 
   onHoldSuccess = () => {
@@ -254,7 +255,8 @@ class PageIncoming extends React.Component {
     const call = this.runningById[callStore.selectedId];
     pbx
       .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onUnholdSuccess, this.onUnholdFailure);
+      .then(this.onUnholdSuccess)
+      .catch(this.onUnholdFailure);
   };
 
   onUnholdSuccess = () => {
@@ -275,7 +277,8 @@ class PageIncoming extends React.Component {
     const call = this.runningById[callStore.selectedId];
     pbx
       .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStartRecordingSuccess, this.onStartRecordingFailure);
+      .then(this.onStartRecordingSuccess)
+      .catch(this.onStartRecordingFailure);
   };
 
   onStartRecordingSuccess = () => {
@@ -296,7 +299,8 @@ class PageIncoming extends React.Component {
     const call = this.runningById[callStore.selectedId];
     pbx
       .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStopRecordingSuccess, this.onStopRecordingFailure);
+      .then(this.onStopRecordingSuccess)
+      .catch(this.onStopRecordingFailure);
   };
 
   onStopRecordingSuccess = () => {

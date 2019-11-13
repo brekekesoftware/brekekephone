@@ -6,7 +6,7 @@ import g from '../global';
 import ContactsCreateForm from './ContactCreateForm';
 
 @observer
-class PageContactCreate extends React.Component {
+class PageContactUpdate extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
   };
@@ -43,4 +43,4 @@ class PageContactCreate extends React.Component {
   };
 }
 
-export default PageContactCreate;
+export default PageContactUpdate;

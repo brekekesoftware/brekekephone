@@ -157,7 +157,7 @@ class TransferDial extends React.Component {
           this.call.pbxTalkerId,
           this.state.target,
         );
-    promise.then(this.onTransferSuccess, this.onTransferFailure);
+    promise.then(this.onTransferSuccess).catch(this.onTransferFailure);
   };
 
   onTransferSuccess = target => {
@@ -193,7 +193,7 @@ class TransferDial extends React.Component {
       this.call.pbxTalkerId,
       target,
     );
-    promise.then(this.onTransferSuccess(target), this.onTransferFailure);
+    promise.then(this.onTransferSuccess(target)).catch(this.onTransferFailure);
   };
 
   transferAttended = target => {
@@ -212,7 +212,7 @@ class TransferDial extends React.Component {
       this.call.pbxTalkerId,
       target,
     );
-    promise.then(this.onTransferSuccess(target), this.onTransferFailure);
+    promise.then(this.onTransferSuccess(target)).catch(this.onTransferFailure);
   };
 
   onTransferAttendedForVideoSuccess = target => {
@@ -253,10 +253,9 @@ class TransferDial extends React.Component {
       target,
     );
 
-    promise.then(
-      this.onTransferAttendedForVideoSuccess(target),
-      this.onTransferAttendedForVideoFailure,
-    );
+    promise
+      .then(this.onTransferAttendedForVideoSuccess(target))
+      .catch(this.onTransferAttendedForVideoFailure);
   };
 }
 

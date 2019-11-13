@@ -94,11 +94,15 @@ const renderItem = p => (
     {p.selected && <View style={s.Item__Selected} />}
     <View style={s.Item_Icon}>
       {p.icon &&
+        p.function &&
         p.icon.map((v, i) => (
           <TouchableOpacity onPress={p.function[i]}>
             <Icon path={v} style={s.Item_Icon__pd} />
           </TouchableOpacity>
         ))}
+      {p.icon &&
+        !p.function &&
+        p.icon.map(v => <Icon path={v} style={s.Item_Icon__pd} />)}
     </View>
   </View>
 );

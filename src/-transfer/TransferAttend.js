@@ -157,7 +157,8 @@ class TransferAttend extends React.Component {
 
     pbx
       .joinTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onJoinSuccess, this.onJoinFailure);
+      .then(this.onJoinSuccess)
+      .catch(this.onJoinFailure);
   };
 
   onJoinSuccess = () => {
@@ -178,7 +179,8 @@ class TransferAttend extends React.Component {
     const call = callStore.getRunningCall(this.props.match.params.call);
     pbx
       .stopTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStopSuccess, this.onStopFailure);
+      .then(this.onStopSuccess)
+      .catch(this.onStopFailure);
   };
 
   onStopSuccess = () => {
