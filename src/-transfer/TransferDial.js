@@ -8,7 +8,7 @@ import React from 'react';
 import callStore from '../-/callStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
-import FieldGroup from '../shared/FieldGroup';
+import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 
@@ -60,23 +60,22 @@ class TransferDial extends React.Component {
           title: `Transfer call`,
         }}
       >
-        <React.Fragment>
-          {groups.map(_g => (
-            <FieldGroup title={_g.key}>
-              {_g.users.map((u, i) => (
-                <Item
-                  last={i === _g.users.length - 1}
-                  icon={[mdiPhoneForward, mdiPhone]}
-                  function={[
-                    () => this.transferAttended(u.number),
-                    () => g.transferBlind(u.number),
-                  ]}
-                  {...u}
-                />
-              ))}
-            </FieldGroup>
-          ))}
-        </React.Fragment>
+        {groups.map(_g => (
+          <React.Fragment>
+            <Field isGroup label={_g.key} />
+            {_g.users.map((u, i) => (
+              <Item
+                last={i === _g.users.length - 1}
+                icon={[mdiPhoneForward, mdiPhone]}
+                function={[
+                  () => this.transferAttended(u.number),
+                  () => g.transferBlind(u.number),
+                ]}
+                {...u}
+              />
+            ))}
+          </React.Fragment>
+        ))}
       </Layout>
     );
   }

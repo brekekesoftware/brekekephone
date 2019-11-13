@@ -21,18 +21,16 @@ import TransferAttend from '../-transfer/TransferAttend';
 import TransferDial from '../-transfer/TransferDial';
 import g from '../global';
 import FooterTab from '../shared/FooterTab';
-import Auth from './auth';
-import WithoutStatusBar from './auth/WithoutStatusBar';
-import BuddyChatsNotify from './buddy-chats-notify';
-import CallVideos from './call-videos';
-import CallVoices from './call-voices';
-import ContactsBrowse from './contacts-browse';
-import Notifications from './notifications';
-import PBXAuth from './pbx-auth';
-import PhonebooksBrowse from './phonebooks-browse';
+import AuthContainer from './components/AuthContainer';
+import AuthPBX from './components/AuthPBX';
+import AuthSIP from './components/AuthSIP';
+import AuthUC from './components/AuthUC';
+import CallVideos from './components/CallVideos';
+import CallVoices from './components/CallVoices';
+import ContactsBrowse from './components/ContactsBrowse';
+import PhonebooksBrowse from './components/PhonebooksBrowse';
+import WithoutStatusBar from './components/WithoutStatusBar';
 import router from './routerStore';
-import SIPAuth from './sip-auth';
-import UCAuth from './uc-auth';
 
 // Wait and push history to fix some strange issues with router
 const withTimeout = fn => (...args) => setTimeout(() => fn(...args), 17);
@@ -88,7 +86,7 @@ const Routes = () => (
       <Route
         path="/"
         render={() => (
-          <Auth>
+          <AuthContainer>
             <Route path="/" component={Callbar} />
             <Route exact path="/" render={() => <Redirect to="/users" />} />
             <Route exact path="/calls/manage" component={PageIncoming} />
@@ -135,21 +133,18 @@ const Routes = () => (
               path="/contacts/create"
               component={PagePhoneBookCreate}
             />
-          </Auth>
+          </AuthContainer>
         )}
       />
-      <Route path="/" component={PBXAuth} />
-      <Route path="/" component={SIPAuth} />
-      <Route path="/" component={UCAuth} />
+      <Route path="/" component={AuthPBX} />
+      <Route path="/" component={AuthSIP} />
+      <Route path="/" component={AuthUC} />
       <Route path="/" component={CallVoices} />
       <Route path="/" component={CallVideos} />
       <Route path="/" component={FooterTab} />
-    </WithoutStatusBar>
-    <Notifications>
       <Route path="/" component={CallNotify} />
       <Route path="/" component={ChatGroupInvite} />
-      <Route path="/" component={BuddyChatsNotify} />
-    </Notifications>
+    </WithoutStatusBar>
   </View>
 );
 

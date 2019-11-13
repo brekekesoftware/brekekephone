@@ -16,7 +16,7 @@ const PageProfileCurrent = observer(p => (
       }
       g.showPrompt({
         title: `Save Server`,
-        message: `Do you want to update your profile,\n you need to sign out and then sign in again?`,
+        message: `Do you want to update your profile?\nYou'll need to sign out and then sign in again.`,
         onConfirm: () => {
           g.upsertProfile(p);
           g.goToPageProfileSignIn();
