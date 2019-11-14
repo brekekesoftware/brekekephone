@@ -19,7 +19,6 @@
     "@react-native-community/async-storage": "1.6.2",
     "brekekejs": "github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44",
     "crypto-js": "3.1.8",
-    "effector": "20.6.1",
     "es6-shim": "0.35.5",
     "es7-shim": "6.0.0",
     "eventemitter3": "4.0.0",

@@ -1,7 +1,7 @@
 import 'brekekejs/lib/jsonrpc';
 import 'brekekejs/lib/pal';
 
-import { createApi, createStore } from 'effector';
+import { createApi, createStore } from 'mobx';
 
 export const store = createStore({
   //
