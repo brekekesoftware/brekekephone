@@ -15,7 +15,10 @@ import CallNotify from '../-notify/CallNotify';
 import ChatGroupInvite from '../-notify/ChatGroupInvite';
 import CallPark from '../-phone/CallPark';
 import PagePhone from '../-phone/PagePhone';
+import PageContactPhoneBook from '../-phonebook/PageContactPhoneBook';
+import PagePhoneBook from '../-phonebook/PagePhoneBook';
 import PagePhoneBookCreate from '../-phonebook/PagePhoneBookCreate';
+import PageContactUpdate from '../-phonebook/PagePhoneBookUpdate';
 import Recent from '../-recent/PageRecent';
 import TransferAttend from '../-transfer/TransferAttend';
 import TransferDial from '../-transfer/TransferDial';
@@ -27,8 +30,6 @@ import AuthSIP from './components/AuthSIP';
 import AuthUC from './components/AuthUC';
 import CallVideos from './components/CallVideos';
 import CallVoices from './components/CallVoices';
-import ContactsBrowse from './components/ContactsBrowse';
-import PhonebooksBrowse from './components/PhonebooksBrowse';
 import WithoutStatusBar from './components/WithoutStatusBar';
 import router from './routerStore';
 
@@ -73,6 +74,9 @@ Object.assign(router, {
   ),
   goToContactsCreate: withTimeout(query =>
     router.history.push(`/contacts/create?${qs.stringify(query)}`),
+  ),
+  goToContactsUpdate: withTimeout(query =>
+    router.history.push(`/contacts/update?${qs.stringify(query)}`),
   ),
   goToPhonebooksBrowse: withTimeout(() =>
     router.history.push(`/phonebooks/browse`),
@@ -122,16 +126,21 @@ const Routes = () => (
               component={GroupChatInvite}
             />
             <Route exact path="/chats/recent" component={ChatsHome} />
+            <Route exact path="/phonebooks/browse" component={PagePhoneBook} />
             <Route
               exact
-              path="/phonebooks/browse"
-              component={PhonebooksBrowse}
+              path="/contacts/browse"
+              component={PageContactPhoneBook}
             />
-            <Route exact path="/contacts/browse" component={ContactsBrowse} />
             <Route
               exact
               path="/contacts/create"
               component={PagePhoneBookCreate}
+            />
+            <Route
+              exact
+              path="/contacts/update"
+              component={PageContactUpdate}
             />
           </AuthContainer>
         )}

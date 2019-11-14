@@ -1,8 +1,7 @@
 import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import { Text, TouchableOpacity } from '../native/Rn';
+import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import v from '../variables';
 import Avatar from './Avatar';
 import Icon from './Icon';
@@ -13,6 +12,7 @@ const s = StyleSheet.create({
     borderColor: v.borderBg,
     height: 80,
     alignItems: `stretch`,
+    paddingLeft: 10,
   },
   Item__Bgr: {
     backgroundColor: v.hoverBg,
@@ -57,7 +57,7 @@ const s = StyleSheet.create({
     backgroundColor: v.mainDarkBg,
   },
   Item__noAvatar: {
-    left: 5,
+    left: 15,
   },
   Item__pdLeft0: {
     paddingLeft: 0,

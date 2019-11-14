@@ -35,7 +35,10 @@ const useForm = () => {
       );
       const vl = new Validator(get($parent, k), rules);
       if (vl.fails()) {
-        $.set(`errorMap`, mapToMap(rules, null, k => vl.errors.first(k)));
+        $.set(
+          `errorMap`,
+          mapToMap(rules, null, k => vl.errors.first(k)),
+        );
         // TODO show toast
       } else {
         $.set(`errorMap`, {});
@@ -43,7 +46,10 @@ const useForm = () => {
           onValidSubmit();
         }
       }
-      $.set(`dirtyMap`, arrToMap(fields, f => f.name));
+      $.set(
+        `dirtyMap`,
+        arrToMap(fields, f => f.name),
+      );
     },
     // Form component
     render: observer(props => {

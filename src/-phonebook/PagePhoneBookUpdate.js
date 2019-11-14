@@ -1,3 +1,4 @@
+import set from 'lodash/set';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -14,7 +15,8 @@ class PageContactUpdate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        title="New Contact"
+        title="Update Contact"
+        updatingPhoneBook={g.getQuery().contact}
         onBack={g.goToPhonebooksBrowse}
         onSave={p => {
           this.save(p);
@@ -25,10 +27,10 @@ class PageContactUpdate extends React.Component {
   }
 
   save = phonebook => {
-    this.context.pbx
-      .setContact({
-        ...phonebook,
-      })
+    set(phonebook, `shared`, phonebook.shared !== `false`);
+    const { pbx } = this.context;
+    pbx
+      .setContact(phonebook)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
   };

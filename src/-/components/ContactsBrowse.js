@@ -112,7 +112,6 @@ class ContactsBrowse extends React.Component {
       console.error(err);
       g.showError({ message: `save the contact` });
     };
-
     pbx.setContact(this.state.contactById[id]).then(onSuccess, onFailure);
   };
 

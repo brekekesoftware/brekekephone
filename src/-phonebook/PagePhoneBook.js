@@ -4,7 +4,6 @@ import React from 'react';
 
 import g from '../global';
 import { TouchableOpacity } from '../native/Rn';
-import FieldGroup from '../shared/FieldGroup';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 
@@ -25,14 +24,20 @@ class PagePhoneBook extends React.Component {
   render() {
     const { books } = this.state;
     return (
-      <Layout>
-        <FieldGroup>
+      <Layout
+        header={{
+          title: `Phone Book`,
+          onCreateBtnPress: g.goToContactsCreate,
+        }}
+        footer={{}}
+      >
+        <React.Fragment>
           {books.map((book, i) => (
             <TouchableOpacity
-              onPress={b =>
+              onPress={() =>
                 g.goToContactsBrowse({
-                  book: b.name,
-                  shared: b.shared,
+                  book: book.name,
+                  shared: book.shared,
                 })
               }
             >
@@ -43,7 +48,7 @@ class PagePhoneBook extends React.Component {
               />
             </TouchableOpacity>
           ))}
-        </FieldGroup>
+        </React.Fragment>
       </Layout>
     );
   }

@@ -10,7 +10,6 @@ import useStore from '../shared/useStore';
 
 const genEmptyPhonebook = () => {
   return {
-    book: ``,
     firstName: ``,
     lastName: ``,
     workNumber: ``,
@@ -27,6 +26,7 @@ const ContactsCreateForm = observer(props => {
   const $ = useStore(() => ({
     observable: {
       phonebook: {
+        book: props.book,
         ...genEmptyPhonebook(),
         ...cloneDeep(props.updatingPhoneBook),
       },
@@ -34,6 +34,11 @@ const ContactsCreateForm = observer(props => {
 
     hasUnsavedChanges: () => {
       const p = props.updatingPhoneBook || genEmptyPhonebook();
+      if (!props.updatingPhoneBook) {
+        Object.assign(p, {
+          book: props.book,
+        });
+      }
       return !isEqual($.phonebook, p);
     },
 
