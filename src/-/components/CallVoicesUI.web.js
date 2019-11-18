@@ -30,9 +30,19 @@ const AnsweredList = p =>
 
 const CallVoicesUI = p => (
   <React.Fragment>
-    <IncomingList ids={p.incomingCallIds} resolve={p.resolveCall} />
-    <OutgoingList ids={p.outgoingCallIds} resolve={p.resolveCall} />
-    <AnsweredList ids={p.answeredCallIds} resolve={p.resolveCall} />
+    {console.warn(`p`, p)}
+    <IncomingList
+      ids={p.incomingCallIds.filter(i => i !== undefined)}
+      resolve={p.resolveCall}
+    />
+    <OutgoingList
+      ids={p.outgoingCallIds.filter(i => i !== undefined)}
+      resolve={p.resolveCall}
+    />
+    <AnsweredList
+      ids={p.answeredCallIds.filter(i => i !== undefined)}
+      resolve={p.resolveCall}
+    />
   </React.Fragment>
 );
 
