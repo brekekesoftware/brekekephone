@@ -65,7 +65,7 @@ class GroupChatInvite extends React.Component {
       >
         <View style={s.GroupInvite_Outer}>
           <Text style={s.GroupInvite_GroupName}>
-            {chatStore.getGroup(this.props.match.params.group).name}
+            {chatStore.getGroup(this.props.groupId).name}
           </Text>
           <TouchableOpacity onPress={this.invite} style={s.GroupInvite_BtnSave}>
             <Text style={s.GroupInvite_BtnText}>Invite</Text>
@@ -88,7 +88,7 @@ class GroupChatInvite extends React.Component {
   }
 
   isNotMember = buddy =>
-    !chatStore.getGroup(this.props.match.params.group).members?.includes(buddy);
+    !chatStore.getGroup(this.props.groupId).members?.includes(buddy);
   resolveBuddy = buddy => contactStore.getUCUser(buddy);
 
   toggleBuddy = buddy => {
@@ -116,7 +116,7 @@ class GroupChatInvite extends React.Component {
 
     const { uc } = this.context;
 
-    uc.inviteChatGroupMembers(this.props.match.params.group, members)
+    uc.inviteChatGroupMembers(this.props.groupId, members)
       .catch(this.onInviteFailure)
       .then(this.back);
   };
@@ -127,7 +127,7 @@ class GroupChatInvite extends React.Component {
   };
 
   back = () => {
-    g.goToChatGroupsRecent(this.props.match.params.group);
+    g.goToChatGroupsRecent({ groupId: this.props.groupId });
   };
 }
 

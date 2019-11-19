@@ -14,7 +14,7 @@ class PagePhoneBookCreate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        book={g.getQuery().book || ``}
+        book={this.props.book || ``}
         onBack={g.goToPhonebooksBrowse}
         onSave={p => {
           this.save(p);

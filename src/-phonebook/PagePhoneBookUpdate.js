@@ -21,7 +21,7 @@ class PageContactUpdate extends React.Component {
           g.goToPhonebooksBrowse();
         }}
         title="Update Contact"
-        updatingPhoneBook={g.getQuery().contact}
+        updatingPhoneBook={this.props.contact}
       />
     );
   }

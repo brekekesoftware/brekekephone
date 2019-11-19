@@ -143,7 +143,7 @@ class ContactUser extends React.Component {
               <Item
                 function={[
                   () => this.callVoice(u.id),
-                  () => g.goToBuddyChatsRecent(u.id),
+                  () => g.goToBuddyChatsRecent({ buddy: u.id }),
                 ]}
                 icon={[mdiPhone, mdiChat]}
                 last={i === _g.users.length - 1}

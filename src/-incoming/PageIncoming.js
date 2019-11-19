@@ -319,9 +319,9 @@ class PageIncoming extends React.Component {
     const call = this.runningById[callStore.selectedId];
 
     if (call.transfering) {
-      g.goToCallTransferAttend(call.id);
+      g.goToCallTransferAttend({ callId: call.id });
     } else {
-      g.goToCallTransferDial(call.id);
+      g.goToCallTransferDial({ callId: call.id });
     }
   };
 
@@ -337,7 +337,7 @@ class PageIncoming extends React.Component {
   };
 
   park = () => {
-    g.goToCallPark(`call_manage`);
+    g.goToCallPark({ screen: `call_manage` });
   };
 
   enableVideo = () => {

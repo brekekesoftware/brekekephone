@@ -4,7 +4,6 @@ import g from '../global';
 import $ from '../global/_';
 import PushNotification from '../native/PushNotification';
 import { arrToMap } from '../utils/toMap';
-import { getAppOld } from './AppOld_';
 import BaseStore from './BaseStore';
 import { getUrlParams } from './deeplink';
 
@@ -85,10 +84,7 @@ class AuthStore extends BaseStore {
     }
     this.set(`signedInId`, p.id);
     PushNotification.resetBadgeNumber();
-    g.openStack({
-      isRoot: true,
-      Component: getAppOld(),
-    });
+    g.goToUsersBrowse();
     return true;
   };
 

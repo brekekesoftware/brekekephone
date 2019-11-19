@@ -68,7 +68,7 @@ const s = StyleSheet.create({
 @observer
 class TransferAttend extends React.Component {
   @computed get call() {
-    return callStore.getRunningCall(this.props.match.params.call);
+    return callStore.getRunningCall(this.props.callId);
   }
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -153,7 +153,7 @@ class TransferAttend extends React.Component {
 
   join = () => {
     const { pbx } = this.context;
-    const call = callStore.getRunningCall(this.props.match.params.call);
+    const call = callStore.getRunningCall(this.props.callId);
 
     pbx
       .joinTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
@@ -163,7 +163,7 @@ class TransferAttend extends React.Component {
 
   onJoinSuccess = () => {
     callStore.upsertRunning({
-      id: this.props.match.params.call,
+      id: this.props.callId,
       transfering: false,
     });
 
@@ -176,7 +176,7 @@ class TransferAttend extends React.Component {
 
   stop = () => {
     const { pbx } = this.context;
-    const call = callStore.getRunningCall(this.props.match.params.call);
+    const call = callStore.getRunningCall(this.props.callId);
     pbx
       .stopTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStopSuccess)
@@ -185,7 +185,7 @@ class TransferAttend extends React.Component {
 
   onStopSuccess = () => {
     callStore.upsertRunning({
-      id: this.props.match.params.call,
+      id: this.props.callId,
       transfering: false,
     });
 

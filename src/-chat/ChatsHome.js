@@ -25,13 +25,13 @@ class ChatsHome extends React.Component {
           createGroup={g.goToChatGroupsCreate}
           groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
           groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
-          groupselect={g.goToChatGroupsRecent}
+          groupselect={groupId => g.goToChatGroupsRecent({ groupId })}
           userbyid={contactStore.ucUsers.reduce((m, u) => {
             m[u.id] = u;
             return m;
           }, {})}
           userids={this.getMatchIds()}
-          userselect={g.goToBuddyChatsRecent}
+          userselect={id => g.goToBuddyChatsRecent({ buddy: id })}
         />
       </Layout>
     );

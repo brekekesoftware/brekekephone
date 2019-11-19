@@ -27,7 +27,7 @@ class CallPark extends React.Component {
   };
 
   render() {
-    const screen = this.props.match.params.screen;
+    const screen = this.props.screen;
     const goBack =
       screen === `page_phone` ? g.goToCallKeypad : g.goToCallsManage;
     return (
