@@ -104,8 +104,8 @@ class TransferAttend extends React.Component {
         <View style={[s.TransferAttend, s.TransferAttend__spaceAround]}>
           <View style={s.TransferAttend_BtnOuter}>
             <TouchableOpacity
-              style={[s.TransferAttend_Btn]}
               onPress={this.hangup}
+              style={[s.TransferAttend_Btn]}
             >
               <Icon path={mdiPhoneOff} />
             </TouchableOpacity>
@@ -114,8 +114,8 @@ class TransferAttend extends React.Component {
           </View>
           <View style={s.TransferAttend_BtnOuter}>
             <TouchableOpacity
-              style={[s.TransferAttend_Btn]}
               onPress={this.stop}
+              style={[s.TransferAttend_Btn]}
             >
               <Icon path={mdiPhoneHangup} />
             </TouchableOpacity>
@@ -124,8 +124,8 @@ class TransferAttend extends React.Component {
           </View>
           <View style={s.TransferAttend_BtnOuter}>
             <TouchableOpacity
-              style={[s.TransferAttend_Btn]}
               onPress={this.join}
+              style={[s.TransferAttend_Btn]}
             >
               <Icon path={mdiPhoneForward} />
             </TouchableOpacity>

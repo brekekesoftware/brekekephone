@@ -98,7 +98,7 @@ class AuthStore extends BaseStore {
       return;
     }
     //
-    const { tenant, user, _wn, host, port } = urlParams;
+    const { _wn, host, port, tenant, user } = urlParams;
     if (!tenant || !user) {
       return;
     }

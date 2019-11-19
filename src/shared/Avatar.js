@@ -23,15 +23,15 @@ const s = StyleSheet.create({
 
 const Avatar = p => (
   <View style={[s.Avatar, p.style]}>
-    <Image style={s.Avatar_Image} source={p.source} />
+    <Image source={p.source} style={s.Avatar_Image} />
     {(p.chatOnline || p.status === `online`) && (
-      <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#74bf53" />
+      <Icon color="#74bf53" path={mdiRecord} style={s.Avatar_Image__status} />
     )}
     {(p.chatOffline || p.status === `offline`) && (
-      <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#8a8a8f" />
+      <Icon color="#8a8a8f" path={mdiRecord} style={s.Avatar_Image__status} />
     )}
     {(p.chatBusy || p.status === `busy`) && (
-      <Icon style={s.Avatar_Image__status} path={mdiRecord} color="#FF2D55" />
+      <Icon color="#FF2D55" path={mdiRecord} style={s.Avatar_Image__status} />
     )}
   </View>
 );

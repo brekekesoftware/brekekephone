@@ -69,11 +69,11 @@ const PBXAuth = p => (
     {p.failure && <Text style={st.message}>PBX CONNECTION FAILED</Text>}
     <View style={st.buttons}>
       {p.failure && p.retryable && (
-        <Btn style={st.retry} onPress={p.retry}>
+        <Btn onPress={p.retry} style={st.retry}>
           <Text style={st.retryText}>Retry</Text>
         </Btn>
       )}
-      <Btn style={st.abort} onPress={p.abort}>
+      <Btn onPress={p.abort} style={st.abort}>
         <Text style={st.abortText}>Abort</Text>
       </Btn>
     </View>

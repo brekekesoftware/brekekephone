@@ -49,7 +49,7 @@ const ContactField = p =>
   p.fields.map((f, i) => (
     <View style={s.ContactField}>
       <View>
-        <Icon path={p.icons[i]} color={v.borderBg} />
+        <Icon color={v.borderBg} path={p.icons[i]} />
       </View>
       <View style={s.ContactField_Field}>
         <Text>{f}</Text>

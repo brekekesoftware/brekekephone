@@ -130,7 +130,7 @@ class PagePhone extends React.Component {
     return (
       <Layout>
         <ShowNumber showNum={this.state.target} />
-        <KeyPad onPress={this.onPress} callVoice={this.callVoice} />
+        <KeyPad callVoice={this.callVoice} onPress={this.onPress} />
       </Layout>
     );
   }

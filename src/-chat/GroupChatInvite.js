@@ -57,17 +57,17 @@ class GroupChatInvite extends React.Component {
   render() {
     return (
       <Layout
+        footer={{}}
         header={{
           onBackBtnPress: this.back,
           title: `Inviting Group member`,
         }}
-        footer={{}}
       >
         <View style={s.GroupInvite_Outer}>
           <Text style={s.GroupInvite_GroupName}>
             {chatStore.getGroup(this.props.match.params.group).name}
           </Text>
-          <TouchableOpacity style={s.GroupInvite_BtnSave} onPress={this.invite}>
+          <TouchableOpacity onPress={this.invite} style={s.GroupInvite_BtnSave}>
             <Text style={s.GroupInvite_BtnText}>Invite</Text>
           </TouchableOpacity>
           <Text style={s.GroupInvite_Text}>Members</Text>
@@ -76,8 +76,8 @@ class GroupChatInvite extends React.Component {
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
             <ItemUser
-              last={i === this.buddyIds.length - 1}
               key={id}
+              last={i === this.buddyIds.length - 1}
               {...this.resolveBuddy(id)}
               selected={this.state.selectedBuddy[id]}
             />

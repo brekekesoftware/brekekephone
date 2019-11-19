@@ -101,14 +101,14 @@ const st = StyleSheet.create({
 const Navbar = p => (
   <View style={st.navbar}>
     <Text style={st.navbarTitle}>Phonebooks</Text>
-    <Button style={st.navbarRightAction} onPress={p.create}>
+    <Button onPress={p.create} style={st.navbarRightAction}>
       <Text style={st.navbarActionText}>Create</Text>
     </Button>
   </View>
 );
 
 const Book = p => (
-  <Button style={st.book} onPress={p.select}>
+  <Button onPress={p.select} style={st.book}>
     <Text style={st.bookName}>
       {p.name} {p.shared && `(Shared)`}
     </Text>

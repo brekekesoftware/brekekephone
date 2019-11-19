@@ -50,10 +50,6 @@ class ChatDetail extends React.Component {
     const u = contactStore.getUCUser(this.props.match.params.buddy);
     return (
       <Layout
-        header={{
-          onBackBtnPress: g.goToChatsRecent,
-          title: u?.name,
-        }}
         footer={{
           actions: {
             selectFile: this.pickFile,
@@ -64,6 +60,10 @@ class ChatDetail extends React.Component {
           },
           LayoutChat: true,
         }}
+        header={{
+          onBackBtnPress: g.goToChatsRecent,
+          title: u?.name,
+        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
@@ -72,15 +72,15 @@ class ChatDetail extends React.Component {
       >
         {this.chatIds.map((id, index) => (
           <Message
-            last={index === this.chatIds.length - 1}
             hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
+            last={index === this.chatIds.length - 1}
             loadingMore={this.state.loadingMore}
             {...this.resolveChat(id, index)}
-            loadMore={this.loadMore}
             acceptFile={this.acceptFile}
+            fileType={this.state.fileType}
+            loadMore={this.loadMore}
             rejectFile={this.rejectFile}
             showImage={this.state.showImage}
-            fileType={this.state.fileType}
           />
         ))}
       </Layout>

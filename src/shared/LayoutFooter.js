@@ -30,7 +30,7 @@ const s = StyleSheet.create({
   },
 });
 
-const LayoutFooter = ({ style, actions, LayoutChat, PhoneBook }) => (
+const LayoutFooter = ({ LayoutChat, PhoneBook, actions, style }) => (
   <View
     style={[
       s.LayoutFooter,

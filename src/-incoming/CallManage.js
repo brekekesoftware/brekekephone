@@ -52,136 +52,136 @@ const CallManage = p => (
     <View style={[s.CallBar_Btn, s.CallBar_Btn__top70]}>
       {p.answered && !p.holding && (
         <ButtonIcon
-          onPress={p.transfer}
-          size={40}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          path={mdiCallSplit}
+          color={v.color}
           name="TRANSFER"
+          noborder
+          onPress={p.transfer}
+          path={mdiCallSplit}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && (
         <ButtonIcon
-          onPress={p.park}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiAlphaPCircle}
+          color={v.color}
           name="PARK"
+          noborder
+          onPress={p.park}
+          path={mdiAlphaPCircle}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && !p.localVideoEnabled && (
         <ButtonIcon
-          onPress={p.enableVideo}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiVideo}
+          color={v.color}
           name="VIDEO"
+          noborder
+          onPress={p.enableVideo}
+          path={mdiVideo}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && p.localVideoEnabled && (
         <ButtonIcon
-          onPress={p.disableVideo}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiVideoOff}
+          color={v.color}
           name="VIDEO"
+          noborder
+          onPress={p.disableVideo}
+          path={mdiVideoOff}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
-          onPress={p.onOpenLoudSpeaker}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiVolumeHigh}
+          color={v.color}
           name="SPEAKER"
+          noborder
+          onPress={p.onOpenLoudSpeaker}
+          path={mdiVolumeHigh}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
-          onPress={p.onCloseLoudSpeaker}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiVolumeMedium}
+          color={v.color}
           name="SPEAKER"
+          noborder
+          onPress={p.onCloseLoudSpeaker}
+          path={mdiVolumeMedium}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
     </View>
     <View style={[s.CallBar_Btn, s.CallBar_Btn__top150]}>
       {p.answered && !p.holding && !p.recording && (
         <ButtonIcon
-          onPress={p.startRecording}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiRecordCircle}
+          color={v.color}
           name="RECORDING"
+          noborder
+          onPress={p.startRecording}
+          path={mdiRecordCircle}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && p.recording && (
         <ButtonIcon
-          onPress={p.stopRecording}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiRecord}
+          color={v.color}
           name="RECORDING"
+          noborder
+          onPress={p.stopRecording}
+          path={mdiRecord}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && (
         <ButtonIcon
-          onPress={p.dtmf}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiDialpad}
+          color={v.color}
           name="KEYPAD"
+          noborder
+          onPress={p.dtmf}
+          path={mdiDialpad}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && !p.holding && (
         <ButtonIcon
-          onPress={p.hold}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiPauseCircle}
+          color={v.color}
           name="HOLD"
+          noborder
+          onPress={p.hold}
+          path={mdiPauseCircle}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
       {p.answered && p.holding && (
         <ButtonIcon
-          onPress={p.unhold}
-          noborder
-          color={v.color}
           bgcolor={v.revColor}
-          Textcolor={v.revColor}
-          size={40}
-          path={mdiPlayCircle}
+          color={v.color}
           name="UNHOLD"
+          noborder
+          onPress={p.unhold}
+          path={mdiPlayCircle}
+          size={40}
+          textcolor={v.revColor}
         />
       )}
     </View>

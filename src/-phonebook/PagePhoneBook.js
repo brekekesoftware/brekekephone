@@ -25,11 +25,11 @@ class PagePhoneBook extends React.Component {
     const { books } = this.state;
     return (
       <Layout
+        footer={{}}
         header={{
           title: `Phone Book`,
           onCreateBtnPress: g.goToContactsCreate,
         }}
-        footer={{}}
       >
         <React.Fragment>
           {books.map((book, i) => (
@@ -42,9 +42,9 @@ class PagePhoneBook extends React.Component {
               }
             >
               <Item
+                icon={[mdiChevronRight]}
                 last={i === books.length - 1}
                 name={book.name}
-                icon={[mdiChevronRight]}
               />
             </TouchableOpacity>
           ))}

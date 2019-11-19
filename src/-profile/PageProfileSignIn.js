@@ -24,24 +24,24 @@ const PageProfileSignIn = observer(() => {
   return (
     <BrekekeGradient colors={[g.mainBg, g.revBg]}>
       <Layout
-        noScroll
         header={{
           transparent: true,
           title: `Servers`,
           description: `${l} server${l > 1 ? `s` : ``} in total`,
           onCreateBtnPress: !!l && g.goToPageProfileCreate,
         }}
+        noScroll
       >
         <View style={s.PageProfileSignIn_Spacing} />
         {!!l && (
           <FlatList
-            horizontal
-            style={s.PageProfileSignIn_ListServers}
             data={g.profiles.toJS() /* Fix observable inside FlatList */}
-            renderItem={({ item, index }) => (
-              <ProfileSignInItem last={index === l - 1} id={item.id} />
-            )}
+            horizontal
             keyExtractor={item => item.id}
+            renderItem={({ index, item }) => (
+              <ProfileSignInItem id={item.id} last={index === l - 1} />
+            )}
+            style={s.PageProfileSignIn_ListServers}
           />
         )}
         {!l && <ProfileSignInItem empty />}

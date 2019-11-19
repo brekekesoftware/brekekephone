@@ -32,12 +32,12 @@ class PageContactPhoneBook extends React.Component {
     const { contactIds } = this.state;
     return (
       <Layout
+        footer={{}}
         header={{
           title: g.getQuery().book,
           onBackBtnPress: g.goToPhonebooksBrowse,
           onCreateBtnPress: this.create,
         }}
-        footer={{}}
       >
         {contactIds.map(id => (
           <ContactItem {...this.resolveContact(id)} update={this.update} />

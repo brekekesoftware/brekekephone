@@ -7,8 +7,6 @@ import g from '../global';
 
 const PageProfileCurrent = observer(p => (
   <ProfileCreateForm
-    title="Current Server"
-    updatingProfile={authStore.profile}
     onBack={g.backToPageProfileSignIn}
     onSave={(p, hasUnsavedChanges) => {
       if (!hasUnsavedChanges) {
@@ -25,6 +23,8 @@ const PageProfileCurrent = observer(p => (
         confirmText: `SAVE`,
       });
     }}
+    title="Current Server"
+    updatingProfile={authStore.profile}
   />
 ));
 

@@ -47,13 +47,6 @@ class ChatGroupDetail extends React.Component {
     const gr = chatStore.getGroup(this.props.match.params.group);
     return (
       <Layout
-        header={{
-          onBackBtnPress: g.goToChatsRecent,
-          onCreateBtnPress: this.invite,
-          onVideoCallBtnPress: this.callVideoConference,
-          onVoiceCallBtnPress: this.callVoiceConference,
-          title: gr?.name,
-        }}
         footer={{
           actions: {
             text: this.state.editingText,
@@ -61,6 +54,13 @@ class ChatGroupDetail extends React.Component {
             submitText: this.submitEditingText,
           },
           LayoutChat: true,
+        }}
+        header={{
+          onBackBtnPress: g.goToChatsRecent,
+          onCreateBtnPress: this.invite,
+          onVideoCallBtnPress: this.callVideoConference,
+          onVoiceCallBtnPress: this.callVoiceConference,
+          title: gr?.name,
         }}
         isChat={{
           ref: this.setViewRef,
@@ -70,15 +70,15 @@ class ChatGroupDetail extends React.Component {
       >
         {this.chatIds.map((id, index) => (
           <Message
-            last={index === this.chatIds.length - 1}
             hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
+            last={index === this.chatIds.length - 1}
             loadingMore={this.state.loadingMore}
             {...this.resolveChat(id, index)}
-            loadMore={this.loadMore}
             acceptFile={this.acceptFile}
+            fileType={this.state.fileType}
+            loadMore={this.loadMore}
             rejectFile={this.rejectFile}
             showImage={this.state.showImage}
-            fileType={this.state.fileType}
           />
         ))}
       </Layout>

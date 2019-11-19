@@ -79,6 +79,12 @@ const ProfileCreateForm = observer(props => {
   const [Form, submitForm, revalidate] = useForm();
   return (
     <Layout
+      footer={{
+        actions: {
+          onBackBtnPress: $.onBackBtnPress,
+          onSaveBtnPress: submitForm,
+        },
+      }}
       header={{
         onBackBtnPress: $.onBackBtnPress,
         title: props.title,
@@ -86,17 +92,9 @@ const ProfileCreateForm = observer(props => {
           ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
           : `Create a new sign in profile`,
       }}
-      footer={{
-        actions: {
-          onBackBtnPress: $.onBackBtnPress,
-          onSaveBtnPress: submitForm,
-        },
-      }}
     >
       <Form
         $={$}
-        k="profile"
-        onValidSubmit={$.onValidSubmit}
         fields={[
           {
             isGroup: true,
@@ -206,6 +204,8 @@ const ProfileCreateForm = observer(props => {
             onCreateBtnPress: $.onAddingParkSubmit,
           },
         ]}
+        k="profile"
+        onValidSubmit={$.onValidSubmit}
       />
     </Layout>
   );

@@ -12,7 +12,7 @@ const st = StyleSheet.create({
 
 export default p =>
   p.sourceObject ? (
-    <RTCView style={st.video} streamURL={p.sourceObject.toURL()} />
+    <RTCView streamURL={p.sourceObject.toURL()} style={st.video} />
   ) : (
     <ActivityIndicator />
   );

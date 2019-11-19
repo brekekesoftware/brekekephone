@@ -127,26 +127,26 @@ class ContactUser extends React.Component {
     });
     return (
       <Layout
+        footer={{}}
         header={{
           title: `Contact`,
         }}
-        footer={{}}
       >
         <Search
-          value={contactStore.searchText}
           onValueChange={contactStore.setF(`searchText`)}
+          value={contactStore.searchText}
         />
         {groups.map(_g => (
           <React.Fragment>
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
               <Item
-                last={i === _g.users.length - 1}
-                icon={[mdiPhone, mdiChat]}
                 function={[
                   () => this.callVoice(u.id),
                   () => g.goToBuddyChatsRecent(u.id),
                 ]}
+                icon={[mdiPhone, mdiChat]}
+                last={i === _g.users.length - 1}
                 {...u}
               />
             ))}

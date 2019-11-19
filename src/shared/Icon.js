@@ -10,9 +10,9 @@ const s = StyleSheet.create({
   },
 });
 
-const Icon = ({ size = 24, path, color, ...p }) => (
+const Icon = ({ color, path, size = 24, ...p }) => (
   <View {...p} style={[s.Icon, p.style, !p.noFlex && { flex: 1 }]}>
-    <Svg viewBox="0 0 24 24" width={size} height={size}>
+    <Svg height={size} viewBox="0 0 24 24" width={size}>
       <Path d={path} fill={color} />
     </Svg>
   </View>

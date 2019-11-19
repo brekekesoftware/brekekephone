@@ -16,11 +16,11 @@ const UCAuth = p => (
     )}
     <View style={st.buttons}>
       {(p.didPleonasticLogin || p.failure) && (
-        <Btn style={st.retry} onPress={p.retry}>
+        <Btn onPress={p.retry} style={st.retry}>
           <Text style={st.retryText}>Retry</Text>
         </Btn>
       )}
-      <Btn style={st.abort} onPress={p.abort}>
+      <Btn onPress={p.abort} style={st.abort}>
         <Text style={st.abortText}>Abort</Text>
       </Btn>
     </View>

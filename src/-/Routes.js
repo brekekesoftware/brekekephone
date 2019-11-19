@@ -91,68 +91,68 @@ const Routes = () => (
         path="/"
         render={() => (
           <AuthContainer>
-            <Route path="/" component={Callbar} />
+            <Route component={Callbar} path="/" />
             <Route exact path="/" render={() => <Redirect to="/users" />} />
-            <Route exact path="/calls/manage" component={PageIncoming} />
-            <Route exact path="/calls/create" component={PagePhone} />
-            <Route exact path="/calls/recent" component={Recent} />
+            <Route component={PageIncoming} exact path="/calls/manage" />
+            <Route component={PagePhone} exact path="/calls/create" />
+            <Route component={Recent} exact path="/calls/recent" />
             <Route
+              component={TransferDial}
               exact
               path="/call/:call/transfer/dial"
-              component={TransferDial}
             />
             <Route
+              component={TransferAttend}
               exact
               path="/call/:call/transfer/attend"
-              component={TransferAttend}
             />
-            <Route exact path="/call/:call/keypad" component={PagePhone} />
-            <Route exact path="/call/:screen/park" component={CallPark} />
-            <Route exact path="/users" component={PageContact} />
+            <Route component={PagePhone} exact path="/call/:call/keypad" />
+            <Route component={CallPark} exact path="/call/:screen/park" />
+            <Route component={PageContact} exact path="/users" />
             <Route
+              component={ChatDetail}
               exact
               path="/chats/buddy/:buddy/recent"
-              component={ChatDetail}
             />
             <Route
+              component={ChatGroupDetail}
               exact
               path="/chats/group/:group/recent"
-              component={ChatGroupDetail}
             />
-            <Route exact path="/chat-groups/create" component={CreateGroup} />
+            <Route component={CreateGroup} exact path="/chat-groups/create" />
             <Route
+              component={GroupChatInvite}
               exact
               path="/chat-group/:group/invite"
-              component={GroupChatInvite}
             />
-            <Route exact path="/chats/recent" component={ChatsHome} />
-            <Route exact path="/phonebooks/browse" component={PagePhoneBook} />
+            <Route component={ChatsHome} exact path="/chats/recent" />
+            <Route component={PagePhoneBook} exact path="/phonebooks/browse" />
             <Route
+              component={PageContactPhoneBook}
               exact
               path="/contacts/browse"
-              component={PageContactPhoneBook}
             />
             <Route
+              component={PagePhoneBookCreate}
               exact
               path="/contacts/create"
-              component={PagePhoneBookCreate}
             />
             <Route
+              component={PageContactUpdate}
               exact
               path="/contacts/update"
-              component={PageContactUpdate}
             />
           </AuthContainer>
         )}
       />
-      <Route path="/" component={AuthPBX} />
-      <Route path="/" component={AuthSIP} />
-      <Route path="/" component={AuthUC} />
-      <Route path="/" component={CallVoices} />
-      <Route path="/" component={CallVideos} />
-      <Route path="/" component={FooterTab} />
-      <Route path="/" component={CallNotify} />
-      <Route path="/" component={ChatGroupInvite} />
+      <Route component={AuthPBX} path="/" />
+      <Route component={AuthSIP} path="/" />
+      <Route component={AuthUC} path="/" />
+      <Route component={CallVoices} path="/" />
+      <Route component={CallVideos} path="/" />
+      <Route component={FooterTab} path="/" />
+      <Route component={CallNotify} path="/" />
+      <Route component={ChatGroupInvite} path="/" />
     </WithoutStatusBar>
   </View>
 );

@@ -270,14 +270,14 @@ const pure = Component =>
 
 const Navbar = pure(p => (
   <View style={st.navbar}>
-    <Button style={st.navbarLeftOpt} onPress={p.back}>
+    <Button onPress={p.back} style={st.navbarLeftOpt}>
       <Text style={st.navbarOptText}>Back</Text>
     </Button>
     <Text style={st.navbarTitle}>
       {p.book} {p.shared && `(Shared)`}
     </Text>
     {p.canCreate && (
-      <Button style={st.navbarRightOpt} onPress={p.create}>
+      <Button onPress={p.create} style={st.navbarRightOpt}>
         <Text style={st.navbarOptText}>Create</Text>
       </Button>
     )}
@@ -287,13 +287,13 @@ const Navbar = pure(p => (
 const Search = pure(p => (
   <View style={st.search}>
     <TextInput
-      style={st.searchInput}
-      placeholder="Search"
-      value={p.value}
       onChangeText={p.setValue}
+      placeholder="Search"
+      style={st.searchInput}
+      value={p.value}
     />
     {!!p.value && (
-      <Button style={st.searchClear} onPress={() => p.setValue(``)}>
+      <Button onPress={() => p.setValue(``)} style={st.searchClear}>
         <Text style={st.searchClearIcon}>icon_x_circle</Text>
       </Button>
     )}
@@ -305,92 +305,92 @@ const ContactEdit = pure(p => (
     <View style={st.contactHead}>
       <View style={st.contactHeadInfo}>
         <TextInput
-          style={st.fieldHeadEdit}
-          placeholderTextColor={std.color.shade4}
-          placeholder="First Name"
-          value={p.firstName}
           onChangeText={v => p.setFirstName(p.id, v)}
+          placeholder="First Name"
+          placeholderTextColor={std.color.shade4}
+          style={st.fieldHeadEdit}
+          value={p.firstName}
         />
         <TextInput
-          style={st.fieldHeadEdit}
-          placeholderTextColor={std.color.shade4}
-          placeholder="Last Name"
-          value={p.lastName}
           onChangeText={v => p.setLastName(p.id, v)}
+          placeholder="Last Name"
+          placeholderTextColor={std.color.shade4}
+          style={st.fieldHeadEdit}
+          value={p.lastName}
         />
       </View>
-      <Button style={st.contactAction} onPress={() => p.save(p.id)}>
+      <Button onPress={() => p.save(p.id)} style={st.contactAction}>
         <Text style={st.contactActionIcon}>icon_check</Text>
       </Button>
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_user</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Job Title"
-        value={p.job}
         onChangeText={v => p.setJob(p.id, v)}
+        placeholder="Job Title"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.job}
       />
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_users</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Company"
-        value={p.company}
         onChangeText={v => p.setCompany(p.id, v)}
+        placeholder="Company"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.company}
       />
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_map_pin</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Address"
-        value={p.address}
         onChangeText={v => p.setAddress(p.id, v)}
+        placeholder="Address"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.address}
       />
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_briefcase</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Work Number"
-        value={p.workNumber}
         onChangeText={v => p.setWorkNumber(p.id, v)}
+        placeholder="Work Number"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.workNumber}
       />
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_smartphone</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Cell Number"
-        value={p.cellNumber}
         onChangeText={v => p.setCellNumber(p.id, v)}
+        placeholder="Cell Number"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.cellNumber}
       />
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_home</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Home Number"
-        value={p.homeNumber}
         onChangeText={v => p.setHomeNumber(p.id, v)}
+        placeholder="Home Number"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.homeNumber}
       />
     </View>
     <View style={st.field}>
       <Text style={st.fieldIcon}>icon_mail</Text>
       <TextInput
-        style={st.fieldBodyEdit}
-        placeholderTextColor={std.color.shade4}
-        placeholder="Email"
-        value={p.email}
         onChangeText={v => p.setEmail(p.id, v)}
+        placeholder="Email"
+        placeholderTextColor={std.color.shade4}
+        style={st.fieldBodyEdit}
+        value={p.email}
       />
     </View>
     {p.loading && (
@@ -408,7 +408,7 @@ const ContactView = pure(p => (
         <Text style={st.fieldHeadText}>{p.name}</Text>
       </View>
       {p.editable && (
-        <Button style={st.contactAction} onPress={() => p.edit(p.id)}>
+        <Button onPress={() => p.edit(p.id)} style={st.contactAction}>
           <Text style={st.contactActionIcon}>icon_edit_2</Text>
         </Button>
       )}
@@ -445,7 +445,7 @@ const ContactView = pure(p => (
         <View style={st.fieldTBA} />
       )}
       {!!p.workNumber && (
-        <Button style={st.fieldAction} onPress={() => p.call(p.workNumber)}>
+        <Button onPress={() => p.call(p.workNumber)} style={st.fieldAction}>
           <Text style={st.actionIcon}>icon_phone_pick</Text>
         </Button>
       )}
@@ -458,7 +458,7 @@ const ContactView = pure(p => (
         <View style={st.fieldTBA} />
       )}
       {!!p.cellNumber && (
-        <Button style={st.fieldAction} onPress={() => p.call(p.cellNumber)}>
+        <Button onPress={() => p.call(p.cellNumber)} style={st.fieldAction}>
           <Text style={st.actionIcon}>icon_phone_pick</Text>
         </Button>
       )}
@@ -471,7 +471,7 @@ const ContactView = pure(p => (
         <View style={st.fieldTBA} />
       )}
       {!!p.homeNumber && (
-        <Button style={st.fieldAction} onPress={() => p.call(p.homeNumber)}>
+        <Button onPress={() => p.call(p.homeNumber)} style={st.fieldAction}>
           <Text style={st.actionIcon}>icon_phone_pick</Text>
         </Button>
       )}
@@ -498,7 +498,7 @@ const Contact = p =>
 const Contacts = p => (
   <ScrollView style={st.contacts}>
     {p.hasPrevPage && (
-      <Button style={st.paging} onPress={p.goPrevPage}>
+      <Button onPress={p.goPrevPage} style={st.paging}>
         <Text style={st.pagingText}>Previous Page</Text>
       </Button>
     )}
@@ -506,23 +506,23 @@ const Contacts = p => (
       <Contact
         key={id}
         {...p.resolve(id)}
-        editable={p.editable}
-        edit={p.edit}
-        setFirstName={p.setFirstName}
-        setLastName={p.setLastName}
-        setJob={p.setJob}
-        setCompany={p.setCompany}
-        setAddress={p.setAddress}
-        setWorkNumber={p.setWorkNumber}
-        setCellNumber={p.setCellNumber}
-        setHomeNumber={p.setHomeNumber}
-        setEmail={p.setEmail}
-        save={p.save}
         call={p.call}
+        edit={p.edit}
+        editable={p.editable}
+        save={p.save}
+        setAddress={p.setAddress}
+        setCellNumber={p.setCellNumber}
+        setCompany={p.setCompany}
+        setEmail={p.setEmail}
+        setFirstName={p.setFirstName}
+        setHomeNumber={p.setHomeNumber}
+        setJob={p.setJob}
+        setLastName={p.setLastName}
+        setWorkNumber={p.setWorkNumber}
       />
     ))}
     {p.hasNextPage && (
-      <Button style={st.paging} onPress={p.goNextPage}>
+      <Button onPress={p.goNextPage} style={st.paging}>
         <Text style={st.pagingText}>Next Page</Text>
       </Button>
     )}
@@ -544,34 +544,34 @@ const Loading = () => (
 const ContactsBrowseUI = p => (
   <KeyboardAvoidingView style={st.main}>
     <Navbar
-      canCreate={!p.shared}
-      book={p.book}
-      shared={p.shared}
       back={p.back}
+      book={p.book}
+      canCreate={!p.shared}
       create={p.create}
+      shared={p.shared}
     />
-    {!p.loading && <Search value={p.searchText} setValue={p.setSearchText} />}
+    {!p.loading && <Search setValue={p.setSearchText} value={p.searchText} />}
     {p.contactIds.length ? (
       <Contacts
-        ids={p.contactIds}
-        editable={!p.shared}
-        resolve={p.resolveContact}
+        call={p.call}
         edit={p.editContact}
-        setFirstName={p.setContactFirstName}
-        setLastName={p.setContactLastName}
-        setJob={p.setContactJob}
-        setCompany={p.setContactCompany}
-        setAddress={p.setContactAddress}
-        setWorkNumber={p.setContactWorkNumber}
-        setCellNumber={p.setContactCellNumber}
-        setHomeNumber={p.setContactHomeNumber}
-        setEmail={p.setContactEmail}
-        save={p.saveContact}
-        hasNextPage={p.hasNextPage}
-        hasPrevPage={p.hasPrevPage}
+        editable={!p.shared}
         goNextPage={p.goNextPage}
         goPrevPage={p.goPrevPage}
-        call={p.call}
+        hasNextPage={p.hasNextPage}
+        hasPrevPage={p.hasPrevPage}
+        ids={p.contactIds}
+        resolve={p.resolveContact}
+        save={p.saveContact}
+        setAddress={p.setContactAddress}
+        setCellNumber={p.setContactCellNumber}
+        setCompany={p.setContactCompany}
+        setEmail={p.setContactEmail}
+        setFirstName={p.setContactFirstName}
+        setHomeNumber={p.setContactHomeNumber}
+        setJob={p.setContactJob}
+        setLastName={p.setContactLastName}
+        setWorkNumber={p.setContactWorkNumber}
       />
     ) : p.loading ? (
       <Loading />

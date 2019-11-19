@@ -15,11 +15,11 @@ const s = StyleSheet.create({
 
 const RnTextInput = forwardRef((props, ref) => (
   <TextInput
-    ref={ref}
     autoCapitalize="none"
+    ref={ref}
     {...props}
-    style={[s.RnTextInput, props.style]}
     keyboardType={Platform.OS === `web` ? null : props.keyboardType}
+    style={[s.RnTextInput, props.style]}
   />
 ));
 

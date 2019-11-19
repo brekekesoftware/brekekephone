@@ -3,7 +3,7 @@ import { Animated } from 'react-native';
 
 import { mapToMap } from '../utils/toMap';
 
-const animationOption = {
+export const animationOption = {
   duration: 150,
 };
 

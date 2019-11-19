@@ -55,17 +55,17 @@ class Recent extends React.Component {
         }}
       >
         <Search
-          value={contactStore.searchText}
           onValueChange={contactStore.setF(`searchText`)}
+          value={contactStore.searchText}
         />
         <Field isGroup />
         {users.length !== 0 &&
           users.map((u, i) => (
             <Item
-              last={i === users.length - 1}
-              icon={[mdiPhone]}
-              function={[() => this.callBack(u.id)]}
               detail={true}
+              function={[() => this.callBack(u.id)]}
+              icon={[mdiPhone]}
+              last={i === users.length - 1}
               {...this.getAvatar(u.partyNumber)}
               {...u}
             />

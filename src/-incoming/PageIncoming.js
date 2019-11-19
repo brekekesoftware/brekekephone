@@ -145,7 +145,6 @@ class PageIncoming extends React.Component {
     return (
       <BrekekeGradient colors={[v.callBg, v.revBg]}>
         <Layout
-          noScroll
           header={{
             transparent: true,
             onBackBtnPress: g.goToCallsRecent,
@@ -153,38 +152,39 @@ class PageIncoming extends React.Component {
             titleColor: v.revColor,
             backBtnColor: v.revColor,
           }}
+          noScroll
         >
           <CallManage
             {...u}
+            answer={this.answer}
+            browseHistory={g.goToCallsRecent}
+            create={g.goToCallsCreate}
+            disableVideo={this.disableVideo}
+            dtmf={this.dtmf}
+            enableVideo={this.enableVideo}
+            hold={this.hold}
+            onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+            park={this.park}
             parkingIds={callStore.runnings
               .filter(c => c.parking)
               .map(c => c.id)}
-            browseHistory={g.goToCallsRecent}
-            create={g.goToCallsCreate}
-            answer={this.answer}
-            hold={this.hold}
-            unhold={this.unhold}
             startRecording={this.startRecording}
             stopRecording={this.stopRecording}
             transfer={this.transfer}
-            dtmf={this.dtmf}
+            unhold={this.unhold}
             unpark={this.unpark}
-            park={this.park}
-            enableVideo={this.enableVideo}
-            disableVideo={this.disableVideo}
-            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-            onCloseLoudSpeaker={this.onCloseLoudSpeaker}
           />
           <View style={s.PageIncoming_Btn__Hangup}>
             <ButtonIcon
-              onPress={this.hangup}
-              size={40}
-              noborder
               bgcolor={v.redBg}
               color={v.revColor}
-              Textcolor={v.revColor}
-              path={mdiPhoneHangup}
               name="HANG UP"
+              noborder
+              onPress={this.hangup}
+              path={mdiPhoneHangup}
+              size={40}
+              textcolor={v.revColor}
             />
           </View>
         </Layout>

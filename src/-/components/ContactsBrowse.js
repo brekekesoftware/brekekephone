@@ -31,31 +31,31 @@ class ContactsBrowse extends React.Component {
   render() {
     return (
       <ContactsBrowseUI
-        hasPrevPage={g.getQuery().offset >= numberOfContactsPerPage}
-        hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
-        searchText={g.getQuery().searchText}
-        loading={this.state.loading}
-        contactIds={this.state.contactIds}
-        resolveContact={this.resolveContact}
-        book={g.getQuery().book}
-        shared={g.getQuery().shared === `true`}
         back={g.goToPhonebooksBrowse}
+        book={g.getQuery().book}
+        call={this.call}
+        contactIds={this.state.contactIds}
+        create={this.create}
+        editContact={this.editContact}
         goNextPage={this.goNextPage}
         goPrevPage={this.goPrevPage}
-        setSearchText={this.setSearchText}
-        call={this.call}
-        editContact={this.editContact}
+        hasNextPage={this.state.contactIds.length === numberOfContactsPerPage}
+        hasPrevPage={g.getQuery().offset >= numberOfContactsPerPage}
+        loading={this.state.loading}
+        resolveContact={this.resolveContact}
         saveContact={this.saveContact}
-        setContactFirstName={this.setContactFirstName}
-        setContactLastName={this.setContactLastName}
-        setContactJob={this.setContactJob}
-        setContactCompany={this.setContactCompany}
+        searchText={g.getQuery().searchText}
         setContactAddress={this.setContactAddress}
-        setContactWorkNumber={this.setContactWorkNumber}
         setContactCellNumber={this.setContactCellNumber}
-        setContactHomeNumber={this.setContactHomeNumber}
+        setContactCompany={this.setContactCompany}
         setContactEmail={this.setContactEmail}
-        create={this.create}
+        setContactFirstName={this.setContactFirstName}
+        setContactHomeNumber={this.setContactHomeNumber}
+        setContactJob={this.setContactJob}
+        setContactLastName={this.setContactLastName}
+        setContactWorkNumber={this.setContactWorkNumber}
+        setSearchText={this.setSearchText}
+        shared={g.getQuery().shared === `true`}
       />
     );
   }

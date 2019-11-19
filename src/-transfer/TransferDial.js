@@ -65,12 +65,12 @@ class TransferDial extends React.Component {
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
               <Item
-                last={i === _g.users.length - 1}
-                icon={[mdiPhoneForward, mdiPhone]}
                 function={[
                   () => this.transferAttended(u.number),
                   () => g.transferBlind(u.number),
                 ]}
+                icon={[mdiPhoneForward, mdiPhone]}
+                last={i === _g.users.length - 1}
                 {...u}
               />
             ))}

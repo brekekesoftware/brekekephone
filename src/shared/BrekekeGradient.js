@@ -13,8 +13,8 @@ const s = StyleSheet.create({
 const BrekekeGradient = props => (
   <LinearGradient
     {...props}
-    style={[s.BrekekeGradient, props.style]}
     colors={props.colors}
+    style={[s.BrekekeGradient, props.style]}
   />
 );
 

@@ -18,7 +18,7 @@ const st = StyleSheet.create({
 @observer
 class AuthContainer extends React.Component {
   @computed get success() {
-    const { profile, pbxState, sipState, ucState } = authStore;
+    const { pbxState, profile, sipState, ucState } = authStore;
     return (
       profile &&
       pbxState === `success` &&

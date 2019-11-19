@@ -27,7 +27,7 @@ const useForm = () => {
     },
     // Submit function to use outside of the hook
     submit: () => {
-      const { $: $parent, k, fields, onValidSubmit } = $.props;
+      const { $: $parent, fields, k, onValidSubmit } = $.props;
       const rules = arrToMap(
         fields.filter(f => f.rule && !f.disabled),
         f => f.name,
@@ -54,7 +54,7 @@ const useForm = () => {
     // Form component
     render: observer(props => {
       $.props = props;
-      const { $: $parent, k, fields } = $.props;
+      const { $: $parent, fields, k } = $.props;
       const RnForm = Platform.OS === `web` ? `form` : React.Fragment;
       const formProps = Platform.OS === `web` ? { onSubmit: $.submit } : null;
       return (
@@ -63,10 +63,9 @@ const useForm = () => {
             <Field
               key={i}
               {...f}
-              value={
-                // Default value from store
-                f.value === undefined ? get($parent, k + `.` + f.name) : f.value
-              }
+              error={!f.disabled && $.dirtyMap[f.name] && $.errorMap[f.name]}
+              onBlur={() => $.onFieldBlur(f.name)}
+              // Mark this field dirty
               onValueChange={flow(
                 [
                   // Add change handler to trigger validate
@@ -81,10 +80,11 @@ const useForm = () => {
                     : f.onValueChange,
                 ].filter(f => f),
               )}
-              // Mark this field dirty
-              onBlur={() => $.onFieldBlur(f.name)}
               // Error
-              error={!f.disabled && $.dirtyMap[f.name] && $.errorMap[f.name]}
+              value={
+                // Default value from store
+                f.value === undefined ? get($parent, k + `.` + f.name) : f.value
+              }
             />
           ))}
         </RnForm>

@@ -52,38 +52,38 @@ class FooterTab extends React.Component {
       <View style={s.FooterTab}>
         <View style={s.FooterTab_Actions}>
           <TouchableOpacity
-            style={[s.FooterTab_Btn]}
             onPress={g.goToUsersBrowse}
+            style={[s.FooterTab_Btn]}
           >
             <Icon path={mdiAccountCircleOutline} />
             <Text style={[s.FooterTab_Txt]}>CONTACTS</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[s.FooterTab_Btn]}
             onPress={g.goToCallsRecent}
+            style={[s.FooterTab_Btn]}
           >
             <Icon path={mdiPhoneOutline} />
             <Text style={[s.FooterTab_Txt]}>RECENTS</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[s.FooterTab_Btn]}
             onPress={g.goToCallsCreate}
+            style={[s.FooterTab_Btn]}
           >
             <Icon path={mdiNumeric} />
             <Text style={[s.FooterTab_Txt]}>CALL</Text>
           </TouchableOpacity>
           {chatsEnabled && (
             <TouchableOpacity
-              style={[s.FooterTab_Btn]}
               onPress={g.goToChatsRecent}
+              style={[s.FooterTab_Btn]}
             >
               <Icon path={mdiMessageTextOutline} />
               <Text style={[s.FooterTab_Txt]}>CHAT</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
-            style={[s.FooterTab_Btn]}
             onPress={g.goToPageProfileCurrent}
+            style={[s.FooterTab_Btn]}
           >
             <Icon path={mdiSettingsOutline} />
             <Text style={[s.FooterTab_Txt]}>SETTINGS</Text>

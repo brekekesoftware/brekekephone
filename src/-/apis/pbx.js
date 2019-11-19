@@ -367,7 +367,7 @@ class PBX extends EventEmitter {
     });
   }
 
-  addApnsToken = ({ username, device_id }) =>
+  addApnsToken = ({ device_id, username }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: `set`,
@@ -382,7 +382,7 @@ class PBX extends EventEmitter {
       console.error(`addApnsToken:`, err);
     });
 
-  addFcmPnToken = ({ username, device_id }) =>
+  addFcmPnToken = ({ device_id, username }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: `set`,
@@ -397,7 +397,7 @@ class PBX extends EventEmitter {
       console.error(`addFcmPnToken:`, err);
     });
 
-  addWebPnToken = ({ username, endpoint, key, auth_secret }) =>
+  addWebPnToken = ({ auth_secret, endpoint, key, username }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: `set`,

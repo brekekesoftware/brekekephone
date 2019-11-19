@@ -21,15 +21,15 @@ class PhonebooksBrowse extends React.Component {
   render() {
     return (
       <PhonebooksBrowseUI
-        loading={this.state.loading}
         books={this.state.books}
+        create={() => g.goToContactsCreate()}
+        loading={this.state.loading}
         selectBook={b =>
           g.goToContactsBrowse({
             book: b.name,
             shared: b.shared,
           })
         }
-        create={() => g.goToContactsCreate()}
       />
     );
   }
