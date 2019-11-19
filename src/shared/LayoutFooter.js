@@ -11,6 +11,7 @@ const s = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    paddingBottom: getBottomSpace(),
     backgroundColor: g.bg,
     ...g.boxShadow,
   },
@@ -19,7 +20,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 15,
   },
   LayoutFooter__hasActionsInputChat: {
-    bottom: 68 - getBottomSpace(),
+    bottom: 68,
   },
   LayoutFooter_Actions: {
     flexDirection: `row`,

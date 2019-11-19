@@ -11,6 +11,7 @@ const s = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
+    paddingBottom: getBottomSpace(),
   },
   Layout_Scroll: {
     flexGrow: 1,
@@ -19,10 +20,10 @@ const s = StyleSheet.create({
     height: 94, // 79+15
   },
   Layout_FooterSpacing: {
-    height: 71 - getBottomSpace(), // 56+15
+    height: 71, // 56+15
   },
   Layout_FooterSpacing__hasInputChat: {
-    height: 127 - getBottomSpace(), // 56*2+15
+    height: 127, // 56*2+15
   },
 });
 

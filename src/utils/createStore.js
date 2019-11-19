@@ -15,7 +15,7 @@ const createStore = (mixin, ...args) => {
             return true;
           }
           return u;
-        });
+        }, false);
         if (!updated) {
           arr.push(v);
         }
