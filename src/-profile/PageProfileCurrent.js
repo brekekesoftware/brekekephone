@@ -7,7 +7,7 @@ import g from '../global';
 
 const PageProfileCurrent = observer(p => (
   <ProfileCreateForm
-    onBack={g.backToPageProfileSignIn}
+    onBack={g.backToUsersBrowse}
     onSave={(p, hasUnsavedChanges) => {
       if (!hasUnsavedChanges) {
         g.backToContactsBrowse();
