@@ -120,6 +120,9 @@ const FooterActions = props => (
           !props.onBackBtnPress &&
             !props.onRefreshBtnPress &&
             s.FooterActions_Btn__100,
+          props.saveColor && {
+            backgroundColor: props.saveColor,
+          },
         ]}
       >
         <Text small style={s.FooterActions_BtnTxt}>

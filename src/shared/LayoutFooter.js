@@ -16,7 +16,8 @@ const s = StyleSheet.create({
     ...g.boxShadow,
   },
   LayoutFooter__hasActions: {
-    paddingVertical: 8,
+    paddingTop: 8,
+    paddingBottom: 8 + getBottomSpace(),
     paddingHorizontal: 15,
   },
   LayoutFooter__hasActionsInputChat: {

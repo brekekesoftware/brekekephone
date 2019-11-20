@@ -7,6 +7,7 @@ import g from '../global';
 
 const PageProfileCurrent = observer(p => (
   <ProfileCreateForm
+    footerLogout
     onBack={g.backToUsersBrowse}
     onSave={(p, hasUnsavedChanges) => {
       if (!hasUnsavedChanges) {
