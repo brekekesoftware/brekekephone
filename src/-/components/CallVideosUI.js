@@ -45,7 +45,6 @@ const st = {
 class Mini extends React.Component {
   prevLeft = st.mini.left;
   prevTop = st.mini.top;
-  prevTap = Date.now();
 
   constructor(props) {
     super(props);
@@ -88,19 +87,14 @@ class Mini extends React.Component {
   onDrop = (ev, gesture) => {
     this.prevLeft += gesture.dx;
     this.prevTop += gesture.dy;
-    const now = Date.now();
 
-    if (now - this.prevTap < 500) {
+    if (gesture.dx === 0 && gesture.dy === 0) {
       this.props.onDoubleTap();
     }
-
-    this.prevTap = now;
   };
 }
 
 class Full extends React.Component {
-  prevTap = Date.now();
-
   constructor(props) {
     super(props);
 
@@ -128,21 +122,13 @@ class Full extends React.Component {
   };
 
   onDrop = (ev, gesture) => {
-    this.prevLeft += gesture.dx;
-    this.prevTop += gesture.dy;
-    const now = Date.now();
-
-    if (now - this.prevTap < 500) {
-      this.props.onDoubleTap();
-    }
-
-    this.prevTap = now;
+    this.props.onDoubleTap();
   };
 }
 
 class Control extends React.Component {
   state = {
-    full: false,
+    full: true,
   };
 
   render() {

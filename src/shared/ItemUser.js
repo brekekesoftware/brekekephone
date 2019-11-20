@@ -96,7 +96,7 @@ const renderItem = p => (
       {p.icon &&
         p.function &&
         p.icon.map((v, i) => (
-          <TouchableOpacity onPress={p.function[i]}>
+          <TouchableOpacity key={i} onPress={p.function[i]}>
             <Icon path={v} style={s.Item_Icon__pd} />
           </TouchableOpacity>
         ))}

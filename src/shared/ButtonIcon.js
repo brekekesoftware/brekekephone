@@ -25,7 +25,7 @@ const ButtonIcon = ({ size = 24, path, color, ...p }) => (
       style={[
         s.ButtonIcon_Btn,
         p.style,
-        { borderRadius: size },
+        { borderRadius: size * 1.5 },
         { backgroundColor: p.bgcolor },
         p.noborder && { borderWidth: 0 },
         { borderColor: p.bdcolor },

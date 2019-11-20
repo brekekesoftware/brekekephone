@@ -30,7 +30,6 @@ const AnsweredList = p =>
 
 const CallVoicesUI = p => (
   <React.Fragment>
-    {console.warn(`p`, p)}
     <IncomingList
       ids={p.incomingCallIds.filter(i => i !== undefined)}
       resolve={p.resolveCall}
