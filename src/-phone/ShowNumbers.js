@@ -45,8 +45,8 @@ const ShowNumber = p => (
   <View style={s.ShowNumbers}>
     <View style={s.ShowNumbers_BtnOuter}>
       <TouchableOpacity
+        onPress={() => g.goToCallPark({ screen: `page_phone` })}
         style={[s.ShowNumbers_Btn, s.ShowNumbers_Btn__callpark]}
-        onPress={() => g.goToCallPark(`page_phone`)}
       >
         <Text style={s.ShowNumbers_BtnTxt}>CALL PARK (1)</Text>
       </TouchableOpacity>

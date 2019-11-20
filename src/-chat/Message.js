@@ -74,7 +74,7 @@ const s = StyleSheet.create({
 const File = p => (
   <View style={s.Message_File}>
     {p.source && p.fileType === `image` && (
-      <Image style={s.Message_File__Image} source={p.source} />
+      <Image source={p.source} style={s.Message_File__Image} />
     )}
     {p.fileType !== `image` && (
       <View>
@@ -86,26 +86,26 @@ const File = p => (
       </View>
     )}
     {p.state === `waiting` && (
-      <TouchableOpacity style={[s.Message_File_Btn]} onPress={p.reject}>
-        <Icon path={mdiClose} color={v.redBg} />
+      <TouchableOpacity onPress={p.reject} style={[s.Message_File_Btn]}>
+        <Icon color={v.redBg} path={mdiClose} />
       </TouchableOpacity>
     )}
     {p.incoming && p.state === `waiting` && (
-      <TouchableOpacity style={[s.Message_File_Btn]} onPress={p.accept}>
-        <Icon path={mdiCheck} color={v.mainBg} />
+      <TouchableOpacity onPress={p.accept} style={[s.Message_File_Btn]}>
+        <Icon color={v.mainBg} path={mdiCheck} />
       </TouchableOpacity>
     )}
     {p.state === `started` && (
-      <TouchableOpacity style={[s.Message_File_Btn]} onPress={p.reject}>
+      <TouchableOpacity onPress={p.reject} style={[s.Message_File_Btn]}>
         <Progress
-          percent={p.state === `percent`}
-          radius={v.fontSizeSubTitle}
+          bgColor={v.bg}
           borderWidth={1 * 2}
           color={v.mainBg}
+          percent={p.state === `percent`}
+          radius={v.fontSizeSubTitle}
           shadowColor={v.bg}
-          bgColor={v.bg}
         >
-          <Icon path={mdiClose} color={v.redBg} />
+          <Icon color={v.redBg} path={mdiClose} />
         </Progress>
       </TouchableOpacity>
     )}
@@ -134,10 +134,10 @@ const Message = observer(p => (
       {!!p.file && (
         <File
           {...p.file}
-          source={p.showImage}
-          fileType={p.fileType}
           accept={() => p.acceptFile(p.file)}
+          fileType={p.fileType}
           reject={() => p.rejectFile(p.file)}
+          source={p.showImage}
         />
       )}
     </View>

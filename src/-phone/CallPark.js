@@ -27,7 +27,7 @@ class CallPark extends React.Component {
   };
 
   render() {
-    const screen = this.props.match.params.screen;
+    const screen = this.props.screen;
     const goBack =
       screen === `page_phone` ? g.goToCallKeypad : g.goToCallsManage;
     return (
@@ -43,9 +43,9 @@ class CallPark extends React.Component {
           this.parkIds.map((u, i) => (
             <TouchableOpacity onPress={() => this.selectPark(u)}>
               <Item
+                detail={true}
                 last={i === this.parkIds.length - 1}
                 name={`Parked ${i + 1}`}
-                detail={true}
                 park={`Extension *${u}`}
                 selected={this.state.selectedPark === u}
               />

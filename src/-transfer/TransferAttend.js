@@ -68,7 +68,7 @@ const s = StyleSheet.create({
 @observer
 class TransferAttend extends React.Component {
   @computed get call() {
-    return callStore.getRunningCall(this.props.match.params.call);
+    return callStore.getRunningCall(this.props.callId);
   }
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -104,8 +104,8 @@ class TransferAttend extends React.Component {
         <View style={[s.TransferAttend, s.TransferAttend__spaceAround]}>
           <View style={s.TransferAttend_BtnOuter}>
             <TouchableOpacity
-              style={[s.TransferAttend_Btn]}
               onPress={this.hangup}
+              style={[s.TransferAttend_Btn]}
             >
               <Icon path={mdiPhoneOff} />
             </TouchableOpacity>
@@ -114,8 +114,8 @@ class TransferAttend extends React.Component {
           </View>
           <View style={s.TransferAttend_BtnOuter}>
             <TouchableOpacity
-              style={[s.TransferAttend_Btn]}
               onPress={this.stop}
+              style={[s.TransferAttend_Btn]}
             >
               <Icon path={mdiPhoneHangup} />
             </TouchableOpacity>
@@ -124,8 +124,8 @@ class TransferAttend extends React.Component {
           </View>
           <View style={s.TransferAttend_BtnOuter}>
             <TouchableOpacity
-              style={[s.TransferAttend_Btn]}
               onPress={this.join}
+              style={[s.TransferAttend_Btn]}
             >
               <Icon path={mdiPhoneForward} />
             </TouchableOpacity>
@@ -153,7 +153,7 @@ class TransferAttend extends React.Component {
 
   join = () => {
     const { pbx } = this.context;
-    const call = callStore.getRunningCall(this.props.match.params.call);
+    const call = callStore.getRunningCall(this.props.callId);
 
     pbx
       .joinTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
@@ -163,7 +163,7 @@ class TransferAttend extends React.Component {
 
   onJoinSuccess = () => {
     callStore.upsertRunning({
-      id: this.props.match.params.call,
+      id: this.props.callId,
       transfering: false,
     });
 
@@ -176,7 +176,7 @@ class TransferAttend extends React.Component {
 
   stop = () => {
     const { pbx } = this.context;
-    const call = callStore.getRunningCall(this.props.match.params.call);
+    const call = callStore.getRunningCall(this.props.callId);
     pbx
       .stopTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStopSuccess)
@@ -185,7 +185,7 @@ class TransferAttend extends React.Component {
 
   onStopSuccess = () => {
     callStore.upsertRunning({
-      id: this.props.match.params.call,
+      id: this.props.callId,
       transfering: false,
     });
 

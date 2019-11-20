@@ -57,17 +57,17 @@ class GroupChatInvite extends React.Component {
   render() {
     return (
       <Layout
+        footer={{}}
         header={{
           onBackBtnPress: this.back,
           title: `Inviting Group member`,
         }}
-        footer={{}}
       >
         <View style={s.GroupInvite_Outer}>
           <Text style={s.GroupInvite_GroupName}>
-            {chatStore.getGroup(this.props.match.params.group).name}
+            {chatStore.getGroup(this.props.groupId).name}
           </Text>
-          <TouchableOpacity style={s.GroupInvite_BtnSave} onPress={this.invite}>
+          <TouchableOpacity onPress={this.invite} style={s.GroupInvite_BtnSave}>
             <Text style={s.GroupInvite_BtnText}>Invite</Text>
           </TouchableOpacity>
           <Text style={s.GroupInvite_Text}>Members</Text>
@@ -76,8 +76,8 @@ class GroupChatInvite extends React.Component {
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
             <ItemUser
-              last={i === this.buddyIds.length - 1}
               key={id}
+              last={i === this.buddyIds.length - 1}
               {...this.resolveBuddy(id)}
               selected={this.state.selectedBuddy[id]}
             />
@@ -88,7 +88,7 @@ class GroupChatInvite extends React.Component {
   }
 
   isNotMember = buddy =>
-    !chatStore.getGroup(this.props.match.params.group).members?.includes(buddy);
+    !chatStore.getGroup(this.props.groupId).members?.includes(buddy);
   resolveBuddy = buddy => contactStore.getUCUser(buddy);
 
   toggleBuddy = buddy => {
@@ -116,7 +116,7 @@ class GroupChatInvite extends React.Component {
 
     const { uc } = this.context;
 
-    uc.inviteChatGroupMembers(this.props.match.params.group, members)
+    uc.inviteChatGroupMembers(this.props.groupId, members)
       .catch(this.onInviteFailure)
       .then(this.back);
   };
@@ -127,7 +127,7 @@ class GroupChatInvite extends React.Component {
   };
 
   back = () => {
-    g.goToChatGroupsRecent(this.props.match.params.group);
+    g.goToChatGroupsRecent({ groupId: this.props.groupId });
   };
 }
 

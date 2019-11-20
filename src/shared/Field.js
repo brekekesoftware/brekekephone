@@ -149,14 +149,14 @@ const Field = observer(({ ...props }) => {
     Object.assign(props, {
       iconRender: () => (
         <TouchableOpacity
-          style={[s.Field_Btn, s.Field_Btn__create]}
           onPress={props.onCreateBtnPress}
+          style={[s.Field_Btn, s.Field_Btn__create]}
         >
           <Icon
-            style={s.Field_CreateRemoveIcon}
+            color={g.mainDarkBg}
             path={mdiPlus}
             size={18}
-            color={g.mainDarkBg}
+            style={s.Field_CreateRemoveIcon}
           />
         </TouchableOpacity>
       ),
@@ -166,14 +166,14 @@ const Field = observer(({ ...props }) => {
     Object.assign(props, {
       iconRender: () => (
         <TouchableOpacity
-          style={[s.Field_Btn, s.Field_Btn__remove]}
           onPress={props.onRemoveBtnPress}
+          style={[s.Field_Btn, s.Field_Btn__remove]}
         >
           <Icon
-            style={s.Field_CreateRemoveIcon}
+            color={g.redDarkBg}
             path={mdiClose}
             size={15}
-            color={g.redDarkBg}
+            style={s.Field_CreateRemoveIcon}
           />
         </TouchableOpacity>
       ),
@@ -183,7 +183,7 @@ const Field = observer(({ ...props }) => {
     if (props.type === `Switch`) {
       Object.assign(props, {
         valueRender: v => (v ? `Enabled` : `Disabled`),
-        iconRender: v => <Switch style={s.Field_Switch} enabled={v} />,
+        iconRender: v => <Switch enabled={v} style={s.Field_Switch} />,
         onTouchPress: () => {
           props.onValueChange(!props.value);
           Keyboard.dismiss();
@@ -218,17 +218,17 @@ const Field = observer(({ ...props }) => {
               `disabled`,
               `error`,
             ])}
-            style={[s.Field_TextInput, props.style]}
-            onChangeText={props.onValueChange}
-            onSubmitEditing={flow(
-              [props.onCreateBtnPress, props.onSubmitEditing].filter(f => f),
-            )}
-            onFocus={flow(
-              [() => $.set(`isFocusing`, true), props.onFocus].filter(f => f),
-            )}
             onBlur={flow(
               [() => $.set(`isFocusing`, false), props.onBlur].filter(f => f),
             )}
+            onChangeText={props.onValueChange}
+            onFocus={flow(
+              [() => $.set(`isFocusing`, true), props.onFocus].filter(f => f),
+            )}
+            onSubmitEditing={flow(
+              [props.onCreateBtnPress, props.onSubmitEditing].filter(f => f),
+            )}
+            style={[s.Field_TextInput, props.style]}
           />
         ),
         onTouchPress: () => inputRef.current?.focus(),
@@ -271,19 +271,19 @@ const Field = observer(({ ...props }) => {
         {Platform.OS === `web` && label}
         {(props.iconRender && props.iconRender(props.value)) ||
           (props.icon && (
-            <Icon path={props.icon} style={s.Field_Icon} pointerEvents="none" />
+            <Icon path={props.icon} pointerEvents="none" style={s.Field_Icon} />
           ))}
       </Container>
       {props.error && (
         <TouchableOpacity
-          style={s.Field_Error}
           onPress={() => inputRef.current?.focus()}
+          style={s.Field_Error}
         >
           <View style={s.Field_ErrorInner}>
             <Icon
-              style={s.Field_ErrorIcon}
-              path={mdiCardsDiamond}
               color={g.redBg}
+              path={mdiCardsDiamond}
+              style={s.Field_ErrorIcon}
             />
             <Text small style={s.Field_ErrorLabel}>
               {props.error}

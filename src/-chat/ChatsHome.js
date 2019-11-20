@@ -18,20 +18,20 @@ class ChatsHome extends React.Component {
         }}
       >
         <Search
-          value={contactStore.searchText}
           onValueChange={contactStore.setF(`searchText`)}
+          value={contactStore.searchText}
         />
         <ListUsers
-          userids={this.getMatchIds()}
+          createGroup={g.goToChatGroupsCreate}
+          groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
+          groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
+          groupselect={groupId => g.goToChatGroupsRecent({ groupId })}
           userbyid={contactStore.ucUsers.reduce((m, u) => {
             m[u.id] = u;
             return m;
           }, {})}
-          userselect={g.goToBuddyChatsRecent}
-          createGroup={g.goToChatGroupsCreate}
-          groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
-          groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
-          groupselect={g.goToChatGroupsRecent}
+          userids={this.getMatchIds()}
+          userselect={id => g.goToBuddyChatsRecent({ buddy: id })}
         />
       </Layout>
     );

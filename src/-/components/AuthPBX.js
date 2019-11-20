@@ -46,10 +46,10 @@ class AuthPBX extends React.Component {
   render() {
     return authStore.pbxState === `success` ? null : (
       <AuthPBXUI
-        retryable={!!authStore.profile}
-        failure={this.props.failure}
         abort={g.goToPageProfileSignIn}
+        failure={this.props.failure}
         retry={this.auth}
+        retryable={!!authStore.profile}
       />
     );
   }

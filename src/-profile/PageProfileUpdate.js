@@ -6,13 +6,13 @@ import ProfileCreateForm from './ProfileCreateForm';
 
 const PageProfileUpdate = observer(props => (
   <ProfileCreateForm
-    title="Update Server"
-    updatingProfile={g.profilesMap[props.id]}
     onBack={g.backToPageProfileSignIn}
     onSave={p => {
       g.upsertProfile(p);
       g.backToPageProfileSignIn();
     }}
+    title="Update Server"
+    updatingProfile={g.profilesMap[props.id]}
   />
 ));
 

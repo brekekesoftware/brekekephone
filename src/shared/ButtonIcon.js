@@ -18,7 +18,7 @@ const s = StyleSheet.create({
   },
 });
 
-const ButtonIcon = ({ size = 24, path, color, ...p }) => (
+const ButtonIcon = ({ color, path, size = 24, ...p }) => (
   <View style={s.ButtonIcon}>
     <TouchableOpacity
       onPress={p.onPress}
@@ -31,12 +31,12 @@ const ButtonIcon = ({ size = 24, path, color, ...p }) => (
         { borderColor: p.bdcolor },
       ]}
     >
-      <Svg viewBox="0 0 24 24" width={size} height={size}>
+      <Svg height={size} viewBox="0 0 24 24" width={size}>
         <Path d={path} fill={color} />
       </Svg>
     </TouchableOpacity>
     {p.name && (
-      <Text style={[s.ButtonIcon_Name, p.Textcolor && { color: p.Textcolor }]}>
+      <Text style={[s.ButtonIcon_Name, p.textcolor && { color: p.textcolor }]}>
         {p.name}
       </Text>
     )}

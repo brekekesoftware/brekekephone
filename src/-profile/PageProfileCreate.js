@@ -5,12 +5,12 @@ import ProfileCreateForm from './ProfileCreateForm';
 
 const PageProfileCreate = () => (
   <ProfileCreateForm
-    title="New Server"
     onBack={g.backToPageProfileSignIn}
     onSave={p => {
       g.upsertProfile(p);
       g.backToPageProfileSignIn();
     }}
+    title="New Server"
   />
 );
 

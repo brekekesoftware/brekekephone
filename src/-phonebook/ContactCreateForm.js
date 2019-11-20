@@ -63,10 +63,6 @@ const ContactsCreateForm = observer(props => {
   const [Form, submitForm] = useForm();
   return (
     <Layout
-      header={{
-        onBackBtnPress: $.onBackBtnPress,
-        title: props.title,
-      }}
       footer={{
         actions: {
           onBackBtnPress: $.onBackBtnPress,
@@ -74,11 +70,13 @@ const ContactsCreateForm = observer(props => {
         },
         PhoneBook: true,
       }}
+      header={{
+        onBackBtnPress: $.onBackBtnPress,
+        title: props.title,
+      }}
     >
       <Form
         $={$}
-        k="phonebook"
-        onValidSubmit={$.onValidSubmit}
         fields={[
           {
             name: `book`,
@@ -127,6 +125,8 @@ const ContactsCreateForm = observer(props => {
             label: `EMAIL`,
           },
         ]}
+        k="phonebook"
+        onValidSubmit={$.onValidSubmit}
       />
     </Layout>
   );

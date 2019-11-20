@@ -31,7 +31,7 @@ class ChatGroupInvite extends React.Component {
   }
 
   formatGroup = group => {
-    const { inviter, name, id } = chatStore.getGroup(group) || {};
+    const { id, inviter, name } = chatStore.getGroup(group) || {};
     const inviterName = contactStore.getUCUser(inviter)?.name;
     return {
       id: id,

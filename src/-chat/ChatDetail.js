@@ -17,13 +17,13 @@ import m from './MiniChat';
 @observer
 class ChatDetail extends React.Component {
   @computed get chatIds() {
-    return (
-      chatStore.messagesByThreadId[this.props.match.params.buddy] || []
-    ).map(m => m.id);
+    return (chatStore.messagesByThreadId[this.props.buddy] || []).map(
+      m => m.id,
+    );
   }
   @computed get chatById() {
     return arrToMap(
-      chatStore.messagesByThreadId[this.props.match.params.buddy] || [],
+      chatStore.messagesByThreadId[this.props.buddy] || [],
       `id`,
       m => m,
     );
@@ -47,13 +47,9 @@ class ChatDetail extends React.Component {
     if (noChat) this.loadRecent();
   }
   render() {
-    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    const u = contactStore.getUCUser(this.props.buddy);
     return (
       <Layout
-        header={{
-          onBackBtnPress: g.goToChatsRecent,
-          title: u?.name,
-        }}
         footer={{
           actions: {
             selectFile: this.pickFile,
@@ -64,6 +60,10 @@ class ChatDetail extends React.Component {
           },
           LayoutChat: true,
         }}
+        header={{
+          onBackBtnPress: g.goToChatsRecent,
+          title: u?.name,
+        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
@@ -72,15 +72,15 @@ class ChatDetail extends React.Component {
       >
         {this.chatIds.map((id, index) => (
           <Message
-            last={index === this.chatIds.length - 1}
             hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
+            last={index === this.chatIds.length - 1}
             loadingMore={this.state.loadingMore}
             {...this.resolveChat(id, index)}
-            loadMore={this.loadMore}
             acceptFile={this.acceptFile}
+            fileType={this.state.fileType}
+            loadMore={this.loadMore}
             rejectFile={this.rejectFile}
             showImage={this.state.showImage}
-            fileType={this.state.fileType}
           />
         ))}
       </Layout>
@@ -156,7 +156,7 @@ class ChatDetail extends React.Component {
 
   loadRecent() {
     this.context.uc
-      .getBuddyChats(this.props.match.params.buddy, {
+      .getBuddyChats(this.props.buddy, {
         max: m.numberOfChatsPerLoad,
       })
       .then(this.onLoadRecentSuccess)
@@ -170,7 +170,7 @@ class ChatDetail extends React.Component {
       loadingRecent: false,
     });
     chats = chats.reverse();
-    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    const u = contactStore.getUCUser(this.props.buddy);
     chatStore.pushMessages(u.id, chats);
   };
   onLoadRecentFailure = err => {
@@ -187,7 +187,7 @@ class ChatDetail extends React.Component {
     const query = { max, end };
 
     const { uc } = this.context;
-    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    const u = contactStore.getUCUser(this.props.buddy);
 
     uc.getBuddyChats(u?.id, query)
       .then(this.onLoadMoreSuccess)
@@ -203,7 +203,7 @@ class ChatDetail extends React.Component {
       loadingMore: false,
     });
     chats = chats.reverse();
-    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    const u = contactStore.getUCUser(this.props.buddy);
     chatStore.pushMessages(u.id, chats);
   };
 
@@ -228,7 +228,7 @@ class ChatDetail extends React.Component {
     this.submitting = true;
     //
     this.context.uc
-      .sendBuddyChatText(this.props.match.params.buddy, txt)
+      .sendBuddyChatText(this.props.buddy, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
@@ -236,7 +236,7 @@ class ChatDetail extends React.Component {
       });
   };
   onSubmitEditingTextSuccess = chat => {
-    chatStore.pushMessages(this.props.match.params.buddy, chat);
+    chatStore.pushMessages(this.props.buddy, chat);
     this.setState({ editingText: `` });
   };
   onSubmitEditingTextFailure = err => {
@@ -278,13 +278,13 @@ class ChatDetail extends React.Component {
     const { uc } = this.context;
     //TODO: fix error duplicate when upload 2 file.
     this.blob(file);
-    const u = contactStore.getUCUser(this.props.match.params.buddy);
+    const u = contactStore.getUCUser(this.props.buddy);
     uc.sendFile(u?.id, file)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure);
   };
   onSendFileSuccess = res => {
-    const buddyId = this.props.match.params.buddy;
+    const buddyId = this.props.buddy;
     chatStore.pushMessages(buddyId, res.chat);
     chatStore.upsertFile(res.file);
   };

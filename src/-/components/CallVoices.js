@@ -13,14 +13,14 @@ class CallVoices extends React.Component {
   render() {
     return (
       <CallVoicesUI
+        answeredCallIds={callStore.runnings
+          .filter(c => isAnswered(c))
+          .map(c => c.id)}
         incomingCallIds={callStore.runnings
           .filter(c => isIncoming(c))
           .map(c => c.id)}
         outgoingCallIds={callStore.runnings
           .filter(c => isOutgoing(c))
-          .map(c => c.id)}
-        answeredCallIds={callStore.runnings
-          .filter(c => isAnswered(c))
           .map(c => c.id)}
         resolveCall={callStore.getRunningCall}
       />

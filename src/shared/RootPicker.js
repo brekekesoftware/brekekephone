@@ -84,8 +84,8 @@ const Picker = p => {
         ]}
       >
         <TouchableOpacity
-          style={StyleSheet.absoluteFill}
           onPress={g.dismissPicker}
+          style={StyleSheet.absoluteFill}
         />
       </Animated.View>
       <Animated.ScrollView
@@ -102,37 +102,37 @@ const Picker = p => {
             return (
               <TouchableOpacity
                 key={i}
+                onPress={() => {
+                  p.onSelect(o.key);
+                  g.dismissPicker();
+                }}
                 style={[
                   s.Picker_Option,
                   i + 1 === p.options.length && s.Picker_Option__last,
                   isSelected && s.Picker_Option__selected,
                 ]}
-                onPress={() => {
-                  p.onSelect(o.key);
-                  g.dismissPicker();
-                }}
               >
                 <Text style={isSelected && s.Picker_Text__selected}>
                   {o.label}
                 </Text>
                 <Icon
+                  color={isSelected ? g.mainDarkBg : null}
                   path={
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
                   }
                   style={s.Picker_Icon}
-                  color={isSelected ? g.mainDarkBg : null}
                 />
               </TouchableOpacity>
             );
           })}
         </View>
         <TouchableOpacity
-          style={[s.Picker_Option, s.Picker_Option__cancel]}
           onPress={g.dismissPicker}
+          style={[s.Picker_Option, s.Picker_Option__cancel]}
         >
           <Text style={s.Picker_Text__cancel}>{p.cancelLabel || `Cancel`}</Text>
-          <Icon path={mdiClose} style={s.Picker_Icon} color={g.redDarkBg} />
+          <Icon color={g.redDarkBg} path={mdiClose} style={s.Picker_Icon} />
         </TouchableOpacity>
       </Animated.ScrollView>
     </View>

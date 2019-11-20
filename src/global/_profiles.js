@@ -2,9 +2,9 @@ import shortid from 'shortid';
 
 import { AsyncStorage } from '../native/Rn';
 import { arrToMap } from '../utils/toMap';
-import $ from './_';
+import g from './_';
 
-$.extends({
+g.extends({
   observable: {
     // id: string
     // pbxHostname: string
@@ -30,7 +30,7 @@ $.extends({
     //    created: Date
     profiles: [],
     get profilesMap() {
-      return arrToMap($.profiles, `id`, p => p);
+      return arrToMap(g.profiles, `id`, p => p);
     },
   },
   genEmptyProfile: () => ({
@@ -60,22 +60,22 @@ $.extends({
       }
     }
     if (arr) {
-      $.set(`profiles`, arr);
+      g.set(`profiles`, arr);
     }
   },
-  saveProfilesToLocalStorage: async (arr = $.profiles) => {
+  saveProfilesToLocalStorage: async (arr = g.profiles) => {
     try {
       await AsyncStorage.setItem(`_api_profiles`, JSON.stringify(arr));
     } catch (err) {
-      $.showError({ err, message: `save profiles to local storage` });
+      g.showError({ err, message: `save profiles to local storage` });
     }
   },
   upsertProfile: p => {
-    $.upsert(`profiles`, p);
-    $.saveProfilesToLocalStorage();
+    g.upsert(`profiles`, p);
+    g.saveProfilesToLocalStorage();
   },
   removeProfile: id => {
-    $.remove(`profiles`, id);
-    $.saveProfilesToLocalStorage();
+    g.remove(`profiles`, id);
+    g.saveProfilesToLocalStorage();
   },
 });

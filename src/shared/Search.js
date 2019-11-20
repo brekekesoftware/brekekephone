@@ -29,17 +29,17 @@ const Search = p => (
   <View style={s.Search}>
     <View style={s.Search_TextInputOuter}>
       <TextInput
-        style={s.Search_TextInput}
-        placeholder="Search name, phone number..."
-        value={p.value}
         onChangeText={p.onValueChange}
+        placeholder="Search name, phone number..."
+        style={s.Search_TextInput}
+        value={p.value}
       />
     </View>
     {!!p.value && (
       <TouchableOpacity
+        onPress={() => p.onValueChange(``)}
         style={s.Search_BtnClose}
         transparent
-        onPress={() => p.onValueChange(``)}
       >
         <Icon path={mdiClose} size={17} />
       </TouchableOpacity>

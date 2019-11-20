@@ -15,13 +15,13 @@ class PageContactUpdate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        title="Update Contact"
-        updatingPhoneBook={g.getQuery().contact}
         onBack={g.goToPhonebooksBrowse}
         onSave={p => {
           this.save(p);
           g.goToPhonebooksBrowse();
         }}
+        title="Update Contact"
+        updatingPhoneBook={this.props.contact}
       />
     );
   }

@@ -65,52 +65,53 @@ const FooterActions = props => (
   <View style={s.FooterActions}>
     {props.onBackBtnPress && (
       <TouchableOpacity
+        onPress={props.onBackBtnPress}
         style={[
           s.FooterActions_Btn,
           s.FooterActions_Btn__back,
           !props.onRefreshBtnPress && s.FooterActions_Btn__33,
         ]}
-        onPress={props.onBackBtnPress}
       >
-        <Icon path={props.backIcon || mdiKeyboardBackspace} color={g.redBg} />
+        <Icon color={g.redBg} path={props.backIcon || mdiKeyboardBackspace} />
       </TouchableOpacity>
     )}
     {props.selectFile && (
       <TouchableOpacity
+        onPress={props.selectFile}
         style={[
           s.FooterActions_Btn,
           s.FooterActions_Btn__selectFile,
           s.FooterActions_Btn__15,
         ]}
-        onPress={props.selectFile}
       >
-        <Icon path={mdiPlus} color={g.layerBg} />
+        <Icon color={g.layerBg} path={mdiPlus} />
       </TouchableOpacity>
     )}
     {props.LayoutChat && (
       <TextInput
-        style={[s.FooterActions_Input]}
-        placeholder="Message"
         blurOnSubmit={false}
-        value={props.text}
         onChangeText={props.setText}
         onSubmitEditing={props.submitText}
+        placeholder="Message"
+        style={[s.FooterActions_Input]}
+        value={props.text}
       />
     )}
     {props.onRefreshBtnPress && (
       <TouchableOpacity
+        onPress={props.onRefreshBtnPress}
         style={[
           s.FooterActions_Btn,
           s.FooterActions_Btn__refresh,
           !props.onBackBtnPress && s.FooterActions_Btn__33,
         ]}
-        onPress={props.onRefreshBtnPress}
       >
         <Icon path={props.refreshIcon || mdiCached} />
       </TouchableOpacity>
     )}
     {!props.LayoutChat && (
       <TouchableOpacity
+        onPress={props.onSaveBtnPress}
         style={[
           s.FooterActions_Btn,
           s.FooterActions_Btn__save,
@@ -120,7 +121,6 @@ const FooterActions = props => (
             !props.onRefreshBtnPress &&
             s.FooterActions_Btn__100,
         ]}
-        onPress={props.onSaveBtnPress}
       >
         <Text small style={s.FooterActions_BtnTxt}>
           {props.saveText || `SAVE`}

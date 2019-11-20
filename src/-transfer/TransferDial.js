@@ -15,7 +15,7 @@ import Layout from '../shared/Layout';
 @observer
 class TransferDial extends React.Component {
   @computed get call() {
-    return callStore.getRunningCall(this.props.match.params.call);
+    return callStore.getRunningCall(this.props.callId);
   }
   static contextTypes = {
     sip: PropTypes.object.isRequired,
@@ -65,12 +65,12 @@ class TransferDial extends React.Component {
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
               <Item
-                last={i === _g.users.length - 1}
-                icon={[mdiPhoneForward, mdiPhone]}
                 function={[
                   () => this.transferAttended(u.number),
                   () => g.transferBlind(u.number),
                 ]}
+                icon={[mdiPhoneForward, mdiPhone]}
+                last={i === _g.users.length - 1}
                 {...u}
               />
             ))}
@@ -169,7 +169,7 @@ class TransferDial extends React.Component {
       transfering: target,
     });
 
-    g.goToCallTransferAttend(this.call.id);
+    g.goToCallTransferAttend({ callId: this.call.id });
   };
 
   onTransferFailure = err => {
@@ -224,7 +224,7 @@ class TransferDial extends React.Component {
       transfering: target,
     });
 
-    g.goToCallTransferAttend(this.call.id);
+    g.goToCallTransferAttend({ callId: this.call.id });
 
     const { sip } = this.context;
 

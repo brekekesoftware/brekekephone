@@ -106,10 +106,10 @@ class AuthSIP extends React.Component {
   render() {
     return authStore.sipState === `success` ? null : (
       <AuthSIPUI
-        retryable={!!authStore.profile}
-        failure={!authStore.profile || authStore.sipState === `failure`}
         abort={g.goToPageProfileSignIn}
+        failure={!authStore.profile || authStore.sipState === `failure`}
         retry={this.auth}
+        retryable={!!authStore.profile}
       />
     );
   }

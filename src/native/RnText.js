@@ -64,8 +64,8 @@ const RnText = forwardRef(
     ref,
   ) => (
     <Text
-      ref={ref}
       numberOfLines={999}
+      ref={ref}
       {...props}
       style={[
         s.RnText,

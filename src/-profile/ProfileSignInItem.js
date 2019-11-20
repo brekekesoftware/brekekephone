@@ -64,30 +64,31 @@ const ProfileSignInItem = observer(props => {
     >
       <TouchableOpacity onPress={() => g.goToPageProfileUpdate({ id: p.id })}>
         <Field
+          icon={mdiAccountCircleOutline}
           label="USERNAME"
           value={p.pbxUsername}
-          icon={mdiAccountCircleOutline}
         />
-        <Field label="TENANT" value={p.pbxTenant} icon={mdiApplication} />
-        <Field label="HOSTNAME" value={p.pbxHostname} icon={mdiWeb} />
-        <Field label="PORT" value={p.pbxPort} icon={mdiServerNetwork} />
+        <Field icon={mdiApplication} label="TENANT" value={p.pbxTenant} />
+        <Field icon={mdiWeb} label="HOSTNAME" value={p.pbxHostname} />
+        <Field icon={mdiServerNetwork} label="PORT" value={p.pbxPort} />
       </TouchableOpacity>
       <Field
-        type="Switch"
         label="PUSH NOTIFICATION"
-        value={p.pushNotificationEnabled}
         onValueChange={v =>
           g.upsertProfile({ id: p.id, pushNotificationEnabled: v })
         }
+        type="Switch"
+        value={p.pushNotificationEnabled}
       />
       <Field
-        type="Switch"
         label="UC"
-        value={p.ucEnabled}
         onValueChange={v => g.upsertProfile({ id: p.id, ucEnabled: v })}
+        type="Switch"
+        value={p.ucEnabled}
       />
       <View style={s.ProfileSignInItem_Btns}>
         <FooterActions
+          backIcon={mdiClose}
           onBackBtnPress={() => {
             g.showPrompt({
               title: `Remove Server`,
@@ -106,13 +107,12 @@ const ProfileSignInItem = observer(props => {
               },
             });
           }}
-          backIcon={mdiClose}
           onRefreshBtnPress={() => g.goToPageProfileUpdate({ id: p.id })}
-          refreshIcon={mdiDotsHorizontal}
-          saveText="SIGN IN"
           onSaveBtnPress={() => {
             authStore.signIn(p.id);
           }}
+          refreshIcon={mdiDotsHorizontal}
+          saveText="SIGN IN"
         />
       </View>
     </View>

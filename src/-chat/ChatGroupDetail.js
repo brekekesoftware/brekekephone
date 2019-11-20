@@ -15,13 +15,13 @@ import m from './MiniChat';
 @observer
 class ChatGroupDetail extends React.Component {
   @computed get chatIds() {
-    return (
-      chatStore.messagesByThreadId[this.props.match.params.group] || []
-    ).map(m => m.id);
+    return (chatStore.messagesByThreadId[this.props.groupId] || []).map(
+      m => m.id,
+    );
   }
   @computed get chatById() {
     return arrToMap(
-      chatStore.messagesByThreadId[this.props.match.params.group] || [],
+      chatStore.messagesByThreadId[this.props.groupId] || [],
       `id`,
       m => m,
     );
@@ -44,16 +44,9 @@ class ChatGroupDetail extends React.Component {
     if (noChat) this.loadRecent();
   }
   render() {
-    const gr = chatStore.getGroup(this.props.match.params.group);
+    const gr = chatStore.getGroup(this.props.groupId);
     return (
       <Layout
-        header={{
-          onBackBtnPress: g.goToChatsRecent,
-          onCreateBtnPress: this.invite,
-          onVideoCallBtnPress: this.callVideoConference,
-          onVoiceCallBtnPress: this.callVoiceConference,
-          title: gr?.name,
-        }}
         footer={{
           actions: {
             text: this.state.editingText,
@@ -61,6 +54,13 @@ class ChatGroupDetail extends React.Component {
             submitText: this.submitEditingText,
           },
           LayoutChat: true,
+        }}
+        header={{
+          onBackBtnPress: g.goToChatsRecent,
+          onCreateBtnPress: this.invite,
+          onVideoCallBtnPress: this.callVideoConference,
+          onVoiceCallBtnPress: this.callVoiceConference,
+          title: gr?.name,
         }}
         isChat={{
           ref: this.setViewRef,
@@ -70,15 +70,15 @@ class ChatGroupDetail extends React.Component {
       >
         {this.chatIds.map((id, index) => (
           <Message
-            last={index === this.chatIds.length - 1}
             hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
+            last={index === this.chatIds.length - 1}
             loadingMore={this.state.loadingMore}
             {...this.resolveChat(id, index)}
-            loadMore={this.loadMore}
             acceptFile={this.acceptFile}
+            fileType={this.state.fileType}
+            loadMore={this.loadMore}
             rejectFile={this.rejectFile}
             showImage={this.state.showImage}
-            fileType={this.state.fileType}
           />
         ))}
       </Layout>
@@ -156,7 +156,7 @@ class ChatGroupDetail extends React.Component {
       max,
     };
 
-    uc.getGroupChats(this.props.match.params.group, query)
+    uc.getGroupChats(this.props.groupId, query)
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
 
@@ -166,7 +166,7 @@ class ChatGroupDetail extends React.Component {
   }
 
   onLoadRecentSuccess = chats => {
-    chatStore.pushMessages(this.props.match.params.group, chats.reverse());
+    chatStore.pushMessages(this.props.groupId, chats.reverse());
     this.setState({
       loadingRecent: false,
     });
@@ -194,7 +194,7 @@ class ChatGroupDetail extends React.Component {
       end,
     };
 
-    uc.getGroupChats(this.props.match.params.group, query)
+    uc.getGroupChats(this.props.groupId, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
 
@@ -204,7 +204,7 @@ class ChatGroupDetail extends React.Component {
   };
 
   onLoadMoreSuccess = chats => {
-    chatStore.pushMessages(this.props.match.params.group, chats.reverse());
+    chatStore.pushMessages(this.props.groupId, chats.reverse());
     this.setState({
       loadingMore: false,
     });
@@ -241,7 +241,7 @@ class ChatGroupDetail extends React.Component {
     this.submitting = true;
 
     this.context.uc
-      .sendGroupChatText(this.props.match.params.group, txt)
+      .sendGroupChatText(this.props.groupId, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
@@ -250,7 +250,7 @@ class ChatGroupDetail extends React.Component {
   };
 
   onSubmitEditingTextSuccess = chat => {
-    chatStore.pushMessages(this.props.match.params.group, [chat]);
+    chatStore.pushMessages(this.props.groupId, [chat]);
 
     this.setState({
       editingText: ``,
@@ -264,13 +264,13 @@ class ChatGroupDetail extends React.Component {
 
   leave = () => {
     const { uc } = this.context;
-    uc.leaveChatGroup(this.props.match.params.group)
+    uc.leaveChatGroup(this.props.groupId)
       .then(this.onLeaveSuccess)
       .catch(this.onLeaveFailure);
   };
 
   onLeaveSuccess = () => {
-    chatStore.removeGroup(this.props.match.params.group);
+    chatStore.removeGroup(this.props.groupId);
     g.goToChatsRecent();
   };
 
@@ -280,7 +280,7 @@ class ChatGroupDetail extends React.Component {
   };
 
   invite = () => {
-    g.goToChatGroupInvite(this.props.match.params.group);
+    g.goToChatGroupInvite({ groupId: this.props.groupId });
   };
 
   call = (target, bVideoEnabled) => {
@@ -292,17 +292,17 @@ class ChatGroupDetail extends React.Component {
   };
 
   callVoiceConference = () => {
-    let target = this.props.match.params.group;
+    let target = this.props.groupId;
     if (!target.startsWith(`uc`)) {
-      target = `uc` + this.props.match.params.group;
+      target = `uc` + this.props.groupId;
     }
     this.call(target, false);
   };
 
   callVideoConference = () => {
-    let target = this.props.match.params.group;
+    let target = this.props.groupId;
     if (!target.startsWith(`uc`)) {
-      target = `uc` + this.props.match.params.group;
+      target = `uc` + this.props.groupId;
     }
     this.call(target, true);
   };

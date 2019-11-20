@@ -32,12 +32,12 @@ class PageContactPhoneBook extends React.Component {
     const { contactIds } = this.state;
     return (
       <Layout
+        footer={{}}
         header={{
-          title: g.getQuery().book,
+          title: this.props.book,
           onBackBtnPress: g.goToPhonebooksBrowse,
           onCreateBtnPress: this.create,
         }}
-        footer={{}}
       >
         {contactIds.map(id => (
           <ContactItem {...this.resolveContact(id)} update={this.update} />
@@ -49,7 +49,7 @@ class PageContactPhoneBook extends React.Component {
   resolveContact = id => this.state.contactById[id];
 
   setSearchText = searchText => {
-    const oldQuery = g.getQuery();
+    const oldQuery = this.props;
 
     const query = {
       ...oldQuery,
@@ -65,7 +65,7 @@ class PageContactPhoneBook extends React.Component {
   loadContacts = debounce(() => {
     const { pbx } = this.context;
 
-    const query = g.getQuery();
+    const query = this.props;
     const book = query.book;
     const shared = query.shared;
 
@@ -144,7 +144,7 @@ class PageContactPhoneBook extends React.Component {
   };
 
   goNextPage = () => {
-    const oldQuery = g.getQuery();
+    const oldQuery = this.props;
 
     const query = {
       ...oldQuery,
@@ -160,7 +160,7 @@ class PageContactPhoneBook extends React.Component {
   };
 
   goPrevPage = () => {
-    const oldQuery = g.getQuery();
+    const oldQuery = this.props;
 
     const query = {
       ...oldQuery,
@@ -184,7 +184,7 @@ class PageContactPhoneBook extends React.Component {
 
   create = () => {
     g.goToContactsCreate({
-      book: g.getQuery().book,
+      book: this.props.book,
     });
   };
   update = contact => {

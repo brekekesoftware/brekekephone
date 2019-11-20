@@ -14,13 +14,13 @@ class PagePhoneBookCreate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        title="New Contact"
-        book={g.getQuery().book || ``}
+        book={this.props.book || ``}
         onBack={g.goToPhonebooksBrowse}
         onSave={p => {
           this.save(p);
           g.goToPhonebooksBrowse();
         }}
+        title="New Contact"
       />
     );
   }

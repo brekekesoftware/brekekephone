@@ -67,20 +67,20 @@ class CreateGroup extends React.Component {
   render() {
     return (
       <Layout
+        footer={{}}
         header={{
           onBackBtnPress: g.goToChatsRecent,
           title: `New Group`,
         }}
-        footer={{}}
       >
         <View style={s.CreateGroup_Outer}>
           <TextInput
-            style={s.CreateGroup_TextInput}
-            placeholder="Group name"
-            value={this.state.name}
             onChangeText={this.setName}
+            placeholder="Group name"
+            style={s.CreateGroup_TextInput}
+            value={this.state.name}
           />
-          <TouchableOpacity style={s.CreateGroup_BtnSave} onPress={this.create}>
+          <TouchableOpacity onPress={this.create} style={s.CreateGroup_BtnSave}>
             <Text style={s.CreateGroup_BtnText}>SAVE</Text>
           </TouchableOpacity>
           <Text style={s.CreateGroup_Text}>Members</Text>
@@ -89,8 +89,8 @@ class CreateGroup extends React.Component {
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
             <ItemUser
-              last={i === this.buddyIds.length - 1}
               key={id}
+              last={i === this.buddyIds.length - 1}
               {...this.buddyById[id]}
               selected={this.state.members.includes(id)}
             />
@@ -121,7 +121,7 @@ class CreateGroup extends React.Component {
   };
 
   create = () => {
-    const { name, members } = this.state;
+    const { members, name } = this.state;
 
     if (!name.trim()) {
       g.showError({ message: `Group name is required` });

@@ -61,22 +61,22 @@ const s = StyleSheet.create({
 });
 
 const RunningItem = p => (
-  <TouchableOpacity style={s.CallBar_Outer} onPress={p.pressCallsManage}>
+  <TouchableOpacity onPress={p.pressCallsManage} style={s.CallBar_Outer}>
     <View style={s.CallBar_Icon}>
       {!p.activecall.answered && p.activecall.incoming && (
-        <Icon path={mdiPhoneInTalkOutline} color={v.mainBg} />
+        <Icon color={v.mainBg} path={mdiPhoneInTalkOutline} />
       )}
       {p.activecall.incoming && !p.activecall.answered && (
-        <Icon path={mdiPhoneMissedOutline} color={v.redBg} />
+        <Icon color={v.redBg} path={mdiPhoneMissedOutline} />
       )}
       {!p.activecall.answered && !p.activecall.incoming && (
-        <Icon path={mdiPhoneOutgoingOutline} color={v.mainBg} />
+        <Icon color={v.mainBg} path={mdiPhoneOutgoingOutline} />
       )}
       {p.activecall.answered && p.activecall.holding && (
-        <Icon path={mdiPhonePausedOutline} color={v.borderBg} />
+        <Icon color={v.borderBg} path={mdiPhonePausedOutline} />
       )}
       {p.activecall.answered && !p.activecall.holding && (
-        <Icon path={mdiPhone} color={v.mainBg} />
+        <Icon color={v.mainBg} path={mdiPhone} />
       )}
     </View>
     <View style={s.CallBar_Info}>
@@ -86,18 +86,18 @@ const RunningItem = p => (
     <View style={s.CallBar_BtnCall}>
       {p.activecall.answered && p.activecall.holding && (
         <ButtonIcon
+          bdcolor={v.borderBg}
+          color={v.callBg}
           onPress={p.unhold}
           path={mdiPlay}
-          color={v.callBg}
-          bdcolor={v.borderBg}
         />
       )}
       {!p.activecall.holding && (
         <ButtonIcon
+          bdcolor={v.borderBg}
+          color={v.redBg}
           onPress={p.hangup}
           path={mdiPhoneHangup}
-          color={v.redBg}
-          bdcolor={v.borderBg}
         />
       )}
       {p.activecall.answered &&
@@ -105,9 +105,9 @@ const RunningItem = p => (
         !p.activecall.loudspeaker &&
         Platform.OS !== `web` && (
           <ButtonIcon
+            bdcolor={v.borderBg}
             onPress={p.onOpenLoudSpeaker}
             path={mdiVolumeHigh}
-            bdcolor={v.borderBg}
           />
         )}
       {p.activecall.answered &&
@@ -115,17 +115,17 @@ const RunningItem = p => (
         p.activecall.loudspeaker &&
         Platform.OS !== `web` && (
           <ButtonIcon
+            bdcolor={v.borderBg}
             onPress={p.onCloseLoudSpeaker}
             path={mdiVolumeMedium}
-            bdcolor={v.borderBg}
           />
         )}
       {p.activecall.answered && !p.activecall.holding && (
         <ButtonIcon
-          onPress={p.hold}
-          color={v.callBg}
-          path={mdiPause}
           bdcolor={v.borderBg}
+          color={v.callBg}
+          onPress={p.hold}
+          path={mdiPause}
         />
       )}
     </View>
@@ -157,14 +157,14 @@ class Callbar extends React.Component {
       <View style={s.CallBar}>
         {bVisible && activecall && (
           <RunningItem
+            activecall={activecall}
+            activecallid={this.state.activecallid}
             hangup={this.hangup}
             hold={this.hold}
-            unhold={this.unhold}
-            activecallid={this.state.activecallid}
-            activecall={activecall}
-            pressCallsManage={g.goToCallsManage}
-            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
             onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+            pressCallsManage={g.goToCallsManage}
+            unhold={this.unhold}
           />
         )}
       </View>

@@ -164,8 +164,8 @@ const Header = props => {
         </Text>
         {props.onCreateBtnPress && (
           <TouchableOpacity
-            style={s.LayoutHeader_CreateBtn}
             onPress={props.onCreateBtnPress}
+            style={s.LayoutHeader_CreateBtn}
           >
             <Animated.View
               style={[
@@ -186,8 +186,8 @@ const Header = props => {
                 ]}
               >
                 <Icon
-                  path={mdiPlus}
                   color={props.transparent ? `black` : `white`}
+                  path={mdiPlus}
                 />
               </Animated.View>
             </Animated.View>
@@ -195,8 +195,8 @@ const Header = props => {
         )}
         {props.onParkBtnPress && (
           <TouchableOpacity
-            style={s.LayoutHeader_CreateBtn}
             onPress={props.onParkBtnPress}
+            style={s.LayoutHeader_CreateBtn}
           >
             <Animated.View
               style={[
@@ -217,8 +217,8 @@ const Header = props => {
                 ]}
               >
                 <Icon
-                  path={mdiPhone}
                   color={props.transparent ? `black` : `white`}
+                  path={mdiPhone}
                 />
               </Animated.View>
             </Animated.View>
@@ -226,8 +226,8 @@ const Header = props => {
         )}
         {props.onVoiceCallBtnPress && (
           <TouchableOpacity
-            style={s.LayoutHeader_VoiceCallBtn}
             onPress={props.onVoiceCallBtnPress}
+            style={s.LayoutHeader_VoiceCallBtn}
           >
             <Animated.View
               style={[
@@ -248,8 +248,8 @@ const Header = props => {
                 ]}
               >
                 <Icon
-                  path={mdiPhone}
                   color={props.transparent ? `black` : `white`}
+                  path={mdiPhone}
                 />
               </Animated.View>
             </Animated.View>
@@ -257,8 +257,8 @@ const Header = props => {
         )}
         {props.onVideoCallBtnPress && (
           <TouchableOpacity
-            style={s.LayoutHeader_VideoCallBtn}
             onPress={props.onVideoCallBtnPress}
+            style={s.LayoutHeader_VideoCallBtn}
           >
             <Animated.View
               style={[
@@ -279,8 +279,8 @@ const Header = props => {
                 ]}
               >
                 <Icon
-                  path={mdiVideoOutline}
                   color={props.transparent ? `black` : `white`}
+                  path={mdiVideoOutline}
                 />
               </Animated.View>
             </Animated.View>
@@ -288,8 +288,8 @@ const Header = props => {
         )}
         {props.onBackBtnPress && (
           <TouchableOpacity
-            style={s.LayoutHeader_BackBtn}
             onPress={props.onBackBtnPress}
+            style={s.LayoutHeader_BackBtn}
           >
             <Animated.View
               style={[
@@ -300,7 +300,7 @@ const Header = props => {
                 },
               ]}
             >
-              <Icon path={mdiKeyboardBackspace} color={props.backBtnColor} />
+              <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
             </Animated.View>
           </TouchableOpacity>
         )}

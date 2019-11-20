@@ -94,10 +94,10 @@ class AuthUC extends React.Component {
     }
     return (
       <AuthUCUI
-        failure={authStore.ucState === `failure`}
         abort={g.goToPageProfileSignIn}
-        retry={this.auth}
         didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
+        failure={authStore.ucState === `failure`}
+        retry={this.auth}
       />
     );
   }

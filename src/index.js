@@ -98,16 +98,16 @@ const AppSelection = () => {
   ) : (
     <React.Fragment>
       <Image
-        style={s.WebApp_Logo}
         source={{
           uri: logo,
         }}
+        style={s.WebApp_Logo}
       />
       <Image
-        style={s.WebApp_Brand}
         source={{
           uri: brand,
         }}
+        style={s.WebApp_Brand}
       />
       <a href={appUrl}>
         <TouchableOpacity style={[s.WebApp_Btn, s.WebApp_Btn__app]}>
@@ -115,15 +115,15 @@ const AppSelection = () => {
             OPEN IN APP
           </Text>
           <Icon
+            color="white"
             path={isIOS ? mdiApple : mdiAndroidHead}
             style={s.WebApp_Icon}
-            color="white"
           />
         </TouchableOpacity>
       </a>
       <TouchableOpacity
-        style={[s.WebApp_Btn, s.WebApp_Btn__browser]}
         onClick={() => setIsBrowser(true)}
+        style={[s.WebApp_Btn, s.WebApp_Btn__browser]}
       >
         <Text small>OPEN IN BROWSER</Text>
         <Icon path={mdiWeb} style={s.WebApp_Icon} />

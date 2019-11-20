@@ -4,24 +4,24 @@ import ringback from '../../assets/incallmanager_ringback.mp3';
 import ringtone from '../../assets/incallmanager_ringtone.mp3';
 
 const IncomingItem = p => (
-  <audio key={p.id} autoPlay volume={1} loop src={ringtone} />
+  <audio autoPlay key={p.id} loop src={ringtone} volume={1} />
 );
 const IncomingList = p => p.ids.map(id => <IncomingItem key={id} />);
 const OutgoingItem = p => (
-  <audio key={p.id} autoPlay volume={1} loop src={ringback} />
+  <audio autoPlay key={p.id} loop src={ringback} volume={1} />
 );
 const OutgoingList = p => p.ids.map(id => <OutgoingItem key={id} />);
 
 const AnsweredItem = p => (
   <audio
-    key={p.id}
     autoPlay
-    volume={1}
+    key={p.id}
     ref={audio => {
       if (audio) {
         audio.srcObject = p.voiceStreamObject;
       }
     }}
+    volume={1}
   />
 );
 

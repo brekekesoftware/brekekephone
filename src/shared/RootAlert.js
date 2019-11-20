@@ -80,8 +80,8 @@ const ErrorDetail = observer(props => {
   if (!$.displayingDetail)
     return (
       <TouchableOpacity
-        style={s.RootAlert_Err}
         onPress={() => $.set(`displayingDetail`, v => !v)}
+        style={s.RootAlert_Err}
       >
         <Text small style={s.RootAlert_ErrTxt__title}>
           Show error detail
@@ -91,13 +91,13 @@ const ErrorDetail = observer(props => {
   return <Text small>{props.err.message}</Text>;
 });
 
-const Alert = ({ prompt, error, loading, ...props }) => {
+const Alert = ({ error, loading, prompt, ...props }) => {
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
     translateY: [Dimensions.get(`screen`).height, 0],
   });
   if (prompt) {
-    const { title, message, onConfirm, onDismiss, ...rest } = prompt;
+    const { message, onConfirm, onDismiss, title, ...rest } = prompt;
     Object.assign(props, {
       title,
       message:
@@ -113,7 +113,7 @@ const Alert = ({ prompt, error, loading, ...props }) => {
       ...rest,
     });
   } else if (error) {
-    const { message, err, unexpectedErr, ...rest } = error;
+    const { err, message, unexpectedErr, ...rest } = error;
     Object.assign(props, {
       title: `Error`,
       message: (
@@ -147,8 +147,8 @@ const Alert = ({ prompt, error, loading, ...props }) => {
         ]}
       >
         <TouchableOpacity
-          style={StyleSheet.absoluteFill}
           onPress={props.onDismiss}
+          style={StyleSheet.absoluteFill}
         />
       </Animated.View>
       <Animated.View
@@ -164,15 +164,15 @@ const Alert = ({ prompt, error, loading, ...props }) => {
         <View style={s.RootAlert_Btns}>
           {props.dismissText && (
             <TouchableOpacity
-              style={[s.RootAlert_Btn, s.RootAlert_Btn__cancel]}
               onPress={props.onDismiss}
+              style={[s.RootAlert_Btn, s.RootAlert_Btn__cancel]}
             >
               <Text small style={s.RootAlert_BtnTxt}>
                 {props.dismissText}
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={s.RootAlert_Btn} onPress={props.onConfirm}>
+          <TouchableOpacity onPress={props.onConfirm} style={s.RootAlert_Btn}>
             <Text small style={s.RootAlert_BtnTxt}>
               {props.confirmText}
             </Text>

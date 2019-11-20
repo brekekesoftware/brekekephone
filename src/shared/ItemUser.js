@@ -74,13 +74,13 @@ const renderItem = p => (
       {p.detail && (
         <View style={[s.Item_Detail, !p.avatar && s.Item__noAvatar]}>
           {p.incoming && p.answered && (
-            <Icon path={mdiPhoneIncoming} noFlex size={18} color={v.callBg} />
+            <Icon color={v.callBg} noFlex path={mdiPhoneIncoming} size={18} />
           )}
           {p.incoming && !p.answered && (
-            <Icon path={mdiPhoneMissed} noFlex size={18} color={v.redBg} />
+            <Icon color={v.redBg} noFlex path={mdiPhoneMissed} size={18} />
           )}
           {!p.incoming && !p.park && (
-            <Icon path={mdiPhoneOutgoing} noFlex size={18} color={v.mainBg} />
+            <Icon color={v.mainBg} noFlex path={mdiPhoneOutgoing} size={18} />
           )}
           {p.created && <Text style={s.Item_Detail_Text}>at {p.created}</Text>}
           {p.park && (

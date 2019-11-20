@@ -45,11 +45,11 @@ const KeyPad = p => (
   <View style={s.KeyPad}>
     <View>
       {keys.map((row, i) => (
-        <View style={s.KeyPad_Number} key={i}>
+        <View key={i} style={s.KeyPad_Number}>
           {row.map(key => (
             <TouchableOpacity
-              style={s.KeyPad_NumberBtn}
               onPress={() => p.onPress(key)}
+              style={s.KeyPad_NumberBtn}
             >
               <Text style={s.KeyPad_NumberTxt}>{key}</Text>
             </TouchableOpacity>
@@ -60,15 +60,15 @@ const KeyPad = p => (
     <View style={s.KeyPad_Btn}>
       <View style={s.KeyPad_NumberBtn}></View>
       <TouchableOpacity
+        onPress={p.callVoice}
         style={[s.KeyPad_NumberBtn, s.KeyPad_Btn__call]}
         success
-        onPress={p.callVoice}
       >
         <Icon path={mdiPhone} />
       </TouchableOpacity>
       <TouchableOpacity
-        style={s.KeyPad_NumberBtn}
         onPress={() => p.onPress(`delete`)}
+        style={s.KeyPad_NumberBtn}
       >
         <Icon path={mdiBackspace} />
       </TouchableOpacity>
