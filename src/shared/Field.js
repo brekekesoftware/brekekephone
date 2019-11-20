@@ -263,7 +263,7 @@ const Field = observer(({ ...props }) => {
           <View pointerEvents="none">
             <TextInput
               disabled
-              secureTextEntry={props.secureTextEntry && props.value}
+              secureTextEntry={!!(props.secureTextEntry && props.value)}
               style={s.Field_TextInput}
               value={
                 (props.valueRender && props.valueRender(props.value)) ||
