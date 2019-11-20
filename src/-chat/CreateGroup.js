@@ -87,7 +87,7 @@ class CreateGroup extends React.Component {
         </View>
         <Field isGroup />
         {this.buddyIds.map((id, i) => (
-          <TouchableOpacity onPress={() => this.toggleBuddy(id)}>
+          <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <ItemUser
               key={id}
               last={i === this.buddyIds.length - 1}

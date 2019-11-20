@@ -61,7 +61,7 @@ class TransferDial extends React.Component {
         }}
       >
         {groups.map(_g => (
-          <React.Fragment>
+          <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
               <Item
@@ -70,6 +70,7 @@ class TransferDial extends React.Component {
                   () => g.transferBlind(u.number),
                 ]}
                 icon={[mdiPhoneForward, mdiPhone]}
+                key={i}
                 last={i === _g.users.length - 1}
                 {...u}
               />

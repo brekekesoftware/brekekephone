@@ -41,9 +41,10 @@ class CallPark extends React.Component {
         <Field isGroup />
         {this.parkIds.length !== 0 &&
           this.parkIds.map((u, i) => (
-            <TouchableOpacity onPress={() => this.selectPark(u)}>
+            <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
               <Item
                 detail={true}
+                key={i}
                 last={i === this.parkIds.length - 1}
                 name={`Parked ${i + 1}`}
                 park={`Extension *${u}`}

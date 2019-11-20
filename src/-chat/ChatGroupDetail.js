@@ -71,6 +71,7 @@ class ChatGroupDetail extends React.Component {
         {this.chatIds.map((id, index) => (
           <Message
             hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
+            key={index}
             last={index === this.chatIds.length - 1}
             loadingMore={this.state.loadingMore}
             {...this.resolveChat(id, index)}

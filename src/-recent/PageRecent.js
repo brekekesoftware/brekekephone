@@ -65,6 +65,7 @@ class Recent extends React.Component {
               detail={true}
               function={[() => this.callBack(u.id)]}
               icon={[mdiPhone]}
+              key={i}
               last={i === users.length - 1}
               {...this.getAvatar(u.partyNumber)}
               {...u}

@@ -48,6 +48,7 @@ const KeyPad = p => (
         <View key={i} style={s.KeyPad_Number}>
           {row.map(key => (
             <TouchableOpacity
+              key={key}
               onPress={() => p.onPress(key)}
               style={s.KeyPad_NumberBtn}
             >
