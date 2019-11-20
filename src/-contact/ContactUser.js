@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import authStore from '../-/authStore';
+import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
 import Field from '../shared/Field';
@@ -100,6 +101,11 @@ class ContactUser extends React.Component {
     g.goToCallsManage();
   };
 
+  getLastMessageChat = id => {
+    const chats = chatStore.messagesByThreadId[id] || [];
+    return chats.length !== 0 ? chats[chats.length - 1] : {};
+  };
+
   render() {
     const users = this.getMatchUserIds().map(this.resolveUser);
     const map = {};
@@ -141,6 +147,7 @@ class ContactUser extends React.Component {
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
               <Item
+                detail={true}
                 function={[
                   () => this.callVoice(u.id),
                   () => g.goToBuddyChatsRecent({ buddy: u.id }),
@@ -148,6 +155,7 @@ class ContactUser extends React.Component {
                 icon={[mdiPhone, mdiChat]}
                 key={i}
                 last={i === _g.users.length - 1}
+                lastmess={this.getLastMessageChat(u.id)}
                 {...u}
               />
             ))}

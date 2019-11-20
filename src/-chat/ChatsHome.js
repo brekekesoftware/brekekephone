@@ -3,6 +3,8 @@ import React from 'react';
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
+import { TouchableOpacity } from '../native/Rn';
+import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 import { arrToMap } from '../utils/toMap';
@@ -14,13 +16,16 @@ class ChatsHome extends React.Component {
       <Layout
         header={{
           title: `Chats`,
-          onCreateBtnPress: g.goToChatGroupsCreate,
         }}
       >
         <Search
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
         />
+
+        <TouchableOpacity onPress={g.goToChatGroupsCreate}>
+          <Item name="Create group" />
+        </TouchableOpacity>
         <ListUsers
           createGroup={g.goToChatGroupsCreate}
           groupbyid={arrToMap(chatStore.groups, `id`, g => g)}

@@ -1,12 +1,10 @@
 import React from 'react';
 
 import { TouchableOpacity } from '../native/Rn';
-import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 
 const ListUsers = p => (
   <React.Fragment>
-    <Field isGroup />
     {p.userids.map((id, i) => (
       <TouchableOpacity key={i} onPress={() => p.userselect(id)}>
         <Item key={id} {...p.userbyid[id]} />

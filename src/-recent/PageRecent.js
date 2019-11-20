@@ -6,7 +6,6 @@ import React from 'react';
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
-import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
@@ -58,7 +57,6 @@ class Recent extends React.Component {
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
         />
-        <Field isGroup />
         {users.length !== 0 &&
           users.map((u, i) => (
             <Item

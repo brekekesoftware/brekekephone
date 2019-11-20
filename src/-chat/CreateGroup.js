@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from '../native/Rn';
-import Field from '../shared/Field';
 import ItemUser from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import v from '../variables';
@@ -85,7 +84,6 @@ class CreateGroup extends React.Component {
           </TouchableOpacity>
           <Text style={s.CreateGroup_Text}>Members</Text>
         </View>
-        <Field isGroup />
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <ItemUser
