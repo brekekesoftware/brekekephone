@@ -21,8 +21,7 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: g.bg,
-    borderTopWidth: 1 / 3,
-    borderColor: `#cbcbcb`,
+    paddingHorizontal: 15,
     ...g.boxShadow,
   },
   FooterTab__hasActions: {
@@ -33,8 +32,8 @@ const s = StyleSheet.create({
     alignSelf: `stretch`,
   },
   FooterTab_Btn: {
+    flex: 1,
     borderRadius: 0,
-    width: `20%`,
     paddingVertical: 8,
     alignItems: `center`,
   },
@@ -47,35 +46,26 @@ class FooterTab extends React.Component {
     return (
       <View style={s.FooterTab}>
         <View style={s.FooterTab_Actions}>
-          <TouchableOpacity
-            onPress={g.goToUsersBrowse}
-            style={[s.FooterTab_Btn]}
-          >
+          <TouchableOpacity onPress={g.goToUsersBrowse} style={s.FooterTab_Btn}>
             <Icon path={mdiAccountCircleOutline} />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={g.goToCallsRecent}
-            style={[s.FooterTab_Btn]}
-          >
+          <TouchableOpacity onPress={g.goToCallsRecent} style={s.FooterTab_Btn}>
             <Icon path={mdiPhoneOutline} />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={g.goToCallsCreate}
-            style={[s.FooterTab_Btn]}
-          >
+          <TouchableOpacity onPress={g.goToCallsCreate} style={s.FooterTab_Btn}>
             <Icon path={mdiNumeric} />
           </TouchableOpacity>
           {chatsEnabled && (
             <TouchableOpacity
               onPress={g.goToChatsRecent}
-              style={[s.FooterTab_Btn]}
+              style={s.FooterTab_Btn}
             >
               <Icon path={mdiMessageTextOutline} />
             </TouchableOpacity>
           )}
           <TouchableOpacity
             onPress={g.goToPageProfileCurrent}
-            style={[s.FooterTab_Btn]}
+            style={s.FooterTab_Btn}
           >
             <Icon path={mdiSettingsOutline} />
           </TouchableOpacity>

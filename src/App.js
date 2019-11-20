@@ -84,6 +84,7 @@ const App = () => {
     }
     g.loadProfilesFromLocalStorage();
     g.goToPageProfileSignIn();
+    // g.goToPageProfileCurrent();
   }, []);
   return (
     <View style={[StyleSheet.absoluteFill, s.App]}>

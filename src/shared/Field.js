@@ -179,7 +179,7 @@ const Field = observer(({ ...props }) => {
       ),
     });
   }
-  if (props.onValueChange && !props.disabled) {
+  if (props.onValueChange) {
     if (props.type === `Switch`) {
       Object.assign(props, {
         valueRender: v => (v ? `Enabled` : `Disabled`),
@@ -235,6 +235,10 @@ const Field = observer(({ ...props }) => {
       });
     }
   }
+  if (props.disabled) {
+    props.inputElement = null;
+    props.onTouchPress = null;
+  }
   const Container = props.onTouchPress ? TouchableOpacity : View;
   const label = (
     <Text small style={s.Field_Label}>
@@ -244,6 +248,7 @@ const Field = observer(({ ...props }) => {
   return (
     <React.Fragment>
       <Container
+        accessible={!props.inputElement}
         onPress={props.onTouchPress}
         style={[
           s.Field,
@@ -257,6 +262,8 @@ const Field = observer(({ ...props }) => {
           // Fix input pointerEvents not work on android
           <View pointerEvents="none">
             <TextInput
+              disabled
+              secureTextEntry={props.secureTextEntry && props.value}
               style={s.Field_TextInput}
               value={
                 (props.valueRender && props.valueRender(props.value)) ||

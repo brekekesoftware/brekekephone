@@ -82,7 +82,11 @@ const ProfileCreateForm = observer(props => {
       footer={{
         actions: {
           onBackBtnPress: $.onBackBtnPress,
-          onSaveBtnPress: submitForm,
+          onSaveBtnPress: props.footerLogout
+            ? g.goToPageProfileSignIn
+            : submitForm,
+          saveText: props.footerLogout ? `LOGOUT` : null,
+          saveColor: props.footerLogout ? g.redDarkBg : null,
         },
       }}
       header={{
@@ -102,33 +106,39 @@ const ProfileCreateForm = observer(props => {
           },
           {
             // autoFocus: true, // TODO Animation issue
+            disabled: props.footerLogout,
             name: `pbxUsername`,
             label: `USERNAME`,
             rule: `required`,
           },
           {
+            disabled: props.footerLogout,
             secureTextEntry: true,
             name: `pbxPassword`,
             label: `PASSWORD`,
             rule: `required`,
           },
           {
+            disabled: props.footerLogout,
             name: `pbxTenant`,
             label: `TENANT`,
             rule: `required`,
           },
           {
+            disabled: props.footerLogout,
             name: `pbxHostname`,
             label: `HOSTNAME`,
             rule: `required|hostname`,
           },
           {
+            disabled: props.footerLogout,
             keyboardType: `numeric`,
             name: `pbxPort`,
             label: `PORT`,
             rule: `required|port`,
           },
           {
+            disabled: props.footerLogout,
             type: `Picker`,
             name: `pbxPhoneIndex`,
             label: `PHONE`,
@@ -138,11 +148,13 @@ const ProfileCreateForm = observer(props => {
             })),
           },
           {
+            disabled: props.footerLogout,
             type: `Switch`,
             name: `pbxTurnEnabled`,
             label: `TURN`,
           },
           {
+            disabled: props.footerLogout,
             type: `Switch`,
             name: `pushNotificationEnabled`,
             label: `PUSH NOTIFICATION`,
@@ -153,6 +165,7 @@ const ProfileCreateForm = observer(props => {
             hasMargin: true,
           },
           {
+            disabled: props.footerLogout,
             type: `Switch`,
             name: `ucEnabled`,
             label: `UC`,
@@ -172,37 +185,43 @@ const ProfileCreateForm = observer(props => {
             },
           },
           {
-            disabled: !$.profile.ucEnabled,
+            disabled: props.footerLogout || !$.profile.ucEnabled,
             name: `ucHostname`,
             label: `HOSTNAME`,
             rule: `required|hostname`,
           },
           {
             keyboardType: `numeric`,
-            disabled: !$.profile.ucEnabled,
+            disabled: props.footerLogout || !$.profile.ucEnabled,
             name: `ucPort`,
             label: `PORT`,
             rule: `required|port`,
           },
           {
             isGroup: true,
-            label: `PARKS`,
+            label: `PARKS (${$.profile.parks.length})`,
             hasMargin: true,
           },
           ...$.profile.parks.map((p, i) => ({
             disabled: true,
-            name: `parks[${i}]:${p}`,
+            name: `parks[${i}]`,
             value: p,
             label: `PARK ${i + 1}`,
-            onRemoveBtnPress: () => $.onAddingParkRemove(i),
+            onRemoveBtnPress: props.footerLogout
+              ? null
+              : () => $.onAddingParkRemove(i),
           })),
-          {
-            name: `parks[new]`,
-            label: `NEW PARK`,
-            value: $.addingPark,
-            onValueChange: v => $.set(`addingPark`, v),
-            onCreateBtnPress: $.onAddingParkSubmit,
-          },
+          ...(props.footerLogout
+            ? []
+            : [
+                {
+                  name: `parks[new]`,
+                  label: `NEW PARK`,
+                  value: $.addingPark,
+                  onValueChange: v => $.set(`addingPark`, v),
+                  onCreateBtnPress: $.onAddingParkSubmit,
+                },
+              ]),
         ]}
         k="profile"
         onValidSubmit={$.onValidSubmit}
