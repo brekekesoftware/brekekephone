@@ -50,7 +50,7 @@ class PageIncoming extends React.Component {
     if (runids && runids.length !== 0) {
       const activeCall = this.findActiveCallByRunids_s(runids, props);
       if (activeCall) {
-        callStore.set(`selectedId`, activeCall);
+        callStore.set(`selectedId`, activeCall.id);
       }
     } else {
       const parkingIds = callStore.runnings

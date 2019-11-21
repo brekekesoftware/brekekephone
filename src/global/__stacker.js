@@ -30,6 +30,7 @@ $.extends({
         }
         Object.assign(_stack, {
           Component: v,
+          name: k,
           isRoot,
         });
         $.openStack(_stack);

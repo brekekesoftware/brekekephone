@@ -19,6 +19,7 @@ class CallNotify extends React.Component {
 
   accept = id => {
     const call = callStore.getRunningCall(id);
+    callStore.set(`selectedId`, call.id);
     const videoEnabled = call.remoteVideoEnabled;
     this.context.sip.answerSession(id, {
       videoEnabled,

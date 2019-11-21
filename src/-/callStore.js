@@ -5,7 +5,7 @@ import BaseStore from './BaseStore';
 
 export class CallStore extends BaseStore {
   @observable selectedId = ``;
-
+  @observable callBar = ``;
   // id
   // incoming
   // answered

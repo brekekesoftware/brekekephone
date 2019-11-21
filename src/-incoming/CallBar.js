@@ -138,27 +138,20 @@ class Callbar extends React.Component {
     return arrToMap(callStore.runnings, `id`, c => c);
   }
 
-  state = {
-    activecallid: null,
-    activecall: null,
-  };
-
   static contextTypes = {
     sip: PropTypes.object.isRequired,
     pbx: PropTypes.object.isRequired,
   };
 
   render() {
-    const bVisible =
-      this.state.activecallid &&
-      this.props.location.pathname !== `/calls/manage`;
-    const activecall = this.callById[this.state.activecallid];
+    const bVisible = g.stacks[0].name !== `CallsManage`;
+
+    const activecall = this.callById[callStore.selectedId];
     return (
       <View style={s.CallBar}>
         {bVisible && activecall && (
           <RunningItem
             activecall={activecall}
-            activecallid={this.state.activecallid}
             hangup={this.hangup}
             hold={this.hold}
             onCloseLoudSpeaker={this.onCloseLoudSpeaker}
@@ -172,7 +165,7 @@ class Callbar extends React.Component {
   }
 
   onOpenLoudSpeaker = () => {
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
     if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(true);
     }
@@ -184,7 +177,7 @@ class Callbar extends React.Component {
   };
 
   onCloseLoudSpeaker = () => {
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
     if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(false);
     }
@@ -198,14 +191,14 @@ class Callbar extends React.Component {
   hangup = () => {
     const { sip } = this.context;
 
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
     sip.hangupSession(activecallid);
   };
 
   hold = () => {
     const { pbx } = this.context;
 
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
     const call = this.callById[activecallid];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
@@ -214,7 +207,7 @@ class Callbar extends React.Component {
   };
 
   onHoldSuccess = () => {
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
 
     callStore.upsertRunning({
       id: activecallid,
@@ -227,7 +220,7 @@ class Callbar extends React.Component {
   };
 
   unhold = () => {
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
 
     const { pbx } = this.context;
 
@@ -239,7 +232,7 @@ class Callbar extends React.Component {
   };
 
   onUnholdSuccess = () => {
-    const activecallid = this.state.activecallid;
+    const activecallid = callStore.selectedId;
 
     callStore.upsertRunning({
       id: activecallid,
@@ -250,55 +243,6 @@ class Callbar extends React.Component {
   onUnholdFailure = err => {
     g.showError({ err, message: `unhold the call` });
   };
-
-  findActiveCallByRunids_s(runids, props) {
-    if (!runids || !runids.length) {
-      return null;
-    }
-
-    let latestCall = null;
-
-    for (let i = 0; i < runids.length; i++) {
-      const runid = runids[i];
-      const call = this.callById[runid];
-      const isActiveCall = call.answered === true;
-
-      if (isActiveCall === true) {
-        if (!latestCall) {
-          latestCall = call;
-        } else {
-          if (call.createdAt > latestCall.createdAt) {
-            latestCall = call;
-          }
-        }
-      }
-    }
-
-    return latestCall;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const runids = callStore.runnings.map(c => c.id);
-    const latestCall = this.findActiveCallByRunids_s(runids, nextProps);
-
-    if (latestCall) {
-      this.setState({
-        activecallid: latestCall.id,
-      });
-
-      this.setState({
-        activecall: latestCall,
-      });
-    } else {
-      this.setState({
-        activecallid: null,
-      });
-
-      this.setState({
-        activecall: null,
-      });
-    }
-  }
 }
 
 export default Callbar;

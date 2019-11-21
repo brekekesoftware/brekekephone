@@ -31,6 +31,7 @@ class ChatsHome extends React.Component {
           groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
           groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
           groupselect={groupId => g.goToChatGroupsRecent({ groupId })}
+          lastmess={this.getLastMessageChat}
           userbyid={contactStore.ucUsers.reduce((m, u) => {
             m[u.id] = u;
             return m;
@@ -41,6 +42,11 @@ class ChatsHome extends React.Component {
       </Layout>
     );
   }
+
+  getLastMessageChat = id => {
+    const chats = chatStore.messagesByThreadId[id] || [];
+    return chats.length !== 0 ? chats[chats.length - 1] : {};
+  };
 
   isMatchUser = id => {
     if (!id) {
