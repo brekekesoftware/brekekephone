@@ -25,6 +25,7 @@ import PageProfileCurrent from './-profile/PageProfileCurrent';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
 import PageRecent from './-recent/PageRecent';
+import Setting from './-settings/Setting';
 import TransferAttend from './-transfer/TransferAttend';
 import TransferDial from './-transfer/TransferDial';
 import g from './global';
@@ -61,6 +62,7 @@ g.registerStacks({
   ContactsBrowse: PageContactPhoneBook,
   ContactsCreate: PagePhoneBookCreate,
   ContactsUpdate: PageContactUpdate,
+  Setting: Setting,
 });
 g.registerStacks({
   PageProfileCreate,
