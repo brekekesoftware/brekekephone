@@ -136,6 +136,7 @@ class ContactUser extends React.Component {
         footer={{}}
         header={{
           title: `Contact`,
+          onCreateBtnPress: g.goToSetting,
         }}
       >
         <Search

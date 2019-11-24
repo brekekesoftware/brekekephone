@@ -21,7 +21,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 15,
   },
   LayoutFooter__hasActionsInputChat: {
-    bottom: 68,
+    bottom: 38,
   },
   LayoutFooter_Actions: {
     flexDirection: `row`,

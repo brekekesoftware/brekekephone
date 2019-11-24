@@ -191,21 +191,16 @@ class UC extends EventEmitter {
     };
   }
 
-  setOffline(statusText) {
+  setStatus(status, statusText) {
+    let num_status = 0;
+    if (status === `online`) {
+      num_status = 1;
+    }
+    if (status === `busy`) {
+      num_status = 3;
+    }
     return new Promise((onres, onerr) =>
-      this.client.changeStatus(0, statusText, onres, onerr),
-    );
-  }
-
-  setOnline(statusText) {
-    return new Promise((onres, onerr) =>
-      this.client.changeStatus(1, statusText, onres, onerr),
-    );
-  }
-
-  setBusy(statusText) {
-    return new Promise((onres, onerr) =>
-      this.client.changeStatus(3, statusText, onres, onerr),
+      this.client.changeStatus(num_status, statusText, onres, onerr),
     );
   }
 

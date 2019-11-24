@@ -87,11 +87,11 @@ class Setting extends Component {
       >
         <View style={[s.Setting_Item]}>
           <View>
-            <Text style={s.Setting_Item__TxtTitle}>Status</Text>
+            <Text>Status</Text>
           </View>
           <View style={s.Setting_Item_BtnOuter}>
             <TouchableOpacity
-              onPress={this.setChatOffline}
+              onPress={() => this.setStatus(`offiline`)}
               style={[
                 s.Setting_Item_Btn,
                 s.Setting_Item_Btn__RdLeft,
@@ -101,7 +101,7 @@ class Setting extends Component {
               <Text style={s.Setting_Item__BtnTxt}>Offline</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={this.setChatOnline}
+              onPress={() => this.setStatus(`online`)}
               style={[
                 s.Setting_Item_Btn,
                 this.state.status === `online` && s.Setting_Item_Btn__On,
@@ -117,7 +117,7 @@ class Setting extends Component {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={this.setChatBusy}
+              onPress={() => this.setStatus(`busy`)}
               style={[
                 s.Setting_Item_Btn,
                 s.Setting_Item_Btn__RdRight,
@@ -137,7 +137,7 @@ class Setting extends Component {
         </View>
         <View style={[s.Setting_Item]}>
           <View>
-            <Text style={s.Setting_Item__TxtTitle}>Status note</Text>
+            <Text>Status note</Text>
           </View>
           <View style={s.Setting_Item_BtnOuter}>
             <TextInput
@@ -160,27 +160,12 @@ class Setting extends Component {
   };
 
   onSetChatStatusFailure = () => {
-    const { showToast } = this.props;
-    showToast(`Failed to change chat status`);
+    g.showError(`to change chat status`);
   };
 
-  setChatOffline = () => {
+  setStatus = status => {
     const { uc } = this.context;
-    uc.setOffline(this.state.statusText)
-      .then(this.onSetChatStatusSuccess)
-      .catch(this.onSetChatStatusFailure);
-  };
-
-  setChatOnline = () => {
-    const { uc } = this.context;
-    uc.setOnline(this.state.statusText)
-      .then(this.onSetChatStatusSuccess)
-      .catch(this.onSetChatStatusFailure);
-  };
-
-  setChatBusy = () => {
-    const { uc } = this.context;
-    uc.setBusy(this.state.statusText)
+    uc.setStatus(status, this.state.statusText)
       .then(this.onSetChatStatusSuccess)
       .catch(this.onSetChatStatusFailure);
   };
@@ -191,14 +176,7 @@ class Setting extends Component {
 
   submitstatusText = () => {
     const { status } = this.state;
-
-    if (status === `offline`) {
-      this.setChatOffline();
-    } else if (status === `online`) {
-      this.setChatOnline();
-    } else if (status === `busy`) {
-      this.setChatBusy();
-    }
+    this.setStatus(status, this.state.statusText);
   };
 }
 
