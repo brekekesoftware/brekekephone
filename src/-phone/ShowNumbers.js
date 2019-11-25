@@ -32,7 +32,7 @@ const s = StyleSheet.create({
   },
   ShowNumbers_Display: {
     position: `absolute`,
-    top: 65,
+    top: 85,
     left: 20,
   },
   ShowNumbers_DisplayTxt: {

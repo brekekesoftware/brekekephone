@@ -7,7 +7,7 @@ import v from '../variables';
 
 const s = StyleSheet.create({
   KeyPad: {
-    top: 120,
+    top: 200,
   },
   KeyPad_Number: {
     flexDirection: `row`,
@@ -29,7 +29,7 @@ const s = StyleSheet.create({
   KeyPad_Btn__call: {
     backgroundColor: v.mainDarkBg,
     width: 64,
-    borderRadius: 30,
+    borderRadius: 40,
     paddingVertical: 20,
   },
 });
