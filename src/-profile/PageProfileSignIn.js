@@ -24,12 +24,6 @@ const PageProfileSignIn = observer(() => {
   return (
     <BrekekeGradient colors={[g.mainBg, g.revBg]}>
       <Layout
-        footer={{
-          navigation: {
-            menu: `settings`,
-            subMenu: `profile`,
-          },
-        }}
         header={{
           transparent: true,
           title: `Servers`,
