@@ -5,7 +5,7 @@ import React from 'react';
 
 import g from '../global';
 import Layout from '../shared/Layout';
-import ContactItem from './contactItem';
+import ContactItem from './ContactItem';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
@@ -39,7 +39,7 @@ class PageContactPhoneBook extends React.Component {
           },
         }}
         header={{
-          title: this.props.book || `PageContactPhoneBook`,
+          title: this.props.book || `Phonebook`,
           onCreateBtnPress: this.create,
         }}
       >
