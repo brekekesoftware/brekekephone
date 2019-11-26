@@ -84,7 +84,7 @@ class AuthStore extends BaseStore {
     }
     this.set(`signedInId`, p.id);
     PushNotification.resetBadgeNumber();
-    g.goToUsersBrowse();
+    g.goToPageContactUsers();
     return true;
   };
 

@@ -5,10 +5,10 @@ import React from 'react';
 
 import authStore from '../-/authStore';
 import callStore from '../-/callStore';
+import UserItem from '../-contact/UserItem';
 import g from '../global';
 import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
-import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 
 @observer
@@ -48,7 +48,7 @@ class CallPark extends React.Component {
         {this.parkIds.length !== 0 &&
           this.parkIds.map((u, i) => (
             <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
-              <Item
+              <UserItem
                 detail={true}
                 key={i}
                 last={i === this.parkIds.length - 1}

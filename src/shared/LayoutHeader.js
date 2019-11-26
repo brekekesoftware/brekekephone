@@ -152,7 +152,7 @@ const Header = props => {
             },
           ]}
         >
-          {props.title}
+          {props.compact ? props.titleCompact || props.title : props.title}
         </Animated.Text>
         <Text
           style={[

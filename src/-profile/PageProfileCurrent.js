@@ -8,7 +8,7 @@ import g from '../global';
 const PageProfileCurrent = observer(p => (
   <ProfileCreateForm
     footerLogout
-    onBack={g.backToUsersBrowse}
+    onBack={g.backToPageContactUsers}
     onSave={(p, hasUnsavedChanges) => {
       if (!hasUnsavedChanges) {
         g.backToContactsBrowse();

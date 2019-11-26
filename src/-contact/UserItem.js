@@ -2,9 +2,9 @@ import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js';
 import React from 'react';
 
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
+import Avatar from '../shared/Avatar';
+import Icon from '../shared/Icon';
 import v from '../variables';
-import Avatar from './Avatar';
-import Icon from './Icon';
 
 const s = StyleSheet.create({
   Item: {
@@ -69,7 +69,7 @@ const s = StyleSheet.create({
   },
 });
 
-const renderItem = p => (
+const UserItem = p => (
   <View>
     <View style={[s.Item, p.last && s.Item__last, p.selected && s.Item__Bgr]}>
       {p.avatar && <Avatar source={{ uri: p.avatar }} {...p} />}
@@ -118,10 +118,4 @@ const renderItem = p => (
   </View>
 );
 
-const Item = p => {
-  return renderItem({
-    ...p,
-  });
-};
-
-export default Item;
+export default UserItem;

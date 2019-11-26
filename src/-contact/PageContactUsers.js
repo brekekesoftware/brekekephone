@@ -11,12 +11,12 @@ import contactStore from '../-/contactStore';
 import g from '../global';
 import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
-import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
+import UserItem from './UserItem';
 
 @observer
-class ContactUser extends React.Component {
+class PageContactUsers extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
@@ -141,7 +141,9 @@ class ContactUser extends React.Component {
           },
         }}
         header={{
-          title: `Contact`,
+          title: `Users`,
+          titleCompact: `Users (${users.length})`,
+          description: `PBX/UC users (${users.length})`,
         }}
       >
         <Search
@@ -156,7 +158,7 @@ class ContactUser extends React.Component {
                 key={i}
                 onPress={() => g.goToBuddyChatsRecent({ buddy: u.id })}
               >
-                <Item
+                <UserItem
                   detail={true}
                   function={[
                     () => this.callVoice(u.id),
@@ -176,4 +178,4 @@ class ContactUser extends React.Component {
   }
 }
 
-export default ContactUser;
+export default PageContactUsers;
