@@ -16,7 +16,6 @@ import PageIncoming from './-incoming/PageIncoming';
 import CallPark from './-phone/CallPark';
 import PagePhone from './-phone/PagePhone';
 import PageContactPhoneBook from './-phonebook/PageContactPhoneBook';
-import PagePhoneBook from './-phonebook/PagePhoneBook';
 import PagePhoneBookCreate from './-phonebook/PagePhoneBookCreate';
 import PageContactUpdate from './-phonebook/PagePhoneBookUpdate';
 import PageProfileCreate from './-profile/PageProfileCreate';
@@ -48,7 +47,6 @@ g.registerStacks({
   CallsCreate: PagePhone,
   CallsManage: PageIncoming,
   CallsRecent: PageRecent,
-  PhonebooksBrowse: PagePhoneBook,
   ChatsRecent: ChatsHome,
   BuddyChatsRecent: ChatDetail,
   CallKeypad: PagePhone,

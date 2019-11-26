@@ -15,10 +15,10 @@ class PagePhoneBookCreate extends React.Component {
     return (
       <ContactsCreateForm
         book={this.props.book || ``}
-        onBack={g.goToPhonebooksBrowse}
+        onBack={g.goToContactsBrowse}
         onSave={p => {
           this.save(p);
-          g.goToPhonebooksBrowse();
+          g.goToContactsBrowse();
         }}
         title="New Contact"
       />
@@ -35,7 +35,7 @@ class PagePhoneBookCreate extends React.Component {
   };
 
   onSaveSuccess = () => {
-    g.goToPhonebooksBrowse();
+    g.goToContactsBrowse();
   };
 
   onSaveFailure = err => {

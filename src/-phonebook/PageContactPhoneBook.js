@@ -39,7 +39,7 @@ class PageContactPhoneBook extends React.Component {
           },
         }}
         header={{
-          title: this.props.book || `PageContactPhoneBook`,
+          title: this.props.book || `Phonebook`,
           onCreateBtnPress: this.create,
         }}
       >
