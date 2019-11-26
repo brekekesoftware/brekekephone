@@ -1,4 +1,4 @@
-import { mdiChat, mdiPhone } from '@mdi/js';
+import { mdiPhone, mdiVideo } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
@@ -9,6 +9,7 @@ import authStore from '../-/authStore';
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
 import g from '../global';
+import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
@@ -151,18 +152,22 @@ class ContactUser extends React.Component {
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
-              <Item
-                detail={true}
-                function={[
-                  () => this.callVoice(u.id),
-                  () => g.goToBuddyChatsRecent({ buddy: u.id }),
-                ]}
-                icon={[mdiPhone, mdiChat]}
+              <TouchableOpacity
                 key={i}
-                last={i === _g.users.length - 1}
-                lastmess={this.getLastMessageChat(u.id)}
-                {...u}
-              />
+                onPress={() => g.goToBuddyChatsRecent({ buddy: u.id })}
+              >
+                <Item
+                  detail={true}
+                  function={[
+                    () => this.callVoice(u.id),
+                    () => this.callVideo(u.id),
+                  ]}
+                  icon={[mdiPhone, mdiVideo]}
+                  last={i === _g.users.length - 1}
+                  lastmess={this.getLastMessageChat(u.id)}
+                  {...u}
+                />
+              </TouchableOpacity>
             ))}
           </React.Fragment>
         ))}
