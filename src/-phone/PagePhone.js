@@ -71,7 +71,14 @@ class PagePhone extends React.Component {
 
   render() {
     return (
-      <Layout>
+      <Layout
+        footer={{
+          navigation: {
+            menu: `phone`,
+            subMenu: `callpad`,
+          },
+        }}
+      >
         <ShowNumber showNum={this.state.target} />
         <KeyPad callVoice={this.callVoice} onPress={this.onPress} />
       </Layout>

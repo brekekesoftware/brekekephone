@@ -133,10 +133,14 @@ class ContactUser extends React.Component {
     });
     return (
       <Layout
-        footer={{}}
+        footer={{
+          navigation: {
+            menu: `contact`,
+            subMenu: `users`,
+          },
+        }}
         header={{
           title: `Contact`,
-          onCreateBtnPress: g.goToSetting,
         }}
       >
         <Search

@@ -79,7 +79,12 @@ class Setting extends Component {
   render() {
     return (
       <Layout
-        footer={{}}
+        footer={{
+          navigation: {
+            menu: `settings`,
+            subMenu: `settings`,
+          },
+        }}
         header={{
           title: `Setting`,
           onBackBtnPress: g.goToUsersBrowse,

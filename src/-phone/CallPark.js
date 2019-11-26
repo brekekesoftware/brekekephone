@@ -32,6 +32,12 @@ class CallPark extends React.Component {
       screen === `page_phone` ? g.goToCallKeypad : g.goToCallsManage;
     return (
       <Layout
+        footer={{
+          navigation: {
+            menu: `phone`,
+            subMenu: `parks`,
+          },
+        }}
         header={{
           title: `Call Park`,
           onBackBtnPress: goBack,

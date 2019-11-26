@@ -25,7 +25,12 @@ class PagePhoneBook extends React.Component {
     const { books } = this.state;
     return (
       <Layout
-        footer={{}}
+        footer={{
+          navigation: {
+            menu: `contact`,
+            subMenu: `phonebook`,
+          },
+        }}
         header={{
           title: `Phone Book`,
           onCreateBtnPress: g.goToContactsCreate,

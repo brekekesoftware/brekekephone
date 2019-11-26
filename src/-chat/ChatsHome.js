@@ -14,6 +14,12 @@ class ChatsHome extends React.Component {
   render() {
     return (
       <Layout
+        footer={{
+          navigation: {
+            menu: `contact`,
+            subMenu: `chat`,
+          },
+        }}
         header={{
           title: `Chats`,
         }}

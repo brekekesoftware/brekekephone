@@ -10,7 +10,6 @@ import CallVoices from '../-/components/CallVoices';
 import Callbar from '../-incoming/CallBar';
 import CallNotify from '../-notify/CallNotify';
 import ChatGroupInvite from '../-notify/ChatGroupInvite';
-import FooterTab from '../shared/FooterTab';
 
 const RootAuth = observer(() => {
   if (!authStore.signedInId) {
@@ -25,7 +24,6 @@ const RootAuth = observer(() => {
       <CallVideos />
       <CallVoices />
       <ChatGroupInvite />
-      <FooterTab />
       <Callbar />
     </React.Fragment>
   );

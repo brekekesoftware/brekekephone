@@ -53,7 +53,6 @@ class ChatDetail extends React.Component {
         footer={{
           actions: {
             selectFile: this.pickFile,
-
             text: this.state.editingText,
             setText: this.setEditingText,
             submitText: this.submitEditingText,

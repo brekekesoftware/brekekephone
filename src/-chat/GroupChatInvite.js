@@ -57,7 +57,6 @@ class GroupChatInvite extends React.Component {
   render() {
     return (
       <Layout
-        footer={{}}
         header={{
           onBackBtnPress: this.back,
           title: `Inviting Group member`,

@@ -1,7 +1,6 @@
 import './polyfill';
 import './utils/validator';
 
-// import { configure } from 'mobx';
 import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
@@ -40,7 +39,6 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
-// configure({ enforceActions: `always` });
 
 g.registerStacks({
   isRoot: true,
@@ -55,19 +53,19 @@ g.registerStacks({
   BuddyChatsRecent: ChatDetail,
   CallKeypad: PagePhone,
   CallPark,
-  CallTransferAttend: TransferAttend,
-  CallTransferDial: TransferDial,
-  ChatGroupInvite: GroupChatInvite,
-  ChatGroupsRecent: ChatGroupDetail,
   ContactsBrowse: PageContactPhoneBook,
-  ContactsCreate: PagePhoneBookCreate,
-  ContactsUpdate: PageContactUpdate,
   Setting: Setting,
 });
 g.registerStacks({
   PageProfileCreate,
   PageProfileUpdate,
   ChatGroupsCreate: CreateGroup,
+  ContactsCreate: PagePhoneBookCreate,
+  ContactsUpdate: PageContactUpdate,
+  CallTransferAttend: TransferAttend,
+  CallTransferDial: TransferDial,
+  ChatGroupInvite: GroupChatInvite,
+  ChatGroupsRecent: ChatGroupDetail,
 });
 
 const s = StyleSheet.create({
@@ -86,7 +84,6 @@ const App = () => {
     }
     g.loadProfilesFromLocalStorage();
     g.goToPageProfileSignIn();
-    // g.goToPageProfileCurrent();
   }, []);
   return (
     <View style={[StyleSheet.absoluteFill, s.App]}>

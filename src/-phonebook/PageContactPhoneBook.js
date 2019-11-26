@@ -32,10 +32,14 @@ class PageContactPhoneBook extends React.Component {
     const { contactIds } = this.state;
     return (
       <Layout
-        footer={{}}
+        footer={{
+          navigation: {
+            menu: `contact`,
+            subMenu: `phonebook`,
+          },
+        }}
         header={{
-          title: this.props.book,
-          onBackBtnPress: g.goToPhonebooksBrowse,
+          title: this.props.book || `PageContactPhoneBook`,
           onCreateBtnPress: this.create,
         }}
       >
@@ -50,13 +54,11 @@ class PageContactPhoneBook extends React.Component {
 
   setSearchText = searchText => {
     const oldQuery = this.props;
-
     const query = {
       ...oldQuery,
       searchText,
       offset: 0,
     };
-
     g.goToContactsBrowse(query);
     this.loadContacts.flush();
     this.loadContacts();
@@ -64,56 +66,44 @@ class PageContactPhoneBook extends React.Component {
 
   loadContacts = debounce(() => {
     const { pbx } = this.context;
-
     const query = this.props;
     const book = query.book;
     const shared = query.shared;
-
     const opts = {
       limit: numberOfContactsPerPage,
       offset: query.offset,
       searchText: query.searchText,
     };
-
     this.setState({
       loading: true,
       contactIds: [],
       contactById: [],
     });
-
     pbx
       .getContacts(book, shared, opts)
-      .then(this.onLoadContactsSuccess)
-      .catch(this.onLoadContactsFailure);
+      .then(contacts => {
+        const contactIds = [];
+        const contactById = {};
+        contacts.forEach(contact => {
+          contactIds.push(contact.id);
+          contactById[contact.id] = {
+            ...contact,
+            loading: true,
+          };
+        });
+        this.setState(
+          {
+            contactIds,
+            contactById,
+            loading: false,
+          },
+          this.loadContactDetails,
+        );
+      })
+      .catch(err => {
+        g.showError({ message: `load contact list`, err });
+      });
   }, 500);
-
-  onLoadContactsSuccess = contacts => {
-    const contactIds = [];
-    const contactById = {};
-
-    contacts.forEach(contact => {
-      contactIds.push(contact.id);
-
-      contactById[contact.id] = {
-        ...contact,
-        loading: true,
-      };
-    });
-
-    this.setState(
-      {
-        contactIds,
-        contactById,
-        loading: false,
-      },
-      this.loadContactDetails,
-    );
-  };
-
-  onLoadContactsFailure = err => {
-    console.error(err);
-    g.showError({ message: `load contacts` });
-  };
 
   loadContactDetails = () => {
     const contactIds = this.state.contactIds;
@@ -122,14 +112,12 @@ class PageContactPhoneBook extends React.Component {
 
   loadContactDetail = id => {
     const { pbx } = this.context;
-
     pbx
       .getContact(id)
       .then(detail => {
         this.setState(prevState => ({
           contactById: {
             ...prevState.contactById,
-
             [id]: {
               ...prevState.contactById[id],
               ...detail,
@@ -139,7 +127,7 @@ class PageContactPhoneBook extends React.Component {
         }));
       })
       .catch(err => {
-        console.err(err);
+        g.showError({ message: `load contact detail for id ${id}`, err });
       });
   };
 
@@ -161,14 +149,11 @@ class PageContactPhoneBook extends React.Component {
 
   goPrevPage = () => {
     const oldQuery = this.props;
-
     const query = {
       ...oldQuery,
       offset: oldQuery.offset - numberOfContactsPerPage,
     };
-
     g.goToContactsBrowse(query);
-
     setTimeout(() => {
       this.loadContacts.flush();
       this.loadContacts();
@@ -177,7 +162,6 @@ class PageContactPhoneBook extends React.Component {
 
   call = number => {
     const { sip } = this.context;
-
     number = formatPhoneNumber(number);
     sip.createSession(number);
   };

@@ -49,8 +49,14 @@ class Recent extends React.Component {
     const users = this.getMatchUserIds();
     return (
       <Layout
+        footer={{
+          navigation: {
+            menu: `phone`,
+            subMenu: `recents`,
+          },
+        }}
         header={{
-          title: `Recent`,
+          title: `Recents`,
         }}
       >
         <Search

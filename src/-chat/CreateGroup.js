@@ -66,7 +66,6 @@ class CreateGroup extends React.Component {
   render() {
     return (
       <Layout
-        footer={{}}
         header={{
           onBackBtnPress: g.goToChatsRecent,
           title: `New Group`,
