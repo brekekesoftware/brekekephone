@@ -3,7 +3,6 @@ import React from 'react';
 
 import g from '../global';
 import Layout from '../shared/Layout';
-import KeyPad from './KeyPad';
 import ShowNumber from './ShowNumbers';
 
 class PagePhone extends React.Component {
@@ -12,23 +11,12 @@ class PagePhone extends React.Component {
   };
 
   state = {
-    text: ``,
     target: ``,
     video: false,
   };
 
-  onPress = val => {
-    let curText = this.state.target;
-    if (isNaN(val)) {
-      if (val === `delete`) {
-        curText = curText.slice(0, -1);
-      } else {
-        curText += val;
-      }
-    } else {
-      curText += val;
-    }
-    this.setState({ target: curText });
+  setTarget = target => {
+    this.setState({ target });
   };
 
   create = () => {
@@ -78,9 +66,15 @@ class PagePhone extends React.Component {
             subMenu: `callpad`,
           },
         }}
+        header={{
+          title: `CallPad`,
+        }}
       >
-        <ShowNumber showNum={this.state.target} />
-        <KeyPad callVoice={this.callVoice} onPress={this.onPress} />
+        <ShowNumber
+          callVoice={this.callVoice}
+          setTarget={this.setTarget}
+          value={this.state.target}
+        />
       </Layout>
     );
   }

@@ -47,7 +47,7 @@ const s = StyleSheet.create({
 
 const ContactField = p =>
   p.fields.map((f, i) => (
-    <View style={s.ContactField}>
+    <View key={i} style={s.ContactField}>
       <View>
         <Icon color={v.borderBg} path={p.icons[i]} />
       </View>
