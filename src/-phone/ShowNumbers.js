@@ -1,66 +1,41 @@
+import { mdiPhone } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
-import v from '../variables';
+import { StyleSheet, TextInput, TouchableOpacity, View } from '../native/Rn';
+import Icon from '../shared/Icon';
 
 const s = StyleSheet.create({
   ShowNumbers: {
-    flexDirection: `column`,
-  },
-  ShowNumbers_BtnOuter: {
     flexDirection: `row`,
   },
-  ShowNumbers_BtnTxt: {
-    fontSize: v.fontSizeSmall,
+  ShowNumbers_DisplayTxt: {
+    fontSize: 24,
+    padding: 15,
+    width: `80%`,
   },
-  ShowNumbers_Btn: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 3,
-    backgroundColor: v.mainDarkBg,
-  },
-  ShowNumbers_Btn__callpark: {
-    position: `absolute`,
-    top: 10,
-    right: 120,
-  },
-  ShowNumbers_Btn__voicecall: {
+  ShowNumbers_BtnCall: {
     position: `absolute`,
     top: 10,
     right: 10,
-  },
-  ShowNumbers_Display: {
-    position: `absolute`,
-    top: 85,
-    left: 20,
-  },
-  ShowNumbers_DisplayTxt: {
-    fontSize: 32,
-    paddingVertical: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 40,
   },
 });
 
 const ShowNumber = p => (
   <View style={s.ShowNumbers}>
-    <View style={s.ShowNumbers_BtnOuter}>
-      <TouchableOpacity
-        onPress={() => g.goToCallPark({ screen: `page_phone` })}
-        style={[s.ShowNumbers_Btn, s.ShowNumbers_Btn__callpark]}
-      >
-        <Text style={s.ShowNumbers_BtnTxt}>CALL PARK (1)</Text>
+    <TextInput
+      keyboardType="number-pad"
+      onChangeText={p.setTarget}
+      placeholder="Enter your number"
+      style={s.ShowNumbers_DisplayTxt}
+    />
+    {p.value !== `` && (
+      <TouchableOpacity onPress={p.callVoice} style={s.ShowNumbers_BtnCall}>
+        <Icon path={mdiPhone} size={30} />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[s.ShowNumbers_Btn, s.ShowNumbers_Btn__voicecall]}
-      >
-        <Text style={s.ShowNumbers_BtnTxt}>VOICEMAIL (2)</Text>
-      </TouchableOpacity>
-    </View>
-    <View style={s.ShowNumbers_Display}>
-      <Text style={s.ShowNumbers_DisplayTxt}>
-        {p.showNum !== `` ? p.showNum : `Your number`}
-      </Text>
-    </View>
+    )}
   </View>
 );
 

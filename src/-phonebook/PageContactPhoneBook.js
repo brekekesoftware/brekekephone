@@ -44,7 +44,11 @@ class PageContactPhoneBook extends React.Component {
         }}
       >
         {contactIds.map(id => (
-          <ContactItem {...this.resolveContact(id)} update={this.update} />
+          <ContactItem
+            key={id}
+            {...this.resolveContact(id)}
+            update={this.update}
+          />
         ))}
       </Layout>
     );
