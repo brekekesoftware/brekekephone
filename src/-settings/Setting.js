@@ -87,7 +87,7 @@ class Setting extends Component {
         }}
         header={{
           title: `Setting`,
-          onBackBtnPress: g.goToUsersBrowse,
+          onBackBtnPress: g.goToPageContactUsers,
         }}
       >
         <View style={[s.Setting_Item]}>

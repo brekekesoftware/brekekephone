@@ -30,6 +30,7 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: g.bg,
+    paddingHorizontal: 15,
   },
   FooterNavigation_Btn: {
     flex: 1,
@@ -67,7 +68,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={g.goToUsersBrowse}
+          onPress={g.goToPageContactUsers}
           style={s.FooterNavigation_Btn}
         >
           <Text
@@ -160,7 +161,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
     <View style={s.FooterNavigation}>
       <View style={s.FooterNavigation_Menu}>
         <TouchableOpacity
-          onPress={isMenuContact ? null : g.goToUsersBrowse}
+          onPress={isMenuContact ? null : g.goToPageContactUsers}
           style={[
             s.FooterNavigation_Btn,
             isMenuContact && s.FooterNavigation_Btn__active,

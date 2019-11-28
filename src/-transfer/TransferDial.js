@@ -7,9 +7,9 @@ import React from 'react';
 
 import callStore from '../-/callStore';
 import contactStore from '../-/contactStore';
+import UserItem from '../-contact/UserItem';
 import g from '../global';
 import Field from '../shared/Field';
-import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 
 @observer
@@ -64,7 +64,7 @@ class TransferDial extends React.Component {
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
-              <Item
+              <UserItem
                 function={[
                   () => this.transferAttended(u.number),
                   () => g.transferBlind(u.number),

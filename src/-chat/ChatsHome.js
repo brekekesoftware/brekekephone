@@ -2,9 +2,9 @@ import React from 'react';
 
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
+import UserItem from '../-contact/UserItem';
 import g from '../global';
 import { TouchableOpacity } from '../native/Rn';
-import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 import { arrToMap } from '../utils/toMap';
@@ -30,7 +30,7 @@ class ChatsHome extends React.Component {
         />
 
         <TouchableOpacity onPress={g.goToChatGroupsCreate}>
-          <Item name="Create group" />
+          <UserItem name="Create group" />
         </TouchableOpacity>
         <ListUsers
           createGroup={g.goToChatGroupsCreate}

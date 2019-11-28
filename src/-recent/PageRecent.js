@@ -5,8 +5,8 @@ import React from 'react';
 
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
+import UserItem from '../-contact/UserItem';
 import g from '../global';
-import Item from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
@@ -65,7 +65,7 @@ class Recent extends React.Component {
         />
         {users.length !== 0 &&
           users.map((u, i) => (
-            <Item
+            <UserItem
               detail={true}
               function={[() => this.callBack(u.id)]}
               icon={[mdiPhone]}

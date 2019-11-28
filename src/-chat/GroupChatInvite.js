@@ -5,10 +5,10 @@ import React from 'react';
 
 import chatStore from '../-/chatStore';
 import contactStore from '../-/contactStore';
+import UserItem from '../-contact/UserItem';
 import g from '../global';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
-import ItemUser from '../shared/ItemUser';
 import Layout from '../shared/Layout';
 import v from '../variables';
 
@@ -74,7 +74,7 @@ class GroupChatInvite extends React.Component {
         <Field isGroup />
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
-            <ItemUser
+            <UserItem
               key={id}
               last={i === this.buddyIds.length - 1}
               {...this.resolveBuddy(id)}

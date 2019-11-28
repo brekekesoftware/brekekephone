@@ -11,7 +11,7 @@ import ChatGroupDetail from './-chat/ChatGroupDetail';
 import ChatsHome from './-chat/ChatsHome';
 import CreateGroup from './-chat/CreateGroup';
 import GroupChatInvite from './-chat/GroupChatInvite';
-import PageContact from './-contact/PageContact';
+import PageContactUsers from './-contact/PageContactUsers';
 import PageIncoming from './-incoming/PageIncoming';
 import CallPark from './-phone/CallPark';
 import PagePhone from './-phone/PagePhone';
@@ -43,7 +43,7 @@ g.registerStacks({
   isRoot: true,
   PageProfileSignIn,
   PageProfileCurrent,
-  UsersBrowse: PageContact,
+  PageContactUsers,
   CallsCreate: PagePhone,
   CallsManage: PageIncoming,
   CallsRecent: PageRecent,
