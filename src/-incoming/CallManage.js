@@ -2,6 +2,8 @@ import {
   mdiAlphaPCircle,
   mdiCallSplit,
   mdiDialpad,
+  mdiMicrophone,
+  mdiMicrophoneOff,
   mdiPauseCircle,
   mdiPlayCircle,
   mdiRecord,
@@ -124,6 +126,30 @@ const CallManage = p => (
       )}
     </View>
     <View style={[s.CallBar_Btn, s.CallBar_Btn__top150]}>
+      {p.answered && !p.holding && !p.muted && (
+        <ButtonIcon
+          bgcolor={v.revColor}
+          color={v.color}
+          name="MUTE"
+          noborder
+          onPress={p.setMuted}
+          path={mdiMicrophoneOff}
+          size={40}
+          textcolor={v.revColor}
+        />
+      )}
+      {p.answered && !p.holding && p.muted && (
+        <ButtonIcon
+          bgcolor={v.revColor}
+          color={v.color}
+          name="UNMUTE"
+          noborder
+          onPress={p.setunMuted}
+          path={mdiMicrophone}
+          size={40}
+          textcolor={v.revColor}
+        />
+      )}
       {p.answered && !p.holding && !p.recording && (
         <ButtonIcon
           bgcolor={v.revColor}

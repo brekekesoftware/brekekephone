@@ -1,4 +1,6 @@
 import {
+  mdiMicrophone,
+  mdiMicrophoneOff,
   mdiPause,
   mdiPhone,
   mdiPhoneHangup,
@@ -102,6 +104,24 @@ const RunningItem = p => (
       )}
       {p.activecall.answered &&
         !p.activecall.holding &&
+        !p.activecall.muted && (
+          <ButtonIcon
+            bdcolor={v.borderBg}
+            color={v.color}
+            onPress={p.setMuted}
+            path={mdiMicrophoneOff}
+          />
+        )}
+      {p.activecall.answered && !p.activecall.holding && p.activecall.muted && (
+        <ButtonIcon
+          bdcolor={v.borderBg}
+          color={v.color}
+          onPress={p.setunMuted}
+          path={mdiMicrophone}
+        />
+      )}
+      {p.activecall.answered &&
+        !p.activecall.holding &&
         !p.activecall.loudspeaker &&
         Platform.OS !== `web` && (
           <ButtonIcon
@@ -145,11 +165,11 @@ class Callbar extends React.Component {
 
   render() {
     const bVisible = g.stacks[0].name !== `CallsManage`;
-
-    const activecall = this.callById[callStore.selectedId];
+    const callId = callStore.selectedId || ``;
+    const activecall = this.callById[callId];
     return (
       <View style={s.CallBar}>
-        {bVisible && activecall && (
+        {bVisible && callId !== `` && activecall && (
           <RunningItem
             activecall={activecall}
             hangup={this.hangup}
@@ -157,12 +177,32 @@ class Callbar extends React.Component {
             onCloseLoudSpeaker={this.onCloseLoudSpeaker}
             onOpenLoudSpeaker={this.onOpenLoudSpeaker}
             pressCallsManage={g.goToCallsManage}
+            setMuted={this.setMuted}
+            setunMuted={this.setunMuted}
             unhold={this.unhold}
           />
         )}
       </View>
     );
   }
+
+  setMuted = () => {
+    const { sip } = this.context;
+    sip.setMuted(true, callStore.selectedId);
+    callStore.upsertRunning({
+      id: callStore.selectedId,
+      muted: true,
+    });
+  };
+
+  setunMuted = () => {
+    const { sip } = this.context;
+    sip.setMuted(false, callStore.selectedId);
+    callStore.upsertRunning({
+      id: callStore.selectedId,
+      muted: false,
+    });
+  };
 
   onOpenLoudSpeaker = () => {
     const activecallid = callStore.selectedId;

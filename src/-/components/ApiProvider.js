@@ -374,7 +374,7 @@ class ApiProvider extends React.Component {
   };
 
   onSIPVideoSessionEnded = ev => {
-    this.props.removeRunningVideo(ev);
+    callStore.removeRunning(ev);
   };
 
   render() {

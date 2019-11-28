@@ -56,6 +56,7 @@ const Notify = observer(p => {
         </View>
       )}
       <ButtonIcon
+        bdcolor={v.redBg}
         color={v.redBg}
         onPress={() => p.reject(p.id)}
         path={mdiClose}
@@ -63,6 +64,7 @@ const Notify = observer(p => {
         style={s.Notify_Btn_reject}
       />
       <ButtonIcon
+        bdcolor={v.mainBg}
         color={v.mainBg}
         onPress={() => p.accept(p.id)}
         path={mdiCheck}

@@ -344,6 +344,10 @@ class SIP extends EventEmitter {
   disableVideo(sessionId) {
     this.phone.setWithVideo(sessionId, false);
   }
+
+  setMuted(muted, sessionId) {
+    this.phone.setMuted({ main: muted }, sessionId);
+  }
 }
 
 const sip = new SIP();

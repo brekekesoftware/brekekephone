@@ -169,6 +169,8 @@ class PageIncoming extends React.Component {
             parkingIds={callStore.runnings
               .filter(c => c.parking)
               .map(c => c.id)}
+            setMuted={this.setMuted}
+            setunMuted={this.setunMuted}
             startRecording={this.startRecording}
             stopRecording={this.stopRecording}
             transfer={this.transfer}
@@ -191,6 +193,24 @@ class PageIncoming extends React.Component {
       </BrekekeGradient>
     );
   }
+
+  setMuted = () => {
+    const { sip } = this.context;
+    sip.setMuted(true, callStore.selectedId);
+    callStore.upsertRunning({
+      id: callStore.selectedId,
+      muted: true,
+    });
+  };
+
+  setunMuted = () => {
+    const { sip } = this.context;
+    sip.setMuted(false, callStore.selectedId);
+    callStore.upsertRunning({
+      id: callStore.selectedId,
+      muted: false,
+    });
+  };
 
   onOpenLoudSpeaker = () => {
     if (Platform.OS !== `web`) {
