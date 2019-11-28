@@ -13,7 +13,7 @@ import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
 @observer
-class TransferDial extends React.Component {
+class PageTransferDial extends React.Component {
   @computed get call() {
     return callStore.getRunningCall(this.props.callId);
   }
@@ -170,7 +170,7 @@ class TransferDial extends React.Component {
       transfering: target,
     });
 
-    g.goToCallTransferAttend({ callId: this.call.id });
+    g.goToPageTransferAttend({ callId: this.call.id });
   };
 
   onTransferFailure = err => {
@@ -225,7 +225,7 @@ class TransferDial extends React.Component {
       transfering: target,
     });
 
-    g.goToCallTransferAttend({ callId: this.call.id });
+    g.goToPageTransferAttend({ callId: this.call.id });
 
     const { sip } = this.context;
 
@@ -259,4 +259,4 @@ class TransferDial extends React.Component {
   };
 }
 
-export default TransferDial;
+export default PageTransferDial;

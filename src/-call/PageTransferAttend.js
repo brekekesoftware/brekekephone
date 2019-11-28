@@ -18,45 +18,45 @@ import Icon from '../shared/Icon';
 import Layout from '../shared/Layout';
 
 const s = StyleSheet.create({
-  TransferAttend: {
+  PageTransferAttend: {
     flexDirection: `row`,
   },
-  TransferAttend__spaceAround: {
+  PageTransferAttend__spaceAround: {
     justifyContent: `space-around`,
   },
-  TransferAttend_Spacing: {
+  PageTransferAttend_Spacing: {
     flex: 1,
     maxHeight: `40%`,
   },
-  TransferAttend_Info: {
+  PageTransferAttend_Info: {
     position: `absolute`,
     alignItems: `center`,
   },
-  TransferAttend_InfoFrom: {
+  PageTransferAttend_InfoFrom: {
     left: 20,
     top: 30,
   },
-  TransferAttend_InfoTo: {
+  PageTransferAttend_InfoTo: {
     right: 20,
     top: 30,
   },
-  TransferAttend_InfoArr: {
+  PageTransferAttend_InfoArr: {
     marginLeft: `auto`,
     marginRight: `auto`,
     top: 60,
   },
 
-  TransferAttend_BtnOuter: {
+  PageTransferAttend_BtnOuter: {
     flexDirection: `column`,
     alignItems: `center`,
   },
-  TransferAttend_Txt__pdt20: {
+  PageTransferAttend_Txt__pdt20: {
     paddingTop: 20,
   },
-  TransferAttend_Txt__pdt10: {
+  PageTransferAttend_Txt__pdt10: {
     paddingTop: 10,
   },
-  TransferAttend_Btn: {
+  PageTransferAttend_Btn: {
     borderWidth: 1,
     borderRadius: 25,
     padding: 5,
@@ -66,7 +66,7 @@ const s = StyleSheet.create({
 });
 
 @observer
-class TransferAttend extends React.Component {
+class PageTransferAttend extends React.Component {
   @computed get call() {
     return callStore.getRunningCall(this.props.callId);
   }
@@ -85,51 +85,55 @@ class TransferAttend extends React.Component {
           title: `Attended Transfer`,
         }}
       >
-        <View style={s.TransferAttend}>
-          <View style={[s.TransferAttend_Info, s.TransferAttend_InfoFrom]}>
+        <View style={s.PageTransferAttend}>
+          <View
+            style={[s.PageTransferAttend_Info, s.PageTransferAttend_InfoFrom]}
+          >
             <Avatar source={{ uri: usersource?.avatar }} />
-            <Text style={s.TransferAttend_Txt__pdt20}>From</Text>
+            <Text style={s.PageTransferAttend_Txt__pdt20}>From</Text>
             <Text>{this.call?.partyName}</Text>
           </View>
-          <View style={s.TransferAttend_InfoArr}>
+          <View style={s.PageTransferAttend_InfoArr}>
             <Icon path={mdiArrowRight} />
           </View>
-          <View style={[s.TransferAttend_Info, s.TransferAttend_InfoTo]}>
+          <View
+            style={[s.PageTransferAttend_Info, s.PageTransferAttend_InfoTo]}
+          >
             <Avatar source={{ uri: usertarget?.avatar }} />
-            <Text style={s.TransferAttend_Txt__pdt20}>To</Text>
+            <Text style={s.PageTransferAttend_Txt__pdt20}>To</Text>
             <Text>{this.call?.transfering}</Text>
           </View>
         </View>
-        <View style={s.TransferAttend_Spacing} />
-        <View style={[s.TransferAttend, s.TransferAttend__spaceAround]}>
-          <View style={s.TransferAttend_BtnOuter}>
+        <View style={s.PageTransferAttend_Spacing} />
+        <View style={[s.PageTransferAttend, s.PageTransferAttend__spaceAround]}>
+          <View style={s.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.hangup}
-              style={[s.TransferAttend_Btn]}
+              style={[s.PageTransferAttend_Btn]}
             >
               <Icon path={mdiPhoneOff} />
             </TouchableOpacity>
-            <Text style={s.TransferAttend_Txt__pdt10}>CANCEL</Text>
+            <Text style={s.PageTransferAttend_Txt__pdt10}>CANCEL</Text>
             <Text>TRANSFER</Text>
           </View>
-          <View style={s.TransferAttend_BtnOuter}>
+          <View style={s.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.stop}
-              style={[s.TransferAttend_Btn]}
+              style={[s.PageTransferAttend_Btn]}
             >
               <Icon path={mdiPhoneHangup} />
             </TouchableOpacity>
-            <Text style={s.TransferAttend_Txt__pdt10}>END CALL &</Text>
+            <Text style={s.PageTransferAttend_Txt__pdt10}>END CALL &</Text>
             <Text>COMPLETE TRANSFER</Text>
           </View>
-          <View style={s.TransferAttend_BtnOuter}>
+          <View style={s.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.join}
-              style={[s.TransferAttend_Btn]}
+              style={[s.PageTransferAttend_Btn]}
             >
               <Icon path={mdiPhoneForward} />
             </TouchableOpacity>
-            <Text style={s.TransferAttend_Txt__pdt10}>CONFERENCE</Text>
+            <Text style={s.PageTransferAttend_Txt__pdt10}>CONFERENCE</Text>
           </View>
         </View>
       </Layout>
@@ -197,4 +201,4 @@ class TransferAttend extends React.Component {
   };
 }
 
-export default TransferAttend;
+export default PageTransferAttend;

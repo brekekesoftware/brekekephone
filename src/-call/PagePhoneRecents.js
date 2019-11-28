@@ -11,7 +11,7 @@ import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
 @observer
-class Recent extends React.Component {
+class PagePhoneRecents extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
@@ -80,4 +80,4 @@ class Recent extends React.Component {
   }
 }
 
-export default Recent;
+export default PagePhoneRecents;

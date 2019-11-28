@@ -15,7 +15,7 @@ import Message from './Message';
 import m from './MiniChat';
 
 @observer
-class ChatDetail extends React.Component {
+class PageChatDetail extends React.Component {
   @computed get chatIds() {
     return (chatStore.messagesByThreadId[this.props.buddy] || []).map(
       m => m.id,
@@ -293,4 +293,4 @@ class ChatDetail extends React.Component {
   };
 }
 
-export default ChatDetail;
+export default PageChatDetail;

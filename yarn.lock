@@ -3927,10 +3927,10 @@ data-urls@^1.0.0, data-urls@^1.1.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-date-fns@2.8.1:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.8.1.tgz#2109362ccb6c87c3ca011e9e31f702bc09e4123b"
-  integrity sha512-EL/C8IHvYRwAHYgFRse4MGAPSqlJVlOrhVYZ75iQBKrnv+ZedmYsgwH3t+BCDuZDXpoo07+q9j4qgSSOa7irJg==
+date-fns@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.1.0.tgz#0d7e806c3cefe14a943532dbf968995ccfd46bd9"
+  integrity sha512-eKeLk3sLCnxB/0PN4t1+zqDtSs4jb4mXRSTZ2okmx/myfWyDqeO4r5nnmA5LClJiCwpuTMeK2v5UQPuE4uMaxA==
 
 date-fns@^1.27.2:
   version "1.30.1"
@@ -7358,10 +7358,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@9.4.3:
-  version "9.4.3"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-9.4.3.tgz#f55ad5f94f6e105294bfd6499b23142961f7b982"
-  integrity sha512-PejnI+rwOAmKAIO+5UuAZU9gxdej/ovSEOAY34yMfC3OS4Ac82vCBPzAWLReR9zCPOMqeVwQRaZ3bUBpAsaL2Q==
+lint-staged@9.5.0:
+  version "9.5.0"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-9.5.0.tgz#290ec605252af646d9b74d73a0fa118362b05a33"
+  integrity sha512-nawMob9cb/G1J98nb8v3VC/E8rcX1rryUYXVZ69aT9kde6YWX+uvNOEHY5yf2gcWcTJGiD0kqXmCnS3oD75GIA==
   dependencies:
     chalk "^2.4.2"
     commander "^2.20.0"
@@ -10299,10 +10299,10 @@ react-dev-utils@^9.1.0:
     strip-ansi "5.2.0"
     text-table "0.2.0"
 
-react-device-detect@1.9.10:
-  version "1.9.10"
-  resolved "https://registry.yarnpkg.com/react-device-detect/-/react-device-detect-1.9.10.tgz#3ea17e1383fef87886fb85cc850747dad306d050"
-  integrity sha512-Rb618NuNwJojJeIgI5UoONwztbd4wMT4TBofzvYOHnPNu61LYYz8b78cXQb7kXRrPn6iI5T1gFtNQh0GxHEPxw==
+react-device-detect@1.11.14:
+  version "1.11.14"
+  resolved "https://registry.yarnpkg.com/react-device-detect/-/react-device-detect-1.11.14.tgz#02ba2398e2ce81fb0eaed3e62a9ad713ab3870a7"
+  integrity sha512-WSjch241xI+rXHVtJaSYxNUT2WAykzfJgMI2Hg9xjNNTlIZdJu/fmWf4iedNH7qzFq+JaJ6fDJu3mrKFLerKBw==
   dependencies:
     ua-parser-js "^0.7.20"
 
@@ -12577,10 +12577,12 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
-validatorjs@3.18.0:
-  version "3.18.0"
-  resolved "https://registry.yarnpkg.com/validatorjs/-/validatorjs-3.18.0.tgz#f0d8e3284b0dc446197dd0d43bacafdb8e3d3b5e"
-  integrity sha512-SciNNWcEshji0lntKNIZkltWbGNaXyDv58Kqtdj8esjJujwAvPmUPX8WMkiCV6MUYORcAKACrCEOi1iQCgFp4g==
+validatorjs@3.18.1:
+  version "3.18.1"
+  resolved "https://registry.yarnpkg.com/validatorjs/-/validatorjs-3.18.1.tgz#5ded9858d2bf9032b517c2e6f9dfc286525cd17a"
+  integrity sha512-ZyHd0lJKNft3nUe+tYtTui2B5GwdKexWB55qNljccJouW/eo06YhYpCYjPlN/F5n/o0eS1uvb1Janh6eRl+TBQ==
+  dependencies:
+    date-fns "2.1.0"
 
 vary@~1.1.2:
   version "1.1.2"

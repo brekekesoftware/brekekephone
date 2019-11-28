@@ -5,13 +5,13 @@ import authStore from '../-/authStore';
 import ProfileCreateForm from '../-profile/ProfileCreateForm';
 import g from '../global';
 
-const PageProfileCurrent = observer(p => (
+const PageSettingsProfile = observer(p => (
   <ProfileCreateForm
     footerLogout
     onBack={g.backToPageContactUsers}
     onSave={(p, hasUnsavedChanges) => {
       if (!hasUnsavedChanges) {
-        g.backToContactsBrowse();
+        g.backToPageContactPhonebook();
       }
       g.showPrompt({
         title: `Save Server`,
@@ -29,4 +29,4 @@ const PageProfileCurrent = observer(p => (
   />
 ));
 
-export default PageProfileCurrent;
+export default PageSettingsProfile;

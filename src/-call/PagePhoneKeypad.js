@@ -5,7 +5,7 @@ import g from '../global';
 import Layout from '../shared/Layout';
 import ShowNumber from './ShowNumbers';
 
-class PagePhone extends React.Component {
+class PagePhoneKeypad extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
@@ -63,7 +63,7 @@ class PagePhone extends React.Component {
         footer={{
           navigation: {
             menu: `phone`,
-            subMenu: `callpad`,
+            subMenu: `keypad`,
           },
         }}
         header={{
@@ -80,4 +80,4 @@ class PagePhone extends React.Component {
   }
 }
 
-export default PagePhone;
+export default PagePhoneKeypad;

@@ -11,7 +11,7 @@ const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
 
 @observer
-class PageContactPhoneBook extends React.Component {
+class PageContactPhonebook extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
@@ -63,7 +63,7 @@ class PageContactPhoneBook extends React.Component {
       searchText,
       offset: 0,
     };
-    g.goToContactsBrowse(query);
+    g.goToPageContactPhonebook(query);
     this.loadContacts.flush();
     this.loadContacts();
   };
@@ -143,7 +143,7 @@ class PageContactPhoneBook extends React.Component {
       offset: oldQuery.offset + numberOfContactsPerPage,
     };
 
-    g.goToContactsBrowse(query);
+    g.goToPageContactPhonebook(query);
 
     setTimeout(() => {
       this.loadContacts.flush();
@@ -157,7 +157,7 @@ class PageContactPhoneBook extends React.Component {
       ...oldQuery,
       offset: oldQuery.offset - numberOfContactsPerPage,
     };
-    g.goToContactsBrowse(query);
+    g.goToPageContactPhonebook(query);
     setTimeout(() => {
       this.loadContacts.flush();
       this.loadContacts();
@@ -171,15 +171,15 @@ class PageContactPhoneBook extends React.Component {
   };
 
   create = () => {
-    g.goToContactsCreate({
+    g.goToPagePhonebookCreate({
       book: this.props.book,
     });
   };
   update = contact => {
-    g.goToContactsUpdate({
+    g.goToPagePhonebookUpdate({
       contact: contact,
     });
   };
 }
 
-export default PageContactPhoneBook;
+export default PageContactPhonebook;

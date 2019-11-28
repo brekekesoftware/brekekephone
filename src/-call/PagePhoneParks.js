@@ -12,7 +12,7 @@ import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
 @observer
-class CallPark extends React.Component {
+class PagePhoneParks extends React.Component {
   @computed get parkIds() {
     return authStore.profile.parks;
   }
@@ -29,7 +29,7 @@ class CallPark extends React.Component {
   render() {
     const screen = this.props.screen;
     const goBack =
-      screen === `page_phone` ? g.goToCallKeypad : g.goToCallsManage;
+      screen === `page_phone` ? g.goToPagePhoneKeypad : g.goToCallsManage;
     return (
       <Layout
         footer={{
@@ -108,4 +108,4 @@ class CallPark extends React.Component {
   };
 }
 
-export default CallPark;
+export default PagePhoneParks;

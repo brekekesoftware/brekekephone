@@ -156,7 +156,7 @@ class PageContactUsers extends React.Component {
             {_g.users.map((u, i) => (
               <TouchableOpacity
                 key={i}
-                onPress={() => g.goToBuddyChatsRecent({ buddy: u.id })}
+                onPress={() => g.goToPageChatDetail({ buddy: u.id })}
               >
                 <UserItem
                   detail={true}

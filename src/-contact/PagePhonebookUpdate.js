@@ -7,7 +7,7 @@ import g from '../global';
 import ContactsCreateForm from './ContactCreateForm';
 
 @observer
-class PageContactUpdate extends React.Component {
+class PagePhonebookUpdate extends React.Component {
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
   };
@@ -15,10 +15,10 @@ class PageContactUpdate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        onBack={g.goToContactsBrowse}
+        onBack={g.goToPageContactPhonebook}
         onSave={p => {
           this.save(p);
-          g.goToContactsBrowse();
+          g.goToPageContactPhonebook();
         }}
         title="Update Contact"
         updatingPhoneBook={this.props.contact}
@@ -36,7 +36,7 @@ class PageContactUpdate extends React.Component {
   };
 
   onSaveSuccess = () => {
-    g.goToContactsBrowse();
+    g.goToPageContactPhonebook();
   };
 
   onSaveFailure = err => {
@@ -45,4 +45,4 @@ class PageContactUpdate extends React.Component {
   };
 }
 
-export default PageContactUpdate;
+export default PagePhonebookUpdate;

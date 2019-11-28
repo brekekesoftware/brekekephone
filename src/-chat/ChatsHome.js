@@ -43,7 +43,7 @@ class ChatsHome extends React.Component {
             return m;
           }, {})}
           userids={this.getMatchIds()}
-          userselect={id => g.goToBuddyChatsRecent({ buddy: id })}
+          userselect={id => g.goToPageChatDetail({ buddy: id })}
         />
       </Layout>
     );

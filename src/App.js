@@ -6,26 +6,26 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
 import ApiProvider from './-/components/ApiProvider';
-import ChatDetail from './-chat/ChatDetail';
+import PageIncoming from './-call/PageIncoming';
+import PagePhoneKeypad from './-call/PagePhoneKeypad';
+import PagePhoneParks from './-call/PagePhoneParks';
+import PagePhoneRecents from './-call/PagePhoneRecents';
+import PageTransferAttend from './-call/PageTransferAttend';
+import PageTransferDial from './-call/PageTransferDial';
 import ChatGroupDetail from './-chat/ChatGroupDetail';
 import ChatsHome from './-chat/ChatsHome';
 import CreateGroup from './-chat/CreateGroup';
 import GroupChatInvite from './-chat/GroupChatInvite';
+import PageChatDetail from './-chat/PageChatDetail';
+import PageContactPhonebook from './-contact/PageContactPhonebook';
 import PageContactUsers from './-contact/PageContactUsers';
-import PageIncoming from './-incoming/PageIncoming';
-import CallPark from './-phone/CallPark';
-import PagePhone from './-phone/PagePhone';
-import PageContactPhoneBook from './-phonebook/PageContactPhoneBook';
-import PagePhoneBookCreate from './-phonebook/PagePhoneBookCreate';
-import PageContactUpdate from './-phonebook/PagePhoneBookUpdate';
+import PagePhonebookCreate from './-contact/PagePhonebookCreate';
+import PagePhonebookUpdate from './-contact/PagePhonebookUpdate';
 import PageProfileCreate from './-profile/PageProfileCreate';
-import PageProfileCurrent from './-profile/PageProfileCurrent';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
-import PageRecent from './-recent/PageRecent';
-import Setting from './-settings/Setting';
-import TransferAttend from './-transfer/TransferAttend';
-import TransferDial from './-transfer/TransferDial';
+import PageSettingsOther from './-settings/PageSettingsOther';
+import PageSettingsProfile from './-settings/PageSettingsProfile';
 import g from './global';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import { Platform, StyleSheet, View } from './native/Rn';
@@ -42,26 +42,25 @@ registerOnUnhandledError(unexpectedErr => {
 g.registerStacks({
   isRoot: true,
   PageProfileSignIn,
-  PageProfileCurrent,
+  PageSettingsProfile,
   PageContactUsers,
-  CallsCreate: PagePhone,
+  PagePhoneRecents,
   CallsManage: PageIncoming,
-  CallsRecent: PageRecent,
   ChatsRecent: ChatsHome,
-  BuddyChatsRecent: ChatDetail,
-  CallKeypad: PagePhone,
-  CallPark,
-  ContactsBrowse: PageContactPhoneBook,
-  Setting: Setting,
+  PagePhoneKeypad,
+  PagePhoneParks,
+  PageContactPhonebook,
+  PageSettingsOther,
 });
 g.registerStacks({
   PageProfileCreate,
   PageProfileUpdate,
+  PageChatDetail,
+  PagePhonebookCreate,
+  PagePhonebookUpdate,
+  PageTransferAttend,
+  PageTransferDial,
   ChatGroupsCreate: CreateGroup,
-  ContactsCreate: PagePhoneBookCreate,
-  ContactsUpdate: PageContactUpdate,
-  CallTransferAttend: TransferAttend,
-  CallTransferDial: TransferDial,
   ChatGroupInvite: GroupChatInvite,
   ChatGroupsRecent: ChatGroupDetail,
 });

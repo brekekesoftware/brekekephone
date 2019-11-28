@@ -70,7 +70,7 @@ class PageIncoming extends React.Component {
     const creatingSessions = sip.getCreatingSessions();
 
     if (creatingSessions.isEmpty()) {
-      g.goToCallsCreate();
+      g.goToPagePhoneKeypad();
     }
   }
 
@@ -147,7 +147,7 @@ class PageIncoming extends React.Component {
         <Layout
           header={{
             transparent: true,
-            onBackBtnPress: g.goToCallsRecent,
+            onBackBtnPress: g.goToPagePhoneRecents,
             title: u?.partyName,
             titleColor: v.revColor,
             backBtnColor: v.revColor,
@@ -157,8 +157,8 @@ class PageIncoming extends React.Component {
           <CallManage
             {...u}
             answer={this.answer}
-            browseHistory={g.goToCallsRecent}
-            create={g.goToCallsCreate}
+            browseHistory={g.goToPagePhoneRecents}
+            create={g.goToPagePhoneKeypad}
             disableVideo={this.disableVideo}
             dtmf={this.dtmf}
             enableVideo={this.enableVideo}
@@ -238,7 +238,7 @@ class PageIncoming extends React.Component {
     const { sip } = this.context;
 
     sip.hangupSession(callStore.selectedId);
-    g.goToCallsRecent();
+    g.goToPagePhoneRecents();
   };
 
   answer = () => {
@@ -339,15 +339,15 @@ class PageIncoming extends React.Component {
     const call = this.runningById[callStore.selectedId];
 
     if (call.transfering) {
-      g.goToCallTransferAttend({ callId: call.id });
+      g.goToPageTransferAttend({ callId: call.id });
     } else {
-      g.goToCallTransferDial({ callId: call.id });
+      g.goToPageTransferDial({ callId: call.id });
     }
   };
 
   dtmf = () => {
     const call = this.runningById[callStore.selectedId];
-    g.goToCallKeypad(call.id);
+    g.goToPagePhoneKeypad(call.id);
   };
 
   unpark = parkNumber => {
@@ -357,7 +357,7 @@ class PageIncoming extends React.Component {
   };
 
   park = () => {
-    g.goToCallPark({ screen: `call_manage` });
+    g.goToPagePhoneParks({ screen: `call_manage` });
   };
 
   enableVideo = () => {
