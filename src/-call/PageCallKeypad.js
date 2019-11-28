@@ -5,7 +5,7 @@ import g from '../global';
 import Layout from '../shared/Layout';
 import ShowNumber from './ShowNumbers';
 
-class PagePhoneKeypad extends React.Component {
+class PageCallKeypad extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
@@ -33,7 +33,7 @@ class PagePhoneKeypad extends React.Component {
       videoEnabled: video,
     });
 
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   call = (target, bVideoEnabled) => {
@@ -48,7 +48,7 @@ class PagePhoneKeypad extends React.Component {
       videoEnabled: bVideoEnabled,
     });
 
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   callVoice = () => {
@@ -80,4 +80,4 @@ class PagePhoneKeypad extends React.Component {
   }
 }
 
-export default PagePhoneKeypad;
+export default PageCallKeypad;

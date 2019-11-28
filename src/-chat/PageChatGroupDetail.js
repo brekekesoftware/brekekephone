@@ -13,7 +13,7 @@ import Message from './Message';
 import m from './MiniChat';
 
 @observer
-class ChatGroupDetail extends React.Component {
+class PageChatGroupDetail extends React.Component {
   @computed get chatIds() {
     return (chatStore.messagesByThreadId[this.props.groupId] || []).map(
       m => m.id,
@@ -56,7 +56,7 @@ class ChatGroupDetail extends React.Component {
           LayoutChat: true,
         }}
         header={{
-          onBackBtnPress: g.goToChatsRecent,
+          onBackBtnPress: g.goToPageChatRecents,
           onCreateBtnPress: this.invite,
           onVideoCallBtnPress: this.callVideoConference,
           onVoiceCallBtnPress: this.callVoiceConference,
@@ -272,7 +272,7 @@ class ChatGroupDetail extends React.Component {
 
   onLeaveSuccess = () => {
     chatStore.removeGroup(this.props.groupId);
-    g.goToChatsRecent();
+    g.goToPageChatRecents();
   };
 
   onLeaveFailure = err => {
@@ -309,4 +309,4 @@ class ChatGroupDetail extends React.Component {
   };
 }
 
-export default ChatGroupDetail;
+export default PageChatGroupDetail;

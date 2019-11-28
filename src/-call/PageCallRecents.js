@@ -11,7 +11,7 @@ import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
 @observer
-class PagePhoneRecents extends React.Component {
+class PageCallRecents extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
@@ -27,7 +27,7 @@ class PagePhoneRecents extends React.Component {
       ?.partyNumber;
     if (number) {
       this.context.sip.createSession(number);
-      g.goToCallsManage();
+      g.goToPageCallManage();
     } else {
       g.showError({ message: `Could not find number from store to call` });
     }
@@ -80,4 +80,4 @@ class PagePhoneRecents extends React.Component {
   }
 }
 
-export default PagePhoneRecents;
+export default PageCallRecents;

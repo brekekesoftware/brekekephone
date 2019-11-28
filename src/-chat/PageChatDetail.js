@@ -60,7 +60,7 @@ class PageChatDetail extends React.Component {
           LayoutChat: true,
         }}
         header={{
-          onBackBtnPress: g.goToChatsRecent,
+          onBackBtnPress: g.goToPageChatRecents,
           title: u?.name,
         }}
         isChat={{

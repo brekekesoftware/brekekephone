@@ -13,36 +13,36 @@ import Layout from '../shared/Layout';
 import v from '../variables';
 
 const s = StyleSheet.create({
-  GroupInvite: {},
-  GroupInvite_TextInput: {
+  PageChatGroupInvite: {},
+  PageChatGroupInvite_TextInput: {
     padding: 10,
     ...v.boxShadow,
   },
-  GroupInvite_Outer: {
+  PageChatGroupInvite_Outer: {
     paddingTop: 5,
     paddingHorizontal: 10,
   },
-  GroupInvite_BtnSave: {
+  PageChatGroupInvite_BtnSave: {
     marginTop: 15,
     padding: 10,
     borderRadius: v.borderRadius,
     backgroundColor: g.mainDarkBg,
   },
-  GroupInvite_BtnText: {
+  PageChatGroupInvite_BtnText: {
     alignItems: `center`,
   },
-  GroupInvite_GroupName: {
+  PageChatGroupInvite_GroupName: {
     fontSize: v.fontSizeTitle,
     padding: 5,
   },
-  GroupInvite_Text: {
+  PageChatGroupInvite_Text: {
     paddingTop: 15,
     fontSize: v.fontSizeTitle,
   },
 });
 
 @observer
-class GroupChatInvite extends React.Component {
+class PageChatGroupInvite extends React.Component {
   @computed get buddyIds() {
     return contactStore.ucUsers.map(u => u.id).filter(this.isNotMember);
   }
@@ -62,14 +62,17 @@ class GroupChatInvite extends React.Component {
           title: `Inviting Group member`,
         }}
       >
-        <View style={s.GroupInvite_Outer}>
-          <Text style={s.GroupInvite_GroupName}>
+        <View style={s.PageChatGroupInvite_Outer}>
+          <Text style={s.PageChatGroupInvite_GroupName}>
             {chatStore.getGroup(this.props.groupId).name}
           </Text>
-          <TouchableOpacity onPress={this.invite} style={s.GroupInvite_BtnSave}>
-            <Text style={s.GroupInvite_BtnText}>Invite</Text>
+          <TouchableOpacity
+            onPress={this.invite}
+            style={s.PageChatGroupInvite_BtnSave}
+          >
+            <Text style={s.PageChatGroupInvite_BtnText}>Invite</Text>
           </TouchableOpacity>
-          <Text style={s.GroupInvite_Text}>Members</Text>
+          <Text style={s.PageChatGroupInvite_Text}>Members</Text>
         </View>
         <Field isGroup />
         {this.buddyIds.map((id, i) => (
@@ -126,8 +129,8 @@ class GroupChatInvite extends React.Component {
   };
 
   back = () => {
-    g.goToChatGroupsRecent({ groupId: this.props.groupId });
+    g.goToPageChatGroupDetail({ groupId: this.props.groupId });
   };
 }
 
-export default GroupChatInvite;
+export default PageChatGroupInvite;

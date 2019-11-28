@@ -6,17 +6,17 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
 import ApiProvider from './-/components/ApiProvider';
-import PageIncoming from './-call/PageIncoming';
-import PagePhoneKeypad from './-call/PagePhoneKeypad';
-import PagePhoneParks from './-call/PagePhoneParks';
-import PagePhoneRecents from './-call/PagePhoneRecents';
+import PageCallKeypad from './-call/PageCallKeypad';
+import PageCallManage from './-call/PageCallManage';
+import PageCallParks from './-call/PageCallParks';
+import PageCallRecents from './-call/PageCallRecents';
 import PageTransferAttend from './-call/PageTransferAttend';
 import PageTransferDial from './-call/PageTransferDial';
-import ChatGroupDetail from './-chat/ChatGroupDetail';
-import ChatsHome from './-chat/ChatsHome';
-import CreateGroup from './-chat/CreateGroup';
-import GroupChatInvite from './-chat/GroupChatInvite';
 import PageChatDetail from './-chat/PageChatDetail';
+import PageChatGroupCreate from './-chat/PageChatGroupCreate';
+import PageChatGroupDetail from './-chat/PageChatGroupDetail';
+import PageChatGroupInvite from './-chat/PageChatGroupInvite';
+import PageChatRecents from './-chat/PageChatRecents';
 import PageContactPhonebook from './-contact/PageContactPhonebook';
 import PageContactUsers from './-contact/PageContactUsers';
 import PagePhonebookCreate from './-contact/PagePhonebookCreate';
@@ -42,27 +42,27 @@ registerOnUnhandledError(unexpectedErr => {
 g.registerStacks({
   isRoot: true,
   PageProfileSignIn,
-  PageSettingsProfile,
-  PageContactUsers,
-  PagePhoneRecents,
-  CallsManage: PageIncoming,
-  ChatsRecent: ChatsHome,
-  PagePhoneKeypad,
-  PagePhoneParks,
+  PageChatRecents,
   PageContactPhonebook,
+  PageContactUsers,
+  PageCallKeypad,
+  PageCallParks,
+  PageCallRecents,
   PageSettingsOther,
+  PageSettingsProfile,
 });
 g.registerStacks({
   PageProfileCreate,
   PageProfileUpdate,
-  PageChatDetail,
   PagePhonebookCreate,
   PagePhonebookUpdate,
+  PageCallManage,
+  PageChatDetail,
   PageTransferAttend,
   PageTransferDial,
-  ChatGroupsCreate: CreateGroup,
-  ChatGroupInvite: GroupChatInvite,
-  ChatGroupsRecent: ChatGroupDetail,
+  PageChatGroupCreate,
+  PageChatGroupInvite,
+  PageChatGroupDetail,
 });
 
 const s = StyleSheet.create({

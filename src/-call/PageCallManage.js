@@ -28,7 +28,7 @@ const s = StyleSheet.create({
 });
 
 @observer
-class PageIncoming extends React.Component {
+class PageCallManage extends React.Component {
   @computed get runningIds() {
     return callStore.runnings.map(c => c.id);
   }
@@ -70,7 +70,7 @@ class PageIncoming extends React.Component {
     const creatingSessions = sip.getCreatingSessions();
 
     if (creatingSessions.isEmpty()) {
-      g.goToPagePhoneKeypad();
+      g.goToPageCallKeypad();
     }
   }
 
@@ -147,7 +147,7 @@ class PageIncoming extends React.Component {
         <Layout
           header={{
             transparent: true,
-            onBackBtnPress: g.goToPagePhoneRecents,
+            onBackBtnPress: g.goToPageCallRecents,
             title: u?.partyName,
             titleColor: v.revColor,
             backBtnColor: v.revColor,
@@ -157,8 +157,8 @@ class PageIncoming extends React.Component {
           <CallManage
             {...u}
             answer={this.answer}
-            browseHistory={g.goToPagePhoneRecents}
-            create={g.goToPagePhoneKeypad}
+            browseHistory={g.goToPageCallRecents}
+            create={g.goToPageCallKeypad}
             disableVideo={this.disableVideo}
             dtmf={this.dtmf}
             enableVideo={this.enableVideo}
@@ -238,7 +238,7 @@ class PageIncoming extends React.Component {
     const { sip } = this.context;
 
     sip.hangupSession(callStore.selectedId);
-    g.goToPagePhoneRecents();
+    g.goToPageCallRecents();
   };
 
   answer = () => {
@@ -347,7 +347,7 @@ class PageIncoming extends React.Component {
 
   dtmf = () => {
     const call = this.runningById[callStore.selectedId];
-    g.goToPagePhoneKeypad(call.id);
+    g.goToPageCallKeypad(call.id);
   };
 
   unpark = parkNumber => {
@@ -357,7 +357,7 @@ class PageIncoming extends React.Component {
   };
 
   park = () => {
-    g.goToPagePhoneParks({ screen: `call_manage` });
+    g.goToPageCallParks({ screen: `call_manage` });
   };
 
   enableVideo = () => {
@@ -373,4 +373,4 @@ class PageIncoming extends React.Component {
   };
 }
 
-export default PageIncoming;
+export default PageCallManage;

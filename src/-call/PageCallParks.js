@@ -12,7 +12,7 @@ import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
 @observer
-class PagePhoneParks extends React.Component {
+class PageCallParks extends React.Component {
   @computed get parkIds() {
     return authStore.profile.parks;
   }
@@ -29,7 +29,7 @@ class PagePhoneParks extends React.Component {
   render() {
     const screen = this.props.screen;
     const goBack =
-      screen === `page_phone` ? g.goToPagePhoneKeypad : g.goToCallsManage;
+      screen === `page_phone` ? g.goToPageCallKeypad : g.goToPageCallManage;
     return (
       <Layout
         footer={{
@@ -95,12 +95,12 @@ class PagePhoneParks extends React.Component {
         videoEnabled: false,
       });
 
-      g.goToCallsManage();
+      g.goToPageCallManage();
     }
   };
 
   onParkSuccess = () => {
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   onParkFailure = err => {
@@ -108,4 +108,4 @@ class PagePhoneParks extends React.Component {
   };
 }
 
-export default PagePhoneParks;
+export default PageCallParks;

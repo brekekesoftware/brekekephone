@@ -81,7 +81,7 @@ class PageTransferAttend extends React.Component {
     return (
       <Layout
         header={{
-          onBackBtnPress: g.goToCallsManage,
+          onBackBtnPress: g.goToPageCallManage,
           title: `Attended Transfer`,
         }}
       >
@@ -171,7 +171,7 @@ class PageTransferAttend extends React.Component {
       transfering: false,
     });
 
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   onJoinFailure = err => {
@@ -193,7 +193,7 @@ class PageTransferAttend extends React.Component {
       transfering: false,
     });
 
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   onStopFailure = err => {

@@ -10,7 +10,7 @@ import Search from '../shared/Search';
 import { arrToMap } from '../utils/toMap';
 import ListUsers from './ListUsers';
 
-class ChatsHome extends React.Component {
+class PageChatRecents extends React.Component {
   render() {
     return (
       <Layout
@@ -29,14 +29,14 @@ class ChatsHome extends React.Component {
           value={contactStore.searchText}
         />
 
-        <TouchableOpacity onPress={g.goToChatGroupsCreate}>
+        <TouchableOpacity onPress={g.goToPageChatGroupCreate}>
           <UserItem name="Create group" />
         </TouchableOpacity>
         <ListUsers
-          createGroup={g.goToChatGroupsCreate}
+          createGroup={g.goToPageChatGroupCreate}
           groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
           groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
-          groupselect={groupId => g.goToChatGroupsRecent({ groupId })}
+          groupselect={groupId => g.goToPageChatGroupDetail({ groupId })}
           lastmess={this.getLastMessageChat}
           userbyid={contactStore.ucUsers.reduce((m, u) => {
             m[u.id] = u;
@@ -76,4 +76,4 @@ class ChatsHome extends React.Component {
     chatStore.threadIdsOrderedByRecent.filter(this.isMatchUser);
 }
 
-export default ChatsHome;
+export default PageChatRecents;

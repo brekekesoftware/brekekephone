@@ -18,32 +18,32 @@ import Layout from '../shared/Layout';
 import v from '../variables';
 
 const s = StyleSheet.create({
-  CreateGroup: {},
-  CreateGroup_TextInput: {
+  PageChatGroupCreate: {},
+  PageChatGroupCreate_TextInput: {
     padding: 10,
     ...v.boxShadow,
   },
-  CreateGroup_Outer: {
+  PageChatGroupCreate_Outer: {
     paddingTop: 5,
     paddingHorizontal: 10,
   },
-  CreateGroup_BtnSave: {
+  PageChatGroupCreate_BtnSave: {
     marginTop: 15,
     padding: 10,
     borderRadius: v.borderRadius,
     backgroundColor: g.mainDarkBg,
   },
-  CreateGroup_BtnText: {
+  PageChatGroupCreate_BtnText: {
     alignItems: `center`,
   },
-  CreateGroup_Text: {
+  PageChatGroupCreate_Text: {
     paddingTop: 15,
     fontSize: v.fontSizeTitle,
   },
 });
 
 @observer
-class CreateGroup extends React.Component {
+class PageChatGroupCreate extends React.Component {
   @computed get buddyIds() {
     return contactStore.ucUsers.map(u => u.id);
   }
@@ -67,21 +67,24 @@ class CreateGroup extends React.Component {
     return (
       <Layout
         header={{
-          onBackBtnPress: g.goToChatsRecent,
+          onBackBtnPress: g.goToPageChatRecents,
           title: `New Group`,
         }}
       >
-        <View style={s.CreateGroup_Outer}>
+        <View style={s.PageChatGroupCreate_Outer}>
           <TextInput
             onChangeText={this.setName}
             placeholder="Group name"
-            style={s.CreateGroup_TextInput}
+            style={s.PageChatGroupCreate_TextInput}
             value={this.state.name}
           />
-          <TouchableOpacity onPress={this.create} style={s.CreateGroup_BtnSave}>
-            <Text style={s.CreateGroup_BtnText}>SAVE</Text>
+          <TouchableOpacity
+            onPress={this.create}
+            style={s.PageChatGroupCreate_BtnSave}
+          >
+            <Text style={s.PageChatGroupCreate_BtnText}>SAVE</Text>
           </TouchableOpacity>
-          <Text style={s.CreateGroup_Text}>Members</Text>
+          <Text style={s.PageChatGroupCreate_Text}>Members</Text>
         </View>
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
@@ -134,7 +137,7 @@ class CreateGroup extends React.Component {
   onCreateSuccess = group => {
     chatStore.upsertGroup(group);
     this.context.uc.joinChatGroup(group.id);
-    g.goToChatsRecent();
+    g.goToPageChatRecents();
   };
 
   onCreateFailure = err => {
@@ -143,4 +146,4 @@ class CreateGroup extends React.Component {
   };
 }
 
-export default CreateGroup;
+export default PageChatGroupCreate;

@@ -79,7 +79,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={g.goToChatsRecent}
+          onPress={g.goToPageChatRecents}
           style={s.FooterNavigation_Btn}
         >
           <Text
@@ -95,7 +95,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
     subMenuButtons = (
       <React.Fragment>
         <TouchableOpacity
-          onPress={g.goToPagePhoneKeypad}
+          onPress={g.goToPageCallKeypad}
           style={s.FooterNavigation_Btn}
         >
           <Text
@@ -106,7 +106,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={g.goToPagePhoneRecents}
+          onPress={g.goToPageCallRecents}
           style={s.FooterNavigation_Btn}
         >
           <Text
@@ -117,7 +117,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={g.goToPagePhoneParks}
+          onPress={g.goToPageCallParks}
           style={s.FooterNavigation_Btn}
         >
           <Text
@@ -170,7 +170,7 @@ const FooterNavigation = ({ menu, subMenu }) => {
           <Icon path={mdiAccountCircleOutline} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={isMenuPhone ? null : g.goToPagePhoneRecents}
+          onPress={isMenuPhone ? null : g.goToPageCallRecents}
           style={[
             s.FooterNavigation_Btn,
             isMenuPhone && s.FooterNavigation_Btn__active,

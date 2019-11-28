@@ -176,7 +176,7 @@ class Callbar extends React.Component {
             hold={this.hold}
             onCloseLoudSpeaker={this.onCloseLoudSpeaker}
             onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-            pressCallsManage={g.goToCallsManage}
+            pressCallsManage={g.goToPageCallManage}
             setMuted={this.setMuted}
             setunMuted={this.setunMuted}
             unhold={this.unhold}

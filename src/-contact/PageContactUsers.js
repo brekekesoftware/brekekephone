@@ -89,7 +89,7 @@ class PageContactUsers extends React.Component {
     const { sip } = this.context;
 
     sip.createSession(userId);
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   callVideo = userId => {
@@ -99,7 +99,7 @@ class PageContactUsers extends React.Component {
       videoEnabled: true,
     });
 
-    g.goToCallsManage();
+    g.goToPageCallManage();
   };
 
   getLastMessageChat = id => {

@@ -56,7 +56,7 @@ class PageTransferDial extends React.Component {
     return (
       <Layout
         header={{
-          onBackBtnPress: g.goToCallsManage,
+          onBackBtnPress: g.goToPageCallManage,
           title: `Transfer call`,
         }}
       >
@@ -163,7 +163,7 @@ class PageTransferDial extends React.Component {
   onTransferSuccess = target => {
     const { attended } = this.state;
 
-    if (!attended) return g.goToCallsManage();
+    if (!attended) return g.goToPageCallManage();
 
     callStore.upsertRunning({
       id: this.call.id,
@@ -218,7 +218,7 @@ class PageTransferDial extends React.Component {
   onTransferAttendedForVideoSuccess = target => {
     const { attended } = this.state;
 
-    if (!attended) return g.goToCallsManage();
+    if (!attended) return g.goToPageCallManage();
 
     callStore.upsertRunning({
       id: this.call.id,
