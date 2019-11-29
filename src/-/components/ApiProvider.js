@@ -13,6 +13,7 @@ import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
+import voiceMailStore from '../voicemailStore';
 import { setApiProvider } from './getApiProvider';
 
 @observer
@@ -43,6 +44,7 @@ class ApiProvider extends React.Component {
     pbx.on(`user-talking`, this.onPBXUserTalking);
     pbx.on(`user-holding`, this.onPBXUserHolding);
     pbx.on(`user-hanging`, this.onPBXUserHanging);
+    pbx.on(`voicemail-updated`, this.onVoiceMailUpdated);
     sip.on(`connection-started`, this.onSIPConnectionStarted);
     sip.on(`connection-stopped`, this.onSIPConnectionStopped);
     sip.on(`connection-timeout`, this.onSIPConnectionTimeout);
@@ -76,6 +78,7 @@ class ApiProvider extends React.Component {
     pbx.off(`user-talking`, this.onPBXUserTalking);
     pbx.off(`user-holding`, this.onPBXUserHolding);
     pbx.off(`user-hanging`, this.onPBXUserHanging);
+    pbx.off(`voicemail-updated`, this.onVoiceMailUpdated);
     sip.off(`connection-started`, this.onSIPConnectionStarted);
     sip.off(`connection-stopped`, this.onSIPConnectionStopped);
     sip.off(`connection-timeout`, this.onSIPConnectionTimeout);
@@ -264,6 +267,10 @@ class ApiProvider extends React.Component {
   };
   onPBXUserHanging = ev => {
     contactStore.setTalkerStatus(ev.user, ev.talker, ``);
+  };
+
+  onVoiceMailUpdated = ev => {
+    voiceMailStore.set(`voicemail`, ev);
   };
 
   onPBXParkStarted = park => {

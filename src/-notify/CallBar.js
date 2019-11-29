@@ -164,7 +164,8 @@ class Callbar extends React.Component {
   };
 
   render() {
-    const bVisible = g.stacks[0].name !== `CallsManage`;
+    const bVisible =
+      g.stacks.filter(t => t.name === `PageCallManage`).length === 0;
     const callId = callStore.selectedId || ``;
     const activecall = this.callById[callId];
     return (
