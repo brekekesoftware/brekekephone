@@ -57,6 +57,10 @@ const v = {
   get redTransBg() {
     return fn.lighten(0.4, v.redBg);
   },
+  warning: `#f4c050`,
+  get warningL() {
+    return fn.lighten(0.4, v.warning);
+  },
   //
   boxShadow: {
     shadowColor: `black`,
