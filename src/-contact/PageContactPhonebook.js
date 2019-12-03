@@ -41,6 +41,10 @@ class PageContactPhonebook extends React.Component {
         header={{
           title: this.props.book || `Phonebook`,
           onCreateBtnPress: this.create,
+          navigation: {
+            menu: `contact`,
+            subMenu: `phonebook`,
+          },
         }}
       >
         {contactIds.map(id => (

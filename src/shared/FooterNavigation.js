@@ -6,7 +6,7 @@ import {
 import React from 'react';
 
 import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
+import { StyleSheet, TouchableOpacity, View } from '../native/Rn';
 import Icon from './Icon';
 
 const s = StyleSheet.create({
@@ -40,123 +40,13 @@ const s = StyleSheet.create({
   FooterNavigation_Btn__active: {
     backgroundColor: g.bg,
   },
-  FooterNavigation_BtnText__active: {
-    color: g.mainDarkBg,
-  },
 });
 
-const FooterNavigation = ({ menu, subMenu }) => {
+const FooterNavigation = ({ menu }) => {
   const isMenuContact = menu === `contact`;
   const isMenuPhone = menu === `phone`;
   const isMenuSettings = menu === `settings`;
 
-  let subMenuButtons = null;
-  if (isMenuContact) {
-    subMenuButtons = (
-      <React.Fragment>
-        <TouchableOpacity
-          onPress={g.goToPageContactPhonebook}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={
-              subMenu === `phonebook` && s.FooterNavigation_BtnText__active
-            }
-          >
-            PHONEBOOK
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={g.goToPageContactUsers}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `users` && s.FooterNavigation_BtnText__active}
-          >
-            USERS
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={g.goToPageChatRecents}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `chat` && s.FooterNavigation_BtnText__active}
-          >
-            CHAT
-          </Text>
-        </TouchableOpacity>
-      </React.Fragment>
-    );
-  } else if (isMenuPhone) {
-    subMenuButtons = (
-      <React.Fragment>
-        <TouchableOpacity
-          onPress={g.goToPageCallKeypad}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `keypad` && s.FooterNavigation_BtnText__active}
-          >
-            KEYPAD
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={g.goToPageCallRecents}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `recents` && s.FooterNavigation_BtnText__active}
-          >
-            RECENTS
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={g.goToPageCallParks}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `parks` && s.FooterNavigation_BtnText__active}
-          >
-            PARKS
-          </Text>
-        </TouchableOpacity>
-      </React.Fragment>
-    );
-  } else if (isMenuSettings) {
-    subMenuButtons = (
-      <React.Fragment>
-        <TouchableOpacity
-          onPress={g.goToPageSettingsProfile}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `profile` && s.FooterNavigation_BtnText__active}
-          >
-            PROFILE
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={g.goToPageSettingsOther}
-          style={s.FooterNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `settings` && s.FooterNavigation_BtnText__active}
-          >
-            SETTINGS
-          </Text>
-        </TouchableOpacity>
-      </React.Fragment>
-    );
-  }
   return (
     <View style={s.FooterNavigation}>
       <View style={s.FooterNavigation_Menu}>
@@ -187,9 +77,6 @@ const FooterNavigation = ({ menu, subMenu }) => {
         >
           <Icon path={mdiSettingsOutline} />
         </TouchableOpacity>
-      </View>
-      <View style={[s.FooterNavigation_Menu, s.FooterNavigation_Menu__sub]}>
-        {subMenuButtons}
       </View>
     </View>
   );

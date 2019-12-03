@@ -5,8 +5,10 @@ import React from 'react';
 
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
+import voiceMailStore from '../-/voicemailStore';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
+import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 
@@ -52,17 +54,25 @@ class PageCallRecents extends React.Component {
         footer={{
           navigation: {
             menu: `phone`,
-            subMenu: `recents`,
           },
         }}
         header={{
           title: `Recents`,
+          navigation: {
+            menu: `phone`,
+            subMenu: `recents`,
+          },
         }}
       >
         <Search
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
         />
+        <Field
+          isGroup
+          label={`VOICE MAIL (${voiceMailStore.voicemail?.new})`}
+        />
+        <Field isGroup label={`RECENT CALLS`} />
         {users.length !== 0 &&
           users.map((u, i) => (
             <UserItem

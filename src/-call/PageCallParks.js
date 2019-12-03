@@ -35,13 +35,16 @@ class PageCallParks extends React.Component {
         footer={{
           navigation: {
             menu: `phone`,
-            subMenu: `parks`,
           },
         }}
         header={{
           title: `Call Park`,
           onBackBtnPress: goBack,
           onParkBtnPress: this.park,
+          navigation: {
+            menu: `phone`,
+            subMenu: `parks`,
+          },
         }}
       >
         <Field isGroup />

@@ -63,11 +63,14 @@ class PageCallKeypad extends React.Component {
         footer={{
           navigation: {
             menu: `phone`,
-            subMenu: `keypad`,
           },
         }}
         header={{
           title: `CallPad`,
+          navigation: {
+            menu: `phone`,
+            subMenu: `keypad`,
+          },
         }}
       >
         <ShowNumber

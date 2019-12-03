@@ -127,7 +127,6 @@ class PageContactUsers extends React.Component {
       key: k,
       users: map[k],
     }));
-
     groups = orderBy(groups, `key`);
     groups.forEach(g => {
       g.users = orderBy(g.users, `name`);
@@ -144,6 +143,10 @@ class PageContactUsers extends React.Component {
           title: `Users`,
           titleCompact: `Users (${users.length})`,
           description: `PBX/UC users (${users.length})`,
+          navigation: {
+            menu: `contact`,
+            subMenu: `users`,
+          },
         }}
       >
         <Search

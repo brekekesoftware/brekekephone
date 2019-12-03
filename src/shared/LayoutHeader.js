@@ -16,6 +16,7 @@ import {
   View,
 } from '../native/Rn';
 import { useAnimation } from '../utils/animation';
+import HeaderNavigation from './HeaderNavigation';
 import Icon from './Icon';
 
 const s = StyleSheet.create({
@@ -114,6 +115,11 @@ const s = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 0,
   },
+  LayoutHeader_Navigation: {
+    position: `absolute`,
+    right: 0,
+    left: 0,
+  },
 });
 
 const Header = props => {
@@ -126,6 +132,7 @@ const Header = props => {
     createBtnInnerTop: [0, -5],
     backBtnHeight: [70, 40],
     backBtnPadding: [20, 5],
+    navigationTop: [90, 40],
   });
   return (
     <View
@@ -303,6 +310,13 @@ const Header = props => {
               <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
             </Animated.View>
           </TouchableOpacity>
+        )}
+        {props.navigation && (
+          <Animated.View
+            style={[s.LayoutHeader_Navigation, { top: a.navigationTop }]}
+          >
+            <HeaderNavigation {...props.navigation} />
+          </Animated.View>
         )}
       </Animated.View>
     </View>

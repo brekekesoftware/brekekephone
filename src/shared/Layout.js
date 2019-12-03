@@ -17,7 +17,7 @@ const s = StyleSheet.create({
     flexGrow: 1,
   },
   Layout_HeaderSpacing: {
-    height: 94, // 79+15
+    height: 128,
   },
   Layout_FooterSpacing: {
     height: 71, // 56+15

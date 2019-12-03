@@ -17,11 +17,14 @@ class PageChatRecents extends React.Component {
         footer={{
           navigation: {
             menu: `contact`,
-            subMenu: `chat`,
           },
         }}
         header={{
           title: `Chats`,
+          navigation: {
+            menu: `contact`,
+            subMenu: `chat`,
+          },
         }}
       >
         <Search
