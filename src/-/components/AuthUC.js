@@ -8,7 +8,6 @@ import g from '../../global';
 import authStore from '../authStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import AuthUCUI from './AuthUCUI';
 
 @observer
 class AuthUC extends React.Component {
@@ -89,17 +88,7 @@ class AuthUC extends React.Component {
   };
 
   render() {
-    if (!authStore.profile?.ucEnabled || authStore.ucState === `success`) {
-      return null;
-    }
-    return (
-      <AuthUCUI
-        abort={g.goToPageProfileSignIn}
-        didPleonasticLogin={authStore.ucLoginFromAnotherPlace}
-        failure={authStore.ucState === `failure`}
-        retry={this.auth}
-      />
-    );
+    return null;
   }
 }
 

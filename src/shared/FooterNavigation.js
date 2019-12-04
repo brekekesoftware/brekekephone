@@ -11,13 +11,8 @@ import Icon from './Icon';
 
 const s = StyleSheet.create({
   FooterNavigation: {
-    position: `absolute`,
     flex: 1,
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: g.hoverBg,
-    paddingHorizontal: 15,
     ...g.boxShadow,
   },
   FooterNavigation_Menu: {

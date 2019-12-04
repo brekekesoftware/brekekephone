@@ -58,6 +58,9 @@ const v = {
     return fn.lighten(0.4, v.redBg);
   },
   warning: `#f4c050`,
+  get warningD() {
+    return fn.darken(0.1, v.warning);
+  },
   get warningL() {
     return fn.lighten(0.4, v.warning);
   },

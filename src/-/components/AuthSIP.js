@@ -5,7 +5,6 @@ import React from 'react';
 
 import g from '../../global';
 import authStore from '../authStore';
-import AuthSIPUI from './AuthSIPUI';
 import getApiProvider from './getApiProvider';
 
 @observer
@@ -104,14 +103,7 @@ class AuthSIP extends React.Component {
   };
 
   render() {
-    return authStore.sipState === `success` ? null : (
-      <AuthSIPUI
-        abort={g.goToPageProfileSignIn}
-        failure={!authStore.profile || authStore.sipState === `failure`}
-        retry={this.auth}
-        retryable={!!authStore.profile}
-      />
-    );
+    return null;
   }
 }
 

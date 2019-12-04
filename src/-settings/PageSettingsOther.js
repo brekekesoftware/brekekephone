@@ -86,17 +86,21 @@ class Setting extends Component {
           },
         }}
         header={{
-          title: `Setting`,
-          onBackBtnPress: g.goToPageContactUsers,
+          description: `Other settings for PBX/UC`,
+          title: `Other settings`,
+          navigation: {
+            menu: `settings`,
+            subMenu: `settings`,
+          },
         }}
       >
         <View style={[s.Setting_Item]}>
           <View>
-            <Text>Status</Text>
+            <Text>UC status</Text>
           </View>
           <View style={s.Setting_Item_BtnOuter}>
             <TouchableOpacity
-              onPress={() => this.setStatus(`offiline`)}
+              onPress={() => this.setStatus(`offline`)}
               style={[
                 s.Setting_Item_Btn,
                 s.Setting_Item_Btn__RdLeft,
@@ -142,7 +146,7 @@ class Setting extends Component {
         </View>
         <View style={[s.Setting_Item]}>
           <View>
-            <Text>Status note</Text>
+            <Text>UC status note</Text>
           </View>
           <View style={s.Setting_Item_BtnOuter}>
             <TextInput

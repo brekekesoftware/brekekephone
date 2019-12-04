@@ -22,6 +22,8 @@ const compareProfile = (p1, p2) => {
   );
 };
 
+const connectingOrFailure = [`connecting`, `failure`];
+
 class AuthStore extends BaseStore {
   // 'stopped'
   // 'connecting'
@@ -34,8 +36,14 @@ class AuthStore extends BaseStore {
   @computed get pbxShouldAuth() {
     return !(!this.signedInId || this.pbxState !== `stopped`);
   }
+  @computed get pbxConnectingOrFailure() {
+    return connectingOrFailure.some(s => s === this.pbxState);
+  }
   @computed get sipShouldAuth() {
     return !(this.pbxState !== `success` || this.sipState !== `stopped`);
+  }
+  @computed get sipConnectingOrFailure() {
+    return connectingOrFailure.some(s => s === this.sipState);
   }
   @computed get ucShouldAuth() {
     return !(
@@ -43,6 +51,26 @@ class AuthStore extends BaseStore {
       this.ucState !== `stopped` ||
       this.ucLoginFromAnotherPlace
     );
+  }
+  @computed get ucConnectingOrFailure() {
+    return (
+      this.profile?.ucEnabled &&
+      connectingOrFailure.some(s => s === this.ucState)
+    );
+  }
+  @computed get shouldShowConnStatus() {
+    return (
+      this.pbxConnectingOrFailure ||
+      this.sipConnectingOrFailure ||
+      this.ucConnectingOrFailure
+    );
+  }
+  @computed get isConnFailure() {
+    return [
+      this.pbxState,
+      this.sipState,
+      this.profile?.ucEnabled && this.ucState,
+    ].some(s => s === `failure`);
   }
 
   findProfile = _p => {

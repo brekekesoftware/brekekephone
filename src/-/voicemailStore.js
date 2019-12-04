@@ -12,6 +12,6 @@ export class VoiceMailStore extends BaseStore {
   @observable voicemail = {};
 }
 
-const voiceMailStore = new VoiceMailStore();
+const voicemailStore = new VoiceMailStore();
 
-export default voiceMailStore;
+export default voicemailStore;

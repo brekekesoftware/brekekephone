@@ -5,7 +5,6 @@ import React from 'react';
 
 import g from '../../global';
 import authStore from '../authStore';
-import AuthPBXUI from './AuthPBXUI';
 
 @observer
 class AuthPBX extends React.Component {
@@ -44,14 +43,7 @@ class AuthPBX extends React.Component {
   };
 
   render() {
-    return authStore.pbxState === `success` ? null : (
-      <AuthPBXUI
-        abort={g.goToPageProfileSignIn}
-        failure={this.props.failure}
-        retry={this.auth}
-        retryable={!!authStore.profile}
-      />
-    );
+    return null;
   }
 }
 

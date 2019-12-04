@@ -34,7 +34,6 @@ class PageContactPhonebook extends React.Component {
   render() {
     const { contactIds } = this.state;
     const phonebooks = contactIds.map(this.resolveContact);
-    console.warn(`phone`, phonebooks);
     const map = {};
 
     phonebooks.forEach(u => {
@@ -68,6 +67,7 @@ class PageContactPhonebook extends React.Component {
         }}
         header={{
           title: this.props.book || `Phonebook`,
+          description: `Your phonebook contacts`,
           onCreateBtnPress: this.create,
           navigation: {
             menu: `contact`,

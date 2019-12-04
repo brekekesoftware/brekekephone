@@ -4,8 +4,10 @@ import {
   mdiPlus,
   mdiVideoOutline,
 } from '@mdi/js';
+import { observer } from 'mobx-react';
 import React from 'react';
 
+import authStore from '../-/authStore';
 import g from '../global';
 import {
   Animated,
@@ -115,14 +117,17 @@ const s = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 0,
   },
-  LayoutHeader_Navigation: {
-    position: `absolute`,
-    right: 0,
-    left: 0,
+  Conn: {
+    backgroundColor: g.warningD,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  Conn__failure: {
+    backgroundColor: g.redDarkBg,
   },
 });
 
-const Header = props => {
+const Header = observer(props => {
   const a = useAnimation(props.compact, {
     headerInnerPaddingVertical: [15, 10],
     titleFontSize: [g.fontSizeTitle, g.fontSizeSubTitle],
@@ -134,11 +139,52 @@ const Header = props => {
     backBtnPadding: [20, 5],
     navigationTop: [90, 40],
   });
+
+  const { isConnFailure, shouldShowConnStatus } = authStore;
+  const connA = useAnimation(shouldShowConnStatus, {
+    height: [0, 20], // lineHeightSmall + paddingVertical
+    opacity: [0, 1],
+  });
+  const {
+    pbxConnectingOrFailure,
+    sipConnectingOrFailure,
+    ucConnectingOrFailure,
+  } = authStore;
+  let service = ``;
+  if (pbxConnectingOrFailure) {
+    service = `PBX`;
+  } else if (sipConnectingOrFailure) {
+    service = `SIP`;
+  } else if (ucConnectingOrFailure) {
+    service = `UC`;
+  }
+  const connMessage =
+    service &&
+    (isConnFailure
+      ? service + ` connection failed`
+      : `Connecting to ` + service);
+
   return (
     <View
       style={[s.LayoutHeader, props.compact && s.LayoutHeader_Inner__compact]}
     >
       <StatusBar transparent={props.transparent} />
+      {shouldShowConnStatus && (
+        <Animated.View
+          style={[
+            s.Conn,
+            isConnFailure && s.Conn__failure,
+            {
+              height: connA.height,
+              opacity: connA.opacity,
+            },
+          ]}
+        >
+          <Text small white>
+            {connMessage}
+          </Text>
+        </Animated.View>
+      )}
       <Animated.View
         style={[
           s.LayoutHeader_Inner,
@@ -155,7 +201,7 @@ const Header = props => {
             {
               fontSize: a.titleFontSize,
               lineHeight: a.titleLineHeight,
-              color: props.titleColor,
+              color: props.titleColor || `black`,
             },
           ]}
         >
@@ -169,6 +215,7 @@ const Header = props => {
         >
           {props.description || `\u200a`}
         </Text>
+
         {props.onCreateBtnPress && (
           <TouchableOpacity
             onPress={props.onCreateBtnPress}
@@ -311,16 +358,10 @@ const Header = props => {
             </Animated.View>
           </TouchableOpacity>
         )}
-        {props.navigation && (
-          <Animated.View
-            style={[s.LayoutHeader_Navigation, { top: a.navigationTop }]}
-          >
-            <HeaderNavigation {...props.navigation} />
-          </Animated.View>
-        )}
       </Animated.View>
+      {props.navigation && <HeaderNavigation {...props.navigation} />}
     </View>
   );
-};
+});
 
 export default Header;

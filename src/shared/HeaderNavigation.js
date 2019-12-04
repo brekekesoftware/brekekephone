@@ -9,10 +9,8 @@ const s = StyleSheet.create({
     alignSelf: `stretch`,
     ...g.boxShadow,
   },
-
   HeaderNavigation_Menu__sub: {
     backgroundColor: g.bg,
-    paddingHorizontal: 15,
   },
   HeaderNavigation_Btn: {
     flex: 1,
@@ -25,7 +23,29 @@ const s = StyleSheet.create({
   HeaderNavigation_BtnText__active: {
     color: g.mainDarkBg,
   },
+  HeaderNavigation_SubBtn: {
+    borderBottomWidth: 3,
+    borderColor: `transparent`,
+  },
+  HeaderNavigation_SubBtn__active: {
+    borderColor: g.mainDarkBg,
+  },
 });
+
+const SubMenuButton = ({ active, onPress, text }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[
+      s.HeaderNavigation_Btn,
+      s.HeaderNavigation_SubBtn,
+      active && s.HeaderNavigation_SubBtn__active,
+    ]}
+  >
+    <Text small style={active && s.HeaderNavigation_BtnText__active}>
+      {text}
+    </Text>
+  </TouchableOpacity>
+);
 
 const HeaderNavigation = ({ menu, subMenu }) => {
   const isMenuContact = menu === `contact`;
@@ -36,106 +56,56 @@ const HeaderNavigation = ({ menu, subMenu }) => {
   if (isMenuContact) {
     subMenuButtons = (
       <React.Fragment>
-        <TouchableOpacity
+        <SubMenuButton
+          active={subMenu === `phonebook`}
           onPress={g.goToPageContactPhonebook}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={
-              subMenu === `phonebook` && s.HeaderNavigation_BtnText__active
-            }
-          >
-            PHONEBOOK
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          text={`PHONEBOOK`}
+        />
+        <SubMenuButton
+          active={subMenu === `users`}
           onPress={g.goToPageContactUsers}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `users` && s.HeaderNavigation_BtnText__active}
-          >
-            USERS
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          text={`USERS`}
+        />
+        <SubMenuButton
+          active={subMenu === `chat`}
           onPress={g.goToPageChatRecents}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `chat` && s.HeaderNavigation_BtnText__active}
-          >
-            CHAT
-          </Text>
-        </TouchableOpacity>
+          text={`CHAT`}
+        />
       </React.Fragment>
     );
   } else if (isMenuPhone) {
     subMenuButtons = (
       <React.Fragment>
-        <TouchableOpacity
+        <SubMenuButton
+          active={subMenu === `keypad`}
           onPress={g.goToPageCallKeypad}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `keypad` && s.HeaderNavigation_BtnText__active}
-          >
-            KEYPAD
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          text={`KEYPAD`}
+        />
+        <SubMenuButton
+          active={subMenu === `recents`}
           onPress={g.goToPageCallRecents}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `recents` && s.HeaderNavigation_BtnText__active}
-          >
-            RECENTS
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          text={`RECENTS`}
+        />
+        <SubMenuButton
+          active={subMenu === `parks`}
           onPress={g.goToPageCallParks}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `parks` && s.HeaderNavigation_BtnText__active}
-          >
-            PARKS
-          </Text>
-        </TouchableOpacity>
+          text={`PARKS`}
+        />
       </React.Fragment>
     );
   } else if (isMenuSettings) {
     subMenuButtons = (
       <React.Fragment>
-        <TouchableOpacity
+        <SubMenuButton
+          active={subMenu === `profile`}
           onPress={g.goToPageSettingsProfile}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `profile` && s.HeaderNavigation_BtnText__active}
-          >
-            PROFILE
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          text={`CURRENT SERVER`}
+        />
+        <SubMenuButton
+          active={subMenu === `settings`}
           onPress={g.goToPageSettingsOther}
-          style={s.HeaderNavigation_Btn}
-        >
-          <Text
-            small
-            style={subMenu === `settings` && s.HeaderNavigation_BtnText__active}
-          >
-            SETTINGS
-          </Text>
-        </TouchableOpacity>
+          text={`OTHER SETTINGS`}
+        />
       </React.Fragment>
     );
   }

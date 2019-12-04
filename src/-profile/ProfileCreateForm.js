@@ -1,8 +1,10 @@
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import authStore from '../-/authStore';
 import g from '../global';
 import { Text, View } from '../native/Rn';
 import Layout from '../shared/Layout';
@@ -81,20 +83,36 @@ const ProfileCreateForm = observer(props => {
     <Layout
       footer={{
         actions: {
-          onBackBtnPress: $.onBackBtnPress,
+          onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
           onSaveBtnPress: props.footerLogout
-            ? g.goToPageProfileSignIn
+            ? action(() => {
+                g.goToPageProfileSignIn();
+                authStore.signedInId = ``;
+              })
             : submitForm,
           saveText: props.footerLogout ? `LOGOUT` : null,
           saveColor: props.footerLogout ? g.redDarkBg : null,
         },
+        forceDisplayActions: props.footerLogout,
+        navigation: props.footerLogout
+          ? {
+              menu: `settings`,
+              subMenu: `profile`,
+            }
+          : null,
       }}
       header={{
-        onBackBtnPress: $.onBackBtnPress,
+        onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
         title: props.title,
         description: props.updatingProfile
           ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
           : `Create a new sign in profile`,
+        navigation: props.footerLogout
+          ? {
+              menu: `settings`,
+              subMenu: `profile`,
+            }
+          : null,
       }}
     >
       <Form

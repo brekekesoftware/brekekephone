@@ -66,7 +66,8 @@ class PageCallKeypad extends React.Component {
           },
         }}
         header={{
-          title: `CallPad`,
+          description: `Keypad dial manually`,
+          title: `Keypad`,
           navigation: {
             menu: `phone`,
             subMenu: `keypad`,
