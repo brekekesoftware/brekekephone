@@ -75,6 +75,7 @@ class PageContactPhonebook extends React.Component {
         }}
         header={{
           title: this.props.book || `Phonebook`,
+          description: `Your phonebook contacts`,
           onCreateBtnPress: this.create,
           navigation: {
             menu: `contact`,

@@ -13,7 +13,7 @@ import authStore from '../authStore';
 import callStore from '../callStore';
 import chatStore from '../chatStore';
 import contactStore from '../contactStore';
-import voiceMailStore from '../voicemailStore';
+import voicemailStore from '../voicemailStore';
 import { setApiProvider } from './getApiProvider';
 
 @observer
@@ -270,7 +270,7 @@ class ApiProvider extends React.Component {
   };
 
   onVoiceMailUpdated = ev => {
-    voiceMailStore.set(`voicemail`, ev);
+    voicemailStore.set(`voicemail`, ev);
   };
 
   onPBXParkStarted = park => {

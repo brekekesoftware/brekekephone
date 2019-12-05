@@ -5,7 +5,7 @@ import React from 'react';
 
 import authStore from '../-/authStore';
 import contactStore from '../-/contactStore';
-import voiceMailStore from '../-/voicemailStore';
+import voicemailStore from '../-/voicemailStore';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
 import Field from '../shared/Field';
@@ -57,6 +57,7 @@ class PageCallRecents extends React.Component {
           },
         }}
         header={{
+          description: `Recent voicemails and calls`,
           title: `Recents`,
           navigation: {
             menu: `phone`,
@@ -70,7 +71,7 @@ class PageCallRecents extends React.Component {
         />
         <Field
           isGroup
-          label={`VOICE MAIL (${voiceMailStore.voicemail?.new})`}
+          label={`VOICEMAILS (${voicemailStore.voicemail?.new})`}
         />
         <Field isGroup label={`RECENT CALLS`} />
         {users.length !== 0 &&

@@ -1,29 +1,27 @@
 import React from 'react';
 import { PanResponder, View } from 'react-native';
 
-import { std } from '../styleguide';
 import VideoPlayer from './VideoPlayer';
 
 const st = {
   mini: {
     position: `absolute`,
-    top: std.textSize.md + std.gap.md * 4,
-    left: std.gap.md,
+    top: 28,
+    left: 4,
     justifyContent: `center`,
     alignItems: `center`,
-    width: std.iconSize.lg * 6,
-    height: std.iconSize.lg * 6,
+    width: 32,
+    height: 32,
     backgroundColor: `black`,
-    borderRadius: std.iconSize.lg * 3,
+    borderRadius: 32,
     borderWidth: 1,
-    borderColor: std.color.shade9,
-    shadowColor: std.color.shade9,
-    shadowRadius: std.gap.md,
+    borderColor: `gray`,
+    shadowColor: `black`,
     shadowOpacity: 0.24,
 
     shadowOffset: {
       width: 0,
-      height: std.gap.sm,
+      height: 4,
     },
 
     elevation: 3,

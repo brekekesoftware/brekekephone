@@ -30,6 +30,8 @@ class PageCallParks extends React.Component {
     const screen = this.props.screen;
     const goBack =
       screen === `page_phone` ? g.goToPageCallKeypad : g.goToPageCallManage;
+    void goBack; // TODO
+
     return (
       <Layout
         footer={{
@@ -38,8 +40,9 @@ class PageCallParks extends React.Component {
           },
         }}
         header={{
-          title: `Call Park`,
-          onBackBtnPress: goBack,
+          description: `Manage your call parks`,
+          title: `Parks`,
+          onBackBtnPress: null,
           onParkBtnPress: this.park,
           navigation: {
             menu: `phone`,

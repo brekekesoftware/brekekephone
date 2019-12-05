@@ -29,7 +29,12 @@ const s = StyleSheet.create({
     width: `100%`,
     minWidth: 260,
     maxWidth: g.maxModalWidth,
-    marginHorizontal: `auto`,
+  },
+  LayoutFooter_Actions__hasNavigation: {
+    marginVertical: 10,
+  },
+  LayoutFooter_ActionsSpacing: {
+    flex: 1,
   },
 });
 
@@ -37,6 +42,7 @@ const LayoutFooter = ({
   LayoutChat,
   PhoneBook,
   actions,
+  forceDisplayActions,
   navigation,
   style,
 }) => (
@@ -49,9 +55,23 @@ const LayoutFooter = ({
       style,
     ]}
   >
-    {actions && !navigation && (
-      <View style={s.LayoutFooter_Actions}>
-        <FooterActions {...actions} LayoutChat={LayoutChat} />
+    {actions && (forceDisplayActions || !navigation) && (
+      <View
+        style={{
+          alignItems: `center`,
+          flexDirection: `row`,
+        }}
+      >
+        <View style={s.LayoutFooter_ActionsSpacing} />
+        <View
+          style={[
+            s.LayoutFooter_Actions,
+            navigation && s.LayoutFooter_Actions__hasNavigation,
+          ]}
+        >
+          <FooterActions {...actions} LayoutChat={LayoutChat} />
+        </View>
+        <View style={s.LayoutFooter_ActionsSpacing} />
       </View>
     )}
     {navigation && <FooterNavigation {...navigation} />}

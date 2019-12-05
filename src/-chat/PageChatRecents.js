@@ -20,7 +20,8 @@ class PageChatRecents extends React.Component {
           },
         }}
         header={{
-          title: `Chats`,
+          title: `Chat`,
+          description: `UC recent active chat`,
           navigation: {
             menu: `contact`,
             subMenu: `chat`,

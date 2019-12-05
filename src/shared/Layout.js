@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
+import authStore from '../-/authStore';
 import { ScrollView, StatusBar, StyleSheet, View } from '../native/Rn';
 import LayoutFooter from './LayoutFooter';
 import LayoutHeader from './LayoutHeader';
@@ -18,6 +19,9 @@ const s = StyleSheet.create({
   },
   Layout_HeaderSpacing: {
     height: 128,
+  },
+  Layout_HeaderSpacing__withConnStatus: {
+    height: 148,
   },
   Layout_FooterSpacing: {
     height: 71, // 56+15
@@ -65,7 +69,15 @@ const Layout = observer(props => {
     <React.Fragment>
       <Container {...containerProps}>
         <StatusBar transparent />
-        {props.header && <View style={s.Layout_HeaderSpacing} />}
+        {props.header && (
+          <View
+            style={[
+              s.Layout_HeaderSpacing,
+              authStore.shouldShowConnStatus &&
+                s.Layout_HeaderSpacing__withConnStatus,
+            ]}
+          />
+        )}
         {props.children}
         {props.footer && (
           <View
