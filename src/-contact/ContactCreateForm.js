@@ -114,7 +114,7 @@ const ContactsCreateForm = observer(props => {
           },
           {
             name: `company`,
-            label: `HOME NUMBER`,
+            label: `COMPANY`,
           },
           {
             name: `address`,

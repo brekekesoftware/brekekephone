@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import contactStore from '../-/contactStore';
 import g from '../global';
 import ContactsCreateForm from './ContactCreateForm';
 
@@ -20,7 +21,7 @@ class PagePhonebookCreate extends React.Component {
           this.save(p);
           g.goToPageContactPhonebook();
         }}
-        title="New Contact"
+        title="New PhoneBook"
       />
     );
   }
@@ -32,9 +33,11 @@ class PagePhonebookCreate extends React.Component {
       })
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
+
+    contactStore.pushPhoneBook(phonebook);
   };
 
-  onSaveSuccess = () => {
+  onSaveSuccess = contact => {
     g.goToPageContactPhonebook();
   };
 

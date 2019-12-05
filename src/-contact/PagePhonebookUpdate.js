@@ -1,8 +1,8 @@
-import set from 'lodash/set';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import contactStore from '../-/contactStore';
 import g from '../global';
 import ContactsCreateForm from './ContactCreateForm';
 
@@ -20,19 +20,20 @@ class PagePhonebookUpdate extends React.Component {
           this.save(p);
           g.goToPageContactPhonebook();
         }}
-        title="Update Contact"
+        title="Update PhoneBook"
         updatingPhoneBook={this.props.contact}
       />
     );
   }
 
   save = phonebook => {
-    set(phonebook, `shared`, phonebook.shared !== `false`);
     const { pbx } = this.context;
     pbx
       .setContact(phonebook)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
+
+    contactStore.updatePhoneBook(phonebook);
   };
 
   onSaveSuccess = () => {

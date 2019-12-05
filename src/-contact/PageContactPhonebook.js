@@ -1,13 +1,16 @@
 import { mdiInformation, mdiPhone } from '@mdi/js';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import contactStore from '../-/contactStore';
 import g from '../global';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
+import { arrToMap } from '../utils/toMap';
 import UserItem from './UserItem';
 
 const numberOfContactsPerPage = 30;
@@ -15,6 +18,14 @@ const formatPhoneNumber = number => number.replace(/\D+/g, ``);
 
 @observer
 class PageContactPhonebook extends React.Component {
+  @computed get phoneBookId() {
+    return contactStore.phoneBooks.map(p => p.id);
+  }
+
+  @computed get phoneBookById() {
+    return arrToMap(contactStore.phoneBooks, `id`, p => p);
+  }
+
   static contextTypes = {
     pbx: PropTypes.object.isRequired,
     sip: PropTypes.object.isRequired,
@@ -22,8 +33,6 @@ class PageContactPhonebook extends React.Component {
 
   state = {
     loading: true,
-    contactIds: [],
-    contactById: {},
   };
 
   componentDidMount() {
@@ -32,9 +41,7 @@ class PageContactPhonebook extends React.Component {
   }
 
   render() {
-    const { contactIds } = this.state;
-    const phonebooks = contactIds.map(this.resolveContact);
-    console.warn(`phone`, phonebooks);
+    const phonebooks = this.phoneBookId.map(this.resolveChat);
     const map = {};
 
     phonebooks.forEach(u => {
@@ -55,7 +62,7 @@ class PageContactPhonebook extends React.Component {
     }));
     groups = orderBy(groups, `key`);
     groups.forEach(g => {
-      g.phonebooks = orderBy(g.phonebooks, `firstName`);
+      g.phonebooks = orderBy(g.phonebooks, `name`);
     });
 
     return (
@@ -107,7 +114,7 @@ class PageContactPhonebook extends React.Component {
                 icon={[mdiPhone, mdiInformation]}
                 key={i}
                 last={i === _g.phonebooks.length - 1}
-                name={`${u.firstName} ${u.lastName}`}
+                name={u.name}
               />
             ))}
           </React.Fragment>
@@ -115,8 +122,6 @@ class PageContactPhonebook extends React.Component {
       </Layout>
     );
   }
-
-  resolveContact = id => this.state.contactById[id];
 
   setSearchText = searchText => {
     const oldQuery = this.props;
@@ -130,6 +135,16 @@ class PageContactPhonebook extends React.Component {
     this.loadContacts();
   };
 
+  resolveChat = id => {
+    const phonebook = this.phoneBookById[id];
+    if (phonebook) {
+      return {
+        name: `${phonebook.firstName} ${phonebook.lastName}`,
+        ...phonebook,
+      };
+    }
+  };
+
   loadContacts = debounce(() => {
     const { pbx } = this.context;
     const query = this.props;
@@ -140,40 +155,24 @@ class PageContactPhonebook extends React.Component {
       offset: query.offset,
       searchText: query.searchText,
     };
-    this.setState({
-      loading: true,
-      contactIds: [],
-      contactById: [],
-    });
     pbx
       .getContacts(book, shared, opts)
-      .then(contacts => {
-        const contactIds = [];
-        const contactById = {};
-        contacts.forEach(contact => {
-          contactIds.push(contact.id);
-          contactById[contact.id] = {
-            ...contact,
-            loading: true,
-          };
-        });
-        this.setState(
-          {
-            contactIds,
-            contactById,
-            loading: false,
-          },
-          this.loadContactDetails,
-        );
-      })
-      .catch(err => {
-        g.showError({ message: `load contact list`, err });
-      });
+      .then(this.onLoadContactsSuccess)
+      .catch(this.onLoadContactsFailure);
   }, 500);
 
-  loadContactDetails = () => {
-    const contactIds = this.state.contactIds;
-    contactIds.map(this.loadContactDetail);
+  onLoadContactsSuccess = contacts => {
+    this.setState({
+      loading: false,
+    });
+    contacts.map(c => this.loadContactDetail(c.id));
+  };
+
+  onLoadContactsFailure = err => {
+    this.setState({
+      loading: false,
+    });
+    g.showError({ message: `load contact list`, err });
   };
 
   loadContactDetail = id => {
@@ -181,16 +180,7 @@ class PageContactPhonebook extends React.Component {
     pbx
       .getContact(id)
       .then(detail => {
-        this.setState(prevState => ({
-          contactById: {
-            ...prevState.contactById,
-            [id]: {
-              ...prevState.contactById[id],
-              ...detail,
-              loading: false,
-            },
-          },
-        }));
+        contactStore.pushPhoneBook(detail);
       })
       .catch(err => {
         g.showError({ message: `load contact detail for id ${id}`, err });

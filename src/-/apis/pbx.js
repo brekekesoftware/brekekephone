@@ -284,7 +284,7 @@ class PBX extends EventEmitter {
     return this.pal(`setContact`, {
       aid: contact.id,
       phonebook: contact.book,
-      shared: contact.shared ? `true` : `false`,
+      shared: contact.shared,
 
       info: {
         $firstname: contact.firstName,

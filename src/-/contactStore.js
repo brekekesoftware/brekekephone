@@ -71,6 +71,42 @@ class ContactStore extends BaseStore {
   getUCUser = id => {
     return this._ucUsersMap[id];
   };
+
+  //id
+  //book
+  //firstName
+  //lastName
+  //workNumber
+  //cellNumber
+  //homeNumber
+  //job
+  //company
+  //address
+  //email
+  //shared
+  @observable phoneBooks = [];
+  @computed get _phoneBooksMap() {
+    return arrToMap(this.phoneBooks, `id`, u => u);
+  }
+  updatePhoneBook = action(_u => {
+    const u = this.getPhoneBook(_u.id);
+    if (!u) {
+      return;
+    }
+    Object.assign(u, _u);
+    this.set(`phoneBooks`, [...this.phoneBooks]);
+  });
+
+  pushPhoneBook = _p => {
+    const p = this.getPhoneBook(_p.id);
+    if (!p) {
+      this.phoneBooks.push(_p);
+    }
+  };
+
+  getPhoneBook = id => {
+    return this._phoneBooksMap[id];
+  };
 }
 
 export default new ContactStore();
