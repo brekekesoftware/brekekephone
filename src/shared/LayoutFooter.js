@@ -40,7 +40,7 @@ const s = StyleSheet.create({
 
 const LayoutFooter = ({
   LayoutChat,
-  PhoneBook,
+  Phonebook,
   actions,
   forceDisplayActions,
   navigation,
@@ -51,7 +51,7 @@ const LayoutFooter = ({
       s.LayoutFooter,
       actions && !navigation && s.LayoutFooter__hasActions,
       LayoutChat && s.LayoutFooter__hasActionsInputChat,
-      PhoneBook && s.LayoutFooter__hasActionsInputChat,
+      Phonebook && s.LayoutFooter__hasActionsInputChat,
       style,
     ]}
   >

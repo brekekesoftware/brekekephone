@@ -88,8 +88,8 @@ class ContactStore extends BaseStore {
   @computed get _phoneBooksMap() {
     return arrToMap(this.phoneBooks, `id`, u => u);
   }
-  updatePhoneBook = action(_u => {
-    const u = this.getPhoneBook(_u.id);
+  updatePhonebook = action(_u => {
+    const u = this.getPhonebook(_u.id);
     if (!u) {
       return;
     }
@@ -97,14 +97,14 @@ class ContactStore extends BaseStore {
     this.set(`phoneBooks`, [...this.phoneBooks]);
   });
 
-  pushPhoneBook = _p => {
-    const p = this.getPhoneBook(_p.id);
+  pushPhonebook = _p => {
+    const p = this.getPhonebook(_p.id);
     if (!p) {
       this.phoneBooks.push(_p);
     }
   };
 
-  getPhoneBook = id => {
+  getPhonebook = id => {
     return this._phoneBooksMap[id];
   };
 }

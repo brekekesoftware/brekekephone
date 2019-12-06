@@ -1,8 +1,6 @@
-import { mdiPhone } from '@mdi/js';
 import React from 'react';
 
-import { StyleSheet, TextInput, TouchableOpacity, View } from '../native/Rn';
-import Icon from '../shared/Icon';
+import { StyleSheet, TextInput, View } from '../native/Rn';
 
 const s = StyleSheet.create({
   ShowNumbers: {
@@ -11,7 +9,7 @@ const s = StyleSheet.create({
   ShowNumbers_DisplayTxt: {
     fontSize: 24,
     padding: 15,
-    width: `80%`,
+    width: `100%`,
   },
   ShowNumbers_BtnCall: {
     position: `absolute`,
@@ -26,16 +24,12 @@ const s = StyleSheet.create({
 const ShowNumber = p => (
   <View style={s.ShowNumbers}>
     <TextInput
-      keyboardType="number-pad"
+      keyboardType="phone-pad"
       onChangeText={p.setTarget}
       placeholder="Enter your number"
       style={s.ShowNumbers_DisplayTxt}
+      value={p.value}
     />
-    {p.value !== `` && (
-      <TouchableOpacity onPress={p.callVoice} style={s.ShowNumbers_BtnCall}>
-        <Icon path={mdiPhone} size={30} />
-      </TouchableOpacity>
-    )}
   </View>
 );
 

@@ -8,9 +8,11 @@ import React from 'react';
 
 import contactStore from '../-/contactStore';
 import g from '../global';
+import { ActivityIndicator, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
+import v from '../variables';
 import UserItem from './UserItem';
 
 const numberOfContactsPerPage = 30;
@@ -83,43 +85,49 @@ class PageContactPhonebook extends React.Component {
           },
         }}
       >
-        {groups.map(_g => (
-          <React.Fragment key={_g.key}>
-            <Field isGroup label={_g.key} />
-            {_g.phonebooks.map((u, i) => (
-              <UserItem
-                function={[
-                  () =>
-                    g.openPicker({
-                      options: [
-                        {
-                          key: u.workNumber,
-                          label: u.workNumber || `Please add work number`,
-                          icon: mdiPhone,
-                        },
-                        {
-                          key: u.cellNumber,
-                          label: u.cellNumber || `Please add cell number`,
-                          icon: mdiPhone,
-                        },
-                        {
-                          key: u.homeNumber,
-                          label: u.homeNumber || `Please add home number`,
-                          icon: mdiPhone,
-                        },
-                      ],
-                      onSelect: this.call,
-                    }),
-                  () => this.update(u),
-                ]}
-                icon={[mdiPhone, mdiInformation]}
-                key={i}
-                last={i === _g.phonebooks.length - 1}
-                name={u.name}
-              />
-            ))}
-          </React.Fragment>
-        ))}
+        {this.state.loading && (
+          <View style={{ marginTop: 20 }}>
+            <ActivityIndicator color={v.mainBg} size={30} />
+          </View>
+        )}
+        {!this.state.loading &&
+          groups.map(_g => (
+            <React.Fragment key={_g.key}>
+              <Field isGroup label={_g.key} />
+              {_g.phonebooks.map((u, i) => (
+                <UserItem
+                  function={[
+                    () =>
+                      g.openPicker({
+                        options: [
+                          {
+                            key: u.workNumber,
+                            label: u.workNumber || `Please add work number`,
+                            icon: mdiPhone,
+                          },
+                          {
+                            key: u.cellNumber,
+                            label: u.cellNumber || `Please add cell number`,
+                            icon: mdiPhone,
+                          },
+                          {
+                            key: u.homeNumber,
+                            label: u.homeNumber || `Please add home number`,
+                            icon: mdiPhone,
+                          },
+                        ],
+                        onSelect: this.call,
+                      }),
+                    () => this.update(u),
+                  ]}
+                  icon={[mdiPhone, mdiInformation]}
+                  key={i}
+                  last={i === _g.phonebooks.length - 1}
+                  name={u.name}
+                />
+              ))}
+            </React.Fragment>
+          ))}
       </Layout>
     );
   }
@@ -181,7 +189,7 @@ class PageContactPhonebook extends React.Component {
     pbx
       .getContact(id)
       .then(detail => {
-        contactStore.pushPhoneBook(detail);
+        contactStore.pushPhonebook(detail);
       })
       .catch(err => {
         g.showError({ message: `load contact detail for id ${id}`, err });

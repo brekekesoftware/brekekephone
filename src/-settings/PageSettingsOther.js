@@ -3,59 +3,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import g from '../global';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from '../native/Rn';
+import Field from '../shared/Field';
 import Layout from '../shared/Layout';
-import v from '../variables';
-
-const s = StyleSheet.create({
-  Setting: {},
-  Setting_Item: {
-    flexDirection: `row`,
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-    height: 60,
-    alignItems: `center`,
-    paddingLeft: 20,
-  },
-  Setting_Item_BtnOuter: {
-    flexDirection: `row`,
-    position: `absolute`,
-    right: 10,
-  },
-  Setting_Item_Btn: {
-    borderWidth: 1,
-    borderColor: v.borderBg,
-    width: 70,
-    padding: 5,
-  },
-  Setting_Item_Btn__RdLeft: {
-    borderTopLeftRadius: 5,
-    borderBottomLeftRadius: 5,
-  },
-  Setting_Item_Btn__RdRight: {
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-  },
-  Setting_Item_Btn__Off: {
-    backgroundColor: v.hoverBg,
-    borderColor: v.borderBg,
-  },
-  Setting_Item_Btn__On: {
-    borderColor: v.mainBg,
-  },
-  Setting_Item_Btn__Busy: {
-    borderColor: v.redBg,
-  },
-  Setting_Item__BtnTxt: {
-    textAlign: `center`,
-  },
-});
 
 @observer
 class Setting extends Component {
@@ -94,68 +43,24 @@ class Setting extends Component {
           },
         }}
       >
-        <View style={[s.Setting_Item]}>
-          <View>
-            <Text>UC status</Text>
-          </View>
-          <View style={s.Setting_Item_BtnOuter}>
-            <TouchableOpacity
-              onPress={() => this.setStatus(`offline`)}
-              style={[
-                s.Setting_Item_Btn,
-                s.Setting_Item_Btn__RdLeft,
-                this.state.status === `offline` && s.Setting_Item_Btn__Off,
-              ]}
-            >
-              <Text style={s.Setting_Item__BtnTxt}>Offline</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => this.setStatus(`online`)}
-              style={[
-                s.Setting_Item_Btn,
-                this.state.status === `online` && s.Setting_Item_Btn__On,
-              ]}
-            >
-              <Text
-                style={[
-                  s.Setting_Item__BtnTxt,
-                  this.state.status === `online` && { color: v.mainBg },
-                ]}
-              >
-                Online
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => this.setStatus(`busy`)}
-              style={[
-                s.Setting_Item_Btn,
-                s.Setting_Item_Btn__RdRight,
-                this.state.status === `busy` && s.Setting_Item_Btn__Busy,
-              ]}
-            >
-              <Text
-                style={[
-                  s.Setting_Item__BtnTxt,
-                  this.state.status === `busy` && { color: v.redBg },
-                ]}
-              >
-                Busy
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={[s.Setting_Item]}>
-          <View>
-            <Text>UC status note</Text>
-          </View>
-          <View style={s.Setting_Item_BtnOuter}>
-            <TextInput
-              onChangeText={this.setstatusText}
-              onSubmitEditing={this.submitstatusText}
-              value={this.state.statusText}
-            />
-          </View>
-        </View>
+        <Field
+          label={`Uc status`}
+          onValueChange={this.setStatus}
+          options={[
+            { key: `offline`, label: `offline` },
+            { key: `online`, label: `online` },
+            { key: `busy`, label: `busy` },
+          ]}
+          type={`Picker`}
+          value={this.state.status}
+        />
+
+        <Field
+          label={`UC status note`}
+          onSubmitEditing={this.submitStatusText}
+          onValueChange={this.setStatusText}
+          value={this.state.statusText}
+        />
       </Layout>
     );
   }
@@ -179,11 +84,11 @@ class Setting extends Component {
       .catch(this.onSetChatStatusFailure);
   };
 
-  setstatusText = statusText => {
+  setStatusText = statusText => {
     this.setState({ statusText });
   };
 
-  submitstatusText = () => {
+  submitStatusText = () => {
     const { status } = this.state;
     this.setStatus(status, this.state.statusText);
   };

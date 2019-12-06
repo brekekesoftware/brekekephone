@@ -26,6 +26,9 @@ const s = StyleSheet.create({
   Layout_FooterSpacing: {
     height: 71, // 56+15
   },
+  Layout_FooterSpacing__hasKeyPad: {
+    height: 0, // 56+15
+  },
   Layout_FooterSpacing__hasInputChat: {
     height: 127, // 56*2+15
   },
@@ -84,7 +87,8 @@ const Layout = observer(props => {
             style={[
               s.Layout_FooterSpacing,
               props.footer.LayoutChat && s.Layout_FooterSpacing__hasInputChat,
-              props.footer.PhoneBook && s.Layout_FooterSpacing__hasInputChat,
+              props.footer.Phonebook && s.Layout_FooterSpacing__hasInputChat,
+              props.footer.KeyPad && s.Layout_FooterSpacing__hasKeyPad,
             ]}
           />
         )}

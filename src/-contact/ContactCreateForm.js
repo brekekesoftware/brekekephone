@@ -28,13 +28,13 @@ const ContactsCreateForm = observer(props => {
       phonebook: {
         book: props.book,
         ...genEmptyPhonebook(),
-        ...cloneDeep(props.updatingPhoneBook),
+        ...cloneDeep(props.updatingPhonebook),
       },
     },
 
     hasUnsavedChanges: () => {
-      const p = props.updatingPhoneBook || genEmptyPhonebook();
-      if (!props.updatingPhoneBook) {
+      const p = props.updatingPhonebook || genEmptyPhonebook();
+      if (!props.updatingPhonebook) {
         Object.assign(p, {
           book: props.book,
         });
@@ -68,7 +68,7 @@ const ContactsCreateForm = observer(props => {
           onBackBtnPress: $.onBackBtnPress,
           onSaveBtnPress: submitForm,
         },
-        PhoneBook: true,
+        Phonebook: true,
       }}
       header={{
         onBackBtnPress: $.onBackBtnPress,

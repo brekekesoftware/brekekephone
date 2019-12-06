@@ -20,8 +20,8 @@ class PagePhonebookUpdate extends React.Component {
           this.save(p);
           g.goToPageContactPhonebook();
         }}
-        title="Update PhoneBook"
-        updatingPhoneBook={this.props.contact}
+        title="Update Phonebook"
+        updatingPhonebook={this.props.contact}
       />
     );
   }
@@ -33,7 +33,7 @@ class PagePhonebookUpdate extends React.Component {
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
 
-    contactStore.updatePhoneBook(phonebook);
+    contactStore.updatePhonebook(phonebook);
   };
 
   onSaveSuccess = () => {

@@ -21,7 +21,7 @@ class PagePhonebookCreate extends React.Component {
           this.save(p);
           g.goToPageContactPhonebook();
         }}
-        title="New PhoneBook"
+        title="New Phonebook"
       />
     );
   }
@@ -34,10 +34,10 @@ class PagePhonebookCreate extends React.Component {
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
 
-    contactStore.pushPhoneBook(phonebook);
+    contactStore.pushPhonebook(phonebook);
   };
 
-  onSaveSuccess = contact => {
+  onSaveSuccess = () => {
     g.goToPageContactPhonebook();
   };
 
