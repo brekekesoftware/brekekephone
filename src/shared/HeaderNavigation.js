@@ -7,7 +7,6 @@ const s = StyleSheet.create({
   HeaderNavigation: {
     flexDirection: `row`,
     alignSelf: `stretch`,
-    ...g.boxShadow,
   },
   HeaderNavigation_Menu__sub: {
     backgroundColor: g.bg,
@@ -25,7 +24,7 @@ const s = StyleSheet.create({
   },
   HeaderNavigation_SubBtn: {
     borderBottomWidth: 3,
-    borderColor: `transparent`,
+    borderColor: g.borderBg,
   },
   HeaderNavigation_SubBtn__active: {
     borderColor: g.mainDarkBg,

@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import g from '../global';
+import authStore from '../global/authStore';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
 @observer
-class Setting extends Component {
+class PageSettingsOther extends Component {
   static contextTypes = {
     uc: PropTypes.object.isRequired,
   };
@@ -24,6 +25,31 @@ class Setting extends Component {
       statusText: me.statusText,
     });
   }
+
+  setStatusText = statusText => {
+    this.setState({ statusText });
+  };
+  submitStatusText = () => {
+    this.setStatus(this.state.status, this.state.statusText);
+  };
+  submitStatus = status => {
+    this.setStatus(status, this.state.statusText);
+  };
+
+  setStatus = (status, statusText) => {
+    this.context.uc
+      .setStatus(status, statusText)
+      .then(() => {
+        const me = this.context.uc.me();
+        this.setState({
+          status: me.status,
+          statusText: me.statusText,
+        });
+      })
+      .catch(() => {
+        g.showError(`to change UC status`);
+      });
+  };
 
   render() {
     return (
@@ -43,20 +69,22 @@ class Setting extends Component {
           },
         }}
       >
+        <Field isGroup label={`UC`} />
         <Field
-          label={`Uc status`}
-          onValueChange={this.setStatus}
+          disabled={!authStore.profile?.ucEnabled}
+          label={`Status`}
+          onValueChange={this.submitStatus}
           options={[
-            { key: `offline`, label: `offline` },
-            { key: `online`, label: `online` },
-            { key: `busy`, label: `busy` },
+            { key: `offline`, label: `Offline` },
+            { key: `online`, label: `Online` },
+            { key: `busy`, label: `Busy` },
           ]}
           type={`Picker`}
           value={this.state.status}
         />
-
         <Field
-          label={`UC status note`}
+          disabled={!authStore.profile?.ucEnabled}
+          label={`Status note`}
           onSubmitEditing={this.submitStatusText}
           onValueChange={this.setStatusText}
           value={this.state.statusText}
@@ -64,34 +92,6 @@ class Setting extends Component {
       </Layout>
     );
   }
-
-  onSetChatStatusSuccess = () => {
-    const me = this.context.uc.me();
-    this.setState({
-      status: me.status,
-      statusText: me.statusText,
-    });
-  };
-
-  onSetChatStatusFailure = () => {
-    g.showError(`to change chat status`);
-  };
-
-  setStatus = status => {
-    const { uc } = this.context;
-    uc.setStatus(status, this.state.statusText)
-      .then(this.onSetChatStatusSuccess)
-      .catch(this.onSetChatStatusFailure);
-  };
-
-  setStatusText = statusText => {
-    this.setState({ statusText });
-  };
-
-  submitStatusText = () => {
-    const { status } = this.state;
-    this.setStatus(status, this.state.statusText);
-  };
 }
 
-export default Setting;
+export default PageSettingsOther;
