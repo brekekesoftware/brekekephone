@@ -28,6 +28,8 @@ g.extends({
     //    partyName: string
     //    partyNumber: string
     //    created: Date
+    // navIndex?: number
+    // nav?: string[]
     profiles: [],
     get profilesMap() {
       return arrToMap(g.profiles, `id`, p => p);

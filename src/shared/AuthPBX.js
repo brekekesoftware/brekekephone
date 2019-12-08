@@ -26,7 +26,7 @@ class AuthPBX extends React.Component {
     this.context.pbx.disconnect();
     authStore.set(`pbxState`, `connecting`);
     this.context.pbx
-      .connect(authStore.profile)
+      .connect(authStore.currentProfile)
       .then(() => {
         authStore.set(`pbxState`, `success`);
       })

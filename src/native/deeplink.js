@@ -23,8 +23,8 @@ Linking.addEventListener(`url`, e => {
   // Check against the current user
   if (
     !p ||
-    !authStore.profile ||
-    compareProfile(authStore.profile, {
+    !authStore.currentProfile ||
+    compareProfile(authStore.currentProfile, {
       pbxHostname: p.host,
       pbxPort: p.port,
       pbxUsername: p.user,

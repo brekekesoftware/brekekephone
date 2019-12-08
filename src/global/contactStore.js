@@ -72,18 +72,18 @@ class ContactStore extends BaseStore {
     return this._ucUsersMap[id];
   };
 
-  //id
-  //book
-  //firstName
-  //lastName
-  //workNumber
-  //cellNumber
-  //homeNumber
-  //job
-  //company
-  //address
-  //email
-  //shared
+  // id
+  // book
+  // firstName
+  // lastName
+  // workNumber
+  // cellNumber
+  // homeNumber
+  // job
+  // company
+  // address
+  // email
+  // shared
   @observable phoneBooks = [];
   @computed get _phoneBooksMap() {
     return arrToMap(this.phoneBooks, `id`, u => u);

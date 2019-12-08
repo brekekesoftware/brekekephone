@@ -57,7 +57,7 @@ class PageSettingsOther extends Component {
         footer={{
           navigation: {
             menu: `settings`,
-            subMenu: `settings`,
+            subMenu: `other`,
           },
         }}
         header={{
@@ -65,13 +65,13 @@ class PageSettingsOther extends Component {
           title: `Other settings`,
           navigation: {
             menu: `settings`,
-            subMenu: `settings`,
+            subMenu: `other`,
           },
         }}
       >
         <Field isGroup label={`UC`} />
         <Field
-          disabled={!authStore.profile?.ucEnabled}
+          disabled={!authStore.currentProfile?.ucEnabled}
           label={`Status`}
           onValueChange={this.submitStatus}
           options={[
@@ -83,7 +83,7 @@ class PageSettingsOther extends Component {
           value={this.state.status}
         />
         <Field
-          disabled={!authStore.profile?.ucEnabled}
+          disabled={!authStore.currentProfile?.ucEnabled}
           label={`Status note`}
           onSubmitEditing={this.submitStatusText}
           onValueChange={this.setStatusText}

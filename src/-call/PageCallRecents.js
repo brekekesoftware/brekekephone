@@ -25,7 +25,7 @@ class PageCallRecents extends React.Component {
   };
 
   callBack = id => {
-    const number = authStore.profile.recentCalls?.find(c => c.id === id)
+    const number = authStore.currentProfile.recentCalls?.find(c => c.id === id)
       ?.partyNumber;
     if (number) {
       this.context.sip.createSession(number);
@@ -45,7 +45,7 @@ class PageCallRecents extends React.Component {
   };
 
   getMatchUserIds = () =>
-    authStore.profile.recentCalls.filter(this.isMatchUser);
+    authStore.currentProfile.recentCalls.filter(this.isMatchUser);
 
   render() {
     const users = this.getMatchUserIds();
@@ -53,14 +53,14 @@ class PageCallRecents extends React.Component {
       <Layout
         footer={{
           navigation: {
-            menu: `phone`,
+            menu: `call`,
           },
         }}
         header={{
           description: `Recent voicemails and calls`,
           title: `Recents`,
           navigation: {
-            menu: `phone`,
+            menu: `call`,
             subMenu: `recents`,
           },
         }}

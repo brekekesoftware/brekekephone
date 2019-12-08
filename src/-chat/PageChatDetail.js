@@ -276,7 +276,7 @@ class PageChatDetail extends React.Component {
 
   sendFile = file => {
     const { uc } = this.context;
-    //TODO: fix error duplicate when upload 2 file.
+    // TODO: fix error duplicate when upload 2 file.
     this.blob(file);
     const u = contactStore.getUCUser(this.props.buddy);
     uc.sendFile(u?.id, file)

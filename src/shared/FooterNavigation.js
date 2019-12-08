@@ -1,13 +1,9 @@
-import {
-  mdiAccountCircleOutline,
-  mdiPhoneOutline,
-  mdiSettingsOutline,
-} from '@mdi/js';
 import React from 'react';
 
 import g from '../global';
 import { StyleSheet, TouchableOpacity, View } from '../native/Rn';
 import Icon from './Icon';
+import { menus } from './navigationConfig';
 
 const s = StyleSheet.create({
   FooterNavigation: {
@@ -37,44 +33,26 @@ const s = StyleSheet.create({
   },
 });
 
-const FooterNavigation = ({ menu }) => {
-  const isMenuContact = menu === `contact`;
-  const isMenuPhone = menu === `phone`;
-  const isMenuSettings = menu === `settings`;
-
-  return (
-    <View style={s.FooterNavigation}>
-      <View style={s.FooterNavigation_Menu}>
-        <TouchableOpacity
-          onPress={isMenuContact ? null : g.goToPageContactUsers}
-          style={[
-            s.FooterNavigation_Btn,
-            isMenuContact && s.FooterNavigation_Btn__active,
-          ]}
-        >
-          <Icon path={mdiAccountCircleOutline} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={isMenuPhone ? null : g.goToPageCallRecents}
-          style={[
-            s.FooterNavigation_Btn,
-            isMenuPhone && s.FooterNavigation_Btn__active,
-          ]}
-        >
-          <Icon path={mdiPhoneOutline} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={isMenuSettings ? null : g.goToPageSettingsProfile}
-          style={[
-            s.FooterNavigation_Btn,
-            isMenuSettings && s.FooterNavigation_Btn__active,
-          ]}
-        >
-          <Icon path={mdiSettingsOutline} />
-        </TouchableOpacity>
-      </View>
+const FooterNavigation = ({ menu }) => (
+  <View style={s.FooterNavigation}>
+    <View style={s.FooterNavigation_Menu}>
+      {menus.map(m => {
+        const active = m.key === menu;
+        return (
+          <TouchableOpacity
+            key={m.key}
+            onPress={active ? null : m.navFn}
+            style={[
+              s.FooterNavigation_Btn,
+              active && s.FooterNavigation_Btn__active,
+            ]}
+          >
+            <Icon path={m.icon} />
+          </TouchableOpacity>
+        );
+      })}
     </View>
-  );
-};
+  </View>
+);
 
 export default FooterNavigation;

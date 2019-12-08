@@ -25,7 +25,7 @@ const PageSettingsProfile = observer(p => (
       });
     }}
     title="Current Server"
-    updatingProfile={authStore.profile}
+    updatingProfile={authStore.currentProfile}
   />
 ));
 

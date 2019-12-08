@@ -40,7 +40,7 @@ class ChatGroupInvite extends React.Component {
     };
   };
 
-  //Todo: rejected but existed in chat home => error when click.
+  // TODO: rejected but existed in chat home => error when click.
   reject = group => {
     this.context.uc
       .leaveChatGroup(group)

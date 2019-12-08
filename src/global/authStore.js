@@ -47,14 +47,14 @@ class AuthStore extends BaseStore {
   }
   @computed get ucShouldAuth() {
     return !(
-      !this.profile?.ucEnabled ||
+      !this.currentProfile?.ucEnabled ||
       this.ucState !== `stopped` ||
       this.ucLoginFromAnotherPlace
     );
   }
   @computed get ucConnectingOrFailure() {
     return (
-      this.profile?.ucEnabled &&
+      this.currentProfile?.ucEnabled &&
       connectingOrFailure.some(s => s === this.ucState)
     );
   }
@@ -69,7 +69,7 @@ class AuthStore extends BaseStore {
     return [
       this.pbxState,
       this.sipState,
-      this.profile?.ucEnabled && this.ucState,
+      this.currentProfile?.ucEnabled && this.ucState,
     ].some(s => s === `failure`);
   }
 
@@ -79,13 +79,13 @@ class AuthStore extends BaseStore {
   pushRecentCall = call => {
     $.upsert(`profiles`, {
       id: this.signedInId,
-      recentCalls: [...(this.profile?.recentCalls || []), call],
+      recentCalls: [...(this.currentProfile?.recentCalls || []), call],
     });
   };
   removeRecentCall = id => {
     $.upsert(`profiles`, {
       id: this.signedInId,
-      recentCalls: this.profile?.recentCalls?.filter(c => c.id === id),
+      recentCalls: this.currentProfile?.recentCalls?.filter(c => c.id === id),
     });
   };
   //
@@ -97,7 +97,7 @@ class AuthStore extends BaseStore {
   };
 
   @observable signedInId = null;
-  @computed get profile() {
+  @computed get currentProfile() {
     return this.getProfile(this.signedInId);
   }
   signIn = id => {
@@ -110,9 +110,14 @@ class AuthStore extends BaseStore {
       g.showError({ message: `The profile password is empty` });
       return true;
     }
+    if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
+      g.goToPageProfileUpdate(p.id);
+      g.showError({ message: `The UC config is missing` });
+      return true;
+    }
     this.set(`signedInId`, p.id);
     PushNotification.resetBadgeNumber();
-    g.goToPageContactUsers();
+    g.goToPageIndex();
     return true;
   };
 

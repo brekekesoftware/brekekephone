@@ -50,7 +50,7 @@ class PageContactUsers extends React.Component {
       chatOnline: ucUser.status === `online`,
       chatIdle: ucUser.status === `idle`,
       chatBusy: ucUser.status === `busy`,
-      chatEnabled: authStore.profile?.ucEnabled,
+      chatEnabled: authStore.currentProfile?.ucEnabled,
     };
   };
 
@@ -141,7 +141,6 @@ class PageContactUsers extends React.Component {
         }}
         header={{
           title: `Users`,
-          titleCompact: `Users (${users.length})`,
           description: `PBX/UC users (${users.length})`,
           navigation: {
             menu: `contact`,

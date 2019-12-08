@@ -33,7 +33,7 @@ class AuthUC extends React.Component {
     authStore.set(`ucState`, `connecting`);
     authStore.set(`ucLoginFromAnotherPlace`, false);
     this.context.uc
-      .connect(authStore.profile)
+      .connect(authStore.currentProfile)
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
   };

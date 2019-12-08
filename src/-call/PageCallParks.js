@@ -14,7 +14,7 @@ import Layout from '../shared/Layout';
 @observer
 class PageCallParks extends React.Component {
   @computed get parkIds() {
-    return authStore.profile.parks;
+    return authStore.currentProfile.parks;
   }
 
   static contextTypes = {
@@ -36,7 +36,7 @@ class PageCallParks extends React.Component {
       <Layout
         footer={{
           navigation: {
-            menu: `phone`,
+            menu: `call`,
           },
         }}
         header={{
@@ -45,7 +45,7 @@ class PageCallParks extends React.Component {
           onBackBtnPress: null,
           onParkBtnPress: this.park,
           navigation: {
-            menu: `phone`,
+            menu: `call`,
             subMenu: `parks`,
           },
         }}

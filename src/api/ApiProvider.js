@@ -137,7 +137,7 @@ class ApiProvider extends React.Component {
   };
 
   _updatePhoneIndex = async () => {
-    let phoneIndex = authStore.profile.pbxPhoneIndex;
+    let phoneIndex = authStore.currentProfile.pbxPhoneIndex;
     phoneIndex = parseInt(phoneIndex) || 4;
     phoneIndex = phoneIndex - 1;
     const extProps = authStore.userExtensionProperties;
@@ -145,7 +145,7 @@ class ApiProvider extends React.Component {
     const phoneTypeCorrect = phone.type === `Web Phone`;
     const hasPhoneId = !!phone.id;
 
-    const { pbxTenant, pbxUsername } = authStore.profile;
+    const { pbxTenant, pbxUsername } = authStore.currentProfile;
 
     const setExtensionProperties = async () => {
       await pbx.pal(`setExtensionProperties`, {
@@ -240,11 +240,11 @@ class ApiProvider extends React.Component {
   };
 
   loadPBXUsers = async () => {
-    if (!authStore.profile) {
+    if (!authStore.currentProfile) {
       return;
     }
-    const tenant = authStore.profile.pbxTenant;
-    const username = authStore.profile.pbxUsername;
+    const tenant = authStore.currentProfile.pbxTenant;
+    const username = authStore.currentProfile.pbxUsername;
     const userIds = await pbx
       .getUsers(tenant)
       .then(ids => ids.filter(id => id !== username));
