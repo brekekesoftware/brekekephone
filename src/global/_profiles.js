@@ -40,7 +40,7 @@ g.extends({
     pbxHostname: ``,
     pbxPort: ``,
     pbxPassword: ``,
-    pbxPhoneIndex: `4`,
+    pbxPhoneIndex: ``,
     pbxTurnEnabled: false,
     pushNotificationEnabled: true,
     parks: [],

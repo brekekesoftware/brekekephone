@@ -160,6 +160,7 @@ const ProfileCreateForm = observer(props => {
             type: `Picker`,
             name: `pbxPhoneIndex`,
             label: `PHONE`,
+            rule: `required`,
             options: [1, 2, 3, 4].map(v => ({
               key: `${v}`,
               label: `Phone ${v}`,
