@@ -48,9 +48,6 @@ const s = StyleSheet.create({
 const ContactField = p =>
   p.fields.map((f, i) => (
     <View key={i} style={s.ContactField}>
-      <View>
-        <Icon color={v.borderBg} path={p.icons[i]} />
-      </View>
       <View style={s.ContactField_Field}>
         <Text>{f}</Text>
       </View>
@@ -77,15 +74,6 @@ const ContactItem = observer(p => {
             p.cellNumber,
             p.homeNumber,
             p.email,
-          ]}
-          icons={[
-            mdiAccount,
-            mdiAccountMultiple,
-            mdiMapMarker,
-            mdiBagChecked,
-            mdiCellphone,
-            mdiHome,
-            mdiEmail,
           ]}
         />
       </View>

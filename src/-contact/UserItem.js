@@ -26,11 +26,6 @@ const s = StyleSheet.create({
     top: 20,
     left: 70,
   },
-  Item__TxtName: {
-    fontSize: v.fontSizeSubTitle,
-    color: v.subColor,
-    fontWeight: `600`,
-  },
   Item__TxtStatus: {
     fontSize: v.fontSizeSmall,
     paddingLeft: 10,
@@ -74,7 +69,9 @@ const UserItem = p => (
     <View style={[s.Item, p.last && s.Item__last, p.selected && s.Item__Bgr]}>
       {p.avatar && <Avatar source={{ uri: p.avatar }} {...p} />}
       <View style={[s.Item_Name, !p.avatar && s.Item__noAvatar]}>
-        <Text style={s.Item__TxtName}>{p.name || p.partyNumber || p.id}</Text>
+        <Text black subTitle>
+          {p.name || p.partyNumber || p.id}
+        </Text>
         <Text style={s.Item__TxtStatus}>{p.statusText}</Text>
       </View>
       {p.detail && (
