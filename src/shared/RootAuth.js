@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import authStore from '../-/authStore';
-import AuthPBX from '../-/components/AuthPBX';
-import AuthSIP from '../-/components/AuthSIP';
-import AuthUC from '../-/components/AuthUC';
-import CallVideos from '../-/components/CallVideos';
-import CallVoices from '../-/components/CallVoices';
 import Callbar from '../-notify/CallBar';
 import CallNotify from '../-notify/CallNotify';
 import ChatGroupInvite from '../-notify/ChatGroupInvite';
+import authStore from '../global/authStore';
+import AuthPBX from '../shared/AuthPBX';
+import AuthSIP from '../shared/AuthSIP';
+import AuthUC from '../shared/AuthUC';
+import CallVideos from '../shared/CallVideos';
+import CallVoices from '../shared/CallVoices';
 
 const RootAuth = observer(() => {
   if (!authStore.signedInId) {

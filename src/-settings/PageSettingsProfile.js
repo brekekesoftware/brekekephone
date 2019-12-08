@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import authStore from '../-/authStore';
 import ProfileCreateForm from '../-profile/ProfileCreateForm';
 import g from '../global';
+import authStore from '../global/authStore';
 
 const PageSettingsProfile = observer(p => (
   <ProfileCreateForm

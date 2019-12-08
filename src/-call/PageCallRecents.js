@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../-/authStore';
-import contactStore from '../-/contactStore';
-import voicemailStore from '../-/voicemailStore';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
+import authStore from '../global/authStore';
+import callStore from '../global/callStore';
+import contactStore from '../global/contactStore';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
@@ -69,10 +69,7 @@ class PageCallRecents extends React.Component {
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
         />
-        <Field
-          isGroup
-          label={`VOICEMAILS (${voicemailStore.voicemail?.new})`}
-        />
+        <Field isGroup label={`VOICEMAILS (${callStore.voicemail?.new})`} />
         <Field isGroup label={`RECENT CALLS`} />
         {users.length !== 0 &&
           users.map((u, i) => (

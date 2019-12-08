@@ -9,9 +9,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../-/callStore';
-import contactStore from '../-/contactStore';
 import g from '../global';
+import callStore from '../global/callStore';
+import contactStore from '../global/contactStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
 import Icon from '../shared/Icon';

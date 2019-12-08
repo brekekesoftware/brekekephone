@@ -1,9 +1,9 @@
 import React from 'react';
 
-import chatStore from '../-/chatStore';
-import contactStore from '../-/contactStore';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
+import chatStore from '../global/chatStore';
+import contactStore from '../global/contactStore';
 import { TouchableOpacity } from '../native/Rn';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';

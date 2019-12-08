@@ -37,13 +37,19 @@ export class CallStore extends BaseStore {
     this.set(`selectedId`, ``);
     this.runnings = this.runnings.filter(c => c.id !== id);
   };
-  //
   @computed get _runningsMap() {
     return arrToMap(this.runnings, `id`, c => c);
   }
   getRunningCall = id => {
     return this._runningsMap[id];
   };
+
+  // user
+  // new
+  // saved
+  // unread
+  // read
+  @observable voicemail = {};
 }
 
 const callStore = new CallStore();

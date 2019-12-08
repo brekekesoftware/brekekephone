@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import g from '../../global';
-import authStore from '../authStore';
-import getApiProvider from './getApiProvider';
+import getApiProvider from '../api/getApiProvider';
+import g from '../global';
+import authStore from '../global/authStore';
 
 @observer
 class AuthSIP extends React.Component {

@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import g from '../../global';
-import authStore from '../authStore';
+import g from '../global';
+import authStore from '../global/authStore';
 
 @observer
 class AuthPBX extends React.Component {

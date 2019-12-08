@@ -3,13 +3,13 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import chatStore from '../-/chatStore';
-import contactStore from '../-/contactStore';
-import pickFile from '../-/pickFile';
-import saveBlob from '../-/saveBlob';
 import g from '../global';
-import formatTime from '../shared/formatTime';
+import chatStore from '../global/chatStore';
+import contactStore from '../global/contactStore';
+import pickFile from '../native/pickFile';
+import saveBlob from '../native/saveBlob';
 import Layout from '../shared/Layout';
+import formatTime from '../utils/formatTime';
 import { arrToMap } from '../utils/toMap';
 import Message from './Message';
 import m from './MiniChat';

@@ -5,10 +5,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../-/authStore';
-import chatStore from '../-/chatStore';
-import contactStore from '../-/contactStore';
 import g from '../global';
+import authStore from '../global/authStore';
+import chatStore from '../global/chatStore';
+import contactStore from '../global/contactStore';
 import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';

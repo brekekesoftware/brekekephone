@@ -15,8 +15,8 @@ import {
   TouchableOpacity,
   View,
 } from '../native/Rn';
+import useStore from '../utils/useStore';
 import Icon from './Icon';
-import useStore from './useStore';
 
 const s = StyleSheet.create({
   Field: {

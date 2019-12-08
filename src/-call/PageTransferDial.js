@@ -5,10 +5,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../-/callStore';
-import contactStore from '../-/contactStore';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
+import callStore from '../global/callStore';
+import contactStore from '../global/contactStore';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 

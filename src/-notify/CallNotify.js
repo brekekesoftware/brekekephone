@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../-/callStore';
+import callStore from '../global/callStore';
 import Notify from './Notify';
 
 const isIncoming = call => call.incoming && !call.answered;

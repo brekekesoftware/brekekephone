@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import callStore from '../callStore';
+import callStore from '../global/callStore';
 import CallVideosUI from './CallVideosUI';
 
 @observer

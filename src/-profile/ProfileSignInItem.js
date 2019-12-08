@@ -9,8 +9,8 @@ import {
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import authStore from '../-/authStore';
 import g from '../global';
+import authStore from '../global/authStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
 import FooterActions from '../shared/FooterActions';

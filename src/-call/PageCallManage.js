@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import callStore from '../-/callStore';
 import g from '../global';
+import callStore from '../global/callStore';
 import IncallManager from '../native/IncallManager';
 import { StyleSheet, View } from '../native/Rn';
 import BrekekeGradient from '../shared/BrekekeGradient';

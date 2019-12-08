@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import authStore from '../-/authStore';
-import callStore from '../-/callStore';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
+import authStore from '../global/authStore';
+import callStore from '../global/callStore';
 import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';

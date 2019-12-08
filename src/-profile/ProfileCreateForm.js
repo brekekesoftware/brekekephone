@@ -4,12 +4,12 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import authStore from '../-/authStore';
 import g from '../global';
+import authStore from '../global/authStore';
 import { Text, View } from '../native/Rn';
 import Layout from '../shared/Layout';
-import useForm from '../shared/useForm';
-import useStore from '../shared/useStore';
+import useForm from '../utils/useForm';
+import useStore from '../utils/useStore';
 
 const ProfileCreateForm = observer(props => {
   const $ = useStore(() => ({

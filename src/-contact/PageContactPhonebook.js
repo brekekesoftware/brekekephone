@@ -6,8 +6,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import contactStore from '../-/contactStore';
 import g from '../global';
+import contactStore from '../global/contactStore';
 import { ActivityIndicator, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';

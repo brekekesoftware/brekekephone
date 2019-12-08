@@ -4,16 +4,15 @@ import React from 'react';
 import { Platform } from 'react-native';
 import createId from 'shortid';
 
-import g from '../../global';
-import PushNotification from '../../native/PushNotification';
-import pbx from '../apis/pbx';
-import sip from '../apis/sip';
-import uc from '../apis/uc';
-import authStore from '../authStore';
-import callStore from '../callStore';
-import chatStore from '../chatStore';
-import contactStore from '../contactStore';
-import voicemailStore from '../voicemailStore';
+import pbx from '../api/pbx';
+import sip from '../api/sip';
+import uc from '../api/uc';
+import g from '../global';
+import authStore from '../global/authStore';
+import callStore from '../global/callStore';
+import chatStore from '../global/chatStore';
+import contactStore from '../global/contactStore';
+import PushNotification from '../native/PushNotification';
 import { setApiProvider } from './getApiProvider';
 
 @observer
@@ -270,7 +269,7 @@ class ApiProvider extends React.Component {
   };
 
   onVoiceMailUpdated = ev => {
-    voicemailStore.set(`voicemail`, ev);
+    callStore.set(`voicemail`, ev);
   };
 
   onPBXParkStarted = park => {

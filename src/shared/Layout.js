@@ -2,11 +2,11 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
-import authStore from '../-/authStore';
+import authStore from '../global/authStore';
 import { ScrollView, StatusBar, StyleSheet, View } from '../native/Rn';
+import useStore from '../utils/useStore';
 import LayoutFooter from './LayoutFooter';
 import LayoutHeader from './LayoutHeader';
-import useStore from './useStore';
 
 const s = StyleSheet.create({
   Layout: {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import IncallManager from '../../native/IncallManager';
+import IncallManager from '../native/IncallManager';
 
 class IncomingItem extends React.Component {
   componentDidMount() {

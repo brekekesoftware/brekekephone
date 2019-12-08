@@ -275,7 +275,7 @@ class SIP extends EventEmitter {
     }
 
     const jssipVersion = `3.2.15`;
-    const appPackageJson = require(`../../../package.json`);
+    const appPackageJson = require(`../../package.json`);
     const appVersion = appPackageJson.version;
     const lUseragent =
       `Brekeke Phone for ` +

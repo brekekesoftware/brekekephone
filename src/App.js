@@ -5,7 +5,6 @@ import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
-import ApiProvider from './-/components/ApiProvider';
 import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
@@ -26,6 +25,7 @@ import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
 import PageSettingsOther from './-settings/PageSettingsOther';
 import PageSettingsProfile from './-settings/PageSettingsProfile';
+import ApiProvider from './api/ApiProvider';
 import g from './global';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import { Platform, StyleSheet, View } from './native/Rn';

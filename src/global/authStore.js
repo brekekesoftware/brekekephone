@@ -2,10 +2,10 @@ import { computed, observable } from 'mobx';
 
 import g from '../global';
 import $ from '../global/_';
+import { getUrlParams } from '../native/deeplink';
 import PushNotification from '../native/PushNotification';
 import { arrToMap } from '../utils/toMap';
 import BaseStore from './BaseStore';
-import { getUrlParams } from './deeplink';
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field];

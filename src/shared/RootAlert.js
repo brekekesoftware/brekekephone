@@ -12,7 +12,7 @@ import {
   View,
 } from '../native/Rn';
 import { useAnimationOnDidMount } from '../utils/animation';
-import useStore from './useStore';
+import useStore from '../utils/useStore';
 
 const s = StyleSheet.create({
   RootAlert: {

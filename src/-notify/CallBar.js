@@ -17,8 +17,8 @@ import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import callStore from '../-/callStore';
 import g from '../global';
+import callStore from '../global/callStore';
 import IncallManager from '../native/IncallManager';
 import {
   Platform,

@@ -5,8 +5,8 @@ import React from 'react';
 
 import g from '../global';
 import Layout from '../shared/Layout';
-import useForm from '../shared/useForm';
-import useStore from '../shared/useStore';
+import useForm from '../utils/useForm';
+import useStore from '../utils/useStore';
 
 const genEmptyPhonebook = () => {
   return {
