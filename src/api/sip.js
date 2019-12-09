@@ -132,7 +132,9 @@ class SIP extends EventEmitter {
           },
         },
       },
+      dtmfSendMode: 1,
     });
+    this.phone.dtmfSendMode = 1;
 
     this.phone.addEventListener(`phoneStatusChanged`, ev => {
       if (!ev) {

@@ -137,35 +137,35 @@ class ApiProvider extends React.Component {
   };
 
   _updatePhoneIndex = async () => {
-    let phoneIndex = authStore.currentProfile.pbxPhoneIndex;
-    phoneIndex = parseInt(phoneIndex) || 4;
-    phoneIndex = phoneIndex - 1;
+    //
+    const phoneIndex = parseInt(authStore.currentProfile.pbxPhoneIndex) || 4;
     const extProps = authStore.userExtensionProperties;
-    const phone = extProps.phones[phoneIndex];
+    const phone = extProps.phones[phoneIndex - 1];
     const phoneTypeCorrect = phone.type === `Web Phone`;
-    const hasPhoneId = !!phone.id;
-
     const { pbxTenant, pbxUsername } = authStore.currentProfile;
-
+    const expectedPhoneId = `${pbxTenant}_${pbxUsername}_phone${phoneIndex}_webphone`;
+    const phoneIdCorrect = phone.id === expectedPhoneId;
+    //
     const setExtensionProperties = async () => {
       await pbx.pal(`setExtensionProperties`, {
         tenant: pbxTenant,
         extension: pbxUsername,
         properties: {
+          // See ./pbx getExtensionProperties for the detail of parameters
           pnumber: extProps.phones.map(p => p.id).join(`,`),
-          [`p${phoneIndex + 1}_ptype`]: phone.type,
+          [`p${phoneIndex}_ptype`]: phone.type,
         },
       });
       authStore.userExtensionProperties = extProps;
     };
-
-    if (phoneTypeCorrect && hasPhoneId) {
-      // Good to go
-    } else if (phoneTypeCorrect && !hasPhoneId) {
-      phone.id = `${pbxTenant}_${pbxUsername}_webphone`;
+    //
+    if (phoneTypeCorrect && phoneIdCorrect) {
+      // Do nothing
+    } else if (phoneTypeCorrect && !phoneIdCorrect) {
+      phone.id = expectedPhoneId;
       await setExtensionProperties();
-    } else if (!phoneTypeCorrect && !hasPhoneId) {
-      phone.id = `${pbxTenant}_${pbxUsername}_webphone`;
+    } else if (!phoneTypeCorrect && !phoneIdCorrect) {
+      phone.id = expectedPhoneId;
       phone.type = `Web Phone`;
       await setExtensionProperties();
     } else {
@@ -191,11 +191,9 @@ class ApiProvider extends React.Component {
         });
       });
     }
-
     return phone;
   };
-
-  addPnToken = async webPhone => {
+  addPnToken = async phone => {
     const t = await PushNotification.getToken();
 
     if (!t) {
@@ -203,18 +201,18 @@ class ApiProvider extends React.Component {
     }
 
     if (Platform.OS === `ios`) {
-      pbx.addApnsToken({
-        username: webPhone.id,
+      await pbx.addApnsToken({
+        username: phone.id,
         device_id: t,
       });
     } else if (Platform.OS === `android`) {
-      pbx.addFcmPnToken({
-        username: webPhone.id,
+      await pbx.addFcmPnToken({
+        username: phone.id,
         device_id: t,
       });
     } else if (Platform.OS === `web`) {
-      pbx.addWebPnToken({
-        user: webPhone.id,
+      await pbx.addWebPnToken({
+        user: phone.id,
         endpoint: t.endpoint,
         auth_secret: t.auth,
         key: t.p256dh,
