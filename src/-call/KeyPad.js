@@ -1,4 +1,4 @@
-import { mdiBackspace, mdiPhone } from '@mdi/js';
+import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js';
 import React from 'react';
 
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
@@ -57,7 +57,9 @@ const KeyPad = p => (
       </View>
     ))}
     <View style={s.KeyPad_Btn}>
-      <View style={s.KeyPad_NumberBtn}></View>
+      <TouchableOpacity onPress={p.showKeyboard} style={s.KeyPad_NumberBtn}>
+        <Icon path={mdiKeyboard} />
+      </TouchableOpacity>
       <TouchableOpacity
         onPress={p.callVoice}
         style={[s.KeyPad_NumberBtn, s.KeyPad_Btn__call]}

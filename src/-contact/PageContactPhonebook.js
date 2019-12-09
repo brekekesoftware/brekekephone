@@ -8,7 +8,13 @@ import React from 'react';
 
 import g from '../global';
 import contactStore from '../global/contactStore';
-import { ActivityIndicator, View } from '../native/Rn';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
@@ -17,6 +23,22 @@ import UserItem from './UserItem';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
+
+const s = StyleSheet.create({
+  PhoneBook_BtnReload: {
+    marginLeft: `auto`,
+    marginRight: `auto`,
+    backgroundColor: v.mainBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginBottom: 5,
+    borderRadius: 2,
+    ...g.boxShadow,
+  },
+  PhoneBook_TxtReload: {
+    color: v.revColor,
+  },
+});
 
 @observer
 class PageContactPhonebook extends React.Component {
@@ -34,16 +56,23 @@ class PageContactPhonebook extends React.Component {
   };
 
   state = {
-    loading: true,
+    loading: false,
+    hidden: false,
   };
 
   componentDidMount() {
-    this.loadContacts.flush();
-    this.loadContacts();
+    const noPhonebook = !this.phoneBookId.length;
+    if (noPhonebook) {
+      this.loadContacts.flush();
+      this.loadContacts();
+    }
   }
 
   render() {
-    const phonebooks = this.phoneBookId.map(this.resolveChat);
+    const phonebooks = this.state.hidden
+      ? this.phoneBookId.map(this.resolveChat).filter(i => i.shared !== false)
+      : this.phoneBookId.map(this.resolveChat);
+
     const map = {};
 
     phonebooks.forEach(u => {
@@ -85,52 +114,75 @@ class PageContactPhonebook extends React.Component {
           },
         }}
       >
+        <Field
+          onValueChange={this.setHiddenContact}
+          type={`Switch`}
+          value={this.state.hidden}
+        />
         {this.state.loading && (
           <View style={{ marginTop: 20 }}>
             <ActivityIndicator color={v.mainBg} size={30} />
           </View>
         )}
-        {!this.state.loading &&
-          groups.map(_g => (
-            <React.Fragment key={_g.key}>
-              <Field isGroup label={_g.key} />
-              {_g.phonebooks.map((u, i) => (
-                <UserItem
-                  function={[
-                    () =>
-                      g.openPicker({
-                        options: [
-                          {
-                            key: u.workNumber,
-                            label: u.workNumber || `Please add work number`,
-                            icon: mdiPhone,
-                          },
-                          {
-                            key: u.cellNumber,
-                            label: u.cellNumber || `Please add cell number`,
-                            icon: mdiPhone,
-                          },
-                          {
-                            key: u.homeNumber,
-                            label: u.homeNumber || `Please add home number`,
-                            icon: mdiPhone,
-                          },
-                        ],
-                        onSelect: this.call,
-                      }),
-                    () => this.update(u),
-                  ]}
-                  icon={[mdiPhone, mdiInformation]}
-                  key={i}
-                  last={i === _g.phonebooks.length - 1}
-                  name={u.name}
-                />
-              ))}
-            </React.Fragment>
-          ))}
+        {!this.state.loading && (
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                this.loadContacts.flush();
+                this.loadContacts();
+              }}
+              style={s.PhoneBook_BtnReload}
+            >
+              <Text style={s.PhoneBook_TxtReload}>Reload</Text>
+            </TouchableOpacity>
+            {groups.map(_g => (
+              <React.Fragment key={_g.key}>
+                <Field isGroup label={_g.key} />
+                {_g.phonebooks.map((u, i) => (
+                  <UserItem
+                    function={[
+                      () =>
+                        g.openPicker({
+                          options: [
+                            {
+                              key: u.workNumber,
+                              label: u.workNumber || `Please add work number`,
+                              icon: mdiPhone,
+                            },
+                            {
+                              key: u.cellNumber,
+                              label: u.cellNumber || `Please add cell number`,
+                              icon: mdiPhone,
+                            },
+                            {
+                              key: u.homeNumber,
+                              label: u.homeNumber || `Please add home number`,
+                              icon: mdiPhone,
+                            },
+                          ],
+                          onSelect: this.call,
+                        }),
+                      () => this.update(u),
+                    ]}
+                    icon={[mdiPhone, mdiInformation]}
+                    key={i}
+                    last={i === _g.phonebooks.length - 1}
+                    name={u.name}
+                  />
+                ))}
+              </React.Fragment>
+            ))}
+          </View>
+        )}
       </Layout>
     );
   }
+
+  setHiddenContact = value => {
+    this.setState({
+      hidden: value,
+    });
+  };
 
   setSearchText = searchText => {
     const oldQuery = this.props;
@@ -164,6 +216,9 @@ class PageContactPhonebook extends React.Component {
       offset: query.offset,
       searchText: query.searchText,
     };
+    this.setState({
+      loading: true,
+    });
     pbx
       .getContacts(book, shared, opts)
       .then(this.onLoadContactsSuccess)

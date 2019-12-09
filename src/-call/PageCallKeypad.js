@@ -91,7 +91,11 @@ class PageCallKeypad extends React.Component {
         }}
       >
         <ShowNumber setTarget={this.setTarget} value={this.state.target} />
-        <KeyPad callVoice={this.callVoice} onPressNumber={this.onPressNumber} />
+        <KeyPad
+          callVoice={this.callVoice}
+          onPressNumber={this.onPressNumber}
+          showKeyboard={this.showKeyboard}
+        />
       </Layout>
     );
   }
