@@ -261,7 +261,6 @@ class PBX extends EventEmitter {
     const res = await this.pal(`getContact`, {
       aid: id,
     });
-
     res.info = res.info || {};
 
     return {
@@ -276,6 +275,7 @@ class PBX extends EventEmitter {
       email: res.info.$email,
       job: res.info.$title,
       book: res.phonebook,
+      hidden: res.info.$hidden,
       shared: res.shared === `true`,
     };
   }
@@ -296,6 +296,7 @@ class PBX extends EventEmitter {
         $title: contact.job,
         $email: contact.email,
         $company: contact.company,
+        $hidden: contact.hidden,
       },
     });
   }

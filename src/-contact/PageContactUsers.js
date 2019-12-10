@@ -21,6 +21,10 @@ class PageContactUsers extends React.Component {
     sip: PropTypes.object.isRequired,
   };
 
+  state = {
+    hidden: false,
+  };
+
   getMatchUserIds() {
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
@@ -52,6 +56,12 @@ class PageContactUsers extends React.Component {
       chatBusy: ucUser.status === `busy`,
       chatEnabled: authStore.currentProfile?.ucEnabled,
     };
+  };
+
+  setHiddenContact = value => {
+    this.setState({
+      hidden: value,
+    });
   };
 
   isMatchUser = id => {
@@ -108,7 +118,11 @@ class PageContactUsers extends React.Component {
   };
 
   render() {
-    const users = this.getMatchUserIds().map(this.resolveUser);
+    const users = this.state.hidden
+      ? this.getMatchUserIds()
+          .map(this.resolveUser)
+          .filter(i => !i.chatOffline)
+      : this.getMatchUserIds().map(this.resolveUser);
     const map = {};
 
     users.forEach(u => {
@@ -148,10 +162,16 @@ class PageContactUsers extends React.Component {
           },
         }}
       >
+        <Field
+          onValueChange={this.setHiddenContact}
+          type={`Switch`}
+          value={this.state.hidden}
+        />
         <Search
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
         />
+
         {groups.map(_g => (
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />

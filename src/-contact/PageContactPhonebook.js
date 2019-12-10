@@ -32,6 +32,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     marginBottom: 5,
+    marginTop: 5,
     borderRadius: 2,
     ...g.boxShadow,
   },
@@ -70,7 +71,7 @@ class PageContactPhonebook extends React.Component {
 
   render() {
     const phonebooks = this.state.hidden
-      ? this.phoneBookId.map(this.resolveChat).filter(i => i.shared !== false)
+      ? this.phoneBookId.map(this.resolveChat).filter(i => i.hidden !== true)
       : this.phoneBookId.map(this.resolveChat);
 
     const map = {};
@@ -210,7 +211,7 @@ class PageContactPhonebook extends React.Component {
     const { pbx } = this.context;
     const query = this.props;
     const book = query.book;
-    const shared = query.shared;
+    const shared = true;
     const opts = {
       limit: numberOfContactsPerPage,
       offset: query.offset,
