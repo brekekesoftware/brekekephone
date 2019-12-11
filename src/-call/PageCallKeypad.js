@@ -14,18 +14,51 @@ class PageCallKeypad extends React.Component {
   state = {
     target: ``,
     video: false,
+    keyboard: false,
+    selection: {},
   };
 
-  onPressNumber = val => {
+  textInput = React.createRef();
+
+  selectionChange = event => {
+    this.setState({ selection: event.nativeEvent.selection });
+  };
+
+  showKeyboardDefault = () => {
+    this.setState({
+      keyboard: true,
+    });
+    this.textInput.focus();
+  };
+
+  showKeyboardNumpad = () => {
+    this.setState({
+      keyboard: false,
+    });
+  };
+
+  //TODO: coding delete and fix select.
+  insertText = (oldVal, val, start, end) => {
+    if (!isNaN(start) && !isNaN(end))
+      return (
+        oldVal.substring(0, start) + val + oldVal.substring(end, oldVal.length)
+      );
+    return oldVal + val;
+  };
+
+  onPressNumber = (val, { end, start }) => {
     let curText = this.state.target;
     if (isNaN(val)) {
       if (val === `delete`) {
-        curText = curText.slice(0, -1);
+        curText = this.insertText(curText, `delete`, start, end);
       } else {
-        curText += val;
+        curText = this.insertText(curText, val, start, end);
       }
     } else {
-      curText += val;
+      curText = this.insertText(curText, val, start, end);
+      if ((start === end) === curText.length) {
+        this.setState({ selection: { start: start + 1, end: end + 1 } });
+      }
     }
     this.setState({ target: curText });
   };
@@ -90,11 +123,20 @@ class PageCallKeypad extends React.Component {
           },
         }}
       >
-        <ShowNumber setTarget={this.setTarget} value={this.state.target} />
+        <ShowNumber
+          isShowKeyboard={this.state.keyboard}
+          refInput={el => (this.textInput = el)}
+          selection={this.state.selection}
+          selectionChange={this.selectionChange}
+          setTarget={this.setTarget}
+          showKeyboradNumpad={this.showKeyboardNumpad}
+          value={this.state.target}
+        />
         <KeyPad
           callVoice={this.callVoice}
           onPressNumber={this.onPressNumber}
-          showKeyboard={this.showKeyboard}
+          selection={this.state.selection}
+          showKeyboard={this.showKeyboardDefault}
         />
       </Layout>
     );

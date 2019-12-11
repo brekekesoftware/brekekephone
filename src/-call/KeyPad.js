@@ -48,7 +48,7 @@ const KeyPad = p => (
         {row.map(key => (
           <TouchableOpacity
             key={key}
-            onPress={() => p.onPressNumber(key)}
+            onPress={() => p.onPressNumber(key, { ...p.selection })}
             style={s.KeyPad_NumberBtn}
           >
             <Text style={s.KeyPad_NumberTxt}>{key}</Text>
@@ -68,7 +68,7 @@ const KeyPad = p => (
         <Icon path={mdiPhone} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => p.onPressNumber(`delete`)}
+        onPress={() => p.onPressNumber(`delete`, { ...p.selection })}
         style={s.KeyPad_NumberBtn}
       >
         <Icon path={mdiBackspace} />

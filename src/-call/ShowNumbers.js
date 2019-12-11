@@ -23,13 +23,33 @@ const s = StyleSheet.create({
 
 const ShowNumber = p => (
   <View style={s.ShowNumbers}>
-    <TextInput
-      keyboardType="phone-pad"
-      onChangeText={p.setTarget}
-      placeholder="Enter your number"
-      style={s.ShowNumbers_DisplayTxt}
-      value={p.value}
-    />
+    {p.isShowKeyboard && (
+      <TextInput
+        keyboardType="default"
+        multiline={true}
+        onChangeText={p.setTarget}
+        onEndEditing={p.showKeyboradNumpad}
+        onSelectionChange={event => p.selectionChange(event)}
+        placeholder="Enter your number"
+        ref={p.refInput}
+        // selection={p.selection}
+        style={s.ShowNumbers_DisplayTxt}
+        value={p.value}
+      />
+    )}
+    {!p.isShowKeyboard && (
+      <TextInput
+        keyboardType="phone-pad"
+        multiline={true}
+        onChangeText={p.setTarget}
+        onSelectionChange={event => p.selectionChange(event)}
+        placeholder="Enter your number"
+        ref={p.refInput}
+        // selection={p.selection}
+        style={s.ShowNumbers_DisplayTxt}
+        value={p.value}
+      />
+    )}
   </View>
 );
 
