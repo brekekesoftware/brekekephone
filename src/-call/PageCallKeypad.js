@@ -37,27 +37,41 @@ class PageCallKeypad extends React.Component {
     });
   };
 
-  //TODO: coding delete and fix select.
   insertText = (oldVal, val, start, end) => {
-    if (!isNaN(start) && !isNaN(end))
-      return (
-        oldVal.substring(0, start) + val + oldVal.substring(end, oldVal.length)
-      );
-    return oldVal + val;
+    return val === `delete`
+      ? oldVal.substring(0, start === end ? start - 1 : start) +
+          oldVal.substring(end, oldVal.length)
+      : oldVal.substring(0, start) + val + oldVal.substring(end, oldVal.length);
   };
 
   onPressNumber = (val, { end, start }) => {
     let curText = this.state.target;
-    if (isNaN(val)) {
-      if (val === `delete`) {
-        curText = this.insertText(curText, `delete`, start, end);
-      } else {
-        curText = this.insertText(curText, val, start, end);
-      }
+    if (!start && !end) {
+      curText = isNaN(val)
+        ? val === `delete`
+          ? curText.slice(0, -1)
+          : curText + val
+        : curText + val;
     } else {
-      curText = this.insertText(curText, val, start, end);
-      if ((start === end) === curText.length) {
-        this.setState({ selection: { start: start + 1, end: end + 1 } });
+      if (isNaN(val)) {
+        //-> delete
+        if (start > 0) {
+          this.setState({
+            selection: {
+              start: start === end ? start - 1 : start,
+              end: start === end ? start - 1 : start,
+            },
+          });
+          curText = this.insertText(curText, val, start, end);
+        }
+      } else {
+        // -> insert
+        start === curText.length && end === curText.length
+          ? this.setState({
+              selection: { start: curText.length + 1, end: curText.length + 1 },
+            })
+          : this.setState({ selection: { start: start + 1, end: start + 1 } });
+        curText = this.insertText(curText, val, start, end);
       }
     }
     this.setState({ target: curText });
