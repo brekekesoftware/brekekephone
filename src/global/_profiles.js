@@ -29,7 +29,12 @@ g.extends({
     //    partyNumber: string
     //    created: Date
     // navIndex?: number
-    // nav?: string[]
+    // navSubMenus?: string[]
+    // noti?[]
+    //    id: string
+    //    to: string
+    //    body: string
+    //    createdAt: Date
     profiles: [],
     get profilesMap() {
       return arrToMap(g.profiles, `id`, p => p);
@@ -50,7 +55,6 @@ g.extends({
     ucHostname: ``,
     ucPort: ``,
     accessToken: ``,
-    recentCalls: [],
   }),
   loadProfilesFromLocalStorage: async () => {
     let arr = await AsyncStorage.getItem(`_api_profiles`);

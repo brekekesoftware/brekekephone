@@ -140,7 +140,6 @@ const ProfileCreateForm = observer(props => {
             disabled: props.footerLogout,
             name: `pbxTenant`,
             label: `TENANT`,
-            rule: `required`,
           },
           {
             disabled: props.footerLogout,
