@@ -85,7 +85,7 @@ menus.forEach((m, i) => {
     s => s,
   );
   m.navFn = () => {
-    let k = authStore.currentProfile?.nav?.[i];
+    let k = authStore.currentProfile?.navSubMenus?.[i];
     if (!(k in m.subMenusMap)) {
       k = m.defaultSubMenu;
     }
@@ -104,7 +104,7 @@ const saveNavigation = (i, k) => {
   }
   normalizeSavedNavigation();
   p.navIndex = i;
-  p.nav[i] = k;
+  p.navSubMenus[i] = k;
   g.saveProfilesToLocalStorage();
 };
 const normalizeSavedNavigation = () => {
@@ -112,12 +112,12 @@ const normalizeSavedNavigation = () => {
   if (!menus[p.navIndex]) {
     p.navIndex = 0;
   }
-  if (p.nav?.length !== menus.length) {
-    p.nav = menus.map(m => null);
+  if (p.navSubMenus?.length !== menus.length) {
+    p.navSubMenus = menus.map(m => null);
   }
   menus.forEach((m, i) => {
-    if (!(p.nav[i] in m.subMenusMap)) {
-      p.nav[i] = m.defaultSubMenu;
+    if (!(p.navSubMenus[i] in m.subMenusMap)) {
+      p.navSubMenus[i] = m.defaultSubMenu;
     }
   });
 };
@@ -130,6 +130,6 @@ g.goToPageIndex = () => {
   normalizeSavedNavigation();
   const p = authStore.currentProfile;
   const i = p.navIndex;
-  const k = p.nav[i];
+  const k = p.navSubMenus[i];
   menus[i].subMenusMap[k].navFn();
 };
