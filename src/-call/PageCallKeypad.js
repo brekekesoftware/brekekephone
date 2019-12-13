@@ -15,7 +15,7 @@ class PageCallKeypad extends React.Component {
     target: ``,
     video: false,
     keyboard: false,
-    selection: {},
+    selection: { start: 0, end: 0 },
   };
 
   textInput = React.createRef();
@@ -46,33 +46,27 @@ class PageCallKeypad extends React.Component {
 
   onPressNumber = (val, { end, start }) => {
     let curText = this.state.target;
-    if (!start && !end) {
-      curText = isNaN(val)
-        ? val === `delete`
-          ? curText.slice(0, -1)
-          : curText + val
-        : curText + val;
-    } else {
-      if (isNaN(val)) {
-        //-> delete
-        if (start > 0) {
-          this.setState({
-            selection: {
-              start: start === end ? start - 1 : start,
-              end: start === end ? start - 1 : start,
-            },
-          });
-          curText = this.insertText(curText, val, start, end);
-        }
-      } else {
-        // -> insert
-        start === curText.length && end === curText.length
-          ? this.setState({
-              selection: { start: curText.length + 1, end: curText.length + 1 },
-            })
-          : this.setState({ selection: { start: start + 1, end: start + 1 } });
+    this.textInput.focus();
+
+    if (isNaN(val)) {
+      //-> delete
+      if (start > 0) {
+        this.setState({
+          selection: {
+            start: start === end ? start - 1 : start,
+            end: start === end ? start - 1 : start,
+          },
+        });
         curText = this.insertText(curText, val, start, end);
       }
+    } else {
+      // -> insert
+      start === curText.length && end === curText.length
+        ? this.setState({
+            selection: { start: curText.length + 1, end: curText.length + 1 },
+          })
+        : this.setState({ selection: { start: start + 1, end: start + 1 } });
+      curText = this.insertText(curText, val, start, end);
     }
     this.setState({ target: curText });
   };

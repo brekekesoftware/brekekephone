@@ -32,7 +32,7 @@ const ShowNumber = p => (
         onSelectionChange={event => p.selectionChange(event)}
         placeholder="Enter your number"
         ref={p.refInput}
-        // selection={p.selection}
+        selection={p.selection}
         style={s.ShowNumbers_DisplayTxt}
         value={p.value}
       />
@@ -45,7 +45,7 @@ const ShowNumber = p => (
         onSelectionChange={event => p.selectionChange(event)}
         placeholder="Enter your number"
         ref={p.refInput}
-        // selection={p.selection}
+        selection={p.selection}
         style={s.ShowNumbers_DisplayTxt}
         value={p.value}
       />
