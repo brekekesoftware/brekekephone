@@ -154,7 +154,7 @@ const Field = observer(({ ...props }) => {
         >
           <Icon
             color={g.mainDarkBg}
-            path={mdiPlus}
+            path={props.createBtnIcon || mdiPlus}
             size={18}
             style={s.Field_CreateRemoveIcon}
           />
@@ -171,7 +171,7 @@ const Field = observer(({ ...props }) => {
         >
           <Icon
             color={g.redDarkBg}
-            path={mdiClose}
+            path={props.removeBtnIcon || mdiClose}
             size={15}
             style={s.Field_CreateRemoveIcon}
           />
@@ -214,7 +214,9 @@ const Field = observer(({ ...props }) => {
               `iconRender`,
               `onValueChange`,
               `onCreateBtnPress`,
+              `createBtnIcon`,
               `onRemoveBtnPress`,
+              `removeBtnIcon`,
               `disabled`,
               `error`,
             ])}

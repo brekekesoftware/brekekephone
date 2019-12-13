@@ -116,7 +116,7 @@ class PageContactPhonebook extends React.Component {
         }}
       >
         <Field
-          label="SHOW HIDDEN CONTACTS"
+          label="SHOW SHARED CONTACTS"
           onValueChange={this.setHiddenContact}
           type={`Switch`}
           value={this.state.hidden}

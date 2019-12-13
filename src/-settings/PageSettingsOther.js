@@ -1,3 +1,4 @@
+import { mdiCheck } from '@mdi/js';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -72,7 +73,7 @@ class PageSettingsOther extends Component {
         <Field isGroup label={`UC`} />
         <Field
           disabled={!authStore.currentProfile?.ucEnabled}
-          label={`Status`}
+          label={`STATUS`}
           onValueChange={this.submitStatus}
           options={[
             { key: `offline`, label: `Offline` },
@@ -83,8 +84,10 @@ class PageSettingsOther extends Component {
           value={this.state.status}
         />
         <Field
+          createBtnIcon={mdiCheck}
           disabled={!authStore.currentProfile?.ucEnabled}
-          label={`Status note`}
+          label={`STATUS NOTE`}
+          onCreateBtnPress={this.submitStatusText}
           onSubmitEditing={this.submitStatusText}
           onValueChange={this.setStatusText}
           value={this.state.statusText}

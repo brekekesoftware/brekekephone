@@ -19,7 +19,7 @@ const genEmptyPhonebook = () => {
     company: ``,
     address: ``,
     email: ``,
-    hidden: false,
+    shared: false,
   };
 };
 
@@ -127,8 +127,8 @@ const ContactsCreateForm = observer(props => {
           },
           {
             type: `Switch`,
-            name: `hidden`,
-            label: `HIDDEN IN CONTACT LIST`,
+            name: `shared`,
+            label: `shared`,
           },
         ]}
         k="phonebook"
