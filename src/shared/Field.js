@@ -182,7 +182,7 @@ const Field = observer(({ ...props }) => {
   if (props.onValueChange) {
     if (props.type === `Switch`) {
       Object.assign(props, {
-        valueRender: v => (v ? `Enabled` : `Disabled`),
+        valueRender: props.valueRender || (v => (v ? `Enabled` : `Disabled`)),
         iconRender: v => <Switch enabled={v} style={s.Field_Switch} />,
         onTouchPress: () => {
           props.onValueChange(!props.value);

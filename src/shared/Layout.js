@@ -8,7 +8,7 @@ import useStore from '../utils/useStore';
 import LayoutFooter from './LayoutFooter';
 import LayoutHeader from './LayoutHeader';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
@@ -24,13 +24,13 @@ const s = StyleSheet.create({
     height: 148,
   },
   Layout_FooterSpacing: {
-    height: 71, // 56+15
+    height: getBottomSpace() + 71, // 56+15
   },
   Layout_FooterSpacing__hasKeyPad: {
-    height: 0, // 56+15
+    height: getBottomSpace(), // 56+15
   },
   Layout_FooterSpacing__hasInputChat: {
-    height: 127, // 56*2+15
+    height: getBottomSpace() + 127, // 56*2+15
   },
 });
 
@@ -45,13 +45,13 @@ const Layout = observer(props => {
   if (props.noScroll) {
     Container = View;
     containerProps = {
-      style: s.Layout,
+      style: css.Layout,
     };
   } else {
     Container = ScrollView;
     containerProps = {
-      style: s.Layout,
-      contentContainerStyle: [s.Layout_Scroll],
+      style: css.Layout,
+      contentContainerStyle: [css.Layout_Scroll],
       keyboardShouldPersistTaps: `always`,
       onScroll: e => {
         $.set(`headerOverflow`, e.nativeEvent.contentOffset.y > 60);
@@ -75,9 +75,9 @@ const Layout = observer(props => {
         {props.header && (
           <View
             style={[
-              s.Layout_HeaderSpacing,
+              css.Layout_HeaderSpacing,
               authStore.shouldShowConnStatus &&
-                s.Layout_HeaderSpacing__withConnStatus,
+                css.Layout_HeaderSpacing__withConnStatus,
             ]}
           />
         )}
@@ -85,10 +85,12 @@ const Layout = observer(props => {
         {props.footer && (
           <View
             style={[
-              s.Layout_FooterSpacing,
-              props.footer.LayoutChat && s.Layout_FooterSpacing__hasInputChat,
-              props.footer.Phonebook && s.Layout_FooterSpacing__hasInputChat,
-              props.footer.KeyPad && s.Layout_FooterSpacing__hasKeyPad,
+              css.Layout_FooterSpacing,
+              (props.footer.LayoutChat ||
+                props.footer.Phonebook ||
+                (props.footer.actions && props.footer.navigation)) &&
+                css.Layout_FooterSpacing__hasInputChat,
+              props.footer.KeyPad && css.Layout_FooterSpacing__hasKeyPad,
             ]}
           />
         )}

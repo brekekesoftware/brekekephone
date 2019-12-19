@@ -22,7 +22,7 @@ class PageContactUsers extends React.Component {
   };
 
   state = {
-    hidden: false,
+    showOfflineUsers: false,
   };
 
   getMatchUserIds() {
@@ -50,17 +50,13 @@ class PageContactUsers extends React.Component {
         .length,
       callCalling: !!pbxUser.talkers?.filter(t => t.status === `holding`)
         .length,
-      chatOffline: ucUser.status === `offline`,
-      chatOnline: ucUser.status === `online`,
-      chatIdle: ucUser.status === `idle`,
-      chatBusy: ucUser.status === `busy`,
       chatEnabled: authStore.currentProfile?.ucEnabled,
     };
   };
 
   setHiddenContact = value => {
     this.setState({
-      hidden: value,
+      showOfflineUsers: value,
     });
   };
 
@@ -118,11 +114,11 @@ class PageContactUsers extends React.Component {
   };
 
   render() {
-    const users = this.state.hidden
-      ? this.getMatchUserIds()
+    const users = this.state.showOfflineUsers
+      ? this.getMatchUserIds().map(this.resolveUser)
+      : this.getMatchUserIds()
           .map(this.resolveUser)
-          .filter(i => !i.chatOffline)
-      : this.getMatchUserIds().map(this.resolveUser);
+          .filter(i => !i.status === `offline`);
     const map = {};
 
     users.forEach(u => {
@@ -163,9 +159,10 @@ class PageContactUsers extends React.Component {
         }}
       >
         <Field
+          label="SHOW OFFLINE CONTACTS"
           onValueChange={this.setHiddenContact}
           type={`Switch`}
-          value={this.state.hidden}
+          value={this.state.showOfflineUsers}
         />
         <Search
           onValueChange={contactStore.setF(`searchText`)}

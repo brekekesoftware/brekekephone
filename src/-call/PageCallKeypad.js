@@ -1,117 +1,23 @@
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import g from '../global';
+import { Keyboard } from '../native/Rn';
 import Layout from '../shared/Layout';
 import KeyPad from './KeyPad';
 import ShowNumber from './ShowNumbers';
 
+@observer
 class PageCallKeypad extends React.Component {
   static contextTypes = {
     sip: PropTypes.object.isRequired,
   };
 
-  state = {
-    target: ``,
-    video: false,
-    keyboard: false,
-    selection: { start: 0, end: 0 },
-  };
-
-  textInput = React.createRef();
-
-  selectionChange = event => {
-    this.setState({ selection: event.nativeEvent.selection });
-  };
-
-  showKeyboardDefault = () => {
-    this.setState({
-      keyboard: true,
-    });
-    this.textInput.focus();
-  };
-
-  showKeyboardNumpad = () => {
-    this.setState({
-      keyboard: false,
-    });
-  };
-
-  insertText = (oldVal, val, start, end) => {
-    return val === `delete`
-      ? oldVal.substring(0, start === end ? start - 1 : start) +
-          oldVal.substring(end, oldVal.length)
-      : oldVal.substring(0, start) + val + oldVal.substring(end, oldVal.length);
-  };
-
-  onPressNumber = (val, { end, start }) => {
-    let curText = this.state.target;
-    this.textInput.focus();
-
-    if (isNaN(val)) {
-      //-> delete
-      if (start > 0) {
-        this.setState({
-          selection: {
-            start: start === end ? start - 1 : start,
-            end: start === end ? start - 1 : start,
-          },
-        });
-        curText = this.insertText(curText, val, start, end);
-      }
-    } else {
-      // -> insert
-      start === curText.length && end === curText.length
-        ? this.setState({
-            selection: { start: curText.length + 1, end: curText.length + 1 },
-          })
-        : this.setState({ selection: { start: start + 1, end: start + 1 } });
-      curText = this.insertText(curText, val, start, end);
-    }
-    this.setState({ target: curText });
-  };
-
-  setTarget = target => {
-    this.setState({ target });
-  };
-
-  create = () => {
-    const { target, video } = this.state;
-
-    if (!target.trim()) {
-      g.showError({ message: `No target` });
-      return;
-    }
-
-    const { sip } = this.context;
-
-    sip.createSession(target, {
-      videoEnabled: video,
-    });
-
-    g.goToPageCallManage();
-  };
-
-  call = (target, bVideoEnabled) => {
-    if (!target.trim()) {
-      g.showError({ message: `No target` });
-      return;
-    }
-
-    const { sip } = this.context;
-
-    sip.createSession(target, {
-      videoEnabled: bVideoEnabled,
-    });
-
-    g.goToPageCallManage();
-  };
-
-  callVoice = () => {
-    const { target } = this.state;
-
-    this.call(target, false);
-  };
+  @observable txt = ``;
+  txtRef = React.createRef();
+  txtSelection = { start: 0, end: 0 };
 
   render() {
     return (
@@ -132,19 +38,62 @@ class PageCallKeypad extends React.Component {
         }}
       >
         <ShowNumber
-          isShowKeyboard={this.state.keyboard}
-          refInput={el => (this.textInput = el)}
-          selection={this.state.selection}
-          selectionChange={this.selectionChange}
-          setTarget={this.setTarget}
-          showKeyboradNumpad={this.showKeyboardNumpad}
-          value={this.state.target}
+          refInput={this.txtRef}
+          selectionChange={e => {
+            Object.assign(this.txtSelection, {
+              start: e.nativeEvent.selection.start,
+              end: e.nativeEvent.selection.end,
+            });
+          }}
+          setTarget={v => {
+            this.txt = v;
+          }}
+          showKeyboradNumpad={() => {
+            Keyboard.dismiss();
+          }}
+          value={this.txt}
         />
         <KeyPad
-          callVoice={this.callVoice}
-          onPressNumber={this.onPressNumber}
-          selection={this.state.selection}
-          showKeyboard={this.showKeyboardDefault}
+          callVoice={() => {
+            this.txt = this.txt.trim();
+            if (!this.txt) {
+              g.showError({ message: `No target` });
+              return;
+            }
+            const { sip } = this.context;
+            sip.createSession(this.txt, {
+              videoEnabled: false,
+            });
+            g.goToPageCallManage();
+          }}
+          onPressNumber={v => {
+            const { end, start } = this.txtSelection;
+            let min = Math.min(start, end);
+            let max = Math.max(start, end);
+            const isDelete = v === ``;
+            if (isDelete) {
+              if (start === end && start) {
+                min = min - 1;
+              }
+            }
+            // Update text to trigger render
+            const t = this.txt;
+            this.txt = t.substring(0, min) + v + t.substring(max);
+            // Add timeout to make sure it updates the selection after rendering
+            setTimeout(() => {
+              const p = min + (isDelete ? 0 : 1);
+              this.txtRef.current.setNativeProps({
+                selection: {
+                  start: p,
+                  end: p,
+                },
+              });
+              this.txtRef.current.focus();
+            }, 17);
+          }}
+          showKeyboard={() => {
+            this.txtRef.current.focus();
+          }}
         />
       </Layout>
     );

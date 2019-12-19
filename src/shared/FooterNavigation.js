@@ -9,7 +9,6 @@ const s = StyleSheet.create({
   FooterNavigation: {
     flex: 1,
     backgroundColor: g.hoverBg,
-    ...g.boxShadow,
   },
   FooterNavigation_Menu: {
     flexDirection: `row`,

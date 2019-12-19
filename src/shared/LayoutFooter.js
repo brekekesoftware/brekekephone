@@ -6,7 +6,7 @@ import { StyleSheet, View } from '../native/Rn';
 import FooterActions from './FooterActions';
 import FooterNavigation from './FooterNavigation';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   LayoutFooter: {
     position: `absolute`,
     bottom: 0,
@@ -19,7 +19,6 @@ const s = StyleSheet.create({
   LayoutFooter__hasActions: {
     paddingTop: 8,
     paddingBottom: 8 + getBottomSpace(),
-    // paddingHorizontal: 15,
   },
   LayoutFooter__hasActionsInputChat: {
     bottom: 0,
@@ -48,10 +47,10 @@ const LayoutFooter = ({
 }) => (
   <View
     style={[
-      s.LayoutFooter,
-      actions && !navigation && s.LayoutFooter__hasActions,
-      LayoutChat && s.LayoutFooter__hasActionsInputChat,
-      Phonebook && s.LayoutFooter__hasActionsInputChat,
+      css.LayoutFooter,
+      actions && !navigation && css.LayoutFooter__hasActions,
+      LayoutChat && css.LayoutFooter__hasActionsInputChat,
+      Phonebook && css.LayoutFooter__hasActionsInputChat,
       style,
     ]}
   >
@@ -62,16 +61,16 @@ const LayoutFooter = ({
           flexDirection: `row`,
         }}
       >
-        <View style={s.LayoutFooter_ActionsSpacing} />
+        <View style={css.LayoutFooter_ActionsSpacing} />
         <View
           style={[
-            s.LayoutFooter_Actions,
-            navigation && s.LayoutFooter_Actions__hasNavigation,
+            css.LayoutFooter_Actions,
+            navigation && css.LayoutFooter_Actions__hasNavigation,
           ]}
         >
           <FooterActions {...actions} LayoutChat={LayoutChat} />
         </View>
-        <View style={s.LayoutFooter_ActionsSpacing} />
+        <View style={css.LayoutFooter_ActionsSpacing} />
       </View>
     )}
     {navigation && <FooterNavigation {...navigation} />}

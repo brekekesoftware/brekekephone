@@ -123,7 +123,7 @@ class PageContactPhonebook extends React.Component {
         />
         {this.state.loading && (
           <View style={{ marginTop: 20 }}>
-            <ActivityIndicator color={v.mainBg} size={30} />
+            <ActivityIndicator color={v.mainBg} size={1} />
           </View>
         )}
         {!this.state.loading && (

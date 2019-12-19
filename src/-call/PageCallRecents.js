@@ -45,7 +45,7 @@ class PageCallRecents extends React.Component {
   };
 
   getMatchUserIds = () =>
-    authStore.currentProfile.recentCalls.filter(this.isMatchUser);
+    authStore.currentProfile.recentCalls?.filter(this.isMatchUser) || [];
 
   render() {
     const users = this.getMatchUserIds();

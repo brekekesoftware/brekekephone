@@ -161,8 +161,8 @@ const Header = observer(props => {
   const connMessage =
     service &&
     (isConnFailure
-      ? service + ` connection failed`
-      : `Connecting to ` + service);
+      ? `${service} connection failed`
+      : `Connecting to ${service}`);
 
   return (
     <View
