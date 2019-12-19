@@ -27,7 +27,7 @@ yarn cache clean && yarn --check-files && react-native start --reset-cache
   - `android/src/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
-  - `src/turnConfig.js`
+  - `src/api/turnConfig.js`
 
 ### Android
 
