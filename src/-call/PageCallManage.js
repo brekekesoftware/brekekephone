@@ -1,10 +1,11 @@
 import { mdiPhoneHangup } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import IncallManager from '../native/IncallManager';
@@ -13,10 +14,9 @@ import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
-import v from '../variables';
 import CallManage from './CallManage';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   PageIncoming_Btn__Hangup: {
     position: `absolute`,
     bottom: 100,
@@ -40,11 +40,6 @@ class PageCallManage extends React.Component {
     prevRunningIds: null,
   };
 
-  static contextTypes = {
-    sip: PropTypes.object.isRequired,
-    pbx: PropTypes.object.isRequired,
-  };
-
   _selectActiveCallWithRoute(props) {
     const runids = this.runningIds;
     if (runids && runids.length !== 0) {
@@ -65,10 +60,7 @@ class PageCallManage extends React.Component {
   }
 
   _checkCreatingSessionAndRoute() {
-    const { sip } = this.context;
-
     const creatingSessions = sip.getCreatingSessions();
-
     if (creatingSessions.isEmpty()) {
       g.goToPageCallKeypad();
     }
@@ -92,9 +84,7 @@ class PageCallManage extends React.Component {
     if (!runids || runids.length === 0) {
       return null;
     }
-
     let latestCall = null;
-
     for (let i = 0; i < runids.length; i++) {
       const runid = runids[i];
       const call = this.runningById[runid];
@@ -106,7 +96,6 @@ class PageCallManage extends React.Component {
         }
       }
     }
-
     return latestCall;
   }
 
@@ -114,14 +103,11 @@ class PageCallManage extends React.Component {
     if (!runids || runids.length === 0) {
       return null;
     }
-
     let latestCall = null;
-
     for (let i = 0; i < runids.length; i++) {
       const runid = runids[i];
       const call = this.runningById[runid];
       const isActiveCall = call.answered === true;
-
       if (isActiveCall === true) {
         if (!latestCall) {
           latestCall = call;
@@ -132,7 +118,6 @@ class PageCallManage extends React.Component {
         }
       }
     }
-
     return latestCall;
   }
 
@@ -143,14 +128,14 @@ class PageCallManage extends React.Component {
   render() {
     const u = this.runningById[callStore.selectedId];
     return (
-      <BrekekeGradient colors={[v.callBg, v.revBg]}>
+      <BrekekeGradient colors={[g.callBg, g.revBg]}>
         <Layout
           header={{
             transparent: true,
             onBackBtnPress: g.goToPageCallRecents,
             title: u?.partyName,
-            titleColor: v.revColor,
-            backBtnColor: v.revColor,
+            titleColor: g.revColor,
+            backBtnColor: g.revColor,
           }}
           noScroll
         >
@@ -177,16 +162,16 @@ class PageCallManage extends React.Component {
             unhold={this.unhold}
             unpark={this.unpark}
           />
-          <View style={s.PageIncoming_Btn__Hangup}>
+          <View style={css.PageIncoming_Btn__Hangup}>
             <ButtonIcon
-              bgcolor={v.redBg}
-              color={v.revColor}
+              bgcolor={g.redBg}
+              color={g.revColor}
               name="HANG UP"
               noborder
               onPress={this.hangup}
               path={mdiPhoneHangup}
               size={40}
-              textcolor={v.revColor}
+              textcolor={g.revColor}
             />
           </View>
         </Layout>
@@ -195,39 +180,32 @@ class PageCallManage extends React.Component {
   }
 
   setMuted = () => {
-    const { sip } = this.context;
     sip.setMuted(true, callStore.selectedId);
     callStore.upsertRunning({
       id: callStore.selectedId,
       muted: true,
     });
   };
-
   setunMuted = () => {
-    const { sip } = this.context;
     sip.setMuted(false, callStore.selectedId);
     callStore.upsertRunning({
       id: callStore.selectedId,
       muted: false,
     });
   };
-
   onOpenLoudSpeaker = () => {
     if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(true);
     }
-
     callStore.upsertRunning({
       id: callStore.selectedId,
       loudspeaker: true,
     });
   };
-
   onCloseLoudSpeaker = () => {
     if (Platform.OS !== `web`) {
       IncallManager.setForceSpeakerphoneOn(false);
     }
-
     callStore.upsertRunning({
       id: callStore.selectedId,
       loudspeaker: false,
@@ -235,104 +213,78 @@ class PageCallManage extends React.Component {
   };
 
   hangup = () => {
-    const { sip } = this.context;
-
     sip.hangupSession(callStore.selectedId);
     g.goToPageCallRecents();
   };
-
   answer = () => {
-    const { sip } = this.context;
-
     sip.answerSession(callStore.selectedId);
   };
 
   hold = () => {
-    const { pbx } = this.context;
-
     const call = this.runningById[callStore.selectedId];
     pbx
       .holdTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onHoldSuccess)
       .catch(this.onHoldFailure);
   };
-
   onHoldSuccess = () => {
     callStore.upsertRunning({
       id: callStore.selectedId,
       holding: true,
     });
   };
-
   onHoldFailure = err => {
-    console.error(err);
-    g.showError({ message: `hold the call` });
+    g.showError({ message: `hold the call`, err });
   };
-
   unhold = () => {
-    const { pbx } = this.context;
-
     const call = this.runningById[callStore.selectedId];
     pbx
       .unholdTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onUnholdSuccess)
       .catch(this.onUnholdFailure);
   };
-
   onUnholdSuccess = () => {
     callStore.upsertRunning({
       id: callStore.selectedId,
       holding: false,
     });
   };
-
   onUnholdFailure = err => {
-    console.error(err);
-    g.showError({ message: `unhold the call` });
+    g.showError({ message: `unhold the call`, err });
   };
 
   startRecording = () => {
-    const { pbx } = this.context;
-
     const call = this.runningById[callStore.selectedId];
     pbx
       .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStartRecordingSuccess)
       .catch(this.onStartRecordingFailure);
   };
-
   onStartRecordingSuccess = () => {
     callStore.upsertRunning({
       id: callStore.selectedId,
       recording: true,
     });
   };
-
   onStartRecordingFailure = err => {
-    console.error(err);
-    g.showError({ message: `start recording the call` });
+    g.showError({ message: `start recording the call`, err });
   };
 
   stopRecording = () => {
-    const { pbx } = this.context;
-
     const call = this.runningById[callStore.selectedId];
     pbx
       .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStopRecordingSuccess)
       .catch(this.onStopRecordingFailure);
   };
-
   onStopRecordingSuccess = () => {
     callStore.upsertRunning({
       id: callStore.selectedId,
       recording: false,
     });
   };
-
   onStopRecordingFailure = err => {
-    console.error(err);
-    g.showError({ message: `stop recording the call` });
+    g.showError({ message: `stop recording the call`, err });
   };
 
   transfer = () => {
@@ -344,31 +296,20 @@ class PageCallManage extends React.Component {
       g.goToPageTransferDial({ callId: call.id });
     }
   };
-
   dtmf = () => {
     const call = this.runningById[callStore.selectedId];
     g.goToPageCallKeypad(call.id);
   };
-
   unpark = parkNumber => {
-    const { sip } = this.context;
-
     sip.createSession(parkNumber);
   };
-
   park = () => {
     g.goToPageCallParks({ screen: `call_manage` });
   };
-
   enableVideo = () => {
-    const { sip } = this.context;
-
     sip.enableVideo(callStore.selectedId);
   };
-
   disableVideo = () => {
-    const { sip } = this.context;
-
     sip.disableVideo(callStore.selectedId);
   };
 }

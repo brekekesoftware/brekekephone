@@ -1,19 +1,22 @@
 import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js';
 import React from 'react';
 
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
+import g from '../global';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../native/Rn';
 import Icon from '../shared/Icon';
-import v from '../variables';
 
-const s = StyleSheet.create({
-  KeyPad: {
-    top: 120,
-  },
+const css = StyleSheet.create({
   KeyPad_Number: {
     flexDirection: `row`,
   },
   KeyPad_NumberTxt: {
-    fontSize: v.fontSizeTitle,
+    fontSize: g.fontSizeTitle,
     fontWeight: `600`,
     textAlign: `center`,
     paddingVertical: 20,
@@ -25,9 +28,8 @@ const s = StyleSheet.create({
     flexDirection: `row`,
     justifyContent: `space-between`,
   },
-
   KeyPad_Btn__call: {
-    backgroundColor: v.mainDarkBg,
+    backgroundColor: g.mainDarkBg,
     width: 64,
     borderRadius: 40,
     paddingVertical: 20,
@@ -42,39 +44,42 @@ const keys = [
 ];
 
 const KeyPad = p => (
-  <View style={s.KeyPad}>
+  <React.Fragment>
     {keys.map((row, i) => (
-      <View key={i} style={s.KeyPad_Number}>
+      <View key={i} style={css.KeyPad_Number}>
         {row.map(key => (
           <TouchableOpacity
             key={key}
             onPress={() => p.onPressNumber(key)}
-            style={s.KeyPad_NumberBtn}
+            style={css.KeyPad_NumberBtn}
           >
-            <Text style={s.KeyPad_NumberTxt}>{key}</Text>
+            <Text style={css.KeyPad_NumberTxt}>{key}</Text>
           </TouchableOpacity>
         ))}
       </View>
     ))}
-    <View style={s.KeyPad_Btn}>
-      <TouchableOpacity onPress={p.showKeyboard} style={s.KeyPad_NumberBtn}>
-        <Icon path={mdiKeyboard} />
+    <View style={css.KeyPad_Btn}>
+      <TouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
+        <Icon
+          color={Platform.OS === `web` ? `white` : null}
+          path={mdiKeyboard}
+        />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={p.callVoice}
-        style={[s.KeyPad_NumberBtn, s.KeyPad_Btn__call]}
+        style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call]}
         success
       >
         <Icon path={mdiPhone} />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => p.onPressNumber(``)}
-        style={s.KeyPad_NumberBtn}
+        style={css.KeyPad_NumberBtn}
       >
         <Icon path={mdiBackspace} />
       </TouchableOpacity>
     </View>
-  </View>
+  </React.Fragment>
 );
 
 export default KeyPad;

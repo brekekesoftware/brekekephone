@@ -1,8 +1,8 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
@@ -28,11 +28,6 @@ class PageChatDetail extends React.Component {
       m => m,
     );
   }
-
-  static contextTypes = {
-    uc: PropTypes.object.isRequired,
-  };
-
   state = {
     loadingRecent: false,
     loadingMore: false,
@@ -40,10 +35,8 @@ class PageChatDetail extends React.Component {
     showImage: ``,
     fileType: ``,
   };
-
   componentDidMount() {
     const noChat = !this.chatIds.length;
-
     if (noChat) this.loadRecent();
   }
   render() {
@@ -86,23 +79,19 @@ class PageChatDetail extends React.Component {
       </Layout>
     );
   }
-
   setViewRef = ref => {
     this.view = ref;
   };
-
   onContentSizeChange = () => {
     if (this._closeToBottom) {
       this.view.scrollToEnd({
         animated: !this._justMounted,
       });
-
       if (this._justMounted) {
         this._justMounted = false;
       }
     }
   };
-
   onScroll = ev => {
     ev = ev.nativeEvent;
     const layoutSize = ev.layoutMeasurement;
@@ -114,7 +103,6 @@ class PageChatDetail extends React.Component {
     this._closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom;
   };
-
   resolveChat = (id, index) => {
     const chat = this.chatById[id];
     const prev = this.chatById[this.chatIds[index - 1]] || {};
@@ -122,7 +110,6 @@ class PageChatDetail extends React.Component {
     const created = chat.created && formatTime(chat.created);
     const file = chatStore.filesMap[chat.file];
     const text = chat.text;
-
     if (mini) {
       return {
         mini: true,
@@ -131,11 +118,9 @@ class PageChatDetail extends React.Component {
         file,
       };
     }
-
     const creator = this.resolveCreator(chat.creator);
     const creatorName =
       !creator.name || creator.name.length === 0 ? creator.id : creator.name;
-
     return {
       creatorName: creatorName,
       creatorAvatar: creator.avatar,
@@ -144,27 +129,22 @@ class PageChatDetail extends React.Component {
       created,
     };
   };
-
-  me = this.context.uc.me();
-
+  me = uc.me();
   resolveCreator = creator => {
     if (creator === this.me.id) {
       return this.me;
     }
     return contactStore.getUCUser(creator) || {};
   };
-
   loadRecent() {
-    this.context.uc
-      .getBuddyChats(this.props.buddy, {
-        max: m.numberOfChatsPerLoad,
-      })
+    uc.getBuddyChats(this.props.buddy, {
+      max: m.numberOfChatsPerLoad,
+    })
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
     //
     this.setState({ loadingRecent: true });
   }
-
   onLoadRecentSuccess = chats => {
     this.setState({
       loadingRecent: false,
@@ -177,27 +157,20 @@ class PageChatDetail extends React.Component {
     this.setState({ loadingRecent: false });
     g.showError({ err, message: `get recent chats` });
   };
-
   loadMore = () => {
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = m.numberOfChatsPerLoad;
     const end = oldestCreated;
-
     const query = { max, end };
-
-    const { uc } = this.context;
     const u = contactStore.getUCUser(this.props.buddy);
-
     uc.getBuddyChats(u?.id, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
-
     this.setState({
       loadingMore: true,
     });
   };
-
   onLoadMoreSuccess = chats => {
     this.setState({
       loadingMore: false,
@@ -206,20 +179,16 @@ class PageChatDetail extends React.Component {
     const u = contactStore.getUCUser(this.props.buddy);
     chatStore.pushMessages(u.id, chats);
   };
-
   onLoadMoreFailure = err => {
     this.setState({
       loadingMore: false,
     });
     g.showError({ err, message: `get more chats` });
   };
-
   setEditingText = editingText => {
     this.setState({ editingText });
   };
-
   submitting = false;
-
   submitEditingText = () => {
     const txt = this.state.editingText.trim();
     if (!txt || this.submitting) {
@@ -227,8 +196,7 @@ class PageChatDetail extends React.Component {
     }
     this.submitting = true;
     //
-    this.context.uc
-      .sendBuddyChatText(this.props.buddy, txt)
+    uc.sendBuddyChatText(this.props.buddy, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
@@ -242,28 +210,23 @@ class PageChatDetail extends React.Component {
   onSubmitEditingTextFailure = err => {
     g.showError({ err, message: `send the message` });
   };
-
   acceptFile = file => {
-    this.context.uc
-      .acceptFile(file.id)
+    uc.acceptFile(file.id)
       .then(blob => saveBlob(blob, file.name))
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
     g.showError({ err, message: `accept file` });
   };
-
   rejectFile = file => {
-    this.context.uc.rejectFile(file.id).catch(this.onRejectFileFailure);
+    uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
     g.showError({ err, message: `reject file` });
   };
-
   pickFile = () => {
     pickFile(this.sendFile);
   };
-
   blob = file => {
     const reader = new FileReader();
     const fileType = file.type.split(`/`)[0];
@@ -273,9 +236,7 @@ class PageChatDetail extends React.Component {
     };
     reader.readAsDataURL(file);
   };
-
   sendFile = file => {
-    const { uc } = this.context;
     // TODO: fix error duplicate when upload 2 file.
     this.blob(file);
     const u = contactStore.getUCUser(this.props.buddy);

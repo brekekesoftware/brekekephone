@@ -1,3 +1,4 @@
+import 'brekekejs/lib/jsonrpc';
 import 'brekekejs/lib/webrtcclient';
 
 import EventEmitter from 'eventemitter3';

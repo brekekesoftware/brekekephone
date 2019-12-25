@@ -6,9 +6,10 @@ import {
 } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
@@ -17,7 +18,7 @@ import Avatar from '../shared/Avatar';
 import Icon from '../shared/Icon';
 import Layout from '../shared/Layout';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   PageTransferAttend: {
     flexDirection: `row`,
   },
@@ -70,10 +71,6 @@ class PageTransferAttend extends React.Component {
   @computed get call() {
     return callStore.getRunningCall(this.props.callId);
   }
-  static contextTypes = {
-    sip: PropTypes.object.isRequired,
-    pbx: PropTypes.object.isRequired,
-  };
 
   render() {
     const usersource = this.resolveMatch(this.call?.partyNumber);
@@ -85,55 +82,60 @@ class PageTransferAttend extends React.Component {
           title: `Attended Transfer`,
         }}
       >
-        <View style={s.PageTransferAttend}>
+        <View style={css.PageTransferAttend}>
           <View
-            style={[s.PageTransferAttend_Info, s.PageTransferAttend_InfoFrom]}
+            style={[
+              css.PageTransferAttend_Info,
+              css.PageTransferAttend_InfoFrom,
+            ]}
           >
             <Avatar source={{ uri: usersource?.avatar }} />
-            <Text style={s.PageTransferAttend_Txt__pdt20}>From</Text>
+            <Text style={css.PageTransferAttend_Txt__pdt20}>From</Text>
             <Text>{this.call?.partyName}</Text>
           </View>
-          <View style={s.PageTransferAttend_InfoArr}>
+          <View style={css.PageTransferAttend_InfoArr}>
             <Icon path={mdiArrowRight} />
           </View>
           <View
-            style={[s.PageTransferAttend_Info, s.PageTransferAttend_InfoTo]}
+            style={[css.PageTransferAttend_Info, css.PageTransferAttend_InfoTo]}
           >
             <Avatar source={{ uri: usertarget?.avatar }} />
-            <Text style={s.PageTransferAttend_Txt__pdt20}>To</Text>
+            <Text style={css.PageTransferAttend_Txt__pdt20}>To</Text>
             <Text>{this.call?.transfering}</Text>
           </View>
         </View>
-        <View style={s.PageTransferAttend_Spacing} />
-        <View style={[s.PageTransferAttend, s.PageTransferAttend__spaceAround]}>
-          <View style={s.PageTransferAttend_BtnOuter}>
+        <View style={css.PageTransferAttend_Spacing} />
+        <View
+          style={[css.PageTransferAttend, css.PageTransferAttend__spaceAround]}
+        >
+          <View style={css.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.hangup}
-              style={[s.PageTransferAttend_Btn]}
+              style={[css.PageTransferAttend_Btn]}
             >
               <Icon path={mdiPhoneOff} />
             </TouchableOpacity>
-            <Text style={s.PageTransferAttend_Txt__pdt10}>CANCEL</Text>
+            <Text style={css.PageTransferAttend_Txt__pdt10}>CANCEL</Text>
             <Text>TRANSFER</Text>
           </View>
-          <View style={s.PageTransferAttend_BtnOuter}>
+          <View style={css.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.stop}
-              style={[s.PageTransferAttend_Btn]}
+              style={[css.PageTransferAttend_Btn]}
             >
               <Icon path={mdiPhoneHangup} />
             </TouchableOpacity>
-            <Text style={s.PageTransferAttend_Txt__pdt10}>END CALL &</Text>
+            <Text style={css.PageTransferAttend_Txt__pdt10}>END CALL &</Text>
             <Text>COMPLETE TRANSFER</Text>
           </View>
-          <View style={s.PageTransferAttend_BtnOuter}>
+          <View style={css.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.join}
-              style={[s.PageTransferAttend_Btn]}
+              style={[css.PageTransferAttend_Btn]}
             >
               <Icon path={mdiPhoneForward} />
             </TouchableOpacity>
-            <Text style={s.PageTransferAttend_Txt__pdt10}>CONFERENCE</Text>
+            <Text style={css.PageTransferAttend_Txt__pdt10}>CONFERENCE</Text>
           </View>
         </View>
       </Layout>
@@ -142,7 +144,6 @@ class PageTransferAttend extends React.Component {
 
   resolveMatch = id => {
     const ucUser = contactStore.getUCUser(id) || {};
-
     return {
       avatar: ucUser.avatar,
       number: id,
@@ -150,52 +151,40 @@ class PageTransferAttend extends React.Component {
   };
 
   hangup = () => {
-    const { sip } = this.context;
-
     sip.hangupSession(this.props.selectedId);
   };
-
   join = () => {
-    const { pbx } = this.context;
     const call = callStore.getRunningCall(this.props.callId);
-
     pbx
       .joinTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
       .then(this.onJoinSuccess)
       .catch(this.onJoinFailure);
   };
-
   onJoinSuccess = () => {
     callStore.upsertRunning({
       id: this.props.callId,
       transfering: false,
     });
-
     g.goToPageCallManage();
   };
-
   onJoinFailure = err => {
     g.showError({ err, message: `join the transfer` });
   };
 
   stop = () => {
-    const { pbx } = this.context;
     const call = callStore.getRunningCall(this.props.callId);
     pbx
       .stopTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
       .then(this.onStopSuccess)
       .catch(this.onStopFailure);
   };
-
   onStopSuccess = () => {
     callStore.upsertRunning({
       id: this.props.callId,
       transfering: false,
     });
-
     g.goToPageCallManage();
   };
-
   onStopFailure = err => {
     g.showError({ err, message: `stop the transfer` });
   };

@@ -1,31 +1,26 @@
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import pbx from '../api/pbx';
 import g from '../global';
 import authStore from '../global/authStore';
 
 @observer
 class AuthPBX extends React.Component {
-  static contextTypes = {
-    pbx: PropTypes.object.isRequired,
-  };
-
   componentDidMount() {
     this.autoAuth();
     this.clearObserve = observe(authStore, `pbxShouldAuth`, this.autoAuth);
   }
   componentWillUnmount() {
     this.clearObserve();
-    this.context.pbx.disconnect();
+    pbx.disconnect();
     authStore.set(`pbxState`, `stopped`);
   }
-
   auth = () => {
-    this.context.pbx.disconnect();
+    pbx.disconnect();
     authStore.set(`pbxState`, `connecting`);
-    this.context.pbx
+    pbx
       .connect(authStore.currentProfile)
       .then(() => {
         authStore.set(`pbxState`, `success`);
@@ -41,7 +36,6 @@ class AuthPBX extends React.Component {
     }
     this.auth();
   };
-
   render() {
     return null;
   }

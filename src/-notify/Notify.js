@@ -2,21 +2,21 @@ import { mdiCheck, mdiClose } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import g from '../global';
 import { StyleSheet, Text, View } from '../native/Rn';
 import ButtonIcon from '../shared/ButtonIcon';
-import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Notify: {
     flexDirection: `row`,
     alignItems: `center`,
-    width: 288,
-    backgroundColor: v.bg,
+    width: `100%`,
+    backgroundColor: g.bg,
     marginBottom: 10,
     alignSelf: `flex-start`,
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
-    ...v.boxShadow,
+    ...g.boxShadow,
     elevation: 3,
   },
 
@@ -27,49 +27,55 @@ const s = StyleSheet.create({
   },
 
   Notify_Btn_reject: {
-    borderColor: v.redBg,
+    borderColor: g.redBg,
   },
   Notify_Btn_accept: {
-    borderColor: v.mainBg,
+    borderColor: g.mainBg,
+  },
+  Notify_Info_PartyName: {
+    fontSize: 15,
+    fontWeight: `bold`,
   },
 });
 
 const Notify = observer(p => {
   return (
-    <View style={s.Notify}>
+    <View style={css.Notify}>
       {p.type === `call` && (
-        <View style={s.Notify_Info}>
+        <View style={css.Notify_Info}>
           <Text>
             {p.remoteVideoEnabled
               ? `Incoming video call`
               : `Incoming voice call`}
           </Text>
-          <Text>{p.partyName?.toUpperCase()}</Text>
+          <Text style={css.Notify_Info_PartyName}>
+            {p.partyName?.toUpperCase()}
+          </Text>
           <Text>{p.partyNumber}</Text>
         </View>
       )}
       {p.type === `inviteChat` && (
-        <View style={s.Notify_Info}>
+        <View style={css.Notify_Info}>
           <Text>Group chat invited</Text>
           <Text>{p.name.toUpperCase()}</Text>
           <Text>by{p.inviter}</Text>
         </View>
       )}
       <ButtonIcon
-        bdcolor={v.redBg}
-        color={v.redBg}
+        bdcolor={g.redBg}
+        color={g.redBg}
         onPress={() => p.reject(p.id)}
         path={mdiClose}
         size={30}
-        style={s.Notify_Btn_reject}
+        style={css.Notify_Btn_reject}
       />
       <ButtonIcon
-        bdcolor={v.mainBg}
-        color={v.mainBg}
+        bdcolor={g.mainBg}
+        color={g.mainBg}
         onPress={() => p.accept(p.id)}
         path={mdiCheck}
         size={30}
-        style={s.Notify_Btn_accept}
+        style={css.Notify_Btn_accept}
       />
     </View>
   );

@@ -1,26 +1,22 @@
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import getApiProvider from '../api/getApiProvider';
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 
 @observer
 class AuthSIP extends React.Component {
-  static contextTypes = {
-    pbx: PropTypes.object.isRequired,
-    sip: PropTypes.object.isRequired,
-  };
-
   componentDidMount() {
     this.autoAuth();
     this.clearObserve = observe(authStore, `sipShouldAuth`, this.autoAuth);
   }
   componentWillUnmount() {
     this.clearObserve();
-    this.context.sip.disconnect();
+    sip.disconnect();
     authStore.set(`sipState`, `stopped`);
   }
 
@@ -34,10 +30,10 @@ class AuthSIP extends React.Component {
     });
 
   _auth = async () => {
-    this.context.sip.disconnect();
+    sip.disconnect();
     authStore.set(`sipState`, `connecting`);
     //
-    const pbxConfig = await this.context.pbx.getConfig();
+    const pbxConfig = await pbx.getConfig();
     if (!pbxConfig) {
       console.error(`Invalid PBX config`);
       return;
@@ -49,7 +45,7 @@ class AuthSIP extends React.Component {
       return;
     }
     //
-    const pbxUserConfig = await this.context.pbx.getUserForSelf(
+    const pbxUserConfig = await pbx.getUserForSelf(
       authStore.currentProfile?.pbxTenant,
       authStore.currentProfile?.pbxUsername,
     );
@@ -67,15 +63,13 @@ class AuthSIP extends React.Component {
       return;
     }
     //
-    const sipAccessToken = await this.context.pbx.createSIPAccessToken(
-      webPhone.id,
-    );
+    const sipAccessToken = await pbx.createSIPAccessToken(webPhone.id);
     if (!sipAccessToken) {
       console.error(`Invalid SIP access token`);
       return;
     }
     //
-    await this.context.sip.connect({
+    await sip.connect({
       hostname: authStore.currentProfile?.pbxHostname,
       port: sipWSSPort,
       tenant: authStore.currentProfile?.pbxTenant,

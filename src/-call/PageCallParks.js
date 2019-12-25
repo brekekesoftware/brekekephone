@@ -1,9 +1,10 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import callStore from '../global/callStore';
@@ -16,12 +17,6 @@ class PageCallParks extends React.Component {
   @computed get parkIds() {
     return authStore.currentProfile.parks;
   }
-
-  static contextTypes = {
-    pbx: PropTypes.object.isRequired,
-    sip: PropTypes.object.isRequired,
-  };
-
   state = {
     selectedPark: null,
   };
@@ -31,7 +26,6 @@ class PageCallParks extends React.Component {
     const goBack =
       screen === `page_phone` ? g.goToPageCallKeypad : g.goToPageCallManage;
     void goBack; // TODO
-
     return (
       <Layout
         footer={{
@@ -76,7 +70,6 @@ class PageCallParks extends React.Component {
 
   park = () => {
     const { selectedPark } = this.state;
-
     if (!selectedPark) {
       g.showError({
         err: new Error(`No selected park`),
@@ -84,9 +77,6 @@ class PageCallParks extends React.Component {
       });
       return;
     }
-
-    const { pbx } = this.context;
-
     if (callStore.selectedId) {
       const call = callStore.getRunningCall(callStore.selectedId);
       const tenant = call.pbxTenant;
@@ -96,11 +86,9 @@ class PageCallParks extends React.Component {
         .then(this.onParkSuccess)
         .catch(this.onParkFailure);
     } else {
-      const { sip } = this.context;
       sip.createSession(selectedPark, {
         videoEnabled: false,
       });
-
       g.goToPageCallManage();
     }
   };
@@ -108,7 +96,6 @@ class PageCallParks extends React.Component {
   onParkSuccess = () => {
     g.goToPageCallManage();
   };
-
   onParkFailure = err => {
     g.showError({ err, message: `park the call` });
   };

@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 import createId from 'shortid';
@@ -17,20 +16,6 @@ import { setApiProvider } from './getApiProvider';
 
 @observer
 class ApiProvider extends React.Component {
-  static childContextTypes = {
-    pbx: PropTypes.object.isRequired,
-    sip: PropTypes.object.isRequired,
-    uc: PropTypes.object.isRequired,
-  };
-
-  getChildContext() {
-    return {
-      pbx,
-      sip,
-      uc,
-    };
-  }
-
   componentDidMount() {
     setApiProvider(this);
     pbx.on(`connection-started`, this.onPBXConnectionStarted);

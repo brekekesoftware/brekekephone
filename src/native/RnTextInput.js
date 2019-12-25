@@ -3,7 +3,7 @@ import { Platform, StyleSheet, TextInput } from 'react-native';
 
 import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   RnTextInput: {
     position: `relative`,
     fontSize: v.fontSize,
@@ -19,7 +19,7 @@ const RnTextInput = forwardRef((props, ref) => (
     ref={ref}
     {...props}
     keyboardType={Platform.OS === `web` ? null : props.keyboardType}
-    style={[s.RnTextInput, props.style]}
+    style={[css.RnTextInput, props.style]}
   />
 ));
 

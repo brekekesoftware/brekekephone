@@ -3,9 +3,10 @@ import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import g from '../global';
 import contactStore from '../global/contactStore';
 import {
@@ -18,17 +19,16 @@ import {
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
-import v from '../variables';
 import UserItem from './UserItem';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   PhoneBook_BtnReload: {
     marginLeft: `auto`,
     marginRight: `auto`,
-    backgroundColor: v.mainBg,
+    backgroundColor: g.mainBg,
     paddingHorizontal: 8,
     paddingVertical: 3,
     marginBottom: 5,
@@ -37,7 +37,7 @@ const s = StyleSheet.create({
     ...g.boxShadow,
   },
   PhoneBook_TxtReload: {
-    color: v.revColor,
+    color: g.revColor,
   },
 });
 
@@ -46,21 +46,13 @@ class PageContactPhonebook extends React.Component {
   @computed get phoneBookId() {
     return contactStore.phoneBooks.map(p => p.id);
   }
-
   @computed get phoneBookById() {
     return arrToMap(contactStore.phoneBooks, `id`, p => p);
   }
-
-  static contextTypes = {
-    pbx: PropTypes.object.isRequired,
-    sip: PropTypes.object.isRequired,
-  };
-
   state = {
     loading: false,
     hidden: false,
   };
-
   componentDidMount() {
     const noPhonebook = !this.phoneBookId.length;
     if (noPhonebook) {
@@ -68,14 +60,11 @@ class PageContactPhonebook extends React.Component {
       this.loadContacts();
     }
   }
-
   render() {
     const phonebooks = this.state.hidden
       ? this.phoneBookId.map(this.resolveChat).filter(i => i.hidden !== true)
       : this.phoneBookId.map(this.resolveChat);
-
     const map = {};
-
     phonebooks.forEach(u => {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
@@ -87,7 +76,6 @@ class PageContactPhonebook extends React.Component {
       }
       map[c0].push(u);
     });
-
     let groups = Object.keys(map).map(k => ({
       key: k,
       phonebooks: map[k],
@@ -96,7 +84,6 @@ class PageContactPhonebook extends React.Component {
     groups.forEach(g => {
       g.phonebooks = orderBy(g.phonebooks, `name`);
     });
-
     return (
       <Layout
         footer={{
@@ -123,7 +110,7 @@ class PageContactPhonebook extends React.Component {
         />
         {this.state.loading && (
           <View style={{ marginTop: 20 }}>
-            <ActivityIndicator color={v.mainBg} size={1} />
+            <ActivityIndicator color={g.mainBg} size={1} />
           </View>
         )}
         {!this.state.loading && (
@@ -133,9 +120,9 @@ class PageContactPhonebook extends React.Component {
                 this.loadContacts.flush();
                 this.loadContacts();
               }}
-              style={s.PhoneBook_BtnReload}
+              style={css.PhoneBook_BtnReload}
             >
-              <Text style={s.PhoneBook_TxtReload}>Reload</Text>
+              <Text style={css.PhoneBook_TxtReload}>Reload</Text>
             </TouchableOpacity>
             {groups.map(_g => (
               <React.Fragment key={_g.key}>
@@ -185,7 +172,6 @@ class PageContactPhonebook extends React.Component {
       hidden: value,
     });
   };
-
   setSearchText = searchText => {
     const oldQuery = this.props;
     const query = {
@@ -197,7 +183,6 @@ class PageContactPhonebook extends React.Component {
     this.loadContacts.flush();
     this.loadContacts();
   };
-
   resolveChat = id => {
     const phonebook = this.phoneBookById[id];
     if (phonebook) {
@@ -207,9 +192,7 @@ class PageContactPhonebook extends React.Component {
       };
     }
   };
-
   loadContacts = debounce(() => {
-    const { pbx } = this.context;
     const query = this.props;
     const book = query.book;
     const shared = true;
@@ -226,23 +209,19 @@ class PageContactPhonebook extends React.Component {
       .then(this.onLoadContactsSuccess)
       .catch(this.onLoadContactsFailure);
   }, 500);
-
   onLoadContactsSuccess = contacts => {
     this.setState({
       loading: false,
     });
     contacts.map(c => this.loadContactDetail(c.id));
   };
-
   onLoadContactsFailure = err => {
     this.setState({
       loading: false,
     });
     g.showError({ message: `load contact list`, err });
   };
-
   loadContactDetail = id => {
-    const { pbx } = this.context;
     pbx
       .getContact(id)
       .then(detail => {
@@ -255,20 +234,16 @@ class PageContactPhonebook extends React.Component {
 
   goNextPage = () => {
     const oldQuery = this.props;
-
     const query = {
       ...oldQuery,
       offset: oldQuery.offset + numberOfContactsPerPage,
     };
-
     g.goToPageContactPhonebook(query);
-
     setTimeout(() => {
       this.loadContacts.flush();
       this.loadContacts();
     }, 170);
   };
-
   goPrevPage = () => {
     const oldQuery = this.props;
     const query = {
@@ -281,14 +256,11 @@ class PageContactPhonebook extends React.Component {
       this.loadContacts();
     }, 170);
   };
-
   call = number => {
-    const { sip } = this.context;
     number = formatPhoneNumber(number);
     sip.createSession(number);
     g.goToPageCallManage();
   };
-
   create = () => {
     g.goToPagePhonebookCreate({
       book: this.props.book,

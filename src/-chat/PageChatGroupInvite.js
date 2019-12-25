@@ -1,22 +1,21 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
+import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
-import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   PageChatGroupInvite: {},
   PageChatGroupInvite_TextInput: {
     padding: 10,
-    ...v.boxShadow,
+    ...g.boxShadow,
   },
   PageChatGroupInvite_Outer: {
     paddingTop: 5,
@@ -25,19 +24,19 @@ const s = StyleSheet.create({
   PageChatGroupInvite_BtnSave: {
     marginTop: 15,
     padding: 10,
-    borderRadius: v.borderRadius,
+    borderRadius: g.borderRadius,
     backgroundColor: g.mainDarkBg,
   },
   PageChatGroupInvite_BtnText: {
     alignItems: `center`,
   },
   PageChatGroupInvite_GroupName: {
-    fontSize: v.fontSizeTitle,
+    fontSize: g.fontSizeTitle,
     padding: 5,
   },
   PageChatGroupInvite_Text: {
     paddingTop: 15,
-    fontSize: v.fontSizeTitle,
+    fontSize: g.fontSizeTitle,
   },
 });
 
@@ -46,10 +45,6 @@ class PageChatGroupInvite extends React.Component {
   @computed get buddyIds() {
     return contactStore.ucUsers.map(u => u.id).filter(this.isNotMember);
   }
-  static contextTypes = {
-    uc: PropTypes.object.isRequired,
-  };
-
   state = {
     selectedBuddy: {},
   };
@@ -62,17 +57,17 @@ class PageChatGroupInvite extends React.Component {
           title: `Inviting Group member`,
         }}
       >
-        <View style={s.PageChatGroupInvite_Outer}>
-          <Text style={s.PageChatGroupInvite_GroupName}>
+        <View style={css.PageChatGroupInvite_Outer}>
+          <Text style={css.PageChatGroupInvite_GroupName}>
             {chatStore.getGroup(this.props.groupId).name}
           </Text>
           <TouchableOpacity
             onPress={this.invite}
-            style={s.PageChatGroupInvite_BtnSave}
+            style={css.PageChatGroupInvite_BtnSave}
           >
-            <Text style={s.PageChatGroupInvite_BtnText}>Invite</Text>
+            <Text style={css.PageChatGroupInvite_BtnText}>Invite</Text>
           </TouchableOpacity>
-          <Text style={s.PageChatGroupInvite_Text}>Members</Text>
+          <Text style={css.PageChatGroupInvite_Text}>Members</Text>
         </View>
         <Field isGroup />
         {this.buddyIds.map((id, i) => (
@@ -92,15 +87,12 @@ class PageChatGroupInvite extends React.Component {
   isNotMember = buddy =>
     !chatStore.getGroup(this.props.groupId).members?.includes(buddy);
   resolveBuddy = buddy => contactStore.getUCUser(buddy);
-
   toggleBuddy = buddy => {
     let { selectedBuddy } = this.state;
-
     selectedBuddy = {
       ...selectedBuddy,
       [buddy]: !selectedBuddy[buddy],
     };
-
     this.setState({
       selectedBuddy,
     });
@@ -108,26 +100,18 @@ class PageChatGroupInvite extends React.Component {
 
   invite = () => {
     const { selectedBuddy } = this.state;
-
     const members = Object.keys(selectedBuddy);
-
     if (!members.length) {
       g.showError({ message: `No buddy selectedBuddy` });
       return;
     }
-
-    const { uc } = this.context;
-
     uc.inviteChatGroupMembers(this.props.groupId, members)
       .catch(this.onInviteFailure)
       .then(this.back);
   };
-
   onInviteFailure = err => {
-    console.error(err);
-    g.showError({ message: err.message || `with unknown error` });
+    g.showError({ message: `invite group chat`, err });
   };
-
   back = () => {
     g.goToPageChatGroupDetail({ groupId: this.props.groupId });
   };

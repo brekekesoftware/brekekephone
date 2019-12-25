@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   ButtonIcon: {
     alignItems: `center`,
     marginHorizontal: 10,
@@ -19,11 +19,11 @@ const s = StyleSheet.create({
 });
 
 const ButtonIcon = ({ color, path, size = 24, ...p }) => (
-  <View style={s.ButtonIcon}>
+  <View style={css.ButtonIcon}>
     <TouchableOpacity
       onPress={p.onPress}
       style={[
-        s.ButtonIcon_Btn,
+        css.ButtonIcon_Btn,
         p.style,
         { borderRadius: size * 1.5 },
         { backgroundColor: p.bgcolor },
@@ -36,7 +36,9 @@ const ButtonIcon = ({ color, path, size = 24, ...p }) => (
       </Svg>
     </TouchableOpacity>
     {p.name && (
-      <Text style={[s.ButtonIcon_Name, p.textcolor && { color: p.textcolor }]}>
+      <Text
+        style={[css.ButtonIcon_Name, p.textcolor && { color: p.textcolor }]}
+      >
         {p.name}
       </Text>
     )}

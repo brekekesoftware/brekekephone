@@ -15,7 +15,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
 import FooterActions from '../shared/FooterActions';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   ProfileSignInItem: {
     backgroundColor: g.bg,
     marginBottom: 15,
@@ -44,11 +44,11 @@ const s = StyleSheet.create({
 const ProfileSignInItem = observer(props => {
   if (props.empty) {
     return (
-      <View style={[s.ProfileSignInItem, s.ProfileSignInItem__empty]}>
+      <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
         <Text subTitle>No server</Text>
         <Text>There is no server created</Text>
         <Text>Tap the below button to create one</Text>
-        <View style={s.ProfileSignInItem_Btns}>
+        <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
             onSaveBtnPress={g.goToPageProfileCreate}
             saveText="CREATE NEW SERVER"
@@ -60,7 +60,7 @@ const ProfileSignInItem = observer(props => {
   const p = g.profilesMap[props.id];
   return (
     <View
-      style={[s.ProfileSignInItem, props.last && s.ProfileSignInItem__last]}
+      style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
     >
       <TouchableOpacity onPress={() => g.goToPageProfileUpdate({ id: p.id })}>
         <Field
@@ -86,7 +86,7 @@ const ProfileSignInItem = observer(props => {
         type="Switch"
         value={p.ucEnabled}
       />
-      <View style={s.ProfileSignInItem_Btns}>
+      <View style={css.ProfileSignInItem_Btns}>
         <FooterActions
           backIcon={mdiClose}
           onBackBtnPress={() => {

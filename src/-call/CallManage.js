@@ -16,11 +16,11 @@ import {
 import React from 'react';
 import { Platform } from 'react-native';
 
+import g from '../global';
 import { StyleSheet, View } from '../native/Rn';
 import ButtonIcon from '../shared/ButtonIcon';
-import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   CallBar_Btn: {
     flexDirection: `row`,
     position: `absolute`,
@@ -37,7 +37,7 @@ const s = StyleSheet.create({
     left: 20,
   },
   CallBar_Txt__Name: {
-    fontSize: v.fontSizeTitle,
+    fontSize: g.fontSizeTitle,
   },
   CallBar_Btn__Hangup: {
     position: `absolute`,
@@ -51,163 +51,163 @@ const s = StyleSheet.create({
 
 const CallManage = p => (
   <View>
-    <View style={[s.CallBar_Btn, s.CallBar_Btn__top70]}>
+    <View style={[css.CallBar_Btn, css.CallBar_Btn__top70]}>
       {p.answered && !p.holding && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="TRANSFER"
           noborder
           onPress={p.transfer}
           path={mdiCallSplit}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="PARK"
           noborder
           onPress={p.park}
           path={mdiAlphaPCircle}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && !p.localVideoEnabled && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="VIDEO"
           noborder
           onPress={p.enableVideo}
           path={mdiVideo}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && p.localVideoEnabled && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="VIDEO"
           noborder
           onPress={p.disableVideo}
           path={mdiVideoOff}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && !p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="SPEAKER"
           noborder
           onPress={p.onOpenLoudSpeaker}
           path={mdiVolumeHigh}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="SPEAKER"
           noborder
           onPress={p.onCloseLoudSpeaker}
           path={mdiVolumeMedium}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
     </View>
-    <View style={[s.CallBar_Btn, s.CallBar_Btn__top150]}>
+    <View style={[css.CallBar_Btn, css.CallBar_Btn__top150]}>
       {p.answered && !p.holding && !p.muted && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="MUTE"
           noborder
           onPress={p.setMuted}
           path={mdiMicrophoneOff}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && p.muted && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="UNMUTE"
           noborder
           onPress={p.setunMuted}
           path={mdiMicrophone}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && !p.recording && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="RECORDING"
           noborder
           onPress={p.startRecording}
           path={mdiRecordCircle}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && p.recording && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="RECORDING"
           noborder
           onPress={p.stopRecording}
           path={mdiRecord}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="KEYPAD"
           noborder
           onPress={p.dtmf}
           path={mdiDialpad}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && !p.holding && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="HOLD"
           noborder
           onPress={p.hold}
           path={mdiPauseCircle}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
       {p.answered && p.holding && (
         <ButtonIcon
-          bgcolor={v.revColor}
-          color={v.color}
+          bgcolor={g.revColor}
+          color={g.color}
           name="UNHOLD"
           noborder
           onPress={p.unhold}
           path={mdiPlayCircle}
           size={40}
-          textcolor={v.revColor}
+          textcolor={g.revColor}
         />
       )}
     </View>

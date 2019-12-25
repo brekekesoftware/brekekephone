@@ -2,7 +2,9 @@ import { Keyboard } from '../native/Rn';
 import $ from './_';
 
 $.extends({
-  isKeyboardShowing: false,
+  observable: {
+    isKeyboardShowing: false,
+  },
   waitKeyboardTimeoutId: 0,
   waitKeyboard: fn => (...args) => {
     if ($.waitKeyboardTimeoutId) {

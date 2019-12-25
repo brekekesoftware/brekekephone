@@ -21,6 +21,8 @@ g.extends({
     // ucPort: string
     // ucPathname: string
     // accessToken: string
+    // contactsDisplayShared: boolean?
+    // usersDisplayOffline: boolean?
     // recentCalls?[]
     //    id: string
     //    incoming: boolean

@@ -2,10 +2,11 @@ import { mdiPhone, mdiPhoneForward } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
@@ -17,11 +18,6 @@ class PageTransferDial extends React.Component {
   @computed get call() {
     return callStore.getRunningCall(this.props.callId);
   }
-  static contextTypes = {
-    sip: PropTypes.object.isRequired,
-    pbx: PropTypes.object.isRequired,
-  };
-
   state = {
     attended: true,
     target: ``,
@@ -30,7 +26,6 @@ class PageTransferDial extends React.Component {
   render() {
     const users = this.getMatchIds().map(this.resolveMatch);
     const map = {};
-
     users.forEach(u => {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
@@ -42,17 +37,14 @@ class PageTransferDial extends React.Component {
       }
       map[c0].push(u);
     });
-
     let groups = Object.keys(map).map(k => ({
       key: k,
       users: map[k],
     }));
-
     groups = orderBy(groups, `key`);
     groups.forEach(g => {
       g.users = orderBy(g.users, `name`);
     });
-
     return (
       <Layout
         header={{
@@ -86,36 +78,28 @@ class PageTransferDial extends React.Component {
       attended,
     });
   };
-
   setTarget = target => {
     this.setState({
       target,
     });
   };
-
   isMatchUser = id => {
     const searchTextLC = this.state.target.toLowerCase();
     const userId = id && id.toLowerCase();
     let pbxUserName;
     const pbxUser = contactStore.getPBXUser(id);
-
     if (pbxUser) {
       pbxUserName = pbxUser.name.toLowerCase();
     } else {
       pbxUserName = ``;
     }
-
     return userId.includes(searchTextLC) || pbxUserName.includes(searchTextLC);
   };
-
   getMatchIds = () =>
     contactStore.pbxUsers.map(u => u.id).filter(this.isMatchUser);
-
   resolveMatch = id => {
     const match = contactStore.getPBXUser(id);
-
     const ucUser = contactStore.getUCUser(id) || {};
-
     return {
       name: match.name,
       avatar: ucUser.avatar,
@@ -126,14 +110,11 @@ class PageTransferDial extends React.Component {
       holding: !!match.talkers?.filter(t => t.status === `holding`).length,
     };
   };
-
   selectMatch = number => {
     this.setTarget(number);
   };
-
   transfer = () => {
     const target = this.state.target;
-
     if (!target.trim()) {
       g.showError({
         err: new Error(`Target is empty`),
@@ -141,11 +122,7 @@ class PageTransferDial extends React.Component {
       });
       return;
     }
-
-    const { pbx } = this.context;
-
     const { attended } = this.state;
-
     const promise = attended
       ? pbx.transferTalkerAttended(
           this.call.pbxTenant,
@@ -159,24 +136,18 @@ class PageTransferDial extends React.Component {
         );
     promise.then(this.onTransferSuccess).catch(this.onTransferFailure);
   };
-
   onTransferSuccess = target => {
     const { attended } = this.state;
-
     if (!attended) return g.goToPageCallManage();
-
     callStore.upsertRunning({
       id: this.call.id,
       transfering: target,
     });
-
     g.goToPageTransferAttend({ callId: this.call.id });
   };
-
   onTransferFailure = err => {
     g.showError({ err, message: `target transfer the call` });
   };
-
   transferBlind = target => {
     if (!target.trim()) {
       g.showError({
@@ -185,9 +156,6 @@ class PageTransferDial extends React.Component {
       });
       return;
     }
-
-    const { pbx } = this.context;
-
     const promise = pbx.transferTalkerBlind(
       this.call.pbxTenant,
       this.call.pbxTalkerId,
@@ -195,7 +163,6 @@ class PageTransferDial extends React.Component {
     );
     promise.then(this.onTransferSuccess(target)).catch(this.onTransferFailure);
   };
-
   transferAttended = target => {
     if (!target.trim()) {
       g.showError({
@@ -204,9 +171,6 @@ class PageTransferDial extends React.Component {
       });
       return;
     }
-
-    const { pbx } = this.context;
-
     const promise = pbx.transferTalkerAttended(
       this.call.pbxTenant,
       this.call.pbxTalkerId,
@@ -214,28 +178,19 @@ class PageTransferDial extends React.Component {
     );
     promise.then(this.onTransferSuccess(target)).catch(this.onTransferFailure);
   };
-
   onTransferAttendedForVideoSuccess = target => {
     const { attended } = this.state;
-
     if (!attended) return g.goToPageCallManage();
-
     callStore.upsertRunning({
       id: this.call.id,
       transfering: target,
     });
-
     g.goToPageTransferAttend({ callId: this.call.id });
-
-    const { sip } = this.context;
-
     sip.enableVideo(this.call.id);
   };
-
   onTransferAttendedForVideoFailure = err => {
     g.showError({ err, message: `target transfer the call` });
   };
-
   transferAttendedForVideo = target => {
     if (!target.trim()) {
       g.showError({
@@ -244,15 +199,11 @@ class PageTransferDial extends React.Component {
       });
       return;
     }
-
-    const { pbx } = this.context;
-
     const promise = pbx.transferTalkerAttended(
       this.call.pbxTenant,
       this.call.pbxTalkerId,
       target,
     );
-
     promise
       .then(this.onTransferAttendedForVideoSuccess(target))
       .catch(this.onTransferAttendedForVideoFailure);

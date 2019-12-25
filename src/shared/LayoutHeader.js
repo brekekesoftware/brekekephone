@@ -21,7 +21,7 @@ import { useAnimation } from '../utils/animation';
 import HeaderNavigation from './HeaderNavigation';
 import Icon from './Icon';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   LayoutHeader: {
     position: `absolute`,
     top: 0,
@@ -166,14 +166,17 @@ const Header = observer(props => {
 
   return (
     <View
-      style={[s.LayoutHeader, props.compact && s.LayoutHeader_Inner__compact]}
+      style={[
+        css.LayoutHeader,
+        props.compact && css.LayoutHeader_Inner__compact,
+      ]}
     >
       <StatusBar transparent={props.transparent} />
       {shouldShowConnStatus && (
         <Animated.View
           style={[
-            s.Conn,
-            isConnFailure && s.Conn__failure,
+            css.Conn,
+            isConnFailure && css.Conn__failure,
             {
               height: connA.height,
               opacity: connA.opacity,
@@ -187,9 +190,9 @@ const Header = observer(props => {
       )}
       <Animated.View
         style={[
-          s.LayoutHeader_Inner,
-          !!props.onBackBtnPress && s.LayoutHeader_Inner__hasBackBtn,
-          props.transparent && s.LayoutHeader_Inner__transparent,
+          css.LayoutHeader_Inner,
+          !!props.onBackBtnPress && css.LayoutHeader_Inner__hasBackBtn,
+          props.transparent && css.LayoutHeader_Inner__transparent,
           {
             paddingVertical: a.headerInnerPaddingVertical,
           },
@@ -197,7 +200,7 @@ const Header = observer(props => {
       >
         <Animated.Text
           style={[
-            s.LayoutHeader_Title,
+            css.LayoutHeader_Title,
             {
               fontSize: a.titleFontSize,
               lineHeight: a.titleLineHeight,
@@ -209,8 +212,8 @@ const Header = observer(props => {
         </Animated.Text>
         <Text
           style={[
-            s.LayoutHeader_Description,
-            props.compact && s.LayoutHeader_Description__compact,
+            css.LayoutHeader_Description,
+            props.compact && css.LayoutHeader_Description__compact,
           ]}
         >
           {props.description || `\u200a`}
@@ -219,11 +222,11 @@ const Header = observer(props => {
         {props.onCreateBtnPress && (
           <TouchableOpacity
             onPress={props.onCreateBtnPress}
-            style={s.LayoutHeader_CreateBtn}
+            style={css.LayoutHeader_CreateBtn}
           >
             <Animated.View
               style={[
-                s.LayoutHeader_CreateBtnOuter,
+                css.LayoutHeader_CreateBtnOuter,
                 {
                   top: a.createBtnOuterTop,
                   height: a.createBtnOuterHeight,
@@ -232,8 +235,8 @@ const Header = observer(props => {
             >
               <Animated.View
                 style={[
-                  s.LayoutHeader_CreateBtnInner,
-                  props.transparent && s.LayoutHeader_CreateBtn__white,
+                  css.LayoutHeader_CreateBtnInner,
+                  props.transparent && css.LayoutHeader_CreateBtn__white,
                   {
                     top: a.createBtnInnerTop,
                   },
@@ -250,11 +253,11 @@ const Header = observer(props => {
         {props.onParkBtnPress && (
           <TouchableOpacity
             onPress={props.onParkBtnPress}
-            style={s.LayoutHeader_CreateBtn}
+            style={css.LayoutHeader_CreateBtn}
           >
             <Animated.View
               style={[
-                s.LayoutHeader_CreateBtnOuter,
+                css.LayoutHeader_CreateBtnOuter,
                 {
                   top: a.createBtnOuterTop,
                   height: a.createBtnOuterHeight,
@@ -263,8 +266,8 @@ const Header = observer(props => {
             >
               <Animated.View
                 style={[
-                  s.LayoutHeader_CreateBtnInner,
-                  props.transparent && s.LayoutHeader_CreateBtn__white,
+                  css.LayoutHeader_CreateBtnInner,
+                  props.transparent && css.LayoutHeader_CreateBtn__white,
                   {
                     top: a.createBtnInnerTop,
                   },
@@ -281,11 +284,11 @@ const Header = observer(props => {
         {props.onVoiceCallBtnPress && (
           <TouchableOpacity
             onPress={props.onVoiceCallBtnPress}
-            style={s.LayoutHeader_VoiceCallBtn}
+            style={css.LayoutHeader_VoiceCallBtn}
           >
             <Animated.View
               style={[
-                s.LayoutHeader_CreateBtnOuter,
+                css.LayoutHeader_CreateBtnOuter,
                 {
                   top: a.createBtnOuterTop,
                   height: a.createBtnOuterHeight,
@@ -294,8 +297,8 @@ const Header = observer(props => {
             >
               <Animated.View
                 style={[
-                  s.LayoutHeader_CreateBtnInner,
-                  props.transparent && s.LayoutHeader_CreateBtn__white,
+                  css.LayoutHeader_CreateBtnInner,
+                  props.transparent && css.LayoutHeader_CreateBtn__white,
                   {
                     top: a.createBtnInnerTop,
                   },
@@ -312,11 +315,11 @@ const Header = observer(props => {
         {props.onVideoCallBtnPress && (
           <TouchableOpacity
             onPress={props.onVideoCallBtnPress}
-            style={s.LayoutHeader_VideoCallBtn}
+            style={css.LayoutHeader_VideoCallBtn}
           >
             <Animated.View
               style={[
-                s.LayoutHeader_CreateBtnOuter,
+                css.LayoutHeader_CreateBtnOuter,
                 {
                   top: a.createBtnOuterTop,
                   height: a.createBtnOuterHeight,
@@ -325,8 +328,8 @@ const Header = observer(props => {
             >
               <Animated.View
                 style={[
-                  s.LayoutHeader_CreateBtnInner,
-                  props.transparent && s.LayoutHeader_CreateBtn__white,
+                  css.LayoutHeader_CreateBtnInner,
+                  props.transparent && css.LayoutHeader_CreateBtn__white,
                   {
                     top: a.createBtnInnerTop,
                   },
@@ -343,11 +346,11 @@ const Header = observer(props => {
         {props.onBackBtnPress && (
           <TouchableOpacity
             onPress={props.onBackBtnPress}
-            style={s.LayoutHeader_BackBtn}
+            style={css.LayoutHeader_BackBtn}
           >
             <Animated.View
               style={[
-                s.LayoutHeader_BackBtnInner,
+                css.LayoutHeader_BackBtnInner,
                 {
                   height: a.backBtnHeight,
                   paddingVertical: a.backBtnPadding,

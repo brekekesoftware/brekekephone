@@ -27,7 +27,7 @@ const css = StyleSheet.create({
     height: getBottomSpace() + 71, // 56+15
   },
   Layout_FooterSpacing__hasKeyPad: {
-    height: getBottomSpace(), // 56+15
+    height: getBottomSpace() + 71, // 56+15
   },
   Layout_FooterSpacing__hasInputChat: {
     height: getBottomSpace() + 127, // 56*2+15

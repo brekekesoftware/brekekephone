@@ -3,7 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   RnText: {
     position: `relative`,
     fontSize: v.fontSize,
@@ -68,16 +68,16 @@ const RnText = forwardRef(
       ref={ref}
       {...props}
       style={[
-        s.RnText,
-        title && s.RnText__title,
-        subTitle && s.RnText__subTitle,
-        small && s.RnText__small,
-        black && s.RnText__black,
-        white && s.RnText__white,
-        normal && s.RnText__normal,
-        bold && s.RnText__bold,
-        center && s.RnText__center,
-        right && s.RnText__right,
+        css.RnText,
+        title && css.RnText__title,
+        subTitle && css.RnText__subTitle,
+        small && css.RnText__small,
+        black && css.RnText__black,
+        white && css.RnText__white,
+        normal && css.RnText__normal,
+        bold && css.RnText__bold,
+        center && css.RnText__center,
+        right && css.RnText__right,
         props.style,
       ]}
     />

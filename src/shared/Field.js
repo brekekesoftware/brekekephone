@@ -18,7 +18,7 @@ import {
 import useStore from '../utils/useStore';
 import Icon from './Icon';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Field: {
     borderBottomWidth: 1,
     borderColor: g.borderBg,
@@ -127,9 +127,9 @@ const Field = observer(({ ...props }) => {
     return (
       <View
         style={[
-          s.Field,
-          s.Field__group,
-          props.hasMargin && s.Field__groupMargin,
+          css.Field,
+          css.Field__group,
+          props.hasMargin && css.Field__groupMargin,
         ]}
       >
         <Text small>{props.label}</Text>
@@ -150,13 +150,13 @@ const Field = observer(({ ...props }) => {
       iconRender: () => (
         <TouchableOpacity
           onPress={props.onCreateBtnPress}
-          style={[s.Field_Btn, s.Field_Btn__create]}
+          style={[css.Field_Btn, css.Field_Btn__create]}
         >
           <Icon
             color={g.mainDarkBg}
             path={props.createBtnIcon || mdiPlus}
             size={18}
-            style={s.Field_CreateRemoveIcon}
+            style={css.Field_CreateRemoveIcon}
           />
         </TouchableOpacity>
       ),
@@ -167,13 +167,13 @@ const Field = observer(({ ...props }) => {
       iconRender: () => (
         <TouchableOpacity
           onPress={props.onRemoveBtnPress}
-          style={[s.Field_Btn, s.Field_Btn__remove]}
+          style={[css.Field_Btn, css.Field_Btn__remove]}
         >
           <Icon
             color={g.redDarkBg}
             path={props.removeBtnIcon || mdiClose}
             size={15}
-            style={s.Field_CreateRemoveIcon}
+            style={css.Field_CreateRemoveIcon}
           />
         </TouchableOpacity>
       ),
@@ -183,7 +183,7 @@ const Field = observer(({ ...props }) => {
     if (props.type === `Switch`) {
       Object.assign(props, {
         valueRender: props.valueRender || (v => (v ? `Enabled` : `Disabled`)),
-        iconRender: v => <Switch enabled={v} style={s.Field_Switch} />,
+        iconRender: v => <Switch enabled={v} style={css.Field_Switch} />,
         onTouchPress: () => {
           props.onValueChange(!props.value);
           Keyboard.dismiss();
@@ -230,7 +230,7 @@ const Field = observer(({ ...props }) => {
             onSubmitEditing={flow(
               [props.onCreateBtnPress, props.onSubmitEditing].filter(f => f),
             )}
-            style={[s.Field_TextInput, props.style]}
+            style={[css.Field_TextInput, props.style]}
           />
         ),
         onTouchPress: () => inputRef.current?.focus(),
@@ -243,7 +243,7 @@ const Field = observer(({ ...props }) => {
   }
   const Container = props.onTouchPress ? TouchableOpacity : View;
   const label = (
-    <Text small style={s.Field_Label}>
+    <Text small style={css.Field_Label}>
       {props.label}
     </Text>
   );
@@ -253,9 +253,9 @@ const Field = observer(({ ...props }) => {
         accessible={!props.inputElement}
         onPress={props.onTouchPress}
         style={[
-          s.Field,
-          $.isFocusing && s.Field__focusing,
-          props.disabled && s.Field__disabled,
+          css.Field,
+          $.isFocusing && css.Field__focusing,
+          props.disabled && css.Field__disabled,
         ]}
       >
         {/* Fix form auto fill style on web */}
@@ -266,7 +266,7 @@ const Field = observer(({ ...props }) => {
             <TextInput
               disabled
               secureTextEntry={!!(props.secureTextEntry && props.value)}
-              style={s.Field_TextInput}
+              style={css.Field_TextInput}
               value={
                 (props.valueRender && props.valueRender(props.value)) ||
                 props.value ||
@@ -280,21 +280,25 @@ const Field = observer(({ ...props }) => {
         {Platform.OS === `web` && label}
         {(props.iconRender && props.iconRender(props.value)) ||
           (props.icon && (
-            <Icon path={props.icon} pointerEvents="none" style={s.Field_Icon} />
+            <Icon
+              path={props.icon}
+              pointerEvents="none"
+              style={css.Field_Icon}
+            />
           ))}
       </Container>
       {props.error && (
         <TouchableOpacity
           onPress={() => inputRef.current?.focus()}
-          style={s.Field_Error}
+          style={css.Field_Error}
         >
-          <View style={s.Field_ErrorInner}>
+          <View style={css.Field_ErrorInner}>
             <Icon
               color={g.redBg}
               path={mdiCardsDiamond}
-              style={s.Field_ErrorIcon}
+              style={css.Field_ErrorIcon}
             />
-            <Text small style={s.Field_ErrorLabel}>
+            <Text small style={css.Field_ErrorLabel}>
               {props.error}
             </Text>
           </View>

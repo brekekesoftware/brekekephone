@@ -3,15 +3,15 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import Progress from 'react-native-progress-circle';
 
+import g from '../global';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
 import Icon from '../shared/Icon';
-import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Message: {
     borderBottomWidth: 1,
-    borderColor: v.borderBg,
+    borderColor: g.borderBg,
     alignItems: `stretch`,
     marginLeft: 15,
   },
@@ -29,11 +29,11 @@ const s = StyleSheet.create({
     flexDirection: `row`,
   },
   Message_Info__Name: {
-    fontSize: v.fontSizeSubTitle,
-    color: v.subColor,
+    fontSize: g.fontSizeSubTitle,
+    color: g.subColor,
   },
   Message_Info__Time: {
-    fontSize: v.fontSizeSmall,
+    fontSize: g.fontSizeSmall,
     marginLeft: 10,
   },
   Message_Text: {
@@ -66,46 +66,46 @@ const s = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     marginLeft: 20,
-    borderColor: v.subColor,
+    borderColor: g.subColor,
   },
   Message_File_Status: {},
 });
 
 const File = p => (
-  <View style={s.Message_File}>
+  <View style={css.Message_File}>
     {p.source && p.fileType === `image` && (
-      <Image source={p.source} style={s.Message_File__Image} />
+      <Image source={p.source} style={css.Message_File__Image} />
     )}
     {p.fileType !== `image` && (
       <View>
         <Icon path={mdiFile} size={50} />
-        <View style={s.Message_File_Info}>
+        <View style={css.Message_File_Info}>
           <Text numberOfLines={1}>{p.name}</Text>
           <Text>{p.size}</Text>
         </View>
       </View>
     )}
     {p.state === `waiting` && (
-      <TouchableOpacity onPress={p.reject} style={[s.Message_File_Btn]}>
-        <Icon color={v.redBg} path={mdiClose} />
+      <TouchableOpacity onPress={p.reject} style={[css.Message_File_Btn]}>
+        <Icon color={g.redBg} path={mdiClose} />
       </TouchableOpacity>
     )}
     {p.incoming && p.state === `waiting` && (
-      <TouchableOpacity onPress={p.accept} style={[s.Message_File_Btn]}>
-        <Icon color={v.mainBg} path={mdiCheck} />
+      <TouchableOpacity onPress={p.accept} style={[css.Message_File_Btn]}>
+        <Icon color={g.mainBg} path={mdiCheck} />
       </TouchableOpacity>
     )}
     {p.state === `started` && (
-      <TouchableOpacity onPress={p.reject} style={[s.Message_File_Btn]}>
+      <TouchableOpacity onPress={p.reject} style={[css.Message_File_Btn]}>
         <Progress
-          bgColor={v.bg}
+          bgColor={g.bg}
           borderWidth={1 * 2}
-          color={v.mainBg}
+          color={g.mainBg}
           percent={p.state === `percent`}
-          radius={v.fontSizeSubTitle}
-          shadowColor={v.bg}
+          radius={g.fontSizeSubTitle}
+          shadowColor={g.bg}
         >
-          <Icon color={v.redBg} path={mdiClose} />
+          <Icon color={g.redBg} path={mdiClose} />
         </Progress>
       </TouchableOpacity>
     )}
@@ -118,17 +118,17 @@ const File = p => (
 const Message = observer(p => (
   <View
     style={[
-      s.Message,
-      p.last && s.Message__last,
-      s.Message__height90,
-      p.file && s.Message__height150,
+      css.Message,
+      p.last && css.Message__last,
+      css.Message__height90,
+      p.file && css.Message__height150,
     ]}
   >
     <Avatar source={{ uri: p.creatorAvatar }} {...p} />
-    <View style={s.Message_Text}>
-      <View style={s.Message_Info}>
-        <Text style={s.Message_Info__Name}>{p.creatorName}</Text>
-        <Text style={s.Message_Info__Time}>{p.created}</Text>
+    <View style={css.Message_Text}>
+      <View style={css.Message_Info}>
+        <Text style={css.Message_Info__Name}>{p.creatorName}</Text>
+        <Text style={css.Message_Info__Time}>{p.created}</Text>
       </View>
       {!!p.text && <Text numberOfLines={999}>{p.text}</Text>}
       {!!p.file && (

@@ -6,7 +6,7 @@ import g from '../global';
 import { Image, StyleSheet, View } from '../native/Rn';
 import Icon from './Icon';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Avatar: {
     flexDirection: `row`,
   },
@@ -31,12 +31,12 @@ const statusMapColor = {
 };
 
 const Avatar = observer(p => (
-  <View style={[s.Avatar, p.style]}>
-    <Image source={p.source} style={s.Avatar_Image} />
+  <View style={[css.Avatar, p.style]}>
+    <Image source={p.source} style={css.Avatar_Image} />
     <Icon
       color={statusMapColor[p.status]}
       path={mdiRecord}
-      style={s.Avatar_Image__status}
+      style={css.Avatar_Image__status}
     />
   </View>
 ));

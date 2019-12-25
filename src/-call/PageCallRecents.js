@@ -1,9 +1,9 @@
 import { mdiPhone } from '@mdi/js';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
+import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import callStore from '../global/callStore';
@@ -14,21 +14,16 @@ import Search from '../shared/Search';
 
 @observer
 class PageCallRecents extends React.Component {
-  static contextTypes = {
-    sip: PropTypes.object.isRequired,
-  };
-
   isMatchUser = call => {
     if (call.partyNumber.includes(contactStore.searchText)) {
       return call.id;
     }
   };
-
   callBack = id => {
     const number = authStore.currentProfile.recentCalls?.find(c => c.id === id)
       ?.partyNumber;
     if (number) {
-      this.context.sip.createSession(number);
+      sip.createSession(number);
       g.goToPageCallManage();
     } else {
       g.showError({ message: `Could not find number from store to call` });
@@ -37,13 +32,11 @@ class PageCallRecents extends React.Component {
 
   getAvatar = id => {
     const ucUser = contactStore.getUCUser(id) || {};
-
     return {
       id: id,
       avatar: ucUser.avatar,
     };
   };
-
   getMatchUserIds = () =>
     authStore.currentProfile.recentCalls?.filter(this.isMatchUser) || [];
 

@@ -7,7 +7,7 @@ import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
     height: `70%`,
     minHeight: 320,
@@ -27,12 +27,12 @@ const PageProfileSignIn = observer(() => {
         header={{
           transparent: true,
           title: `Servers`,
-          description: `${l} server${l > 1 ? `s` : ``} in total`,
+          description: `${l} server${l > 1 ? `css` : ``} in total`,
           onCreateBtnPress: !!l && g.goToPageProfileCreate,
         }}
         noScroll
       >
-        <View style={s.PageProfileSignIn_Spacing} />
+        <View style={css.PageProfileSignIn_Spacing} />
         {!!l && (
           <FlatList
             data={g.profiles.toJS() /* Fix observable inside FlatList */}
@@ -41,7 +41,7 @@ const PageProfileSignIn = observer(() => {
             renderItem={({ index, item }) => (
               <ProfileSignInItem id={item.id} last={index === l - 1} />
             )}
-            style={s.PageProfileSignIn_ListServers}
+            style={css.PageProfileSignIn_ListServers}
           />
         )}
         {!l && <ProfileSignInItem empty />}

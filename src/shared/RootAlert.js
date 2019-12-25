@@ -14,7 +14,7 @@ import {
 import { useAnimationOnDidMount } from '../utils/animation';
 import useStore from '../utils/useStore';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   RootAlert: {
     alignItems: `center`,
     justifyContent: `center`,
@@ -81,9 +81,9 @@ const ErrorDetail = observer(props => {
     return (
       <TouchableOpacity
         onPress={() => $.set(`displayingDetail`, v => !v)}
-        style={s.RootAlert_Err}
+        style={css.RootAlert_Err}
       >
-        <Text small style={s.RootAlert_ErrTxt__title}>
+        <Text small style={css.RootAlert_ErrTxt__title}>
           Show error detail
         </Text>
       </TouchableOpacity>
@@ -102,9 +102,9 @@ const Alert = ({ error, loading, prompt, ...props }) => {
       title,
       message:
         typeof message === `string` ? (
-          <Text style={s.RootAlert_Message}>{message}</Text>
+          <Text style={css.RootAlert_Message}>{message}</Text>
         ) : (
-          <View style={s.RootAlert_Message}>{message}</View>
+          <View style={css.RootAlert_Message}>{message}</View>
         ),
       dismissText: `CANCEL`,
       confirmText: `REMOVE`,
@@ -118,7 +118,7 @@ const Alert = ({ error, loading, prompt, ...props }) => {
       title: `Error`,
       message: (
         <React.Fragment>
-          <Text style={s.RootAlert_Message}>
+          <Text style={css.RootAlert_Message}>
             {unexpectedErr
               ? `An unexpected error occurred`
               : `Failed to ${message}`}
@@ -138,11 +138,11 @@ const Alert = ({ error, loading, prompt, ...props }) => {
     return null;
   }
   return (
-    <View style={[StyleSheet.absoluteFill, s.RootAlert]}>
+    <View style={[StyleSheet.absoluteFill, css.RootAlert]}>
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
-          s.RootAlert_Backdrop,
+          css.RootAlert_Backdrop,
           { opacity: a.opacity },
         ]}
       >
@@ -153,7 +153,7 @@ const Alert = ({ error, loading, prompt, ...props }) => {
       </Animated.View>
       <Animated.View
         style={[
-          s.RootAlert_Modal,
+          css.RootAlert_Modal,
           {
             transform: [{ translateY: a.translateY }],
           },
@@ -161,19 +161,19 @@ const Alert = ({ error, loading, prompt, ...props }) => {
       >
         <Text subTitle>{props.title}</Text>
         {props.message}
-        <View style={s.RootAlert_Btns}>
+        <View style={css.RootAlert_Btns}>
           {props.dismissText && (
             <TouchableOpacity
               onPress={props.onDismiss}
-              style={[s.RootAlert_Btn, s.RootAlert_Btn__cancel]}
+              style={[css.RootAlert_Btn, css.RootAlert_Btn__cancel]}
             >
-              <Text small style={s.RootAlert_BtnTxt}>
+              <Text small style={css.RootAlert_BtnTxt}>
                 {props.dismissText}
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={props.onConfirm} style={s.RootAlert_Btn}>
-            <Text small style={s.RootAlert_BtnTxt}>
+          <TouchableOpacity onPress={props.onConfirm} style={css.RootAlert_Btn}>
+            <Text small style={css.RootAlert_BtnTxt}>
               {props.confirmText}
             </Text>
           </TouchableOpacity>

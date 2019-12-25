@@ -11,7 +11,7 @@ import {
 } from '../native/Rn';
 import Icon from './Icon';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   FooterActions: {
     width: `100%`,
     flexDirection: `row`,
@@ -62,14 +62,14 @@ const s = StyleSheet.create({
 });
 
 const FooterActions = props => (
-  <View style={s.FooterActions}>
+  <View style={css.FooterActions}>
     {props.onBackBtnPress && (
       <TouchableOpacity
         onPress={props.onBackBtnPress}
         style={[
-          s.FooterActions_Btn,
-          s.FooterActions_Btn__back,
-          !props.onRefreshBtnPress && s.FooterActions_Btn__33,
+          css.FooterActions_Btn,
+          css.FooterActions_Btn__back,
+          !props.onRefreshBtnPress && css.FooterActions_Btn__33,
         ]}
       >
         <Icon color={g.redBg} path={props.backIcon || mdiKeyboardBackspace} />
@@ -79,9 +79,9 @@ const FooterActions = props => (
       <TouchableOpacity
         onPress={props.selectFile}
         style={[
-          s.FooterActions_Btn,
-          s.FooterActions_Btn__selectFile,
-          s.FooterActions_Btn__15,
+          css.FooterActions_Btn,
+          css.FooterActions_Btn__selectFile,
+          css.FooterActions_Btn__15,
         ]}
       >
         <Icon color={g.layerBg} path={mdiPlus} />
@@ -93,7 +93,7 @@ const FooterActions = props => (
         onChangeText={props.setText}
         onSubmitEditing={props.submitText}
         placeholder="Message"
-        style={[s.FooterActions_Input]}
+        style={[css.FooterActions_Input]}
         value={props.text}
       />
     )}
@@ -101,9 +101,9 @@ const FooterActions = props => (
       <TouchableOpacity
         onPress={props.onRefreshBtnPress}
         style={[
-          s.FooterActions_Btn,
-          s.FooterActions_Btn__refresh,
-          !props.onBackBtnPress && s.FooterActions_Btn__33,
+          css.FooterActions_Btn,
+          css.FooterActions_Btn__refresh,
+          !props.onBackBtnPress && css.FooterActions_Btn__33,
         ]}
       >
         <Icon path={props.refreshIcon || mdiCached} />
@@ -113,19 +113,19 @@ const FooterActions = props => (
       <TouchableOpacity
         onPress={props.onSaveBtnPress}
         style={[
-          s.FooterActions_Btn,
-          s.FooterActions_Btn__save,
+          css.FooterActions_Btn,
+          css.FooterActions_Btn__save,
           (!props.onBackBtnPress || !props.onRefreshBtnPress) &&
-            s.FooterActions_Btn__67,
+            css.FooterActions_Btn__67,
           !props.onBackBtnPress &&
             !props.onRefreshBtnPress &&
-            s.FooterActions_Btn__100,
+            css.FooterActions_Btn__100,
           props.saveColor && {
             backgroundColor: props.saveColor,
           },
         ]}
       >
-        <Text small style={s.FooterActions_BtnTxt}>
+        <Text small style={css.FooterActions_BtnTxt}>
           {props.saveText || `SAVE`}
         </Text>
       </TouchableOpacity>

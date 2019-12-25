@@ -14,7 +14,7 @@ import {
 import { useAnimationOnDidMount } from '../utils/animation';
 import Icon from './Icon';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Picker: {
     flexDirection: `row`,
     alignItems: `center`,
@@ -75,11 +75,11 @@ const Picker = p => {
     translateY: [Dimensions.get(`screen`).height, 0],
   });
   return (
-    <View style={[StyleSheet.absoluteFill, s.Picker]}>
+    <View style={[StyleSheet.absoluteFill, css.Picker]}>
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
-          s.Picker_Backdrop,
+          css.Picker_Backdrop,
           { opacity: a.opacity },
         ]}
       >
@@ -90,13 +90,13 @@ const Picker = p => {
       </Animated.View>
       <Animated.ScrollView
         style={[
-          s.Picker_Inner,
+          css.Picker_Inner,
           {
             transform: [{ translateY: a.translateY }],
           },
         ]}
       >
-        <View style={s.Picker_Options}>
+        <View style={css.Picker_Options}>
           {p.options.map((o, i) => {
             const isSelected = `${p.selectedKey}` === `${o.key}`;
             return (
@@ -107,12 +107,12 @@ const Picker = p => {
                   g.dismissPicker();
                 }}
                 style={[
-                  s.Picker_Option,
-                  i + 1 === p.options.length && s.Picker_Option__last,
-                  isSelected && s.Picker_Option__selected,
+                  css.Picker_Option,
+                  i + 1 === p.options.length && css.Picker_Option__last,
+                  isSelected && css.Picker_Option__selected,
                 ]}
               >
-                <Text style={isSelected && s.Picker_Text__selected}>
+                <Text style={isSelected && css.Picker_Text__selected}>
                   {o.label}
                 </Text>
                 <Icon
@@ -121,7 +121,7 @@ const Picker = p => {
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
                   }
-                  style={s.Picker_Icon}
+                  style={css.Picker_Icon}
                 />
               </TouchableOpacity>
             );
@@ -129,10 +129,12 @@ const Picker = p => {
         </View>
         <TouchableOpacity
           onPress={g.dismissPicker}
-          style={[s.Picker_Option, s.Picker_Option__cancel]}
+          style={[css.Picker_Option, css.Picker_Option__cancel]}
         >
-          <Text style={s.Picker_Text__cancel}>{p.cancelLabel || `Cancel`}</Text>
-          <Icon color={g.redDarkBg} path={mdiClose} style={s.Picker_Icon} />
+          <Text style={css.Picker_Text__cancel}>
+            {p.cancelLabel || `Cancel`}
+          </Text>
+          <Icon color={g.redDarkBg} path={mdiClose} style={css.Picker_Icon} />
         </TouchableOpacity>
       </Animated.ScrollView>
     </View>

@@ -1,9 +1,9 @@
 import * as UCClient from 'brekekejs/lib/ucclient';
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import uc from '../api/uc';
 import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
@@ -11,29 +11,23 @@ import contactStore from '../global/contactStore';
 
 @observer
 class AuthUC extends React.Component {
-  static contextTypes = {
-    uc: PropTypes.object.isRequired,
-  };
-
   componentDidMount() {
-    this.context.uc.on(`connection-stopped`, this.onConnectionStopped);
+    uc.on(`connection-stopped`, this.onConnectionStopped);
     this.autoAuth();
     this.clearObserve = observe(authStore, `ucShouldAuth`, this.autoAuth);
   }
-
   componentWillUnmount() {
     this.clearObserve();
-    this.context.uc.off(`connection-stopped`, this.onConnectionStopped);
-    this.context.uc.disconnect();
+    uc.off(`connection-stopped`, this.onConnectionStopped);
+    uc.disconnect();
     authStore.set(`ucState`, `stopped`);
   }
 
   auth = () => {
-    this.context.uc.disconnect();
+    uc.disconnect();
     authStore.set(`ucState`, `connecting`);
     authStore.set(`ucLoginFromAnotherPlace`, false);
-    this.context.uc
-      .connect(authStore.currentProfile)
+    uc.connect(authStore.currentProfile)
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
   };
@@ -42,7 +36,6 @@ class AuthUC extends React.Component {
       this.auth();
     }
   };
-
   onAuthSuccess = () => {
     this.loadUsers();
     this.loadUnreadChats().then(() => {
@@ -54,7 +47,6 @@ class AuthUC extends React.Component {
     g.showError({ message: `connect to UC` });
     console.error(err);
   };
-
   onConnectionStopped = e => {
     authStore.set(`ucState`, `failure`);
     authStore.set(
@@ -62,31 +54,26 @@ class AuthUC extends React.Component {
       e.code === UCClient.Errors.PLEONASTIC_LOGIN,
     );
   };
-
   loadUsers = () => {
-    const users = this.context.uc.getUsers();
+    const users = uc.getUsers();
     contactStore.set(`ucUsers`, users);
   };
-
   loadUnreadChats = () =>
-    this.context.uc
+    uc
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure);
-
   onLoadUnreadChatsSuccess = chats => {
     chats.forEach(chat => {
       chatStore.pushMessages(chat.creator, [chat]);
     });
   };
-
   onLoadUnreadChatsFailure = err => {
     g.showError({ message: `load unread chats` });
     if (err && err.message) {
       g.showError(err.message);
     }
   };
-
   render() {
     return null;
   }

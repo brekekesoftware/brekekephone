@@ -5,6 +5,7 @@ import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import { TouchableOpacity } from '../native/Rn';
+import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import Search from '../shared/Search';
 import { arrToMap } from '../utils/toMap';
@@ -36,6 +37,7 @@ class PageChatRecents extends React.Component {
         <TouchableOpacity onPress={g.goToPageChatGroupCreate}>
           <UserItem name="Create group" />
         </TouchableOpacity>
+        <Field isGroup label={`GROUP CHAT`} />
         <ListUsers
           createGroup={g.goToPageChatGroupCreate}
           groupbyid={arrToMap(chatStore.groups, `id`, g => g)}

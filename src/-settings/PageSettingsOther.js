@@ -1,8 +1,8 @@
 import { mdiCheck } from '@mdi/js';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
+import uc from '../api/uc';
 import g from '../global';
 import authStore from '../global/authStore';
 import Field from '../shared/Field';
@@ -10,23 +10,17 @@ import Layout from '../shared/Layout';
 
 @observer
 class PageSettingsOther extends Component {
-  static contextTypes = {
-    uc: PropTypes.object.isRequired,
-  };
-
   state = {
     status: ``,
     statusText: ``,
   };
-
   componentDidMount() {
-    const me = this.context.uc.me();
+    const me = uc.me();
     this.setState({
       status: me.status,
       statusText: me.statusText,
     });
   }
-
   setStatusText = statusText => {
     this.setState({ statusText });
   };
@@ -36,22 +30,19 @@ class PageSettingsOther extends Component {
   submitStatus = status => {
     this.setStatus(status, this.state.statusText);
   };
-
   setStatus = (status, statusText) => {
-    this.context.uc
-      .setStatus(status, statusText)
+    uc.setStatus(status, statusText)
       .then(() => {
-        const me = this.context.uc.me();
+        const me = uc.me();
         this.setState({
           status: me.status,
           statusText: me.statusText,
         });
       })
-      .catch(() => {
-        g.showError(`to change UC status`);
+      .catch(err => {
+        g.showError({ message: `change UC status`, err });
       });
   };
-
   render() {
     return (
       <Layout
@@ -76,8 +67,8 @@ class PageSettingsOther extends Component {
           label={`STATUS`}
           onValueChange={this.submitStatus}
           options={[
-            { key: `offline`, label: `Offline` },
             { key: `online`, label: `Online` },
+            { key: `offline`, label: `Invisible` },
             { key: `busy`, label: `Busy` },
           ]}
           type={`Picker`}

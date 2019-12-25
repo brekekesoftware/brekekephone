@@ -1,17 +1,13 @@
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import pbx from '../api/pbx';
 import g from '../global';
 import contactStore from '../global/contactStore';
 import ContactsCreateForm from './ContactCreateForm';
 
 @observer
 class PagePhonebookUpdate extends React.Component {
-  static contextTypes = {
-    pbx: PropTypes.object.isRequired,
-  };
-
   render() {
     return (
       <ContactsCreateForm
@@ -27,22 +23,17 @@ class PagePhonebookUpdate extends React.Component {
   }
 
   save = phonebook => {
-    const { pbx } = this.context;
     pbx
       .setContact(phonebook)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
-
     contactStore.updatePhonebook(phonebook);
   };
-
   onSaveSuccess = () => {
     g.goToPageContactPhonebook();
   };
-
   onSaveFailure = err => {
-    console.error(err);
-    g.showError({ message: `save the contact` });
+    g.showError({ message: `save the contact`, err });
   };
 }
 

@@ -2,9 +2,9 @@ import { mdiPhone, mdiVideo } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
@@ -17,14 +17,9 @@ import UserItem from './UserItem';
 
 @observer
 class PageContactUsers extends React.Component {
-  static contextTypes = {
-    sip: PropTypes.object.isRequired,
-  };
-
   state = {
     showOfflineUsers: false,
   };
-
   getMatchUserIds() {
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
@@ -32,11 +27,9 @@ class PageContactUsers extends React.Component {
     ]);
     return userIds.filter(this.isMatchUser);
   }
-
   resolveUser = id => {
     const pbxUser = contactStore.getPBXUser(id) || {};
     const ucUser = contactStore.getUCUser(id) || {};
-
     return {
       id: id,
       name: pbxUser.name || ucUser.name,
@@ -53,13 +46,11 @@ class PageContactUsers extends React.Component {
       chatEnabled: authStore.currentProfile?.ucEnabled,
     };
   };
-
   setHiddenContact = value => {
     this.setState({
       showOfflineUsers: value,
     });
   };
-
   isMatchUser = id => {
     if (!id) {
       return false;
@@ -90,24 +81,16 @@ class PageContactUsers extends React.Component {
       ucUserName.includes(txt)
     );
   };
-
   callVoice = userId => {
-    const { sip } = this.context;
-
     sip.createSession(userId);
     g.goToPageCallManage();
   };
-
   callVideo = userId => {
-    const { sip } = this.context;
-
     sip.createSession(userId, {
       videoEnabled: true,
     });
-
     g.goToPageCallManage();
   };
-
   getLastMessageChat = id => {
     const chats = chatStore.messagesByThreadId[id] || [];
     return chats.length !== 0 ? chats[chats.length - 1] : {};
@@ -120,7 +103,6 @@ class PageContactUsers extends React.Component {
           .map(this.resolveUser)
           .filter(i => !i.status === `offline`);
     const map = {};
-
     users.forEach(u => {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
@@ -132,7 +114,6 @@ class PageContactUsers extends React.Component {
       }
       map[c0].push(u);
     });
-
     let groups = Object.keys(map).map(k => ({
       key: k,
       users: map[k],

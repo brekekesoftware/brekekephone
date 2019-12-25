@@ -4,7 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
 import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   RnStatusBar: {
     backgroundColor: v.hoverBg,
     borderColor: v.borderBg,
@@ -24,7 +24,10 @@ const s = StyleSheet.create({
 const RnStatusBar = props =>
   Platform.OS === `web` ? null : (
     <View
-      style={[s.RnStatusBar, props.transparent && s.RnStatusBar__transparent]}
+      style={[
+        css.RnStatusBar,
+        props.transparent && css.RnStatusBar__transparent,
+      ]}
     >
       <StatusBar backgroundColor={v.hoverBg} barStyle="dark-content" />
     </View>

@@ -1,11 +1,11 @@
 import { mdiClose } from '@mdi/js';
 import React from 'react';
 
+import g from '../global';
 import { StyleSheet, TextInput, TouchableOpacity, View } from '../native/Rn';
-import v from '../variables';
 import Icon from './Icon';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Search: {
     height: 50,
   },
@@ -15,7 +15,7 @@ const s = StyleSheet.create({
   },
   Search_TextInput: {
     padding: 10,
-    ...v.boxShadow,
+    ...g.boxShadow,
   },
   Search_BtnClose: {
     position: `absolute`,
@@ -26,19 +26,19 @@ const s = StyleSheet.create({
 });
 
 const Search = p => (
-  <View style={s.Search}>
-    <View style={s.Search_TextInputOuter}>
+  <View style={css.Search}>
+    <View style={css.Search_TextInputOuter}>
       <TextInput
         onChangeText={p.onValueChange}
         placeholder="Search name, phone number..."
-        style={s.Search_TextInput}
+        style={css.Search_TextInput}
         value={p.value}
       />
     </View>
     {!!p.value && (
       <TouchableOpacity
         onPress={() => p.onValueChange(``)}
-        style={s.Search_BtnClose}
+        style={css.Search_BtnClose}
         transparent
       >
         <Icon path={mdiClose} size={17} />

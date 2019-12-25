@@ -103,7 +103,9 @@ const saveNavigation = (i, k) => {
     k = m.defaultSubMenu;
   }
   normalizeSavedNavigation();
-  p.navIndex = i;
+  if (m.key !== `settings`) {
+    p.navIndex = i;
+  }
   p.navSubMenus[i] = k;
   g.saveProfilesToLocalStorage();
 };

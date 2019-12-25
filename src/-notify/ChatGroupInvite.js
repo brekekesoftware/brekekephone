@@ -1,8 +1,8 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
@@ -13,10 +13,6 @@ class ChatGroupInvite extends React.Component {
   @computed get GroupIds() {
     return chatStore.groups.filter(g => !g.jointed).map(g => g.id);
   }
-
-  static contextTypes = {
-    uc: PropTypes.object.isRequired,
-  };
 
   render() {
     return this.GroupIds.map(group => (
@@ -29,7 +25,6 @@ class ChatGroupInvite extends React.Component {
       />
     ));
   }
-
   formatGroup = group => {
     const { id, inviter, name } = chatStore.getGroup(group) || {};
     const inviterName = contactStore.getUCUser(inviter)?.name;
@@ -39,11 +34,9 @@ class ChatGroupInvite extends React.Component {
       inviter: inviterName || inviter,
     };
   };
-
   // TODO: rejected but existed in chat home => error when click.
   reject = group => {
-    this.context.uc
-      .leaveChatGroup(group)
+    uc.leaveChatGroup(group)
       .then(this.onRejectSuccess)
       .catch(this.onRejectFailure);
   };
@@ -51,16 +44,13 @@ class ChatGroupInvite extends React.Component {
     chatStore.removeGroup(res.id);
   };
   onRejectFailure = err => {
-    console.error(err);
-    g.showError({ message: `reject the group chat` });
+    g.showError({ message: `reject the group chat`, err });
   };
-
   accept = group => {
-    this.context.uc.joinChatGroup(group).catch(this.onAcceptFailure);
+    uc.joinChatGroup(group).catch(this.onAcceptFailure);
   };
   onAcceptFailure = err => {
-    console.error(err);
-    g.showError({ message: `accept the group chat` });
+    g.showError({ message: `accept the group chat`, err });
   };
 }
 

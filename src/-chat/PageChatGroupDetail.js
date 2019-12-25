@@ -1,8 +1,9 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import sip from '../api/sip';
+import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
@@ -26,10 +27,6 @@ class PageChatGroupDetail extends React.Component {
       m => m,
     );
   }
-  static contextTypes = {
-    uc: PropTypes.object.isRequired,
-    sip: PropTypes.object.isRequired,
-  };
 
   state = {
     target: ``,
@@ -37,10 +34,8 @@ class PageChatGroupDetail extends React.Component {
     loadingMore: false,
     editingText: ``,
   };
-
   componentDidMount() {
     const noChat = !this.chatIds.length;
-
     if (noChat) this.loadRecent();
   }
   render() {
@@ -89,19 +84,16 @@ class PageChatGroupDetail extends React.Component {
   setViewRef = ref => {
     this.view = ref;
   };
-
   onContentSizeChange = () => {
     if (this._closeToBottom) {
       this.view.scrollToEnd({
         animated: !this._justMounted,
       });
-
       if (this._justMounted) {
         this._justMounted = false;
       }
     }
   };
-
   onScroll = ev => {
     ev = ev.nativeEvent;
     const layoutSize = ev.layoutMeasurement;
@@ -114,20 +106,17 @@ class PageChatGroupDetail extends React.Component {
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom;
   };
 
-  me = this.context.uc.me();
-
+  me = uc.me();
   resolveBuddy = creator => {
     if (creator === this.me.id) return this.me;
     return contactStore.getUCUser(creator) || {};
   };
-
   resolveChat = (id, index) => {
     const chat = this.chatById[id];
     const prev = this.chatById[this.chatIds[index - 1]] || {};
     const mini = m.isMiniChat(chat, prev);
     const created = formatTime(chat.created);
     const text = chat.text;
-
     if (mini) {
       return {
         mini: true,
@@ -135,11 +124,9 @@ class PageChatGroupDetail extends React.Component {
         text,
       };
     }
-
     const creator = this.resolveBuddy(chat.creator);
     const creatorName =
       !creator.name || creator.name.length === 0 ? creator.id : creator.name;
-
     return {
       creatorName: creatorName,
       creatorAvatar: creator.avatar,
@@ -149,72 +136,54 @@ class PageChatGroupDetail extends React.Component {
   };
 
   loadRecent() {
-    const { uc } = this.context;
-
     const max = m.numberOfChatsPerLoad;
-
     const query = {
       max,
     };
-
     uc.getGroupChats(this.props.groupId, query)
       .then(this.onLoadRecentSuccess)
       .catch(this.onLoadRecentFailure);
-
     this.setState({
       loadingRecent: true,
     });
   }
-
   onLoadRecentSuccess = chats => {
     chatStore.pushMessages(this.props.groupId, chats.reverse());
     this.setState({
       loadingRecent: false,
     });
   };
-
   onLoadRecentFailure = err => {
-    console.error(err);
-
     this.setState({
       loadingRecent: false,
     });
-
-    g.showError({ message: `get recent chats` });
+    g.showError({ message: `get recent chats`, err });
   };
 
   loadMore = () => {
-    const { uc } = this.context;
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = m.numberOfChatsPerLoad;
     const end = oldestCreated;
-
     const query = {
       max,
       end,
     };
-
     uc.getGroupChats(this.props.groupId, query)
       .then(this.onLoadMoreSuccess)
       .catch(this.onLoadMoreFailure);
-
     this.setState({
       loadingMore: true,
     });
   };
-
   onLoadMoreSuccess = chats => {
     chatStore.pushMessages(this.props.groupId, chats.reverse());
     this.setState({
       loadingMore: false,
     });
   };
-
   onLoadMoreFailure = err => {
-    g.showError({ message: `get more chats` });
-    console.error(err);
-
+    g.showError({ message: `get more chats`, err });
     this.setState({
       loadingMore: false,
     });
@@ -225,73 +194,54 @@ class PageChatGroupDetail extends React.Component {
       editingText,
     });
   };
-
   submitting = false;
-
   submitEditingText = () => {
     if (this.submitting) {
       return;
     }
-
     const txt = this.state.editingText.trim();
-
     if (!txt) {
       return;
     }
-
     this.submitting = true;
-
-    this.context.uc
-      .sendGroupChatText(this.props.groupId, txt)
+    uc.sendGroupChatText(this.props.groupId, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
         this.submitting = false;
       });
   };
-
   onSubmitEditingTextSuccess = chat => {
     chatStore.pushMessages(this.props.groupId, [chat]);
-
     this.setState({
       editingText: ``,
     });
   };
-
   onSubmitEditingTextFailure = err => {
-    console.error(err);
-    g.showError({ message: `send the message` });
+    g.showError({ message: `send the message`, err });
   };
 
   leave = () => {
-    const { uc } = this.context;
     uc.leaveChatGroup(this.props.groupId)
       .then(this.onLeaveSuccess)
       .catch(this.onLeaveFailure);
   };
-
   onLeaveSuccess = () => {
     chatStore.removeGroup(this.props.groupId);
     g.goToPageChatRecents();
   };
-
   onLeaveFailure = err => {
-    console.error(err);
-    g.showError({ message: `leave the group` });
+    g.showError({ message: `leave the group`, err });
   };
 
   invite = () => {
     g.goToChatGroupInvite({ groupId: this.props.groupId });
   };
-
   call = (target, bVideoEnabled) => {
-    const { sip } = this.context;
-
     sip.createSession(target, {
       videoEnabled: bVideoEnabled,
     });
   };
-
   callVoiceConference = () => {
     let target = this.props.groupId;
     if (!target.startsWith(`uc`)) {
@@ -299,7 +249,6 @@ class PageChatGroupDetail extends React.Component {
     }
     this.call(target, false);
   };
-
   callVideoConference = () => {
     let target = this.props.groupId;
     if (!target.startsWith(`uc`)) {

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import v from '../variables';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   RnSwitch: {
     height: 12,
     width: 32,
@@ -31,8 +31,10 @@ const s = StyleSheet.create({
 });
 
 const RnSwitch = ({ enabled, style, ...p }) => (
-  <View {...p} style={[s.RnSwitch, enabled && s.RnSwitch__enabled, style]}>
-    <View style={[s.RnSwitch_Circle, enabled && s.RnSwitch_Circle__enabled]} />
+  <View {...p} style={[css.RnSwitch, enabled && css.RnSwitch__enabled, style]}>
+    <View
+      style={[css.RnSwitch_Circle, enabled && css.RnSwitch_Circle__enabled]}
+    />
   </View>
 );
 

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { StyleSheet, TextInput, View } from '../native/Rn';
+import { Keyboard, StyleSheet, TextInput, View } from '../native/Rn';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   ShowNumbers: {
     flexDirection: `row`,
   },
@@ -22,16 +22,19 @@ const s = StyleSheet.create({
 });
 
 const ShowNumber = p => (
-  <View style={s.ShowNumbers}>
+  <View style={css.ShowNumbers}>
     <TextInput
+      blurOnSubmit
       keyboardType="default"
-      multiline={true}
+      multiline
       onChangeText={p.setTarget}
-      onEndEditing={p.showKeyboradNumpad}
+      onEndEditing={() => {
+        Keyboard.dismiss();
+      }}
       onSelectionChange={p.selectionChange}
       placeholder="Enter your number"
       ref={p.refInput}
-      style={s.ShowNumbers_DisplayTxt}
+      style={css.ShowNumbers_DisplayTxt}
       value={p.value}
     />
   </View>

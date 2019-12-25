@@ -65,7 +65,7 @@ g.registerStacks({
   PageChatGroupDetail,
 });
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   App: {
     backgroundColor: g.bg,
   },
@@ -83,8 +83,8 @@ const App = () => {
     g.goToPageProfileSignIn();
   }, []);
   return (
-    <View style={[StyleSheet.absoluteFill, s.App]}>
-      <View style={s.App_Inner}>
+    <View style={[StyleSheet.absoluteFill, css.App]}>
+      <View style={css.App_Inner}>
         <ApiProvider>
           <RootStacks />
           <RootPicker />

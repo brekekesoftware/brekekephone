@@ -1,8 +1,8 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import sip from '../api/sip';
 import callStore from '../global/callStore';
 import Notify from './Notify';
 
@@ -13,21 +13,16 @@ class CallNotify extends React.Component {
   @computed get callIds() {
     return callStore.runnings.filter(c => isIncoming(c)).map(c => c.id);
   }
-  static contextTypes = {
-    sip: PropTypes.object.isRequired,
-  };
-
   accept = id => {
     const call = callStore.getRunningCall(id);
     callStore.set(`selectedId`, call.id);
     const videoEnabled = call.remoteVideoEnabled;
-    this.context.sip.answerSession(id, {
+    sip.answerSession(id, {
       videoEnabled,
     });
   };
-
   reject = id => {
-    this.context.sip.hangupSession(id);
+    sip.hangupSession(id);
   };
 
   render() {

@@ -40,7 +40,7 @@ requestAnimationFrame(() => {
   h.appendChild(s);
 });
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   WebApp: {
     flex: 1,
     display: `flex`,
@@ -101,37 +101,37 @@ const AppSelection = () => {
         source={{
           uri: logo,
         }}
-        style={s.WebApp_Logo}
+        style={css.WebApp_Logo}
       />
       <Image
         source={{
           uri: brand,
         }}
-        style={s.WebApp_Brand}
+        style={css.WebApp_Brand}
       />
       <a href={appUrl}>
-        <TouchableOpacity style={[s.WebApp_Btn, s.WebApp_Btn__app]}>
-          <Text small style={s.WebApp_BtnTxt__browser}>
+        <TouchableOpacity style={[css.WebApp_Btn, css.WebApp_Btn__app]}>
+          <Text small style={css.WebApp_BtnTxt__browser}>
             OPEN IN APP
           </Text>
           <Icon
             color="white"
             path={isIOS ? mdiApple : mdiAndroidHead}
-            style={s.WebApp_Icon}
+            style={css.WebApp_Icon}
           />
         </TouchableOpacity>
       </a>
       <TouchableOpacity
         onClick={() => setIsBrowser(true)}
-        style={[s.WebApp_Btn, s.WebApp_Btn__browser]}
+        style={[css.WebApp_Btn, css.WebApp_Btn__browser]}
       >
         <Text small>OPEN IN BROWSER</Text>
-        <Icon path={mdiWeb} style={s.WebApp_Icon} />
+        <Icon path={mdiWeb} style={css.WebApp_Icon} />
       </TouchableOpacity>
     </React.Fragment>
   );
   const Container = isBrowser ? View : BrekekeGradient;
-  return <Container style={s.WebApp}>{child}</Container>;
+  return <Container style={css.WebApp}>{child}</Container>;
 };
 
 AppRegistry.registerComponent(`App`, () => AppSelection);

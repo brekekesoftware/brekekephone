@@ -5,7 +5,7 @@ import g from '../global';
 import { Animated, Dimensions, StyleSheet, View } from '../native/Rn';
 import { useAnimationOnDidMount } from '../utils/animation';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   Stack: {
     backgroundColor: g.bg,
   },
@@ -20,7 +20,7 @@ const Stack = ({ Component, ...p }) => {
     <OuterComponent
       style={[
         StyleSheet.absoluteFill,
-        s.Stack,
+        css.Stack,
         !p.isRoot && {
           transform: [{ translateX: a.translateX }],
         },

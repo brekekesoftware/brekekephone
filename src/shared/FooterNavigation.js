@@ -5,52 +5,50 @@ import { StyleSheet, TouchableOpacity, View } from '../native/Rn';
 import Icon from './Icon';
 import { menus } from './navigationConfig';
 
-const s = StyleSheet.create({
+const css = StyleSheet.create({
   FooterNavigation: {
-    flex: 1,
-    backgroundColor: g.hoverBg,
-  },
-  FooterNavigation_Menu: {
     flexDirection: `row`,
     alignSelf: `stretch`,
   },
-  FooterNavigation_Menu__sub: {
-    position: `absolute`,
-    bottom: `100%`,
-    left: 0,
-    right: 0,
-    backgroundColor: g.bg,
-    paddingHorizontal: 15,
-  },
   FooterNavigation_Btn: {
     flex: 1,
-    paddingVertical: 8,
+    padding: 4,
     alignItems: `center`,
   },
-  FooterNavigation_Btn__active: {
-    backgroundColor: g.bg,
+  FooterNavigation_BtnBg: {
+    paddingVertical: 8,
+    width: `100%`,
+  },
+  FooterNavigation_BtnBg__active: {
+    borderRadius: 22,
+    backgroundColor: g.mainTransBg,
   },
 });
 
 const FooterNavigation = ({ menu }) => (
-  <View style={s.FooterNavigation}>
-    <View style={s.FooterNavigation_Menu}>
-      {menus.map(m => {
-        const active = m.key === menu;
-        return (
-          <TouchableOpacity
-            key={m.key}
-            onPress={active ? null : m.navFn}
+  <View style={css.FooterNavigation}>
+    {menus.map(m => {
+      const active = m.key === menu;
+      return (
+        <TouchableOpacity
+          key={m.key}
+          onPress={active ? null : m.navFn}
+          style={[
+            css.FooterNavigation_Btn,
+            // active && css.FooterNavigation_Btn__active,
+          ]}
+        >
+          <View
             style={[
-              s.FooterNavigation_Btn,
-              active && s.FooterNavigation_Btn__active,
+              css.FooterNavigation_BtnBg,
+              active && css.FooterNavigation_BtnBg__active,
             ]}
           >
             <Icon path={m.icon} />
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+          </View>
+        </TouchableOpacity>
+      );
+    })}
   </View>
 );
 
