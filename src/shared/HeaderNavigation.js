@@ -1,6 +1,7 @@
 import React from 'react';
 
 import g from '../global';
+import authStore from '../global/authStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import { menus } from './navigationConfig';
 
@@ -31,24 +32,57 @@ const HeaderNavigation = ({ menu, subMenu }) => {
     return null;
   }
   return (
-    <View style={css.HeaderNavigation}>
-      {m.subMenus.map(s => {
-        const active = s.key === subMenu;
-        return (
-          <TouchableOpacity
-            key={s.key}
-            onPress={active ? null : s.navFn}
-            style={[
-              css.HeaderNavigation_Btn,
-              active && css.HeaderNavigation_Btn__active,
-            ]}
-          >
-            <Text small style={active && css.HeaderNavigation_BtnText__active}>
-              {s.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+    <View>
+      {authStore.currentProfile?.ucEnabled ? (
+        <View style={css.HeaderNavigation}>
+          {m.subMenus.map(s => {
+            const active = s.key === subMenu;
+            return (
+              <TouchableOpacity
+                key={s.key}
+                onPress={active ? null : s.navFn}
+                style={[
+                  css.HeaderNavigation_Btn,
+                  active && css.HeaderNavigation_Btn__active,
+                ]}
+              >
+                <Text
+                  small
+                  style={active && css.HeaderNavigation_BtnText__active}
+                >
+                  {s.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ) : (
+        <View style={css.HeaderNavigation}>
+          {m.subMenus.map(s => {
+            if (s.key === `chat`) {
+              return null;
+            }
+            const active = s.key === subMenu;
+            return (
+              <TouchableOpacity
+                key={s.key}
+                onPress={active ? null : s.navFn}
+                style={[
+                  css.HeaderNavigation_Btn,
+                  active && css.HeaderNavigation_Btn__active,
+                ]}
+              >
+                <Text
+                  small
+                  style={active && css.HeaderNavigation_BtnText__active}
+                >
+                  {s.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 };

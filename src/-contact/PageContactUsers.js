@@ -156,7 +156,11 @@ class PageContactUsers extends React.Component {
             {_g.users.map((u, i) => (
               <TouchableOpacity
                 key={i}
-                onPress={() => g.goToPageChatDetail({ buddy: u.id })}
+                onPress={
+                  authStore.currentProfile?.ucEnabled
+                    ? () => g.goToPageChatDetail({ buddy: u.id })
+                    : null
+                }
               >
                 <UserItem
                   detail={true}

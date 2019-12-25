@@ -54,11 +54,14 @@ class PageContactPhonebook extends React.Component {
     hidden: false,
   };
   componentDidMount() {
-    const noPhonebook = !this.phoneBookId.length;
-    if (noPhonebook) {
+    const id = setInterval(() => {
+      if (!pbx.client) {
+        return;
+      }
       this.loadContacts.flush();
       this.loadContacts();
-    }
+      clearInterval(id);
+    }, 300);
   }
   render() {
     const phonebooks = this.state.hidden
