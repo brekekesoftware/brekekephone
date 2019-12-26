@@ -138,17 +138,19 @@ class PageContactUsers extends React.Component {
           },
         }}
       >
-        <Field
-          label="SHOW OFFLINE USERS"
-          onValueChange={v => {
-            g.upsertProfile({
-              id: authStore.currentProfile?.id,
-              displayOfflineUsers: v,
-            });
-          }}
-          type={`Switch`}
-          value={authStore.currentProfile?.displayOfflineUsers}
-        />
+        {ucEnabled && (
+          <Field
+            label="SHOW OFFLINE USERS"
+            onValueChange={v => {
+              g.upsertProfile({
+                id: authStore.currentProfile?.id,
+                displayOfflineUsers: v,
+              });
+            }}
+            type={`Switch`}
+            value={authStore.currentProfile?.displayOfflineUsers}
+          />
+        )}
         <Search
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
