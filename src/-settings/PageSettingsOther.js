@@ -61,28 +61,32 @@ class PageSettingsOther extends Component {
           },
         }}
       >
-        <Field isGroup label={`UC`} />
-        <Field
-          disabled={!authStore.currentProfile?.ucEnabled}
-          label={`STATUS`}
-          onValueChange={this.submitStatus}
-          options={[
-            { key: `online`, label: `Online` },
-            { key: `offline`, label: `Invisible` },
-            { key: `busy`, label: `Busy` },
-          ]}
-          type={`Picker`}
-          value={this.state.status}
-        />
-        <Field
-          createBtnIcon={mdiCheck}
-          disabled={!authStore.currentProfile?.ucEnabled}
-          label={`STATUS NOTE`}
-          onCreateBtnPress={this.submitStatusText}
-          onSubmitEditing={this.submitStatusText}
-          onValueChange={this.setStatusText}
-          value={this.state.statusText}
-        />
+        {authStore.currentProfile?.ucEnabled && (
+          <React.Fragment>
+            <Field isGroup label={`UC`} />
+            <Field
+              disabled={!authStore.currentProfile?.ucEnabled}
+              label={`STATUS`}
+              onValueChange={this.submitStatus}
+              options={[
+                { key: `online`, label: `Online` },
+                { key: `offline`, label: `Invisible` },
+                { key: `busy`, label: `Busy` },
+              ]}
+              type={`Picker`}
+              value={this.state.status}
+            />
+            <Field
+              createBtnIcon={mdiCheck}
+              disabled={!authStore.currentProfile?.ucEnabled}
+              label={`STATUS NOTE`}
+              onCreateBtnPress={this.submitStatusText}
+              onSubmitEditing={this.submitStatusText}
+              onValueChange={this.setStatusText}
+              value={this.state.statusText}
+            />
+          </React.Fragment>
+        )}
       </Layout>
     );
   }

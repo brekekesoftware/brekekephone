@@ -32,57 +32,29 @@ const HeaderNavigation = ({ menu, subMenu }) => {
     return null;
   }
   return (
-    <View>
-      {authStore.currentProfile?.ucEnabled ? (
-        <View style={css.HeaderNavigation}>
-          {m.subMenus.map(s => {
-            const active = s.key === subMenu;
-            return (
-              <TouchableOpacity
-                key={s.key}
-                onPress={active ? null : s.navFn}
-                style={[
-                  css.HeaderNavigation_Btn,
-                  active && css.HeaderNavigation_Btn__active,
-                ]}
+    <View style={css.HeaderNavigation}>
+      {m.subMenus
+        .filter(s => !s.ucRequired || authStore.currentProfile?.ucEnabled)
+        .map(s => {
+          const active = s.key === subMenu;
+          return (
+            <TouchableOpacity
+              key={s.key}
+              onPress={active ? null : s.navFn}
+              style={[
+                css.HeaderNavigation_Btn,
+                active && css.HeaderNavigation_Btn__active,
+              ]}
+            >
+              <Text
+                small
+                style={active && css.HeaderNavigation_BtnText__active}
               >
-                <Text
-                  small
-                  style={active && css.HeaderNavigation_BtnText__active}
-                >
-                  {s.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      ) : (
-        <View style={css.HeaderNavigation}>
-          {m.subMenus.map(s => {
-            if (s.key === `chat`) {
-              return null;
-            }
-            const active = s.key === subMenu;
-            return (
-              <TouchableOpacity
-                key={s.key}
-                onPress={active ? null : s.navFn}
-                style={[
-                  css.HeaderNavigation_Btn,
-                  active && css.HeaderNavigation_Btn__active,
-                ]}
-              >
-                <Text
-                  small
-                  style={active && css.HeaderNavigation_BtnText__active}
-                >
-                  {s.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
+                {s.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
     </View>
   );
 };

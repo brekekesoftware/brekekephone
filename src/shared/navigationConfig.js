@@ -27,9 +27,10 @@ export const menus = [
         key: `chat`,
         label: `CHAT`,
         navFnKey: `goToPageChatRecents`,
+        ucRequired: true,
       },
     ],
-    defaultSubMenu: `users`,
+    defaultSubMenuKey: `users`,
   },
   {
     key: `call`,
@@ -51,7 +52,7 @@ export const menus = [
         navFnKey: `goToPageCallParks`,
       },
     ],
-    defaultSubMenu: `recents`,
+    defaultSubMenuKey: `recents`,
   },
   {
     key: `settings`,
@@ -68,26 +69,31 @@ export const menus = [
         navFnKey: `goToPageSettingsOther`,
       },
     ],
-    defaultSubMenu: `profile`,
+    defaultSubMenuKey: `profile`,
   },
 ];
 
 menus.forEach((m, i) => {
-  m.subMenus.forEach(s => {
-    s.navFn = () => {
-      g[s.navFnKey]();
-      saveNavigation(i, s.key);
-    };
-  });
   m.subMenusMap = arrToMap(
     m.subMenus,
     s => s.key,
     s => s,
   );
+  m.defaultSubMenu = m.subMenusMap[m.defaultSubMenuKey];
+  m.subMenus.forEach(s => {
+    s.navFn = () => {
+      if (s.ucRequired && !authStore.currentProfile?.ucEnabled) {
+        m.defaultSubMenu.navFn();
+        return;
+      }
+      g[s.navFnKey]();
+      saveNavigation(i, s.key);
+    };
+  });
   m.navFn = () => {
     let k = authStore.currentProfile?.navSubMenus?.[i];
     if (!(k in m.subMenusMap)) {
-      k = m.defaultSubMenu;
+      k = m.defaultSubMenuKey;
     }
     m.subMenusMap[k].navFn();
   };
@@ -100,7 +106,7 @@ const saveNavigation = (i, k) => {
     return;
   }
   if (!(k in m.subMenusMap)) {
-    k = m.defaultSubMenu;
+    k = m.defaultSubMenuKey;
   }
   normalizeSavedNavigation();
   if (m.key !== `settings`) {
@@ -119,7 +125,7 @@ const normalizeSavedNavigation = () => {
   }
   menus.forEach((m, i) => {
     if (!(p.navSubMenus[i] in m.subMenusMap)) {
-      p.navSubMenus[i] = m.defaultSubMenu;
+      p.navSubMenus[i] = m.defaultSubMenuKey;
     }
   });
 };
