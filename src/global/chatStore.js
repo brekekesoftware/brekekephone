@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy';
 import uniq from 'lodash/uniq';
-import { action, computed, observable } from 'mobx';
+import { computed, observable } from 'mobx';
 
 import { arrToMap } from '../utils/toMap';
 import BaseStore from './BaseStore';
@@ -49,7 +49,7 @@ class ChatStore extends BaseStore {
     const f = this.filesMap[_f.id];
     this.set(`filesMap.${_f.id}`, f ? Object.assign(f, _f) : _f);
   };
-  @action removeFile = id => {
+  removeFile = id => {
     delete this.filesMap[id];
   };
 
@@ -68,7 +68,7 @@ class ChatStore extends BaseStore {
     }
     this.set(`groups`, [...this.groups]);
   };
-  @action removeGroup = id => {
+  removeGroup = id => {
     delete this.messagesByThreadId[id];
     this.groups = this.groups.filter(g => g.id !== id);
   };

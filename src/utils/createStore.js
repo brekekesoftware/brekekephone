@@ -1,12 +1,12 @@
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { action, extendObservable } from 'mobx';
+import { extendObservable } from 'mobx';
 
 const createStore = (mixin, ...args) => {
   const $ = {
-    set: action((k, v) => {
+    set: (k, v) => {
       set($, k, typeof v === `function` ? v(get($, k)) : v);
-    }),
+    },
     upsert: (k, v, idKey = `id`) => {
       $.set(k, arr => {
         const updated = arr.reduce((u, _v) => {

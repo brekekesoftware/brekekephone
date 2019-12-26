@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { computed, observable } from 'mobx';
 
 import { arrToMap } from '../utils/toMap';
 import BaseStore from './BaseStore';
@@ -33,7 +33,7 @@ export class CallStore extends BaseStore {
       this.set(`runnings`, [...this.runnings, _c]);
     }
   };
-  @action removeRunning = id => {
+  removeRunning = id => {
     this.set(`selectedId`, ``);
     this.runnings = this.runnings.filter(c => c.id !== id);
   };
