@@ -8,6 +8,7 @@ import React from 'react';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
+import authStore from '../global/authStore';
 import contactStore from '../global/contactStore';
 import {
   ActivityIndicator,
@@ -51,7 +52,6 @@ class PageContactPhonebook extends React.Component {
   }
   state = {
     loading: false,
-    hidden: false,
   };
   componentDidMount() {
     const id = setInterval(() => {
@@ -64,8 +64,8 @@ class PageContactPhonebook extends React.Component {
     }, 300);
   }
   render() {
-    const phonebooks = this.state.hidden
-      ? this.phoneBookId.map(this.resolveChat).filter(i => i.hidden !== true)
+    const phonebooks = authStore.currentProfile.displaySharedContacts
+      ? this.phoneBookId.map(this.resolveChat).filter(i => i.shared !== true)
       : this.phoneBookId.map(this.resolveChat);
     const map = {};
     phonebooks.forEach(u => {
@@ -107,9 +107,14 @@ class PageContactPhonebook extends React.Component {
       >
         <Field
           label="SHOW SHARED CONTACTS"
-          onValueChange={this.setHiddenContact}
+          onValueChange={v => {
+            g.upsertProfile({
+              id: authStore.currentProfile.id,
+              displaySharedContacts: v,
+            });
+          }}
           type={`Switch`}
-          value={this.state.hidden}
+          value={authStore.currentProfile.displaySharedContacts}
         />
         {this.state.loading && (
           <View style={{ marginTop: 20 }}>
@@ -170,11 +175,6 @@ class PageContactPhonebook extends React.Component {
     );
   }
 
-  setHiddenContact = value => {
-    this.setState({
-      hidden: value,
-    });
-  };
   setSearchText = searchText => {
     const oldQuery = this.props;
     const query = {
