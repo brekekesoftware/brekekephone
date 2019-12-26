@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import sip from '../api/sip';
+import avatarPlaceholderUrl from '../assets/avatar-placeholder.png';
 import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
@@ -17,9 +18,6 @@ import UserItem from './UserItem';
 
 @observer
 class PageContactUsers extends React.Component {
-  state = {
-    showOfflineUsers: false,
-  };
   getMatchUserIds() {
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
@@ -30,26 +28,12 @@ class PageContactUsers extends React.Component {
   resolveUser = id => {
     const pbxUser = contactStore.getPBXUser(id) || {};
     const ucUser = contactStore.getUCUser(id) || {};
-    return {
-      id: id,
-      name: pbxUser.name || ucUser.name,
-      statusText: ucUser.statusText,
-      avatar: ucUser.avatar,
-      callTalking: !!pbxUser.talkers?.filter(t => t.status === `calling`)
-        .length,
-      callHolding: !!pbxUser.talkers?.filter(t => t.status === `ringing`)
-        .length,
-      callRinging: !!pbxUser.talkers?.filter(t => t.status === `talking`)
-        .length,
-      callCalling: !!pbxUser.talkers?.filter(t => t.status === `holding`)
-        .length,
-      chatEnabled: authStore.currentProfile?.ucEnabled,
+    const u = {
+      ...pbxUser,
+      ...ucUser,
     };
-  };
-  setHiddenContact = value => {
-    this.setState({
-      showOfflineUsers: value,
-    });
+    u.avatar = u.avatar || avatarPlaceholderUrl;
+    return u;
   };
   isMatchUser = id => {
     if (!id) {
@@ -97,13 +81,17 @@ class PageContactUsers extends React.Component {
   };
 
   render() {
-    const users = this.state.showOfflineUsers
-      ? this.getMatchUserIds().map(this.resolveUser)
-      : this.getMatchUserIds()
-          .map(this.resolveUser)
-          .filter(i => !i.status === `offline`);
+    const allUsers = this.getMatchUserIds().map(this.resolveUser);
+    const onlineUsers = allUsers.filter(
+      i => i.status && i.status !== `offline`,
+    );
+
+    const { displayOfflineUsers, ucEnabled } = authStore.currentProfile;
+    const displayUsers =
+      !displayOfflineUsers && ucEnabled ? onlineUsers : allUsers;
+
     const map = {};
-    users.forEach(u => {
+    displayUsers.forEach(u => {
       u.name = u.name || u.id;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
@@ -122,6 +110,7 @@ class PageContactUsers extends React.Component {
     groups.forEach(g => {
       g.users = orderBy(g.users, `name`);
     });
+
     return (
       <Layout
         footer={{
@@ -132,7 +121,17 @@ class PageContactUsers extends React.Component {
         }}
         header={{
           title: `Users`,
-          description: `PBX/UC users (${users.length})`,
+          description: (() => {
+            let desc = `PBX users, ${allUsers.length} total`;
+            if (allUsers.length && ucEnabled) {
+              desc = desc.replace(`PBX`, `PBX/UC`);
+              desc = desc.replace(
+                `${allUsers.length} total`,
+                `${onlineUsers.length}/${allUsers.length} online`,
+              );
+            }
+            return desc;
+          })(),
           navigation: {
             menu: `contact`,
             subMenu: `users`,
@@ -140,16 +139,20 @@ class PageContactUsers extends React.Component {
         }}
       >
         <Field
-          label="SHOW OFFLINE CONTACTS"
-          onValueChange={this.setHiddenContact}
+          label="SHOW OFFLINE USERS"
+          onValueChange={v => {
+            g.upsertProfile({
+              id: authStore.currentProfile?.id,
+              displayOfflineUsers: v,
+            });
+          }}
           type={`Switch`}
-          value={this.state.showOfflineUsers}
+          value={authStore.currentProfile?.displayOfflineUsers}
         />
         <Search
           onValueChange={contactStore.setF(`searchText`)}
           value={contactStore.searchText}
         />
-
         {groups.map(_g => (
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />

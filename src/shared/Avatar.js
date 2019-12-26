@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import g from '../global';
+import authStore from '../global/authStore';
 import { Image, StyleSheet, View } from '../native/Rn';
 import Icon from './Icon';
 
@@ -33,11 +34,13 @@ const statusMapColor = {
 const Avatar = observer(p => (
   <View style={[css.Avatar, p.style]}>
     <Image source={p.source} style={css.Avatar_Image} />
-    <Icon
-      color={statusMapColor[p.status]}
-      path={mdiRecord}
-      style={css.Avatar_Image__status}
-    />
+    {authStore.currentProfile?.ucEnabled && (
+      <Icon
+        color={statusMapColor[p.status]}
+        path={mdiRecord}
+        style={css.Avatar_Image__status}
+      />
+    )}
   </View>
 ));
 
