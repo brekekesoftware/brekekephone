@@ -27,7 +27,7 @@ const PageProfileSignIn = observer(() => {
         header={{
           transparent: true,
           title: `Servers`,
-          description: `${l} server${l > 1 ? `css` : ``} in total`,
+          description: `${l} server${l > 1 ? `s` : ``} in total`,
           onCreateBtnPress: !!l && g.goToPageProfileCreate,
         }}
         noScroll
