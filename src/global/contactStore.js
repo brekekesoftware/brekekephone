@@ -6,6 +6,8 @@ import BaseStore from './BaseStore';
 class ContactStore extends BaseStore {
   @observable searchText = ``;
 
+  @observable usersSearchTerm = ``;
+
   // id
   // name
   // talkers?[]

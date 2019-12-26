@@ -1,4 +1,4 @@
-import { mdiPhone, mdiVideo } from '@mdi/js';
+import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
@@ -13,7 +13,6 @@ import contactStore from '../global/contactStore';
 import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
-import Search from '../shared/Search';
 import UserItem from './UserItem';
 
 @observer
@@ -58,7 +57,7 @@ class PageContactUsers extends React.Component {
     userId = userId.toLowerCase();
     pbxUserName = pbxUserName.toLowerCase();
     ucUserName = ucUserName.toLowerCase();
-    const txt = contactStore.searchText.toLowerCase();
+    const txt = contactStore.usersSearchTerm.toLowerCase();
     return (
       userId.includes(txt) ||
       pbxUserName.includes(txt) ||
@@ -138,6 +137,14 @@ class PageContactUsers extends React.Component {
           },
         }}
       >
+        <Field
+          icon={mdiMagnify}
+          label="SEARCH FOR USERS"
+          onValueChange={v => {
+            contactStore.usersSearchTerm = v;
+          }}
+          value={contactStore.usersSearchTerm}
+        />
         {ucEnabled && (
           <Field
             label="SHOW OFFLINE USERS"
@@ -151,10 +158,6 @@ class PageContactUsers extends React.Component {
             value={authStore.currentProfile?.displayOfflineUsers}
           />
         )}
-        <Search
-          onValueChange={contactStore.setF(`searchText`)}
-          value={contactStore.searchText}
-        />
         {groups.map(_g => (
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />

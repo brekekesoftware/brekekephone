@@ -33,6 +33,7 @@ const css = StyleSheet.create({
   },
   Field__group: {
     marginHorizontal: 0,
+    marginTop: 15,
     backgroundColor: g.borderBg,
     padding: 15,
   },
