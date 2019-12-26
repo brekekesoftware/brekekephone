@@ -128,7 +128,7 @@ const ContactsCreateForm = observer(props => {
           {
             type: `Switch`,
             name: `shared`,
-            label: `shared`,
+            label: `SHARED`,
           },
         ]}
         k="phonebook"
