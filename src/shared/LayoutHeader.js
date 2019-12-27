@@ -1,9 +1,4 @@
-import {
-  mdiKeyboardBackspace,
-  mdiPhone,
-  mdiPlus,
-  mdiVideoOutline,
-} from '@mdi/js';
+import { mdiKeyboardBackspace, mdiPlus } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
@@ -52,32 +47,6 @@ const css = StyleSheet.create({
   LayoutHeader_Description__compact: {
     display: `none`,
   },
-  LayoutHeader_VideoCallBtn: {
-    position: `absolute`,
-    top: 0,
-    right: 60,
-  },
-  LayoutHeader_VideoCallBtnInner: {
-    position: `absolute`,
-    right: 0,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: g.mainDarkBg,
-  },
-  LayoutHeader_VoiceCallBtn: {
-    position: `absolute`,
-    top: 0,
-    right: 115,
-  },
-  LayoutHeader_VoiceCallBtnInner: {
-    position: `absolute`,
-    right: 0,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: g.mainDarkBg,
-  },
   LayoutHeader_CreateBtn: {
     position: `absolute`,
     top: 0,
@@ -117,12 +86,12 @@ const css = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 0,
   },
-  Conn: {
+  LayoutHeader_Conn: {
     backgroundColor: g.warningD,
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
-  Conn__failure: {
+  LayoutHeader_Conn__failure: {
     backgroundColor: g.redDarkBg,
   },
 });
@@ -175,8 +144,8 @@ const Header = observer(props => {
       {shouldShowConnStatus && (
         <Animated.View
           style={[
-            css.Conn,
-            isConnFailure && css.Conn__failure,
+            css.LayoutHeader_Conn,
+            isConnFailure && css.LayoutHeader_Conn__failure,
             {
               height: connA.height,
               opacity: connA.opacity,
@@ -218,150 +187,56 @@ const Header = observer(props => {
         >
           {props.description || `\u200a`}
         </Text>
-
-        {props.onCreateBtnPress && (
-          <TouchableOpacity
-            onPress={props.onCreateBtnPress}
-            style={css.LayoutHeader_CreateBtn}
-          >
-            <Animated.View
-              style={[
-                css.LayoutHeader_CreateBtnOuter,
-                {
-                  top: a.createBtnOuterTop,
-                  height: a.createBtnOuterHeight,
-                },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  css.LayoutHeader_CreateBtnInner,
-                  props.transparent && css.LayoutHeader_CreateBtn__white,
-                  {
-                    top: a.createBtnInnerTop,
-                  },
-                ]}
-              >
-                <Icon
-                  color={props.transparent ? `black` : `white`}
-                  path={mdiPlus}
-                />
-              </Animated.View>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-        {props.onParkBtnPress && (
-          <TouchableOpacity
-            onPress={props.onParkBtnPress}
-            style={css.LayoutHeader_CreateBtn}
-          >
-            <Animated.View
-              style={[
-                css.LayoutHeader_CreateBtnOuter,
-                {
-                  top: a.createBtnOuterTop,
-                  height: a.createBtnOuterHeight,
-                },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  css.LayoutHeader_CreateBtnInner,
-                  props.transparent && css.LayoutHeader_CreateBtn__white,
-                  {
-                    top: a.createBtnInnerTop,
-                  },
-                ]}
-              >
-                <Icon
-                  color={props.transparent ? `black` : `white`}
-                  path={mdiPhone}
-                />
-              </Animated.View>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-        {props.onVoiceCallBtnPress && (
-          <TouchableOpacity
-            onPress={props.onVoiceCallBtnPress}
-            style={css.LayoutHeader_VoiceCallBtn}
-          >
-            <Animated.View
-              style={[
-                css.LayoutHeader_CreateBtnOuter,
-                {
-                  top: a.createBtnOuterTop,
-                  height: a.createBtnOuterHeight,
-                },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  css.LayoutHeader_CreateBtnInner,
-                  props.transparent && css.LayoutHeader_CreateBtn__white,
-                  {
-                    top: a.createBtnInnerTop,
-                  },
-                ]}
-              >
-                <Icon
-                  color={props.transparent ? `black` : `white`}
-                  path={mdiPhone}
-                />
-              </Animated.View>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-        {props.onVideoCallBtnPress && (
-          <TouchableOpacity
-            onPress={props.onVideoCallBtnPress}
-            style={css.LayoutHeader_VideoCallBtn}
-          >
-            <Animated.View
-              style={[
-                css.LayoutHeader_CreateBtnOuter,
-                {
-                  top: a.createBtnOuterTop,
-                  height: a.createBtnOuterHeight,
-                },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  css.LayoutHeader_CreateBtnInner,
-                  props.transparent && css.LayoutHeader_CreateBtn__white,
-                  {
-                    top: a.createBtnInnerTop,
-                  },
-                ]}
-              >
-                <Icon
-                  color={props.transparent ? `black` : `white`}
-                  path={mdiVideoOutline}
-                />
-              </Animated.View>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-        {props.onBackBtnPress && (
-          <TouchableOpacity
-            onPress={props.onBackBtnPress}
-            style={css.LayoutHeader_BackBtn}
-          >
-            <Animated.View
-              style={[
-                css.LayoutHeader_BackBtnInner,
-                {
-                  height: a.backBtnHeight,
-                  paddingVertical: a.backBtnPadding,
-                },
-              ]}
-            >
-              <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
-            </Animated.View>
-          </TouchableOpacity>
-        )}
       </Animated.View>
+      {props.onCreateBtnPress && (
+        <TouchableOpacity
+          onPress={props.onCreateBtnPress}
+          style={css.LayoutHeader_CreateBtn}
+        >
+          <Animated.View
+            style={[
+              css.LayoutHeader_CreateBtnOuter,
+              {
+                top: a.createBtnOuterTop,
+                height: a.createBtnOuterHeight,
+              },
+            ]}
+          >
+            <Animated.View
+              style={[
+                css.LayoutHeader_CreateBtnInner,
+                props.transparent && css.LayoutHeader_CreateBtn__white,
+                {
+                  top: a.createBtnInnerTop,
+                },
+              ]}
+            >
+              <Icon
+                color={props.transparent ? `black` : `white`}
+                path={mdiPlus}
+              />
+            </Animated.View>
+          </Animated.View>
+        </TouchableOpacity>
+      )}
+      {props.onBackBtnPress && (
+        <TouchableOpacity
+          onPress={props.onBackBtnPress}
+          style={css.LayoutHeader_BackBtn}
+        >
+          <Animated.View
+            style={[
+              css.LayoutHeader_BackBtnInner,
+              {
+                height: a.backBtnHeight,
+                paddingVertical: a.backBtnPadding,
+              },
+            ]}
+          >
+            <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
+          </Animated.View>
+        </TouchableOpacity>
+      )}
       {props.navigation && <HeaderNavigation {...props.navigation} />}
     </View>
   );
