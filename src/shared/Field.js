@@ -67,8 +67,10 @@ const css = StyleSheet.create({
     ...Platform.select({
       android: {
         lineHeight: g.lineHeight,
+        height: g.lineHeight,
         paddingTop: 0,
         paddingBottom: 1,
+        overflow: `hidden`,
       },
       web: {
         // Fix form auto fill style on web

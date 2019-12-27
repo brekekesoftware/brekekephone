@@ -11,7 +11,6 @@ const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
     height: `70%`,
     minHeight: 320,
-    marginBottom: 30,
   },
   PageProfileSignIn_Spacing: {
     flex: 1,
