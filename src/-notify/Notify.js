@@ -17,7 +17,6 @@ const css = StyleSheet.create({
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
     ...g.boxShadow,
-    elevation: 3,
   },
 
   Notify_Info: {

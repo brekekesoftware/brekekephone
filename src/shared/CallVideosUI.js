@@ -23,8 +23,6 @@ const st = {
       width: 0,
       height: 4,
     },
-
-    elevation: 3,
     overflow: `hidden`,
   },
 
