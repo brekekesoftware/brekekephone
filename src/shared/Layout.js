@@ -17,21 +17,6 @@ const css = StyleSheet.create({
   Layout_Scroll: {
     flexGrow: 1,
   },
-  Layout_HeaderSpacing: {
-    height: 128,
-  },
-  Layout_HeaderSpacing__withConnStatus: {
-    height: 148,
-  },
-  Layout_FooterSpacing: {
-    height: getBottomSpace() + 71, // 56+15
-  },
-  Layout_FooterSpacing__hasKeyPad: {
-    height: getBottomSpace() + 71, // 56+15
-  },
-  Layout_FooterSpacing__hasInputChat: {
-    height: getBottomSpace() + 127, // 56*2+15
-  },
 });
 
 const Layout = observer(props => {
@@ -68,32 +53,30 @@ const Layout = observer(props => {
       containerProps = { ...containerProps, ...containerPropsChat };
     }
   }
+
+  let headerSpace = 86 + 15;
+  if (props.header?.navigation) {
+    headerSpace += 35;
+  }
+  if (authStore.shouldShowConnStatus) {
+    headerSpace += 20;
+  }
+
+  let footerSpace = getBottomSpace() + 15;
+  if (props.footer?.navigation) {
+    footerSpace += 48;
+  }
+  if (props.footer?.actions) {
+    footerSpace += 60;
+  }
+
   return (
     <React.Fragment>
       <Container {...containerProps}>
         <StatusBar transparent />
-        {props.header && (
-          <View
-            style={[
-              css.Layout_HeaderSpacing,
-              authStore.shouldShowConnStatus &&
-                css.Layout_HeaderSpacing__withConnStatus,
-            ]}
-          />
-        )}
+        <View style={{ height: headerSpace }} />
         {props.children}
-        {props.footer && (
-          <View
-            style={[
-              css.Layout_FooterSpacing,
-              (props.footer.LayoutChat ||
-                props.footer.Phonebook ||
-                (props.footer.actions && props.footer.navigation)) &&
-                css.Layout_FooterSpacing__hasInputChat,
-              props.footer.KeyPad && css.Layout_FooterSpacing__hasKeyPad,
-            ]}
-          />
-        )}
+        <View style={{ height: footerSpace }} />
       </Container>
       {props.footer && <LayoutFooter {...props.footer} />}
       {props.header && (
