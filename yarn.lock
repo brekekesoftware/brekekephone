@@ -11147,10 +11147,10 @@ react-native-general-actionsheet@1.0.4:
     react-native-root-siblings "^3.1.6"
     react-native-safe-area-utility "^1.0.0"
 
-react-native-incall-manager@3.2.6:
-  version "3.2.6"
-  resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-3.2.6.tgz#033747fb6324ff2d7742f5b0a49c43bf71f03842"
-  integrity sha512-BAul4D3KhVIlnG9ZKS/dNcnjuHA1C8vvLQxCe272iGPDSQ7SWj9aI0nyRb5Az5p5uYuraes6pL0HrZRfvQUVQQ==
+react-native-incall-manager@3.2.7:
+  version "3.2.7"
+  resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-3.2.7.tgz#3a6f34bd4bb89ed4f0bcaa2ffc571e9b2f0c479b"
+  integrity sha512-qrWXISceKhXZL3F8FHKsrFSCrYgTmWpj1or7oV8+vKhYUJshKk8grMrMoZlF+xldTTFvOdYCEDEktSVWxYN4Dw==
 
 react-native-iphone-x-helper@1.2.1:
   version "1.2.1"
