@@ -67,10 +67,12 @@ const css = StyleSheet.create({
     ...Platform.select({
       android: {
         lineHeight: g.lineHeight,
-        height: g.lineHeight,
         paddingTop: 0,
         paddingBottom: 1,
-        overflow: `hidden`,
+        // Should not set height and overflow here
+        //    it will cause scroll issue with the input
+        // height: g.lineHeight,
+        // overflow: `hidden`,
       },
       web: {
         // Fix form auto fill style on web
