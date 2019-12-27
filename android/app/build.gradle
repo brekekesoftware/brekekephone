@@ -121,9 +121,6 @@ android {
     versionName "3.0.0"
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
-    ndk {
-      abiFilters "armeabi-v7a", "x86"
-    }
     signingConfig signingConfigs.development
   }
   //
@@ -132,7 +129,7 @@ android {
       reset()
       enable enableSeparateBuildPerCPUArchitecture
       universalApk false // If true, also generate a universal APK
-      include "armeabi-v7a", "x86"
+      include "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
     }
   }
   //
@@ -149,7 +146,7 @@ android {
     variant.outputs.each { output ->
       // For each separate APK per architecture, set a unique version code as described here:
       // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
-      def versionCodes = ["armeabi-v7a": 1, "x86": 2]
+      def versionCodes = ["x86":1,"x86_64":2,"armeabi-v7a":3,"arm64-v8a":4]
       def abi = output.getFilter(OutputFile.ABI)
       if (abi != null) { // null for the universal-debug, universal-release variants
         output.versionCodeOverride = versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
