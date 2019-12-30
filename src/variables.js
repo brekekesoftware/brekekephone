@@ -73,7 +73,7 @@ const v = {
     },
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    elevation: 2, // android
+    elevation: 3, // android
   },
 };
 

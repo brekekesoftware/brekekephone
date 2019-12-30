@@ -27,11 +27,11 @@ const css = StyleSheet.create({
     padding: 15,
     backgroundColor: g.bg,
   },
-  LayoutHeader_Inner__hasBackBtn: {
-    paddingLeft: 50,
-  },
   LayoutHeader_Inner__compact: {
     ...g.boxShadow,
+  },
+  LayoutHeader_Inner__hasBackBtn: {
+    paddingLeft: 50,
   },
   LayoutHeader_Inner__transparent: {
     backgroundColor: `transparent`,
@@ -134,12 +134,7 @@ const Header = observer(props => {
       : `Connecting to ${service}`);
 
   return (
-    <View
-      style={[
-        css.LayoutHeader,
-        props.compact && css.LayoutHeader_Inner__compact,
-      ]}
-    >
+    <View style={[css.LayoutHeader]}>
       <StatusBar transparent={props.transparent} />
       {shouldShowConnStatus && (
         <Animated.View
@@ -160,6 +155,7 @@ const Header = observer(props => {
       <Animated.View
         style={[
           css.LayoutHeader_Inner,
+          props.compact && css.LayoutHeader_Inner__compact,
           !!props.onBackBtnPress && css.LayoutHeader_Inner__hasBackBtn,
           props.transparent && css.LayoutHeader_Inner__transparent,
           {
@@ -187,56 +183,56 @@ const Header = observer(props => {
         >
           {props.description || `\u200a`}
         </Text>
-      </Animated.View>
-      {props.onCreateBtnPress && (
-        <TouchableOpacity
-          onPress={props.onCreateBtnPress}
-          style={css.LayoutHeader_CreateBtn}
-        >
-          <Animated.View
-            style={[
-              css.LayoutHeader_CreateBtnOuter,
-              {
-                top: a.createBtnOuterTop,
-                height: a.createBtnOuterHeight,
-              },
-            ]}
+        {props.onCreateBtnPress && (
+          <TouchableOpacity
+            onPress={props.onCreateBtnPress}
+            style={css.LayoutHeader_CreateBtn}
           >
             <Animated.View
               style={[
-                css.LayoutHeader_CreateBtnInner,
-                props.transparent && css.LayoutHeader_CreateBtn__white,
+                css.LayoutHeader_CreateBtnOuter,
                 {
-                  top: a.createBtnInnerTop,
+                  top: a.createBtnOuterTop,
+                  height: a.createBtnOuterHeight,
                 },
               ]}
             >
-              <Icon
-                color={props.transparent ? `black` : `white`}
-                path={mdiPlus}
-              />
+              <Animated.View
+                style={[
+                  css.LayoutHeader_CreateBtnInner,
+                  props.transparent && css.LayoutHeader_CreateBtn__white,
+                  {
+                    top: a.createBtnInnerTop,
+                  },
+                ]}
+              >
+                <Icon
+                  color={props.transparent ? `black` : `white`}
+                  path={mdiPlus}
+                />
+              </Animated.View>
             </Animated.View>
-          </Animated.View>
-        </TouchableOpacity>
-      )}
-      {props.onBackBtnPress && (
-        <TouchableOpacity
-          onPress={props.onBackBtnPress}
-          style={css.LayoutHeader_BackBtn}
-        >
-          <Animated.View
-            style={[
-              css.LayoutHeader_BackBtnInner,
-              {
-                height: a.backBtnHeight,
-                paddingVertical: a.backBtnPadding,
-              },
-            ]}
+          </TouchableOpacity>
+        )}
+        {props.onBackBtnPress && (
+          <TouchableOpacity
+            onPress={props.onBackBtnPress}
+            style={css.LayoutHeader_BackBtn}
           >
-            <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
-          </Animated.View>
-        </TouchableOpacity>
-      )}
+            <Animated.View
+              style={[
+                css.LayoutHeader_BackBtnInner,
+                {
+                  height: a.backBtnHeight,
+                  paddingVertical: a.backBtnPadding,
+                },
+              ]}
+            >
+              <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
+            </Animated.View>
+          </TouchableOpacity>
+        )}
+      </Animated.View>
       {props.navigation && <HeaderNavigation {...props.navigation} />}
     </View>
   );

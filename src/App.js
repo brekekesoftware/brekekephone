@@ -27,6 +27,8 @@ import PageSettingsOther from './-settings/PageSettingsOther';
 import PageSettingsProfile from './-settings/PageSettingsProfile';
 import ApiProvider from './api/ApiProvider';
 import g from './global';
+import authStore from './global/authStore';
+import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import { Platform, StyleSheet, View } from './native/Rn';
 import RootAlert from './shared/RootAlert';
@@ -38,6 +40,8 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
+
+PushNotification.register();
 
 g.registerStacks({
   isRoot: true,
@@ -81,6 +85,7 @@ const App = () => {
     }
     g.loadProfilesFromLocalStorage();
     g.goToPageProfileSignIn();
+    authStore.handleUrlParams();
   }, []);
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>

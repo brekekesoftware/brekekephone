@@ -69,7 +69,7 @@ const UserItem = p => (
     <View
       style={[css.Item, p.last && css.Item__last, p.selected && css.Item__Bgr]}
     >
-      {p.avatar && <Avatar source={{ uri: p.avatar }} {...p} />}
+      {p.avatar && <Avatar source={{ uri: `` + p.avatar }} {...p} />}
       <View style={[css.Item_Name, !p.avatar && css.Item__noAvatar]}>
         <Text black subTitle>
           {p.name || p.partyNumber || p.id}
