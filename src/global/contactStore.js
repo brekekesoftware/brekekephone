@@ -4,9 +4,11 @@ import { arrToMap } from '../utils/toMap';
 import BaseStore from './BaseStore';
 
 class ContactStore extends BaseStore {
-  @observable searchText = ``;
+  @observable usersSearchChat = ``;
 
   @observable usersSearchTerm = ``;
+
+  @observable callSearchRecents = ``;
 
   // id
   // name

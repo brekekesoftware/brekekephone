@@ -1,4 +1,4 @@
-import { mdiPhone } from '@mdi/js';
+import { mdiMagnify, mdiPhone } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
@@ -10,12 +10,11 @@ import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
-import Search from '../shared/Search';
 
 @observer
 class PageCallRecents extends React.Component {
   isMatchUser = call => {
-    if (call.partyNumber.includes(contactStore.searchText)) {
+    if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id;
     }
   };
@@ -58,9 +57,13 @@ class PageCallRecents extends React.Component {
           },
         }}
       >
-        <Search
-          onValueChange={contactStore.setF(`searchText`)}
-          value={contactStore.searchText}
+        <Field
+          icon={mdiMagnify}
+          label="SEARCH NAME, PHONE NUMBER ..."
+          onValueChange={v => {
+            contactStore.callSearchRecents = v;
+          }}
+          value={contactStore.callSearchRecents}
         />
         <Field
           isGroup

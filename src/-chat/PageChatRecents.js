@@ -1,3 +1,5 @@
+import { mdiMagnify } from '@mdi/js';
+import { observer } from 'mobx-react';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
@@ -7,10 +9,10 @@ import contactStore from '../global/contactStore';
 import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
-import Search from '../shared/Search';
 import { arrToMap } from '../utils/toMap';
 import ListUsers from './ListUsers';
 
+@observer
 class PageChatRecents extends React.Component {
   render() {
     return (
@@ -29,9 +31,13 @@ class PageChatRecents extends React.Component {
           },
         }}
       >
-        <Search
-          onValueChange={contactStore.setF(`searchText`)}
-          value={contactStore.searchText}
+        <Field
+          icon={mdiMagnify}
+          label="SEARCH NAME, PHONE NUMBER ..."
+          onValueChange={v => {
+            contactStore.usersSearchChat = v;
+          }}
+          value={contactStore.usersSearchChat}
         />
 
         <TouchableOpacity onPress={g.goToPageChatGroupCreate}>
@@ -74,7 +80,7 @@ class PageChatRecents extends React.Component {
     }
     userId = userId.toLowerCase();
     ucUserName = ucUserName.toLowerCase();
-    const txt = contactStore.searchText.toLowerCase();
+    const txt = contactStore.usersSearchChat.toLowerCase();
     return userId.includes(txt) || ucUserName.includes(txt);
   };
 
