@@ -32,9 +32,11 @@ class AuthUC extends React.Component {
       .catch(this.onAuthFailure);
   };
   autoAuth = () => {
-    if (authStore.ucShouldAuth) {
-      this.auth();
-    }
+    setTimeout(() => {
+      if (authStore.ucShouldAuth && !authStore.ucLoginFromAnotherPlace) {
+        this.auth();
+      }
+    }, 300);
   };
   onAuthSuccess = () => {
     this.loadUsers();
@@ -44,8 +46,7 @@ class AuthUC extends React.Component {
   };
   onAuthFailure = err => {
     authStore.set(`ucState`, `failure`);
-    g.showError({ message: `connect to UC` });
-    console.error(err);
+    g.showError({ message: `connect to UC`, err });
   };
   onConnectionStopped = e => {
     authStore.set(`ucState`, `failure`);
@@ -69,10 +70,7 @@ class AuthUC extends React.Component {
     });
   };
   onLoadUnreadChatsFailure = err => {
-    g.showError({ message: `load unread chats` });
-    if (err && err.message) {
-      g.showError(err.message);
-    }
+    g.showError({ message: `load unread chat messages`, err });
   };
   render() {
     return null;

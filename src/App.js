@@ -1,6 +1,7 @@
 import './polyfill';
 import './utils/validator';
 
+import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
@@ -30,11 +31,19 @@ import g from './global';
 import authStore from './global/authStore';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
-import { Platform, StyleSheet, View } from './native/Rn';
+import {
+  Animated,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from './native/Rn';
 import RootAlert from './shared/RootAlert';
 import RootAuth from './shared/RootAuth';
 import RootPicker from './shared/RootPicker';
 import RootStacks from './shared/RootStacks';
+import { useAnimation } from './utils/animation';
 
 registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
@@ -76,9 +85,17 @@ const css = StyleSheet.create({
   App_Inner: {
     flex: 1,
   },
+  App_ConnectionStatus: {
+    backgroundColor: g.warningD,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  App_ConnectionStatus__failure: {
+    backgroundColor: g.redDarkBg,
+  },
 });
 
-const App = () => {
+const App = observer(() => {
   useEffect(() => {
     if (Platform.OS !== `web`) {
       SplashScreen.hide();
@@ -87,8 +104,54 @@ const App = () => {
     g.goToPageProfileSignIn();
     authStore.handleUrlParams();
   }, []);
+
+  const { isConnFailure, shouldShowConnStatus } = authStore;
+  const a = useAnimation(shouldShowConnStatus, {
+    height: [0, 20], // lineHeightSmall + paddingVertical
+    opacity: [0, 1],
+  });
+  const {
+    pbxConnectingOrFailure,
+    sipConnectingOrFailure,
+    ucConnectingOrFailure,
+    ucLoginFromAnotherPlace,
+  } = authStore;
+  let service = ``;
+  if (pbxConnectingOrFailure) {
+    service = `PBX`;
+  } else if (sipConnectingOrFailure) {
+    service = `SIP`;
+  } else if (ucConnectingOrFailure) {
+    service = `UC`;
+  }
+  let connMessage =
+    service &&
+    (isConnFailure
+      ? `${service} connection failed`
+      : `Connecting to ${service}`);
+  if (isConnFailure && ucConnectingOrFailure && ucLoginFromAnotherPlace) {
+    connMessage = `UC signed in from another location`;
+  }
+
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
+      <StatusBar />
+      {shouldShowConnStatus && (
+        <Animated.View
+          style={[
+            css.App_ConnectionStatus,
+            isConnFailure && css.App_ConnectionStatus__failure,
+            {
+              height: a.height,
+              opacity: a.opacity,
+            },
+          ]}
+        >
+          <Text small white>
+            {connMessage}
+          </Text>
+        </Animated.View>
+      )}
       <View style={css.App_Inner}>
         <ApiProvider />
         <RootStacks />
@@ -99,6 +162,6 @@ const App = () => {
       {Platform.OS === `ios` && <KeyboardSpacer />}
     </View>
   );
-};
+});
 
 export default App;

@@ -3,10 +3,8 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import g from '../global';
-import authStore from '../global/authStore';
 import {
   Animated,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -86,14 +84,6 @@ const css = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 0,
   },
-  LayoutHeader_Conn: {
-    backgroundColor: g.warningD,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-  },
-  LayoutHeader_Conn__failure: {
-    backgroundColor: g.redDarkBg,
-  },
 });
 
 const Header = observer(props => {
@@ -109,49 +99,8 @@ const Header = observer(props => {
     navigationTop: [90, 40],
   });
 
-  const { isConnFailure, shouldShowConnStatus } = authStore;
-  const connA = useAnimation(shouldShowConnStatus, {
-    height: [0, 20], // lineHeightSmall + paddingVertical
-    opacity: [0, 1],
-  });
-  const {
-    pbxConnectingOrFailure,
-    sipConnectingOrFailure,
-    ucConnectingOrFailure,
-  } = authStore;
-  let service = ``;
-  if (pbxConnectingOrFailure) {
-    service = `PBX`;
-  } else if (sipConnectingOrFailure) {
-    service = `SIP`;
-  } else if (ucConnectingOrFailure) {
-    service = `UC`;
-  }
-  const connMessage =
-    service &&
-    (isConnFailure
-      ? `${service} connection failed`
-      : `Connecting to ${service}`);
-
   return (
     <View style={[css.LayoutHeader]}>
-      <StatusBar transparent={props.transparent} />
-      {shouldShowConnStatus && (
-        <Animated.View
-          style={[
-            css.LayoutHeader_Conn,
-            isConnFailure && css.LayoutHeader_Conn__failure,
-            {
-              height: connA.height,
-              opacity: connA.opacity,
-            },
-          ]}
-        >
-          <Text small white>
-            {connMessage}
-          </Text>
-        </Animated.View>
-      )}
       <Animated.View
         style={[
           css.LayoutHeader_Inner,
