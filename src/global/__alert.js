@@ -1,4 +1,3 @@
-import { BackHandler } from '../native/Rn';
 import $ from './_';
 
 $.extends({
@@ -36,13 +35,4 @@ $.extends({
     $.alerts.shift();
     $.set(`alertsCount`, $.alerts.length);
   },
-});
-
-// Handle android hardware back button press
-BackHandler.addEventListener(`hardwareBackPress`, () => {
-  if ($.alerts.length) {
-    $.dismissAlert();
-    return true;
-  }
-  return false;
 });

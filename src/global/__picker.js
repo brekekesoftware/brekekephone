@@ -1,4 +1,3 @@
-import { BackHandler } from '../native/Rn';
 import $ from './_';
 
 $.extends({
@@ -18,13 +17,4 @@ $.extends({
   dismissPicker: () => {
     $.set(`currentPicker`, null);
   },
-});
-
-// Handle android hardware back button press
-BackHandler.addEventListener(`hardwareBackPress`, () => {
-  if ($.currentPicker) {
-    $.dismissPicker();
-    return true;
-  }
-  return false;
 });
