@@ -2,9 +2,9 @@ import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import getApiProvider from '../api/getApiProvider';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
+import updatePhoneIndex from '../api/updatePhoneIndex';
 import g from '../global';
 import authStore from '../global/authStore';
 
@@ -19,15 +19,6 @@ class AuthSIP extends React.Component {
     sip.disconnect();
     authStore.set(`sipState`, `stopped`);
   }
-
-  getWebPhone = () =>
-    new Promise(resolve => {
-      setTimeout(async () => {
-        const api = getApiProvider();
-        const phone = api && (await api.updatePhoneIndex());
-        resolve(phone);
-      }, 1000);
-    });
 
   _auth = async () => {
     sip.disconnect();
@@ -58,7 +49,7 @@ class AuthSIP extends React.Component {
     const language = pbxUserConfig.language;
     void language;
     //
-    const webPhone = await this.getWebPhone();
+    const webPhone = await updatePhoneIndex();
     if (!webPhone) {
       return;
     }

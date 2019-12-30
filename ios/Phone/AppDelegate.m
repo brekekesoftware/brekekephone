@@ -75,7 +75,7 @@
 }
 
 //
-// react-native-voip-push-notification
+// react-native-voip-push-notification add PushKit delegate method
 // Handle updated push credentials
 - (void)pushRegistry:(PKPushRegistry *)registry
     didUpdatePushCredentials:(PKPushCredentials *)credentials

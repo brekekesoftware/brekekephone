@@ -11246,10 +11246,10 @@ react-native-video@^4.3.0:
     prop-types "^15.5.10"
     shaka-player "^2.4.4"
 
-react-native-voip-push-notification@1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-1.1.5.tgz#e22ebce43430941e1c4fe33976027a0ece72b5d1"
-  integrity sha512-TBkdE0CFY3xHHay+cN53MdINmjmvw0ff9VY/AEwky7egSXun/Qtctjca4pytARmUFAMT15ihKEGTdycWHqPXZA==
+react-native-voip-push-notification@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-2.0.0.tgz#2d2bf6d55503ac9eaedc30610945931ce5b68201"
+  integrity sha512-CwRvZWjcTULXLIRrd7wlx7czIPQ3GoPbryoyr6ZGFxSRXtTy0YSogTkyVzpiULFe8jdlP46UKmeZI+Gj2V1ugA==
 
 react-native-web-linear-gradient@1.0.5:
   version "1.0.5"

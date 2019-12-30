@@ -4,26 +4,8 @@ import 'brekekejs/lib/webrtcclient';
 import EventEmitter from 'eventemitter3';
 import { Platform } from 'react-native';
 
+import getFrontCameraSourceId from './getFrontCameraSourceId';
 import turnConfig from './turnConfig';
-
-const getFrontSourceId = () => {
-  const asyncFn = async () =>
-    window.navigator.mediaDevices.enumerateDevices().then(infos => {
-      let sourceId;
-
-      infos.forEach(i => {
-        if (i.kind === `video` && i.facing === `front`) {
-          sourceId = i.id;
-        }
-      });
-
-      return sourceId;
-    });
-
-  return asyncFn().catch(err => {
-    console.error(`getFrontSourceId`, err);
-  });
-};
 
 class CreatingSessions {
   _items;
@@ -75,7 +57,7 @@ class SIP extends EventEmitter {
   _creatingSessions;
 
   init = async () => {
-    const sourceId = await getFrontSourceId();
+    const sourceId = await getFrontCameraSourceId();
     this._creatingSessions = new CreatingSessions();
 
     this.phone = new window.Brekeke.WebrtcClient.Phone({

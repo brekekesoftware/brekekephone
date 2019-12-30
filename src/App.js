@@ -90,12 +90,11 @@ const App = () => {
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <View style={css.App_Inner}>
-        <ApiProvider>
-          <RootStacks />
-          <RootPicker />
-          <RootAlert />
-          <RootAuth />
-        </ApiProvider>
+        <ApiProvider />
+        <RootStacks />
+        <RootPicker />
+        <RootAlert />
+        <RootAuth />
       </View>
       {Platform.OS === `ios` && <KeyboardSpacer />}
     </View>

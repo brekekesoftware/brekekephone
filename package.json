@@ -44,7 +44,7 @@
     "react-native-progress-circle": "2.1.0",
     "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen#a78ee51c0f89652a2a223ff2bc4ec10928bf2c30",
     "react-native-svg": "9.13.6",
-    "react-native-voip-push-notification": "1.1.5",
+    "react-native-voip-push-notification": "2.0.0",
     "react-native-webrtc": "1.75.2",
     "shortid": "2.2.15",
     "url-parse": "1.4.7",

@@ -1,11 +1,6 @@
 import get from 'lodash/get';
 import { Platform } from 'react-native';
 
-let checker = null;
-const setChecker = fn => {
-  checker = fn;
-};
-
 const keysInCustomNotification = [
   `body`,
   `message`,
@@ -81,12 +76,8 @@ const parse = raw => {
   ) {
     return null;
   }
-  if (checker && !checker(n)) {
-    return null;
-  }
   //
   return n;
 };
 
-export { setChecker };
 export default parse;

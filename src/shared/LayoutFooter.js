@@ -30,7 +30,7 @@ const css = StyleSheet.create({
     bottom: 4,
     left: null,
     right: 4,
-    borderRadius: 12,
+    borderRadius: g.borderRadius,
   },
   LayoutFooter__hasActions: {
     paddingTop: 8,

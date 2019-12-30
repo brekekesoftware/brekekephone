@@ -12,12 +12,11 @@ import callStore from '../global/callStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import PushNotification from '../native/PushNotification';
-import { setApiProvider } from './getApiProvider';
+import updatePhoneIndex from './updatePhoneIndex';
 
 @observer
 class ApiProvider extends React.Component {
   componentDidMount() {
-    setApiProvider(this);
     pbx.on(`connection-started`, this.onPBXConnectionStarted);
     pbx.on(`connection-stopped`, this.onPBXConnectionStopped);
     pbx.on(`connection-timeout`, this.onPBXConnectionTimeout);
@@ -51,7 +50,6 @@ class ApiProvider extends React.Component {
   }
 
   componentWillUnmount() {
-    setApiProvider(null);
     pbx.off(`connection-started`, this.onPBXConnectionStarted);
     pbx.off(`connection-stopped`, this.onPBXConnectionStopped);
     pbx.off(`connection-timeout`, this.onPBXConnectionTimeout);
@@ -102,7 +100,7 @@ class ApiProvider extends React.Component {
     }
 
     this.pbxAndSipStarted = 0;
-    const webPhone = await this.updatePhoneIndex();
+    const webPhone = await updatePhoneIndex();
 
     if (!webPhone) {
       return;
@@ -111,73 +109,6 @@ class ApiProvider extends React.Component {
     this.addPnToken(webPhone);
   };
 
-  updatePhoneIndex = async () => {
-    try {
-      return await this._updatePhoneIndex();
-    } catch (err) {
-      console.error(`updatePhoneIndex`, err);
-      g.goToPageProfileSignIn();
-      return null;
-    }
-  };
-
-  _updatePhoneIndex = async () => {
-    //
-    const phoneIndex = parseInt(authStore.currentProfile.pbxPhoneIndex) || 4;
-    const extProps = authStore.userExtensionProperties;
-    const phone = extProps.phones[phoneIndex - 1];
-    const phoneTypeCorrect = phone.type === `Web Phone`;
-    const { pbxTenant, pbxUsername } = authStore.currentProfile;
-    const expectedPhoneId = `${pbxTenant}_${pbxUsername}_phone${phoneIndex}_webphone`;
-    const phoneIdCorrect = phone.id === expectedPhoneId;
-    //
-    const setExtensionProperties = async () => {
-      await pbx.pal(`setExtensionProperties`, {
-        tenant: pbxTenant,
-        extension: pbxUsername,
-        properties: {
-          // See ./pbx getExtensionProperties for the detail of parameters
-          pnumber: extProps.phones.map(p => p.id).join(`,`),
-          [`p${phoneIndex}_ptype`]: phone.type,
-        },
-      });
-      authStore.userExtensionProperties = extProps;
-    };
-    //
-    if (phoneTypeCorrect && phoneIdCorrect) {
-      // Do nothing
-    } else if (phoneTypeCorrect && !phoneIdCorrect) {
-      phone.id = expectedPhoneId;
-      await setExtensionProperties();
-    } else if (!phoneTypeCorrect && !phoneIdCorrect) {
-      phone.id = expectedPhoneId;
-      phone.type = `Web Phone`;
-      await setExtensionProperties();
-    } else {
-      return new Promise(resolve => {
-        g.showPrompt({
-          title: `Warning`,
-          message: `This phone index is already in use. Do you want to continue?`,
-          onConfirm: () => {
-            phone.type = `Web Phone`;
-            setExtensionProperties()
-              .then(() => {
-                resolve(phone);
-              })
-              .catch(err => {
-                console.error(`setExtensionProperties`, err);
-                resolve(null);
-              });
-          },
-          onDismiss: () => {
-            g.goToPageProfileSignIn();
-            resolve(null);
-          },
-        });
-      });
-    }
-    return phone;
-  };
   addPnToken = async phone => {
     const t = await PushNotification.getToken();
 
@@ -207,8 +138,7 @@ class ApiProvider extends React.Component {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      g.showError({ message: `load PBX users` });
-      console.error(err);
+      g.showError({ message: `load PBX users`, err });
     });
 
     setTimeout(this.onPBXAndSipStarted, 170);
@@ -367,7 +297,7 @@ class ApiProvider extends React.Component {
   };
 
   render() {
-    return this.props.children;
+    return null;
   }
 }
 

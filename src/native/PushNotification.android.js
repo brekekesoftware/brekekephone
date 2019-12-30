@@ -2,7 +2,7 @@ import FCM, { FCMEvent } from 'react-native-fcm';
 
 import g from '../global';
 import { AsyncStorage } from '../native/Rn';
-import parse, { setChecker } from './PushNotification-parse';
+import parse from './PushNotification-parse';
 
 const { Notification, RefreshToken } = FCMEvent;
 
@@ -57,9 +57,8 @@ const PushNotification = {
   getToken: () => {
     return Promise.resolve(fcmPnToken);
   },
-  register: async fn => {
+  register: async () => {
     try {
-      setChecker(fn);
       await FCM.requestPermissions();
       FCM.enableDirectChannel();
       await FCM.createNotificationChannel({

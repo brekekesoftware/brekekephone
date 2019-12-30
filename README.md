@@ -1,6 +1,6 @@
 ### Environment requirement
 
-- Install `yarn` and use it instead of `npm`
+- Install `yarn` and use it instead of `npm`: `npm install -g yarn`
 - Install node packages:
 
 ```sh
@@ -111,3 +111,12 @@ react-native run-android --deviceId=DEVICE_ID
 - iOS
   - Ensure the push notification gets configured correctly in General, Info.plist, Phone.entitlements
   - Ensure correct api key (string or file) in sip proxy server
+
+### Automation format tools
+
+- To run the format command for all possible files `yarn pret-`, we must install the following packages:
+
+```sh
+brew install clang-format google-java-format xmlstarlet
+npm install -g imagemin-cli
+```
