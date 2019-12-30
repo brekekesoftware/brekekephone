@@ -22,6 +22,7 @@ $.extends({
   registerStacks: ({ isRoot, ...pages }) => {
     const fnMap = Object.entries(pages).reduce((m, [k, v]) => {
       const fn = $.waitKeyboard(stack => {
+        // Prevent multiple stacks from opening at the same time
         if (stackAnimating) {
           return;
         }

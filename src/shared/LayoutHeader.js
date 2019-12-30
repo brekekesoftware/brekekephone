@@ -47,20 +47,8 @@ const css = StyleSheet.create({
   },
   LayoutHeader_CreateBtn: {
     position: `absolute`,
-    top: 0,
-    right: 5,
-  },
-  LayoutHeader_CreateBtnOuter: {
-    position: `absolute`,
     top: 11,
-    right: 0,
-    width: 50,
-    height: 50,
-    overflow: `hidden`,
-  },
-  LayoutHeader_CreateBtnInner: {
-    position: `absolute`,
-    right: 0,
+    right: 5,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -75,9 +63,6 @@ const css = StyleSheet.create({
     left: 0,
   },
   LayoutHeader_BackBtnInner: {
-    position: `absolute`,
-    top: 0,
-    left: 0,
     width: 50,
     height: 70,
     paddingHorizontal: 0,
@@ -91,9 +76,6 @@ const Header = observer(props => {
     headerInnerPaddingVertical: [15, 10],
     titleFontSize: [g.fontSizeTitle, g.fontSizeSubTitle],
     titleLineHeight: [g.lineHeightTitle, 20],
-    createBtnOuterTop: [11, 0],
-    createBtnOuterHeight: [50, 40],
-    createBtnInnerTop: [0, -5],
     backBtnHeight: [70, 40],
     backBtnPadding: [20, 5],
     navigationTop: [90, 40],
@@ -135,32 +117,15 @@ const Header = observer(props => {
         {props.onCreateBtnPress && (
           <TouchableOpacity
             onPress={props.onCreateBtnPress}
-            style={css.LayoutHeader_CreateBtn}
+            style={[
+              css.LayoutHeader_CreateBtn,
+              props.transparent && css.LayoutHeader_CreateBtn__white,
+            ]}
           >
-            <Animated.View
-              style={[
-                css.LayoutHeader_CreateBtnOuter,
-                {
-                  top: a.createBtnOuterTop,
-                  height: a.createBtnOuterHeight,
-                },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  css.LayoutHeader_CreateBtnInner,
-                  props.transparent && css.LayoutHeader_CreateBtn__white,
-                  {
-                    top: a.createBtnInnerTop,
-                  },
-                ]}
-              >
-                <Icon
-                  color={props.transparent ? `black` : `white`}
-                  path={mdiPlus}
-                />
-              </Animated.View>
-            </Animated.View>
+            <Icon
+              color={props.transparent ? `black` : `white`}
+              path={props.createBtnIcon || mdiPlus}
+            />
           </TouchableOpacity>
         )}
         {props.onBackBtnPress && (

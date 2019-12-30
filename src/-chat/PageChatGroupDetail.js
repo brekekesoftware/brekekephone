@@ -53,6 +53,7 @@ class PageChatGroupDetail extends React.Component {
         header={{
           onBackBtnPress: g.goToPageChatRecents,
           onCreateBtnPress: this.invite,
+          // TODO !!!
           onVideoCallBtnPress: this.callVideoConference,
           onVoiceCallBtnPress: this.callVoiceConference,
           title: gr?.name,

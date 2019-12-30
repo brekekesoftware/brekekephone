@@ -1,3 +1,4 @@
+import { mdiPhone } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -37,7 +38,8 @@ class PageCallParks extends React.Component {
           description: `Manage your call parks`,
           title: `Parks`,
           onBackBtnPress: null,
-          onParkBtnPress: this.park,
+          onCreateBtnPress: this.park,
+          createBtnIcon: mdiPhone,
           navigation: {
             menu: `call`,
             subMenu: `parks`,
