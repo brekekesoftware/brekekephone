@@ -1,5 +1,7 @@
 import $ from './_';
 
+let stackAnimating = false;
+
 $.extends({
   observable: {
     // isRoot?: boolean
@@ -20,6 +22,14 @@ $.extends({
   registerStacks: ({ isRoot, ...pages }) => {
     const fnMap = Object.entries(pages).reduce((m, [k, v]) => {
       const fn = $.waitKeyboard(stack => {
+        if (stackAnimating) {
+          return;
+        }
+        stackAnimating = true;
+        setTimeout(() => {
+          stackAnimating = false;
+        }, 1000);
+        //
         let _stack = {};
         // It fails if the param is an event
         //    or something not enumerable
