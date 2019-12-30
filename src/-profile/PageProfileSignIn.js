@@ -40,6 +40,7 @@ const PageProfileSignIn = observer(() => {
             renderItem={({ index, item }) => (
               <ProfileSignInItem id={item.id} last={index === l - 1} />
             )}
+            showsHorizontalScrollIndicator={false}
             style={css.PageProfileSignIn_ListServers}
           />
         )}
