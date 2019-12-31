@@ -1,7 +1,7 @@
 import FCM, { FCMEvent } from 'react-native-fcm';
 
 import g from '../global';
-import { AsyncStorage } from '../native/Rn';
+import { AppRegistry, AsyncStorage } from '../native/Rn';
 import parse from './PushNotification-parse';
 
 const { Notification, RefreshToken } = FCMEvent;
@@ -97,5 +97,14 @@ const PushNotification = {
     });
   },
 };
+
+// TODO
+AppRegistry.registerHeadlessTask(
+  `RNCallKeepBackgroundMessage`,
+  () => ({ callUUID, handle, name }) => {
+    // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
+    return Promise.resolve();
+  },
+);
 
 export default PushNotification;
