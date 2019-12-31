@@ -142,7 +142,7 @@ const Header = observer(props => {
                 },
               ]}
             >
-              <Icon color={props.backBtnColor} path={mdiKeyboardBackspace} />
+              <Icon path={mdiKeyboardBackspace} />
             </Animated.View>
           </TouchableOpacity>
         )}
