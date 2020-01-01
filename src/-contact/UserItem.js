@@ -54,7 +54,7 @@ const css = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 10,
-    backgroundColor: g.mainDarkBg,
+    backgroundColor: g.colors.primary,
   },
   Item__noAvatar: {
     left: 15,
@@ -79,13 +79,28 @@ const UserItem = p => (
       {p.detail && (
         <View style={[css.Item_Detail, !p.avatar && css.Item__noAvatar]}>
           {p.incoming && p.answered && (
-            <Icon color={g.callBg} noFlex path={mdiPhoneIncoming} size={18} />
+            <Icon
+              color={g.colors.primary}
+              noFlex
+              path={mdiPhoneIncoming}
+              size={18}
+            />
           )}
           {p.incoming && !p.answered && (
-            <Icon color={g.redBg} noFlex path={mdiPhoneMissed} size={18} />
+            <Icon
+              color={g.colors.danger}
+              noFlex
+              path={mdiPhoneMissed}
+              size={18}
+            />
           )}
           {!p.incoming && !p.park && !p.lastmess && (
-            <Icon color={g.mainBg} noFlex path={mdiPhoneOutgoing} size={18} />
+            <Icon
+              color={g.colors.primary}
+              noFlex
+              path={mdiPhoneOutgoing}
+              size={18}
+            />
           )}
           {p.created && (
             <Text style={css.Item_Detail_Text}>at {p.created}</Text>

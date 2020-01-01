@@ -21,7 +21,7 @@ const css = StyleSheet.create({
 const PageProfileSignIn = observer(() => {
   const l = g.profiles.length;
   return (
-    <BrekekeGradient colors={[g.mainBg, g.revBg]}>
+    <BrekekeGradient colors={[g.colors.primary, g.revBg]}>
       <Layout
         header={{
           transparent: true,

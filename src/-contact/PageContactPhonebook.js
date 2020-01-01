@@ -29,7 +29,7 @@ const css = StyleSheet.create({
   PhoneBook_BtnReload: {
     marginLeft: `auto`,
     marginRight: `auto`,
-    backgroundColor: g.mainBg,
+    backgroundColor: g.colors.primary,
     paddingHorizontal: 8,
     paddingVertical: 3,
     marginBottom: 5,
@@ -118,7 +118,7 @@ class PageContactPhonebook extends React.Component {
         />
         {this.state.loading && (
           <View style={{ marginTop: 20 }}>
-            <ActivityIndicator color={g.mainBg} size={1} />
+            <ActivityIndicator color={g.colors.primary} size={1} />
           </View>
         )}
         {!this.state.loading && (

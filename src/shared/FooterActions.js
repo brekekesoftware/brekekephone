@@ -28,18 +28,18 @@ const css = StyleSheet.create({
     paddingVertical: 8,
   },
   FooterActions_Btn__back: {
-    backgroundColor: g.redTransBg,
+    backgroundColor: g.colors.dangerFn(0.5),
   },
   FooterActions_Btn__refresh: {
     backgroundColor: g.hoverBg,
   },
   FooterActions_Btn__selectFile: {
-    backgroundColor: g.mainBg,
+    backgroundColor: g.colors.primary,
     borderRadius: g.borderRadius,
   },
   FooterActions_Btn__save: {
     width: `50%`,
-    backgroundColor: g.mainDarkBg,
+    backgroundColor: g.colors.primary,
   },
   FooterActions_Btn__15: {
     width: `15%`,
@@ -72,7 +72,10 @@ const FooterActions = props => (
           !props.onRefreshBtnPress && css.FooterActions_Btn__33,
         ]}
       >
-        <Icon color={g.redBg} path={props.backIcon || mdiKeyboardBackspace} />
+        <Icon
+          color={g.colors.danger}
+          path={props.backIcon || mdiKeyboardBackspace}
+        />
       </TouchableOpacity>
     )}
     {props.selectFile && (

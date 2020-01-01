@@ -38,7 +38,7 @@ const css = StyleSheet.create({
     alignSelf: `flex-start`,
   },
   RootAlert_ErrTxt: {
-    color: g.redDarkBg,
+    color: g.colors.danger,
     fontWeight: g.fontWeight,
   },
   RootAlert_ErrTxt__title: {
@@ -55,7 +55,7 @@ const css = StyleSheet.create({
     borderRadius: g.borderRadius,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: g.mainDarkBg,
+    backgroundColor: g.colors.primary,
     width: 100,
   },
   RootAlert_Btn__cancel: {

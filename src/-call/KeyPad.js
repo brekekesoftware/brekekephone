@@ -29,7 +29,7 @@ const css = StyleSheet.create({
     justifyContent: `space-between`,
   },
   KeyPad_Btn__call: {
-    backgroundColor: g.mainDarkBg,
+    backgroundColor: g.colors.primary,
     width: 64,
     borderRadius: 40,
     paddingVertical: 20,

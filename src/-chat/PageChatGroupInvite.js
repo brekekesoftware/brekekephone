@@ -25,7 +25,7 @@ const css = StyleSheet.create({
     marginTop: 15,
     padding: 10,
     borderRadius: g.borderRadius,
-    backgroundColor: g.mainDarkBg,
+    backgroundColor: g.colors.primary,
   },
   PageChatGroupInvite_BtnText: {
     alignItems: `center`,

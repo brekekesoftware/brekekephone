@@ -19,10 +19,10 @@ const css = StyleSheet.create({
     borderColor: g.borderBg,
   },
   HeaderNavigation_Btn__active: {
-    borderColor: g.mainDarkBg,
+    borderColor: g.colors.primary,
   },
   HeaderNavigation_BtnText__active: {
-    color: g.mainDarkBg,
+    color: g.colors.primary,
   },
 });
 

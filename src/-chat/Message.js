@@ -87,12 +87,12 @@ const File = p => (
     )}
     {p.state === `waiting` && (
       <TouchableOpacity onPress={p.reject} style={[css.Message_File_Btn]}>
-        <Icon color={g.redBg} path={mdiClose} />
+        <Icon color={g.colors.danger} path={mdiClose} />
       </TouchableOpacity>
     )}
     {p.incoming && p.state === `waiting` && (
       <TouchableOpacity onPress={p.accept} style={[css.Message_File_Btn]}>
-        <Icon color={g.mainBg} path={mdiCheck} />
+        <Icon color={g.colors.primary} path={mdiCheck} />
       </TouchableOpacity>
     )}
     {p.state === `started` && (
@@ -100,12 +100,12 @@ const File = p => (
         <Progress
           bgColor={g.bg}
           borderWidth={1 * 2}
-          color={g.mainBg}
+          color={g.colors.primary}
           percent={p.state === `percent`}
           radius={g.fontSizeSubTitle}
           shadowColor={g.bg}
         >
-          <Icon color={g.redBg} path={mdiClose} />
+          <Icon color={g.colors.danger} path={mdiClose} />
         </Progress>
       </TouchableOpacity>
     )}

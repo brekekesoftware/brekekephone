@@ -128,7 +128,7 @@ class PageCallManage extends React.Component {
   render() {
     const u = this.runningById[callStore.selectedId];
     return (
-      <BrekekeGradient colors={[g.callBg, g.revBg]}>
+      <BrekekeGradient colors={[g.colors.primary, g.revBg]}>
         <Layout
           header={{
             transparent: true,
@@ -163,7 +163,7 @@ class PageCallManage extends React.Component {
           />
           <View style={css.PageIncoming_Btn__Hangup}>
             <ButtonIcon
-              bgcolor={g.redBg}
+              bgcolor={g.colors.danger}
               color={g.revColor}
               name="HANG UP"
               noborder

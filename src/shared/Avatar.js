@@ -25,9 +25,9 @@ const css = StyleSheet.create({
 });
 
 const statusMapColor = {
-  online: g.mainBg,
-  idle: g.warning,
-  busy: g.redDarkBg,
+  online: g.colors.primary,
+  idle: g.colors.warning,
+  busy: g.colors.danger,
   offline: g.subColor,
 };
 

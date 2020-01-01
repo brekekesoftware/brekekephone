@@ -26,10 +26,10 @@ const css = StyleSheet.create({
   },
 
   Notify_Btn_reject: {
-    borderColor: g.redBg,
+    borderColor: g.colors.danger,
   },
   Notify_Btn_accept: {
-    borderColor: g.mainBg,
+    borderColor: g.colors.primary,
   },
   Notify_Info_PartyName: {
     fontSize: 15,
@@ -61,16 +61,16 @@ const Notify = observer(p => {
         </View>
       )}
       <ButtonIcon
-        bdcolor={g.redBg}
-        color={g.redBg}
+        bdcolor={g.colors.danger}
+        color={g.colors.danger}
         onPress={() => p.reject(p.id)}
         path={mdiClose}
         size={30}
         style={css.Notify_Btn_reject}
       />
       <ButtonIcon
-        bdcolor={g.mainBg}
-        color={g.mainBg}
+        bdcolor={g.colors.primary}
+        color={g.colors.primary}
         onPress={() => p.accept(p.id)}
         path={mdiCheck}
         size={30}

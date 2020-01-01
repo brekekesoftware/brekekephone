@@ -90,7 +90,7 @@ const ProfileCreateForm = observer(props => {
               }
             : submitForm,
           saveText: props.footerLogout ? `LOGOUT` : null,
-          saveColor: props.footerLogout ? g.redDarkBg : null,
+          saveColor: props.footerLogout ? g.colors.danger : null,
         },
         forceDisplayActions: props.footerLogout,
         navigation: props.footerLogout

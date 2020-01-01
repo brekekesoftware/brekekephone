@@ -52,7 +52,7 @@ const css = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: g.mainDarkBg,
+    backgroundColor: g.colors.primary,
   },
   LayoutHeader_CreateBtn__white: {
     backgroundColor: g.bg,
