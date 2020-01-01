@@ -90,6 +90,12 @@ class PageContactPhonebook extends React.Component {
     return (
       <Layout
         description="Your phonebook contacts"
+        dropdown={[
+          {
+            label: `Create new contact`,
+            onPress: this.create,
+          },
+        ]}
         footer={{
           navigation: {
             menu: `contact`,
@@ -97,7 +103,6 @@ class PageContactPhonebook extends React.Component {
           },
         }}
         menu="contact"
-        onCreateBtnPress={this.create}
         subMenu="phonebook"
         title={this.props.book || `Phonebook`}
       >

@@ -1,4 +1,3 @@
-import { mdiPhone } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -29,15 +28,20 @@ class PageCallParks extends React.Component {
     void goBack; // TODO
     return (
       <Layout
-        createBtnIcon={mdiPhone}
         description="Manage your call parks"
+        dropdown={[
+          {
+            // TODO move to footer actions button
+            label: `Start new park`,
+            onPress: this.park,
+          },
+        ]}
         footer={{
           navigation: {
             menu: `call`,
           },
         }}
         menu="call"
-        onCreateBtnPress={this.park}
         subMenu="parks"
         title="Parks"
       >

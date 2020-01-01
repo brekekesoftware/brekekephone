@@ -19,6 +19,22 @@ const ProfileCreateForm = observer(props => {
       },
       addingPark: ``,
     },
+    resetAllFields: () => {
+      g.showPrompt({
+        title: `Reset`,
+        message: `Do you want to reset all current fields to ${
+          props.updatingProfile ? `original data` : `empty`
+        }?`,
+        onConfirm: () => {
+          $.set(`profile`, p => ({
+            ...g.genEmptyProfile(),
+            ...cloneDeep(props.updatingProfile),
+            id: p.id,
+          }));
+        },
+        confirmText: `RESET`,
+      });
+    },
     //
     onAddingParkSubmit: () => {
       $.set(`profile`, p => {
@@ -84,6 +100,16 @@ const ProfileCreateForm = observer(props => {
         props.updatingProfile
           ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
           : `Create a new sign in profile`
+      }
+      dropdown={
+        props.footerLogout
+          ? null
+          : [
+              {
+                label: `Reset all fields`,
+                onPress: $.resetAllFields,
+              },
+            ]
       }
       footer={{
         actions: {
