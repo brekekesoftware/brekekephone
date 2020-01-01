@@ -236,7 +236,7 @@ class PageChatGroupDetail extends React.Component {
   };
 
   invite = () => {
-    g.goToChatGroupInvite({ groupId: this.props.groupId });
+    g.goToPageChatGroupInvite({ groupId: this.props.groupId });
   };
   call = (target, bVideoEnabled) => {
     sip.createSession(target, {
