@@ -15,6 +15,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 
+#import "RNCallKeep.h"
 #import "RNSplashScreen.h"
 #import "RNVoipPushNotificationManager.h"
 
@@ -69,9 +70,13 @@
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:(void (^)(NSArray *_Nullable))restorationHandler {
-  return [RCTLinkingManager application:application
-                   continueUserActivity:userActivity
-                     restorationHandler:restorationHandler];
+  [RCTLinkingManager application:application
+            continueUserActivity:userActivity
+              restorationHandler:restorationHandler];
+  // react-native-callkeep
+  return [RNCallKeep application:application
+            continueUserActivity:userActivity
+              restorationHandler:restorationHandler];
 }
 
 //

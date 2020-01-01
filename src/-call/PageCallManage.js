@@ -74,6 +74,7 @@ class PageCallManage extends React.Component {
       if (!nextSelectedId || isSelectedIdInactive) {
         const call = this.findNewestCallByRunids_s(runids, this.props);
         callStore.set(`selectedId`, call.id);
+        g.goToPageCallRecents();
       }
     } else {
       this._checkCreatingSessionAndRoute();
