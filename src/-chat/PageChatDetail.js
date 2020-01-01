@@ -52,15 +52,13 @@ class PageChatDetail extends React.Component {
           },
           LayoutChat: true,
         }}
-        header={{
-          onBackBtnPress: g.goToPageChatRecents,
-          title: u?.name,
-        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
           onScroll: this.onScroll,
         }}
+        onBack={g.goToPageChatRecents}
+        title={u?.name}
       >
         {this.chatIds.map((id, index) => (
           <Message

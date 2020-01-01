@@ -128,15 +128,12 @@ class PageCallManage extends React.Component {
   render() {
     const u = this.runningById[callStore.selectedId];
     return (
-      <BrekekeGradient colors={[g.colors.primary, g.revBg]}>
+      <BrekekeGradient colors={[g.colors.primaryFn(0.2), g.revBg]}>
         <Layout
-          header={{
-            transparent: true,
-            onBackBtnPress: g.goToPageCallRecents,
-            title: u?.partyName,
-            titleColor: g.revColor,
-          }}
           noScroll
+          onBack={g.goToPageCallRecents}
+          title={u?.partyName}
+          transparent
         >
           <CallManage
             {...u}

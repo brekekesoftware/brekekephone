@@ -89,21 +89,17 @@ class PageContactPhonebook extends React.Component {
     });
     return (
       <Layout
+        description="Your phonebook contacts"
         footer={{
           navigation: {
             menu: `contact`,
             subMenu: `phonebook`,
           },
         }}
-        header={{
-          title: this.props.book || `Phonebook`,
-          description: `Your phonebook contacts`,
-          onCreateBtnPress: this.create,
-          navigation: {
-            menu: `contact`,
-            subMenu: `phonebook`,
-          },
-        }}
+        menu="contact"
+        onCreateBtnPress={this.create}
+        subMenu="phonebook"
+        title={this.props.book || `Phonebook`}
       >
         <Field
           label="SHOW SHARED CONTACTS"

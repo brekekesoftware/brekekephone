@@ -71,10 +71,8 @@ const ContactsCreateForm = observer(props => {
         },
         Phonebook: true,
       }}
-      header={{
-        onBackBtnPress: $.onBackBtnPress,
-        title: props.title,
-      }}
+      onBack={$.onBackBtnPress}
+      title={props.title}
     >
       <Form
         $={$}

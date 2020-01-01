@@ -50,19 +50,17 @@ class PageChatGroupDetail extends React.Component {
           },
           LayoutChat: true,
         }}
-        header={{
-          onBackBtnPress: g.goToPageChatRecents,
-          onCreateBtnPress: this.invite,
-          // TODO !!!
-          onVideoCallBtnPress: this.callVideoConference,
-          onVoiceCallBtnPress: this.callVoiceConference,
-          title: gr?.name,
-        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
           onScroll: this.onScroll,
         }}
+        onBack={g.goToPageChatRecents}
+        // TODO
+        onCreateBtnPress={this.invite}
+        onVideoCallBtnPress={this.callVideoConference}
+        onVoiceCallBtnPress={this.callVoiceConference}
+        title={gr?.name}
       >
         {this.chatIds.map((id, index) => (
           <Message

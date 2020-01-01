@@ -43,19 +43,15 @@ class PageCallRecents extends React.Component {
     const users = this.getMatchUserIds();
     return (
       <Layout
+        description="Recent voicemails and calls"
         footer={{
           navigation: {
             menu: `call`,
           },
         }}
-        header={{
-          description: `Recent voicemails and calls`,
-          title: `Recents`,
-          navigation: {
-            menu: `call`,
-            subMenu: `recents`,
-          },
-        }}
+        menu="call"
+        subMenu="recents"
+        title="Recents"
       >
         <Field
           icon={mdiMagnify}

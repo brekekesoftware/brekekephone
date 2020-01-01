@@ -51,12 +51,7 @@ class PageChatGroupInvite extends React.Component {
 
   render() {
     return (
-      <Layout
-        header={{
-          onBackBtnPress: this.back,
-          title: `Inviting Group member`,
-        }}
-      >
+      <Layout onBack={this.back} title="Inviting Group member">
         <View style={css.PageChatGroupInvite_Outer}>
           <Text style={css.PageChatGroupInvite_GroupName}>
             {chatStore.getGroup(this.props.groupId).name}

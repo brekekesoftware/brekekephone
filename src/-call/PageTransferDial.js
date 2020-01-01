@@ -46,12 +46,7 @@ class PageTransferDial extends React.Component {
       g.users = orderBy(g.users, `name`);
     });
     return (
-      <Layout
-        header={{
-          onBackBtnPress: g.goToPageCallManage,
-          title: `Transfer call`,
-        }}
-      >
+      <Layout onBack={g.goToPageCallManage} title="Transfer call">
         {groups.map(_g => (
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />

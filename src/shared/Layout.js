@@ -1,11 +1,9 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
+import Header from '../Header/Header';
 import { ScrollView, StyleSheet, View } from '../native/Rn';
-import useStore from '../utils/useStore';
 import LayoutFooter from './LayoutFooter';
-import LayoutHeader from './LayoutHeader';
 
 const css = StyleSheet.create({
   Layout: {
@@ -18,12 +16,9 @@ const css = StyleSheet.create({
   },
 });
 
-const Layout = observer(props => {
-  const $ = useStore(() => ({
-    observable: {
-      headerOverflow: false,
-    },
-  }));
+const Layout = props => {
+  const [headerOverflow, setHeaderOverflow] = useState(false);
+  //
   let Container = null;
   let containerProps = null;
   if (props.noScroll) {
@@ -37,9 +32,10 @@ const Layout = observer(props => {
       style: css.Layout,
       contentContainerStyle: [css.Layout_Scroll],
       keyboardShouldPersistTaps: `always`,
-      onScroll: e => {
-        $.set(`headerOverflow`, e.nativeEvent.contentOffset.y > 60);
-      },
+      onScroll: e =>
+        // eslint-disable-next-line no-mixed-operators
+        e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
+        setHeaderOverflow(!headerOverflow),
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
     };
@@ -54,7 +50,7 @@ const Layout = observer(props => {
   }
 
   let headerSpace = 86 + 15;
-  if (props.header?.navigation) {
+  if (props.menu) {
     headerSpace += 35;
   }
 
@@ -74,11 +70,9 @@ const Layout = observer(props => {
         <View style={{ height: footerSpace }} />
       </Container>
       {props.footer && <LayoutFooter {...props.footer} />}
-      {props.header && (
-        <LayoutHeader {...props.header} compact={$.headerOverflow} />
-      )}
+      <Header {...props} compact={props.compact || headerOverflow} />
     </React.Fragment>
   );
-});
+};
 
 export default Layout;

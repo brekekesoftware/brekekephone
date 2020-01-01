@@ -3,7 +3,7 @@ import React from 'react';
 import g from '../global';
 import authStore from '../global/authStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
-import { menus } from './navigationConfig';
+import { menus } from '../shared/navigationConfig';
 
 const css = StyleSheet.create({
   HeaderNavigation: {

@@ -80,6 +80,11 @@ const ProfileCreateForm = observer(props => {
   const [Form, submitForm, revalidate] = useForm();
   return (
     <Layout
+      description={
+        props.updatingProfile
+          ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
+          : `Create a new sign in profile`
+      }
       footer={{
         actions: {
           onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
@@ -100,19 +105,10 @@ const ProfileCreateForm = observer(props => {
             }
           : null,
       }}
-      header={{
-        onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
-        title: props.title,
-        description: props.updatingProfile
-          ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
-          : `Create a new sign in profile`,
-        navigation: props.footerLogout
-          ? {
-              menu: `settings`,
-              subMenu: `profile`,
-            }
-          : null,
-      }}
+      menu={props.footerLogout ? `settings` : null}
+      onBack={props.footerLogout ? null : $.onBackBtnPress}
+      subMenu={props.footerLogout ? `profile` : null}
+      title={props.title}
     >
       <Form
         $={$}
