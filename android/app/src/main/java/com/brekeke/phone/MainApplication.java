@@ -17,6 +17,7 @@ import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.rnfs.RNFSPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
+import io.wazo.callkeep.RNCallKeepPackage;
 import java.util.Arrays;
 import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
@@ -42,6 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
               new FastImageViewPackage(),
               new ReactNativeExceptionHandlerPackage(),
               new ReactVideoPackage(),
+              new RNCallKeepPackage(),
               new RNCameraPackage(),
               new RNFSPackage(),
               new SplashScreenReactPackage(),

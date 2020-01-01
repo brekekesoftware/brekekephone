@@ -135,7 +135,6 @@ class PageCallManage extends React.Component {
             onBackBtnPress: g.goToPageCallRecents,
             title: u?.partyName,
             titleColor: g.revColor,
-            backBtnColor: g.revColor,
           }}
           noScroll
         >

@@ -50,6 +50,9 @@
 		9CB4D249231FFCB700B39C6A /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB4D23E231FFC3400B39C6A /* libRNCAsyncStorage.a */; };
 		9CBEF4A722FB452C007E3898 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CBEF4A022FB4510007E3898 /* libRNSVG.a */; };
 		9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CBF72CB221160B800A93F01 /* libRNDocumentPicker.a */; };
+		9CE1275B23BB353B0035CEBD /* libRNCallKeep.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4A188823BB2C83005AA9ED /* libRNCallKeep.a */; };
+		9CE1279723BB35AC0035CEBD /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE1279623BB35AB0035CEBD /* CallKit.framework */; };
+		9CE1279923BB35B40035CEBD /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE1279823BB35B40035CEBD /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6841FA4F8DC00B85C8A /* libfishhook.a */; };
 		A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */; };
 		A13821AC989E4690A7480ABB /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0272DDCB4BD947E2A3A1D461 /* libRCTVideo.a */; };
@@ -298,6 +301,13 @@
 			remoteGlobalIDString = 23D512051CC765E500845BEE;
 			remoteInfo = RNVoipPushNotification;
 		};
+		9C4A188723BB2C83005AA9ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C4A185323BB2C83005AA9ED /* RNCallKeep.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 234528921E0B88C700D1A033;
+			remoteInfo = RNCallKeep;
+		};
 		9C740744221FFC7400AC17B9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9C740740221FFC7400AC17B9 /* RNCamera.xcodeproj */;
@@ -491,7 +501,7 @@
 		0272DDCB4BD947E2A3A1D461 /* libRCTVideo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTVideo.a; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* PhoneDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = PhoneDev.app; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Phone/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Phone/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -524,6 +534,7 @@
 		84D1D1191EA9BF6800BC7305 /* Phone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Phone.entitlements; path = Phone/Phone.entitlements; sourceTree = "<group>"; };
 		85551F28DB7E4D349CE40F41 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C31A4B121D50BE1000CB78F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		9C4A185323BB2C83005AA9ED /* RNCallKeep.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCallKeep.xcodeproj; path = "../node_modules/react-native-callkeep/ios/RNCallKeep.xcodeproj"; sourceTree = "<group>"; };
 		9C740740221FFC7400AC17B9 /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
 		9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNInCallManager.xcodeproj; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager.xcodeproj"; sourceTree = "<group>"; };
 		9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -535,6 +546,8 @@
 		9CB4D206231FFC3400B39C6A /* RNCAsyncStorage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCAsyncStorage.xcodeproj; path = "../node_modules/@react-native-community/async-storage/ios/RNCAsyncStorage.xcodeproj"; sourceTree = "<group>"; };
 		9CBEF46522FB4510007E3898 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
 		9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDocumentPicker.xcodeproj; path = "../node_modules/react-native-document-picker/ios/RNDocumentPicker.xcodeproj"; sourceTree = "<group>"; };
+		9CE1279623BB35AB0035CEBD /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
+		9CE1279823BB35B40035CEBD /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		9CE9F9022293B02300777DDF /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -547,6 +560,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CE1279923BB35B40035CEBD /* Intents.framework in Frameworks */,
+				9CE1279723BB35AC0035CEBD /* CallKit.framework in Frameworks */,
+				9CE1275B23BB353B0035CEBD /* libRNCallKeep.a in Frameworks */,
 				9CB4D249231FFCB700B39C6A /* libRNCAsyncStorage.a in Frameworks */,
 				9CBEF4A722FB452C007E3898 /* libRNSVG.a in Frameworks */,
 				E207C1EE2292B9AD00BAC02D /* libBVLinearGradient.a in Frameworks */,
@@ -715,6 +731,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CE1279823BB35B40035CEBD /* Intents.framework */,
+				9CE1279623BB35AB0035CEBD /* CallKit.framework */,
 				9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */,
 				9C31A4B121D50BE1000CB78F /* PushKit.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
@@ -743,6 +761,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9C4A185323BB2C83005AA9ED /* RNCallKeep.xcodeproj */,
 				9CB4D206231FFC3400B39C6A /* RNCAsyncStorage.xcodeproj */,
 				9CBEF46522FB4510007E3898 /* RNSVG.xcodeproj */,
 				9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */,
@@ -801,7 +820,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* PhoneDev.app */,
+				13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -842,6 +861,14 @@
 			isa = PBXGroup;
 			children = (
 				9C31A4B021D5098F000CB78F /* libRNVoipPushNotification.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9C4A185423BB2C83005AA9ED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C4A188823BB2C83005AA9ED /* libRNCallKeep.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -985,7 +1012,7 @@
 			);
 			name = Phone;
 			productName = "Brekeke Phone";
-			productReference = 13B07F961A680F5B00A75B9A /* PhoneDev.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1109,6 +1136,10 @@
 				{
 					ProductGroup = 9C9146CD22BE2E2300CF23FE /* Products */;
 					ProjectRef = 9C9146CC22BE2E2300CF23FE /* ReactNativeExceptionHandler.xcodeproj */;
+				},
+				{
+					ProductGroup = 9C4A185423BB2C83005AA9ED /* Products */;
+					ProjectRef = 9C4A185323BB2C83005AA9ED /* RNCallKeep.xcodeproj */;
 				},
 				{
 					ProductGroup = 9C740741221FFC7400AC17B9 /* Products */;
@@ -1389,6 +1420,13 @@
 			remoteRef = 9C31A4AF21D5098F000CB78F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9C4A188823BB2C83005AA9ED /* libRNCallKeep.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNCallKeep.a;
+			remoteRef = 9C4A188723BB2C83005AA9ED /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9C740745221FFC7400AC17B9 /* libRNCamera.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1658,8 +1696,9 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-video/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/react-native-fast-image/ios/FastImage",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager/**",
+					"$(SRCROOT)/../node_modules/react-native-fast-image/ios/FastImage/**",
+					"$(SRCROOT)/../node_modules/react-native-callkeep/ios/RNCallKeep/**",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1706,8 +1745,9 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-video/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/react-native-fast-image/ios/FastImage",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager/**",
+					"$(SRCROOT)/../node_modules/react-native-fast-image/ios/FastImage/**",
+					"$(SRCROOT)/../node_modules/react-native-callkeep/ios/RNCallKeep/**",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1879,8 +1919,9 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-video/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
-					"$(SRCROOT)/../node_modules/react-native-fast-image/ios/FastImage",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager/**",
+					"$(SRCROOT)/../node_modules/react-native-fast-image/ios/FastImage/**",
+					"$(SRCROOT)/../node_modules/react-native-callkeep/ios/RNCallKeep/**",
 				);
 				INFOPLIST_FILE = Phone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
