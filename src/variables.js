@@ -52,6 +52,11 @@ const v = {
     shadowRadius: 2,
     elevation: 3, // android
   },
+  //
+  backdropZindex: {
+    zIndex: 999,
+    elevation: 999,
+  },
 };
 
 v.colors = {

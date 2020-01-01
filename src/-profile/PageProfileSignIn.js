@@ -25,7 +25,7 @@ const PageProfileSignIn = observer(() => {
       <Layout
         description={`${l} server${l > 1 ? `s` : ``} in total`}
         noScroll
-        onCreateBtnPress={!!l && g.goToPageProfileCreate}
+        onCreate={!!l && g.goToPageProfileCreate}
         title="Servers"
         transparent
       >
