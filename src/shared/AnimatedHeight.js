@@ -17,7 +17,7 @@ const css = StyleSheet.create({
 });
 
 // The style and innerStyle prop should only be used for positioning and theming
-// We should not use them for sizing, use the children instead
+// We should not use them for sizing like height/border/padding... -> use the children instead
 const AnimatedHeight = p => {
   const [height, setHeight] = useState(0);
   const Component = height ? Animation : Getter;
