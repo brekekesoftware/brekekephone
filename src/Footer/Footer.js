@@ -68,7 +68,7 @@ const Footer = observer(({ menu, onFabBack, onFabNext }) =>
     >
       <Text small>HIDE KEYBOARD</Text>
     </TouchableOpacity>
-  ) : (
+  ) : onFabNext || menu ? (
     <View style={[css.Footer, onFabNext && css.Footer__hasActions]}>
       {onFabNext && (
         <View style={css.ActionsOuter}>
@@ -81,7 +81,7 @@ const Footer = observer(({ menu, onFabBack, onFabNext }) =>
       )}
       {menu && <Navigation menu={menu} />}
     </View>
-  ),
+  ) : null,
 );
 
 export default Footer;

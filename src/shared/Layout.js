@@ -10,7 +10,6 @@ const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
-    paddingBottom: getBottomSpace(),
   },
   Layout_Scroll: {
     flexGrow: 1,
@@ -67,8 +66,8 @@ const Layout = props => {
       <Container {...containerProps}>
         <View style={{ height: headerSpace }} />
         {props.children}
-        <View style={{ height: footerSpace }} />
       </Container>
+      <View style={{ height: footerSpace }} />
       <Footer {...props} />
       <Header {...props} compact={props.compact || headerOverflow} />
     </React.Fragment>
