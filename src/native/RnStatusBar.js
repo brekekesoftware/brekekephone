@@ -7,8 +7,7 @@ import v from '../variables';
 const css = StyleSheet.create({
   RnStatusBar: {
     backgroundColor: v.hoverBg,
-    borderColor: v.borderBg,
-    borderBottomWidth: 1,
+    ...v.backdropZindex,
     ...Platform.select({
       ios: {
         height: getStatusBarHeight(true),
@@ -18,6 +17,15 @@ const css = StyleSheet.create({
   RnStatusBar__transparent: {
     backgroundColor: `transparent`,
     borderColor: `transparent`,
+  },
+  Border: {
+    position: `absolute`,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderColor: v.borderBg,
+    borderBottomWidth: 1,
+    ...v.backdropZindex,
   },
 });
 
@@ -30,6 +38,7 @@ const RnStatusBar = props =>
       ]}
     >
       <StatusBar backgroundColor={v.hoverBg} barStyle="dark-content" />
+      <View style={css.Border} />
     </View>
   );
 

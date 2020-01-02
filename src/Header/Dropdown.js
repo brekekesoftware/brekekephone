@@ -55,7 +55,11 @@ const css = StyleSheet.create({
 const Dropdown = ({ close, compact, dropdown }) => {
   return (
     <React.Fragment>
-      <TouchableOpacity onPress={close} style={css.Backdrop} />
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={close}
+        style={css.Backdrop}
+      />
       <AnimatedHeight
         innerStyle={css.Inner}
         style={[css.Dropdown, compact && css.Dropdown__compact]}
