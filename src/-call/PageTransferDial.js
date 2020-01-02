@@ -59,7 +59,7 @@ class PageTransferDial extends React.Component {
               <UserItem
                 function={[
                   () => this.transferAttended(u.number),
-                  () => g.transferBlind(u.number),
+                  () => this.transferBlind(u.number),
                 ]}
                 icon={[mdiPhoneForward, mdiPhone]}
                 key={i}
