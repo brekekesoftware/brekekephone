@@ -56,11 +56,11 @@ const css = StyleSheet.create({
   },
   Picker_Text__selected: {
     fontWeight: `bold`,
-    color: g.mainDarkBg,
+    color: g.colors.primary,
   },
   Picker_Text__cancel: {
     fontWeight: `bold`,
-    color: g.redDarkBg,
+    color: g.colors.danger,
   },
   Picker_Icon: {
     position: `absolute`,
@@ -116,7 +116,7 @@ const Picker = p => {
                   {o.label}
                 </Text>
                 <Icon
-                  color={isSelected ? g.mainDarkBg : null}
+                  color={isSelected ? g.colors.primary : null}
                   path={
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
@@ -134,7 +134,11 @@ const Picker = p => {
           <Text style={css.Picker_Text__cancel}>
             {p.cancelLabel || `Cancel`}
           </Text>
-          <Icon color={g.redDarkBg} path={mdiClose} style={css.Picker_Icon} />
+          <Icon
+            color={g.colors.danger}
+            path={mdiClose}
+            style={css.Picker_Icon}
+          />
         </TouchableOpacity>
       </Animated.ScrollView>
     </View>

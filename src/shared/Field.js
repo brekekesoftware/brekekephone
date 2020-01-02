@@ -26,7 +26,7 @@ const css = StyleSheet.create({
     marginHorizontal: 15,
   },
   Field__focusing: {
-    backgroundColor: g.mainTransBg,
+    backgroundColor: g.colors.primaryFn(0.5),
   },
   Field__disabled: {
     backgroundColor: g.hoverBg,
@@ -94,10 +94,10 @@ const css = StyleSheet.create({
     borderRadius: g.borderRadius,
   },
   Field_Btn__create: {
-    backgroundColor: g.mainTransBg,
+    backgroundColor: g.colors.primaryFn(0.5),
   },
   Field_Btn__remove: {
-    backgroundColor: g.redTransBg,
+    backgroundColor: g.colors.dangerFn(0.5),
   },
   Field_Icon: {
     position: `absolute`,
@@ -114,7 +114,7 @@ const css = StyleSheet.create({
     marginHorizontal: 15,
     paddingVertical: 2,
     paddingHorizontal: 10,
-    backgroundColor: g.redBg,
+    backgroundColor: g.colors.danger,
     borderRadius: g.borderRadius,
   },
   Field_ErrorIcon: {
@@ -158,7 +158,7 @@ const Field = observer(({ ...props }) => {
           style={[css.Field_Btn, css.Field_Btn__create]}
         >
           <Icon
-            color={g.mainDarkBg}
+            color={g.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
             style={css.Field_CreateRemoveIcon}
@@ -175,7 +175,7 @@ const Field = observer(({ ...props }) => {
           style={[css.Field_Btn, css.Field_Btn__remove]}
         >
           <Icon
-            color={g.redDarkBg}
+            color={g.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
             style={css.Field_CreateRemoveIcon}
@@ -299,7 +299,7 @@ const Field = observer(({ ...props }) => {
         >
           <View style={css.Field_ErrorInner}>
             <Icon
-              color={g.redBg}
+              color={g.colors.danger}
               path={mdiCardsDiamond}
               style={css.Field_ErrorIcon}
             />

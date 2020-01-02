@@ -1,7 +1,7 @@
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
-import { Text, TouchableOpacity } from '../native/Rn';
+import { TouchableOpacity } from '../native/Rn';
 
 const ListUsers = p => (
   <React.Fragment>

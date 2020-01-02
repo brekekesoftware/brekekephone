@@ -11,7 +11,7 @@ const css = StyleSheet.create({
     borderRadius: 12,
   },
   RnSwitch__enabled: {
-    backgroundColor: v.mainBg,
+    backgroundColor: v.colors.primaryFn(0.1),
   },
   RnSwitch_Circle: {
     position: `absolute`,
@@ -26,7 +26,7 @@ const css = StyleSheet.create({
   RnSwitch_Circle__enabled: {
     left: null,
     right: -1,
-    backgroundColor: v.mainDarkBg,
+    backgroundColor: v.colors.primary,
   },
 });
 

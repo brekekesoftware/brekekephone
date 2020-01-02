@@ -129,15 +129,12 @@ class PageCallManage extends React.Component {
   render() {
     const u = this.runningById[callStore.selectedId];
     return (
-      <BrekekeGradient colors={[g.callBg, g.revBg]}>
+      <BrekekeGradient colors={[g.colors.primaryFn(0.2), g.revBg]}>
         <Layout
-          header={{
-            transparent: true,
-            onBackBtnPress: g.goToPageCallRecents,
-            title: u?.partyName,
-            titleColor: g.revColor,
-          }}
           noScroll
+          onBack={g.goToPageCallRecents}
+          title={u?.partyName}
+          transparent
         >
           <CallManage
             {...u}
@@ -164,7 +161,7 @@ class PageCallManage extends React.Component {
           />
           <View style={css.PageIncoming_Btn__Hangup}>
             <ButtonIcon
-              bgcolor={g.redBg}
+              bgcolor={g.colors.danger}
               color={g.revColor}
               name="HANG UP"
               noborder

@@ -76,12 +76,7 @@ class PageTransferAttend extends React.Component {
     const usersource = this.resolveMatch(this.call?.partyNumber);
     const usertarget = this.resolveMatch(this.call?.transfering);
     return (
-      <Layout
-        header={{
-          onBackBtnPress: g.goToPageCallManage,
-          title: `Attended Transfer`,
-        }}
-      >
+      <Layout onBack={g.goToPageCallManage} title="Attended Transfer">
         <View style={css.PageTransferAttend}>
           <View
             style={[

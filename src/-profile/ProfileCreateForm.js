@@ -19,6 +19,22 @@ const ProfileCreateForm = observer(props => {
       },
       addingPark: ``,
     },
+    resetAllFields: () => {
+      g.showPrompt({
+        title: `Reset`,
+        message: `Do you want to reset all current fields to ${
+          props.updatingProfile ? `original data` : `empty`
+        }?`,
+        onConfirm: () => {
+          $.set(`profile`, p => ({
+            ...g.genEmptyProfile(),
+            ...cloneDeep(props.updatingProfile),
+            id: p.id,
+          }));
+        },
+        confirmText: `RESET`,
+      });
+    },
     //
     onAddingParkSubmit: () => {
       $.set(`profile`, p => {
@@ -80,6 +96,21 @@ const ProfileCreateForm = observer(props => {
   const [Form, submitForm, revalidate] = useForm();
   return (
     <Layout
+      description={
+        props.updatingProfile
+          ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
+          : `Create a new sign in profile`
+      }
+      dropdown={
+        props.footerLogout
+          ? null
+          : [
+              {
+                label: `Reset all fields`,
+                onPress: $.resetAllFields,
+              },
+            ]
+      }
       footer={{
         actions: {
           onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
@@ -90,7 +121,7 @@ const ProfileCreateForm = observer(props => {
               }
             : submitForm,
           saveText: props.footerLogout ? `LOGOUT` : null,
-          saveColor: props.footerLogout ? g.redDarkBg : null,
+          saveColor: props.footerLogout ? g.colors.danger : null,
         },
         forceDisplayActions: props.footerLogout,
         navigation: props.footerLogout
@@ -100,19 +131,10 @@ const ProfileCreateForm = observer(props => {
             }
           : null,
       }}
-      header={{
-        onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
-        title: props.title,
-        description: props.updatingProfile
-          ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
-          : `Create a new sign in profile`,
-        navigation: props.footerLogout
-          ? {
-              menu: `settings`,
-              subMenu: `profile`,
-            }
-          : null,
-      }}
+      menu={props.footerLogout ? `settings` : null}
+      onBack={props.footerLogout ? null : $.onBackBtnPress}
+      subMenu={props.footerLogout ? `profile` : null}
+      title={props.title}
     >
       <Form
         $={$}

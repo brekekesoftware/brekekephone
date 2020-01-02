@@ -21,15 +21,13 @@ const css = StyleSheet.create({
 const PageProfileSignIn = observer(() => {
   const l = g.profiles.length;
   return (
-    <BrekekeGradient colors={[g.mainBg, g.revBg]}>
+    <BrekekeGradient colors={[g.colors.primaryFn(0.2), g.revBg]}>
       <Layout
-        header={{
-          transparent: true,
-          title: `Servers`,
-          description: `${l} server${l > 1 ? `s` : ``} in total`,
-          onCreateBtnPress: !!l && g.goToPageProfileCreate,
-        }}
+        description={`${l} server${l > 1 ? `s` : ``} in total`}
         noScroll
+        onCreate={!!l && g.goToPageProfileCreate}
+        title="Servers"
+        transparent
       >
         <View style={css.PageProfileSignIn_Spacing} />
         {!!l && (

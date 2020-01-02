@@ -86,12 +86,12 @@ const css = StyleSheet.create({
     flex: 1,
   },
   App_ConnectionStatus: {
-    backgroundColor: g.warningD,
+    backgroundColor: g.colors.warning,
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
   App_ConnectionStatus__failure: {
-    backgroundColor: g.redDarkBg,
+    backgroundColor: g.colors.danger,
   },
 });
 

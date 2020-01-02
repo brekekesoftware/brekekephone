@@ -42,6 +42,20 @@ class PageChatGroupDetail extends React.Component {
     const gr = chatStore.getGroup(this.props.groupId);
     return (
       <Layout
+        dropdown={[
+          {
+            label: `Invite more people`,
+            onPress: this.invite,
+          },
+          {
+            label: `Start voice call`,
+            onPress: this.callVideoConference,
+          },
+          {
+            label: `Start video call`,
+            onPress: this.callVoiceConference,
+          },
+        ]}
         footer={{
           actions: {
             text: this.state.editingText,
@@ -50,19 +64,13 @@ class PageChatGroupDetail extends React.Component {
           },
           LayoutChat: true,
         }}
-        header={{
-          onBackBtnPress: g.goToPageChatRecents,
-          onCreateBtnPress: this.invite,
-          // TODO !!!
-          onVideoCallBtnPress: this.callVideoConference,
-          onVoiceCallBtnPress: this.callVoiceConference,
-          title: gr?.name,
-        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
           onScroll: this.onScroll,
         }}
+        onBack={g.goToPageChatRecents}
+        title={gr?.name}
       >
         {this.chatIds.map((id, index) => (
           <Message

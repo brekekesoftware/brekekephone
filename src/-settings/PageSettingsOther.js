@@ -46,20 +46,16 @@ class PageSettingsOther extends Component {
   render() {
     return (
       <Layout
+        description="Other settings for PBX/UC"
         footer={{
           navigation: {
             menu: `settings`,
             subMenu: `other`,
           },
         }}
-        header={{
-          description: `Other settings for PBX/UC`,
-          title: `Other settings`,
-          navigation: {
-            menu: `settings`,
-            subMenu: `other`,
-          },
-        }}
+        menu="settings"
+        subMenu="other"
+        title="Other settings"
       >
         {authStore.currentProfile?.ucEnabled && (
           <React.Fragment>

@@ -73,19 +73,19 @@ const RunningItem = p => (
     <TouchableOpacity onPress={p.pressCallsManage} style={css.CallBar_Outer}>
       <View style={css.CallBar_Icon}>
         {!p.activecall.answered && p.activecall.incoming && (
-          <Icon color={g.mainBg} path={mdiPhoneInTalkOutline} />
+          <Icon color={g.colors.primary} path={mdiPhoneInTalkOutline} />
         )}
         {p.activecall.incoming && !p.activecall.answered && (
-          <Icon color={g.redBg} path={mdiPhoneMissedOutline} />
+          <Icon color={g.colors.danger} path={mdiPhoneMissedOutline} />
         )}
         {!p.activecall.answered && !p.activecall.incoming && (
-          <Icon color={g.mainBg} path={mdiPhoneOutgoingOutline} />
+          <Icon color={g.colors.primary} path={mdiPhoneOutgoingOutline} />
         )}
         {p.activecall.answered && p.activecall.holding && (
           <Icon color={g.borderBg} path={mdiPhonePausedOutline} />
         )}
         {p.activecall.answered && !p.activecall.holding && (
-          <Icon color={g.mainBg} path={mdiPhone} />
+          <Icon color={g.colors.primary} path={mdiPhone} />
         )}
       </View>
       <View style={css.CallBar_Info}>
@@ -98,7 +98,7 @@ const RunningItem = p => (
         {p.activecall.answered && p.activecall.holding && (
           <ButtonIcon
             bdcolor={g.borderBg}
-            color={g.callBg}
+            color={g.colors.primary}
             onPress={p.unhold}
             path={mdiPlay}
           />
@@ -106,7 +106,7 @@ const RunningItem = p => (
         {!p.activecall.holding && (
           <ButtonIcon
             bdcolor={g.borderBg}
-            color={g.redBg}
+            color={g.colors.danger}
             onPress={p.hangup}
             path={mdiPhoneHangup}
           />
@@ -154,7 +154,7 @@ const RunningItem = p => (
         {p.activecall.answered && !p.activecall.holding && (
           <ButtonIcon
             bdcolor={g.borderBg}
-            color={g.callBg}
+            color={g.colors.primary}
             onPress={p.hold}
             path={mdiPause}
           />

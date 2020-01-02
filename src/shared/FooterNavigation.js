@@ -21,7 +21,7 @@ const css = StyleSheet.create({
   },
   FooterNavigation_BtnBg__active: {
     borderRadius: 22,
-    backgroundColor: g.mainTransBg,
+    backgroundColor: g.colors.primaryFn(0.5),
   },
 });
 

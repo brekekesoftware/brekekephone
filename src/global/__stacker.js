@@ -26,10 +26,12 @@ $.extends({
         if (stackAnimating) {
           return;
         }
-        stackAnimating = true;
-        setTimeout(() => {
-          stackAnimating = false;
-        }, 1000);
+        if (!isRoot) {
+          stackAnimating = true;
+          setTimeout(() => {
+            stackAnimating = false;
+          }, 1000);
+        }
         //
         let _stack = {};
         // It fails if the param is an event

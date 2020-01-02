@@ -17,19 +17,15 @@ class PageChatRecents extends React.Component {
   render() {
     return (
       <Layout
+        description="UC recent active chat"
         footer={{
           navigation: {
             menu: `contact`,
           },
         }}
-        header={{
-          title: `Chat`,
-          description: `UC recent active chat`,
-          navigation: {
-            menu: `contact`,
-            subMenu: `chat`,
-          },
-        }}
+        menu="contact"
+        subMenu="chat"
+        title="Chat"
       >
         <Field
           icon={mdiMagnify}

@@ -112,30 +112,26 @@ class PageContactUsers extends React.Component {
 
     return (
       <Layout
+        description={(() => {
+          let desc = `PBX users, ${allUsers.length} total`;
+          if (allUsers.length && ucEnabled) {
+            desc = desc.replace(`PBX`, `PBX/UC`);
+            desc = desc.replace(
+              `${allUsers.length} total`,
+              `${onlineUsers.length}/${allUsers.length} online`,
+            );
+          }
+          return desc;
+        })()}
         footer={{
           navigation: {
             menu: `contact`,
             subMenu: `users`,
           },
         }}
-        header={{
-          title: `Users`,
-          description: (() => {
-            let desc = `PBX users, ${allUsers.length} total`;
-            if (allUsers.length && ucEnabled) {
-              desc = desc.replace(`PBX`, `PBX/UC`);
-              desc = desc.replace(
-                `${allUsers.length} total`,
-                `${onlineUsers.length}/${allUsers.length} online`,
-              );
-            }
-            return desc;
-          })(),
-          navigation: {
-            menu: `contact`,
-            subMenu: `users`,
-          },
-        }}
+        menu="contact"
+        subMenu="users"
+        title="Users"
       >
         <Field
           icon={mdiMagnify}

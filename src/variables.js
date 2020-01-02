@@ -42,29 +42,6 @@ const v = {
   borderBg: fn.darken(0.15, `white`),
   layerBg: fn.transparentize(0.2, `black`),
   //
-  callBg: `#32648a`,
-  mainBg: `#74bf53`,
-  get mainDarkBg() {
-    return fn.darken(0.12, v.mainBg);
-  },
-  get mainTransBg() {
-    return fn.lighten(0.4, v.mainBg);
-  },
-  redBg: `#f12d55`,
-  get redDarkBg() {
-    return fn.darken(0.1, v.redBg);
-  },
-  get redTransBg() {
-    return fn.lighten(0.4, v.redBg);
-  },
-  warning: `#f4c050`,
-  get warningD() {
-    return fn.darken(0.1, v.warning);
-  },
-  get warningL() {
-    return fn.lighten(0.4, v.warning);
-  },
-  //
   boxShadow: {
     shadowColor: `black`,
     shadowOffset: {
@@ -75,6 +52,22 @@ const v = {
     shadowRadius: 2,
     elevation: 3, // android
   },
+  //
+  backdropZindex: {
+    zIndex: 999,
+    elevation: 999,
+  },
 };
+
+v.colors = {
+  //
+  primary: `#609b3a`,
+  warning: `#f1af20`,
+  danger: `#dc0f39`,
+};
+[`primary`, `warning`, `danger`].forEach(k => {
+  v.colors[`${k}Fn`] = lv =>
+    lv > 0 ? fn.lighten(lv, v.colors[k]) : fn.darken(-lv, v.colors[k]);
+});
 
 export default v;

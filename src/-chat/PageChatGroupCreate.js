@@ -36,12 +36,9 @@ class PageChatGroupCreate extends React.Component {
             onSaveBtnPress: this.create,
             onBackBtnPress: g.goToPageChatRecents,
           },
-          title: `SAVE`,
         }}
-        header={{
-          onBackBtnPress: g.goToPageChatRecents,
-          title: `New Group`,
-        }}
+        onBack={g.goToPageChatRecents}
+        title="New Group"
       >
         <Field
           label="GROUP NAME"

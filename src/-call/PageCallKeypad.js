@@ -17,20 +17,16 @@ class PageCallKeypad extends React.Component {
   render() {
     return (
       <Layout
+        description="Keypad dial manually"
         footer={{
           navigation: {
             menu: `call`,
           },
           KeyPad: true,
         }}
-        header={{
-          description: `Keypad dial manually`,
-          title: `Keypad`,
-          navigation: {
-            menu: `call`,
-            subMenu: `keypad`,
-          },
-        }}
+        menu="call"
+        subMenu="keypad"
+        title="Keypad"
       >
         <ShowNumber
           refInput={this.txtRef}
