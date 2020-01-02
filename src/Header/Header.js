@@ -68,7 +68,7 @@ const Header = ({
         <Dropdown
           close={() => setDropdownActive(false)}
           compact={compact}
-          items={dropdown}
+          dropdown={dropdown}
         />
       )}
       {/* No compact mode, should only use in the noScroll layout (such as the server list page)
