@@ -31,19 +31,12 @@ import g from './global';
 import authStore from './global/authStore';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
-import {
-  Animated,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from './native/Rn';
+import { Platform, StatusBar, StyleSheet, Text, View } from './native/Rn';
+import AnimatedHeight from './shared/AnimatedHeight';
 import RootAlert from './shared/RootAlert';
 import RootAuth from './shared/RootAuth';
 import RootPicker from './shared/RootPicker';
 import RootStacks from './shared/RootStacks';
-import { useAnimation } from './utils/animation';
 
 registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
@@ -87,11 +80,13 @@ const css = StyleSheet.create({
   },
   App_ConnectionStatus: {
     backgroundColor: g.colors.warning,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
   },
   App_ConnectionStatus__failure: {
     backgroundColor: g.colors.danger,
+  },
+  App_ConnectionStatusInner: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
   },
 });
 
@@ -105,13 +100,10 @@ const App = observer(() => {
     authStore.handleUrlParams();
   }, []);
 
-  const { isConnFailure, shouldShowConnStatus } = authStore;
-  const a = useAnimation(shouldShowConnStatus, {
-    height: [0, 20], // lineHeightSmall + paddingVertical
-    opacity: [0, 1],
-  });
   const {
+    isConnFailure,
     pbxConnectingOrFailure,
+    shouldShowConnStatus,
     sipConnectingOrFailure,
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
@@ -137,20 +129,18 @@ const App = observer(() => {
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <StatusBar />
       {shouldShowConnStatus && (
-        <Animated.View
+        <AnimatedHeight
           style={[
             css.App_ConnectionStatus,
             isConnFailure && css.App_ConnectionStatus__failure,
-            {
-              height: a.height,
-              opacity: a.opacity,
-            },
           ]}
         >
-          <Text small white>
-            {connMessage}
-          </Text>
-        </Animated.View>
+          <View style={css.App_ConnectionStatusInner}>
+            <Text small white>
+              {connMessage}
+            </Text>
+          </View>
+        </AnimatedHeight>
       )}
       <View style={css.App_Inner}>
         <ApiProvider />
