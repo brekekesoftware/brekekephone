@@ -10,7 +10,7 @@ import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import contactStore from '../global/contactStore';
-import { ActivityIndicator, StyleSheet, View } from '../native/Rn';
+import { ActivityIndicator, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
