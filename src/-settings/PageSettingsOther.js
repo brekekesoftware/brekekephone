@@ -47,6 +47,16 @@ class PageSettingsOther extends Component {
     return (
       <Layout
         description="Other settings for PBX/UC"
+        dropdown={[
+          {
+            label: `Logout`,
+            onPress: () => {
+              g.goToPageProfileSignIn();
+              authStore.signedInId = ``;
+            },
+            danger: true,
+          },
+        ]}
         footer={{
           navigation: {
             menu: `settings`,

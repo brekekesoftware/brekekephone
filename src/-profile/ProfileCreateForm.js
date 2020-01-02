@@ -103,7 +103,16 @@ const ProfileCreateForm = observer(props => {
       }
       dropdown={
         props.footerLogout
-          ? null
+          ? [
+              {
+                label: `Logout`,
+                onPress: () => {
+                  g.goToPageProfileSignIn();
+                  authStore.signedInId = ``;
+                },
+                danger: true,
+              },
+            ]
           : [
               {
                 label: `Reset form`,
@@ -112,18 +121,12 @@ const ProfileCreateForm = observer(props => {
             ]
       }
       footer={{
-        actions: {
-          onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
-          onSaveBtnPress: props.footerLogout
-            ? () => {
-                g.goToPageProfileSignIn();
-                authStore.signedInId = ``;
-              }
-            : submitForm,
-          saveText: props.footerLogout ? `LOGOUT` : null,
-          saveColor: props.footerLogout ? g.colors.danger : null,
-        },
-        forceDisplayActions: props.footerLogout,
+        actions: props.footerLogout
+          ? null
+          : {
+              onBackBtnPress: $.onBackBtnPress,
+              onSaveBtnPress: submitForm,
+            },
         navigation: props.footerLogout
           ? {
               menu: `settings`,

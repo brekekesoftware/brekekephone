@@ -55,14 +55,7 @@ const css = StyleSheet.create({
 });
 
 const LayoutFooter = observer(
-  ({
-    LayoutChat,
-    Phonebook,
-    actions,
-    forceDisplayActions,
-    navigation,
-    style,
-  }) =>
+  ({ LayoutChat, Phonebook, actions, navigation, style }) =>
     g.isKeyboardShowing ? (
       <TouchableOpacity
         onPress={() => {
@@ -82,7 +75,7 @@ const LayoutFooter = observer(
           style,
         ]}
       >
-        {actions && (forceDisplayActions || !navigation) && (
+        {actions && (
           <View
             style={{
               alignItems: `center`,
