@@ -64,9 +64,8 @@ const Header = ({
         </Animated.View>
         {menu && <HeaderNavigation menu={menu} subMenu={subMenu} />}
       </View>
-      {dropdown && (
+      {dropdown && dropdownActive && (
         <Dropdown
-          active={dropdownActive}
           close={() => setDropdownActive(false)}
           compact={compact}
           items={dropdown}

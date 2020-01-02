@@ -2,8 +2,15 @@ import { mdiDotsVertical } from '@mdi/js';
 import React from 'react';
 
 import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../native/Rn';
 import Icon from '../shared/Icon';
+import { useAnimationOnDidMount } from '../utils/animation';
 
 const css = StyleSheet.create({
   Dropdown: {
@@ -15,6 +22,10 @@ const css = StyleSheet.create({
     borderRadius: g.borderRadius,
     ...g.boxShadow,
     ...g.backdropZindex,
+  },
+  Inner: {
+    flex: 1,
+    overflow: `hidden`,
   },
   Dropdown__compact: {
     top: 35,
@@ -46,27 +57,32 @@ const css = StyleSheet.create({
   },
 });
 
-const Dropdown = ({ active, close, compact, items }) => {
-  if (!active) {
-    return null;
-  }
+const Dropdown = ({ close, compact, items }) => {
+  const l = items.length;
+  const cssDropdownA = useAnimationOnDidMount({
+    height: [0, l * 41 - 1],
+  });
   return (
     <React.Fragment>
       <TouchableOpacity onPress={close} style={css.Backdrop} />
-      <View style={[css.Dropdown, compact && css.Dropdown__compact]}>
-        {items.map((d, i) => (
-          <TouchableOpacity
-            key={i}
-            onPress={() => {
-              close();
-              d.onPress();
-            }}
-            style={[css.Item, i === items.length - 1 && css.Item__last]}
-          >
-            <Text>{d.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Animated.View
+        style={[css.Dropdown, compact && css.Dropdown__compact, cssDropdownA]}
+      >
+        <View style={css.Inner}>
+          {items.map((d, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => {
+                close();
+                d.onPress();
+              }}
+              style={[css.Item, i === items.length - 1 && css.Item__last]}
+            >
+              <Text>{d.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Animated.View>
     </React.Fragment>
   );
 };

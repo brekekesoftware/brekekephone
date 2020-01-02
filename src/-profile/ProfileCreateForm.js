@@ -106,7 +106,7 @@ const ProfileCreateForm = observer(props => {
           ? null
           : [
               {
-                label: `Reset all fields`,
+                label: `Reset form`,
                 onPress: $.resetAllFields,
               },
             ]
