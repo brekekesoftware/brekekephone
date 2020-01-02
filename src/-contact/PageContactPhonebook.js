@@ -10,13 +10,7 @@ import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import contactStore from '../global/contactStore';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../native/Rn';
+import { ActivityIndicator, StyleSheet, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
@@ -24,23 +18,6 @@ import UserItem from './UserItem';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
-
-const css = StyleSheet.create({
-  PhoneBook_BtnReload: {
-    marginLeft: `auto`,
-    marginRight: `auto`,
-    backgroundColor: g.colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginBottom: 5,
-    marginTop: 5,
-    borderRadius: 2,
-    ...g.boxShadow,
-  },
-  PhoneBook_TxtReload: {
-    color: g.revColor,
-  },
-});
 
 @observer
 class PageContactPhonebook extends React.Component {
@@ -95,6 +72,13 @@ class PageContactPhonebook extends React.Component {
             label: `Create new contact`,
             onPress: this.create,
           },
+          {
+            label: `Reload`,
+            onPress: () => {
+              this.loadContacts.flush();
+              this.loadContacts();
+            },
+          },
         ]}
         footer={{
           navigation: {
@@ -124,15 +108,6 @@ class PageContactPhonebook extends React.Component {
         )}
         {!this.state.loading && (
           <View>
-            <TouchableOpacity
-              onPress={() => {
-                this.loadContacts.flush();
-                this.loadContacts();
-              }}
-              style={css.PhoneBook_BtnReload}
-            >
-              <Text style={css.PhoneBook_TxtReload}>Reload</Text>
-            </TouchableOpacity>
             {groups.map(_g => (
               <React.Fragment key={_g.key}>
                 <Field isGroup label={_g.key} />

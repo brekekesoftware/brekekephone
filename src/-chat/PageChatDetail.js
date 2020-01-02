@@ -43,6 +43,7 @@ class PageChatDetail extends React.Component {
     const u = contactStore.getUCUser(this.props.buddy);
     return (
       <Layout
+        compact={true}
         footer={{
           actions: {
             selectFile: this.pickFile,
