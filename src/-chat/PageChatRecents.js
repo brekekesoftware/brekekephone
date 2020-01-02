@@ -18,11 +18,6 @@ class PageChatRecents extends React.Component {
     return (
       <Layout
         description="UC recent active chat"
-        footer={{
-          navigation: {
-            menu: `contact`,
-          },
-        }}
         menu="contact"
         subMenu="chat"
         title="Chat"

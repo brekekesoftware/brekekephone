@@ -44,11 +44,6 @@ class PageCallRecents extends React.Component {
     return (
       <Layout
         description="Recent voicemails and calls"
-        footer={{
-          navigation: {
-            menu: `call`,
-          },
-        }}
         menu="call"
         subMenu="recents"
         title="Recents"

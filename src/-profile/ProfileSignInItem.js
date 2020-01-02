@@ -9,11 +9,11 @@ import {
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import FooterActions from '../Footer/Actions';
 import g from '../global';
 import authStore from '../global/authStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
-import FooterActions from '../shared/FooterActions';
 
 const css = StyleSheet.create({
   ProfileSignInItem: {
@@ -50,8 +50,8 @@ const ProfileSignInItem = observer(props => {
         <Text>Tap the below button to create one</Text>
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
-            onSaveBtnPress={g.goToPageProfileCreate}
-            saveText="CREATE NEW SERVER"
+            onNext={g.goToPageProfileCreate}
+            onNextText="CREATE NEW SERVER"
           />
         </View>
       </View>
@@ -88,8 +88,7 @@ const ProfileSignInItem = observer(props => {
       />
       <View style={css.ProfileSignInItem_Btns}>
         <FooterActions
-          backIcon={mdiClose}
-          onBackBtnPress={() => {
+          onBack={() => {
             g.showPrompt({
               title: `Remove Server`,
               message: (
@@ -107,12 +106,13 @@ const ProfileSignInItem = observer(props => {
               },
             });
           }}
-          onRefreshBtnPress={() => g.goToPageProfileUpdate({ id: p.id })}
-          onSaveBtnPress={() => {
+          onBackIcon={mdiClose}
+          onMore={() => g.goToPageProfileUpdate({ id: p.id })}
+          onMoreIcon={mdiDotsHorizontal}
+          onNext={() => {
             authStore.signIn(p.id);
           }}
-          refreshIcon={mdiDotsHorizontal}
-          saveText="SIGN IN"
+          onNextText="SIGN IN"
         />
       </View>
     </View>

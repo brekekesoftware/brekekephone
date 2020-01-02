@@ -2,48 +2,40 @@ import React from 'react';
 
 import g from '../global';
 import { StyleSheet, TouchableOpacity, View } from '../native/Rn';
-import Icon from './Icon';
-import { menus } from './navigationConfig';
+import Icon from '../shared/Icon';
+import { menus } from '../shared/navigationConfig';
 
 const css = StyleSheet.create({
-  FooterNavigation: {
+  Navigation: {
     flexDirection: `row`,
     alignSelf: `stretch`,
   },
-  FooterNavigation_Btn: {
+  Btn: {
     flex: 1,
     padding: 4,
     alignItems: `center`,
   },
-  FooterNavigation_BtnBg: {
+  BtnBg: {
     paddingVertical: 8,
     width: `100%`,
   },
-  FooterNavigation_BtnBg__active: {
+  BtnBg__active: {
     borderRadius: 22,
     backgroundColor: g.colors.primaryFn(0.5),
   },
 });
 
-const FooterNavigation = ({ menu }) => (
-  <View style={css.FooterNavigation}>
+const Navigation = ({ menu }) => (
+  <View style={css.Navigation}>
     {menus.map(m => {
       const active = m.key === menu;
       return (
         <TouchableOpacity
           key={m.key}
           onPress={active ? null : m.navFn}
-          style={[
-            css.FooterNavigation_Btn,
-            // active && css.FooterNavigation_Btn__active,
-          ]}
+          style={css.Btn}
         >
-          <View
-            style={[
-              css.FooterNavigation_BtnBg,
-              active && css.FooterNavigation_BtnBg__active,
-            ]}
-          >
+          <View style={[css.BtnBg, active && css.BtnBg__active]}>
             <Icon path={m.icon} />
           </View>
         </TouchableOpacity>
@@ -52,4 +44,4 @@ const FooterNavigation = ({ menu }) => (
   </View>
 );
 
-export default FooterNavigation;
+export default Navigation;

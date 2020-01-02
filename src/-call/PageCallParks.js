@@ -36,11 +36,6 @@ class PageCallParks extends React.Component {
             onPress: this.park,
           },
         ]}
-        footer={{
-          navigation: {
-            menu: `call`,
-          },
-        }}
         menu="call"
         subMenu="parks"
         title="Parks"

@@ -80,12 +80,6 @@ class PageContactPhonebook extends React.Component {
             },
           },
         ]}
-        footer={{
-          navigation: {
-            menu: `contact`,
-            subMenu: `phonebook`,
-          },
-        }}
         menu="contact"
         subMenu="phonebook"
         title={this.props.book || `Phonebook`}

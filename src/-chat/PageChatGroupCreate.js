@@ -31,13 +31,9 @@ class PageChatGroupCreate extends React.Component {
   render() {
     return (
       <Layout
-        footer={{
-          actions: {
-            onSaveBtnPress: this.create,
-            onBackBtnPress: g.goToPageChatRecents,
-          },
-        }}
         onBack={g.goToPageChatRecents}
+        onFabBack={g.goToPageChatRecents}
+        onFabNext={this.create}
         title="New Group"
       >
         <Field

@@ -44,15 +44,6 @@ class PageChatDetail extends React.Component {
     return (
       <Layout
         compact={true}
-        footer={{
-          actions: {
-            selectFile: this.pickFile,
-            text: this.state.editingText,
-            setText: this.setEditingText,
-            submitText: this.submitEditingText,
-          },
-          LayoutChat: true,
-        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,

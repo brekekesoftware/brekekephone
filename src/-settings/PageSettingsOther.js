@@ -57,12 +57,6 @@ class PageSettingsOther extends Component {
             danger: true,
           },
         ]}
-        footer={{
-          navigation: {
-            menu: `settings`,
-            subMenu: `other`,
-          },
-        }}
         menu="settings"
         subMenu="other"
         title="Other settings"

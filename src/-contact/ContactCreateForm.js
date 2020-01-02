@@ -64,14 +64,9 @@ const ContactsCreateForm = observer(props => {
   const [Form, submitForm] = useForm();
   return (
     <Layout
-      footer={{
-        actions: {
-          onBackBtnPress: $.onBackBtnPress,
-          onSaveBtnPress: submitForm,
-        },
-        Phonebook: true,
-      }}
       onBack={$.onBackBtnPress}
+      onFabBack={$.onBackBtnPress}
+      onFabNext={submitForm}
       title={props.title}
     >
       <Form
