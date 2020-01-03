@@ -73,8 +73,11 @@ class PageCallManage extends React.Component {
       const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
       if (!nextSelectedId || isSelectedIdInactive) {
         const call = this.findNewestCallByRunids_s(runids, this.props);
-        callStore.set(`selectedId`, call.id);
-        g.goToPageCallRecents();
+        if (call.id) {
+          callStore.set(`selectedId`, call.id);
+        } else {
+          g.goToPageCallRecents();
+        }
       }
     } else {
       this._checkCreatingSessionAndRoute();
@@ -139,7 +142,6 @@ class PageCallManage extends React.Component {
           <CallManage
             {...u}
             answer={this.answer}
-            browseHistory={g.goToPageCallRecents}
             create={g.goToPageCallKeypad}
             disableVideo={this.disableVideo}
             dtmf={this.dtmf}
