@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 
 import g from '../global';
-import { Animated, StyleSheet, View } from '../native/Rn';
-import { useAnimation } from '../utils/animation';
+import { StyleSheet, View } from '../native/Rn';
 import BackBtn from './BackBtn';
 import CreateBtn from './CreateBtn';
 import Dropdown from './Dropdown';
-import HeaderNavigation from './HeaderNavigation';
+import Navigation from './Navigation';
 import Title from './Title';
 
 const css = StyleSheet.create({
@@ -16,18 +15,17 @@ const css = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  Inner: {
-    padding: 15,
+  Outer: {
     backgroundColor: g.bg,
   },
-  Inner__compact: {
+  Outer__compact: {
     ...g.boxShadow,
   },
-  Inner__hasBackBtn: {
-    paddingLeft: 50,
-  },
-  Inner__transparent: {
+  Outer__transparent: {
     backgroundColor: `transparent`,
+  },
+  Inner__hasBackBtn: {
+    paddingLeft: 35,
   },
 });
 
@@ -43,33 +41,31 @@ const Header = ({
   transparent,
 }) => {
   const [dropdownActive, setDropdownActive] = useState(false);
-  const cssInnerA = useAnimation(compact, {
-    paddingVertical: [15, 10],
-  });
   return (
     <React.Fragment>
       <View style={[css.Header]}>
-        <Animated.View
+        <View
           style={[
-            css.Inner,
-            compact && css.Inner__compact,
-            onBack && css.Inner__hasBackBtn,
-            transparent && css.Inner__transparent,
-            cssInnerA,
+            css.Outer,
+            compact && css.Outer__compact,
+            transparent && css.Outer__transparent,
           ]}
         >
-          <Title compact={compact} description={description} title={title} />
-          {onBack && <BackBtn compact={compact} onPress={onBack} />}
-          {dropdown && <Dropdown.Btn onPress={() => setDropdownActive(true)} />}
-        </Animated.View>
-        {menu && <HeaderNavigation menu={menu} subMenu={subMenu} />}
+          <View style={onBack && css.Inner__hasBackBtn}>
+            <Title compact={compact} description={description} title={title} />
+            {onBack && <BackBtn compact={compact} onPress={onBack} />}
+            {dropdown && (
+              <Dropdown.Btn onPress={() => setDropdownActive(true)} />
+            )}
+          </View>
+          {menu && <Navigation menu={menu} subMenu={subMenu} />}
+        </View>
       </View>
-      {dropdown && (
+      {dropdown && dropdownActive && (
         <Dropdown
-          active={dropdownActive}
           close={() => setDropdownActive(false)}
           compact={compact}
-          items={dropdown}
+          dropdown={dropdown}
         />
       )}
       {/* No compact mode, should only use in the noScroll layout (such as the server list page)

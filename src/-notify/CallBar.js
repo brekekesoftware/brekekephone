@@ -174,21 +174,22 @@ class CallBar extends React.Component {
       g.stacks.filter(t => t.name === `PageCallManage`).length === 0;
     const callId = callStore.selectedId || ``;
     const activecall = this.callById[callId];
+    if (!bVisible || !callId || !activecall) {
+      return null;
+    }
     return (
       <View style={css.CallBar}>
-        {bVisible && callId !== `` && activecall && (
-          <RunningItem
-            activecall={activecall}
-            hangup={this.hangup}
-            hold={this.hold}
-            onCloseLoudSpeaker={this.onCloseLoudSpeaker}
-            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-            pressCallsManage={g.goToPageCallManage}
-            setMuted={this.setMuted}
-            setunMuted={this.setunMuted}
-            unhold={this.unhold}
-          />
-        )}
+        <RunningItem
+          activecall={activecall}
+          hangup={this.hangup}
+          hold={this.hold}
+          onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+          onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+          pressCallsManage={g.goToPageCallManage}
+          setMuted={this.setMuted}
+          setunMuted={this.setunMuted}
+          unhold={this.unhold}
+        />
       </View>
     );
   }

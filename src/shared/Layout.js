@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
+import Footer from '../Footer/Footer';
+import g from '../global';
 import Header from '../Header/Header';
 import { ScrollView, StyleSheet, View } from '../native/Rn';
-import LayoutFooter from './LayoutFooter';
 
 const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
-    paddingBottom: getBottomSpace(),
   },
   Layout_Scroll: {
     flexGrow: 1,
@@ -48,28 +48,27 @@ const Layout = props => {
       containerProps = { ...containerProps, ...containerPropsChat };
     }
   }
-
+  //
   let headerSpace = 86 + 15;
   if (props.menu) {
     headerSpace += 35;
   }
-
   let footerSpace = getBottomSpace() + 15;
-  if (props.footer?.navigation) {
+  if (props.menu && !g.isKeyboardShowing) {
     footerSpace += 48;
   }
-  if (props.footer?.actions) {
+  if (props.onFabNext || g.isKeyboardShowing) {
     footerSpace += 60;
   }
-
+  //
   return (
     <React.Fragment>
       <Container {...containerProps}>
         <View style={{ height: headerSpace }} />
         {props.children}
-        <View style={{ height: footerSpace }} />
       </Container>
-      {props.footer && <LayoutFooter {...props.footer} />}
+      <View style={{ height: footerSpace }} />
+      <Footer {...props} />
       <Header {...props} compact={props.compact || headerOverflow} />
     </React.Fragment>
   );

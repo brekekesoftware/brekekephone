@@ -5,6 +5,9 @@ import { Animated, StyleSheet, Text } from '../native/Rn';
 import { useAnimation } from '../utils/animation';
 
 const css = StyleSheet.create({
+  Container: {
+    padding: 15,
+  },
   Title: {
     fontSize: g.fontSizeTitle,
     lineHeight: g.lineHeightTitle,
@@ -17,17 +20,20 @@ const css = StyleSheet.create({
 });
 
 const Title = ({ compact, description, title }) => {
+  const cssContainerA = useAnimation(compact, {
+    paddingVertical: [15, 10],
+  });
   const cssTitleA = useAnimation(compact, {
     fontSize: [g.fontSizeTitle, g.fontSizeSubTitle],
     lineHeight: [g.lineHeightTitle, 20],
   });
   return (
-    <React.Fragment>
+    <Animated.View style={[css.Container, cssContainerA]}>
       <Animated.Text style={[css.Title, cssTitleA]}>{title}</Animated.Text>
       {!compact && (
         <Text style={css.Description}>{description || `\u200a`}</Text>
       )}
-    </React.Fragment>
+    </Animated.View>
   );
 };
 

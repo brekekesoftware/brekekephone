@@ -43,15 +43,7 @@ class PageChatDetail extends React.Component {
     const u = contactStore.getUCUser(this.props.buddy);
     return (
       <Layout
-        footer={{
-          actions: {
-            selectFile: this.pickFile,
-            text: this.state.editingText,
-            setText: this.setEditingText,
-            submitText: this.submitEditingText,
-          },
-          LayoutChat: true,
-        }}
+        compact={true}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,

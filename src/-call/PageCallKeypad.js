@@ -18,12 +18,6 @@ class PageCallKeypad extends React.Component {
     return (
       <Layout
         description="Keypad dial manually"
-        footer={{
-          navigation: {
-            menu: `call`,
-          },
-          KeyPad: true,
-        }}
         menu="call"
         subMenu="keypad"
         title="Keypad"

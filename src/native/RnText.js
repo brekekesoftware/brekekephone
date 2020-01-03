@@ -33,6 +33,15 @@ const css = StyleSheet.create({
   RnText__white: {
     color: `white`,
   },
+  RnText__primary: {
+    color: v.colors.primary,
+  },
+  RnText__warning: {
+    color: v.colors.warning,
+  },
+  RnText__danger: {
+    color: v.colors.danger,
+  },
   RnText__normal: {
     fontWeight: `normal`,
   },
@@ -53,11 +62,14 @@ const RnText = forwardRef(
       black,
       bold,
       center,
+      danger,
       normal,
+      primary,
       right,
       small,
       subTitle,
       title,
+      warning,
       white,
       ...props
     },
@@ -74,6 +86,9 @@ const RnText = forwardRef(
         small && css.RnText__small,
         black && css.RnText__black,
         white && css.RnText__white,
+        primary && css.RnText__primary,
+        warning && css.RnText__warning,
+        danger && css.RnText__danger,
         normal && css.RnText__normal,
         bold && css.RnText__bold,
         center && css.RnText__center,

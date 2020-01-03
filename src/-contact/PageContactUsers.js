@@ -123,12 +123,6 @@ class PageContactUsers extends React.Component {
           }
           return desc;
         })()}
-        footer={{
-          navigation: {
-            menu: `contact`,
-            subMenu: `users`,
-          },
-        }}
         menu="contact"
         subMenu="users"
         title="Users"

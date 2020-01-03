@@ -141,3 +141,14 @@ g.goToPageIndex = () => {
   const k = p.navSubMenus[i];
   menus[i].subMenusMap[k].navFn();
 };
+
+export const getSubMenus = menu => {
+  const m = menus.find(m => m.key === menu);
+  if (!m) {
+    g.showError({ message: `Can not find sub menus for ${menu}` });
+    return [];
+  }
+  return m.subMenus.filter(
+    s => !(s.ucRequired && !authStore.currentProfile?.ucEnabled),
+  );
+};

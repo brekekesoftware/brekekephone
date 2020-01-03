@@ -42,6 +42,7 @@ class PageChatGroupDetail extends React.Component {
     const gr = chatStore.getGroup(this.props.groupId);
     return (
       <Layout
+        compact={true}
         dropdown={[
           {
             label: `Invite more people`,
@@ -56,14 +57,6 @@ class PageChatGroupDetail extends React.Component {
             onPress: this.callVoiceConference,
           },
         ]}
-        footer={{
-          actions: {
-            text: this.state.editingText,
-            setText: this.setEditingText,
-            submitText: this.submitEditingText,
-          },
-          LayoutChat: true,
-        }}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,

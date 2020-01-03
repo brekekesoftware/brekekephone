@@ -103,36 +103,27 @@ const ProfileCreateForm = observer(props => {
       }
       dropdown={
         props.footerLogout
-          ? null
+          ? [
+              {
+                label: `Logout`,
+                onPress: () => {
+                  g.goToPageProfileSignIn();
+                  authStore.signedInId = ``;
+                },
+                danger: true,
+              },
+            ]
           : [
               {
-                label: `Reset all fields`,
+                label: `Reset form`,
                 onPress: $.resetAllFields,
               },
             ]
       }
-      footer={{
-        actions: {
-          onBackBtnPress: props.footerLogout ? null : $.onBackBtnPress,
-          onSaveBtnPress: props.footerLogout
-            ? () => {
-                g.goToPageProfileSignIn();
-                authStore.signedInId = ``;
-              }
-            : submitForm,
-          saveText: props.footerLogout ? `LOGOUT` : null,
-          saveColor: props.footerLogout ? g.colors.danger : null,
-        },
-        forceDisplayActions: props.footerLogout,
-        navigation: props.footerLogout
-          ? {
-              menu: `settings`,
-              subMenu: `profile`,
-            }
-          : null,
-      }}
       menu={props.footerLogout ? `settings` : null}
       onBack={props.footerLogout ? null : $.onBackBtnPress}
+      onFabBack={props.footerLogout ? null : $.onBackBtnPress}
+      onFabNext={props.footerLogout ? null : submitForm}
       subMenu={props.footerLogout ? `profile` : null}
       title={props.title}
     >
