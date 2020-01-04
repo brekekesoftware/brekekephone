@@ -7,11 +7,12 @@ import Icon from '../shared/Icon';
 
 const css = StyleSheet.create({
   Actions: {
-    width: `100%`,
+    flex: 1,
     flexDirection: `row`,
     borderRadius: g.borderRadius,
     overflow: `hidden`,
   },
+  //
   Btn: {
     borderRadius: 0,
     width: `25%`,
@@ -43,7 +44,7 @@ const css = StyleSheet.create({
   Text: {
     flex: 1,
     color: g.revColor,
-    lineHeight: 24, // Icon height
+    lineHeight: g.iconSize,
     textAlign: `center`,
   },
 });

@@ -68,7 +68,6 @@ const KeyPad = p => (
       <TouchableOpacity
         onPress={p.callVoice}
         style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call]}
-        success
       >
         <Icon path={mdiPhone} />
       </TouchableOpacity>

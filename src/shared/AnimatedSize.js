@@ -18,25 +18,27 @@ const css = StyleSheet.create({
 
 // The style and innerStyle prop should only be used for positioning and theming
 // We should not use them for sizing like height/border/padding... -> use the children instead
-const AnimatedHeight = p => {
-  const [height, setHeight] = useState(0);
-  const Component = height ? Animation : Getter;
-  return <Component {...p} height={height} setHeight={setHeight} />;
+const AnimatedSize = p => {
+  const [size, setSize] = useState(0);
+  const Component = size ? Animation : Getter;
+  return <Component {...p} setSize={setSize} size={size} />;
 };
 
-const Getter = ({ children, setHeight }) => (
+const Getter = ({ animateWidth, children, setSize }) => (
   <View style={css.Getter}>
     <View
-      onLayout={e => setHeight(e.nativeEvent.layout.height)}
+      onLayout={e =>
+        setSize(e.nativeEvent.layout[animateWidth ? `width` : `height`])
+      }
       style={css.GetterInner}
     >
       {children}
     </View>
   </View>
 );
-const Animation = ({ children, height, innerStyle, style }) => {
+const Animation = ({ animateWidth, children, innerStyle, size, style }) => {
   const cssAnimation = useAnimationOnDidMount({
-    height: [0, height],
+    [animateWidth ? `width` : `height`]: [0, size],
   });
   return (
     <Animated.View style={[style, cssAnimation]}>
@@ -45,4 +47,4 @@ const Animation = ({ children, height, innerStyle, style }) => {
   );
 };
 
-export default AnimatedHeight;
+export default AnimatedSize;

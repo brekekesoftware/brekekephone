@@ -10,6 +10,7 @@ const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
+    paddingBottom: 15,
   },
   Layout_Scroll: {
     flexGrow: 1,
@@ -53,12 +54,12 @@ const Layout = props => {
   if (props.menu) {
     headerSpace += 35;
   }
-  let footerSpace = getBottomSpace() + 15;
+  let footerSpace = getBottomSpace();
   if (props.menu && !g.isKeyboardShowing) {
     footerSpace += 48;
   }
   if (props.onFabNext || g.isKeyboardShowing) {
-    footerSpace += 60;
+    footerSpace += 56;
   }
   //
   return (

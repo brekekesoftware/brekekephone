@@ -3,7 +3,7 @@ import React from 'react';
 
 import g from '../global';
 import { StyleSheet, Text, TouchableOpacity } from '../native/Rn';
-import AnimatedHeight from '../shared/AnimatedHeight';
+import AnimatedSize from '../shared/AnimatedSize';
 import Icon from '../shared/Icon';
 
 const css = StyleSheet.create({
@@ -60,7 +60,7 @@ const Dropdown = ({ close, compact, dropdown }) => {
         onPress={close}
         style={css.Backdrop}
       />
-      <AnimatedHeight
+      <AnimatedSize
         innerStyle={css.Inner}
         style={[css.Dropdown, compact && css.Dropdown__compact]}
       >
@@ -76,7 +76,7 @@ const Dropdown = ({ close, compact, dropdown }) => {
             <Text {...{ primary, warning, danger }}>{label}</Text>
           </TouchableOpacity>
         ))}
-      </AnimatedHeight>
+      </AnimatedSize>
     </React.Fragment>
   );
 };
