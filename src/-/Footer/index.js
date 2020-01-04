@@ -2,9 +2,9 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
-import g from '../global';
-import { StyleSheet, View } from '../native/Rn';
-import { arrToMap } from '../utils/toMap';
+import g from '../../global';
+import { arrToMap } from '../../utils/toMap';
+import { StyleSheet, View } from '../Rn';
 import Actions from './Actions';
 import Navigation from './Navigation';
 import ToggleKeyboard from './ToggleKeyboard';
@@ -41,20 +41,20 @@ const css = StyleSheet.create({
 });
 
 const Footer = observer(props => {
-  const { menu, onFabNext } = props;
-  if (!(menu || onFabNext || g.isKeyboardShowing)) {
+  const { fabRender, menu, onFabNext } = props;
+  if (!(menu || fabRender || onFabNext || g.isKeyboardShowing)) {
     return null;
   }
-  const fabProps =
-    onFabNext &&
-    arrToMap(
-      Object.keys(props).filter(k => k.indexOf(`Fab`) > 0),
-      k => k.replace(`Fab`, ``),
-      k => props[k],
-    );
+  const fabProps = arrToMap(
+    Object.keys(props).filter(k => k.indexOf(`Fab`) > 0),
+    k => k.replace(`Fab`, ``),
+    k => props[k],
+  );
   return (
     <View style={css.Footer}>
-      {onFabNext && (
+      {fabRender ? (
+        <View style={css.ActionsOuter}>{fabRender()}</View>
+      ) : onFabNext ? (
         <View style={css.ActionsOuter}>
           <View style={css.ActionsSpacing} />
           <View style={css.ActionsInner}>
@@ -63,13 +63,12 @@ const Footer = observer(props => {
           </View>
           <View style={css.ActionsSpacing} />
         </View>
-      )}
-      {g.isKeyboardShowing && !onFabNext && (
+      ) : g.isKeyboardShowing ? (
         <View style={css.ActionsOuter}>
           <View style={css.ActionsSpacing} />
           <ToggleKeyboard {...fabProps} />
         </View>
-      )}
+      ) : null}
       {!g.isKeyboardShowing && menu && <Navigation menu={menu} />}
     </View>
   );

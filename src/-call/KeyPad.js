@@ -1,15 +1,15 @@
 import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
 import {
+  Icon,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from '../native/Rn';
-import Icon from '../shared/Icon';
+} from '../-/Rn';
+import g from '../global';
 
 const css = StyleSheet.create({
   KeyPad_Number: {

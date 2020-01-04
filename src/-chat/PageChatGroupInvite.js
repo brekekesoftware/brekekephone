@@ -2,12 +2,12 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
-import Footer from '../Footer/Footer';
+import Footer from '../-/Footer';
+import Header from '../-/Header';
+import { ScrollView, StyleSheet, View } from '../-/Rn';
 import g from '../global';
-import Header from '../Header/Header';
-import { ScrollView, StyleSheet, View } from '../native/Rn';
 
 const css = StyleSheet.create({
   Layout: {

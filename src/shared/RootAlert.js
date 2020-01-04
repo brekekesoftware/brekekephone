@@ -2,7 +2,6 @@ import flow from 'lodash/flow';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import g from '../global';
 import {
   Animated,
   Dimensions,
@@ -10,7 +9,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from '../native/Rn';
+} from '../-/Rn';
+import g from '../global';
 import { useAnimationOnDidMount } from '../utils/animation';
 import useStore from '../utils/useStore';
 

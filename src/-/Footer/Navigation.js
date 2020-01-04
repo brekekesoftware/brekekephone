@@ -1,9 +1,8 @@
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, TouchableOpacity, View } from '../native/Rn';
-import Icon from '../shared/Icon';
-import { menus } from '../shared/navigationConfig';
+import g from '../../global';
+import { menus } from '../../shared/navigationConfig';
+import { Icon, StyleSheet, TouchableOpacity, View } from '../Rn';
 
 const css = StyleSheet.create({
   Navigation: {

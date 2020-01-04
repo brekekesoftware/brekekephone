@@ -1,6 +1,6 @@
 import shortid from 'shortid';
 
-import { AsyncStorage } from '../native/Rn';
+import { AsyncStorage } from '../-/Rn';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
 

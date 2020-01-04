@@ -8,14 +8,13 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
-import Icon from '../shared/Icon';
 import Layout from '../shared/Layout';
 
 const css = StyleSheet.create({

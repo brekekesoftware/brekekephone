@@ -9,10 +9,10 @@ import {
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import FooterActions from '../Footer/Actions';
+import FooterActions from '../-/Footer/Actions';
+import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
 import authStore from '../global/authStore';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
 
 const css = StyleSheet.create({

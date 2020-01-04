@@ -1,18 +1,19 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { StyleSheet, View } from '../native/Rn';
-import v from '../variables';
+import v from '../../variables';
 
 const css = StyleSheet.create({
   Icon: {
+    flex: 1,
     alignItems: `center`,
     justifyContent: `center`,
   },
 });
 
-const Icon = ({ color, path, size = v.iconSize, viewBox, ...p }) => (
-  <View {...p} style={[css.Icon, p.style, !p.noFlex && { flex: 1 }]}>
+const Icon = ({ color, path, size = v.iconSize, viewBox, style, ...p }) => (
+  <View {...p} style={[css.Icon, style]}>
     <Svg
       height={size}
       /* 24 is the regular size of the @mdi/js package */

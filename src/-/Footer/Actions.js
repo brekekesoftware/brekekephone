@@ -1,9 +1,8 @@
 import { mdiCached, mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
-import Icon from '../shared/Icon';
+import g from '../../global';
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 
 const css = StyleSheet.create({
   Actions: {

@@ -2,11 +2,11 @@ import { mdiMagnify } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
-import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';

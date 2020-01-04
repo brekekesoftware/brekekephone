@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { FlatList, StyleSheet, View } from '../-/Rn';
 import g from '../global';
-import { FlatList, StyleSheet, View } from '../native/Rn';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';

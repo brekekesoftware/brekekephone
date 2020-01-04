@@ -2,16 +2,16 @@ import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import g from '../global';
+import g from '../../global';
+import AnimatedSize from '../../shared/AnimatedSize';
 import {
+  Icon,
   Keyboard,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
-} from '../native/Rn';
-import AnimatedSize from '../shared/AnimatedSize';
-import Icon from '../shared/Icon';
+} from '../Rn';
 
 const css = StyleSheet.create({
   ToggleKeyboard: {

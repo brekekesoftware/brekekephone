@@ -1,7 +1,7 @@
 import FCM, { FCMEvent } from 'react-native-fcm';
 
+import { AppRegistry, AsyncStorage } from '../-/Rn';
 import g from '../global';
-import { AppRegistry, AsyncStorage } from '../native/Rn';
 import parse from './PushNotification-parse';
 
 const { Notification, RefreshToken } = FCMEvent;

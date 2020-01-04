@@ -4,7 +4,7 @@ import './__picker';
 import './__stacker';
 import './_profiles';
 
-import { BackHandler, Keyboard } from '../native/Rn';
+import { BackHandler, Keyboard } from '../-/Rn';
 import v from '../variables';
 import g from './_';
 

@@ -4,8 +4,8 @@ import omit from 'lodash/omit';
 import { observer } from 'mobx-react';
 import React, { useRef } from 'react';
 
-import g from '../global';
 import {
+  Icon,
   Keyboard,
   Platform,
   StyleSheet,
@@ -14,9 +14,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from '../native/Rn';
+} from '../-/Rn';
+import g from '../global';
 import useStore from '../utils/useStore';
-import Icon from './Icon';
 
 const css = StyleSheet.create({
   Field: {

@@ -4,19 +4,19 @@ import { mdiAndroidHead, mdiApple, mdiWeb } from '@mdi/js';
 import React, { useState } from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
-import App from './App';
-import brand from './assets/brand.png';
-import logo from './assets/logo.png';
 import {
   AppRegistry,
+  Icon,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from './native/Rn';
+} from './-/Rn';
+import App from './App';
+import brand from './assets/brand.png';
+import logo from './assets/logo.png';
 import BrekekeGradient from './shared/BrekekeGradient';
-import Icon from './shared/Icon';
 import v from './variables';
 
 const globalCss = `* {

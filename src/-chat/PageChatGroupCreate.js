@@ -2,12 +2,12 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
-import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -34,6 +34,7 @@ class PageChatGroupCreate extends React.Component {
         onBack={g.goToPageChatRecents}
         onFabBack={g.goToPageChatRecents}
         onFabNext={this.create}
+        onFabNextText="CREATE"
         title="New Group"
       >
         <Field

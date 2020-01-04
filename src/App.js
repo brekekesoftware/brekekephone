@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
+import { Platform, StatusBar, StyleSheet, Text, View } from './-/Rn';
 import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
@@ -31,7 +32,6 @@ import g from './global';
 import authStore from './global/authStore';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
-import { Platform, StatusBar, StyleSheet, Text, View } from './native/Rn';
 import AnimatedSize from './shared/AnimatedSize';
 import RootAlert from './shared/RootAlert';
 import RootAuth from './shared/RootAuth';

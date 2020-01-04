@@ -1,9 +1,8 @@
 import { mdiClose } from '@mdi/js';
 import React from 'react';
 
+import { Icon, StyleSheet, TextInput, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
-import { StyleSheet, TextInput, TouchableOpacity, View } from '../native/Rn';
-import Icon from './Icon';
 
 const css = StyleSheet.create({
   Search: {

@@ -2,17 +2,17 @@ import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import g from '../global';
 import {
   Animated,
   Dimensions,
+  Icon,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from '../native/Rn';
+} from '../-/Rn';
+import g from '../global';
 import { useAnimationOnDidMount } from '../utils/animation';
-import Icon from './Icon';
 
 const css = StyleSheet.create({
   Picker: {

@@ -1,10 +1,9 @@
 import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js';
 import React from 'react';
 
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
-import Icon from '../shared/Icon';
 
 const css = StyleSheet.create({
   Item: {
@@ -62,6 +61,9 @@ const css = StyleSheet.create({
   Item__pdLeft0: {
     paddingLeft: 0,
   },
+  Icon__noFlex: {
+    flex: null,
+  },
 });
 
 const UserItem = p => (
@@ -81,25 +83,25 @@ const UserItem = p => (
           {p.incoming && p.answered && (
             <Icon
               color={g.colors.primary}
-              noFlex
               path={mdiPhoneIncoming}
               size={18}
+              style={css.Icon__noFlex}
             />
           )}
           {p.incoming && !p.answered && (
             <Icon
               color={g.colors.danger}
-              noFlex
               path={mdiPhoneMissed}
               size={18}
+              style={css.Icon__noFlex}
             />
           )}
           {!p.incoming && !p.park && !p.lastmess && (
             <Icon
               color={g.colors.primary}
-              noFlex
               path={mdiPhoneOutgoing}
               size={18}
+              style={css.Icon__noFlex}
             />
           )}
           {p.created && (

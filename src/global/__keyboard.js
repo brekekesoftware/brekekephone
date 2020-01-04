@@ -1,4 +1,4 @@
-import { Keyboard } from '../native/Rn';
+import { Keyboard } from '../-/Rn';
 import $ from './_';
 
 $.extends({

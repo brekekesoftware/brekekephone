@@ -1,10 +1,9 @@
 import { mdiDotsVertical } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, Text, TouchableOpacity } from '../native/Rn';
-import AnimatedSize from '../shared/AnimatedSize';
-import Icon from '../shared/Icon';
+import g from '../../global';
+import AnimatedSize from '../../shared/AnimatedSize';
+import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn';
 
 const css = StyleSheet.create({
   Backdrop: {

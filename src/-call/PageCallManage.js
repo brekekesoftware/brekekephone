@@ -4,12 +4,12 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { Platform } from 'react-native';
 
+import { StyleSheet, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import IncallManager from '../native/IncallManager';
-import { StyleSheet, View } from '../native/Rn';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
