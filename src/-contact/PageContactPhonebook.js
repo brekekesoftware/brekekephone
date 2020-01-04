@@ -192,7 +192,7 @@ class PageContactPhonebook extends React.Component {
     this.setState({
       loading: false,
     });
-    g.showError({ message: `load contact list`, err });
+    g.showError({ message: `Failed to load contact list`, err });
   };
   loadContactDetail = id => {
     pbx
@@ -201,7 +201,10 @@ class PageContactPhonebook extends React.Component {
         contactStore.pushPhonebook(detail);
       })
       .catch(err => {
-        g.showError({ message: `load contact detail for id ${id}`, err });
+        g.showError({
+          message: `Failed to load contact detail for id ${id}`,
+          err,
+        });
       });
   };
 

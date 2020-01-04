@@ -105,7 +105,7 @@ class PageChatGroupInvite extends React.Component {
       .then(this.back);
   };
   onInviteFailure = err => {
-    g.showError({ message: `invite group chat`, err });
+    g.showError({ message: `Failed to invite group chat`, err });
   };
   back = () => {
     g.goToPageChatGroupDetail({ groupId: this.props.groupId });

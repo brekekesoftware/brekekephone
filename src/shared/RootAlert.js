@@ -119,9 +119,7 @@ const Alert = ({ error, loading, prompt, ...props }) => {
       message: (
         <React.Fragment>
           <Text style={css.RootAlert_Message}>
-            {unexpectedErr
-              ? `An unexpected error occurred`
-              : `Failed to ${message}`}
+            {unexpectedErr ? `An unexpected error occurred` : message}
           </Text>
           <ErrorDetail err={unexpectedErr || err} />
         </React.Fragment>

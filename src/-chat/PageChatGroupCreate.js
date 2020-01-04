@@ -90,7 +90,7 @@ class PageChatGroupCreate extends React.Component {
     g.goToPageChatRecents();
   };
   onCreateFailure = err => {
-    g.showError({ message: `create the group chat`, err });
+    g.showError({ message: `Failed to create the group chat`, err });
   };
 }
 export default PageChatGroupCreate;

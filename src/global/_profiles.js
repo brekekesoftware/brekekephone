@@ -75,7 +75,7 @@ g.extends({
     try {
       await AsyncStorage.setItem(`_api_profiles`, JSON.stringify(arr));
     } catch (err) {
-      g.showError({ err, message: `save profiles to local storage` });
+      g.showError({ err, message: `Failed to save profiles to local storage` });
     }
   },
   upsertProfile: p => {

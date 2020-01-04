@@ -138,7 +138,7 @@ class ApiProvider extends React.Component {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      g.showError({ message: `load PBX users`, err });
+      g.showError({ message: `Failed to load PBX users`, err });
     });
 
     setTimeout(this.onPBXAndSipStarted, 170);

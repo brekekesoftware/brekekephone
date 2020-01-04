@@ -74,7 +74,7 @@ const PushNotification = {
       onNotification(n);
     } catch (err) {
       g.showError({
-        message: `register push notification`,
+        message: `Failed to register push notification`,
         err,
       });
     }

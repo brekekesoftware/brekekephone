@@ -163,7 +163,7 @@ class PageTransferAttend extends React.Component {
     g.goToPageCallManage();
   };
   onJoinFailure = err => {
-    g.showError({ err, message: `join the transfer` });
+    g.showError({ err, message: `Failed to join the transfer` });
   };
 
   stop = () => {
@@ -181,7 +181,7 @@ class PageTransferAttend extends React.Component {
     g.goToPageCallManage();
   };
   onStopFailure = err => {
-    g.showError({ err, message: `stop the transfer` });
+    g.showError({ err, message: `Failed to stop the transfer` });
   };
 }
 

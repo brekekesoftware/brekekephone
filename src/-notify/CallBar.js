@@ -249,7 +249,7 @@ class CallBar extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: `hold the call`, err });
+    g.showError({ message: `Failed to hold the call`, err });
   };
   unhold = () => {
     const activecallid = callStore.selectedId;
@@ -267,7 +267,7 @@ class CallBar extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: `unhold the call`, err });
+    g.showError({ message: `Failed to unhold the call`, err });
   };
 }
 
