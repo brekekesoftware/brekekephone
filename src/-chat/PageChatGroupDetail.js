@@ -37,7 +37,11 @@ class PageChatGroupDetail extends React.Component {
   };
   componentDidMount() {
     const noChat = !this.chatIds.length;
-    if (noChat) this.loadRecent();
+    if (noChat) {
+      this.loadRecent();
+    } else {
+      setTimeout(this.onContentSizeChange, 170);
+    }
   }
 
   renderChatInput = () => {
@@ -105,6 +109,8 @@ class PageChatGroupDetail extends React.Component {
   setViewRef = ref => {
     this.view = ref;
   };
+
+  _closeToBottom = true;
   onContentSizeChange = () => {
     if (this._closeToBottom) {
       this.view.scrollToEnd({
@@ -157,31 +163,24 @@ class PageChatGroupDetail extends React.Component {
   };
 
   loadRecent() {
-    const max = m.numberOfChatsPerLoad;
-    const query = {
-      max,
-    };
-    uc.getGroupChats(this.props.groupId, query)
-      .then(this.onLoadRecentSuccess)
-      .catch(this.onLoadRecentFailure);
-    this.setState({
-      loadingRecent: true,
-    });
+    this.setState({ loadingRecent: true });
+    uc.getGroupChats(this.props.groupId, {
+      max: m.numberOfChatsPerLoad,
+    })
+      .then(chats => {
+        chatStore.pushMessages(this.props.groupId, chats.reverse());
+        setTimeout(this.onContentSizeChange, 170);
+      })
+      .catch(err => {
+        g.showError({ message: `Failed to get recent chats`, err });
+      })
+      .then(() => {
+        this.setState({ loadingRecent: false });
+      });
   }
-  onLoadRecentSuccess = chats => {
-    chatStore.pushMessages(this.props.groupId, chats.reverse());
-    this.setState({
-      loadingRecent: false,
-    });
-  };
-  onLoadRecentFailure = err => {
-    this.setState({
-      loadingRecent: false,
-    });
-    g.showError({ message: `Failed to get recent chats`, err });
-  };
 
   loadMore = () => {
+    this.setState({ loadingMore: true });
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = m.numberOfChatsPerLoad;
@@ -191,23 +190,15 @@ class PageChatGroupDetail extends React.Component {
       end,
     };
     uc.getGroupChats(this.props.groupId, query)
-      .then(this.onLoadMoreSuccess)
-      .catch(this.onLoadMoreFailure);
-    this.setState({
-      loadingMore: true,
-    });
-  };
-  onLoadMoreSuccess = chats => {
-    chatStore.pushMessages(this.props.groupId, chats.reverse());
-    this.setState({
-      loadingMore: false,
-    });
-  };
-  onLoadMoreFailure = err => {
-    g.showError({ message: `Failed to get more chats`, err });
-    this.setState({
-      loadingMore: false,
-    });
+      .then(chats => {
+        chatStore.pushMessages(this.props.groupId, chats.reverse());
+      })
+      .catch(err => {
+        g.showError({ message: `Failed to get more chats`, err });
+      })
+      .then(() => {
+        this.setState({ loadingMore: false });
+      });
   };
 
   setEditingText = editingText => {
@@ -215,6 +206,7 @@ class PageChatGroupDetail extends React.Component {
       editingText,
     });
   };
+
   submitting = false;
   submitEditingText = () => {
     if (this.submitting) {
@@ -226,33 +218,27 @@ class PageChatGroupDetail extends React.Component {
     }
     this.submitting = true;
     uc.sendGroupChatText(this.props.groupId, txt)
-      .then(this.onSubmitEditingTextSuccess)
-      .catch(this.onSubmitEditingTextFailure)
+      .then(chat => {
+        chatStore.pushMessages(this.props.groupId, [chat]);
+        this.setState({ editingText: `` });
+      })
+      .catch(err => {
+        g.showError({ message: `Failed to send the message`, err });
+      })
       .then(() => {
         this.submitting = false;
       });
   };
-  onSubmitEditingTextSuccess = chat => {
-    chatStore.pushMessages(this.props.groupId, [chat]);
-    this.setState({
-      editingText: ``,
-    });
-  };
-  onSubmitEditingTextFailure = err => {
-    g.showError({ message: `Failed to send the message`, err });
-  };
 
   leave = () => {
     uc.leaveChatGroup(this.props.groupId)
-      .then(this.onLeaveSuccess)
-      .catch(this.onLeaveFailure);
-  };
-  onLeaveSuccess = () => {
-    chatStore.removeGroup(this.props.groupId);
-    g.goToPageChatRecents();
-  };
-  onLeaveFailure = err => {
-    g.showError({ message: `Failed to leave the group`, err });
+      .then(() => {
+        chatStore.removeGroup(this.props.groupId);
+        g.goToPageChatRecents();
+      })
+      .catch(err => {
+        g.showError({ message: `Failed to leave the group`, err });
+      });
   };
 
   invite = () => {

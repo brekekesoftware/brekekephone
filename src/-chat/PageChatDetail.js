@@ -38,7 +38,11 @@ class PageChatDetail extends React.Component {
   };
   componentDidMount() {
     const noChat = !this.chatIds.length;
-    if (noChat) this.loadRecent();
+    if (noChat) {
+      this.loadRecent();
+    } else {
+      setTimeout(this.onContentSizeChange, 170);
+    }
   }
   renderChatInput = () => {
     return (
@@ -82,10 +86,16 @@ class PageChatDetail extends React.Component {
       </Layout>
     );
   }
+
   setViewRef = ref => {
     this.view = ref;
   };
+
+  _closeToBottom = true;
   onContentSizeChange = () => {
+    if (!this.view) {
+      return;
+    }
     if (this._closeToBottom) {
       this.view.scrollToEnd({
         animated: !this._justMounted,
@@ -139,28 +149,26 @@ class PageChatDetail extends React.Component {
     }
     return contactStore.getUCUser(creator) || {};
   };
-  loadRecent() {
+  loadRecent = () => {
+    this.setState({ loadingRecent: true });
     uc.getBuddyChats(this.props.buddy, {
       max: m.numberOfChatsPerLoad,
     })
-      .then(this.onLoadRecentSuccess)
-      .catch(this.onLoadRecentFailure);
-    //
-    this.setState({ loadingRecent: true });
-  }
-  onLoadRecentSuccess = chats => {
-    this.setState({
-      loadingRecent: false,
-    });
-    chats = chats.reverse();
-    const u = contactStore.getUCUser(this.props.buddy);
-    chatStore.pushMessages(u.id, chats);
+      .then(chats => {
+        const u = contactStore.getUCUser(this.props.buddy);
+        chatStore.pushMessages(u.id, chats.reverse());
+        setTimeout(this.onContentSizeChange, 170);
+      })
+      .catch(err => {
+        g.showError({ err, message: `Failed to get recent chats` });
+      })
+      .then(() => {
+        this.setState({ loadingRecent: false });
+      });
   };
-  onLoadRecentFailure = err => {
-    this.setState({ loadingRecent: false });
-    g.showError({ err, message: `Failed to get recent chats` });
-  };
+
   loadMore = () => {
+    this.setState({ loadingMore: true });
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
     const max = m.numberOfChatsPerLoad;
@@ -168,26 +176,18 @@ class PageChatDetail extends React.Component {
     const query = { max, end };
     const u = contactStore.getUCUser(this.props.buddy);
     uc.getBuddyChats(u?.id, query)
-      .then(this.onLoadMoreSuccess)
-      .catch(this.onLoadMoreFailure);
-    this.setState({
-      loadingMore: true,
-    });
+      .then(chats => {
+        const u = contactStore.getUCUser(this.props.buddy);
+        chatStore.pushMessages(u.id, chats.reverse());
+      })
+      .catch(err => {
+        g.showError({ err, message: `Failed to get more chats` });
+      })
+      .then(() => {
+        this.setState({ loadingMore: false });
+      });
   };
-  onLoadMoreSuccess = chats => {
-    this.setState({
-      loadingMore: false,
-    });
-    chats = chats.reverse();
-    const u = contactStore.getUCUser(this.props.buddy);
-    chatStore.pushMessages(u.id, chats);
-  };
-  onLoadMoreFailure = err => {
-    this.setState({
-      loadingMore: false,
-    });
-    g.showError({ err, message: `Failed to get more chats` });
-  };
+
   setEditingText = editingText => {
     this.setState({ editingText });
   };
