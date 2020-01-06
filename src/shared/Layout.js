@@ -54,12 +54,18 @@ const Layout = props => {
   if (props.menu) {
     headerSpace += 35;
   }
+  if (props.compact) {
+    headerSpace -= 46; // TODO put more document here
+  }
   let footerSpace = getBottomSpace();
   if (props.menu && !g.isKeyboardShowing) {
     footerSpace += 48;
   }
-  if (props.onFabNext || g.isKeyboardShowing) {
+  if (props.fabRender || props.onFabNext || g.isKeyboardShowing) {
     footerSpace += 56;
+  }
+  if (props.fabRender) {
+    footerSpace -= 16; // TODO put more document here
   }
   //
   return (

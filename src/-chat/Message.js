@@ -72,7 +72,7 @@ const css = StyleSheet.create({
 
 const File = p => (
   <View style={css.Message_File}>
-    {p.source && p.fileType === `image` && (
+    {!!p.source && p.fileType === `image` && (
       <Image source={p.source} style={css.Message_File__Image} />
     )}
     {p.fileType !== `image` && (
@@ -85,17 +85,17 @@ const File = p => (
       </View>
     )}
     {p.state === `waiting` && (
-      <TouchableOpacity onPress={p.reject} style={[css.Message_File_Btn]}>
+      <TouchableOpacity onPress={p.reject} style={css.Message_File_Btn}>
         <Icon color={g.colors.danger} path={mdiClose} />
       </TouchableOpacity>
     )}
-    {p.incoming && p.state === `waiting` && (
-      <TouchableOpacity onPress={p.accept} style={[css.Message_File_Btn]}>
+    {!!p.incoming && p.state === `waiting` && (
+      <TouchableOpacity onPress={p.accept} style={css.Message_File_Btn}>
         <Icon color={g.colors.primary} path={mdiCheck} />
       </TouchableOpacity>
     )}
     {p.state === `started` && (
-      <TouchableOpacity onPress={p.reject} style={[css.Message_File_Btn]}>
+      <TouchableOpacity onPress={p.reject} style={css.Message_File_Btn}>
         <Progress
           bgColor={g.bg}
           borderWidth={1 * 2}

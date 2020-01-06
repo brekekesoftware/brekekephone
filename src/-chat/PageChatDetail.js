@@ -2,6 +2,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import ChatInput from '../-/Footer/ChatInput';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
@@ -39,11 +40,23 @@ class PageChatDetail extends React.Component {
     const noChat = !this.chatIds.length;
     if (noChat) this.loadRecent();
   }
+  renderChatInput = () => {
+    return (
+      <ChatInput
+        onTextChange={this.setEditingText}
+        onTextSubmit={this.submitEditingText}
+        openFilePicker={() => pickFile(this.sendFile)}
+        text={this.state.editingText}
+      />
+    );
+  };
+
   render() {
     const u = contactStore.getUCUser(this.props.buddy);
     return (
       <Layout
         compact={true}
+        fabRender={this.renderChatInput}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
@@ -213,9 +226,6 @@ class PageChatDetail extends React.Component {
   };
   onRejectFileFailure = err => {
     g.showError({ err, message: `Failed to reject file` });
-  };
-  pickFile = () => {
-    pickFile(this.sendFile);
   };
   blob = file => {
     const reader = new FileReader();

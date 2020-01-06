@@ -31,7 +31,6 @@ const css = StyleSheet.create({
     flex: 1,
   },
   //
-  // Add hide keyboard button
   ActionsInner: {
     flexDirection: `row`,
     width: `100%`,
@@ -53,20 +52,19 @@ const Footer = observer(props => {
   return (
     <View style={css.Footer}>
       {fabRender ? (
-        <View style={css.ActionsOuter}>{fabRender()}</View>
+        fabRender()
+      ) : g.isKeyboardShowing ? (
+        <View style={css.ActionsOuter}>
+          <View style={css.ActionsSpacing} />
+          <ToggleKeyboard {...fabProps} />
+        </View>
       ) : onFabNext ? (
         <View style={css.ActionsOuter}>
           <View style={css.ActionsSpacing} />
           <View style={css.ActionsInner}>
             <Actions {...fabProps} />
-            <ToggleKeyboard {...fabProps} />
           </View>
           <View style={css.ActionsSpacing} />
-        </View>
-      ) : g.isKeyboardShowing ? (
-        <View style={css.ActionsOuter}>
-          <View style={css.ActionsSpacing} />
-          <ToggleKeyboard {...fabProps} />
         </View>
       ) : null}
       {!g.isKeyboardShowing && menu && <Navigation menu={menu} />}
