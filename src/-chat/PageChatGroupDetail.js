@@ -56,6 +56,11 @@ class PageChatGroupDetail extends React.Component {
             label: `Start video call`,
             onPress: this.callVoiceConference,
           },
+          {
+            label: `Leave group`,
+            onPress: this.leave,
+            danger: true,
+          },
         ]}
         isChat={{
           ref: this.setViewRef,
@@ -243,6 +248,7 @@ class PageChatGroupDetail extends React.Component {
     sip.createSession(target, {
       videoEnabled: bVideoEnabled,
     });
+    g.goToPageCallManage();
   };
   callVoiceConference = () => {
     let target = this.props.groupId;
