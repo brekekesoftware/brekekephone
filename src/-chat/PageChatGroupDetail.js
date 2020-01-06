@@ -2,6 +2,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import ChatInput from '../-/Footer/ChatInput';
 import sip from '../api/sip';
 import uc from '../api/uc';
 import g from '../global';
@@ -38,6 +39,19 @@ class PageChatGroupDetail extends React.Component {
     const noChat = !this.chatIds.length;
     if (noChat) this.loadRecent();
   }
+
+  renderChatInput = () => {
+    return (
+      <ChatInput
+        onTextChange={this.setEditingText}
+        onTextSubmit={this.submitEditingText}
+        openFilePicker={() => {
+          /* TODO implement send file chat group here */
+        }}
+        text={this.state.editingText}
+      />
+    );
+  };
   render() {
     const gr = chatStore.getGroup(this.props.groupId);
     return (
