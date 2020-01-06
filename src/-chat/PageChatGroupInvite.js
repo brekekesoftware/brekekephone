@@ -2,12 +2,12 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -105,7 +105,7 @@ class PageChatGroupInvite extends React.Component {
       .then(this.back);
   };
   onInviteFailure = err => {
-    g.showError({ message: `invite group chat`, err });
+    g.showError({ message: `Failed to invite group chat`, err });
   };
   back = () => {
     g.goToPageChatGroupDetail({ groupId: this.props.groupId });

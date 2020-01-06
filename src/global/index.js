@@ -4,7 +4,7 @@ import './__picker';
 import './__stacker';
 import './_profiles';
 
-import { BackHandler } from '../native/Rn';
+import { BackHandler, Keyboard } from '../-/Rn';
 import v from '../variables';
 import g from './_';
 
@@ -12,6 +12,10 @@ g.extends(v);
 
 // Handle android hardware back button press
 BackHandler.addEventListener(`hardwareBackPress`, () => {
+  if (g.isKeyboardShowing) {
+    Keyboard.dismiss();
+    return true;
+  }
   if (g.alerts.length) {
     g.dismissAlert();
     return true;

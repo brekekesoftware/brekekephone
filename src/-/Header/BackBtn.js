@@ -1,9 +1,8 @@
 import { mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
 
-import { Animated, StyleSheet, TouchableOpacity } from '../native/Rn';
-import Icon from '../shared/Icon';
-import { useAnimation } from '../utils/animation';
+import { useAnimation } from '../../utils/animation';
+import { Animated, Icon, StyleSheet, TouchableOpacity } from '../Rn';
 
 const css = StyleSheet.create({
   BackBtn: {

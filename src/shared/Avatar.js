@@ -2,10 +2,9 @@ import { mdiRecord } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { Icon, Image, StyleSheet, View } from '../-/Rn';
 import g from '../global';
 import authStore from '../global/authStore';
-import { Image, StyleSheet, View } from '../native/Rn';
-import Icon from './Icon';
 
 const css = StyleSheet.create({
   Avatar: {

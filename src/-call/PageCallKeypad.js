@@ -14,11 +14,28 @@ class PageCallKeypad extends React.Component {
   txtRef = React.createRef();
   txtSelection = { start: 0, end: 0 };
 
+  showKeyboard = () => {
+    this.txtRef.current.focus();
+  };
+  callVoice = () => {
+    this.txt = this.txt.trim();
+    if (!this.txt) {
+      g.showError({ message: `No target` });
+      return;
+    }
+    sip.createSession(this.txt, {
+      videoEnabled: false,
+    });
+    g.goToPageCallManage();
+  };
+
   render() {
     return (
       <Layout
         description="Keypad dial manually"
         menu="call"
+        onFabNext={g.isKeyboardShowing ? this.callVoice : null}
+        onFabNextText="DIAL"
         subMenu="keypad"
         title="Keypad"
       >
@@ -41,17 +58,7 @@ class PageCallKeypad extends React.Component {
         />
         {!g.isKeyboardShowing && (
           <KeyPad
-            callVoice={() => {
-              this.txt = this.txt.trim();
-              if (!this.txt) {
-                g.showError({ message: `No target` });
-                return;
-              }
-              sip.createSession(this.txt, {
-                videoEnabled: false,
-              });
-              g.goToPageCallManage();
-            }}
+            callVoice={this.callVoice}
             onPressNumber={v => {
               const { end, start } = this.txtSelection;
               let min = Math.min(start, end);
@@ -70,9 +77,7 @@ class PageCallKeypad extends React.Component {
               this.txtSelection.start = p;
               this.txtSelection.end = p;
             }}
-            showKeyboard={() => {
-              this.txtRef.current.focus();
-            }}
+            showKeyboard={this.showKeyboard}
           />
         )}
       </Layout>

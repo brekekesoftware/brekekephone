@@ -145,7 +145,7 @@ class PageChatDetail extends React.Component {
   };
   onLoadRecentFailure = err => {
     this.setState({ loadingRecent: false });
-    g.showError({ err, message: `get recent chats` });
+    g.showError({ err, message: `Failed to get recent chats` });
   };
   loadMore = () => {
     const oldestChat = this.chatById[this.chatIds[0]] || {};
@@ -173,7 +173,7 @@ class PageChatDetail extends React.Component {
     this.setState({
       loadingMore: false,
     });
-    g.showError({ err, message: `get more chats` });
+    g.showError({ err, message: `Failed to get more chats` });
   };
   setEditingText = editingText => {
     this.setState({ editingText });
@@ -198,7 +198,7 @@ class PageChatDetail extends React.Component {
     this.setState({ editingText: `` });
   };
   onSubmitEditingTextFailure = err => {
-    g.showError({ err, message: `send the message` });
+    g.showError({ err, message: `Failed to send the message` });
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
@@ -206,13 +206,13 @@ class PageChatDetail extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({ err, message: `accept file` });
+    g.showError({ err, message: `Failed to accept file` });
   };
   rejectFile = file => {
     uc.rejectFile(file.id).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({ err, message: `reject file` });
+    g.showError({ err, message: `Failed to reject file` });
   };
   pickFile = () => {
     pickFile(this.sendFile);
@@ -240,7 +240,7 @@ class PageChatDetail extends React.Component {
     chatStore.upsertFile(res.file);
   };
   onSendFileFailure = err => {
-    g.showError({ err, message: `send file` });
+    g.showError({ err, message: `Failed to send file` });
   };
 }
 

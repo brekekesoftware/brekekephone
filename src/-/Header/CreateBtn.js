@@ -1,9 +1,8 @@
 import { mdiPlus } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, TouchableOpacity } from '../native/Rn';
-import Icon from '../shared/Icon';
+import g from '../../global';
+import { Icon, StyleSheet, TouchableOpacity } from '../Rn';
 
 const css = StyleSheet.create({
   CreateBtn: {

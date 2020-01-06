@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Platform, StyleSheet, TextInput } from 'react-native';
 
-import v from '../variables';
+import v from '../../variables';
 
 const css = StyleSheet.create({
   RnTextInput: {

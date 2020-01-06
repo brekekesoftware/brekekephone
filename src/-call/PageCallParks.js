@@ -2,13 +2,13 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import callStore from '../global/callStore';
-import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -69,7 +69,7 @@ class PageCallParks extends React.Component {
     if (!selectedPark) {
       g.showError({
         err: new Error(`No selected park`),
-        message: `start new park`,
+        message: `Failed to start new park`,
       });
       return;
     }
@@ -93,7 +93,7 @@ class PageCallParks extends React.Component {
     g.goToPageCallManage();
   };
   onParkFailure = err => {
-    g.showError({ err, message: `park the call` });
+    g.showError({ err, message: `Failed to park the call` });
   };
 }
 

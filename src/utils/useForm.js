@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import Validator from 'validatorjs';
 
-import { Platform } from '../native/Rn';
+import { Platform } from '../-/Rn';
 import Field from '../shared/Field';
 import { arrToMap, mapToMap } from '../utils/toMap';
 import useStore from '../utils/useStore';

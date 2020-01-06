@@ -3,9 +3,9 @@ import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { Text, View } from '../-/Rn';
 import g from '../global';
 import authStore from '../global/authStore';
-import { Text, View } from '../native/Rn';
 import Layout from '../shared/Layout';
 import useForm from '../utils/useForm';
 import useStore from '../utils/useStore';
@@ -22,9 +22,7 @@ const ProfileCreateForm = observer(props => {
     resetAllFields: () => {
       g.showPrompt({
         title: `Reset`,
-        message: `Do you want to reset all current fields to ${
-          props.updatingProfile ? `original data` : `empty`
-        }?`,
+        message: `Do you want to reset the form to the original data?`,
         onConfirm: () => {
           $.set(`profile`, p => ({
             ...g.genEmptyProfile(),
@@ -51,11 +49,10 @@ const ProfileCreateForm = observer(props => {
         title: `Remove Park`,
         message: (
           <React.Fragment>
-            <View>
-              <Text small>
-                Park {i + 1}: {$.profile.parks[i]}
-              </Text>
-            </View>
+            <Text small>
+              Park {i + 1}: {$.profile.parks[i]}
+            </Text>
+            <View />
             <Text>Do you want to remove this park?</Text>
           </React.Fragment>
         ),

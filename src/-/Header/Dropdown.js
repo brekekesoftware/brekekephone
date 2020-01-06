@@ -1,10 +1,9 @@
 import { mdiDotsVertical } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, Text, TouchableOpacity } from '../native/Rn';
-import AnimatedHeight from '../shared/AnimatedHeight';
-import Icon from '../shared/Icon';
+import g from '../../global';
+import AnimatedSize from '../../shared/AnimatedSize';
+import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn';
 
 const css = StyleSheet.create({
   Backdrop: {
@@ -60,7 +59,7 @@ const Dropdown = ({ close, compact, dropdown }) => {
         onPress={close}
         style={css.Backdrop}
       />
-      <AnimatedHeight
+      <AnimatedSize
         innerStyle={css.Inner}
         style={[css.Dropdown, compact && css.Dropdown__compact]}
       >
@@ -76,7 +75,7 @@ const Dropdown = ({ close, compact, dropdown }) => {
             <Text {...{ primary, warning, danger }}>{label}</Text>
           </TouchableOpacity>
         ))}
-      </AnimatedHeight>
+      </AnimatedSize>
     </React.Fragment>
   );
 };

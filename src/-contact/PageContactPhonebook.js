@@ -5,12 +5,12 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { ActivityIndicator, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import contactStore from '../global/contactStore';
-import { ActivityIndicator, View } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
@@ -192,7 +192,7 @@ class PageContactPhonebook extends React.Component {
     this.setState({
       loading: false,
     });
-    g.showError({ message: `load contact list`, err });
+    g.showError({ message: `Failed to load contact list`, err });
   };
   loadContactDetail = id => {
     pbx
@@ -201,7 +201,10 @@ class PageContactPhonebook extends React.Component {
         contactStore.pushPhonebook(detail);
       })
       .catch(err => {
-        g.showError({ message: `load contact detail for id ${id}`, err });
+        g.showError({
+          message: `Failed to load contact detail for id ${id}`,
+          err,
+        });
       });
   };
 

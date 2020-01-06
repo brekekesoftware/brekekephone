@@ -46,7 +46,7 @@ class AuthUC extends React.Component {
   };
   onAuthFailure = err => {
     authStore.set(`ucState`, `failure`);
-    g.showError({ message: `connect to UC`, err });
+    g.showError({ message: `Failed to connect to UC`, err });
   };
   onConnectionStopped = e => {
     authStore.set(`ucState`, `failure`);
@@ -70,7 +70,7 @@ class AuthUC extends React.Component {
     });
   };
   onLoadUnreadChatsFailure = err => {
-    g.showError({ message: `load unread chat messages`, err });
+    g.showError({ message: `Failed to load unread chat messages`, err });
   };
   render() {
     return null;

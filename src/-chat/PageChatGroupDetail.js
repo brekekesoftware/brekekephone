@@ -164,7 +164,7 @@ class PageChatGroupDetail extends React.Component {
     this.setState({
       loadingRecent: false,
     });
-    g.showError({ message: `get recent chats`, err });
+    g.showError({ message: `Failed to get recent chats`, err });
   };
 
   loadMore = () => {
@@ -190,7 +190,7 @@ class PageChatGroupDetail extends React.Component {
     });
   };
   onLoadMoreFailure = err => {
-    g.showError({ message: `get more chats`, err });
+    g.showError({ message: `Failed to get more chats`, err });
     this.setState({
       loadingMore: false,
     });
@@ -225,7 +225,7 @@ class PageChatGroupDetail extends React.Component {
     });
   };
   onSubmitEditingTextFailure = err => {
-    g.showError({ message: `send the message`, err });
+    g.showError({ message: `Failed to send the message`, err });
   };
 
   leave = () => {
@@ -238,7 +238,7 @@ class PageChatGroupDetail extends React.Component {
     g.goToPageChatRecents();
   };
   onLeaveFailure = err => {
-    g.showError({ message: `leave the group`, err });
+    g.showError({ message: `Failed to leave the group`, err });
   };
 
   invite = () => {

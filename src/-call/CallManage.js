@@ -16,8 +16,8 @@ import {
 import React from 'react';
 import { Platform } from 'react-native';
 
+import { StyleSheet, View } from '../-/Rn';
 import g from '../global';
-import { StyleSheet, View } from '../native/Rn';
 import ButtonIcon from '../shared/ButtonIcon';
 
 const css = StyleSheet.create({

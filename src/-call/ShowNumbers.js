@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Keyboard, StyleSheet, TextInput, View } from '../native/Rn';
+import { Keyboard, StyleSheet, TextInput, View } from '../-/Rn';
 
 const css = StyleSheet.create({
   ShowNumbers: {

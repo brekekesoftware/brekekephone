@@ -16,21 +16,21 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import pbx from '../api/pbx';
-import sip from '../api/sip';
-import g from '../global';
-import callStore from '../global/callStore';
-import IncallManager from '../native/IncallManager';
 import {
+  Icon,
   Platform,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from '../native/Rn';
+} from '../-/Rn';
+import pbx from '../api/pbx';
+import sip from '../api/sip';
+import g from '../global';
+import callStore from '../global/callStore';
+import IncallManager from '../native/IncallManager';
 import ButtonIcon from '../shared/ButtonIcon';
-import Icon from '../shared/Icon';
 import { arrToMap } from '../utils/toMap';
 
 const css = StyleSheet.create({
@@ -249,7 +249,7 @@ class CallBar extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: `hold the call`, err });
+    g.showError({ message: `Failed to hold the call`, err });
   };
   unhold = () => {
     const activecallid = callStore.selectedId;
@@ -267,7 +267,7 @@ class CallBar extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: `unhold the call`, err });
+    g.showError({ message: `Failed to unhold the call`, err });
   };
 }
 

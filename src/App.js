@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
+import { Platform, StatusBar, StyleSheet, Text, View } from './-/Rn';
 import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
@@ -31,8 +32,7 @@ import g from './global';
 import authStore from './global/authStore';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
-import { Platform, StatusBar, StyleSheet, Text, View } from './native/Rn';
-import AnimatedHeight from './shared/AnimatedHeight';
+import AnimatedSize from './shared/AnimatedSize';
 import RootAlert from './shared/RootAlert';
 import RootAuth from './shared/RootAuth';
 import RootPicker from './shared/RootPicker';
@@ -129,7 +129,7 @@ const App = observer(() => {
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <StatusBar />
       {shouldShowConnStatus && (
-        <AnimatedHeight
+        <AnimatedSize
           style={[
             css.App_ConnectionStatus,
             isConnFailure && css.App_ConnectionStatus__failure,
@@ -140,7 +140,7 @@ const App = observer(() => {
               {connMessage}
             </Text>
           </View>
-        </AnimatedHeight>
+        </AnimatedSize>
       )}
       <View style={css.App_Inner}>
         <ApiProvider />

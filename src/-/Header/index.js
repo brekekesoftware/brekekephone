@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import g from '../global';
-import { StyleSheet, View } from '../native/Rn';
+import g from '../../global';
+import { StyleSheet, View } from '../Rn';
 import BackBtn from './BackBtn';
 import CreateBtn from './CreateBtn';
 import Dropdown from './Dropdown';

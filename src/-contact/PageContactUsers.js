@@ -4,13 +4,13 @@ import uniq from 'lodash/uniq';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { TouchableOpacity } from '../-/Rn';
 import sip from '../api/sip';
 import avatarPlaceholderUrl from '../assets/avatar-placeholder.png';
 import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
-import { TouchableOpacity } from '../native/Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import UserItem from './UserItem';

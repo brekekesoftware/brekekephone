@@ -27,7 +27,9 @@ class AuthPBX extends React.Component {
       })
       .catch(err => {
         authStore.set(`pbxState`, `failure`);
-        g.showError({ message: `login to pbx, err: ${err?.message}` });
+        g.showError({
+          message: `Failed to login to pbx, err: ${err?.message}`,
+        });
       });
   };
   autoAuth = () => {

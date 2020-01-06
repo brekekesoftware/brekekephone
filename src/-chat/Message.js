@@ -3,10 +3,9 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import Progress from 'react-native-progress-circle';
 
+import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
-import Icon from '../shared/Icon';
 
 const css = StyleSheet.create({
   Message: {

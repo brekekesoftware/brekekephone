@@ -113,7 +113,7 @@ class PageTransferDial extends React.Component {
     if (!target.trim()) {
       g.showError({
         err: new Error(`Target is empty`),
-        message: `start transfer`,
+        message: `Failed to start transfer`,
       });
       return;
     }
@@ -141,13 +141,13 @@ class PageTransferDial extends React.Component {
     g.goToPageTransferAttend({ callId: this.call.id });
   };
   onTransferFailure = err => {
-    g.showError({ err, message: `target transfer the call` });
+    g.showError({ err, message: `Failed to target transfer the call` });
   };
   transferBlind = target => {
     if (!target.trim()) {
       g.showError({
         err: new Error(`Target is empty`),
-        message: `start transfer`,
+        message: `Failed to start transfer`,
       });
       return;
     }
@@ -162,7 +162,7 @@ class PageTransferDial extends React.Component {
     if (!target.trim()) {
       g.showError({
         err: new Error(`Target is empty`),
-        message: `start transfer`,
+        message: `Failed to start transfer`,
       });
       return;
     }
@@ -184,13 +184,13 @@ class PageTransferDial extends React.Component {
     sip.enableVideo(this.call.id);
   };
   onTransferAttendedForVideoFailure = err => {
-    g.showError({ err, message: `target transfer the call` });
+    g.showError({ err, message: `Failed to target transfer the call` });
   };
   transferAttendedForVideo = target => {
     if (!target.trim()) {
       g.showError({
         err: new Error(`Target is empty`),
-        message: `start transfer`,
+        message: `Failed to start transfer`,
       });
       return;
     }

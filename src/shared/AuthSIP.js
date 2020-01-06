@@ -76,7 +76,9 @@ class AuthSIP extends React.Component {
       })
       .catch(err => {
         authStore.set(`sipState`, `failure`);
-        g.showError({ message: `login to sip server, err: ${err?.message}` });
+        g.showError({
+          message: `Failed to login to sip server, err: ${err?.message}`,
+        });
         console.error(err);
       });
   };

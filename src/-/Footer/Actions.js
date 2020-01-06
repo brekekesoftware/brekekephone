@@ -1,17 +1,17 @@
 import { mdiCached, mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
 
-import g from '../global';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
-import Icon from '../shared/Icon';
+import g from '../../global';
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 
 const css = StyleSheet.create({
   Actions: {
-    width: `100%`,
+    flex: 1,
     flexDirection: `row`,
     borderRadius: g.borderRadius,
     overflow: `hidden`,
   },
+  //
   Btn: {
     borderRadius: 0,
     width: `25%`,
@@ -43,7 +43,7 @@ const css = StyleSheet.create({
   Text: {
     flex: 1,
     color: g.revColor,
-    lineHeight: 24, // Icon height
+    lineHeight: g.iconSize,
     textAlign: `center`,
   },
 });

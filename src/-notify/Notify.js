@@ -2,8 +2,8 @@ import { mdiCheck, mdiClose } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { StyleSheet, Text, View } from '../-/Rn';
 import g from '../global';
-import { StyleSheet, Text, View } from '../native/Rn';
 import ButtonIcon from '../shared/ButtonIcon';
 
 const css = StyleSheet.create({

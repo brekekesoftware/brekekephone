@@ -4,12 +4,12 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { Platform } from 'react-native';
 
+import { StyleSheet, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import IncallManager from '../native/IncallManager';
-import { StyleSheet, View } from '../native/Rn';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
@@ -233,7 +233,7 @@ class PageCallManage extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: `hold the call`, err });
+    g.showError({ message: `Failed to hold the call`, err });
   };
   unhold = () => {
     const call = this.runningById[callStore.selectedId];
@@ -249,7 +249,7 @@ class PageCallManage extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: `unhold the call`, err });
+    g.showError({ message: `Failed to unhold the call`, err });
   };
 
   startRecording = () => {
@@ -266,7 +266,7 @@ class PageCallManage extends React.Component {
     });
   };
   onStartRecordingFailure = err => {
-    g.showError({ message: `start recording the call`, err });
+    g.showError({ message: `Failed to start recording the call`, err });
   };
 
   stopRecording = () => {
@@ -283,7 +283,7 @@ class PageCallManage extends React.Component {
     });
   };
   onStopRecordingFailure = err => {
-    g.showError({ message: `stop recording the call`, err });
+    g.showError({ message: `Failed to stop recording the call`, err });
   };
 
   transfer = () => {

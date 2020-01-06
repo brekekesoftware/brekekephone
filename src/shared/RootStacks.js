@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { Animated, Dimensions, StyleSheet, View } from '../-/Rn';
 import g from '../global';
-import { Animated, Dimensions, StyleSheet, View } from '../native/Rn';
 import { useAnimationOnDidMount } from '../utils/animation';
 
 const css = StyleSheet.create({

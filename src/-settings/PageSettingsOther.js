@@ -40,7 +40,7 @@ class PageSettingsOther extends Component {
         });
       })
       .catch(err => {
-        g.showError({ message: `change UC status`, err });
+        g.showError({ message: `Failed to change UC status`, err });
       });
   };
   render() {

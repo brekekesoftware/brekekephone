@@ -1,6 +1,6 @@
 import shortid from 'shortid';
 
-import { AsyncStorage } from '../native/Rn';
+import { AsyncStorage } from '../-/Rn';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
 
@@ -75,7 +75,7 @@ g.extends({
     try {
       await AsyncStorage.setItem(`_api_profiles`, JSON.stringify(arr));
     } catch (err) {
-      g.showError({ err, message: `save profiles to local storage` });
+      g.showError({ err, message: `Failed to save profiles to local storage` });
     }
   },
   upsertProfile: p => {

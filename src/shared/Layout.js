@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
-import Footer from '../Footer/Footer';
+import Footer from '../-/Footer';
+import Header from '../-/Header';
+import { ScrollView, StyleSheet, View } from '../-/Rn';
 import g from '../global';
-import Header from '../Header/Header';
-import { ScrollView, StyleSheet, View } from '../native/Rn';
 
 const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
+    paddingBottom: 15,
   },
   Layout_Scroll: {
     flexGrow: 1,
@@ -53,12 +54,12 @@ const Layout = props => {
   if (props.menu) {
     headerSpace += 35;
   }
-  let footerSpace = getBottomSpace() + 15;
+  let footerSpace = getBottomSpace();
   if (props.menu && !g.isKeyboardShowing) {
     footerSpace += 48;
   }
   if (props.onFabNext || g.isKeyboardShowing) {
-    footerSpace += 60;
+    footerSpace += 56;
   }
   //
   return (

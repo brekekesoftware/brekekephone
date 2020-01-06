@@ -24,6 +24,7 @@ const v = {
   get lineHeightSmall() {
     return 0.8 * v.lineHeight;
   },
+  iconSize: 24,
   fontWeight: `normal`,
   fontFamily:
     Platform.OS === `web`

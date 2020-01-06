@@ -8,14 +8,13 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
-import { StyleSheet, Text, TouchableOpacity, View } from '../native/Rn';
 import Avatar from '../shared/Avatar';
-import Icon from '../shared/Icon';
 import Layout from '../shared/Layout';
 
 const css = StyleSheet.create({
@@ -163,7 +162,7 @@ class PageTransferAttend extends React.Component {
     g.goToPageCallManage();
   };
   onJoinFailure = err => {
-    g.showError({ err, message: `join the transfer` });
+    g.showError({ err, message: `Failed to join the transfer` });
   };
 
   stop = () => {
@@ -181,7 +180,7 @@ class PageTransferAttend extends React.Component {
     g.goToPageCallManage();
   };
   onStopFailure = err => {
-    g.showError({ err, message: `stop the transfer` });
+    g.showError({ err, message: `Failed to stop the transfer` });
   };
 }
 
