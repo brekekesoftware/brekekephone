@@ -156,7 +156,7 @@ class PageTransferDial extends React.Component {
       this.call.pbxTalkerId,
       target,
     );
-    promise.then(this.onTransferSuccess(target)).catch(this.onTransferFailure);
+    promise.then(g.goToPageCallRecents()).catch(this.onTransferFailure);
   };
   transferAttended = target => {
     if (!target.trim()) {
