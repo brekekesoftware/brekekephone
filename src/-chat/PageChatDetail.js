@@ -10,10 +10,9 @@ import contactStore from '../global/contactStore';
 import pickFile from '../native/pickFile';
 import saveBlob from '../native/saveBlob';
 import Layout from '../shared/Layout';
-import formatTime from '../utils/formatTime';
 import { arrToMap } from '../utils/toMap';
-import Message from './Message';
-import m from './MiniChat';
+import { numberOfChatsPerLoad } from './config';
+import MessageList from './MessageList';
 
 @observer
 class PageChatDetail extends React.Component {
@@ -69,20 +68,15 @@ class PageChatDetail extends React.Component {
         onBack={g.backToPageChatRecents}
         title={u?.name}
       >
-        {this.chatIds.map((id, index) => (
-          <Message
-            hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
-            key={index}
-            last={index === this.chatIds.length - 1}
-            loadingMore={this.state.loadingMore}
-            {...this.resolveChat(id, index)}
-            acceptFile={this.acceptFile}
-            fileType={this.state.fileType}
-            loadMore={this.loadMore}
-            rejectFile={this.rejectFile}
-            showImage={this.state.showImage}
-          />
-        ))}
+        <MessageList
+          acceptFile={this.acceptFile}
+          fileType={this.state.fileType}
+          list={chatStore.messagesByThreadId[this.props.buddy]}
+          loadMore={this.loadMore}
+          rejectFile={this.rejectFile}
+          resolveChat={this.resolveChat}
+          showImage={this.state.showImage}
+        />
       </Layout>
     );
   }
@@ -119,28 +113,17 @@ class PageChatDetail extends React.Component {
   };
   resolveChat = (id, index) => {
     const chat = this.chatById[id];
-    const prev = this.chatById[this.chatIds[index - 1]] || {};
-    const mini = m.isMiniChat(chat, prev);
-    const created = chat.created && formatTime(chat.created);
     const file = chatStore.filesMap[chat.file];
     const text = chat.text;
-    if (mini) {
-      return {
-        mini: true,
-        created,
-        text,
-        file,
-      };
-    }
     const creator = this.resolveCreator(chat.creator);
-    const creatorName =
-      !creator.name || creator.name.length === 0 ? creator.id : creator.name;
     return {
-      creatorName: creatorName,
+      creatorId: creator.id,
+      creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
       text,
       file,
-      created,
+      created: chat.created,
+      createdByMe: creator.id === this.me.id,
     };
   };
   me = uc.me();
@@ -153,7 +136,7 @@ class PageChatDetail extends React.Component {
   loadRecent = () => {
     this.setState({ loadingRecent: true });
     uc.getBuddyChats(this.props.buddy, {
-      max: m.numberOfChatsPerLoad,
+      max: numberOfChatsPerLoad,
     })
       .then(chats => {
         const u = contactStore.getUCUser(this.props.buddy);
@@ -172,7 +155,7 @@ class PageChatDetail extends React.Component {
     this.setState({ loadingMore: true });
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
-    const max = m.numberOfChatsPerLoad;
+    const max = numberOfChatsPerLoad;
     const end = oldestCreated;
     const query = { max, end };
     const u = contactStore.getUCUser(this.props.buddy);

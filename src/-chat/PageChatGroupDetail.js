@@ -9,10 +9,9 @@ import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import Layout from '../shared/Layout';
-import formatTime from '../utils/formatTime';
 import { arrToMap } from '../utils/toMap';
-import Message from './Message';
-import m from './MiniChat';
+import { numberOfChatsPerLoad } from './config';
+import MessageList from './MessageList';
 
 @observer
 class PageChatGroupDetail extends React.Component {
@@ -89,20 +88,15 @@ class PageChatGroupDetail extends React.Component {
         onBack={g.backToPageChatRecents}
         title={gr?.name}
       >
-        {this.chatIds.map((id, index) => (
-          <Message
-            hasMore={this.chatIds.length > 0 && !this.state.loadingMore}
-            key={index}
-            last={index === this.chatIds.length - 1}
-            loadingMore={this.state.loadingMore}
-            {...this.resolveChat(id, index)}
-            acceptFile={this.acceptFile}
-            fileType={this.state.fileType}
-            loadMore={this.loadMore}
-            rejectFile={this.rejectFile}
-            showImage={this.state.showImage}
-          />
-        ))}
+        <MessageList
+          acceptFile={this.acceptFile}
+          fileType={this.state.fileType}
+          list={chatStore.messagesByThreadId[this.props.groupId]}
+          loadMore={this.loadMore}
+          rejectFile={this.rejectFile}
+          resolveChat={this.resolveChat}
+          showImage={this.state.showImage}
+        />
       </Layout>
     );
   }
@@ -142,32 +136,22 @@ class PageChatGroupDetail extends React.Component {
   };
   resolveChat = (id, index) => {
     const chat = this.chatById[id];
-    const prev = this.chatById[this.chatIds[index - 1]] || {};
-    const mini = m.isMiniChat(chat, prev);
-    const created = formatTime(chat.created);
     const text = chat.text;
-    if (mini) {
-      return {
-        mini: true,
-        created,
-        text,
-      };
-    }
     const creator = this.resolveBuddy(chat.creator);
-    const creatorName =
-      !creator.name || creator.name.length === 0 ? creator.id : creator.name;
     return {
-      creatorName: creatorName,
+      creatorId: creator.id,
+      creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
       text,
-      created,
+      created: chat.created,
+      createdByMe: creator.id === this.me.id,
     };
   };
 
   loadRecent() {
     this.setState({ loadingRecent: true });
     uc.getGroupChats(this.props.groupId, {
-      max: m.numberOfChatsPerLoad,
+      max: numberOfChatsPerLoad,
     })
       .then(chats => {
         chatStore.pushMessages(this.props.groupId, chats.reverse());
@@ -185,7 +169,7 @@ class PageChatGroupDetail extends React.Component {
     this.setState({ loadingMore: true });
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
-    const max = m.numberOfChatsPerLoad;
+    const max = numberOfChatsPerLoad;
     const end = oldestCreated;
     const query = {
       max,

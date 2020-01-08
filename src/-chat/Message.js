@@ -5,57 +5,48 @@ import Progress from 'react-native-progress-circle';
 
 import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
-import Avatar from '../shared/Avatar';
 
 const css = StyleSheet.create({
-  Message: {
-    borderBottomWidth: 1,
-    borderColor: g.borderBg,
-    alignItems: `stretch`,
-    marginLeft: 15,
+  Outer: {
+    flexDirection: `row-reverse`,
   },
-  Message__height90: {
-    height: 90,
-  },
-  Message__height150: {
-    height: 150,
-  },
-
-  Message__last: {
-    borderBottomWidth: 0,
-  },
-  Message_Info: {
+  Outer__createdByMe: {
     flexDirection: `row`,
   },
-  Message_Info__Name: {
-    fontSize: g.fontSizeSubTitle,
-    color: g.subColor,
+  Space: {
+    width: 20,
   },
-  Message_Info__Time: {
-    fontSize: g.fontSizeSmall,
-    marginLeft: 10,
+  SpaceFill: {
+    flex: 1,
   },
-  Message_Text: {
-    position: `absolute`,
-    alignItems: `stretch`,
-    left: 60,
-    top: 10,
-    right: 10,
+  Message: {
+    alignSelf: `flex-start`,
+    left: -5,
+    marginBottom: 2,
+    borderRadius: g.borderRadius,
+    paddingVertical: 5,
+    paddingLeft: 15,
+    paddingRight: 10,
+    backgroundColor: g.hoverBg,
+    overflow: `hidden`,
   },
-  Message_Avatar: {
-    position: `absolute`,
-    left: 15,
-    top: 20,
+  Message__createdByMe: {
+    alignSelf: `flex-end`,
+    left: 5,
+    paddingLeft: 10,
+    paddingRight: 15,
+    backgroundColor: g.colors.primary,
+    color: `white`,
   },
-  Message_File: {
+  //
+  File: {
     flexDirection: `row`,
     marginTop: 10,
   },
   Message_File_Info: {
     marginLeft: 5,
   },
-  Message_File_Info__name: {},
-  Message_File__Image: {
+  Image: {
     width: 75,
     height: 75,
   },
@@ -67,13 +58,12 @@ const css = StyleSheet.create({
     marginLeft: 20,
     borderColor: g.subColor,
   },
-  Message_File_Status: {},
 });
 
 const File = p => (
-  <View style={css.Message_File}>
+  <View style={css.File}>
     {!!p.source && p.fileType === `image` && (
-      <Image source={p.source} style={css.Message_File__Image} />
+      <Image source={p.source} style={css.Image} />
     )}
     {p.fileType !== `image` && (
       <View>
@@ -115,32 +105,26 @@ const File = p => (
 );
 
 const Message = observer(p => (
-  <View
-    style={[
-      css.Message,
-      p.last && css.Message__last,
-      css.Message__height90,
-      p.file && css.Message__height150,
-    ]}
-  >
-    <Avatar source={{ uri: p.creatorAvatar }} {...p} />
-    <View style={css.Message_Text}>
-      <View style={css.Message_Info}>
-        <Text style={css.Message_Info__Name}>{p.creatorName}</Text>
-        <Text style={css.Message_Info__Time}>{p.created}</Text>
+  <React.Fragment>
+    {!!p.text && (
+      <View style={[css.Outer, p.createdByMe && css.Outer__createdByMe]}>
+        <View style={css.Space} />
+        <View style={css.SpaceFill} />
+        <Text style={[css.Message, p.createdByMe && css.Message__createdByMe]}>
+          {p.text}
+        </Text>
       </View>
-      {!!p.text && <Text numberOfLines={999}>{p.text}</Text>}
-      {!!p.file && (
-        <File
-          {...p.file}
-          accept={() => p.acceptFile(p.file)}
-          fileType={p.fileType}
-          reject={() => p.rejectFile(p.file)}
-          source={p.showImage}
-        />
-      )}
-    </View>
-  </View>
+    )}
+    {!!p.file && (
+      <File
+        {...p.file}
+        accept={() => p.acceptFile(p.file)}
+        fileType={p.fileType}
+        reject={() => p.rejectFile(p.file)}
+        source={p.showImage}
+      />
+    )}
+  </React.Fragment>
 ));
 
 export default Message;
