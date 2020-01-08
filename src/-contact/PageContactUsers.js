@@ -6,7 +6,6 @@ import React from 'react';
 
 import { TouchableOpacity } from '../-/Rn';
 import sip from '../api/sip';
-import avatarPlaceholderUrl from '../assets/avatar-placeholder.png';
 import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
@@ -31,7 +30,6 @@ class PageContactUsers extends React.Component {
       ...pbxUser,
       ...ucUser,
     };
-    u.avatar = u.avatar || avatarPlaceholderUrl;
     return u;
   };
   isMatchUser = id => {

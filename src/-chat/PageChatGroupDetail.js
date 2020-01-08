@@ -86,7 +86,7 @@ class PageChatGroupDetail extends React.Component {
           onContentSizeChange: this.onContentSizeChange,
           onScroll: this.onScroll,
         }}
-        onBack={g.goToPageChatRecents}
+        onBack={g.backToPageChatRecents}
         title={gr?.name}
       >
         {this.chatIds.map((id, index) => (

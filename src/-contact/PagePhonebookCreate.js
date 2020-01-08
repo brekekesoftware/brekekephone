@@ -12,7 +12,7 @@ class PagePhonebookCreate extends React.Component {
     return (
       <ContactsCreateForm
         book={this.props.book || ``}
-        onBack={g.goToPageContactPhonebook}
+        onBack={g.backToPageContactPhonebook}
         onSave={p => {
           this.save(p);
           g.goToPageContactPhonebook();

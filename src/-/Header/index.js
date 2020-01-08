@@ -43,7 +43,7 @@ const Header = ({
   const [dropdownActive, setDropdownActive] = useState(false);
   return (
     <React.Fragment>
-      <View style={[css.Header]}>
+      <View style={css.Header}>
         <View
           style={[
             css.Outer,

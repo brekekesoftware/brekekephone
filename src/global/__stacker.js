@@ -48,19 +48,15 @@ $.extends({
         });
         $.openStack(_stack);
       });
+      const backFn = $.waitKeyboard(() => {
+        $.set(`stacks`, s => {
+          s.pop();
+          return s;
+        });
+      });
+      //
       m[`goTo${k}`] = fn;
-      m[`backTo${k}`] = () => {
-        let backFn = fn;
-        if ($.stacks.length > 1) {
-          backFn = $.waitKeyboard(() => {
-            $.set(`stacks`, s => {
-              s.pop();
-              return s;
-            });
-          });
-        }
-        backFn();
-      };
+      m[`backTo${k}`] = stack => ($.stacks.length > 1 ? backFn() : fn(stack));
       return m;
     }, {});
     $.extends(fnMap);

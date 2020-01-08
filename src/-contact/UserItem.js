@@ -55,9 +55,6 @@ const css = StyleSheet.create({
     width: 10,
     backgroundColor: g.colors.primary,
   },
-  Item__noAvatar: {
-    left: 15,
-  },
   Item__pdLeft0: {
     paddingLeft: 0,
   },
@@ -71,15 +68,15 @@ const UserItem = p => (
     <View
       style={[css.Item, p.last && css.Item__last, p.selected && css.Item__Bgr]}
     >
-      {p.avatar && <Avatar source={{ uri: `` + p.avatar }} {...p} />}
-      <View style={[css.Item_Name, !p.avatar && css.Item__noAvatar]}>
+      <Avatar source={{ uri: p.avatar }} {...p} />
+      <View style={css.Item_Name}>
         <Text black subTitle>
           {p.name || p.partyNumber || p.id}
         </Text>
         <Text style={css.Item__TxtStatus}>{p.statusText}</Text>
       </View>
       {p.detail && (
-        <View style={[css.Item_Detail, !p.avatar && css.Item__noAvatar]}>
+        <View style={css.Item_Detail}>
           {p.incoming && p.answered && (
             <Icon
               color={g.colors.primary}
@@ -107,18 +104,8 @@ const UserItem = p => (
           {p.created && (
             <Text style={css.Item_Detail_Text}>at {p.created}</Text>
           )}
-          {p.park && (
-            <Text
-              style={[css.Item_Detail_Text, !p.avatar && css.Item__pdLeft0]}
-            >
-              {p.park}
-            </Text>
-          )}
-          {p.lastmess && (
-            <Text numberOfLines={20} style={[!p.avatar && css.Item__pdLeft0]}>
-              {p.lastmess.text}
-            </Text>
-          )}
+          {p.park && <Text style={css.Item_Detail_Text}>{p.park}</Text>}
+          {p.lastmess && <Text numberOfLines={20}>{p.lastmess.text}</Text>}
         </View>
       )}
     </View>

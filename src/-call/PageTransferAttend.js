@@ -75,7 +75,7 @@ class PageTransferAttend extends React.Component {
     const usersource = this.resolveMatch(this.call?.partyNumber);
     const usertarget = this.resolveMatch(this.call?.transfering);
     return (
-      <Layout onBack={g.goToPageCallManage} title="Attended Transfer">
+      <Layout onBack={g.backToPageCallManage} title="Attended Transfer">
         <View style={css.PageTransferAttend}>
           <View
             style={[
@@ -105,7 +105,7 @@ class PageTransferAttend extends React.Component {
           <View style={css.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.hangup}
-              style={[css.PageTransferAttend_Btn]}
+              style={css.PageTransferAttend_Btn}
             >
               <Icon path={mdiPhoneOff} />
             </TouchableOpacity>
@@ -115,7 +115,7 @@ class PageTransferAttend extends React.Component {
           <View style={css.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.stop}
-              style={[css.PageTransferAttend_Btn]}
+              style={css.PageTransferAttend_Btn}
             >
               <Icon path={mdiPhoneHangup} />
             </TouchableOpacity>
@@ -125,7 +125,7 @@ class PageTransferAttend extends React.Component {
           <View style={css.PageTransferAttend_BtnOuter}>
             <TouchableOpacity
               onPress={this.join}
-              style={[css.PageTransferAttend_Btn]}
+              style={css.PageTransferAttend_Btn}
             >
               <Icon path={mdiPhoneForward} />
             </TouchableOpacity>

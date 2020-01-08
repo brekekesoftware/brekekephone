@@ -135,7 +135,7 @@ class PageCallManage extends React.Component {
       <BrekekeGradient colors={[g.colors.primaryFn(0.2), g.revBg]}>
         <Layout
           noScroll
-          onBack={g.goToPageCallRecents}
+          onBack={g.backToPageCallRecents}
           title={u?.partyName}
           transparent
         >

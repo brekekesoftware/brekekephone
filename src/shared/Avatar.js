@@ -2,7 +2,8 @@ import { mdiRecord } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { Icon, Image, StyleSheet, View } from '../-/Rn';
+import { Icon, Image, Platform, StyleSheet, View } from '../-/Rn';
+import avatarPlaceholder from '../assets/avatar-placeholder.png';
 import g from '../global';
 import authStore from '../global/authStore';
 
@@ -30,17 +31,25 @@ const statusMapColor = {
   offline: g.subColor,
 };
 
-const Avatar = observer(p => (
-  <View style={[css.Avatar, p.style]}>
-    <Image source={p.source} style={css.Avatar_Image} />
-    {authStore.currentProfile?.ucEnabled && (
-      <Icon
-        color={statusMapColor[p.status]}
-        path={mdiRecord}
-        style={css.Avatar_Image__status}
+const Avatar = observer(({ source, status, style }) => {
+  const uri =
+    (typeof source?.uri === `string` && source?.uri) ||
+    (Platform.OS === `web` && avatarPlaceholder);
+  return (
+    <View style={[css.Avatar, style]}>
+      <Image
+        source={uri ? { uri } : avatarPlaceholder}
+        style={css.Avatar_Image}
       />
-    )}
-  </View>
-));
+      {authStore.currentProfile?.ucEnabled && typeof status === `string` && (
+        <Icon
+          color={statusMapColor[status]}
+          path={mdiRecord}
+          style={css.Avatar_Image__status}
+        />
+      )}
+    </View>
+  );
+});
 
 export default Avatar;

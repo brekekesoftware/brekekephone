@@ -11,7 +11,7 @@ class PagePhonebookUpdate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        onBack={g.goToPageContactPhonebook}
+        onBack={g.backToPageContactPhonebook}
         onSave={p => {
           this.save(p);
           g.goToPageContactPhonebook();
