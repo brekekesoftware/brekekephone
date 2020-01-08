@@ -91,6 +91,7 @@ class PageChatDetail extends React.Component {
     this.view = ref;
   };
 
+  _justMounted = true;
   _closeToBottom = true;
   onContentSizeChange = () => {
     if (!this.view) {

@@ -80,6 +80,7 @@ class PageChatGroupDetail extends React.Component {
             danger: true,
           },
         ]}
+        fabRender={this.renderChatInput}
         isChat={{
           ref: this.setViewRef,
           onContentSizeChange: this.onContentSizeChange,
@@ -110,6 +111,7 @@ class PageChatGroupDetail extends React.Component {
     this.view = ref;
   };
 
+  _justMounted = true;
   _closeToBottom = true;
   onContentSizeChange = () => {
     if (this._closeToBottom) {
