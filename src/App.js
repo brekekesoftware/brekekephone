@@ -142,12 +142,12 @@ const App = observer(() => {
           </View>
         </AnimatedSize>
       )}
+      <RootAuth />
       <View style={css.App_Inner}>
         <ApiProvider />
         <RootStacks />
         <RootPicker />
         <RootAlert />
-        <RootAuth />
       </View>
       {Platform.OS === `ios` && <KeyboardSpacer />}
     </View>

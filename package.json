@@ -48,7 +48,7 @@
     "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen#a78ee51c0f89652a2a223ff2bc4ec10928bf2c30",
     "react-native-svg": "9.13.6",
     "react-native-voip-push-notification": "2.0.0",
-    "react-native-webrtc": "1.75.2",
+    "react-native-webrtc": "1.75.3",
     "shortid": "2.2.15",
     "url-parse": "1.4.7",
     "validatorjs": "3.18.1"
@@ -78,7 +78,7 @@
     "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-simple-import-sort": "5.0.0",
     "eslint-plugin-sort-destructure-keys": "1.3.3",
-    "husky": "4.0.0",
+    "husky": "4.0.3",
     "lint-staged": "9.5.0",
     "prettier": "1.19.1",
     "react-scripts": "3.3.0"
