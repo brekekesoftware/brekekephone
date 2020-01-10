@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import ChatInput from '../-/Footer/ChatInput';
+import { ActivityIndicator, Button, Text, View } from '../-/Rn';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
@@ -34,6 +35,7 @@ class PageChatDetail extends React.Component {
     editingText: ``,
     showImage: ``,
     fileType: ``,
+    numberOfChatsPerLoadMore: numberOfChatsPerLoad + 20,
   };
   componentDidMount() {
     const noChat = !this.chatIds.length;
@@ -68,15 +70,36 @@ class PageChatDetail extends React.Component {
         onBack={g.backToPageChatRecents}
         title={u?.name}
       >
-        <MessageList
-          acceptFile={this.acceptFile}
-          fileType={this.state.fileType}
-          list={chatStore.messagesByThreadId[this.props.buddy]}
-          loadMore={this.loadMore}
-          rejectFile={this.rejectFile}
-          resolveChat={this.resolveChat}
-          showImage={this.state.showImage}
-        />
+        <View>
+          {this.state.loadingMore ? (
+            <View>
+              <ActivityIndicator color="#0000ff" size="small" />
+              <Text
+                style={{
+                  alignSelf: `center`,
+                  backgroundColor: `white`,
+                  paddingHorizontal: 10,
+                }}
+              >
+                Loading...
+              </Text>
+            </View>
+          ) : (
+            <Button
+              onPress={() => this.onLoadMoreBtnPress()}
+              title={`Load more`}
+            />
+          )}
+          <MessageList
+            acceptFile={this.acceptFile}
+            fileType={this.state.fileType}
+            list={chatStore.messagesByThreadId[this.props.buddy]}
+            loadMore={this.loadMore}
+            rejectFile={this.rejectFile}
+            resolveChat={this.resolveChat}
+            showImage={this.state.showImage}
+          />
+        </View>
       </Layout>
     );
   }
@@ -84,7 +107,12 @@ class PageChatDetail extends React.Component {
   setViewRef = ref => {
     this.view = ref;
   };
-
+  onLoadMoreBtnPress = () => {
+    this.setState({
+      numberOfChatsPerLoadMore: this.state.numberOfChatsPerLoadMore + 20,
+    });
+    this.loadMore();
+  };
   _justMounted = true;
   _closeToBottom = true;
   onContentSizeChange = () => {
@@ -155,7 +183,7 @@ class PageChatDetail extends React.Component {
     this.setState({ loadingMore: true });
     const oldestChat = this.chatById[this.chatIds[0]] || {};
     const oldestCreated = oldestChat.created || 0;
-    const max = numberOfChatsPerLoad;
+    const max = this.state.numberOfChatsPerLoadMore;
     const end = oldestCreated;
     const query = { max, end };
     const u = contactStore.getUCUser(this.props.buddy);
