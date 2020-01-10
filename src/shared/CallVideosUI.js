@@ -1,47 +1,25 @@
+import { observer } from 'mobx-react';
 import React from 'react';
-import { PanResponder, View } from 'react-native';
+import { PanResponder, StyleSheet, View } from 'react-native';
 
+import g from '../global';
+import callStore from '../global/callStore';
 import VideoPlayer from './VideoPlayer';
 
-const st = {
-  mini: {
+const css = StyleSheet.create({
+  Mini: {
     position: `absolute`,
-    top: 28,
-    left: 4,
-    justifyContent: `center`,
-    alignItems: `center`,
-    width: 64,
-    height: 64,
-    backgroundColor: `black`,
-    borderRadius: 32,
-    borderWidth: 1,
-    borderColor: `gray`,
-    shadowColor: `black`,
-    shadowOpacity: 0.24,
-
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    maxWidth: 144,
+    maxHeight: 256,
+    borderRadius: g.borderRadius,
     overflow: `hidden`,
+    ...g.boxShadow,
+    ...g.backdropZindex,
   },
+});
 
-  full: {
-    position: `absolute`,
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    justifyContent: `center`,
-    alignItems: `center`,
-    backgroundColor: `black`,
-  },
-};
-
+@observer
 class Mini extends React.Component {
-  prevLeft = st.mini.left;
-  prevTop = st.mini.top;
-
   constructor(props) {
     super(props);
 
@@ -58,7 +36,10 @@ class Mini extends React.Component {
     return (
       <View
         ref={this.setViewRef}
-        style={st.mini}
+        style={[
+          css.Mini,
+          { top: callStore.videoPositionT, left: callStore.videoPositionL },
+        ]}
         {...this.panResponder.panHandlers}
       >
         <VideoPlayer sourceObject={this.props.sourceObject} />
@@ -73,77 +54,30 @@ class Mini extends React.Component {
   onDrag = (ev, gesture) => {
     this.view.setNativeProps({
       style: {
-        ...st.mini,
-        left: this.prevLeft + gesture.dx,
-        top: this.prevTop + gesture.dy,
+        left: callStore.videoPositionL + gesture.dx,
+        top: callStore.videoPositionT + gesture.dy,
       },
     });
   };
 
   onDrop = (ev, gesture) => {
-    this.prevLeft += gesture.dx;
-    this.prevTop += gesture.dy;
-
+    callStore.videoPositionL += gesture.dx;
+    callStore.videoPositionT += gesture.dy;
     if (gesture.dx === 0 && gesture.dy === 0) {
       this.props.onDoubleTap();
     }
   };
 }
 
-class Full extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => false,
-      onPanResponderRelease: this.onDrop,
-    });
-  }
-
-  render() {
-    return (
-      <View
-        ref={this.setViewRef}
-        style={st.full}
-        {...this.panResponder.panHandlers}
-      >
-        <VideoPlayer sourceObject={this.props.sourceObject} />
-      </View>
-    );
-  }
-
-  setViewRef = view => {
-    this.view = view;
-  };
-
-  onDrop = (ev, gesture) => {
-    this.props.onDoubleTap();
-  };
-}
-
+@observer
 class Control extends React.Component {
-  state = {
-    full: true,
-  };
-
   render() {
-    if (!this.props.enabled) {
+    const s = g.stacks[g.stacks.length - 1];
+    if (!this.props.enabled || s.name === `PageCallManage`) {
       return null;
     }
-
-    if (this.state.full) {
-      return <Full {...this.props} onDoubleTap={this.toggleFull} />;
-    }
-
-    return <Mini {...this.props} onDoubleTap={this.toggleFull} />;
+    return <Mini {...this.props} onDoubleTap={g.goToPageCallManage} />;
   }
-
-  toggleFull = () => {
-    this.setState({
-      full: !this.state.full,
-    });
-  };
 }
 
 const CallVideos = p =>

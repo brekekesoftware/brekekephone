@@ -50,6 +50,10 @@ export class CallStore extends BaseStore {
   // unread
   // read
   @observable voicemail = {};
+
+  // Style in CallVideosUI to save the previous video position
+  @observable videoPositionT = 28;
+  @observable videoPositionL = 4;
 }
 
 const callStore = new CallStore();
