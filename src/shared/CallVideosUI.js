@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { PanResponder, StyleSheet, View } from 'react-native';
+import { PanResponder, Platform, StyleSheet, View } from 'react-native';
 
 import g from '../global';
 import callStore from '../global/callStore';
@@ -9,9 +9,16 @@ import VideoPlayer from './VideoPlayer';
 const css = StyleSheet.create({
   Mini: {
     position: `absolute`,
-    maxWidth: 144,
-    maxHeight: 256,
-    borderRadius: g.borderRadius,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: `black`,
+    ...Platform.select({
+      web: {
+        height: null,
+        borderRadius: g.borderRadius,
+      },
+    }),
     overflow: `hidden`,
     ...g.boxShadow,
     ...g.backdropZindex,
@@ -20,6 +27,7 @@ const css = StyleSheet.create({
 
 @observer
 class Mini extends React.Component {
+  state = {};
   constructor(props) {
     super(props);
 
@@ -60,12 +68,20 @@ class Mini extends React.Component {
     });
   };
 
+  _lastTap = null;
   onDrop = (ev, gesture) => {
     callStore.videoPositionL += gesture.dx;
     callStore.videoPositionT += gesture.dy;
-    if (gesture.dx === 0 && gesture.dy === 0) {
+    const n = Date.now();
+    if (
+      gesture.dx <= 10 &&
+      gesture.dy <= 10 &&
+      this._lastTap &&
+      n - this._lastTap <= 500
+    ) {
       this.props.onDoubleTap();
     }
+    this._lastTap = n;
   };
 }
 

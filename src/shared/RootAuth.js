@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { View } from 'react-native';
 
 import CallBar from '../-notify/CallBar';
 import CallNotify from '../-notify/CallNotify';
@@ -22,7 +21,6 @@ const RootAuth = observer(() => {
       <AuthSIP />
       <AuthUC />
       <CallNotify />
-      <View />
       <CallBar />
       <CallVideos />
       <CallVoices />
