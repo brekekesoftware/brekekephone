@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import { StyleSheet, View } from '../-/Rn';
+import { StyleSheet, TouchableOpacity, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
@@ -13,17 +13,28 @@ import IncallManager from '../native/IncallManager';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
 import Layout from '../shared/Layout';
+import VideoPlayer from '../shared/VideoPlayer';
 import { arrToMap } from '../utils/toMap';
 import CallManage from './CallManage';
 
 const css = StyleSheet.create({
   PageIncoming_Btn__Hangup: {
     position: `absolute`,
-    bottom: 100,
+    bottom: 30,
     left: 0,
     right: 0,
-    marginLeft: `auto`,
-    marginRight: `auto`,
+  },
+  Space: {
+    flex: 1,
+    alignSelf: `stretch`,
+  },
+  VideoPlayer: {
+    position: `absolute`,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: `black`,
   },
 });
 
@@ -38,6 +49,22 @@ class PageCallManage extends React.Component {
   state = {
     prevSelectedId: null,
     prevRunningIds: null,
+    showButtonsInVideoCall: true,
+  };
+
+  _alreadySetShowButtonsInVideoCall = false;
+
+  toggleButtons = () => {
+    this.setState({
+      showButtonsInVideoCall: !this.state.showButtonsInVideoCall,
+    });
+  };
+  hideButtonsIfVideo = () => {
+    const u = this.runningById[callStore.selectedId];
+    if (!this._alreadySetShowButtonsInVideoCall && u?.remoteVideoEnabled) {
+      this.setState({ showButtonsInVideoCall: false });
+      this._alreadySetShowButtonsInVideoCall = true;
+    }
   };
 
   _selectActiveCallWithRoute(props) {
@@ -82,6 +109,7 @@ class PageCallManage extends React.Component {
     } else {
       this._checkCreatingSessionAndRoute();
     }
+    this.hideButtonsIfVideo();
   }
 
   findNewestCallByRunids_s(runids, props) {
@@ -127,54 +155,78 @@ class PageCallManage extends React.Component {
 
   componentDidMount() {
     this._selectActiveCallWithRoute(this.props);
+    this.hideButtonsIfVideo();
   }
 
   render() {
     const u = this.runningById[callStore.selectedId];
+    const Container = u?.remoteVideoEnabled ? React.Fragment : BrekekeGradient;
+    const containerProps = u?.remoteVideoEnabled
+      ? null
+      : {
+          colors: [g.colors.primaryFn(0.2), g.revBg],
+        };
     return (
-      <BrekekeGradient colors={[g.colors.primaryFn(0.2), g.revBg]}>
+      <Container {...containerProps}>
         <Layout
+          compact
           noScroll
           onBack={g.backToPageCallRecents}
           title={u?.partyName}
-          transparent
+          transparent={!u?.remoteVideoEnabled}
         >
-          <CallManage
-            {...u}
-            answer={this.answer}
-            create={g.goToPageCallKeypad}
-            disableVideo={this.disableVideo}
-            dtmf={this.dtmf}
-            enableVideo={this.enableVideo}
-            hold={this.hold}
-            onCloseLoudSpeaker={this.onCloseLoudSpeaker}
-            onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-            park={this.park}
-            parkingIds={callStore.runnings
-              .filter(c => c.parking)
-              .map(c => c.id)}
-            setMuted={this.setMuted}
-            setunMuted={this.setunMuted}
-            startRecording={this.startRecording}
-            stopRecording={this.stopRecording}
-            transfer={this.transfer}
-            unhold={this.unhold}
-            unpark={this.unpark}
-          />
-          <View style={css.PageIncoming_Btn__Hangup}>
-            <ButtonIcon
-              bgcolor={g.colors.danger}
-              color={g.revColor}
-              name="HANG UP"
-              noborder
-              onPress={this.hangup}
-              path={mdiPhoneHangup}
-              size={40}
-              textcolor={g.revColor}
-            />
-          </View>
+          {u?.remoteVideoEnabled && (
+            <React.Fragment>
+              <View style={css.Space} />
+              <View style={css.VideoPlayer}>
+                <VideoPlayer sourceObject={u.remoteVideoStreamObject} />
+              </View>
+              <TouchableOpacity
+                onPress={this.toggleButtons}
+                style={StyleSheet.absoluteFill}
+              />
+            </React.Fragment>
+          )}
+          {(this.state.showButtonsInVideoCall || !u?.remoteVideoEnabled) && (
+            <React.Fragment>
+              <CallManage
+                {...u}
+                answer={this.answer}
+                create={g.goToPageCallKeypad}
+                disableVideo={this.disableVideo}
+                dtmf={this.dtmf}
+                enableVideo={this.enableVideo}
+                hold={this.hold}
+                onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+                onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+                park={this.park}
+                parkingIds={callStore.runnings
+                  .filter(c => c.parking)
+                  .map(c => c.id)}
+                setMuted={this.setMuted}
+                setunMuted={this.setunMuted}
+                startRecording={this.startRecording}
+                stopRecording={this.stopRecording}
+                toggleButtons={this.toggleButtons}
+                transfer={this.transfer}
+                unhold={this.unhold}
+                unpark={this.unpark}
+              />
+              <View style={css.PageIncoming_Btn__Hangup}>
+                <ButtonIcon
+                  bgcolor={g.colors.danger}
+                  color={g.revColor}
+                  noborder
+                  onPress={this.hangup}
+                  path={mdiPhoneHangup}
+                  size={40}
+                  textcolor={g.revColor}
+                />
+              </View>
+            </React.Fragment>
+          )}
         </Layout>
-      </BrekekeGradient>
+      </Container>
     );
   }
 
