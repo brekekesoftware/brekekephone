@@ -12,7 +12,6 @@ import {
 } from '../-/Rn';
 import g from '../global';
 import { useAnimationOnDidMount } from '../utils/animation';
-import useStore from '../utils/useStore';
 
 const css = StyleSheet.create({
   RootAlert: {
@@ -68,29 +67,6 @@ const css = StyleSheet.create({
   },
 });
 
-const ErrorDetail = observer(props => {
-  const $ = useStore(() => ({
-    observable: {
-      displayingDetail: false,
-    },
-  }));
-  if (!props.err?.message) {
-    return null;
-  }
-  if (!$.displayingDetail)
-    return (
-      <TouchableOpacity
-        onPress={() => $.set(`displayingDetail`, v => !v)}
-        style={css.RootAlert_Err}
-      >
-        <Text small style={css.RootAlert_ErrTxt__title}>
-          Show error detail
-        </Text>
-      </TouchableOpacity>
-    );
-  return <Text small>{props.err.message}</Text>;
-});
-
 const Alert = ({ error, loading, prompt, ...props }) => {
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
@@ -114,6 +90,7 @@ const Alert = ({ error, loading, prompt, ...props }) => {
     });
   } else if (error) {
     const { err, message, unexpectedErr, ...rest } = error;
+    const errMessage = unexpectedErr?.message || err?.message || err;
     Object.assign(props, {
       title: `Error`,
       message: (
@@ -121,7 +98,7 @@ const Alert = ({ error, loading, prompt, ...props }) => {
           <Text style={css.RootAlert_Message}>
             {unexpectedErr ? `An unexpected error occurred` : message}
           </Text>
-          <ErrorDetail err={unexpectedErr || err} />
+          {!!errMessage && <Text small>{errMessage}</Text>}
         </React.Fragment>
       ),
       confirmText: `OK`,
