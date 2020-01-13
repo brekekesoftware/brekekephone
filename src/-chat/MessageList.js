@@ -2,7 +2,6 @@ import React from 'react';
 
 import { StyleSheet, Text, View } from '../-/Rn';
 import g from '../global';
-import Avatar from '../shared/Avatar';
 import { groupByTimestamp } from './config';
 import Message from './Message';
 
