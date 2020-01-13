@@ -19,7 +19,6 @@ import React from 'react';
 import {
   Icon,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -63,99 +62,95 @@ const css = StyleSheet.create({
 });
 
 const RunningItem = p => (
-  <SafeAreaView>
-    <TouchableOpacity onPress={p.pressCallsManage} style={css.CallBar_Outer}>
-      <View style={css.CallBar_Icon}>
-        {!p.activecall.answered && p.activecall.incoming && (
-          <Icon color={g.colors.primary} path={mdiPhoneInTalkOutline} />
-        )}
-        {p.activecall.incoming && !p.activecall.answered && (
-          <Icon color={g.colors.danger} path={mdiPhoneMissedOutline} />
-        )}
-        {!p.activecall.answered && !p.activecall.incoming && (
-          <Icon color={g.colors.primary} path={mdiPhoneOutgoingOutline} />
-        )}
-        {p.activecall.answered && p.activecall.holding && (
-          <Icon color={g.borderBg} path={mdiPhonePausedOutline} />
-        )}
-        {p.activecall.answered && !p.activecall.holding && (
-          <Icon color={g.colors.primary} path={mdiPhone} />
-        )}
-      </View>
-      <View style={css.CallBar_Info}>
-        <Text style={css.Notify_Info_PartyName}>
-          {p.activecall.partyName || p.activecall.partyNumber}
-        </Text>
-        <Text>{p.activecall.partyNumber}</Text>
-      </View>
-      <View style={css.CallBar_BtnCall}>
-        {p.activecall.answered && p.activecall.holding && (
+  <TouchableOpacity onPress={p.pressCallsManage} style={css.CallBar_Outer}>
+    <View style={css.CallBar_Icon}>
+      {!p.activecall.answered && p.activecall.incoming && (
+        <Icon color={g.colors.primary} path={mdiPhoneInTalkOutline} />
+      )}
+      {p.activecall.incoming && !p.activecall.answered && (
+        <Icon color={g.colors.danger} path={mdiPhoneMissedOutline} />
+      )}
+      {!p.activecall.answered && !p.activecall.incoming && (
+        <Icon color={g.colors.primary} path={mdiPhoneOutgoingOutline} />
+      )}
+      {p.activecall.answered && p.activecall.holding && (
+        <Icon color={g.borderBg} path={mdiPhonePausedOutline} />
+      )}
+      {p.activecall.answered && !p.activecall.holding && (
+        <Icon color={g.colors.primary} path={mdiPhone} />
+      )}
+    </View>
+    <View style={css.CallBar_Info}>
+      <Text style={css.Notify_Info_PartyName}>
+        {p.activecall.partyName || p.activecall.partyNumber}
+      </Text>
+      <Text>{p.activecall.partyNumber}</Text>
+    </View>
+    <View style={css.CallBar_BtnCall}>
+      {p.activecall.answered && p.activecall.holding && (
+        <ButtonIcon
+          bdcolor={g.borderBg}
+          color={g.colors.primary}
+          onPress={p.unhold}
+          path={mdiPlay}
+        />
+      )}
+      {!p.activecall.holding && (
+        <ButtonIcon
+          bdcolor={g.borderBg}
+          color={g.colors.danger}
+          onPress={p.hangup}
+          path={mdiPhoneHangup}
+        />
+      )}
+      {p.activecall.answered &&
+        !p.activecall.holding &&
+        !p.activecall.muted && (
           <ButtonIcon
             bdcolor={g.borderBg}
-            color={g.colors.primary}
-            onPress={p.unhold}
-            path={mdiPlay}
+            color={g.color}
+            onPress={p.setMuted}
+            path={mdiMicrophoneOff}
           />
         )}
-        {!p.activecall.holding && (
+      {p.activecall.answered && !p.activecall.holding && p.activecall.muted && (
+        <ButtonIcon
+          bdcolor={g.borderBg}
+          color={g.color}
+          onPress={p.setunMuted}
+          path={mdiMicrophone}
+        />
+      )}
+      {p.activecall.answered &&
+        !p.activecall.holding &&
+        !p.activecall.loudspeaker &&
+        Platform.OS !== `web` && (
           <ButtonIcon
             bdcolor={g.borderBg}
-            color={g.colors.danger}
-            onPress={p.hangup}
-            path={mdiPhoneHangup}
+            onPress={p.onOpenLoudSpeaker}
+            path={mdiVolumeHigh}
           />
         )}
-        {p.activecall.answered &&
-          !p.activecall.holding &&
-          !p.activecall.muted && (
-            <ButtonIcon
-              bdcolor={g.borderBg}
-              color={g.color}
-              onPress={p.setMuted}
-              path={mdiMicrophoneOff}
-            />
-          )}
-        {p.activecall.answered &&
-          !p.activecall.holding &&
-          p.activecall.muted && (
-            <ButtonIcon
-              bdcolor={g.borderBg}
-              color={g.color}
-              onPress={p.setunMuted}
-              path={mdiMicrophone}
-            />
-          )}
-        {p.activecall.answered &&
-          !p.activecall.holding &&
-          !p.activecall.loudspeaker &&
-          Platform.OS !== `web` && (
-            <ButtonIcon
-              bdcolor={g.borderBg}
-              onPress={p.onOpenLoudSpeaker}
-              path={mdiVolumeHigh}
-            />
-          )}
-        {p.activecall.answered &&
-          !p.activecall.holding &&
-          p.activecall.loudspeaker &&
-          Platform.OS !== `web` && (
-            <ButtonIcon
-              bdcolor={g.borderBg}
-              onPress={p.onCloseLoudSpeaker}
-              path={mdiVolumeMedium}
-            />
-          )}
-        {p.activecall.answered && !p.activecall.holding && (
+      {p.activecall.answered &&
+        !p.activecall.holding &&
+        p.activecall.loudspeaker &&
+        Platform.OS !== `web` && (
           <ButtonIcon
             bdcolor={g.borderBg}
-            color={g.colors.primary}
-            onPress={p.hold}
-            path={mdiPause}
+            onPress={p.onCloseLoudSpeaker}
+            path={mdiVolumeMedium}
           />
         )}
-      </View>
-    </TouchableOpacity>
-  </SafeAreaView>
+      {p.activecall.answered && !p.activecall.holding && (
+        <ButtonIcon
+          bdcolor={g.borderBg}
+          color={g.colors.primary}
+          onPress={p.hold}
+          path={mdiPause}
+        />
+      )}
+    </View>
+  </TouchableOpacity>
 );
 
 @observer
