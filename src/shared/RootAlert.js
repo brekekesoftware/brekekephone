@@ -67,7 +67,7 @@ const css = StyleSheet.create({
   },
 });
 
-const Alert = ({ error, loading, prompt, ...props }) => {
+const Alert = ({ error, prompt, ...props }) => {
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
     translateY: [Dimensions.get(`screen`).height, 0],
@@ -106,9 +106,6 @@ const Alert = ({ error, loading, prompt, ...props }) => {
       onDismiss: g.dismissAlert,
       ...rest,
     });
-  } else if (loading) {
-    // TODO
-    return null;
   } else {
     return null;
   }
