@@ -58,7 +58,7 @@ class PageCallRecents extends React.Component {
         />
         <Field
           isGroup
-          label={`VOICEMAILS (${callStore.voicemail?.new || 0})`}
+          label={`VOICEMAILS (${callStore.newVoicemailCount})`}
         />
         <Field isGroup label={`RECENT CALLS`} />
         {users.length !== 0 &&
