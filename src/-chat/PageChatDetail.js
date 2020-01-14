@@ -58,7 +58,7 @@ class PageChatDetail extends React.Component {
     const u = contactStore.getUCUser(this.props.buddy);
     return (
       <Layout
-        compact={true}
+        compact
         fabRender={this.renderChatInput}
         isChat={{
           ref: this.setViewRef,

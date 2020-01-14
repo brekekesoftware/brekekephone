@@ -108,7 +108,7 @@ class PageContactPhonebook extends React.Component {
                 <Field isGroup label={_g.key} />
                 {_g.phonebooks.map((u, i) => (
                   <UserItem
-                    function={[
+                    iconFuncs={[
                       () =>
                         g.openPicker({
                           options: [
@@ -132,9 +132,8 @@ class PageContactPhonebook extends React.Component {
                         }),
                       () => this.update(u),
                     ]}
-                    icon={[mdiPhone, mdiInformation]}
+                    icons={[mdiPhone, mdiInformation]}
                     key={i}
-                    last={i === _g.phonebooks.length - 1}
                     name={u.name}
                   />
                 ))}

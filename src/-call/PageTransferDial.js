@@ -52,13 +52,12 @@ class PageTransferDial extends React.Component {
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
               <UserItem
-                function={[
+                iconFuncs={[
                   () => this.transferAttended(u.number),
                   () => this.transferBlind(u.number),
                 ]}
-                icon={[mdiPhoneForward, mdiPhone]}
+                icons={[mdiPhoneForward, mdiPhone]}
                 key={i}
-                last={i === _g.users.length - 1}
                 {...u}
               />
             ))}

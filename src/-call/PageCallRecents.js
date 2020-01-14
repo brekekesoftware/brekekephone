@@ -1,4 +1,4 @@
-import { mdiMagnify, mdiPhone } from '@mdi/js';
+import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
@@ -18,15 +18,16 @@ class PageCallRecents extends React.Component {
       return call.id;
     }
   };
-  callBack = id => {
-    const number = authStore.currentProfile.recentCalls?.find(c => c.id === id)
-      ?.partyNumber;
-    if (number) {
-      sip.createSession(number);
-      g.goToPageCallManage();
-    } else {
-      g.showError({ message: `Could not find number from store to call` });
-    }
+
+  callVoice = userId => {
+    sip.createSession(userId);
+    g.goToPageCallManage();
+  };
+  callVideo = userId => {
+    sip.createSession(userId, {
+      videoEnabled: true,
+    });
+    g.goToPageCallManage();
   };
 
   getAvatar = id => {
@@ -61,11 +62,13 @@ class PageCallRecents extends React.Component {
         {users.length !== 0 &&
           users.map((u, i) => (
             <UserItem
-              detail={true}
-              function={[() => this.callBack(u.id)]}
-              icon={[mdiPhone]}
+              iconFuncs={[
+                () => this.callVideo(u.partyNumber),
+                () => this.callVoice(u.partyNumber),
+              ]}
+              icons={[mdiVideo, mdiPhone]}
+              isRecentCall
               key={i}
-              last={i === users.length - 1}
               {...this.getAvatar(u.partyNumber)}
               {...u}
             />

@@ -59,7 +59,7 @@ class PageChatGroupDetail extends React.Component {
     const gr = chatStore.getGroup(this.props.groupId);
     return (
       <Layout
-        compact={true}
+        compact
         dropdown={[
           {
             label: `Invite more people`,

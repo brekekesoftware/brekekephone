@@ -69,7 +69,6 @@ class PageChatGroupInvite extends React.Component {
           <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <UserItem
               key={id}
-              last={i === this.buddyIds.length - 1}
               {...this.resolveBuddy(id)}
               selected={this.state.selectedBuddy[id]}
             />
