@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import ChatInput from '../-/Footer/ChatInput';
-import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
+import { StyleSheet, Text, TouchableOpacity } from '../-/Rn';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
@@ -16,17 +16,17 @@ import { numberOfChatsPerLoad } from './config';
 import MessageList from './MessageList';
 
 const css = StyleSheet.create({
-  loadMoreBtn: {
+  LoadMore: {
     alignSelf: `center`,
-    backgroundColor: `white`,
+    paddingBottom: 15,
+    fontSize: g.fontSizeSmall,
     paddingHorizontal: 10,
-    color: `blue`,
   },
-  loadFinishTxt: {
-    alignSelf: `center`,
-    backgroundColor: `white`,
-    paddingHorizontal: 9,
-    color: `brown`,
+  LoadMore__btn: {
+    color: g.colors.primary,
+  },
+  LoadMore__finished: {
+    color: g.colors.warning,
   },
 });
 
@@ -50,7 +50,7 @@ class PageChatDetail extends React.Component {
     editingText: ``,
     showImage: ``,
     fileType: ``,
-    loadFinish: false,
+    allMessagesLoaded: false,
   };
   numberOfChatsPerLoadMore = numberOfChatsPerLoad;
 
@@ -75,6 +75,13 @@ class PageChatDetail extends React.Component {
 
   render() {
     const u = contactStore.getUCUser(this.props.buddy);
+    const {
+      allMessagesLoaded,
+      fileType,
+      loadingMore,
+      loadingRecent,
+      showImage,
+    } = this.state;
     return (
       <Layout
         compact
@@ -87,43 +94,35 @@ class PageChatDetail extends React.Component {
         onBack={g.backToPageChatRecents}
         title={u?.name}
       >
-        <View>
-          {this.state.loadFinish ? (
-            <View>
-              {this.chatIds.length === 0 ? (
-                <Text style={css.loadFinishTxt}>
-                  Hiện tại không có tin nhắn để load
-                </Text>
-              ) : (
-                <Text style={css.loadFinishTxt}>
-                  {` `}
-                  Đã load tất cả các tin nhắn{` `}
-                </Text>
-              )}
-            </View>
-          ) : (
-            <View>
-              {this.state.loadingMore ? (
-                <View>
-                  <Text style={css.loadMoreBtn}>Loading...</Text>
-                </View>
-              ) : (
-                <TouchableOpacity onPress={() => this.loadMore()}>
-                  <Text style={css.loadMoreBtn}>Load more</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          <MessageList
-            acceptFile={this.acceptFile}
-            fileType={this.state.fileType}
-            list={chatStore.messagesByThreadId[this.props.buddy]}
-            loadMore={this.loadMore}
-            rejectFile={this.rejectFile}
-            resolveChat={this.resolveChat}
-            showImage={this.state.showImage}
-          />
-        </View>
+        {loadingRecent ? (
+          <Text style={css.LoadMore}>Loading...</Text>
+        ) : allMessagesLoaded ? (
+          <Text center style={[css.LoadMore, css.LoadMore__finished]}>
+            {this.chatIds.length === 0
+              ? `There's currently no message in this thread`
+              : `All messages in this thread have been loaded`}
+          </Text>
+        ) : (
+          <TouchableOpacity
+            onPress={loadingMore ? null : () => this.loadMore()}
+          >
+            <Text
+              bold={!loadingMore}
+              style={[css.LoadMore, !loadingMore && css.LoadMore__btn]}
+            >
+              {loadingMore ? `Loading...` : `Load more messages`}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <MessageList
+          acceptFile={this.acceptFile}
+          fileType={fileType}
+          list={chatStore.messagesByThreadId[this.props.buddy]}
+          loadMore={this.loadMore}
+          rejectFile={this.rejectFile}
+          resolveChat={this.resolveChat}
+          showImage={showImage}
+        />
       </Layout>
     );
   }
@@ -197,7 +196,7 @@ class PageChatDetail extends React.Component {
       })
       .then(() => {
         if (this.chatIds.length < numberOfChatsPerLoad) {
-          this.setState({ loadFinish: true });
+          this.setState({ allMessagesLoaded: true });
         }
       });
   };
@@ -234,7 +233,7 @@ class PageChatDetail extends React.Component {
           `id`,
         ).length;
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-          this.setState({ loadFinish: true });
+          this.setState({ allMessagesLoaded: true });
         }
       });
   };
