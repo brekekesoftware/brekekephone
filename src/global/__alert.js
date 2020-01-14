@@ -15,8 +15,6 @@ $.extends({
   //    message: string|ReactElement
   //    err: Error
   //    unexpectedErr?: Error
-  // loading?: boolean|
-  //    dismissTimeout: boolean|number
   alerts: [],
   showPrompt: prompt => {
     $.alerts.push({ prompt });
@@ -24,11 +22,6 @@ $.extends({
   },
   showError: error => {
     $.alerts.push({ error });
-    $.set(`alertsCount`, $.alerts.length);
-  },
-  showLoading: loading => {
-    loading = loading || true;
-    $.alerts.push({ loading });
     $.set(`alertsCount`, $.alerts.length);
   },
   dismissAlert: () => {

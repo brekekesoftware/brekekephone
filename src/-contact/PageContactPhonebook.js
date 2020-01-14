@@ -47,7 +47,7 @@ class PageContactPhonebook extends React.Component {
     }
     const map = {};
     phonebooks.forEach(u => {
-      u.name = u.name || u.id;
+      u.name = u.name || u.id || ``;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
         c0 = `#`;

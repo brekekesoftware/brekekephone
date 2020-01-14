@@ -44,16 +44,11 @@ export class CallStore extends BaseStore {
     return this._runningsMap[id];
   };
 
-  // user
-  // new
-  // saved
-  // unread
-  // read
-  @observable voicemail = {};
+  @observable newVoicemailCount = 0;
 
   // Style in CallVideosUI to save the previous video position
-  @observable videoPositionT = 28;
-  @observable videoPositionL = 4;
+  @observable videoPositionT = 25;
+  @observable videoPositionL = 5;
 }
 
 const callStore = new CallStore();
