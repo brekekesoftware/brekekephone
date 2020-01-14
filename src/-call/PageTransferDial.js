@@ -27,7 +27,7 @@ class PageTransferDial extends React.Component {
     const users = this.getMatchIds().map(this.resolveMatch);
     const map = {};
     users.forEach(u => {
-      u.name = u.name || u.id;
+      u.name = u.name || u.number || ``;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
         c0 = `#`;
