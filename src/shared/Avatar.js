@@ -10,10 +10,11 @@ import authStore from '../global/authStore';
 const css = StyleSheet.create({
   Avatar: {
     flexDirection: `row`,
-  },
-  Image: {
     width: 50,
     height: 50,
+  },
+  Image: {
+    flex: 1,
     borderRadius: 25,
   },
   Status: {

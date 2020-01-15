@@ -10,10 +10,12 @@ const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
-    paddingBottom: 15,
   },
-  Layout_Scroll: {
+  Scroller: {
     flexGrow: 1,
+  },
+  FooterSpaceInsideScroller: {
+    height: 15,
   },
 });
 
@@ -31,7 +33,7 @@ const Layout = props => {
     Container = ScrollView;
     containerProps = {
       style: css.Layout,
-      contentContainerStyle: [css.Layout_Scroll],
+      contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: `always`,
       onScroll: e =>
         // eslint-disable-next-line no-mixed-operators
@@ -73,6 +75,7 @@ const Layout = props => {
       <Container {...containerProps}>
         <View style={{ height: headerSpace }} />
         {props.children}
+        <View style={css.FooterSpaceInsideScroller} />
       </Container>
       <View style={{ height: footerSpace }} />
       <Footer {...props} />

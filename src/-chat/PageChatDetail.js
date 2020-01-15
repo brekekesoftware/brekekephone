@@ -162,6 +162,7 @@ class PageChatDetail extends React.Component {
     const text = chat.text;
     const creator = this.resolveCreator(chat.creator);
     return {
+      id,
       creatorId: creator.id,
       creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
@@ -185,7 +186,7 @@ class PageChatDetail extends React.Component {
     })
       .then(chats => {
         const u = contactStore.getUCUser(this.props.buddy);
-        chatStore.pushMessages(u.id, chats.reverse());
+        chatStore.pushMessages(u.id, chats);
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
@@ -219,7 +220,7 @@ class PageChatDetail extends React.Component {
     uc.getBuddyChats(u?.id, query)
       .then(chats => {
         const u = contactStore.getUCUser(this.props.buddy);
-        chatStore.pushMessages(u.id, chats.reverse());
+        chatStore.pushMessages(u.id, chats);
       })
       .catch(err => {
         g.showError({ err, message: `Failed to get more chats` });

@@ -91,6 +91,7 @@ class PageChatGroupDetail extends React.Component {
         <MessageList
           acceptFile={this.acceptFile}
           fileType={this.state.fileType}
+          isGroupChat
           list={chatStore.messagesByThreadId[this.props.groupId]}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
@@ -139,6 +140,7 @@ class PageChatGroupDetail extends React.Component {
     const text = chat.text;
     const creator = this.resolveBuddy(chat.creator);
     return {
+      id,
       creatorId: creator.id,
       creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
@@ -154,7 +156,7 @@ class PageChatGroupDetail extends React.Component {
       max: numberOfChatsPerLoad,
     })
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats.reverse());
+        chatStore.pushMessages(this.props.groupId, chats);
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
@@ -177,7 +179,7 @@ class PageChatGroupDetail extends React.Component {
     };
     uc.getGroupChats(this.props.groupId, query)
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats.reverse());
+        chatStore.pushMessages(this.props.groupId, chats);
       })
       .catch(err => {
         g.showError({ message: `Failed to get more chats`, err });

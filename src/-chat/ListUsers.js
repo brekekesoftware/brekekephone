@@ -5,28 +5,28 @@ import UserItem from '../-contact/UserItem';
 
 const ListUsers = p => (
   <React.Fragment>
-    {p.userids.map((id, i) => {
-      if (isNaN(id))
-        return (
-          <TouchableOpacity key={i} onPress={() => p.userselect(id)}>
-            <UserItem
-              key={id}
-              {...p.userbyid[id]}
-              lastMessage={p.lastmess(id)?.text}
-            />
-          </TouchableOpacity>
-        );
-      return null;
-    })}
-    {p.groupids.map((id, i) => (
-      <TouchableOpacity key={i} onPress={() => p.groupselect(id)}>
-        <UserItem
-          key={id}
-          {...p.groupbyid[id]}
-          lastMessage={p.lastmess(id)?.text}
-        />
-      </TouchableOpacity>
-    ))}
+    {p.groupIds
+      .filter(id => id)
+      .map(id => (
+        <TouchableOpacity key={id} onPress={() => p.onGroupSelect(id)}>
+          <UserItem
+            key={id}
+            {...p.groupById[id]}
+            lastMessage={p.getLastChat(id)?.text}
+          />
+        </TouchableOpacity>
+      ))}
+    {p.userIds
+      .filter(id => id)
+      .map(id => (
+        <TouchableOpacity key={id} onPress={() => p.onUserSelect(id)}>
+          <UserItem
+            key={id}
+            {...p.userById[id]}
+            lastMessage={p.getLastChat(id)?.text}
+          />
+        </TouchableOpacity>
+      ))}
   </React.Fragment>
 );
 
