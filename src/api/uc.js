@@ -459,6 +459,70 @@ class UC extends EventEmitter {
       },
     };
   }
+
+  async sendFiles(conf_id, file) {
+    let input = null;
+
+    if (Platform.OS === `web`) {
+      input = document.createElement(`input`);
+      input.type = `file`;
+      input.name = `file`;
+
+      input.files = (() => {
+        let b = null;
+
+        if (window.DataTransfer) {
+          b = new DataTransfer();
+        } else if (window.ClipboardEvent) {
+          b = new ClipboardEvent(``).clipboardData;
+        } else {
+          console.error(`Can not set input.files`);
+          return;
+        }
+
+        b.items.add(file);
+        return b.files;
+      })();
+
+      const form = document.createElement(`form`);
+      form.appendChild(input);
+    } else {
+      const fd = new FormData();
+
+      fd.append(`file`, {
+        ...file,
+        type: `multipart/form-data`,
+      });
+    }
+
+    const res = await new Promise((onres, onerr) =>
+      this.client.sendFiles(
+        {
+          conf_id,
+        },
+        [file],
+        onres,
+        onerr,
+      ),
+    );
+    const file_res = res.infoList[0];
+    return {
+      file: {
+        id: file_res.fileInfo.file_id,
+        name: file_res.fileInfo.name,
+        size: file_res.fileInfo.size,
+        state: getFileStateFromCode(file_res.fileInfo.status),
+        transferPercent: file_res.fileInfo.progress,
+      },
+
+      chat: {
+        id: file_res.text_id,
+        file: file_res.fileInfo.file_id,
+        creator: this.client.getProfile().user_id,
+        created: file_res.ltime,
+      },
+    };
+  }
 }
 
 export default new UC();
