@@ -19,7 +19,6 @@ class CallVideos extends React.Component {
 
   resolveCall = id => {
     const call = callStore.getRunningCall(id);
-
     return {
       enabled: call.localVideoEnabled,
       sourceObject: call.remoteVideoStreamObject,

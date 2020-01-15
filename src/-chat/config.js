@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import uc from '../api/uc';
 
-export const numberOfChatsPerLoad = 50;
+export const numberOfChatsPerLoad = 20;
 
 export const groupByTimestamp = arr => {
   const me = uc.me();

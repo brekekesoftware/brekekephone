@@ -62,63 +62,75 @@ const ContactsCreateForm = observer(props => {
     //
   }));
   const [Form, submitForm] = useForm();
+  const disabled = props.updatingPhonebook?.shared;
   return (
     <Layout
       onBack={$.onBackBtnPress}
       onFabBack={$.onBackBtnPress}
-      onFabNext={submitForm}
+      onFabNext={disabled ? null : submitForm}
       title={props.title}
     >
       <Form
         $={$}
         fields={[
           {
+            disabled,
             name: `book`,
             label: `BOOK`,
             rule: `required`,
           },
           {
+            disabled,
             name: `firstName`,
             label: `FIRST NAME`,
             rule: `required`,
           },
           {
+            disabled,
             name: `lastName`,
             label: `LAST NAME`,
             rule: `required`,
           },
           {
+            disabled,
             keyboardType: `numeric`,
             name: `workNumber`,
             label: `WORD NUMBER`,
           },
           {
+            disabled,
             keyboardType: `numeric`,
             name: `cellNumber`,
             label: `CELL PHONE`,
           },
           {
+            disabled,
             keyboardType: `numeric`,
             name: `homeNumber`,
             label: `HOME NUMBER`,
           },
           {
+            disabled,
             name: `job`,
             label: `JOB`,
           },
           {
+            disabled,
             name: `company`,
             label: `COMPANY`,
           },
           {
+            disabled,
             name: `address`,
             label: `ADDRESS`,
           },
           {
+            disabled,
             name: `email`,
             label: `EMAIL`,
           },
           {
+            disabled,
             type: `Switch`,
             name: `shared`,
             label: `SHARED`,

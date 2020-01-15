@@ -29,14 +29,9 @@ class PageCallParks extends React.Component {
     return (
       <Layout
         description="Manage your call parks"
-        dropdown={[
-          {
-            // TODO move to footer actions button
-            label: `Start new park`,
-            onPress: this.park,
-          },
-        ]}
         menu="call"
+        onFabNext={this.state.selectedPark ? this.park : null}
+        onFabNextText="START NEW PARK"
         subMenu="parks"
         title="Parks"
       >
@@ -60,7 +55,8 @@ class PageCallParks extends React.Component {
 
   selectPark = selectedPark => {
     this.setState({
-      selectedPark,
+      selectedPark:
+        selectedPark === this.state.selectedPark ? null : selectedPark,
     });
   };
 

@@ -41,9 +41,10 @@ class PageContactPhonebook extends React.Component {
     }, 300);
   }
   render() {
-    const phonebooks = authStore.currentProfile.displaySharedContacts
-      ? this.phoneBookId.map(this.resolveChat).filter(i => i.shared !== true)
-      : this.phoneBookId.map(this.resolveChat);
+    let phonebooks = this.phoneBookId.map(this.resolvePhonebook);
+    if (!authStore.currentProfile.displaySharedContacts) {
+      phonebooks = phonebooks.filter(i => i.shared !== true);
+    }
     const map = {};
     phonebooks.forEach(u => {
       u.name = u.name || u.id;
@@ -156,7 +157,7 @@ class PageContactPhonebook extends React.Component {
     this.loadContacts.flush();
     this.loadContacts();
   };
-  resolveChat = id => {
+  resolvePhonebook = id => {
     const phonebook = this.phoneBookById[id];
     if (phonebook) {
       return {
@@ -177,6 +178,7 @@ class PageContactPhonebook extends React.Component {
     this.setState({
       loading: true,
     });
+    contactStore.phoneBooks = [];
     pbx
       .getContacts(book, shared, opts)
       .then(this.onLoadContactsSuccess)

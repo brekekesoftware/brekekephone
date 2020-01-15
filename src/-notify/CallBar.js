@@ -35,14 +35,9 @@ import { arrToMap } from '../utils/toMap';
 
 const css = StyleSheet.create({
   CallBar: {
-    position: `absolute`,
-    top: 0,
-    left: 0,
-    right: 0,
     borderBottomWidth: 1,
-    borderColor: g.hoverBg,
+    borderColor: g.borderBg,
     backgroundColor: g.hoverBg,
-    zIndex: 10, // hot fix: callbar is hidden. -> TODO: fix it.
   },
   CallBar_Outer: {
     flexDirection: `row`,
