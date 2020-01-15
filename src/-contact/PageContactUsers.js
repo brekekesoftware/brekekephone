@@ -89,7 +89,7 @@ class PageContactUsers extends React.Component {
 
     const map = {};
     displayUsers.forEach(u => {
-      u.name = u.name || u.id;
+      u.name = u.name || u.id || ``;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
         c0 = `#`;
@@ -159,14 +159,12 @@ class PageContactUsers extends React.Component {
                 }
               >
                 <UserItem
-                  detail={true}
-                  function={[
-                    () => this.callVoice(u.id),
+                  iconFuncs={[
                     () => this.callVideo(u.id),
+                    () => this.callVoice(u.id),
                   ]}
-                  icon={[mdiPhone, mdiVideo]}
-                  last={i === _g.users.length - 1}
-                  lastmess={this.getLastMessageChat(u.id)}
+                  icons={[mdiVideo, mdiPhone]}
+                  lastMessage={this.getLastMessageChat(u.id)?.text}
                   {...u}
                 />
               </TouchableOpacity>

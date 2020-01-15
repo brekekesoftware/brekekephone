@@ -39,6 +39,10 @@ const css = StyleSheet.create({
     fontSize: g.fontSizeSmall,
   },
 });
+function removeDuplicates(array, key) {
+  let lookup = new Set();
+  return array.filter(obj => !lookup.has(obj[key]) && lookup.add(obj[key]));
+}
 
 const MessageList = ({ list, ...p }) =>
   groupByTimestamp(list || []).map(({ date, groupByTime }, i) => (
@@ -50,7 +54,7 @@ const MessageList = ({ list, ...p }) =>
           <Text right={createdByMe} style={css.TimeText}>
             {time}
           </Text>
-          {messages.map(m => (
+          {removeDuplicates(messages, `id`).map(m => (
             <Message
               key={m.id}
               {...p.resolveChat(m.id)}

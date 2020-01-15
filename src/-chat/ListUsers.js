@@ -12,8 +12,7 @@ const ListUsers = p => (
             <UserItem
               key={id}
               {...p.userbyid[id]}
-              detail={true}
-              lastmess={p.lastmess(id)}
+              lastMessage={p.lastmess(id)?.text}
             />
           </TouchableOpacity>
         );
@@ -24,8 +23,7 @@ const ListUsers = p => (
         <UserItem
           key={id}
           {...p.groupbyid[id]}
-          detail={true}
-          lastmess={p.lastmess(id)}
+          lastMessage={p.lastmess(id)?.text}
         />
       </TouchableOpacity>
     ))}
