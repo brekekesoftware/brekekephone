@@ -115,20 +115,20 @@ class PageContactPhonebook extends React.Component {
                             {
                               key: u.workNumber,
                               label: u.workNumber || `Please add work number`,
-                              icon: mdiPhone,
+                              icon: u.workNumber ? mdiPhone : mdiInformation,
                             },
                             {
                               key: u.cellNumber,
                               label: u.cellNumber || `Please add cell number`,
-                              icon: mdiPhone,
+                              icon: u.cellNumber ? mdiPhone : mdiInformation,
                             },
                             {
                               key: u.homeNumber,
                               label: u.homeNumber || `Please add home number`,
-                              icon: mdiPhone,
+                              icon: u.homeNumber ? mdiPhone : mdiInformation,
                             },
                           ],
-                          onSelect: this.call,
+                          onSelect: e => this.callRequest(e, u),
                         }),
                       () => this.update(u),
                     ]}
@@ -247,6 +247,13 @@ class PageContactPhonebook extends React.Component {
     g.goToPagePhonebookUpdate({
       contact: contact,
     });
+  };
+  callRequest = (number, contact) => {
+    if (number !== ``) {
+      this.call(number);
+    } else {
+      this.update(contact);
+    }
   };
 }
 
