@@ -211,18 +211,7 @@ class PageChatDetail extends React.Component {
   onRejectFileFailure = err => {
     g.showError({ err, message: `Failed to reject file` });
   };
-  blob = file => {
-    const reader = new FileReader();
-    const fileType = file.type.split(`/`)[0];
-    reader.onload = async () => {
-      const url = reader.result;
-      this.setState({ showImage: url, fileType: fileType });
-    };
-    reader.readAsDataURL(file);
-  };
   sendFile = file => {
-    // TODO: fix error duplicate when upload 2 file.
-    this.blob(file);
     const u = contactStore.getUCUser(this.props.buddy);
     uc.sendFile(u?.id, file)
       .then(this.onSendFileSuccess)
@@ -230,8 +219,8 @@ class PageChatDetail extends React.Component {
   };
   onSendFileSuccess = res => {
     const buddyId = this.props.buddy;
-    chatStore.pushMessages(buddyId, res.chat);
     chatStore.upsertFile(res.file);
+    chatStore.pushMessages(buddyId, res.chat);
   };
   onSendFileFailure = err => {
     g.showError({ err, message: `Failed to send file` });
