@@ -1,5 +1,6 @@
 import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js';
 import { observer } from 'mobx-react';
+import moment from 'moment';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
@@ -37,11 +38,34 @@ class PageCallRecents extends React.Component {
       avatar: ucUser.avatar,
     };
   };
-  getMatchUserIds = () =>
-    authStore.currentProfile.recentCalls?.filter(this.isMatchUser) || [];
+  getMatchedCalls = () => {
+    const calls =
+      authStore.currentProfile.recentCalls?.filter(this.isMatchUser) || [];
+    const today = moment().format(`MMM D`);
+    const normalizedCalls = calls.reduce((arr, c) => {
+      if (
+        typeof c.created !== `string` ||
+        (c.created.length !== 13 && c.created.length !== 14)
+      ) {
+        return arr;
+      }
+      arr.push({ ...c, created: c.created.replace(` - ${today}`, ``) });
+      return arr;
+    }, []);
+    if (calls.length !== normalizedCalls.length) {
+      setTimeout(() => {
+        // Can not update observable while rendering
+        g.upsertProfile({
+          id: authStore.signedInId,
+          recentCalls: normalizedCalls,
+        });
+      });
+    }
+    return normalizedCalls;
+  };
 
   render() {
-    const users = this.getMatchUserIds();
+    const calls = this.getMatchedCalls();
     return (
       <Layout
         description="Recent voicemails and calls"
@@ -58,21 +82,20 @@ class PageCallRecents extends React.Component {
           value={contactStore.callSearchRecents}
         />
         <Field isGroup label={`VOICEMAILS (${callStore.newVoicemailCount})`} />
-        <Field isGroup label={`RECENT CALLS`} />
-        {users.length !== 0 &&
-          users.map((u, i) => (
-            <UserItem
-              iconFuncs={[
-                () => this.callVideo(u.partyNumber),
-                () => this.callVoice(u.partyNumber),
-              ]}
-              icons={[mdiVideo, mdiPhone]}
-              isRecentCall
-              key={i}
-              {...this.getAvatar(u.partyNumber)}
-              {...u}
-            />
-          ))}
+        <Field isGroup label={`RECENT CALLS (${calls.length})`} />
+        {calls.map((c, i) => (
+          <UserItem
+            iconFuncs={[
+              () => this.callVideo(c.partyNumber),
+              () => this.callVoice(c.partyNumber),
+            ]}
+            icons={[mdiVideo, mdiPhone]}
+            isRecentCall
+            key={i}
+            {...this.getAvatar(c.partyNumber)}
+            {...c}
+          />
+        ))}
       </Layout>
     );
   }

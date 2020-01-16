@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react';
+import moment from 'moment';
 import React from 'react';
 import { Platform } from 'react-native';
 import createId from 'shortid';
@@ -226,14 +227,13 @@ class ApiProvider extends React.Component {
 
   onSIPSessionStopped = id => {
     const call = callStore.getRunningCall(id);
-    const time = new Date();
     authStore.pushRecentCall({
       id: createId(),
       incoming: call.incoming,
       answered: call.answered,
       partyName: call.partyName,
       partyNumber: call.partyNumber,
-      created: `${time.getHours()}:${time.getMinutes()}`,
+      created: moment().format(`hh:mm - MMM D`),
     });
     callStore.removeRunning(call.id);
   };

@@ -10,12 +10,11 @@ const css = StyleSheet.create({
   },
   ButtonIcon_Btn: {
     borderWidth: 1,
-    padding: 10,
+    padding: 12,
   },
   ButtonIcon_Name: {
-    fontSize: 14,
     paddingTop: 5,
-    fontWeight: `500`,
+    maxWidth: 74,
   },
 });
 

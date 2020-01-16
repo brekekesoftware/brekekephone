@@ -6,7 +6,6 @@ import React from 'react';
 
 import UserItem from '../-contact/UserItem';
 import pbx from '../api/pbx';
-import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
@@ -18,13 +17,52 @@ class PageTransferDial extends React.Component {
   @computed get call() {
     return callStore.getRunningCall(this.props.callId);
   }
-  state = {
-    attended: true,
-    target: ``,
+
+  resolveMatch = id => {
+    const match = contactStore.getPBXUser(id);
+    const ucUser = contactStore.getUCUser(id) || {};
+    return {
+      name: match.name,
+      avatar: ucUser.avatar,
+      number: id,
+      calling: !!match.talkers?.filter(t => t.status === `calling`).length,
+      ringing: !!match.talkers?.filter(t => t.status === `ringing`).length,
+      talking: !!match.talkers?.filter(t => t.status === `talking`).length,
+      holding: !!match.talkers?.filter(t => t.status === `holding`).length,
+    };
+  };
+
+  onTransferFailure = err => {
+    g.showError({ message: `Failed to transfer the call`, err });
+  };
+  transferBlind = target => {
+    const promise = pbx.transferTalkerBlind(
+      this.call.pbxTenant,
+      this.call.pbxTalkerId,
+      target,
+    );
+    promise.then(g.goToPageCallRecents).catch(this.onTransferFailure);
+  };
+  transferAttended = target => {
+    const promise = pbx.transferTalkerAttended(
+      this.call.pbxTenant,
+      this.call.pbxTalkerId,
+      target,
+    );
+    promise
+      .then(() => {
+        callStore.upsertRunning({
+          id: this.call.id,
+          transfering: target,
+        });
+        g.stacks.pop();
+        g.goToPageTransferAttend({ callId: this.call.id });
+      })
+      .catch(this.onTransferFailure);
   };
 
   render() {
-    const users = this.getMatchIds().map(this.resolveMatch);
+    const users = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch);
     const map = {};
     users.forEach(u => {
       u.name = u.name || u.number || ``;
@@ -46,7 +84,11 @@ class PageTransferDial extends React.Component {
       g.users = orderBy(g.users, `name`);
     });
     return (
-      <Layout onBack={g.backToPageCallManage} title="Transfer call">
+      <Layout
+        description="Select target to start transfer"
+        onBack={g.backToPageCallManage}
+        title="Transfer call"
+      >
         {groups.map(_g => (
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />
@@ -66,142 +108,6 @@ class PageTransferDial extends React.Component {
       </Layout>
     );
   }
-
-  setAttended = attended => {
-    this.setState({
-      attended,
-    });
-  };
-  setTarget = target => {
-    this.setState({
-      target,
-    });
-  };
-  isMatchUser = id => {
-    const searchTextLC = this.state.target.toLowerCase();
-    const userId = id && id.toLowerCase();
-    let pbxUserName;
-    const pbxUser = contactStore.getPBXUser(id);
-    if (pbxUser) {
-      pbxUserName = pbxUser.name.toLowerCase();
-    } else {
-      pbxUserName = ``;
-    }
-    return userId.includes(searchTextLC) || pbxUserName.includes(searchTextLC);
-  };
-  getMatchIds = () =>
-    contactStore.pbxUsers.map(u => u.id).filter(this.isMatchUser);
-  resolveMatch = id => {
-    const match = contactStore.getPBXUser(id);
-    const ucUser = contactStore.getUCUser(id) || {};
-    return {
-      name: match.name,
-      avatar: ucUser.avatar,
-      number: id,
-      calling: !!match.talkers?.filter(t => t.status === `calling`).length,
-      ringing: !!match.talkers?.filter(t => t.status === `ringing`).length,
-      talking: !!match.talkers?.filter(t => t.status === `talking`).length,
-      holding: !!match.talkers?.filter(t => t.status === `holding`).length,
-    };
-  };
-  selectMatch = number => {
-    this.setTarget(number);
-  };
-  transfer = () => {
-    const target = this.state.target;
-    if (!target.trim()) {
-      g.showError({
-        err: new Error(`Target is empty`),
-        message: `Failed to start transfer`,
-      });
-      return;
-    }
-    const { attended } = this.state;
-    const promise = attended
-      ? pbx.transferTalkerAttended(
-          this.call.pbxTenant,
-          this.call.pbxTalkerId,
-          this.state.target,
-        )
-      : pbx.transferTalkerBlind(
-          this.call.pbxTenant,
-          this.call.pbxTalkerId,
-          this.state.target,
-        );
-    promise.then(this.onTransferSuccess).catch(this.onTransferFailure);
-  };
-  onTransferSuccess = target => {
-    const { attended } = this.state;
-    if (!attended) return g.goToPageCallManage();
-    callStore.upsertRunning({
-      id: this.call.id,
-      transfering: target,
-    });
-    g.goToPageTransferAttend({ callId: this.call.id });
-  };
-  onTransferFailure = err => {
-    g.showError({ err, message: `Failed to target transfer the call` });
-  };
-  transferBlind = target => {
-    if (!target.trim()) {
-      g.showError({
-        err: new Error(`Target is empty`),
-        message: `Failed to start transfer`,
-      });
-      return;
-    }
-    const promise = pbx.transferTalkerBlind(
-      this.call.pbxTenant,
-      this.call.pbxTalkerId,
-      target,
-    );
-    promise.then(g.goToPageCallRecents()).catch(this.onTransferFailure);
-  };
-  transferAttended = target => {
-    if (!target.trim()) {
-      g.showError({
-        err: new Error(`Target is empty`),
-        message: `Failed to start transfer`,
-      });
-      return;
-    }
-    const promise = pbx.transferTalkerAttended(
-      this.call.pbxTenant,
-      this.call.pbxTalkerId,
-      target,
-    );
-    promise.then(this.onTransferSuccess(target)).catch(this.onTransferFailure);
-  };
-  onTransferAttendedForVideoSuccess = target => {
-    const { attended } = this.state;
-    if (!attended) return g.goToPageCallManage();
-    callStore.upsertRunning({
-      id: this.call.id,
-      transfering: target,
-    });
-    g.goToPageTransferAttend({ callId: this.call.id });
-    sip.enableVideo(this.call.id);
-  };
-  onTransferAttendedForVideoFailure = err => {
-    g.showError({ err, message: `Failed to target transfer the call` });
-  };
-  transferAttendedForVideo = target => {
-    if (!target.trim()) {
-      g.showError({
-        err: new Error(`Target is empty`),
-        message: `Failed to start transfer`,
-      });
-      return;
-    }
-    const promise = pbx.transferTalkerAttended(
-      this.call.pbxTenant,
-      this.call.pbxTalkerId,
-      target,
-    );
-    promise
-      .then(this.onTransferAttendedForVideoSuccess(target))
-      .catch(this.onTransferAttendedForVideoFailure);
-  };
 }
 
 export default PageTransferDial;

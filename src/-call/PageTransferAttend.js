@@ -18,50 +18,53 @@ import Avatar from '../shared/Avatar';
 import Layout from '../shared/Layout';
 
 const css = StyleSheet.create({
-  PageTransferAttend: {
+  Outer: {
+    alignItems: `center`,
+  },
+  Inner: {
+    width: `100%`,
     flexDirection: `row`,
+    maxWidth: 320,
   },
-  PageTransferAttend__spaceAround: {
-    justifyContent: `space-around`,
+  Inner__info: {
+    maxWidth: 280,
+    marginBottom: 100,
   },
-  PageTransferAttend_Spacing: {
-    flex: 1,
-    maxHeight: `40%`,
-  },
-  PageTransferAttend_Info: {
+  Info: {
     position: `absolute`,
     alignItems: `center`,
   },
-  PageTransferAttend_InfoFrom: {
+  Info__from: {
     left: 20,
     top: 30,
   },
-  PageTransferAttend_InfoTo: {
+  Info__to: {
     right: 20,
     top: 30,
   },
-  PageTransferAttend_InfoArr: {
+  Arrow: {
     marginLeft: `auto`,
     marginRight: `auto`,
     top: 60,
   },
 
-  PageTransferAttend_BtnOuter: {
-    flexDirection: `column`,
+  BtnOuter: {
+    width: `${100 / 3}%`,
     alignItems: `center`,
   },
-  PageTransferAttend_Txt__pdt20: {
-    paddingTop: 20,
-  },
-  PageTransferAttend_Txt__pdt10: {
-    paddingTop: 10,
-  },
-  PageTransferAttend_Btn: {
-    borderWidth: 1,
+  Btn: {
     borderRadius: 25,
-    padding: 5,
     width: 50,
     height: 50,
+  },
+  Btn__stop: {
+    backgroundColor: g.colors.warning,
+  },
+  Btn__hangup: {
+    backgroundColor: g.colors.danger,
+  },
+  Btn__conference: {
+    backgroundColor: g.colors.primary,
   },
 });
 
@@ -69,71 +72,6 @@ const css = StyleSheet.create({
 class PageTransferAttend extends React.Component {
   @computed get call() {
     return callStore.getRunningCall(this.props.callId);
-  }
-
-  render() {
-    const usersource = this.resolveMatch(this.call?.partyNumber);
-    const usertarget = this.resolveMatch(this.call?.transfering);
-    return (
-      <Layout onBack={g.backToPageCallManage} title="Attended Transfer">
-        <View style={css.PageTransferAttend}>
-          <View
-            style={[
-              css.PageTransferAttend_Info,
-              css.PageTransferAttend_InfoFrom,
-            ]}
-          >
-            <Avatar source={{ uri: usersource?.avatar }} />
-            <Text style={css.PageTransferAttend_Txt__pdt20}>From</Text>
-            <Text>{this.call?.partyName}</Text>
-          </View>
-          <View style={css.PageTransferAttend_InfoArr}>
-            <Icon path={mdiArrowRight} />
-          </View>
-          <View
-            style={[css.PageTransferAttend_Info, css.PageTransferAttend_InfoTo]}
-          >
-            <Avatar source={{ uri: usertarget?.avatar }} />
-            <Text style={css.PageTransferAttend_Txt__pdt20}>To</Text>
-            <Text>{this.call?.transfering}</Text>
-          </View>
-        </View>
-        <View style={css.PageTransferAttend_Spacing} />
-        <View
-          style={[css.PageTransferAttend, css.PageTransferAttend__spaceAround]}
-        >
-          <View style={css.PageTransferAttend_BtnOuter}>
-            <TouchableOpacity
-              onPress={this.hangup}
-              style={css.PageTransferAttend_Btn}
-            >
-              <Icon path={mdiPhoneOff} />
-            </TouchableOpacity>
-            <Text style={css.PageTransferAttend_Txt__pdt10}>CANCEL</Text>
-            <Text>TRANSFER</Text>
-          </View>
-          <View style={css.PageTransferAttend_BtnOuter}>
-            <TouchableOpacity
-              onPress={this.stop}
-              style={css.PageTransferAttend_Btn}
-            >
-              <Icon path={mdiPhoneHangup} />
-            </TouchableOpacity>
-            <Text style={css.PageTransferAttend_Txt__pdt10}>END CALL &</Text>
-            <Text>COMPLETE TRANSFER</Text>
-          </View>
-          <View style={css.PageTransferAttend_BtnOuter}>
-            <TouchableOpacity
-              onPress={this.join}
-              style={css.PageTransferAttend_Btn}
-            >
-              <Icon path={mdiPhoneForward} />
-            </TouchableOpacity>
-            <Text style={css.PageTransferAttend_Txt__pdt10}>CONFERENCE</Text>
-          </View>
-        </View>
-      </Layout>
-    );
   }
 
   resolveMatch = id => {
@@ -144,44 +82,112 @@ class PageTransferAttend extends React.Component {
     };
   };
 
+  stop = () => {
+    pbx
+      .stopTalkerTransfer(this.call.pbxTenant, this.call.pbxTalkerId)
+      .then(() => {
+        callStore.upsertRunning({
+          id: this.props.callId,
+          transfering: false,
+        });
+        g.backToPageCallManage();
+      })
+      .catch(err => {
+        g.showError({ message: `Failed to stop the transfer`, err });
+      });
+  };
+  conference = () => {
+    pbx
+      .joinTalkerTransfer(this.call.pbxTenant, this.call.pbxTalkerId)
+      .then(() => {
+        callStore.upsertRunning({
+          id: this.props.callId,
+          transfering: false,
+        });
+        g.backToPageCallManage();
+      })
+      .catch(err => {
+        g.showError({
+          message: `Failed to make conference for the transfer`,
+          err,
+        });
+      });
+  };
   hangup = () => {
     sip.hangupSession(this.props.selectedId);
   };
-  join = () => {
-    const call = callStore.getRunningCall(this.props.callId);
-    pbx
-      .joinTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onJoinSuccess)
-      .catch(this.onJoinFailure);
-  };
-  onJoinSuccess = () => {
-    callStore.upsertRunning({
-      id: this.props.callId,
-      transfering: false,
-    });
-    g.goToPageCallManage();
-  };
-  onJoinFailure = err => {
-    g.showError({ err, message: `Failed to join the transfer` });
-  };
 
-  stop = () => {
-    const call = callStore.getRunningCall(this.props.callId);
-    pbx
-      .stopTalkerTransfer(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStopSuccess)
-      .catch(this.onStopFailure);
-  };
-  onStopSuccess = () => {
-    callStore.upsertRunning({
-      id: this.props.callId,
-      transfering: false,
-    });
-    g.goToPageCallManage();
-  };
-  onStopFailure = err => {
-    g.showError({ err, message: `Failed to stop the transfer` });
-  };
+  render() {
+    const usersource = this.resolveMatch(this.call?.partyNumber);
+    const usertarget = this.resolveMatch(this.call?.transfering);
+    return (
+      <Layout compact onBack={g.backToPageCallManage} title="Attended Transfer">
+        <View style={css.Outer}>
+          <View style={[css.Inner, css.Inner__info]}>
+            <View style={[css.Info, css.Info__from]}>
+              <Avatar source={{ uri: usersource?.avatar }} />
+              <Text center singleLine small>
+                {this.call?.partyName}
+              </Text>
+            </View>
+            <View style={css.Arrow}>
+              <Icon path={mdiArrowRight} />
+            </View>
+            <View style={[css.Info, css.Info__to]}>
+              <Avatar source={{ uri: usertarget?.avatar }} />
+              <Text center singleLine small>
+                {this.call?.transfering}
+              </Text>
+            </View>
+          </View>
+          <View style={css.Inner}>
+            <View style={css.BtnOuter}>
+              <TouchableOpacity
+                onPress={this.stop}
+                style={[css.Btn, css.Btn__stop]}
+              >
+                <Icon path={mdiPhoneOff} />
+              </TouchableOpacity>
+              <Text center singleLine small>
+                STOP
+              </Text>
+              <Text center singleLine small>
+                TRANSFER
+              </Text>
+            </View>
+            <View style={css.BtnOuter}>
+              <TouchableOpacity
+                onPress={this.hangup}
+                style={[css.Btn, css.Btn__hangup]}
+              >
+                <Icon path={mdiPhoneHangup} />
+              </TouchableOpacity>
+              <Text center singleLine small>
+                STOP
+              </Text>
+              <Text center singleLine small>
+                AND HANGUP
+              </Text>
+            </View>
+            <View style={css.BtnOuter}>
+              <TouchableOpacity
+                onPress={this.conference}
+                style={[css.Btn, css.Btn__conference]}
+              >
+                <Icon path={mdiPhoneForward} />
+              </TouchableOpacity>
+              <Text center singleLine small>
+                MAKE
+              </Text>
+              <Text center singleLine small>
+                CONFERENCE
+              </Text>
+            </View>
+          </View>
+        </View>
+      </Layout>
+    );
+  }
 }
 
 export default PageTransferAttend;

@@ -77,15 +77,13 @@ class AuthStore extends BaseStore {
     return g.profiles.find(p => compareProfile(p, _p));
   };
   pushRecentCall = call => {
-    $.upsert(`profiles`, {
+    const recentCalls = [call, ...(this.currentProfile?.recentCalls || [])];
+    if (recentCalls.length > 20) {
+      recentCalls.pop();
+    }
+    $.upsertProfile({
       id: this.signedInId,
-      recentCalls: [...(this.currentProfile?.recentCalls || []), call],
-    });
-  };
-  removeRecentCall = id => {
-    $.upsert(`profiles`, {
-      id: this.signedInId,
-      recentCalls: this.currentProfile?.recentCalls?.filter(c => c.id === id),
+      recentCalls,
     });
   };
   //
