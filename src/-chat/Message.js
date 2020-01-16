@@ -55,6 +55,13 @@ const css = StyleSheet.create({
     flexDirection: `row`,
     marginTop: 10,
   },
+  File__createdByMe: {
+    alignSelf: `flex-end`,
+    left: 5,
+    paddingLeft: 10,
+    paddingRight: 15,
+    backgroundColor: g.colors.primary,
+  },
   Message_File_Info: {
     marginLeft: 5,
   },
@@ -85,11 +92,13 @@ const css = StyleSheet.create({
 });
 
 const File = p => (
-  <View
-    style={[css.File, css.Message, p.createdByMe && css.Message__createdByMe]}
-  >
+  <View style={[css.File, css.Message, p.createdByMe && css.File__createdByMe]}>
     <View>
-      <Icon color={p.createdByMe && g.revColor} path={mdiFile} size={50} />
+      <Icon
+        color={p.createdByMe ? g.revColor : g.color}
+        path={mdiFile}
+        size={50}
+      />
       <View style={css.Message_File_Info}>
         <Text
           numberOfLines={1}
