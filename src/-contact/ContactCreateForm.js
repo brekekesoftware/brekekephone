@@ -1,5 +1,5 @@
-import { isEqual } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react';
 import React from 'react';
 

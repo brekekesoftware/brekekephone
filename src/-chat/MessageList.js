@@ -1,3 +1,6 @@
+import sortBy from 'lodash/sortBy';
+import uniqBy from 'lodash/uniqBy';
+import { observer } from 'mobx-react';
 import React from 'react';
 
 import { StyleSheet, Text, View } from '../-/Rn';
@@ -6,13 +9,13 @@ import { groupByTimestamp } from './config';
 import Message from './Message';
 
 const css = StyleSheet.create({
-  Date: {
+  DateGroup: {
     marginTop: 20,
   },
-  Date__first: {
+  DateGroup__first: {
     marginTop: 0,
   },
-  DateText: {
+  Date: {
     alignSelf: `center`,
     backgroundColor: `white`,
     paddingHorizontal: 10,
@@ -27,47 +30,85 @@ const css = StyleSheet.create({
     backgroundColor: g.hoverBg,
   },
   //
-  Time: {
+  TimeGroup: {
     marginTop: 10,
   },
-  Time__first: {
+  TimeGroup__first: {
     marginTop: 0,
   },
-  TimeText: {
-    paddingHorizontal: 2,
+  Time: {
+    paddingHorizontal: 4,
     color: g.subColor,
     fontSize: g.fontSizeSmall,
   },
+  //
+  Creator: {
+    flexDirection: `row`,
+    flexWrap: `nowrap`,
+    paddingLeft: 4,
+  },
 });
-function removeDuplicates(array, key) {
-  let lookup = new Set();
-  return array.filter(obj => !lookup.has(obj[key]) && lookup.add(obj[key]));
-}
 
-const MessageList = ({ list, ...p }) =>
-  groupByTimestamp(list || []).map(({ date, groupByTime }, i) => (
-    <View key={date} style={[css.Date, !i && css.Date__first]}>
-      <View style={css.Border} />
-      <Text style={css.DateText}>{date}</Text>
-      {groupByTime.map(({ createdByMe, messages, time }, j) => (
-        <View key={time} style={[css.Time, !j && css.Time__first]}>
-          <Text right={createdByMe} style={css.TimeText}>
-            {time}
-          </Text>
-          {removeDuplicates(messages, `id`).map(m => (
-            <Message
-              key={m.id}
-              {...p.resolveChat(m.id)}
-              acceptFile={p.acceptFile}
-              fileType={p.fileType}
-              loadMore={p.loadMore}
-              rejectFile={p.rejectFile}
-              showImage={p.showImage}
-            />
-          ))}
-        </View>
-      ))}
-    </View>
-  ));
+const MessageList = observer(
+  ({
+    acceptFile,
+    fileType,
+    isGroupChat,
+    list,
+    loadMore,
+    rejectFile,
+    resolveChat,
+    showImage,
+  }) => {
+    // TODO unique and sort right after fetching
+    if (!Array.isArray(list)) {
+      list = [];
+    }
+    list = uniqBy(list, `id`);
+    list = sortBy(list, `created`);
+    //
+    return groupByTimestamp(list).map(({ date, groupByTime }, i) => (
+      <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
+        <View style={css.Border} />
+        <Text style={css.Date}>{date}</Text>
+        {groupByTime.map(({ createdByMe, messages, time }, j) => {
+          const id = messages[0]?.id;
+          const c0 = resolveChat(id);
+          const name = c0?.creatorName;
+          return (
+            <View
+              key={`${time}${id}`}
+              style={[css.TimeGroup, !j && css.TimeGroup__first]}
+            >
+              {isGroupChat && !createdByMe && name ? (
+                <View style={css.Creator}>
+                  <Text bold singleLine>
+                    {name}
+                  </Text>
+                  <Text style={css.Time}>{time}</Text>
+                </View>
+              ) : (
+                <Text right={createdByMe} style={css.Time}>
+                  {time}
+                </Text>
+              )}
+              {messages.map(m => (
+                <Message
+                  {...resolveChat(m.id)}
+                  acceptFile={acceptFile}
+                  fileType={fileType}
+                  key={m.id}
+                  loadMore={loadMore}
+                  rejectFile={rejectFile}
+                  showImage={showImage}
+                />
+              ))}
+            </View>
+          );
+        })}
+      </View>
+    ));
+  },
+);
 
 export default MessageList;

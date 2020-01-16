@@ -1,82 +1,56 @@
-import { mdiMagnify } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { TouchableOpacity } from '../-/Rn';
-import UserItem from '../-contact/UserItem';
+import { Text } from '../-/Rn';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
-import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import ListUsers from './ListUsers';
 
 @observer
 class PageChatRecents extends React.Component {
+  getLastChat = id => {
+    const chats = chatStore.messagesByThreadId[id] || [];
+    return chats.length !== 0 ? chats[chats.length - 1] : {};
+  };
   render() {
+    const groupIds = chatStore.groups
+      .filter(g => g.jointed)
+      .map(g => g.id)
+      .filter(id => id);
+    const userIds = chatStore.threadIdsOrderedByRecent.filter(id => id);
     return (
       <Layout
         description="UC recent active chat"
+        dropdown={[
+          {
+            label: `Create group chat`,
+            onPress: g.goToPageChatGroupCreate,
+          },
+        ]}
         menu="contact"
         subMenu="chat"
         title="Chat"
       >
-        <Field
-          icon={mdiMagnify}
-          label="SEARCH NAME, PHONE NUMBER ..."
-          onValueChange={v => {
-            contactStore.usersSearchChat = v;
-          }}
-          value={contactStore.usersSearchChat}
-        />
-
-        <TouchableOpacity onPress={g.goToPageChatGroupCreate}>
-          <UserItem name="Create group" />
-        </TouchableOpacity>
-        <Field isGroup label={`GROUP CHAT`} />
+        {!groupIds.length && !userIds.length && (
+          <Text center normal small warning>
+            There's no active chat thread
+          </Text>
+        )}
         <ListUsers
-          createGroup={g.goToPageChatGroupCreate}
-          groupbyid={arrToMap(chatStore.groups, `id`, g => g)}
-          groupids={chatStore.groups.filter(g => g.jointed).map(g => g.id)}
-          groupselect={groupId => g.goToPageChatGroupDetail({ groupId })}
-          lastmess={this.getLastMessageChat}
-          userbyid={contactStore.ucUsers.reduce((m, u) => {
-            m[u.id] = u;
-            return m;
-          }, {})}
-          userids={this.getMatchIds()}
-          userselect={id => g.goToPageChatDetail({ buddy: id })}
+          getLastChat={this.getLastChat}
+          groupById={arrToMap(chatStore.groups, `id`, g => g)}
+          groupIds={groupIds}
+          onGroupSelect={groupId => g.goToPageChatGroupDetail({ groupId })}
+          onUserSelect={id => g.goToPageChatDetail({ buddy: id })}
+          userById={arrToMap(contactStore.ucUsers, `id`, u => u)}
+          userIds={userIds}
         />
       </Layout>
     );
   }
-
-  getLastMessageChat = id => {
-    const chats = chatStore.messagesByThreadId[id] || [];
-    return chats.length !== 0 ? chats[chats.length - 1] : {};
-  };
-
-  isMatchUser = id => {
-    if (!id) {
-      return false;
-    }
-    let userId = id;
-    let ucUserName;
-    const chatUser = contactStore.getUCUser(id);
-    if (chatUser) {
-      ucUserName = chatUser.name.toLowerCase();
-    } else {
-      ucUserName = ``;
-    }
-    userId = userId.toLowerCase();
-    ucUserName = ucUserName.toLowerCase();
-    const txt = contactStore.usersSearchChat.toLowerCase();
-    return userId.includes(txt) || ucUserName.includes(txt);
-  };
-
-  getMatchIds = () =>
-    chatStore.threadIdsOrderedByRecent.filter(this.isMatchUser);
 }
 
 export default PageChatRecents;

@@ -9,13 +9,10 @@ const css = StyleSheet.create({
   Outer: {
     borderBottomWidth: 1,
     borderColor: g.borderBg,
-    paddingLeft: 10,
-  },
-  Outer__noButtons: {
-    paddingRight: 10,
   },
   Inner: {
     flexDirection: `row`,
+    paddingLeft: 10,
   },
   Inner_selected: {
     borderRightWidth: 5,
@@ -81,22 +78,22 @@ const UserItem = ({
   statusText,
   ...p
 }) => (
-  <View style={[css.Outer, !icons?.length && css.Outer__noButtons]}>
+  <View style={css.Outer}>
     <View style={[css.Inner, selected && css.Inner_selected]}>
       <Avatar source={{ uri: avatar }} {...p} style={css.WithSpace} />
       <View style={[css.Text, css.WithSpace]}>
         <View style={css.NameWithStatus}>
-          <Text numberOfLines={1} subTitle>
+          <Text singleLine subTitle>
             {name || partyNumber || id}
           </Text>
           {!!statusText && (
-            <Text numberOfLines={1} style={css.Status}>
+            <Text singleLine style={css.Status}>
               {statusText}
             </Text>
           )}
         </View>
         {!isRecentCall && !!lastMessage && (
-          <Text numberOfLines={1} style={css.LastMessage}>
+          <Text singleLine style={css.LastMessage}>
             {lastMessage}
           </Text>
         )}

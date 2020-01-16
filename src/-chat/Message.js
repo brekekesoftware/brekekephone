@@ -2,7 +2,15 @@ import { mdiCheck, mdiClose, mdiFile } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
+import {
+  Dimensions,
+  Icon,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../-/Rn';
 import g from '../global';
 
 const css = StyleSheet.create({
@@ -19,21 +27,26 @@ const css = StyleSheet.create({
     flex: 1,
   },
   Message: {
-    alignSelf: `flex-start`,
-    left: -5,
+    position: `relative`,
     marginBottom: 2,
-    borderRadius: g.borderRadius,
+    borderTopRightRadius: g.borderRadius,
+    borderBottomRightRadius: g.borderRadius,
     paddingVertical: 5,
-    paddingLeft: 15,
-    paddingRight: 10,
+    paddingHorizontal: 10,
     backgroundColor: g.hoverBg,
     overflow: `hidden`,
+    maxWidth: Dimensions.get(`screen`).width - 20,
+    ...Platform.select({
+      web: {
+        maxWidth: null,
+      },
+    }),
   },
   Message__createdByMe: {
-    alignSelf: `flex-end`,
-    left: 5,
-    paddingLeft: 10,
-    paddingRight: 15,
+    borderTopLeftRadius: g.borderRadius,
+    borderBottomLeftRadius: g.borderRadius,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
     backgroundColor: g.colors.primary,
     color: `white`,
   },
