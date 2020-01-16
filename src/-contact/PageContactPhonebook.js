@@ -118,6 +118,11 @@ class PageContactPhonebook extends React.Component {
                       () =>
                         !u.homeNumber && !u.workNumber && !u.cellNumber
                           ? this.callRequest(``, u)
+                          : this.renderPhoneBookNumer(u).length === 1
+                          ? this.callRequest(
+                              this.renderPhoneBookNumer(u)[0].value,
+                              u,
+                            )
                           : g.openPicker({
                               options: this.renderPhoneBookNumer(u).map(i => ({
                                 key: i.value,
