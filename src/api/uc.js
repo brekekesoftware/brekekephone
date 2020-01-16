@@ -371,7 +371,7 @@ class UC extends EventEmitter {
   }
 
   acceptFile(file) {
-    return new Promise((onres, onerr) => {
+    const res = new Promise((onres, onerr) => {
       const xhr = new XMLHttpRequest();
       xhr.responseType = `blob`;
 
@@ -381,13 +381,23 @@ class UC extends EventEmitter {
 
       this.client.acceptFileWithXhr(file, xhr, onerr);
     });
+    return res;
   }
 
   rejectFile(file) {
-    return new Promise((onres, onerr) => {
-      this.client.cancelFile(file, onerr);
-      onres();
-    });
+    if (file.file_id_target) {
+      file.file_id_target.map(f => {
+        return new Promise((onres, onerr) => {
+          this.client.cancelFile(f, onerr);
+          onres();
+        });
+      });
+    } else {
+      return new Promise((onres, onerr) => {
+        this.client.cancelFile(file.id, onerr);
+        onres();
+      });
+    }
   }
 
   async sendFile(user_id, file) {
@@ -441,7 +451,6 @@ class UC extends EventEmitter {
         onerr,
       ),
     );
-
     return {
       file: {
         id: res.fileInfo.file_id,
@@ -510,6 +519,7 @@ class UC extends EventEmitter {
       file: {
         id: file_res.fileInfo.file_id,
         name: file_res.fileInfo.name,
+        file_id_target: file_res.fileInfos.map(f => f.file_id),
         size: file_res.fileInfo.size,
         state: getFileStateFromCode(file_res.fileInfo.status),
         transferPercent: file_res.fileInfo.progress,

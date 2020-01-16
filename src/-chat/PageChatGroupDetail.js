@@ -277,7 +277,7 @@ class PageChatGroupDetail extends React.Component {
     g.showError({ err, message: `Failed to accept file` });
   };
   rejectFile = file => {
-    uc.rejectFile(file.id).catch(this.onRejectFileFailure);
+    uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
     g.showError({ err, message: `Failed to reject file` });
