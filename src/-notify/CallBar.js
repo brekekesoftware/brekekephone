@@ -5,7 +5,6 @@ import {
   mdiPhone,
   mdiPhoneHangup,
   mdiPhoneInTalkOutline,
-  mdiPhoneMissedOutline,
   mdiPhoneOutgoingOutline,
   mdiPhonePausedOutline,
   mdiPlay,
@@ -62,13 +61,13 @@ const css = StyleSheet.create({
 });
 
 const RunningItem = p => (
-  <TouchableOpacity onPress={p.pressCallsManage} style={css.CallBar_Outer}>
+  <TouchableOpacity
+    onPress={() => g.goToPageCallManage({ isFromCallBar: true })}
+    style={css.CallBar_Outer}
+  >
     <View style={css.CallBar_Icon}>
       {!p.activecall.answered && p.activecall.incoming && (
         <Icon color={g.colors.primary} path={mdiPhoneInTalkOutline} />
-      )}
-      {p.activecall.incoming && !p.activecall.answered && (
-        <Icon color={g.colors.danger} path={mdiPhoneMissedOutline} />
       )}
       {!p.activecall.answered && !p.activecall.incoming && (
         <Icon color={g.colors.primary} path={mdiPhoneOutgoingOutline} />
@@ -175,7 +174,6 @@ class CallBar extends React.Component {
           hold={this.hold}
           onCloseLoudSpeaker={this.onCloseLoudSpeaker}
           onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-          pressCallsManage={g.goToPageCallManage}
           setMuted={this.setMuted}
           setunMuted={this.setunMuted}
           unhold={this.unhold}

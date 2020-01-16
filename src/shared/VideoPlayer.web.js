@@ -1,5 +1,14 @@
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+
+const css = StyleSheet.create({
+  loading: {
+    flex: 1,
+    width: `100%`,
+    height: `100%`,
+    padding: 50,
+  },
+});
 
 export default p =>
   p.sourceObject ? (
@@ -14,5 +23,5 @@ export default p =>
       width="100%"
     />
   ) : (
-    <ActivityIndicator />
+    <ActivityIndicator style={css.loading} />
   );

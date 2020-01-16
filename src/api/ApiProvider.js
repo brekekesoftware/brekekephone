@@ -34,9 +34,6 @@ class ApiProvider extends React.Component {
     sip.on(`session-started`, this.onSIPSessionStarted);
     sip.on(`session-updated`, this.onSIPSessionUpdated);
     sip.on(`session-stopped`, this.onSIPSessionStopped);
-    sip.on(`video-session-created`, this.onSIPVideoSessionCreated);
-    sip.on(`video-session-updated`, this.onSIPVideoSessionUpdated);
-    sip.on(`video-session-ended`, this.onSIPVideoSessionEnded);
     uc.on(`connection-stopped`, this.onUCConnectionStopped);
     uc.on(`user-updated`, this.onUCUserUpdated);
     uc.on(`buddy-chat-created`, this.onBuddyChatCreated);
@@ -67,9 +64,6 @@ class ApiProvider extends React.Component {
     sip.off(`session-started`, this.onSIPSessionStarted);
     sip.off(`session-updated`, this.onSIPSessionUpdated);
     sip.off(`session-stopped`, this.onSIPSessionStopped);
-    sip.off(`video-session-created`, this.onSIPVideoSessionCreated);
-    sip.off(`video-session-updated`, this.onSIPVideoSessionUpdated);
-    sip.off(`video-session-ended`, this.onSIPVideoSessionEnded);
     uc.off(`connection-stopped`, this.onUCConnectionStopped);
     uc.off(`connection-timeout`, this.onUCConnectionTimeout);
     uc.off(`user-updated`, this.onUCUserUpdated);
@@ -282,18 +276,6 @@ class ApiProvider extends React.Component {
   };
   onFileFinished = file => {
     chatStore.upsertFile(file);
-  };
-
-  onSIPVideoSessionCreated = ev => {
-    callStore.upsertRunning(ev);
-  };
-
-  onSIPVideoSessionUpdated = ev => {
-    callStore.upsertRunning(ev);
-  };
-
-  onSIPVideoSessionEnded = ev => {
-    callStore.removeRunning(ev);
   };
 
   render() {
