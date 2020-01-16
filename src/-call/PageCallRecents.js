@@ -45,6 +45,7 @@ class PageCallRecents extends React.Component {
     const normalizedCalls = calls.reduce((arr, c) => {
       if (
         typeof c.created !== `string` ||
+        // Backward compatibility to remove outdate items
         (c.created.length !== 13 && c.created.length !== 14)
       ) {
         return arr;
