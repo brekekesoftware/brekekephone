@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
 
-const st = StyleSheet.create({
+const css = StyleSheet.create({
   video: {
     flex: 1,
     width: `100%`,
@@ -12,7 +12,7 @@ const st = StyleSheet.create({
 
 export default p =>
   p.sourceObject ? (
-    <RTCView streamURL={p.sourceObject.toURL()} style={st.video} />
+    <RTCView streamURL={p.sourceObject.toURL()} style={css.video} />
   ) : (
-    <ActivityIndicator />
+    <ActivityIndicator style={css.video} />
   );

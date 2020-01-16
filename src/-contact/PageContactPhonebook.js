@@ -254,7 +254,7 @@ class PageContactPhonebook extends React.Component {
       this.call(number);
     } else {
       this.update(contact);
-      g.showError({ message: `This contact doesn't have any phone numbers` });
+      g.showError({ message: `This contact doesn't have any phone number` });
     }
   };
   renderPhoneBookNumer = contact => {

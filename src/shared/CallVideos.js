@@ -10,7 +10,10 @@ class CallVideos extends React.Component {
     return (
       <CallVideosUI
         callIds={callStore.runnings
-          .filter(c => c.videoSessionId)
+          .filter(
+            c =>
+              c.videoSessionId && c.localVideoEnabled && c.remoteVideoEnabled,
+          )
           .map(c => c.id)}
         resolveCall={this.resolveCall}
       />
@@ -20,7 +23,6 @@ class CallVideos extends React.Component {
   resolveCall = id => {
     const call = callStore.getRunningCall(id);
     return {
-      enabled: call.localVideoEnabled,
       sourceObject: call.remoteVideoStreamObject,
     };
   };

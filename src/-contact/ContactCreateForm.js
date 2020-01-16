@@ -94,14 +94,14 @@ const ContactsCreateForm = observer(props => {
           {
             disabled,
             keyboardType: `numeric`,
-            name: `workNumber`,
-            label: `WORD NUMBER`,
+            name: `cellNumber`,
+            label: `MOBILE NUMBER`,
           },
           {
             disabled,
             keyboardType: `numeric`,
-            name: `cellNumber`,
-            label: `CELL PHONE`,
+            name: `workNumber`,
+            label: `WORK NUMBER`,
           },
           {
             disabled,

@@ -62,11 +62,11 @@ const css = StyleSheet.create({
 });
 
 const CallManage = p => {
-  const Container = p.remoteVideoEnabled ? TouchableOpacity : View;
+  const Container = p.toggleButtons ? TouchableOpacity : View;
   return (
     <Container
       onPress={p.toggleButtons}
-      style={[css.Buttons, p.remoteVideoEnabled && css.Buttons__hasBackground]}
+      style={[css.Buttons, p.toggleButtons && css.Buttons__hasBackground]}
     >
       <View style={css.Space} />
       <View style={[css.CallBar_Btn, css.CallBar_Btn__margin]}>
@@ -108,8 +108,8 @@ const CallManage = p => {
         )}
         {p.answered && !p.holding && p.localVideoEnabled && (
           <ButtonIcon
-            bgcolor={g.revColor}
-            color={g.color}
+            bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
+            color="white"
             name="VIDEO"
             noborder
             onPress={p.disableVideo}
@@ -135,8 +135,8 @@ const CallManage = p => {
           )}
         {p.answered && !p.holding && p.loudspeaker && Platform.OS !== `web` && (
           <ButtonIcon
-            bgcolor={g.revColor}
-            color={g.color}
+            bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
+            color="white"
             name="SPEAKER"
             noborder
             onPress={p.onCloseLoudSpeaker}
@@ -161,8 +161,8 @@ const CallManage = p => {
         )}
         {p.answered && !p.holding && p.muted && (
           <ButtonIcon
-            bgcolor={g.revColor}
-            color={g.color}
+            bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
+            color="white"
             name="UNMUTE"
             noborder
             onPress={p.setunMuted}
@@ -185,8 +185,8 @@ const CallManage = p => {
         )}
         {p.answered && !p.holding && p.recording && (
           <ButtonIcon
-            bgcolor={g.revColor}
-            color={g.color}
+            bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
+            color="white"
             name="RECORDING"
             noborder
             onPress={p.stopRecording}
@@ -221,8 +221,8 @@ const CallManage = p => {
         )}
         {p.answered && p.holding && (
           <ButtonIcon
-            bgcolor={g.revColor}
-            color={g.color}
+            bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
+            color="white"
             name="UNHOLD"
             noborder
             onPress={p.unhold}

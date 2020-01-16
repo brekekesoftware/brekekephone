@@ -6,6 +6,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "shake": "adb shell input keyevent 82",
     "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\"",
     "pret-": "yarn pret && yarn pret-objc && yarn pret-java && yarn pret-xml && yarn imagemin",
     "pret-objc": "yarn git-ls | egrep -h '.(h|m)$' | xargs clang-format -i -style=file",

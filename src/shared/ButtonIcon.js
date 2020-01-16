@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+
+import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 
 const css = StyleSheet.create({
   ButtonIcon: {
@@ -37,6 +38,7 @@ const ButtonIcon = ({ color, path, size = 24, ...p }) => (
     </TouchableOpacity>
     {p.name && (
       <Text
+        small
         style={[css.ButtonIcon_Name, p.textcolor && { color: p.textcolor }]}
       >
         {p.name}
