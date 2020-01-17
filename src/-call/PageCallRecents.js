@@ -41,28 +41,28 @@ class PageCallRecents extends React.Component {
   getMatchedCalls = () => {
     const calls =
       authStore.currentProfile.recentCalls?.filter(this.isMatchUser) || [];
-    const today = moment().format(`MMM D`);
-    const normalizedCalls = calls.reduce((arr, c) => {
-      if (
-        typeof c.created !== `string` ||
-        // Backward compatibility to remove outdate items
-        (c.created.length !== 13 && c.created.length !== 14)
-      ) {
-        return arr;
-      }
-      arr.push({ ...c, created: c.created.replace(` - ${today}`, ``) });
-      return arr;
-    }, []);
-    if (calls.length !== normalizedCalls.length) {
+    // Backward compatibility to remove invalid items from the previous versions
+    const filteredCalls = calls.filter(
+      c =>
+        typeof c.created === `string` &&
+        // hh:mm - MMM D
+        (c.created.length === 13 || c.created.length === 14),
+    );
+    if (calls.length !== filteredCalls.length) {
+      // Use setTimeout to update observable after rendering
       setTimeout(() => {
-        // Can not update observable while rendering
         g.upsertProfile({
           id: authStore.signedInId,
-          recentCalls: normalizedCalls,
+          recentCalls: filteredCalls,
         });
       });
     }
-    return normalizedCalls;
+    //
+    const today = moment().format(`MMM D`);
+    return filteredCalls.map(c => ({
+      ...c,
+      created: c.created.replace(` - ${today}`, ``),
+    }));
   };
 
   render() {
