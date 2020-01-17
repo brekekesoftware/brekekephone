@@ -233,7 +233,7 @@ class ApiProvider extends React.Component {
       answered: call.answered,
       partyName: call.partyName,
       partyNumber: call.partyNumber,
-      created: moment().format(`hh:mm - MMM D`),
+      created: moment().format(`HH:mm - MMM D`),
     });
     callStore.removeRunning(call.id);
   };

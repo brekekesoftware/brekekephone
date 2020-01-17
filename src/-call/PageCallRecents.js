@@ -45,7 +45,7 @@ class PageCallRecents extends React.Component {
     const filteredCalls = calls.filter(
       c =>
         typeof c.created === `string` &&
-        // hh:mm - MMM D
+        // HH:mm - MMM D
         (c.created.length === 13 || c.created.length === 14),
     );
     if (calls.length !== filteredCalls.length) {
