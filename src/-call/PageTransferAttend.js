@@ -96,6 +96,9 @@ class PageTransferAttend extends React.Component {
         g.showError({ message: `Failed to stop the transfer`, err });
       });
   };
+  hangup = () => {
+    sip.hangupSession(this.props.callId);
+  };
   conference = () => {
     pbx
       .joinTalkerTransfer(this.call.pbxTenant, this.call.pbxTalkerId)
@@ -112,9 +115,6 @@ class PageTransferAttend extends React.Component {
           err,
         });
       });
-  };
-  hangup = () => {
-    sip.hangupSession(this.props.selectedId);
   };
 
   render() {
@@ -149,10 +149,7 @@ class PageTransferAttend extends React.Component {
                 <Icon path={mdiPhoneOff} />
               </TouchableOpacity>
               <Text center singleLine small>
-                STOP
-              </Text>
-              <Text center singleLine small>
-                TRANSFER
+                CANCEL
               </Text>
             </View>
             <View style={css.BtnOuter}>
@@ -163,10 +160,7 @@ class PageTransferAttend extends React.Component {
                 <Icon path={mdiPhoneHangup} />
               </TouchableOpacity>
               <Text center singleLine small>
-                STOP
-              </Text>
-              <Text center singleLine small>
-                AND HANGUP
+                TRANSFER
               </Text>
             </View>
             <View style={css.BtnOuter}>
@@ -176,9 +170,6 @@ class PageTransferAttend extends React.Component {
               >
                 <Icon path={mdiPhoneForward} />
               </TouchableOpacity>
-              <Text center singleLine small>
-                MAKE
-              </Text>
               <Text center singleLine small>
                 CONFERENCE
               </Text>
