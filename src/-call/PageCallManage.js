@@ -30,7 +30,7 @@ const css = StyleSheet.create({
   },
   VideoPlayer: {
     position: `absolute`,
-    top: 0,
+    top: 40, // Header compact height
     bottom: 0,
     left: 0,
     right: 0,
@@ -61,7 +61,11 @@ class PageCallManage extends React.Component {
   };
   hideButtonsIfVideo = () => {
     const u = this.runningById[callStore.selectedId];
-    if (!this._alreadySetShowButtonsInVideoCall && u?.remoteVideoEnabled) {
+    if (
+      !this.props.isFromCallBar &&
+      !this._alreadySetShowButtonsInVideoCall &&
+      u?.remoteVideoEnabled
+    ) {
       this.setState({ showButtonsInVideoCall: false });
       this._alreadySetShowButtonsInVideoCall = true;
     }
@@ -156,78 +160,6 @@ class PageCallManage extends React.Component {
   componentDidMount() {
     this._selectActiveCallWithRoute(this.props);
     this.hideButtonsIfVideo();
-  }
-
-  render() {
-    const u = this.runningById[callStore.selectedId];
-    const Container = u?.remoteVideoEnabled ? React.Fragment : BrekekeGradient;
-    const containerProps = u?.remoteVideoEnabled
-      ? null
-      : {
-          colors: [g.colors.primaryFn(0.2), g.revBg],
-        };
-    return (
-      <Container {...containerProps}>
-        <Layout
-          compact
-          noScroll
-          onBack={g.backToPageCallRecents}
-          title={u?.partyName}
-          transparent={!u?.remoteVideoEnabled}
-        >
-          {u?.remoteVideoEnabled && (
-            <React.Fragment>
-              <View style={css.Space} />
-              <View style={css.VideoPlayer}>
-                <VideoPlayer sourceObject={u.remoteVideoStreamObject} />
-              </View>
-              <TouchableOpacity
-                onPress={this.toggleButtons}
-                style={StyleSheet.absoluteFill}
-              />
-            </React.Fragment>
-          )}
-          {(this.state.showButtonsInVideoCall || !u?.remoteVideoEnabled) && (
-            <React.Fragment>
-              <CallManage
-                {...u}
-                answer={this.answer}
-                create={g.goToPageCallKeypad}
-                disableVideo={this.disableVideo}
-                dtmf={this.dtmf}
-                enableVideo={this.enableVideo}
-                hold={this.hold}
-                onCloseLoudSpeaker={this.onCloseLoudSpeaker}
-                onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-                park={this.park}
-                parkingIds={callStore.runnings
-                  .filter(c => c.parking)
-                  .map(c => c.id)}
-                setMuted={this.setMuted}
-                setunMuted={this.setunMuted}
-                startRecording={this.startRecording}
-                stopRecording={this.stopRecording}
-                toggleButtons={this.toggleButtons}
-                transfer={this.transfer}
-                unhold={this.unhold}
-                unpark={this.unpark}
-              />
-              <View style={css.PageIncoming_Btn__Hangup}>
-                <ButtonIcon
-                  bgcolor={g.colors.danger}
-                  color={g.revColor}
-                  noborder
-                  onPress={this.hangup}
-                  path={mdiPhoneHangup}
-                  size={40}
-                  textcolor={g.revColor}
-                />
-              </View>
-            </React.Fragment>
-          )}
-        </Layout>
-      </Container>
-    );
   }
 
   setMuted = () => {
@@ -363,6 +295,89 @@ class PageCallManage extends React.Component {
   disableVideo = () => {
     sip.disableVideo(callStore.selectedId);
   };
+
+  render() {
+    const u = this.runningById[callStore.selectedId];
+    const videoEnabled = u?.remoteVideoEnabled && u?.localVideoEnabled;
+    const Container = videoEnabled ? React.Fragment : BrekekeGradient;
+    const containerProps = videoEnabled
+      ? null
+      : {
+          colors: [g.colors.primaryFn(0.2), g.revBg],
+        };
+
+    const { showButtonsInVideoCall } = this.state;
+    const dropdown = videoEnabled
+      ? [
+          {
+            label:
+              (showButtonsInVideoCall ? `Hide` : `Show`) + ` call menu buttons`,
+            onPress: this.toggleButtons,
+          },
+        ]
+      : null;
+
+    return (
+      <Container {...containerProps}>
+        <Layout
+          compact
+          dropdown={dropdown}
+          noScroll
+          onBack={g.backToPageCallRecents}
+          title={u?.partyName}
+        >
+          {videoEnabled && (
+            <React.Fragment>
+              <View style={css.Space} />
+              <View style={css.VideoPlayer}>
+                <VideoPlayer sourceObject={u.remoteVideoStreamObject} />
+              </View>
+              <TouchableOpacity
+                onPress={this.toggleButtons}
+                style={StyleSheet.absoluteFill}
+              />
+            </React.Fragment>
+          )}
+          {(showButtonsInVideoCall || !videoEnabled) && (
+            <CallManage
+              {...u}
+              answer={this.answer}
+              create={g.goToPageCallKeypad}
+              disableVideo={this.disableVideo}
+              dtmf={this.dtmf}
+              enableVideo={this.enableVideo}
+              hold={this.hold}
+              onCloseLoudSpeaker={this.onCloseLoudSpeaker}
+              onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+              park={this.park}
+              parkingIds={callStore.runnings
+                .filter(c => c.parking)
+                .map(c => c.id)}
+              setMuted={this.setMuted}
+              setunMuted={this.setunMuted}
+              startRecording={this.startRecording}
+              stopRecording={this.stopRecording}
+              toggleButtons={videoEnabled ? this.toggleButtons : null}
+              transfer={this.transfer}
+              unhold={this.unhold}
+              unpark={this.unpark}
+            />
+          )}
+          <View style={css.PageIncoming_Btn__Hangup}>
+            <ButtonIcon
+              bgcolor={g.colors.danger}
+              color={g.revColor}
+              noborder
+              onPress={this.hangup}
+              path={mdiPhoneHangup}
+              size={40}
+              textcolor={g.revColor}
+            />
+          </View>
+        </Layout>
+      </Container>
+    );
+  }
 }
 
 export default PageCallManage;

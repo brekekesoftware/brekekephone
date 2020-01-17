@@ -11,16 +11,15 @@ export class CallStore extends BaseStore {
   // holding
   // recording
   // transferring
-  // parking => new TODO need to implement and test
+  // parking
   // partyNumber
   // partyName
-  // pbxTalkerId => TODO rename to partyPBXUserId
-  // pbxTenant => TODO rename to partyPBXTenant
+  // pbxTalkerId
+  // pbxTenant
   // createdAt
   // voiceStreamObject
   // videoSessionId
   // localVideoEnabled
-  // remoteVideoStreamURL
   // remoteVideoStreamObject
   // remoteVideoEnabled
   @observable runnings = [];

@@ -89,7 +89,11 @@ class Mini extends React.Component {
 class Control extends React.Component {
   render() {
     const s = g.stacks[g.stacks.length - 1];
-    if (!this.props.enabled || s.name === `PageCallManage`) {
+    if (
+      s.name === `PageCallManage` ||
+      s.name === `PageTransferDial` ||
+      s.name === `PageTransferAttend`
+    ) {
       return null;
     }
     return <Mini {...this.props} onDoubleTap={g.goToPageCallManage} />;

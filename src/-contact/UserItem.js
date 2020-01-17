@@ -26,22 +26,17 @@ const css = StyleSheet.create({
   //
   Text: {
     flex: 1,
-    paddingTop: 5,
+    paddingTop: 7,
     paddingLeft: 10,
   },
   NameWithStatus: {
-    top: 3,
     flexDirection: `row`,
     flexWrap: `nowrap`,
   },
   Status: {
     top: 2,
     left: 3,
-    fontSize: g.fontSizeSmall,
     color: g.subColor,
-  },
-  LastMessage: {
-    fontSize: g.fontSizeSmall,
   },
   //
   Detail: {
@@ -52,7 +47,6 @@ const css = StyleSheet.create({
   },
   CallCreatedAt: {
     left: 3,
-    fontSize: g.fontSizeSmall,
     color: g.subColor,
   },
   //
@@ -83,17 +77,17 @@ const UserItem = ({
       <Avatar source={{ uri: avatar }} {...p} style={css.WithSpace} />
       <View style={[css.Text, css.WithSpace]}>
         <View style={css.NameWithStatus}>
-          <Text singleLine subTitle>
+          <Text black bold singleLine>
             {name || partyNumber || id}
           </Text>
           {!!statusText && (
-            <Text singleLine style={css.Status}>
+            <Text normal singleLine small style={css.Status}>
               {statusText}
             </Text>
           )}
         </View>
         {!isRecentCall && !!lastMessage && (
-          <Text singleLine style={css.LastMessage}>
+          <Text normal singleLine small>
             {lastMessage}
           </Text>
         )}
@@ -117,7 +111,9 @@ const UserItem = ({
               size={14}
               style={css.CallIcon}
             />
-            <Text style={css.CallCreatedAt}>at {created}</Text>
+            <Text normal small style={css.CallCreatedAt}>
+              at {created}
+            </Text>
             {!!park && <Text small>{park}</Text>}
           </View>
         )}

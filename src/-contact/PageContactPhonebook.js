@@ -118,6 +118,11 @@ class PageContactPhonebook extends React.Component {
                       () =>
                         !u.homeNumber && !u.workNumber && !u.cellNumber
                           ? this.callRequest(``, u)
+                          : this.renderPhoneBookNumer(u).length === 1
+                          ? this.callRequest(
+                              this.renderPhoneBookNumer(u)[0].value,
+                              u,
+                            )
                           : g.openPicker({
                               options: this.renderPhoneBookNumer(u).map(i => ({
                                 key: i.value,
@@ -249,7 +254,7 @@ class PageContactPhonebook extends React.Component {
       this.call(number);
     } else {
       this.update(contact);
-      g.showError({ message: `This contact doesn't have any phone numbers` });
+      g.showError({ message: `This contact doesn't have any phone number` });
     }
   };
   renderPhoneBookNumer = contact => {
