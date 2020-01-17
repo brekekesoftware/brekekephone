@@ -40,9 +40,7 @@ class PageCallParks extends React.Component {
           this.parkIds.map((u, i) => (
             <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
               <UserItem
-                detail={true}
                 key={i}
-                last={i === this.parkIds.length - 1}
                 name={`Parked ${i + 1}`}
                 park={`Extension *${u}`}
                 selected={this.state.selectedPark === u}

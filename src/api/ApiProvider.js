@@ -182,7 +182,7 @@ class ApiProvider extends React.Component {
   };
 
   onVoiceMailUpdated = ev => {
-    callStore.set(`voicemail`, ev);
+    callStore.set(`newVoicemailCount`, ev?.new || 0);
   };
 
   onPBXParkStarted = park => {

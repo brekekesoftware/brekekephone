@@ -57,9 +57,10 @@ class PageChatGroupDetail extends React.Component {
   };
   render() {
     const gr = chatStore.getGroup(this.props.groupId);
+    alert(this.props.group);
     return (
       <Layout
-        compact={true}
+        compact
         dropdown={[
           {
             label: `Invite more people`,
@@ -67,11 +68,11 @@ class PageChatGroupDetail extends React.Component {
           },
           {
             label: `Start voice call`,
-            onPress: this.callVideoConference,
+            onPress: this.callVoiceConference,
           },
           {
             label: `Start video call`,
-            onPress: this.callVoiceConference,
+            onPress: this.callVideoConference,
           },
           {
             label: `Leave group`,

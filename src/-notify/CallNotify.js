@@ -26,15 +26,17 @@ class CallNotify extends React.Component {
   };
 
   render() {
-    return this.callIds.map(id => (
-      <Notify
-        key={id}
-        {...callStore.getRunningCall(id)}
-        accept={this.accept}
-        reject={this.reject}
-        type={`call`}
-      />
-    ));
+    return this.callIds
+      .filter(id => id !== callStore.selectedId)
+      .map(id => (
+        <Notify
+          key={id}
+          {...callStore.getRunningCall(id)}
+          accept={this.accept}
+          reject={this.reject}
+          type={`call`}
+        />
+      ));
   }
 }
 

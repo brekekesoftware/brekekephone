@@ -69,7 +69,6 @@ class PageChatGroupInvite extends React.Component {
           <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <UserItem
               key={id}
-              last={i === this.buddyIds.length - 1}
               {...this.resolveBuddy(id)}
               selected={this.state.selectedBuddy[id]}
             />
@@ -108,7 +107,7 @@ class PageChatGroupInvite extends React.Component {
     g.showError({ message: `Failed to invite group chat`, err });
   };
   back = () => {
-    g.goToPageChatGroupDetail({ groupId: this.props.groupId });
+    g.backToPageChatGroupDetail({ groupId: this.props.groupId });
   };
 }
 

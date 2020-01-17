@@ -47,7 +47,7 @@ class PageContactPhonebook extends React.Component {
     }
     const map = {};
     phonebooks.forEach(u => {
-      u.name = u.name || u.id;
+      u.name = u.name || u.id || ``;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
         c0 = `#`;
@@ -108,33 +108,32 @@ class PageContactPhonebook extends React.Component {
                 <Field isGroup label={_g.key} />
                 {_g.phonebooks.map((u, i) => (
                   <UserItem
-                    function={[
+                    iconFuncs={[
                       () =>
                         g.openPicker({
                           options: [
                             {
                               key: u.workNumber,
                               label: u.workNumber || `Please add work number`,
-                              icon: mdiPhone,
+                              icon: u.workNumber ? mdiPhone : mdiInformation,
                             },
                             {
                               key: u.cellNumber,
                               label: u.cellNumber || `Please add cell number`,
-                              icon: mdiPhone,
+                              icon: u.cellNumber ? mdiPhone : mdiInformation,
                             },
                             {
                               key: u.homeNumber,
                               label: u.homeNumber || `Please add home number`,
-                              icon: mdiPhone,
+                              icon: u.homeNumber ? mdiPhone : mdiInformation,
                             },
                           ],
-                          onSelect: this.call,
+                          onSelect: e => this.callRequest(e, u),
                         }),
                       () => this.update(u),
                     ]}
-                    icon={[mdiPhone, mdiInformation]}
+                    icons={[mdiPhone, mdiInformation]}
                     key={i}
-                    last={i === _g.phonebooks.length - 1}
                     name={u.name}
                   />
                 ))}
@@ -248,6 +247,13 @@ class PageContactPhonebook extends React.Component {
     g.goToPagePhonebookUpdate({
       contact: contact,
     });
+  };
+  callRequest = (number, contact) => {
+    if (number !== ``) {
+      this.call(number);
+    } else {
+      this.update(contact);
+    }
   };
 }
 

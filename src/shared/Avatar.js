@@ -11,15 +11,14 @@ const css = StyleSheet.create({
   Avatar: {
     flexDirection: `row`,
   },
-  Avatar_Image: {
+  Image: {
     width: 50,
     height: 50,
-    top: 13,
     borderRadius: 25,
   },
-  Avatar_Image__status: {
+  Status: {
     position: `absolute`,
-    top: 40,
+    top: 27,
     left: 30,
   },
 });
@@ -35,17 +34,15 @@ const Avatar = observer(({ source, status, style }) => {
   const uri =
     (typeof source?.uri === `string` && source?.uri) ||
     (Platform.OS === `web` && avatarPlaceholder);
+  const imgSource = uri ? { uri } : avatarPlaceholder;
   return (
     <View style={[css.Avatar, style]}>
-      <Image
-        source={uri ? { uri } : avatarPlaceholder}
-        style={css.Avatar_Image}
-      />
+      <Image source={imgSource} style={css.Image} />
       {authStore.currentProfile?.ucEnabled && typeof status === `string` && (
         <Icon
           color={statusMapColor[status]}
           path={mdiRecord}
-          style={css.Avatar_Image__status}
+          style={css.Status}
         />
       )}
     </View>

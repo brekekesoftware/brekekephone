@@ -6,121 +6,130 @@ import g from '../global';
 import Avatar from '../shared/Avatar';
 
 const css = StyleSheet.create({
-  Item: {
+  Outer: {
     borderBottomWidth: 1,
     borderColor: g.borderBg,
-    height: 80,
-    alignItems: `stretch`,
     paddingLeft: 10,
   },
-  Item__Bgr: {
+  Outer__noButtons: {
+    paddingRight: 10,
+  },
+  Inner: {
+    flexDirection: `row`,
+  },
+  Inner_selected: {
+    borderRightWidth: 5,
+    borderColor: g.colors.primary,
     backgroundColor: g.hoverBg,
   },
-  Item__last: {
-    borderBottomWidth: 0,
+  //
+  WithSpace: {
+    marginVertical: 5,
   },
-  Item_Name: {
+  //
+  Text: {
+    flex: 1,
+    paddingTop: 5,
+    paddingLeft: 10,
+  },
+  NameWithStatus: {
+    top: 3,
     flexDirection: `row`,
-    position: `absolute`,
-    top: 20,
-    left: 70,
+    flexWrap: `nowrap`,
   },
-  Item__TxtStatus: {
+  Status: {
+    top: 2,
+    left: 3,
     fontSize: g.fontSizeSmall,
-    paddingLeft: 10,
+    color: g.subColor,
   },
-  Item_Detail: {
+  LastMessage: {
+    fontSize: g.fontSizeSmall,
+  },
+  //
+  Detail: {
     flexDirection: `row`,
-    position: `absolute`,
-    top: 50,
-    left: 70,
   },
-  Item_Detail_Text: {
-    paddingLeft: 10,
-  },
-  Item_Icon: {
-    position: `absolute`,
-    flexDirection: `row`,
-    top: 20,
-    right: 15,
-  },
-  Item_Icon__pd: {
-    paddingLeft: 20,
-  },
-  Item__Selected: {
-    position: `absolute`,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: 10,
-    backgroundColor: g.colors.primary,
-  },
-  Item__pdLeft0: {
-    paddingLeft: 0,
-  },
-  Icon__noFlex: {
+  CallIcon: {
     flex: null,
+  },
+  CallCreatedAt: {
+    left: 3,
+    fontSize: g.fontSizeSmall,
+    color: g.subColor,
+  },
+  //
+  ButtonIcon: {
+    padding: 10,
   },
 });
 
-const UserItem = p => (
-  <View>
-    <View
-      style={[css.Item, p.last && css.Item__last, p.selected && css.Item__Bgr]}
-    >
-      <Avatar source={{ uri: p.avatar }} {...p} />
-      <View style={css.Item_Name}>
-        <Text black subTitle>
-          {p.name || p.partyNumber || p.id}
-        </Text>
-        <Text style={css.Item__TxtStatus}>{p.statusText}</Text>
-      </View>
-      {p.detail && (
-        <View style={css.Item_Detail}>
-          {p.incoming && p.answered && (
-            <Icon
-              color={g.colors.primary}
-              path={mdiPhoneIncoming}
-              size={18}
-              style={css.Icon__noFlex}
-            />
+const UserItem = ({
+  answered,
+  avatar,
+  created,
+  iconFuncs,
+  icons,
+  id,
+  incoming,
+  isRecentCall,
+  lastMessage,
+  name,
+  park,
+  partyNumber,
+  selected,
+  statusText,
+  ...p
+}) => (
+  <View style={[css.Outer, !icons?.length && css.Outer__noButtons]}>
+    <View style={[css.Inner, selected && css.Inner_selected]}>
+      <Avatar source={{ uri: avatar }} {...p} style={css.WithSpace} />
+      <View style={[css.Text, css.WithSpace]}>
+        <View style={css.NameWithStatus}>
+          <Text numberOfLines={1} subTitle>
+            {name || partyNumber || id}
+          </Text>
+          {!!statusText && (
+            <Text numberOfLines={1} style={css.Status}>
+              {statusText}
+            </Text>
           )}
-          {p.incoming && !p.answered && (
-            <Icon
-              color={g.colors.danger}
-              path={mdiPhoneMissed}
-              size={18}
-              style={css.Icon__noFlex}
-            />
-          )}
-          {!p.incoming && !p.park && !p.lastmess && (
-            <Icon
-              color={g.colors.primary}
-              path={mdiPhoneOutgoing}
-              size={18}
-              style={css.Icon__noFlex}
-            />
-          )}
-          {p.created && (
-            <Text style={css.Item_Detail_Text}>at {p.created}</Text>
-          )}
-          {p.park && <Text style={css.Item_Detail_Text}>{p.park}</Text>}
-          {p.lastmess && <Text numberOfLines={20}>{p.lastmess.text}</Text>}
         </View>
-      )}
-    </View>
-    {p.selected && <View style={css.Item__Selected} />}
-    <View style={css.Item_Icon}>
-      {p.icon &&
-        p.function &&
-        p.icon.map((v, i) => (
-          <TouchableOpacity key={i} onPress={p.function[i]}>
-            <Icon path={v} style={css.Item_Icon__pd} />
-          </TouchableOpacity>
-        ))}
-      {p.icon &&
-        !p.function &&
-        p.icon.map(v => <Icon path={v} style={css.Item_Icon__pd} />)}
+        {!isRecentCall && !!lastMessage && (
+          <Text numberOfLines={1} style={css.LastMessage}>
+            {lastMessage}
+          </Text>
+        )}
+        {isRecentCall && !lastMessage && (
+          <View style={css.Detail}>
+            <Icon
+              color={
+                incoming && !answered
+                  ? g.colors.danger
+                  : incoming && answered
+                  ? g.colors.primary
+                  : g.colors.warning
+              }
+              path={
+                incoming && !answered
+                  ? mdiPhoneMissed
+                  : incoming && answered
+                  ? mdiPhoneIncoming
+                  : mdiPhoneOutgoing
+              }
+              size={14}
+              style={css.CallIcon}
+            />
+            <Text style={css.CallCreatedAt}>at {created}</Text>
+            {!!park && <Text small>{park}</Text>}
+          </View>
+        )}
+      </View>
+      {icons?.map((v, i) => (
+        <TouchableOpacity key={i} onPress={iconFuncs?.[i]}>
+          <Icon path={v} style={css.ButtonIcon} />
+        </TouchableOpacity>
+      ))}
     </View>
   </View>
 );
