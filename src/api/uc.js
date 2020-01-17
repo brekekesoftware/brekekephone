@@ -521,7 +521,6 @@ class UC extends EventEmitter {
         onerr,
       ),
     );
-    console.warn(`res`, res);
     const file_res = res.infoList[0];
     return {
       file: {
