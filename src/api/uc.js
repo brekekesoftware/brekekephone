@@ -384,7 +384,7 @@ class UC extends EventEmitter {
     return res;
   }
 
-  rejectFile(file) {
+  async rejectFile(file) {
     if (file.file_id_target) {
       file.file_id_target.map(f => {
         return new Promise((onres, onerr) => {
@@ -502,18 +502,26 @@ class UC extends EventEmitter {
         ...file,
         type: `multipart/form-data`,
       });
+
+      input = {
+        form: `This is not a form element, see app/apis/uc.js for detail`,
+        files: [file],
+        __rnFormData: fd,
+      };
     }
 
     const res = await new Promise((onres, onerr) =>
       this.client.sendFiles(
         {
           conf_id,
+          input,
         },
         [file],
         onres,
         onerr,
       ),
     );
+    console.warn(`res`, res);
     const file_res = res.infoList[0];
     return {
       file: {
