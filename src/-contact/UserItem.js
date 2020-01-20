@@ -9,13 +9,10 @@ const css = StyleSheet.create({
   Outer: {
     borderBottomWidth: 1,
     borderColor: g.borderBg,
-    paddingLeft: 10,
-  },
-  Outer__noButtons: {
-    paddingRight: 10,
   },
   Inner: {
     flexDirection: `row`,
+    paddingLeft: 10,
   },
   Inner_selected: {
     borderRightWidth: 5,
@@ -29,22 +26,17 @@ const css = StyleSheet.create({
   //
   Text: {
     flex: 1,
-    paddingTop: 5,
+    paddingTop: 7,
     paddingLeft: 10,
   },
   NameWithStatus: {
-    top: 3,
     flexDirection: `row`,
     flexWrap: `nowrap`,
   },
   Status: {
     top: 2,
     left: 3,
-    fontSize: g.fontSizeSmall,
     color: g.subColor,
-  },
-  LastMessage: {
-    fontSize: g.fontSizeSmall,
   },
   //
   Detail: {
@@ -55,7 +47,6 @@ const css = StyleSheet.create({
   },
   CallCreatedAt: {
     left: 3,
-    fontSize: g.fontSizeSmall,
     color: g.subColor,
   },
   //
@@ -81,22 +72,22 @@ const UserItem = ({
   statusText,
   ...p
 }) => (
-  <View style={[css.Outer, !icons?.length && css.Outer__noButtons]}>
+  <View style={css.Outer}>
     <View style={[css.Inner, selected && css.Inner_selected]}>
       <Avatar source={{ uri: avatar }} {...p} style={css.WithSpace} />
       <View style={[css.Text, css.WithSpace]}>
         <View style={css.NameWithStatus}>
-          <Text numberOfLines={1} subTitle>
+          <Text black bold singleLine>
             {name || partyNumber || id}
           </Text>
           {!!statusText && (
-            <Text numberOfLines={1} style={css.Status}>
+            <Text normal singleLine small style={css.Status}>
               {statusText}
             </Text>
           )}
         </View>
         {!isRecentCall && !!lastMessage && (
-          <Text numberOfLines={1} style={css.LastMessage}>
+          <Text normal singleLine small>
             {lastMessage}
           </Text>
         )}
@@ -120,7 +111,9 @@ const UserItem = ({
               size={14}
               style={css.CallIcon}
             />
-            <Text style={css.CallCreatedAt}>at {created}</Text>
+            <Text normal small style={css.CallCreatedAt}>
+              at {created}
+            </Text>
             {!!park && <Text small>{park}</Text>}
           </View>
         )}

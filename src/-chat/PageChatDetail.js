@@ -162,6 +162,7 @@ class PageChatDetail extends React.Component {
     const text = chat.text;
     const creator = this.resolveCreator(chat.creator);
     return {
+      id,
       creatorId: creator.id,
       creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
@@ -185,7 +186,7 @@ class PageChatDetail extends React.Component {
     })
       .then(chats => {
         const u = contactStore.getUCUser(this.props.buddy);
-        chatStore.pushMessages(u.id, chats.reverse());
+        chatStore.pushMessages(u.id, chats);
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
@@ -219,7 +220,7 @@ class PageChatDetail extends React.Component {
     uc.getBuddyChats(u?.id, query)
       .then(chats => {
         const u = contactStore.getUCUser(this.props.buddy);
-        chatStore.pushMessages(u.id, chats.reverse());
+        chatStore.pushMessages(u.id, chats);
       })
       .catch(err => {
         g.showError({ err, message: `Failed to get more chats` });
@@ -272,23 +273,12 @@ class PageChatDetail extends React.Component {
     g.showError({ err, message: `Failed to accept file` });
   };
   rejectFile = file => {
-    uc.rejectFile(file.id).catch(this.onRejectFileFailure);
+    uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
     g.showError({ err, message: `Failed to reject file` });
   };
-  blob = file => {
-    const reader = new FileReader();
-    const fileType = file.type.split(`/`)[0];
-    reader.onload = async () => {
-      const url = reader.result;
-      this.setState({ showImage: url, fileType: fileType });
-    };
-    reader.readAsDataURL(file);
-  };
   sendFile = file => {
-    // TODO: fix error duplicate when upload 2 file.
-    this.blob(file);
     const u = contactStore.getUCUser(this.props.buddy);
     uc.sendFile(u?.id, file)
       .then(this.onSendFileSuccess)
@@ -296,8 +286,8 @@ class PageChatDetail extends React.Component {
   };
   onSendFileSuccess = res => {
     const buddyId = this.props.buddy;
-    chatStore.pushMessages(buddyId, res.chat);
     chatStore.upsertFile(res.file);
+    chatStore.pushMessages(buddyId, res.chat);
   };
   onSendFileFailure = err => {
     g.showError({ err, message: `Failed to send file` });

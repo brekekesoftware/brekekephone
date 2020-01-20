@@ -59,26 +59,21 @@ class SIP extends EventEmitter {
   init = async () => {
     const sourceId = await getFrontCameraSourceId();
     this._creatingSessions = new CreatingSessions();
-
     this.phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: `all`,
       multiSession: true,
-
       defaultOptions: {
         videoOptions: {
           call: {
             mediaConstraints: {
               audio: false,
-
               video: {
                 mandatory: {
                   minWidth: 0,
                   minHeight: 0,
                   minFrameRate: 0,
                 },
-
                 facingMode: Platform.OS === `web` ? undefined : `user`,
-
                 optional: sourceId
                   ? [
                       {
@@ -89,20 +84,16 @@ class SIP extends EventEmitter {
               },
             },
           },
-
           answer: {
             mediaConstraints: {
               audio: false,
-
               video: {
                 mandatory: {
                   minWidth: 0,
                   minHeight: 0,
                   minFrameRate: 0,
                 },
-
                 facingMode: Platform.OS === `web` ? undefined : `user`,
-
                 optional: sourceId
                   ? [
                       {
@@ -125,56 +116,67 @@ class SIP extends EventEmitter {
       if (!ev) {
         return;
       }
-
       if (ev.phoneStatus === `started`) {
         return this.emit(`connection-started`);
       }
-
       if (ev.phoneStatus === `stopped`) {
         return this.emit(`connection-stopped`);
       }
     });
 
+    // sessionId: "1"
+    // sessionStatus: "dialing"
+    // answering: false
+    // audio: true
+    // video: false
+    // remoteStreamObject: MediaStream{...}
+    // localStreamObject: MediaStream{...}
+    // remoteWithVideo: false
+    // withVideo: true
+    // shareStream: false
+    // exInfo: ""
+    // muted: {main: false, videoClient: false}
+    // localVideoStreamObject: null
+    // videoClientSessionTable: {}
+    // rtcSession: RTCSession{...}
+    // incomingMessage: null
+    // remoteUserOptionsTable: {}
+    // analyser: null
     this.phone.addEventListener(`sessionCreated`, ev => {
       if (!ev) {
         return;
       }
-
       if (ev.rtcSession.direction === `outgoing`) {
         this._creatingSessions.__removeFirst();
       }
-
       this.emit(`session-started`, {
         id: ev.sessionId,
         incoming: ev.rtcSession.direction === `incoming`,
         partyNumber: ev.rtcSession.remote_identity.uri.user,
         partyName: ev.rtcSession.remote_identity.display_name,
         remoteVideoEnabled: ev.remoteWithVideo,
+        localVideoEnabled: ev.withVideo,
         createdAt: Date.now(),
       });
     });
-
     this.phone.addEventListener(`sessionStatusChanged`, ev => {
       if (!ev) {
         return;
       }
-
       if (ev.sessionStatus === `terminated`) {
         return this.emit(`session-stopped`, ev.sessionId);
       }
-
       const patch = {
+        id: ev.sessionId,
         answered: ev.sessionStatus === `connected`,
-        remoteVideoEnabled: ev.remoteWithVideo,
         voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo,
+        remoteVideoEnabled: ev.remoteWithVideo,
       };
-
       if (ev.incomingMessage) {
         const pbxSessionInfo = ev.incomingMessage.getHeader(
           `X-PBX-Session-Info`,
         );
-
         if (typeof pbxSessionInfo === `string`) {
           const infos = pbxSessionInfo.split(`;`);
           patch.pbxTenant = infos[0];
@@ -183,53 +185,37 @@ class SIP extends EventEmitter {
           patch.pbxUsername = infos[3];
         }
       }
-
-      this.emit(`session-updated`, {
-        id: ev.sessionId,
-        ...patch,
-      });
-
-      this.emit(`video-session-updated`, ev);
+      this.emit(`session-updated`, patch);
     });
 
     this.phone.addEventListener(`videoClientSessionCreated`, ev => {
       if (!ev) {
         return;
       }
-
       const session = this.phone.getSession(ev.sessionId);
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId];
-
       this.emit(`session-updated`, {
         id: ev.sessionId,
-        remoteVideoStreamObject: videoSession.remoteStreamObject,
-      });
-
-      this.emit(`video-session-created`, {
-        id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
+        remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
       });
     });
-
     this.phone.addEventListener(`videoClientSessionEnded`, ev => {
       if (!ev) {
         return;
       }
-
       this.emit(`session-updated`, {
         id: ev.sessionId,
-      });
-
-      this.emit(`video-session-ended`, {
-        id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
+        remoteVideoEnabled: false,
+        remoteVideoStreamObject: null,
       });
     });
 
     this.phone.addEventListener(`rtcErrorOccurred`, ev => {
-      console.error(ev);
+      console.error(ev); // TODO
     });
 
     this._makeCallOptionsForAndoirOrIos = {
@@ -239,7 +225,6 @@ class SIP extends EventEmitter {
           OfferToReceiveVideo: false,
           _____SKIP_Adapter_fixRTCOfferOptions_____: true,
         },
-
         optional: [],
       },
     };
@@ -251,8 +236,8 @@ class SIP extends EventEmitter {
 
   connect(profile) {
     this._creatingSessions.__clear();
+    //
     let platformOs = Platform.OS;
-
     if (platformOs === `ios`) {
       platformOs = `iOS`;
     } else if (platformOs === `android`) {
@@ -260,7 +245,7 @@ class SIP extends EventEmitter {
     } else if (platformOs === `web`) {
       platformOs = `Web`;
     }
-
+    //
     const jssipVersion = `3.2.15`;
     const appPackageJson = require(`../../package.json`);
     const appVersion = appPackageJson.version;
@@ -271,19 +256,17 @@ class SIP extends EventEmitter {
       appVersion +
       `/JsSIP ` +
       jssipVersion;
+    //
     const config = profile.pbxTurnEnabled ? turnConfig : {};
-
     if (!config.pcConfig) {
       config.pcConfig = {};
     }
-
     if (!Array.isArray(config.pcConfig.iceServers)) {
       config.pcConfig.iceServers = [];
     }
-
     config.pcConfig.bundlePolicy = `balanced`;
     this.phone.setDefaultCallOptions(config);
-
+    //
     this.phone.startWebRTC({
       host: profile.hostname,
       port: profile.port,
@@ -315,23 +298,18 @@ class SIP extends EventEmitter {
     const rtcSession = session && session.rtcSession;
     rtcSession && rtcSession.terminate();
   }
-
   answerSession(sessionId, opts = {}) {
     this.phone.answer(sessionId, null, opts.videoEnabled);
   }
-
   sendDTMF(dtmf, sessionId) {
     this.phone.sendDTMF(dtmf, sessionId);
   }
-
   enableVideo(sessionId) {
     this.phone.setWithVideo(sessionId, true);
   }
-
   disableVideo(sessionId) {
     this.phone.setWithVideo(sessionId, false);
   }
-
   setMuted(muted, sessionId) {
     this.phone.setMuted({ main: muted }, sessionId);
   }

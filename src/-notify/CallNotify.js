@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import sip from '../api/sip';
+import g from '../global';
 import callStore from '../global/callStore';
 import Notify from './Notify';
 
@@ -20,6 +21,7 @@ class CallNotify extends React.Component {
     sip.answerSession(id, {
       videoEnabled,
     });
+    g.goToPageCallManage();
   };
   reject = id => {
     sip.hangupSession(id);

@@ -3,11 +3,15 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import ChatInput from '../-/Footer/ChatInput';
+import pbx from '../api/pbx';
 import sip from '../api/sip';
 import uc from '../api/uc';
 import g from '../global';
+import callStore from '../global/callStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import pickFile from '../native/pickFile';
+import saveBlob from '../native/saveBlob';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import { numberOfChatsPerLoad } from './config';
@@ -48,16 +52,13 @@ class PageChatGroupDetail extends React.Component {
       <ChatInput
         onTextChange={this.setEditingText}
         onTextSubmit={this.submitEditingText}
-        openFilePicker={() => {
-          /* TODO implement send file chat group here */
-        }}
+        openFilePicker={() => pickFile(this.sendFile)}
         text={this.state.editingText}
       />
     );
   };
   render() {
     const gr = chatStore.getGroup(this.props.groupId);
-    alert(this.props.group);
     return (
       <Layout
         compact
@@ -92,6 +93,7 @@ class PageChatGroupDetail extends React.Component {
         <MessageList
           acceptFile={this.acceptFile}
           fileType={this.state.fileType}
+          isGroupChat
           list={chatStore.messagesByThreadId[this.props.groupId]}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
@@ -138,11 +140,14 @@ class PageChatGroupDetail extends React.Component {
   resolveChat = (id, index) => {
     const chat = this.chatById[id];
     const text = chat.text;
+    const file = chatStore.filesMap[chat.file];
     const creator = this.resolveBuddy(chat.creator);
     return {
+      id,
       creatorId: creator.id,
       creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
+      file,
       text,
       created: chat.created,
       createdByMe: creator.id === this.me.id,
@@ -155,7 +160,7 @@ class PageChatGroupDetail extends React.Component {
       max: numberOfChatsPerLoad,
     })
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats.reverse());
+        chatStore.pushMessages(this.props.groupId, chats);
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
@@ -178,7 +183,7 @@ class PageChatGroupDetail extends React.Component {
     };
     uc.getGroupChats(this.props.groupId, query)
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats.reverse());
+        chatStore.pushMessages(this.props.groupId, chats);
       })
       .catch(err => {
         g.showError({ message: `Failed to get more chats`, err });
@@ -250,6 +255,37 @@ class PageChatGroupDetail extends React.Component {
       target = `uc` + this.props.groupId;
     }
     this.call(target, true);
+  };
+
+  sendFile = file => {
+    const groupId = this.props.groupId;
+    uc.sendFiles(groupId, file)
+      .then(this.onSendFileSuccess)
+      .catch(this.onSendFileFailure);
+  };
+  onSendFileSuccess = res => {
+    const groupId = this.props.groupId;
+    chatStore.upsertFile(res.file);
+    chatStore.pushMessages(groupId, res.chat);
+  };
+  onSendFileFailure = err => {
+    g.showError({ err, message: `Failed to send file` });
+  };
+  acceptFile = file => {
+    uc.acceptFile(file.id)
+      .then(blob => {
+        saveBlob(blob, file.name);
+      })
+      .catch(this.onAcceptFileFailure);
+  };
+  onAcceptFileFailure = err => {
+    g.showError({ err, message: `Failed to accept file` });
+  };
+  rejectFile = file => {
+    uc.rejectFile(file).catch(this.onRejectFileFailure);
+  };
+  onRejectFileFailure = err => {
+    g.showError({ err, message: `Failed to reject file` });
   };
 }
 

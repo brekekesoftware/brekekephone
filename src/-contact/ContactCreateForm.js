@@ -1,5 +1,5 @@
-import { isEqual } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react';
 import React from 'react';
 
@@ -94,14 +94,14 @@ const ContactsCreateForm = observer(props => {
           {
             disabled,
             keyboardType: `numeric`,
-            name: `workNumber`,
-            label: `WORD NUMBER`,
+            name: `cellNumber`,
+            label: `MOBILE NUMBER`,
           },
           {
             disabled,
             keyboardType: `numeric`,
-            name: `cellNumber`,
-            label: `CELL PHONE`,
+            name: `workNumber`,
+            label: `WORK NUMBER`,
           },
           {
             disabled,

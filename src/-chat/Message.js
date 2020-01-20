@@ -1,9 +1,16 @@
 import { mdiCheck, mdiClose, mdiFile } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
-import Progress from 'react-native-progress-circle';
 
-import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
+import {
+  Dimensions,
+  Icon,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../-/Rn';
 import g from '../global';
 
 const css = StyleSheet.create({
@@ -20,21 +27,26 @@ const css = StyleSheet.create({
     flex: 1,
   },
   Message: {
-    alignSelf: `flex-start`,
-    left: -5,
+    position: `relative`,
     marginBottom: 2,
-    borderRadius: g.borderRadius,
+    borderTopRightRadius: g.borderRadius,
+    borderBottomRightRadius: g.borderRadius,
     paddingVertical: 5,
-    paddingLeft: 15,
-    paddingRight: 10,
+    paddingHorizontal: 10,
     backgroundColor: g.hoverBg,
     overflow: `hidden`,
+    maxWidth: Dimensions.get(`screen`).width - 20,
+    ...Platform.select({
+      web: {
+        maxWidth: null,
+      },
+    }),
   },
   Message__createdByMe: {
-    alignSelf: `flex-end`,
-    left: 5,
-    paddingLeft: 10,
-    paddingRight: 15,
+    borderTopLeftRadius: g.borderRadius,
+    borderBottomLeftRadius: g.borderRadius,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
     backgroundColor: g.colors.primary,
     color: `white`,
   },
@@ -43,8 +55,18 @@ const css = StyleSheet.create({
     flexDirection: `row`,
     marginTop: 10,
   },
+  File__createdByMe: {
+    alignSelf: `flex-end`,
+    left: 5,
+    paddingLeft: 10,
+    paddingRight: 15,
+    backgroundColor: g.colors.primary,
+  },
   Message_File_Info: {
     marginLeft: 5,
+  },
+  Message_File_Info__color: {
+    color: g.revColor,
   },
   Image: {
     width: 75,
@@ -56,51 +78,93 @@ const css = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     marginLeft: 20,
-    borderColor: g.subColor,
+    marginTop: 5,
+  },
+  Message_File_Btn_borderColor__white: {
+    borderColor: g.revColor,
+  },
+  Message_File_Btn_borderColor__accept: {
+    borderColor: g.colors.primary,
+  },
+  Message_File_Btn_borderColor__reject: {
+    borderColor: g.colors.danger,
   },
 });
 
 const File = p => (
-  <View style={css.File}>
-    {!!p.source && p.fileType === `image` && (
-      <Image source={p.source} style={css.Image} />
-    )}
-    {p.fileType !== `image` && (
-      <View>
-        <Icon path={mdiFile} size={50} />
-        <View style={css.Message_File_Info}>
-          <Text numberOfLines={1}>{p.name}</Text>
-          <Text>{p.size}</Text>
-        </View>
+  <View style={[css.File, css.Message, p.createdByMe && css.File__createdByMe]}>
+    <View>
+      <Icon
+        color={p.createdByMe ? g.revColor : g.color}
+        path={mdiFile}
+        size={50}
+      />
+      <View style={css.Message_File_Info}>
+        <Text
+          numberOfLines={1}
+          style={p.createdByMe && css.Message_File_Info__color}
+        >
+          {p.name}
+        </Text>
+        <Text style={p.createdByMe && css.Message_File_Info__color}>
+          {p.size}
+        </Text>
       </View>
+    </View>
+    {p.state === `waiting` && p.createdByMe && (
+      <TouchableOpacity
+        onPress={p.reject}
+        style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__white]}
+      >
+        <Icon color={g.revColor} path={mdiClose} />
+      </TouchableOpacity>
     )}
-    {p.state === `waiting` && (
-      <TouchableOpacity onPress={p.reject} style={css.Message_File_Btn}>
+    {p.state === `waiting` && !p.createdByMe && (
+      <TouchableOpacity
+        onPress={p.reject}
+        style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__reject]}
+      >
         <Icon color={g.colors.danger} path={mdiClose} />
       </TouchableOpacity>
     )}
     {!!p.incoming && p.state === `waiting` && (
-      <TouchableOpacity onPress={p.accept} style={css.Message_File_Btn}>
+      <TouchableOpacity
+        onPress={p.accept}
+        style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__accept]}
+      >
         <Icon color={g.colors.primary} path={mdiCheck} />
       </TouchableOpacity>
     )}
-    {p.state === `started` && (
-      <TouchableOpacity onPress={p.reject} style={css.Message_File_Btn}>
-        <Progress
-          bgColor={g.bg}
-          borderWidth={1 * 2}
-          color={g.colors.primary}
-          percent={p.state === `percent`}
-          radius={g.fontSizeSubTitle}
-          shadowColor={g.bg}
-        >
-          <Icon color={g.colors.danger} path={mdiClose} />
-        </Progress>
-      </TouchableOpacity>
+
+    {/*//TODO: fix error UI component Progress*/}
+
+    {/*{p.state === `started` && (*/}
+    {/*  <TouchableOpacity onPress={p.reject} >*/}
+    {/*    <Progress*/}
+    {/*      bgColor={g.bg}*/}
+    {/*      borderWidth={1}*/}
+    {/*      color={g.colors.primary}*/}
+    {/*      percent={p.state === `percent`}*/}
+    {/*      radius={g.fontSizeTitle}*/}
+    {/*      shadowColor={g.bg}*/}
+    {/*    >*/}
+    {/*      <Icon color={g.colors.danger} path={mdiClose} />*/}
+
+    {/*    </Progress>*/}
+    {/*  </TouchableOpacity>*/}
+    {/*)}*/}
+
+    {p.state === `success` && (
+      <Text style={p.createdByMe && css.Message_File_Info__color}>Success</Text>
     )}
-    {p.state === `success` && <Text>Success</Text>}
-    {p.state === `failure` && <Text>Failed</Text>}
-    {p.state === `stopped` && <Text>Canceled</Text>}
+    {p.state === `failure` && (
+      <Text style={p.createdByMe && css.Message_File_Info__color}>Failed</Text>
+    )}
+    {p.state === `stopped` && (
+      <Text style={p.createdByMe && css.Message_File_Info__color}>
+        Canceled
+      </Text>
+    )}
   </View>
 );
 
@@ -119,6 +183,7 @@ const Message = observer(p => (
       <File
         {...p.file}
         accept={() => p.acceptFile(p.file)}
+        createdByMe={p.createdByMe}
         fileType={p.fileType}
         reject={() => p.rejectFile(p.file)}
         source={p.showImage}

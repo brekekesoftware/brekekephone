@@ -1,4 +1,10 @@
-import { mdiInformation, mdiPhone } from '@mdi/js';
+import {
+  mdiBriefcase,
+  mdiCellphone,
+  mdiHome,
+  mdiInformation,
+  mdiPhone,
+} from '@mdi/js';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
 import { computed } from 'mobx';
@@ -110,26 +116,21 @@ class PageContactPhonebook extends React.Component {
                   <UserItem
                     iconFuncs={[
                       () =>
-                        g.openPicker({
-                          options: [
-                            {
-                              key: u.workNumber,
-                              label: u.workNumber || `Please add work number`,
-                              icon: u.workNumber ? mdiPhone : mdiInformation,
-                            },
-                            {
-                              key: u.cellNumber,
-                              label: u.cellNumber || `Please add cell number`,
-                              icon: u.cellNumber ? mdiPhone : mdiInformation,
-                            },
-                            {
-                              key: u.homeNumber,
-                              label: u.homeNumber || `Please add home number`,
-                              icon: u.homeNumber ? mdiPhone : mdiInformation,
-                            },
-                          ],
-                          onSelect: e => this.callRequest(e, u),
-                        }),
+                        !u.homeNumber && !u.workNumber && !u.cellNumber
+                          ? this.callRequest(``, u)
+                          : this.renderPhoneBookNumer(u).length === 1
+                          ? this.callRequest(
+                              this.renderPhoneBookNumer(u)[0].value,
+                              u,
+                            )
+                          : g.openPicker({
+                              options: this.renderPhoneBookNumer(u).map(i => ({
+                                key: i.value,
+                                label: i.value,
+                                icon: i.icon,
+                              })),
+                              onSelect: e => this.callRequest(e, u),
+                            }),
                       () => this.update(u),
                     ]}
                     icons={[mdiPhone, mdiInformation]}
@@ -253,7 +254,33 @@ class PageContactPhonebook extends React.Component {
       this.call(number);
     } else {
       this.update(contact);
+      g.showError({ message: `This contact doesn't have any phone number` });
     }
+  };
+  renderPhoneBookNumer = contact => {
+    const arrNumberExist = [];
+    if (contact.workNumber !== ``) {
+      arrNumberExist.push({
+        key: `workNumber`,
+        value: contact.workNumber,
+        icon: mdiBriefcase,
+      });
+    }
+    if (contact.cellNumber !== ``) {
+      arrNumberExist.push({
+        key: `cellNumber`,
+        value: contact.cellNumber,
+        icon: mdiCellphone,
+      });
+    }
+    if (contact.homeNumber !== ``) {
+      arrNumberExist.push({
+        key: `homeNumber`,
+        value: contact.homeNumber,
+        icon: mdiHome,
+      });
+    }
+    return arrNumberExist;
   };
 }
 
