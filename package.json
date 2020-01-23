@@ -6,6 +6,9 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "rn": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "shake": "adb shell input keyevent 82",
     "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\"",
     "pret-": "yarn pret && yarn pret-objc && yarn pret-java && yarn pret-xml && yarn imagemin",
