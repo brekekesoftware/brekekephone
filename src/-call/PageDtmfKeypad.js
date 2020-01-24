@@ -40,22 +40,20 @@ const keys = [
 class PageDtmfKeypad extends React.Component {
   render() {
     return (
-      <Layout onBack={g.backToPageCallManage} title="Send Keypad">
-        <React.Fragment>
-          {keys.map((row, i) => (
-            <View key={i} style={css.KeyPad_Number}>
-              {row.map(key => (
-                <TouchableOpacity
-                  key={key}
-                  onPress={() => this.sendKey(key)}
-                  style={css.KeyPad_NumberBtn}
-                >
-                  <Text style={css.KeyPad_NumberTxt}>{key}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))}
-        </React.Fragment>
+      <Layout compact onBack={g.backToPageCallManage} title="Send DTMF">
+        {keys.map((row, i) => (
+          <View key={i} style={css.KeyPad_Number}>
+            {row.map(key => (
+              <TouchableOpacity
+                key={key}
+                onPress={() => this.sendKey(key)}
+                style={css.KeyPad_NumberBtn}
+              >
+                <Text style={css.KeyPad_NumberTxt}>{key}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))}
       </Layout>
     );
   }
