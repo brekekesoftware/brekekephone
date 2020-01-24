@@ -93,14 +93,8 @@
     }
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.{html,scss,json,md}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.js": "eslint --fix",
+    "*.{html,scss,json,md}": "prettier --write"
   },
   "eslintConfig": {
     "extends": "react-app",
