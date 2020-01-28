@@ -40,7 +40,7 @@ const keys = [
 class PageDtmfKeypad extends React.Component {
   render() {
     return (
-      <Layout compact onBack={g.backToPageCallManage} title="Send DTMF">
+      <Layout compact onBack={g.backToPageCallManage} title="DTMF Keypad">
         {keys.map((row, i) => (
           <View key={i} style={css.KeyPad_Number}>
             {row.map(key => (
