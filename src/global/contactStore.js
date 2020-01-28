@@ -109,6 +109,12 @@ class ContactStore extends BaseStore {
   getPhonebook = id => {
     return this._phoneBooksMap[id];
   };
+
+  clearStore = () => {
+    this.phoneBooks = [];
+    this.ucUsers = [];
+    this.pbxUsers = [];
+  };
 }
 
 export default new ContactStore();

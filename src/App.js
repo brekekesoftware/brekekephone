@@ -32,6 +32,8 @@ import PageSettingsProfile from './-settings/PageSettingsProfile';
 import api from './api';
 import g from './global';
 import authStore from './global/authStore';
+import chatStore from './global/chatStore';
+import contactStore from './global/contactStore';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import AnimatedSize from './shared/AnimatedSize';
@@ -54,7 +56,11 @@ PushNotification.register();
 authStore.handleUrlParams();
 
 setTimeout(g.goToPageIndex, 100);
-observe(authStore, `signedInId`, g.goToPageIndex);
+observe(authStore, `signedInId`, () => {
+  g.goToPageIndex();
+  chatStore.clearStore();
+  contactStore.clearStore();
+});
 
 // TODO: Only reset when logged in and AppState.current active
 // PushNotification.resetBadgeNumber();
