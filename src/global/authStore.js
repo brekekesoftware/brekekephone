@@ -1,10 +1,10 @@
+import debounce from 'lodash/debounce';
 import { computed, observable } from 'mobx';
 
-import g from '../global';
-import $ from '../global/_';
+import { AppState } from '../-/Rn';
 import { getUrlParams } from '../native/deeplink';
-import PushNotification from '../native/PushNotification';
 import { arrToMap } from '../utils/toMap';
+import g from './_';
 import BaseStore from './BaseStore';
 
 const compareField = (p1, p2, field) => {
@@ -49,7 +49,8 @@ class AuthStore extends BaseStore {
     return !(
       !this.currentProfile?.ucEnabled ||
       this.ucState !== `stopped` ||
-      this.ucLoginFromAnotherPlace
+      this.ucLoginFromAnotherPlace ||
+      this.isSignInByNotification
     );
   }
   @computed get ucConnectingOrFailure() {
@@ -81,7 +82,7 @@ class AuthStore extends BaseStore {
     if (recentCalls.length > 20) {
       recentCalls.pop();
     }
-    $.upsertProfile({
+    g.upsertProfile({
       id: this.signedInId,
       recentCalls,
     });
@@ -114,8 +115,6 @@ class AuthStore extends BaseStore {
       return true;
     }
     this.set(`signedInId`, p.id);
-    PushNotification.resetBadgeNumber();
-    g.goToPageIndex();
     return true;
   };
 
@@ -172,16 +171,50 @@ class AuthStore extends BaseStore {
     }
   };
 
-  findProfileFromNotification = n => {
-    return this.findProfile({
+  @observable isSignInByNotification = false;
+  clearSignInByNotification = debounce(
+    () => {
+      this.isSignInByNotification = false;
+    },
+    10000,
+    {
+      maxWait: 15000,
+    },
+  );
+
+  signInByNotification = async n => {
+    const state = AppState.currentState;
+    await g.profilesLoaded;
+    // Find profile for the notification target
+    const p = this.findProfile({
       ...n,
       pbxUsername: n.to,
       pbxTenant: n.tenant,
     });
-  };
-  signinByNotification = n => {
-    const p = this.findProfileFromNotification(n);
-    return p && this.signIn(p.id);
+    if (!p?.id || !p.pushNotificationEnabled) {
+      return false;
+    }
+    // Use isSignInByNotification to disable UC auto sign in for a while
+    if (n.isCall) {
+      this.isSignInByNotification = true;
+      this.clearSignInByNotification();
+    }
+    // In case the app is already signed in
+    if (this.signedInId) {
+      // Always show notification if the signed in id is another profile
+      if (this.signedInId !== p.id) {
+        return true;
+      }
+      // Attempt to reconnect on notification if state is currently failure
+      [`pbxState`, `sipState`, `ucState`].forEach(k => {
+        if (this[k] === `failure`) {
+          this[k] = `stopped`;
+        }
+      });
+      return state !== `active`;
+    }
+    // Call signIn
+    return this.signIn(p?.id);
   };
 
   // id

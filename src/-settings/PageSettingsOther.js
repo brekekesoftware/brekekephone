@@ -51,7 +51,6 @@ class PageSettingsOther extends Component {
           {
             label: `Logout`,
             onPress: () => {
-              g.goToPageProfileSignIn();
               authStore.signedInId = ``;
             },
             danger: true,

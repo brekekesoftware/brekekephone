@@ -104,7 +104,6 @@ const ProfileCreateForm = observer(props => {
               {
                 label: `Logout`,
                 onPress: () => {
-                  g.goToPageProfileSignIn();
                   authStore.signedInId = ``;
                 },
                 danger: true,

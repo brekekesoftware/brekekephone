@@ -1,4 +1,5 @@
 import * as UCClient from 'brekekejs/lib/ucclient';
+import debounce from 'lodash/debounce';
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -31,13 +32,10 @@ class AuthUC extends React.Component {
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
   };
-  autoAuth = () => {
-    setTimeout(() => {
-      if (authStore.ucShouldAuth && !authStore.ucLoginFromAnotherPlace) {
-        this.auth();
-      }
-    }, 300);
-  };
+  autoAuth = debounce(() => authStore.ucShouldAuth && this.auth(), 100, {
+    maxWait: 300,
+  });
+
   onAuthSuccess = () => {
     this.loadUsers();
     this.loadUnreadChats().then(() => {
@@ -72,6 +70,7 @@ class AuthUC extends React.Component {
   onLoadUnreadChatsFailure = err => {
     g.showError({ message: `Failed to load unread chat messages`, err });
   };
+
   render() {
     return null;
   }

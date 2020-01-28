@@ -9,23 +9,21 @@ const onToken = t => {
     voipApnsToken = t;
   }
 };
-const onNotification = n => {
-  n = n && parse(n);
+const onNotification = async n => {
+  n = await parse(n);
+  if (!n) {
+    return;
+  }
   //
-  const alertBody = n.body || JSON.stringify(n);
-  const isCall = /call/i.test(alertBody);
-  const alertAction = isCall ? `Answer` : `View`;
-  const soundName = isCall ? `incallmanager_ringtone.mp3` : undefined;
-  //
-  PushNotificationIOS.getApplicationIconBadgeNumber(n => {
-    n = (n || 0) + 1;
+  PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
+    badge = (badge || 0) + 1;
     VoipPushNotification.presentLocalNotification({
-      alertBody,
-      alertAction,
-      soundName,
-      applicationIconBadgeNumber: n,
+      alertBody: n.body,
+      alertAction: n.isCall ? `Answer` : `View`,
+      soundName: n.isCall ? `incallmanager_ringtone.mp3` : undefined,
+      applicationIconBadgeNumber: badge,
     });
-    PushNotificationIOS.setApplicationIconBadgeNumber(n);
+    PushNotificationIOS.setApplicationIconBadgeNumber(badge);
   });
 };
 

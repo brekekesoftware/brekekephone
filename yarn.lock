@@ -2885,9 +2885,9 @@ braces@^3.0.1:
   dependencies:
     fill-range "^7.0.1"
 
-"brekekejs@github:brekekesoftware/brekekejs#3df5e0c22e638c6543490de0f18ce63098d4c80f":
+"brekekejs@github:brekekesoftware/brekekejs#9b3e01cfb9191c4b6e8020d97a03006480bdfc44":
   version "0.0.0"
-  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/3df5e0c22e638c6543490de0f18ce63098d4c80f"
+  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/9b3e01cfb9191c4b6e8020d97a03006480bdfc44"
   dependencies:
     url-parse "1.4.7"
 
@@ -8355,10 +8355,10 @@ mobx-react@6.1.5:
   dependencies:
     mobx-react-lite "^1.4.2"
 
-mobx@5.15.3:
-  version "5.15.3"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-5.15.3.tgz#1915beae35c8b6dc37f2add78bf3231fb0bc55bf"
-  integrity sha512-aKpzjJ11rRXMtoxIYIq8eaVB7qtB2C3L6PCwhVWSJrsfF5E38TjFqmvglmVEZ3HEEISeKx/UJ4XJ1n29smQlEw==
+mobx@5.15.4:
+  version "5.15.4"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-5.15.4.tgz#9da1a84e97ba624622f4e55a0bf3300fb931c2ab"
+  integrity sha512-xRFJxSU2Im3nrGCdjSuOTFmxVDGeqOHL+TyADCGbT0k4HHqGmx5u2yaHNryvoORpI4DfbzjJ5jPmuv+d7sioFw==
 
 moment@2.24.0:
   version "2.24.0"

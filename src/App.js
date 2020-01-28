@@ -1,8 +1,9 @@
 import './polyfill';
 import './utils/validator';
 
+import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -28,7 +29,7 @@ import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
 import PageSettingsOther from './-settings/PageSettingsOther';
 import PageSettingsProfile from './-settings/PageSettingsProfile';
-import ApiProvider from './api/ApiProvider';
+import api from './api';
 import g from './global';
 import authStore from './global/authStore';
 import PushNotification from './native/PushNotification';
@@ -43,8 +44,23 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
+if (Platform.OS !== `web`) {
+  SplashScreen.hide();
+}
+// Must load profiles here because when app wake from notification, there's no rendering
+g.loadProfilesFromLocalStorage();
 
 PushNotification.register();
+authStore.handleUrlParams();
+
+setTimeout(g.goToPageIndex, 100);
+observe(authStore, `signedInId`, g.goToPageIndex);
+
+// TODO: Only reset when logged in and AppState.current active
+// PushNotification.resetBadgeNumber();
+
+// TODO
+void api;
 
 g.registerStacks({
   isRoot: true,
@@ -93,15 +109,6 @@ const css = StyleSheet.create({
 });
 
 const App = observer(() => {
-  useEffect(() => {
-    if (Platform.OS !== `web`) {
-      SplashScreen.hide();
-    }
-    g.loadProfilesFromLocalStorage();
-    g.goToPageProfileSignIn();
-    authStore.handleUrlParams();
-  }, []);
-
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -146,7 +153,6 @@ const App = observer(() => {
       )}
       <RootAuth />
       <View style={css.App_Inner}>
-        <ApiProvider />
         <RootStacks />
         <RootPicker />
         <RootAlert />
