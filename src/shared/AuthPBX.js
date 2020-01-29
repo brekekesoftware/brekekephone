@@ -9,7 +9,9 @@ import authStore from '../global/authStore';
 
 @observer
 class AuthPBX extends React.Component {
-  componentDidMount() {
+  constructor() {
+    // TODO notification login not work
+    super();
     this.autoAuth();
     this.clearObserve = observe(authStore, `pbxShouldAuth`, this.autoAuth);
   }

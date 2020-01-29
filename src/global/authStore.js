@@ -174,7 +174,13 @@ class AuthStore extends BaseStore {
   @observable isSignInByNotification = false;
   clearSignInByNotification = debounce(
     () => {
-      this.isSignInByNotification = false;
+      // clearSignInByNotification will activate UC login
+      // We will only allow UC login when the app is active
+      if (AppState.currentState !== `active`) {
+        setTimeout(this.clearSignInByNotification, 17);
+      } else {
+        this.isSignInByNotification = false;
+      }
     },
     10000,
     {

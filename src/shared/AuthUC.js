@@ -12,7 +12,9 @@ import contactStore from '../global/contactStore';
 
 @observer
 class AuthUC extends React.Component {
-  componentDidMount() {
+  constructor() {
+    // TODO notification login not work
+    super();
     uc.on(`connection-stopped`, this.onConnectionStopped);
     this.autoAuth();
     this.clearObserve = observe(authStore, `ucShouldAuth`, this.autoAuth);
