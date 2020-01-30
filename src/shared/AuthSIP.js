@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce';
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -10,7 +11,9 @@ import authStore from '../global/authStore';
 
 @observer
 class AuthSIP extends React.Component {
-  componentDidMount() {
+  constructor() {
+    // TODO notification login not work
+    super();
     this.autoAuth();
     this.clearObserve = observe(authStore, `sipShouldAuth`, this.autoAuth);
   }
@@ -82,12 +85,9 @@ class AuthSIP extends React.Component {
         console.error(err);
       });
   };
-  autoAuth = () => {
-    if (!authStore.sipShouldAuth) {
-      return;
-    }
-    this.auth();
-  };
+  autoAuth = debounce(() => authStore.sipShouldAuth && this.auth(), 50, {
+    maxWait: 150,
+  });
 
   render() {
     return null;

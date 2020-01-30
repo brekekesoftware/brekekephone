@@ -13,8 +13,10 @@ const css = StyleSheet.create({
   Footer: {
     position: `absolute`,
     bottom: 0,
-    left: 0,
     right: 0,
+  },
+  Footer__noKeyboard: {
+    left: 0,
     paddingBottom: getBottomSpace(),
     backgroundColor: g.bg,
     ...g.boxShadow,
@@ -50,14 +52,16 @@ const Footer = observer(props => {
     k => props[k],
   );
   return (
-    <View style={css.Footer}>
+    <View
+      style={[
+        css.Footer,
+        (fabRender || !g.isKeyboardShowing) && css.Footer__noKeyboard,
+      ]}
+    >
       {fabRender ? (
         fabRender()
       ) : g.isKeyboardShowing ? (
-        <View style={css.ActionsOuter}>
-          <View style={css.ActionsSpacing} />
-          <ToggleKeyboard {...fabProps} />
-        </View>
+        <ToggleKeyboard {...fabProps} />
       ) : onFabNext ? (
         <View style={css.ActionsOuter}>
           <View style={css.ActionsSpacing} />

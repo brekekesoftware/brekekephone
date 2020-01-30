@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
@@ -19,7 +20,7 @@ const css = StyleSheet.create({
   },
 });
 
-const Layout = props => {
+const Layout = observer(props => {
   const [headerOverflow, setHeaderOverflow] = useState(false);
   //
   let Container = null;
@@ -60,14 +61,17 @@ const Layout = props => {
     headerSpace -= 46; // TODO put more document here
   }
   let footerSpace = getBottomSpace();
-  if (props.menu && !g.isKeyboardShowing) {
-    footerSpace += 48;
-  }
-  if (props.fabRender || props.onFabNext || g.isKeyboardShowing) {
-    footerSpace += 56;
-  }
   if (props.fabRender) {
-    footerSpace -= 16; // TODO put more document here
+    // Chat input
+    footerSpace += 40;
+  }
+  if (!g.isKeyboardShowing) {
+    if (props.menu) {
+      footerSpace += 48;
+    }
+    if (props.onFabNext) {
+      footerSpace += 56;
+    }
   }
   //
   return (
@@ -82,6 +86,6 @@ const Layout = props => {
       <Header {...props} compact={props.compact || headerOverflow} />
     </React.Fragment>
   );
-};
+});
 
 export default Layout;

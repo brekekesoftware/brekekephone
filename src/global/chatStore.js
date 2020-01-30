@@ -79,6 +79,12 @@ class ChatStore extends BaseStore {
   getGroup = id => {
     return this._groupsMap[id];
   };
+
+  clearStore = () => {
+    this.messagesByThreadId = {};
+    this.groups = [];
+    this.filesMap = {};
+  };
 }
 
 export default new ChatStore();

@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce';
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -8,7 +9,9 @@ import authStore from '../global/authStore';
 
 @observer
 class AuthPBX extends React.Component {
-  componentDidMount() {
+  constructor() {
+    // TODO notification login not work
+    super();
     this.autoAuth();
     this.clearObserve = observe(authStore, `pbxShouldAuth`, this.autoAuth);
   }
@@ -32,12 +35,10 @@ class AuthPBX extends React.Component {
         });
       });
   };
-  autoAuth = () => {
-    if (!authStore.pbxShouldAuth) {
-      return;
-    }
-    this.auth();
-  };
+  autoAuth = debounce(() => authStore.pbxShouldAuth && this.auth(), 50, {
+    maxWait: 150,
+  });
+
   render() {
     return null;
   }

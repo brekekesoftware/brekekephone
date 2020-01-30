@@ -4,6 +4,11 @@ import { AsyncStorage } from '../-/Rn';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
 
+let resolveFn = null;
+const profilesLoaded = new Promise(resolve => {
+  resolveFn = resolve;
+});
+
 g.extends({
   observable: {
     // id: string
@@ -42,6 +47,7 @@ g.extends({
       return arrToMap(g.profiles, `id`, p => p);
     },
   },
+  profilesLoaded,
   genEmptyProfile: () => ({
     id: shortid(),
     pbxTenant: ``,
@@ -69,6 +75,10 @@ g.extends({
     }
     if (arr) {
       g.set(`profiles`, arr);
+    }
+    if (resolveFn) {
+      resolveFn();
+      resolveFn = null;
     }
   },
   saveProfilesToLocalStorage: async (arr = g.profiles) => {

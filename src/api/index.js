@@ -1,6 +1,4 @@
-import { observer } from 'mobx-react';
 import moment from 'moment';
-import React from 'react';
 import { Platform } from 'react-native';
 import createId from 'shortid';
 
@@ -15,9 +13,8 @@ import contactStore from '../global/contactStore';
 import PushNotification from '../native/PushNotification';
 import updatePhoneIndex from './updatePhoneIndex';
 
-@observer
-class ApiProvider extends React.Component {
-  componentDidMount() {
+class Api {
+  constructor() {
     pbx.on(`connection-started`, this.onPBXConnectionStarted);
     pbx.on(`connection-stopped`, this.onPBXConnectionStopped);
     pbx.on(`connection-timeout`, this.onPBXConnectionTimeout);
@@ -46,38 +43,6 @@ class ApiProvider extends React.Component {
     uc.on(`file-progress`, this.onFileProgress);
     uc.on(`file-finished`, this.onFileFinished);
   }
-
-  componentWillUnmount() {
-    pbx.off(`connection-started`, this.onPBXConnectionStarted);
-    pbx.off(`connection-stopped`, this.onPBXConnectionStopped);
-    pbx.off(`connection-timeout`, this.onPBXConnectionTimeout);
-    pbx.off(`park-started`, this.onPBXParkStarted);
-    pbx.off(`park-stopped`, this.onPBXParkStopped);
-    pbx.off(`user-calling`, this.onPBXUserCalling);
-    pbx.off(`user-ringing`, this.onPBXUserRinging);
-    pbx.off(`user-talking`, this.onPBXUserTalking);
-    pbx.off(`user-holding`, this.onPBXUserHolding);
-    pbx.off(`user-hanging`, this.onPBXUserHanging);
-    pbx.off(`voicemail-updated`, this.onVoiceMailUpdated);
-    sip.off(`connection-started`, this.onSIPConnectionStarted);
-    sip.off(`connection-stopped`, this.onSIPConnectionStopped);
-    sip.off(`connection-timeout`, this.onSIPConnectionTimeout);
-    sip.off(`session-started`, this.onSIPSessionStarted);
-    sip.off(`session-updated`, this.onSIPSessionUpdated);
-    sip.off(`session-stopped`, this.onSIPSessionStopped);
-    uc.off(`connection-stopped`, this.onUCConnectionStopped);
-    uc.off(`connection-timeout`, this.onUCConnectionTimeout);
-    uc.off(`user-updated`, this.onUCUserUpdated);
-    uc.off(`buddy-chat-created`, this.onBuddyChatCreated);
-    uc.off(`group-chat-created`, this.onGroupChatCreated);
-    uc.off(`chat-group-invited`, this.onChatGroupInvited);
-    uc.off(`chat-group-revoked`, this.onChatGroupRevoked);
-    uc.off(`chat-group-updated`, this.onChatGroupUpdated);
-    uc.off(`file-received`, this.onFileReceived);
-    uc.off(`file-progress`, this.onFileProgress);
-    uc.off(`file-finished`, this.onFileFinished);
-  }
-
   pbxAndSipStarted = 0;
 
   onPBXAndSipStarted = async () => {
@@ -208,23 +173,18 @@ class ApiProvider extends React.Component {
 
   onSIPSessionStarted = call => {
     const number = call.partyNumber;
-
     if (number === `8`) {
       call.partyName = `Voicemails`;
     }
-
     if (!call.partyName) {
       const pbxUser = contactStore.getPBXUser(number);
       call.partyName = pbxUser ? pbxUser.name : `Unnamed`;
     }
-
     callStore.upsertRunning(call);
   };
-
   onSIPSessionUpdated = call => {
     callStore.upsertRunning(call);
   };
-
   onSIPSessionStopped = id => {
     const call = callStore.getRunningCall(id);
     authStore.pushRecentCall({
@@ -277,10 +237,6 @@ class ApiProvider extends React.Component {
   onFileFinished = file => {
     chatStore.upsertFile(file);
   };
-
-  render() {
-    return null;
-  }
 }
 
-export default ApiProvider;
+export default new Api();

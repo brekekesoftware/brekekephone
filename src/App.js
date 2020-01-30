@@ -1,8 +1,9 @@
 import './polyfill';
 import './utils/validator';
 
+import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -11,6 +12,7 @@ import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
 import PageCallRecents from './-call/PageCallRecents';
+import PageDtmfKeypad from './-call/PageDtmfKeypad';
 import PageTransferAttend from './-call/PageTransferAttend';
 import PageTransferDial from './-call/PageTransferDial';
 import PageChatDetail from './-chat/PageChatDetail';
@@ -27,9 +29,11 @@ import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
 import PageSettingsOther from './-settings/PageSettingsOther';
 import PageSettingsProfile from './-settings/PageSettingsProfile';
-import ApiProvider from './api/ApiProvider';
+import api from './api';
 import g from './global';
 import authStore from './global/authStore';
+import chatStore from './global/chatStore';
+import contactStore from './global/contactStore';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import AnimatedSize from './shared/AnimatedSize';
@@ -42,8 +46,27 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
+if (Platform.OS !== `web`) {
+  SplashScreen.hide();
+}
+// Must load profiles here because when app wake from notification, there's no rendering
+g.loadProfilesFromLocalStorage();
 
 PushNotification.register();
+authStore.handleUrlParams();
+
+setTimeout(g.goToPageIndex, 100);
+observe(authStore, `signedInId`, () => {
+  g.goToPageIndex();
+  chatStore.clearStore();
+  contactStore.clearStore();
+});
+
+// TODO: Only reset when logged in and AppState.current active
+// PushNotification.resetBadgeNumber();
+
+// TODO
+void api;
 
 g.registerStacks({
   isRoot: true,
@@ -63,6 +86,7 @@ g.registerStacks({
   PagePhonebookCreate,
   PagePhonebookUpdate,
   PageCallManage,
+  PageDtmfKeypad,
   PageChatDetail,
   PageTransferAttend,
   PageTransferDial,
@@ -91,15 +115,6 @@ const css = StyleSheet.create({
 });
 
 const App = observer(() => {
-  useEffect(() => {
-    if (Platform.OS !== `web`) {
-      SplashScreen.hide();
-    }
-    g.loadProfilesFromLocalStorage();
-    g.goToPageProfileSignIn();
-    authStore.handleUrlParams();
-  }, []);
-
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -144,7 +159,6 @@ const App = observer(() => {
       )}
       <RootAuth />
       <View style={css.App_Inner}>
-        <ApiProvider />
         <RootStacks />
         <RootPicker />
         <RootAlert />

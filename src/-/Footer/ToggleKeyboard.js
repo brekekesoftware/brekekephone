@@ -16,11 +16,13 @@ import {
 const css = StyleSheet.create({
   ToggleKeyboard: {
     flexDirection: `row`,
-    marginLeft: 8,
+    marginRight: 8,
+    marginBottom: 4,
     borderRadius: g.borderRadius,
     paddingVertical: 8,
     width: g.iconSize + 24,
     backgroundColor: g.hoverBg,
+    ...g.boxShadow,
   },
   Text: {
     /* Fix button size does not equal with the Actions */
