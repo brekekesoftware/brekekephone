@@ -20,7 +20,9 @@ class PageChatRecents extends React.Component {
       .filter(g => g.jointed)
       .map(g => g.id)
       .filter(id => id);
-    const userIds = chatStore.threadIdsOrderedByRecent.filter(id => id);
+    const userIds = chatStore.threadIdsOrderedByRecent
+      .filter(id => isNaN(id))
+      .filter(id => id);
     return (
       <Layout
         description="UC recent active chat"
