@@ -1,66 +1,92 @@
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 import React from 'react';
 
-import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import sip from '../api/sip';
 import g from '../global';
 import Layout from '../shared/Layout';
+import KeyPad from './KeyPad';
+import ShowNumber from './ShowNumbers';
 
-const css = StyleSheet.create({
-  KeyPad_Number: {
-    flexDirection: `row`,
-  },
-  KeyPad_NumberTxt: {
-    fontSize: g.fontSizeTitle,
-    fontWeight: `600`,
-    textAlign: `center`,
-    paddingVertical: 20,
-  },
-  KeyPad_NumberBtn: {
-    width: `33.3%`,
-  },
-  KeyPad_Btn: {
-    flexDirection: `row`,
-    justifyContent: `space-between`,
-  },
-  KeyPad_Btn__call: {
-    backgroundColor: g.colors.primary,
-    width: 64,
-    borderRadius: 40,
-    paddingVertical: 20,
-  },
-});
-
-const keys = [
-  [`1`, `2`, `3`],
-  [`4`, `5`, `6`],
-  [`7`, `8`, `9`],
-  [`*`, `0`, `#`],
-];
-
+@observer
 class PageDtmfKeypad extends React.Component {
+  @observable txt = ``;
+  txtRef = React.createRef();
+  txtSelection = { start: 0, end: 0 };
+
+  showKeyboard = () => {
+    this.txtRef.current.focus();
+  };
+
+  sendKey = key => {
+    console.warn(`key`, key);
+    sip.sendDTMF(key, this.props.callId);
+  };
+
+  callVoice = () => {
+    this.txt = this.txt.trim();
+    if (!this.txt) {
+      g.showError({ message: `No target` });
+      return;
+    }
+    sip.createSession(this.txt, {
+      videoEnabled: false,
+    });
+    g.goToPageCallManage();
+  };
+
   render() {
     return (
-      <Layout compact onBack={g.backToPageCallManage} title="DTMF Keypad">
-        {keys.map((row, i) => (
-          <View key={i} style={css.KeyPad_Number}>
-            {row.map(key => (
-              <TouchableOpacity
-                key={key}
-                onPress={() => this.sendKey(key)}
-                style={css.KeyPad_NumberBtn}
-              >
-                <Text style={css.KeyPad_NumberTxt}>{key}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ))}
+      <Layout
+        description="Keypad dial manually"
+        onBack={g.backToPageCallManage}
+        title={this.props.partyName}
+      >
+        <ShowNumber
+          refInput={this.txtRef}
+          selectionChange={
+            g.isKeyboardShowing
+              ? null
+              : e => {
+                  Object.assign(this.txtSelection, {
+                    start: e.nativeEvent.selection.start,
+                    end: e.nativeEvent.selection.end,
+                  });
+                }
+          }
+          setTarget={v => {
+            this.txt = v;
+          }}
+          value={this.txt}
+        />
+        {!g.isKeyboardShowing && (
+          <KeyPad
+            callVoice={this.callVoice}
+            onPressNumber={v => {
+              this.sendKey(v);
+              const { end, start } = this.txtSelection;
+              let min = Math.min(start, end);
+              let max = Math.max(start, end);
+              const isDelete = v === ``;
+              if (isDelete) {
+                if (start === end && start) {
+                  min = min - 1;
+                }
+              }
+              // Update text to trigger render
+              const t = this.txt;
+              this.txt = t.substring(0, min) + v + t.substring(max);
+              //
+              const p = min + (isDelete ? 0 : 1);
+              this.txtSelection.start = p;
+              this.txtSelection.end = p;
+            }}
+            showKeyboard={this.showKeyboard}
+          />
+        )}
       </Layout>
     );
   }
-
-  sendKey = key => {
-    sip.sendDTMF(key, this.props.callId);
-  };
 }
 
 export default PageDtmfKeypad;
