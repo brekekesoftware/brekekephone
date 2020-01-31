@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce';
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -35,9 +34,7 @@ class AuthPBX extends React.Component {
         });
       });
   };
-  autoAuth = debounce(() => authStore.pbxShouldAuth && this.auth(), 50, {
-    maxWait: 150,
-  });
+  autoAuth = () => authStore.pbxShouldAuth && this.auth();
 
   render() {
     return null;
