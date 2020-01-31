@@ -1,6 +1,7 @@
 // Main entry for the create-react-app web bundle
 
 import { mdiAndroidHead, mdiApple, mdiWeb } from '@mdi/js';
+import qs from 'qs';
 import React, { useState } from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
@@ -16,6 +17,7 @@ import {
 import App from './App';
 import brand from './assets/brand.png';
 import logo from './assets/logo.png';
+import parse from './native/deeplink-parse';
 import BrekekeGradient from './shared/BrekekeGradient';
 import v from './variables';
 
@@ -89,47 +91,51 @@ const css = StyleSheet.create({
 
 const AppSelection = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid);
-  const q = window.location.search;
-  const appUrl = isIOS
-    ? `brekekeapp://open${q}`
-    : `intent://open${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`;
-  const child = isBrowser ? (
-    <App />
-  ) : (
-    <React.Fragment>
-      <Image
-        source={{
-          uri: logo,
-        }}
-        style={css.WebApp_Logo}
-      />
-      <Image
-        source={{
-          uri: brand,
-        }}
-        style={css.WebApp_Brand}
-      />
-      <a href={appUrl}>
-        <TouchableOpacity style={[css.WebApp_Btn, css.WebApp_Btn__app]}>
-          <Text small style={css.WebApp_BtnTxt__browser}>
-            OPEN IN APP
-          </Text>
-          <Icon
-            color="white"
-            path={isIOS ? mdiApple : mdiAndroidHead}
-            style={css.WebApp_Icon}
-          />
+  let child = null;
+  if (isBrowser) {
+    child = <App />;
+  } else {
+    const params = parse(window.location);
+    const q = qs.stringify(params);
+    const appUrl = isIOS
+      ? `brekekeapp://open?${q}`
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`;
+    child = (
+      <React.Fragment>
+        <Image
+          source={{
+            uri: logo,
+          }}
+          style={css.WebApp_Logo}
+        />
+        <Image
+          source={{
+            uri: brand,
+          }}
+          style={css.WebApp_Brand}
+        />
+        <a href={appUrl}>
+          <TouchableOpacity style={[css.WebApp_Btn, css.WebApp_Btn__app]}>
+            <Text small style={css.WebApp_BtnTxt__browser}>
+              OPEN IN APP
+            </Text>
+            <Icon
+              color="white"
+              path={isIOS ? mdiApple : mdiAndroidHead}
+              style={css.WebApp_Icon}
+            />
+          </TouchableOpacity>
+        </a>
+        <TouchableOpacity
+          onClick={() => setIsBrowser(true)}
+          style={[css.WebApp_Btn, css.WebApp_Btn__browser]}
+        >
+          <Text small>OPEN IN BROWSER</Text>
+          <Icon path={mdiWeb} style={css.WebApp_Icon} />
         </TouchableOpacity>
-      </a>
-      <TouchableOpacity
-        onClick={() => setIsBrowser(true)}
-        style={[css.WebApp_Btn, css.WebApp_Btn__browser]}
-      >
-        <Text small>OPEN IN BROWSER</Text>
-        <Icon path={mdiWeb} style={css.WebApp_Icon} />
-      </TouchableOpacity>
-    </React.Fragment>
-  );
+      </React.Fragment>
+    );
+  }
   const Container = isBrowser ? View : BrekekeGradient;
   return <Container style={css.WebApp}>{child}</Container>;
 };

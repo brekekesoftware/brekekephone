@@ -119,21 +119,24 @@ class AuthStore extends BaseStore {
   };
 
   handleUrlParams = async () => {
+    await g.profilesLoaded;
     const urlParams = await getUrlParams();
     if (!urlParams) {
       return;
     }
     //
-    const { _wn, host, port, tenant, user } = urlParams;
+    const { _wn, host, phone_idx, port, tenant, user } = urlParams;
     if (!tenant || !user) {
       return;
     }
+    //
     const p = this.findProfile({
       pbxUsername: user,
       pbxTenant: tenant,
       pbxHostname: host,
       pbxPort: port,
     });
+    const pbxPhoneIndex = `${parseInt(phone_idx) || 4}`;
     //
     if (p) {
       if (_wn) {
@@ -145,7 +148,9 @@ class AuthStore extends BaseStore {
       if (!p.pbxPort) {
         p.pbxPort = port;
       }
-      this.upsertProfile(p);
+      p.pbxPhoneIndex = pbxPhoneIndex;
+      //
+      g.upsertProfile(p);
       if (p.pbxPassword || p.accessToken) {
         this.signIn(p.id);
       } else {
@@ -160,10 +165,11 @@ class AuthStore extends BaseStore {
       pbxUsername: user,
       pbxHostname: host,
       pbxPort: port,
+      pbxPhoneIndex,
       accessToken: _wn,
     };
     //
-    this.upsertProfile(newP);
+    g.upsertProfile(newP);
     if (newP.accessToken) {
       this.signIn(newP.id);
     } else {
