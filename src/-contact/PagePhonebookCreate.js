@@ -27,6 +27,11 @@ class PagePhonebookCreate extends React.Component {
       .setContact({
         ...phonebook,
       })
+      .then(function(val) {
+        const phoneBookId = { id: val.aid };
+        const newPhoneBook = Object.assign(phonebook, phoneBookId);
+        phonebook = Object.assign(phonebook, newPhoneBook);
+      })
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
     contactStore.pushPhonebook(phonebook);
