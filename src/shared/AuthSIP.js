@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce';
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -85,9 +84,7 @@ class AuthSIP extends React.Component {
         console.error(err);
       });
   };
-  autoAuth = debounce(() => authStore.sipShouldAuth && this.auth(), 50, {
-    maxWait: 150,
-  });
+  autoAuth = () => authStore.sipShouldAuth && this.auth();
 
   render() {
     return null;

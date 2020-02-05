@@ -47,6 +47,7 @@ class PageContactPhonebook extends React.Component {
     }, 300);
   }
   render() {
+    console.log(this);
     let phonebooks = this.phoneBookId.map(this.resolvePhonebook);
     if (!authStore.currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true);

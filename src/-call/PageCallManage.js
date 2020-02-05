@@ -281,7 +281,7 @@ class PageCallManage extends React.Component {
   };
   dtmf = () => {
     const call = this.runningById[callStore.selectedId];
-    g.goToPageDtmfKeypad({ callId: call.id });
+    g.goToPageDtmfKeypad({ callId: call.id, partyName: call?.partyName });
   };
   unpark = parkNumber => {
     sip.createSession(parkNumber);

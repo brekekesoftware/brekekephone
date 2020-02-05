@@ -9,6 +9,7 @@ import ContactsCreateForm from './ContactCreateForm';
 @observer
 class PagePhonebookUpdate extends React.Component {
   render() {
+    console.log(this.props.contact);
     return (
       <ContactsCreateForm
         onBack={g.backToPageContactPhonebook}

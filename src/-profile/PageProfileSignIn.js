@@ -21,7 +21,7 @@ const css = StyleSheet.create({
 const PageProfileSignIn = observer(() => {
   const l = g.profiles.length;
   return (
-    <BrekekeGradient colors={[g.colors.primaryFn(0.2), g.revBg]}>
+    <BrekekeGradient>
       <Layout
         description={`${l} server${l > 1 ? `s` : ``} in total`}
         noScroll
