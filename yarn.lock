@@ -2027,10 +2027,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@mdi/js@4.8.95":
-  version "4.8.95"
-  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.8.95.tgz#7c8df4d6a59a6f8abb9ab6b5894ab7b7e1919028"
-  integrity sha512-mKhC18fKPtSNJxpHa6tHmntnLjSUSrzOIuT4QnhlXt27MkOP5n+sQtK6Ii/R0K4fdpgLZGi+vR5o6PsDDb/iIg==
+"@mdi/js@4.9.95":
+  version "4.9.95"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.9.95.tgz#8984c2ac04c89913a3ff2bbe4d91f4ab51d8ef4f"
+  integrity sha512-6zKTCqZUCuDWJThdRcjdFTqp2BXfYwXI1UlYa68A1/kmCcy1ijpbpRbrJcUdZ+9WojencCh1DOGFqhj/x8I/eQ==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -11127,10 +11127,10 @@ react-native-voip-push-notification@2.0.0:
   resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-2.0.0.tgz#2d2bf6d55503ac9eaedc30610945931ce5b68201"
   integrity sha512-CwRvZWjcTULXLIRrd7wlx7czIPQ3GoPbryoyr6ZGFxSRXtTy0YSogTkyVzpiULFe8jdlP46UKmeZI+Gj2V1ugA==
 
-react-native-web-linear-gradient@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-web-linear-gradient/-/react-native-web-linear-gradient-1.0.5.tgz#11ef5f91fe0ef8ef61c4c18a556522ec93eda1a5"
-  integrity sha512-PqAsAc5rgFaJtCJ0sOuyr2yfidu59nOCvqRi1y2HRMrukoihaVOCdNsfJyrCRVHEGp6kpiyBDBl+aQT9P+Av+w==
+react-native-web-linear-gradient@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-web-linear-gradient/-/react-native-web-linear-gradient-1.1.1.tgz#3c872f099695a31d90448fa5d137f04e81ad7a11"
+  integrity sha512-tjah65P8tSwMi/bzi+/JEinpyhL4875npOyHvm51HfF3uq8XmD6GzlxU7LIIgpqXw7GeI/1UghBCKHAoGIAVeQ==
 
 react-native-web@0.11.7:
   version "0.11.7"
