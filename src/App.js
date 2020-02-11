@@ -34,6 +34,7 @@ import g from './global';
 import authStore from './global/authStore';
 import chatStore from './global/chatStore';
 import contactStore from './global/contactStore';
+import intl from './intl/intl';
 import PushNotification from './native/PushNotification';
 import registerOnUnhandledError from './native/registerOnUnhandledError';
 import AnimatedSize from './shared/AnimatedSize';
@@ -134,10 +135,10 @@ const App = observer(() => {
   let connMessage =
     service &&
     (isConnFailure
-      ? `${service} connection failed`
-      : `Connecting to ${service}`);
+      ? intl`${service} connection failed`
+      : intl`Connecting to ${service}`);
   if (isConnFailure && ucConnectingOrFailure && ucLoginFromAnotherPlace) {
-    connMessage = `UC signed in from another location`;
+    connMessage = intl`UC signed in from another location`;
   }
 
   return (

@@ -1,7 +1,15 @@
+import { mdiUnfoldMoreHorizontal } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { FlatList, StyleSheet, View } from '../-/Rn';
+import {
+  FlatList,
+  Icon,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from '../-/Rn';
 import g from '../global';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
@@ -10,11 +18,33 @@ import ProfileSignInItem from './ProfileSignInItem';
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
     height: `70%`,
-    minHeight: 320,
+    minHeight: 500,
   },
   PageProfileSignIn_Spacing: {
     flex: 1,
-    maxHeight: `30%`,
+    maxHeight: `20%`,
+  },
+  Space: {
+    height: 15,
+  },
+  Language: {
+    position: `absolute`,
+    bottom: 0,
+    right: 0,
+    paddingTop: 25,
+    paddingBottom: 10,
+    paddingHorizontal: 15,
+    ...g.backdropZindex,
+  },
+  Language_Inner: {
+    flexDirection: `row`,
+    justifyContent: `flex-end`,
+    paddingRight: 17,
+  },
+  Language_DropdownIcon: {
+    position: `absolute`,
+    top: 2,
+    right: 0,
   },
 });
 
@@ -44,6 +74,32 @@ const PageProfileSignIn = observer(() => {
         )}
         {!l && <ProfileSignInItem empty />}
       </Layout>
+      <TouchableOpacity
+        onPress={() => {
+          g.openPicker({
+            options: [
+              { key: `en`, label: `English` },
+              { key: `ja`, label: `日本語` },
+              { key: `vi`, label: `Tiếng Việt` },
+            ],
+            selectedKey: `en`,
+          });
+        }}
+        style={css.Language}
+      >
+        <View style={css.Language_Inner}>
+          <Text bold white>
+            English
+          </Text>
+          <Icon
+            color="white"
+            path={mdiUnfoldMoreHorizontal}
+            size={16}
+            style={css.Language_DropdownIcon}
+          />
+        </View>
+      </TouchableOpacity>
+      <View style={css.Space} />
     </BrekekeGradient>
   );
 });

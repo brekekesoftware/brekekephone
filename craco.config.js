@@ -1,8 +1,11 @@
 const CircularDependencyPlugin = require(`circular-dependency-plugin`);
 
+const babelPluginIntl = require(`./babelPluginIntl`);
+
 module.exports = {
   babel: {
     plugins: [
+      babelPluginIntl,
       [`@babel/plugin-proposal-decorators`, { legacy: true }],
       [`@babel/plugin-proposal-class-properties`, { loose: true }],
       [`@babel/plugin-transform-modules-commonjs`, { loose: true }],
