@@ -47,14 +47,13 @@ class PageContactPhonebook extends React.Component {
     }, 300);
   }
   render() {
-    console.log(this);
     let phonebooks = this.phoneBookId.map(this.resolvePhonebook);
     if (!authStore.currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true);
     }
     const map = {};
     phonebooks.forEach(u => {
-      u.name = u.name || u.id || ``;
+      u.name = `${u.firstName} ${u.lastName}` || u.id || ``;
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
         c0 = `#`;
