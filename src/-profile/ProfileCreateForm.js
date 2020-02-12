@@ -129,7 +129,7 @@ const ProfileCreateForm = observer(props => {
         fields={[
           {
             isGroup: true,
-            label: `PBX`,
+            label: intl`PBX`,
           },
           {
             // autoFocus: true, // TODO Animation issue

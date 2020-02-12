@@ -18,6 +18,7 @@ import { Platform, TouchableOpacity } from 'react-native';
 
 import { StyleSheet, View } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import ButtonIcon from '../shared/ButtonIcon';
 
 const css = StyleSheet.create({
@@ -74,7 +75,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="TRANSFER"
+            name={intl`TRANSFER`}
             noborder
             onPress={p.transfer}
             path={mdiCallSplit}
@@ -86,7 +87,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="PARK"
+            name={intl`PARK`}
             noborder
             onPress={p.park}
             path={mdiAlphaPCircle}
@@ -98,7 +99,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="VIDEO"
+            name={intl`VIDEO`}
             noborder
             onPress={p.enableVideo}
             path={mdiVideo}
@@ -110,7 +111,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
             color="white"
-            name="VIDEO"
+            name={intl`VIDEO`}
             noborder
             onPress={p.disableVideo}
             path={mdiVideoOff}
@@ -125,7 +126,7 @@ const CallManage = p => {
             <ButtonIcon
               bgcolor={g.revColor}
               color={g.color}
-              name="SPEAKER"
+              name={intl`SPEAKER`}
               noborder
               onPress={p.onOpenLoudSpeaker}
               path={mdiVolumeHigh}
@@ -137,7 +138,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
             color="white"
-            name="SPEAKER"
+            name={intl`SPEAKER`}
             noborder
             onPress={p.onCloseLoudSpeaker}
             path={mdiVolumeMedium}
@@ -151,7 +152,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="MUTE"
+            name={intl`MUTE`}
             noborder
             onPress={p.setMuted}
             path={mdiMicrophoneOff}
@@ -163,7 +164,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
             color="white"
-            name="UNMUTE"
+            name={intl`UNMUTE`}
             noborder
             onPress={p.setunMuted}
             path={mdiMicrophone}
@@ -175,7 +176,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="RECORDING"
+            name={intl`RECORDING`}
             noborder
             onPress={p.startRecording}
             path={mdiRecordCircle}
@@ -187,7 +188,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
             color="white"
-            name="RECORDING"
+            name={intl`RECORDING`}
             noborder
             onPress={p.stopRecording}
             path={mdiRecord}
@@ -199,7 +200,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="KEYPAD"
+            name={intl`KEYPAD`}
             noborder
             onPress={p.dtmf}
             path={mdiDialpad}
@@ -211,7 +212,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name="HOLD"
+            name={intl`HOLD`}
             noborder
             onPress={p.hold}
             path={mdiPauseCircle}
@@ -223,7 +224,7 @@ const CallManage = p => {
           <ButtonIcon
             bgcolor={p.toggleButtons ? g.colors.primary : g.colors.warning}
             color="white"
-            name="UNHOLD"
+            name={intl`UNHOLD`}
             noborder
             onPress={p.unhold}
             path={mdiPlayCircle}

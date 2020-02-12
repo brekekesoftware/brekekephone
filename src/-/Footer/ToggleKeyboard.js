@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import g from '../../global';
+import intl from '../../intl/intl';
 import AnimatedSize from '../../shared/AnimatedSize';
 import {
   Icon,
@@ -43,7 +44,7 @@ const ToggleKeyboard = observer(({ onShowKeyboard }) => {
         style={css.ToggleKeyboard}
       >
         {/* Fix button size does not equal with the Actions */}
-        <Text style={css.Text}>{`\u200a`}</Text>
+        <Text style={css.Text}>{intl`\u200a`}</Text>
         <Icon
           path={
             g.isKeyboardShowing ? mdiKeyboardOffOutline : mdiKeyboardOutline

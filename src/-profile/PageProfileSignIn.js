@@ -54,7 +54,7 @@ const PageProfileSignIn = observer(() => {
   return (
     <BrekekeGradient>
       <Layout
-        description={`${l} server${l > 1 ? `s` : ``} in total`}
+        description={intl`${l} server${l > 1 ? `s` : ``} in total`}
         noScroll
         onCreate={!!l && g.goToPageProfileCreate}
         title={intl`Servers`}

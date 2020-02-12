@@ -115,7 +115,7 @@ const UserItem = ({
             <Text normal small style={css.CallCreatedAt}>
               {intl`at`} {created}
             </Text>
-            {!!park && <Text small>{park}</Text>}
+            {!!park && <Text small>{intl`${park}`}</Text>}
           </View>
         )}
       </View>

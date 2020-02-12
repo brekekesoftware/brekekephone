@@ -1,6 +1,7 @@
 import React from 'react';
 
 import g from '../../global';
+import intl from '../../intl/intl';
 import { getSubMenus } from '../../shared/navigationConfig';
 import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 
@@ -36,7 +37,7 @@ const Navigation = ({ menu, subMenu }) => (
           style={[css.Btn, active && css.Btn__active]}
         >
           <Text small style={active && css.Text__active}>
-            {s.label}
+            {intl`${s.label}`}
           </Text>
         </TouchableOpacity>
       );

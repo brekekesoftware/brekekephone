@@ -96,7 +96,7 @@ class PageChatDetail extends React.Component {
         title={u?.name}
       >
         {loadingRecent ? (
-          <Text style={css.LoadMore}>Loading...</Text>
+          <Text style={css.LoadMore}>{intl`Loading...`}</Text>
         ) : allMessagesLoaded ? (
           <Text center style={[css.LoadMore, css.LoadMore__finished]}>
             {this.chatIds.length === 0

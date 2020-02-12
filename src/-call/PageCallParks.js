@@ -42,8 +42,8 @@ class PageCallParks extends React.Component {
             <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
               <UserItem
                 key={i}
-                name={`Parked ${i + 1}`}
-                park={`Extension *${u}`}
+                name={intl`Parked ${i + 1}`}
+                park={intl`Extension *${u}`}
                 selected={this.state.selectedPark === u}
               />
             </TouchableOpacity>

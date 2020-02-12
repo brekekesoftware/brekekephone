@@ -81,7 +81,7 @@ class PageContactUsers extends React.Component {
   render() {
     const allUsers = this.getMatchUserIds().map(this.resolveUser);
     const onlineUsers = allUsers.filter(
-      i => i.status && i.status !== intl`offline`,
+      i => i.status && i.status !== `offline`,
     );
 
     const { displayOfflineUsers, ucEnabled } = authStore.currentProfile;
