@@ -10,6 +10,7 @@ import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import UserItem from './UserItem';
@@ -80,7 +81,7 @@ class PageContactUsers extends React.Component {
   render() {
     const allUsers = this.getMatchUserIds().map(this.resolveUser);
     const onlineUsers = allUsers.filter(
-      i => i.status && i.status !== `offline`,
+      i => i.status && i.status !== intl`offline`,
     );
 
     const { displayOfflineUsers, ucEnabled } = authStore.currentProfile;
@@ -110,23 +111,23 @@ class PageContactUsers extends React.Component {
     return (
       <Layout
         description={(() => {
-          let desc = `PBX users, ${allUsers.length} total`;
+          let desc = intl`PBX users, ${allUsers.length} total`;
           if (allUsers.length && ucEnabled) {
             desc = desc.replace(`PBX`, `PBX/UC`);
             desc = desc.replace(
-              `${allUsers.length} total`,
-              `${onlineUsers.length}/${allUsers.length} online`,
+              intl`${allUsers.length} total`,
+              intl`${onlineUsers.length}/${allUsers.length} online`,
             );
           }
           return desc;
         })()}
         menu="contact"
         subMenu="users"
-        title="Users"
+        title={intl`Users`}
       >
         <Field
           icon={mdiMagnify}
-          label="SEARCH FOR USERS"
+          label={intl`SEARCH FOR USERS`}
           onValueChange={v => {
             contactStore.usersSearchTerm = v;
           }}
@@ -134,7 +135,7 @@ class PageContactUsers extends React.Component {
         />
         {ucEnabled && (
           <Field
-            label="SHOW OFFLINE USERS"
+            label={intl`SHOW OFFLINE USERS`}
             onValueChange={v => {
               g.upsertProfile({
                 id: authStore.currentProfile?.id,

@@ -27,6 +27,7 @@ import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
+import intl from '../intl/intl';
 import IncallManager from '../native/IncallManager';
 import ButtonIcon from '../shared/ButtonIcon';
 import { arrToMap } from '../utils/toMap';
@@ -237,7 +238,7 @@ class CallBar extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: `Failed to hold the call`, err });
+    g.showError({ message: intl`Failed to hold the call`, err });
   };
   unhold = () => {
     const activecallid = callStore.selectedId;
@@ -255,7 +256,7 @@ class CallBar extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: `Failed to unhold the call`, err });
+    g.showError({ message: intl`Failed to unhold the call`, err });
   };
 }
 

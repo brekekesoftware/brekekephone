@@ -3,13 +3,12 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import ChatInput from '../-/Footer/ChatInput';
-import pbx from '../api/pbx';
 import sip from '../api/sip';
 import uc from '../api/uc';
 import g from '../global';
-import callStore from '../global/callStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import pickFile from '../native/pickFile';
 import saveBlob from '../native/saveBlob';
 import Layout from '../shared/Layout';
@@ -64,19 +63,19 @@ class PageChatGroupDetail extends React.Component {
         compact
         dropdown={[
           {
-            label: `Invite more people`,
+            label: intl`Invite more people`,
             onPress: this.invite,
           },
           {
-            label: `Start voice call`,
+            label: intl`Start voice call`,
             onPress: this.callVoiceConference,
           },
           {
-            label: `Start video call`,
+            label: intl`Start video call`,
             onPress: this.callVideoConference,
           },
           {
-            label: `Leave group`,
+            label: intl`Leave group`,
             onPress: this.leave,
             danger: true,
           },
@@ -164,7 +163,7 @@ class PageChatGroupDetail extends React.Component {
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
-        g.showError({ message: `Failed to get recent chats`, err });
+        g.showError({ message: intl`Failed to get recent chats`, err });
       })
       .then(() => {
         this.setState({ loadingRecent: false });
@@ -186,7 +185,7 @@ class PageChatGroupDetail extends React.Component {
         chatStore.pushMessages(this.props.groupId, chats);
       })
       .catch(err => {
-        g.showError({ message: `Failed to get more chats`, err });
+        g.showError({ message: intl`Failed to get more chats`, err });
       })
       .then(() => {
         this.setState({ loadingMore: false });
@@ -215,7 +214,7 @@ class PageChatGroupDetail extends React.Component {
         this.setState({ editingText: `` });
       })
       .catch(err => {
-        g.showError({ message: `Failed to send the message`, err });
+        g.showError({ message: intl`Failed to send the message`, err });
       })
       .then(() => {
         this.submitting = false;
@@ -229,7 +228,7 @@ class PageChatGroupDetail extends React.Component {
         g.goToPageChatRecents();
       })
       .catch(err => {
-        g.showError({ message: `Failed to leave the group`, err });
+        g.showError({ message: intl`Failed to leave the group`, err });
       });
   };
 
@@ -269,7 +268,7 @@ class PageChatGroupDetail extends React.Component {
     chatStore.pushMessages(groupId, res.chat);
   };
   onSendFileFailure = err => {
-    g.showError({ err, message: `Failed to send file` });
+    g.showError({ err, message: intl`Failed to send file` });
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
@@ -279,13 +278,13 @@ class PageChatGroupDetail extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({ err, message: `Failed to accept file` });
+    g.showError({ err, message: intl`Failed to accept file` });
   };
   rejectFile = file => {
     uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({ err, message: `Failed to reject file` });
+    g.showError({ err, message: intl`Failed to reject file` });
   };
 }
 

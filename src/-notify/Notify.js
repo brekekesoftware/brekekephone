@@ -4,6 +4,7 @@ import React from 'react';
 
 import { StyleSheet, Text, View } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import ButtonIcon from '../shared/ButtonIcon';
 
 const css = StyleSheet.create({
@@ -35,15 +36,15 @@ const Notify = observer(p => {
           <Text bold>{p.partyName || p.partyNumber}</Text>
           <Text>
             {p.remoteVideoEnabled
-              ? `Incoming video call`
-              : `Incoming voice call`}
+              ? intl`Incoming video call`
+              : intl`Incoming voice call`}
           </Text>
         </View>
       )}
       {p.type === `inviteChat` && (
         <View style={css.Notify_Info}>
           <Text bold>{p.name}</Text>
-          <Text>Group chat invited by {p.inviter}</Text>
+          <Text>{intl`Group chat invited by ${p.inviter}`}</Text>
         </View>
       )}
       <ButtonIcon

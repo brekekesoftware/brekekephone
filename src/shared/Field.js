@@ -30,6 +30,7 @@ const css = StyleSheet.create({
   },
   Field__disabled: {
     backgroundColor: g.hoverBg,
+    borderBottomWidth: 0,
   },
   Field__group: {
     marginHorizontal: 0,

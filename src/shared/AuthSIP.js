@@ -7,6 +7,7 @@ import sip from '../api/sip';
 import updatePhoneIndex from '../api/updatePhoneIndex';
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 
 @observer
 class AuthSIP extends React.Component {
@@ -79,7 +80,7 @@ class AuthSIP extends React.Component {
       .catch(err => {
         authStore.set(`sipState`, `failure`);
         g.showError({
-          message: `Failed to login to sip server, err: ${err?.message}`,
+          message: intl`Failed to login to sip server, err: ${err?.message}`,
         });
         console.error(err);
       });

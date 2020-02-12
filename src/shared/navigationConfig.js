@@ -6,6 +6,7 @@ import {
 
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 import { arrToMap } from '../utils/toMap';
 
 export const menus = [
@@ -15,17 +16,17 @@ export const menus = [
     subMenus: [
       {
         key: `phonebook`,
-        label: `PHONEBOOK`,
+        label: intl`PHONEBOOK`,
         navFnKey: `goToPageContactPhonebook`,
       },
       {
         key: `users`,
-        label: `USERS`,
+        label: intl`USERS`,
         navFnKey: `goToPageContactUsers`,
       },
       {
         key: `chat`,
-        label: `CHAT`,
+        label: intl`CHAT`,
         navFnKey: `goToPageChatRecents`,
         ucRequired: true,
       },
@@ -38,7 +39,7 @@ export const menus = [
     subMenus: [
       {
         key: `keypad`,
-        label: `KEYPAD`,
+        label: intl`KEYPAD`,
         navFnKey: `goToPageCallKeypad`,
       },
       {
@@ -48,7 +49,7 @@ export const menus = [
       },
       {
         key: `parks`,
-        label: `PARKS`,
+        label: intl`PARKS`,
         navFnKey: `goToPageCallParks`,
       },
     ],
@@ -60,12 +61,12 @@ export const menus = [
     subMenus: [
       {
         key: `profile`,
-        label: `CURRENT SERVER`,
+        label: intl`CURRENT SERVER`,
         navFnKey: `goToPageSettingsProfile`,
       },
       {
         key: `other`,
-        label: `OTHER SETTINGS`,
+        label: intl`OTHER SETTINGS`,
         navFnKey: `goToPageSettingsOther`,
       },
     ],
@@ -145,7 +146,7 @@ g.goToPageIndex = () => {
 export const getSubMenus = menu => {
   const m = menus.find(m => m.key === menu);
   if (!m) {
-    g.showError({ message: `Can not find sub menus for ${menu}` });
+    g.showError({ message: intl`Can not find sub menus for ${menu}` });
     return [];
   }
   return m.subMenus.filter(

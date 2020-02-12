@@ -9,6 +9,7 @@ import g from '../global';
 import authStore from '../global/authStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 
 @observer
 class AuthUC extends React.Component {
@@ -46,7 +47,7 @@ class AuthUC extends React.Component {
   };
   onAuthFailure = err => {
     authStore.set(`ucState`, `failure`);
-    g.showError({ message: `Failed to connect to UC`, err });
+    g.showError({ message: intl`Failed to connect to UC`, err });
   };
   onConnectionStopped = e => {
     authStore.set(`ucState`, `failure`);
@@ -70,7 +71,7 @@ class AuthUC extends React.Component {
     });
   };
   onLoadUnreadChatsFailure = err => {
-    g.showError({ message: `Failed to load unread chat messages`, err });
+    g.showError({ message: intl`Failed to load unread chat messages`, err });
   };
 
   render() {

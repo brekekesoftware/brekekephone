@@ -9,6 +9,7 @@ import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import callStore from '../global/callStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -62,8 +63,8 @@ class PageCallParks extends React.Component {
     const { selectedPark } = this.state;
     if (!selectedPark) {
       g.showError({
-        err: new Error(`No selected park`),
-        message: `Failed to start new park`,
+        err: new Error(intl`No selected park`),
+        message: intl`Failed to start new park`,
       });
       return;
     }
@@ -87,7 +88,7 @@ class PageCallParks extends React.Component {
     g.goToPageCallManage();
   };
   onParkFailure = err => {
-    g.showError({ err, message: `Failed to park the call` });
+    g.showError({ err, message: intl`Failed to park the call` });
   };
 }
 

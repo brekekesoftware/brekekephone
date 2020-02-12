@@ -10,6 +10,7 @@ import authStore from '../global/authStore';
 import callStore from '../global/callStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import PushNotification from '../native/PushNotification';
 import updatePhoneIndex from './updatePhoneIndex';
 
@@ -98,7 +99,7 @@ class Api {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      g.showError({ message: `Failed to load PBX users`, err });
+      g.showError({ message: intl`Failed to load PBX users`, err });
     });
 
     setTimeout(this.onPBXAndSipStarted, 170);

@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import g from '../global';
+import intl from '../intl/intl';
 import Layout from '../shared/Layout';
 import useForm from '../utils/useForm';
 import useStore from '../utils/useStore';
@@ -49,10 +50,10 @@ const ContactsCreateForm = observer(props => {
         return;
       }
       g.showPrompt({
-        title: `Discard Changes`,
-        message: `Do you want to discard all unsaved changes and go back?`,
+        title: intl`Discard Changes`,
+        message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,
-        confirmText: `DISCARD`,
+        confirmText: intl`DISCARD`,
       });
     },
 
@@ -76,64 +77,64 @@ const ContactsCreateForm = observer(props => {
           {
             disabled,
             name: `book`,
-            label: `BOOK`,
+            label: intl`BOOK`,
             rule: `required`,
           },
           {
             disabled,
             name: `firstName`,
-            label: `FIRST NAME`,
+            label: intl`FIRST NAME`,
             rule: `required`,
           },
           {
             disabled,
             name: `lastName`,
-            label: `LAST NAME`,
+            label: intl`LAST NAME`,
             rule: `required`,
           },
           {
             disabled,
             keyboardType: `numeric`,
             name: `cellNumber`,
-            label: `MOBILE NUMBER`,
+            label: intl`MOBILE NUMBER`,
           },
           {
             disabled,
             keyboardType: `numeric`,
             name: `workNumber`,
-            label: `WORK NUMBER`,
+            label: intl`WORK NUMBER`,
           },
           {
             disabled,
             keyboardType: `numeric`,
             name: `homeNumber`,
-            label: `HOME NUMBER`,
+            label: intl`HOME NUMBER`,
           },
           {
             disabled,
             name: `job`,
-            label: `JOB`,
+            label: intl`JOB`,
           },
           {
             disabled,
             name: `company`,
-            label: `COMPANY`,
+            label: intl`COMPANY`,
           },
           {
             disabled,
             name: `address`,
-            label: `ADDRESS`,
+            label: intl`ADDRESS`,
           },
           {
             disabled,
             name: `email`,
-            label: `EMAIL`,
+            label: intl`EMAIL`,
           },
           {
             disabled,
             type: `Switch`,
             name: `shared`,
-            label: `SHARED`,
+            label: intl`SHARED`,
           },
         ]}
         k="phonebook"

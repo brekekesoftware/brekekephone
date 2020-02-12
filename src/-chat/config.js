@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import uc from '../api/uc';
+import intl from '../intl/intl';
 
 export const numberOfChatsPerLoad = 20;
 
@@ -25,7 +26,11 @@ export const groupByTimestamp = arr => {
       lastDate = date;
       groupByDate.push({
         date:
-          date === today ? `Today` : date === yesterday ? `Yesterday` : date,
+          date === today
+            ? intl`Today`
+            : date === yesterday
+            ? intl`Yesterday`
+            : date,
         groupByTime,
       });
     }

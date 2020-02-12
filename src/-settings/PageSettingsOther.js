@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import uc from '../api/uc';
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -40,16 +41,16 @@ class PageSettingsOther extends Component {
         });
       })
       .catch(err => {
-        g.showError({ message: `Failed to change UC status`, err });
+        g.showError({ message: intl`Failed to change UC status`, err });
       });
   };
   render() {
     return (
       <Layout
-        description="Other settings for PBX/UC"
+        description={intl`Other settings for PBX/UC`}
         dropdown={[
           {
-            label: `Logout`,
+            label: intl`Logout`,
             onPress: () => {
               authStore.signedInId = ``;
             },
@@ -58,19 +59,19 @@ class PageSettingsOther extends Component {
         ]}
         menu="settings"
         subMenu="other"
-        title="Other settings"
+        title={intl`Other settings`}
       >
         {authStore.currentProfile?.ucEnabled && (
           <React.Fragment>
             <Field isGroup label={`UC`} />
             <Field
               disabled={!authStore.currentProfile?.ucEnabled}
-              label={`STATUS`}
+              label={intl`STATUS`}
               onValueChange={this.submitStatus}
               options={[
-                { key: `online`, label: `Online` },
-                { key: `offline`, label: `Invisible` },
-                { key: `busy`, label: `Busy` },
+                { key: `online`, label: intl`Online` },
+                { key: `offline`, label: intl`Invisible` },
+                { key: `busy`, label: intl`Busy` },
               ]}
               type={`Picker`}
               value={this.state.status}
@@ -78,7 +79,7 @@ class PageSettingsOther extends Component {
             <Field
               createBtnIcon={mdiCheck}
               disabled={!authStore.currentProfile?.ucEnabled}
-              label={`STATUS NOTE`}
+              label={intl`STATUS NOTE`}
               onCreateBtnPress={this.submitStatusText}
               onSubmitEditing={this.submitStatusText}
               onValueChange={this.setStatusText}

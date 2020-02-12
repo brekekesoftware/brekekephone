@@ -6,6 +6,7 @@ import React from 'react';
 import { Text, View } from '../-/Rn';
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 import Layout from '../shared/Layout';
 import useForm from '../utils/useForm';
 import useStore from '../utils/useStore';
@@ -21,8 +22,8 @@ const ProfileCreateForm = observer(props => {
     },
     resetAllFields: () => {
       g.showPrompt({
-        title: `Reset`,
-        message: `Do you want to reset the form to the original data?`,
+        title: intl`Reset`,
+        message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
           $.set(`profile`, p => ({
             ...g.genEmptyProfile(),
@@ -30,7 +31,7 @@ const ProfileCreateForm = observer(props => {
             id: p.id,
           }));
         },
-        confirmText: `RESET`,
+        confirmText: intl`RESET`,
       });
     },
     //
@@ -46,14 +47,14 @@ const ProfileCreateForm = observer(props => {
     },
     onAddingParkRemove: i => {
       g.showPrompt({
-        title: `Remove Park`,
+        title: intl`Remove Park`,
         message: (
           <React.Fragment>
             <Text small>
               Park {i + 1}: {$.profile.parks[i]}
             </Text>
             <View />
-            <Text>Do you want to remove this park?</Text>
+            <Text>{intl`Do you want to remove this park?`}</Text>
           </React.Fragment>
         ),
         onConfirm: () => {
@@ -80,10 +81,10 @@ const ProfileCreateForm = observer(props => {
         return;
       }
       g.showPrompt({
-        title: `Discard Changes`,
-        message: `Do you want to discard all unsaved changes and go back?`,
-        onConfirm: props.onBack,
-        confirmText: `DISCARD`,
+        title: intl`Discard Changes`,
+        message: intl`Do you want to discard all unsaved changes and go back?`,
+        onConfirm: intl`${props.onBack}`,
+        confirmText: intl`DISCARD`,
       });
     },
     onValidSubmit: () => {
@@ -96,13 +97,13 @@ const ProfileCreateForm = observer(props => {
       description={
         props.updatingProfile
           ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
-          : `Create a new sign in profile`
+          : intl`Create a new sign in profile`
       }
       dropdown={
         props.footerLogout
           ? [
               {
-                label: `Logout`,
+                label: intl`Logout`,
                 onPress: () => {
                   authStore.signedInId = ``;
                 },
@@ -111,16 +112,16 @@ const ProfileCreateForm = observer(props => {
             ]
           : [
               {
-                label: `Reset form`,
+                label: intl`Reset form`,
                 onPress: $.resetAllFields,
               },
             ]
       }
-      menu={props.footerLogout ? `settings` : null}
+      menu={props.footerLogout ? intl`settings` : null}
       onBack={props.footerLogout ? null : $.onBackBtnPress}
       onFabBack={props.footerLogout ? null : $.onBackBtnPress}
       onFabNext={props.footerLogout ? null : submitForm}
-      subMenu={props.footerLogout ? `profile` : null}
+      subMenu={props.footerLogout ? intl`profile` : null}
       title={props.title}
     >
       <Form
@@ -134,39 +135,39 @@ const ProfileCreateForm = observer(props => {
             // autoFocus: true, // TODO Animation issue
             disabled: props.footerLogout,
             name: `pbxUsername`,
-            label: `USERNAME`,
+            label: intl`USERNAME`,
             rule: `required`,
           },
           {
             disabled: props.footerLogout,
             secureTextEntry: true,
             name: `pbxPassword`,
-            label: `PASSWORD`,
+            label: intl`PASSWORD`,
             rule: `required`,
           },
           {
             disabled: props.footerLogout,
             name: `pbxTenant`,
-            label: `TENANT`,
+            label: intl`TENANT`,
           },
           {
             disabled: props.footerLogout,
             name: `pbxHostname`,
-            label: `HOSTNAME`,
+            label: intl`HOSTNAME`,
             rule: `required|hostname`,
           },
           {
             disabled: props.footerLogout,
             keyboardType: `numeric`,
             name: `pbxPort`,
-            label: `PORT`,
+            label: intl`PORT`,
             rule: `required|port`,
           },
           {
             disabled: props.footerLogout,
             type: `Picker`,
             name: `pbxPhoneIndex`,
-            label: `PHONE`,
+            label: intl`PHONE`,
             rule: `required`,
             options: [1, 2, 3, 4].map(v => ({
               key: `${v}`,
@@ -177,13 +178,13 @@ const ProfileCreateForm = observer(props => {
             disabled: props.footerLogout,
             type: `Switch`,
             name: `pbxTurnEnabled`,
-            label: `TURN`,
+            label: intl`TURN`,
           },
           {
             disabled: props.footerLogout,
             type: `Switch`,
             name: `pushNotificationEnabled`,
-            label: `PUSH NOTIFICATION`,
+            label: intl`PUSH NOTIFICATION`,
           },
           {
             isGroup: true,
@@ -213,14 +214,14 @@ const ProfileCreateForm = observer(props => {
           {
             disabled: props.footerLogout || !$.profile.ucEnabled,
             name: `ucHostname`,
-            label: `HOSTNAME`,
+            label: intl`HOSTNAME`,
             rule: `required|hostname`,
           },
           {
             keyboardType: `numeric`,
             disabled: props.footerLogout || !$.profile.ucEnabled,
             name: `ucPort`,
-            label: `PORT`,
+            label: intl`PORT`,
             rule: `required|port`,
           },
           {
@@ -232,7 +233,7 @@ const ProfileCreateForm = observer(props => {
             disabled: true,
             name: `parks[${i}]`,
             value: p,
-            label: `PARK ${i + 1}`,
+            label: intl`PARK ${i + 1}`,
             onRemoveBtnPress: props.footerLogout
               ? null
               : () => $.onAddingParkRemove(i),
@@ -242,7 +243,7 @@ const ProfileCreateForm = observer(props => {
             : [
                 {
                   name: `parks[new]`,
-                  label: `NEW PARK`,
+                  label: intl`NEW PARK`,
                   value: $.addingPark,
                   onValueChange: v => $.set(`addingPark`, v),
                   onCreateBtnPress: $.onAddingParkSubmit,

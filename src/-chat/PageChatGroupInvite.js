@@ -8,6 +8,7 @@ import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -51,7 +52,7 @@ class PageChatGroupInvite extends React.Component {
 
   render() {
     return (
-      <Layout onBack={this.back} title="Inviting Group member">
+      <Layout onBack={this.back} title={intl`Inviting Group member`}>
         <View style={css.PageChatGroupInvite_Outer}>
           <Text style={css.PageChatGroupInvite_GroupName}>
             {chatStore.getGroup(this.props.groupId).name}
@@ -60,9 +61,9 @@ class PageChatGroupInvite extends React.Component {
             onPress={this.invite}
             style={css.PageChatGroupInvite_BtnSave}
           >
-            <Text style={css.PageChatGroupInvite_BtnText}>Invite</Text>
+            <Text style={css.PageChatGroupInvite_BtnText}>{intl`Invite`}</Text>
           </TouchableOpacity>
-          <Text style={css.PageChatGroupInvite_Text}>Members</Text>
+          <Text style={css.PageChatGroupInvite_Text}>{intl`Members`}</Text>
         </View>
         <Field isGroup />
         {this.buddyIds.map((id, i) => (
@@ -96,7 +97,7 @@ class PageChatGroupInvite extends React.Component {
     const { selectedBuddy } = this.state;
     const members = Object.keys(selectedBuddy);
     if (!members.length) {
-      g.showError({ message: `No buddy selectedBuddy` });
+      g.showError({ message: intl`No buddy selectedBuddy` });
       return;
     }
     uc.inviteChatGroupMembers(this.props.groupId, members)
@@ -104,7 +105,7 @@ class PageChatGroupInvite extends React.Component {
       .then(this.back);
   };
   onInviteFailure = err => {
-    g.showError({ message: `Failed to invite group chat`, err });
+    g.showError({ message: intl`Failed to invite group chat`, err });
   };
   back = () => {
     g.backToPageChatGroupDetail({ groupId: this.props.groupId });

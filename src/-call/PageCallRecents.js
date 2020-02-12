@@ -9,6 +9,7 @@ import g from '../global';
 import authStore from '../global/authStore';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -82,8 +83,11 @@ class PageCallRecents extends React.Component {
           }}
           value={contactStore.callSearchRecents}
         />
-        <Field isGroup label={`VOICEMAILS (${callStore.newVoicemailCount})`} />
-        <Field isGroup label={`RECENT CALLS (${calls.length})`} />
+        <Field
+          isGroup
+          label={intl`VOICEMAILS (${callStore.newVoicemailCount})`}
+        />
+        <Field isGroup label={intl`RECENT CALLS (${calls.length})`} />
         {calls.map((c, i) => (
           <UserItem
             iconFuncs={[

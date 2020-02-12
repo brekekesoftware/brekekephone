@@ -17,6 +17,7 @@ import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
@@ -73,14 +74,14 @@ class PageContactPhonebook extends React.Component {
     });
     return (
       <Layout
-        description="Your phonebook contacts"
+        description={intl`Your phonebook contacts`}
         dropdown={[
           {
-            label: `Create new contact`,
+            label: intl`Create new contact`,
             onPress: this.create,
           },
           {
-            label: `Reload`,
+            label: intl`Reload`,
             onPress: () => {
               this.loadContacts.flush();
               this.loadContacts();
@@ -89,10 +90,10 @@ class PageContactPhonebook extends React.Component {
         ]}
         menu="contact"
         subMenu="phonebook"
-        title={this.props.book || `Phonebook`}
+        title={this.props.book || intl`Phonebook`}
       >
         <Field
-          label="SHOW SHARED CONTACTS"
+          label={intl`SHOW SHARED CONTACTS`}
           onValueChange={v => {
             g.upsertProfile({
               id: authStore.currentProfile.id,
@@ -194,7 +195,7 @@ class PageContactPhonebook extends React.Component {
     this.setState({
       loading: false,
     });
-    g.showError({ message: `Failed to load contact list`, err });
+    g.showError({ message: intl`Failed to load contact list`, err });
   };
   loadContactDetail = id => {
     pbx
@@ -204,7 +205,7 @@ class PageContactPhonebook extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: `Failed to load contact detail for id ${id}`,
+          message: intl`Failed to load contact detail for id ${id}`,
           err,
         });
       });
@@ -254,7 +255,9 @@ class PageContactPhonebook extends React.Component {
       this.call(number);
     } else {
       this.update(contact);
-      g.showError({ message: `This contact doesn't have any phone number` });
+      g.showError({
+        message: intl`This contact doesn't have any phone number`,
+      });
     }
   };
   renderPhoneBookNumer = contact => {

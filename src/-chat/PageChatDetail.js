@@ -8,6 +8,7 @@ import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import pickFile from '../native/pickFile';
 import saveBlob from '../native/saveBlob';
 import Layout from '../shared/Layout';
@@ -99,8 +100,8 @@ class PageChatDetail extends React.Component {
         ) : allMessagesLoaded ? (
           <Text center style={[css.LoadMore, css.LoadMore__finished]}>
             {this.chatIds.length === 0
-              ? `There's currently no message in this thread`
-              : `All messages in this thread have been loaded`}
+              ? intl`There's currently no message in this thread`
+              : intl`All messages in this thread have been loaded`}
           </Text>
         ) : (
           <TouchableOpacity
@@ -110,7 +111,7 @@ class PageChatDetail extends React.Component {
               bold={!loadingMore}
               style={[css.LoadMore, !loadingMore && css.LoadMore__btn]}
             >
-              {loadingMore ? `Loading...` : `Load more messages`}
+              {loadingMore ? intl`Loading...` : intl`Load more messages`}
             </Text>
           </TouchableOpacity>
         )}
@@ -190,7 +191,7 @@ class PageChatDetail extends React.Component {
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
-        g.showError({ err, message: `Failed to get recent chats` });
+        g.showError({ err, message: intl`Failed to get recent chats` });
       })
       .then(() => {
         this.setState({ loadingRecent: false });
@@ -223,7 +224,7 @@ class PageChatDetail extends React.Component {
         chatStore.pushMessages(u.id, chats);
       })
       .catch(err => {
-        g.showError({ err, message: `Failed to get more chats` });
+        g.showError({ err, message: intl`Failed to get more chats` });
       })
       .then(() => {
         this.setState({ loadingMore: false });
@@ -262,7 +263,7 @@ class PageChatDetail extends React.Component {
     this.setState({ editingText: `` });
   };
   onSubmitEditingTextFailure = err => {
-    g.showError({ err, message: `Failed to send the message` });
+    g.showError({ err, message: intl`Failed to send the message` });
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
@@ -270,13 +271,13 @@ class PageChatDetail extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({ err, message: `Failed to accept file` });
+    g.showError({ err, message: intl`Failed to accept file` });
   };
   rejectFile = file => {
     uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({ err, message: `Failed to reject file` });
+    g.showError({ err, message: intl`Failed to reject file` });
   };
   sendFile = file => {
     const u = contactStore.getUCUser(this.props.buddy);
@@ -290,7 +291,7 @@ class PageChatDetail extends React.Component {
     chatStore.pushMessages(buddyId, res.chat);
   };
   onSendFileFailure = err => {
-    g.showError({ err, message: `Failed to send file` });
+    g.showError({ err, message: intl`Failed to send file` });
   };
 }
 

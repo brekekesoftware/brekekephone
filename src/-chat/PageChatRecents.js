@@ -5,6 +5,7 @@ import { Text } from '../-/Rn';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import ListUsers from './ListUsers';
@@ -25,20 +26,20 @@ class PageChatRecents extends React.Component {
       .filter(id => id);
     return (
       <Layout
-        description="UC recent active chat"
+        description={intl`UC recent active chat`}
         dropdown={[
           {
-            label: `Create group chat`,
+            label: intl`Create group chat`,
             onPress: g.goToPageChatGroupCreate,
           },
         ]}
         menu="contact"
         subMenu="chat"
-        title="Chat"
+        title={intl`Chat`}
       >
         {!groupIds.length && !userIds.length && (
           <Text center normal small warning>
-            There's no active chat thread
+            {intl`There's no active chat thread`}
           </Text>
         )}
         <ListUsers

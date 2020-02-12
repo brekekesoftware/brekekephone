@@ -2,6 +2,7 @@ import { mdiCached, mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
 
 import g from '../../global';
+import intl from '../../intl/intl';
 import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 
 const css = StyleSheet.create({
@@ -90,7 +91,7 @@ const Actions = ({
       ]}
     >
       <Text small style={css.Text}>
-        {onNextText || `SAVE`}
+        {onNextText || intl`SAVE`}
       </Text>
     </TouchableOpacity>
   </View>

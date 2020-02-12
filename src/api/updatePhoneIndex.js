@@ -1,10 +1,11 @@
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 import pbx from './pbx';
 
 const updatePhoneIndex = () =>
   updatePhoneIndexWithoutCatch().catch(err => {
-    g.showError({ message: `Failed to update phone index`, err });
+    g.showError({ message: intl`Failed to update phone index`, err });
     g.goToPageProfileSignIn();
     return null;
   });
@@ -44,8 +45,8 @@ const updatePhoneIndexWithoutCatch = async () => {
   } else {
     return new Promise(resolve => {
       g.showPrompt({
-        title: `Warning`,
-        message: `This phone index is already in use. Do you want to continue?`,
+        title: intl`Warning`,
+        message: intl`This phone index is already in use. Do you want to continue?`,
         onConfirm: () => {
           phone.type = `Web Phone`;
           setExtensionProperties()
@@ -54,7 +55,7 @@ const updatePhoneIndexWithoutCatch = async () => {
             })
             .catch(err => {
               g.showError({
-                message: `Failed to set extension properties`,
+                message: intl`Failed to set extension properties`,
                 err,
               });
               resolve(null);

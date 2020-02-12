@@ -13,6 +13,7 @@ import FooterActions from '../-/Footer/Actions';
 import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 
 const css = StyleSheet.create({
@@ -51,7 +52,7 @@ const ProfileSignInItem = observer(props => {
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
             onNext={g.goToPageProfileCreate}
-            onNextText="CREATE NEW SERVER"
+            onNextText={intl`CREATE NEW SERVER`}
           />
         </View>
       </View>
@@ -65,15 +66,15 @@ const ProfileSignInItem = observer(props => {
       <TouchableOpacity onPress={() => g.goToPageProfileUpdate({ id: p.id })}>
         <Field
           icon={mdiAccountCircleOutline}
-          label="USERNAME"
+          label={intl`USERNAME`}
           value={p.pbxUsername}
         />
-        <Field icon={mdiApplication} label="TENANT" value={p.pbxTenant} />
-        <Field icon={mdiWeb} label="HOSTNAME" value={p.pbxHostname} />
-        <Field icon={mdiServerNetwork} label="PORT" value={p.pbxPort} />
+        <Field icon={mdiApplication} label={intl`TENANT`} value={p.pbxTenant} />
+        <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
+        <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
       </TouchableOpacity>
       <Field
-        label="PUSH NOTIFICATION"
+        label={intl`PUSH NOTIFICATION`}
         onValueChange={v =>
           g.upsertProfile({ id: p.id, pushNotificationEnabled: v })
         }
@@ -90,7 +91,7 @@ const ProfileSignInItem = observer(props => {
         <FooterActions
           onBack={() => {
             g.showPrompt({
-              title: `Remove Server`,
+              title: intl`Remove Server`,
               message: (
                 <React.Fragment>
                   <View>
@@ -112,7 +113,7 @@ const ProfileSignInItem = observer(props => {
           onNext={() => {
             authStore.signIn(p.id);
           }}
-          onNextText="SIGN IN"
+          onNextText={intl`SIGN IN`}
         />
       </View>
     </View>

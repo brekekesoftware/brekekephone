@@ -3,6 +3,7 @@ import React from 'react';
 
 import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import Avatar from '../shared/Avatar';
 
 const css = StyleSheet.create({
@@ -82,7 +83,7 @@ const UserItem = ({
           </Text>
           {!!statusText && (
             <Text normal singleLine small style={css.Status}>
-              {statusText}
+              {intl`${statusText}`}
             </Text>
           )}
         </View>

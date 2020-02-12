@@ -14,6 +14,7 @@ import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Avatar from '../shared/Avatar';
 import Layout from '../shared/Layout';
 
@@ -93,7 +94,7 @@ class PageTransferAttend extends React.Component {
         g.backToPageCallManage();
       })
       .catch(err => {
-        g.showError({ message: `Failed to stop the transfer`, err });
+        g.showError({ message: intl`Failed to stop the transfer`, err });
       });
   };
   hangup = () => {
@@ -111,7 +112,7 @@ class PageTransferAttend extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: `Failed to make conference for the transfer`,
+          message: intl`Failed to make conference for the transfer`,
           err,
         });
       });

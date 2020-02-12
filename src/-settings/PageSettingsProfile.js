@@ -4,6 +4,7 @@ import React from 'react';
 import ProfileCreateForm from '../-profile/ProfileCreateForm';
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 
 const PageSettingsProfile = observer(p => (
   <ProfileCreateForm
@@ -14,17 +15,17 @@ const PageSettingsProfile = observer(p => (
         g.backToPageContactPhonebook();
       }
       g.showPrompt({
-        title: `Save Server`,
-        message: `Do you want to update your profile?\nYou'll need to sign out and then sign in again.`,
+        title: intl`Save Server`,
+        message: intl`Do you want to update your profile?\nYou'll need to sign out and then sign in again.`,
         onConfirm: () => {
           g.upsertProfile(p);
           g.goToPageProfileSignIn();
           setTimeout(() => authStore.signIn(p.id), 300);
         },
-        confirmText: `SAVE`,
+        confirmText: intl`SAVE`,
       });
     }}
-    title="Current Server"
+    title={intl`Current Server`}
     updatingProfile={authStore.currentProfile}
   />
 ));

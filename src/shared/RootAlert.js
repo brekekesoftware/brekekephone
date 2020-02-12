@@ -11,6 +11,7 @@ import {
   View,
 } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import { useAnimationOnDidMount } from '../utils/animation';
 
 const css = StyleSheet.create({
@@ -82,8 +83,8 @@ const Alert = ({ error, prompt, ...props }) => {
         ) : (
           <View style={css.RootAlert_Message}>{message}</View>
         ),
-      dismissText: `CANCEL`,
-      confirmText: `REMOVE`,
+      dismissText: intl`CANCEL`,
+      confirmText: intl`REMOVE`,
       onConfirm: flow([g.dismissAlert, onConfirm].filter(f => f)),
       onDismiss: flow([g.dismissAlert, onDismiss].filter(f => f)),
       ...rest,
@@ -92,16 +93,16 @@ const Alert = ({ error, prompt, ...props }) => {
     const { err, message, unexpectedErr, ...rest } = error;
     const errMessage = unexpectedErr?.message || err?.message || err;
     Object.assign(props, {
-      title: `Error`,
+      title: intl`Error`,
       message: (
         <React.Fragment>
           <Text style={css.RootAlert_Message}>
-            {unexpectedErr ? `An unexpected error occurred` : message}
+            {unexpectedErr ? intl`An unexpected error occurred` : message}
           </Text>
           {!!errMessage && <Text small>{errMessage}</Text>}
         </React.Fragment>
       ),
-      confirmText: `OK`,
+      confirmText: intl`OK`,
       onConfirm: g.dismissAlert,
       onDismiss: g.dismissAlert,
       ...rest,

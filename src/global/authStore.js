@@ -2,6 +2,7 @@ import debounce from 'lodash/debounce';
 import { computed, observable } from 'mobx';
 
 import { AppState } from '../-/Rn';
+import intl from '../intl/intl';
 import { getUrlParams } from '../native/deeplink';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
@@ -106,12 +107,12 @@ class AuthStore extends BaseStore {
     }
     if (!p.pbxPassword && !p.accessToken) {
       g.goToPageProfileUpdate(p.id);
-      g.showError({ message: `The profile password is empty` });
+      g.showError({ message: intl`The profile password is empty` });
       return true;
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
       g.goToPageProfileUpdate(p.id);
-      g.showError({ message: `The UC config is missing` });
+      g.showError({ message: intl`The UC config is missing` });
       return true;
     }
     this.set(`signedInId`, p.id);

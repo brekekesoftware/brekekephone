@@ -2,6 +2,7 @@ import FCM, { FCMEvent } from 'react-native-fcm';
 
 import { AppRegistry, AsyncStorage } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import parse from './PushNotification-parse';
 
 const { Notification, RefreshToken } = FCMEvent;
@@ -61,7 +62,7 @@ const PushNotification = {
       await FCM.createNotificationChannel({
         id: `default`,
         name: `Brekeke Phone`,
-        description: `Brekeke Phone notification channel`,
+        description: intl`Brekeke Phone notification channel`,
         priority: `high`,
       });
       FCM.on(RefreshToken, onToken);
@@ -71,7 +72,7 @@ const PushNotification = {
       onNotification(n);
     } catch (err) {
       g.showError({
-        message: `Failed to register push notification`,
+        message: intl`Failed to register push notification`,
         err,
       });
     }

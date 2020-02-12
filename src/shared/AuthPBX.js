@@ -5,6 +5,7 @@ import React from 'react';
 import pbx from '../api/pbx';
 import g from '../global';
 import authStore from '../global/authStore';
+import intl from '../intl/intl';
 
 @observer
 class AuthPBX extends React.Component {
@@ -30,7 +31,7 @@ class AuthPBX extends React.Component {
       .catch(err => {
         authStore.set(`pbxState`, `failure`);
         g.showError({
-          message: `Failed to login to pbx, err: ${err?.message}`,
+          message: intl`Failed to login to pbx, err: ${err?.message}`,
         });
       });
   };

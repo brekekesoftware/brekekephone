@@ -4,6 +4,7 @@ import React from 'react';
 
 import sip from '../api/sip';
 import g from '../global';
+import intl from '../intl/intl';
 import Layout from '../shared/Layout';
 import KeyPad from './KeyPad';
 import ShowNumber from './ShowNumbers';
@@ -20,7 +21,7 @@ class PageCallKeypad extends React.Component {
   callVoice = () => {
     this.txt = this.txt.trim();
     if (!this.txt) {
-      g.showError({ message: `No target` });
+      g.showError({ message: intl`No target` });
       return;
     }
     sip.createSession(this.txt, {

@@ -8,6 +8,7 @@ import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -34,16 +35,16 @@ class PageChatGroupCreate extends React.Component {
         onBack={g.backToPageChatRecents}
         onFabBack={g.goToPageChatRecents}
         onFabNext={this.create}
-        onFabNextText="CREATE"
+        onFabNextText={intl`CREATE`}
         title="New Group"
       >
         <Field
-          label="GROUP NAME"
+          label={intl`GROUP NAME`}
           onValueChange={this.setName}
           type={`inputElement`}
           value={this.state.name}
         />
-        <Field isGroup label={`Members`} />
+        <Field isGroup label={intl`Members`} />
         {this.buddyIds.map((id, i) => (
           <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <UserItem
@@ -77,7 +78,7 @@ class PageChatGroupCreate extends React.Component {
   create = () => {
     const { members, name } = this.state;
     if (!name.trim()) {
-      g.showError({ message: `Group name is required` });
+      g.showError({ message: intl`Group name is required` });
       return;
     }
     uc.createChatGroup(name, members)
@@ -90,7 +91,7 @@ class PageChatGroupCreate extends React.Component {
     g.goToPageChatRecents();
   };
   onCreateFailure = err => {
-    g.showError({ message: `Failed to create the group chat`, err });
+    g.showError({ message: intl`Failed to create the group chat`, err });
   };
 }
 export default PageChatGroupCreate;

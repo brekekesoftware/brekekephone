@@ -2,6 +2,8 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 import { extendObservable } from 'mobx';
 
+import intl from '../intl/intl';
+
 const createStore = (mixin, ...args) => {
   const $ = {
     set: (k, v) => {
@@ -36,7 +38,7 @@ const createStore = (mixin, ...args) => {
         .concat(Object.keys(mx))
         .forEach(k => {
           if (k in $) {
-            throw new Error(`createStore.extends: Duplicated key ${k}`);
+            throw new Error(intl`createStore.extends: Duplicated key ${k}`);
           }
         });
       extendObservable($, mx.observable);

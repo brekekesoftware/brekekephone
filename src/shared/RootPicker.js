@@ -12,6 +12,7 @@ import {
   View,
 } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import { useAnimationOnDidMount } from '../utils/animation';
 
 const css = StyleSheet.create({
@@ -132,7 +133,7 @@ const Picker = p => {
           style={[css.Picker_Option, css.Picker_Option__cancel]}
         >
           <Text style={css.Picker_Text__cancel}>
-            {p.cancelLabel || `Cancel`}
+            {p.cancelLabel || intl`Cancel`}
           </Text>
           <Icon
             color={g.colors.danger}

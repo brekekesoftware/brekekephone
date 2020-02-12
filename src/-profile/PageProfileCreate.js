@@ -1,6 +1,7 @@
 import React from 'react';
 
 import g from '../global';
+import intl from '../intl/intl';
 import ProfileCreateForm from './ProfileCreateForm';
 
 const PageProfileCreate = () => (
@@ -10,7 +11,7 @@ const PageProfileCreate = () => (
       g.upsertProfile(p);
       g.backToPageProfileSignIn();
     }}
-    title="New Server"
+    title={intl`New Server`}
   />
 );
 

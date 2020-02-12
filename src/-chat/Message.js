@@ -12,6 +12,7 @@ import {
   View,
 } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 
 const css = StyleSheet.create({
   Outer: {
@@ -155,14 +156,18 @@ const File = p => (
     {/*)}*/}
 
     {p.state === `success` && (
-      <Text style={p.createdByMe && css.Message_File_Info__color}>Success</Text>
+      <Text
+        style={p.createdByMe && css.Message_File_Info__color}
+      >{intl`Success`}</Text>
     )}
     {p.state === `failure` && (
-      <Text style={p.createdByMe && css.Message_File_Info__color}>Failed</Text>
+      <Text
+        style={p.createdByMe && css.Message_File_Info__color}
+      >{intl`Failed`}</Text>
     )}
     {p.state === `stopped` && (
       <Text style={p.createdByMe && css.Message_File_Info__color}>
-        Canceled
+        {intl`Canceled`}
       </Text>
     )}
   </View>

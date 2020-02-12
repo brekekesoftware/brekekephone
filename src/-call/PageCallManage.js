@@ -9,6 +9,7 @@ import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
+import intl from '../intl/intl';
 import IncallManager from '../native/IncallManager';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
@@ -217,7 +218,7 @@ class PageCallManage extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: `Failed to hold the call`, err });
+    g.showError({ message: intl`Failed to hold the call`, err });
   };
   unhold = () => {
     const call = this.runningById[callStore.selectedId];
@@ -233,7 +234,7 @@ class PageCallManage extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: `Failed to unhold the call`, err });
+    g.showError({ message: intl`Failed to unhold the call`, err });
   };
 
   startRecording = () => {
@@ -250,7 +251,7 @@ class PageCallManage extends React.Component {
     });
   };
   onStartRecordingFailure = err => {
-    g.showError({ message: `Failed to start recording the call`, err });
+    g.showError({ message: intl`Failed to start recording the call`, err });
   };
 
   stopRecording = () => {
@@ -267,7 +268,7 @@ class PageCallManage extends React.Component {
     });
   };
   onStopRecordingFailure = err => {
-    g.showError({ message: `Failed to stop recording the call`, err });
+    g.showError({ message: intl`Failed to stop recording the call`, err });
   };
 
   transfer = () => {
@@ -287,7 +288,7 @@ class PageCallManage extends React.Component {
     sip.createSession(parkNumber);
   };
   park = () => {
-    g.goToPageCallParks({ screen: `call_manage` });
+    g.goToPageCallParks({ screen: intl`call_manage` });
   };
   enableVideo = () => {
     sip.enableVideo(callStore.selectedId);
@@ -311,7 +312,8 @@ class PageCallManage extends React.Component {
       ? [
           {
             label:
-              (showButtonsInVideoCall ? `Hide` : `Show`) + ` call menu buttons`,
+              (showButtonsInVideoCall ? intl`Hide` : intl`Show`) +
+              intl` call menu buttons`,
             onPress: this.toggleButtons,
           },
         ]

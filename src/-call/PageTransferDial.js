@@ -9,6 +9,7 @@ import pbx from '../api/pbx';
 import g from '../global';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
+import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 
@@ -25,15 +26,15 @@ class PageTransferDial extends React.Component {
       name: match.name,
       avatar: ucUser.avatar,
       number: id,
-      calling: !!match.talkers?.filter(t => t.status === `calling`).length,
-      ringing: !!match.talkers?.filter(t => t.status === `ringing`).length,
-      talking: !!match.talkers?.filter(t => t.status === `talking`).length,
-      holding: !!match.talkers?.filter(t => t.status === `holding`).length,
+      calling: !!match.talkers?.filter(t => t.status === intl`calling`).length,
+      ringing: !!match.talkers?.filter(t => t.status === intl`ringing`).length,
+      talking: !!match.talkers?.filter(t => t.status === intl`talking`).length,
+      holding: !!match.talkers?.filter(t => t.status === intl`holding`).length,
     };
   };
 
   onTransferFailure = err => {
-    g.showError({ message: `Failed to transfer the call`, err });
+    g.showError({ message: intl`Failed to transfer the call`, err });
   };
   transferBlind = target => {
     const promise = pbx.transferTalkerBlind(
