@@ -63,7 +63,7 @@ class PageCallParks extends React.Component {
     const { selectedPark } = this.state;
     if (!selectedPark) {
       g.showError({
-        err: new Error(intl`No selected park`),
+        err: new Error(`No selected park`),
         message: intl`Failed to start new park`,
       });
       return;

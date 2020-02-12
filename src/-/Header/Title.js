@@ -1,7 +1,6 @@
 import React from 'react';
 
 import g from '../../global';
-import intl from '../../intl/intl';
 import { useAnimation } from '../../utils/animation';
 import { Animated, StyleSheet, Text } from '../Rn';
 
@@ -30,11 +29,9 @@ const Title = ({ compact, description, title }) => {
   });
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
-      <Animated.Text
-        style={[css.Title, cssTitleA]}
-      >{intl`${title}`}</Animated.Text>
+      <Animated.Text style={[css.Title, cssTitleA]}>{title}</Animated.Text>
       {!compact && (
-        <Text style={css.Description}>{intl`${description}` || `\u200a`}</Text>
+        <Text style={css.Description}>{description || `\u200a`}</Text>
       )}
     </Animated.View>
   );

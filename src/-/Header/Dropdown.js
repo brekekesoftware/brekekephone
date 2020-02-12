@@ -2,7 +2,6 @@ import { mdiDotsVertical } from '@mdi/js';
 import React from 'react';
 
 import g from '../../global';
-import intl from '../../intl/intl';
 import AnimatedSize from '../../shared/AnimatedSize';
 import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn';
 
@@ -73,7 +72,7 @@ const Dropdown = ({ close, compact, dropdown }) => {
             }}
             style={[css.Item, i === dropdown.length - 1 && css.Item__last]}
           >
-            <Text {...{ primary, warning, danger }}>{intl`${label}`}</Text>
+            <Text {...{ primary, warning, danger }}>{label}</Text>
           </TouchableOpacity>
         ))}
       </AnimatedSize>

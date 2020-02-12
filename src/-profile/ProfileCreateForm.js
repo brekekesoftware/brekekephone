@@ -83,7 +83,7 @@ const ProfileCreateForm = observer(props => {
       g.showPrompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
-        onConfirm: intl`${props.onBack}`,
+        onConfirm: props.onBack,
         confirmText: intl`DISCARD`,
       });
     },

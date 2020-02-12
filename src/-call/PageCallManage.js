@@ -288,7 +288,7 @@ class PageCallManage extends React.Component {
     sip.createSession(parkNumber);
   };
   park = () => {
-    g.goToPageCallParks({ screen: `call_manage` });
+    g.goToPageCallParks({ screen: `call_manage` }); // TODO
   };
   enableVideo = () => {
     sip.enableVideo(callStore.selectedId);
@@ -311,9 +311,9 @@ class PageCallManage extends React.Component {
     const dropdown = videoEnabled
       ? [
           {
-            label:
-              (showButtonsInVideoCall ? intl`Hide` : intl`Show`) +
-              intl` call menu buttons`,
+            label: showButtonsInVideoCall
+              ? intl`Hide call menu buttons`
+              : intl`Show call menu buttons`,
             onPress: this.toggleButtons,
           },
         ]

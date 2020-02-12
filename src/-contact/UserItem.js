@@ -83,7 +83,7 @@ const UserItem = ({
           </Text>
           {!!statusText && (
             <Text normal singleLine small style={css.Status}>
-              {intl`${statusText}`}
+              {statusText}
             </Text>
           )}
         </View>
@@ -115,7 +115,7 @@ const UserItem = ({
             <Text normal small style={css.CallCreatedAt}>
               {intl`at`} {created}
             </Text>
-            {!!park && <Text small>{intl`${park}`}</Text>}
+            {!!park && <Text small>{park}</Text>}
           </View>
         )}
       </View>

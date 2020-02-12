@@ -12,7 +12,7 @@ class PagePhonebookCreate extends React.Component {
   render() {
     return (
       <ContactsCreateForm
-        book={intl`${this.props.book}` || ``}
+        book={this.props.book || ``}
         onBack={g.backToPageContactPhonebook}
         onSave={p => {
           this.save(p);
