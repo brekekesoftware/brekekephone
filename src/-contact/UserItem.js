@@ -113,7 +113,7 @@ const UserItem = ({
               style={css.CallIcon}
             />
             <Text normal small style={css.CallCreatedAt}>
-              at {created}
+              {intl`at`} {created}
             </Text>
             {!!park && <Text small>{park}</Text>}
           </View>

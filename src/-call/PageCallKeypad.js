@@ -33,12 +33,12 @@ class PageCallKeypad extends React.Component {
   render() {
     return (
       <Layout
-        description="Keypad dial manually"
+        description={intl`Keypad dial manually`}
         menu="call"
         onFabNext={g.isKeyboardShowing ? this.callVoice : null}
-        onFabNextText="DIAL"
+        onFabNextText={intl`DIAL`}
         subMenu="keypad"
-        title="Keypad"
+        title={intl`Keypad`}
       >
         <ShowNumber
           refInput={this.txtRef}

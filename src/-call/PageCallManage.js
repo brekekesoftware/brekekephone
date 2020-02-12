@@ -288,7 +288,7 @@ class PageCallManage extends React.Component {
     sip.createSession(parkNumber);
   };
   park = () => {
-    g.goToPageCallParks({ screen: intl`call_manage` });
+    g.goToPageCallParks({ screen: `call_manage` });
   };
   enableVideo = () => {
     sip.enableVideo(callStore.selectedId);

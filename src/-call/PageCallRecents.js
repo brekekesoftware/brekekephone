@@ -70,14 +70,14 @@ class PageCallRecents extends React.Component {
     const calls = this.getMatchedCalls();
     return (
       <Layout
-        description="Recent voicemails and calls"
+        description={intl`Recent voicemails and calls`}
         menu="call"
         subMenu="recents"
-        title="Recents"
+        title={intl`Recents`}
       >
         <Field
           icon={mdiMagnify}
-          label="SEARCH NAME, PHONE NUMBER ..."
+          label={intl`SEARCH NAME, PHONE NUMBER ...`}
           onValueChange={v => {
             contactStore.callSearchRecents = v;
           }}

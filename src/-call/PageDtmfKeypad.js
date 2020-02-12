@@ -39,7 +39,7 @@ class PageDtmfKeypad extends React.Component {
   render() {
     return (
       <Layout
-        description="Keypad dial manually"
+        description={intl`Keypad dial manually`}
         onBack={g.backToPageCallManage}
         title={this.props.partyName}
       >

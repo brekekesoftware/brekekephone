@@ -122,7 +122,11 @@ class PageTransferAttend extends React.Component {
     const usersource = this.resolveMatch(this.call?.partyNumber);
     const usertarget = this.resolveMatch(this.call?.transfering);
     return (
-      <Layout compact onBack={g.backToPageCallManage} title="Attended Transfer">
+      <Layout
+        compact
+        onBack={g.backToPageCallManage}
+        title={intl`Attended Transfer`}
+      >
         <View style={css.Outer}>
           <View style={[css.Inner, css.Inner__info]}>
             <View style={[css.Info, css.Info__from]}>
@@ -161,7 +165,7 @@ class PageTransferAttend extends React.Component {
                 <Icon path={mdiPhoneHangup} />
               </TouchableOpacity>
               <Text center singleLine small>
-                TRANSFER
+                {intl`TRANSFER`}
               </Text>
             </View>
             <View style={css.BtnOuter}>
@@ -172,7 +176,7 @@ class PageTransferAttend extends React.Component {
                 <Icon path={mdiPhoneForward} />
               </TouchableOpacity>
               <Text center singleLine small>
-                CONFERENCE
+                {intl`CONFERENCE`}
               </Text>
             </View>
           </View>

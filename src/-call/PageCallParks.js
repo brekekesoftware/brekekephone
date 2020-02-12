@@ -29,12 +29,12 @@ class PageCallParks extends React.Component {
     void goBack; // TODO
     return (
       <Layout
-        description="Manage your call parks"
+        description={intl`Manage your call parks`}
         menu="call"
         onFabNext={this.state.selectedPark ? this.park : null}
-        onFabNextText="START NEW PARK"
+        onFabNextText={intl`START NEW PARK`}
         subMenu="parks"
-        title="Parks"
+        title={intl`Park`}
       >
         <Field isGroup />
         {this.parkIds.length !== 0 &&

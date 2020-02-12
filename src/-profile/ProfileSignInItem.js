@@ -99,7 +99,7 @@ const ProfileSignInItem = observer(props => {
                       {p.pbxUsername} - {p.pbxHostname}
                     </Text>
                   </View>
-                  <Text>Do you want to remove this profile?</Text>
+                  <Text>{intl`Do you want to remove this profile?`}</Text>
                 </React.Fragment>
               ),
               onConfirm: () => {

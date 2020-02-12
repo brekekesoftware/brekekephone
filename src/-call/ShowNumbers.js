@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Keyboard, StyleSheet, TextInput, View } from '../-/Rn';
+import intl from '../intl/intl';
 
 const css = StyleSheet.create({
   ShowNumbers: {
@@ -32,7 +33,7 @@ const ShowNumber = p => (
         Keyboard.dismiss();
       }}
       onSelectionChange={p.selectionChange}
-      placeholder="Enter your number"
+      placeholder={intl`Enter your number`}
       ref={p.refInput}
       style={css.ShowNumbers_DisplayTxt}
       value={p.value}

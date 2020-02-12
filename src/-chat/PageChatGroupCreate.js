@@ -36,7 +36,7 @@ class PageChatGroupCreate extends React.Component {
         onFabBack={g.goToPageChatRecents}
         onFabNext={this.create}
         onFabNextText={intl`CREATE`}
-        title="New Group"
+        title={intl`New Group`}
       >
         <Field
           label={intl`GROUP NAME`}
