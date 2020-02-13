@@ -57,7 +57,7 @@ const PageProfileSignIn = observer(() => {
         description={`${l} server${l > 1 ? `s` : ``} in total`}
         noScroll
         onCreate={!!l && g.goToPageProfileCreate}
-        title={intl`Servers`}
+        title={`Servers`}
         transparent
       >
         <View style={css.PageProfileSignIn_Spacing} />
