@@ -46,9 +46,9 @@ const ProfileSignInItem = observer(props => {
   if (props.empty) {
     return (
       <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
-        <Text subTitle>No server</Text>
-        <Text>There is no server created</Text>
-        <Text>Tap the below button to create one</Text>
+        <Text subTitle>{intl`No server`}</Text>
+        <Text>{intl`There is no server created`}</Text>
+        <Text>{intl`Tap the below button to create one`}</Text>
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
             onNext={g.goToPageProfileCreate}
@@ -82,7 +82,7 @@ const ProfileSignInItem = observer(props => {
         value={p.pushNotificationEnabled}
       />
       <Field
-        label="UC"
+        label={intl`UC`}
         onValueChange={v => g.upsertProfile({ id: p.id, ucEnabled: v })}
         type="Switch"
         value={p.ucEnabled}

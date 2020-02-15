@@ -154,7 +154,7 @@ class PageTransferAttend extends React.Component {
                 <Icon path={mdiPhoneOff} />
               </TouchableOpacity>
               <Text center singleLine small>
-                CANCEL
+                {intl`CANCEL`}
               </Text>
             </View>
             <View style={css.BtnOuter}>

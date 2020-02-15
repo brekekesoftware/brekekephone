@@ -5,6 +5,7 @@ import qs from 'qs';
 import React, { useState } from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
+import intl from '../src/intl/intl';
 import {
   AppRegistry,
   Icon,
@@ -117,7 +118,7 @@ const AppSelection = () => {
         <a href={appUrl}>
           <TouchableOpacity style={[css.WebApp_Btn, css.WebApp_Btn__app]}>
             <Text small style={css.WebApp_BtnTxt__browser}>
-              OPEN IN APP
+              {intl`OPEN IN APP`}
             </Text>
             <Icon
               color="white"
@@ -130,7 +131,7 @@ const AppSelection = () => {
           onClick={() => setIsBrowser(true)}
           style={[css.WebApp_Btn, css.WebApp_Btn__browser]}
         >
-          <Text small>OPEN IN BROWSER</Text>
+          <Text small>{intl`OPEN IN BROWSER`}</Text>
           <Icon path={mdiWeb} style={css.WebApp_Icon} />
         </TouchableOpacity>
       </React.Fragment>

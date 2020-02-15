@@ -5,8 +5,9 @@ const getFrontCameraSourceId = () => {
   const mediaDevices = window.navigator.mediaDevices;
   if (!mediaDevices) {
     g.showError({
-      message: intl`Can not access mediaDevices`,
-      err: new Error(intl`Check if your connection is https secure`),
+      unexpectedErr: new Error(
+        `Can not access mediaDevices, check if your connection is https secure`,
+      ),
     });
     return null;
   }

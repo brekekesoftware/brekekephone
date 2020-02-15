@@ -44,7 +44,7 @@ export const menus = [
       },
       {
         key: `recents`,
-        label: `RECENTS`,
+        label: intl`RECENTS`,
         navFnKey: `goToPageCallRecents`,
       },
       {
@@ -146,7 +146,9 @@ g.goToPageIndex = () => {
 export const getSubMenus = menu => {
   const m = menus.find(m => m.key === menu);
   if (!m) {
-    g.showError({ message: intl`Can not find sub menus for ${menu}` });
+    g.showError({
+      unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
+    });
     return [];
   }
   return m.subMenus.filter(

@@ -42,8 +42,8 @@ class PageCallParks extends React.Component {
             <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
               <UserItem
                 key={i}
-                name={`Parked ${i + 1}`}
-                park={`Extension *${u}`}
+                name={intl`Parked ${i + 1}`}
+                park={intl`Extension *${u}`}
                 selected={this.state.selectedPark === u}
               />
             </TouchableOpacity>
@@ -63,7 +63,7 @@ class PageCallParks extends React.Component {
     const { selectedPark } = this.state;
     if (!selectedPark) {
       g.showError({
-        err: new Error(intl`No selected park`),
+        err: new Error(`No selected park`),
         message: intl`Failed to start new park`,
       });
       return;

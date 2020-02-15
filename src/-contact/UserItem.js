@@ -83,7 +83,7 @@ const UserItem = ({
           </Text>
           {!!statusText && (
             <Text normal singleLine small style={css.Status}>
-              {intl`${statusText}`}
+              {statusText}
             </Text>
           )}
         </View>

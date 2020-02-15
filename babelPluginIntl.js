@@ -91,12 +91,12 @@ const babelPluginIntl = () => ({
         .replace(`\\\``, `\``);
       // Extract the normalized template
       if (process.env.EXTRACT_INTL) {
-        const arr = fs.existsSync(jsonOutputPath)
+        let arr = fs.existsSync(jsonOutputPath)
           ? JSON.parse(fs.readFileSync(jsonOutputPath))
           : [];
         if (!arr.includes(normalizedTemplate)) {
           arr.push(normalizedTemplate);
-          arr.sort();
+          arr = arr.sort();
         }
         fs.outputFileSync(jsonOutputPath, `${JSON.stringify(arr, null, 2)}\n`);
       }

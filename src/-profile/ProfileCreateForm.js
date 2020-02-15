@@ -83,7 +83,7 @@ const ProfileCreateForm = observer(props => {
       g.showPrompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
-        onConfirm: intl`${props.onBack}`,
+        onConfirm: props.onBack,
         confirmText: intl`DISCARD`,
       });
     },
@@ -129,7 +129,7 @@ const ProfileCreateForm = observer(props => {
         fields={[
           {
             isGroup: true,
-            label: `PBX`,
+            label: intl`PBX`,
           },
           {
             // autoFocus: true, // TODO Animation issue
