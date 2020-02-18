@@ -47,11 +47,6 @@ export const menus = [
         label: `RECENTS`,
         navFnKey: `goToPageCallRecents`,
       },
-      {
-        key: `parks`,
-        label: intl`PARKS`,
-        navFnKey: `goToPageCallParks`,
-      },
     ],
     defaultSubMenuKey: `recents`,
   },
