@@ -78,6 +78,7 @@ g.registerStacks({
   PageCallKeypad,
   PageCallRecents,
   PageSettingsOther,
+  PageCallParks,
   PageSettingsProfile,
 });
 g.registerStacks({
@@ -85,7 +86,6 @@ g.registerStacks({
   PageProfileUpdate,
   PagePhonebookCreate,
   PagePhonebookUpdate,
-  PageCallParks,
   PageCallManage,
   PageDtmfKeypad,
   PageChatDetail,
