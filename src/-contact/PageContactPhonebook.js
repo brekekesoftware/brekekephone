@@ -100,7 +100,7 @@ class PageContactPhonebook extends React.Component {
               displaySharedContacts: v,
             });
           }}
-          type={`Switch`}
+          type="Switch"
           value={authStore.currentProfile.displaySharedContacts}
         />
         {this.state.loading && (

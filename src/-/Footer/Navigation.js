@@ -26,7 +26,7 @@ const css = StyleSheet.create({
 
 const Navigation = ({ menu }) => (
   <View style={css.Navigation}>
-    {menus.map(m => {
+    {menus().map(m => {
       const active = m.key === menu;
       return (
         <TouchableOpacity

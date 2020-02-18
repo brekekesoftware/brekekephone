@@ -41,7 +41,6 @@ class PageChatGroupCreate extends React.Component {
         <Field
           label={intl`GROUP NAME`}
           onValueChange={this.setName}
-          type={`inputElement`}
           value={this.state.name}
         />
         <Field isGroup label={intl`Members`} />

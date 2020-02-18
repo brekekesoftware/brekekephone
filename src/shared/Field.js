@@ -16,6 +16,7 @@ import {
   View,
 } from '../-/Rn';
 import g from '../global';
+import intl from '../intl/intl';
 import useStore from '../utils/useStore';
 
 const css = StyleSheet.create({
@@ -188,7 +189,8 @@ const Field = observer(({ ...props }) => {
   if (props.onValueChange) {
     if (props.type === `Switch`) {
       Object.assign(props, {
-        valueRender: props.valueRender || (v => (v ? `Enabled` : `Disabled`)),
+        valueRender:
+          props.valueRender || (v => (v ? intl`Enabled` : intl`Disabled`)),
         iconRender: v => <Switch enabled={v} style={css.Field_Switch} />,
         onTouchPress: () => {
           props.onValueChange(!props.value);
@@ -276,7 +278,7 @@ const Field = observer(({ ...props }) => {
               value={
                 (props.valueRender && props.valueRender(props.value)) ||
                 props.value ||
-                `\u00A0`
+                `\u200a`
               }
             />
             <View style={StyleSheet.absoluteFill} />

@@ -126,11 +126,11 @@ const App = observer(() => {
   } = authStore;
   let service = ``;
   if (pbxConnectingOrFailure) {
-    service = `PBX`;
+    service = intl`PBX`;
   } else if (sipConnectingOrFailure) {
-    service = `SIP`;
+    service = intl`SIP`;
   } else if (ucConnectingOrFailure) {
-    service = `UC`;
+    service = intl`UC`;
   }
   let connMessage =
     service &&

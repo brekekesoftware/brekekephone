@@ -21,7 +21,7 @@ class PageCallKeypad extends React.Component {
   callVoice = () => {
     this.txt = this.txt.trim();
     if (!this.txt) {
-      g.showError({ message: intl`No target` });
+      g.showError({ message: intl`No target to call` });
       return;
     }
     sip.createSession(this.txt, {

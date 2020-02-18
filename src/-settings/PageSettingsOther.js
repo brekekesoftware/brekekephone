@@ -63,7 +63,7 @@ class PageSettingsOther extends Component {
       >
         {authStore.currentProfile?.ucEnabled && (
           <React.Fragment>
-            <Field isGroup label={`UC`} />
+            <Field isGroup label={intl`UC`} />
             <Field
               disabled={!authStore.currentProfile?.ucEnabled}
               label={intl`STATUS`}
@@ -73,7 +73,7 @@ class PageSettingsOther extends Component {
                 { key: `offline`, label: intl`Invisible` },
                 { key: `busy`, label: intl`Busy` },
               ]}
-              type={`Picker`}
+              type="Picker"
               value={this.state.status}
             />
             <Field

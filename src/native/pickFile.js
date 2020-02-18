@@ -1,34 +1,17 @@
+import { mdiDotsHorizontal } from '@mdi/js';
 import { Platform } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-full-image-picker';
-import ActionSheet from 'react-native-general-actionsheet';
 import shortid from 'shortid';
 
-ActionSheet.useActionSheetIOS = true;
+import g from '../global';
+import intl from '../intl/intl';
+
 ImagePicker.AlbumView.autoConvertPath = true;
 ImagePicker.AlbumListView.autoConvertPath = true;
 
-const actionSheetOptions = {
-  options: [
-    `Select from photo library`,
-    `Take a new photo`,
-    `Take a new video`,
-    `More...`,
-    `Cancel`,
-  ],
-  destructiveButtonIndex: 4,
-  cancelButtonIndex: 4,
-};
-
 const actionSheetHandlers = [
-  () =>
-    new Promise(resolve => {
-      ImagePicker.getAlbum({
-        callback: arr => resolve(arr[0]),
-        maxSize: 1,
-      });
-    }),
   () =>
     new Promise(resolve => {
       ImagePicker.getCamera({
@@ -43,15 +26,46 @@ const actionSheetHandlers = [
       });
     }),
   () =>
+    new Promise(resolve => {
+      ImagePicker.getAlbum({
+        callback: arr => resolve(arr[0]),
+        maxSize: 1,
+      });
+    }),
+  () =>
     DocumentPicker.pick({
       type: [DocumentPicker.types.allFiles],
     }),
 ];
 
-const pickFile = async cb => {
-  const i = await new Promise(resolve => {
-    ActionSheet.showActionSheetWithOptions(actionSheetOptions, resolve);
+const pickFile = cb =>
+  g.openPicker({
+    options: [
+      {
+        key: 0,
+        label: intl`Take a new photo`,
+        icon: mdiDotsHorizontal,
+      },
+      {
+        key: 1,
+        label: intl`Take a new video`,
+        icon: mdiDotsHorizontal,
+      },
+      {
+        key: 2,
+        label: intl`Select from photo library`,
+        icon: mdiDotsHorizontal,
+      },
+      {
+        key: 3,
+        label: intl`More...`,
+        icon: mdiDotsHorizontal,
+      },
+    ],
+    onSelect: i => pickFileOnSelect(i, cb),
   });
+
+const pickFileOnSelect = async (i, cb) => {
   const fn = actionSheetHandlers[i];
   if (!fn) {
     return;
@@ -61,10 +75,12 @@ const pickFile = async cb => {
   try {
     file = await fn();
   } catch (err) {
-    if (DocumentPicker.isCancel(err)) {
-      return;
+    if (!DocumentPicker.isCancel(err)) {
+      g.showError({
+        message: intl`Failed to pick file from system`,
+        err,
+      });
     }
-    console.error(err);
   }
   if (!file?.uri) {
     return;

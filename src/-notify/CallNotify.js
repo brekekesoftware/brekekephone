@@ -36,7 +36,7 @@ class CallNotify extends React.Component {
           {...callStore.getRunningCall(id)}
           accept={this.accept}
           reject={this.reject}
-          type={`call`}
+          type="call"
         />
       ));
   }
