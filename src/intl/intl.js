@@ -3,6 +3,7 @@ import HandlebarsMoment from 'helper-moment';
 
 import { AsyncStorage } from '../-/Rn';
 import g from '../global/_';
+import { arrToMap } from '../utils/toMap';
 import waitTimeout from '../utils/waitTimeout';
 import en from './en.json';
 import ja from './ja.json';
@@ -15,10 +16,11 @@ const labels = {
   ja,
   vi,
 };
-const enLabelsIndex = en.reduce((m, k, i) => {
-  m[k] = i;
-  return m;
-}, {});
+const enLabelsMapIndex = arrToMap(
+  en,
+  k => k,
+  (k, i) => i,
+);
 
 const localeOptions = [
   { key: `en`, label: `English` },
@@ -72,7 +74,7 @@ g.extends({
 
 const intl = (k, data) => {
   const arr = labels[g.locale];
-  const i = enLabelsIndex[k];
+  const i = enLabelsMapIndex[k];
   if (g.locale !== `en`) {
     k = arr[i];
   }
