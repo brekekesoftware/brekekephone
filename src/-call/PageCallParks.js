@@ -30,9 +30,9 @@ class PageCallParks extends React.Component {
     return (
       <Layout
         description={intl`Manage your call parks`}
+        fabOnNext={this.state.selectedPark ? this.park : null}
+        fabOnNextText={intl`START NEW PARK`}
         menu="call"
-        onFabNext={this.state.selectedPark ? this.park : null}
-        onFabNextText={intl`START NEW PARK`}
         subMenu="parks"
         title={intl`Park`}
       >

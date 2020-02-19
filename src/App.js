@@ -3,7 +3,7 @@ import './utils/validator';
 
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -47,9 +47,6 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
-if (Platform.OS !== `web`) {
-  SplashScreen.hide();
-}
 // Must load profiles here because when app wake from notification, there's no rendering
 g.loadProfilesFromLocalStorage();
 
@@ -116,6 +113,11 @@ const css = StyleSheet.create({
 });
 
 const App = observer(() => {
+  useEffect(() => {
+    if (Platform.OS !== `web`) {
+      SplashScreen.hide();
+    }
+  }, []);
   const {
     isConnFailure,
     pbxConnectingOrFailure,

@@ -86,12 +86,10 @@ class PageChatDetail extends React.Component {
     return (
       <Layout
         compact
+        containerOnContentSizeChange={this.onContentSizeChange}
+        containerOnScroll={this.onScroll}
+        containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
-        isChat={{
-          ref: this.setViewRef,
-          onContentSizeChange: this.onContentSizeChange,
-          onScroll: this.onScroll,
-        }}
         onBack={g.backToPageChatRecents}
         title={u?.name}
       >

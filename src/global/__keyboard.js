@@ -4,6 +4,7 @@ import $ from './_';
 $.extends({
   observable: {
     isKeyboardShowing: false,
+    isKeyboardAnimating: false,
   },
   waitKeyboardTimeoutId: 0,
   waitKeyboard: fn => (...args) => {
@@ -22,14 +23,32 @@ $.extends({
   },
 });
 
-const onKeyboardShow = () => {
-  $.isKeyboardShowing = true;
-};
-const onKeyboardHide = () => {
-  $.isKeyboardShowing = false;
+let keyboardAnimatingTimeoutId = 0;
+const setKeyboardAnimatingTimeout = () => {
+  if (keyboardAnimatingTimeoutId) {
+    clearTimeout(keyboardAnimatingTimeoutId);
+  }
+  $.isKeyboardAnimating = true;
+  keyboardAnimatingTimeoutId = setTimeout(() => {
+    keyboardAnimatingTimeoutId = 0;
+    $.isKeyboardAnimating = false;
+  }, 300);
 };
 
-Keyboard.addListener(`keyboardWillShow`, onKeyboardShow);
-Keyboard.addListener(`keyboardWillHide`, onKeyboardHide);
-Keyboard.addListener(`keyboardDidShow`, onKeyboardShow); // android
-Keyboard.addListener(`keyboardDidHide`, onKeyboardHide); // android
+// ios
+Keyboard.addListener(`keyboardWillShow`, () => {
+  setKeyboardAnimatingTimeout();
+  $.isKeyboardShowing = true;
+});
+Keyboard.addListener(`keyboardWillHide`, () => {
+  setKeyboardAnimatingTimeout();
+  $.isKeyboardShowing = false;
+});
+
+// android
+Keyboard.addListener(`keyboardDidShow`, () => {
+  $.isKeyboardShowing = true;
+});
+Keyboard.addListener(`keyboardDidHide`, () => {
+  $.isKeyboardShowing = false;
+});

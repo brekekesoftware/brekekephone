@@ -117,10 +117,10 @@ const ProfileCreateForm = observer(props => {
               },
             ]
       }
+      fabOnBack={props.footerLogout ? null : $.onBackBtnPress}
+      fabOnNext={props.footerLogout ? null : submitForm}
       menu={props.footerLogout ? `settings` : null}
       onBack={props.footerLogout ? null : $.onBackBtnPress}
-      onFabBack={props.footerLogout ? null : $.onBackBtnPress}
-      onFabNext={props.footerLogout ? null : submitForm}
       subMenu={props.footerLogout ? `profile` : null}
       title={props.title}
     >

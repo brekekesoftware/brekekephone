@@ -61,6 +61,9 @@ class PageChatGroupDetail extends React.Component {
     return (
       <Layout
         compact
+        containerOnContentSizeChange={this.onContentSizeChange}
+        containerOnScroll={this.onScroll}
+        containerRef={this.setViewRef}
         dropdown={[
           {
             label: intl`Invite more people`,
@@ -81,11 +84,6 @@ class PageChatGroupDetail extends React.Component {
           },
         ]}
         fabRender={this.renderChatInput}
-        isChat={{
-          ref: this.setViewRef,
-          onContentSizeChange: this.onContentSizeChange,
-          onScroll: this.onScroll,
-        }}
         onBack={g.backToPageChatRecents}
         title={gr?.name}
       >

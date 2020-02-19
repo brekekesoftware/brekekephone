@@ -30,10 +30,10 @@ class PageChatGroupCreate extends React.Component {
   render() {
     return (
       <Layout
+        fabOnBack={g.goToPageChatRecents}
+        fabOnNext={this.create}
+        fabOnNextText={intl`CREATE`}
         onBack={g.backToPageChatRecents}
-        onFabBack={g.goToPageChatRecents}
-        onFabNext={this.create}
-        onFabNextText={intl`CREATE`}
         title={intl`New Group`}
       >
         <Field

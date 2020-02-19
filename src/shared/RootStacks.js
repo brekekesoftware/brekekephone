@@ -24,7 +24,7 @@ const Stack = ({ Component, ...p }) => {
       style={[
         StyleSheet.absoluteFill,
         css.Stack,
-        p.hidden && css.Stack__hidden,
+        p.isBackgroundStack && css.Stack__hidden,
         !p.isRoot && { transform: [a] },
       ]}
     >
@@ -36,11 +36,9 @@ const Stack = ({ Component, ...p }) => {
 const RootStacks = observer(() =>
   g.stacks.map((s, i) => (
     <Stack
-      hidden={
-        !(
-          i + 1 === g.stacks.length ||
-          (i + 2 === g.stacks.length && g.stackAnimating)
-        )
+      isBackgroundStack={
+        !(i + 1 === g.stacks.length) &&
+        !(i + 2 === g.stacks.length && g.stackAnimating)
       }
       key={i}
       {...s}
