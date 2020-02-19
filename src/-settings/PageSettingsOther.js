@@ -1,4 +1,4 @@
-import { mdiCheck } from '@mdi/js';
+import { mdiCheck, mdiTranslate } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 
@@ -61,6 +61,14 @@ class PageSettingsOther extends Component {
         subMenu="other"
         title={intl`Other settings`}
       >
+        <Field isGroup label={intl`LOCALIZATION`} />
+        <Field
+          icon={mdiTranslate}
+          label={intl`LANGUAGE`}
+          onTouchPress={g.selectLocale}
+          value={g.locale}
+          valueRender={() => g.localeName}
+        />
         {authStore.currentProfile?.ucEnabled && (
           <React.Fragment>
             <Field isGroup label={intl`UC`} />

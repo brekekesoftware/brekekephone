@@ -1,4 +1,9 @@
-import { mdiCardsDiamond, mdiClose, mdiPlus } from '@mdi/js';
+import {
+  mdiCardsDiamond,
+  mdiClose,
+  mdiPlus,
+  mdiUnfoldMoreHorizontal,
+} from '@mdi/js';
 import flow from 'lodash/flow';
 import omit from 'lodash/omit';
 import { observer } from 'mobx-react';
@@ -208,6 +213,7 @@ const Field = observer(({ ...props }) => {
           });
           Keyboard.dismiss();
         },
+        icon: props.icon || mdiUnfoldMoreHorizontal,
       });
     } else {
       Object.assign(props, {
