@@ -11,7 +11,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { ActivityIndicator, View, StyleSheet } from '../-/Rn';
+import { ActivityIndicator, StyleSheet, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';

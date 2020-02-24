@@ -1,4 +1,8 @@
-import { mdiDotsHorizontal, mdiUnfoldMoreHorizontal } from '@mdi/js';
+import {
+  mdiDotsHorizontal,
+  mdiLadybug,
+  mdiUnfoldMoreHorizontal,
+} from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
@@ -29,29 +33,50 @@ const css = StyleSheet.create({
   Space: {
     height: 15,
   },
-  Language: {
+  CornerButton: {
     position: `absolute`,
     bottom: 0,
-    right: 0,
     paddingTop: 25,
     paddingBottom: 10,
     paddingHorizontal: 15,
     ...g.backdropZindex,
   },
-  Language_Inner: {
+  CornerButton__left: {
+    left: 0,
+  },
+  CornerButton__right: {
+    right: 0,
+  },
+  CornerButton_Inner: {
     flexDirection: `row`,
     justifyContent: `flex-end`,
+  },
+  CornerButton_Inner__left: {
+    paddingLeft: 15,
+  },
+  CornerButton_Inner__right: {
     paddingRight: 17,
   },
-  Language_DropdownIcon: {
+  CornerButton_Icon: {
     position: `absolute`,
     top: 2,
-    right: 0,
     ...Platform.select({
       android: {
         top: 4,
       },
     }),
+  },
+  CornerButton_Icon__left: {
+    top: 4,
+    left: 0,
+    ...Platform.select({
+      android: {
+        top: 6,
+      },
+    }),
+  },
+  CornerButton_Icon__right: {
+    right: 0,
   },
 });
 
@@ -82,10 +107,38 @@ const PageProfileSignIn = observer(() => {
         {!l && <ProfileSignInItem empty />}
       </Layout>
       <TouchableOpacity
-        onPress={g.localeLoading ? null : g.selectLocale}
-        style={css.Language}
+        onPress={g.goToPageSettingsDebug}
+        style={[css.CornerButton, css.CornerButton__Left]}
       >
-        <View style={css.Language_Inner}>
+        <View
+          style={[
+            css.CornerButton_Inner,
+            css.CornerButton_Inner__right,
+            css.CornerButton_Inner__left,
+          ]}
+        >
+          <Icon
+            color="white"
+            path={mdiLadybug}
+            size={13}
+            style={[css.CornerButton_Icon, css.CornerButton_Icon__left]}
+          />
+          <Text bold white>
+            2.0.0
+          </Text>
+          <Icon
+            color="white"
+            path={mdiUnfoldMoreHorizontal}
+            size={16}
+            style={[css.CornerButton_Icon, css.CornerButton_Icon__right]}
+          />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={g.localeLoading ? null : g.selectLocale}
+        style={[css.CornerButton, css.CornerButton__right]}
+      >
+        <View style={[css.CornerButton_Inner, css.CornerButton_Inner__right]}>
           <Text bold white>
             {g.localeLoading ? `\u200a` : g.localeName}
           </Text>
@@ -93,7 +146,7 @@ const PageProfileSignIn = observer(() => {
             color="white"
             path={g.localeLoading ? mdiDotsHorizontal : mdiUnfoldMoreHorizontal}
             size={16}
-            style={css.Language_DropdownIcon}
+            style={[css.CornerButton_Icon, css.CornerButton_Icon__right]}
           />
         </View>
       </TouchableOpacity>

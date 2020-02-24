@@ -27,6 +27,7 @@ import PagePhonebookUpdate from './-contact/PagePhonebookUpdate';
 import PageProfileCreate from './-profile/PageProfileCreate';
 import PageProfileSignIn from './-profile/PageProfileSignIn';
 import PageProfileUpdate from './-profile/PageProfileUpdate';
+import PageSettingsDebug from './-settings/PageSettingsDebug';
 import PageSettingsOther from './-settings/PageSettingsOther';
 import PageSettingsProfile from './-settings/PageSettingsProfile';
 import api from './api';
@@ -91,6 +92,7 @@ g.registerStacks({
   PageChatGroupCreate,
   PageChatGroupInvite,
   PageChatGroupDetail,
+  PageSettingsDebug,
 });
 
 const css = StyleSheet.create({
