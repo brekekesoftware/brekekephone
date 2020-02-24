@@ -21,7 +21,7 @@ class PageCallKeypad extends React.Component {
   callVoice = () => {
     this.txt = this.txt.trim();
     if (!this.txt) {
-      g.showError({ message: intl`No target` });
+      g.showError({ message: intl`No target to call` });
       return;
     }
     sip.createSession(this.txt, {
@@ -34,9 +34,9 @@ class PageCallKeypad extends React.Component {
     return (
       <Layout
         description={intl`Keypad dial manually`}
+        fabOnNext={g.isKeyboardShowing ? this.callVoice : null}
+        fabOnNextText={intl`DIAL`}
         menu="call"
-        onFabNext={g.isKeyboardShowing ? this.callVoice : null}
-        onFabNextText={intl`DIAL`}
         subMenu="keypad"
         title={intl`Keypad`}
       >

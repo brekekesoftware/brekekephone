@@ -11,7 +11,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { ActivityIndicator, View } from '../-/Rn';
+import { ActivityIndicator, StyleSheet, View } from '../-/Rn';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
@@ -25,6 +25,12 @@ import UserItem from './UserItem';
 
 const numberOfContactsPerPage = 30;
 const formatPhoneNumber = number => number.replace(/\D+/g, ``);
+
+const css = StyleSheet.create({
+  Loading: {
+    marginTop: 20,
+  },
+});
 
 @observer
 class PageContactPhonebook extends React.Component {
@@ -100,11 +106,11 @@ class PageContactPhonebook extends React.Component {
               displaySharedContacts: v,
             });
           }}
-          type={`Switch`}
+          type="Switch"
           value={authStore.currentProfile.displaySharedContacts}
         />
         {this.state.loading && (
-          <View style={{ marginTop: 20 }}>
+          <View style={css.Loading}>
             <ActivityIndicator color={g.colors.primary} size={1} />
           </View>
         )}

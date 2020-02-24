@@ -22,8 +22,8 @@ const useForm = () => {
     onFieldChange: (k, v) => {
       // TODO batch, remember k
       const rule = $.props.fields.find(f => f.name === k)?.rule;
-      const vl = rule && new Validator({ [k]: v }, { [k]: rule });
-      $.set(`errorMap.${k}`, vl?.fails() && vl.errors.first(k));
+      const validator = rule && new Validator({ [k]: v }, { [k]: rule });
+      $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k));
     },
     // Submit function to use outside of the hook
     submit: () => {
@@ -33,11 +33,11 @@ const useForm = () => {
         f => f.name,
         f => f.rule,
       );
-      const vl = new Validator(get($parent, k), rules);
-      if (vl.fails()) {
+      const validator = new Validator(get($parent, k), rules);
+      if (validator.fails()) {
         $.set(
           `errorMap`,
-          mapToMap(rules, null, k => vl.errors.first(k)),
+          mapToMap(rules, null, k => validator.errors.first(k)),
         );
         // TODO show toast
       } else {

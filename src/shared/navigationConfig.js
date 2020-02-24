@@ -9,99 +9,113 @@ import authStore from '../global/authStore';
 import intl from '../intl/intl';
 import { arrToMap } from '../utils/toMap';
 
-export const menus = [
-  {
-    key: `contact`,
-    icon: mdiAccountCircleOutline,
-    subMenus: [
-      {
-        key: `phonebook`,
-        label: intl`PHONEBOOK`,
-        navFnKey: `goToPageContactPhonebook`,
-      },
-      {
-        key: `users`,
-        label: intl`USERS`,
-        navFnKey: `goToPageContactUsers`,
-      },
-      {
-        key: `chat`,
-        label: intl`CHAT`,
-        navFnKey: `goToPageChatRecents`,
-        ucRequired: true,
-      },
-    ],
-    defaultSubMenuKey: `users`,
-  },
-  {
-    key: `call`,
-    icon: mdiPhoneOutline,
-    subMenus: [
-      {
-        key: `keypad`,
-        label: intl`KEYPAD`,
-        navFnKey: `goToPageCallKeypad`,
-      },
-      {
-        key: `recents`,
-        label: intl`RECENTS`,
-        navFnKey: `goToPageCallRecents`,
-      },
-      {
-        key: `parks`,
-        label: intl`PARKS`,
-        navFnKey: `goToPageCallParks`,
-      },
-    ],
-    defaultSubMenuKey: `recents`,
-  },
-  {
-    key: `settings`,
-    icon: mdiSettingsOutline,
-    subMenus: [
-      {
-        key: `profile`,
-        label: intl`CURRENT SERVER`,
-        navFnKey: `goToPageSettingsProfile`,
-      },
-      {
-        key: `other`,
-        label: intl`OTHER SETTINGS`,
-        navFnKey: `goToPageSettingsOther`,
-      },
-    ],
-    defaultSubMenuKey: `profile`,
-  },
-];
-
-menus.forEach((m, i) => {
-  m.subMenusMap = arrToMap(
-    m.subMenus,
-    s => s.key,
-    s => s,
-  );
-  m.defaultSubMenu = m.subMenusMap[m.defaultSubMenuKey];
-  m.subMenus.forEach(s => {
-    s.navFn = () => {
-      if (s.ucRequired && !authStore.currentProfile?.ucEnabled) {
-        m.defaultSubMenu.navFn();
-        return;
+const genMenus = () => {
+  const arr = [
+    {
+      key: `contact`,
+      icon: mdiAccountCircleOutline,
+      subMenus: [
+        {
+          key: `phonebook`,
+          label: intl`PHONEBOOK`,
+          navFnKey: `goToPageContactPhonebook`,
+        },
+        {
+          key: `users`,
+          label: intl`USERS`,
+          navFnKey: `goToPageContactUsers`,
+        },
+        {
+          key: `chat`,
+          label: intl`CHAT`,
+          navFnKey: `goToPageChatRecents`,
+          ucRequired: true,
+        },
+      ],
+      defaultSubMenuKey: `users`,
+    },
+    {
+      key: `call`,
+      icon: mdiPhoneOutline,
+      subMenus: [
+        {
+          key: `keypad`,
+          label: intl`KEYPAD`,
+          navFnKey: `goToPageCallKeypad`,
+        },
+        {
+          key: `recents`,
+          label: intl`RECENTS`,
+          navFnKey: `goToPageCallRecents`,
+        },
+        {
+          key: `parks`,
+          label: intl`PARKS`,
+          navFnKey: `goToPageCallParks`,
+        },
+      ],
+      defaultSubMenuKey: `recents`,
+    },
+    {
+      key: `settings`,
+      icon: mdiSettingsOutline,
+      subMenus: [
+        {
+          key: `profile`,
+          label: intl`CURRENT SERVER`,
+          navFnKey: `goToPageSettingsProfile`,
+        },
+        {
+          key: `other`,
+          label: intl`OTHER SETTINGS`,
+          navFnKey: `goToPageSettingsOther`,
+        },
+      ],
+      defaultSubMenuKey: `profile`,
+    },
+  ];
+  //
+  arr.forEach((m, i) => {
+    m.subMenusMap = arrToMap(
+      m.subMenus,
+      s => s.key,
+      s => s,
+    );
+    m.defaultSubMenu = m.subMenusMap[m.defaultSubMenuKey];
+    m.subMenus.forEach(s => {
+      s.navFn = () => {
+        if (s.ucRequired && !authStore.currentProfile?.ucEnabled) {
+          m.defaultSubMenu.navFn();
+          return;
+        }
+        g[s.navFnKey]();
+        saveNavigation(i, s.key);
+      };
+    });
+    m.navFn = () => {
+      let k = authStore.currentProfile?.navSubMenus?.[i];
+      if (!(k in m.subMenusMap)) {
+        k = m.defaultSubMenuKey;
       }
-      g[s.navFnKey]();
-      saveNavigation(i, s.key);
+      m.subMenusMap[k].navFn();
     };
   });
-  m.navFn = () => {
-    let k = authStore.currentProfile?.navSubMenus?.[i];
-    if (!(k in m.subMenusMap)) {
-      k = m.defaultSubMenuKey;
-    }
-    m.subMenusMap[k].navFn();
-  };
-});
+  return arr;
+};
+
+let lastLocale = g.locale;
+let lastMenus = genMenus();
+export const menus = () => {
+  if (lastLocale !== g.locale) {
+    lastLocale = g.locale;
+    lastMenus = genMenus();
+  }
+  return lastMenus;
+};
 
 const saveNavigation = (i, k) => {
-  const m = menus[i];
+  const arr = menus();
+  const m = arr[i];
   const p = authStore.currentProfile;
   if (!m || !p) {
     return;
@@ -117,14 +131,15 @@ const saveNavigation = (i, k) => {
   g.saveProfilesToLocalStorage();
 };
 const normalizeSavedNavigation = () => {
+  const arr = menus();
   const p = authStore.currentProfile;
-  if (!menus[p.navIndex]) {
+  if (!arr[p.navIndex]) {
     p.navIndex = 0;
   }
-  if (p.navSubMenus?.length !== menus.length) {
-    p.navSubMenus = menus.map(m => null);
+  if (p.navSubMenus?.length !== arr.length) {
+    p.navSubMenus = arr.map(m => null);
   }
-  menus.forEach((m, i) => {
+  arr.forEach((m, i) => {
     if (!(p.navSubMenus[i] in m.subMenusMap)) {
       p.navSubMenus[i] = m.defaultSubMenuKey;
     }
@@ -136,15 +151,17 @@ g.goToPageIndex = () => {
     g.goToPageProfileSignIn();
     return;
   }
+  const arr = menus();
   normalizeSavedNavigation();
   const p = authStore.currentProfile;
   const i = p.navIndex;
   const k = p.navSubMenus[i];
-  menus[i].subMenusMap[k].navFn();
+  arr[i].subMenusMap[k].navFn();
 };
 
 export const getSubMenus = menu => {
-  const m = menus.find(m => m.key === menu);
+  const arr = menus();
+  const m = arr.find(m => m.key === menu);
   if (!m) {
     g.showError({
       unexpectedErr: new Error(`Can not find sub menus for ${menu}`),

@@ -3,7 +3,7 @@ import './utils/validator';
 
 import { observe } from 'mobx';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -47,9 +47,6 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
-if (Platform.OS !== `web`) {
-  SplashScreen.hide();
-}
 // Must load profiles here because when app wake from notification, there's no rendering
 g.loadProfilesFromLocalStorage();
 
@@ -76,9 +73,9 @@ g.registerStacks({
   PageContactPhonebook,
   PageContactUsers,
   PageCallKeypad,
-  PageCallParks,
   PageCallRecents,
   PageSettingsOther,
+  PageCallParks,
   PageSettingsProfile,
 });
 g.registerStacks({
@@ -116,6 +113,11 @@ const css = StyleSheet.create({
 });
 
 const App = observer(() => {
+  useEffect(() => {
+    if (Platform.OS !== `web`) {
+      SplashScreen.hide();
+    }
+  }, []);
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -126,11 +128,11 @@ const App = observer(() => {
   } = authStore;
   let service = ``;
   if (pbxConnectingOrFailure) {
-    service = `PBX`;
+    service = intl`PBX`;
   } else if (sipConnectingOrFailure) {
-    service = `SIP`;
+    service = intl`SIP`;
   } else if (ucConnectingOrFailure) {
-    service = `UC`;
+    service = intl`UC`;
   }
   let connMessage =
     service &&

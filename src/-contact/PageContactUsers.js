@@ -142,7 +142,7 @@ class PageContactUsers extends React.Component {
                 displayOfflineUsers: v,
               });
             }}
-            type={`Switch`}
+            type="Switch"
             value={authStore.currentProfile?.displayOfflineUsers}
           />
         )}

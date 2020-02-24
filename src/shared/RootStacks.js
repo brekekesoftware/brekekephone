@@ -9,6 +9,9 @@ const css = StyleSheet.create({
   Stack: {
     backgroundColor: g.bg,
   },
+  Stack__hidden: {
+    opacity: 0,
+  },
 });
 
 const Stack = ({ Component, ...p }) => {
@@ -21,9 +24,8 @@ const Stack = ({ Component, ...p }) => {
       style={[
         StyleSheet.absoluteFill,
         css.Stack,
-        !p.isRoot && {
-          transform: [{ translateX: a.translateX }],
-        },
+        p.isBackgroundStack && css.Stack__hidden,
+        !p.isRoot && { transform: [a] },
       ]}
     >
       <Component {...p} />
@@ -32,7 +34,16 @@ const Stack = ({ Component, ...p }) => {
 };
 
 const RootStacks = observer(() =>
-  g.stacks.map((s, i) => <Stack key={i} {...s} />),
+  g.stacks.map((s, i) => (
+    <Stack
+      isBackgroundStack={
+        !(i + 1 === g.stacks.length) &&
+        !(i + 2 === g.stacks.length && g.stackAnimating)
+      }
+      key={i}
+      {...s}
+    />
+  )),
 );
 
 export default RootStacks;

@@ -117,11 +117,11 @@ const ProfileCreateForm = observer(props => {
               },
             ]
       }
-      menu={props.footerLogout ? intl`settings` : null}
+      fabOnBack={props.footerLogout ? null : $.onBackBtnPress}
+      fabOnNext={props.footerLogout ? null : submitForm}
+      menu={props.footerLogout ? `settings` : null}
       onBack={props.footerLogout ? null : $.onBackBtnPress}
-      onFabBack={props.footerLogout ? null : $.onBackBtnPress}
-      onFabNext={props.footerLogout ? null : submitForm}
-      subMenu={props.footerLogout ? intl`profile` : null}
+      subMenu={props.footerLogout ? `profile` : null}
       title={props.title}
     >
       <Form
@@ -171,7 +171,7 @@ const ProfileCreateForm = observer(props => {
             rule: `required`,
             options: [1, 2, 3, 4].map(v => ({
               key: `${v}`,
-              label: `Phone ${v}`,
+              label: intl`Phone ${v}`,
             })),
           },
           {
@@ -188,14 +188,14 @@ const ProfileCreateForm = observer(props => {
           },
           {
             isGroup: true,
-            label: `UC`,
+            label: intl`UC`,
             hasMargin: true,
           },
           {
             disabled: props.footerLogout,
             type: `Switch`,
             name: `ucEnabled`,
-            label: `UC`,
+            label: intl`UC`,
             onValueChange: v => {
               $.set(`profile`, p => {
                 if (v && !p.ucHostname && !p.ucPort) {
@@ -226,7 +226,7 @@ const ProfileCreateForm = observer(props => {
           },
           {
             isGroup: true,
-            label: `PARKS (${$.profile.parks.length})`,
+            label: intl`PARKS (${$.profile.parks.length})`,
             hasMargin: true,
           },
           ...$.profile.parks.map((p, i) => ({

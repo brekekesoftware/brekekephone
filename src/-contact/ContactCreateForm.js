@@ -66,9 +66,9 @@ const ContactsCreateForm = observer(props => {
   const disabled = props.updatingPhonebook?.shared;
   return (
     <Layout
+      fabOnBack={$.onBackBtnPress}
+      fabOnNext={disabled ? null : submitForm}
       onBack={$.onBackBtnPress}
-      onFabBack={$.onBackBtnPress}
-      onFabNext={disabled ? null : submitForm}
       title={props.title}
     >
       <Form

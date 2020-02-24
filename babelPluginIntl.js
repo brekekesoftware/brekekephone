@@ -49,22 +49,22 @@ const babelPluginIntl = () => ({
           .join(``),
       );
       // Check invalid/duplicated fields
-      exprNames.reduce((m, v, i) => {
+      const duplicatedMap = {};
+      exprNames.forEach((v, i) => {
         if (!v) {
           throw p.buildCodeFrameError(
             `Can not build identifier for expression ${exprs[i]}`,
           );
         }
-        if (v in m) {
+        if (v in duplicatedMap) {
           throw p.buildCodeFrameError(
-            `Duplicated identifier for expression ${exprs[m[v]]} and ${
-              exprs[i]
-            }`,
+            `Duplicated identifier for expression ${
+              exprs[duplicatedMap[v]]
+            } and ${exprs[i]}`,
           );
         }
-        m[v] = i;
-        return m;
-      }, {});
+        duplicatedMap[v] = i;
+      });
       // Build the locations to automatically add brackets for fields
       const quasis = p.node.quasi.quasis.map(q => q.value.raw);
       const [rawTemplate, fieldLocations] = quasis.reduce(

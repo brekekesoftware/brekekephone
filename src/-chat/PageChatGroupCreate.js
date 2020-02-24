@@ -11,6 +11,7 @@ import contactStore from '../global/contactStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
+import { arrToMap } from '../utils/toMap';
 
 @observer
 class PageChatGroupCreate extends React.Component {
@@ -18,10 +19,7 @@ class PageChatGroupCreate extends React.Component {
     return contactStore.ucUsers.map(u => u.id);
   }
   @computed get buddyById() {
-    return contactStore.ucUsers.reduce((m, u) => {
-      m[u.id] = u;
-      return m;
-    }, {});
+    return arrToMap(contactStore.ucUsers, `id`, u => u);
   }
 
   state = {
@@ -32,16 +30,15 @@ class PageChatGroupCreate extends React.Component {
   render() {
     return (
       <Layout
+        fabOnBack={g.goToPageChatRecents}
+        fabOnNext={this.create}
+        fabOnNextText={intl`CREATE`}
         onBack={g.backToPageChatRecents}
-        onFabBack={g.goToPageChatRecents}
-        onFabNext={this.create}
-        onFabNextText={intl`CREATE`}
         title={intl`New Group`}
       >
         <Field
           label={intl`GROUP NAME`}
           onValueChange={this.setName}
-          type={`inputElement`}
           value={this.state.name}
         />
         <Field isGroup label={intl`Members`} />

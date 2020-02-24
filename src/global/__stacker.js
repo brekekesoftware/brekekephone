@@ -1,13 +1,12 @@
 import $ from './_';
 
-let stackAnimating = false;
-
 $.extends({
   observable: {
     // isRoot?: boolean
     // Component: ReactComponent
     // ...props?
     stacks: [],
+    stackAnimating: false,
   },
   openStack: stack => {
     if (stack.isRoot) {
@@ -23,13 +22,13 @@ $.extends({
     const fnMap = Object.entries(pages).reduce((m, [k, v]) => {
       const fn = $.waitKeyboard(stack => {
         // Prevent multiple stacks from opening at the same time
-        if (stackAnimating) {
+        if ($.stackAnimating) {
           return;
         }
         if (!isRoot) {
-          stackAnimating = true;
+          $.stackAnimating = true;
           setTimeout(() => {
-            stackAnimating = false;
+            $.stackAnimating = false;
           }, 1000);
         }
         //

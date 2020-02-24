@@ -1,10 +1,11 @@
-import { mdiUnfoldMoreHorizontal } from '@mdi/js';
+import { mdiDotsHorizontal, mdiUnfoldMoreHorizontal } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
 import {
   FlatList,
   Icon,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -46,6 +47,11 @@ const css = StyleSheet.create({
     position: `absolute`,
     top: 2,
     right: 0,
+    ...Platform.select({
+      android: {
+        top: 4,
+      },
+    }),
   },
 });
 
@@ -76,25 +82,16 @@ const PageProfileSignIn = observer(() => {
         {!l && <ProfileSignInItem empty />}
       </Layout>
       <TouchableOpacity
-        onPress={() => {
-          g.openPicker({
-            options: [
-              { key: `en`, label: `English` },
-              { key: `ja`, label: `日本語` },
-              { key: `vi`, label: `Tiếng Việt` },
-            ],
-            selectedKey: `en`,
-          });
-        }}
+        onPress={g.localeLoading ? null : g.selectLocale}
         style={css.Language}
       >
         <View style={css.Language_Inner}>
           <Text bold white>
-            English
+            {g.localeLoading ? `\u200a` : g.localeName}
           </Text>
           <Icon
             color="white"
-            path={mdiUnfoldMoreHorizontal}
+            path={g.localeLoading ? mdiDotsHorizontal : mdiUnfoldMoreHorizontal}
             size={16}
             style={css.Language_DropdownIcon}
           />

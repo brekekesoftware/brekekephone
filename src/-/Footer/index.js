@@ -3,6 +3,7 @@ import React from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
 import g from '../../global';
+import { toLowerCaseFirstChar } from '../../utils/string';
 import { arrToMap } from '../../utils/toMap';
 import { StyleSheet, View } from '../Rn';
 import Actions from './Actions';
@@ -42,27 +43,31 @@ const css = StyleSheet.create({
 });
 
 const Footer = observer(props => {
-  const { fabRender, menu, onFabNext } = props;
-  if (!(menu || fabRender || onFabNext || g.isKeyboardShowing)) {
-    return null;
-  }
   const fabProps = arrToMap(
-    Object.keys(props).filter(k => k.indexOf(`Fab`) > 0),
-    k => k.replace(`Fab`, ``),
+    Object.keys(props).filter(k => k.startsWith(`fab`)),
+    k => toLowerCaseFirstChar(k.replace(`fab`, ``)),
     k => props[k],
   );
+  const { menu } = props;
+  const { onNext, render } = fabProps;
+  if (
+    !render &&
+    ((!menu && !onNext && !g.isKeyboardShowing) || g.isKeyboardAnimating)
+  ) {
+    return null;
+  }
   return (
     <View
       style={[
         css.Footer,
-        (fabRender || !g.isKeyboardShowing) && css.Footer__noKeyboard,
+        (render || !g.isKeyboardShowing) && css.Footer__noKeyboard,
       ]}
     >
-      {fabRender ? (
-        fabRender()
+      {render ? (
+        render()
       ) : g.isKeyboardShowing ? (
         <ToggleKeyboard {...fabProps} />
-      ) : onFabNext ? (
+      ) : onNext ? (
         <View style={css.ActionsOuter}>
           <View style={css.ActionsSpacing} />
           <View style={css.ActionsInner}>

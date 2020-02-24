@@ -6,6 +6,7 @@ import Footer from '../-/Footer';
 import Header from '../-/Header';
 import { ScrollView, StyleSheet, View } from '../-/Rn';
 import g from '../global';
+import { toLowerCaseFirstChar } from '../utils/string';
 
 const css = StyleSheet.create({
   Layout: {
@@ -21,18 +22,26 @@ const css = StyleSheet.create({
 });
 
 const Layout = observer(props => {
+  props = { ...props }; // Clone so it can be mutated
   const [headerOverflow, setHeaderOverflow] = useState(false);
   //
-  let Container = null;
-  let containerProps = null;
+  const Container = props.noScroll ? View : ScrollView;
+  const containerProps = Object.entries(props).reduce((m, [k, v]) => {
+    if (k.startsWith(`container`)) {
+      delete props[k];
+      k = k.replace(`container`, ``);
+      k = toLowerCaseFirstChar(k);
+      m[k] = v;
+    }
+    return m;
+  }, {});
+  //
   if (props.noScroll) {
-    Container = View;
-    containerProps = {
+    Object.assign(containerProps, {
       style: css.Layout,
-    };
+    });
   } else {
-    Container = ScrollView;
-    containerProps = {
+    Object.assign(containerProps, {
       style: css.Layout,
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: `always`,
@@ -42,34 +51,25 @@ const Layout = observer(props => {
         setHeaderOverflow(!headerOverflow),
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
-    };
-    if (props.isChat) {
-      let containerPropsChat = {
-        ref: props.isChat.ref,
-        onContentSizeChange: props.isChat.onContentSizeChange,
-        onScroll: props.isChat.onScroll,
-      };
-      containerProps = { ...containerProps, ...containerPropsChat };
-    }
+    });
   }
-  //
+  // TODO put more document here
   let headerSpace = 86 + 15;
   if (props.menu) {
     headerSpace += 35;
   }
   if (props.compact) {
-    headerSpace -= 46; // TODO put more document here
+    headerSpace -= 46;
   }
+  // TODO put more document here
   let footerSpace = getBottomSpace();
   if (props.fabRender) {
-    // Chat input
     footerSpace += 40;
-  }
-  if (!g.isKeyboardShowing) {
+  } else if (!g.isKeyboardShowing) {
     if (props.menu) {
       footerSpace += 48;
     }
-    if (props.onFabNext) {
+    if (props.fabOnNext) {
       footerSpace += 56;
     }
   }
