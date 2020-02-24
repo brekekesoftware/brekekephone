@@ -51,5 +51,4 @@ export class CallStore extends BaseStore {
 }
 
 const callStore = new CallStore();
-
 export default callStore;
