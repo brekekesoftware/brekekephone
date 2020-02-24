@@ -15,7 +15,7 @@ const css = StyleSheet.create({
 });
 
 const Stack = ({ Component, ...p }) => {
-  const a = useAnimationOnDidMount({
+  const x = useAnimationOnDidMount({
     translateX: [Dimensions.get(`screen`).width, 0],
   });
   const OuterComponent = p.isRoot ? View : Animated.View;
@@ -25,7 +25,7 @@ const Stack = ({ Component, ...p }) => {
         StyleSheet.absoluteFill,
         css.Stack,
         p.isBackgroundStack && css.Stack__hidden,
-        !p.isRoot && { transform: [a] },
+        !p.isRoot && { transform: [x] },
       ]}
     >
       <Component {...p} />

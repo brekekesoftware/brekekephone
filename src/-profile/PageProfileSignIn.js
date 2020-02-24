@@ -41,21 +41,21 @@ const css = StyleSheet.create({
     paddingHorizontal: 15,
     ...g.backdropZindex,
   },
-  CornerButton__left: {
+  CornerButton__info: {
     left: 0,
   },
-  CornerButton__right: {
+  CornerButton__language: {
     right: 0,
   },
   CornerButton_Inner: {
     flexDirection: `row`,
     justifyContent: `flex-end`,
   },
-  CornerButton_Inner__left: {
-    paddingLeft: 15,
+  CornerButton_Inner__info: {
+    paddingLeft: 19,
   },
-  CornerButton_Inner__right: {
-    paddingRight: 17,
+  CornerButton_Inner__language: {
+    paddingRight: 19,
   },
   CornerButton_Icon: {
     position: `absolute`,
@@ -66,16 +66,10 @@ const css = StyleSheet.create({
       },
     }),
   },
-  CornerButton_Icon__left: {
-    top: 4,
+  CornerButton_Icon__info: {
     left: 0,
-    ...Platform.select({
-      android: {
-        top: 6,
-      },
-    }),
   },
-  CornerButton_Icon__right: {
+  CornerButton_Icon__language: {
     right: 0,
   },
 });
@@ -110,35 +104,25 @@ const PageProfileSignIn = observer(() => {
         onPress={g.goToPageSettingsDebug}
         style={[css.CornerButton, css.CornerButton__Left]}
       >
-        <View
-          style={[
-            css.CornerButton_Inner,
-            css.CornerButton_Inner__right,
-            css.CornerButton_Inner__left,
-          ]}
-        >
+        <View style={[css.CornerButton_Inner, css.CornerButton_Inner__info]}>
           <Icon
             color="white"
             path={mdiLadybug}
-            size={13}
-            style={[css.CornerButton_Icon, css.CornerButton_Icon__left]}
+            size={16}
+            style={[css.CornerButton_Icon, css.CornerButton_Icon__info]}
           />
           <Text bold white>
             2.0.0
           </Text>
-          <Icon
-            color="white"
-            path={mdiUnfoldMoreHorizontal}
-            size={16}
-            style={[css.CornerButton_Icon, css.CornerButton_Icon__right]}
-          />
         </View>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={g.localeLoading ? null : g.selectLocale}
-        style={[css.CornerButton, css.CornerButton__right]}
+        style={[css.CornerButton, css.CornerButton__language]}
       >
-        <View style={[css.CornerButton_Inner, css.CornerButton_Inner__right]}>
+        <View
+          style={[css.CornerButton_Inner, css.CornerButton_Inner__language]}
+        >
           <Text bold white>
             {g.localeLoading ? `\u200a` : g.localeName}
           </Text>
@@ -146,7 +130,7 @@ const PageProfileSignIn = observer(() => {
             color="white"
             path={g.localeLoading ? mdiDotsHorizontal : mdiUnfoldMoreHorizontal}
             size={16}
-            style={[css.CornerButton_Icon, css.CornerButton_Icon__right]}
+            style={[css.CornerButton_Icon, css.CornerButton_Icon__language]}
           />
         </View>
       </TouchableOpacity>

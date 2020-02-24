@@ -25,9 +25,8 @@ const css = StyleSheet.create({
     backgroundColor: g.layerBg,
   },
   Picker_Inner: {
-    alignSelf: `flex-end`,
     position: `absolute`,
-    paddingVertical: 15,
+    bottom: 15,
     width: `90%`,
     maxWidth: g.maxModalWidth,
     maxHeight: `100%`,
@@ -71,32 +70,23 @@ const css = StyleSheet.create({
 });
 
 const Picker = p => {
-  const a = useAnimationOnDidMount({
+  const backdropCss = useAnimationOnDidMount({
     opacity: [0, 1],
+  });
+  const y = useAnimationOnDidMount({
     translateY: [Dimensions.get(`screen`).height, 0],
   });
   return (
     <View style={[StyleSheet.absoluteFill, css.Picker]}>
       <Animated.View
-        style={[
-          StyleSheet.absoluteFill,
-          css.Picker_Backdrop,
-          { opacity: a.opacity },
-        ]}
+        style={[StyleSheet.absoluteFill, css.Picker_Backdrop, backdropCss]}
       >
         <TouchableOpacity
           onPress={g.dismissPicker}
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
-      <Animated.ScrollView
-        style={[
-          css.Picker_Inner,
-          {
-            transform: [{ translateY: a.translateY }],
-          },
-        ]}
-      >
+      <Animated.ScrollView style={[css.Picker_Inner, { transform: [y] }]}>
         <View style={css.Picker_Options}>
           {p.options.map((o, i) => {
             const isSelected = `${p.selectedKey}` === `${o.key}`;
