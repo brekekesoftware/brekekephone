@@ -233,6 +233,19 @@ const CallManage = p => {
           />
         )}
       </View>
+      <View style={css.CallBar_Btn}>
+        {p.answered && !p.holding && (
+          <ButtonIcon
+            bgcolor={g.revColor}
+            color={g.color}
+            name={intl`OTHER CALL`}
+            noborder
+            onPress={g.otherCall}
+            size={40}
+            textcolor={g.revColor}
+          />
+        )}
+      </View>
       <View style={css.Space} />
       <View style={css.Space200} />
     </Container>

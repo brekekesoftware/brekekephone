@@ -37,6 +37,10 @@ const css = StyleSheet.create({
     right: 0,
     backgroundColor: `black`,
   },
+  Other_Call: {
+    left: 0,
+    top: 50,
+  },
 });
 
 @observer
@@ -296,6 +300,10 @@ class PageCallManage extends React.Component {
   disableVideo = () => {
     sip.disableVideo(callStore.selectedId);
   };
+  otherCall = () => {
+    const call = this.runningById[callStore.selectedId];
+    g.goToPageOtherCall({ callId: call.id, partyName: call?.partyName });
+  };
 
   render() {
     const u = this.runningById[callStore.selectedId];
@@ -351,6 +359,7 @@ class PageCallManage extends React.Component {
               hold={this.hold}
               onCloseLoudSpeaker={this.onCloseLoudSpeaker}
               onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+              otherCall={this.otherCall}
               park={this.park}
               parkingIds={callStore.runnings
                 .filter(c => c.parking)
