@@ -97,7 +97,7 @@ const ProfileCreateForm = observer(props => {
       description={
         props.updatingProfile
           ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
-          : intl`Create a new sign in profile`
+          : intl`Create a new sign in account`
       }
       dropdown={
         props.footerLogout

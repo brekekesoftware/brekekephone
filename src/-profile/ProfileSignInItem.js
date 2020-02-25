@@ -46,13 +46,13 @@ const ProfileSignInItem = observer(props => {
   if (props.empty) {
     return (
       <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
-        <Text subTitle>{intl`No server`}</Text>
-        <Text>{intl`There is no server created`}</Text>
+        <Text subTitle>{intl`No account`}</Text>
+        <Text>{intl`There is no account created`}</Text>
         <Text>{intl`Tap the below button to create one`}</Text>
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
             onNext={g.goToPageProfileCreate}
-            onNextText={intl`CREATE NEW SERVER`}
+            onNextText={intl`CREATE NEW ACCOUNT`}
           />
         </View>
       </View>
@@ -91,7 +91,7 @@ const ProfileSignInItem = observer(props => {
         <FooterActions
           onBack={() => {
             g.showPrompt({
-              title: intl`Remove Server`,
+              title: intl`Remove Account`,
               message: (
                 <React.Fragment>
                   <View>
@@ -99,7 +99,7 @@ const ProfileSignInItem = observer(props => {
                       {p.pbxUsername} - {p.pbxHostname}
                     </Text>
                   </View>
-                  <Text>{intl`Do you want to remove this profile?`}</Text>
+                  <Text>{intl`Do you want to remove this account?`}</Text>
                 </React.Fragment>
               ),
               onConfirm: () => {

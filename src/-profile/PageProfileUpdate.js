@@ -12,7 +12,7 @@ const PageProfileUpdate = observer(props => (
       g.upsertProfile(p);
       g.backToPageProfileSignIn();
     }}
-    title={intl`Update Server`}
+    title={intl`Update Account`}
     updatingProfile={g.profilesMap[props.id]}
   />
 ));

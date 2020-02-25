@@ -48,7 +48,7 @@ registerOnUnhandledError(unexpectedErr => {
   g.showError({ unexpectedErr });
   return false;
 });
-// Must load profiles here because when app wake from notification, there's no rendering
+// Must load accounts here because when app wake from notification, there's no rendering
 g.loadProfilesFromLocalStorage();
 
 PushNotification.register();

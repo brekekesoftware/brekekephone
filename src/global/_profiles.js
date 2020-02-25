@@ -88,7 +88,7 @@ g.extends({
     } catch (err) {
       g.showError({
         err,
-        message: intl`Failed to save profiles to local storage`,
+        message: intl`Failed to save accounts to local storage`,
       });
     }
   },

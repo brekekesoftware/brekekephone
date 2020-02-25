@@ -107,7 +107,7 @@ class AuthStore extends BaseStore {
     }
     if (!p.pbxPassword && !p.accessToken) {
       g.goToPageProfileUpdate(p.id);
-      g.showError({ message: intl`The profile password is empty` });
+      g.showError({ message: intl`The account password is empty` });
       return true;
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
@@ -198,7 +198,7 @@ class AuthStore extends BaseStore {
   signInByNotification = async n => {
     const state = AppState.currentState;
     await g.profilesLoaded;
-    // Find profile for the notification target
+    // Find account for the notification target
     const p = this.findProfile({
       ...n,
       pbxUsername: n.to,
@@ -214,7 +214,7 @@ class AuthStore extends BaseStore {
     }
     // In case the app is already signed in
     if (this.signedInId) {
-      // Always show notification if the signed in id is another profile
+      // Always show notification if the signed in id is another account
       if (this.signedInId !== p.id) {
         return true;
       }

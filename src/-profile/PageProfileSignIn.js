@@ -55,7 +55,7 @@ const css = StyleSheet.create({
     paddingLeft: 19,
   },
   CornerButton_Inner__language: {
-    paddingRight: 19,
+    paddingRight: 18,
   },
   CornerButton_Icon: {
     position: `absolute`,
@@ -79,10 +79,10 @@ const PageProfileSignIn = observer(() => {
   return (
     <BrekekeGradient>
       <Layout
-        description={intl`${l} server${l > 1 ? `s` : ``} in total`}
+        description={intl`${l} account${l > 1 ? `s` : ``} in total`}
         noScroll
         onCreate={!!l && g.goToPageProfileCreate}
-        title={intl`Servers`}
+        title={intl`Accounts`}
         transparent
       >
         <View style={css.PageProfileSignIn_Spacing} />

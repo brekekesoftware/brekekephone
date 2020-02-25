@@ -15,8 +15,8 @@ const PageSettingsProfile = observer(p => (
         g.backToPageContactPhonebook();
       }
       g.showPrompt({
-        title: intl`Save Server`,
-        message: intl`Do you want to update your profile?\nYou'll need to sign out and then sign in again.`,
+        title: intl`Save Account`,
+        message: intl`Do you want to update your account?\nYou'll need to sign out and then sign in again.`,
         onConfirm: () => {
           g.upsertProfile(p);
           g.goToPageProfileSignIn();
@@ -25,7 +25,7 @@ const PageSettingsProfile = observer(p => (
         confirmText: intl`SAVE`,
       });
     }}
-    title={intl`Current Server`}
+    title={intl`Current Account`}
     updatingProfile={authStore.currentProfile}
   />
 ));

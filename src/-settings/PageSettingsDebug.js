@@ -15,7 +15,7 @@ class PageSettingsDebug extends Component {
         onBack={g.backToPageProfileSignIn}
         title={intl`Debug`}
       >
-        <Field isGroup label={intl`DEBUG`} />
+        <Field isGroup label={intl`DEBUG LOG`} />
       </Layout>
     );
   }

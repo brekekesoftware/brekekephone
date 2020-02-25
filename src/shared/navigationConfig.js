@@ -62,7 +62,7 @@ const genMenus = () => {
       subMenus: [
         {
           key: `profile`,
-          label: intl`CURRENT SERVER`,
+          label: intl`CURRENT ACCOUNT`,
           navFnKey: `goToPageSettingsProfile`,
         },
         {

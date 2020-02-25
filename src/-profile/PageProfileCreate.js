@@ -11,7 +11,7 @@ const PageProfileCreate = () => (
       g.upsertProfile(p);
       g.backToPageProfileSignIn();
     }}
-    title={intl`New Server`}
+    title={intl`New Account`}
   />
 );
 
