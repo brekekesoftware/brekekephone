@@ -37,10 +37,6 @@ const css = StyleSheet.create({
     right: 0,
     backgroundColor: `black`,
   },
-  Other_Call: {
-    left: 0,
-    top: 50,
-  },
 });
 
 @observer
