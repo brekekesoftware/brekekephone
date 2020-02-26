@@ -37,6 +37,10 @@ const css = StyleSheet.create({
     right: 0,
     backgroundColor: `black`,
   },
+  Other_Call: {
+    left: 0,
+    top: 50,
+  },
 });
 
 @observer
@@ -197,8 +201,16 @@ class PageCallManage extends React.Component {
   };
 
   hangup = () => {
-    sip.hangupSession(callStore.selectedId);
-    g.goToPageCallRecents();
+    const u = callStore.runnings.map(c => {
+      return this.runningById[c.id];
+    });
+    if (u.length === 1 && u.length !== 0) {
+      sip.hangupSession(callStore.selectedId);
+      g.goToPageCallRecents();
+    } else {
+      sip.hangupSession(callStore.selectedId);
+      g.goToPageOtherCall();
+    }
   };
   answer = () => {
     sip.answerSession(callStore.selectedId);
@@ -296,6 +308,14 @@ class PageCallManage extends React.Component {
   disableVideo = () => {
     sip.disableVideo(callStore.selectedId);
   };
+  otherCall = () => {
+    const call = this.runningById[callStore.selectedId];
+    pbx
+      .holdTalker(call.pbxTenant, call.pbxTalkerId)
+      .then(this.onHoldSuccess)
+      .then(g.goToPageOtherCall())
+      .catch(this.onHoldFailure);
+  };
 
   render() {
     const u = this.runningById[callStore.selectedId];
@@ -326,7 +346,7 @@ class PageCallManage extends React.Component {
           dropdown={dropdown}
           noScroll
           onBack={g.backToPageCallRecents}
-          title={u?.partyName || u?.id || `Connection failed`}
+          title={u?.partyName || u?.id || intl`Connection failed`}
         >
           {videoEnabled && (
             <React.Fragment>
@@ -351,6 +371,7 @@ class PageCallManage extends React.Component {
               hold={this.hold}
               onCloseLoudSpeaker={this.onCloseLoudSpeaker}
               onOpenLoudSpeaker={this.onOpenLoudSpeaker}
+              otherCall={this.otherCall}
               park={this.park}
               parkingIds={callStore.runnings
                 .filter(c => c.parking)

@@ -232,6 +232,17 @@ const CallManage = p => {
             textcolor={g.revColor}
           />
         )}
+        {p.answered && !p.holding && (
+          <ButtonIcon
+            bgcolor={g.revColor}
+            color={g.color}
+            name={intl`OTHER CALL`}
+            noborder
+            onPress={p.otherCall}
+            size={40}
+            textcolor={g.revColor}
+          />
+        )}
       </View>
       <View style={css.Space} />
       <View style={css.Space200} />
