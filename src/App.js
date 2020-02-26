@@ -13,6 +13,7 @@ import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
 import PageCallRecents from './-call/PageCallRecents';
 import PageDtmfKeypad from './-call/PageDtmfKeypad';
+import PageOtherCall from './-call/PageOtherCall';
 import PageTransferAttend from './-call/PageTransferAttend';
 import PageTransferDial from './-call/PageTransferDial';
 import PageChatDetail from './-chat/PageChatDetail';
@@ -84,6 +85,7 @@ g.registerStacks({
   PagePhonebookCreate,
   PagePhonebookUpdate,
   PageCallManage,
+  PageOtherCall,
   PageDtmfKeypad,
   PageChatDetail,
   PageTransferAttend,

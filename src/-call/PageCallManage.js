@@ -201,8 +201,16 @@ class PageCallManage extends React.Component {
   };
 
   hangup = () => {
-    sip.hangupSession(callStore.selectedId);
-    g.goToPageCallRecents();
+    const u = callStore.runnings.map(c => {
+      return this.runningById[c.id];
+    });
+    if (u.length === 1 && u.length !== 0) {
+      sip.hangupSession(callStore.selectedId);
+      g.goToPageCallRecents();
+    } else {
+      sip.hangupSession(callStore.selectedId);
+      g.goToPageOtherCall();
+    }
   };
   answer = () => {
     sip.answerSession(callStore.selectedId);
@@ -302,7 +310,11 @@ class PageCallManage extends React.Component {
   };
   otherCall = () => {
     const call = this.runningById[callStore.selectedId];
-    g.goToPageOtherCall({ callId: call.id, partyName: call?.partyName });
+    pbx
+      .holdTalker(call.pbxTenant, call.pbxTalkerId)
+      .then(this.onHoldSuccess)
+      .then(g.goToPageOtherCall())
+      .catch(this.onHoldFailure);
   };
 
   render() {
@@ -334,7 +346,7 @@ class PageCallManage extends React.Component {
           dropdown={dropdown}
           noScroll
           onBack={g.backToPageCallRecents}
-          title={u?.partyName || u?.id || `Connection failed`}
+          title={u?.partyName || u?.id || intl`Connection failed`}
         >
           {videoEnabled && (
             <React.Fragment>
