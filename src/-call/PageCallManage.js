@@ -196,7 +196,7 @@ class PageCallManage extends React.Component {
     });
   };
 
-  hangup = () => {
+  hangupFunc = () => {
     const u = callStore.runnings.map(c => {
       return this.runningById[c.id];
     });
@@ -206,6 +206,19 @@ class PageCallManage extends React.Component {
     } else {
       sip.hangupSession(callStore.selectedId);
       g.goToPageOtherCall();
+    }
+  };
+
+  hangup = () => {
+    const call = this.runningById[callStore.selectedId];
+    if (!call?.holding) {
+      this.hangupFunc();
+    } else {
+      pbx
+        .unholdTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onUnholdSuccess)
+        .then(this.hangupFunc)
+        .catch(this.onUnholdFailure);
     }
   };
   answer = () => {
