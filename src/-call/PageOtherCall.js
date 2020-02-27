@@ -1,10 +1,9 @@
-import { mdiPhone, mdiPhoneHangup } from '@mdi/js';
+import { mdiPhone } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
-import sip from '../api/sip';
 import g from '../global';
 import callStore from '../global/callStore';
 import intl from '../intl/intl';
@@ -19,9 +18,6 @@ class PageOtherCall extends React.Component {
   @computed get runningById() {
     return arrToMap(callStore.runnings, `id`, c => c);
   }
-  hangup = id => {
-    sip.hangupSession(id);
-  };
   setSelectedId = id => {
     callStore.set(`selectedId`, id);
     g.backToPageCallManage();
@@ -39,11 +35,8 @@ class PageOtherCall extends React.Component {
       >
         {u.map(call => (
           <UserItem
-            iconFuncs={[
-              () => this.setSelectedId(call?.id),
-              () => this.hangup(call?.id),
-            ]}
-            icons={[mdiPhone, mdiPhoneHangup]}
+            iconFuncs={[() => this.setSelectedId(call?.id)]}
+            icons={[mdiPhone]}
             key={call?.id}
             {...call}
           />

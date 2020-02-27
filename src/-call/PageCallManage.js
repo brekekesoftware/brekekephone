@@ -200,7 +200,7 @@ class PageCallManage extends React.Component {
     const u = callStore.runnings.map(c => {
       return this.runningById[c.id];
     });
-    if (u.length === 1 && u.length !== 0) {
+    if (u.length <= 1) {
       sip.hangupSession(callStore.selectedId);
       g.goToPageCallRecents();
     } else {
