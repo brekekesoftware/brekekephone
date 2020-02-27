@@ -43,7 +43,6 @@ class PageOtherCall extends React.Component {
         .then(this.hangupFunc(call?.id))
         .catch(this.onUnholdFailure);
     }
-    console.log(call);
   };
   setSelectedId = id => {
     callStore.set(`selectedId`, id);
