@@ -182,7 +182,7 @@
   "account",
   "settings",
   "{{allUsersLength}} total",
-  "{{l}} account{{l1S}} in total",
+  "{{l}} accounts in total",
   "{{onlineUsersLength}}/{{allUsersLength}} online",
   "{{service}} connection failed"
 ]

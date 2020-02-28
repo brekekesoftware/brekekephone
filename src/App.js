@@ -10,10 +10,10 @@ import SplashScreen from 'react-native-splash-screen';
 import { Platform, StatusBar, StyleSheet, Text, View } from './-/Rn';
 import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
+import PageCallOthers from './-call/PageCallOthers';
 import PageCallParks from './-call/PageCallParks';
 import PageCallRecents from './-call/PageCallRecents';
 import PageDtmfKeypad from './-call/PageDtmfKeypad';
-import PageOtherCall from './-call/PageOtherCall';
 import PageTransferAttend from './-call/PageTransferAttend';
 import PageTransferDial from './-call/PageTransferDial';
 import PageChatDetail from './-chat/PageChatDetail';
@@ -86,7 +86,7 @@ g.registerStacks({
   PagePhonebookCreate,
   PagePhonebookUpdate,
   PageCallManage,
-  PageOtherCall,
+  PageCallOthers,
   PageDtmfKeypad,
   PageChatDetail,
   PageTransferAttend,

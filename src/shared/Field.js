@@ -47,6 +47,10 @@ const css = StyleSheet.create({
   Field__groupMargin: {
     marginTop: 30,
   },
+  Field__transparent: {
+    borderColor: `transparent`,
+    marginHorizontal: 0,
+  },
   Field_Label: {
     paddingTop: 13,
     paddingBottom: 0,
@@ -162,13 +166,13 @@ const Field = observer(({ ...props }) => {
       iconRender: () => (
         <TouchableOpacity
           onPress={props.onCreateBtnPress}
-          style={[css.Field_Btn, css.Field_Btn__create]}
+          style={[css.Field_Btn, css.Field_Btn__create, props.createBtnStyle]}
         >
           <Icon
             color={g.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
-            style={css.Field_CreateRemoveIcon}
+            style={[css.Field_CreateRemoveIcon, props.createBtnIconStyle]}
           />
         </TouchableOpacity>
       ),
@@ -179,13 +183,13 @@ const Field = observer(({ ...props }) => {
       iconRender: () => (
         <TouchableOpacity
           onPress={props.onRemoveBtnPress}
-          style={[css.Field_Btn, css.Field_Btn__remove]}
+          style={[css.Field_Btn, css.Field_Btn__remove, props.removeBtnStyle]}
         >
           <Icon
             color={g.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
-            style={css.Field_CreateRemoveIcon}
+            style={[css.Field_CreateRemoveIcon, props.removeBtnIconStyle]}
           />
         </TouchableOpacity>
       ),
@@ -270,6 +274,7 @@ const Field = observer(({ ...props }) => {
           css.Field,
           $.isFocusing && css.Field__focusing,
           props.disabled && css.Field__disabled,
+          props.transparent && css.Field__transparent,
         ]}
       >
         {/* Fix form auto fill style on web */}

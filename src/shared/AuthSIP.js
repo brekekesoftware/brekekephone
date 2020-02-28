@@ -40,8 +40,8 @@ class AuthSIP extends React.Component {
     }
     //
     const pbxUserConfig = await pbx.getUserForSelf(
-      authStore.currentProfile?.pbxTenant,
-      authStore.currentProfile?.pbxUsername,
+      authStore.currentProfile.pbxTenant,
+      authStore.currentProfile.pbxUsername,
     );
     if (!pbxUserConfig) {
       console.error(`Invalid PBX user config`);
@@ -64,12 +64,12 @@ class AuthSIP extends React.Component {
     }
     //
     await sip.connect({
-      hostname: authStore.currentProfile?.pbxHostname,
+      hostname: authStore.currentProfile.pbxHostname,
       port: sipWSSPort,
-      tenant: authStore.currentProfile?.pbxTenant,
+      tenant: authStore.currentProfile.pbxTenant,
       username: webPhone.id,
       accessToken: sipAccessToken,
-      pbxTurnEnabled: authStore.currentProfile?.pbxTurnEnabled,
+      pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
     });
   };
   auth = () => {

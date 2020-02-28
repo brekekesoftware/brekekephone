@@ -2,6 +2,7 @@ import {
   mdiAlphaPCircle,
   mdiCallSplit,
   mdiDialpad,
+  mdiKeyboardBackspace,
   mdiMicrophone,
   mdiMicrophoneOff,
   mdiPauseCircle,
@@ -13,13 +14,16 @@ import {
   mdiVolumeHigh,
   mdiVolumeMedium,
 } from '@mdi/js';
+import { observer } from 'mobx-react';
 import React from 'react';
 import { Platform, TouchableOpacity } from 'react-native';
 
 import { StyleSheet, View } from '../-/Rn';
 import g from '../global';
+import callStore from '../global/callStore';
 import intl from '../intl/intl';
 import ButtonIcon from '../shared/ButtonIcon';
+import Field from '../shared/Field';
 
 const css = StyleSheet.create({
   Buttons: {
@@ -60,10 +64,38 @@ const css = StyleSheet.create({
   Space200: {
     height: 112,
   },
+  OtherCall: {
+    alignSelf: `center`,
+    marginTop: 15,
+    paddingHorizontal: 10,
+    width: 305,
+    backgroundColor: `white`,
+    borderRadius: g.borderRadius,
+    overflow: `hidden`,
+  },
+  OtherCall_Inner: {
+    top: -5,
+  },
+  OtherCall_Btn: {
+    top: 15,
+    ...Platform.select({
+      android: {
+        top: 20,
+      },
+    }),
+  },
+  OtherCall_BtnIcon: {
+    transform: [
+      {
+        rotate: `180deg`,
+      },
+    ],
+  },
 });
 
-const CallManage = p => {
+const CallManage = observer(p => {
   const Container = p.toggleButtons ? TouchableOpacity : View;
+  const otherCalls = callStore.runnings.length - 1;
   return (
     <Container
       onPress={p.toggleButtons}
@@ -232,22 +264,26 @@ const CallManage = p => {
             textcolor={g.revColor}
           />
         )}
-        {p.answered && !p.holding && (
-          <ButtonIcon
-            bgcolor={g.revColor}
-            color={g.color}
-            name={intl`OTHER CALL`}
-            noborder
-            onPress={p.otherCall}
-            size={40}
-            textcolor={g.revColor}
-          />
-        )}
       </View>
+      {p.answered && !p.holding && otherCalls > 0 && (
+        <TouchableOpacity onPress={g.goToPageCallOthers} style={css.OtherCall}>
+          <View style={css.OtherCall_Inner}>
+            <Field
+              createBtnIcon={mdiKeyboardBackspace}
+              createBtnIconStyle={css.OtherCall_BtnIcon}
+              createBtnStyle={css.OtherCall_Btn}
+              label={intl`BACKGROUND CALLS`}
+              onCreateBtnPress={g.goToPageCallOthers}
+              transparent
+              value={intl`${otherCalls} other calls are in background`}
+            />
+          </View>
+        </TouchableOpacity>
+      )}
       <View style={css.Space} />
       <View style={css.Space200} />
     </Container>
   );
-};
+});
 
 export default CallManage;

@@ -138,12 +138,12 @@ class PageContactUsers extends React.Component {
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={v => {
               g.upsertProfile({
-                id: authStore.currentProfile?.id,
+                id: authStore.currentProfile.id,
                 displayOfflineUsers: v,
               });
             }}
             type="Switch"
-            value={authStore.currentProfile?.displayOfflineUsers}
+            value={authStore.currentProfile.displayOfflineUsers}
           />
         )}
         {groups.map(_g => (
@@ -153,7 +153,7 @@ class PageContactUsers extends React.Component {
               <TouchableOpacity
                 key={i}
                 onPress={
-                  authStore.currentProfile?.ucEnabled
+                  authStore.currentProfile.ucEnabled
                     ? () => g.goToPageChatDetail({ buddy: u.id })
                     : null
                 }

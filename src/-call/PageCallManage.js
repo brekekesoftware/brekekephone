@@ -205,7 +205,7 @@ class PageCallManage extends React.Component {
       g.goToPageCallRecents();
     } else {
       sip.hangupSession(callStore.selectedId);
-      g.goToPageOtherCall();
+      g.goToPageCallOthers();
     }
   };
 
@@ -317,14 +317,6 @@ class PageCallManage extends React.Component {
   disableVideo = () => {
     sip.disableVideo(callStore.selectedId);
   };
-  otherCall = () => {
-    const call = this.runningById[callStore.selectedId];
-    pbx
-      .holdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onHoldSuccess)
-      .then(g.goToPageOtherCall())
-      .catch(this.onHoldFailure);
-  };
 
   render() {
     const u = this.runningById[callStore.selectedId];
@@ -380,7 +372,6 @@ class PageCallManage extends React.Component {
               hold={this.hold}
               onCloseLoudSpeaker={this.onCloseLoudSpeaker}
               onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-              otherCall={this.otherCall}
               park={this.park}
               parkingIds={callStore.runnings
                 .filter(c => c.parking)

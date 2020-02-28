@@ -79,7 +79,7 @@ class AuthStore extends BaseStore {
     return g.profiles.find(p => compareProfile(p, _p));
   };
   pushRecentCall = call => {
-    const recentCalls = [call, ...(this.currentProfile?.recentCalls || [])];
+    const recentCalls = [call, ...(this.currentProfile.recentCalls || [])];
     if (recentCalls.length > 20) {
       recentCalls.pop();
     }

@@ -13,7 +13,7 @@ import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 
 @observer
-class PageOtherCall extends React.Component {
+class PageCallOthers extends React.Component {
   @computed get runningIds() {
     return callStore.runnings.map(c => c.id);
   }
@@ -24,11 +24,9 @@ class PageOtherCall extends React.Component {
     const u = callStore.runnings.map(c => {
       return this.runningById[c.id];
     });
+    sip.hangupSession(id);
     if (u.length <= 1) {
-      sip.hangupSession(id);
-      g.goToPageCallRecents();
-    } else {
-      sip.hangupSession(id);
+      g.backToPageCallRecents();
     }
   };
 
@@ -57,7 +55,7 @@ class PageOtherCall extends React.Component {
         compact
         noScroll
         onBack={g.backToPageCallManage}
-        title={intl`Other call`}
+        title={intl`Background calls`}
       >
         {u.map(call => (
           <UserItem
@@ -77,4 +75,4 @@ class PageOtherCall extends React.Component {
   }
 }
 
-export default PageOtherCall;
+export default PageCallOthers;

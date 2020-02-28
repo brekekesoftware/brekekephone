@@ -84,7 +84,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap[m.defaultSubMenuKey];
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !authStore.currentProfile?.ucEnabled) {
+        if (s.ucRequired && !authStore.currentProfile.ucEnabled) {
           m.defaultSubMenu.navFn();
           return;
         }
@@ -93,7 +93,7 @@ const genMenus = () => {
       };
     });
     m.navFn = () => {
-      let k = authStore.currentProfile?.navSubMenus?.[i];
+      let k = authStore.currentProfile.navSubMenus?.[i];
       if (!(k in m.subMenusMap)) {
         k = m.defaultSubMenuKey;
       }
@@ -169,6 +169,6 @@ export const getSubMenus = menu => {
     return [];
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !authStore.currentProfile?.ucEnabled),
+    s => !(s.ucRequired && !authStore.currentProfile.ucEnabled),
   );
 };

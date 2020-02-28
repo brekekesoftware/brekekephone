@@ -69,11 +69,11 @@ class PageSettingsOther extends Component {
           value={g.locale}
           valueRender={() => g.localeName}
         />
-        {authStore.currentProfile?.ucEnabled && (
+        {authStore.currentProfile.ucEnabled && (
           <React.Fragment>
             <Field isGroup label={intl`UC`} />
             <Field
-              disabled={!authStore.currentProfile?.ucEnabled}
+              disabled={!authStore.currentProfile.ucEnabled}
               label={intl`STATUS`}
               onValueChange={this.submitStatus}
               options={[
@@ -86,7 +86,7 @@ class PageSettingsOther extends Component {
             />
             <Field
               createBtnIcon={mdiCheck}
-              disabled={!authStore.currentProfile?.ucEnabled}
+              disabled={!authStore.currentProfile.ucEnabled}
               label={intl`STATUS NOTE`}
               onCreateBtnPress={this.submitStatusText}
               onSubmitEditing={this.submitStatusText}

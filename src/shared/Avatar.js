@@ -39,7 +39,7 @@ const Avatar = observer(({ source, status, style }) => {
   return (
     <View style={[css.Avatar, style]}>
       <Image source={imgSource} style={css.Image} />
-      {authStore.currentProfile?.ucEnabled && typeof status === `string` && (
+      {authStore.currentProfile.ucEnabled && typeof status === `string` && (
         <Icon
           color={statusMapColor[status]}
           path={mdiRecord}
