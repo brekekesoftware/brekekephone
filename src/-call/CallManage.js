@@ -75,12 +75,17 @@ const css = StyleSheet.create({
   },
   OtherCall_Inner: {
     top: -5,
+    ...Platform.select({
+      android: {
+        top: 1,
+      },
+    }),
   },
   OtherCall_Btn: {
     top: 15,
     ...Platform.select({
       android: {
-        top: 20,
+        top: 8,
       },
     }),
   },
@@ -208,7 +213,7 @@ const CallManage = observer(p => {
           <ButtonIcon
             bgcolor={g.revColor}
             color={g.color}
-            name={intl`RECORDING`}
+            name={intl`RECORD`}
             noborder
             onPress={p.startRecording}
             path={mdiRecordCircle}

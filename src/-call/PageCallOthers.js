@@ -1,8 +1,9 @@
-import { mdiPhone, mdiPhoneHangup } from '@mdi/js';
+import { mdiPhoneHangup } from '@mdi/js';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
+import { TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import pbx from '../api/pbx';
 import sip from '../api/sip';
@@ -58,17 +59,14 @@ class PageCallOthers extends React.Component {
         title={intl`Background calls`}
       >
         {u.map(call => (
-          <UserItem
-            iconFuncs={[
-              () => this.setSelectedId(call?.id),
-              () => {
-                this.hangup(call?.id);
-              },
-            ]}
-            icons={[mdiPhone, mdiPhoneHangup]}
-            key={call?.id}
-            {...call}
-          />
+          <TouchableOpacity onPress={() => this.setSelectedId(call?.id)}>
+            <UserItem
+              iconFuncs={[() => this.hangup(call?.id)]}
+              icons={[mdiPhoneHangup]}
+              key={call?.id}
+              {...call}
+            />
+          </TouchableOpacity>
         ))}
       </Layout>
     );

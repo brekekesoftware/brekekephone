@@ -24,7 +24,7 @@ import ProfileSignInItem from './ProfileSignInItem';
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
     height: `70%`,
-    minHeight: 500,
+    minHeight: 320,
   },
   PageProfileSignIn_Spacing: {
     flex: 1,

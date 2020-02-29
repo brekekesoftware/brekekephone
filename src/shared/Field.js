@@ -30,13 +30,17 @@ const css = StyleSheet.create({
     borderColor: g.borderBg,
     alignItems: `stretch`,
     marginHorizontal: 15,
+    ...Platform.select({
+      android: {
+        paddingBottom: 2,
+      },
+    }),
   },
   Field__focusing: {
     backgroundColor: g.colors.primaryFn(0.5),
   },
   Field__disabled: {
     backgroundColor: g.hoverBg,
-    borderBottomWidth: 0,
   },
   Field__group: {
     marginHorizontal: 0,
@@ -55,9 +59,11 @@ const css = StyleSheet.create({
     paddingTop: 13,
     paddingBottom: 0,
     paddingLeft: 7,
-    color: g.subColor,
-    fontWeight: g.fontWeight,
     ...Platform.select({
+      android: {
+        paddingTop: 3,
+        top: 6,
+      },
       web: {
         // Fix form auto fill style on web
         position: `absolute`,
@@ -66,6 +72,10 @@ const css = StyleSheet.create({
         right: 0,
       },
     }),
+  },
+  Field_LabelText: {
+    color: g.subColor,
+    fontWeight: g.fontWeight,
   },
   Field_TextInput: {
     width: `100%`,
@@ -77,13 +87,12 @@ const css = StyleSheet.create({
     overflow: `hidden`,
     ...Platform.select({
       android: {
-        lineHeight: g.lineHeight,
         paddingTop: 0,
-        paddingBottom: 1,
+        paddingBottom: 0,
+        lineHeight: g.lineHeight,
         // Should not set height and overflow here
         //    it will cause scroll issue with the input
         // height: g.lineHeight,
-        // overflow: `hidden`,
       },
       web: {
         // Fix form auto fill style on web
@@ -261,9 +270,11 @@ const Field = observer(({ ...props }) => {
   }
   const Container = props.onTouchPress ? TouchableOpacity : View;
   const label = (
-    <Text small style={css.Field_Label}>
-      {props.label}
-    </Text>
+    <View pointerEvents="none" style={css.Field_Label}>
+      <Text small style={css.Field_LabelText}>
+        {props.label}
+      </Text>
+    </View>
   );
   return (
     <React.Fragment>
@@ -279,9 +290,8 @@ const Field = observer(({ ...props }) => {
       >
         {/* Fix form auto fill style on web */}
         {Platform.OS !== `web` && label}
-        {props.inputElement || (
-          // Fix input pointerEvents not work on android
-          <View pointerEvents="none">
+        <View pointerEvents={$.isFocusing ? null : `none`}>
+          {props.inputElement || (
             <TextInput
               disabled
               secureTextEntry={!!(props.secureTextEntry && props.value)}
@@ -292,9 +302,9 @@ const Field = observer(({ ...props }) => {
                 `\u200a`
               }
             />
-            <View style={StyleSheet.absoluteFill} />
-          </View>
-        )}
+          )}
+          {!$.isFocusing && <View style={StyleSheet.absoluteFill} />}
+        </View>
         {/* Fix form auto fill style on web */}
         {Platform.OS === `web` && label}
         {(props.iconRender && props.iconRender(props.value)) ||
