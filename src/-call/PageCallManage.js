@@ -347,7 +347,12 @@ class PageCallManage extends React.Component {
           dropdown={dropdown}
           noScroll
           onBack={g.backToPageCallRecents}
-          title={u?.partyName || u?.id || intl`Connection failed`}
+          title={
+            u?.partyName ||
+            u?.id ||
+            this.props.changeTitle ||
+            intl`Connection failed`
+          }
         >
           {videoEnabled && (
             <React.Fragment>

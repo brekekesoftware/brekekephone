@@ -42,7 +42,7 @@ class PageCallParks extends React.Component {
             <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
               <UserItem
                 key={i}
-                name={intl`Parked ${i + 1}`}
+                name={intl`Parked ${i + 1}: ${u}`}
                 park={intl`Extension *${u}`}
                 selected={this.state.selectedPark === u}
               />
@@ -85,7 +85,7 @@ class PageCallParks extends React.Component {
   };
 
   onParkSuccess = () => {
-    g.goToPageCallManage();
+    g.goToPageCallManage({ changeTitle: intl`Call park is success` });
   };
   onParkFailure = err => {
     g.showError({ err, message: intl`Failed to park the call` });
