@@ -31,15 +31,25 @@ class PageCallOthers extends React.Component {
     }
   };
 
+  onUnholdSuccess = selectedId => {
+    callStore.upsertRunning({
+      id: selectedId,
+      holding: false,
+    });
+  };
+  onUnholdFailure = err => {
+    g.showError({ message: intl`Failed to unhold the call`, err });
+  };
+
   hangup = id => {
     const call = this.runningById[id];
-    if (!call?.holding) {
+    if (!call.holding) {
       this.hangupFunc();
     } else {
       pbx
         .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-        .then(this.onUnholdSuccess)
-        .then(this.hangupFunc(call?.id))
+        .then(() => this.onUnholdSuccess(call.id))
+        .then(() => this.hangupFunc(call.id))
         .catch(this.onUnholdFailure);
     }
   };
@@ -59,11 +69,14 @@ class PageCallOthers extends React.Component {
         title={intl`Background calls`}
       >
         {u.map(call => (
-          <TouchableOpacity onPress={() => this.setSelectedId(call?.id)}>
+          <TouchableOpacity
+            key={call.id}
+            onPress={() => this.setSelectedId(call.id)}
+          >
             <UserItem
-              iconFuncs={[() => this.hangup(call?.id)]}
+              iconFuncs={[() => this.hangup(call.id)]}
               icons={[mdiPhoneHangup]}
-              key={call?.id}
+              key={call.id}
               {...call}
             />
           </TouchableOpacity>
