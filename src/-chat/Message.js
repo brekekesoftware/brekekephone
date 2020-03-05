@@ -30,8 +30,8 @@ const css = StyleSheet.create({
   Message: {
     position: `relative`,
     marginBottom: 2,
-    borderTopRightRadius: g.borderRadius,
-    borderBottomRightRadius: g.borderRadius,
+    borderTopRightRadius: 2 * g.borderRadius,
+    borderBottomRightRadius: 2 * g.borderRadius,
     paddingVertical: 5,
     paddingHorizontal: 10,
     backgroundColor: g.hoverBg,
@@ -48,7 +48,7 @@ const css = StyleSheet.create({
     borderBottomLeftRadius: g.borderRadius,
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: g.colors.primary,
+    backgroundColor: g.colors.primaryFn(0.8),
     color: `white`,
   },
   //

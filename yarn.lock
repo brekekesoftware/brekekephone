@@ -3884,6 +3884,11 @@ circular-dependency-plugin@5.2.0:
   resolved "https://registry.yarnpkg.com/circular-dependency-plugin/-/circular-dependency-plugin-5.2.0.tgz#e09dbc2dd3e2928442403e2d45b41cea06bc0a93"
   integrity sha512-7p4Kn/gffhQaavNfyDFg7LS5S/UT1JAjyGd4UqR2+jzoYF02eDkj0Ec3+48TsIa4zghjLY87nQHIh/ecK9qLdw==
 
+circular-json@0.5.9:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/circular-json/-/circular-json-0.5.9.tgz#932763ae88f4f7dead7a0d09c8a51a4743a53b1d"
+  integrity sha512-4ivwqHpIFJZBuhN3g/pEcdbnGUywkBblloGbkglyloVjjR3uT6tieI89MVOfbP2tHX5sgb01FuLgAOzebNlJNQ==
+
 clamp@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/clamp/-/clamp-1.0.1.tgz#66a0e64011816e37196828fdc8c8c147312c8634"
@@ -4337,10 +4342,10 @@ create-react-context@0.2.2:
     fbjs "^0.8.0"
     gud "^1.0.0"
 
-cross-env@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.0.tgz#5a3b2ddce51ec713ea58f2fb79ce22e65b4f5479"
-  integrity sha512-rV6M9ldNgmwP7bx5u6rZsTbYidzwvrwIYZnT08hSGLcQCcggofgFW+sNe7IhA1SRauPS0QuLbbX+wdNtpqE5CQ==
+cross-env@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.1.tgz#c8e03412ea0e1370fe3f0066929a70b8e1e90c39"
+  integrity sha512-1+DmLosu38kC4s1H4HzNkcolwdANifu9+5bE6uKQCV4L6jvVdV9qdRAk8vV3GoWRe0x4z+K2fFhgoDMqwNsPqQ==
   dependencies:
     cross-spawn "^7.0.1"
 

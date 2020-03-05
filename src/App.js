@@ -1,3 +1,4 @@
+import './-/captureConsoleOutput';
 import './polyfill';
 import './utils/validator';
 
