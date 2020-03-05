@@ -44,8 +44,8 @@ const css = StyleSheet.create({
     }),
   },
   Message__createdByMe: {
-    borderTopLeftRadius: g.borderRadius,
-    borderBottomLeftRadius: g.borderRadius,
+    borderTopLeftRadius: 2 * g.borderRadius,
+    borderBottomLeftRadius: 2 * g.borderRadius,
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     backgroundColor: g.colors.primaryFn(0.8),
