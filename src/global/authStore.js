@@ -2,11 +2,16 @@ import debounce from 'lodash/debounce';
 import { computed, observable } from 'mobx';
 
 import { AppState } from '../-/Rn';
+import pbx from '../api/pbx';
+import sip from '../api/sip';
 import intl from '../intl/intl';
 import { getUrlParams } from '../native/deeplink';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
 import BaseStore from './BaseStore';
+import callStore from './callStore';
+import chatStore from './chatStore';
+import contactStore from './contactStore';
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field];
@@ -117,6 +122,57 @@ class AuthStore extends BaseStore {
     }
     this.set(`signedInId`, p.id);
     return true;
+  };
+
+  @computed get runningById() {
+    return arrToMap(callStore.runnings, `id`, c => c);
+  }
+
+  clearStore = () => {
+    chatStore.clearStore();
+    contactStore.clearStore();
+    this.set(`signedInId`, null);
+  };
+
+  onUnholdSuccess = selectedId => {
+    callStore.upsertRunning({
+      id: selectedId,
+      holding: false,
+    });
+  };
+  onUnholdFailure = err => {
+    g.showError({ message: intl`Failed to unhold the call`, err });
+  };
+
+  hangup = id => {
+    const call = this.runningById[id];
+    if (!call.holding) {
+      sip.hangupSession(call.id);
+    } else {
+      pbx
+        .unholdTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(() => this.onUnholdSuccess(call.id))
+        .then(() => sip.hangupSession(call.id))
+        .catch(this.onUnholdFailure);
+    }
+  };
+
+  signOut = () => {
+    const callsActive = callStore.runnings;
+    if (callsActive.length > 0) {
+      callsActive.map(call => {
+        return this.hangup(call.id);
+      });
+      const id = setInterval(() => {
+        const callsActive = callStore.runnings;
+        if (callsActive.length === 0) {
+          this.clearStore();
+          clearInterval(id);
+        }
+      }, 300);
+    } else {
+      this.clearStore();
+    }
   };
 
   handleUrlParams = async () => {

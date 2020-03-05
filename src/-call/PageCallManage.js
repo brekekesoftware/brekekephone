@@ -211,7 +211,7 @@ class PageCallManage extends React.Component {
 
   hangup = () => {
     const call = this.runningById[callStore.selectedId];
-    if (!call?.holding) {
+    if (!call.holding) {
       this.hangupFunc();
     } else {
       pbx

@@ -52,7 +52,7 @@ class PageSettingsOther extends Component {
           {
             label: intl`Logout`,
             onPress: () => {
-              authStore.signedInId = ``;
+              authStore.signOut();
             },
             danger: true,
           },

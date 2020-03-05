@@ -105,7 +105,7 @@ const ProfileCreateForm = observer(props => {
               {
                 label: intl`Logout`,
                 onPress: () => {
-                  authStore.signedInId = ``;
+                  authStore.signOut();
                 },
                 danger: true,
               },
