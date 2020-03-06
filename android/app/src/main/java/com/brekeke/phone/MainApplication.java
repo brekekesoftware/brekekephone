@@ -1,6 +1,7 @@
 package com.brekeke.phonedev;
 
 import android.app.Application;
+import cl.json.RNSharePackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
@@ -46,6 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
               new RNCallKeepPackage(),
               new RNCameraPackage(),
               new RNFSPackage(),
+              new RNSharePackage(),
               new SplashScreenReactPackage(),
               new SvgPackage(),
               new WebRTCModulePackage());

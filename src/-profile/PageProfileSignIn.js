@@ -20,6 +20,7 @@ import intl from '../intl/intl';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
+import { currentVersion } from '../-settings/PageSettingsDebug';
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -112,7 +113,7 @@ const PageProfileSignIn = observer(() => {
             style={[css.CornerButton_Icon, css.CornerButton_Icon__info]}
           />
           <Text bold white>
-            2.0.0
+            {currentVersion}
           </Text>
         </View>
       </TouchableOpacity>

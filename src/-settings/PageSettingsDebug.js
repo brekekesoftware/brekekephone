@@ -23,8 +23,16 @@ const css = StyleSheet.create({
   },
 });
 
+export const currentVersion = `2.1.0`;
+
 @observer
 class PageSettingsDebug extends Component {
+  notImplemented = () => {
+    g.showError({
+      unexpectedErr: new Error(`Not implemented`),
+    });
+  };
+
   render() {
     return (
       <Layout
@@ -34,16 +42,12 @@ class PageSettingsDebug extends Component {
             ? [
                 {
                   label: intl`Clear all log files`,
-                  onPress: () => {
-                    /* TODO */
-                  },
+                  onPress: debugStore.clearLogFiles,
                   danger: true,
                 },
                 {
                   label: intl`Manually check for update`,
-                  onPress: () => {
-                    /* TODO */
-                  },
+                  onPress: this.notImplemented,
                 },
               ]
             : []),
@@ -56,20 +60,16 @@ class PageSettingsDebug extends Component {
             <Field isGroup label={intl`DEBUG LOG`} />
             <Field
               label={intl`CAPTURE ALL DEBUG LOG`}
-              onValueChange={debugStore.setF(`captureDebugLog`)}
+              onValueChange={debugStore.toggleCaptureDebugLog}
               type="Switch"
               value={debugStore.captureDebugLog}
             />
             <Field
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
-              label={intl`SAVE LOG TO FILE`}
-              onCreateBtnPress={() => {
-                /* TODO */
-              }}
-              onTouchPress={() => {
-                /* TODO */
-              }}
+              label={intl`OPEN DEBUG LOG`}
+              onCreateBtnPress={debugStore.buildLogFile}
+              onTouchPress={debugStore.buildLogFile}
               value={filesize(debugStore.logSize, { round: 0 })}
             />
 
@@ -78,17 +78,14 @@ class PageSettingsDebug extends Component {
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`UPDATE`}
-              onCreateBtnPress={() => {
-                /* TODO */
-              }}
-              onTouchPress={() => {
-                /* TODO */
-              }}
+              onCreateBtnPress={this.notImplemented}
+              onTouchPress={this.notImplemented}
               value={intl`Open Brekeke Phone on store`}
             />
             <Text normal small style={css.Text} warning>
-              {intl`Current version: 2.0.0`}
+              {intl`Current version: ${currentVersion}`}
             </Text>
+            {/*
             <Text normal small style={css.Text} warning>
               {intl`Checking for update...`}
             </Text>
@@ -98,6 +95,7 @@ class PageSettingsDebug extends Component {
             <Text normal primary small style={css.Text}>
               {intl`Brekeke Phone is up-to-update (checked 4m ago)`}
             </Text>
+            */}
           </React.Fragment>
         )}
       </Layout>

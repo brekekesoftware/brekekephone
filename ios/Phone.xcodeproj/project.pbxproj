@@ -53,6 +53,9 @@
 		9CE1275B23BB353B0035CEBD /* libRNCallKeep.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4A188823BB2C83005AA9ED /* libRNCallKeep.a */; };
 		9CE1279723BB35AC0035CEBD /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE1279623BB35AB0035CEBD /* CallKit.framework */; };
 		9CE1279923BB35B40035CEBD /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE1279823BB35B40035CEBD /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9CE31F592412A77100B29DB7 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE31F542412A75D00B29DB7 /* libRNShare.a */; };
+		9CE31F5B2412A79E00B29DB7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE31F5A2412A79E00B29DB7 /* MessageUI.framework */; };
+		9CE31F5D2412A7A900B29DB7 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE31F5C2412A7A900B29DB7 /* Social.framework */; };
 		9CE7478E21E505F400A0C6EB /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6841FA4F8DC00B85C8A /* libfishhook.a */; };
 		A0AE33C5F671480F9753E335 /* libRNVoipPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */; };
 		A13821AC989E4690A7480ABB /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0272DDCB4BD947E2A3A1D461 /* libRCTVideo.a */; };
@@ -434,6 +437,13 @@
 			remoteGlobalIDString = E01DD9DB1D2311A600C39062;
 			remoteInfo = RNDocumentPicker;
 		};
+		9CE31F532412A75D00B29DB7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9CE31F182412A75D00B29DB7 /* RNShare.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNShare;
+		};
 		9CE9F9072293B02300777DDF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9CE9F9022293B02300777DDF /* RCTPushNotification.xcodeproj */;
@@ -548,6 +558,9 @@
 		9CBF729C221160B800A93F01 /* RNDocumentPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDocumentPicker.xcodeproj; path = "../node_modules/react-native-document-picker/ios/RNDocumentPicker.xcodeproj"; sourceTree = "<group>"; };
 		9CE1279623BB35AB0035CEBD /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		9CE1279823BB35B40035CEBD /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		9CE31F182412A75D00B29DB7 /* RNShare.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
+		9CE31F5A2412A79E00B29DB7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		9CE31F5C2412A7A900B29DB7 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		9CE9F9022293B02300777DDF /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		A0C5A45A60174E9D9CC6A735 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -560,8 +573,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CE31F592412A77100B29DB7 /* libRNShare.a in Frameworks */,
 				9CE1279923BB35B40035CEBD /* Intents.framework in Frameworks */,
 				9CE1279723BB35AC0035CEBD /* CallKit.framework in Frameworks */,
+				9CE31F5D2412A7A900B29DB7 /* Social.framework in Frameworks */,
 				9CE1275B23BB353B0035CEBD /* libRNCallKeep.a in Frameworks */,
 				9CB4D249231FFCB700B39C6A /* libRNCAsyncStorage.a in Frameworks */,
 				9CBEF4A722FB452C007E3898 /* libRNSVG.a in Frameworks */,
@@ -601,6 +616,7 @@
 				846C98DB1F160C4300696596 /* libRCTWebRTC.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				9C91470522BE2E3A00CF23FE /* libReactNativeExceptionHandler.a in Frameworks */,
+				9CE31F5B2412A79E00B29DB7 /* MessageUI.framework in Frameworks */,
 				9C740746221FFCA800AC17B9 /* libRNCamera.a in Frameworks */,
 				9CBF72CD221160DC00A93F01 /* libRNDocumentPicker.a in Frameworks */,
 				9C91651F22205646000DEF18 /* libRNFS.a in Frameworks */,
@@ -731,6 +747,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CE31F5C2412A7A900B29DB7 /* Social.framework */,
+				9CE31F5A2412A79E00B29DB7 /* MessageUI.framework */,
 				9CE1279823BB35B40035CEBD /* Intents.framework */,
 				9CE1279623BB35AB0035CEBD /* CallKit.framework */,
 				9C8C84BB2246AE3500C5FB09 /* JavaScriptCore.framework */,
@@ -761,6 +779,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9CE31F182412A75D00B29DB7 /* RNShare.xcodeproj */,
 				9C4A185323BB2C83005AA9ED /* RNCallKeep.xcodeproj */,
 				9CB4D206231FFC3400B39C6A /* RNCAsyncStorage.xcodeproj */,
 				9CBEF46522FB4510007E3898 /* RNSVG.xcodeproj */,
@@ -953,6 +972,14 @@
 			isa = PBXGroup;
 			children = (
 				9CBF72CB221160B800A93F01 /* libRNDocumentPicker.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CE31F192412A75D00B29DB7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9CE31F542412A75D00B29DB7 /* libRNShare.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1160,6 +1187,10 @@
 				{
 					ProductGroup = 9C8525C322D5140B00E94618 /* Products */;
 					ProjectRef = 9C8525C222D5140B00E94618 /* RNInCallManager.xcodeproj */;
+				},
+				{
+					ProductGroup = 9CE31F192412A75D00B29DB7 /* Products */;
+					ProjectRef = 9CE31F182412A75D00B29DB7 /* RNShare.xcodeproj */;
 				},
 				{
 					ProductGroup = 9CBEF46622FB4510007E3898 /* Products */;
@@ -1551,6 +1582,13 @@
 			fileType = archive.ar;
 			path = libRNDocumentPicker.a;
 			remoteRef = 9CBF72CA221160B800A93F01 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9CE31F542412A75D00B29DB7 /* libRNShare.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNShare.a;
+			remoteRef = 9CE31F532412A75D00B29DB7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9CE9F9082293B02300777DDF /* libRCTPushNotification.a */ = {
