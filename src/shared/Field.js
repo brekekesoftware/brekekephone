@@ -77,6 +77,13 @@ const css = StyleSheet.create({
     color: g.subColor,
     fontWeight: g.fontWeight,
   },
+  Field_LabelTextGroup: {
+    ...Platform.select({
+      android: {
+        top: -6,
+      },
+    }),
+  },
   Field_TextInput: {
     width: `100%`,
     paddingTop: 1,
@@ -157,7 +164,9 @@ const Field = observer(({ ...props }) => {
           props.hasMargin && css.Field__groupMargin,
         ]}
       >
-        <Text small>{props.label}</Text>
+        <Text small style={css.Field_LabelTextGroup}>
+          {props.label}
+        </Text>
       </View>
     );
   }

@@ -28,6 +28,7 @@
     "es6-shim": "0.35.5",
     "es7-shim": "6.0.0",
     "eventemitter3": "4.0.0",
+    "filesize": "6.1.0",
     "handlebars": "4.7.3",
     "helper-moment": "0.2.0",
     "jssip": "github:brekekesoftware/jssip#1e8446f930647bf9ebb1c2e642a38684db5729fd",
