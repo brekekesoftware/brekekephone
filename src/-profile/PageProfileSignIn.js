@@ -15,12 +15,12 @@ import {
   TouchableOpacity,
   View,
 } from '../-/Rn';
+import { currentVersion } from '../-settings/PageSettingsDebug';
 import g from '../global';
 import intl from '../intl/intl';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
 import ProfileSignInItem from './ProfileSignInItem';
-import { currentVersion } from '../-settings/PageSettingsDebug';
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {

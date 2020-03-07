@@ -37,8 +37,8 @@ class PageSettingsDebug extends Component {
     return (
       <Layout
         description={intl`App information and debugging`}
-        dropdown={[
-          ...(Platform.OS !== `web`
+        dropdown={
+          Platform.OS !== `web`
             ? [
                 {
                   label: intl`Clear all log files`,
@@ -50,8 +50,8 @@ class PageSettingsDebug extends Component {
                   onPress: this.notImplemented,
                 },
               ]
-            : []),
-        ]}
+            : null
+        }
         onBack={g.backToPageProfileSignIn}
         title={intl`Debug`}
       >
@@ -68,8 +68,8 @@ class PageSettingsDebug extends Component {
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`OPEN DEBUG LOG`}
-              onCreateBtnPress={debugStore.buildLogFile}
-              onTouchPress={debugStore.buildLogFile}
+              onCreateBtnPress={debugStore.openLogFile}
+              onTouchPress={debugStore.openLogFile}
               value={filesize(debugStore.logSize, { round: 0 })}
             />
 
@@ -85,17 +85,6 @@ class PageSettingsDebug extends Component {
             <Text normal small style={css.Text} warning>
               {intl`Current version: ${currentVersion}`}
             </Text>
-            {/*
-            <Text normal small style={css.Text} warning>
-              {intl`Checking for update...`}
-            </Text>
-            <Text normal small style={css.Text} warning>
-              {intl`New version is available to update`}
-            </Text>
-            <Text normal primary small style={css.Text}>
-              {intl`Brekeke Phone is up-to-update (checked 4m ago)`}
-            </Text>
-            */}
           </React.Fragment>
         )}
       </Layout>

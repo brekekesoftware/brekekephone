@@ -5,7 +5,7 @@ const lv = [`debug`, `log`, `info`, `warn`, `error`];
 
 const customConsoleObject = lv.reduce((m, k) => {
   // debugStore was added globally in src/global/debugStore.js so it can be used here
-  m[k] = (...args) => window.debugStore?.writeLog(k, ...args);
+  m[k] = (...args) => window.debugStore?.captureConsoleOutput(k, ...args);
   return m;
 }, {});
 
