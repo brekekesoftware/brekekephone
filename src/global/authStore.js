@@ -112,12 +112,16 @@ class AuthStore extends BaseStore {
     }
     if (!p.pbxPassword && !p.accessToken) {
       g.goToPageProfileUpdate(p.id);
-      g.showError({ message: intl`The account password is empty` });
+      g.showError({
+        message: intl`The account password is empty`,
+      });
       return true;
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
       g.goToPageProfileUpdate(p.id);
-      g.showError({ message: intl`The UC config is missing` });
+      g.showError({
+        message: intl`The UC config is missing`,
+      });
       return true;
     }
     this.set(`signedInId`, p.id);
@@ -141,7 +145,10 @@ class AuthStore extends BaseStore {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: intl`Failed to unhold the call`, err });
+    g.showError({
+      message: intl`Failed to unhold the call`,
+      err,
+    });
   };
 
   hangup = id => {

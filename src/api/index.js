@@ -50,7 +50,7 @@ class Api {
     try {
       await this._onPBXAndSipStarted();
     } catch (err) {
-      console.error(`onPBXAndSipStarted`, err);
+      console.error(`api.onPBXAndSipStarted:`, err);
     }
   };
 
@@ -99,7 +99,10 @@ class Api {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      g.showError({ message: intl`Failed to load PBX users`, err });
+      g.showError({
+        message: intl`Failed to load PBX users`,
+        err,
+      });
     });
 
     setTimeout(this.onPBXAndSipStarted, 170);

@@ -94,7 +94,10 @@ class PageTransferAttend extends React.Component {
         g.backToPageCallManage();
       })
       .catch(err => {
-        g.showError({ message: intl`Failed to stop the transfer`, err });
+        g.showError({
+          message: intl`Failed to stop the transfer`,
+          err,
+        });
       });
   };
   hangup = () => {

@@ -97,7 +97,9 @@ class PageChatGroupInvite extends React.Component {
     const { selectedBuddy } = this.state;
     const members = Object.keys(selectedBuddy);
     if (!members.length) {
-      g.showError({ message: intl`No buddy selectedBuddy` });
+      g.showError({
+        message: intl`No buddy selected`,
+      });
       return;
     }
     uc.inviteChatGroupMembers(this.props.groupId, members)
@@ -105,7 +107,10 @@ class PageChatGroupInvite extends React.Component {
       .then(this.back);
   };
   onInviteFailure = err => {
-    g.showError({ message: intl`Failed to invite group chat`, err });
+    g.showError({
+      message: intl`Failed to invite group chat`,
+      err,
+    });
   };
   back = () => {
     g.backToPageChatGroupDetail({ groupId: this.props.groupId });

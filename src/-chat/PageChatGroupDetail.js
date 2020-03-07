@@ -161,7 +161,10 @@ class PageChatGroupDetail extends React.Component {
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
-        g.showError({ message: intl`Failed to get recent chats`, err });
+        g.showError({
+          message: intl`Failed to get recent chats`,
+          err,
+        });
       })
       .then(() => {
         this.setState({ loadingRecent: false });
@@ -183,7 +186,10 @@ class PageChatGroupDetail extends React.Component {
         chatStore.pushMessages(this.props.groupId, chats);
       })
       .catch(err => {
-        g.showError({ message: intl`Failed to get more chats`, err });
+        g.showError({
+          message: intl`Failed to get more chats`,
+          err,
+        });
       })
       .then(() => {
         this.setState({ loadingMore: false });
@@ -212,7 +218,10 @@ class PageChatGroupDetail extends React.Component {
         this.setState({ editingText: `` });
       })
       .catch(err => {
-        g.showError({ message: intl`Failed to send the message`, err });
+        g.showError({
+          message: intl`Failed to send the message`,
+          err,
+        });
       })
       .then(() => {
         this.submitting = false;
@@ -226,7 +235,10 @@ class PageChatGroupDetail extends React.Component {
         g.goToPageChatRecents();
       })
       .catch(err => {
-        g.showError({ message: intl`Failed to leave the group`, err });
+        g.showError({
+          message: intl`Failed to leave the group`,
+          err,
+        });
       });
   };
 
@@ -266,7 +278,10 @@ class PageChatGroupDetail extends React.Component {
     chatStore.pushMessages(groupId, res.chat);
   };
   onSendFileFailure = err => {
-    g.showError({ err, message: intl`Failed to send file` });
+    g.showError({
+      message: intl`Failed to send file`,
+      err,
+    });
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
@@ -276,13 +291,19 @@ class PageChatGroupDetail extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({ err, message: intl`Failed to accept file` });
+    g.showError({
+      message: intl`Failed to accept file`,
+      err,
+    });
   };
   rejectFile = file => {
     uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({ err, message: intl`Failed to reject file` });
+    g.showError({
+      message: intl`Failed to reject file`,
+      err,
+    });
   };
 }
 

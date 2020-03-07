@@ -5,7 +5,10 @@ import pbx from './pbx';
 
 const updatePhoneIndex = () =>
   updatePhoneIndexWithoutCatch().catch(err => {
-    g.showError({ message: intl`Failed to update phone index`, err });
+    g.showError({
+      message: intl`Failed to update phone index`,
+      err,
+    });
     g.goToPageProfileSignIn();
     return null;
   });

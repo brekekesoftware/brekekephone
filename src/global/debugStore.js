@@ -129,12 +129,13 @@ class DebugStore {
       confirmText: intl`CLEAR`,
     });
   };
-  clearLogFilesWithoutPrompt = this.clearLogFilesWithoutCatch().catch(err => {
-    g.showError({
-      message: intl`Failed to clear the log files`,
-      err,
+  clearLogFilesWithoutPrompt = () =>
+    this.clearLogFilesWithoutCatch().catch(err => {
+      g.showError({
+        message: intl`Failed to clear the log files`,
+        err,
+      });
     });
-  });
   clearLogFilesWithoutCatch = () =>
     Promise.all(
       [log1, log2].map((l, i) =>

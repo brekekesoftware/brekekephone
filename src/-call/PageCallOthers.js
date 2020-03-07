@@ -38,7 +38,10 @@ class PageCallOthers extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({ message: intl`Failed to unhold the call`, err });
+    g.showError({
+      message: intl`Failed to unhold the call`,
+      err,
+    });
   };
 
   hangup = id => {

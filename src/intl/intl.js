@@ -75,17 +75,24 @@ g.extends({
 const intl = (k, data) => {
   const arr = labels[g.locale];
   const i = enLabelsMapIndex[k];
+  //
+  let compileFn = null;
   if (g.locale !== `en`) {
-    k = arr[i];
+    compileFn = arr[i];
   }
-  if (!k) {
-    return `...`;
+  if (!compileFn) {
+    return k;
   }
-  if (typeof k !== `function`) {
-    k = Handlebars.compile(k);
-    arr[i] = k;
+  //
+  if (typeof compileFn !== `function`) {
+    compileFn = Handlebars.compile(k);
+    arr[i] = compileFn;
   }
-  return k(data);
+  const l = compileFn(data);
+  // Add en label so we can tracked later
+  // TODO not used anywhere yet
+  l.en = k;
+  return l;
 };
 
 g.initLocale();

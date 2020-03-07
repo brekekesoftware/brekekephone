@@ -27,7 +27,10 @@ class CallNotify extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: intl`Failed to hold the call`, err });
+    g.showError({
+      message: intl`Failed to hold the call`,
+      err,
+    });
   };
   accept = id => {
     const u = callStore.runnings.map(c => {

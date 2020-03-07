@@ -79,7 +79,10 @@ class AuthSIP extends React.Component {
       })
       .catch(err => {
         authStore.set(`sipState`, `failure`);
-        g.showError({ message: intl`Failed to connect to SIP`, err });
+        g.showError({
+          message: intl`Failed to connect to SIP`,
+          err,
+        });
       });
   };
   autoAuth = () => authStore.sipShouldAuth && this.auth();

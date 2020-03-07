@@ -20,14 +20,15 @@ class PageDtmfKeypad extends React.Component {
   };
 
   sendKey = key => {
-    console.warn(`key`, key);
     sip.sendDTMF(key, this.props.callId);
   };
 
   callVoice = () => {
     this.txt = this.txt.trim();
     if (!this.txt) {
-      g.showError({ message: intl`No target` });
+      g.showError({
+        message: intl`No target`,
+      });
       return;
     }
     sip.createSession(this.txt, {

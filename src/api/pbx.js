@@ -49,7 +49,7 @@ class PBX extends EventEmitter {
     };
 
     this.client.onError = err => {
-      console.error(err);
+      console.error(`pbx.client.onError:`, err);
     };
 
     this.client.notify_serverstatus = e => {

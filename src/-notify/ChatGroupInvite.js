@@ -45,13 +45,19 @@ class ChatGroupInvite extends React.Component {
     chatStore.removeGroup(res.id);
   };
   onRejectFailure = err => {
-    g.showError({ message: intl`Failed to reject the group chat`, err });
+    g.showError({
+      message: intl`Failed to reject the group chat`,
+      err,
+    });
   };
   accept = group => {
     uc.joinChatGroup(group).catch(this.onAcceptFailure);
   };
   onAcceptFailure = err => {
-    g.showError({ message: intl`Failed to accept the group chat`, err });
+    g.showError({
+      message: intl`Failed to accept the group chat`,
+      err,
+    });
   };
 }
 

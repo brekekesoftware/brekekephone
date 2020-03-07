@@ -62,8 +62,7 @@ class PageCallParks extends React.Component {
     const { selectedPark } = this.state;
     if (!selectedPark) {
       g.showError({
-        err: new Error(`No selected park`),
-        message: intl`Failed to start new park`,
+        message: intl`No selected park to start`,
       });
       return;
     }
@@ -87,7 +86,10 @@ class PageCallParks extends React.Component {
     g.goToPageCallManage({ changeTitle: intl`Call park is success` });
   };
   onParkFailure = err => {
-    g.showError({ err, message: intl`Failed to park the call` });
+    g.showError({
+      message: intl`Failed to park the call`,
+      err,
+    });
   };
 }
 

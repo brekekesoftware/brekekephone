@@ -215,7 +215,7 @@ class SIP extends EventEmitter {
     });
 
     this.phone.addEventListener(`rtcErrorOccurred`, ev => {
-      console.error(`rtcErrorOccurred`, ev); // TODO
+      console.error(`sip.phone.rtcErrorOccurred:`, ev); // TODO
     });
 
     this._makeCallOptionsForAndoirOrIos = {

@@ -34,7 +34,10 @@ class PageTransferDial extends React.Component {
   };
 
   onTransferFailure = err => {
-    g.showError({ message: intl`Failed to transfer the call`, err });
+    g.showError({
+      message: intl`Failed to transfer the call`,
+      err,
+    });
   };
   transferBlind = target => {
     const promise = pbx.transferTalkerBlind(

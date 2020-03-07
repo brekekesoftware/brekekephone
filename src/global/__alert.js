@@ -23,6 +23,13 @@ $.extends({
   showError: error => {
     $.alerts.push({ error });
     $.set(`alertsCount`, $.alerts.length);
+    // Call console.error to save the error to log file
+    const err = error.unexpectedErr || error.err;
+    if (!err) {
+      return;
+    }
+    const k = error.message?.en || error.message;
+    console.error(...(k ? [k, err] : [err]));
   },
   dismissAlert: () => {
     $.alerts.shift();
