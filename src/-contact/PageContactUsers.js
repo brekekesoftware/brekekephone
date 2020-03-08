@@ -1,18 +1,22 @@
 import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
 import { TouchableOpacity } from '../-/Rn';
+import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
+import callStore from '../global/callStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
+import { arrToMap } from '../utils/toMap';
 import UserItem from './UserItem';
 
 @observer
@@ -63,9 +67,44 @@ class PageContactUsers extends React.Component {
       ucUserName.includes(txt)
     );
   };
+  onHoldSuccess = () => {
+    callStore.upsertRunning({
+      id: callStore.selectedId,
+      holding: true,
+    });
+  };
+  onHoldFailure = err => {
+    g.showError({ message: intl`Failed to hold the call`, err });
+  };
+  @computed get runningById() {
+    return arrToMap(callStore.runnings, `id`, c => c);
+  }
+  getListCall = () => {
+    const otherCalls = callStore.runnings.map(c => {
+      return this.runningById[c.id];
+    });
+    const id = setInterval(() => {
+      const callsActive = callStore.runnings;
+      if (callsActive.length === otherCalls.length + 1) {
+        callStore.set(`selectedId`, callsActive[callsActive.length - 1].id);
+        g.goToPageCallOthers();
+        clearInterval(id);
+      }
+    }, 300);
+  };
   callVoice = userId => {
-    sip.createSession(userId);
-    g.goToPageCallManage();
+    const call = this.runningById[callStore.selectedId];
+    if (call) {
+      pbx
+        .holdTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onHoldSuccess)
+        .then(() => sip.createSession(userId))
+        .then(this.getListCall)
+        .catch(this.onHoldFailure);
+    } else {
+      sip.createSession(userId);
+      g.goToPageCallManage();
+    }
   };
   callVideo = userId => {
     sip.createSession(userId, {

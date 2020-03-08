@@ -218,8 +218,13 @@ class CallBar extends React.Component {
     });
   };
   hangup = () => {
-    const activecallid = callStore.selectedId;
-    sip.hangupSession(activecallid);
+    const listCall = callStore.runnings;
+    if (listCall.length <= 1) {
+      sip.hangupSession(callStore.selectedId);
+    } else {
+      sip.hangupSession(callStore.selectedId);
+      g.goToPageCallOthers();
+    }
   };
   hold = () => {
     const activecallid = callStore.selectedId;
@@ -238,10 +243,7 @@ class CallBar extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({
-      message: intl`Failed to hold the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to hold the call`, err });
   };
   unhold = () => {
     const activecallid = callStore.selectedId;
@@ -259,10 +261,7 @@ class CallBar extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({
-      message: intl`Failed to unhold the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to unhold the call`, err });
   };
 }
 

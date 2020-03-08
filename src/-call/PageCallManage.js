@@ -211,7 +211,7 @@ class PageCallManage extends React.Component {
 
   hangup = () => {
     const call = this.runningById[callStore.selectedId];
-    if (!call.holding) {
+    if (!call?.holding) {
       this.hangupFunc();
     } else {
       pbx
@@ -239,10 +239,7 @@ class PageCallManage extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({
-      message: intl`Failed to hold the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to hold the call`, err });
   };
   unhold = () => {
     const call = this.runningById[callStore.selectedId];
@@ -258,10 +255,7 @@ class PageCallManage extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({
-      message: intl`Failed to unhold the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to unhold the call`, err });
   };
 
   startRecording = () => {
@@ -278,10 +272,7 @@ class PageCallManage extends React.Component {
     });
   };
   onStartRecordingFailure = err => {
-    g.showError({
-      message: intl`Failed to start recording the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to start recording the call`, err });
   };
 
   stopRecording = () => {
@@ -298,10 +289,7 @@ class PageCallManage extends React.Component {
     });
   };
   onStopRecordingFailure = err => {
-    g.showError({
-      message: intl`Failed to stop recording the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to stop recording the call`, err });
   };
 
   transfer = () => {

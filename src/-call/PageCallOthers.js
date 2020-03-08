@@ -38,16 +38,13 @@ class PageCallOthers extends React.Component {
     });
   };
   onUnholdFailure = err => {
-    g.showError({
-      message: intl`Failed to unhold the call`,
-      err,
-    });
+    g.showError({ message: intl`Failed to unhold the call`, err });
   };
 
   hangup = id => {
     const call = this.runningById[id];
-    if (!call.holding) {
-      this.hangupFunc();
+    if (!call?.holding) {
+      this.hangupFunc(call.id);
     } else {
       pbx
         .unholdTalker(call.pbxTenant, call.pbxTalkerId)
@@ -56,9 +53,29 @@ class PageCallOthers extends React.Component {
         .catch(this.onUnholdFailure);
     }
   };
+
+  onHoldSuccess = () => {
+    callStore.upsertRunning({
+      id: callStore.selectedId,
+      holding: true,
+    });
+  };
+  onHoldFailure = err => {
+    g.showError({ message: intl`Failed to hold the call`, err });
+  };
+
   setSelectedId = id => {
-    callStore.set(`selectedId`, id);
-    g.backToPageCallManage();
+    const call = this.runningById[callStore.selectedId];
+    if (id === callStore.selectedId) {
+      g.backToPageCallManage();
+    } else {
+      pbx
+        .holdTalker(call.pbxTenant, call.pbxTalkerId)
+        .then(this.onHoldSuccess)
+        .then(() => callStore.set(`selectedId`, id))
+        .then(g.backToPageCallManage)
+        .catch(this.onHoldFailure);
+    }
   };
   render() {
     const u = callStore.runnings.map(c => {
