@@ -1,6 +1,7 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
+import EmojiSelector, { Categories } from 'react-native-emoji-selector';
 
 import ChatInput from '../-/Footer/ChatInput';
 import { StyleSheet, Text, TouchableOpacity } from '../-/Rn';
@@ -54,6 +55,8 @@ class PageChatDetail extends React.Component {
     allMessagesLoaded: false,
   };
   numberOfChatsPerLoadMore = numberOfChatsPerLoad;
+  edittingTextEmoji = ``;
+  editingTextReplace = false;
 
   componentDidMount() {
     const noChat = !this.chatIds.length;
@@ -66,6 +69,7 @@ class PageChatDetail extends React.Component {
   renderChatInput = () => {
     return (
       <ChatInput
+        onSelectionChange={this.onSelectionChange}
         onTextChange={this.setEditingText}
         onTextSubmit={this.submitEditingText}
         openFilePicker={() => pickFile(this.sendFile)}
@@ -122,9 +126,50 @@ class PageChatDetail extends React.Component {
           resolveChat={this.resolveChat}
           showImage={showImage}
         />
+        <EmojiSelector
+          category={Categories.symbols}
+          onEmojiSelected={emoji => this.emojiSelectFunc(emoji)}
+        />
       </Layout>
     );
   }
+
+  onSelectionChange = event => {
+    const selection = event.nativeEvent.selection;
+    if (selection.start !== selection.end) {
+      this.edittingTextEmoji = this.state.editingText.substring(
+        selection.start,
+        selection.end,
+      );
+      this.editingTextReplace = true;
+    } else {
+      this.edittingTextEmoji = this.state.editingText.substring(
+        0,
+        selection.start,
+      );
+    }
+  };
+  emojiSelectFunc = emoji => {
+    let newText = this.edittingTextEmoji.concat(emoji);
+    if (!this.editingTextReplace) {
+      this.setState({
+        editingText: this.state.editingText.replace(
+          this.edittingTextEmoji,
+          newText,
+        ),
+      });
+      this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji);
+    } else {
+      this.setState({
+        editingText: this.state.editingText.replace(
+          this.edittingTextEmoji,
+          emoji,
+        ),
+      });
+      this.editingTextReplace = false;
+      this.edittingTextEmoji = emoji;
+    }
+  };
 
   setViewRef = ref => {
     this.view = ref;
@@ -189,10 +234,7 @@ class PageChatDetail extends React.Component {
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
-        g.showError({
-          message: intl`Failed to get recent chats`,
-          err,
-        });
+        g.showError({ err, message: intl`Failed to get recent chats` });
       })
       .then(() => {
         this.setState({ loadingRecent: false });
@@ -225,10 +267,7 @@ class PageChatDetail extends React.Component {
         chatStore.pushMessages(u.id, chats);
       })
       .catch(err => {
-        g.showError({
-          message: intl`Failed to get more chats`,
-          err,
-        });
+        g.showError({ err, message: intl`Failed to get more chats` });
       })
       .then(() => {
         this.setState({ loadingMore: false });
@@ -267,10 +306,7 @@ class PageChatDetail extends React.Component {
     this.setState({ editingText: `` });
   };
   onSubmitEditingTextFailure = err => {
-    g.showError({
-      message: intl`Failed to send the message`,
-      err,
-    });
+    g.showError({ err, message: intl`Failed to send the message` });
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
@@ -278,19 +314,13 @@ class PageChatDetail extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({
-      message: intl`Failed to accept file`,
-      err,
-    });
+    g.showError({ err, message: intl`Failed to accept file` });
   };
   rejectFile = file => {
     uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({
-      message: intl`Failed to reject file`,
-      err,
-    });
+    g.showError({ err, message: intl`Failed to reject file` });
   };
   sendFile = file => {
     const u = contactStore.getUCUser(this.props.buddy);
@@ -304,10 +334,7 @@ class PageChatDetail extends React.Component {
     chatStore.pushMessages(buddyId, res.chat);
   };
   onSendFileFailure = err => {
-    g.showError({
-      message: intl`Failed to send file`,
-      err,
-    });
+    g.showError({ err, message: intl`Failed to send file` });
   };
 }
 
