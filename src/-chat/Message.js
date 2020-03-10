@@ -42,6 +42,7 @@ const css = StyleSheet.create({
         maxWidth: null,
       },
       ios: {
+        // Fix issue partial border radius not work on ios
         borderRadius: 2 * g.borderRadius,
         paddingLeft: 12 + 2 * g.borderRadius,
         left: 2 * g.borderRadius,
@@ -56,6 +57,7 @@ const css = StyleSheet.create({
     backgroundColor: g.colors.primaryFn(0.5),
     ...Platform.select({
       ios: {
+        // Fix issue partial border radius not work on ios
         borderRadius: 2 * g.borderRadius,
         paddingRight: 12 + 2 * g.borderRadius,
         right: 2 * g.borderRadius,

@@ -14,7 +14,7 @@ const css = StyleSheet.create({
 });
 
 const RnTextInput = forwardRef(
-  ({ keyboardType, style, value, placeholder, ...props }, ref) => (
+  ({ keyboardType, placeholder, style, value, ...props }, ref) => (
     <TextInput
       autoCapitalize="none"
       ref={ref}

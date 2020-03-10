@@ -83,20 +83,24 @@ const intl = (k, data) => {
     labels.en[i] = enFn; // Cache
   }
   //
-  let fn = labels[g.locale][i];
-  if (!fn && g.locale !== `en`) {
-    fn = () => `Untranslated`;
+  let fn = enFn;
+  if (g.locale !== `en`) {
+    fn = labels[g.locale][i];
+    if (!fn) {
+      fn = () => `Untranslated`;
+    }
+    if (typeof fn !== `function`) {
+      fn = Handlebars.compile(fn);
+    }
+    if (i !== undefined) {
+      labels[g.locale][i] = fn; // Cache
+    }
   }
-  if (typeof fn !== `function`) {
-    fn = Handlebars.compile(fn || k);
-  }
-  if (i !== undefined) {
-    labels[g.locale][i] = fn; // Cache
-  }
-  //
-  const str = fn(data);
-  const l = new String(str); // eslint-disable-line no-new-wrappers
-  l.intl = enFn(data); // Add English label to log/debug
+  // Add English label to log/debug in showError using intl property
+  // In order to assign intl property to string we must use the String object
+  // eslint-disable-next-line no-new-wrappers
+  const l = new String(fn(data));
+  l.intl = enFn(data);
   return l;
 };
 
