@@ -1,4 +1,4 @@
-import { mdiPaperclip, mdiSend } from '@mdi/js';
+import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js';
 import React from 'react';
 
 import g from '../../global';
@@ -20,6 +20,13 @@ const css = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
   },
+  Btn__emoji: {
+    backgroundColor: g.hoverBg,
+    borderRightWidth: 1,
+    borderColor: g.borderBg,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
   Btn__send: {
     backgroundColor: g.colors.primary,
     paddingLeft: 8,
@@ -35,14 +42,24 @@ const css = StyleSheet.create({
   },
 });
 
-const ChatInput = ({ onTextChange, onTextSubmit, openFilePicker, text }) => (
+const ChatInput = ({
+  onSelectionChange,
+  onTextChange,
+  onTextSubmit,
+  openFilePicker,
+  text,
+}) => (
   <View style={css.ChatInput}>
     <TouchableOpacity onPress={openFilePicker} style={[css.Btn, css.Btn__file]}>
       <Icon path={mdiPaperclip} size={20} />
     </TouchableOpacity>
+    <TouchableOpacity style={[css.Btn, css.Btn__emoji]}>
+      <Icon color="gray" path={mdiEmoticon} />
+    </TouchableOpacity>
     <TextInput
       blurOnSubmit={false}
       onChangeText={onTextChange}
+      onSelectionChange={onSelectionChange}
       onSubmitEditing={onTextSubmit}
       style={css.Input}
       value={text}
