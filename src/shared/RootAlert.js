@@ -78,7 +78,7 @@ const Alert = ({ error, prompt, ...props }) => {
     Object.assign(props, {
       title,
       message:
-        typeof message === `string` ? (
+        typeof message === `string` || message?.intl ? (
           <Text style={css.RootAlert_Message}>{message}</Text>
         ) : (
           <View style={css.RootAlert_Message}>{message}</View>

@@ -87,8 +87,8 @@ g.extends({
       await AsyncStorage.setItem(`_api_profiles`, JSON.stringify(arr));
     } catch (err) {
       g.showError({
-        err,
         message: intl`Failed to save accounts to local storage`,
+        err,
       });
     }
   },

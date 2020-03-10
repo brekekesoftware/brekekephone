@@ -32,14 +32,19 @@ const css = StyleSheet.create({
     marginBottom: 2,
     borderTopRightRadius: 2 * g.borderRadius,
     borderBottomRightRadius: 2 * g.borderRadius,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
     backgroundColor: g.hoverBg,
     overflow: `hidden`,
     maxWidth: Dimensions.get(`screen`).width - 20,
     ...Platform.select({
       web: {
         maxWidth: null,
+      },
+      ios: {
+        borderRadius: 2 * g.borderRadius,
+        paddingLeft: 12 + 2 * g.borderRadius,
+        left: 2 * g.borderRadius,
       },
     }),
   },
@@ -48,8 +53,14 @@ const css = StyleSheet.create({
     borderBottomLeftRadius: 2 * g.borderRadius,
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: g.colors.primaryFn(0.8),
-    color: `white`,
+    backgroundColor: g.colors.primaryFn(0.5),
+    ...Platform.select({
+      ios: {
+        borderRadius: 2 * g.borderRadius,
+        paddingRight: 12 + 2 * g.borderRadius,
+        right: 2 * g.borderRadius,
+      },
+    }),
   },
   //
   File: {
@@ -61,7 +72,7 @@ const css = StyleSheet.create({
     left: 5,
     paddingLeft: 10,
     paddingRight: 15,
-    backgroundColor: g.colors.primary,
+    backgroundColor: g.colors.primaryFn(0.5),
   },
   Message_File_Info: {
     marginLeft: 5,

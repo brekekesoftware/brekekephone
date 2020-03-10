@@ -234,7 +234,10 @@ class PageChatDetail extends React.Component {
         setTimeout(this.onContentSizeChange, 170);
       })
       .catch(err => {
-        g.showError({ err, message: intl`Failed to get recent chats` });
+        g.showError({
+          message: intl`Failed to get recent chats`,
+          err,
+        });
       })
       .then(() => {
         this.setState({ loadingRecent: false });
@@ -267,7 +270,10 @@ class PageChatDetail extends React.Component {
         chatStore.pushMessages(u.id, chats);
       })
       .catch(err => {
-        g.showError({ err, message: intl`Failed to get more chats` });
+        g.showError({
+          message: intl`Failed to get more chats`,
+          err,
+        });
       })
       .then(() => {
         this.setState({ loadingMore: false });
@@ -306,7 +312,10 @@ class PageChatDetail extends React.Component {
     this.setState({ editingText: `` });
   };
   onSubmitEditingTextFailure = err => {
-    g.showError({ err, message: intl`Failed to send the message` });
+    g.showError({
+      message: intl`Failed to send the message`,
+      err,
+    });
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
@@ -314,13 +323,19 @@ class PageChatDetail extends React.Component {
       .catch(this.onAcceptFileFailure);
   };
   onAcceptFileFailure = err => {
-    g.showError({ err, message: intl`Failed to accept file` });
+    g.showError({
+      message: intl`Failed to accept file`,
+      err,
+    });
   };
   rejectFile = file => {
     uc.rejectFile(file).catch(this.onRejectFileFailure);
   };
   onRejectFileFailure = err => {
-    g.showError({ err, message: intl`Failed to reject file` });
+    g.showError({
+      message: intl`Failed to reject file`,
+      err,
+    });
   };
   sendFile = file => {
     const u = contactStore.getUCUser(this.props.buddy);
@@ -334,7 +349,10 @@ class PageChatDetail extends React.Component {
     chatStore.pushMessages(buddyId, res.chat);
   };
   onSendFileFailure = err => {
-    g.showError({ err, message: intl`Failed to send file` });
+    g.showError({
+      message: intl`Failed to send file`,
+      err,
+    });
   };
 }
 

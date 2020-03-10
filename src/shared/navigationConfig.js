@@ -1,7 +1,7 @@
 import {
   mdiAccountCircleOutline,
+  mdiCogOutline,
   mdiPhoneOutline,
-  mdiSettingsOutline,
 } from '@mdi/js';
 
 import g from '../global';
@@ -58,7 +58,7 @@ const genMenus = () => {
     },
     {
       key: `settings`,
-      icon: mdiSettingsOutline,
+      icon: mdiCogOutline,
       subMenus: [
         {
           key: `profile`,

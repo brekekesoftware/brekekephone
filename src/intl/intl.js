@@ -73,25 +73,30 @@ g.extends({
 });
 
 const intl = (k, data) => {
-  const arr = labels[g.locale];
   const i = enLabelsMapIndex[k];
   //
-  let compileFn = null;
-  if (g.locale !== `en`) {
-    compileFn = arr[i];
+  let enFn = labels.en[i];
+  if (!enFn || typeof enFn !== `function`) {
+    enFn = Handlebars.compile(k);
   }
-  if (!compileFn) {
-    return k;
+  if (i !== undefined) {
+    labels.en[i] = enFn; // Cache
   }
   //
-  if (typeof compileFn !== `function`) {
-    compileFn = Handlebars.compile(k);
-    arr[i] = compileFn;
+  let fn = labels[g.locale][i];
+  if (!fn && g.locale !== `en`) {
+    fn = () => `Untranslated`;
   }
-  const l = compileFn(data);
-  // Add en label so we can tracked later
-  // TODO not used anywhere yet
-  l.en = k;
+  if (typeof fn !== `function`) {
+    fn = Handlebars.compile(fn || k);
+  }
+  if (i !== undefined) {
+    labels[g.locale][i] = fn; // Cache
+  }
+  //
+  const str = fn(data);
+  const l = new String(str); // eslint-disable-line no-new-wrappers
+  l.intl = enFn(data); // Add English label to log/debug
   return l;
 };
 

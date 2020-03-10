@@ -74,7 +74,10 @@ class PageContactUsers extends React.Component {
     });
   };
   onHoldFailure = err => {
-    g.showError({ message: intl`Failed to hold the call`, err });
+    g.showError({
+      message: intl`Failed to hold the call`,
+      err,
+    });
   };
   @computed get runningById() {
     return arrToMap(callStore.runnings, `id`, c => c);

@@ -1,6 +1,6 @@
 import pickBy from 'lodash/pickBy';
 import React, { forwardRef } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Animated, StyleSheet, Text } from 'react-native';
 
 import v from '../../variables';
 
@@ -57,21 +57,28 @@ const css = StyleSheet.create({
   },
 });
 
-const RnText = forwardRef(({ singleLine, style, ...props }, ref) => (
-  <Text
-    numberOfLines={singleLine ? 1 : 999}
-    ref={ref}
-    {...pickBy(props, (v, k) => !(k in css))}
-    style={[
-      css.RnText,
-      ...Object.keys(props)
-        .sort(k =>
-          k === `title` || k === `subTitle` || k === `small` ? -1 : 1,
-        )
-        .map(k => props[k] && css[k]),
-      style,
-    ]}
-  />
-));
+const wrap = Component =>
+  forwardRef(({ children, singleLine, style, ...props }, ref) => (
+    <Component
+      numberOfLines={singleLine ? 1 : 999}
+      ref={ref}
+      {...pickBy(props, (v, k) => !(k in css))}
+      style={[
+        css.RnText,
+        ...Object.keys(props)
+          .sort(k =>
+            k === `title` || k === `subTitle` || k === `small` ? -1 : 1,
+          )
+          .map(k => props[k] && css[k]),
+        style,
+      ]}
+    >
+      {// Fix issue in intl using new String
+      children?.intl ? `${children}` : children}
+    </Component>
+  ));
+
+const RnText = wrap(Text);
+Animated.Text = wrap(Animated.Text);
 
 export default RnText;

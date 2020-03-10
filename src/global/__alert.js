@@ -17,18 +17,22 @@ $.extends({
   //    unexpectedErr?: Error
   alerts: [],
   showPrompt: prompt => {
-    $.alerts.push({ prompt });
-    $.set(`alertsCount`, $.alerts.length);
+    setTimeout(() => {
+      $.alerts.push({ prompt });
+      $.set(`alertsCount`, $.alerts.length);
+    });
   },
   showError: error => {
-    $.alerts.push({ error });
-    $.set(`alertsCount`, $.alerts.length);
+    setTimeout(() => {
+      $.alerts.push({ error });
+      $.set(`alertsCount`, $.alerts.length);
+    });
     // Call console.error to save the error to log file
     const err = error.unexpectedErr || error.err;
     if (!err) {
       return;
     }
-    const k = error.message?.en || error.message;
+    const k = error.message?.intl || error.message;
     console.error(...(k ? [k, err] : [err]));
   },
   dismissAlert: () => {
