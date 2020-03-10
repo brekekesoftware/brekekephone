@@ -15,8 +15,8 @@ import {
   TouchableOpacity,
   View,
 } from '../-/Rn';
-import { currentVersion } from '../-settings/PageSettingsDebug';
 import g from '../global';
+import debugStore from '../global/debugStore';
 import intl from '../intl/intl';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
@@ -113,7 +113,7 @@ const PageProfileSignIn = observer(() => {
             style={[css.CornerButton_Icon, css.CornerButton_Icon__info]}
           />
           <Text bold white>
-            {currentVersion}
+            {debugStore.currentVersion}
           </Text>
         </View>
       </TouchableOpacity>
