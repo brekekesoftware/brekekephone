@@ -53,12 +53,12 @@ class DebugStore {
       args
         .map(a =>
           !a
-            ? `` + a
-            : a.message && a.stacks
-            ? a.message + ` ` + a.stacks
+            ? `${a}`
+            : a.message && a.stack
+            ? a.message + ` ` + a.stack
             : typeof a === `object`
             ? CircularJson.stringify(a)
-            : `` + a,
+            : `${a}`,
         )
         .join(` `)
         .replace(/\s+/g, ` `);

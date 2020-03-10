@@ -46,57 +46,63 @@ import RootAuth from './shared/RootAuth';
 import RootPicker from './shared/RootPicker';
 import RootStacks from './shared/RootStacks';
 
-registerOnUnhandledError(unexpectedErr => {
-  g.showError({ unexpectedErr });
-  return false;
-});
-// Must load accounts here because when app wake from notification, there's no rendering
-g.loadProfilesFromLocalStorage();
+// Must wrap in setTimeout to make sure
+//    there's no state change when rendering
+setTimeout(() => {
+  registerOnUnhandledError(unexpectedErr => {
+    g.showError({ unexpectedErr });
+    return false;
+  });
 
-PushNotification.register();
-authStore.handleUrlParams();
+  // Must load accounts here because when app wake
+  //    from notification, there's no rendering
+  g.loadProfilesFromLocalStorage();
 
-setTimeout(g.goToPageIndex, 100);
-observe(authStore, `signedInId`, () => {
-  g.goToPageIndex();
-  chatStore.clearStore();
-  contactStore.clearStore();
-});
+  PushNotification.register();
+  authStore.handleUrlParams();
 
-// TODO: Only reset when logged in and AppState.current active
-// PushNotification.resetBadgeNumber();
+  setTimeout(g.goToPageIndex, 100);
+  observe(authStore, `signedInId`, () => {
+    g.goToPageIndex();
+    chatStore.clearStore();
+    contactStore.clearStore();
+  });
 
-// TODO
-void api;
+  // TODO: Only reset when logged in and AppState.current active
+  // PushNotification.resetBadgeNumber();
 
-g.registerStacks({
-  isRoot: true,
-  PageProfileSignIn,
-  PageChatRecents,
-  PageContactPhonebook,
-  PageContactUsers,
-  PageCallKeypad,
-  PageCallRecents,
-  PageSettingsOther,
-  PageCallParks,
-  PageSettingsProfile,
-});
-g.registerStacks({
-  PageProfileCreate,
-  PageProfileUpdate,
-  PagePhonebookCreate,
-  PagePhonebookUpdate,
-  PageCallManage,
-  PageCallOthers,
-  PageDtmfKeypad,
-  PageChatDetail,
-  PageTransferAttend,
-  PageTransferDial,
-  PageChatGroupCreate,
-  PageChatGroupInvite,
-  PageChatGroupDetail,
-  PageSettingsDebug,
-});
+  // TODO
+  void api;
+
+  g.registerStacks({
+    isRoot: true,
+    PageProfileSignIn,
+    PageChatRecents,
+    PageContactPhonebook,
+    PageContactUsers,
+    PageCallKeypad,
+    PageCallRecents,
+    PageSettingsOther,
+    PageCallParks,
+    PageSettingsProfile,
+  });
+  g.registerStacks({
+    PageProfileCreate,
+    PageProfileUpdate,
+    PagePhonebookCreate,
+    PagePhonebookUpdate,
+    PageCallManage,
+    PageCallOthers,
+    PageDtmfKeypad,
+    PageChatDetail,
+    PageTransferAttend,
+    PageTransferDial,
+    PageChatGroupCreate,
+    PageChatGroupInvite,
+    PageChatGroupDetail,
+    PageSettingsDebug,
+  });
+}, 100);
 
 const css = StyleSheet.create({
   App: {
