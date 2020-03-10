@@ -28,7 +28,7 @@ const css = StyleSheet.create({
 class PageSettingsDebug extends Component {
   render() {
     const v = debugStore.currentVersion;
-    const rv = debugStore.remoteVersion;
+    const nv = debugStore.remoteVersion;
     const ago = moment(debugStore.remoteVersionLastCheck).fromNow();
 
     return (
@@ -91,7 +91,7 @@ class PageSettingsDebug extends Component {
               {debugStore.isCheckingForUpdate
                 ? intl`Checking for update...`
                 : debugStore.isUpdateAvailable
-                ? intl`A new version is available: ${rv}`
+                ? intl`A new version is available: ${nv}`
                 : intl`Brekeke Phone is up-to-date, checked ${ago}`}
             </Text>
           </React.Fragment>
