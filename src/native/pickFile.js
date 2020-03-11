@@ -77,7 +77,7 @@ const pickFileOnSelect = async (i, cb) => {
   } catch (err) {
     if (!DocumentPicker.isCancel(err)) {
       g.showError({
-        message: intl`Failed to pick file from system`,
+        message: intl.debug`Failed to pick file from system`,
         err,
       });
     }

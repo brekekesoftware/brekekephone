@@ -244,7 +244,7 @@ class CallBar extends React.Component {
   };
   onHoldFailure = err => {
     g.showError({
-      message: intl`Failed to hold the call`,
+      message: intl.debug`Failed to hold the call`,
       err,
     });
   };
@@ -265,7 +265,7 @@ class CallBar extends React.Component {
   };
   onUnholdFailure = err => {
     g.showError({
-      message: intl`Failed to unhold the call`,
+      message: intl.debug`Failed to unhold the call`,
       err,
     });
   };

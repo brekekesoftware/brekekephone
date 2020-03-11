@@ -23,17 +23,18 @@ $.extends({
     });
   },
   showError: error => {
-    setTimeout(() => {
-      $.alerts.push({ error });
-      $.set(`alertsCount`, $.alerts.length);
-    });
-    // Call console.error to save the error to log file
+    // Log error to save it to the debug log
     const err = error.unexpectedErr || error.err;
-    if (!err) {
-      return;
+    if (err) {
+      const k = error.message?.intl || error.message;
+      console.error(...(k ? [k, err] : [err]));
     }
-    const k = error.message?.intl || error.message;
-    console.error(...(k ? [k, err] : [err]));
+    // Convert error message to string if it was constructed using intl.debug
+    if (error.message?.intl) {
+      error.message = `${error.message}`;
+    }
+    $.alerts.push({ error });
+    $.set(`alertsCount`, $.alerts.length);
   },
   dismissAlert: () => {
     $.alerts.shift();

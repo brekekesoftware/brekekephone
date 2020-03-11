@@ -17,7 +17,7 @@ const getFrontCameraSourceId = () => {
     .then(i => i?.id)
     .catch(err => {
       g.showError({
-        message: intl`Failed to get front camera information`,
+        message: intl.debug`Failed to get front camera information`,
         err,
       });
     });

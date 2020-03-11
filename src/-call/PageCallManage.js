@@ -240,7 +240,7 @@ class PageCallManage extends React.Component {
   };
   onHoldFailure = err => {
     g.showError({
-      message: intl`Failed to hold the call`,
+      message: intl.debug`Failed to hold the call`,
       err,
     });
   };
@@ -259,7 +259,7 @@ class PageCallManage extends React.Component {
   };
   onUnholdFailure = err => {
     g.showError({
-      message: intl`Failed to unhold the call`,
+      message: intl.debug`Failed to unhold the call`,
       err,
     });
   };
@@ -279,7 +279,7 @@ class PageCallManage extends React.Component {
   };
   onStartRecordingFailure = err => {
     g.showError({
-      message: intl`Failed to start recording the call`,
+      message: intl.debug`Failed to start recording the call`,
       err,
     });
   };
@@ -299,7 +299,7 @@ class PageCallManage extends React.Component {
   };
   onStopRecordingFailure = err => {
     g.showError({
-      message: intl`Failed to stop recording the call`,
+      message: intl.debug`Failed to stop recording the call`,
       err,
     });
   };

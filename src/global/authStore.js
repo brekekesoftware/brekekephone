@@ -113,14 +113,14 @@ class AuthStore extends BaseStore {
     if (!p.pbxPassword && !p.accessToken) {
       g.goToPageProfileUpdate(p.id);
       g.showError({
-        message: intl`The account password is empty`,
+        message: intl.debug`The account password is empty`,
       });
       return true;
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
       g.goToPageProfileUpdate(p.id);
       g.showError({
-        message: intl`The UC config is missing`,
+        message: intl.debug`The UC config is missing`,
       });
       return true;
     }
@@ -146,7 +146,7 @@ class AuthStore extends BaseStore {
   };
   onUnholdFailure = err => {
     g.showError({
-      message: intl`Failed to unhold the call`,
+      message: intl.debug`Failed to unhold the call`,
       err,
     });
   };

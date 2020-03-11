@@ -1,7 +1,6 @@
 const path = require(`path`);
 const fs = require(`fs-extra`);
 
-const tagName = `intl`;
 const jsonOutputPath = path.join(__dirname, `./src/intl/en.json`);
 
 // Only add brackets if there's no existing brackets
@@ -33,7 +32,8 @@ const babelPluginIntl = () => ({
   visitor: {
     TaggedTemplateExpression(p, s) {
       //
-      if (p.node.tag.name !== tagName) {
+      const tagName = p.node.tag.name;
+      if (tagName !== `intl` && tagName !== `intl.debug`) {
         return;
       }
       // Get raw expressions from source code

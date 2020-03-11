@@ -100,7 +100,7 @@ class Api {
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
       g.showError({
-        message: intl`Failed to load PBX users`,
+        message: intl.debug`Failed to load PBX users`,
         err,
       });
     });

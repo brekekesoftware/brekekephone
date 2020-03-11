@@ -60,49 +60,49 @@ setTimeout(() => {
 
   PushNotification.register();
   authStore.handleUrlParams();
-
-  setTimeout(g.goToPageIndex, 100);
-  observe(authStore, `signedInId`, () => {
-    g.goToPageIndex();
-    chatStore.clearStore();
-    contactStore.clearStore();
-  });
-
-  // TODO: Only reset when logged in and AppState.current active
-  // PushNotification.resetBadgeNumber();
-
-  // TODO
-  void api;
-
-  g.registerStacks({
-    isRoot: true,
-    PageProfileSignIn,
-    PageChatRecents,
-    PageContactPhonebook,
-    PageContactUsers,
-    PageCallKeypad,
-    PageCallRecents,
-    PageSettingsOther,
-    PageCallParks,
-    PageSettingsProfile,
-  });
-  g.registerStacks({
-    PageProfileCreate,
-    PageProfileUpdate,
-    PagePhonebookCreate,
-    PagePhonebookUpdate,
-    PageCallManage,
-    PageCallOthers,
-    PageDtmfKeypad,
-    PageChatDetail,
-    PageTransferAttend,
-    PageTransferDial,
-    PageChatGroupCreate,
-    PageChatGroupInvite,
-    PageChatGroupDetail,
-    PageSettingsDebug,
-  });
 }, 100);
+
+setTimeout(g.goToPageIndex, 100);
+observe(authStore, `signedInId`, () => {
+  g.goToPageIndex();
+  chatStore.clearStore();
+  contactStore.clearStore();
+});
+
+// TODO: Only reset when logged in and AppState.current active
+// PushNotification.resetBadgeNumber();
+
+// TODO
+void api;
+
+g.registerStacks({
+  isRoot: true,
+  PageProfileSignIn,
+  PageChatRecents,
+  PageContactPhonebook,
+  PageContactUsers,
+  PageCallKeypad,
+  PageCallRecents,
+  PageSettingsOther,
+  PageCallParks,
+  PageSettingsProfile,
+});
+g.registerStacks({
+  PageProfileCreate,
+  PageProfileUpdate,
+  PagePhonebookCreate,
+  PagePhonebookUpdate,
+  PageCallManage,
+  PageCallOthers,
+  PageDtmfKeypad,
+  PageChatDetail,
+  PageTransferAttend,
+  PageTransferDial,
+  PageChatGroupCreate,
+  PageChatGroupInvite,
+  PageChatGroupDetail,
+  PageSettingsDebug,
+});
 
 const css = StyleSheet.create({
   App: {

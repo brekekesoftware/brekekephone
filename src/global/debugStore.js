@@ -45,7 +45,7 @@ class DebugStore {
 
   // The function to be called in src/-/captureConsoleOutput.js
   captureConsoleOutput = (lv, ...args) => {
-    if (lv !== `error` && !this.captureDebugLog) {
+    if (lv !== `error` && lv !== `warn` && !this.captureDebugLog) {
       return;
     }
     const msg =
@@ -69,7 +69,7 @@ class DebugStore {
   writeFile = () =>
     this.writeFileWithoutCatch().catch(err => {
       g.showError({
-        message: intl`Failed to write debug log to file`,
+        message: intl.debug`Failed to write debug log to file`,
         err,
       });
     });
@@ -98,7 +98,7 @@ class DebugStore {
   openLogFile = () =>
     this.openLogFileWithoutCatch().catch(err => {
       g.showError({
-        message: intl`Failed to build and open log file`,
+        message: intl.debug`Failed to build and open log file`,
         err,
       });
     });
@@ -133,7 +133,7 @@ class DebugStore {
   clearLogFilesWithoutPrompt = () =>
     this.clearLogFilesWithoutCatch().catch(err => {
       g.showError({
-        message: intl`Failed to clear the log files`,
+        message: intl.debug`Failed to clear the log files`,
         err,
       });
     });
@@ -187,7 +187,7 @@ class DebugStore {
       .then(this.saveRemoteVersionToStorage)
       .catch(err => {
         g.showError({
-          message: intl`Failed to get app version from app store`,
+          message: intl.debug`Failed to get app version from app store`,
           err,
         });
         this.isCheckingForUpdate = false;
@@ -202,7 +202,7 @@ class DebugStore {
       }),
     ).catch(err => {
       g.showError({
-        message: intl`Failed to save app version to storage`,
+        message: intl.debug`Failed to save app version to storage`,
         err,
       });
     });
@@ -231,7 +231,7 @@ class DebugStore {
         .then(e => (this.logSizes[i] = Number(e.size) || 0))
         .catch(err => {
           g.showError({
-            message: intl`Failed to read debug log file size`,
+            message: intl.debug`Failed to read debug log file size`,
             err,
           });
         }),
@@ -244,7 +244,7 @@ class DebugStore {
         .then(e => e && RNFS.unlink(log))
         .catch(err => {
           g.showError({
-            message: intl`Failed to delete unused debug log file`,
+            message: intl.debug`Failed to delete unused debug log file`,
             err,
           });
         }),
@@ -255,7 +255,7 @@ class DebugStore {
         .then(v => v && (this.captureDebugLog = JSON.parse(v)))
         .catch(err => {
           g.showError({
-            message: intl`Failed to read debug log settings from storage`,
+            message: intl.debug`Failed to read debug log settings from storage`,
             err,
           });
         }),
@@ -273,7 +273,7 @@ class DebugStore {
         })
         .catch(err => {
           g.showError({
-            message: intl`Failed to read app version from storage`,
+            message: intl.debug`Failed to read app version from storage`,
             err,
           });
         }),

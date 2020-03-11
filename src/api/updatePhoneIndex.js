@@ -6,7 +6,7 @@ import pbx from './pbx';
 const updatePhoneIndex = () =>
   updatePhoneIndexWithoutCatch().catch(err => {
     g.showError({
-      message: intl`Failed to update phone index`,
+      message: intl.debug`Failed to update phone index`,
       err,
     });
     g.goToPageProfileSignIn();
@@ -58,7 +58,7 @@ const updatePhoneIndexWithoutCatch = async () => {
             })
             .catch(err => {
               g.showError({
-                message: intl`Failed to set extension properties`,
+                message: intl.debug`Failed to set extension properties`,
                 err,
               });
               resolve(null);

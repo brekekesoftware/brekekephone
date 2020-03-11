@@ -13,24 +13,14 @@ const css = StyleSheet.create({
   },
 });
 
-const RnTextInput = forwardRef(
-  ({ keyboardType, placeholder, style, value, ...props }, ref) => (
-    <TextInput
-      autoCapitalize="none"
-      ref={ref}
-      {...props}
-      keyboardType={Platform.OS === `web` ? null : keyboardType}
-      placeholder={
-        // Fix issue in intl using new String
-        placeholder?.intl ? `${placeholder}` : placeholder
-      }
-      style={[css.RnTextInput, style]}
-      value={
-        // Fix issue in intl using new String
-        value?.intl ? `${value}` : value
-      }
-    />
-  ),
-);
+const RnTextInput = forwardRef(({ keyboardType, style, ...props }, ref) => (
+  <TextInput
+    autoCapitalize="none"
+    ref={ref}
+    {...props}
+    keyboardType={Platform.OS === `web` ? null : keyboardType}
+    style={[css.RnTextInput, style]}
+  />
+));
 
 export default RnTextInput;

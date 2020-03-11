@@ -27,7 +27,7 @@ class PageDtmfKeypad extends React.Component {
     this.txt = this.txt.trim();
     if (!this.txt) {
       g.showError({
-        message: intl`No target`,
+        message: intl.debug`No target`,
       });
       return;
     }

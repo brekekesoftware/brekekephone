@@ -46,7 +46,7 @@ class ChatGroupInvite extends React.Component {
   };
   onRejectFailure = err => {
     g.showError({
-      message: intl`Failed to reject the group chat`,
+      message: intl.debug`Failed to reject the group chat`,
       err,
     });
   };
@@ -55,7 +55,7 @@ class ChatGroupInvite extends React.Component {
   };
   onAcceptFailure = err => {
     g.showError({
-      message: intl`Failed to accept the group chat`,
+      message: intl.debug`Failed to accept the group chat`,
       err,
     });
   };

@@ -202,7 +202,7 @@ class PageContactPhonebook extends React.Component {
       loading: false,
     });
     g.showError({
-      message: intl`Failed to load contact list`,
+      message: intl.debug`Failed to load contact list`,
       err,
     });
   };
@@ -214,7 +214,7 @@ class PageContactPhonebook extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to load contact detail for id ${id}`,
+          message: intl.debug`Failed to load contact detail for id ${id}`,
           err,
         });
       });
@@ -265,7 +265,7 @@ class PageContactPhonebook extends React.Component {
     } else {
       this.update(contact);
       g.showError({
-        message: intl`This contact doesn't have any phone number`,
+        message: intl.debug`This contact doesn't have any phone number`,
       });
     }
   };

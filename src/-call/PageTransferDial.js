@@ -35,7 +35,7 @@ class PageTransferDial extends React.Component {
 
   onTransferFailure = err => {
     g.showError({
-      message: intl`Failed to transfer the call`,
+      message: intl.debug`Failed to transfer the call`,
       err,
     });
   };

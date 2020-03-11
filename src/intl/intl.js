@@ -87,14 +87,12 @@ const compileFn = (locale, k) => {
   return fn;
 };
 
-const intl = (k, data) => {
-  const enFn = compileFn(`en`, k);
-  const fn = g.locale === `en` ? enFn : compileFn(g.locale, k);
-  // Add English label to log/debug in showError using intl property
+const intl = (k, data) => compileFn(g.locale, k)(data);
+intl.debug = (k, data) => {
+  // Add English label to save debug log in showError
   // In order to assign intl property to string we must use the String object
-  // eslint-disable-next-line no-new-wrappers
-  const l = new String(fn(data));
-  l.intl = enFn(data);
+  const l = new String(intl(k, data)); // eslint-disable-line no-new-wrappers
+  l.intl = compileFn(`en`, k)(data);
   return l;
 };
 

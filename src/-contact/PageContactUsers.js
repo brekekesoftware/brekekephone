@@ -75,7 +75,7 @@ class PageContactUsers extends React.Component {
   };
   onHoldFailure = err => {
     g.showError({
-      message: intl`Failed to hold the call`,
+      message: intl.debug`Failed to hold the call`,
       err,
     });
   };

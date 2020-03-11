@@ -42,7 +42,7 @@ class PageSettingsOther extends Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to change UC status`,
+          message: intl.debug`Failed to change UC status`,
           err,
         });
       });

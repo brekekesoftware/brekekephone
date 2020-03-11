@@ -162,7 +162,7 @@ class PageChatGroupDetail extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to get recent chats`,
+          message: intl.debug`Failed to get recent chats`,
           err,
         });
       })
@@ -187,7 +187,7 @@ class PageChatGroupDetail extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to get more chats`,
+          message: intl.debug`Failed to get more chats`,
           err,
         });
       })
@@ -219,7 +219,7 @@ class PageChatGroupDetail extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to send the message`,
+          message: intl.debug`Failed to send the message`,
           err,
         });
       })
@@ -236,7 +236,7 @@ class PageChatGroupDetail extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to leave the group`,
+          message: intl.debug`Failed to leave the group`,
           err,
         });
       });
@@ -279,7 +279,7 @@ class PageChatGroupDetail extends React.Component {
   };
   onSendFileFailure = err => {
     g.showError({
-      message: intl`Failed to send file`,
+      message: intl.debug`Failed to send file`,
       err,
     });
   };
@@ -292,7 +292,7 @@ class PageChatGroupDetail extends React.Component {
   };
   onAcceptFileFailure = err => {
     g.showError({
-      message: intl`Failed to accept file`,
+      message: intl.debug`Failed to accept file`,
       err,
     });
   };
@@ -301,7 +301,7 @@ class PageChatGroupDetail extends React.Component {
   };
   onRejectFileFailure = err => {
     g.showError({
-      message: intl`Failed to reject file`,
+      message: intl.debug`Failed to reject file`,
       err,
     });
   };

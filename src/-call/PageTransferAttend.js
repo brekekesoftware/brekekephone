@@ -95,7 +95,7 @@ class PageTransferAttend extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to stop the transfer`,
+          message: intl.debug`Failed to stop the transfer`,
           err,
         });
       });
@@ -115,7 +115,7 @@ class PageTransferAttend extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to make conference for the transfer`,
+          message: intl.debug`Failed to make conference for the transfer`,
           err,
         });
       });

@@ -235,7 +235,7 @@ class PageChatDetail extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to get recent chats`,
+          message: intl.debug`Failed to get recent chats`,
           err,
         });
       })
@@ -271,7 +271,7 @@ class PageChatDetail extends React.Component {
       })
       .catch(err => {
         g.showError({
-          message: intl`Failed to get more chats`,
+          message: intl.debug`Failed to get more chats`,
           err,
         });
       })
@@ -313,7 +313,7 @@ class PageChatDetail extends React.Component {
   };
   onSubmitEditingTextFailure = err => {
     g.showError({
-      message: intl`Failed to send the message`,
+      message: intl.debug`Failed to send the message`,
       err,
     });
   };
@@ -324,7 +324,7 @@ class PageChatDetail extends React.Component {
   };
   onAcceptFileFailure = err => {
     g.showError({
-      message: intl`Failed to accept file`,
+      message: intl.debug`Failed to accept file`,
       err,
     });
   };
@@ -333,7 +333,7 @@ class PageChatDetail extends React.Component {
   };
   onRejectFileFailure = err => {
     g.showError({
-      message: intl`Failed to reject file`,
+      message: intl.debug`Failed to reject file`,
       err,
     });
   };
@@ -350,7 +350,7 @@ class PageChatDetail extends React.Component {
   };
   onSendFileFailure = err => {
     g.showError({
-      message: intl`Failed to send file`,
+      message: intl.debug`Failed to send file`,
       err,
     });
   };

@@ -35,7 +35,7 @@ class PagePhonebookUpdate extends React.Component {
   };
   onSaveFailure = err => {
     g.showError({
-      message: intl`Failed to save the contact`,
+      message: intl.debug`Failed to save the contact`,
       err,
     });
   };
