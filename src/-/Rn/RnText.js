@@ -58,7 +58,7 @@ const css = StyleSheet.create({
 });
 
 const wrap = Component =>
-  forwardRef(({ children, singleLine, style, ...props }, ref) => (
+  forwardRef(({ singleLine, style, ...props }, ref) => (
     <Component
       numberOfLines={singleLine ? 1 : 999}
       ref={ref}
@@ -72,10 +72,7 @@ const wrap = Component =>
           .map(k => props[k] && css[k]),
         style,
       ]}
-    >
-      {// Fix issue in intl using new String
-      children?.intl ? `${children}` : children}
-    </Component>
+    />
   ));
 
 const RnText = wrap(Text);

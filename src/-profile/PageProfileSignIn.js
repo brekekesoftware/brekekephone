@@ -15,11 +15,11 @@ import {
   TouchableOpacity,
   View,
 } from '../-/Rn';
-import { currentVersion } from '../-settings/PageSettingsDebug';
 import g from '../global';
 import intl from '../intl/intl';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
+import { currentVersion } from '../variables';
 import ProfileSignInItem from './ProfileSignInItem';
 
 const css = StyleSheet.create({

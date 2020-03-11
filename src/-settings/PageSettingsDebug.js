@@ -1,6 +1,7 @@
 import { mdiKeyboardBackspace } from '@mdi/js';
 import filesize from 'filesize';
 import { observer } from 'mobx-react';
+import moment from 'moment';
 import React, { Component } from 'react';
 
 import { Platform, StyleSheet, Text } from '../-/Rn';
@@ -9,6 +10,7 @@ import debugStore from '../global/debugStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
+import { currentVersion } from '../variables';
 
 const css = StyleSheet.create({
   BtnIcon: {
@@ -23,17 +25,13 @@ const css = StyleSheet.create({
   },
 });
 
-export const currentVersion = `2.1.0`;
-
 @observer
 class PageSettingsDebug extends Component {
-  notImplemented = () => {
-    g.showError({
-      unexpectedErr: new Error(`Not implemented`),
-    });
-  };
-
   render() {
+    const v = currentVersion;
+    const nv = debugStore.remoteVersion;
+    const ago = moment(debugStore.remoteVersionLastCheck).fromNow();
+
     return (
       <Layout
         description={intl`App information and debugging`}
@@ -47,7 +45,7 @@ class PageSettingsDebug extends Component {
                 },
                 {
                   label: intl`Manually check for update`,
-                  onPress: this.notImplemented,
+                  onPress: debugStore.checkForUpdate,
                 },
               ]
             : null
@@ -78,12 +76,24 @@ class PageSettingsDebug extends Component {
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`UPDATE`}
-              onCreateBtnPress={this.notImplemented}
-              onTouchPress={this.notImplemented}
+              onCreateBtnPress={debugStore.openInStore}
+              onTouchPress={debugStore.openInStore}
               value={intl`Open Brekeke Phone on store`}
             />
-            <Text normal small style={css.Text} warning>
-              {intl`Current version: ${currentVersion}`}
+            <Text
+              normal
+              primary={!debugStore.isUpdateAvailable}
+              small
+              style={css.Text}
+              warning={debugStore.isUpdateAvailable}
+            >
+              {intl`Current version: ${v}`}
+              {`\n`}
+              {debugStore.isCheckingForUpdate
+                ? intl`Checking for update...`
+                : debugStore.isUpdateAvailable
+                ? intl`A new version is available: ${nv}`
+                : intl`Brekeke Phone is up-to-date, checked ${ago}`}
             </Text>
           </React.Fragment>
         )}

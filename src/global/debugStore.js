@@ -6,9 +6,10 @@ import moment from 'moment';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 
-import { AsyncStorage, Platform } from '../-/Rn';
+import { AsyncStorage, Linking, Platform } from '../-/Rn';
 import g from '../global';
 import intl from '../intl/intl';
+import { currentVersion } from '../variables';
 
 // The location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
@@ -145,6 +146,83 @@ class DebugStore {
       ),
     );
 
+  @observable isCheckingForUpdate = false;
+  @observable remoteVersion = ``;
+  @observable remoteVersionLastCheck = 0;
+  @computed get isUpdateAvailable() {
+    const a1 = currentVersion.split(`.`);
+    const a2 = this.remoteVersion.split(`.`);
+    return a1.reduce((available, v, i) => {
+      const v1 = Number(v) || 0;
+      const v2 = Number(a2[i]) || 0;
+      return available || v2 > v1;
+    }, false);
+  }
+
+  checkForUpdate = () => {
+    if (this.isCheckingForUpdate) {
+      return;
+    }
+    this.isCheckingForUpdate = true;
+    (Platform.OS === `android`
+      ? window
+          .fetch(
+            `https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en`,
+          )
+          .then(res => res.text())
+          .then(t => t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim())
+      : window
+          .fetch(`https://itunes.apple.com/lookup?bundleId=com.brekeke.phone`)
+          .then(res => res.json())
+          .then(j => j.results?.[0].version)
+    )
+      .then(v => {
+        if (!v) {
+          throw new Error(`The returned version from app store is empty`);
+        }
+        this.remoteVersion = v;
+        this.remoteVersionLastCheck = Date.now();
+        this.isCheckingForUpdate = false;
+      })
+      .then(this.saveRemoteVersionToStorage)
+      .catch(err => {
+        g.showError({
+          message: intl`Failed to get app version from app store`,
+          err,
+        });
+        this.isCheckingForUpdate = false;
+      });
+  };
+  saveRemoteVersionToStorage = () => {
+    AsyncStorage.setItem(
+      `remoteVersion`,
+      JSON.stringify({
+        version: this.remoteVersion,
+        lastCheck: this.remoteVersionLastCheck,
+      }),
+    ).catch(err => {
+      g.showError({
+        message: intl`Failed to save app version to storage`,
+        err,
+      });
+    });
+  };
+
+  openInStore = () => {
+    Linking.openURL(
+      Platform.OS === `android`
+        ? `https://play.google.com/store/apps/details?id=com.brekeke.phone`
+        : `itms-apps://apps.apple.com/app/id1233825750`,
+    );
+  };
+  autoCheckForUpdate = () => {
+    // Check for update in every 14 days
+    // https://softwareengineering.stackexchange.com/questions/202316
+    if (Date.now() - this.remoteVersionLastCheck > 14 * 24 * 60 * 60 * 1000) {
+      this.checkForUpdate();
+    }
+  };
+
   init = () => {
     // Read size of log files using stat for the initial state
     const promises = [log1, log2].map((l, i) =>
@@ -153,7 +231,7 @@ class DebugStore {
         .then(e => (this.logSizes[i] = Number(e.size) || 0))
         .catch(err => {
           g.showError({
-            message: intl`Failed to get debug log file size`,
+            message: intl`Failed to read debug log file size`,
             err,
           });
         }),
@@ -166,7 +244,7 @@ class DebugStore {
         .then(e => e && RNFS.unlink(log))
         .catch(err => {
           g.showError({
-            message: intl`Failed to delete unused log file`,
+            message: intl`Failed to delete unused debug log file`,
             err,
           });
         }),
@@ -177,11 +255,30 @@ class DebugStore {
         .then(v => v && (this.captureDebugLog = JSON.parse(v)))
         .catch(err => {
           g.showError({
-            message: intl`Failed to get debug log settings from storage`,
+            message: intl`Failed to read debug log settings from storage`,
             err,
           });
         }),
     );
+    // Read remote app version from storage
+    promises.push(
+      AsyncStorage.getItem(`remoteVersion`)
+        .then(v => JSON.parse(v))
+        .then(v => {
+          if (v) {
+            this.remoteVersion = v.version;
+            this.remoteVersionLastCheck = v.lastCheck;
+          }
+          this.autoCheckForUpdate();
+        })
+        .catch(err => {
+          g.showError({
+            message: intl`Failed to read app version from storage`,
+            err,
+          });
+        }),
+    );
+    //
     return Promise.all(promises);
   };
 }
