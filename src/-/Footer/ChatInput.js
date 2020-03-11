@@ -43,6 +43,7 @@ const css = StyleSheet.create({
 });
 
 const ChatInput = ({
+  onEmojiTurnOn,
   onSelectionChange,
   onTextChange,
   onTextSubmit,
@@ -53,7 +54,7 @@ const ChatInput = ({
     <TouchableOpacity onPress={openFilePicker} style={[css.Btn, css.Btn__file]}>
       <Icon path={mdiPaperclip} size={20} />
     </TouchableOpacity>
-    <TouchableOpacity style={[css.Btn, css.Btn__emoji]}>
+    <TouchableOpacity onPress={onEmojiTurnOn} style={[css.Btn, css.Btn__emoji]}>
       <Icon color="gray" path={mdiEmoticon} />
     </TouchableOpacity>
     <TextInput

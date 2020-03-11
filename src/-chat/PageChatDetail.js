@@ -4,7 +4,7 @@ import React from 'react';
 import EmojiSelector, { Categories } from 'react-native-emoji-selector';
 
 import ChatInput from '../-/Footer/ChatInput';
-import { StyleSheet, Text, TouchableOpacity } from '../-/Rn';
+import { StyleSheet, Text, TouchableOpacity, View } from '../-/Rn';
 import uc from '../api/uc';
 import g from '../global';
 import chatStore from '../global/chatStore';
@@ -53,6 +53,7 @@ class PageChatDetail extends React.Component {
     showImage: ``,
     fileType: ``,
     allMessagesLoaded: false,
+    emojiTurnOn: false,
   };
   numberOfChatsPerLoadMore = numberOfChatsPerLoad;
   edittingTextEmoji = ``;
@@ -69,6 +70,9 @@ class PageChatDetail extends React.Component {
   renderChatInput = () => {
     return (
       <ChatInput
+        onEmojiTurnOn={() =>
+          this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
+        }
         onSelectionChange={this.onSelectionChange}
         onTextChange={this.setEditingText}
         onTextSubmit={this.submitEditingText}
@@ -126,16 +130,26 @@ class PageChatDetail extends React.Component {
           resolveChat={this.resolveChat}
           showImage={showImage}
         />
-        <EmojiSelector
-          category={Categories.symbols}
-          onEmojiSelected={emoji => this.emojiSelectFunc(emoji)}
-        />
+        {this.state.emojiTurnOn && (
+          <View style={css.emojiTab}>
+            <EmojiSelector
+              category={Categories.emotion}
+              columns={10}
+              onEmojiSelected={emoji => this.emojiSelectFunc(emoji)}
+              showHistory={true}
+              showSearchBar={true}
+              showSectionTitles={true}
+              showTabs={true}
+            />
+          </View>
+        )}
       </Layout>
     );
   }
 
   onSelectionChange = event => {
     const selection = event.nativeEvent.selection;
+    this.editingTextReplace = false;
     if (selection.start !== selection.end) {
       this.edittingTextEmoji = this.state.editingText.substring(
         selection.start,
@@ -151,23 +165,28 @@ class PageChatDetail extends React.Component {
   };
   emojiSelectFunc = emoji => {
     let newText = this.edittingTextEmoji.concat(emoji);
-    if (!this.editingTextReplace) {
-      this.setState({
-        editingText: this.state.editingText.replace(
-          this.edittingTextEmoji,
-          newText,
-        ),
-      });
-      this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji);
-    } else {
-      this.setState({
-        editingText: this.state.editingText.replace(
-          this.edittingTextEmoji,
-          emoji,
-        ),
-      });
-      this.editingTextReplace = false;
+    if (this.state.editingText === ``) {
+      this.setState({ editingText: emoji });
       this.edittingTextEmoji = emoji;
+    } else {
+      if (!this.editingTextReplace) {
+        this.setState({
+          editingText: this.state.editingText.replace(
+            this.edittingTextEmoji,
+            newText,
+          ),
+        });
+        this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji);
+      } else {
+        this.setState({
+          editingText: this.state.editingText.replace(
+            this.edittingTextEmoji,
+            emoji,
+          ),
+        });
+        this.editingTextReplace = false;
+        this.edittingTextEmoji = emoji;
+      }
     }
   };
 
