@@ -72,30 +72,24 @@ g.extends({
   },
 });
 
-const intl = (k, data) => {
+const compileFn = (locale, k) => {
+  const arr = labels[locale];
   const i = enLabelsMapIndex[k];
   //
-  let enFn = labels.en[i];
-  if (!enFn || typeof enFn !== `function`) {
-    enFn = Handlebars.compile(k);
+  let fn = arr[i];
+  if (!fn || typeof fn !== `function`) {
+    fn = Handlebars.compile(k);
   }
   if (i !== undefined) {
-    labels.en[i] = enFn; // Cache
+    arr[i] = fn;
   }
   //
-  let fn = enFn;
-  if (g.locale !== `en`) {
-    fn = labels[g.locale][i];
-    if (!fn) {
-      fn = () => `Untranslated`;
-    }
-    if (typeof fn !== `function`) {
-      fn = Handlebars.compile(fn);
-    }
-    if (i !== undefined) {
-      labels[g.locale][i] = fn; // Cache
-    }
-  }
+  return fn;
+};
+
+const intl = (k, data) => {
+  const enFn = compileFn(`en`, k);
+  const fn = g.locale === `en` ? enFn : compileFn(g.locale, k);
   // Add English label to log/debug in showError using intl property
   // In order to assign intl property to string we must use the String object
   // eslint-disable-next-line no-new-wrappers
