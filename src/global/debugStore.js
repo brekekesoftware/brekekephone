@@ -9,6 +9,7 @@ import Share from 'react-native-share';
 import { AsyncStorage, Linking, Platform } from '../-/Rn';
 import g from '../global';
 import intl from '../intl/intl';
+import { currentVersion } from '../variables';
 
 // The location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
@@ -145,12 +146,11 @@ class DebugStore {
       ),
     );
 
-  currentVersion = `2.1.0`;
   @observable isCheckingForUpdate = false;
   @observable remoteVersion = ``;
   @observable remoteVersionLastCheck = 0;
   @computed get isUpdateAvailable() {
-    const a1 = this.currentVersion.split(`.`);
+    const a1 = currentVersion.split(`.`);
     const a2 = this.remoteVersion.split(`.`);
     return a1.reduce((available, v, i) => {
       const v1 = Number(v) || 0;

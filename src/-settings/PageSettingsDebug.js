@@ -10,6 +10,7 @@ import debugStore from '../global/debugStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
+import { currentVersion } from '../variables';
 
 const css = StyleSheet.create({
   BtnIcon: {
@@ -27,7 +28,7 @@ const css = StyleSheet.create({
 @observer
 class PageSettingsDebug extends Component {
   render() {
-    const v = debugStore.currentVersion;
+    const v = currentVersion;
     const nv = debugStore.remoteVersion;
     const ago = moment(debugStore.remoteVersionLastCheck).fromNow();
 

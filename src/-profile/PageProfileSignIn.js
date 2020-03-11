@@ -16,10 +16,10 @@ import {
   View,
 } from '../-/Rn';
 import g from '../global';
-import debugStore from '../global/debugStore';
 import intl from '../intl/intl';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import Layout from '../shared/Layout';
+import { currentVersion } from '../variables';
 import ProfileSignInItem from './ProfileSignInItem';
 
 const css = StyleSheet.create({
@@ -113,7 +113,7 @@ const PageProfileSignIn = observer(() => {
             style={[css.CornerButton_Icon, css.CornerButton_Icon__info]}
           />
           <Text bold white>
-            {debugStore.currentVersion}
+            {currentVersion}
           </Text>
         </View>
       </TouchableOpacity>
