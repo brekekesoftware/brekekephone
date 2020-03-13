@@ -1,11 +1,12 @@
 {
   "name": "BrekekePhone",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "homepage": "./",
   "scripts": {
     "start": "craco start",
-    "build": "del-cli -f \"node_modules/.cache/babel*\" \"src/intl/en.json\" && cross-env EXTRACT_INTL=1 craco build",
+    "build": "craco build",
+    "intl": "del-cli -f \"node_modules/.cache/babel*\" \"src/intl/en.json\" && cross-env EXTRACT_INTL=1 craco build",
     "rn": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
