@@ -196,29 +196,14 @@ class PageCallManage extends React.Component {
     });
   };
 
-  hangupFunc = () => {
-    const u = callStore.runnings.map(c => {
-      return this.runningById[c.id];
-    });
+  hangup = () => {
+    const u = callStore.runnings;
     if (u.length <= 1) {
       sip.hangupSession(callStore.selectedId);
       g.goToPageCallRecents();
     } else {
       sip.hangupSession(callStore.selectedId);
       g.goToPageCallOthers();
-    }
-  };
-
-  hangup = () => {
-    const call = this.runningById[callStore.selectedId];
-    if (!call?.holding) {
-      this.hangupFunc();
-    } else {
-      pbx
-        .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-        .then(this.onUnholdSuccess)
-        .then(this.hangupFunc)
-        .catch(this.onUnholdFailure);
     }
   };
   answer = () => {
