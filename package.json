@@ -5,8 +5,8 @@
   "homepage": "./",
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
-    "intl": "del-cli -f \"node_modules/.cache/babel*\" \"src/intl/en.json\" && cross-env EXTRACT_INTL=1 craco build",
+    "build": "del-cli -f \"node_modules/.cache/babel*\" && craco build",
+    "intl": "del-cli -f \"src/intl/en.json\" && cross-env EXTRACT_INTL=1 yarn build",
     "rn": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
