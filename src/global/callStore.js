@@ -1,5 +1,6 @@
 import { computed, observable } from 'mobx';
 
+import pbx from '../api/pbx';
 import { arrToMap } from '../utils/toMap';
 import BaseStore from './BaseStore';
 
@@ -27,19 +28,46 @@ export class CallStore extends BaseStore {
     const c = this.getRunningCall(_c.id);
     if (c) {
       Object.assign(c, _c);
-      this.set(`runnings`, [...this.runnings]);
+      this.runnings = [...this.runnings];
     } else {
-      this.set(`runnings`, [...this.runnings, _c]);
+      this.runnings = [...this.runnings, _c];
     }
+    this.updateSelectedId();
+  };
+
+  setSelectedId = id => {
+    if (id && !this.runnings.some(r => r.id === id)) {
+      return; // Not found
+    }
+    this.selectedId = id;
+    if (!id) {
+      return; // Remove
+    }
+    // selectedId changed
+    setTimeout(() => {
+      this.runnings.forEach(r => {
+        if (r.id !== id && !r.holding) {
+          pbx.holdTalker(r.pbxTenant, r.pbxTalkerId);
+          // TODO handle errors
+        }
+        if (r.id === id && r.holding) {
+          pbx.unholdTalker(r.pbxTenant, r.pbxTalkerId);
+          // TODO handle errors
+        }
+      });
+    }, 300);
+  };
+  updateSelectedId = () =>
     setTimeout(() => {
       if (!this.runnings.some(r => r.id === this.selectedId)) {
-        this.selectedId = this.runnings[0].id;
+        this.setSelectedId(this.runnings[0].id);
       }
     }, 17);
-  };
+
   removeRunning = id => {
-    this.set(`selectedId`, ``);
+    this.setSelectedId(``);
     this.runnings = this.runnings.filter(c => c.id !== id);
+    this.updateSelectedId();
   };
   @computed get _runningsMap() {
     return arrToMap(this.runnings, `id`, c => c);

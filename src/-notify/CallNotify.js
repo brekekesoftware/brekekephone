@@ -38,7 +38,7 @@ class CallNotify extends React.Component {
     });
     if (u.length <= 1) {
       const call = callStore.getRunningCall(id);
-      callStore.set(`selectedId`, call.id);
+      callStore.setSelectedId(call.id);
       const videoEnabled = call.remoteVideoEnabled;
       sip.answerSession(id, {
         videoEnabled,
@@ -51,7 +51,7 @@ class CallNotify extends React.Component {
       pbx
         .holdTalker(callActive.pbxTenant, callActive.pbxTalkerId)
         .then(this.onHoldSuccess)
-        .then(() => callStore.set(`selectedId`, call.id))
+        .then(() => callStore.setSelectedId(call.id))
         .then(() =>
           sip.answerSession(id, {
             videoEnabled,

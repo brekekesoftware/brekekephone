@@ -78,7 +78,7 @@ class PageCallOthers extends React.Component {
       pbx
         .holdTalker(call.pbxTenant, call.pbxTalkerId)
         .then(this.onHoldSuccess)
-        .then(() => callStore.set(`selectedId`, id))
+        .then(() => callStore.setSelectedId(id))
         .then(g.backToPageCallManage)
         .catch(this.onHoldFailure);
     }

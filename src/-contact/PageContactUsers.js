@@ -89,7 +89,7 @@ class PageContactUsers extends React.Component {
     const id = setInterval(() => {
       const callsActive = callStore.runnings;
       if (callsActive.length === otherCalls.length + 1) {
-        callStore.set(`selectedId`, callsActive[callsActive.length - 1].id);
+        callStore.setSelectedId(callsActive[callsActive.length - 1].id);
         g.goToPageCallOthers();
         clearInterval(id);
       }
