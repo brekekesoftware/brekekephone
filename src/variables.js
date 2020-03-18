@@ -71,6 +71,6 @@ v.colors = {
     lv > 0 ? fn.lighten(lv, v.colors[k]) : fn.darken(-lv, v.colors[k]);
 });
 
-export const currentVersion = `2.1.0`;
+export const currentVersion = `2.1.1`;
 
 export default v;

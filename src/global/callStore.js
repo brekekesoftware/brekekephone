@@ -31,6 +31,11 @@ export class CallStore extends BaseStore {
     } else {
       this.set(`runnings`, [...this.runnings, _c]);
     }
+    setTimeout(() => {
+      if (!this.runnings.some(r => r.id === this.selectedId)) {
+        this.selectedId = this.runnings[0].id;
+      }
+    }, 17);
   };
   removeRunning = id => {
     this.set(`selectedId`, ``);
