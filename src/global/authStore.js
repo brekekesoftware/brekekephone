@@ -2,8 +2,6 @@ import debounce from 'lodash/debounce';
 import { computed, observable } from 'mobx';
 
 import { AppState } from '../-/Rn';
-import pbx from '../api/pbx';
-import sip from '../api/sip';
 import intl from '../intl/intl';
 import { getUrlParams } from '../native/deeplink';
 import { arrToMap } from '../utils/toMap';
@@ -128,57 +126,24 @@ class AuthStore extends BaseStore {
     return true;
   };
 
-  @computed get runningById() {
-    return arrToMap(callStore.runnings, `id`, c => c);
-  }
-
-  clearStore = () => {
-    chatStore.clearStore();
-    contactStore.clearStore();
-    this.set(`signedInId`, null);
-  };
-
-  onUnholdSuccess = selectedId => {
-    callStore.upsertRunning({
-      id: selectedId,
-      holding: false,
-    });
-  };
-  onUnholdFailure = err => {
-    g.showError({
-      message: intl.debug`Failed to unhold the call`,
-      err,
-    });
-  };
-
-  hangup = id => {
-    const call = this.runningById[id];
-    if (!call.holding) {
-      sip.hangupSession(call.id);
-    } else {
-      pbx
-        .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-        .then(() => this.onUnholdSuccess(call.id))
-        .then(() => sip.hangupSession(call.id))
-        .catch(this.onUnholdFailure);
-    }
-  };
-
   signOut = () => {
-    const callsActive = callStore.runnings;
-    if (callsActive.length > 0) {
-      callsActive.map(call => {
-        return this.hangup(call.id);
-      });
+    const clearStore = () => {
+      chatStore.clearStore();
+      contactStore.clearStore();
+      this.set(`signedInId`, null);
+    };
+    callStore._calls.forEach(c => c.hangupWithUnhold());
+    if (callStore._calls.length > 0) {
+      const intervalStartedAt = Date.now();
       const id = setInterval(() => {
-        const callsActive = callStore.runnings;
-        if (callsActive.length === 0) {
-          this.clearStore();
+        // TODO show/hide loader
+        if (!callStore._calls.length || Date.now() > intervalStartedAt + 2000) {
           clearInterval(id);
+          clearStore();
         }
-      }, 300);
+      }, 100);
     } else {
-      this.clearStore();
+      clearStore();
     }
   };
 

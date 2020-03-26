@@ -1,7 +1,9 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 
 import IncallManager from '../native/IncallManager';
 
+@observer
 class IncomingItem extends React.Component {
   componentDidMount() {
     IncallManager.startRingtone(`_BUNDLE_`);
@@ -16,8 +18,9 @@ class IncomingItem extends React.Component {
   }
 }
 
-const IncomingList = p =>
-  p.ids.map(id => <IncomingItem key={id} {...p.resolve(id)} />);
+const IncomingList = observer(p =>
+  p.ids.map(id => <IncomingItem key={id} {...p.resolve(id)} />),
+);
 
 class OutgoingItem extends React.Component {
   componentDidMount() {
@@ -38,7 +41,7 @@ class OutgoingItem extends React.Component {
 const OutgoingList = p =>
   p.ids.map(id => <OutgoingItem key={id} {...p.resolve(id)} />);
 
-const CallVoicesUI = p => (
+const CallVoicesUI = observer(p => (
   <React.Fragment>
     <IncomingList
       ids={p.incomingCallIds.filter(i => i !== undefined)}
@@ -49,6 +52,6 @@ const CallVoicesUI = p => (
       resolve={p.resolveCall}
     />
   </React.Fragment>
-);
+));
 
 export default CallVoicesUI;

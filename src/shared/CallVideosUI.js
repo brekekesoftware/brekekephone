@@ -100,6 +100,7 @@ class Control extends React.Component {
   }
 }
 
-const CallVideos = p =>
-  p.callIds.map(id => <Control key={id} {...p.resolveCall(id)} />);
+const CallVideos = observer(p =>
+  p.callIds.map(id => <Control key={id} {...p.resolveCall(id)} />),
+);
 export default CallVideos;

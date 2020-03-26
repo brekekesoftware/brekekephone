@@ -375,7 +375,7 @@ class UC extends EventEmitter {
       const xhr = new XMLHttpRequest();
       xhr.responseType = `blob`;
 
-      xhr.onload = function(ev) {
+      xhr.onload = function (ev) {
         if (this.status === 200) onres(this.response);
       };
 

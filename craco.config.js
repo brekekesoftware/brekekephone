@@ -22,7 +22,7 @@ module.exports = {
   },
   webpack: {
     alias: {
-      '@react-native-community/async-storage': `react-native-web/dist/exports/AsyncStorage`,
+      '@react-native-community/async-storage': `@callstack/async-storage`,
       'react-native': `react-native-web`,
       'react-native-fast-image': `react-native-web/dist/exports/Image`,
       'react-native-linear-gradient': `react-native-web-linear-gradient`,

@@ -1,79 +1,132 @@
-import { computed, observable } from 'mobx';
+import debounce from 'lodash/debounce';
+import { action, computed, observable } from 'mobx';
+import { Platform } from 'react-native';
 
-import pbx from '../api/pbx';
+import sip from '../api/sip';
+import g from '../global';
+import IncallManager from '../native/IncallManager';
 import { arrToMap } from '../utils/toMap';
-import BaseStore from './BaseStore';
+import Call from './Call';
 
-export class CallStore extends BaseStore {
-  @observable selectedId = ``;
-  // id
-  // incoming
-  // answered
-  // holding
-  // recording
-  // transferring
-  // parking
-  // partyNumber
-  // partyName
-  // pbxTalkerId
-  // pbxTenant
-  // createdAt
-  // voiceStreamObject
-  // videoSessionId
-  // localVideoEnabled
-  // remoteVideoStreamObject
-  // remoteVideoEnabled
-  @observable runnings = [];
-  upsertRunning = _c => {
-    const c = this.getRunningCall(_c.id);
-    if (c) {
-      Object.assign(c, _c);
-      this.runnings = [...this.runnings];
-    } else {
-      this.runnings = [...this.runnings, _c];
+export class CallStore {
+  constructor() {
+    this._initDurationInterval();
+  }
+
+  @observable _calls = [];
+  @observable _currentCallId = undefined;
+  @computed get incomingCall() {
+    return this._calls.find(c => c.incoming && !c.answered);
+  }
+  @computed get currentCall() {
+    this._updateCurrentCallDebounce();
+    return this._calls.find(c => c.id === this._currentCallId);
+  }
+  @computed get backgroundCalls() {
+    return this._calls.filter(c => !c.incoming && c.id !== this._currentCallId);
+  }
+
+  @action _updateCurrentCall = () => {
+    let currentCall;
+    if (this._calls.length) {
+      currentCall =
+        this._calls.find(c => c.id === this._currentCallId) ||
+        this._calls.find(c => c.answered && !c.holding) ||
+        this._calls[0];
     }
-    this.updateSelectedId();
+    const currentCallId = currentCall?.id || undefined;
+    if (currentCallId !== this._currentCallId) {
+      this._currentCallId = currentCallId;
+    }
+    this._holdBackgroundCallsDebounce();
+  };
+  _updateCurrentCallDebounce = debounce(this._updateCurrentCall, 100, {
+    maxWait: 300,
+  });
+  @action _holdBackgroundCalls = () => {
+    this._calls
+      .filter(
+        c =>
+          c.id !== this._currentCallId &&
+          c.answered &&
+          !c.parking &&
+          !c.transferring &&
+          !c.holding,
+      )
+      .forEach(c => c.toggleHold());
+    if (!this.backgroundCalls.length && this.isViewBackgroundCalls) {
+      this.isViewBackgroundCalls = false;
+    }
+  };
+  _holdBackgroundCallsDebounce = debounce(this._holdBackgroundCalls, 500, {
+    maxWait: 1000,
+  });
+
+  upsertCall = _c => {
+    let c = this._calls.find(c => c.id === _c.id);
+    if (!c) {
+      c = new Call();
+      this._calls = [c, ...this._calls];
+    }
+    Object.assign(c, _c);
+  };
+  removeCall = id => {
+    this._calls = this._calls.filter(c => c.id !== id);
   };
 
-  setSelectedId = id => {
-    if (id && !this.runnings.some(r => r.id === id)) {
-      return; // Not found
+  @action selectBackgroundCall = c => {
+    if (c.holding) {
+      c.toggleHold();
     }
-    this.selectedId = id;
-    if (!id) {
-      return; // Remove
-    }
-    // selectedId changed
-    setTimeout(() => {
-      this.runnings.forEach(r => {
-        if (r.id !== id && !r.holding) {
-          pbx.holdTalker(r.pbxTenant, r.pbxTalkerId);
-          // TODO handle errors
-        }
-        if (r.id === id && r.holding) {
-          pbx.unholdTalker(r.pbxTenant, r.pbxTalkerId);
-          // TODO handle errors
-        }
-      });
-    }, 300);
+    this._currentCallId = c.id;
+    this.isViewBackgroundCalls = false;
   };
-  updateSelectedId = () =>
-    setTimeout(() => {
-      if (!this.runnings.some(r => r.id === this.selectedId)) {
-        this.setSelectedId(this.runnings[0].id);
+
+  @action answerCall = id => {
+    this._currentCallId = id;
+    sip.answerSession(id);
+  };
+
+  _startCallIntervalAt = 0;
+  _startCallIntervalId = 0;
+  startCall = (number, options) => {
+    sip.createSession(number, options);
+    g.goToPageCallManage();
+    // Auto update _currentCallId
+    const prevIds = arrToMap(this._calls, `id`);
+    if (this._startCallIntervalId) {
+      clearInterval(this._startCallIntervalId);
+    }
+    this._startCallIntervalAt = Date.now();
+    this._startCallIntervalId = setInterval(() => {
+      const currentCallId = this._calls.map(c => c.id).find(id => !prevIds[id]);
+      if (currentCallId) {
+        this._currentCallId = currentCallId;
+      }
+      if (currentCallId || Date.now() > this._startCallIntervalAt + 10000) {
+        clearInterval(this._startCallIntervalId);
+        this._startCallIntervalId = 0;
       }
     }, 17);
-
-  removeRunning = id => {
-    this.setSelectedId(``);
-    this.runnings = this.runnings.filter(c => c.id !== id);
-    this.updateSelectedId();
   };
-  @computed get _runningsMap() {
-    return arrToMap(this.runnings, `id`, c => c);
-  }
-  getRunningCall = id => {
-    return this._runningsMap[id];
+
+  startVideoCall = number => {
+    this.startCall(number, {
+      videoEnabled: true,
+    });
+  };
+
+  @observable isLoudSpeakerEnabled = false;
+  @action toggleLoudSpeaker = () => {
+    if (Platform.OS !== `web`) {
+      this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled;
+      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled);
+    }
+  };
+
+  @observable isViewBackgroundCalls = false;
+  @action toggleViewBackgroundCalls = () => {
+    this.isViewBackgroundCalls = !this.isViewBackgroundCalls;
   };
 
   @observable newVoicemailCount = 0;
@@ -81,6 +134,27 @@ export class CallStore extends BaseStore {
   // Style in CallVideosUI to save the previous video position
   @observable videoPositionT = 25;
   @observable videoPositionL = 5;
+
+  _durationIntervalId = 0;
+  _initDurationInterval = () => {
+    this._durationIntervalId = setInterval(this._updateDuration, 100);
+  };
+  @action _updateDuration = () => {
+    this._calls
+      .filter(c => c.answered && !c.transferring && !c.parking)
+      .forEach(c => {
+        c.duration += 100;
+      });
+  };
+
+  dispose = () => {
+    if (this._startCallIntervalId) {
+      clearInterval(this._startCallIntervalId);
+      this._startCallIntervalId = 0;
+    }
+    // Dont need to dispose duration interval id
+    // Because the store is currently global static
+  };
 }
 
 const callStore = new CallStore();

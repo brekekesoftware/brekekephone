@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
@@ -10,7 +11,7 @@ const css = StyleSheet.create({
   },
 });
 
-export default p =>
+export default observer(p =>
   p.sourceObject ? (
     <video
       autoPlay
@@ -24,4 +25,5 @@ export default p =>
     />
   ) : (
     <ActivityIndicator style={css.loading} />
-  );
+  ),
+);

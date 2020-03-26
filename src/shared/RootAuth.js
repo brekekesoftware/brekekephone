@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import CallBar from '../-notify/CallBar';
-import CallNotify from '../-notify/CallNotify';
-import ChatGroupInvite from '../-notify/ChatGroupInvite';
+import CallBar from '../-call/CallBar';
+import CallNotify from '../-call/CallNotify';
+import ChatGroupInvite from '../-chat/ChatGroupInvite';
 import authStore from '../global/authStore';
 import AuthPBX from '../shared/AuthPBX';
 import AuthSIP from '../shared/AuthSIP';

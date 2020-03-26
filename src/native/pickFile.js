@@ -86,12 +86,7 @@ const pickFileOnSelect = async (i, cb) => {
     return;
   }
   //
-  const getName = p =>
-    p &&
-    p
-      .split(/[\\/]/g)
-      .pop()
-      .replace(/\?.+$/, ``);
+  const getName = p => p && p.split(/[\\/]/g).pop().replace(/\?.+$/, ``);
   let name = file.fileName || file.filename || file.name || getName(file.uri);
   let size = file.fileSize || file.filesize || file.size || 0;
   if (!size) {
@@ -102,10 +97,7 @@ const pickFileOnSelect = async (i, cb) => {
     } catch (err) {}
   }
   //
-  let ext = name
-    .split(`.`)
-    .pop()
-    .replace(/\?.+$/, ``);
+  let ext = name.split(`.`).pop().replace(/\?.+$/, ``);
   if (Platform.OS === `ios` && ext === name) {
     name = shortid();
     switch (file.type) {

@@ -11,18 +11,17 @@ const isAnswered = call => call.answered;
 @observer
 class CallVoices extends React.Component {
   render() {
+    const calls = callStore._calls; // TODO
+    const m = calls.reduce((m, c) => {
+      m[c.id] = c;
+      return m;
+    }, {});
     return (
       <CallVoicesUI
-        answeredCallIds={callStore.runnings
-          .filter(c => isAnswered(c))
-          .map(c => c.id)}
-        incomingCallIds={callStore.runnings
-          .filter(c => isIncoming(c))
-          .map(c => c.id)}
-        outgoingCallIds={callStore.runnings
-          .filter(c => isOutgoing(c))
-          .map(c => c.id)}
-        resolveCall={callStore.getRunningCall}
+        answeredCallIds={calls.filter(c => isAnswered(c)).map(c => c.id)}
+        incomingCallIds={calls.filter(c => isIncoming(c)).map(c => c.id)}
+        outgoingCallIds={calls.filter(c => isOutgoing(c)).map(c => c.id)}
+        resolveCall={id => m[id]}
       />
     );
   }

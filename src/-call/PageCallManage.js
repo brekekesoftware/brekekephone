@@ -1,35 +1,35 @@
-import { mdiPhoneHangup } from '@mdi/js';
-import { computed } from 'mobx';
+import {
+  mdiAlphaPCircle,
+  mdiCallSplit,
+  mdiDialpad,
+  mdiMicrophone,
+  mdiMicrophoneOff,
+  mdiPauseCircle,
+  mdiPhoneHangup,
+  mdiRecord,
+  mdiRecordCircle,
+  mdiVideo,
+  mdiVideoOff,
+  mdiVolumeHigh,
+  mdiVolumeMedium,
+} from '@mdi/js';
+import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { Platform } from 'react-native';
 
-import { StyleSheet, TouchableOpacity, View } from '../-/Rn';
-import pbx from '../api/pbx';
-import sip from '../api/sip';
+import { Platform, StyleSheet, TouchableOpacity, View } from '../-/Rn';
 import g from '../global';
 import callStore from '../global/callStore';
 import intl from '../intl/intl';
-import IncallManager from '../native/IncallManager';
 import BrekekeGradient from '../shared/BrekekeGradient';
 import ButtonIcon from '../shared/ButtonIcon';
+import FieldButton from '../shared/FieldButton';
 import Layout from '../shared/Layout';
 import VideoPlayer from '../shared/VideoPlayer';
-import { arrToMap } from '../utils/toMap';
-import CallManage from './CallManage';
+import renderBackgroundCalls from './renderBackgroundCalls';
 
 const css = StyleSheet.create({
-  PageIncoming_Btn__Hangup: {
-    position: `absolute`,
-    bottom: 30,
-    left: 0,
-    right: 0,
-  },
-  Space: {
-    flex: 1,
-    alignSelf: `stretch`,
-  },
-  VideoPlayer: {
+  Video: {
     position: `absolute`,
     top: 40, // Header compact height
     bottom: 0,
@@ -37,371 +37,257 @@ const css = StyleSheet.create({
     right: 0,
     backgroundColor: `black`,
   },
+  VideoSpace: {
+    flex: 1,
+    alignSelf: `stretch`,
+  },
+
+  Btns: {
+    position: `absolute`,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingBottom: 112, // Hangup button
+  },
+  Btns__isVideoEnabled: {
+    backgroundColor: g.layerBg,
+  },
+  BtnsInner: {
+    flexDirection: `row`,
+    alignSelf: `center`,
+  },
+  BtnsInnerSpace: {
+    height: 20,
+  },
+  BtnsInnerMarginVertical: {
+    flex: 1,
+  },
+
+  HangupBtn: {
+    position: `absolute`,
+    bottom: 30,
+    left: 0,
+    right: 0,
+  },
 });
 
 @observer
 class PageCallManage extends React.Component {
-  @computed get runningIds() {
-    return callStore.runnings.map(c => c.id);
-  }
-  @computed get runningById() {
-    return arrToMap(callStore.runnings, `id`, c => c);
-  }
-  state = {
-    prevSelectedId: null,
-    prevRunningIds: null,
-    showButtonsInVideoCall: true,
-  };
-
-  _alreadySetShowButtonsInVideoCall = false;
-
-  toggleButtons = () => {
-    this.setState({
-      showButtonsInVideoCall: !this.state.showButtonsInVideoCall,
-    });
-  };
-  hideButtonsIfVideo = () => {
-    const u = this.runningById[callStore.selectedId];
-    if (
-      !this.props.isFromCallBar &&
-      !this._alreadySetShowButtonsInVideoCall &&
-      u?.remoteVideoEnabled
-    ) {
-      this.setState({ showButtonsInVideoCall: false });
-      this._alreadySetShowButtonsInVideoCall = true;
-    }
-  };
-
-  _selectActiveCallWithRoute(props) {
-    const runids = this.runningIds;
-    if (runids && runids.length !== 0) {
-      const activeCall = this.findActiveCallByRunids_s(runids, props);
-      if (activeCall) {
-        callStore.setSelectedId(activeCall.id);
-      }
-    } else {
-      const parkingIds = callStore.runnings
-        .filter(c => c.parking)
-        .map(c => c.id);
-      if (parkingIds.length !== 0) {
-        // ???
-      } else {
-        this._checkCreatingSessionAndRoute();
-      }
-    }
-  }
-
-  _checkCreatingSessionAndRoute() {
-    const creatingSessions = sip.getCreatingSessions();
-    if (creatingSessions.isEmpty()) {
-      g.goToPageCallKeypad();
-    }
-  }
-
-  componentDidUpdate() {
-    let runids = this.runningIds;
-    const nextSelectedId = callStore.selectedId;
-    if (runids && runids.length !== 0) {
-      const isSelectedIdInactive = runids.indexOf(nextSelectedId) === -1;
-      if (!nextSelectedId || isSelectedIdInactive) {
-        const call = this.findNewestCallByRunids_s(runids, this.props);
-        if (call.id) {
-          callStore.setSelectedId(call.id);
-        } else {
-          g.goToPageCallRecents();
-        }
-      }
-    } else {
-      this._checkCreatingSessionAndRoute();
-    }
-    this.hideButtonsIfVideo();
-  }
-
-  findNewestCallByRunids_s(runids, props) {
-    if (!runids || runids.length === 0) {
-      return null;
-    }
-    let latestCall = null;
-    for (let i = 0; i < runids.length; i++) {
-      const runid = runids[i];
-      const call = this.runningById[runid];
-      if (!latestCall) {
-        latestCall = call;
-      } else {
-        if (call.createdAt > latestCall.createdAt || !latestCall.createdAt) {
-          latestCall = call;
-        }
-      }
-    }
-    return latestCall;
-  }
-
-  findActiveCallByRunids_s(runids, props) {
-    if (!runids || runids.length === 0) {
-      return null;
-    }
-    let latestCall = null;
-    for (let i = 0; i < runids.length; i++) {
-      const runid = runids[i];
-      const call = this.runningById[runid];
-      const isActiveCall = call.answered === true;
-      if (isActiveCall === true) {
-        if (!latestCall) {
-          latestCall = call;
-        } else {
-          if (call.createdAt > latestCall.createdAt) {
-            latestCall = call;
-          }
-        }
-      }
-    }
-    return latestCall;
-  }
+  @observable showButtonsInVideoCall = true;
+  alreadySetShowButtonsInVideoCall = false;
 
   componentDidMount() {
-    this._selectActiveCallWithRoute(this.props);
     this.hideButtonsIfVideo();
   }
-
-  setMuted = () => {
-    sip.setMuted(true, callStore.selectedId);
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      muted: true,
-    });
-  };
-  setunMuted = () => {
-    sip.setMuted(false, callStore.selectedId);
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      muted: false,
-    });
-  };
-  onOpenLoudSpeaker = () => {
-    if (Platform.OS !== `web`) {
-      IncallManager.setForceSpeakerphoneOn(true);
+  componentDidUpdate() {
+    this.hideButtonsIfVideo();
+    if (!callStore.currentCall && !callStore.backgroundCalls.length) {
+      g.backToPageCallRecents();
     }
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      loudspeaker: true,
-    });
-  };
-  onCloseLoudSpeaker = () => {
-    if (Platform.OS !== `web`) {
-      IncallManager.setForceSpeakerphoneOn(false);
-    }
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      loudspeaker: false,
-    });
-  };
+  }
 
-  hangup = () => {
-    const u = callStore.runnings;
-    if (u.length <= 1) {
-      sip.hangupSession(callStore.selectedId);
-      g.goToPageCallRecents();
-    } else {
-      sip.hangupSession(callStore.selectedId);
-      g.goToPageCallOthers();
+  @action toggleButtons = () => {
+    this.showButtonsInVideoCall = !this.showButtonsInVideoCall;
+  };
+  @action hideButtonsIfVideo = () => {
+    if (
+      !this.props.isFromCallBar &&
+      !this.alreadySetShowButtonsInVideoCall &&
+      callStore.currentCall?.remoteVideoEnabled
+    ) {
+      this.showButtonsInVideoCall = false;
+      this.alreadySetShowButtonsInVideoCall = true;
     }
   };
-  answer = () => {
-    sip.answerSession(callStore.selectedId);
+
+  renderCall = (c, isVideoEnabled) => {
+    const fn = callStore.isViewBackgroundCalls
+      ? renderBackgroundCalls
+      : !c
+      ? () => null
+      : c.holding
+      ? this.renderHoldingCall
+      : c.transferring
+      ? this.renderTransferringCall
+      : c.parking
+      ? this.renderParkingCall
+      : c.isDTMF
+      ? this.renderDTMF
+      : this.renderCommonCall;
+    return fn(c, isVideoEnabled);
   };
 
-  hold = () => {
-    const call = this.runningById[callStore.selectedId];
-    pbx
-      .holdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onHoldSuccess)
-      .catch(this.onHoldFailure);
-  };
-  onHoldSuccess = () => {
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      holding: true,
-    });
-  };
-  onHoldFailure = err => {
-    g.showError({
-      message: intl.debug`Failed to hold the call`,
-      err,
-    });
-  };
-  unhold = () => {
-    const call = this.runningById[callStore.selectedId];
-    pbx
-      .unholdTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onUnholdSuccess)
-      .catch(this.onUnholdFailure);
-  };
-  onUnholdSuccess = () => {
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      holding: false,
-    });
-  };
-  onUnholdFailure = err => {
-    g.showError({
-      message: intl.debug`Failed to unhold the call`,
-      err,
-    });
-  };
-
-  startRecording = () => {
-    const call = this.runningById[callStore.selectedId];
-    pbx
-      .startRecordingTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStartRecordingSuccess)
-      .catch(this.onStartRecordingFailure);
-  };
-  onStartRecordingSuccess = () => {
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      recording: true,
-    });
-  };
-  onStartRecordingFailure = err => {
-    g.showError({
-      message: intl.debug`Failed to start recording the call`,
-      err,
-    });
-  };
-
-  stopRecording = () => {
-    const call = this.runningById[callStore.selectedId];
-    pbx
-      .stopRecordingTalker(call.pbxTenant, call.pbxTalkerId)
-      .then(this.onStopRecordingSuccess)
-      .catch(this.onStopRecordingFailure);
-  };
-  onStopRecordingSuccess = () => {
-    callStore.upsertRunning({
-      id: callStore.selectedId,
-      recording: false,
-    });
-  };
-  onStopRecordingFailure = err => {
-    g.showError({
-      message: intl.debug`Failed to stop recording the call`,
-      err,
-    });
-  };
-
-  transfer = () => {
-    const call = this.runningById[callStore.selectedId];
-
-    if (call.transfering) {
-      g.goToPageTransferAttend({ callId: call.id });
-    } else {
-      g.goToPageTransferDial({ callId: call.id });
-    }
-  };
-  dtmf = () => {
-    const call = this.runningById[callStore.selectedId];
-    g.goToPageDtmfKeypad({ callId: call.id, partyName: call?.partyName });
-  };
-  unpark = parkNumber => {
-    sip.createSession(parkNumber);
-  };
-  park = () => {
-    g.goToPageCallParks({ screen: `call_manage` }); // TODO
-  };
-  enableVideo = () => {
-    sip.enableVideo(callStore.selectedId);
-  };
-  disableVideo = () => {
-    sip.disableVideo(callStore.selectedId);
-  };
-
-  render() {
-    const u = this.runningById[callStore.selectedId];
-    const videoEnabled = u?.remoteVideoEnabled && u?.localVideoEnabled;
-    const Container = videoEnabled ? React.Fragment : BrekekeGradient;
-    const containerProps = videoEnabled
-      ? null
-      : {
-          colors: [g.colors.primaryFn(0.2), g.revBg],
-        };
-
-    const { showButtonsInVideoCall } = this.state;
-    const dropdown = videoEnabled
-      ? [
-          {
-            label: showButtonsInVideoCall
-              ? intl`Hide call menu buttons`
-              : intl`Show call menu buttons`,
-            onPress: this.toggleButtons,
-          },
-        ]
-      : null;
-
+  renderCommonCall = (c, isVideoEnabled) => {
+    let dropdown =
+      isVideoEnabled && !c.holding && !c.transparent && !c.parking
+        ? [
+            {
+              label: this.showButtonsInVideoCall
+                ? intl`Hide call menu buttons`
+                : intl`Show call menu buttons`,
+              onPress: this.toggleButtons,
+            },
+          ]
+        : null;
     return (
-      <Container {...containerProps}>
-        <Layout
-          compact
-          dropdown={dropdown}
-          noScroll
-          onBack={g.backToPageCallRecents}
-          title={
-            u?.partyName ||
-            u?.id ||
-            this.props.changeTitle ||
-            intl`Connection failed`
-          }
-        >
-          {videoEnabled && (
-            <React.Fragment>
-              <View style={css.Space} />
-              <View style={css.VideoPlayer}>
-                <VideoPlayer sourceObject={u.remoteVideoStreamObject} />
-              </View>
-              <TouchableOpacity
-                onPress={this.toggleButtons}
-                style={StyleSheet.absoluteFill}
-              />
-            </React.Fragment>
-          )}
-          {(showButtonsInVideoCall || !videoEnabled) && (
-            <CallManage
-              {...u}
-              answer={this.answer}
-              create={g.goToPageCallKeypad}
-              disableVideo={this.disableVideo}
-              dtmf={this.dtmf}
-              enableVideo={this.enableVideo}
-              hold={this.hold}
-              onCloseLoudSpeaker={this.onCloseLoudSpeaker}
-              onOpenLoudSpeaker={this.onOpenLoudSpeaker}
-              park={this.park}
-              parkingIds={callStore.runnings
-                .filter(c => c.parking)
-                .map(c => c.id)}
-              setMuted={this.setMuted}
-              setunMuted={this.setunMuted}
-              startRecording={this.startRecording}
-              stopRecording={this.stopRecording}
-              toggleButtons={videoEnabled ? this.toggleButtons : null}
-              transfer={this.transfer}
-              unhold={this.unhold}
-              unpark={this.unpark}
-            />
-          )}
-          <View style={css.PageIncoming_Btn__Hangup}>
+      <Layout
+        compact
+        dropdown={dropdown}
+        noScroll
+        onBack={g.backToPageCallRecents}
+        title={c?.title || intl`Connection failed`}
+      >
+        {isVideoEnabled && this.renderVideo(c)}
+        {c.answered && this.renderBtns(c, isVideoEnabled)}
+        {this.renderHangupBtn(c)}
+      </Layout>
+    );
+  };
+  renderVideo = c => (
+    <React.Fragment>
+      <View style={css.VideoSpace} />
+      <View style={css.Video}>
+        <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
+      </View>
+      <TouchableOpacity
+        onPress={this.toggleButtons}
+        style={StyleSheet.absoluteFill}
+      />
+    </React.Fragment>
+  );
+  renderBtns = (c, isVideoEnabled) => {
+    if (isVideoEnabled && !this.showButtonsInVideoCall) {
+      return null;
+    }
+    const Container = isVideoEnabled ? TouchableOpacity : View;
+    const activeColor = isVideoEnabled ? g.colors.primary : g.colors.warning;
+    const n = callStore.backgroundCalls.length;
+    return (
+      <Container
+        onPress={isVideoEnabled ? this.toggleButtons : null}
+        style={[css.Btns, isVideoEnabled && css.Btns__isVideoEnabled]}
+      >
+        <View style={css.BtnsInnerMarginVertical} />
+        <View style={css.BtnsInner}>
+          <ButtonIcon
+            bgcolor="white"
+            color="black"
+            name={intl`TRANSFER`}
+            noborder
+            onPress={c.initTransferring}
+            path={mdiCallSplit}
+            size={40}
+            textcolor="white"
+          />
+          <ButtonIcon
+            bgcolor="white"
+            color="black"
+            name={intl`PARK`}
+            noborder
+            onPress={c.park}
+            path={mdiAlphaPCircle}
+            size={40}
+            textcolor="white"
+          />
+          <ButtonIcon
+            bgcolor={c.localVideoEnabled ? activeColor : `white`}
+            color={c.localVideoEnabled ? `white` : `black`}
+            name={intl`VIDEO`}
+            noborder
+            onPress={c.localVideoEnabled ? c.disableVideo : c.enableVideo}
+            path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
+            size={40}
+            textcolor="white"
+          />
+          {Platform.OS !== `web` && (
             <ButtonIcon
-              bgcolor={g.colors.danger}
-              color={g.revColor}
+              bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : `white`}
+              color={callStore.isLoudSpeakerEnabled ? `white` : `black`}
+              name={intl`SPEAKER`}
               noborder
-              onPress={this.hangup}
-              path={mdiPhoneHangup}
+              onPress={callStore.toggleLoudSpeaker}
+              path={
+                callStore.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
+              }
               size={40}
-              textcolor={g.revColor}
+              textcolor="white"
             />
-          </View>
-        </Layout>
+          )}
+        </View>
+        <View style={css.BtnsInnerSpace} />
+        <View style={css.BtnsInner}>
+          <ButtonIcon
+            bgcolor={c.muted ? activeColor : `white`}
+            color={c.muted ? `white` : `black`}
+            name={c.muted ? intl`UNMUTE` : intl`MUTE`}
+            noborder
+            onPress={c.toggleMuted}
+            path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+            size={40}
+            textcolor="white"
+          />
+          <ButtonIcon
+            bgcolor={c.recording ? activeColor : `white`}
+            color={c.recording ? `white` : `black`}
+            name={intl`RECORD`}
+            noborder
+            onPress={c.toggleRecording}
+            path={c.recording ? mdiRecordCircle : mdiRecord}
+            size={40}
+            textcolor="white"
+          />
+          <ButtonIcon
+            bgcolor="white"
+            color="black"
+            name={intl`DTMF`}
+            noborder
+            onPress={c.toggleDTMF}
+            path={mdiDialpad}
+            size={40}
+            textcolor="white"
+          />
+          <ButtonIcon
+            bgcolor="white"
+            color="black"
+            name={intl`HOLD`}
+            noborder
+            onPress={c.toggleHold}
+            path={mdiPauseCircle}
+            size={40}
+            textcolor="white"
+          />
+        </View>
+        {n > 0 && (
+          <FieldButton
+            label={intl`BACKGROUND CALLS`}
+            onCreateBtnPress={callStore.toggleViewBackgroundCalls}
+            value={intl`${n} other calls are in background`}
+          />
+        )}
+        <View style={css.BtnsInnerMarginVertical} />
       </Container>
     );
+  };
+  renderHangupBtn = c => (
+    <View style={css.HangupBtn}>
+      <ButtonIcon
+        bgcolor={g.colors.danger}
+        color="white"
+        noborder
+        onPress={c.hangup}
+        path={mdiPhoneHangup}
+        size={40}
+        textcolor="white"
+      />
+    </View>
+  );
+
+  render() {
+    const c = callStore.currentCall;
+    const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled;
+    const Container = isVideoEnabled ? React.Fragment : BrekekeGradient;
+    return <Container>{this.renderCall(c, isVideoEnabled)}</Container>;
   }
 }
 

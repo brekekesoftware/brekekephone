@@ -4,11 +4,9 @@ import React from 'react';
 
 import { TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
-import pbx from '../api/pbx';
 import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
-import callStore from '../global/callStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
@@ -66,20 +64,10 @@ class PageCallParks extends React.Component {
       });
       return;
     }
-    if (callStore.selectedId) {
-      const call = callStore.getRunningCall(callStore.selectedId);
-      const tenant = call.pbxTenant;
-      const talkerId = call.pbxTalkerId;
-      pbx
-        .parkTalker(tenant, talkerId, selectedPark)
-        .then(this.onParkSuccess)
-        .catch(this.onParkFailure);
-    } else {
-      sip.createSession(selectedPark, {
-        videoEnabled: false,
-      });
-      g.goToPageCallManage();
-    }
+    sip.createSession(selectedPark, {
+      videoEnabled: false,
+    });
+    g.goToPageCallManage();
   };
 
   onParkSuccess = () => {

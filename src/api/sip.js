@@ -7,58 +7,9 @@ import { Platform } from 'react-native';
 import getFrontCameraSourceId from './getFrontCameraSourceId';
 import turnConfig from './turnConfig';
 
-class CreatingSessions {
-  _items;
-
-  constructor() {
-    this._items = [];
-  }
-
-  __add() {
-    const currentTime = new Date().getTime();
-    const expireVal = currentTime + 100000;
-
-    const itm = {
-      expire: expireVal,
-    };
-
-    this._items.push(itm);
-  }
-
-  __removeFirst() {
-    this._items.splice(0, 1);
-  }
-
-  __refresh() {
-    const currentTime = new Date().getTime();
-
-    for (let i = 0; i < this._items.length; ) {
-      const item = this._items[i];
-
-      if (currentTime > item.expire) {
-        this._items.splice(i, 1);
-      } else {
-        i++;
-      }
-    }
-  }
-
-  isEmpty() {
-    this.__refresh();
-    return this._items.length === 0;
-  }
-
-  __clear() {
-    this._items.splice(0, this._items.length);
-  }
-}
-
 class SIP extends EventEmitter {
-  _creatingSessions;
-
   init = async () => {
     const sourceId = await getFrontCameraSourceId();
-    this._creatingSessions = new CreatingSessions();
     this.phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: `all`,
       multiSession: true,
@@ -148,9 +99,6 @@ class SIP extends EventEmitter {
       if (!ev) {
         return;
       }
-      if (ev.rtcSession.direction === `outgoing`) {
-        this._creatingSessions.__removeFirst();
-      }
       this.emit(`session-started`, {
         id: ev.sessionId,
         incoming: ev.rtcSession.direction === `incoming`,
@@ -158,7 +106,6 @@ class SIP extends EventEmitter {
         partyName: ev.rtcSession.remote_identity.display_name,
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
-        createdAt: Date.now(),
       });
     });
     this.phone.addEventListener(`sessionStatusChanged`, ev => {
@@ -232,12 +179,7 @@ class SIP extends EventEmitter {
     };
   };
 
-  getCreatingSessions() {
-    return this._creatingSessions;
-  }
-
   connect(profile) {
-    this._creatingSessions.__clear();
     //
     let platformOs = Platform.OS;
     if (platformOs === `ios`) {
@@ -292,7 +234,6 @@ class SIP extends EventEmitter {
         ? this._makeCallOptionsForAndoirOrIos
         : null;
     this.phone.makeCall(number, options, opts.videoEnabled, undefined, ``);
-    this._creatingSessions.__add();
   }
 
   hangupSession(sessionId) {

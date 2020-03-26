@@ -146,18 +146,18 @@ class Api {
   };
 
   onVoiceMailUpdated = ev => {
-    callStore.set(`newVoicemailCount`, ev?.new || 0);
+    callStore.newVoicemailCount = ev?.new || 0;
   };
 
-  onPBXParkStarted = park => {
-    callStore.upsertRunning({
-      id: park,
+  onPBXParkStarted = id => {
+    callStore.upsertCall({
+      id,
       parking: true,
     });
   };
-  onPBXParkStopped = park => {
-    callStore.upsertRunning({
-      id: park,
+  onPBXParkStopped = id => {
+    callStore.upsertCall({
+      id,
       parking: false,
     });
   };
@@ -184,22 +184,23 @@ class Api {
       const pbxUser = contactStore.getPBXUser(number);
       call.partyName = pbxUser ? pbxUser.name : `Unnamed`;
     }
-    callStore.upsertRunning(call);
+    callStore.upsertCall(call);
   };
   onSIPSessionUpdated = call => {
-    callStore.upsertRunning(call);
+    callStore.upsertCall(call);
   };
   onSIPSessionStopped = id => {
-    const call = callStore.getRunningCall(id);
+    const call = callStore._calls.find(c => c.id === id);
     authStore.pushRecentCall({
       id: createId(),
       incoming: call.incoming,
       answered: call.answered,
       partyName: call.partyName,
       partyNumber: call.partyNumber,
+      duration: call.duration,
       created: moment().format(`HH:mm - MMM D`),
     });
-    callStore.removeRunning(call.id);
+    callStore.removeCall(call.id);
   };
 
   onUCConnectionStopped = () => {
