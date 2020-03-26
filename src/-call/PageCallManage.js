@@ -6,6 +6,7 @@ import {
   mdiMicrophoneOff,
   mdiPauseCircle,
   mdiPhoneHangup,
+  mdiPlayCircle,
   mdiRecord,
   mdiRecordCircle,
   mdiVideo,
@@ -27,6 +28,9 @@ import FieldButton from '../shared/FieldButton';
 import Layout from '../shared/Layout';
 import VideoPlayer from '../shared/VideoPlayer';
 import renderBackgroundCalls from './renderBackgroundCalls';
+import renderDTMF from './renderDTMF';
+import renderParkingCall from './renderParkingCall';
+import renderTransferringCall from './renderTransferringCall';
 
 const css = StyleSheet.create({
   Video: {
@@ -37,34 +41,37 @@ const css = StyleSheet.create({
     right: 0,
     backgroundColor: `black`,
   },
-  VideoSpace: {
+  Video_Space: {
     flex: 1,
     alignSelf: `stretch`,
   },
 
   Btns: {
     position: `absolute`,
-    top: 0,
+    top: 40, // Header compact height
     left: 0,
     right: 0,
     bottom: 0,
-    paddingBottom: 112, // Hangup button
+    paddingBottom: 124, // Hangup button 64 + 2*30
   },
   Btns__isVideoEnabled: {
     backgroundColor: g.layerBg,
   },
-  BtnsInner: {
+  Btns_Hidden: {
+    opacity: 0,
+  },
+  Btns_Inner: {
     flexDirection: `row`,
     alignSelf: `center`,
   },
-  BtnsInnerSpace: {
+  Btns_Space: {
     height: 20,
   },
-  BtnsInnerMarginVertical: {
+  Btns_VerticalMargin: {
     flex: 1,
   },
 
-  HangupBtn: {
+  Hangup: {
     position: `absolute`,
     bottom: 30,
     left: 0,
@@ -106,14 +113,12 @@ class PageCallManage extends React.Component {
       ? renderBackgroundCalls
       : !c
       ? () => null
-      : c.holding
-      ? this.renderHoldingCall
       : c.transferring
-      ? this.renderTransferringCall
+      ? renderTransferringCall
       : c.parking
-      ? this.renderParkingCall
+      ? renderParkingCall
       : c.isDTMF
-      ? this.renderDTMF
+      ? renderDTMF
       : this.renderCommonCall;
     return fn(c, isVideoEnabled);
   };
@@ -136,17 +141,18 @@ class PageCallManage extends React.Component {
         dropdown={dropdown}
         noScroll
         onBack={g.backToPageCallRecents}
-        title={c?.title || intl`Connection failed`}
+        title={c?.title || intl`Connection Failed`}
+        transparent
       >
         {isVideoEnabled && this.renderVideo(c)}
-        {c.answered && this.renderBtns(c, isVideoEnabled)}
+        {this.renderBtns(c, isVideoEnabled)}
         {this.renderHangupBtn(c)}
       </Layout>
     );
   };
   renderVideo = c => (
     <React.Fragment>
-      <View style={css.VideoSpace} />
+      <View style={css.Video_Space} />
       <View style={css.Video}>
         <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
       </View>
@@ -168,95 +174,100 @@ class PageCallManage extends React.Component {
         onPress={isVideoEnabled ? this.toggleButtons : null}
         style={[css.Btns, isVideoEnabled && css.Btns__isVideoEnabled]}
       >
-        <View style={css.BtnsInnerMarginVertical} />
-        <View style={css.BtnsInner}>
-          <ButtonIcon
-            bgcolor="white"
-            color="black"
-            name={intl`TRANSFER`}
-            noborder
-            onPress={c.initTransferring}
-            path={mdiCallSplit}
-            size={40}
-            textcolor="white"
-          />
-          <ButtonIcon
-            bgcolor="white"
-            color="black"
-            name={intl`PARK`}
-            noborder
-            onPress={c.park}
-            path={mdiAlphaPCircle}
-            size={40}
-            textcolor="white"
-          />
-          <ButtonIcon
-            bgcolor={c.localVideoEnabled ? activeColor : `white`}
-            color={c.localVideoEnabled ? `white` : `black`}
-            name={intl`VIDEO`}
-            noborder
-            onPress={c.localVideoEnabled ? c.disableVideo : c.enableVideo}
-            path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
-            size={40}
-            textcolor="white"
-          />
-          {Platform.OS !== `web` && (
+        <View style={css.Btns_VerticalMargin} />
+        {/* TODO add Connecting... */}
+        <View style={!c.answered && css.Btns_Hidden}>
+          <View style={css.Btns_Inner}>
             <ButtonIcon
-              bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : `white`}
-              color={callStore.isLoudSpeakerEnabled ? `white` : `black`}
-              name={intl`SPEAKER`}
+              bgcolor="white"
+              color="black"
+              name={intl`TRANSFER`}
               noborder
-              onPress={callStore.toggleLoudSpeaker}
-              path={
-                callStore.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
-              }
+              onPress={c.initTransferring}
+              path={mdiCallSplit}
               size={40}
               textcolor="white"
             />
-          )}
-        </View>
-        <View style={css.BtnsInnerSpace} />
-        <View style={css.BtnsInner}>
-          <ButtonIcon
-            bgcolor={c.muted ? activeColor : `white`}
-            color={c.muted ? `white` : `black`}
-            name={c.muted ? intl`UNMUTE` : intl`MUTE`}
-            noborder
-            onPress={c.toggleMuted}
-            path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
-            size={40}
-            textcolor="white"
-          />
-          <ButtonIcon
-            bgcolor={c.recording ? activeColor : `white`}
-            color={c.recording ? `white` : `black`}
-            name={intl`RECORD`}
-            noborder
-            onPress={c.toggleRecording}
-            path={c.recording ? mdiRecordCircle : mdiRecord}
-            size={40}
-            textcolor="white"
-          />
-          <ButtonIcon
-            bgcolor="white"
-            color="black"
-            name={intl`DTMF`}
-            noborder
-            onPress={c.toggleDTMF}
-            path={mdiDialpad}
-            size={40}
-            textcolor="white"
-          />
-          <ButtonIcon
-            bgcolor="white"
-            color="black"
-            name={intl`HOLD`}
-            noborder
-            onPress={c.toggleHold}
-            path={mdiPauseCircle}
-            size={40}
-            textcolor="white"
-          />
+            <ButtonIcon
+              bgcolor="white"
+              color="black"
+              name={intl`PARK`}
+              noborder
+              onPress={c.initParking}
+              path={mdiAlphaPCircle}
+              size={40}
+              textcolor="white"
+            />
+            <ButtonIcon
+              bgcolor={c.localVideoEnabled ? activeColor : `white`}
+              color={c.localVideoEnabled ? `white` : `black`}
+              name={intl`VIDEO`}
+              noborder
+              onPress={c.localVideoEnabled ? c.disableVideo : c.enableVideo}
+              path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
+              size={40}
+              textcolor="white"
+            />
+            {Platform.OS !== `web` && (
+              <ButtonIcon
+                bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : `white`}
+                color={callStore.isLoudSpeakerEnabled ? `white` : `black`}
+                name={intl`SPEAKER`}
+                noborder
+                onPress={callStore.toggleLoudSpeaker}
+                path={
+                  callStore.isLoudSpeakerEnabled
+                    ? mdiVolumeHigh
+                    : mdiVolumeMedium
+                }
+                size={40}
+                textcolor="white"
+              />
+            )}
+          </View>
+          <View style={css.Btns_Space} />
+          <View style={css.Btns_Inner}>
+            <ButtonIcon
+              bgcolor={c.muted ? activeColor : `white`}
+              color={c.muted ? `white` : `black`}
+              name={c.muted ? intl`UNMUTE` : intl`MUTE`}
+              noborder
+              onPress={c.toggleMuted}
+              path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+              size={40}
+              textcolor="white"
+            />
+            <ButtonIcon
+              bgcolor={c.recording ? activeColor : `white`}
+              color={c.recording ? `white` : `black`}
+              name={intl`RECORD`}
+              noborder
+              onPress={c.toggleRecording}
+              path={c.recording ? mdiRecordCircle : mdiRecord}
+              size={40}
+              textcolor="white"
+            />
+            <ButtonIcon
+              bgcolor="white"
+              color="black"
+              name={intl`DTMF`}
+              noborder
+              onPress={c.toggleDTMF}
+              path={mdiDialpad}
+              size={40}
+              textcolor="white"
+            />
+            <ButtonIcon
+              bgcolor={c.holding ? activeColor : `white`}
+              color={c.holding ? `white` : `black`}
+              name={c.holding ? intl`UNHOLD` : intl`HOLD`}
+              noborder
+              onPress={c.toggleHold}
+              path={c.holding ? mdiPlayCircle : mdiPauseCircle}
+              size={40}
+              textcolor="white"
+            />
+          </View>
         </View>
         {n > 0 && (
           <FieldButton
@@ -265,12 +276,12 @@ class PageCallManage extends React.Component {
             value={intl`${n} other calls are in background`}
           />
         )}
-        <View style={css.BtnsInnerMarginVertical} />
+        <View style={css.Btns_VerticalMargin} />
       </Container>
     );
   };
   renderHangupBtn = c => (
-    <View style={css.HangupBtn}>
+    <View style={css.Hangup}>
       <ButtonIcon
         bgcolor={g.colors.danger}
         color="white"

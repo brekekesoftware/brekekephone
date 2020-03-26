@@ -4,9 +4,9 @@ import React from 'react';
 
 import { TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
-import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
+import callStore from '../global/callStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
@@ -64,10 +64,7 @@ class PageCallParks extends React.Component {
       });
       return;
     }
-    sip.createSession(selectedPark, {
-      videoEnabled: false,
-    });
-    g.goToPageCallManage();
+    callStore.startCall(selectedPark);
   };
 
   onParkSuccess = () => {

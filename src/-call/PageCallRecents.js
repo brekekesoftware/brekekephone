@@ -4,7 +4,6 @@ import moment from 'moment';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
-import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
 import callStore from '../global/callStore';
@@ -19,17 +18,6 @@ class PageCallRecents extends React.Component {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id;
     }
-  };
-
-  callVoice = userId => {
-    sip.createSession(userId);
-    g.goToPageCallManage();
-  };
-  callVideo = userId => {
-    sip.createSession(userId, {
-      videoEnabled: true,
-    });
-    g.goToPageCallManage();
   };
 
   getAvatar = id => {
@@ -91,8 +79,8 @@ class PageCallRecents extends React.Component {
         {calls.map((c, i) => (
           <UserItem
             iconFuncs={[
-              () => this.callVideo(c.partyNumber),
-              () => this.callVoice(c.partyNumber),
+              () => callStore.startVideoCall(c.partyNumber),
+              () => callStore.startCall(c.partyNumber),
             ]}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall

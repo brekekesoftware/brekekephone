@@ -62,7 +62,7 @@ class PageSettingsOther extends Component {
         ]}
         menu="settings"
         subMenu="other"
-        title={intl`Other settings`}
+        title={intl`Other Settings`}
       >
         <Field isGroup label={intl`LOCALIZATION`} />
         <Field

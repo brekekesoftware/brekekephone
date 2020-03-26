@@ -13,9 +13,9 @@ import React from 'react';
 
 import { ActivityIndicator, StyleSheet, View } from '../-/Rn';
 import pbx from '../api/pbx';
-import sip from '../api/sip';
 import g from '../global';
 import authStore from '../global/authStore';
+import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
 import intl from '../intl/intl';
 import Field from '../shared/Field';
@@ -246,8 +246,7 @@ class PageContactPhonebook extends React.Component {
   };
   call = number => {
     number = formatPhoneNumber(number);
-    sip.createSession(number);
-    g.goToPageCallManage();
+    callStore.startCall(number);
   };
   create = () => {
     g.goToPagePhonebookCreate({

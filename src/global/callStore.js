@@ -23,7 +23,9 @@ export class CallStore {
     return this._calls.find(c => c.id === this._currentCallId);
   }
   @computed get backgroundCalls() {
-    return this._calls.filter(c => !c.incoming && c.id !== this._currentCallId);
+    return this._calls.filter(
+      c => c.id !== this._currentCallId && !(c.incoming && !c.answered),
+    );
   }
 
   @action _updateCurrentCall = () => {
@@ -38,12 +40,13 @@ export class CallStore {
     if (currentCallId !== this._currentCallId) {
       this._currentCallId = currentCallId;
     }
-    this._holdBackgroundCallsDebounce();
+    this._updateBackgroundCallsDebounce();
   };
-  _updateCurrentCallDebounce = debounce(this._updateCurrentCall, 100, {
-    maxWait: 300,
+  _updateCurrentCallDebounce = debounce(this._updateCurrentCall, 500, {
+    maxWait: 1000,
   });
-  @action _holdBackgroundCalls = () => {
+  @action _updateBackgroundCalls = () => {
+    // Auto hold background calls
     this._calls
       .filter(
         c =>
@@ -54,11 +57,12 @@ export class CallStore {
           !c.holding,
       )
       .forEach(c => c.toggleHold());
+    // Auto hide background calls view
     if (!this.backgroundCalls.length && this.isViewBackgroundCalls) {
       this.isViewBackgroundCalls = false;
     }
   };
-  _holdBackgroundCallsDebounce = debounce(this._holdBackgroundCalls, 500, {
+  _updateBackgroundCallsDebounce = debounce(this._updateBackgroundCalls, 500, {
     maxWait: 1000,
   });
 
@@ -82,9 +86,11 @@ export class CallStore {
     this.isViewBackgroundCalls = false;
   };
 
-  @action answerCall = id => {
-    this._currentCallId = id;
-    sip.answerSession(id);
+  @action answerCall = c => {
+    this._currentCallId = c.id;
+    sip.answerSession(c.id, {
+      videoEnabled: c.remoteVideoEnabled,
+    });
   };
 
   _startCallIntervalAt = 0;
@@ -93,6 +99,7 @@ export class CallStore {
     sip.createSession(number, options);
     g.goToPageCallManage();
     // Auto update _currentCallId
+    this._currentCallId = undefined;
     const prevIds = arrToMap(this._calls, `id`);
     if (this._startCallIntervalId) {
       clearInterval(this._startCallIntervalId);
@@ -107,7 +114,7 @@ export class CallStore {
         clearInterval(this._startCallIntervalId);
         this._startCallIntervalId = 0;
       }
-    }, 17);
+    }, 100);
   };
 
   startVideoCall = number => {

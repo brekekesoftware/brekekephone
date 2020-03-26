@@ -12,6 +12,10 @@ const css = StyleSheet.create({
   Layout: {
     flex: 1,
     height: `100%`,
+    backgroundColor: `white`,
+  },
+  Layout__transparent: {
+    backgroundColor: `transparent`,
   },
   Scroller: {
     flexGrow: 1,
@@ -22,9 +26,10 @@ const css = StyleSheet.create({
 });
 
 const Layout = observer(props => {
-  props = { ...props }; // Clone so it can be mutated
   const [headerOverflow, setHeaderOverflow] = useState(false);
-  //
+
+  props = { ...props }; // Clone so it can be mutated
+
   const Container = props.noScroll ? View : ScrollView;
   const containerProps = Object.entries(props).reduce((m, [k, v]) => {
     if (k.startsWith(`container`)) {
@@ -35,14 +40,13 @@ const Layout = observer(props => {
     }
     return m;
   }, {});
-  //
-  if (props.noScroll) {
+
+  Object.assign(containerProps, {
+    style: [css.Layout, props.transparent && css.Layout__transparent],
+  });
+
+  if (!props.noScroll) {
     Object.assign(containerProps, {
-      style: css.Layout,
-    });
-  } else {
-    Object.assign(containerProps, {
-      style: css.Layout,
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: `always`,
       onScroll: e =>
@@ -53,6 +57,12 @@ const Layout = observer(props => {
       showsVerticalScrollIndicator: false,
     });
   }
+
+  if (props.compact) {
+    // Fix android header transparent box shadow
+    props.transparent = false;
+  }
+
   // TODO put more document here
   let headerSpace = 86 + 15;
   if (props.menu) {
@@ -73,7 +83,7 @@ const Layout = observer(props => {
       footerSpace += 56;
     }
   }
-  //
+
   return (
     <React.Fragment>
       <Container {...containerProps}>

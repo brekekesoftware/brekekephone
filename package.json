@@ -40,7 +40,7 @@
     "mobx-react": "6.1.8",
     "moment": "2.24.0",
     "polished": "3.5.1",
-    "qs": "6.9.2",
+    "qs": "6.9.3",
     "react": "16.13.1",
     "react-art": "16.13.1",
     "react-device-detect": "1.11.14",

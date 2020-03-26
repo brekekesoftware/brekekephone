@@ -22,6 +22,7 @@ import {
 } from '../-/Rn';
 import g from '../global';
 import callStore from '../global/callStore';
+import intl from '../intl/intl';
 import ButtonIcon from '../shared/ButtonIcon';
 import formatDuration from '../utils/formatDuration';
 
@@ -79,7 +80,9 @@ class CallBar extends React.Component {
           </View>
           <View style={css.CallBar_Info}>
             <Text style={css.Notify_Info_PartyName}>{c.title}</Text>
-            <Text>{formatDuration(c.duration)}</Text>
+            <Text>
+              {c.answered ? formatDuration(c.duration) : intl`Dialing...`}
+            </Text>
           </View>
 
           <View style={css.CallBar_BtnCall}>

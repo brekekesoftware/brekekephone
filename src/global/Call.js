@@ -105,6 +105,14 @@ export default class Call {
 
   @observable parking = false;
   @observable parkingNumber = ``; // TODO
+  @action initParking = () => {
+    this.parking = true;
+    this.parkingNumber = ``;
+  };
+  @action closeParking = () => {
+    this.parking = false;
+    this.parkingNumber = ``;
+  };
 
   @observable isDTMF = false;
   @action toggleDTMF = () => {

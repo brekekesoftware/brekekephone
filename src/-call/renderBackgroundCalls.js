@@ -10,10 +10,8 @@ import Layout from '../shared/Layout';
 const renderBackgroundCalls = () => (
   <Layout
     compact
-    noScroll
     onBack={callStore.toggleViewBackgroundCalls}
-    title={intl`Background calls`}
-    transparent
+    title={intl`Background Calls`}
   >
     {callStore.backgroundCalls.map(c => (
       <TouchableOpacity

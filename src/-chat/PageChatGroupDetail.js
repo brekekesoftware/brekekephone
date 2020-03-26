@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import React from 'react';
 
 import ChatInput from '../-/Footer/ChatInput';
-import sip from '../api/sip';
 import uc from '../api/uc';
 import g from '../global';
+import callStore from '../global/callStore';
 import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import intl from '../intl/intl';
@@ -246,10 +246,9 @@ class PageChatGroupDetail extends React.Component {
     g.goToPageChatGroupInvite({ groupId: this.props.groupId });
   };
   call = (target, bVideoEnabled) => {
-    sip.createSession(target, {
+    callStore.startCall(target, {
       videoEnabled: bVideoEnabled,
     });
-    g.goToPageCallManage();
   };
   callVoiceConference = () => {
     let target = this.props.groupId;

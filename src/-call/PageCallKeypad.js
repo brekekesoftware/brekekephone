@@ -2,8 +2,8 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import sip from '../api/sip';
 import g from '../global';
+import callStore from '../global/callStore';
 import intl from '../intl/intl';
 import Layout from '../shared/Layout';
 import KeyPad from './KeyPad';
@@ -26,10 +26,7 @@ class PageCallKeypad extends React.Component {
       });
       return;
     }
-    sip.createSession(this.txt, {
-      videoEnabled: false,
-    });
-    g.goToPageCallManage();
+    callStore.startCall(this.txt);
   };
 
   render() {
