@@ -9,6 +9,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import SplashScreen from 'react-native-splash-screen';
 
 import { Platform, StatusBar, StyleSheet, Text, View } from './-/Rn';
+import PageBackgroundCalls from './-call/PageBackgroundCalls';
 import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
@@ -89,6 +90,7 @@ g.registerStacks({
   PagePhonebookCreate,
   PagePhonebookUpdate,
   PageCallManage,
+  PageBackgroundCalls,
   PageChatDetail,
   PageChatGroupCreate,
   PageChatGroupInvite,

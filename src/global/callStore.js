@@ -57,10 +57,6 @@ export class CallStore {
           !c.holding,
       )
       .forEach(c => c.toggleHold());
-    // Auto hide background calls view
-    if (!this.backgroundCalls.length && this.isViewBackgroundCalls) {
-      this.isViewBackgroundCalls = false;
-    }
   };
   _updateBackgroundCallsDebounce = debounce(this._updateBackgroundCalls, 500, {
     maxWait: 1000,
@@ -83,7 +79,7 @@ export class CallStore {
       c.toggleHold();
     }
     this._currentCallId = c.id;
-    this.isViewBackgroundCalls = false;
+    g.backToPageBackgroundCalls();
   };
 
   @action answerCall = c => {
@@ -129,11 +125,6 @@ export class CallStore {
       this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled;
       IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled);
     }
-  };
-
-  @observable isViewBackgroundCalls = false;
-  @action toggleViewBackgroundCalls = () => {
-    this.isViewBackgroundCalls = !this.isViewBackgroundCalls;
   };
 
   @observable newVoicemailCount = 0;

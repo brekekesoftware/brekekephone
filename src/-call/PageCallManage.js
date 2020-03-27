@@ -27,7 +27,6 @@ import ButtonIcon from '../shared/ButtonIcon';
 import FieldButton from '../shared/FieldButton';
 import Layout from '../shared/Layout';
 import VideoPlayer from '../shared/VideoPlayer';
-import renderBackgroundCalls from './renderBackgroundCalls';
 import renderDTMF from './renderDTMF';
 import renderParkingCall from './renderParkingCall';
 import renderTransferringCall from './renderTransferringCall';
@@ -109,9 +108,7 @@ class PageCallManage extends React.Component {
   };
 
   renderCall = (c, isVideoEnabled) => {
-    const fn = callStore.isViewBackgroundCalls
-      ? renderBackgroundCalls
-      : !c
+    const fn = !c
       ? () => null
       : c.transferring
       ? renderTransferringCall
@@ -272,7 +269,7 @@ class PageCallManage extends React.Component {
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={callStore.toggleViewBackgroundCalls}
+            onCreateBtnPress={g.goToPageBackgroundCalls}
             value={intl`${n} other calls are in background`}
           />
         )}

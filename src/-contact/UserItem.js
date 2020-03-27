@@ -16,9 +16,7 @@ const css = StyleSheet.create({
     paddingLeft: 10,
   },
   Inner_selected: {
-    borderRightWidth: 5,
-    borderColor: g.colors.primary,
-    backgroundColor: g.hoverBg,
+    backgroundColor: g.colors.primaryFn(0.5),
   },
   //
   WithSpace: {
