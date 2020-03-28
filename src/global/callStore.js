@@ -52,7 +52,6 @@ export class CallStore {
         c =>
           c.id !== this._currentCallId &&
           c.answered &&
-          !c.parking &&
           !c.transferring &&
           !c.holding,
       )
@@ -139,7 +138,7 @@ export class CallStore {
   };
   @action _updateDuration = () => {
     this._calls
-      .filter(c => c.answered && !c.transferring && !c.parking)
+      .filter(c => c.answered)
       .forEach(c => {
         c.duration += 100;
       });

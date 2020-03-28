@@ -71,51 +71,68 @@ export default class Call {
     g.showError({ message, err });
   };
 
-  @observable transferring = false;
-  @observable transferringNumber = ``;
-  @action initTransferring = () => {
-    this.transferring = true;
-    this.transferringNumber = ``;
-  };
-  @action closeTransferring = () => {
-    this.transferring = false;
-    this.transferringNumber = ``;
-  };
-  @action transferBlind = number => {
-    this.transferring = false;
-    this.transferringNumber = ``;
+  @observable transferring = ``;
+  _prevTransferring = ``;
+  transferBlind = number => {
+    g.backToPageCallManage();
     return pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this._onTransferFailure);
   };
   @action transferAttended = number => {
-    this.transfering = true;
-    this.transferringNumber = number;
+    this.transferring = number;
+    g.backToPageCallManage();
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this._onTransferFailure);
   };
-  _onTransferFailure = err => {
-    this.initTransferring();
+  @action _onTransferFailure = err => {
+    this.transferring = ``;
     g.showError({
       message: intl.debug`Failed to transfer the call`,
       err,
     });
   };
 
-  @observable parking = false;
-  @observable parkingNumber = ``; // TODO
-  @action initParking = () => {
-    this.parking = true;
-    this.parkingNumber = ``;
+  @action stopTransferring = () => {
+    this._prevTransferring = this.transferring;
+    this.transferring = ``;
+    return pbx
+      .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .catch(this._onStopTransferringFailure);
   };
-  @action closeParking = () => {
-    this.parking = false;
-    this.parkingNumber = ``;
+  @action _onStopTransferringFailure = err => {
+    this.transferring = this._prevTransferring;
+    g.showError({
+      message: intl.debug`Failed to stop the transfer`,
+      err,
+    });
   };
 
-  @observable isDTMF = false;
-  @action toggleDTMF = () => {
-    this.isDTMF = !this.isDTMF;
+  @action conferenceTransferring = () => {
+    this._prevTransferring = this.transferring;
+    this.transferring = ``;
+    return pbx
+      .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .catch(this._onConferenceTransferringFailure);
+  };
+  @action _onConferenceTransferringFailure = err => {
+    this.transferring = this._prevTransferring;
+    g.showError({
+      message: intl.debug`Failed to make conference for the transfer`,
+      err,
+    });
+  };
+
+  @action park = number => {
+    return pbx
+      .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
+      .catch(this._onParkFailure);
+  };
+  _onParkFailure = err => {
+    g.showError({
+      message: intl.debug`Failed to park the call`,
+      err,
+    });
   };
 }

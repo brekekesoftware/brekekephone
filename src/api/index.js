@@ -19,8 +19,6 @@ class Api {
     pbx.on(`connection-started`, this.onPBXConnectionStarted);
     pbx.on(`connection-stopped`, this.onPBXConnectionStopped);
     pbx.on(`connection-timeout`, this.onPBXConnectionTimeout);
-    pbx.on(`park-started`, this.onPBXParkStarted);
-    pbx.on(`park-stopped`, this.onPBXParkStopped);
     pbx.on(`user-calling`, this.onPBXUserCalling);
     pbx.on(`user-ringing`, this.onPBXUserRinging);
     pbx.on(`user-talking`, this.onPBXUserTalking);
@@ -149,19 +147,6 @@ class Api {
     callStore.newVoicemailCount = ev?.new || 0;
   };
 
-  onPBXParkStarted = id => {
-    callStore.upsertCall({
-      id,
-      parking: true,
-    });
-  };
-  onPBXParkStopped = id => {
-    callStore.upsertCall({
-      id,
-      parking: false,
-    });
-  };
-
   onSIPConnectionStarted = () => {
     authStore.set(`sipState`, `success`);
     setTimeout(this.onPBXAndSipStarted, 170);
@@ -181,8 +166,7 @@ class Api {
       call.partyName = `Voicemails`;
     }
     if (!call.partyName) {
-      const pbxUser = contactStore.getPBXUser(number);
-      call.partyName = pbxUser ? pbxUser.name : `Unnamed`;
+      call.partyName = contactStore.getPBXUser(number)?.name;
     }
     callStore.upsertCall(call);
   };

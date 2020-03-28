@@ -13,7 +13,10 @@ import PageBackgroundCalls from './-call/PageBackgroundCalls';
 import PageCallKeypad from './-call/PageCallKeypad';
 import PageCallManage from './-call/PageCallManage';
 import PageCallParks from './-call/PageCallParks';
+import PageCallParks2 from './-call/PageCallParks2';
 import PageCallRecents from './-call/PageCallRecents';
+import PageDtmfKeypad from './-call/PageDtmfKeypad';
+import PageTransferDial from './-call/PageTransferDial';
 import PageChatDetail from './-chat/PageChatDetail';
 import PageChatGroupCreate from './-chat/PageChatGroupCreate';
 import PageChatGroupDetail from './-chat/PageChatGroupDetail';
@@ -91,11 +94,14 @@ g.registerStacks({
   PagePhonebookUpdate,
   PageCallManage,
   PageBackgroundCalls,
+  PageTransferDial,
+  PageDtmfKeypad,
   PageChatDetail,
   PageChatGroupCreate,
   PageChatGroupInvite,
   PageChatGroupDetail,
   PageSettingsDebug,
+  PageCallParks2,
 });
 
 const css = StyleSheet.create({

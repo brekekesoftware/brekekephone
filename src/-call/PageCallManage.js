@@ -27,9 +27,7 @@ import ButtonIcon from '../shared/ButtonIcon';
 import FieldButton from '../shared/FieldButton';
 import Layout from '../shared/Layout';
 import VideoPlayer from '../shared/VideoPlayer';
-import renderDTMF from './renderDTMF';
-import renderParkingCall from './renderParkingCall';
-import renderTransferringCall from './renderTransferringCall';
+import TransferringCall from './renderTransferringCall';
 
 const css = StyleSheet.create({
   Video: {
@@ -107,46 +105,37 @@ class PageCallManage extends React.Component {
     }
   };
 
-  renderCall = (c, isVideoEnabled) => {
-    const fn = !c
-      ? () => null
-      : c.transferring
-      ? renderTransferringCall
-      : c.parking
-      ? renderParkingCall
-      : c.isDTMF
-      ? renderDTMF
-      : this.renderCommonCall;
-    return fn(c, isVideoEnabled);
-  };
-
-  renderCommonCall = (c, isVideoEnabled) => {
-    let dropdown =
-      isVideoEnabled && !c.holding && !c.transparent && !c.parking
-        ? [
-            {
-              label: this.showButtonsInVideoCall
-                ? intl`Hide call menu buttons`
-                : intl`Show call menu buttons`,
-              onPress: this.toggleButtons,
-            },
-          ]
-        : null;
-    return (
-      <Layout
-        compact
-        dropdown={dropdown}
-        noScroll
-        onBack={g.backToPageCallRecents}
-        title={c?.title || intl`Connection Failed`}
-        transparent
-      >
-        {isVideoEnabled && this.renderVideo(c)}
-        {this.renderBtns(c, isVideoEnabled)}
-        {this.renderHangupBtn(c)}
-      </Layout>
-    );
-  };
+  renderCall = (c, isVideoEnabled) => (
+    <Layout
+      compact
+      dropdown={
+        isVideoEnabled && c?.transferring
+          ? [
+              {
+                label: this.showButtonsInVideoCall
+                  ? intl`Hide call menu buttons`
+                  : intl`Show call menu buttons`,
+                onPress: this.toggleButtons,
+              },
+            ]
+          : null
+      }
+      noScroll
+      onBack={g.backToPageCallRecents}
+      title={c?.title || intl`Connection Failed`}
+      transparent={c?.transferring}
+    >
+      {!c ? null : c.transferring ? (
+        <TransferringCall />
+      ) : (
+        <React.Fragment>
+          {isVideoEnabled && this.renderVideo(c)}
+          {this.renderBtns(c, isVideoEnabled)}
+          {this.renderHangupBtn(c)}
+        </React.Fragment>
+      )}
+    </Layout>
+  );
   renderVideo = c => (
     <React.Fragment>
       <View style={css.Video_Space} />
@@ -180,7 +169,7 @@ class PageCallManage extends React.Component {
               color="black"
               name={intl`TRANSFER`}
               noborder
-              onPress={c.initTransferring}
+              onPress={g.goToPageTransferDial}
               path={mdiCallSplit}
               size={40}
               textcolor="white"
@@ -190,7 +179,7 @@ class PageCallManage extends React.Component {
               color="black"
               name={intl`PARK`}
               noborder
-              onPress={c.initParking}
+              onPress={g.goToPageCallParks2}
               path={mdiAlphaPCircle}
               size={40}
               textcolor="white"
@@ -249,7 +238,7 @@ class PageCallManage extends React.Component {
               color="black"
               name={intl`DTMF`}
               noborder
-              onPress={c.toggleDTMF}
+              onPress={g.goToPageDtmfKeypad}
               path={mdiDialpad}
               size={40}
               textcolor="white"

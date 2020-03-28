@@ -65,15 +65,13 @@ class PBX extends EventEmitter {
     };
 
     this.client.notify_park = e => {
-      if (!e?.park) {
-        return;
-      }
-      if (e.status === `on`) {
-        return this.emit(`park-started`, e.park);
-      }
-      if (e.status === `off`) {
-        return this.emit(`park-stopped`, e.park);
-      }
+      // TODO
+      // if (e.status === `on`) {
+      //   return this.emit(`park-started`, e.park);
+      // }
+      // if (e.status === `off`) {
+      //   return this.emit(`park-stopped`, e.park);
+      // }
     };
 
     this.client.notify_voicemail = e => {

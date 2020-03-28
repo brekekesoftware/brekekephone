@@ -48,8 +48,6 @@ const PageBackgroundCalls = observer(() => (
               ? intl`Dialing...`
               : c.transferring
               ? intl`Transferring`
-              : c.parking
-              ? intl`Parking`
               : intl`On Hold`
           }
           {...c}

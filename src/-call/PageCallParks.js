@@ -1,8 +1,7 @@
-import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import { TouchableOpacity } from '../-/Rn';
+import { Text, TouchableOpacity } from '../-/Rn';
 import UserItem from '../-contact/UserItem';
 import g from '../global';
 import authStore from '../global/authStore';
@@ -13,41 +12,9 @@ import Layout from '../shared/Layout';
 
 @observer
 class PageCallParks extends React.Component {
-  @computed get parkIds() {
-    return authStore.currentProfile.parks;
-  }
   state = {
     selectedPark: null,
   };
-
-  render() {
-    const screen = this.props.screen;
-    const goBack =
-      screen === `page_phone` ? g.goToPageCallKeypad : g.goToPageCallManage;
-    void goBack; // TODO
-    return (
-      <Layout
-        description={intl`Manage your call parks`}
-        fabOnNext={this.state.selectedPark ? this.park : null}
-        fabOnNextText={intl`START NEW PARK`}
-        menu="call"
-        subMenu="parks"
-        title={intl`Park`}
-      >
-        <Field isGroup />
-        {this.parkIds.length !== 0 &&
-          this.parkIds.map((u, i) => (
-            <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
-              <UserItem
-                key={i}
-                name={intl`Park ${i + 1}: ${u}`}
-                selected={this.state.selectedPark === u}
-              />
-            </TouchableOpacity>
-          ))}
-      </Layout>
-    );
-  }
 
   selectPark = selectedPark => {
     this.setState({
@@ -57,25 +24,44 @@ class PageCallParks extends React.Component {
   };
 
   park = () => {
-    const { selectedPark } = this.state;
-    if (!selectedPark) {
-      g.showError({
-        message: intl.debug`No selected park to start`,
-      });
-      return;
-    }
-    callStore.startCall(selectedPark);
+    const p = this.state.selectedPark;
+    return this.props.callParks2
+      ? callStore.currentCall?.park(p)
+      : callStore.startCall(p);
   };
 
-  onParkSuccess = () => {
-    g.goToPageCallManage({ changeTitle: intl`Call park is success` });
-  };
-  onParkFailure = err => {
-    g.showError({
-      message: intl.debug`Failed to park the call`,
-      err,
-    });
-  };
+  render() {
+    const ps = authStore.currentProfile.parks;
+    const p = this.state.selectedPark;
+    const p2 = this.props.callParks2;
+    return (
+      <Layout
+        description={intl`Your park numbers`}
+        fabOnNext={p ? this.park : null}
+        fabOnNextText={p2 ? intl`START PARKING` : intl`CALL PARK`}
+        menu={p2 ? null : `call`}
+        onBack={p2 ? g.backToPageCallManage : null}
+        subMenu={p2 ? null : `parks`}
+        title={intl`Park`}
+      >
+        {!ps.length && (
+          <React.Fragment>
+            <Field isGroup label={intl`PARK (0)`} />
+            <Text padding>{intl`This account has no park number`}</Text>
+          </React.Fragment>
+        )}
+        {ps.map((u, i) => (
+          <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
+            <UserItem
+              key={i}
+              name={intl`Park ${i + 1}: ${u}`}
+              selected={p === u}
+            />
+          </TouchableOpacity>
+        ))}
+      </Layout>
+    );
+  }
 }
 
 export default PageCallParks;

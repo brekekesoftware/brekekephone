@@ -65,7 +65,6 @@ const UserItem = ({
   isRecentCall,
   lastMessage,
   name,
-  park,
   partyNumber,
   selected,
   statusText,
@@ -113,7 +112,6 @@ const UserItem = ({
             <Text normal small style={css.CallCreatedAt}>
               {intl`at`} {created}
             </Text>
-            {!!park && <Text small>{park}</Text>}
           </View>
         )}
       </View>

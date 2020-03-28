@@ -55,6 +55,9 @@ const css = StyleSheet.create({
   right: {
     textAlign: `right`,
   },
+  padding: {
+    paddingHorizontal: 10,
+  },
 });
 
 const wrap = Component =>
