@@ -1,13 +1,13 @@
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js';
 import React from 'react';
 
-import g from '../../global';
+import g from '../global';
 import { Icon, StyleSheet, TextInput, TouchableOpacity, View } from '../Rn';
 
 const css = StyleSheet.create({
   ChatInput: {
     flex: 1,
-    flexDirection: `row`,
+    flexDirection: 'row',
   },
   Btn: {
     width: 50,

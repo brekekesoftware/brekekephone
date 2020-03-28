@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import v from '../../variables';
+import v from '../variables';
 
 const css = StyleSheet.create({
   RnSwitch: {
@@ -14,7 +14,7 @@ const css = StyleSheet.create({
     backgroundColor: v.colors.primaryFn(0.1),
   },
   Circle: {
-    position: `absolute`,
+    position: 'absolute',
     top: -3,
     left: -1,
     width: 18,

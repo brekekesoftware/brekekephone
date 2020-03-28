@@ -1,17 +1,17 @@
-const path = require(`path`);
-const fs = require(`fs-extra`);
+const path = require('path');
+const fs = require('fs-extra');
 
-const jsonOutputPath = path.join(__dirname, `./src/intl/en.json`);
+const jsonOutputPath = path.join(__dirname, './src/intl/en2.json');
 
 // Only add brackets if there's no existing brackets
 const withBrackets = (exprName, rawTemplate, i) =>
-  !findBrackets(rawTemplate, i, `{`) ||
-  !findBrackets(rawTemplate, i + exprName.length, `}`)
+  !findBrackets(rawTemplate, i, '{') ||
+  !findBrackets(rawTemplate, i + exprName.length, '}')
     ? `{{${exprName}}}`
     : exprName;
 const findBrackets = (rawTemplate, i, bracket) => {
-  const d = bracket === `{` ? -1 : 1;
-  const negBracket = bracket === `{` ? `}` : `{`;
+  const d = bracket === '{' ? -1 : 1;
+  const negBracket = bracket === '{' ? '}' : '{';
   while (true) {
     if (i <= 0 || i >= rawTemplate.length) {
       return false;
@@ -33,7 +33,8 @@ const babelPluginIntl = () => ({
     TaggedTemplateExpression(p, s) {
       //
       const tagName = p.node.tag.name;
-      if (tagName !== `intl` && tagName !== `intl.debug`) {
+      const tl = tagName && tagName.toLowerCase();
+      if (!tl || (tl.indexOf('intl') < 0 && tl.indexOf('debug') < 0)) {
         return;
       }
       // Get raw expressions from source code
@@ -46,7 +47,7 @@ const babelPluginIntl = () => ({
           .split(/\W+/g)
           .filter(w => w)
           .map((w, i) => (!i ? w : w.charAt(0).toUpperCase() + w.substr(1)))
-          .join(``),
+          .join(''),
       );
       // Check invalid/duplicated fields
       const duplicatedMap = {};
@@ -76,7 +77,7 @@ const babelPluginIntl = () => ({
           }
           return [r, a];
         },
-        [``, []],
+        ['', []],
       );
       // Get the template
       const normalizedTemplate = quasis
@@ -87,8 +88,8 @@ const babelPluginIntl = () => ({
           }
           return a;
         }, [])
-        .join(``)
-        .replace(`\\\``, `\``);
+        .join('')
+        .replace('\\`', '`');
       // Extract the normalized template
       if (process.env.EXTRACT_INTL) {
         let arr = fs.existsSync(jsonOutputPath)
@@ -102,7 +103,7 @@ const babelPluginIntl = () => ({
       }
       // Replace the tagged template with a function call
       const p1 = JSON.stringify(normalizedTemplate);
-      const p2 = `{${exprNames.map((v, i) => `${v}:${exprs[i]}`).join(`,`)}}`;
+      const p2 = `{${exprNames.map((v, i) => `${v}:${exprs[i]}`).join(',')}}`;
       p.replaceWithSourceString(`${tagName}(${p1}, ${p2})`);
     },
   },

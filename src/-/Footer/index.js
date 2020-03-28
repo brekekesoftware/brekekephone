@@ -2,17 +2,17 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 
-import g from '../../global';
-import { toLowerCaseFirstChar } from '../../utils/string';
-import { arrToMap } from '../../utils/toMap';
+import g from '../global';
 import { StyleSheet, View } from '../Rn';
+import { toLowerCaseFirstChar } from '../utils/string';
+import { arrToMap } from '../utils/toMap';
 import Actions from './Actions';
 import Navigation from './Navigation';
 import ToggleKeyboard from './ToggleKeyboard';
 
 const css = StyleSheet.create({
   Footer: {
-    position: `absolute`,
+    position: 'absolute',
     bottom: 0,
     right: 0,
   },
@@ -25,8 +25,8 @@ const css = StyleSheet.create({
   //
   // Fix bug margin auto can not be used
   ActionsOuter: {
-    alignItems: `center`,
-    flexDirection: `row`,
+    alignItems: 'center',
+    flexDirection: 'row',
     paddingHorizontal: 10,
     marginVertical: 8,
   },
@@ -35,8 +35,8 @@ const css = StyleSheet.create({
   },
   //
   ActionsInner: {
-    flexDirection: `row`,
-    width: `100%`,
+    flexDirection: 'row',
+    width: '100%',
     minWidth: 260,
     maxWidth: g.maxModalWidth,
   },
@@ -44,8 +44,8 @@ const css = StyleSheet.create({
 
 const Footer = observer(props => {
   const fabProps = arrToMap(
-    Object.keys(props).filter(k => k.startsWith(`fab`)),
-    k => toLowerCaseFirstChar(k.replace(`fab`, ``)),
+    Object.keys(props).filter(k => k.startsWith('fab')),
+    k => toLowerCaseFirstChar(k.replace('fab', '')),
     k => props[k],
   );
   const { menu } = props;

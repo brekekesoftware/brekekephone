@@ -1,12 +1,12 @@
 import { mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
 
-import { useAnimation } from '../../utils/animation';
 import { Animated, Icon, StyleSheet, TouchableOpacity } from '../Rn';
+import { useAnimation } from '../utils/animation';
 
 const css = StyleSheet.create({
   BackBtn: {
-    position: `absolute`,
+    position: 'absolute',
     top: 0,
     left: 0,
   },

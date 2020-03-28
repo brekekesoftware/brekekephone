@@ -1,19 +1,19 @@
 import React from 'react';
 
-import g from '../../global';
-import { getSubMenus } from '../../shared/navigationConfig';
+import g from '../global';
 import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
+import { getSubMenus } from '../shared/navigationConfig';
 
 const css = StyleSheet.create({
   Navigation: {
-    flexDirection: `row`,
-    alignSelf: `stretch`,
+    flexDirection: 'row',
+    alignSelf: 'stretch',
     backgroundColor: g.bg,
   },
   Btn: {
     flex: 1,
     paddingVertical: 8,
-    alignItems: `center`,
+    alignItems: 'center',
     borderBottomWidth: 3,
     borderColor: g.borderBg,
   },

@@ -1,21 +1,21 @@
 import { mdiCached, mdiKeyboardBackspace } from '@mdi/js';
 import React from 'react';
 
-import g from '../../global';
-import intl from '../../intl/intl';
+import g from '../global';
+import intl from '../intl/intl';
 import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 
 const css = StyleSheet.create({
   Actions: {
     flex: 1,
-    flexDirection: `row`,
+    flexDirection: 'row',
     borderRadius: g.borderRadius,
-    overflow: `hidden`,
+    overflow: 'hidden',
   },
   //
   Btn: {
     borderRadius: 0,
-    width: `25%`,
+    width: '25%',
     paddingVertical: 8,
   },
   Btn__back: {
@@ -25,11 +25,11 @@ const css = StyleSheet.create({
     backgroundColor: g.hoverBg,
   },
   Btn__next: {
-    width: `50%`,
+    width: '50%',
     backgroundColor: g.colors.primary,
   },
   Btn__15: {
-    width: `15%`,
+    width: '15%',
   },
   Btn__33: {
     width: `${(1 / 3) * 100}%`,
@@ -38,14 +38,14 @@ const css = StyleSheet.create({
     width: `${(2 / 3) * 100}%`,
   },
   Btn__100: {
-    width: `100%`,
+    width: '100%',
   },
   //
   Text: {
     flex: 1,
     color: g.revColor,
     lineHeight: g.iconSize,
-    textAlign: `center`,
+    textAlign: 'center',
   },
 });
 

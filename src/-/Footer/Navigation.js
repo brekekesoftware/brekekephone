@@ -1,22 +1,22 @@
 import React from 'react';
 
-import g from '../../global';
-import { menus } from '../../shared/navigationConfig';
+import g from '../global';
 import { Icon, StyleSheet, TouchableOpacity, View } from '../Rn';
+import { menus } from '../shared/navigationConfig';
 
 const css = StyleSheet.create({
   Navigation: {
-    flexDirection: `row`,
-    alignSelf: `stretch`,
+    flexDirection: 'row',
+    alignSelf: 'stretch',
   },
   Btn: {
     flex: 1,
     padding: 4,
-    alignItems: `center`,
+    alignItems: 'center',
   },
   BtnBg: {
     paddingVertical: 8,
-    width: `100%`,
+    width: '100%',
   },
   BtnBg__active: {
     borderRadius: 22,

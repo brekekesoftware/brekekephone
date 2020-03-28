@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
-import v from '../../variables';
+import v from '../variables';
 
 const css = StyleSheet.create({
   RnStatusBar: {
@@ -15,11 +15,11 @@ const css = StyleSheet.create({
     }),
   },
   RnStatusBar__transparent: {
-    backgroundColor: `transparent`,
-    borderColor: `transparent`,
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
   },
   Border: {
-    position: `absolute`,
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
@@ -30,7 +30,7 @@ const css = StyleSheet.create({
 });
 
 const RnStatusBar = props =>
-  Platform.OS === `web` ? null : (
+  Platform.OS === 'web' ? null : (
     <View
       style={[
         css.RnStatusBar,

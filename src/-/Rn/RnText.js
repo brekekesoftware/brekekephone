@@ -2,11 +2,11 @@ import pickBy from 'lodash/pickBy';
 import React, { forwardRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
 
-import v from '../../variables';
+import v from '../variables';
 
 const css = StyleSheet.create({
   RnText: {
-    position: `relative`,
+    position: 'relative',
     fontSize: v.fontSize,
     lineHeight: v.lineHeight,
     fontWeight: v.fontWeight,
@@ -16,23 +16,23 @@ const css = StyleSheet.create({
   title: {
     fontSize: v.fontSizeTitle,
     lineHeight: v.lineHeightTitle,
-    fontWeight: `bold`,
+    fontWeight: 'bold',
   },
   subTitle: {
     fontSize: v.fontSizeSubTitle,
     lineHeight: v.lineHeightSubTitle,
-    fontWeight: `bold`,
+    fontWeight: 'bold',
   },
   small: {
     fontSize: v.fontSizeSmall,
     lineHeight: v.lineHeightSmall,
-    fontWeight: `bold`,
+    fontWeight: 'bold',
   },
   black: {
-    color: `black`,
+    color: 'black',
   },
   white: {
-    color: `white`,
+    color: 'white',
   },
   primary: {
     color: v.colors.primary,
@@ -44,16 +44,16 @@ const css = StyleSheet.create({
     color: v.colors.danger,
   },
   normal: {
-    fontWeight: `normal`,
+    fontWeight: 'normal',
   },
   bold: {
-    fontWeight: `bold`,
+    fontWeight: 'bold',
   },
   center: {
-    textAlign: `center`,
+    textAlign: 'center',
   },
   right: {
-    textAlign: `right`,
+    textAlign: 'right',
   },
   padding: {
     paddingHorizontal: 10,
@@ -70,7 +70,7 @@ const wrap = Component =>
         css.RnText,
         ...Object.keys(props)
           .sort(k =>
-            k === `title` || k === `subTitle` || k === `small` ? -1 : 1,
+            k === 'title' || k === 'subTitle' || k === 'small' ? -1 : 1,
           )
           .map(k => props[k] && css[k]),
         style,

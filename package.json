@@ -1,6 +1,6 @@
 {
   "name": "BrekekePhone",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -8,14 +8,15 @@
     "build": "del-cli -f \"node_modules/.cache/babel*\" && craco build",
     "intl": "del-cli -f \"src/intl/en.json\" && cross-env EXTRACT_INTL=1 yarn build",
     "rn": "react-native start",
+    "ts": "tsc && type-coverage",
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
     "shake": "adb shell input keyevent 82",
-    "pret": "eslint --ignore-path=.gitignore --fix . && prettier --ignore-path=.gitignore --loglevel=silent --write \"**/*.{html,scss,json,md}\"",
-    "pret-": "yarn pret && yarn pret-objc && yarn pret-java && yarn pret-xml && yarn imagemin",
-    "pret-objc": "yarn git-ls | egrep -h '.(h|m)$' | xargs clang-format -i -style=file",
-    "pret-java": "yarn git-ls | egrep -h '.(java)$' | xargs google-java-format -i",
-    "pret-xml": "yarn git-ls | egrep -h '.(xml|xib|xccheme|xcworkspacedata|plist)$' | xargs -L1 bash -c 'xmllint --format --output $0 $0'",
+    "ios": "react-native run-ios",
+    "pret": "eslint --ignore-path=.gitignore --fix --ext=.js,.ts,.tsx . && prettier --ignore-path=.gitignore --loglevel=error --write \"**/*.{html,js,ts,tsx,json,md}\"",
+    "f": "yarn pret && yarn f-objc && yarn f-java && yarn f-xml && yarn imagemin",
+    "f-objc": "yarn git-ls | egrep -h '.(h|m)$' | xargs clang-format -i -style=file",
+    "f-java": "yarn git-ls | egrep -h '.(java)$' | xargs google-java-format -i",
+    "f-xml": "yarn git-ls | egrep -h '.(xml|xib|xccheme|xcworkspacedata|plist)$' | xargs -L1 bash -c 'xmllint --format --output $0 $0'",
     "imagemin": "yarn git-ls | egrep -h '.(png|jpg|gif|ico)$' | xargs -L1 bash -c 'imagemin $0 --out-dir $(dirname $0)'",
     "git-ls": "bash -c 'comm -3 <(git ls-files) <(git ls-files -d)'"
   },
@@ -46,12 +47,12 @@
     "react-device-detect": "1.11.14",
     "react-dom": "16.13.1",
     "react-native": "0.59.10",
-    "react-native-callkeep": "3.0.10",
+    "react-native-callkeep": "3.0.11",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
     "react-native-emoji-selector": "^0.1.8",
     "react-native-exception-handler": "2.10.8",
     "react-native-fast-image": "6.1.1",
-    "react-native-fcm": "github:brekekesoftware/react-native-fcm#f9ce0351f68db62b2295a55c44430d0066d0f3ae",
+    "react-native-fcm": "github:brekekesoftware/react-native-fcm#afbddd1782afe9a6cf81c34f903e026b712d5579",
     "react-native-fs": "2.15.3",
     "react-native-full-image-picker": "github:brekekesoftware/react-native-full-image-picker#f515715c26b395ce0faa4af9e2840d63d682fc67",
     "react-native-incall-manager": "3.2.7",
@@ -62,23 +63,20 @@
     "react-native-splash-screen": "github:brekekesoftware/react-native-splash-screen#a78ee51c0f89652a2a223ff2bc4ec10928bf2c30",
     "react-native-svg": "9.13.6",
     "react-native-svg-web": "1.0.1",
+    "react-native-uuid": "1.4.9",
     "react-native-voip-push-notification": "2.0.0",
     "react-native-web": "0.12.2",
     "react-native-web-linear-gradient": "1.1.1",
     "react-native-webrtc": "1.75.3",
-    "shortid": "2.2.15",
     "url-parse": "1.4.7",
+    "uuid": "7.0.2",
     "validatorjs": "3.18.1"
   },
   "devDependencies": {
     "@babel/core": "7.9.0",
     "@babel/plugin-proposal-class-properties": "7.8.3",
     "@babel/plugin-proposal-decorators": "7.8.3",
-    "@babel/plugin-proposal-export-default-from": "7.8.3",
-    "@babel/plugin-proposal-export-namespace-from": "7.8.3",
     "@babel/plugin-proposal-optional-chaining": "7.9.0",
-    "@babel/plugin-proposal-throw-expressions": "7.8.3",
-    "@babel/plugin-transform-flow-strip-types": "7.9.0",
     "@babel/plugin-transform-modules-commonjs": "7.9.0",
     "@babel/plugin-transform-react-jsx": "7.9.4",
     "@craco/craco": "5.6.4",
@@ -86,14 +84,14 @@
     "cross-env": "7.0.2",
     "del-cli": "3.0.0",
     "eslint-plugin-import": "2.20.1",
-    "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-simple-import-sort": "5.0.2",
-    "eslint-plugin-sort-destructure-keys": "1.3.3",
     "fs-extra": "9.0.0",
     "husky": "4.2.3",
     "lint-staged": "10.0.9",
     "prettier": "2.0.2",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "type-coverage": "2.4.2",
+    "typescript": "3.8.3"
   },
   "husky": {
     "hooks": {
@@ -101,45 +99,8 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --fix",
-    "*.{html,scss,json,md}": "prettier --write"
-  },
-  "eslintConfig": {
-    "extends": "react-app",
-    "parser": "babel-eslint",
-    "plugins": [
-      "import",
-      "prettier",
-      "simple-import-sort",
-      "sort-destructure-keys"
-    ],
-    "rules": {
-      "sort-imports": "off",
-      "simple-import-sort/sort": 2,
-      "import/first": 2,
-      "import/newline-after-import": 2,
-      "import/no-duplicates": 2,
-      "import/no-extraneous-dependencies": 2,
-      "prettier/prettier": 2,
-      "react/jsx-sort-props": 2,
-      "react/sort-prop-types": 2,
-      "sort-destructure-keys/sort-destructure-keys": 2,
-      "quotes": [
-        2,
-        "backtick"
-      ]
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "tabWidth": 2,
-    "useTabs": false,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "all",
-    "bracketSpacing": true,
-    "jsxBracketSameLine": false,
-    "arrowParens": "avoid"
+    "*.{js,ts,tsx}": "eslint --fix",
+    "*.{html,scss,js,ts,tsx,json,md}": "prettier --write"
   },
   "browserslist": "ie 10-11"
 }

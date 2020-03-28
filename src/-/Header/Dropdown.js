@@ -1,23 +1,23 @@
 import { mdiDotsVertical } from '@mdi/js';
 import React from 'react';
 
-import g from '../../global';
-import AnimatedSize from '../../shared/AnimatedSize';
+import g from '../global';
 import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn';
+import AnimatedSize from '../shared/AnimatedSize';
 
 const css = StyleSheet.create({
   Backdrop: {
-    position: `absolute`,
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: g.fn.transparentize(0.8, `black`),
+    backgroundColor: g.fn.transparentize(0.8, 'black'),
     ...g.backdropZindex,
   },
   //
   Dropdown: {
-    position: `absolute`,
+    position: 'absolute',
     top: 60,
     right: 15,
     width: 250,
@@ -43,7 +43,7 @@ const css = StyleSheet.create({
   },
   //
   Btn: {
-    position: `absolute`,
+    position: 'absolute',
     top: 0,
     bottom: 0,
     right: 0,

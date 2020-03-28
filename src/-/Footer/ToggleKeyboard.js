@@ -2,8 +2,7 @@ import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
 
-import g from '../../global';
-import AnimatedSize from '../../shared/AnimatedSize';
+import g from '../global';
 import {
   Icon,
   Keyboard,
@@ -12,10 +11,11 @@ import {
   Text,
   TouchableOpacity,
 } from '../Rn';
+import AnimatedSize from '../shared/AnimatedSize';
 
 const css = StyleSheet.create({
   ToggleKeyboard: {
-    flexDirection: `row`,
+    flexDirection: 'row',
     marginRight: 8,
     marginBottom: 4,
     borderRadius: g.borderRadius,
@@ -28,12 +28,12 @@ const css = StyleSheet.create({
     /* Fix button size does not equal with the Actions */
     width: 0,
     lineHeight: g.iconSize,
-    overflow: `hidden`,
+    overflow: 'hidden',
   },
 });
 
 const ToggleKeyboard = observer(({ onShowKeyboard }) => {
-  if (Platform.OS === `web` || (!g.isKeyboardShowing && !onShowKeyboard)) {
+  if (Platform.OS === 'web' || (!g.isKeyboardShowing && !onShowKeyboard)) {
     return null;
   }
   return (
@@ -43,7 +43,7 @@ const ToggleKeyboard = observer(({ onShowKeyboard }) => {
         style={css.ToggleKeyboard}
       >
         {/* Fix button size does not equal with the Actions */}
-        <Text style={css.Text}>{`\u200a`}</Text>
+        <Text style={css.Text}>{'\u200a'}</Text>
         <Icon
           path={
             g.isKeyboardShowing ? mdiKeyboardOffOutline : mdiKeyboardOutline

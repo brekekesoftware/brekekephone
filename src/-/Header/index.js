@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import g from '../../global';
+import g from '../global';
 import { StyleSheet, View } from '../Rn';
 import BackBtn from './BackBtn';
 import CreateBtn from './CreateBtn';
@@ -10,7 +10,7 @@ import Title from './Title';
 
 const css = StyleSheet.create({
   Header: {
-    position: `absolute`,
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -22,7 +22,7 @@ const css = StyleSheet.create({
     ...g.boxShadow,
   },
   Outer__transparent: {
-    backgroundColor: `transparent`,
+    backgroundColor: 'transparent',
   },
   Inner__hasBackBtn: {
     paddingLeft: 35,
