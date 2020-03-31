@@ -1,7 +1,7 @@
 import { mdiCheck, mdiClose, mdiFile } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
-import Linkify from 'react-linkify';
+import Hyperlink from 'react-native-hyperlink';
 
 import g from '../global';
 import intl from '../intl/intl';
@@ -16,32 +16,23 @@ import {
 } from '../Rn';
 
 const css = StyleSheet.create({
-  Outer: {
-    flexDirection: 'row',
-  },
   Message: {
     position: 'relative',
-    marginBottom: 2,
-    borderRadius: 2 * g.borderRadius,
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-    backgroundColor: g.hoverBg,
+    // marginBottom: 2,
+    // borderRadius: 2 * g.borderRadius,
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+    // backgroundColor: g.hoverBg,
     overflow: 'hidden',
-    maxWidth: Dimensions.get('screen').width - 20,
+    maxWidth: Dimensions.get('screen').width - 60, // 50px of avatar and 10px of padding
     ...Platform.select({
       web: {
-        maxWidth: null,
-      },
-      ios: {
-        // Fix issue partial border radius not work on ios
-        borderRadius: 2 * g.borderRadius,
-        paddingLeft: 2 * g.borderRadius,
-      },
-    }),
+        maxWidth: `calc(100vw - 60px)`
+      }
+    })
   },
   Message__createdByMe: {
-    borderRadius: 2 * g.borderRadius,
-    backgroundColor: g.colors.primaryFn(0.5),
+    // backgroundColor: g.colors.primaryFn(0.5),
   },
   //
   File: {
@@ -81,6 +72,16 @@ const css = StyleSheet.create({
   },
   Message_File_Btn_borderColor__reject: {
     borderColor: g.colors.danger,
+  },
+
+  Link: {
+    color: g.colors.primary,
+    padding: 0,
+    ...Platform.select({
+      web: {
+        display: 'inline'
+      }
+    })
   },
 });
 
@@ -165,23 +166,13 @@ const File = p => (
   </View>
 );
 
-const componentDecorator = (href, text) => (
-  <Text onPress={null} style={{ color: g.colors.primary }}>
-    {text}
-  </Text>
-);
-
 const Message = observer(p => (
   <React.Fragment>
     {!!p.text && (
-      <View style={css.Outer}>
-        <Linkify componentDecorator={componentDecorator}>
-          <Text
-            style={[css.Message, p.createdByMe && css.Message__createdByMe]}
-          >
-            {p.text}
-          </Text>
-        </Linkify>
+      <View style={css.Message}>
+        <Hyperlink linkStyle={css.Link}>
+          <Text>{p.text}</Text>
+        </Hyperlink>
       </View>
     )}
     {!!p.file && (

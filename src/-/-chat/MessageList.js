@@ -45,20 +45,14 @@ const css = StyleSheet.create({
     color: g.subColor,
     fontSize: g.fontSizeSmall,
   },
-  Name: {
-    paddingHorizontal: 5,
-  },
   //
   Creator: {
     flexDirection: 'row',
     flexWrap: 'nowrap',
-    paddingLeft: 4,
+    paddingLeft: 10,
   },
   Right: {
     flexDirection: 'column',
-  },
-  Message: {
-    marginHorizontal: 5,
   },
 });
 
@@ -95,12 +89,12 @@ const MessageList = observer(
               <Avatar imgSource={c0.creatorAvatar} />
               <View style={css.Right}>
                 <View style={css.Creator}>
-                  <Text style={css.Name} bold singleLine>
+                  <Text bold singleLine>
                     {name}
                   </Text>
                   <Text style={css.Time}>{time}</Text>
                 </View>
-                <View style={css.Message}>
+                <View>
                   {messages.map(m => (
                     <Message
                       {...resolveChat(m.id)}
