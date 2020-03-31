@@ -46,6 +46,7 @@
     "react-art": "16.13.1",
     "react-device-detect": "1.11.14",
     "react-dom": "16.13.1",
+    "react-linkify": "1.0.0-alpha",
     "react-native": "0.59.10",
     "react-native-callkeep": "3.0.11",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",

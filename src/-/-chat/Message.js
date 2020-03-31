@@ -1,6 +1,7 @@
 import { mdiCheck, mdiClose, mdiFile } from '@mdi/js';
 import { observer } from 'mobx-react';
 import React from 'react';
+import Linkify from 'react-linkify';
 
 import g from '../global';
 import intl from '../intl/intl';
@@ -16,22 +17,12 @@ import {
 
 const css = StyleSheet.create({
   Outer: {
-    flexDirection: 'row-reverse',
-  },
-  Outer__createdByMe: {
     flexDirection: 'row',
-  },
-  Space: {
-    width: 20,
-  },
-  SpaceFill: {
-    flex: 1,
   },
   Message: {
     position: 'relative',
     marginBottom: 2,
-    borderTopRightRadius: 2 * g.borderRadius,
-    borderBottomRightRadius: 2 * g.borderRadius,
+    borderRadius: 2 * g.borderRadius,
     paddingVertical: 7,
     paddingHorizontal: 12,
     backgroundColor: g.hoverBg,
@@ -44,25 +35,13 @@ const css = StyleSheet.create({
       ios: {
         // Fix issue partial border radius not work on ios
         borderRadius: 2 * g.borderRadius,
-        paddingLeft: 12 + 2 * g.borderRadius,
-        left: 2 * g.borderRadius,
+        paddingLeft: 2 * g.borderRadius,
       },
     }),
   },
   Message__createdByMe: {
-    borderTopLeftRadius: 2 * g.borderRadius,
-    borderBottomLeftRadius: 2 * g.borderRadius,
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
+    borderRadius: 2 * g.borderRadius,
     backgroundColor: g.colors.primaryFn(0.5),
-    ...Platform.select({
-      ios: {
-        // Fix issue partial border radius not work on ios
-        borderRadius: 2 * g.borderRadius,
-        paddingRight: 12 + 2 * g.borderRadius,
-        right: 2 * g.borderRadius,
-      },
-    }),
   },
   //
   File: {
@@ -186,15 +165,23 @@ const File = p => (
   </View>
 );
 
+const componentDecorator = (href, text) => (
+  <Text onPress={null} style={{ color: g.colors.primary }}>
+    {text}
+  </Text>
+);
+
 const Message = observer(p => (
   <React.Fragment>
     {!!p.text && (
-      <View style={[css.Outer, p.createdByMe && css.Outer__createdByMe]}>
-        <View style={css.Space} />
-        <View style={css.SpaceFill} />
-        <Text style={[css.Message, p.createdByMe && css.Message__createdByMe]}>
-          {p.text}
-        </Text>
+      <View style={css.Outer}>
+        <Linkify componentDecorator={componentDecorator}>
+          <Text
+            style={[css.Message, p.createdByMe && css.Message__createdByMe]}
+          >
+            {p.text}
+          </Text>
+        </Linkify>
       </View>
     )}
     {!!p.file && (

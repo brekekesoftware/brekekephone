@@ -5,9 +5,9 @@ import qs from 'qs';
 import React, { useState } from 'react';
 import { isAndroid, isIOS } from 'react-device-detect';
 
+import brand from '../assets/brand.png';
+import logo from '../assets/logo.png';
 import App from './App.js';
-import brand from './assets/brand.png';
-import logo from './assets/logo.png';
 import intl from './intl/intl';
 import parse from './native/deeplink-parse';
 import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from './Rn';

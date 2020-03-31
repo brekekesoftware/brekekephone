@@ -5,6 +5,7 @@ import React from 'react';
 
 import g from '../global';
 import { StyleSheet, Text, View } from '../Rn';
+import Avatar from '../shared/Avatar';
 import { groupByTimestamp } from './config';
 import Message from './Message';
 
@@ -31,15 +32,21 @@ const css = StyleSheet.create({
   },
   //
   TimeGroup: {
+    flexDirection: 'row',
     marginTop: 10,
+    paddingLeft: 10,
   },
   TimeGroup__first: {
     marginTop: 0,
+    paddingLeft: 10,
   },
   Time: {
     paddingHorizontal: 4,
     color: g.subColor,
     fontSize: g.fontSizeSmall,
+  },
+  Name: {
+    paddingHorizontal: 5,
   },
   //
   Creator: {
@@ -47,13 +54,18 @@ const css = StyleSheet.create({
     flexWrap: 'nowrap',
     paddingLeft: 4,
   },
+  Right: {
+    flexDirection: 'column',
+  },
+  Message: {
+    marginHorizontal: 5,
+  },
 });
 
 const MessageList = observer(
   ({
     acceptFile,
     fileType,
-    isGroupChat,
     list,
     loadMore,
     rejectFile,
@@ -66,7 +78,7 @@ const MessageList = observer(
     }
     list = uniqBy(list, 'id');
     list = sortBy(list, 'created');
-    //
+
     return groupByTimestamp(list).map(({ date, groupByTime }, i) => (
       <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
         <View style={css.Border} />
@@ -80,29 +92,28 @@ const MessageList = observer(
               key={`${time}${id}`}
               style={[css.TimeGroup, !j && css.TimeGroup__first]}
             >
-              {isGroupChat && !createdByMe && name ? (
+              <Avatar imgSource={c0.creatorAvatar} />
+              <View style={css.Right}>
                 <View style={css.Creator}>
-                  <Text bold singleLine>
+                  <Text style={css.Name} bold singleLine>
                     {name}
                   </Text>
                   <Text style={css.Time}>{time}</Text>
                 </View>
-              ) : (
-                <Text right={createdByMe} style={css.Time}>
-                  {time}
-                </Text>
-              )}
-              {messages.map(m => (
-                <Message
-                  {...resolveChat(m.id)}
-                  acceptFile={acceptFile}
-                  fileType={fileType}
-                  key={m.id}
-                  loadMore={loadMore}
-                  rejectFile={rejectFile}
-                  showImage={showImage}
-                />
-              ))}
+                <View style={css.Message}>
+                  {messages.map(m => (
+                    <Message
+                      {...resolveChat(m.id)}
+                      acceptFile={acceptFile}
+                      fileType={fileType}
+                      key={m.id}
+                      loadMore={loadMore}
+                      rejectFile={rejectFile}
+                      showImage={showImage}
+                    />
+                  ))}
+                </View>
+              </View>
             </View>
           );
         })}
