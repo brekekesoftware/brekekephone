@@ -63,7 +63,7 @@ class PageTransferDial extends React.Component {
       <Layout
         description={intl`Select target to start transfer`}
         onBack={g.backToPageCallManage}
-        title={intl`Transfer Call`}
+        title={intl`Transfer`}
       >
         {groups.map(_g => (
           <React.Fragment key={_g.key}>

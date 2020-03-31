@@ -122,7 +122,7 @@ class PageCallManage extends React.Component {
       }
       noScroll
       onBack={g.backToPageCallRecents}
-      title={c?.title || intl`Connection Failed`}
+      title={c?.title || intl`Connection failed`}
       transparent={!c?.transferring}
     >
       {!c ? null : c.transferring ? (

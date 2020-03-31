@@ -73,17 +73,13 @@ class AuthSIP extends React.Component {
     });
   };
   auth = () => {
-    this._auth()
-      .then(() => {
-        authStore.set('sipState', 'success');
-      })
-      .catch(err => {
-        authStore.set('sipState', 'failure');
-        g.showError({
-          message: intlDebug`Failed to connect to SIP`,
-          err,
-        });
+    this._auth().catch(err => {
+      authStore.set('sipState', 'failure');
+      g.showError({
+        message: intlDebug`Failed to connect to SIP`,
+        err,
       });
+    });
   };
   autoAuth = () => authStore.sipShouldAuth && this.auth();
 

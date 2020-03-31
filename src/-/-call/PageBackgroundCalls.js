@@ -15,7 +15,7 @@ const PageBackgroundCalls = observer(() => (
   <Layout
     compact
     onBack={g.backToPageCallManage}
-    title={intl`Background Calls`}
+    title={intl`Background calls`}
   >
     <Field isGroup label={intl`CURRENT CALL`} />
     {[callStore.currentCall].map(c => (
@@ -48,7 +48,7 @@ const PageBackgroundCalls = observer(() => (
               ? intl`Dialing...`
               : c.transferring
               ? intl`Transferring`
-              : intl`On Hold`
+              : intl`On hold`
           }
           {...c}
         />
