@@ -8,6 +8,7 @@ import intl from '../intl/intl';
 import {
   Dimensions,
   Icon,
+  Image,
   Platform,
   StyleSheet,
   Text,
@@ -27,9 +28,9 @@ const css = StyleSheet.create({
     maxWidth: Dimensions.get('screen').width - 60, // 50px of avatar and 10px of padding
     ...Platform.select({
       web: {
-        maxWidth: `calc(100vw - 60px)`
-      }
-    })
+        maxWidth: 'calc(100vw - 60px)',
+      },
+    }),
   },
   Message__createdByMe: {
     // backgroundColor: g.colors.primaryFn(0.5),
@@ -40,11 +41,15 @@ const css = StyleSheet.create({
     marginTop: 10,
   },
   File__createdByMe: {
-    alignSelf: 'flex-end',
+    // alignSelf: 'flex-end',
     left: 5,
     paddingLeft: 10,
     paddingRight: 15,
     backgroundColor: g.colors.primaryFn(0.5),
+  },
+  File_Icon: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   Message_File_Info: {
     marginLeft: 5,
@@ -79,41 +84,27 @@ const css = StyleSheet.create({
     padding: 0,
     ...Platform.select({
       web: {
-        display: 'inline'
-      }
-    })
+        display: 'inline',
+      },
+    }),
   },
 });
 
-const File = p => (
-  <View style={[css.File, css.Message, p.createdByMe && css.File__createdByMe]}>
-    <View>
-      <Icon
-        color={p.createdByMe ? g.revColor : g.color}
-        path={mdiFile}
-        size={50}
-      />
-      <View style={css.Message_File_Info}>
-        <Text
-          numberOfLines={1}
-          style={p.createdByMe && css.Message_File_Info__color}
-        >
-          {p.name}
-        </Text>
-        <Text style={p.createdByMe && css.Message_File_Info__color}>
-          {p.size}
-        </Text>
-      </View>
-    </View>
-    {p.state === 'waiting' && p.createdByMe && (
-      <TouchableOpacity
-        onPress={p.reject}
-        style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__white]}
-      >
-        <Icon color={g.revColor} path={mdiClose} />
-      </TouchableOpacity>
+const File = observer(p => (
+  <View style={[css.File, css.Message]}>
+    {p.fileType === 'image' && (
+      <Image source={p.url} style={css.Image} /> //TODO: fix error ios not show image
     )}
-    {p.state === 'waiting' && !p.createdByMe && (
+    {p.fileType !== 'image' && (
+      <View style={css.File_Icon}>
+        <Icon path={mdiFile} size={50} />
+        <View style={css.Message_File_Info}>
+          <Text numberOfLines={1}>{p.name}</Text>
+          <Text>{p.size}</Text>
+        </View>
+      </View>
+    )}
+    {p.state === 'waiting' && (
       <TouchableOpacity
         onPress={p.reject}
         style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__reject]}
@@ -164,7 +155,7 @@ const File = p => (
       </Text>
     )}
   </View>
-);
+));
 
 const Message = observer(p => (
   <React.Fragment>
@@ -180,9 +171,7 @@ const Message = observer(p => (
         {...p.file}
         accept={() => p.acceptFile(p.file)}
         createdByMe={p.createdByMe}
-        fileType={p.fileType}
         reject={() => p.rejectFile(p.file)}
-        source={p.showImage}
       />
     )}
   </React.Fragment>

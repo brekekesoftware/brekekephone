@@ -50,8 +50,10 @@ class PageChatDetail extends React.Component {
     loadingRecent: false,
     loadingMore: false,
     editingText: '',
-    showImage: '',
-    fileType: '',
+    blobFile: {
+      url: '',
+      fileType: '',
+    },
     allMessagesLoaded: false,
     emojiTurnOn: false,
   };
@@ -84,13 +86,7 @@ class PageChatDetail extends React.Component {
 
   render() {
     const u = contactStore.getUCUser(this.props.buddy);
-    const {
-      allMessagesLoaded,
-      fileType,
-      loadingMore,
-      loadingRecent,
-      showImage,
-    } = this.state;
+    const { allMessagesLoaded, loadingMore, loadingRecent } = this.state;
     return (
       <Layout
         compact
@@ -123,12 +119,10 @@ class PageChatDetail extends React.Component {
         )}
         <MessageList
           acceptFile={this.acceptFile}
-          fileType={fileType}
           list={chatStore.messagesByThreadId[this.props.buddy]}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
           resolveChat={this.resolveChat}
-          showImage={showImage}
         />
         {this.state.emojiTurnOn && (
           <View style={css.emojiTab}>
@@ -338,8 +332,27 @@ class PageChatDetail extends React.Component {
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
-      .then(blob => saveBlob(blob, file.name))
+      .then(blob => this.onAcceptFileSuccess(blob, file))
       .catch(this.onAcceptFileFailure);
+  };
+
+  onAcceptFileSuccess = (blob, file) => {
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+    const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+      ? 'image'
+      : 'other';
+    const reader = new FileReader();
+    reader.onload = async event => {
+      const url = event.target.result;
+      await Object.assign(chatStore.filesMap[file.id], {
+        url: url,
+        fileType: fileType,
+      });
+    };
+
+    reader.readAsDataURL(blob);
+
+    saveBlob(blob, file.name);
   };
   onAcceptFileFailure = err => {
     g.showError({
@@ -356,7 +369,19 @@ class PageChatDetail extends React.Component {
       err,
     });
   };
+
+  readFile = file => {
+    const reader = new FileReader();
+    const fileType = file.type ? file.type.split('/')[0] : '';
+    reader.onload = async event => {
+      const url = event.target.result;
+      this.setState({ blobFile: { url: url, fileType: fileType } });
+    };
+    reader.readAsDataURL(file);
+  };
+
   sendFile = file => {
+    this.readFile(file);
     const u = contactStore.getUCUser(this.props.buddy);
     uc.sendFile(u?.id, file)
       .then(this.onSendFileSuccess)
@@ -364,6 +389,7 @@ class PageChatDetail extends React.Component {
   };
   onSendFileSuccess = res => {
     const buddyId = this.props.buddy;
+    Object.assign(res.file, this.state.blobFile);
     chatStore.upsertFile(res.file);
     chatStore.pushMessages(buddyId, res.chat);
   };

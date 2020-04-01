@@ -57,15 +57,7 @@ const css = StyleSheet.create({
 });
 
 const MessageList = observer(
-  ({
-    acceptFile,
-    fileType,
-    list,
-    loadMore,
-    rejectFile,
-    resolveChat,
-    showImage,
-  }) => {
+  ({ acceptFile, list, loadMore, rejectFile, resolveChat }) => {
     // TODO unique and sort right after fetching
     if (!Array.isArray(list)) {
       list = [];
@@ -99,11 +91,9 @@ const MessageList = observer(
                     <Message
                       {...resolveChat(m.id)}
                       acceptFile={acceptFile}
-                      fileType={fileType}
                       key={m.id}
                       loadMore={loadMore}
                       rejectFile={rejectFile}
-                      showImage={showImage}
                     />
                   ))}
                 </View>
