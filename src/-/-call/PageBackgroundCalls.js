@@ -18,7 +18,7 @@ const PageBackgroundCalls = observer(() => (
     title={intl`Background calls`}
   >
     <Field isGroup label={intl`CURRENT CALL`} />
-    {[callStore.currentCall].map(c => (
+    {(callStore.currentCall ? [callStore.currentCall] : []).map(c => (
       <TouchableOpacity key={c.id} onPress={g.backToPageCallManage}>
         <UserItem
           iconFuncs={[c.hangupWithUnhold]}

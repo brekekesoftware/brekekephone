@@ -1,3 +1,5 @@
+import './callkeep';
+
 import FCM, { FCMEvent } from 'react-native-fcm';
 
 import { AppRegistry, AsyncStorage } from '../Rn';

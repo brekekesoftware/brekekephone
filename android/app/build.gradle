@@ -84,6 +84,7 @@ dependencies {
     }
   }
   compile project(":@react-native-community_async-storage")
+  compile project(":@react-native-community_clipboard")
   compile project(":react-native-callkeep")
   compile project(":react-native-document-picker")
   compile project(":react-native-exception-handler")

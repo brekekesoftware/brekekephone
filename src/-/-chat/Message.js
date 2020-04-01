@@ -1,14 +1,17 @@
-import { mdiCheck, mdiClose, mdiFile } from '@mdi/js';
+import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js';
+import Clipboard from '@react-native-community/clipboard';
 import { observer } from 'mobx-react';
 import React from 'react';
 import Hyperlink from 'react-native-hyperlink';
+import Share from 'react-native-share';
 
 import g from '../global';
-import intl from '../intl/intl';
+import intl, { intlDebug } from '../intl/intl';
 import {
   Dimensions,
   Icon,
   Image,
+  Linking,
   Platform,
   StyleSheet,
   Text,
@@ -157,24 +160,102 @@ const File = observer(p => (
   </View>
 ));
 
-const Message = observer(p => (
-  <React.Fragment>
-    {!!p.text && (
-      <View style={css.Message}>
-        <Hyperlink linkStyle={css.Link}>
-          <Text>{p.text}</Text>
-        </Hyperlink>
-      </View>
-    )}
-    {!!p.file && (
-      <File
-        {...p.file}
-        accept={() => p.acceptFile(p.file)}
-        createdByMe={p.createdByMe}
-        reject={() => p.rejectFile(p.file)}
-      />
-    )}
-  </React.Fragment>
-));
+@observer
+class Message extends React.Component {
+  onLinkPress = url => {
+    if (Platform.OS === 'web') {
+      window.open(url, '_blank', 'noopener');
+      return;
+    }
+    if (!Linking.canOpenURL(url)) {
+      g.showError({
+        message: intlDebug`Can not open the url`,
+      });
+    } else {
+      Linking.openURL(url);
+    }
+  };
+  onLinkLongPress = url => {
+    g.openPicker({
+      options: [
+        {
+          key: 2,
+          label: intl`Copy link`,
+          icon: mdiDotsHorizontal,
+        },
+        {
+          key: 3,
+          label: intl`Share link to external app`,
+          icon: mdiDotsHorizontal,
+        },
+        {
+          key: 0,
+          label: intl`Copy message`,
+          icon: mdiDotsHorizontal,
+        },
+        {
+          key: 1,
+          label: intl`Share message to external app`,
+          icon: mdiDotsHorizontal,
+        },
+      ],
+      onSelect: k => this.onPickerSelect(k, url),
+    });
+  };
+  onMessagePress = () => {
+    g.openPicker({
+      options: [
+        {
+          key: 0,
+          label: intl`Copy message`,
+          icon: mdiDotsHorizontal,
+        },
+        {
+          key: 1,
+          label: intl`Share message to external app`,
+          icon: mdiDotsHorizontal,
+        },
+      ],
+      onSelect: this.onPickerSelect,
+    });
+  };
+
+  onPickerSelect = (k, url) => {
+    const message = k === 0 || k === 1 ? this.props.text : url;
+    if (k === 0 || k === 2) {
+      Clipboard.setString(message);
+    } else {
+      Share.open({ message });
+    }
+  };
+
+  render() {
+    const p = this.props;
+    const TextContainer = Platform.OS === 'web' ? View : TouchableOpacity;
+    return (
+      <React.Fragment>
+        {!!p.text && (
+          <TextContainer style={css.Message} onLongPress={this.onMessagePress}>
+            <Hyperlink
+              onPress={this.onLinkPress}
+              linkStyle={css.Link}
+              onLongPress={this.onLinkLongPress}
+            >
+              <Text>{p.text}</Text>
+            </Hyperlink>
+          </TextContainer>
+        )}
+        {!!p.file && (
+          <File
+            {...p.file}
+            accept={() => p.acceptFile(p.file)}
+            createdByMe={p.createdByMe}
+            reject={() => p.rejectFile(p.file)}
+          />
+        )}
+      </React.Fragment>
+    );
+  }
+}
 
 export default Message;
