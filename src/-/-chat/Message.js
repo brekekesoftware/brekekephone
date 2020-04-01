@@ -1,5 +1,4 @@
 import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js';
-import Clipboard from '@react-native-community/clipboard';
 import { observer } from 'mobx-react';
 import React from 'react';
 import Hyperlink from 'react-native-hyperlink';
@@ -8,6 +7,7 @@ import Share from 'react-native-share';
 import g from '../global';
 import intl, { intlDebug } from '../intl/intl';
 import {
+  Clipboard,
   Dimensions,
   Icon,
   Image,

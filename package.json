@@ -24,7 +24,6 @@
     "@callstack/async-storage": "2.0.3",
     "@mdi/js": "5.0.45",
     "@react-native-community/async-storage": "1.6.3",
-    "@react-native-community/clipboard": "1.2.0",
     "@use-it/interval": "0.1.3",
     "brekekejs": "github:brekekesoftware/brekekejs#b4ade72cef3c0bef1bdeca2819bb69c410913cac",
     "buffer": "5.5.0",

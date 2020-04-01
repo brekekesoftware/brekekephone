@@ -1284,11 +1284,6 @@
     xcode "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/clipboard@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/clipboard/-/clipboard-1.2.0.tgz#07e1bab720c8ad80b33a018f689842a497294890"
-  integrity sha512-ajaqbn1YgzyA3HH+G174JPXXRFZ5Qpz4GF+SHerh/XOXRsNaF4fnQy5d29KkpH8B/ss3TvlrvWdGR/+D53sW3w==
-
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"

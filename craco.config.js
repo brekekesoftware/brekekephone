@@ -22,8 +22,6 @@ module.exports = {
   webpack: {
     alias: {
       '@react-native-community/async-storage': '@callstack/async-storage',
-      '@react-native-community/clipboard':
-        'react-native-web/dist/exports/Clipboard',
       'react-native': 'react-native-web',
       'react-native-fast-image': 'react-native-web/dist/exports/Image',
       'react-native-linear-gradient': 'react-native-web-linear-gradient',
