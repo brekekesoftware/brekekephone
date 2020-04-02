@@ -5,7 +5,7 @@
 
 ```sh
 # IMPORTANT: Do not run react-native link, we already linked them manually because the automation link has issues sometimes
-cd /path/to/test-brekeke-phone
+cd /path/to/brekekephone
 yarn
 ```
 
