@@ -107,11 +107,12 @@ class Api {
   };
 
   onPBXConnectionStopped = () => {
-    authStore.set('pbxState', 'stopped');
+    authStore.pbxState = 'stopped';
   };
 
   onPBXConnectionTimeout = () => {
-    authStore.set('pbxState', 'failure');
+    authStore.pbxState = 'failure';
+    authStore.pbxTotalFailure += 1;
   };
 
   loadPBXUsers = async () => {
@@ -124,7 +125,7 @@ class Api {
       .getUsers(tenant)
       .then(ids => ids.filter(id => id !== username));
     const users = await pbx.getOtherUsers(tenant, userIds);
-    contactStore.set('pbxUsers', users);
+    contactStore.pbxUsers = users;
   };
 
   onPBXUserCalling = ev => {
@@ -148,16 +149,17 @@ class Api {
   };
 
   onSIPConnectionStarted = () => {
-    authStore.set('sipState', 'success');
+    authStore.sipState = 'success';
     setTimeout(this.onPBXAndSipStarted, 170);
   };
 
   onSIPConnectionStopped = () => {
-    authStore.set('sipState', 'stopped');
+    authStore.sipState = 'stopped';
   };
 
   onSIPConnectionTimeout = () => {
-    authStore.set('sipState', 'failure');
+    authStore.sipState = 'failure';
+    authStore.sipTotalFailure += 1;
   };
 
   onSIPSessionStarted = call => {
@@ -188,11 +190,12 @@ class Api {
   };
 
   onUCConnectionStopped = () => {
-    authStore.set('ucState', 'stopped');
+    authStore.ucState = 'stopped';
   };
 
   onUCConnectionTimeout = () => {
-    authStore.set('ucState', 'failure');
+    authStore.ucState = 'failure';
+    authStore.ucTotalFailure += 1;
   };
 
   onUCUserUpdated = ev => {

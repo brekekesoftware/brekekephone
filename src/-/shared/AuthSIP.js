@@ -20,12 +20,12 @@ class AuthSIP extends React.Component {
   componentWillUnmount() {
     this.clearObserve();
     sip.disconnect();
-    authStore.set('sipState', 'stopped');
+    authStore.sipState = 'stopped';
   }
 
   _auth = async () => {
     sip.disconnect();
-    authStore.set('sipState', 'connecting');
+    authStore.sipState = 'connecting';
     //
     const pbxConfig = await pbx.getConfig();
     if (!pbxConfig) {
@@ -74,7 +74,8 @@ class AuthSIP extends React.Component {
   };
   auth = () => {
     this._auth().catch(err => {
-      authStore.set('sipState', 'failure');
+      authStore.sipState = 'failure';
+      authStore.sipTotalFailure += 1;
       g.showError({
         message: intlDebug`Failed to connect to SIP`,
         err,
