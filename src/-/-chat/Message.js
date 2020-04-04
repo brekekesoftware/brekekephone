@@ -96,7 +96,7 @@ const css = StyleSheet.create({
 const File = observer(p => (
   <View style={[css.File, css.Message]}>
     {p.fileType === 'image' && (
-      <Image source={p.url} style={css.Image} /> //TODO: fix error ios not show image
+      <Image source={{ uri: p.url }} style={css.Image} />
     )}
     {p.fileType !== 'image' && (
       <View style={css.File_Icon}>

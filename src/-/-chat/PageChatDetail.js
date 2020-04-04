@@ -11,7 +11,7 @@ import contactStore from '../global/contactStore';
 import intl, { intlDebug } from '../intl/intl';
 import pickFile from '../native/pickFile';
 import saveBlob from '../native/saveBlob';
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
+import { Platform,StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import { numberOfChatsPerLoad } from './config';
@@ -371,13 +371,22 @@ class PageChatDetail extends React.Component {
   };
 
   readFile = file => {
-    const reader = new FileReader();
-    const fileType = file.type ? file.type.split('/')[0] : '';
-    reader.onload = async event => {
-      const url = event.target.result;
-      this.setState({ blobFile: { url: url, fileType: fileType } });
-    };
-    reader.readAsDataURL(file);
+    if (Platform.OS === 'web') {
+      const reader = new FileReader();
+
+      const fileType = file.type ? file.type.split('/')[0] : '';
+      reader.onload = async event => {
+        const url = event.target.result;
+        this.setState({ blobFile: { url: url, fileType: fileType } });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+      const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+        ? 'image'
+        : 'other';
+      this.setState({ blobFile: { url: file.uri, fileType: fileType } });
+    }
   };
 
   sendFile = file => {
