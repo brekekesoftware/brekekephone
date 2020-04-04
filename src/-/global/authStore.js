@@ -6,7 +6,6 @@ import { getUrlParams } from '../native/deeplink';
 import { AppState } from '../Rn';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
-import BaseStore from './BaseStore';
 import callStore from './callStore';
 import chatStore from './chatStore';
 import contactStore from './contactStore';
@@ -26,41 +25,51 @@ const compareProfile = (p1, p2) => {
   );
 };
 
-const connectingOrFailure = ['connecting', 'failure'];
-
-class AuthStore extends BaseStore {
+class AuthStore {
   // 'stopped'
   // 'connecting'
   // 'success'
   // 'failure'
   @observable pbxState = 'stopped';
+  @observable pbxTotalFailure = 0;
   @observable sipState = 'stopped';
+  @observable sipTotalFailure = 0;
   @observable ucState = 'stopped';
+  @observable ucTotalFailure = 0;
   @observable ucLoginFromAnotherPlace = false;
   @computed get pbxShouldAuth() {
-    return !(!this.signedInId || this.pbxState !== 'stopped');
+    return (
+      this.signedInId &&
+      (this.pbxState === 'stopped' ||
+        (this.pbxState === 'failure' && !this.pbxTotalFailure))
+    );
   }
   @computed get pbxConnectingOrFailure() {
-    return connectingOrFailure.some(s => s === this.pbxState);
+    return ['connecting', 'failure'].some(s => s === this.pbxState);
   }
   @computed get sipShouldAuth() {
-    return !(this.pbxState !== 'success' || this.sipState !== 'stopped');
+    return (
+      this.pbxState === 'success' &&
+      (this.sipState === 'stopped' ||
+        (this.sipState === 'failure' && !this.sipTotalFailure))
+    );
   }
   @computed get sipConnectingOrFailure() {
-    return connectingOrFailure.some(s => s === this.sipState);
+    return ['connecting', 'failure'].some(s => s === this.sipState);
   }
   @computed get ucShouldAuth() {
-    return !(
-      !this.currentProfile?.ucEnabled ||
-      this.ucState !== 'stopped' ||
-      this.ucLoginFromAnotherPlace ||
-      this.isSignInByNotification
+    return (
+      this.currentProfile?.ucEnabled &&
+      !this.ucLoginFromAnotherPlace &&
+      !this.isSignInByNotification &&
+      (this.ucState === 'stopped' ||
+        (this.ucState === 'failure' && !this.ucTotalFailure))
     );
   }
   @computed get ucConnectingOrFailure() {
     return (
       this.currentProfile?.ucEnabled &&
-      connectingOrFailure.some(s => s === this.ucState)
+      ['connecting', 'failure'].some(s => s === this.ucState)
     );
   }
   @computed get shouldShowConnStatus() {
@@ -122,7 +131,7 @@ class AuthStore extends BaseStore {
       });
       return true;
     }
-    this.set('signedInId', p.id);
+    this.signedInId = p.id;
     return true;
   };
 
@@ -130,7 +139,7 @@ class AuthStore extends BaseStore {
     const clearStore = () => {
       chatStore.clearStore();
       contactStore.clearStore();
-      this.set('signedInId', null);
+      this.signedInId = null;
     };
     callStore._calls.forEach(c => c.hangupWithUnhold());
     if (callStore._calls.length > 0) {
@@ -146,6 +155,12 @@ class AuthStore extends BaseStore {
       clearStore();
     }
   };
+
+  reconnect = debounce(() => {
+    authStore.pbxTotalFailure = 0;
+    authStore.sipTotalFailure = 0;
+    authStore.ucTotalFailure = 0;
+  }, 1000);
 
   handleUrlParams = async () => {
     await g.profilesLoaded;
@@ -268,6 +283,13 @@ class AuthStore extends BaseStore {
 }
 
 const authStore = new AuthStore();
+
+const onAppStateChange = () => {
+  if (AppState.currentState === 'active') {
+    authStore.reconnect();
+  }
+};
+AppState.addEventListener('change', onAppStateChange);
 
 export { compareProfile };
 export default authStore;

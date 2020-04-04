@@ -18,18 +18,19 @@ class AuthPBX extends React.Component {
   componentWillUnmount() {
     this.clearObserve();
     pbx.disconnect();
-    authStore.set('pbxState', 'stopped');
+    authStore.pbxState = 'stopped';
   }
   auth = () => {
     pbx.disconnect();
-    authStore.set('pbxState', 'connecting');
+    authStore.pbxState = 'connecting';
     pbx
       .connect(authStore.currentProfile)
       .then(() => {
-        authStore.set('pbxState', 'success');
+        authStore.pbxState = 'success';
       })
       .catch(err => {
-        authStore.set('pbxState', 'failure');
+        authStore.pbxState = 'failure';
+        authStore.pbxTotalFailure += 1;
         g.showError({
           message: intlDebug`Failed to connect to pbx`,
           err,

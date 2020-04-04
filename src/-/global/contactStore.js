@@ -1,9 +1,8 @@
 import { computed, observable } from 'mobx';
 
 import { arrToMap } from '../utils/toMap';
-import BaseStore from './BaseStore';
 
-class ContactStore extends BaseStore {
+class ContactStore {
   @observable usersSearchTerm = '';
 
   @observable callSearchRecents = '';
@@ -39,7 +38,7 @@ class ContactStore extends BaseStore {
         talker.status = status;
       }
     }
-    this.set('pbxUsers', [...this.pbxUsers]);
+    this.pbxUsers = [...this.pbxUsers];
   };
   //
   @computed get _pbxUsersMap() {
@@ -65,7 +64,7 @@ class ContactStore extends BaseStore {
       return;
     }
     Object.assign(u, _u);
-    this.set('ucUsers', [...this.ucUsers]);
+    this.ucUsers = [...this.ucUsers];
   };
   @computed get _ucUsersMap() {
     return arrToMap(this.ucUsers, 'id', u => u);
@@ -96,7 +95,7 @@ class ContactStore extends BaseStore {
       return;
     }
     Object.assign(u, _u);
-    this.set('phoneBooks', [...this.phoneBooks]);
+    this.phoneBooks = [...this.phoneBooks];
   };
 
   pushPhonebook = _p => {

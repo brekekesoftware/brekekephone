@@ -24,13 +24,13 @@ class AuthUC extends React.Component {
     this.clearObserve();
     uc.off('connection-stopped', this.onConnectionStopped);
     uc.disconnect();
-    authStore.set('ucState', 'stopped');
+    authStore.ucState = 'stopped';
   }
 
   auth = () => {
     uc.disconnect();
-    authStore.set('ucState', 'connecting');
-    authStore.set('ucLoginFromAnotherPlace', false);
+    authStore.ucState = 'connecting';
+    authStore.ucLoginFromAnotherPlace = false;
     uc.connect(authStore.currentProfile)
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure);
@@ -42,26 +42,26 @@ class AuthUC extends React.Component {
   onAuthSuccess = () => {
     this.loadUsers();
     this.loadUnreadChats().then(() => {
-      authStore.set('ucState', 'success');
+      authStore.ucState = 'success';
     });
   };
   onAuthFailure = err => {
-    authStore.set('ucState', 'failure');
+    authStore.ucState = 'failure';
+    authStore.ucTotalFailure += 1;
     g.showError({
       message: intlDebug`Failed to connect to UC`,
       err,
     });
   };
   onConnectionStopped = e => {
-    authStore.set('ucState', 'failure');
-    authStore.set(
-      'ucLoginFromAnotherPlace',
-      e.code === UCClient.Errors.PLEONASTIC_LOGIN,
-    );
+    authStore.ucState = 'failure';
+    authStore.ucTotalFailure += 1;
+    authStore.ucLoginFromAnotherPlace =
+      e.code === UCClient.Errors.PLEONASTIC_LOGIN;
   };
   loadUsers = () => {
     const users = uc.getUsers();
-    contactStore.set('ucUsers', users);
+    contactStore.ucUsers = users;
   };
   loadUnreadChats = () =>
     uc

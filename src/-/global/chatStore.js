@@ -3,9 +3,8 @@ import uniq from 'lodash/uniq';
 import { computed, observable } from 'mobx';
 
 import { arrToMap } from '../utils/toMap';
-import BaseStore from './BaseStore';
 
-class ChatStore extends BaseStore {
+class ChatStore {
   // id
   // text
   // file
@@ -27,10 +26,7 @@ class ChatStore extends BaseStore {
     }
     const messages = this.messagesByThreadId[threadId] || [];
     messages.push(..._m);
-    this.set(
-      `messagesByThreadId.${threadId}`,
-      sortBy(uniq(messages, 'id'), 'created'),
-    );
+    this.messagesByThreadId[threadId] = sortBy(uniq(messages, 'id'), 'created');
   };
 
   // id
@@ -47,7 +43,7 @@ class ChatStore extends BaseStore {
   @observable filesMap = {};
   upsertFile = _f => {
     const f = this.filesMap[_f.id];
-    this.set(`filesMap.${_f.id}`, f ? Object.assign(f, _f) : _f);
+    this.filesMap[_f.id] = f ? Object.assign(f, _f) : _f;
   };
   removeFile = id => {
     delete this.filesMap[id];
@@ -66,7 +62,7 @@ class ChatStore extends BaseStore {
     } else {
       this.groups.push(_g);
     }
-    this.set('groups', [...this.groups]);
+    this.groups = [...this.groups];
   };
   removeGroup = id => {
     delete this.messagesByThreadId[id];
