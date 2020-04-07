@@ -5584,14 +5584,15 @@ handle-thing@^2.0.0:
   resolved "https://registry.yarnpkg.com/handle-thing/-/handle-thing-2.0.1.tgz#857f79ce359580c340d43081cc648970d0bb234e"
   integrity sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==
 
-handlebars@4.7.3:
-  version "4.7.3"
-  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.3.tgz#8ece2797826886cf8082d1726ff21d2a022550ee"
-  integrity sha512-SRGwSYuNfx8DwHD/6InAPzD6RgeruWLT+B8e8a7gGs8FWgHzlExpTFMEq2IA6QpAfOClpKHy6+8IqTjeBCu6Kg==
+handlebars@4.7.6:
+  version "4.7.6"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.6.tgz#d4c05c1baf90e9945f77aa68a7a219aa4a7df74e"
+  integrity sha512-1f2BACcBfiwAfStCKZNrUCgqNZkGsAT7UM3kkYtXuLo0KnaVfjKOyf7PRzB6++aK9STyT1Pd2ZCPe3EGOXleXA==
   dependencies:
+    minimist "^1.2.5"
     neo-async "^2.6.0"
-    optimist "^0.6.1"
     source-map "^0.6.1"
+    wordwrap "^1.0.0"
   optionalDependencies:
     uglify-js "^3.1.4"
 
@@ -7368,10 +7369,10 @@ linkify-it@^2.2.0:
   dependencies:
     uc.micro "^1.0.1"
 
-lint-staged@10.1.1:
-  version "10.1.1"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.1.1.tgz#1c8569b66d684e6e3553cd760c03053f41fca152"
-  integrity sha512-wAeu/ePaBAOfwM2+cVbgPWDtn17B0Sxiv0NvNEqDAIvB8Yhvl60vafKFiK4grcYn87K1iK+a0zVoETvKbdT9/Q==
+lint-staged@10.1.2:
+  version "10.1.2"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.1.2.tgz#beaefc58037ea9e02fe7639cb323d584312a7957"
+  integrity sha512-Vtbe8rhWbJxPNlnXk6jczRh6wvAVjGg+VhELAIjLakOjTACdB4qJOD4W2R8oUXLRCqL1t9WMUsXbSlVK34A8Lg==
   dependencies:
     chalk "^3.0.0"
     commander "^4.0.1"
@@ -8297,17 +8298,17 @@ mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.5"
 
-mobx-react-lite@^1.4.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-1.5.2.tgz#c4395b0568b9cb16f07669d8869cc4efa1b8656d"
-  integrity sha512-PyZmARqqWtpuQaAoHF5pKX7h6TKNLwq6vtovm4zZvG6sEbMRHHSqioGXSeQbpRmG8Kw8uln3q/W1yMO5IfL5Sg==
+mobx-react-lite@2:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-2.0.3.tgz#5e5f9c4b472c415796cbc7a21d9dfbb0c0db1895"
+  integrity sha512-9YwjomobyZOc5WQPBqZFGyFpDr89KpWgfRuPD2jMP7V7X3poTSyWZTskqSpuo7TB4QISXezUT3t7NNN7MVoF7Q==
 
-mobx-react@6.1.8:
-  version "6.1.8"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-6.1.8.tgz#5b9a3950463d58c154dda2c94d16d48ed8fcb02e"
-  integrity sha512-NCMJn/hrWoeyeNbzCsBDtftWSy6VlFgw1VzhogrciPFvJIl2xs+8rJJdPlRHQTiNirwNoHNKJgUE4WhPZPvKDw==
+mobx-react@6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-6.2.0.tgz#782b46bcfd505489a65882b74b78272155934501"
+  integrity sha512-Lb1Dqj4wxky1lkBjfPw5+FN8GOQym2N3xhuxa1y5qgU1kiS8xOj1qRxz2SoDgzDavMIN6ykBqOle6wdBs3KPcQ==
   dependencies:
-    mobx-react-lite "^1.4.2"
+    mobx-react-lite "2"
 
 mobx@5.15.4:
   version "5.15.4"
@@ -9968,10 +9969,10 @@ preserve@^0.2.0:
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
   integrity sha1-gV7R9uvGWSb4ZbMQwHE7yzMVzks=
 
-prettier@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.0.2.tgz#1ba8f3eb92231e769b7fcd7cb73ae1b6b74ade08"
-  integrity sha512-5xJQIPT8BraI7ZnaDwSbu5zLrB6vvi8hVV58yHQ+QK64qrY40dULy0HSRlQ2/2IdzeBpjhDkqdcFBnFeDEMVdg==
+prettier@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.0.4.tgz#2d1bae173e355996ee355ec9830a7a1ee05457ef"
+  integrity sha512-SVJIQ51spzFDvh4fIbCLvciiDMCrRhlN3mbZvv/+ycjvmF5E73bKdGfU8QDLNmjYJf+lsGnDBC4UUnvTe5OO0w==
 
 pretty-bytes@^5.1.0:
   version "5.3.0"
