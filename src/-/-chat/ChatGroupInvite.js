@@ -56,6 +56,7 @@ const Notify = observer(({ call: c, ...p }) => {
             path={mdiCheck}
             size={20}
             style={css.Notify_Btn_accept}
+            disabled={p.loading}
           />
         </React.Fragment>
       )}
@@ -69,6 +70,10 @@ class ChatGroupInvite extends React.Component {
     return chatStore.groups.filter(g => !g.jointed).map(g => g.id);
   }
 
+  state = {
+    loading: false,
+  };
+
   render() {
     return this.GroupIds.map(group => (
       <Notify
@@ -77,6 +82,7 @@ class ChatGroupInvite extends React.Component {
         accept={this.accept}
         reject={this.reject}
         type="inviteChat"
+        loading={this.state.loading}
       />
     ));
   }
@@ -105,7 +111,13 @@ class ChatGroupInvite extends React.Component {
     });
   };
   accept = group => {
-    uc.joinChatGroup(group).catch(this.onAcceptFailure);
+    this.setState({ loading: true });
+    uc.joinChatGroup(group)
+      .then(this.onAcceptSuccess)
+      .catch(this.onAcceptFailure);
+  };
+  onAcceptSuccess = () => {
+    this.setState({ loading: false });
   };
   onAcceptFailure = err => {
     g.showError({

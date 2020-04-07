@@ -1,6 +1,7 @@
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
+import { Platform } from 'react-native';
 
 import uc from '../api/uc';
 import ChatInput from '../Footer/ChatInput';
@@ -36,6 +37,10 @@ class PageChatGroupDetail extends React.Component {
     loadingRecent: false,
     loadingMore: false,
     editingText: '',
+    blobFile: {
+      url: '',
+      fileType: '',
+    },
   };
   componentDidMount() {
     const noChat = !this.chatIds.length;
@@ -89,13 +94,11 @@ class PageChatGroupDetail extends React.Component {
       >
         <MessageList
           acceptFile={this.acceptFile}
-          fileType={this.state.fileType}
           isGroupChat
           list={chatStore.messagesByThreadId[this.props.groupId]}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
           resolveChat={this.resolveChat}
-          showImage={this.state.showImage}
         />
       </Layout>
     );
@@ -265,7 +268,27 @@ class PageChatGroupDetail extends React.Component {
     this.call(target, true);
   };
 
+  readFile = file => {
+    if (Platform.OS === 'web') {
+      const reader = new FileReader();
+
+      const fileType = file.type ? file.type.split('/')[0] : '';
+      reader.onload = async event => {
+        const url = event.target.result;
+        this.setState({ blobFile: { url: url, fileType: fileType } });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+      const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+        ? 'image'
+        : 'other';
+      this.setState({ blobFile: { url: file.uri, fileType: fileType } });
+    }
+  };
+
   sendFile = file => {
+    this.readFile(file);
     const groupId = this.props.groupId;
     uc.sendFiles(groupId, file)
       .then(this.onSendFileSuccess)
@@ -273,6 +296,7 @@ class PageChatGroupDetail extends React.Component {
   };
   onSendFileSuccess = res => {
     const groupId = this.props.groupId;
+    Object.assign(res.file, this.state.blobFile);
     chatStore.upsertFile(res.file);
     chatStore.pushMessages(groupId, res.chat);
   };
@@ -284,11 +308,29 @@ class PageChatGroupDetail extends React.Component {
   };
   acceptFile = file => {
     uc.acceptFile(file.id)
-      .then(blob => {
-        saveBlob(blob, file.name);
-      })
+      .then(blob => this.onAcceptFileSuccess(blob, file))
       .catch(this.onAcceptFileFailure);
   };
+
+  onAcceptFileSuccess = (blob, file) => {
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+    const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+      ? 'image'
+      : 'other';
+    const reader = new FileReader();
+    reader.onload = async event => {
+      const url = event.target.result;
+      await Object.assign(chatStore.filesMap[file.id], {
+        url: url,
+        fileType: fileType,
+      });
+    };
+
+    reader.readAsDataURL(blob);
+
+    saveBlob(blob, file.name);
+  };
+
   onAcceptFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to accept file`,

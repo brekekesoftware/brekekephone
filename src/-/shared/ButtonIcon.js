@@ -21,6 +21,7 @@ const css = StyleSheet.create({
 const ButtonIcon = ({ color, path, size = 24, ...p }) => (
   <View style={css.ButtonIcon}>
     <TouchableOpacity
+      disabled={p.disabled}
       onPress={p.onPress}
       style={[
         css.ButtonIcon_Btn,

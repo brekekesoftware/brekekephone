@@ -288,11 +288,12 @@ class UC extends EventEmitter {
       return [];
     }
 
+    console.log('log mess', res);
     return res.logs.map(log => ({
       id: log.log_id,
       text: log.content,
       creator: log.sender.user_id,
-      created: res.ltime,
+      created: log.ltime,
     }));
   }
 
