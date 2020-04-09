@@ -7,8 +7,6 @@ import { AppState } from '../Rn';
 import { arrToMap } from '../utils/toMap';
 import g from './_';
 import callStore from './callStore';
-import chatStore from './chatStore';
-import contactStore from './contactStore';
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field];
@@ -136,11 +134,6 @@ class AuthStore {
   };
 
   signOut = () => {
-    const clearStore = () => {
-      chatStore.clearStore();
-      contactStore.clearStore();
-      this.signedInId = null;
-    };
     callStore._calls.forEach(c => c.hangupWithUnhold());
     if (callStore._calls.length > 0) {
       const intervalStartedAt = Date.now();
@@ -148,11 +141,11 @@ class AuthStore {
         // TODO show/hide loader
         if (!callStore._calls.length || Date.now() > intervalStartedAt + 2000) {
           clearInterval(id);
-          clearStore();
+          this.signedInId = null;
         }
       }, 100);
     } else {
-      clearStore();
+      this.signedInId = null;
     }
   };
 

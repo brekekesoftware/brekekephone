@@ -1,6 +1,9 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 
+import { css as fcss } from '../Footer/Navigation';
 import g from '../global';
+import chatStore from '../global/chatStore';
 import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 import { getSubMenus } from '../shared/navigationConfig';
 
@@ -23,12 +26,19 @@ const css = StyleSheet.create({
   Text__active: {
     color: g.colors.primary,
   },
+  Unread: {
+    top: -5,
+    left: 25,
+  },
 });
 
 const Navigation = ({ menu, subMenu }) => (
   <View style={css.Navigation}>
     {getSubMenus(menu).map(s => {
       const active = s.key === subMenu;
+      const totalUnreadChat = Object.values(chatStore.threadConfig).filter(
+        v => v.isUnread,
+      ).length;
       return (
         <TouchableOpacity
           key={s.key}
@@ -38,10 +48,19 @@ const Navigation = ({ menu, subMenu }) => (
           <Text small style={active && css.Text__active}>
             {s.label}
           </Text>
+          {s.key === 'chat' && !!totalUnreadChat && (
+            <View style={fcss.UnreadOuter}>
+              <View style={[fcss.Unread, css.Unread]}>
+                <Text style={fcss.UnreadText} bold white center>
+                  {totalUnreadChat}
+                </Text>
+              </View>
+            </View>
+          )}
         </TouchableOpacity>
       );
     })}
   </View>
 );
 
-export default Navigation;
+export default observer(Navigation);

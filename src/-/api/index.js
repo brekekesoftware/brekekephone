@@ -203,11 +203,10 @@ class Api {
   };
 
   onBuddyChatCreated = chat => {
-    chatStore.pushMessages(chat.creator, chat);
+    chatStore.pushMessages(chat.creator, chat, true);
   };
   onGroupChatCreated = chat => {
-    chat.isGroup = true;
-    chatStore.pushMessages(chat.group, chat);
+    chatStore.pushMessages(chat.group, chat, true);
   };
 
   onChatGroupInvited = group => {

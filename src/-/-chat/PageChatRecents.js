@@ -6,6 +6,7 @@ import chatStore from '../global/chatStore';
 import contactStore from '../global/contactStore';
 import intl from '../intl/intl';
 import { Text } from '../Rn';
+import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import ListUsers from './ListUsers';
@@ -37,8 +38,9 @@ class PageChatRecents extends React.Component {
         subMenu="chat"
         title={intl`Chat`}
       >
+        <Field isGroup label={intl`ACTIVE CHAT THREADS`} />
         {!groupIds.length && !userIds.length && (
-          <Text center normal small warning>
+          <Text center normal small warning style={{ marginTop: 5 }}>
             {intl`There's no active chat thread`}
           </Text>
         )}

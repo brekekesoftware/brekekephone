@@ -54,7 +54,6 @@ class PageChatDetail extends React.Component {
       url: '',
       fileType: '',
     },
-    allMessagesLoaded: false,
     emojiTurnOn: false,
   };
   numberOfChatsPerLoadMore = numberOfChatsPerLoad;
@@ -68,7 +67,20 @@ class PageChatDetail extends React.Component {
     } else {
       setTimeout(this.onContentSizeChange, 170);
     }
+    const { buddy: id } = this.props;
+    chatStore.updateThreadConfig(id, false, {
+      isUnread: false,
+    });
   }
+  componentDidUpdate() {
+    const { buddy: id } = this.props;
+    if (chatStore.getThreadConfig(id).isUnread) {
+      chatStore.updateThreadConfig(id, false, {
+        isUnread: false,
+      });
+    }
+  }
+
   renderChatInput = () => {
     return (
       <ChatInput
@@ -85,8 +97,10 @@ class PageChatDetail extends React.Component {
   };
 
   render() {
-    const u = contactStore.getUCUser(this.props.buddy);
-    const { allMessagesLoaded, loadingMore, loadingRecent } = this.state;
+    const { buddy: id } = this.props;
+    const u = contactStore.getUCUser(id);
+    const { allMessagesLoaded } = chatStore.getThreadConfig(id);
+    const { loadingMore, loadingRecent } = this.state;
     return (
       <Layout
         compact
@@ -254,11 +268,6 @@ class PageChatDetail extends React.Component {
       })
       .then(() => {
         this.setState({ loadingRecent: false });
-      })
-      .then(() => {
-        if (this.chatIds.length < numberOfChatsPerLoad) {
-          this.setState({ allMessagesLoaded: true });
-        }
       });
   };
 
@@ -292,12 +301,15 @@ class PageChatDetail extends React.Component {
         this.setState({ loadingMore: false });
       })
       .then(() => {
+        const { buddy: id } = this.props;
         const totalChatLoaded = this.removeDuplicates(
-          chatStore.messagesByThreadId[this.props.buddy],
+          chatStore.messagesByThreadId[id],
           'id',
         ).length;
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-          this.setState({ allMessagesLoaded: true });
+          chatStore.updateThreadConfig(id, false, {
+            allMessagesLoaded: true,
+          });
         }
       });
   };
