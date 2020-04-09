@@ -11,7 +11,7 @@ import contactStore from '../global/contactStore';
 import intl, { intlDebug } from '../intl/intl';
 import pickFile from '../native/pickFile';
 import saveBlob from '../native/saveBlob';
-import { Platform,StyleSheet, Text, TouchableOpacity, View } from '../Rn';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
 import { numberOfChatsPerLoad } from './config';

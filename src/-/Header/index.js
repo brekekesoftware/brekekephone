@@ -68,11 +68,13 @@ const Header = ({
           dropdown={dropdown}
         />
       )}
-      {/* No compact mode, should only use in the noScroll layout (such as the account list page)
+      {
+        /* No compact mode, should only use in the noScroll layout (such as the account list page)
        Can not use together with dropdown */
-      !dropdown && onCreate && (
-        <CreateBtn onPress={onCreate} white={transparent} />
-      )}
+        !dropdown && onCreate && (
+          <CreateBtn onPress={onCreate} white={transparent} />
+        )
+      }
     </React.Fragment>
   );
 };
