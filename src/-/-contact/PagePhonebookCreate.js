@@ -35,7 +35,7 @@ class PagePhonebookCreate extends React.Component {
         });
         contactStore.pushPhonebook(phonebook);
       })
-      .then(this.onSaveSuccess())
+      .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
   };
   onSaveSuccess = () => {
