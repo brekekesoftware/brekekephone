@@ -28,6 +28,9 @@ class PagePhonebookUpdate extends React.Component {
       .setContact(phonebook)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure);
+    Object.assign(phonebook, {
+      name: `${phonebook.firstName} ${phonebook.lastName}`,
+    });
     contactStore.updatePhonebook(phonebook);
   };
   onSaveSuccess = () => {

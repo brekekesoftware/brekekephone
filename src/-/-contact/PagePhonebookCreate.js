@@ -29,13 +29,14 @@ class PagePhonebookCreate extends React.Component {
         ...phonebook,
       })
       .then(val => {
-        const phoneBookId = { id: val.aid };
-        const newPhoneBook = Object.assign(phonebook, phoneBookId);
-        phonebook = Object.assign(phonebook, newPhoneBook);
+        phonebook = Object.assign(phonebook, {
+          id: val.aid,
+          name: `${phonebook.firstName} ${phonebook.lastName}`,
+        });
+        contactStore.pushPhonebook(phonebook);
       })
-      .then(this.onSaveSuccess)
+      .then(this.onSaveSuccess())
       .catch(this.onSaveFailure);
-    contactStore.pushPhonebook(phonebook);
   };
   onSaveSuccess = () => {
     g.goToPageContactPhonebook();

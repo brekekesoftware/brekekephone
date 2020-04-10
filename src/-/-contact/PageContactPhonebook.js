@@ -73,21 +73,7 @@ class PageContactPhonebook extends React.Component {
     pbx
       .getContacts(book, shared, opts)
       .then(contacts => {
-        contactStore.phoneBooks = [];
-        const p = contacts.map(c =>
-          pbx
-            .getContact(c.id)
-            .then(detail => {
-              contactStore.pushPhonebook(detail);
-            })
-            .catch(err => {
-              g.showError({
-                message: intlDebug`Failed to load contact detail for ${c.id}`,
-                err,
-              });
-            }),
-        );
-        return Promise.all(p);
+        contactStore.setPhonebook(contacts);
       })
       .catch(err => {
         g.showError({
@@ -109,10 +95,29 @@ class PageContactPhonebook extends React.Component {
       book: this.props.book,
     });
   };
-  update = contact => {
-    g.goToPagePhonebookUpdate({
-      contact: contact,
-    });
+  update = id => {
+    const contact = contactStore.getPhonebook(id);
+    if (!!contact.loaded) {
+      g.goToPagePhonebookUpdate({
+        contact: contact,
+      });
+    } else {
+      pbx
+        .getContact(id)
+        .then(ct => {
+          Object.assign(ct, { loaded: true });
+          contactStore.updatePhonebook(ct);
+          g.goToPagePhonebookUpdate({
+            contact: ct,
+          });
+        })
+        .catch(err => {
+          g.showError({
+            message: intlDebug`Failed to load contact detail for ${id}`,
+            err,
+          });
+        });
+    }
   };
   callRequest = (number, contact) => {
     if (number !== '') {
@@ -169,16 +174,12 @@ class PageContactPhonebook extends React.Component {
   };
 
   render() {
-    let phonebooks = contactStore.phoneBooks.map(p => ({
-      name: `${p.firstName} ${p.lastName}`,
-      ...p,
-    }));
+    let phonebooks = contactStore.phoneBooks;
     if (!authStore.currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true);
     }
     const map = {};
     phonebooks.forEach(u => {
-      u.name = `${u.firstName} ${u.lastName}` || u.id || '';
       let c0 = u.name.charAt(0).toUpperCase();
       if (!/[A-Z]/.test(c0)) {
         c0 = '#';
@@ -240,7 +241,7 @@ class PageContactPhonebook extends React.Component {
                 <Field isGroup label={_g.key} />
                 {_g.phonebooks.map((u, i) => (
                   <UserItem
-                    iconFuncs={[() => this.onIcon0(u), () => this.update(u)]}
+                    iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                     icons={[mdiPhone, mdiInformation]}
                     key={i}
                     name={u.name}

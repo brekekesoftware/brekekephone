@@ -105,6 +105,13 @@ class ContactStore {
     }
   };
 
+  setPhonebook = _p => {
+    if (!Array.isArray(_p)) {
+      return;
+    }
+    this.phoneBooks = [...this.phoneBooks, ..._p];
+  };
+
   getPhonebook = id => {
     return this._phoneBooksMap[id];
   };
