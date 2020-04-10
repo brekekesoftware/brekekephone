@@ -50,6 +50,7 @@ class PageChatRecents extends React.Component {
           onUserSelect={id => g.goToPageChatDetail({ buddy: id })}
           userById={arrToMap(contactStore.ucUsers, 'id', u => u)}
           userIds={userIds}
+          isRecentChat
         />
       </Layout>
     );

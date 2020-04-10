@@ -52,6 +52,11 @@ const css = StyleSheet.create({
   ButtonIcon: {
     padding: 10,
   },
+  LastDate: {
+    marginVertical: 10,
+    marginRight: 15,
+    paddingTop: 7,
+  },
 });
 
 const UserItem = ({
@@ -63,7 +68,9 @@ const UserItem = ({
   id,
   incoming,
   isRecentCall,
+  isRecentChat,
   lastMessage,
+  lastMessageDate,
   name,
   partyNumber,
   selected,
@@ -115,6 +122,13 @@ const UserItem = ({
           </View>
         )}
       </View>
+      {!isRecentCall && !!lastMessage && isRecentChat && (
+        <View style={css.LastDate}>
+          <Text normal singleLine small>
+            {lastMessageDate}
+          </Text>
+        </View>
+      )}
       {icons?.map((v, i) => (
         <TouchableOpacity key={i} onPress={iconFuncs?.[i]}>
           <Icon path={v} style={css.ButtonIcon} />
