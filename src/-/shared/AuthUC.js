@@ -70,7 +70,7 @@ class AuthUC extends React.Component {
       .catch(this.onLoadUnreadChatsFailure);
   onLoadUnreadChatsSuccess = chats => {
     chats.forEach(chat => {
-      chatStore.pushMessages(chat.creator, [chat]);
+      chatStore.pushMessages(chat.creator, [chat], true);
     });
   };
   onLoadUnreadChatsFailure = err => {

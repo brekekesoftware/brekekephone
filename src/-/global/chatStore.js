@@ -8,11 +8,11 @@ class ChatStore {
   // id
   // text
   // file
-  // isGroup => new TODO consider to keep this? also in apis/index
-  // created => TODO update to createdAt apis/uc
-  // creator => TODO update to ucUserId apis/uc
+  // created
+  // creator
   @observable messagesByThreadId = {};
-  // threadId can be `ucUserId` or `groupId`
+  @observable threadConfig = {};
+  // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
     return sortBy(
@@ -20,13 +20,30 @@ class ChatStore {
       k => this.messagesByThreadId[k].created,
     );
   }
-  pushMessages = (threadId, _m) => {
+  pushMessages = (threadId, _m, isUnread = false) => {
     if (!Array.isArray(_m)) {
       _m = [_m];
     }
     const messages = this.messagesByThreadId[threadId] || [];
     messages.push(..._m);
     this.messagesByThreadId[threadId] = sortBy(uniq(messages, 'id'), 'created');
+    const isGroup = this.groups.some(g => g.id === threadId);
+    this.updateThreadConfig(threadId, isGroup, {
+      isUnread,
+    });
+  };
+
+  getThreadConfig = id => this.threadConfig[id] || {};
+  updateThreadConfig = (id, isGroup, c) => {
+    this.threadConfig = {
+      ...this.threadConfig,
+      [id]: {
+        ...this.getThreadConfig(id),
+        ...c,
+        id,
+        isGroup,
+      },
+    };
   };
 
   // id
@@ -66,6 +83,7 @@ class ChatStore {
   };
   removeGroup = id => {
     delete this.messagesByThreadId[id];
+    delete this.threadConfig[id];
     this.groups = this.groups.filter(g => g.id !== id);
   };
   //
@@ -78,6 +96,7 @@ class ChatStore {
 
   clearStore = () => {
     this.messagesByThreadId = {};
+    this.threadConfig = {};
     this.groups = [];
     this.filesMap = {};
   };

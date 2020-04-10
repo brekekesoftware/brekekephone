@@ -17,7 +17,7 @@ import authStore from '../global/authStore';
 import callStore from '../global/callStore';
 import contactStore from '../global/contactStore';
 import intl, { intlDebug } from '../intl/intl';
-import { ActivityIndicator, StyleSheet, View } from '../Rn';
+import { StyleSheet, Text, View } from '../Rn';
 import Field from '../shared/Field';
 import Layout from '../shared/Layout';
 import { arrToMap } from '../utils/toMap';
@@ -48,13 +48,131 @@ class PageContactPhonebook extends React.Component {
       if (!pbx.client) {
         return;
       }
-      this.loadContacts.flush();
-      this.loadContacts();
+      this.loadContactsFirstTime();
       clearInterval(id);
     }, 300);
   }
+
+  loadContactsFirstTime = () => {
+    if (contactStore.alreadyLoadContactsFirstTime) {
+      return;
+    }
+    this.loadContacts();
+    contactStore.alreadyLoadContactsFirstTime = true;
+  };
+  loadContacts = debounce(() => {
+    const query = this.props;
+    const book = query.book;
+    const shared = true;
+    const opts = {
+      limit: numberOfContactsPerPage,
+      offset: query.offset,
+      searchText: query.searchText,
+    };
+    this.setState({ loading: true });
+    pbx
+      .getContacts(book, shared, opts)
+      .then(contacts => {
+        contactStore.phoneBooks = [];
+        const p = contacts.map(c =>
+          pbx
+            .getContact(c.id)
+            .then(detail => {
+              contactStore.pushPhonebook(detail);
+            })
+            .catch(err => {
+              g.showError({
+                message: intlDebug`Failed to load contact detail for ${c.id}`,
+                err,
+              });
+            }),
+        );
+        return Promise.all(p);
+      })
+      .catch(err => {
+        g.showError({
+          message: intlDebug`Failed to load contact list`,
+          err,
+        });
+      })
+      .then(() => {
+        this.setState({ loading: false });
+      });
+  }, 500);
+
+  call = number => {
+    number = formatPhoneNumber(number);
+    callStore.startCall(number);
+  };
+  create = () => {
+    g.goToPagePhonebookCreate({
+      book: this.props.book,
+    });
+  };
+  update = contact => {
+    g.goToPagePhonebookUpdate({
+      contact: contact,
+    });
+  };
+  callRequest = (number, contact) => {
+    if (number !== '') {
+      this.call(number);
+    } else {
+      this.update(contact);
+      g.showError({
+        message: intlDebug`This contact doesn't have any phone number`,
+      });
+    }
+  };
+
+  onIcon0 = u => {
+    if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
+      this.callRequest('', u);
+      return;
+    }
+
+    const numbers = [];
+    if (u.workNumber !== '') {
+      numbers.push({
+        key: 'workNumber',
+        value: u.workNumber,
+        icon: mdiBriefcase,
+      });
+    }
+    if (u.cellNumber !== '') {
+      numbers.push({
+        key: 'cellNumber',
+        value: u.cellNumber,
+        icon: mdiCellphone,
+      });
+    }
+    if (u.homeNumber !== '') {
+      numbers.push({
+        key: 'homeNumber',
+        value: u.homeNumber,
+        icon: mdiHome,
+      });
+    }
+
+    if (numbers.length === 1) {
+      this.callRequest(numbers[0].value, u);
+      return;
+    }
+    g.openPicker({
+      options: numbers.map(i => ({
+        key: i.value,
+        label: i.value,
+        icon: i.icon,
+      })),
+      onSelect: e => this.callRequest(e, u),
+    });
+  };
+
   render() {
-    let phonebooks = this.phoneBookId.map(this.resolvePhonebook);
+    let phonebooks = contactStore.phoneBooks.map(p => ({
+      name: `${p.firstName} ${p.lastName}`,
+      ...p,
+    }));
     if (!authStore.currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true);
     }
@@ -88,10 +206,7 @@ class PageContactPhonebook extends React.Component {
           },
           {
             label: intl`Reload`,
-            onPress: () => {
-              this.loadContacts.flush();
-              this.loadContacts();
-            },
+            onPress: this.loadContacts,
           },
         ]}
         menu="contact"
@@ -110,9 +225,13 @@ class PageContactPhonebook extends React.Component {
           value={authStore.currentProfile.displaySharedContacts}
         />
         {this.state.loading && (
-          <View style={css.Loading}>
-            <ActivityIndicator color={g.colors.primary} size={1} />
-          </View>
+          <Text
+            style={css.Loading}
+            warning
+            small
+            normal
+            center
+          >{intl`Loading...`}</Text>
         )}
         {!this.state.loading && (
           <View>
@@ -121,25 +240,7 @@ class PageContactPhonebook extends React.Component {
                 <Field isGroup label={_g.key} />
                 {_g.phonebooks.map((u, i) => (
                   <UserItem
-                    iconFuncs={[
-                      () =>
-                        !u.homeNumber && !u.workNumber && !u.cellNumber
-                          ? this.callRequest('', u)
-                          : this.renderPhoneBookNumer(u).length === 1
-                          ? this.callRequest(
-                              this.renderPhoneBookNumer(u)[0].value,
-                              u,
-                            )
-                          : g.openPicker({
-                              options: this.renderPhoneBookNumer(u).map(i => ({
-                                key: i.value,
-                                label: i.value,
-                                icon: i.icon,
-                              })),
-                              onSelect: e => this.callRequest(e, u),
-                            }),
-                      () => this.update(u),
-                    ]}
+                    iconFuncs={[() => this.onIcon0(u), () => this.update(u)]}
                     icons={[mdiPhone, mdiInformation]}
                     key={i}
                     name={u.name}
@@ -152,147 +253,6 @@ class PageContactPhonebook extends React.Component {
       </Layout>
     );
   }
-
-  setSearchText = searchText => {
-    const oldQuery = this.props;
-    const query = {
-      ...oldQuery,
-      searchText,
-      offset: 0,
-    };
-    g.goToPageContactPhonebook(query);
-    this.loadContacts.flush();
-    this.loadContacts();
-  };
-  resolvePhonebook = id => {
-    const phonebook = this.phoneBookById[id];
-    if (phonebook) {
-      return {
-        name: `${phonebook.firstName} ${phonebook.lastName}`,
-        ...phonebook,
-      };
-    }
-  };
-  loadContacts = debounce(() => {
-    const query = this.props;
-    const book = query.book;
-    const shared = true;
-    const opts = {
-      limit: numberOfContactsPerPage,
-      offset: query.offset,
-      searchText: query.searchText,
-    };
-    this.setState({
-      loading: true,
-    });
-    contactStore.phoneBooks = [];
-    pbx
-      .getContacts(book, shared, opts)
-      .then(this.onLoadContactsSuccess)
-      .catch(this.onLoadContactsFailure);
-  }, 500);
-  onLoadContactsSuccess = contacts => {
-    this.setState({
-      loading: false,
-    });
-    contacts.map(c => this.loadContactDetail(c.id));
-  };
-  onLoadContactsFailure = err => {
-    this.setState({
-      loading: false,
-    });
-    g.showError({
-      message: intlDebug`Failed to load contact list`,
-      err,
-    });
-  };
-  loadContactDetail = id => {
-    pbx
-      .getContact(id)
-      .then(detail => {
-        contactStore.pushPhonebook(detail);
-      })
-      .catch(err => {
-        g.showError({
-          message: intlDebug`Failed to load contact detail for id ${id}`,
-          err,
-        });
-      });
-  };
-
-  goNextPage = () => {
-    const oldQuery = this.props;
-    const query = {
-      ...oldQuery,
-      offset: oldQuery.offset + numberOfContactsPerPage,
-    };
-    g.goToPageContactPhonebook(query);
-    setTimeout(() => {
-      this.loadContacts.flush();
-      this.loadContacts();
-    }, 170);
-  };
-  goPrevPage = () => {
-    const oldQuery = this.props;
-    const query = {
-      ...oldQuery,
-      offset: oldQuery.offset - numberOfContactsPerPage,
-    };
-    g.goToPageContactPhonebook(query);
-    setTimeout(() => {
-      this.loadContacts.flush();
-      this.loadContacts();
-    }, 170);
-  };
-  call = number => {
-    number = formatPhoneNumber(number);
-    callStore.startCall(number);
-  };
-  create = () => {
-    g.goToPagePhonebookCreate({
-      book: this.props.book,
-    });
-  };
-  update = contact => {
-    g.goToPagePhonebookUpdate({
-      contact: contact,
-    });
-  };
-  callRequest = (number, contact) => {
-    if (number !== '') {
-      this.call(number);
-    } else {
-      this.update(contact);
-      g.showError({
-        message: intlDebug`This contact doesn't have any phone number`,
-      });
-    }
-  };
-  renderPhoneBookNumer = contact => {
-    const arrNumberExist = [];
-    if (contact.workNumber !== '') {
-      arrNumberExist.push({
-        key: 'workNumber',
-        value: contact.workNumber,
-        icon: mdiBriefcase,
-      });
-    }
-    if (contact.cellNumber !== '') {
-      arrNumberExist.push({
-        key: 'cellNumber',
-        value: contact.cellNumber,
-        icon: mdiCellphone,
-      });
-    }
-    if (contact.homeNumber !== '') {
-      arrNumberExist.push({
-        key: 'homeNumber',
-        value: contact.homeNumber,
-        icon: mdiHome,
-      });
-    }
-    return arrNumberExist;
-  };
 }
 
 export default PageContactPhonebook;

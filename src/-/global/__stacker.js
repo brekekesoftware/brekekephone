@@ -4,6 +4,7 @@ $.extends({
   observable: {
     // isRoot?: boolean
     // Component: ReactComponent
+    // name: string
     // ...props?
     stacks: [],
     stackAnimating: false,

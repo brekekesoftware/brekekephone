@@ -1,15 +1,28 @@
+import { observer } from 'mobx-react';
 import moment from 'moment';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
-import { TouchableOpacity } from '../Rn';
+import g from '../global';
+import chatStore from '../global/chatStore';
+import { StyleSheet, TouchableOpacity } from '../Rn';
+
+const css = StyleSheet.create({
+  Unread: {
+    backgroundColor: g.colors.primaryFn(0.5),
+  },
+});
 
 const ListUsers = p => (
   <React.Fragment>
     {p.groupIds
       .filter(id => id)
       .map(id => (
-        <TouchableOpacity key={id} onPress={() => p.onGroupSelect(id)}>
+        <TouchableOpacity
+          key={id}
+          onPress={() => p.onGroupSelect(id)}
+          style={chatStore.getThreadConfig(id).isUnread && css.Unread}
+        >
           <UserItem
             key={id}
             {...p.groupById[id]}
@@ -24,7 +37,11 @@ const ListUsers = p => (
     {p.userIds
       .filter(id => id)
       .map(id => (
-        <TouchableOpacity key={id} onPress={() => p.onUserSelect(id)}>
+        <TouchableOpacity
+          key={id}
+          onPress={() => p.onUserSelect(id)}
+          style={chatStore.getThreadConfig(id).isUnread && css.Unread}
+        >
           <UserItem
             key={id}
             {...p.userById[id]}
@@ -39,4 +56,4 @@ const ListUsers = p => (
   </React.Fragment>
 );
 
-export default ListUsers;
+export default observer(ListUsers);
