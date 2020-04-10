@@ -3,7 +3,7 @@ import React from 'react';
 
 import CallBar from '../-call/CallBar';
 import CallNotify from '../-call/CallNotify';
-import ChatGroupInvite from '../-chat/ChatGroupInvite';
+import ChatGroupInvite, { UnreadChatNoti } from '../-chat/ChatGroupInvite';
 import authStore from '../global/authStore';
 import AuthPBX from '../shared/AuthPBX';
 import AuthSIP from '../shared/AuthSIP';
@@ -25,6 +25,7 @@ const RootAuth = observer(() => {
       <CallVideos />
       <CallVoices />
       <ChatGroupInvite />
+      <UnreadChatNoti />
     </React.Fragment>
   );
 });

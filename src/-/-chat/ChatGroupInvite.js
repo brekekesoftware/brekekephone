@@ -1,6 +1,6 @@
 import { mdiCheck, mdiClose } from '@mdi/js';
 import sortBy from 'lodash/sortBy';
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 
@@ -31,6 +31,14 @@ const css = StyleSheet.create({
   },
   Notify_Btn_accept: {
     borderColor: g.colors.primary,
+  },
+
+  NotifyUnread: {
+    borderBottomWidth: 0,
+  },
+  NotifyUnreadBtn: {
+    flex: 1,
+    backgroundColor: g.colors.primaryFn(0.5),
   },
 });
 
@@ -68,18 +76,80 @@ const Notify = observer(({ call: c, ...p }) => {
 
 @observer
 class ChatGroupInvite extends React.Component {
-  alreadyShowNoti = {};
-
-  @computed get GroupIds() {
+  @observable loading = false;
+  @computed get groupIds() {
     return chatStore.groups.filter(g => !g.jointed).map(g => g.id);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  formatGroup = group => {
+    const { id, inviter, name } = chatStore.getGroup(group) || {};
+    const inviterName = contactStore.getUCUser(inviter)?.name;
+    return {
+      id: id,
+      name,
+      inviter: inviterName || inviter,
+    };
+  };
+  // TODO: rejected but existed in chat home => error when click.
+  reject = group => {
+    uc.leaveChatGroup(group)
+      .then(this.onRejectSuccess)
+      .catch(this.onRejectFailure);
+  };
+  onRejectSuccess = res => {
+    chatStore.removeGroup(res.id);
+  };
+  onRejectFailure = err => {
+    g.showError({
+      message: intlDebug`Failed to reject the group chat`,
+      err,
+    });
+  };
+  accept = group => {
+    this.loading = true;
+    uc.joinChatGroup(group)
+      .then(this.onAcceptSuccess)
+      .catch(this.onAcceptFailure);
+  };
+  onAcceptSuccess = () => {
+    this.loading = false;
+  };
+  onAcceptFailure = err => {
+    g.showError({
+      message: intlDebug`Failed to accept the group chat`,
+      err,
+    });
+  };
+
+  render() {
+    return this.groupIds.map(group => (
+      <Notify
+        key={group}
+        {...this.formatGroup(group)}
+        accept={this.accept}
+        reject={this.reject}
+        type="inviteChat"
+        loading={this.loading}
+      />
+    ));
+  }
+}
+
+@observer
+class UnreadChatNoti extends React.Component {
+  @observable unreadChat = null;
+  alreadyShowNoti = {};
+
+  componentDidMount() {
+    this.updateLatestUnreadChat();
+  }
+
+  componentDidUpdate() {
     this.updateLatestUnreadChat();
   }
 
   updateLatestUnreadChat = () => {
-    if (this.state.unreadChat) {
+    if (this.unreadChat) {
       return;
     }
     let unreadChats = Object.entries(chatStore.threadConfig)
@@ -124,19 +194,19 @@ class ChatGroupInvite extends React.Component {
       return;
     }
     //
-    this.setState({ unreadChat: latestUnreadChat });
+    this.unreadChat = latestUnreadChat;
     this.prevLastMessageId = latestUnreadChat.lastMessage.id;
     this.prevUnreadChatTimeoutId = setTimeout(this.clear, 5000);
   };
   clear = () => {
-    this.setState({ unreadChat: null });
+    this.unreadChat = null;
     if (this.prevUnreadChatTimeoutId) {
       clearTimeout(this.prevUnreadChatTimeoutId);
       this.prevUnreadChatTimeoutId = 0;
     }
   };
   onUnreadPress = () => {
-    const { id, isGroup } = this.state.unreadChat;
+    const { id, isGroup } = this.unreadChat;
     this.clear();
     return isGroup
       ? g.goToPageChatGroupDetail({ groupId: id })
@@ -149,89 +219,41 @@ class ChatGroupInvite extends React.Component {
     }
   }
 
-  state = {
-    loading: false,
-    unreadChat: null,
-  };
-
   render() {
-    void chatStore.threadConfig;
-    if (this.GroupIds.length) {
-      return this.GroupIds.map(group => (
-        <Notify
-          key={group}
-          {...this.formatGroup(group)}
-          accept={this.accept}
-          reject={this.reject}
-          type="inviteChat"
-          loading={this.state.loading}
-        />
-      ));
-    }
-    if (!this.state.unreadChat) {
+    Object.entries(chatStore.threadConfig).forEach(([k, v]) => {
+      Object.entries(v).forEach(([k2, v2]) => {
+        void v2;
+      });
+    });
+    Object.values(chatStore.messagesByThreadId).forEach(v => {
+      void v.id;
+    });
+    if (!this.unreadChat) {
       return null;
     }
     const {
       id,
       lastMessage: { text },
       isGroup,
-    } = this.state.unreadChat;
+    } = this.unreadChat;
     return (
-      <TouchableOpacity
-        style={{
-          backgroundColor: g.colors.primaryFn(0.5),
-        }}
-        onPress={this.onUnreadPress}
-      >
-        <UserItem
-          key={id}
-          {...(isGroup
-            ? chatStore.groups.find(g => g.id === id)
-            : contactStore.ucUsers.find(u => u.id === id))}
-          lastMessage={text}
-        />
-      </TouchableOpacity>
+      <View style={[css.Notify, css.NotifyUnread]}>
+        <TouchableOpacity
+          style={css.NotifyUnreadBtn}
+          onPress={this.onUnreadPress}
+        >
+          <UserItem
+            key={id}
+            {...(isGroup
+              ? chatStore.groups.find(g => g.id === id)
+              : contactStore.ucUsers.find(u => u.id === id))}
+            lastMessage={text}
+          />
+        </TouchableOpacity>
+      </View>
     );
   }
-  formatGroup = group => {
-    const { id, inviter, name } = chatStore.getGroup(group) || {};
-    const inviterName = contactStore.getUCUser(inviter)?.name;
-    return {
-      id: id,
-      name,
-      inviter: inviterName || inviter,
-    };
-  };
-  // TODO: rejected but existed in chat home => error when click.
-  reject = group => {
-    uc.leaveChatGroup(group)
-      .then(this.onRejectSuccess)
-      .catch(this.onRejectFailure);
-  };
-  onRejectSuccess = res => {
-    chatStore.removeGroup(res.id);
-  };
-  onRejectFailure = err => {
-    g.showError({
-      message: intlDebug`Failed to reject the group chat`,
-      err,
-    });
-  };
-  accept = group => {
-    this.setState({ loading: true });
-    uc.joinChatGroup(group)
-      .then(this.onAcceptSuccess)
-      .catch(this.onAcceptFailure);
-  };
-  onAcceptSuccess = () => {
-    this.setState({ loading: false });
-  };
-  onAcceptFailure = err => {
-    g.showError({
-      message: intlDebug`Failed to accept the group chat`,
-      err,
-    });
-  };
 }
 
+export { UnreadChatNoti };
 export default ChatGroupInvite;
