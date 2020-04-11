@@ -9,13 +9,16 @@ import { Icon, Image, Platform, StyleSheet, View } from '../Rn';
 
 const css = StyleSheet.create({
   Avatar: {
-    flexDirection: 'row',
     width: 50,
     height: 50,
   },
+  ImageOuter: {
+    flex: 1,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
   Image: {
     flex: 1,
-    borderRadius: 25,
   },
   Status: {
     position: 'absolute',
@@ -38,7 +41,9 @@ const Avatar = observer(({ source, status, style }) => {
   const imgSource = uri ? { uri } : avatarPlaceholder;
   return (
     <View style={[css.Avatar, style]}>
-      <Image source={imgSource} style={css.Image} />
+      <View style={css.ImageOuter}>
+        <Image source={imgSource} style={css.Image} />
+      </View>
       {authStore.currentProfile.ucEnabled && typeof status === 'string' && (
         <Icon
           color={statusMapColor[status]}
