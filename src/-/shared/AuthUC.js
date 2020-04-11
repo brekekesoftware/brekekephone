@@ -22,9 +22,9 @@ class AuthUC extends React.Component {
   }
   componentWillUnmount() {
     this.clearObserve();
-    uc.off('connection-stopped', this.onConnectionStopped);
     uc.disconnect();
     authStore.ucState = 'stopped';
+    uc.off('connection-stopped', this.onConnectionStopped);
   }
 
   auth = () => {

@@ -141,12 +141,22 @@ class AuthStore {
         // TODO show/hide loader
         if (!callStore._calls.length || Date.now() > intervalStartedAt + 2000) {
           clearInterval(id);
-          this.signedInId = null;
+          this._signOut();
         }
       }, 100);
     } else {
-      this.signedInId = null;
+      this._signOut();
     }
+  };
+  _signOut = () => {
+    this.signedInId = null;
+    this.pbxState = 'stopped';
+    this.pbxTotalFailure = 0;
+    this.sipState = 'stopped';
+    this.sipTotalFailure = 0;
+    this.ucState = 'stopped';
+    this.ucTotalFailure = 0;
+    this.ucLoginFromAnotherPlace = false;
   };
 
   reconnect = debounce(() => {
