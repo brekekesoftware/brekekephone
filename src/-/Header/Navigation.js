@@ -36,9 +36,7 @@ const Navigation = ({ menu, subMenu }) => (
   <View style={css.Navigation}>
     {getSubMenus(menu).map(s => {
       const active = s.key === subMenu;
-      const totalUnreadChat = Object.values(chatStore.threadConfig).filter(
-        v => v.isUnread,
-      ).length;
+      const totalUnreadChat = chatStore.unreadCount;
       return (
         <TouchableOpacity
           key={s.key}

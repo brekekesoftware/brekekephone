@@ -63,9 +63,7 @@ const Navigation = ({ menu }) => (
   <View style={css.Navigation}>
     {menus().map(m => {
       const active = m.key === menu;
-      const totalUnreadChat = Object.values(chatStore.threadConfig).filter(
-        v => v.isUnread,
-      ).length;
+      const totalUnreadChat = chatStore.unreadCount;
       const showUnreadChat =
         !!totalUnreadChat && m.key === 'contact' && !active;
       return (

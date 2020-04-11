@@ -1,3 +1,4 @@
+import uniqBy from 'lodash/uniqBy';
 import { computed, observable } from 'mobx';
 
 import { arrToMap } from '../utils/toMap';
@@ -106,10 +107,13 @@ class ContactStore {
   };
 
   setPhonebook = _p => {
-    if (!Array.isArray(_p)) {
+    if (!_p) {
       return;
     }
-    this.phoneBooks = [...this.phoneBooks, ..._p];
+    if (!Array.isArray(_p)) {
+      _p = [_p];
+    }
+    this.phoneBooks = uniqBy([...this.phoneBooks, ..._p], 'id');
   };
 
   getPhonebook = id => {

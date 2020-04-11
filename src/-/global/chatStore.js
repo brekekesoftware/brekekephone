@@ -12,6 +12,11 @@ class ChatStore {
   // creator
   @observable messagesByThreadId = {};
   @observable threadConfig = {};
+  @computed get unreadCount() {
+    return Object.values(this.threadConfig).filter(
+      v => v.isUnread && this.messagesByThreadId[v.id]?.length,
+    ).length;
+  }
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
