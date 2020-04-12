@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
-import moment from 'moment';
 import React from 'react';
 
 import UserItem from '../-contact/UserItem';
 import g from '../global';
 import chatStore from '../global/chatStore';
 import { StyleSheet, TouchableOpacity } from '../Rn';
+import { formatDateTimeSemantic } from './config';
 
 const css = StyleSheet.create({
   Unread: {
@@ -17,42 +17,44 @@ const ListUsers = p => (
   <React.Fragment>
     {p.groupIds
       .filter(id => id)
-      .map(id => (
-        <TouchableOpacity
-          key={id}
-          onPress={() => p.onGroupSelect(id)}
-          style={chatStore.getThreadConfig(id).isUnread && css.Unread}
-        >
-          <UserItem
+      .map(id => {
+        const l = p.getLastChat(id);
+        return (
+          <TouchableOpacity
             key={id}
-            {...p.groupById[id]}
-            lastMessage={p.getLastChat(id)?.text}
-            isRecentChat={p.isRecentChat}
-            lastMessageDate={moment(p.getLastChat(id)?.created).format(
-              'DD/MM/YYYY',
-            )}
-          />
-        </TouchableOpacity>
-      ))}
+            onPress={() => p.onGroupSelect(id)}
+            style={chatStore.getThreadConfig(id).isUnread && css.Unread}
+          >
+            <UserItem
+              key={id}
+              {...p.groupById[id]}
+              lastMessage={l?.text}
+              isRecentChat={p.isRecentChat}
+              lastMessageDate={formatDateTimeSemantic(l?.created)}
+            />
+          </TouchableOpacity>
+        );
+      })}
     {p.userIds
       .filter(id => id)
-      .map(id => (
-        <TouchableOpacity
-          key={id}
-          onPress={() => p.onUserSelect(id)}
-          style={chatStore.getThreadConfig(id).isUnread && css.Unread}
-        >
-          <UserItem
+      .map(id => {
+        const l = p.getLastChat(id);
+        return (
+          <TouchableOpacity
             key={id}
-            {...p.userById[id]}
-            lastMessage={p.getLastChat(id)?.text}
-            isRecentChat={p.isRecentChat}
-            lastMessageDate={moment(p.getLastChat(id)?.created).format(
-              'DD/MM/YYYY',
-            )}
-          />
-        </TouchableOpacity>
-      ))}
+            onPress={() => p.onUserSelect(id)}
+            style={chatStore.getThreadConfig(id).isUnread && css.Unread}
+          >
+            <UserItem
+              key={id}
+              {...p.userById[id]}
+              lastMessage={l?.text}
+              isRecentChat={p.isRecentChat}
+              lastMessageDate={formatDateTimeSemantic(l?.created)}
+            />
+          </TouchableOpacity>
+        );
+      })}
   </React.Fragment>
 );
 

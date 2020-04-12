@@ -15,9 +15,6 @@ export const groupByTimestamp = arr => {
   let groupByTime = null;
   let lastMessage = null;
   let messages = null;
-  const d = moment();
-  const today = d.format('MMM D');
-  const yesterday = d.add(-1, 'days').format('MMM D');
   arr.forEach(m => {
     const d = moment(m.created);
     const date = d.format('MMM D');
@@ -25,12 +22,7 @@ export const groupByTimestamp = arr => {
       groupByTime = [];
       lastDate = date;
       groupByDate.push({
-        date:
-          date === today
-            ? intl`Today`
-            : date === yesterday
-            ? intl`Yesterday`
-            : date,
+        date: formatDateSemantic(m.created),
         groupByTime,
       });
     }
@@ -40,7 +32,7 @@ export const groupByTimestamp = arr => {
       moment(m.created).valueOf() - moment(lastMessage.created).valueOf() >
         10 * 60000
     ) {
-      const time = d.format('HH:mm');
+      const time = d.format('HH:mm'); // TODO intl
       lastMessage = m;
       messages = [];
       groupByTime.push({
@@ -52,4 +44,36 @@ export const groupByTimestamp = arr => {
     messages.push(m);
   });
   return groupByDate;
+};
+
+export const formatDateSemantic = d => {
+  d = moment(d);
+  const t = moment();
+  if (d.format('yyyy') !== t.format('yyyy')) {
+    return d.format('DD/MM/yyyy'); // TODO intl
+  }
+  const today = t.format('MMM D');
+  const yesterday = t.add(-1, 'days').format('MMM D');
+  const date = d.format('MMM D'); // TODO intl
+  return date === today
+    ? intl`Today`
+    : date === yesterday
+    ? intl`Yesterday`
+    : date;
+};
+
+export const formatDateTimeSemantic = d => {
+  d = moment(d);
+  const t = moment();
+  let date = '';
+  if (d.format('yyyy') !== t.format('yyyy')) {
+    date = d.format('DD/MM/yyyy'); // TODO intl
+  } else if (d.format('MMM D') !== t.format('MMM D')) {
+    date = d.format('MMM D'); // TODO intl
+  }
+  if (date) {
+    date = ' ' + date;
+  }
+  const time = d.format('HH:mm'); // TODO intl
+  return time + date;
 };

@@ -12,6 +12,7 @@ import contactStore from '../global/contactStore';
 import intl, { intlDebug } from '../intl/intl';
 import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
 import ButtonIcon from '../shared/ButtonIcon';
+import { formatDateTimeSemantic } from './config';
 
 const css = StyleSheet.create({
   Notify: {
@@ -233,7 +234,7 @@ class UnreadChatNoti extends React.Component {
     }
     const {
       id,
-      lastMessage: { text },
+      lastMessage: { text, created },
       isGroup,
     } = this.unreadChat;
     return (
@@ -248,6 +249,8 @@ class UnreadChatNoti extends React.Component {
               ? chatStore.groups.find(g => g.id === id)
               : contactStore.ucUsers.find(u => u.id === id))}
             lastMessage={text}
+            isRecentChat
+            lastMessageDate={formatDateTimeSemantic(created)}
           />
         </TouchableOpacity>
       </View>
