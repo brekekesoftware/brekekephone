@@ -1,5 +1,5 @@
 declare module 'react-native-uuid' {
-  import * as uuid from 'uuid';
+  import * as uuid from 'uuid'
 
-  export = uuid;
+  export = uuid
 }

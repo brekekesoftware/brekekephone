@@ -1,11 +1,11 @@
-import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
-import Hyperlink from 'react-native-hyperlink';
-import Share from 'react-native-share';
+import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
+import Hyperlink from 'react-native-hyperlink'
+import Share from 'react-native-share'
 
-import g from '../global';
-import intl, { intlDebug } from '../intl/intl';
+import g from '../global'
+import intl, { intlDebug } from '../intl/intl'
 import {
   Clipboard,
   Dimensions,
@@ -17,7 +17,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from '../Rn';
+} from '../Rn'
 
 const css = StyleSheet.create({
   Message: {
@@ -91,7 +91,7 @@ const css = StyleSheet.create({
       },
     }),
   },
-});
+})
 
 const File = observer(p => (
   <View style={[css.File, css.Message]}>
@@ -158,23 +158,23 @@ const File = observer(p => (
       </Text>
     )}
   </View>
-));
+))
 
 @observer
 class Message extends React.Component {
   onLinkPress = url => {
     if (Platform.OS === 'web') {
-      window.open(url, '_blank', 'noopener');
-      return;
+      window.open(url, '_blank', 'noopener')
+      return
     }
     if (!Linking.canOpenURL(url)) {
       g.showError({
         message: intlDebug`Can not open the url`,
-      });
+      })
     } else {
-      Linking.openURL(url);
+      Linking.openURL(url)
     }
-  };
+  }
   onLinkLongPress = url => {
     g.openPicker({
       options: [
@@ -200,8 +200,8 @@ class Message extends React.Component {
         },
       ],
       onSelect: k => this.onPickerSelect(k, url),
-    });
-  };
+    })
+  }
   onMessagePress = () => {
     g.openPicker({
       options: [
@@ -217,21 +217,21 @@ class Message extends React.Component {
         },
       ],
       onSelect: this.onPickerSelect,
-    });
-  };
+    })
+  }
 
   onPickerSelect = (k, url) => {
-    const message = k === 0 || k === 1 ? this.props.text : url;
+    const message = k === 0 || k === 1 ? this.props.text : url
     if (k === 0 || k === 2) {
-      Clipboard.setString(message);
+      Clipboard.setString(message)
     } else {
-      Share.open({ message });
+      Share.open({ message })
     }
-  };
+  }
 
   render() {
-    const p = this.props;
-    const TextContainer = Platform.OS === 'web' ? View : TouchableOpacity;
+    const p = this.props
+    const TextContainer = Platform.OS === 'web' ? View : TouchableOpacity
     return (
       <React.Fragment>
         {!!p.text && (
@@ -254,8 +254,8 @@ class Message extends React.Component {
           />
         )}
       </React.Fragment>
-    );
+    )
   }
 }
 
-export default Message;
+export default Message

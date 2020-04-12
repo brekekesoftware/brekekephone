@@ -1,18 +1,18 @@
-import { mdiCheck, mdiClose } from '@mdi/js';
-import sortBy from 'lodash/sortBy';
-import { computed, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiCheck, mdiClose } from '@mdi/js'
+import sortBy from 'lodash/sortBy'
+import { computed, observable } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import UserItem from '../-contact/UserItem';
-import uc from '../api/uc';
-import g from '../global';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl, { intlDebug } from '../intl/intl';
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import ButtonIcon from '../shared/ButtonIcon';
-import { formatDateTimeSemantic } from './config';
+import UserItem from '../-contact/UserItem'
+import uc from '../api/uc'
+import g from '../global'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl, { intlDebug } from '../intl/intl'
+import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import ButtonIcon from '../shared/ButtonIcon'
+import { formatDateTimeSemantic } from './config'
 
 const css = StyleSheet.create({
   Notify: {
@@ -41,7 +41,7 @@ const css = StyleSheet.create({
     flex: 1,
     backgroundColor: g.colors.primaryFn(0.5),
   },
-});
+})
 
 const Notify = observer(({ call: c, ...p }) => {
   return (
@@ -72,55 +72,55 @@ const Notify = observer(({ call: c, ...p }) => {
         </React.Fragment>
       )}
     </View>
-  );
-});
+  )
+})
 
 @observer
 class ChatGroupInvite extends React.Component {
-  @observable loading = false;
+  @observable loading = false
   @computed get groupIds() {
-    return chatStore.groups.filter(g => !g.jointed).map(g => g.id);
+    return chatStore.groups.filter(g => !g.jointed).map(g => g.id)
   }
 
   formatGroup = group => {
-    const { id, inviter, name } = chatStore.getGroup(group) || {};
-    const inviterName = contactStore.getUCUser(inviter)?.name;
+    const { id, inviter, name } = chatStore.getGroup(group) || {}
+    const inviterName = contactStore.getUCUser(inviter)?.name
     return {
       id: id,
       name,
       inviter: inviterName || inviter,
-    };
-  };
+    }
+  }
   // TODO: rejected but existed in chat home => error when click.
   reject = group => {
     uc.leaveChatGroup(group)
       .then(this.onRejectSuccess)
-      .catch(this.onRejectFailure);
-  };
+      .catch(this.onRejectFailure)
+  }
   onRejectSuccess = res => {
-    chatStore.removeGroup(res.id);
-  };
+    chatStore.removeGroup(res.id)
+  }
   onRejectFailure = err => {
     g.showError({
       message: intlDebug`Failed to reject the group chat`,
       err,
-    });
-  };
+    })
+  }
   accept = group => {
-    this.loading = true;
+    this.loading = true
     uc.joinChatGroup(group)
       .then(this.onAcceptSuccess)
-      .catch(this.onAcceptFailure);
-  };
+      .catch(this.onAcceptFailure)
+  }
   onAcceptSuccess = () => {
-    this.loading = false;
-  };
+    this.loading = false
+  }
   onAcceptFailure = err => {
     g.showError({
       message: intlDebug`Failed to accept the group chat`,
       err,
-    });
-  };
+    })
+  }
 
   render() {
     return this.groupIds.map(group => (
@@ -132,26 +132,26 @@ class ChatGroupInvite extends React.Component {
         type="inviteChat"
         loading={this.loading}
       />
-    ));
+    ))
   }
 }
 
 @observer
 class UnreadChatNoti extends React.Component {
-  @observable unreadChat = null;
-  alreadyShowNoti = {};
+  @observable unreadChat = null
+  alreadyShowNoti = {}
 
   componentDidMount() {
-    this.updateLatestUnreadChat();
+    this.updateLatestUnreadChat()
   }
 
   componentDidUpdate() {
-    this.updateLatestUnreadChat();
+    this.updateLatestUnreadChat()
   }
 
   updateLatestUnreadChat = () => {
     if (this.unreadChat) {
-      return;
+      return
     }
     let unreadChats = Object.entries(chatStore.threadConfig)
       .filter(([k, v]) => v.isUnread && chatStore.messagesByThreadId[k]?.length)
@@ -166,77 +166,77 @@ class UnreadChatNoti extends React.Component {
         c =>
           !this.alreadyShowNoti[c.lastMessage.id] &&
           c.lastMessage.id !== this.prevLastMessageId,
-      );
+      )
     unreadChats.forEach(c => {
-      this.alreadyShowNoti[c.lastMessage.id] = true;
-    });
+      this.alreadyShowNoti[c.lastMessage.id] = true
+    })
     //
     unreadChats = unreadChats.filter(c => {
-      const s = g.stacks[g.stacks.length - 1];
+      const s = g.stacks[g.stacks.length - 1]
       if (!s) {
-        return true;
+        return true
       }
-      const { name, buddy, groupId } = s;
+      const { name, buddy, groupId } = s
       if (name === 'PageChatRecents') {
-        return false;
+        return false
       }
       if (name === 'PageChatDetail' && !c.isGroup && buddy === c.id) {
-        return false;
+        return false
       }
       if (name === 'PageChatGroupDetail' && c.isGroup && groupId === c.id) {
-        return false;
+        return false
       }
-      return true;
-    });
+      return true
+    })
     //
-    unreadChats = sortBy(unreadChats, 'lastMessage.created');
-    const latestUnreadChat = unreadChats[unreadChats.length - 1];
+    unreadChats = sortBy(unreadChats, 'lastMessage.created')
+    const latestUnreadChat = unreadChats[unreadChats.length - 1]
     if (!latestUnreadChat) {
-      return;
+      return
     }
     //
-    this.unreadChat = latestUnreadChat;
-    this.prevLastMessageId = latestUnreadChat.lastMessage.id;
-    this.prevUnreadChatTimeoutId = setTimeout(this.clear, 5000);
-  };
+    this.unreadChat = latestUnreadChat
+    this.prevLastMessageId = latestUnreadChat.lastMessage.id
+    this.prevUnreadChatTimeoutId = setTimeout(this.clear, 5000)
+  }
   clear = () => {
-    this.unreadChat = null;
+    this.unreadChat = null
     if (this.prevUnreadChatTimeoutId) {
-      clearTimeout(this.prevUnreadChatTimeoutId);
-      this.prevUnreadChatTimeoutId = 0;
+      clearTimeout(this.prevUnreadChatTimeoutId)
+      this.prevUnreadChatTimeoutId = 0
     }
-  };
+  }
   onUnreadPress = () => {
-    const { id, isGroup } = this.unreadChat;
-    this.clear();
+    const { id, isGroup } = this.unreadChat
+    this.clear()
     return isGroup
       ? g.goToPageChatGroupDetail({ groupId: id })
-      : g.goToPageChatDetail({ buddy: id });
-  };
+      : g.goToPageChatDetail({ buddy: id })
+  }
 
   componentWillUnmount() {
     if (this.prevUnreadChatTimeoutId) {
-      clearTimeout(this.prevUnreadChatTimeoutId);
+      clearTimeout(this.prevUnreadChatTimeoutId)
     }
   }
 
   render() {
     Object.entries(chatStore.threadConfig).forEach(([k, v]) => {
       Object.entries(v).forEach(([k2, v2]) => {
-        void v2;
-      });
-    });
+        void v2
+      })
+    })
     Object.values(chatStore.messagesByThreadId).forEach(v => {
-      void v.id;
-    });
+      void v.id
+    })
     if (!this.unreadChat) {
-      return null;
+      return null
     }
     const {
       id,
       lastMessage: { text, created },
       isGroup,
-    } = this.unreadChat;
+    } = this.unreadChat
     return (
       <View style={[css.Notify, css.NotifyUnread]}>
         <TouchableOpacity
@@ -254,9 +254,9 @@ class UnreadChatNoti extends React.Component {
           />
         </TouchableOpacity>
       </View>
-    );
+    )
   }
 }
 
-export { UnreadChatNoti };
-export default ChatGroupInvite;
+export { UnreadChatNoti }
+export default ChatGroupInvite

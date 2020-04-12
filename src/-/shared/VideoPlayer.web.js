@@ -1,6 +1,6 @@
-import { observer } from 'mobx-react';
-import React from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { observer } from 'mobx-react'
+import React from 'react'
+import { ActivityIndicator, StyleSheet } from 'react-native'
 
 const css = StyleSheet.create({
   loading: {
@@ -9,7 +9,7 @@ const css = StyleSheet.create({
     height: '100%',
     padding: 50,
   },
-});
+})
 
 export default observer(p =>
   p.sourceObject ? (
@@ -18,7 +18,7 @@ export default observer(p =>
       height="100%"
       ref={video => {
         if (video) {
-          video.srcObject = p.sourceObject;
+          video.srcObject = p.sourceObject
         }
       }}
       width="100%"
@@ -26,4 +26,4 @@ export default observer(p =>
   ) : (
     <ActivityIndicator style={css.loading} />
   ),
-);
+)

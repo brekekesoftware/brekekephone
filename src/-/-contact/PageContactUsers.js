@@ -1,19 +1,19 @@
-import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js';
-import orderBy from 'lodash/orderBy';
-import uniq from 'lodash/uniq';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
+import orderBy from 'lodash/orderBy'
+import uniq from 'lodash/uniq'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import authStore from '../global/authStore';
-import callStore from '../global/callStore';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl from '../intl/intl';
-import { TouchableOpacity } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
-import UserItem from './UserItem';
+import g from '../global'
+import authStore from '../global/authStore'
+import callStore from '../global/callStore'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl from '../intl/intl'
+import { TouchableOpacity } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
+import UserItem from './UserItem'
 
 @observer
 class PageContactUsers extends React.Component {
@@ -21,96 +21,94 @@ class PageContactUsers extends React.Component {
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
       ...contactStore.ucUsers.map(u => u.id),
-    ]);
-    return userIds.filter(this.isMatchUser);
+    ])
+    return userIds.filter(this.isMatchUser)
   }
   resolveUser = id => {
-    const pbxUser = contactStore.getPBXUser(id) || {};
-    const ucUser = contactStore.getUCUser(id) || {};
+    const pbxUser = contactStore.getPBXUser(id) || {}
+    const ucUser = contactStore.getUCUser(id) || {}
     const u = {
       ...pbxUser,
       ...ucUser,
-    };
-    return u;
-  };
+    }
+    return u
+  }
   isMatchUser = id => {
     if (!id) {
-      return false;
+      return false
     }
-    let userId = id;
-    let pbxUserName;
-    const pbxUser = contactStore.getPBXUser(id);
+    let userId = id
+    let pbxUserName
+    const pbxUser = contactStore.getPBXUser(id)
     if (pbxUser) {
-      pbxUserName = pbxUser.name;
+      pbxUserName = pbxUser.name
     } else {
-      pbxUserName = '';
+      pbxUserName = ''
     }
-    let ucUserName;
-    const ucUser = contactStore.getUCUser(id);
+    let ucUserName
+    const ucUser = contactStore.getUCUser(id)
     if (ucUser) {
-      ucUserName = ucUser.name;
+      ucUserName = ucUser.name
     } else {
-      ucUserName = '';
+      ucUserName = ''
     }
     //
-    userId = userId.toLowerCase();
-    pbxUserName = pbxUserName.toLowerCase();
-    ucUserName = ucUserName.toLowerCase();
-    const txt = contactStore.usersSearchTerm.toLowerCase();
+    userId = userId.toLowerCase()
+    pbxUserName = pbxUserName.toLowerCase()
+    ucUserName = ucUserName.toLowerCase()
+    const txt = contactStore.usersSearchTerm.toLowerCase()
     return (
       userId.includes(txt) ||
       pbxUserName.includes(txt) ||
       ucUserName.includes(txt)
-    );
-  };
+    )
+  }
 
   getLastMessageChat = id => {
-    const chats = chatStore.messagesByThreadId[id] || [];
-    return chats.length !== 0 ? chats[chats.length - 1] : {};
-  };
+    const chats = chatStore.messagesByThreadId[id] || []
+    return chats.length !== 0 ? chats[chats.length - 1] : {}
+  }
 
   render() {
-    const allUsers = this.getMatchUserIds().map(this.resolveUser);
-    const onlineUsers = allUsers.filter(
-      i => i.status && i.status !== 'offline',
-    );
+    const allUsers = this.getMatchUserIds().map(this.resolveUser)
+    const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
 
-    const { displayOfflineUsers, ucEnabled } = authStore.currentProfile;
+    const { displayOfflineUsers, ucEnabled } = authStore.currentProfile
     const displayUsers =
-      !displayOfflineUsers && ucEnabled ? onlineUsers : allUsers;
+      !displayOfflineUsers && ucEnabled ? onlineUsers : allUsers
 
-    const map = {};
+    const map = {}
     displayUsers.forEach(u => {
-      u.name = u.name || u.id || '';
-      let c0 = u.name.charAt(0).toUpperCase();
+      u.name = u.name || u.id || ''
+      let c0 = u.name.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
-        c0 = '#';
+        c0 = '#'
       }
       if (!map[c0]) {
-        map[c0] = [];
+        map[c0] = []
       }
-      map[c0].push(u);
-    });
+      map[c0].push(u)
+    })
     let groups = Object.keys(map).map(k => ({
       key: k,
       users: map[k],
-    }));
-    groups = orderBy(groups, 'key');
+    }))
+    groups = orderBy(groups, 'key')
     groups.forEach(g => {
-      g.users = orderBy(g.users, 'name');
-    });
+      g.users = orderBy(g.users, 'name')
+    })
     return (
       <Layout
         description={(() => {
-          let desc = intl`PBX users, ${allUsers.length} total`;
+          let desc = intl`PBX users, ${allUsers.length} total`
           if (allUsers.length && ucEnabled) {
-            desc = desc.replace('PBX', 'PBX/UC');
+            desc = desc.replace('PBX', 'PBX/UC')
             desc = desc.replace(
               intl`${allUsers.length} total`,
               intl`${onlineUsers.length}/${allUsers.length} online`,
-            );
+            )
           }
-          return desc;
+          return desc
         })()}
         menu="contact"
         subMenu="users"
@@ -120,7 +118,7 @@ class PageContactUsers extends React.Component {
           icon={mdiMagnify}
           label={intl`SEARCH FOR USERS`}
           onValueChange={v => {
-            contactStore.usersSearchTerm = v;
+            contactStore.usersSearchTerm = v
           }}
           value={contactStore.usersSearchTerm}
         />
@@ -131,7 +129,7 @@ class PageContactUsers extends React.Component {
               g.upsertProfile({
                 id: authStore.currentProfile.id,
                 displayOfflineUsers: v,
-              });
+              })
             }}
             type="Switch"
             value={authStore.currentProfile.displayOfflineUsers}
@@ -163,8 +161,8 @@ class PageContactUsers extends React.Component {
           </React.Fragment>
         ))}
       </Layout>
-    );
+    )
   }
 }
 
-export default PageContactUsers;
+export default PageContactUsers

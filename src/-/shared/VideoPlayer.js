@@ -1,7 +1,7 @@
-import { observer } from 'mobx-react';
-import React from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
-import { RTCView } from 'react-native-webrtc';
+import { observer } from 'mobx-react'
+import React from 'react'
+import { ActivityIndicator, StyleSheet } from 'react-native'
+import { RTCView } from 'react-native-webrtc'
 
 const css = StyleSheet.create({
   video: {
@@ -9,7 +9,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-});
+})
 
 export default observer(p =>
   p.sourceObject ? (
@@ -17,4 +17,4 @@ export default observer(p =>
   ) : (
     <ActivityIndicator style={css.video} />
   ),
-);
+)

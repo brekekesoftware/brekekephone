@@ -1,8 +1,8 @@
-import sortBy from 'lodash/sortBy';
-import uniq from 'lodash/uniq';
-import { computed, observable } from 'mobx';
+import sortBy from 'lodash/sortBy'
+import uniq from 'lodash/uniq'
+import { computed, observable } from 'mobx'
 
-import { arrToMap } from '../utils/toMap';
+import { arrToMap } from '../utils/toMap'
 
 class ChatStore {
   // id
@@ -10,12 +10,12 @@ class ChatStore {
   // file
   // created
   // creator
-  @observable messagesByThreadId = {};
-  @observable threadConfig = {};
+  @observable messagesByThreadId = {}
+  @observable threadConfig = {}
   @computed get unreadCount() {
     return Object.values(this.threadConfig).filter(
       v => v.isUnread && this.messagesByThreadId[v.id]?.length,
-    ).length;
+    ).length
   }
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
@@ -23,22 +23,22 @@ class ChatStore {
     return sortBy(
       Object.keys(this.messagesByThreadId),
       k => this.messagesByThreadId[k].created,
-    );
+    )
   }
   pushMessages = (threadId, _m, isUnread = false) => {
     if (!Array.isArray(_m)) {
-      _m = [_m];
+      _m = [_m]
     }
-    const messages = this.messagesByThreadId[threadId] || [];
-    messages.push(..._m);
-    this.messagesByThreadId[threadId] = sortBy(uniq(messages, 'id'), 'created');
-    const isGroup = this.groups.some(g => g.id === threadId);
+    const messages = this.messagesByThreadId[threadId] || []
+    messages.push(..._m)
+    this.messagesByThreadId[threadId] = sortBy(uniq(messages, 'id'), 'created')
+    const isGroup = this.groups.some(g => g.id === threadId)
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
-    });
-  };
+    })
+  }
 
-  getThreadConfig = id => this.threadConfig[id] || {};
+  getThreadConfig = id => this.threadConfig[id] || {}
   updateThreadConfig = (id, isGroup, c) => {
     this.threadConfig = {
       ...this.threadConfig,
@@ -48,8 +48,8 @@ class ChatStore {
         id,
         isGroup,
       },
-    };
-  };
+    }
+  }
 
   // id
   // name
@@ -62,49 +62,49 @@ class ChatStore {
   //   'stopped'
   //   'failure'
   // transferPercent
-  @observable filesMap = {};
+  @observable filesMap = {}
   upsertFile = _f => {
-    const f = this.filesMap[_f.id];
-    this.filesMap[_f.id] = f ? Object.assign(f, _f) : _f;
-  };
+    const f = this.filesMap[_f.id]
+    this.filesMap[_f.id] = f ? Object.assign(f, _f) : _f
+  }
   removeFile = id => {
-    delete this.filesMap[id];
-  };
+    delete this.filesMap[id]
+  }
 
   // id
   // name
   // inviter
   // jointed
   // members
-  @observable groups = [];
+  @observable groups = []
   upsertGroup = _g => {
-    const g = this.getGroup(_g.id);
+    const g = this.getGroup(_g.id)
     if (g) {
-      Object.assign(g, _g);
+      Object.assign(g, _g)
     } else {
-      this.groups.push(_g);
+      this.groups.push(_g)
     }
-    this.groups = [...this.groups];
-  };
+    this.groups = [...this.groups]
+  }
   removeGroup = id => {
-    delete this.messagesByThreadId[id];
-    delete this.threadConfig[id];
-    this.groups = this.groups.filter(g => g.id !== id);
-  };
+    delete this.messagesByThreadId[id]
+    delete this.threadConfig[id]
+    this.groups = this.groups.filter(g => g.id !== id)
+  }
   //
   @computed get _groupsMap() {
-    return arrToMap(this.groups, 'id', g => g);
+    return arrToMap(this.groups, 'id', g => g)
   }
   getGroup = id => {
-    return this._groupsMap[id];
-  };
+    return this._groupsMap[id]
+  }
 
   clearStore = () => {
-    this.messagesByThreadId = {};
-    this.threadConfig = {};
-    this.groups = [];
-    this.filesMap = {};
-  };
+    this.messagesByThreadId = {}
+    this.threadConfig = {}
+    this.groups = []
+    this.filesMap = {}
+  }
 }
 
-export default new ChatStore();
+export default new ChatStore()

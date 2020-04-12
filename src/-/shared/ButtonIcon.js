@@ -1,7 +1,7 @@
-import React from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React from 'react'
+import Svg, { Path } from 'react-native-svg'
 
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
+import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
 
 const css = StyleSheet.create({
   ButtonIcon: {
@@ -16,7 +16,7 @@ const css = StyleSheet.create({
     paddingTop: 5,
     maxWidth: 74,
   },
-});
+})
 
 const ButtonIcon = ({ color, path, size = 24, ...p }) => (
   <View style={css.ButtonIcon}>
@@ -45,6 +45,6 @@ const ButtonIcon = ({ color, path, size = 24, ...p }) => (
       </Text>
     )}
   </View>
-);
+)
 
-export default ButtonIcon;
+export default ButtonIcon

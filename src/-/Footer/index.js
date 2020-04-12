@@ -1,14 +1,14 @@
-import { observer } from 'mobx-react';
-import React from 'react';
-import { getBottomSpace } from 'react-native-iphone-x-helper';
+import { observer } from 'mobx-react'
+import React from 'react'
+import { getBottomSpace } from 'react-native-iphone-x-helper'
 
-import g from '../global';
-import { StyleSheet, View } from '../Rn';
-import { toLowerCaseFirstChar } from '../utils/string';
-import { arrToMap } from '../utils/toMap';
-import Actions from './Actions';
-import Navigation from './Navigation';
-import ToggleKeyboard from './ToggleKeyboard';
+import g from '../global'
+import { StyleSheet, View } from '../Rn'
+import { toLowerCaseFirstChar } from '../utils/string'
+import { arrToMap } from '../utils/toMap'
+import Actions from './Actions'
+import Navigation from './Navigation'
+import ToggleKeyboard from './ToggleKeyboard'
 
 const css = StyleSheet.create({
   Footer: {
@@ -40,21 +40,21 @@ const css = StyleSheet.create({
     minWidth: 260,
     maxWidth: g.maxModalWidth,
   },
-});
+})
 
 const Footer = observer(props => {
   const fabProps = arrToMap(
     Object.keys(props).filter(k => k.startsWith('fab')),
     k => toLowerCaseFirstChar(k.replace('fab', '')),
     k => props[k],
-  );
-  const { menu } = props;
-  const { onNext, render } = fabProps;
+  )
+  const { menu } = props
+  const { onNext, render } = fabProps
   if (
     !render &&
     ((!menu && !onNext && !g.isKeyboardShowing) || g.isKeyboardAnimating)
   ) {
-    return null;
+    return null
   }
   return (
     <View
@@ -78,7 +78,7 @@ const Footer = observer(props => {
       ) : null}
       {!g.isKeyboardShowing && menu && <Navigation menu={menu} />}
     </View>
-  );
-});
+  )
+})
 
-export default Footer;
+export default Footer

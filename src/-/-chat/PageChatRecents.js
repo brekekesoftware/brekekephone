@@ -1,30 +1,30 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl from '../intl/intl';
-import { Text } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
-import { arrToMap } from '../utils/toMap';
-import ListUsers from './ListUsers';
+import g from '../global'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl from '../intl/intl'
+import { Text } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
+import { arrToMap } from '../utils/toMap'
+import ListUsers from './ListUsers'
 
 @observer
 class PageChatRecents extends React.Component {
   getLastChat = id => {
-    const chats = chatStore.messagesByThreadId[id] || [];
-    return chats.length !== 0 ? chats[chats.length - 1] : {};
-  };
+    const chats = chatStore.messagesByThreadId[id] || []
+    return chats.length !== 0 ? chats[chats.length - 1] : {}
+  }
   render() {
     const groupIds = chatStore.groups
       .filter(g => g.jointed)
       .map(g => g.id)
-      .filter(id => id);
+      .filter(id => id)
     const userIds = chatStore.threadIdsOrderedByRecent
       .filter(id => isNaN(id))
-      .filter(id => id);
+      .filter(id => id)
     return (
       <Layout
         description={intl`UC recent active chat`}
@@ -55,8 +55,8 @@ class PageChatRecents extends React.Component {
           isRecentChat
         />
       </Layout>
-    );
+    )
   }
 }
 
-export default PageChatRecents;
+export default PageChatRecents

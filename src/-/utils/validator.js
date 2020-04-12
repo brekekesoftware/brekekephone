@@ -1,11 +1,11 @@
-import Validator from 'validatorjs';
-import en from 'validatorjs/src/lang/en';
+import Validator from 'validatorjs'
+import en from 'validatorjs/src/lang/en'
 
 Validator.setMessages('en', {
   ...en,
   required: 'This field is required',
-});
-Validator.useLang('en');
+})
+Validator.useLang('en')
 
 Validator.register(
   'hostname',
@@ -19,7 +19,7 @@ Validator.register(
       false
     ),
   'Invalid host name',
-);
+)
 
 Validator.register(
   'port',
@@ -31,4 +31,4 @@ Validator.register(
       false
     ),
   'Invalid port',
-);
+)

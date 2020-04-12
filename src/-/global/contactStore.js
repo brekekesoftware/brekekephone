@@ -1,12 +1,12 @@
-import uniqBy from 'lodash/uniqBy';
-import { computed, observable } from 'mobx';
+import uniqBy from 'lodash/uniqBy'
+import { computed, observable } from 'mobx'
 
-import { arrToMap } from '../utils/toMap';
+import { arrToMap } from '../utils/toMap'
 
 class ContactStore {
-  @observable usersSearchTerm = '';
+  @observable usersSearchTerm = ''
 
-  @observable callSearchRecents = '';
+  @observable callSearchRecents = ''
 
   // id
   // name
@@ -17,37 +17,37 @@ class ContactStore {
   //     'ringing'
   //     'talking'
   //     'holding'
-  @observable pbxUsers = [];
+  @observable pbxUsers = []
   setTalkerStatus = (userId, talkerId, status) => {
-    const user = this.getPBXUser(userId);
+    const user = this.getPBXUser(userId)
     if (!user) {
-      return;
+      return
     }
     if (!user.talkers) {
-      user.talkers = [];
+      user.talkers = []
     }
     if (!status) {
-      user.talkers = user.talkers.filter(t => t.id !== talkerId);
+      user.talkers = user.talkers.filter(t => t.id !== talkerId)
     } else {
-      const talker = user.talkers.find(t => t.id === talkerId);
+      const talker = user.talkers.find(t => t.id === talkerId)
       if (!talker) {
         user.talkers.push({
           id: talkerId,
           status,
-        });
+        })
       } else {
-        talker.status = status;
+        talker.status = status
       }
     }
-    this.pbxUsers = [...this.pbxUsers];
-  };
+    this.pbxUsers = [...this.pbxUsers]
+  }
   //
   @computed get _pbxUsersMap() {
-    return arrToMap(this.pbxUsers, 'id', u => u);
+    return arrToMap(this.pbxUsers, 'id', u => u)
   }
   getPBXUser = id => {
-    return this._pbxUsersMap[id];
-  };
+    return this._pbxUsersMap[id]
+  }
 
   // id
   // name
@@ -58,21 +58,21 @@ class ContactStore {
   //   'idle'
   //   'busy'
   // statusText
-  @observable ucUsers = [];
+  @observable ucUsers = []
   updateUCUser = _u => {
-    const u = this.getUCUser(_u.id);
+    const u = this.getUCUser(_u.id)
     if (!u) {
-      return;
+      return
     }
-    Object.assign(u, _u);
-    this.ucUsers = [...this.ucUsers];
-  };
+    Object.assign(u, _u)
+    this.ucUsers = [...this.ucUsers]
+  }
   @computed get _ucUsersMap() {
-    return arrToMap(this.ucUsers, 'id', u => u);
+    return arrToMap(this.ucUsers, 'id', u => u)
   }
   getUCUser = id => {
-    return this._ucUsersMap[id];
-  };
+    return this._ucUsersMap[id]
+  }
 
   // id
   // book
@@ -86,45 +86,45 @@ class ContactStore {
   // address
   // email
   // shared
-  @observable phoneBooks = [];
+  @observable phoneBooks = []
   @computed get _phoneBooksMap() {
-    return arrToMap(this.phoneBooks, 'id', u => u);
+    return arrToMap(this.phoneBooks, 'id', u => u)
   }
   updatePhonebook = _u => {
-    const u = this.getPhonebook(_u.id);
+    const u = this.getPhonebook(_u.id)
     if (!u) {
-      return;
+      return
     }
-    Object.assign(u, _u);
-    this.phoneBooks = [...this.phoneBooks];
-  };
+    Object.assign(u, _u)
+    this.phoneBooks = [...this.phoneBooks]
+  }
 
   pushPhonebook = _p => {
-    const p = this.getPhonebook(_p.id);
+    const p = this.getPhonebook(_p.id)
     if (!p) {
-      this.phoneBooks.push(_p);
+      this.phoneBooks.push(_p)
     }
-  };
+  }
 
   setPhonebook = _p => {
     if (!_p) {
-      return;
+      return
     }
     if (!Array.isArray(_p)) {
-      _p = [_p];
+      _p = [_p]
     }
-    this.phoneBooks = uniqBy([...this.phoneBooks, ..._p], 'id');
-  };
+    this.phoneBooks = uniqBy([...this.phoneBooks, ..._p], 'id')
+  }
 
   getPhonebook = id => {
-    return this._phoneBooksMap[id];
-  };
+    return this._phoneBooksMap[id]
+  }
 
   clearStore = () => {
-    this.phoneBooks = [];
-    this.ucUsers = [];
-    this.pbxUsers = [];
-  };
+    this.phoneBooks = []
+    this.ucUsers = []
+    this.pbxUsers = []
+  }
 }
 
-export default new ContactStore();
+export default new ContactStore()

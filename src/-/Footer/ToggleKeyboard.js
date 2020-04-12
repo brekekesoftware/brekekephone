@@ -1,8 +1,8 @@
-import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
+import g from '../global'
 import {
   Icon,
   Keyboard,
@@ -10,8 +10,8 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-} from '../Rn';
-import AnimatedSize from '../shared/AnimatedSize';
+} from '../Rn'
+import AnimatedSize from '../shared/AnimatedSize'
 
 const css = StyleSheet.create({
   ToggleKeyboard: {
@@ -30,11 +30,11 @@ const css = StyleSheet.create({
     lineHeight: g.iconSize,
     overflow: 'hidden',
   },
-});
+})
 
 const ToggleKeyboard = observer(({ onShowKeyboard }) => {
   if (Platform.OS === 'web' || (!g.isKeyboardShowing && !onShowKeyboard)) {
-    return null;
+    return null
   }
   return (
     <AnimatedSize animateWidth>
@@ -51,7 +51,7 @@ const ToggleKeyboard = observer(({ onShowKeyboard }) => {
         />
       </TouchableOpacity>
     </AnimatedSize>
-  );
-});
+  )
+})
 
-export default ToggleKeyboard;
+export default ToggleKeyboard

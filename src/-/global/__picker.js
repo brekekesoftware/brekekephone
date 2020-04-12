@@ -1,4 +1,4 @@
-import $ from './_';
+import $ from './_'
 
 $.extends({
   observable: {
@@ -12,9 +12,9 @@ $.extends({
     currentPicker: null,
   },
   openPicker: picker => {
-    $.set('currentPicker', picker);
+    $.set('currentPicker', picker)
   },
   dismissPicker: () => {
-    $.set('currentPicker', null);
+    $.set('currentPicker', null)
   },
-});
+})

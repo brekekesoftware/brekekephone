@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 
-import g from '../global';
-import { Animated, StyleSheet, Text } from '../Rn';
-import { useAnimation } from '../utils/animation';
+import g from '../global'
+import { Animated, StyleSheet, Text } from '../Rn'
+import { useAnimation } from '../utils/animation'
 
 const css = StyleSheet.create({
   Container: {
@@ -17,16 +17,16 @@ const css = StyleSheet.create({
   Description: {
     color: g.subColor,
   },
-});
+})
 
 const Title = ({ compact, description, title }) => {
   const cssContainerA = useAnimation(compact, {
     paddingVertical: [15, 10],
-  });
+  })
   const cssTitleA = useAnimation(compact, {
     fontSize: [g.fontSizeTitle, g.fontSizeSubTitle],
     lineHeight: [g.lineHeightTitle, 20],
-  });
+  })
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
       <Animated.Text style={[css.Title, cssTitleA]}>{title}</Animated.Text>
@@ -34,7 +34,7 @@ const Title = ({ compact, description, title }) => {
         <Text style={css.Description}>{description || '\u200a'}</Text>
       )}
     </Animated.View>
-  );
-};
+  )
+}
 
-export default Title;
+export default Title

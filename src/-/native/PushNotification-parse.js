@@ -1,7 +1,7 @@
-import get from 'lodash/get';
-import { Platform } from 'react-native';
+import get from 'lodash/get'
+import { Platform } from 'react-native'
 
-import authStore from '../global/authStore';
+import authStore from '../global/authStore'
 
 const keysInCustomNotification = [
   'title',
@@ -13,7 +13,7 @@ const keysInCustomNotification = [
   'pbxPort',
   'my_custom_data',
   'is_local_notification',
-];
+]
 
 const _parseNotificationData = (...fields) =>
   fields
@@ -21,23 +21,23 @@ const _parseNotificationData = (...fields) =>
     .map(f => {
       if (typeof f === 'string') {
         try {
-          return JSON.parse(f);
+          return JSON.parse(f)
         } catch (err) {}
       }
-      return f;
+      return f
     })
     .reduce((map, f) => {
       if (!f || typeof f !== 'object') {
-        return map;
+        return map
       }
       keysInCustomNotification.forEach(k => {
-        const v = f[k];
+        const v = f[k]
         if (!(k in map) && v) {
-          map[k] = v;
+          map[k] = v
         }
-      });
-      return map;
-    }, {});
+      })
+      return map
+    }, {})
 const parseNotificationData = raw => {
   if (Platform.OS === 'android') {
     return _parseNotificationData(
@@ -48,7 +48,7 @@ const parseNotificationData = raw => {
       get(raw, 'data.alert'),
       get(raw, 'custom_notification'),
       get(raw, 'data.custom_notification'),
-    );
+    )
   }
   if (Platform.OS === 'ios') {
     return _parseNotificationData(
@@ -56,23 +56,23 @@ const parseNotificationData = raw => {
       get(raw, '_data'),
       get(raw, '_alert'),
       get(raw, '_data.custom_notification'),
-    );
+    )
   }
   // TODO handle web
-  return null;
-};
+  return null
+}
 
 const parse = async raw => {
   if (!raw) {
-    return null;
+    return null
   }
-  const n = parseNotificationData(raw);
+  const n = parseNotificationData(raw)
   // Guard for invalid notification
   if (!n.body) {
-    n.body = n.message || n.title;
+    n.body = n.message || n.title
   }
   if (!n.body && !n.to) {
-    return null;
+    return null
   }
   // Skip local notification from ./PushNotification.android.js
   if (
@@ -81,17 +81,17 @@ const parse = async raw => {
     n.my_custom_data ||
     n.is_local_notification
   ) {
-    return null;
+    return null
   }
   // Assign more fields to present local message in android/ios specific code
-  n.isCall = /call/i.test(n.body) || /call/i.test(n.title);
+  n.isCall = /call/i.test(n.body) || /call/i.test(n.title)
   // Call api to sign in
-  const shouldPresentLocal = await authStore.signInByNotification(n);
+  const shouldPresentLocal = await authStore.signInByNotification(n)
   if (!shouldPresentLocal) {
-    return null;
+    return null
   }
   //
-  return n;
-};
+  return n
+}
 
-export default parse;
+export default parse

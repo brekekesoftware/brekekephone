@@ -13,21 +13,21 @@ import {
   mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '@mdi/js';
-import { action, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+} from '@mdi/js'
+import { action, observable } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import callStore from '../global/callStore';
-import intl from '../intl/intl';
-import { Platform, StyleSheet, TouchableOpacity, View } from '../Rn';
-import BrekekeGradient from '../shared/BrekekeGradient';
-import ButtonIcon from '../shared/ButtonIcon';
-import FieldButton from '../shared/FieldButton';
-import Layout from '../shared/Layout';
-import VideoPlayer from '../shared/VideoPlayer';
-import TransferringCall from './renderTransferringCall';
+import g from '../global'
+import callStore from '../global/callStore'
+import intl from '../intl/intl'
+import { Platform, StyleSheet, TouchableOpacity, View } from '../Rn'
+import BrekekeGradient from '../shared/BrekekeGradient'
+import ButtonIcon from '../shared/ButtonIcon'
+import FieldButton from '../shared/FieldButton'
+import Layout from '../shared/Layout'
+import VideoPlayer from '../shared/VideoPlayer'
+import TransferringCall from './renderTransferringCall'
 
 const css = StyleSheet.create({
   Video: {
@@ -74,36 +74,36 @@ const css = StyleSheet.create({
     left: 0,
     right: 0,
   },
-});
+})
 
 @observer
 class PageCallManage extends React.Component {
-  @observable showButtonsInVideoCall = true;
-  alreadySetShowButtonsInVideoCall = false;
+  @observable showButtonsInVideoCall = true
+  alreadySetShowButtonsInVideoCall = false
 
   componentDidMount() {
-    this.hideButtonsIfVideo();
+    this.hideButtonsIfVideo()
   }
   componentDidUpdate() {
-    this.hideButtonsIfVideo();
+    this.hideButtonsIfVideo()
     if (!callStore.currentCall && !callStore.backgroundCalls.length) {
-      g.backToPageCallRecents();
+      g.backToPageCallRecents()
     }
   }
 
   @action toggleButtons = () => {
-    this.showButtonsInVideoCall = !this.showButtonsInVideoCall;
-  };
+    this.showButtonsInVideoCall = !this.showButtonsInVideoCall
+  }
   @action hideButtonsIfVideo = () => {
     if (
       !this.props.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
       callStore.currentCall?.remoteVideoEnabled
     ) {
-      this.showButtonsInVideoCall = false;
-      this.alreadySetShowButtonsInVideoCall = true;
+      this.showButtonsInVideoCall = false
+      this.alreadySetShowButtonsInVideoCall = true
     }
-  };
+  }
 
   renderCall = (c, isVideoEnabled) => (
     <Layout
@@ -135,7 +135,7 @@ class PageCallManage extends React.Component {
         </React.Fragment>
       )}
     </Layout>
-  );
+  )
   renderVideo = c => (
     <React.Fragment>
       <View style={css.Video_Space} />
@@ -147,14 +147,14 @@ class PageCallManage extends React.Component {
         style={StyleSheet.absoluteFill}
       />
     </React.Fragment>
-  );
+  )
   renderBtns = (c, isVideoEnabled) => {
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
-      return null;
+      return null
     }
-    const Container = isVideoEnabled ? TouchableOpacity : View;
-    const activeColor = isVideoEnabled ? g.colors.primary : g.colors.warning;
-    const n = callStore.backgroundCalls.length;
+    const Container = isVideoEnabled ? TouchableOpacity : View
+    const activeColor = isVideoEnabled ? g.colors.primary : g.colors.warning
+    const n = callStore.backgroundCalls.length
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : null}
@@ -264,8 +264,8 @@ class PageCallManage extends React.Component {
         )}
         <View style={css.Btns_VerticalMargin} />
       </Container>
-    );
-  };
+    )
+  }
   renderHangupBtn = c => (
     <View style={css.Hangup}>
       <ButtonIcon
@@ -278,14 +278,14 @@ class PageCallManage extends React.Component {
         textcolor="white"
       />
     </View>
-  );
+  )
 
   render() {
-    const c = callStore.currentCall;
-    const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled;
-    const Container = isVideoEnabled ? React.Fragment : BrekekeGradient;
-    return <Container>{this.renderCall(c, isVideoEnabled)}</Container>;
+    const c = callStore.currentCall
+    const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
+    const Container = isVideoEnabled ? React.Fragment : BrekekeGradient
+    return <Container>{this.renderCall(c, isVideoEnabled)}</Container>
   }
 }
 
-export default PageCallManage;
+export default PageCallManage

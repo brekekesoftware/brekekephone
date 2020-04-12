@@ -1,79 +1,79 @@
-import './captureConsoleOutput';
-import './polyfill';
-import './utils/validator';
+import './captureConsoleOutput'
+import './polyfill'
+import './utils/validator'
 
-import { observe } from 'mobx';
-import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
-import SplashScreen from 'react-native-splash-screen';
+import { observe } from 'mobx'
+import { observer } from 'mobx-react'
+import React, { useEffect } from 'react'
+import KeyboardSpacer from 'react-native-keyboard-spacer'
+import SplashScreen from 'react-native-splash-screen'
 
-import PageBackgroundCalls from './-call/PageBackgroundCalls';
-import PageCallKeypad from './-call/PageCallKeypad';
-import PageCallManage from './-call/PageCallManage';
-import PageCallParks from './-call/PageCallParks';
-import PageCallParks2 from './-call/PageCallParks2';
-import PageCallRecents from './-call/PageCallRecents';
-import PageDtmfKeypad from './-call/PageDtmfKeypad';
-import PageTransferDial from './-call/PageTransferDial';
-import PageChatDetail from './-chat/PageChatDetail';
-import PageChatGroupCreate from './-chat/PageChatGroupCreate';
-import PageChatGroupDetail from './-chat/PageChatGroupDetail';
-import PageChatGroupInvite from './-chat/PageChatGroupInvite';
-import PageChatRecents from './-chat/PageChatRecents';
-import PageContactPhonebook from './-contact/PageContactPhonebook';
-import PageContactUsers from './-contact/PageContactUsers';
-import PagePhonebookCreate from './-contact/PagePhonebookCreate';
-import PagePhonebookUpdate from './-contact/PagePhonebookUpdate';
-import PageProfileCreate from './-profile/PageProfileCreate';
-import PageProfileSignIn from './-profile/PageProfileSignIn';
-import PageProfileUpdate from './-profile/PageProfileUpdate';
-import PageSettingsDebug from './-settings/PageSettingsDebug';
-import PageSettingsOther from './-settings/PageSettingsOther';
-import PageSettingsProfile from './-settings/PageSettingsProfile';
-import api from './api';
-import g from './global';
-import authStore from './global/authStore';
-import chatStore from './global/chatStore';
-import contactStore from './global/contactStore';
-import intl from './intl/intl';
-import PushNotification from './native/PushNotification';
-import registerOnUnhandledError from './native/registerOnUnhandledError';
-import { Platform, StatusBar, StyleSheet, Text, View } from './Rn';
-import AnimatedSize from './shared/AnimatedSize';
-import RootAlert from './shared/RootAlert';
-import RootAuth from './shared/RootAuth';
-import RootPicker from './shared/RootPicker';
-import RootStacks from './shared/RootStacks';
+import PageBackgroundCalls from './-call/PageBackgroundCalls'
+import PageCallKeypad from './-call/PageCallKeypad'
+import PageCallManage from './-call/PageCallManage'
+import PageCallParks from './-call/PageCallParks'
+import PageCallParks2 from './-call/PageCallParks2'
+import PageCallRecents from './-call/PageCallRecents'
+import PageDtmfKeypad from './-call/PageDtmfKeypad'
+import PageTransferDial from './-call/PageTransferDial'
+import PageChatDetail from './-chat/PageChatDetail'
+import PageChatGroupCreate from './-chat/PageChatGroupCreate'
+import PageChatGroupDetail from './-chat/PageChatGroupDetail'
+import PageChatGroupInvite from './-chat/PageChatGroupInvite'
+import PageChatRecents from './-chat/PageChatRecents'
+import PageContactPhonebook from './-contact/PageContactPhonebook'
+import PageContactUsers from './-contact/PageContactUsers'
+import PagePhonebookCreate from './-contact/PagePhonebookCreate'
+import PagePhonebookUpdate from './-contact/PagePhonebookUpdate'
+import PageProfileCreate from './-profile/PageProfileCreate'
+import PageProfileSignIn from './-profile/PageProfileSignIn'
+import PageProfileUpdate from './-profile/PageProfileUpdate'
+import PageSettingsDebug from './-settings/PageSettingsDebug'
+import PageSettingsOther from './-settings/PageSettingsOther'
+import PageSettingsProfile from './-settings/PageSettingsProfile'
+import api from './api'
+import g from './global'
+import authStore from './global/authStore'
+import chatStore from './global/chatStore'
+import contactStore from './global/contactStore'
+import intl from './intl/intl'
+import PushNotification from './native/PushNotification'
+import registerOnUnhandledError from './native/registerOnUnhandledError'
+import { Platform, StatusBar, StyleSheet, Text, View } from './Rn'
+import AnimatedSize from './shared/AnimatedSize'
+import RootAlert from './shared/RootAlert'
+import RootAuth from './shared/RootAuth'
+import RootPicker from './shared/RootPicker'
+import RootStacks from './shared/RootStacks'
 
 // Must wrap in setTimeout to make sure
 //    there's no state change when rendering
 setTimeout(() => {
   registerOnUnhandledError(unexpectedErr => {
-    g.showError({ unexpectedErr });
-    return false;
-  });
+    g.showError({ unexpectedErr })
+    return false
+  })
 
   // Must load accounts here because when app wake
   //    from notification, there's no rendering
-  g.loadProfilesFromLocalStorage();
+  g.loadProfilesFromLocalStorage()
 
-  PushNotification.register();
-  authStore.handleUrlParams();
-}, 100);
+  PushNotification.register()
+  authStore.handleUrlParams()
+}, 100)
 
-setTimeout(g.goToPageIndex, 100);
+setTimeout(g.goToPageIndex, 100)
 observe(authStore, 'signedInId', () => {
-  g.goToPageIndex();
-  chatStore.clearStore();
-  contactStore.clearStore();
-});
+  g.goToPageIndex()
+  chatStore.clearStore()
+  contactStore.clearStore()
+})
 
 // TODO: Only reset when logged in and AppState.current active
 // PushNotification.resetBadgeNumber();
 
 // TODO
-void api;
+void api
 
 g.registerStacks({
   isRoot: true,
@@ -86,7 +86,7 @@ g.registerStacks({
   PageSettingsOther,
   PageCallParks,
   PageSettingsProfile,
-});
+})
 g.registerStacks({
   PageProfileCreate,
   PageProfileUpdate,
@@ -102,7 +102,7 @@ g.registerStacks({
   PageChatGroupDetail,
   PageSettingsDebug,
   PageCallParks2,
-});
+})
 
 const css = StyleSheet.create({
   App: {
@@ -121,14 +121,14 @@ const css = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
-});
+})
 
 const App = observer(() => {
   useEffect(() => {
     if (Platform.OS !== 'web') {
-      SplashScreen.hide();
+      SplashScreen.hide()
     }
-  }, []);
+  }, [])
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -136,22 +136,22 @@ const App = observer(() => {
     sipConnectingOrFailure,
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
-  } = authStore;
-  let service = '';
+  } = authStore
+  let service = ''
   if (pbxConnectingOrFailure) {
-    service = intl`PBX`;
+    service = intl`PBX`
   } else if (sipConnectingOrFailure) {
-    service = intl`SIP`;
+    service = intl`SIP`
   } else if (ucConnectingOrFailure) {
-    service = intl`UC`;
+    service = intl`UC`
   }
   let connMessage =
     service &&
     (isConnFailure
       ? intl`${service} connection failed`
-      : intl`Connecting to ${service}`);
+      : intl`Connecting to ${service}`)
   if (isConnFailure && ucConnectingOrFailure && ucLoginFromAnotherPlace) {
-    connMessage = intl`UC signed in from another location`;
+    connMessage = intl`UC signed in from another location`
   }
 
   return (
@@ -179,7 +179,7 @@ const App = observer(() => {
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
     </View>
-  );
-});
+  )
+})
 
-export default App;
+export default App

@@ -1,15 +1,15 @@
-import g from '../global';
-import { intlDebug } from '../intl/intl';
+import g from '../global'
+import { intlDebug } from '../intl/intl'
 
 const getFrontCameraSourceId = () => {
-  const mediaDevices = window.navigator.mediaDevices;
+  const mediaDevices = window.navigator.mediaDevices
   if (!mediaDevices) {
     g.showError({
       unexpectedErr: new Error(
         'Can not access mediaDevices, check if your connection is https secured',
       ),
-    });
-    return null;
+    })
+    return null
   }
   return mediaDevices
     .enumerateDevices()
@@ -19,8 +19,8 @@ const getFrontCameraSourceId = () => {
       g.showError({
         message: intlDebug`Failed to get front camera information`,
         err,
-      });
-    });
-};
+      })
+    })
+}
 
-export default getFrontCameraSourceId;
+export default getFrontCameraSourceId

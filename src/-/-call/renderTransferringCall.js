@@ -3,16 +3,16 @@ import {
   mdiPhoneForward,
   mdiPhoneHangup,
   mdiPhoneOff,
-} from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+} from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import callStore from '../global/callStore';
-import contactStore from '../global/contactStore';
-import intl from '../intl/intl';
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import Avatar from '../shared/Avatar';
+import g from '../global'
+import callStore from '../global/callStore'
+import contactStore from '../global/contactStore'
+import intl from '../intl/intl'
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import Avatar from '../shared/Avatar'
 
 const css = StyleSheet.create({
   Outer: {
@@ -67,25 +67,25 @@ const css = StyleSheet.create({
   Space: {
     height: 10,
   },
-});
+})
 
 @observer
 class PageTransferAttend extends React.Component {
   resolveMatch = id => {
-    const ucUser = contactStore.getUCUser(id) || {};
+    const ucUser = contactStore.getUCUser(id) || {}
     return {
       avatar: ucUser.avatar,
       number: id,
-    };
-  };
+    }
+  }
 
   render() {
-    const c = callStore.currentCall;
+    const c = callStore.currentCall
     if (!c) {
-      return null;
+      return null
     }
-    const usersource = this.resolveMatch(c.partyNumber);
-    const usertarget = this.resolveMatch(c.transferring);
+    const usersource = this.resolveMatch(c.partyNumber)
+    const usertarget = this.resolveMatch(c.transferring)
     return (
       <View style={css.Outer}>
         <Text center subTitle>{intl`Transferring`}</Text>
@@ -144,8 +144,8 @@ class PageTransferAttend extends React.Component {
           </View>
         </View>
       </View>
-    );
+    )
   }
 }
 
-export default PageTransferAttend;
+export default PageTransferAttend

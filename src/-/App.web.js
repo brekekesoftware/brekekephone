@@ -1,18 +1,18 @@
 // Main entry for the create-react-app web bundle
 
-import { mdiAndroidHead, mdiApple, mdiWeb } from '@mdi/js';
-import qs from 'qs';
-import React, { useState } from 'react';
-import { isAndroid, isIOS } from 'react-device-detect';
+import { mdiAndroidHead, mdiApple, mdiWeb } from '@mdi/js'
+import qs from 'qs'
+import React, { useState } from 'react'
+import { isAndroid, isIOS } from 'react-device-detect'
 
-import brand from '../assets/brand.png';
-import logo from '../assets/logo.png';
-import App from './App.js';
-import intl from './intl/intl';
-import parse from './native/deeplink-parse';
-import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from './Rn';
-import BrekekeGradient from './shared/BrekekeGradient';
-import v from './variables';
+import brand from '../assets/brand.png'
+import logo from '../assets/logo.png'
+import App from './App.js'
+import intl from './intl/intl'
+import parse from './native/deeplink-parse'
+import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from './Rn'
+import BrekekeGradient from './shared/BrekekeGradient'
+import v from './variables'
 
 const globalCss = `* {
   outline: none !important;
@@ -25,15 +25,15 @@ const globalCss = `* {
 }
 a {
   text-decoration: none;
-}`;
+}`
 
 requestAnimationFrame(() => {
-  const s = document.createElement('style');
-  s.type = 'text/css';
-  s.appendChild(document.createTextNode(globalCss));
-  const h = document.head || document.getElementsByTagName('head')[0];
-  h.appendChild(s);
-});
+  const s = document.createElement('style')
+  s.type = 'text/css'
+  s.appendChild(document.createTextNode(globalCss))
+  const h = document.head || document.getElementsByTagName('head')[0]
+  h.appendChild(s)
+})
 
 const css = StyleSheet.create({
   WebApp: {
@@ -80,19 +80,19 @@ const css = StyleSheet.create({
     top: 11,
     right: 10,
   },
-});
+})
 
 const AppSelection = () => {
-  const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid);
-  let child = null;
+  const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
+  let child = null
   if (isBrowser) {
-    child = <App />;
+    child = <App />
   } else {
-    const params = parse(window.location);
-    const q = qs.stringify(params);
+    const params = parse(window.location)
+    const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`;
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`
     child = (
       <React.Fragment>
         <Image
@@ -127,10 +127,10 @@ const AppSelection = () => {
           <Icon path={mdiWeb} style={css.WebApp_Icon} />
         </TouchableOpacity>
       </React.Fragment>
-    );
+    )
   }
-  const Container = isBrowser ? View : BrekekeGradient;
-  return <Container style={css.WebApp}>{child}</Container>;
-};
+  const Container = isBrowser ? View : BrekekeGradient
+  return <Container style={css.WebApp}>{child}</Container>
+}
 
-export default AppSelection;
+export default AppSelection

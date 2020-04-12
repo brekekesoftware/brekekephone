@@ -1,7 +1,7 @@
-import { mdiDotsHorizontal } from '@mdi/js';
+import { mdiDotsHorizontal } from '@mdi/js'
 
-import g from '../global';
-import intl, { intlDebug } from '../intl/intl';
+import g from '../global'
+import intl, { intlDebug } from '../intl/intl'
 
 // Need to declare native intl here
 // So it will get bundled when build intl via web
@@ -26,21 +26,21 @@ export const pickFileNativeOptions = () => [
     label: intl`More...`,
     icon: mdiDotsHorizontal,
   },
-];
+]
 export const onPickFileNativeError = err => {
   g.showError({
     message: intlDebug`Failed to pick file from system`,
     err,
-  });
-};
+  })
+}
 
 const pickFile = cb => {
-  const input = document.createElement('input');
-  input.type = 'file';
+  const input = document.createElement('input')
+  input.type = 'file'
   input.onchange = function () {
-    cb(this.files[0]);
-  };
-  input.click();
-};
+    cb(this.files[0])
+  }
+  input.click()
+}
 
-export default pickFile;
+export default pickFile

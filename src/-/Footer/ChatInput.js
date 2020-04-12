@@ -1,8 +1,8 @@
-import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js';
-import React from 'react';
+import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import { Icon, StyleSheet, TextInput, TouchableOpacity, View } from '../Rn';
+import g from '../global'
+import { Icon, StyleSheet, TextInput, TouchableOpacity, View } from '../Rn'
 
 const css = StyleSheet.create({
   ChatInput: {
@@ -40,7 +40,7 @@ const css = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: g.borderBg,
   },
-});
+})
 
 const ChatInput = ({
   onEmojiTurnOn,
@@ -69,6 +69,6 @@ const ChatInput = ({
       <Icon color="white" path={mdiSend} />
     </TouchableOpacity>
   </View>
-);
+)
 
-export default ChatInput;
+export default ChatInput

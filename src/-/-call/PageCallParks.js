@@ -1,39 +1,39 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import UserItem from '../-contact/UserItem';
-import g from '../global';
-import authStore from '../global/authStore';
-import callStore from '../global/callStore';
-import intl from '../intl/intl';
-import { Text, TouchableOpacity } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
+import UserItem from '../-contact/UserItem'
+import g from '../global'
+import authStore from '../global/authStore'
+import callStore from '../global/callStore'
+import intl from '../intl/intl'
+import { Text, TouchableOpacity } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
 
 @observer
 class PageCallParks extends React.Component {
   state = {
     selectedPark: null,
-  };
+  }
 
   selectPark = selectedPark => {
     this.setState({
       selectedPark:
         selectedPark === this.state.selectedPark ? null : selectedPark,
-    });
-  };
+    })
+  }
 
   park = () => {
-    const p = this.state.selectedPark;
+    const p = this.state.selectedPark
     return this.props.callParks2
       ? callStore.currentCall?.park(p)
-      : callStore.startCall(p);
-  };
+      : callStore.startCall(p)
+  }
 
   render() {
-    const ps = authStore.currentProfile.parks;
-    const p = this.state.selectedPark;
-    const p2 = this.props.callParks2;
+    const ps = authStore.currentProfile.parks
+    const p = this.state.selectedPark
+    const p2 = this.props.callParks2
     return (
       <Layout
         description={intl`Your park numbers`}
@@ -60,8 +60,8 @@ class PageCallParks extends React.Component {
           </TouchableOpacity>
         ))}
       </Layout>
-    );
+    )
   }
 }
 
-export default PageCallParks;
+export default PageCallParks

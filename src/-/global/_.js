@@ -1,3 +1,3 @@
-import createStore from '../utils/createStore';
+import createStore from '../utils/createStore'
 
-export default createStore();
+export default createStore()

@@ -1,11 +1,11 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import { css as fcss } from '../Footer/Navigation';
-import g from '../global';
-import chatStore from '../global/chatStore';
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import { getSubMenus } from '../shared/navigationConfig';
+import { css as fcss } from '../Footer/Navigation'
+import g from '../global'
+import chatStore from '../global/chatStore'
+import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { getSubMenus } from '../shared/navigationConfig'
 
 const css = StyleSheet.create({
   Navigation: {
@@ -30,13 +30,13 @@ const css = StyleSheet.create({
     top: -5,
     left: 25,
   },
-});
+})
 
 const Navigation = ({ menu, subMenu }) => (
   <View style={css.Navigation}>
     {getSubMenus(menu).map(s => {
-      const active = s.key === subMenu;
-      const totalUnreadChat = chatStore.unreadCount;
+      const active = s.key === subMenu
+      const totalUnreadChat = chatStore.unreadCount
       return (
         <TouchableOpacity
           key={s.key}
@@ -56,9 +56,9 @@ const Navigation = ({ menu, subMenu }) => (
             </View>
           )}
         </TouchableOpacity>
-      );
+      )
     })}
   </View>
-);
+)
 
-export default observer(Navigation);
+export default observer(Navigation)

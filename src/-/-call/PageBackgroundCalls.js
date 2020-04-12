@@ -1,15 +1,15 @@
-import { mdiPhoneHangup } from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiPhoneHangup } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import UserItem from '../-contact/UserItem';
-import g from '../global';
-import callStore from '../global/callStore';
-import intl from '../intl/intl';
-import { TouchableOpacity } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
-import formatDuration from '../utils/formatDuration';
+import UserItem from '../-contact/UserItem'
+import g from '../global'
+import callStore from '../global/callStore'
+import intl from '../intl/intl'
+import { TouchableOpacity } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
+import formatDuration from '../utils/formatDuration'
 
 const PageBackgroundCalls = observer(() => (
   <Layout
@@ -55,6 +55,6 @@ const PageBackgroundCalls = observer(() => (
       </TouchableOpacity>
     ))}
   </Layout>
-));
+))
 
-export default PageBackgroundCalls;
+export default PageBackgroundCalls

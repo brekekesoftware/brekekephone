@@ -1,41 +1,41 @@
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { observable } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import sip from '../api/sip';
-import g from '../global';
-import intl, { intlDebug } from '../intl/intl';
-import Layout from '../shared/Layout';
-import KeyPad from './KeyPad';
-import ShowNumber from './ShowNumbers';
+import sip from '../api/sip'
+import g from '../global'
+import intl, { intlDebug } from '../intl/intl'
+import Layout from '../shared/Layout'
+import KeyPad from './KeyPad'
+import ShowNumber from './ShowNumbers'
 
 @observer
 class PageDtmfKeypad extends React.Component {
-  @observable txt = '';
-  txtRef = React.createRef();
-  txtSelection = { start: 0, end: 0 };
+  @observable txt = ''
+  txtRef = React.createRef()
+  txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
-    this.txtRef.current.focus();
-  };
+    this.txtRef.current.focus()
+  }
 
   sendKey = key => {
-    sip.sendDTMF(key, this.props.callId);
-  };
+    sip.sendDTMF(key, this.props.callId)
+  }
 
   callVoice = () => {
-    this.txt = this.txt.trim();
+    this.txt = this.txt.trim()
     if (!this.txt) {
       g.showError({
         message: intlDebug`No target`,
-      });
-      return;
+      })
+      return
     }
     sip.createSession(this.txt, {
       videoEnabled: false,
-    });
-    g.goToPageCallManage();
-  };
+    })
+    g.goToPageCallManage()
+  }
 
   render() {
     return (
@@ -53,11 +53,11 @@ class PageDtmfKeypad extends React.Component {
                   Object.assign(this.txtSelection, {
                     start: e.nativeEvent.selection.start,
                     end: e.nativeEvent.selection.end,
-                  });
+                  })
                 }
           }
           setTarget={v => {
-            this.txt = v;
+            this.txt = v
           }}
           value={this.txt}
         />
@@ -65,30 +65,30 @@ class PageDtmfKeypad extends React.Component {
           <KeyPad
             callVoice={this.callVoice}
             onPressNumber={v => {
-              this.sendKey(v);
-              const { end, start } = this.txtSelection;
-              let min = Math.min(start, end);
-              let max = Math.max(start, end);
-              const isDelete = v === '';
+              this.sendKey(v)
+              const { end, start } = this.txtSelection
+              let min = Math.min(start, end)
+              let max = Math.max(start, end)
+              const isDelete = v === ''
               if (isDelete) {
                 if (start === end && start) {
-                  min = min - 1;
+                  min = min - 1
                 }
               }
               // Update text to trigger render
-              const t = this.txt;
-              this.txt = t.substring(0, min) + v + t.substring(max);
+              const t = this.txt
+              this.txt = t.substring(0, min) + v + t.substring(max)
               //
-              const p = min + (isDelete ? 0 : 1);
-              this.txtSelection.start = p;
-              this.txtSelection.end = p;
+              const p = min + (isDelete ? 0 : 1)
+              this.txtSelection.start = p
+              this.txtSelection.end = p
             }}
             showKeyboard={this.showKeyboard}
           />
         )}
       </Layout>
-    );
+    )
   }
 }
 
-export default PageDtmfKeypad;
+export default PageDtmfKeypad

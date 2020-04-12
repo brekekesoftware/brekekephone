@@ -1,4 +1,4 @@
-import $ from './_';
+import $ from './_'
 
 $.extends({
   observable: {
@@ -18,26 +18,26 @@ $.extends({
   alerts: [],
   showPrompt: prompt => {
     setTimeout(() => {
-      $.alerts.push({ prompt });
-      $.set('alertsCount', $.alerts.length);
-    });
+      $.alerts.push({ prompt })
+      $.set('alertsCount', $.alerts.length)
+    })
   },
   showError: error => {
     // Log error to save it to the debug log
-    const err = error.unexpectedErr || error.err;
+    const err = error.unexpectedErr || error.err
     if (err) {
-      const k = error.message?.intl || error.message;
-      console.error(...(k ? [k, err] : [err]));
+      const k = error.message?.intl || error.message
+      console.error(...(k ? [k, err] : [err]))
     }
     // Convert error message to string if it was constructed using intl.debug
     if (error.message?.intl) {
-      error.message = `${error.message}`;
+      error.message = `${error.message}`
     }
-    $.alerts.push({ error });
-    $.set('alertsCount', $.alerts.length);
+    $.alerts.push({ error })
+    $.set('alertsCount', $.alerts.length)
   },
   dismissAlert: () => {
-    $.alerts.shift();
-    $.set('alertsCount', $.alerts.length);
+    $.alerts.shift()
+    $.set('alertsCount', $.alerts.length)
   },
-});
+})

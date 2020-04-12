@@ -1,16 +1,16 @@
-import { computed } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { computed } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import UserItem from '../-contact/UserItem';
-import uc from '../api/uc';
-import g from '../global';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl, { intlDebug } from '../intl/intl';
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
+import UserItem from '../-contact/UserItem'
+import uc from '../api/uc'
+import g from '../global'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl, { intlDebug } from '../intl/intl'
+import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
 
 const css = StyleSheet.create({
   PageChatGroupInvite: {},
@@ -39,16 +39,16 @@ const css = StyleSheet.create({
     paddingTop: 15,
     fontSize: g.fontSizeTitle,
   },
-});
+})
 
 @observer
 class PageChatGroupInvite extends React.Component {
   @computed get buddyIds() {
-    return contactStore.ucUsers.map(u => u.id).filter(this.isNotMember);
+    return contactStore.ucUsers.map(u => u.id).filter(this.isNotMember)
   }
   state = {
     selectedBuddy: {},
-  };
+  }
 
   render() {
     return (
@@ -76,45 +76,45 @@ class PageChatGroupInvite extends React.Component {
           </TouchableOpacity>
         ))}
       </Layout>
-    );
+    )
   }
 
   isNotMember = buddy =>
-    !chatStore.getGroup(this.props.groupId).members?.includes(buddy);
-  resolveBuddy = buddy => contactStore.getUCUser(buddy);
+    !chatStore.getGroup(this.props.groupId).members?.includes(buddy)
+  resolveBuddy = buddy => contactStore.getUCUser(buddy)
   toggleBuddy = buddy => {
-    let { selectedBuddy } = this.state;
+    let { selectedBuddy } = this.state
     selectedBuddy = {
       ...selectedBuddy,
       [buddy]: !selectedBuddy[buddy],
-    };
+    }
     this.setState({
       selectedBuddy,
-    });
-  };
+    })
+  }
 
   invite = () => {
-    const { selectedBuddy } = this.state;
-    const members = Object.keys(selectedBuddy);
+    const { selectedBuddy } = this.state
+    const members = Object.keys(selectedBuddy)
     if (!members.length) {
       g.showError({
         message: intlDebug`No buddy selected`,
-      });
-      return;
+      })
+      return
     }
     uc.inviteChatGroupMembers(this.props.groupId, members)
       .catch(this.onInviteFailure)
-      .then(this.back);
-  };
+      .then(this.back)
+  }
   onInviteFailure = err => {
     g.showError({
       message: intlDebug`Failed to invite group chat`,
       err,
-    });
-  };
+    })
+  }
   back = () => {
-    g.backToPageChatGroupDetail({ groupId: this.props.groupId });
-  };
+    g.backToPageChatGroupDetail({ groupId: this.props.groupId })
+  }
 }
 
-export default PageChatGroupInvite;
+export default PageChatGroupInvite

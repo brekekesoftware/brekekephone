@@ -1,5 +1,5 @@
-import { Keyboard } from '../Rn';
-import $ from './_';
+import { Keyboard } from '../Rn'
+import $ from './_'
 
 $.extends({
   observable: {
@@ -9,46 +9,46 @@ $.extends({
   waitKeyboardTimeoutId: 0,
   waitKeyboard: fn => (...args) => {
     if ($.waitKeyboardTimeoutId) {
-      return;
+      return
     }
     if (!$.isKeyboardShowing) {
-      fn(...args);
-      return;
+      fn(...args)
+      return
     }
-    Keyboard.dismiss();
+    Keyboard.dismiss()
     $.waitKeyboardTimeoutId = setTimeout(() => {
-      $.waitKeyboardTimeoutId = 0;
-      fn(...args);
-    }, 300);
+      $.waitKeyboardTimeoutId = 0
+      fn(...args)
+    }, 300)
   },
-});
+})
 
-let keyboardAnimatingTimeoutId = 0;
+let keyboardAnimatingTimeoutId = 0
 const setKeyboardAnimatingTimeout = () => {
   if (keyboardAnimatingTimeoutId) {
-    clearTimeout(keyboardAnimatingTimeoutId);
+    clearTimeout(keyboardAnimatingTimeoutId)
   }
-  $.isKeyboardAnimating = true;
+  $.isKeyboardAnimating = true
   keyboardAnimatingTimeoutId = setTimeout(() => {
-    keyboardAnimatingTimeoutId = 0;
-    $.isKeyboardAnimating = false;
-  }, 300);
-};
+    keyboardAnimatingTimeoutId = 0
+    $.isKeyboardAnimating = false
+  }, 300)
+}
 
 // ios
 Keyboard.addListener('keyboardWillShow', () => {
-  setKeyboardAnimatingTimeout();
-  $.isKeyboardShowing = true;
-});
+  setKeyboardAnimatingTimeout()
+  $.isKeyboardShowing = true
+})
 Keyboard.addListener('keyboardWillHide', () => {
-  setKeyboardAnimatingTimeout();
-  $.isKeyboardShowing = false;
-});
+  setKeyboardAnimatingTimeout()
+  $.isKeyboardShowing = false
+})
 
 // android
 Keyboard.addListener('keyboardDidShow', () => {
-  $.isKeyboardShowing = true;
-});
+  $.isKeyboardShowing = true
+})
 Keyboard.addListener('keyboardDidHide', () => {
-  $.isKeyboardShowing = false;
-});
+  $.isKeyboardShowing = false
+})

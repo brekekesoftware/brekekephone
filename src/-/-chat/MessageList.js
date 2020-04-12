@@ -1,13 +1,13 @@
-import sortBy from 'lodash/sortBy';
-import uniqBy from 'lodash/uniqBy';
-import { observer } from 'mobx-react';
-import React from 'react';
+import sortBy from 'lodash/sortBy'
+import uniqBy from 'lodash/uniqBy'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import { StyleSheet, Text, View } from '../Rn';
-import Avatar from '../shared/Avatar';
-import { groupByTimestamp } from './config';
-import Message from './Message';
+import g from '../global'
+import { StyleSheet, Text, View } from '../Rn'
+import Avatar from '../shared/Avatar'
+import { groupByTimestamp } from './config'
+import Message from './Message'
 
 const css = StyleSheet.create({
   DateGroup: {
@@ -54,25 +54,25 @@ const css = StyleSheet.create({
   Right: {
     flexDirection: 'column',
   },
-});
+})
 
 const MessageList = observer(
   ({ acceptFile, list, loadMore, rejectFile, resolveChat }) => {
     // TODO unique and sort right after fetching
     if (!Array.isArray(list)) {
-      list = [];
+      list = []
     }
-    list = uniqBy(list, 'id');
-    list = sortBy(list, 'created');
+    list = uniqBy(list, 'id')
+    list = sortBy(list, 'created')
 
     return groupByTimestamp(list).map(({ date, groupByTime }, i) => (
       <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
         <View style={css.Border} />
         <Text style={css.Date}>{date}</Text>
         {groupByTime.map(({ createdByMe, messages, time }, j) => {
-          const id = messages[0]?.id;
-          const c0 = resolveChat(id);
-          const name = c0?.creatorName;
+          const id = messages[0]?.id
+          const c0 = resolveChat(id)
+          const name = c0?.creatorName
           return (
             <View
               key={`${time}${id}`}
@@ -99,11 +99,11 @@ const MessageList = observer(
                 </View>
               </View>
             </View>
-          );
+          )
         })}
       </View>
-    ));
+    ))
   },
-);
+)
 
-export default MessageList;
+export default MessageList

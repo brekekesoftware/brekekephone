@@ -1,13 +1,9 @@
-import {
-  mdiDotsHorizontal,
-  mdiLadybug,
-  mdiUnfoldMoreHorizontal,
-} from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiDotsHorizontal, mdiLadybug, mdiUnfoldMoreHorizontal } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
+import g from '../global'
+import intl from '../intl/intl'
 import {
   FlatList,
   Icon,
@@ -16,11 +12,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from '../Rn';
-import BrekekeGradient from '../shared/BrekekeGradient';
-import Layout from '../shared/Layout';
-import { currentVersion } from '../variables';
-import ProfileSignInItem from './ProfileSignInItem';
+} from '../Rn'
+import BrekekeGradient from '../shared/BrekekeGradient'
+import Layout from '../shared/Layout'
+import { currentVersion } from '../variables'
+import ProfileSignInItem from './ProfileSignInItem'
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -73,10 +69,10 @@ const css = StyleSheet.create({
   CornerButton_Icon__language: {
     right: 0,
   },
-});
+})
 
 const PageProfileSignIn = observer(() => {
-  const l = g.profiles.length;
+  const l = g.profiles.length
   return (
     <BrekekeGradient>
       <Layout
@@ -137,7 +133,7 @@ const PageProfileSignIn = observer(() => {
       </TouchableOpacity>
       <View style={css.Space} />
     </BrekekeGradient>
-  );
-});
+  )
+})
 
-export default PageProfileSignIn;
+export default PageProfileSignIn

@@ -1,7 +1,7 @@
-import React, { forwardRef } from 'react';
-import { Platform, StyleSheet, TextInput } from 'react-native';
+import React, { forwardRef } from 'react'
+import { Platform, StyleSheet, TextInput } from 'react-native'
 
-import v from '../variables';
+import v from '../variables'
 
 const css = StyleSheet.create({
   RnTextInput: {
@@ -11,7 +11,7 @@ const css = StyleSheet.create({
     fontFamily: v.fontFamily,
     color: v.color,
   },
-});
+})
 
 const RnTextInput = forwardRef(({ keyboardType, style, ...props }, ref) => (
   <TextInput
@@ -21,6 +21,6 @@ const RnTextInput = forwardRef(({ keyboardType, style, ...props }, ref) => (
     keyboardType={Platform.OS === 'web' ? null : keyboardType}
     style={[css.RnTextInput, style]}
   />
-));
+))
 
-export default RnTextInput;
+export default RnTextInput

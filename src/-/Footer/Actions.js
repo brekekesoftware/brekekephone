@@ -1,9 +1,9 @@
-import { mdiCached, mdiKeyboardBackspace } from '@mdi/js';
-import React from 'react';
+import { mdiCached, mdiKeyboardBackspace } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
+import g from '../global'
+import intl from '../intl/intl'
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
 
 const css = StyleSheet.create({
   Actions: {
@@ -47,7 +47,7 @@ const css = StyleSheet.create({
     lineHeight: g.iconSize,
     textAlign: 'center',
   },
-});
+})
 
 const Actions = ({
   onBack,
@@ -95,6 +95,6 @@ const Actions = ({
       </Text>
     </TouchableOpacity>
   </View>
-);
+)
 
-export default Actions;
+export default Actions

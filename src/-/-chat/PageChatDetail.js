@@ -1,21 +1,21 @@
-import { computed } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
-import EmojiSelector, { Categories } from 'react-native-emoji-selector';
+import { computed } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
+import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
-import uc from '../api/uc';
-import ChatInput from '../Footer/ChatInput';
-import g from '../global';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl, { intlDebug } from '../intl/intl';
-import pickFile from '../native/pickFile';
-import saveBlob from '../native/saveBlob';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import Layout from '../shared/Layout';
-import { arrToMap } from '../utils/toMap';
-import { numberOfChatsPerLoad } from './config';
-import MessageList from './MessageList';
+import uc from '../api/uc'
+import ChatInput from '../Footer/ChatInput'
+import g from '../global'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl, { intlDebug } from '../intl/intl'
+import pickFile from '../native/pickFile'
+import saveBlob from '../native/saveBlob'
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import Layout from '../shared/Layout'
+import { arrToMap } from '../utils/toMap'
+import { numberOfChatsPerLoad } from './config'
+import MessageList from './MessageList'
 
 const css = StyleSheet.create({
   LoadMore: {
@@ -30,21 +30,19 @@ const css = StyleSheet.create({
   LoadMore__finished: {
     color: g.colors.warning,
   },
-});
+})
 
 @observer
 class PageChatDetail extends React.Component {
   @computed get chatIds() {
-    return (chatStore.messagesByThreadId[this.props.buddy] || []).map(
-      m => m.id,
-    );
+    return (chatStore.messagesByThreadId[this.props.buddy] || []).map(m => m.id)
   }
   @computed get chatById() {
     return arrToMap(
       chatStore.messagesByThreadId[this.props.buddy] || [],
       'id',
       m => m,
-    );
+    )
   }
   state = {
     loadingRecent: false,
@@ -55,29 +53,29 @@ class PageChatDetail extends React.Component {
       fileType: '',
     },
     emojiTurnOn: false,
-  };
-  numberOfChatsPerLoadMore = numberOfChatsPerLoad;
-  edittingTextEmoji = '';
-  editingTextReplace = false;
+  }
+  numberOfChatsPerLoadMore = numberOfChatsPerLoad
+  edittingTextEmoji = ''
+  editingTextReplace = false
 
   componentDidMount() {
-    const noChat = !this.chatIds.length;
+    const noChat = !this.chatIds.length
     if (noChat) {
-      this.loadRecent();
+      this.loadRecent()
     } else {
-      setTimeout(this.onContentSizeChange, 170);
+      setTimeout(this.onContentSizeChange, 170)
     }
-    const { buddy: id } = this.props;
+    const { buddy: id } = this.props
     chatStore.updateThreadConfig(id, false, {
       isUnread: false,
-    });
+    })
   }
   componentDidUpdate() {
-    const { buddy: id } = this.props;
+    const { buddy: id } = this.props
     if (chatStore.getThreadConfig(id).isUnread) {
       chatStore.updateThreadConfig(id, false, {
         isUnread: false,
-      });
+      })
     }
   }
 
@@ -93,14 +91,14 @@ class PageChatDetail extends React.Component {
         openFilePicker={() => pickFile(this.sendFile)}
         text={this.state.editingText}
       />
-    );
-  };
+    )
+  }
 
   render() {
-    const { buddy: id } = this.props;
-    const u = contactStore.getUCUser(id);
-    const { allMessagesLoaded } = chatStore.getThreadConfig(id);
-    const { loadingMore, loadingRecent } = this.state;
+    const { buddy: id } = this.props
+    const u = contactStore.getUCUser(id)
+    const { allMessagesLoaded } = chatStore.getThreadConfig(id)
+    const { loadingMore, loadingRecent } = this.state
     return (
       <Layout
         compact
@@ -152,30 +150,30 @@ class PageChatDetail extends React.Component {
           </View>
         )}
       </Layout>
-    );
+    )
   }
 
   onSelectionChange = event => {
-    const selection = event.nativeEvent.selection;
-    this.editingTextReplace = false;
+    const selection = event.nativeEvent.selection
+    this.editingTextReplace = false
     if (selection.start !== selection.end) {
       this.edittingTextEmoji = this.state.editingText.substring(
         selection.start,
         selection.end,
-      );
-      this.editingTextReplace = true;
+      )
+      this.editingTextReplace = true
     } else {
       this.edittingTextEmoji = this.state.editingText.substring(
         0,
         selection.start,
-      );
+      )
     }
-  };
+  }
   emojiSelectFunc = emoji => {
-    let newText = this.edittingTextEmoji.concat(emoji);
+    let newText = this.edittingTextEmoji.concat(emoji)
     if (this.state.editingText === '') {
-      this.setState({ editingText: emoji });
-      this.edittingTextEmoji = emoji;
+      this.setState({ editingText: emoji })
+      this.edittingTextEmoji = emoji
     } else {
       if (!this.editingTextReplace) {
         this.setState({
@@ -183,55 +181,55 @@ class PageChatDetail extends React.Component {
             this.edittingTextEmoji,
             newText,
           ),
-        });
-        this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji);
+        })
+        this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji)
       } else {
         this.setState({
           editingText: this.state.editingText.replace(
             this.edittingTextEmoji,
             emoji,
           ),
-        });
-        this.editingTextReplace = false;
-        this.edittingTextEmoji = emoji;
+        })
+        this.editingTextReplace = false
+        this.edittingTextEmoji = emoji
       }
     }
-  };
+  }
 
   setViewRef = ref => {
-    this.view = ref;
-  };
-  _justMounted = true;
-  _closeToBottom = true;
+    this.view = ref
+  }
+  _justMounted = true
+  _closeToBottom = true
   onContentSizeChange = () => {
     if (!this.view) {
-      return;
+      return
     }
     if (this._closeToBottom) {
       this.view.scrollToEnd({
         animated: !this._justMounted,
-      });
+      })
       if (this._justMounted) {
-        this._justMounted = false;
+        this._justMounted = false
       }
     }
-  };
+  }
   onScroll = ev => {
-    ev = ev.nativeEvent;
-    const layoutSize = ev.layoutMeasurement;
-    const layoutHeight = layoutSize.height;
-    const contentOffset = ev.contentOffset;
-    const contentSize = ev.contentSize;
-    const contentHeight = contentSize.height;
-    const paddingToBottom = 20;
+    ev = ev.nativeEvent
+    const layoutSize = ev.layoutMeasurement
+    const layoutHeight = layoutSize.height
+    const contentOffset = ev.contentOffset
+    const contentSize = ev.contentSize
+    const contentHeight = contentSize.height
+    const paddingToBottom = 20
     this._closeToBottom =
-      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom;
-  };
+      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
+  }
   resolveChat = (id, index) => {
-    const chat = this.chatById[id];
-    const file = chatStore.filesMap[chat.file];
-    const text = chat.text;
-    const creator = this.resolveCreator(chat.creator);
+    const chat = this.chatById[id]
+    const file = chatStore.filesMap[chat.file]
+    const text = chat.text
+    const creator = this.resolveCreator(chat.creator)
     return {
       id,
       creatorId: creator.id,
@@ -241,185 +239,185 @@ class PageChatDetail extends React.Component {
       file,
       created: chat.created,
       createdByMe: creator.id === this.me.id,
-    };
-  };
-  me = uc.me();
+    }
+  }
+  me = uc.me()
   resolveCreator = creator => {
     if (creator === this.me.id) {
-      return this.me;
+      return this.me
     }
-    return contactStore.getUCUser(creator) || {};
-  };
+    return contactStore.getUCUser(creator) || {}
+  }
   loadRecent = () => {
-    this.setState({ loadingRecent: true });
+    this.setState({ loadingRecent: true })
     uc.getBuddyChats(this.props.buddy, {
       max: numberOfChatsPerLoad,
     })
       .then(chats => {
-        const u = contactStore.getUCUser(this.props.buddy);
-        chatStore.pushMessages(u.id, chats);
-        setTimeout(this.onContentSizeChange, 170);
+        const u = contactStore.getUCUser(this.props.buddy)
+        chatStore.pushMessages(u.id, chats)
+        setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to get recent chats`,
           err,
-        });
+        })
       })
       .then(() => {
-        this.setState({ loadingRecent: false });
-      });
-  };
+        this.setState({ loadingRecent: false })
+      })
+  }
 
   removeDuplicates = (array, key) => {
-    let lookup = new Set();
-    return array.filter(obj => !lookup.has(obj[key]) && lookup.add(obj[key]));
-  };
+    let lookup = new Set()
+    return array.filter(obj => !lookup.has(obj[key]) && lookup.add(obj[key]))
+  }
 
   loadMore = () => {
-    this.setState({ loadingMore: true });
+    this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
-      this.numberOfChatsPerLoadMore + numberOfChatsPerLoad;
-    const oldestChat = this.chatById[this.chatIds[0]] || {};
-    const oldestCreated = oldestChat.created || 0;
-    const max = this.numberOfChatsPerLoadMore;
-    const end = oldestCreated;
-    const query = { max, end };
-    const u = contactStore.getUCUser(this.props.buddy);
+      this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
+    const oldestChat = this.chatById[this.chatIds[0]] || {}
+    const oldestCreated = oldestChat.created || 0
+    const max = this.numberOfChatsPerLoadMore
+    const end = oldestCreated
+    const query = { max, end }
+    const u = contactStore.getUCUser(this.props.buddy)
     uc.getBuddyChats(u?.id, query)
       .then(chats => {
-        const u = contactStore.getUCUser(this.props.buddy);
-        chatStore.pushMessages(u.id, chats);
+        const u = contactStore.getUCUser(this.props.buddy)
+        chatStore.pushMessages(u.id, chats)
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to get more chats`,
           err,
-        });
+        })
       })
       .then(() => {
-        this.setState({ loadingMore: false });
+        this.setState({ loadingMore: false })
       })
       .then(() => {
-        const { buddy: id } = this.props;
+        const { buddy: id } = this.props
         const totalChatLoaded = this.removeDuplicates(
           chatStore.messagesByThreadId[id],
           'id',
-        ).length;
+        ).length
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
           chatStore.updateThreadConfig(id, false, {
             allMessagesLoaded: true,
-          });
+          })
         }
-      });
-  };
+      })
+  }
 
   setEditingText = editingText => {
-    this.setState({ editingText });
-  };
-  submitting = false;
+    this.setState({ editingText })
+  }
+  submitting = false
   submitEditingText = () => {
-    const txt = this.state.editingText.trim();
+    const txt = this.state.editingText.trim()
     if (!txt || this.submitting) {
-      return;
+      return
     }
-    this.submitting = true;
+    this.submitting = true
     //
     uc.sendBuddyChatText(this.props.buddy, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
-        this.submitting = false;
-      });
-  };
+        this.submitting = false
+      })
+  }
   onSubmitEditingTextSuccess = chat => {
-    chatStore.pushMessages(this.props.buddy, chat);
-    this.setState({ editingText: '' });
-  };
+    chatStore.pushMessages(this.props.buddy, chat)
+    this.setState({ editingText: '' })
+  }
   onSubmitEditingTextFailure = err => {
     g.showError({
       message: intlDebug`Failed to send the message`,
       err,
-    });
-  };
+    })
+  }
   acceptFile = file => {
     uc.acceptFile(file.id)
       .then(blob => this.onAcceptFileSuccess(blob, file))
-      .catch(this.onAcceptFileFailure);
-  };
+      .catch(this.onAcceptFileFailure)
+  }
 
   onAcceptFileSuccess = (blob, file) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
     const fileType = type.includes(file.name.split('.').pop().toUpperCase())
       ? 'image'
-      : 'other';
-    const reader = new FileReader();
+      : 'other'
+    const reader = new FileReader()
     reader.onload = async event => {
-      const url = event.target.result;
+      const url = event.target.result
       await Object.assign(chatStore.filesMap[file.id], {
         url: url,
         fileType: fileType,
-      });
-    };
+      })
+    }
 
-    reader.readAsDataURL(blob);
+    reader.readAsDataURL(blob)
 
-    saveBlob(blob, file.name);
-  };
+    saveBlob(blob, file.name)
+  }
   onAcceptFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to accept file`,
       err,
-    });
-  };
+    })
+  }
   rejectFile = file => {
-    uc.rejectFile(file).catch(this.onRejectFileFailure);
-  };
+    uc.rejectFile(file).catch(this.onRejectFileFailure)
+  }
   onRejectFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to reject file`,
       err,
-    });
-  };
+    })
+  }
 
   readFile = file => {
     if (Platform.OS === 'web') {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
-      const fileType = file.type ? file.type.split('/')[0] : '';
+      const fileType = file.type ? file.type.split('/')[0] : ''
       reader.onload = async event => {
-        const url = event.target.result;
-        this.setState({ blobFile: { url: url, fileType: fileType } });
-      };
-      reader.readAsDataURL(file);
+        const url = event.target.result
+        this.setState({ blobFile: { url: url, fileType: fileType } })
+      }
+      reader.readAsDataURL(file)
     } else {
-      const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+      const type = ['PNG', 'JPG', 'JPEG', 'GIF']
       const fileType = type.includes(file.name.split('.').pop().toUpperCase())
         ? 'image'
-        : 'other';
-      this.setState({ blobFile: { url: file.uri, fileType: fileType } });
+        : 'other'
+      this.setState({ blobFile: { url: file.uri, fileType: fileType } })
     }
-  };
+  }
 
   sendFile = file => {
-    this.readFile(file);
-    const u = contactStore.getUCUser(this.props.buddy);
+    this.readFile(file)
+    const u = contactStore.getUCUser(this.props.buddy)
     uc.sendFile(u?.id, file)
       .then(this.onSendFileSuccess)
-      .catch(this.onSendFileFailure);
-  };
+      .catch(this.onSendFileFailure)
+  }
   onSendFileSuccess = res => {
-    const buddyId = this.props.buddy;
-    Object.assign(res.file, this.state.blobFile);
-    chatStore.upsertFile(res.file);
-    chatStore.pushMessages(buddyId, res.chat);
-  };
+    const buddyId = this.props.buddy
+    Object.assign(res.file, this.state.blobFile)
+    chatStore.upsertFile(res.file)
+    chatStore.pushMessages(buddyId, res.chat)
+  }
   onSendFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to send file`,
       err,
-    });
-  };
+    })
+  }
 }
 
-export default PageChatDetail;
+export default PageChatDetail

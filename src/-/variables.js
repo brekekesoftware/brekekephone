@@ -1,7 +1,7 @@
-import * as fn from 'polished';
-import { Platform } from 'react-native';
+import * as fn from 'polished'
+import { Platform } from 'react-native'
 
-import json from '../../package.json';
+import json from '../../package.json'
 
 const v = {
   fn,
@@ -9,22 +9,22 @@ const v = {
   fontSize: 14,
   lineHeight: 20,
   get fontSizeTitle() {
-    return 1.8 * v.fontSize;
+    return 1.8 * v.fontSize
   },
   get lineHeightTitle() {
-    return 1.8 * v.lineHeight;
+    return 1.8 * v.lineHeight
   },
   get fontSizeSubTitle() {
-    return 1.2 * v.fontSize;
+    return 1.2 * v.fontSize
   },
   get lineHeightSubTitle() {
-    return 1.2 * v.lineHeight;
+    return 1.2 * v.lineHeight
   },
   get fontSizeSmall() {
-    return 0.8 * v.fontSize;
+    return 0.8 * v.fontSize
   },
   get lineHeightSmall() {
-    return 0.8 * v.lineHeight;
+    return 0.8 * v.lineHeight
   },
   iconSize: 24,
   fontWeight: 'normal',
@@ -60,19 +60,19 @@ const v = {
     zIndex: 999,
     elevation: 999,
   },
-};
+}
 
 v.colors = {
   //
   primary: '#609b3a',
   warning: '#f1af20',
   danger: '#dc0f39',
-};
-['primary', 'warning', 'danger'].forEach(k => {
+}
+;['primary', 'warning', 'danger'].forEach(k => {
   v.colors[`${k}Fn`] = lv =>
-    lv > 0 ? fn.lighten(lv, v.colors[k]) : fn.darken(-lv, v.colors[k]);
-});
+    lv > 0 ? fn.lighten(lv, v.colors[k]) : fn.darken(-lv, v.colors[k])
+})
 
-export const currentVersion = json.version;
+export const currentVersion = json.version
 
-export default v;
+export default v

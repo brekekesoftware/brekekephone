@@ -1,13 +1,13 @@
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
-import { observer } from 'mobx-react';
-import React from 'react';
+import cloneDeep from 'lodash/cloneDeep'
+import isEqual from 'lodash/isEqual'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
-import Layout from '../shared/Layout';
-import useForm from '../utils/useForm';
-import useStore from '../utils/useStore';
+import g from '../global'
+import intl from '../intl/intl'
+import Layout from '../shared/Layout'
+import useForm from '../utils/useForm'
+import useStore from '../utils/useStore'
 
 const genEmptyPhonebook = () => {
   return {
@@ -21,8 +21,8 @@ const genEmptyPhonebook = () => {
     address: '',
     email: '',
     shared: false,
-  };
-};
+  }
+}
 
 const ContactsCreateForm = observer(props => {
   const $ = useStore(() => ({
@@ -35,35 +35,35 @@ const ContactsCreateForm = observer(props => {
     },
 
     hasUnsavedChanges: () => {
-      const p = props.updatingPhonebook || genEmptyPhonebook();
+      const p = props.updatingPhonebook || genEmptyPhonebook()
       if (!props.updatingPhonebook) {
         Object.assign(p, {
           book: props.book,
-        });
+        })
       }
-      return !isEqual($.phonebook, p);
+      return !isEqual($.phonebook, p)
     },
 
     onBackBtnPress: () => {
       if (!$.hasUnsavedChanges()) {
-        props.onBack();
-        return;
+        props.onBack()
+        return
       }
       g.showPrompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,
         confirmText: intl`DISCARD`,
-      });
+      })
     },
 
     onValidSubmit: () => {
-      props.onSave($.phonebook, $.hasUnsavedChanges());
+      props.onSave($.phonebook, $.hasUnsavedChanges())
     },
     //
-  }));
-  const [Form, submitForm] = useForm();
-  const disabled = props.updatingPhonebook?.shared;
+  }))
+  const [Form, submitForm] = useForm()
+  const disabled = props.updatingPhonebook?.shared
   return (
     <Layout
       fabOnBack={$.onBackBtnPress}
@@ -141,7 +141,7 @@ const ContactsCreateForm = observer(props => {
         onValidSubmit={$.onValidSubmit}
       />
     </Layout>
-  );
-});
+  )
+})
 
-export default ContactsCreateForm;
+export default ContactsCreateForm

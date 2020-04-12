@@ -1,9 +1,9 @@
-import { mdiDotsVertical } from '@mdi/js';
-import React from 'react';
+import { mdiDotsVertical } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn';
-import AnimatedSize from '../shared/AnimatedSize';
+import g from '../global'
+import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn'
+import AnimatedSize from '../shared/AnimatedSize'
 
 const css = StyleSheet.create({
   Backdrop: {
@@ -49,7 +49,7 @@ const css = StyleSheet.create({
     right: 0,
     width: 50,
   },
-});
+})
 
 const Dropdown = ({ close, compact, dropdown }) => {
   return (
@@ -67,8 +67,8 @@ const Dropdown = ({ close, compact, dropdown }) => {
           <TouchableOpacity
             key={i}
             onPress={() => {
-              close();
-              onPress();
+              close()
+              onPress()
             }}
             style={[css.Item, i === dropdown.length - 1 && css.Item__last]}
           >
@@ -77,14 +77,14 @@ const Dropdown = ({ close, compact, dropdown }) => {
         ))}
       </AnimatedSize>
     </React.Fragment>
-  );
-};
+  )
+}
 
 const DropdownBtn = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={css.Btn}>
     <Icon path={mdiDotsVertical} />
   </TouchableOpacity>
-);
-Dropdown.Btn = DropdownBtn;
+)
+Dropdown.Btn = DropdownBtn
 
-export default Dropdown;
+export default Dropdown

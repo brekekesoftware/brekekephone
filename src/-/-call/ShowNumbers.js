@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
-import intl from '../intl/intl';
-import { Keyboard, StyleSheet, TextInput, View } from '../Rn';
+import intl from '../intl/intl'
+import { Keyboard, StyleSheet, TextInput, View } from '../Rn'
 
 const css = StyleSheet.create({
   ShowNumbers: {
@@ -20,7 +20,7 @@ const css = StyleSheet.create({
     height: 40,
     borderRadius: 40,
   },
-});
+})
 
 const ShowNumber = p => (
   <View style={css.ShowNumbers}>
@@ -30,7 +30,7 @@ const ShowNumber = p => (
       multiline
       onChangeText={p.setTarget}
       onEndEditing={() => {
-        Keyboard.dismiss();
+        Keyboard.dismiss()
       }}
       onSelectionChange={p.selectionChange}
       placeholder={intl`Enter your number`}
@@ -39,6 +39,6 @@ const ShowNumber = p => (
       value={p.value}
     />
   </View>
-);
+)
 
-export default ShowNumber;
+export default ShowNumber

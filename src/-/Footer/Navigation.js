@@ -1,17 +1,10 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import chatStore from '../global/chatStore';
-import {
-  Icon,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn';
-import { menus } from '../shared/navigationConfig';
+import g from '../global'
+import chatStore from '../global/chatStore'
+import { Icon, Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { menus } from '../shared/navigationConfig'
 
 export const css = StyleSheet.create({
   Navigation: {
@@ -57,15 +50,14 @@ export const css = StyleSheet.create({
     fontSize: g.fontSizeSmall - 2,
     lineHeight: g.fontSizeSmall - 2,
   },
-});
+})
 
 const Navigation = ({ menu }) => (
   <View style={css.Navigation}>
     {menus().map(m => {
-      const active = m.key === menu;
-      const totalUnreadChat = chatStore.unreadCount;
-      const showUnreadChat =
-        !!totalUnreadChat && m.key === 'contact' && !active;
+      const active = m.key === menu
+      const totalUnreadChat = chatStore.unreadCount
+      const showUnreadChat = !!totalUnreadChat && m.key === 'contact' && !active
       return (
         <TouchableOpacity
           key={m.key}
@@ -85,9 +77,9 @@ const Navigation = ({ menu }) => (
             </View>
           )}
         </TouchableOpacity>
-      );
+      )
     })}
   </View>
-);
+)
 
-export default observer(Navigation);
+export default observer(Navigation)

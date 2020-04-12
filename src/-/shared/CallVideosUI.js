@@ -1,10 +1,10 @@
-import { observer } from 'mobx-react';
-import React from 'react';
-import { PanResponder, Platform, StyleSheet, View } from 'react-native';
+import { observer } from 'mobx-react'
+import React from 'react'
+import { PanResponder, Platform, StyleSheet, View } from 'react-native'
 
-import g from '../global';
-import callStore from '../global/callStore';
-import VideoPlayer from './VideoPlayer';
+import g from '../global'
+import callStore from '../global/callStore'
+import VideoPlayer from './VideoPlayer'
 
 const css = StyleSheet.create({
   Mini: {
@@ -23,13 +23,13 @@ const css = StyleSheet.create({
     ...g.boxShadow,
     ...g.backdropZindex,
   },
-});
+})
 
 @observer
 class Mini extends React.Component {
-  state = {};
+  state = {}
   constructor(props) {
-    super(props);
+    super(props)
 
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -37,7 +37,7 @@ class Mini extends React.Component {
       onPanResponderMove: this.onDrag,
       onPanResponderRelease: this.onDrop,
       onPanResponderTerminate: this.onDrop,
-    });
+    })
   }
 
   render() {
@@ -52,12 +52,12 @@ class Mini extends React.Component {
       >
         <VideoPlayer sourceObject={this.props.sourceObject} />
       </View>
-    );
+    )
   }
 
   setViewRef = view => {
-    this.view = view;
-  };
+    this.view = view
+  }
 
   onDrag = (ev, gesture) => {
     this.view.setNativeProps({
@@ -65,42 +65,42 @@ class Mini extends React.Component {
         left: callStore.videoPositionL + gesture.dx,
         top: callStore.videoPositionT + gesture.dy,
       },
-    });
-  };
+    })
+  }
 
-  _lastTap = null;
+  _lastTap = null
   onDrop = (ev, gesture) => {
-    callStore.videoPositionL += gesture.dx;
-    callStore.videoPositionT += gesture.dy;
-    const n = Date.now();
+    callStore.videoPositionL += gesture.dx
+    callStore.videoPositionT += gesture.dy
+    const n = Date.now()
     if (
       gesture.dx <= 10 &&
       gesture.dy <= 10 &&
       this._lastTap &&
       n - this._lastTap <= 500
     ) {
-      this.props.onDoubleTap();
+      this.props.onDoubleTap()
     }
-    this._lastTap = n;
-  };
+    this._lastTap = n
+  }
 }
 
 @observer
 class Control extends React.Component {
   render() {
-    const s = g.stacks[g.stacks.length - 1];
+    const s = g.stacks[g.stacks.length - 1]
     if (
       s.name === 'PageCallManage' ||
       s.name === 'PageTransferDial' ||
       s.name === 'PageTransferAttend'
     ) {
-      return null;
+      return null
     }
-    return <Mini {...this.props} onDoubleTap={g.goToPageCallManage} />;
+    return <Mini {...this.props} onDoubleTap={g.goToPageCallManage} />
   }
 }
 
 const CallVideos = observer(p =>
   p.callIds.map(id => <Control key={id} {...p.resolveCall(id)} />),
-);
-export default CallVideos;
+)
+export default CallVideos

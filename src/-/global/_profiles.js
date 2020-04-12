@@ -1,14 +1,14 @@
-import { v4 as uuid } from 'react-native-uuid';
+import { v4 as uuid } from 'react-native-uuid'
 
-import { intlDebug } from '../intl/intl';
-import { AsyncStorage } from '../Rn';
-import { arrToMap } from '../utils/toMap';
-import g from './_';
+import { intlDebug } from '../intl/intl'
+import { AsyncStorage } from '../Rn'
+import { arrToMap } from '../utils/toMap'
+import g from './_'
 
-let resolveFn = null;
+let resolveFn = null
 const profilesLoaded = new Promise(resolve => {
-  resolveFn = resolve;
-});
+  resolveFn = resolve
+})
 
 g.extends({
   observable: {
@@ -45,7 +45,7 @@ g.extends({
     //    createdAt: Date
     profiles: [],
     get profilesMap() {
-      return arrToMap(g.profiles, 'id', p => p);
+      return arrToMap(g.profiles, 'id', p => p)
     },
   },
   profilesLoaded,
@@ -66,38 +66,38 @@ g.extends({
     accessToken: '',
   }),
   loadProfilesFromLocalStorage: async () => {
-    let arr = await AsyncStorage.getItem('_api_profiles');
+    let arr = await AsyncStorage.getItem('_api_profiles')
     if (arr && !Array.isArray(arr)) {
       try {
-        arr = JSON.parse(arr);
+        arr = JSON.parse(arr)
       } catch (err) {
-        arr = null;
+        arr = null
       }
     }
     if (arr) {
-      g.set('profiles', arr);
+      g.set('profiles', arr)
     }
     if (resolveFn) {
-      resolveFn();
-      resolveFn = null;
+      resolveFn()
+      resolveFn = null
     }
   },
   saveProfilesToLocalStorage: async (arr = g.profiles) => {
     try {
-      await AsyncStorage.setItem('_api_profiles', JSON.stringify(arr));
+      await AsyncStorage.setItem('_api_profiles', JSON.stringify(arr))
     } catch (err) {
       g.showError({
         message: intlDebug`Failed to save accounts to local storage`,
         err,
-      });
+      })
     }
   },
   upsertProfile: p => {
-    g.upsert('profiles', p);
-    g.saveProfilesToLocalStorage();
+    g.upsert('profiles', p)
+    g.saveProfilesToLocalStorage()
   },
   removeProfile: id => {
-    g.remove('profiles', id);
-    g.saveProfilesToLocalStorage();
+    g.remove('profiles', id)
+    g.saveProfilesToLocalStorage()
   },
-});
+})

@@ -1,10 +1,10 @@
-import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js';
-import React from 'react';
+import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import Avatar from '../shared/Avatar';
+import g from '../global'
+import intl from '../intl/intl'
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import Avatar from '../shared/Avatar'
 
 const css = StyleSheet.create({
   Outer: {
@@ -57,7 +57,7 @@ const css = StyleSheet.create({
     marginRight: 15,
     paddingTop: 7,
   },
-});
+})
 
 const UserItem = ({
   answered,
@@ -136,6 +136,6 @@ const UserItem = ({
       ))}
     </View>
   </View>
-);
+)
 
-export default UserItem;
+export default UserItem

@@ -1,17 +1,17 @@
-import 'brekekejs/lib/jsonrpc';
-import 'brekekejs/lib/pal';
+import 'brekekejs/lib/jsonrpc'
+import 'brekekejs/lib/pal'
 
-import EventEmitter from 'eventemitter3';
+import EventEmitter from 'eventemitter3'
 
 class PBX extends EventEmitter {
-  client = null;
+  client = null
 
   async connect(profile) {
     if (this.client) {
-      return Promise.reject(new Error('PAL client is connected'));
+      return Promise.reject(new Error('PAL client is connected'))
     }
 
-    const wsUri = `wss://${profile.pbxHostname}:${profile.pbxPort}/pbx/ws`;
+    const wsUri = `wss://${profile.pbxHostname}:${profile.pbxPort}/pbx/ws`
 
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: profile.pbxTenant,
@@ -24,45 +24,45 @@ class PBX extends EventEmitter {
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
-    });
+    })
 
-    client.debugLevel = 2;
-    let timeout = null;
+    client.debugLevel = 2
+    let timeout = null
 
     await Promise.race([
       new Promise((onres, onerr) => {
         timeout = setTimeout(() => {
-          client.close();
-          onerr(new Error('Timeout'));
-        }, 10000);
+          client.close()
+          onerr(new Error('Timeout'))
+        }, 10000)
       }),
       new Promise((onres, onerr) => {
-        client.login(onres, onerr);
+        client.login(onres, onerr)
       }),
-    ]);
+    ])
 
-    clearTimeout(timeout);
-    this.client = client;
+    clearTimeout(timeout)
+    this.client = client
 
     this.client.onClose = () => {
-      this.emit('connection-stopped');
-    };
+      this.emit('connection-stopped')
+    }
 
     this.client.onError = err => {
-      console.error('pbx.client.onError:', err);
-    };
+      console.error('pbx.client.onError:', err)
+    }
 
     this.client.notify_serverstatus = e => {
       if (!e) {
-        return;
+        return
       }
       if (e.status === 'active') {
-        return this.emit('connection-started');
+        return this.emit('connection-started')
       }
       if (e.status === 'inactive') {
-        return this.emit('connection-stopped');
+        return this.emit('connection-stopped')
       }
-    };
+    }
 
     this.client.notify_park = e => {
       // TODO
@@ -72,18 +72,18 @@ class PBX extends EventEmitter {
       // if (e.status === `off`) {
       //   return this.emit(`park-stopped`, e.park);
       // }
-    };
+    }
 
     this.client.notify_voicemail = e => {
       if (!e) {
-        return;
+        return
       }
-      this.emit('voicemail-updated', e);
-    };
+      this.emit('voicemail-updated', e)
+    }
 
     this.client.notify_status = e => {
       if (!e) {
-        return;
+        return
       }
 
       switch (e.status) {
@@ -93,62 +93,62 @@ class PBX extends EventEmitter {
           return this.emit('user-talking', {
             user: e.user,
             talker: e.talker_id,
-          });
+          })
         case '35':
           return this.emit('user-holding', {
             user: e.user,
             talker: e.talker_id,
-          });
+          })
         case '-1':
           return this.emit('user-hanging', {
             user: e.user,
             talker: e.talker_id,
-          });
+          })
         case '1':
           return this.emit('user-calling', {
             user: e.user,
             talker: e.talker_id,
-          });
+          })
         case '65':
           return this.emit('user-ringing', {
             user: e.user,
             talker: e.talker_id,
-          });
+          })
         default:
-          return;
+          return
       }
-    };
+    }
   }
 
   disconnect() {
     if (this.client) {
-      this.client.close();
-      this.client = null;
+      this.client.close()
+      this.client = null
     }
   }
 
   pal(method, params) {
     return new Promise((onres, onerr) => {
       if (!this.client) {
-        return onerr(new Error('PAL client is not ready'));
+        return onerr(new Error('PAL client is not ready'))
       }
 
       if (typeof this.client[method] !== 'function') {
-        return onerr(new Error(`PAL client doesn't support "${method}"`));
+        return onerr(new Error(`PAL client doesn't support "${method}"`))
       }
 
-      this.client[method](params, onres, onerr);
-    });
+      this.client[method](params, onres, onerr)
+    })
   }
 
   getConfig() {
-    return this.pal('getProductInfo');
+    return this.pal('getProductInfo')
   }
 
   createSIPAccessToken(sipUsername) {
     return this.pal('createAuthHeader', {
       username: sipUsername,
-    });
+    })
   }
 
   getUsers(tenant) {
@@ -157,7 +157,7 @@ class PBX extends EventEmitter {
       pattern: '..*',
       limit: -1,
       type: 'user',
-    });
+    })
   }
 
   async getOtherUsers(tenant, userIds) {
@@ -165,22 +165,22 @@ class PBX extends EventEmitter {
       tenant: tenant,
       extension: userIds,
       property_names: ['name'],
-    });
+    })
 
-    const users = new Array(res.length);
+    const users = new Array(res.length)
 
     for (let i = 0; i < res.length; i++) {
-      const srcUser = res[i];
+      const srcUser = res[i]
 
       const dstUser = {
         id: userIds[i],
         name: srcUser[0],
-      };
+      }
 
-      users[i] = dstUser;
+      users[i] = dstUser
     }
 
-    return users;
+    return users
   }
 
   async getUserForSelf(tenant, userId) {
@@ -197,9 +197,9 @@ class PBX extends EventEmitter {
         'pnumber',
         'language',
       ],
-    });
+    })
 
-    const pnumber = res[5].split(',');
+    const pnumber = res[5].split(',')
 
     const phones = [
       {
@@ -218,26 +218,26 @@ class PBX extends EventEmitter {
         id: pnumber[3],
         type: res[4],
       },
-    ];
+    ]
 
-    const lang = res[6];
-    const userName = res[0];
+    const lang = res[6]
+    const userName = res[0]
 
     return {
       id: userId,
       name: userName,
       phones,
       language: lang,
-    };
+    }
   }
 
   async getPhonebooks() {
-    const res = await this.pal('getPhonebooks');
+    const res = await this.pal('getPhonebooks')
 
     return res.map(item => ({
       name: item.phonebook,
       shared: item.shared === 'true',
-    }));
+    }))
   }
 
   async getContacts(book, shared, opts = {}) {
@@ -247,19 +247,19 @@ class PBX extends EventEmitter {
       search_text: opts.searchText,
       offset: opts.offset,
       limit: opts.limit,
-    });
+    })
 
     return res.map(contact => ({
       id: contact.aid,
       name: contact.display_name,
-    }));
+    }))
   }
 
   async getContact(id) {
     const res = await this.pal('getContact', {
       aid: id,
-    });
-    res.info = res.info || {};
+    })
+    res.info = res.info || {}
 
     return {
       id,
@@ -275,7 +275,7 @@ class PBX extends EventEmitter {
       book: res.phonebook,
       hidden: res.info.$hidden,
       shared: res.shared === 'true',
-    };
+    }
   }
 
   setContact(contact) {
@@ -296,35 +296,35 @@ class PBX extends EventEmitter {
         $company: contact.company,
         $hidden: contact.hidden,
       },
-    });
+    })
   }
 
   holdTalker(tenant, talker) {
     return this.pal('hold', {
       tenant,
       tid: talker,
-    });
+    })
   }
 
   unholdTalker(tenant, talker) {
     return this.pal('unhold', {
       tenant,
       tid: talker,
-    });
+    })
   }
 
   startRecordingTalker(tenant, talker) {
     return this.pal('startRecording', {
       tenant,
       tid: talker,
-    });
+    })
   }
 
   stopRecordingTalker(tenant, talker) {
     return this.pal('stopRecording', {
       tenant,
       tid: talker,
-    });
+    })
   }
 
   transferTalkerBlind(tenant, talker, toUser) {
@@ -333,7 +333,7 @@ class PBX extends EventEmitter {
       user: toUser,
       tid: talker,
       mode: 'blind',
-    });
+    })
   }
 
   transferTalkerAttended(tenant, talker, toUser) {
@@ -341,21 +341,21 @@ class PBX extends EventEmitter {
       tenant,
       user: toUser,
       tid: talker,
-    });
+    })
   }
 
   joinTalkerTransfer(tenant, talker) {
     return this.pal('conference', {
       tenant,
       tid: talker,
-    });
+    })
   }
 
   stopTalkerTransfer(tenant, talker) {
     return this.pal('cancelTransfer', {
       tenant,
       tid: talker,
-    });
+    })
   }
 
   parkTalker(tenant, talker, atNumber) {
@@ -363,7 +363,7 @@ class PBX extends EventEmitter {
       tenant,
       tid: talker,
       number: atNumber,
-    });
+    })
   }
 
   addApnsToken = ({ device_id, username }) =>
@@ -375,14 +375,14 @@ class PBX extends EventEmitter {
         user_agent: 'react-native',
         username,
         device_id,
-      };
-      if (!this.client) {
-        resolve(null);
       }
-      this.client.pnmanage(params, resolve, reject);
+      if (!this.client) {
+        resolve(null)
+      }
+      this.client.pnmanage(params, resolve, reject)
     }).catch(err => {
-      console.error('addApnsToken:', err);
-    });
+      console.error('addApnsToken:', err)
+    })
 
   addFcmPnToken = ({ device_id, username }) =>
     new Promise((resolve, reject) => {
@@ -393,14 +393,14 @@ class PBX extends EventEmitter {
         user_agent: 'react-native',
         username,
         device_id,
-      };
-      if (!this.client) {
-        resolve(null);
       }
-      this.client.pnmanage(params, resolve, reject);
+      if (!this.client) {
+        resolve(null)
+      }
+      this.client.pnmanage(params, resolve, reject)
     }).catch(err => {
-      console.error('addFcmPnToken:', err);
-    });
+      console.error('addFcmPnToken:', err)
+    })
 
   addWebPnToken = ({ auth_secret, endpoint, key, username }) =>
     new Promise((resolve, reject) => {
@@ -413,14 +413,14 @@ class PBX extends EventEmitter {
         endpoint,
         auth_secret,
         key,
-      };
-      if (!this.client) {
-        resolve(null);
       }
-      this.client.pnmanage(params, resolve, reject);
+      if (!this.client) {
+        resolve(null)
+      }
+      this.client.pnmanage(params, resolve, reject)
     }).catch(err => {
-      console.error('addWebPnToken:', err);
-    });
+      console.error('addWebPnToken:', err)
+    })
 }
 
-export default new PBX();
+export default new PBX()

@@ -1,13 +1,13 @@
-import flow from 'lodash/flow';
-import get from 'lodash/get';
-import { observer } from 'mobx-react';
-import React from 'react';
-import Validator from 'validatorjs';
+import flow from 'lodash/flow'
+import get from 'lodash/get'
+import { observer } from 'mobx-react'
+import React from 'react'
+import Validator from 'validatorjs'
 
-import { Platform } from '../Rn';
-import Field from '../shared/Field';
-import { arrToMap, mapToMap } from './toMap';
-import useStore from './useStore';
+import { Platform } from '../Rn'
+import Field from '../shared/Field'
+import { arrToMap, mapToMap } from './toMap'
+import useStore from './useStore'
 
 const useForm = () => {
   const $ = useStore($ => ({
@@ -17,46 +17,46 @@ const useForm = () => {
     },
     props: {},
     onFieldBlur: k => {
-      $.set(`dirtyMap.${k}`, true);
+      $.set(`dirtyMap.${k}`, true)
     },
     onFieldChange: (k, v) => {
       // TODO batch, remember k
-      const rule = $.props.fields.find(f => f.name === k)?.rule;
-      const validator = rule && new Validator({ [k]: v }, { [k]: rule });
-      $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k));
+      const rule = $.props.fields.find(f => f.name === k)?.rule
+      const validator = rule && new Validator({ [k]: v }, { [k]: rule })
+      $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k))
     },
     // Submit function to use outside of the hook
     submit: () => {
-      const { $: $parent, fields, k, onValidSubmit } = $.props;
+      const { $: $parent, fields, k, onValidSubmit } = $.props
       const rules = arrToMap(
         fields.filter(f => f.rule && !f.disabled),
         f => f.name,
         f => f.rule,
-      );
-      const validator = new Validator(get($parent, k), rules);
+      )
+      const validator = new Validator(get($parent, k), rules)
       if (validator.fails()) {
         $.set(
           'errorMap',
           mapToMap(rules, null, k => validator.errors.first(k)),
-        );
+        )
         // TODO show toast
       } else {
-        $.set('errorMap', {});
+        $.set('errorMap', {})
         if (onValidSubmit) {
-          onValidSubmit();
+          onValidSubmit()
         }
       }
       $.set(
         'dirtyMap',
         arrToMap(fields, f => f.name),
-      );
+      )
     },
     // Form component
     render: observer(props => {
-      $.props = props;
-      const { $: $parent, fields, k } = $.props;
-      const RnForm = Platform.OS === 'web' ? 'form' : React.Fragment;
-      const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null;
+      $.props = props
+      const { $: $parent, fields, k } = $.props
+      const RnForm = Platform.OS === 'web' ? 'form' : React.Fragment
+      const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
       return (
         <RnForm {...formProps}>
           {fields.map((f, i) => (
@@ -71,8 +71,8 @@ const useForm = () => {
                   // Add change handler to trigger validate
                   // TODO update all flows to regular funcs
                   v => {
-                    $.onFieldChange(f.name, v);
-                    return v;
+                    $.onFieldChange(f.name, v)
+                    return v
                   },
                   // Default change handler from store
                   f.onValueChange === undefined
@@ -88,10 +88,10 @@ const useForm = () => {
             />
           ))}
         </RnForm>
-      );
+      )
     }),
-  }));
-  return [$.render, $.submit, $.onFieldChange];
-};
+  }))
+  return [$.render, $.submit, $.onFieldChange]
+}
 
-export default useForm;
+export default useForm

@@ -1,9 +1,9 @@
-import flow from 'lodash/flow';
-import { observer } from 'mobx-react';
-import React from 'react';
+import flow from 'lodash/flow'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
+import g from '../global'
+import intl from '../intl/intl'
 import {
   Animated,
   Dimensions,
@@ -11,8 +11,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from '../Rn';
-import { useAnimationOnDidMount } from '../utils/animation';
+} from '../Rn'
+import { useAnimationOnDidMount } from '../utils/animation'
 
 const css = StyleSheet.create({
   RootAlert: {
@@ -66,15 +66,15 @@ const css = StyleSheet.create({
     textAlign: 'center',
     color: g.revColor,
   },
-});
+})
 
 const Alert = ({ error, prompt, ...props }) => {
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
     translateY: [Dimensions.get('screen').height, 0],
-  });
+  })
   if (prompt) {
-    const { message, onConfirm, onDismiss, title, ...rest } = prompt;
+    const { message, onConfirm, onDismiss, title, ...rest } = prompt
     Object.assign(props, {
       title,
       message:
@@ -88,10 +88,10 @@ const Alert = ({ error, prompt, ...props }) => {
       onConfirm: flow([g.dismissAlert, onConfirm].filter(f => f)),
       onDismiss: flow([g.dismissAlert, onDismiss].filter(f => f)),
       ...rest,
-    });
+    })
   } else if (error) {
-    const { err, message, unexpectedErr, ...rest } = error;
-    const errMessage = unexpectedErr?.message || err?.message || err;
+    const { err, message, unexpectedErr, ...rest } = error
+    const errMessage = unexpectedErr?.message || err?.message || err
     Object.assign(props, {
       title: intl`Error`,
       message: (
@@ -106,9 +106,9 @@ const Alert = ({ error, prompt, ...props }) => {
       onConfirm: g.dismissAlert,
       onDismiss: g.dismissAlert,
       ...rest,
-    });
+    })
   } else {
-    return null;
+    return null
   }
   return (
     <View style={[StyleSheet.absoluteFill, css.RootAlert]}>
@@ -153,14 +153,14 @@ const Alert = ({ error, prompt, ...props }) => {
         </View>
       </Animated.View>
     </View>
-  );
-};
+  )
+}
 
 const RootAlert = observer(() => {
   if (!g.alertsCount || !g.alerts[0]) {
-    return null;
+    return null
   }
-  return <Alert {...g.alerts[0]} />;
-});
+  return <Alert {...g.alerts[0]} />
+})
 
-export default RootAlert;
+export default RootAlert

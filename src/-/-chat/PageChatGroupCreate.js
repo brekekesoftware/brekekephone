@@ -1,31 +1,31 @@
-import { computed } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { computed } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import UserItem from '../-contact/UserItem';
-import uc from '../api/uc';
-import g from '../global';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl, { intlDebug } from '../intl/intl';
-import { TouchableOpacity } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
-import { arrToMap } from '../utils/toMap';
+import UserItem from '../-contact/UserItem'
+import uc from '../api/uc'
+import g from '../global'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl, { intlDebug } from '../intl/intl'
+import { TouchableOpacity } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
+import { arrToMap } from '../utils/toMap'
 
 @observer
 class PageChatGroupCreate extends React.Component {
   @computed get buddyIds() {
-    return contactStore.ucUsers.map(u => u.id);
+    return contactStore.ucUsers.map(u => u.id)
   }
   @computed get buddyById() {
-    return arrToMap(contactStore.ucUsers, 'id', u => u);
+    return arrToMap(contactStore.ucUsers, 'id', u => u)
   }
 
   state = {
     name: '',
     members: [],
-  };
+  }
 
   render() {
     return (
@@ -52,48 +52,48 @@ class PageChatGroupCreate extends React.Component {
           </TouchableOpacity>
         ))}
       </Layout>
-    );
+    )
   }
 
   setName = name => {
     this.setState({
       name,
-    });
-  };
+    })
+  }
   toggleBuddy = buddy => {
-    const { members } = this.state;
+    const { members } = this.state
     if (members.includes(buddy)) {
       this.setState({
         members: members.filter(_ => _ !== buddy),
-      });
+      })
     } else {
       this.setState({
         members: [...members, buddy],
-      });
+      })
     }
-  };
+  }
   create = () => {
-    const { members, name } = this.state;
+    const { members, name } = this.state
     if (!name.trim()) {
       g.showError({
         message: intlDebug`Group name is required`,
-      });
-      return;
+      })
+      return
     }
     uc.createChatGroup(name, members)
       .then(this.onCreateSuccess)
-      .catch(this.onCreateFailure);
-  };
+      .catch(this.onCreateFailure)
+  }
   onCreateSuccess = group => {
-    chatStore.upsertGroup(group);
-    uc.joinChatGroup(group.id);
-    g.goToPageChatRecents();
-  };
+    chatStore.upsertGroup(group)
+    uc.joinChatGroup(group.id)
+    g.goToPageChatRecents()
+  }
   onCreateFailure = err => {
     g.showError({
       message: intlDebug`Failed to create the group chat`,
       err,
-    });
-  };
+    })
+  }
 }
-export default PageChatGroupCreate;
+export default PageChatGroupCreate

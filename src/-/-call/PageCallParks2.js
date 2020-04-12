@@ -1,5 +1,5 @@
-import React from 'react';
+import React from 'react'
 
-import PageCallParks from './PageCallParks';
+import PageCallParks from './PageCallParks'
 
-export default p => <PageCallParks {...p} callParks2 />;
+export default p => <PageCallParks {...p} callParks2 />

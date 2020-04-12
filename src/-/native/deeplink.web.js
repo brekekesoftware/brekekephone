@@ -1,18 +1,18 @@
-import parse from './deeplink-parse';
+import parse from './deeplink-parse'
 
-let alreadyHandleFirstOpen = false;
-const params = parse(window.location);
+let alreadyHandleFirstOpen = false
+const params = parse(window.location)
 
 const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
-    return Promise.resolve(null);
+    return Promise.resolve(null)
   }
-  alreadyHandleFirstOpen = true;
-  return Promise.resolve(params);
-};
+  alreadyHandleFirstOpen = true
+  return Promise.resolve(params)
+}
 
 const setUrlParams = () => {
   // Polyfill
-};
+}
 
-export { getUrlParams, setUrlParams };
+export { getUrlParams, setUrlParams }

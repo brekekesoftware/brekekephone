@@ -1,8 +1,8 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
+import Svg, { Path } from 'react-native-svg'
 
-import v from '../variables';
+import v from '../variables'
 
 const css = StyleSheet.create({
   Icon: {
@@ -10,7 +10,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+})
 
 const Icon = ({ color, path, size = v.iconSize, viewBox, style, ...p }) => (
   <View {...p} style={[css.Icon, style]}>
@@ -23,6 +23,6 @@ const Icon = ({ color, path, size = v.iconSize, viewBox, style, ...p }) => (
       <Path d={path} fill={color} />
     </Svg>
   </View>
-);
+)
 
-export default Icon;
+export default Icon

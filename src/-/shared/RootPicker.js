@@ -1,9 +1,9 @@
-import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
+import g from '../global'
+import intl from '../intl/intl'
 import {
   Animated,
   Dimensions,
@@ -12,8 +12,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from '../Rn';
-import { useAnimationOnDidMount } from '../utils/animation';
+} from '../Rn'
+import { useAnimationOnDidMount } from '../utils/animation'
 
 const css = StyleSheet.create({
   Picker: {
@@ -67,15 +67,15 @@ const css = StyleSheet.create({
     top: 10,
     right: 10,
   },
-});
+})
 
 const Picker = p => {
   const backdropCss = useAnimationOnDidMount({
     opacity: [0, 1],
-  });
+  })
   const y = useAnimationOnDidMount({
     translateY: [Dimensions.get('screen').height, 0],
-  });
+  })
   return (
     <View style={[StyleSheet.absoluteFill, css.Picker]}>
       <Animated.View
@@ -89,13 +89,13 @@ const Picker = p => {
       <Animated.ScrollView style={[css.Picker_Inner, { transform: [y] }]}>
         <View style={css.Picker_Options}>
           {p.options.map((o, i) => {
-            const isSelected = `${p.selectedKey}` === `${o.key}`;
+            const isSelected = `${p.selectedKey}` === `${o.key}`
             return (
               <TouchableOpacity
                 key={i}
                 onPress={() => {
-                  p.onSelect(o.key);
-                  g.dismissPicker();
+                  p.onSelect(o.key)
+                  g.dismissPicker()
                 }}
                 style={[
                   css.Picker_Option,
@@ -115,7 +115,7 @@ const Picker = p => {
                   style={css.Picker_Icon}
                 />
               </TouchableOpacity>
-            );
+            )
           })}
         </View>
         <TouchableOpacity
@@ -133,11 +133,11 @@ const Picker = p => {
         </TouchableOpacity>
       </Animated.ScrollView>
     </View>
-  );
-};
+  )
+}
 
 const RootPicker = observer(
   () => g.currentPicker && <Picker {...g.currentPicker} />,
-);
+)
 
-export default RootPicker;
+export default RootPicker

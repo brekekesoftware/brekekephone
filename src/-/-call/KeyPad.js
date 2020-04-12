@@ -1,15 +1,8 @@
-import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js';
-import React from 'react';
+import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import {
-  Icon,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn';
+import g from '../global'
+import { Icon, Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
 
 const css = StyleSheet.create({
   KeyPad_Number: {
@@ -34,14 +27,14 @@ const css = StyleSheet.create({
     borderRadius: 40,
     paddingVertical: 20,
   },
-});
+})
 
 const keys = [
   ['1', '2', '3'],
   ['4', '5', '6'],
   ['7', '8', '9'],
   ['*', '0', '#'],
-];
+]
 
 const KeyPad = p => (
   <React.Fragment>
@@ -79,6 +72,6 @@ const KeyPad = p => (
       </TouchableOpacity>
     </View>
   </React.Fragment>
-);
+)
 
-export default KeyPad;
+export default KeyPad

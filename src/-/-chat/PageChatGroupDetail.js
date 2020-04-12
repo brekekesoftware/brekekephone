@@ -1,35 +1,35 @@
-import { computed } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
-import { Platform } from 'react-native';
+import { computed } from 'mobx'
+import { observer } from 'mobx-react'
+import React from 'react'
+import { Platform } from 'react-native'
 
-import uc from '../api/uc';
-import ChatInput from '../Footer/ChatInput';
-import g from '../global';
-import callStore from '../global/callStore';
-import chatStore from '../global/chatStore';
-import contactStore from '../global/contactStore';
-import intl, { intlDebug } from '../intl/intl';
-import pickFile from '../native/pickFile';
-import saveBlob from '../native/saveBlob';
-import Layout from '../shared/Layout';
-import { arrToMap } from '../utils/toMap';
-import { numberOfChatsPerLoad } from './config';
-import MessageList from './MessageList';
+import uc from '../api/uc'
+import ChatInput from '../Footer/ChatInput'
+import g from '../global'
+import callStore from '../global/callStore'
+import chatStore from '../global/chatStore'
+import contactStore from '../global/contactStore'
+import intl, { intlDebug } from '../intl/intl'
+import pickFile from '../native/pickFile'
+import saveBlob from '../native/saveBlob'
+import Layout from '../shared/Layout'
+import { arrToMap } from '../utils/toMap'
+import { numberOfChatsPerLoad } from './config'
+import MessageList from './MessageList'
 
 @observer
 class PageChatGroupDetail extends React.Component {
   @computed get chatIds() {
     return (chatStore.messagesByThreadId[this.props.groupId] || []).map(
       m => m.id,
-    );
+    )
   }
   @computed get chatById() {
     return arrToMap(
       chatStore.messagesByThreadId[this.props.groupId] || [],
       'id',
       m => m,
-    );
+    )
   }
 
   state = {
@@ -41,13 +41,13 @@ class PageChatGroupDetail extends React.Component {
       url: '',
       fileType: '',
     },
-  };
+  }
   componentDidMount() {
-    const noChat = !this.chatIds.length;
+    const noChat = !this.chatIds.length
     if (noChat) {
-      this.loadRecent();
+      this.loadRecent()
     } else {
-      setTimeout(this.onContentSizeChange, 170);
+      setTimeout(this.onContentSizeChange, 170)
     }
   }
 
@@ -59,10 +59,10 @@ class PageChatGroupDetail extends React.Component {
         openFilePicker={() => pickFile(this.sendFile)}
         text={this.state.editingText}
       />
-    );
-  };
+    )
+  }
   render() {
-    const gr = chatStore.getGroup(this.props.groupId);
+    const gr = chatStore.getGroup(this.props.groupId)
     return (
       <Layout
         compact
@@ -101,47 +101,47 @@ class PageChatGroupDetail extends React.Component {
           resolveChat={this.resolveChat}
         />
       </Layout>
-    );
+    )
   }
 
   setViewRef = ref => {
-    this.view = ref;
-  };
+    this.view = ref
+  }
 
-  _justMounted = true;
-  _closeToBottom = true;
+  _justMounted = true
+  _closeToBottom = true
   onContentSizeChange = () => {
     if (this._closeToBottom) {
       this.view.scrollToEnd({
         animated: !this._justMounted,
-      });
+      })
       if (this._justMounted) {
-        this._justMounted = false;
+        this._justMounted = false
       }
     }
-  };
+  }
   onScroll = ev => {
-    ev = ev.nativeEvent;
-    const layoutSize = ev.layoutMeasurement;
-    const layoutHeight = layoutSize.height;
-    const contentOffset = ev.contentOffset;
-    const contentSize = ev.contentSize;
-    const contentHeight = contentSize.height;
-    const paddingToBottom = 20;
+    ev = ev.nativeEvent
+    const layoutSize = ev.layoutMeasurement
+    const layoutHeight = layoutSize.height
+    const contentOffset = ev.contentOffset
+    const contentSize = ev.contentSize
+    const contentHeight = contentSize.height
+    const paddingToBottom = 20
     this._closeToBottom =
-      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom;
-  };
+      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
+  }
 
-  me = uc.me();
+  me = uc.me()
   resolveBuddy = creator => {
-    if (creator === this.me.id) return this.me;
-    return contactStore.getUCUser(creator) || {};
-  };
+    if (creator === this.me.id) return this.me
+    return contactStore.getUCUser(creator) || {}
+  }
   resolveChat = (id, index) => {
-    const chat = this.chatById[id];
-    const text = chat.text;
-    const file = chatStore.filesMap[chat.file];
-    const creator = this.resolveBuddy(chat.creator);
+    const chat = this.chatById[id]
+    const text = chat.text
+    const file = chatStore.filesMap[chat.file]
+    const creator = this.resolveBuddy(chat.creator)
     return {
       id,
       creatorId: creator.id,
@@ -151,201 +151,201 @@ class PageChatGroupDetail extends React.Component {
       text,
       created: chat.created,
       createdByMe: creator.id === this.me.id,
-    };
-  };
+    }
+  }
 
   loadRecent() {
-    this.setState({ loadingRecent: true });
+    this.setState({ loadingRecent: true })
     uc.getGroupChats(this.props.groupId, {
       max: numberOfChatsPerLoad,
     })
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats);
-        setTimeout(this.onContentSizeChange, 170);
+        chatStore.pushMessages(this.props.groupId, chats)
+        setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to get recent chats`,
           err,
-        });
+        })
       })
       .then(() => {
-        this.setState({ loadingRecent: false });
-      });
+        this.setState({ loadingRecent: false })
+      })
   }
 
   loadMore = () => {
-    this.setState({ loadingMore: true });
-    const oldestChat = this.chatById[this.chatIds[0]] || {};
-    const oldestCreated = oldestChat.created || 0;
-    const max = numberOfChatsPerLoad;
-    const end = oldestCreated;
+    this.setState({ loadingMore: true })
+    const oldestChat = this.chatById[this.chatIds[0]] || {}
+    const oldestCreated = oldestChat.created || 0
+    const max = numberOfChatsPerLoad
+    const end = oldestCreated
     const query = {
       max,
       end,
-    };
+    }
     uc.getGroupChats(this.props.groupId, query)
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats);
+        chatStore.pushMessages(this.props.groupId, chats)
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to get more chats`,
           err,
-        });
+        })
       })
       .then(() => {
-        this.setState({ loadingMore: false });
-      });
-  };
+        this.setState({ loadingMore: false })
+      })
+  }
 
   setEditingText = editingText => {
     this.setState({
       editingText,
-    });
-  };
+    })
+  }
 
-  submitting = false;
+  submitting = false
   submitEditingText = () => {
     if (this.submitting) {
-      return;
+      return
     }
-    const txt = this.state.editingText.trim();
+    const txt = this.state.editingText.trim()
     if (!txt) {
-      return;
+      return
     }
-    this.submitting = true;
+    this.submitting = true
     uc.sendGroupChatText(this.props.groupId, txt)
       .then(chat => {
-        chatStore.pushMessages(this.props.groupId, [chat]);
-        this.setState({ editingText: '' });
+        chatStore.pushMessages(this.props.groupId, [chat])
+        this.setState({ editingText: '' })
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to send the message`,
           err,
-        });
+        })
       })
       .then(() => {
-        this.submitting = false;
-      });
-  };
+        this.submitting = false
+      })
+  }
 
   leave = () => {
     uc.leaveChatGroup(this.props.groupId)
       .then(() => {
-        chatStore.removeGroup(this.props.groupId);
-        g.goToPageChatRecents();
+        chatStore.removeGroup(this.props.groupId)
+        g.goToPageChatRecents()
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to leave the group`,
           err,
-        });
-      });
-  };
+        })
+      })
+  }
 
   invite = () => {
-    g.goToPageChatGroupInvite({ groupId: this.props.groupId });
-  };
+    g.goToPageChatGroupInvite({ groupId: this.props.groupId })
+  }
   call = (target, bVideoEnabled) => {
     callStore.startCall(target, {
       videoEnabled: bVideoEnabled,
-    });
-  };
+    })
+  }
   callVoiceConference = () => {
-    let target = this.props.groupId;
+    let target = this.props.groupId
     if (!target.startsWith('uc')) {
-      target = 'uc' + this.props.groupId;
+      target = 'uc' + this.props.groupId
     }
-    this.call(target, false);
-  };
+    this.call(target, false)
+  }
   callVideoConference = () => {
-    let target = this.props.groupId;
+    let target = this.props.groupId
     if (!target.startsWith('uc')) {
-      target = 'uc' + this.props.groupId;
+      target = 'uc' + this.props.groupId
     }
-    this.call(target, true);
-  };
+    this.call(target, true)
+  }
 
   readFile = file => {
     if (Platform.OS === 'web') {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
-      const fileType = file.type ? file.type.split('/')[0] : '';
+      const fileType = file.type ? file.type.split('/')[0] : ''
       reader.onload = async event => {
-        const url = event.target.result;
-        this.setState({ blobFile: { url: url, fileType: fileType } });
-      };
-      reader.readAsDataURL(file);
+        const url = event.target.result
+        this.setState({ blobFile: { url: url, fileType: fileType } })
+      }
+      reader.readAsDataURL(file)
     } else {
-      const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+      const type = ['PNG', 'JPG', 'JPEG', 'GIF']
       const fileType = type.includes(file.name.split('.').pop().toUpperCase())
         ? 'image'
-        : 'other';
-      this.setState({ blobFile: { url: file.uri, fileType: fileType } });
+        : 'other'
+      this.setState({ blobFile: { url: file.uri, fileType: fileType } })
     }
-  };
+  }
 
   sendFile = file => {
-    this.readFile(file);
-    const groupId = this.props.groupId;
+    this.readFile(file)
+    const groupId = this.props.groupId
     uc.sendFiles(groupId, file)
       .then(this.onSendFileSuccess)
-      .catch(this.onSendFileFailure);
-  };
+      .catch(this.onSendFileFailure)
+  }
   onSendFileSuccess = res => {
-    const groupId = this.props.groupId;
-    Object.assign(res.file, this.state.blobFile);
-    chatStore.upsertFile(res.file);
-    chatStore.pushMessages(groupId, res.chat);
-  };
+    const groupId = this.props.groupId
+    Object.assign(res.file, this.state.blobFile)
+    chatStore.upsertFile(res.file)
+    chatStore.pushMessages(groupId, res.chat)
+  }
   onSendFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to send file`,
       err,
-    });
-  };
+    })
+  }
   acceptFile = file => {
     uc.acceptFile(file.id)
       .then(blob => this.onAcceptFileSuccess(blob, file))
-      .catch(this.onAcceptFileFailure);
-  };
+      .catch(this.onAcceptFileFailure)
+  }
 
   onAcceptFileSuccess = (blob, file) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF'];
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
     const fileType = type.includes(file.name.split('.').pop().toUpperCase())
       ? 'image'
-      : 'other';
-    const reader = new FileReader();
+      : 'other'
+    const reader = new FileReader()
     reader.onload = async event => {
-      const url = event.target.result;
+      const url = event.target.result
       await Object.assign(chatStore.filesMap[file.id], {
         url: url,
         fileType: fileType,
-      });
-    };
+      })
+    }
 
-    reader.readAsDataURL(blob);
+    reader.readAsDataURL(blob)
 
-    saveBlob(blob, file.name);
-  };
+    saveBlob(blob, file.name)
+  }
 
   onAcceptFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to accept file`,
       err,
-    });
-  };
+    })
+  }
   rejectFile = file => {
-    uc.rejectFile(file).catch(this.onRejectFileFailure);
-  };
+    uc.rejectFile(file).catch(this.onRejectFileFailure)
+  }
   onRejectFileFailure = err => {
     g.showError({
       message: intlDebug`Failed to reject file`,
       err,
-    });
-  };
+    })
+  }
 }
 
-export default PageChatGroupDetail;
+export default PageChatGroupDetail

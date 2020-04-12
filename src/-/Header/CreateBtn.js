@@ -1,8 +1,8 @@
-import { mdiPlus } from '@mdi/js';
-import React from 'react';
+import { mdiPlus } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import { Icon, StyleSheet, TouchableOpacity } from '../Rn';
+import g from '../global'
+import { Icon, StyleSheet, TouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   CreateBtn: {
@@ -17,7 +17,7 @@ const css = StyleSheet.create({
   CreateBtn__white: {
     backgroundColor: g.bg,
   },
-});
+})
 
 const CreateBtn = ({ onPress, white }) => (
   <TouchableOpacity
@@ -26,6 +26,6 @@ const CreateBtn = ({ onPress, white }) => (
   >
     <Icon color={white ? 'black' : 'white'} path={mdiPlus} />
   </TouchableOpacity>
-);
+)
 
-export default CreateBtn;
+export default CreateBtn

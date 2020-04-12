@@ -8,23 +8,16 @@ import {
   mdiPlay,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+} from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import callStore from '../global/callStore';
-import intl from '../intl/intl';
-import {
-  Icon,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn';
-import ButtonIcon from '../shared/ButtonIcon';
-import formatDuration from '../utils/formatDuration';
+import g from '../global'
+import callStore from '../global/callStore'
+import intl from '../intl/intl'
+import { Icon, Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import ButtonIcon from '../shared/ButtonIcon'
+import formatDuration from '../utils/formatDuration'
 
 const css = StyleSheet.create({
   CallBar: {
@@ -53,16 +46,16 @@ const css = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
-});
+})
 
 @observer
 class CallBar extends React.Component {
   render() {
     const bVisible =
-      g.stacks.filter(t => t.name === 'PageCallManage').length === 0;
-    const c = callStore.currentCall;
+      g.stacks.filter(t => t.name === 'PageCallManage').length === 0
+    const c = callStore.currentCall
     if (!bVisible || !c || (c.incoming && !c.answered)) {
-      return null;
+      return null
     }
     return (
       <View style={css.CallBar}>
@@ -131,8 +124,8 @@ class CallBar extends React.Component {
           </View>
         </TouchableOpacity>
       </View>
-    );
+    )
   }
 }
 
-export default CallBar;
+export default CallBar

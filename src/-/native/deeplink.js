@@ -1,25 +1,25 @@
-import { Linking } from 'react-native';
+import { Linking } from 'react-native'
 
-import authStore, { compareProfile } from '../global/authStore';
-import parse from './deeplink-parse';
+import authStore, { compareProfile } from '../global/authStore'
+import parse from './deeplink-parse'
 
-let alreadyHandleFirstOpen = false;
-let urlParams = null;
+let alreadyHandleFirstOpen = false
+let urlParams = null
 
 const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
-    return Promise.resolve(urlParams);
+    return Promise.resolve(urlParams)
   }
-  alreadyHandleFirstOpen = true;
-  return Linking.getInitialURL().then(parse);
-};
+  alreadyHandleFirstOpen = true
+  return Linking.getInitialURL().then(parse)
+}
 
 const setUrlParams = p => {
-  urlParams = p;
-};
+  urlParams = p
+}
 
 Linking.addEventListener('url', e => {
-  const p = (urlParams = parse(e.url));
+  const p = (urlParams = parse(e.url))
   // Check against the current user
   if (
     !p ||
@@ -31,9 +31,9 @@ Linking.addEventListener('url', e => {
       pbxTenant: p.tenant,
     })
   ) {
-    return;
+    return
   }
-  authStore.handleUrlParams();
-});
+  authStore.handleUrlParams()
+})
 
-export { getUrlParams, setUrlParams };
+export { getUrlParams, setUrlParams }

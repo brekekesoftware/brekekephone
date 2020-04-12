@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-import g from '../global';
-import { StyleSheet, View } from '../Rn';
-import BackBtn from './BackBtn';
-import CreateBtn from './CreateBtn';
-import Dropdown from './Dropdown';
-import Navigation from './Navigation';
-import Title from './Title';
+import g from '../global'
+import { StyleSheet, View } from '../Rn'
+import BackBtn from './BackBtn'
+import CreateBtn from './CreateBtn'
+import Dropdown from './Dropdown'
+import Navigation from './Navigation'
+import Title from './Title'
 
 const css = StyleSheet.create({
   Header: {
@@ -27,7 +27,7 @@ const css = StyleSheet.create({
   Inner__hasBackBtn: {
     paddingLeft: 35,
   },
-});
+})
 
 const Header = ({
   compact,
@@ -40,7 +40,7 @@ const Header = ({
   title,
   transparent,
 }) => {
-  const [dropdownActive, setDropdownActive] = useState(false);
+  const [dropdownActive, setDropdownActive] = useState(false)
   return (
     <React.Fragment>
       <View style={css.Header}>
@@ -76,7 +76,7 @@ const Header = ({
         )
       }
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

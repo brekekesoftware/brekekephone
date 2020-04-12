@@ -1,15 +1,15 @@
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
-import { observer } from 'mobx-react';
-import React from 'react';
+import cloneDeep from 'lodash/cloneDeep'
+import isEqual from 'lodash/isEqual'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import authStore from '../global/authStore';
-import intl from '../intl/intl';
-import { Text, View } from '../Rn';
-import Layout from '../shared/Layout';
-import useForm from '../utils/useForm';
-import useStore from '../utils/useStore';
+import g from '../global'
+import authStore from '../global/authStore'
+import intl from '../intl/intl'
+import { Text, View } from '../Rn'
+import Layout from '../shared/Layout'
+import useForm from '../utils/useForm'
+import useStore from '../utils/useStore'
 
 const ProfileCreateForm = observer(props => {
   const $ = useStore(() => ({
@@ -29,21 +29,21 @@ const ProfileCreateForm = observer(props => {
             ...g.genEmptyProfile(),
             ...cloneDeep(props.updatingProfile),
             id: p.id,
-          }));
+          }))
         },
         confirmText: intl`RESET`,
-      });
+      })
     },
     //
     onAddingParkSubmit: () => {
       $.set('profile', p => {
-        $.addingPark = $.addingPark.trim();
+        $.addingPark = $.addingPark.trim()
         if ($.addingPark) {
-          p.parks.push($.addingPark);
-          $.addingPark = '';
+          p.parks.push($.addingPark)
+          $.addingPark = ''
         }
-        return p;
-      });
+        return p
+      })
     },
     onAddingParkRemove: i => {
       g.showPrompt({
@@ -59,39 +59,39 @@ const ProfileCreateForm = observer(props => {
         ),
         onConfirm: () => {
           $.set('profile', p => {
-            p.parks = p.parks.filter((p, _i) => _i !== i);
-            return p;
-          });
+            p.parks = p.parks.filter((p, _i) => _i !== i)
+            return p
+          })
         },
-      });
+      })
     },
     //
     hasUnsavedChanges: () => {
-      const p = props.updatingProfile || g.genEmptyProfile();
+      const p = props.updatingProfile || g.genEmptyProfile()
       if (!props.updatingProfile) {
         Object.assign(p, {
           id: $.profile.id,
-        });
+        })
       }
-      return !isEqual($.profile, p);
+      return !isEqual($.profile, p)
     },
     onBackBtnPress: () => {
       if (!$.hasUnsavedChanges()) {
-        props.onBack();
-        return;
+        props.onBack()
+        return
       }
       g.showPrompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,
         confirmText: intl`DISCARD`,
-      });
+      })
     },
     onValidSubmit: () => {
-      props.onSave($.profile, $.hasUnsavedChanges());
+      props.onSave($.profile, $.hasUnsavedChanges())
     },
-  }));
-  const [Form, submitForm, revalidate] = useForm();
+  }))
+  const [Form, submitForm, revalidate] = useForm()
   return (
     <Layout
       description={
@@ -205,16 +205,16 @@ const ProfileCreateForm = observer(props => {
             onValueChange: v => {
               $.set('profile', p => {
                 if (v && !p.ucHostname && !p.ucPort) {
-                  p.ucHostname = p.pbxHostname;
-                  p.ucPort = p.pbxPort;
+                  p.ucHostname = p.pbxHostname
+                  p.ucPort = p.pbxPort
                   // TODO
                   // revalidate('ucHostname', 'ucPort');
-                  revalidate('ucHostname', p.ucHostname);
-                  revalidate('ucPort', p.ucPort);
+                  revalidate('ucHostname', p.ucHostname)
+                  revalidate('ucPort', p.ucPort)
                 }
-                p.ucEnabled = v;
-                return p;
-              });
+                p.ucEnabled = v
+                return p
+              })
             },
           },
           {
@@ -260,7 +260,7 @@ const ProfileCreateForm = observer(props => {
         onValidSubmit={$.onValidSubmit}
       />
     </Layout>
-  );
-});
+  )
+})
 
-export default ProfileCreateForm;
+export default ProfileCreateForm

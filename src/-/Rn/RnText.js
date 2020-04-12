@@ -1,8 +1,8 @@
-import pickBy from 'lodash/pickBy';
-import React, { forwardRef } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import pickBy from 'lodash/pickBy'
+import React, { forwardRef } from 'react'
+import { Animated, StyleSheet, Text } from 'react-native'
 
-import v from '../variables';
+import v from '../variables'
 
 const css = StyleSheet.create({
   RnText: {
@@ -58,7 +58,7 @@ const css = StyleSheet.create({
   padding: {
     paddingHorizontal: 10,
   },
-});
+})
 
 const wrap = Component =>
   forwardRef(({ singleLine, style, ...props }, ref) => (
@@ -76,9 +76,9 @@ const wrap = Component =>
         style,
       ]}
     />
-  ));
+  ))
 
-const RnText = wrap(Text);
-Animated.Text = wrap(Animated.Text);
+const RnText = wrap(Text)
+Animated.Text = wrap(Animated.Text)
 
-export default RnText;
+export default RnText

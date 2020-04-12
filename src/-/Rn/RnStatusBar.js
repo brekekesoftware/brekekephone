@@ -1,8 +1,8 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import React from 'react'
+import { Platform, StatusBar, StyleSheet, View } from 'react-native'
+import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
-import v from '../variables';
+import v from '../variables'
 
 const css = StyleSheet.create({
   RnStatusBar: {
@@ -27,7 +27,7 @@ const css = StyleSheet.create({
     borderBottomWidth: 1,
     ...v.backdropZindex,
   },
-});
+})
 
 const RnStatusBar = props =>
   Platform.OS === 'web' ? null : (
@@ -40,6 +40,6 @@ const RnStatusBar = props =>
       <StatusBar backgroundColor={v.hoverBg} barStyle="dark-content" />
       <View style={css.Border} />
     </View>
-  );
+  )
 
-export default RnStatusBar;
+export default RnStatusBar

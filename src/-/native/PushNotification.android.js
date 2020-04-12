@@ -1,37 +1,37 @@
-import './callkeep';
+import './callkeep'
 
-import FCM, { FCMEvent } from 'react-native-fcm';
+import FCM, { FCMEvent } from 'react-native-fcm'
 
-import { AppRegistry, AsyncStorage } from '../Rn';
-import parse from './PushNotification-parse';
+import { AppRegistry, AsyncStorage } from '../Rn'
+import parse from './PushNotification-parse'
 
-const { Notification, RefreshToken } = FCMEvent;
+const { Notification, RefreshToken } = FCMEvent
 
 const getBadgeNumber = async () => {
-  let n = await AsyncStorage.getItem('androidBadgeNumber');
+  let n = await AsyncStorage.getItem('androidBadgeNumber')
   if (typeof n === 'string') {
-    n = n.replace(/\D+/g, '');
+    n = n.replace(/\D+/g, '')
   }
-  return parseInt(n) || 0;
-};
+  return parseInt(n) || 0
+}
 const setBadgeNumber = n => {
-  AsyncStorage.setItem('androidBadgeNumber', '' + n);
-};
+  AsyncStorage.setItem('androidBadgeNumber', '' + n)
+}
 
-let fcmPnToken = '';
+let fcmPnToken = ''
 const onToken = t => {
   if (t) {
-    fcmPnToken = t;
+    fcmPnToken = t
   }
-};
+}
 const onNotification = async n => {
-  n = await parse(n);
+  n = await parse(n)
   if (!n) {
-    return;
+    return
   }
   //
-  const badge = (await getBadgeNumber()) + 1;
-  await setBadgeNumber(badge);
+  const badge = (await getBadgeNumber()) + 1
+  await setBadgeNumber(badge)
   //
   FCM.presentLocalNotification({
     body: 'Click to ' + (n.isCall ? 'answer' : 'view'),
@@ -48,34 +48,34 @@ const onNotification = async n => {
     icon: 'ic_launcher',
     my_custom_data: 'local_notification',
     is_local_notification: 'local_notification',
-  });
-};
+  })
+}
 
 const PushNotification = {
   getToken: () => {
-    return Promise.resolve(fcmPnToken);
+    return Promise.resolve(fcmPnToken)
   },
   register: async () => {
     try {
-      await FCM.requestPermissions();
-      FCM.enableDirectChannel();
+      await FCM.requestPermissions()
+      FCM.enableDirectChannel()
       await FCM.createNotificationChannel({
         id: 'default',
         name: 'Brekeke Phone',
         description: 'Brekeke Phone notification channel',
         priority: 'high',
-      });
-      FCM.on(RefreshToken, onToken);
-      FCM.on(Notification, onNotification);
-      await FCM.getFCMToken().then(onToken);
-      const n = await FCM.getInitialNotification();
-      onNotification(n);
+      })
+      FCM.on(RefreshToken, onToken)
+      FCM.on(Notification, onNotification)
+      await FCM.getFCMToken().then(onToken)
+      const n = await FCM.getInitialNotification()
+      onNotification(n)
     } catch (err) {
-      console.error('Failed to register push notification', err);
+      console.error('Failed to register push notification', err)
     }
   },
   resetBadgeNumber: () => {
-    setBadgeNumber(0);
+    setBadgeNumber(0)
     FCM.presentLocalNotification({
       body: 'Reset badge',
       number: 0,
@@ -89,17 +89,17 @@ const PushNotification = {
       icon: 'ic_launcher',
       my_custom_data: 'local_notification',
       is_local_notification: 'local_notification',
-    });
+    })
   },
-};
+}
 
 // TODO
 AppRegistry.registerHeadlessTask(
   'RNCallKeepBackgroundMessage',
   () => ({ callUUID, handle, name }) => {
     // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
-    return Promise.resolve();
+    return Promise.resolve()
   },
-);
+)
 
-export default PushNotification;
+export default PushNotification

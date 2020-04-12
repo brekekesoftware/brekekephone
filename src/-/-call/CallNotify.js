@@ -1,12 +1,12 @@
-import { mdiCheck, mdiClose } from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { mdiCheck, mdiClose } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import callStore from '../global/callStore';
-import intl from '../intl/intl';
-import { StyleSheet, Text, View } from '../Rn';
-import ButtonIcon from '../shared/ButtonIcon';
+import g from '../global'
+import callStore from '../global/callStore'
+import intl from '../intl/intl'
+import { StyleSheet, Text, View } from '../Rn'
+import ButtonIcon from '../shared/ButtonIcon'
 
 const css = StyleSheet.create({
   Notify: {
@@ -27,14 +27,14 @@ const css = StyleSheet.create({
   Notify_Btn_accept: {
     borderColor: g.colors.primary,
   },
-});
+})
 
 @observer
 class CallNotify extends React.Component {
   render() {
-    const c = callStore.incomingCall;
+    const c = callStore.incomingCall
     if (!c) {
-      return null;
+      return null
     }
     return (
       <View style={css.Notify}>
@@ -63,8 +63,8 @@ class CallNotify extends React.Component {
           style={css.Notify_Btn_accept}
         />
       </View>
-    );
+    )
   }
 }
 
-export default CallNotify;
+export default CallNotify

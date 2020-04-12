@@ -1,9 +1,9 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import g from '../global';
-import { Animated, Dimensions, StyleSheet, View } from '../Rn';
-import { useAnimationOnDidMount } from '../utils/animation';
+import g from '../global'
+import { Animated, Dimensions, StyleSheet, View } from '../Rn'
+import { useAnimationOnDidMount } from '../utils/animation'
 
 const css = StyleSheet.create({
   Stack: {
@@ -12,13 +12,13 @@ const css = StyleSheet.create({
   Stack__hidden: {
     opacity: 0,
   },
-});
+})
 
 const Stack = ({ Component, ...p }) => {
   const x = useAnimationOnDidMount({
     translateX: [Dimensions.get('screen').width, 0],
-  });
-  const OuterComponent = p.isRoot ? View : Animated.View;
+  })
+  const OuterComponent = p.isRoot ? View : Animated.View
   return (
     <OuterComponent
       style={[
@@ -30,8 +30,8 @@ const Stack = ({ Component, ...p }) => {
     >
       <Component {...p} />
     </OuterComponent>
-  );
-};
+  )
+}
 
 const RootStacks = observer(() =>
   g.stacks.map((s, i) => (
@@ -44,6 +44,6 @@ const RootStacks = observer(() =>
       {...s}
     />
   )),
-);
+)
 
-export default RootStacks;
+export default RootStacks

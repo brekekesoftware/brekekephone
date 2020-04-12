@@ -1,52 +1,52 @@
-import { mdiCheck, mdiTranslate } from '@mdi/js';
-import { observer } from 'mobx-react';
-import React, { Component } from 'react';
+import { mdiCheck, mdiTranslate } from '@mdi/js'
+import { observer } from 'mobx-react'
+import React, { Component } from 'react'
 
-import uc from '../api/uc';
-import g from '../global';
-import authStore from '../global/authStore';
-import intl, { intlDebug } from '../intl/intl';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
+import uc from '../api/uc'
+import g from '../global'
+import authStore from '../global/authStore'
+import intl, { intlDebug } from '../intl/intl'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
 
 @observer
 class PageSettingsOther extends Component {
   state = {
     status: '',
     statusText: '',
-  };
+  }
   componentDidMount() {
-    const me = uc.me();
+    const me = uc.me()
     this.setState({
       status: me.status,
       statusText: me.statusText,
-    });
+    })
   }
   setStatusText = statusText => {
-    this.setState({ statusText });
-  };
+    this.setState({ statusText })
+  }
   submitStatusText = () => {
-    this.setStatus(this.state.status, this.state.statusText);
-  };
+    this.setStatus(this.state.status, this.state.statusText)
+  }
   submitStatus = status => {
-    this.setStatus(status, this.state.statusText);
-  };
+    this.setStatus(status, this.state.statusText)
+  }
   setStatus = (status, statusText) => {
     uc.setStatus(status, statusText)
       .then(() => {
-        const me = uc.me();
+        const me = uc.me()
         this.setState({
           status: me.status,
           statusText: me.statusText,
-        });
+        })
       })
       .catch(err => {
         g.showError({
           message: intlDebug`Failed to change UC status`,
           err,
-        });
-      });
-  };
+        })
+      })
+  }
   render() {
     return (
       <Layout
@@ -105,8 +105,8 @@ class PageSettingsOther extends Component {
           </React.Fragment>
         )}
       </Layout>
-    );
+    )
   }
 }
 
-export default PageSettingsOther;
+export default PageSettingsOther

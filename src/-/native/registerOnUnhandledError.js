@@ -1,13 +1,13 @@
 import {
   setJSExceptionHandler,
   setNativeExceptionHandler,
-} from 'react-native-exception-handler';
+} from 'react-native-exception-handler'
 
 const registerOnUnhandledError = fn => {
-  setJSExceptionHandler(fn);
+  setJSExceptionHandler(fn)
   setNativeExceptionHandler(nativeErr => {
     //
-  });
-};
+  })
+}
 
-export default registerOnUnhandledError;
+export default registerOnUnhandledError

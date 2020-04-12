@@ -5,16 +5,16 @@ import {
   mdiDotsHorizontal,
   mdiServerNetwork,
   mdiWeb,
-} from '@mdi/js';
-import { observer } from 'mobx-react';
-import React from 'react';
+} from '@mdi/js'
+import { observer } from 'mobx-react'
+import React from 'react'
 
-import FooterActions from '../Footer/Actions';
-import g from '../global';
-import authStore from '../global/authStore';
-import intl from '../intl/intl';
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn';
-import Field from '../shared/Field';
+import FooterActions from '../Footer/Actions'
+import g from '../global'
+import authStore from '../global/authStore'
+import intl from '../intl/intl'
+import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import Field from '../shared/Field'
 
 const css = StyleSheet.create({
   ProfileSignInItem: {
@@ -40,7 +40,7 @@ const css = StyleSheet.create({
     left: 15,
     right: 15,
   },
-});
+})
 
 const ProfileSignInItem = observer(props => {
   if (props.empty) {
@@ -56,9 +56,9 @@ const ProfileSignInItem = observer(props => {
           />
         </View>
       </View>
-    );
+    )
   }
-  const p = g.profilesMap[props.id];
+  const p = g.profilesMap[props.id]
   return (
     <View
       style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
@@ -103,21 +103,21 @@ const ProfileSignInItem = observer(props => {
                 </React.Fragment>
               ),
               onConfirm: () => {
-                g.removeProfile(p.id);
+                g.removeProfile(p.id)
               },
-            });
+            })
           }}
           onBackIcon={mdiClose}
           onMore={() => g.goToPageProfileUpdate({ id: p.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
-            authStore.signIn(p.id);
+            authStore.signIn(p.id)
           }}
           onNextText={intl`SIGN IN`}
         />
       </View>
     </View>
-  );
-});
+  )
+})
 
-export default ProfileSignInItem;
+export default ProfileSignInItem

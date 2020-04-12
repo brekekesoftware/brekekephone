@@ -1,9 +1,9 @@
-import { mdiKeyboardBackspace } from '@mdi/js';
-import React from 'react';
+import { mdiKeyboardBackspace } from '@mdi/js'
+import React from 'react'
 
-import g from '../global';
-import { Platform, StyleSheet, TouchableOpacity, View } from '../Rn';
-import Field from './Field';
+import g from '../global'
+import { Platform, StyleSheet, TouchableOpacity, View } from '../Rn'
+import Field from './Field'
 
 const css = StyleSheet.create({
   FieldButton: {
@@ -38,7 +38,7 @@ const css = StyleSheet.create({
       },
     ],
   },
-});
+})
 
 const FieldButton = ({ style, ...p }) => (
   <TouchableOpacity
@@ -55,6 +55,6 @@ const FieldButton = ({ style, ...p }) => (
       />
     </View>
   </TouchableOpacity>
-);
+)
 
-export default FieldButton;
+export default FieldButton

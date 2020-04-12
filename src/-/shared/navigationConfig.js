@@ -2,12 +2,12 @@ import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
-} from '@mdi/js';
+} from '@mdi/js'
 
-import g from '../global';
-import authStore from '../global/authStore';
-import intl from '../intl/intl';
-import { arrToMap } from '../utils/toMap';
+import g from '../global'
+import authStore from '../global/authStore'
+import intl from '../intl/intl'
+import { arrToMap } from '../utils/toMap'
 
 const genMenus = () => {
   const arr = [
@@ -73,102 +73,102 @@ const genMenus = () => {
       ],
       defaultSubMenuKey: 'profile',
     },
-  ];
+  ]
   //
   arr.forEach((m, i) => {
     m.subMenusMap = arrToMap(
       m.subMenus,
       s => s.key,
       s => s,
-    );
-    m.defaultSubMenu = m.subMenusMap[m.defaultSubMenuKey];
+    )
+    m.defaultSubMenu = m.subMenusMap[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
         if (s.ucRequired && !authStore.currentProfile.ucEnabled) {
-          m.defaultSubMenu.navFn();
-          return;
+          m.defaultSubMenu.navFn()
+          return
         }
-        g[s.navFnKey]();
-        saveNavigation(i, s.key);
-      };
-    });
-    m.navFn = () => {
-      let k = authStore.currentProfile.navSubMenus?.[i];
-      if (!(k in m.subMenusMap)) {
-        k = m.defaultSubMenuKey;
+        g[s.navFnKey]()
+        saveNavigation(i, s.key)
       }
-      m.subMenusMap[k].navFn();
-    };
-  });
-  return arr;
-};
+    })
+    m.navFn = () => {
+      let k = authStore.currentProfile.navSubMenus?.[i]
+      if (!(k in m.subMenusMap)) {
+        k = m.defaultSubMenuKey
+      }
+      m.subMenusMap[k].navFn()
+    }
+  })
+  return arr
+}
 
-let lastLocale = g.locale;
-let lastMenus = genMenus();
+let lastLocale = g.locale
+let lastMenus = genMenus()
 export const menus = () => {
   if (lastLocale !== g.locale) {
-    lastLocale = g.locale;
-    lastMenus = genMenus();
+    lastLocale = g.locale
+    lastMenus = genMenus()
   }
-  return lastMenus;
-};
+  return lastMenus
+}
 
 const saveNavigation = (i, k) => {
-  const arr = menus();
-  const m = arr[i];
-  const p = authStore.currentProfile;
+  const arr = menus()
+  const m = arr[i]
+  const p = authStore.currentProfile
   if (!m || !p) {
-    return;
+    return
   }
   if (!(k in m.subMenusMap)) {
-    k = m.defaultSubMenuKey;
+    k = m.defaultSubMenuKey
   }
-  normalizeSavedNavigation();
+  normalizeSavedNavigation()
   if (m.key !== 'settings') {
-    p.navIndex = i;
+    p.navIndex = i
   }
-  p.navSubMenus[i] = k;
-  g.saveProfilesToLocalStorage();
-};
+  p.navSubMenus[i] = k
+  g.saveProfilesToLocalStorage()
+}
 const normalizeSavedNavigation = () => {
-  const arr = menus();
-  const p = authStore.currentProfile;
+  const arr = menus()
+  const p = authStore.currentProfile
   if (!arr[p.navIndex]) {
-    p.navIndex = 0;
+    p.navIndex = 0
   }
   if (p.navSubMenus?.length !== arr.length) {
-    p.navSubMenus = arr.map(m => null);
+    p.navSubMenus = arr.map(m => null)
   }
   arr.forEach((m, i) => {
     if (!(p.navSubMenus[i] in m.subMenusMap)) {
-      p.navSubMenus[i] = m.defaultSubMenuKey;
+      p.navSubMenus[i] = m.defaultSubMenuKey
     }
-  });
-};
+  })
+}
 
 g.goToPageIndex = () => {
   if (!authStore.currentProfile) {
-    g.goToPageProfileSignIn();
-    return;
+    g.goToPageProfileSignIn()
+    return
   }
-  const arr = menus();
-  normalizeSavedNavigation();
-  const p = authStore.currentProfile;
-  const i = p.navIndex;
-  const k = p.navSubMenus[i];
-  arr[i].subMenusMap[k].navFn();
-};
+  const arr = menus()
+  normalizeSavedNavigation()
+  const p = authStore.currentProfile
+  const i = p.navIndex
+  const k = p.navSubMenus[i]
+  arr[i].subMenusMap[k].navFn()
+}
 
 export const getSubMenus = menu => {
-  const arr = menus();
-  const m = arr.find(m => m.key === menu);
+  const arr = menus()
+  const m = arr.find(m => m.key === menu)
   if (!m) {
     g.showError({
       unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
-    });
-    return [];
+    })
+    return []
   }
   return m.subMenus.filter(
     s => !(s.ucRequired && !authStore.currentProfile.ucEnabled),
-  );
-};
+  )
+}

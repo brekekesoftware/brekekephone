@@ -1,9 +1,9 @@
-const path = require('path');
-const CircularDependencyPlugin = require('circular-dependency-plugin');
+const path = require('path')
+const CircularDependencyPlugin = require('circular-dependency-plugin')
 
-const babelPluginIntl = require('./babelPluginIntl');
+const babelPluginIntl = require('./babelPluginIntl')
 
-const nullAlias = path.join(__dirname, './src/null');
+const nullAlias = path.join(__dirname, './src/null')
 
 module.exports = {
   babel: {
@@ -52,4 +52,4 @@ module.exports = {
       }),
     ],
   },
-};
+}

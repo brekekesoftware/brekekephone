@@ -1,16 +1,16 @@
-import { mdiKeyboardBackspace } from '@mdi/js';
-import filesize from 'filesize';
-import { observer } from 'mobx-react';
-import moment from 'moment';
-import React, { Component } from 'react';
+import { mdiKeyboardBackspace } from '@mdi/js'
+import filesize from 'filesize'
+import { observer } from 'mobx-react'
+import moment from 'moment'
+import React, { Component } from 'react'
 
-import g from '../global';
-import debugStore from '../global/debugStore';
-import intl from '../intl/intl';
-import { Platform, StyleSheet, Text } from '../Rn';
-import Field from '../shared/Field';
-import Layout from '../shared/Layout';
-import { currentVersion } from '../variables';
+import g from '../global'
+import debugStore from '../global/debugStore'
+import intl from '../intl/intl'
+import { Platform, StyleSheet, Text } from '../Rn'
+import Field from '../shared/Field'
+import Layout from '../shared/Layout'
+import { currentVersion } from '../variables'
 
 const css = StyleSheet.create({
   BtnIcon: {
@@ -23,14 +23,14 @@ const css = StyleSheet.create({
   Text: {
     paddingHorizontal: 20,
   },
-});
+})
 
 @observer
 class PageSettingsDebug extends Component {
   render() {
-    const v = currentVersion;
-    const nv = debugStore.remoteVersion;
-    const ago = moment(debugStore.remoteVersionLastCheck).fromNow();
+    const v = currentVersion
+    const nv = debugStore.remoteVersion
+    const ago = moment(debugStore.remoteVersionLastCheck).fromNow()
 
     return (
       <Layout
@@ -98,8 +98,8 @@ class PageSettingsDebug extends Component {
           </React.Fragment>
         )}
       </Layout>
-    );
+    )
   }
 }
 
-export default PageSettingsDebug;
+export default PageSettingsDebug

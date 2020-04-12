@@ -3,14 +3,14 @@ import {
   mdiClose,
   mdiPlus,
   mdiUnfoldMoreHorizontal,
-} from '@mdi/js';
-import flow from 'lodash/flow';
-import omit from 'lodash/omit';
-import { observer } from 'mobx-react';
-import React, { useRef } from 'react';
+} from '@mdi/js'
+import flow from 'lodash/flow'
+import omit from 'lodash/omit'
+import { observer } from 'mobx-react'
+import React, { useRef } from 'react'
 
-import g from '../global';
-import intl from '../intl/intl';
+import g from '../global'
+import intl from '../intl/intl'
 import {
   Icon,
   Keyboard,
@@ -21,8 +21,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from '../Rn';
-import useStore from '../utils/useStore';
+} from '../Rn'
+import useStore from '../utils/useStore'
 
 const css = StyleSheet.create({
   Field: {
@@ -152,7 +152,7 @@ const css = StyleSheet.create({
   Field_ErrorLabel: {
     color: g.revColor,
   },
-});
+})
 
 const Field = observer(({ ...props }) => {
   if (props.isGroup) {
@@ -168,16 +168,16 @@ const Field = observer(({ ...props }) => {
           {props.label}
         </Text>
       </View>
-    );
+    )
   }
   const $ = useStore(() => ({
     observable: {
       isFocusing: false,
     },
-  }));
-  const inputRef = useRef();
+  }))
+  const inputRef = useRef()
   if (!inputRef.current && $.isFocusing) {
-    $.set('isFocusing', false);
+    $.set('isFocusing', false)
   }
   if (props.onCreateBtnPress) {
     Object.assign(props, {
@@ -194,7 +194,7 @@ const Field = observer(({ ...props }) => {
           />
         </TouchableOpacity>
       ),
-    });
+    })
   }
   if (props.onRemoveBtnPress) {
     Object.assign(props, {
@@ -211,7 +211,7 @@ const Field = observer(({ ...props }) => {
           />
         </TouchableOpacity>
       ),
-    });
+    })
   }
   if (props.onValueChange) {
     if (props.type === 'Switch') {
@@ -220,10 +220,10 @@ const Field = observer(({ ...props }) => {
           props.valueRender || (v => (v ? intl`Enabled` : intl`Disabled`)),
         iconRender: v => <Switch enabled={v} style={css.Field_Switch} />,
         onTouchPress: () => {
-          props.onValueChange(!props.value);
-          Keyboard.dismiss();
+          props.onValueChange(!props.value)
+          Keyboard.dismiss()
         },
-      });
+      })
     } else if (props.type === 'Picker') {
       Object.assign(props, {
         valueRender: v => props.options.find(o => o.key === v)?.label || v,
@@ -232,11 +232,11 @@ const Field = observer(({ ...props }) => {
             options: props.options,
             selectedKey: props.value,
             onSelect: props.onValueChange,
-          });
-          Keyboard.dismiss();
+          })
+          Keyboard.dismiss()
         },
         icon: props.icon || mdiUnfoldMoreHorizontal,
-      });
+      })
     } else {
       Object.assign(props, {
         inputElement: (
@@ -270,21 +270,21 @@ const Field = observer(({ ...props }) => {
           />
         ),
         onTouchPress: () => inputRef.current?.focus(),
-      });
+      })
     }
   }
   if (props.disabled) {
-    props.inputElement = null;
-    props.onTouchPress = null;
+    props.inputElement = null
+    props.onTouchPress = null
   }
-  const Container = props.onTouchPress ? TouchableOpacity : View;
+  const Container = props.onTouchPress ? TouchableOpacity : View
   const label = (
     <View pointerEvents="none" style={css.Field_Label}>
       <Text small style={css.Field_LabelText}>
         {props.label}
       </Text>
     </View>
-  );
+  )
   return (
     <React.Fragment>
       <Container
@@ -343,7 +343,7 @@ const Field = observer(({ ...props }) => {
         </TouchableOpacity>
       )}
     </React.Fragment>
-  );
-});
+  )
+})
 
-export default Field;
+export default Field
