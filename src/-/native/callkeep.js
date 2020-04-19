@@ -22,6 +22,7 @@ const setup = async () => {
   }).catch(err => {
     // TODO
   })
+  RNCallKeep.setAvailable(true)
 }
 
 setTimeout(setup, 1000)

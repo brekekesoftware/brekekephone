@@ -65,18 +65,21 @@ class SIP extends EventEmitter {
     this.phone.dtmfSendMode = 1
     this.phone.ctiAutoAnswer = true
     this.phone.eventTalk = true
-
-    this.phone.addEventListener('phoneStatusChanged', ev => {
+    const phone = this.phone;
+    const h = ev => {
       if (!ev) {
         return
       }
       if (ev.phoneStatus === 'started') {
         return this.emit('connection-started')
       }
-      if (ev.phoneStatus === 'stopped') {
-        return this.emit('connection-stopped')
+      if (ev.phoneStatus === 'stopping' || ev.phoneStatus === 'stopped') {
+        phone.removeEventListener('phoneStatusChanged', h)
+        setTimeout(() => this.disconnect())
+        setTimeout(() => this.emit('connection-stopped'), 300)
       }
-    })
+    };
+    this.phone.addEventListener('phoneStatusChanged', h)
 
     // sessionId: "1"
     // sessionStatus: "dialing"
@@ -180,7 +183,9 @@ class SIP extends EventEmitter {
     }
   }
 
-  connect(profile) {
+  async connect(profile) {
+    this.disconnect()
+    await this.init()
     //
     let platformOs = Platform.OS
     if (platformOs === 'ios') {
@@ -225,7 +230,10 @@ class SIP extends EventEmitter {
   }
 
   disconnect() {
-    this.phone.stopWebRTC()
+    if (this.phone) {
+      this.phone.stopWebRTC()
+      this.phone = null
+    }
   }
 
   createSession(number, opts = {}) {
@@ -259,5 +267,4 @@ class SIP extends EventEmitter {
 }
 
 const sip = new SIP()
-sip.init()
 export default sip

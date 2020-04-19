@@ -154,12 +154,15 @@ class Api {
   }
 
   onSIPConnectionStopped = () => {
-    authStore.sipState = 'stopped'
+    authStore.sipState = 'failure'
+    authStore.sipTotalFailure += 1
+    setTimeout(() => sip.disconnect(), 300)
   }
 
   onSIPConnectionTimeout = () => {
     authStore.sipState = 'failure'
     authStore.sipTotalFailure += 1
+    sip.disconnect()
   }
 
   onSIPSessionStarted = call => {

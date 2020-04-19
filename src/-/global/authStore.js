@@ -1,6 +1,7 @@
 import debounce from 'lodash/debounce'
 import { computed, observable } from 'mobx'
 
+import sip from '../api/sip'
 import { intlDebug } from '../intl/intl'
 import { getUrlParams } from '../native/deeplink'
 import { AppState } from '../Rn'
@@ -153,6 +154,7 @@ class AuthStore {
     this.pbxState = 'stopped'
     this.pbxTotalFailure = 0
     this.sipState = 'stopped'
+    sip.disconnect()
     this.sipTotalFailure = 0
     this.ucState = 'stopped'
     this.ucTotalFailure = 0
