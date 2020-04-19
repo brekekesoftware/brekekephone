@@ -4,7 +4,8 @@ const uint8ArrayToUrlBase64 = arr =>
     .replace(/[+/]/g, '-')
 
 const PushNotification = {
-  register: () => {
+  register: initApp => {
+    setTimeout(initApp)
     if (!window.Notification || window.Notification.permission === 'granted') {
       return
     }

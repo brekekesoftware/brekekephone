@@ -1,33 +1,28 @@
 import * as UCClient from 'brekekejs/lib/ucclient'
 import debounce from 'lodash/debounce'
 import { observe } from 'mobx'
-import { observer } from 'mobx-react'
-import React from 'react'
 
 import uc from '../api/uc'
-import g from '../global'
-import authStore from '../global/authStore'
-import chatStore from '../global/chatStore'
-import contactStore from '../global/contactStore'
 import { intlDebug } from '../intl/intl'
+import g from '.'
+import authStore from './authStore'
+import chatStore from './chatStore'
+import contactStore from './contactStore'
 
-@observer
-class AuthUC extends React.Component {
-  constructor() {
-    // TODO notification login not work
-    super()
+class AuthUC {
+  auth() {
+    this._auth2()
     uc.on('connection-stopped', this.onConnectionStopped)
-    this.autoAuth()
-    this.clearObserve = observe(authStore, 'ucShouldAuth', this.autoAuth)
+    this.clearObserve = observe(authStore, 'ucShouldAuth', this._auth2)
   }
-  componentWillUnmount() {
-    this.clearObserve()
+  dispose() {
+    uc.off('connection-stopped', this.onConnectionStopped)
+    void this.clearObserve?.()
     uc.disconnect()
     authStore.ucState = 'stopped'
-    uc.off('connection-stopped', this.onConnectionStopped)
   }
 
-  auth = () => {
+  _auth = () => {
     uc.disconnect()
     authStore.ucState = 'connecting'
     authStore.ucLoginFromAnotherPlace = false
@@ -35,7 +30,7 @@ class AuthUC extends React.Component {
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure)
   }
-  autoAuth = debounce(() => authStore.ucShouldAuth && this.auth(), 100, {
+  _auth2 = debounce(() => authStore.ucShouldAuth && this._auth(), 100, {
     maxWait: 300,
   })
 
@@ -78,10 +73,6 @@ class AuthUC extends React.Component {
       message: intlDebug`Failed to load unread chat messages`,
       err,
     })
-  }
-
-  render() {
-    return null
   }
 }
 

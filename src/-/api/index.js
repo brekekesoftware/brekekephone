@@ -153,9 +153,13 @@ class Api {
     setTimeout(this.onPBXAndSipStarted, 170)
   }
 
-  onSIPConnectionStopped = () => {
-    authStore.sipState = 'failure'
-    authStore.sipTotalFailure += 1
+  onSIPConnectionStopped = e => {
+    if (!e?.reason && !e?.response) {
+      authStore.sipState = 'stopped'
+    } else {
+      authStore.sipState = 'failure'
+      authStore.sipTotalFailure += 1
+    }
     setTimeout(() => sip.disconnect(), 300)
   }
 

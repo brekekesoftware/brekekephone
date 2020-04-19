@@ -289,12 +289,5 @@ class AuthStore {
 
 const authStore = new AuthStore()
 
-const onAppStateChange = () => {
-  if (AppState.currentState === 'active') {
-    authStore.reconnect()
-  }
-}
-AppState.addEventListener('change', onAppStateChange)
-
 export { compareProfile }
 export default authStore

@@ -1,26 +1,22 @@
 import { observe } from 'mobx'
-import { observer } from 'mobx-react'
-import React from 'react'
 
 import pbx from '../api/pbx'
-import g from '../global'
-import authStore from '../global/authStore'
 import { intlDebug } from '../intl/intl'
+import g from '.'
+import authStore from './authStore'
 
-@observer
-class AuthPBX extends React.Component {
-  constructor() {
-    // TODO notification login not work
-    super()
-    this.autoAuth()
-    this.clearObserve = observe(authStore, 'pbxShouldAuth', this.autoAuth)
+class AuthPBX {
+  auth() {
+    this._auth2()
+    this.clearObserve = observe(authStore, 'pbxShouldAuth', this._auth2)
   }
-  componentWillUnmount() {
-    this.clearObserve()
+  dispose() {
+    void this.clearObserve?.()
     pbx.disconnect()
     authStore.pbxState = 'stopped'
   }
-  auth = () => {
+
+  _auth = () => {
     pbx.disconnect()
     authStore.pbxState = 'connecting'
     pbx
@@ -37,11 +33,7 @@ class AuthPBX extends React.Component {
         })
       })
   }
-  autoAuth = () => authStore.pbxShouldAuth && this.auth()
-
-  render() {
-    return null
-  }
+  _auth2 = () => authStore.pbxShouldAuth && this._auth()
 }
 
 export default AuthPBX

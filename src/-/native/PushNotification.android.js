@@ -24,7 +24,8 @@ const onToken = t => {
     fcmPnToken = t
   }
 }
-const onNotification = async n => {
+const onNotification = async (n, initApp) => {
+  initApp()
   n = await parse(n)
   if (!n) {
     return
@@ -55,8 +56,9 @@ const PushNotification = {
   getToken: () => {
     return Promise.resolve(fcmPnToken)
   },
-  register: async () => {
+  register: async initApp => {
     try {
+      setTimeout(initApp)
       await FCM.requestPermissions()
       FCM.enableDirectChannel()
       await FCM.createNotificationChannel({
@@ -66,10 +68,10 @@ const PushNotification = {
         priority: 'high',
       })
       FCM.on(RefreshToken, onToken)
-      FCM.on(Notification, onNotification)
+      FCM.on(Notification, n => onNotification(n, initApp))
       await FCM.getFCMToken().then(onToken)
       const n = await FCM.getInitialNotification()
-      onNotification(n)
+      onNotification(n, initApp)
     } catch (err) {
       console.error('Failed to register push notification', err)
     }

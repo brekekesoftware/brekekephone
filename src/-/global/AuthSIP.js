@@ -1,29 +1,24 @@
 import { observe } from 'mobx'
-import { observer } from 'mobx-react'
-import React from 'react'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
-import g from '../global'
-import authStore from '../global/authStore'
 import { intlDebug } from '../intl/intl'
+import g from '.'
+import authStore from './authStore'
 
-@observer
-class AuthSIP extends React.Component {
-  constructor() {
-    // TODO notification login not work
-    super()
-    this.autoAuth()
-    this.clearObserve = observe(authStore, 'sipShouldAuth', this.autoAuth)
+class AuthSIP {
+  auth() {
+    this._auth2()
+    this.clearObserve = observe(authStore, 'sipShouldAuth', this._auth2)
   }
-  componentWillUnmount() {
-    this.clearObserve()
+  dispose() {
+    void this.clearObserve?.()
     authStore.sipState = 'stopped'
     sip.disconnect()
   }
 
-  _auth = async () => {
+  _auth0 = async () => {
     authStore.sipState = 'connecting'
     //
     const pbxConfig = await pbx.getConfig()
@@ -71,8 +66,8 @@ class AuthSIP extends React.Component {
       pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
     })
   }
-  auth = () => {
-    this._auth().catch(err => {
+  _auth = () => {
+    this._auth0().catch(err => {
       authStore.sipState = 'failure'
       authStore.sipTotalFailure += 1
       sip.disconnect()
@@ -82,11 +77,7 @@ class AuthSIP extends React.Component {
       })
     })
   }
-  autoAuth = () => authStore.sipShouldAuth && this.auth()
-
-  render() {
-    return null
-  }
+  _auth2 = () => authStore.sipShouldAuth && this._auth()
 }
 
 export default AuthSIP

@@ -65,7 +65,7 @@ class SIP extends EventEmitter {
     this.phone.dtmfSendMode = 1
     this.phone.ctiAutoAnswer = true
     this.phone.eventTalk = true
-    const phone = this.phone;
+    const phone = this.phone
     const h = ev => {
       if (!ev) {
         return
@@ -76,9 +76,9 @@ class SIP extends EventEmitter {
       if (ev.phoneStatus === 'stopping' || ev.phoneStatus === 'stopped') {
         phone.removeEventListener('phoneStatusChanged', h)
         setTimeout(() => this.disconnect())
-        setTimeout(() => this.emit('connection-stopped'), 300)
+        setTimeout(() => this.emit('connection-stopped', ev), 300)
       }
-    };
+    }
     this.phone.addEventListener('phoneStatusChanged', h)
 
     // sessionId: "1"

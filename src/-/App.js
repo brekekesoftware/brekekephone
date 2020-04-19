@@ -8,6 +8,8 @@ import React, { useEffect } from 'react'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
+import CallBar from './-call/CallBar'
+import CallNotify from './-call/CallNotify'
 import PageBackgroundCalls from './-call/PageBackgroundCalls'
 import PageCallKeypad from './-call/PageCallKeypad'
 import PageCallManage from './-call/PageCallManage'
@@ -16,6 +18,7 @@ import PageCallParks2 from './-call/PageCallParks2'
 import PageCallRecents from './-call/PageCallRecents'
 import PageDtmfKeypad from './-call/PageDtmfKeypad'
 import PageTransferDial from './-call/PageTransferDial'
+import ChatGroupInvite, { UnreadChatNoti } from './-chat/ChatGroupInvite'
 import PageChatDetail from './-chat/PageChatDetail'
 import PageChatGroupCreate from './-chat/PageChatGroupCreate'
 import PageChatGroupDetail from './-chat/PageChatGroupDetail'
@@ -33,75 +36,101 @@ import PageSettingsOther from './-settings/PageSettingsOther'
 import PageSettingsProfile from './-settings/PageSettingsProfile'
 import api from './api'
 import g from './global'
+import AuthPBX from './global/AuthPBX'
+import AuthSIP from './global/AuthSIP'
 import authStore from './global/authStore'
+import AuthUC from './global/AuthUC'
 import chatStore from './global/chatStore'
 import contactStore from './global/contactStore'
 import intl from './intl/intl'
 import PushNotification from './native/PushNotification'
 import registerOnUnhandledError from './native/registerOnUnhandledError'
-import { Platform, StatusBar, StyleSheet, Text, View } from './Rn'
+import { AppState, Platform, StatusBar, StyleSheet, Text, View } from './Rn'
 import AnimatedSize from './shared/AnimatedSize'
+import CallVideos from './shared/CallVideos'
+import CallVoices from './shared/CallVoices'
 import RootAlert from './shared/RootAlert'
-import RootAuth from './shared/RootAuth'
 import RootPicker from './shared/RootPicker'
 import RootStacks from './shared/RootStacks'
 
-// Must wrap in setTimeout to make sure
-//    there's no state change when rendering
-setTimeout(() => {
-  registerOnUnhandledError(unexpectedErr => {
-    g.showError({ unexpectedErr })
-    return false
-  })
-
-  // Must load accounts here because when app wake
-  //    from notification, there's no rendering
-  g.loadProfilesFromLocalStorage()
-
-  PushNotification.register()
-  authStore.handleUrlParams()
-}, 100)
-
-setTimeout(g.goToPageIndex, 100)
-observe(authStore, 'signedInId', () => {
-  g.goToPageIndex()
-  chatStore.clearStore()
-  contactStore.clearStore()
-})
-
-// TODO: Only reset when logged in and AppState.current active
-// PushNotification.resetBadgeNumber();
-
-// TODO
+// API was a component but had been rewritten to a listener
 void api
 
-g.registerStacks({
-  isRoot: true,
-  PageProfileSignIn,
-  PageChatRecents,
-  PageContactPhonebook,
-  PageContactUsers,
-  PageCallKeypad,
-  PageCallRecents,
-  PageSettingsOther,
-  PageCallParks,
-  PageSettingsProfile,
+// Must wrap in setTimeout to make sure
+//    there's no state change when rendering
+const batchRender = setTimeout
+
+AppState.addEventListener('change', () => {
+  if (AppState.currentState === 'active') {
+    authStore.reconnect()
+    PushNotification.resetBadgeNumber()
+  }
 })
-g.registerStacks({
-  PageProfileCreate,
-  PageProfileUpdate,
-  PagePhonebookCreate,
-  PagePhonebookUpdate,
-  PageCallManage,
-  PageBackgroundCalls,
-  PageTransferDial,
-  PageDtmfKeypad,
-  PageChatDetail,
-  PageChatGroupCreate,
-  PageChatGroupInvite,
-  PageChatGroupDetail,
-  PageSettingsDebug,
-  PageCallParks2,
+registerOnUnhandledError(unexpectedErr => {
+  batchRender(() => g.showError({ unexpectedErr }))
+  return false
+})
+
+let alreadyInitApp = false
+PushNotification.register(() => {
+  if (alreadyInitApp) {
+    return
+  }
+  alreadyInitApp = true
+
+  g.registerStacks({
+    isRoot: true,
+    PageProfileSignIn,
+    PageChatRecents,
+    PageContactPhonebook,
+    PageContactUsers,
+    PageCallKeypad,
+    PageCallRecents,
+    PageSettingsOther,
+    PageCallParks,
+    PageSettingsProfile,
+  })
+  g.registerStacks({
+    PageProfileCreate,
+    PageProfileUpdate,
+    PagePhonebookCreate,
+    PagePhonebookUpdate,
+    PageCallManage,
+    PageBackgroundCalls,
+    PageTransferDial,
+    PageDtmfKeypad,
+    PageChatDetail,
+    PageChatGroupCreate,
+    PageChatGroupInvite,
+    PageChatGroupDetail,
+    PageSettingsDebug,
+    PageCallParks2,
+  })
+
+  g.goToPageIndex()
+
+  g.loadProfilesFromLocalStorage()
+  authStore.handleUrlParams()
+
+  const authPBX = new AuthPBX()
+  const authSIP = new AuthSIP()
+  const authUC = new AuthUC()
+
+  observe(authStore, 'signedInId', () => {
+    g.goToPageIndex()
+    chatStore.clearStore()
+    contactStore.clearStore()
+    if (authStore.signedInId) {
+      authStore.reconnect()
+      authPBX.auth()
+      authSIP.auth()
+      authUC.auth()
+    } else {
+      authPBX.dispose()
+      authSIP.dispose()
+      authUC.dispose()
+    }
+  })
 })
 
 const css = StyleSheet.create({
@@ -136,20 +165,28 @@ const App = observer(() => {
     sipConnectingOrFailure,
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
+    pbxTotalFailure,
+    sipTotalFailure,
+    ucTotalFailure,
   } = authStore
   let service = ''
+  let isRetrying = false
   if (pbxConnectingOrFailure) {
     service = intl`PBX`
+    isRetrying = pbxTotalFailure > 0
   } else if (sipConnectingOrFailure) {
     service = intl`SIP`
+    isRetrying = sipTotalFailure > 0
   } else if (ucConnectingOrFailure) {
     service = intl`UC`
+    isRetrying = ucTotalFailure > 0
   }
   let connMessage =
     service &&
     (isConnFailure
       ? intl`${service} connection failed`
-      : intl`Connecting to ${service}`)
+      : intl`Connecting to ${service}...`)
+  void isRetrying
   if (isConnFailure && ucConnectingOrFailure && ucLoginFromAnotherPlace) {
     connMessage = intl`UC signed in from another location`
   }
@@ -157,7 +194,7 @@ const App = observer(() => {
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <StatusBar />
-      {shouldShowConnStatus && (
+      {shouldShowConnStatus && !!authStore.signedInId && (
         <AnimatedSize
           style={[
             css.App_ConnectionStatus,
@@ -171,7 +208,17 @@ const App = observer(() => {
           </View>
         </AnimatedSize>
       )}
-      <RootAuth />
+
+      {!!authStore.signedInId && (
+        <React.Fragment>
+          <CallNotify />
+          <CallBar />
+          <CallVideos />
+          <CallVoices />
+          <ChatGroupInvite />
+          <UnreadChatNoti />
+        </React.Fragment>
+      )}
       <View style={css.App_Inner}>
         <RootStacks />
         <RootPicker />

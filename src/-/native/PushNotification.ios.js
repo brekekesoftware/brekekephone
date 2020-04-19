@@ -11,7 +11,8 @@ const onToken = t => {
     voipApnsToken = t
   }
 }
-const onNotification = async n => {
+const onNotification = async (n, initApp) => {
+  initApp()
   n = await parse(n)
   if (!n) {
     return
@@ -30,9 +31,12 @@ const onNotification = async n => {
 }
 
 const PushNotification = {
-  register: () => {
+  register: initApp => {
+    setTimeout(initApp)
     VoipPushNotification.addEventListener('register', onToken)
-    VoipPushNotification.addEventListener('notification', onNotification)
+    VoipPushNotification.addEventListener('notification', n =>
+      onNotification(n, initApp),
+    )
     VoipPushNotification.requestPermissions()
     VoipPushNotification.registerVoipToken()
   },
