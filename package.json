@@ -35,6 +35,7 @@
     "filesize": "6.1.0",
     "handlebars": "4.7.6",
     "helper-moment": "0.2.0",
+    "json-stable-stringify": "1.0.1",
     "jssip": "github:brekekesoftware/jssip#1e8446f930647bf9ebb1c2e642a38684db5729fd",
     "lodash": "4.17.15",
     "mobx": "5.15.4",

@@ -3,22 +3,24 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
+import g from '../global'
+
 class PBX extends EventEmitter {
   client = null
 
-  async connect(profile) {
+  async connect(p) {
     if (this.client) {
       return Promise.reject(new Error('PAL client is connected'))
     }
 
-    const wsUri = `wss://${profile.pbxHostname}:${profile.pbxPort}/pbx/ws`
-
+    const d = g.getProfileData(p)
+    const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
-      tenant: profile.pbxTenant,
-      login_user: profile.pbxUsername,
-      login_password: profile.pbxPassword,
-      _wn: profile.accessToken,
-      park: profile.parks,
+      tenant: p.pbxTenant,
+      login_user: p.pbxUsername,
+      login_password: p.pbxPassword,
+      _wn: d.accessToken,
+      park: p.parks,
       voicemail: 'self',
       user: '*',
       status: true,
@@ -64,6 +66,8 @@ class PBX extends EventEmitter {
       }
     }
 
+    // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
+    // {"time":1587451575120,"park":"777","status":"off"}
     this.client.notify_park = e => {
       // TODO
       // if (e.status === `on`) {

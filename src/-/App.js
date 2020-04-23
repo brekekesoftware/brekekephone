@@ -43,6 +43,8 @@ import AuthUC from './global/AuthUC'
 import chatStore from './global/chatStore'
 import contactStore from './global/contactStore'
 import intl from './intl/intl'
+import { setupCallKeep } from './native/callkeep'
+import { initCallKeepProcessor } from './native/callkeepProcessor'
 import PushNotification from './native/PushNotification'
 import registerOnUnhandledError from './native/registerOnUnhandledError'
 import { AppState, Platform, StatusBar, StyleSheet, Text, View } from './Rn'
@@ -77,6 +79,9 @@ PushNotification.register(() => {
     return
   }
   alreadyInitApp = true
+
+  setupCallKeep()
+  initCallKeepProcessor()
 
   g.registerStacks({
     isRoot: true,

@@ -183,7 +183,7 @@ class SIP extends EventEmitter {
     }
   }
 
-  async connect(profile) {
+  async connect(sipLoginOption) {
     this.disconnect()
     await this.init()
     //
@@ -206,7 +206,7 @@ class SIP extends EventEmitter {
       '/JsSIP ' +
       jssipVersion
     //
-    const config = profile.pbxTurnEnabled ? turnConfig : {}
+    const config = sipLoginOption.pbxTurnEnabled ? turnConfig : {}
     if (!config.pcConfig) {
       config.pcConfig = {}
     }
@@ -217,13 +217,13 @@ class SIP extends EventEmitter {
     this.phone.setDefaultCallOptions(config)
     //
     this.phone.startWebRTC({
-      host: profile.hostname,
-      port: profile.port,
+      host: sipLoginOption.hostname,
+      port: sipLoginOption.port,
       tls: true,
-      tenant: profile.tenant,
-      user: profile.username,
-      password: profile.password,
-      auth: profile.accessToken,
+      tenant: sipLoginOption.tenant,
+      user: sipLoginOption.username,
+      password: sipLoginOption.password,
+      auth: sipLoginOption.accessToken,
       useVideoClient: true,
       userAgent: lUseragent,
     })

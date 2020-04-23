@@ -3,6 +3,7 @@ import React from 'react'
 
 import UserItem from '../-contact/UserItem'
 import g from '../global'
+// import intl from '../intl/intl'
 import chatStore from '../global/chatStore'
 import { StyleSheet, TouchableOpacity } from '../Rn'
 import { formatDateTimeSemantic } from './config'
@@ -15,46 +16,22 @@ const css = StyleSheet.create({
 
 const ListUsers = p => (
   <React.Fragment>
-    {p.groupIds
-      .filter(id => id)
-      .map(id => {
-        const l = p.getLastChat(id)
-        return (
-          <TouchableOpacity
-            key={id}
-            onPress={() => p.onGroupSelect(id)}
-            style={chatStore.getThreadConfig(id).isUnread && css.Unread}
-          >
-            <UserItem
-              key={id}
-              {...p.groupById[id]}
-              lastMessage={l?.text}
-              isRecentChat={p.isRecentChat}
-              lastMessageDate={formatDateTimeSemantic(l?.created)}
-            />
-          </TouchableOpacity>
-        )
-      })}
-    {p.userIds
-      .filter(id => id)
-      .map(id => {
-        const l = p.getLastChat(id)
-        return (
-          <TouchableOpacity
-            key={id}
-            onPress={() => p.onUserSelect(id)}
-            style={chatStore.getThreadConfig(id).isUnread && css.Unread}
-          >
-            <UserItem
-              key={id}
-              {...p.userById[id]}
-              lastMessage={l?.text}
-              isRecentChat={p.isRecentChat}
-              lastMessageDate={formatDateTimeSemantic(l?.created)}
-            />
-          </TouchableOpacity>
-        )
-      })}
+    {p.recents.map(({ id, name, group, text, unread, created }) => (
+      <TouchableOpacity
+        key={id}
+        onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO group
+        style={(unread || chatStore.getThreadConfig(id).isUnread) && css.Unread}
+      >
+        <UserItem
+          key={id}
+          name={name}
+          {...(group ? p.groupById : p.userById)[id]}
+          lastMessage={text}
+          isRecentChat
+          lastMessageDate={formatDateTimeSemantic(created)}
+        />
+      </TouchableOpacity>
+    ))}
   </React.Fragment>
 )
 

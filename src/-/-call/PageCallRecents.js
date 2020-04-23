@@ -4,7 +4,6 @@ import moment from 'moment'
 import React from 'react'
 
 import UserItem from '../-contact/UserItem'
-import g from '../global'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
@@ -28,8 +27,7 @@ class PageCallRecents extends React.Component {
     }
   }
   getMatchedCalls = () => {
-    const calls =
-      authStore.currentProfile.recentCalls?.filter(this.isMatchUser) || []
+    const calls = authStore.currentData.recentCalls.filter(this.isMatchUser)
     // Backward compatibility to remove invalid items from the previous versions
     const filteredCalls = calls.filter(
       c =>
@@ -37,15 +35,6 @@ class PageCallRecents extends React.Component {
         // HH:mm - MMM D
         (c.created.length === 13 || c.created.length === 14),
     )
-    if (calls.length !== filteredCalls.length) {
-      // Use setTimeout to update observable after rendering
-      setTimeout(() => {
-        g.upsertProfile({
-          id: authStore.signedInId,
-          recentCalls: filteredCalls,
-        })
-      })
-    }
     //
     const today = moment().format('MMM D')
     return filteredCalls.map(c => ({

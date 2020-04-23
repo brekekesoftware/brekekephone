@@ -90,16 +90,12 @@ class AuthStore {
     return g.profiles.find(p => compareProfile(p, _p))
   }
   pushRecentCall = call => {
-    const recentCalls = [call, ...(this.currentProfile.recentCalls || [])]
-    if (recentCalls.length > 20) {
-      recentCalls.pop()
+    this.currentData.recentCalls = [call, ...this.currentData.recentCalls]
+    if (this.currentData.recentCalls.length > 20) {
+      this.currentData.recentCalls.pop()
     }
-    g.upsertProfile({
-      id: this.signedInId,
-      recentCalls,
-    })
+    g.saveProfilesToLocalStorage()
   }
-  //
   @computed get _profilesMap() {
     return arrToMap(g.profiles, 'id', p => p)
   }
@@ -111,12 +107,17 @@ class AuthStore {
   @computed get currentProfile() {
     return this.getProfile(this.signedInId)
   }
+  @computed get currentData() {
+    const p = this.currentProfile
+    return p && g.getProfileData(p)
+  }
   signIn = id => {
     const p = this.getProfile(id)
     if (!p) {
       return false
     }
-    if (!p.pbxPassword && !p.accessToken) {
+    const d = g.getProfileData(p)
+    if (!p.pbxPassword && !d.accessToken) {
       g.goToPageProfileUpdate(p.id)
       g.showError({
         message: intlDebug`The account password is empty`,
@@ -188,9 +189,6 @@ class AuthStore {
     const pbxPhoneIndex = `${parseInt(phone_idx) || 4}`
     //
     if (p) {
-      if (_wn) {
-        p.accessToken = _wn
-      }
       if (!p.pbxHostname) {
         p.pbxHostname = host
       }
@@ -198,9 +196,13 @@ class AuthStore {
         p.pbxPort = port
       }
       p.pbxPhoneIndex = pbxPhoneIndex
+      const d = g.getProfileData(p)
+      if (_wn) {
+        d.accessToken = _wn
+      }
       //
       g.upsertProfile(p)
-      if (p.pbxPassword || p.accessToken) {
+      if (p.pbxPassword || d.accessToken) {
         this.signIn(p.id)
       } else {
         g.goToPageProfileUpdate(p.id)
@@ -215,11 +217,11 @@ class AuthStore {
       pbxHostname: host,
       pbxPort: port,
       pbxPhoneIndex,
-      accessToken: _wn,
     }
+    const d = g.getProfileData(newP)
     //
     g.upsertProfile(newP)
-    if (newP.accessToken) {
+    if (d.accessToken) {
       this.signIn(newP.id)
     } else {
       g.goToPageProfileUpdate(newP.id)

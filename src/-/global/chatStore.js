@@ -3,6 +3,7 @@ import uniq from 'lodash/uniq'
 import { computed, observable } from 'mobx'
 
 import { arrToMap } from '../utils/toMap'
+import authStore from './authStore'
 
 class ChatStore {
   // id
@@ -13,9 +14,15 @@ class ChatStore {
   @observable messagesByThreadId = {}
   @observable threadConfig = {}
   @computed get unreadCount() {
-    return Object.values(this.threadConfig).filter(
-      v => v.isUnread && this.messagesByThreadId[v.id]?.length,
+    const idMap = {}
+    const l1 = Object.values(this.threadConfig).filter(v => {
+      idMap[v.id] = true
+      return v.isUnread && this.messagesByThreadId[v.id]?.length
+    }).length
+    const l2 = authStore.currentData.recentChats.filter(
+      c => !idMap[c.id] && c.unread,
     ).length
+    return l1 + l2
   }
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them

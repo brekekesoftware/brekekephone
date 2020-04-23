@@ -1,3 +1,6 @@
+import stringify from 'json-stable-stringify'
+import debounce from 'lodash/debounce'
+import uniqBy from 'lodash/uniqBy'
 import { v4 as uuid } from 'react-native-uuid'
 
 import { intlDebug } from '../intl/intl'
@@ -26,27 +29,31 @@ g.extends({
     // ucHostname: string
     // ucPort: string
     // ucPathname: string
-    // accessToken: string
     // displaySharedContacts: boolean?
     // displayOfflineUsers: boolean?
-    // recentCalls?[]
+    // navIndex?: number
+    // navSubMenus?: string[]
+    profiles: [],
+    get profilesMap() {
+      return arrToMap(g.profiles, 'id', p => p)
+    },
+    // id: string
+    // accessToken: string
+    // recentCalls[]
     //    id: string
     //    incoming: boolean
     //    answered: boolean
     //    partyName: string
     //    partyNumber: string
     //    created: Date
-    // navIndex?: number
-    // navSubMenus?: string[]
-    // noti?[]
-    //    id: string
-    //    to: string
-    //    body: string
-    //    createdAt: Date
-    profiles: [],
-    get profilesMap() {
-      return arrToMap(g.profiles, 'id', p => p)
-    },
+    // recentChats[]
+    //    id: string // thread id
+    //    name: string
+    //    text: string
+    //    group: boolean
+    //    unread: boolean
+    //    created: number
+    profileData: [],
   },
   profilesLoaded,
   genEmptyProfile: () => ({
@@ -63,7 +70,6 @@ g.extends({
     ucEnabled: false,
     ucHostname: '',
     ucPort: '',
-    accessToken: '',
   }),
   loadProfilesFromLocalStorage: async () => {
     let arr = await AsyncStorage.getItem('_api_profiles')
@@ -75,16 +81,26 @@ g.extends({
       }
     }
     if (arr) {
-      g.set('profiles', arr)
+      let { profileData, profiles } = arr
+      if (Array.isArray(arr)) {
+        profiles = arr
+        profileData = []
+      }
+      g.set('profiles', profiles)
+      g.set('profileData', uniqBy(profileData, 'id'))
     }
     if (resolveFn) {
       resolveFn()
       resolveFn = null
     }
   },
-  saveProfilesToLocalStorage: async (arr = g.profiles) => {
+  saveProfilesToLocalStorage: async () => {
     try {
-      await AsyncStorage.setItem('_api_profiles', JSON.stringify(arr))
+      const { profiles, profileData } = g
+      await AsyncStorage.setItem(
+        '_api_profiles',
+        JSON.stringify({ profiles, profileData }),
+      )
     } catch (err) {
       g.showError({
         message: intlDebug`Failed to save accounts to local storage`,
@@ -100,4 +116,33 @@ g.extends({
     g.remove('profiles', id)
     g.saveProfilesToLocalStorage()
   },
+  getProfileData: p => {
+    if (!p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
+      return null
+    }
+    const id = stringify({
+      u: p.pbxUsername,
+      t: p.pbxTenant,
+      h: p.pbxHostname,
+      p: p.pbxPort,
+    })
+    const d = g.profileData.find(d => d.id === id) || {
+      id,
+      accessToken: '',
+      recentCalls: [],
+      recentChats: [],
+    }
+    if (d.id !== g.profileData[0].id) {
+      g.xxxxx(d)
+    }
+    return d
+  },
+  xxxxx: debounce(d => {
+    const arr = [d, ...g.profileData.filter(d2 => d2.id !== d.id)]
+    if (arr.length > 20) {
+      arr.pop()
+    }
+    g.profileData = arr
+    g.saveProfilesToLocalStorage()
+  }, 300),
 })
