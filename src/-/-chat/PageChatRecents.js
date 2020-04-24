@@ -1,5 +1,6 @@
 import stringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
+import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -21,18 +22,13 @@ class PageChatRecents extends React.Component {
     return chats.length !== 0 ? chats[chats.length - 1] : {}
   }
   render() {
-    const groupIds = chatStore.groups
-      .filter(g => g.jointed)
-      .map(g => g.id)
-      .filter(id => id)
-    const userIds = chatStore.threadIdsOrderedByRecent
-      .filter(id => isNaN(id))
-      .filter(id => id)
+    const groupIds = chatStore.groups.filter(g => g.jointed).map(g => g.id)
+    const threadIds = chatStore.threadIdsOrderedByRecent
     const groupById = arrToMap(chatStore.groups, 'id', g => g)
     const userById = arrToMap(contactStore.ucUsers, 'id', u => u)
 
     const recentFromStorage = authStore.currentData.recentChats.filter(
-      c => groupIds.indexOf(c.id) < 0 && userIds.indexOf(c.id) < 0,
+      c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
     )
 
     const recentGroups = recentFromStorage.filter(c => c.group)
@@ -42,7 +38,7 @@ class PageChatRecents extends React.Component {
 
     const recentUsers = recentFromStorage.filter(c => !c.group)
     recentUsers.push(
-      ...userIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
+      ...threadIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )
 
     const fn = group => c => {
@@ -62,6 +58,7 @@ class PageChatRecents extends React.Component {
       }
     }
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
+    arr = uniqBy(arr, 'id')
     arr = orderBy(arr, 'created').reverse()
 
     setTimeout(() => {

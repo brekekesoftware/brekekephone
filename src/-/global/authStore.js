@@ -163,9 +163,10 @@ class AuthStore {
   }
 
   reconnect = debounce(() => {
-    authStore.pbxTotalFailure = 0
-    authStore.sipTotalFailure = 0
-    authStore.ucTotalFailure = 0
+    this.pbxTotalFailure = 0
+    this.sipTotalFailure = 0
+    this.ucTotalFailure = 0
+    this.ucLoginFromAnotherPlace = false
   }, 1000)
 
   handleUrlParams = async () => {
@@ -269,11 +270,7 @@ class AuthStore {
         return true
       }
       // Attempt to reconnect on notification if state is currently failure
-      ;['pbxState', 'sipState', 'ucState'].forEach(k => {
-        if (this[k] === 'failure') {
-          this[k] = 'stopped'
-        }
-      })
+      this.reconnect()
       return state !== 'active'
     }
     // Call signIn

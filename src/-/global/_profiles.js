@@ -135,15 +135,19 @@ g.extends({
     g.updateProfileDataDebounced(d)
     return d
   },
-  updateProfileDataDebounced: debounce(d => {
-    if (d.id === g.profileData[0]?.id) {
-      return
-    }
-    const arr = [d, ...g.profileData.filter(d2 => d2.id !== d.id)]
-    if (arr.length > 20) {
-      arr.pop()
-    }
-    g.profileData = arr
-    g.saveProfilesToLocalStorage()
-  }, 300, { maxWait: 3000 }),
+  updateProfileDataDebounced: debounce(
+    d => {
+      if (d.id === g.profileData[0]?.id) {
+        return
+      }
+      const arr = [d, ...g.profileData.filter(d2 => d2.id !== d.id)]
+      if (arr.length > 20) {
+        arr.pop()
+      }
+      g.profileData = arr
+      g.saveProfilesToLocalStorage()
+    },
+    300,
+    { maxWait: 3000 },
+  ),
 })

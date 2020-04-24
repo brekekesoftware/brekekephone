@@ -3,7 +3,7 @@ import React from 'react'
 
 import g from '../global'
 import chatStore from '../global/chatStore'
-import { Icon, Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
 import { menus } from '../shared/navigationConfig'
 
 export const css = StyleSheet.create({
@@ -37,12 +37,7 @@ export const css = StyleSheet.create({
     width: 20,
     height: 15,
     borderRadius: g.borderRadius,
-    paddingTop: 2,
-    ...Platform.select({
-      android: {
-        paddingTop: 3,
-      },
-    }),
+    paddingTop: 3,
     backgroundColor: g.colors.danger,
     overflow: 'hidden',
   },

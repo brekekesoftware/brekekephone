@@ -250,12 +250,12 @@ class PageChatDetail extends React.Component {
   }
   loadRecent = () => {
     this.setState({ loadingRecent: true })
-    uc.getBuddyChats(this.props.buddy, {
+    const { buddy: id } = this.props
+    uc.getBuddyChats(id, {
       max: numberOfChatsPerLoad,
     })
       .then(chats => {
-        const u = contactStore.getUCUser(this.props.buddy)
-        chatStore.pushMessages(u.id, chats)
+        chatStore.pushMessages(id, chats)
         setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
@@ -269,11 +269,6 @@ class PageChatDetail extends React.Component {
       })
   }
 
-  removeDuplicates = (array, key) => {
-    let lookup = new Set()
-    return array.filter(obj => !lookup.has(obj[key]) && lookup.add(obj[key]))
-  }
-
   loadMore = () => {
     this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
@@ -283,11 +278,10 @@ class PageChatDetail extends React.Component {
     const max = this.numberOfChatsPerLoadMore
     const end = oldestCreated
     const query = { max, end }
-    const u = contactStore.getUCUser(this.props.buddy)
-    uc.getBuddyChats(u?.id, query)
+    const { buddy: id } = this.props
+    uc.getBuddyChats(id, query)
       .then(chats => {
-        const u = contactStore.getUCUser(this.props.buddy)
-        chatStore.pushMessages(u.id, chats)
+        chatStore.pushMessages(id, chats)
       })
       .catch(err => {
         g.showError({
@@ -300,10 +294,7 @@ class PageChatDetail extends React.Component {
       })
       .then(() => {
         const { buddy: id } = this.props
-        const totalChatLoaded = this.removeDuplicates(
-          chatStore.messagesByThreadId[id],
-          'id',
-        ).length
+        const totalChatLoaded = chatStore.messagesByThreadId[id]?.length || 0
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
           chatStore.updateThreadConfig(id, false, {
             allMessagesLoaded: true,
