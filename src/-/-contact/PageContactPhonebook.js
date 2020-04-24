@@ -23,7 +23,7 @@ import Layout from '../shared/Layout'
 import { arrToMap } from '../utils/toMap'
 import UserItem from './UserItem'
 
-const numberOfContactsPerPage = 30
+const numberOfContactsPerPage = 100
 const formatPhoneNumber = number => number.replace(/\D+/g, '')
 
 const css = StyleSheet.create({

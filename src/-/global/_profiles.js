@@ -145,5 +145,5 @@ g.extends({
     }
     g.profileData = arr
     g.saveProfilesToLocalStorage()
-  }, 300),
+  }, 300, { maxWait: 3000 }),
 })

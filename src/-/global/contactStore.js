@@ -5,8 +5,8 @@ import { arrToMap } from '../utils/toMap'
 
 class ContactStore {
   @observable usersSearchTerm = ''
-
   @observable callSearchRecents = ''
+  alreadyLoadContactsFirstTime = false
 
   // id
   // name
@@ -124,6 +124,7 @@ class ContactStore {
     this.phoneBooks = []
     this.ucUsers = []
     this.pbxUsers = []
+    this.alreadyLoadContactsFirstTime = false
   }
 }
 
