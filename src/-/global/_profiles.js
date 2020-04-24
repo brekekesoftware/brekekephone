@@ -132,12 +132,13 @@ g.extends({
       recentCalls: [],
       recentChats: [],
     }
-    if (d.id !== g.profileData[0].id) {
-      g.xxxxx(d)
-    }
+    g.updateProfileDataDebounced(d)
     return d
   },
-  xxxxx: debounce(d => {
+  updateProfileDataDebounced: debounce(d => {
+    if (d.id === g.profileData[0]?.id) {
+      return
+    }
     const arr = [d, ...g.profileData.filter(d2 => d2.id !== d.id)]
     if (arr.length > 20) {
       arr.pop()
