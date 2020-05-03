@@ -1,6 +1,7 @@
 import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
-import { Platform } from 'react-native'
+import { AppState,Platform } from 'react-native'
+import RNCallKeep from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 
 import sip from '../api/sip'
@@ -61,16 +62,33 @@ export class CallStore {
     maxWait: 1000,
   })
 
-  upsertCall = _c => {
+  @action upsertCall = _c => {
     let c = this._calls.find(c => c.id === _c.id)
     if (!c) {
       c = new Call()
+      Object.assign(c, _c)
       this._calls = [c, ...this._calls]
+      if (AppState.currentState !== 'active') {
+        c.callkeep = true
+        RNCallKeep.displayIncomingCall(
+          c.uuid,
+          c.partyNumber,
+          !c.partyName || c.partyName === c.partyNumber
+            ? 'Brekeke Phone'
+            : c.partyName,
+        )
+      }
+    } else {
+      Object.assign(c, _c)
     }
-    Object.assign(c, _c)
   }
-  removeCall = id => {
+  @action removeCall = id => {
     this._calls = this._calls.filter(c => c.id !== id)
+  }
+
+  findByUuid = uuid => this._calls.find(c => c.uuid === uuid)
+  @action removeByUuid = uuid => {
+    this._calls = this._calls.filter(c => c.uuid !== uuid)
   }
 
   @action selectBackgroundCall = c => {

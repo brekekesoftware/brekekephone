@@ -2,17 +2,8 @@ import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import g from '../global'
+import callStore from '../global/callStore'
 import intl, { intlDebug } from '../intl/intl'
-
-export const callKeepEvents = {}
-const insertCallKeepEvent = (uuid, e) => {
-  if (AppState.currentState !== 'active') {
-    return
-  }
-  let arr = callKeepEvents[uuid] || []
-  callKeepEvents[uuid] = arr
-  arr.push(e)
-}
 
 export const setupCallKeep = async () => {
   if (Platform.OS === 'web') {
@@ -43,28 +34,40 @@ export const setupCallKeep = async () => {
   // callUUID (string)
   // name (string)
   RNCallKeep.addEventListener('didReceiveStartCallAction', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'didReceiveStartCallAction',
-    })
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'didReceiveStartCallAction',
+    // })
   })
 
   // callUUID (string)
   RNCallKeep.addEventListener('answerCall', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'answerCall',
-    })
-    // Do your normal `Answering` actions here
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'answerCall',
+    // })
+    const c = callStore.findByUuid(e.callUUID)
+    if (!c?.callkeep) {
+      //
+    } else {
+      callStore.answerCall(c)
+      RNCallKeep.setMutedCall(e.callUUID, false)
+      RNCallKeep.setOnHold(e.callUUID, false)
+    }
   })
 
   // callUUID (string)
   RNCallKeep.addEventListener('endCall', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'endCall',
-    })
-    // Do your normal `Hang Up` actions here
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'endCall',
+    // })
+    const c = callStore.findByUuid(e.callUUID)
+    if (!c?.callkeep) {
+      //
+    } else {
+      c.hangupWithUnhold()
+    }
   })
 
   RNCallKeep.addEventListener('didActivateAudioSession', () => {
@@ -89,10 +92,10 @@ export const setupCallKeep = async () => {
   // payload (object)
   //    VOIP push payload.
   RNCallKeep.addEventListener('didDisplayIncomingCall', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'didDisplayIncomingCall',
-    })
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'didDisplayIncomingCall',
+    // })
     // you might want to do following things when receiving this event:
     // - Start playing ringback if it is an outgoing call
   })
@@ -100,31 +103,41 @@ export const setupCallKeep = async () => {
   // muted (boolean)
   // callUUID (string)
   RNCallKeep.addEventListener('didPerformSetMutedCallAction', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'didPerformSetMutedCallAction',
-    })
-    //
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'didPerformSetMutedCallAction',
+    // })
+    const c = callStore.findByUuid(e.callUUID)
+    if (!c?.callkeep) {
+      //
+    } else {
+      c.toggleMuted()
+    }
   })
 
   // hold (boolean)
   // callUUID (string)
   RNCallKeep.addEventListener('didToggleHoldCallAction', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'didToggleHoldCallAction',
-    })
-    //
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'didToggleHoldCallAction',
+    // })
+    const c = callStore.findByUuid(e.callUUID)
+    if (!c?.callkeep) {
+      //
+    } else {
+      c.toggleHold()
+    }
   })
 
   // digits (string)
   //    The digits that emit the dtmf tone
   // callUUID (string)
   RNCallKeep.addEventListener('didPerformDTMFAction', e => {
-    insertCallKeepEvent(e.callUUID, {
-      ...e,
-      name: 'didPerformDTMFAction',
-    })
+    // insertCallKeepEvent(e.callUUID, {
+    //   ...e,
+    //   name: 'didPerformDTMFAction',
+    // })
     //
   })
 }

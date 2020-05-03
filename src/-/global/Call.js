@@ -1,4 +1,7 @@
 import { action, computed, observable } from 'mobx'
+import { Platform } from 'react-native'
+import RNCallKeep from 'react-native-callkeep'
+import { v4 as uuid } from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -14,6 +17,9 @@ export default class Call {
   @computed get title() {
     return this.partyName || this.partyNumber || this.pbxTalkerId || this.id
   }
+
+  uuid = uuid()
+  callkeep = false
 
   @observable incoming = false
   @observable answered = false
@@ -37,6 +43,9 @@ export default class Call {
   @observable muted = false
   @action toggleMuted = () => {
     this.muted = !this.muted
+    if (Platform.OS !== 'web' && this.callkeep) {
+      RNCallKeep.setMutedCall(this.uuid, this.muted)
+    }
     return sip.setMuted(this.muted, this.id)
   }
 
@@ -61,7 +70,13 @@ export default class Call {
     return pbx[this.holding ? 'holdTalker' : 'unholdTalker'](
       this.pbxTenant,
       this.pbxTalkerId,
-    ).catch(this._onToggleHoldFailure)
+    )
+      .then(() => {
+        if (Platform.OS !== 'web' && this.callkeep) {
+          RNCallKeep.setOnHold(this.uuid, this.holding)
+        }
+      })
+      .catch(this._onToggleHoldFailure)
   }
   @action _onToggleHoldFailure = err => {
     this.holding = !this.holding
