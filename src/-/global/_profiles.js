@@ -54,6 +54,7 @@ g.extends({
     //    unread: boolean
     //    created: number
     profileData: [],
+    profilesLoadedObservable: false,
   },
   profilesLoaded,
   genEmptyProfile: () => ({
@@ -92,6 +93,7 @@ g.extends({
     if (resolveFn) {
       resolveFn()
       resolveFn = null
+      g.set('profilesLoadedObservable', true)
     }
   },
   saveProfilesToLocalStorage: async () => {

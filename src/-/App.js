@@ -8,6 +8,7 @@ import React, { useEffect } from 'react'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
+import launch from '../assets/launch.png'
 import CallBar from './-call/CallBar'
 import CallNotify from './-call/CallNotify'
 import PageBackgroundCalls from './-call/PageBackgroundCalls'
@@ -46,7 +47,15 @@ import intl from './intl/intl'
 import { setupCallKeep } from './native/callkeep'
 import PushNotification from './native/PushNotification'
 import registerOnUnhandledError from './native/registerOnUnhandledError'
-import { AppState, Platform, StatusBar, StyleSheet, Text, View } from './Rn'
+import {
+  AppState,
+  Image,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from './Rn'
 import AnimatedSize from './shared/AnimatedSize'
 import CallVideos from './shared/CallVideos'
 import CallVoices from './shared/CallVoices'
@@ -80,6 +89,7 @@ PushNotification.register(() => {
   alreadyInitApp = true
 
   setupCallKeep()
+  g.loadProfilesFromLocalStorage()
 
   g.registerStacks({
     isRoot: true,
@@ -111,8 +121,6 @@ PushNotification.register(() => {
   })
 
   g.goToPageIndex()
-
-  g.loadProfilesFromLocalStorage()
   authStore.handleUrlParams()
 
   const authPBX = new AuthPBX()
@@ -153,6 +161,22 @@ const css = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
+
+  LoadingFullscreen: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#74bf53', // Old color from design, not g.colors.primary
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  LoadingFullscreenImage: {
+    width: 168,
+    height: 129,
+    ...Platform.select({
+      android: {
+        top: 3,
+      },
+    }),
+  },
 })
 
 const App = observer(() => {
@@ -161,6 +185,18 @@ const App = observer(() => {
       SplashScreen.hide()
     }
   }, [])
+
+  if (!g.profilesLoadedObservable) {
+    return (
+      <View style={css.LoadingFullscreen}>
+        <Image
+          source={Platform.OS === 'web' ? { uri: launch } : launch}
+          style={css.LoadingFullscreenImage}
+        />
+      </View>
+    )
+  }
+
   const {
     isConnFailure,
     pbxConnectingOrFailure,
