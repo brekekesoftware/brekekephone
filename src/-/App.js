@@ -8,7 +8,6 @@ import React, { useEffect } from 'react'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
-import launch from '../assets/launch.png'
 import CallBar from './-call/CallBar'
 import CallNotify from './-call/CallNotify'
 import PageBackgroundCalls from './-call/PageBackgroundCalls'
@@ -48,8 +47,8 @@ import { setupCallKeep } from './native/callkeep'
 import PushNotification from './native/PushNotification'
 import registerOnUnhandledError from './native/registerOnUnhandledError'
 import {
+  ActivityIndicator,
   AppState,
-  Image,
   Platform,
   StatusBar,
   StyleSheet,
@@ -168,15 +167,6 @@ const css = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  LoadingFullscreenImage: {
-    width: 168,
-    height: 129,
-    ...Platform.select({
-      android: {
-        top: 3,
-      },
-    }),
-  },
 })
 
 const App = observer(() => {
@@ -189,10 +179,7 @@ const App = observer(() => {
   if (!g.profilesLoadedObservable) {
     return (
       <View style={css.LoadingFullscreen}>
-        <Image
-          source={Platform.OS === 'web' ? { uri: launch } : launch}
-          style={css.LoadingFullscreenImage}
-        />
+        <ActivityIndicator size="small" color="white" />
       </View>
     )
   }

@@ -9,6 +9,9 @@ export const setupCallKeep = async () => {
   if (Platform.OS === 'web') {
     return
   }
+
+  RNCallKeep.setAvailable(true)
+
   await RNCallKeep.setup({
     ios: {
       appName: 'Brekeke Phone',
@@ -33,7 +36,6 @@ export const setupCallKeep = async () => {
       err,
     })
   })
-  RNCallKeep.setAvailable(true)
 
   // handle (string)
   //    Phone number of the callee
@@ -124,7 +126,7 @@ export const setupCallKeep = async () => {
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       RNCallKeep.endCall(e.callUUID)
-    } else {
+    } else if (e.muted !== c.muted) {
       c.toggleMuted(true)
     }
   })
@@ -139,7 +141,7 @@ export const setupCallKeep = async () => {
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       RNCallKeep.endCall(e.callUUID)
-    } else if (c.answered) {
+    } else if (c.answered && e.hold !== c.holding) {
       c.toggleHold(true)
     }
   })

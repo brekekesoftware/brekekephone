@@ -73,7 +73,7 @@ export class CallStore {
       this._calls = [c, ...this._calls]
       if (canUseCallKeep()) {
         c.callkeep = true
-        RNCallKeep.displayIncomingCall(c.uuid, c.partyNumber, 'Brekeke Phone')
+        RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
       }
     } else {
       Object.assign(c, _c)

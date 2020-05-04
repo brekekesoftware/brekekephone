@@ -3,7 +3,7 @@ import './callkeep'
 import FCM, { FCMEvent } from 'react-native-fcm'
 
 import g from '../global'
-import { AppRegistry, AppState, AsyncStorage } from '../Rn'
+import { AppRegistry, AsyncStorage } from '../Rn'
 import parse from './PushNotification-parse'
 
 const { Notification, RefreshToken } = FCMEvent
@@ -72,9 +72,7 @@ const PushNotification = {
       FCM.on(Notification, n => onNotification(n, initApp))
       await FCM.getFCMToken().then(onToken)
       const n = await FCM.getInitialNotification()
-      if (n && AppState.currentState !== 'active') {
-        onNotification(n, initApp)
-      }
+      onNotification(n, initApp)
     } catch (err) {
       g.showError({
         message: 'Failed to initialize push notification',
