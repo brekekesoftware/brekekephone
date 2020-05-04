@@ -1,12 +1,14 @@
 import get from 'lodash/get'
-import { Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
 
 import authStore from '../global/authStore'
+import callStore from '../global/callStore'
 
 const keysInCustomNotification = [
   'title',
   'body',
   'message',
+  'from',
   'to',
   'tenant',
   'pbxHostname',
@@ -84,11 +86,31 @@ const parse = async raw => {
     return null
   }
   // Assign more fields to present local message in android/ios specific code
+  if (!n.from) {
+    const re = /from\s+([^:]+)/
+    const matches = re.exec(n.title) || re.exec(n.body)
+    n.from = matches?.[1] || ''
+  }
   n.isCall = /call/i.test(n.body) || /call/i.test(n.title)
   // Call api to sign in
   const shouldPresentLocal = await authStore.signInByNotification(n)
   if (!shouldPresentLocal) {
     return null
+  }
+  // PN via callkeep
+  if (n.isCall && authStore.currentProfile?.pbxUsername === n.to) {
+    return new Promise(resolve => {
+      const intervalAt = Date.now()
+      const intervalId = setInterval(() => {
+        if (Date.now() - intervalAt > 20000) {
+          clearInterval(intervalId)
+          resolve(AppState.currentState === 'active' ? null : n)
+        } else if (callStore._calls.find(c => c.callkeep)) {
+          clearInterval(intervalId)
+          resolve(null)
+        }
+      }, 1000)
+    })
   }
   //
   return n

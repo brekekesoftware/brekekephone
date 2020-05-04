@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
-import { AppState,Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 
@@ -8,6 +8,9 @@ import sip from '../api/sip'
 import { arrToMap } from '../utils/toMap'
 import g from '.'
 import Call from './Call'
+
+export const canUseCallKeep = () =>
+  Platform.OS !== 'web' && AppState.currentState !== 'active'
 
 export class CallStore {
   constructor() {
@@ -68,22 +71,20 @@ export class CallStore {
       c = new Call()
       Object.assign(c, _c)
       this._calls = [c, ...this._calls]
-      if (AppState.currentState !== 'active') {
+      if (canUseCallKeep()) {
         c.callkeep = true
-        RNCallKeep.displayIncomingCall(
-          c.uuid,
-          c.partyNumber,
-          !c.partyName || c.partyName === c.partyNumber
-            ? 'Brekeke Phone'
-            : c.partyName,
-        )
+        RNCallKeep.displayIncomingCall(c.uuid, c.partyNumber, 'Brekeke Phone')
       }
     } else {
       Object.assign(c, _c)
     }
   }
   @action removeCall = id => {
+    const c = this._calls.find(c => c.id === id)
     this._calls = this._calls.filter(c => c.id !== id)
+    if (c?.callkeep) {
+      RNCallKeep.endCall(c.uuid)
+    }
   }
 
   findByUuid = uuid => this._calls.find(c => c.uuid === uuid)
@@ -99,10 +100,11 @@ export class CallStore {
     g.backToPageBackgroundCalls()
   }
 
-  @action answerCall = c => {
+  @action answerCall = (c, options) => {
     this._currentCallId = c.id
     sip.answerSession(c.id, {
       videoEnabled: c.remoteVideoEnabled,
+      ...options,
     })
   }
 
@@ -173,5 +175,24 @@ export class CallStore {
 }
 
 const callStore = new CallStore()
+
+if (Platform.OS !== 'web') {
+  // autorun(() => {
+  //   // TODO speaker
+  //   // https://github.com/react-native-webrtc/react-native-callkeep/issues/78
+  // })
+
+  // End all callkeep when app active
+  AppState.addEventListener('change', () => {
+    if (AppState.currentState === 'active') {
+      callStore._calls
+        .filter(c => c.callkeep)
+        .forEach(c => {
+          c.callkeep = false
+          RNCallKeep.endCall(c.uuid)
+        })
+    }
+  })
+}
 
 export default callStore

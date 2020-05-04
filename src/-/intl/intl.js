@@ -24,8 +24,8 @@ const enLabelsMapIndex = arrToMap(
 
 const localeOptions = [
   { key: 'en', label: 'English' },
-  { key: 'ja', label: '日本語' },
-  { key: 'vi', label: 'Tiếng Việt' },
+  // { key: 'ja', label: '日本語' },
+  // { key: 'vi', label: 'Tiếng Việt' },
 ]
 
 g.extends({

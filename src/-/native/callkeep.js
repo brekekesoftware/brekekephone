@@ -12,6 +12,9 @@ export const setupCallKeep = async () => {
   await RNCallKeep.setup({
     ios: {
       appName: 'Brekeke Phone',
+      // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
+      // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
+      supportsVideo: false,
     },
     android: {
       alertTitle: intl`Permissions required`,
@@ -22,6 +25,9 @@ export const setupCallKeep = async () => {
       additionalPermissions: [],
     },
   }).catch(err => {
+    if (AppState.currentState !== 'active') {
+      return
+    }
     g.showError({
       message: intlDebug`Can not get permission to show call notification`,
       err,
@@ -48,9 +54,13 @@ export const setupCallKeep = async () => {
     // })
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
-      //
+      RNCallKeep.endCall(e.callUUID)
     } else {
-      callStore.answerCall(c)
+      callStore.answerCall(c, {
+        // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
+        // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
+        // videoEnabled: false,
+      })
       RNCallKeep.setMutedCall(e.callUUID, false)
       RNCallKeep.setOnHold(e.callUUID, false)
     }
@@ -96,8 +106,12 @@ export const setupCallKeep = async () => {
     //   ...e,
     //   name: 'didDisplayIncomingCall',
     // })
-    // you might want to do following things when receiving this event:
-    // - Start playing ringback if it is an outgoing call
+    const c = callStore.findByUuid(e.callUUID)
+    if (!c?.callkeep) {
+      RNCallKeep.endCall(e.callUUID)
+    } else {
+      c.callkeepDisplayed = true
+    }
   })
 
   // muted (boolean)
@@ -109,9 +123,9 @@ export const setupCallKeep = async () => {
     // })
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
-      //
+      RNCallKeep.endCall(e.callUUID)
     } else {
-      c.toggleMuted()
+      c.toggleMuted(true)
     }
   })
 
@@ -124,9 +138,9 @@ export const setupCallKeep = async () => {
     // })
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
-      //
-    } else {
-      c.toggleHold()
+      RNCallKeep.endCall(e.callUUID)
+    } else if (c.answered) {
+      c.toggleHold(true)
     }
   })
 
@@ -138,6 +152,5 @@ export const setupCallKeep = async () => {
     //   ...e,
     //   name: 'didPerformDTMFAction',
     // })
-    //
   })
 }
