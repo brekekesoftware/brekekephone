@@ -247,7 +247,7 @@ class AuthStore {
   )
 
   signInByNotification = async n => {
-    const state = AppState.currentState
+    this.reconnect()
     await g.profilesLoaded
     // Find account for the notification target
     const p = this.findProfile({
@@ -269,9 +269,7 @@ class AuthStore {
       if (this.signedInId !== p.id) {
         return true
       }
-      // Attempt to reconnect on notification if state is currently failure
-      this.reconnect()
-      return state !== 'active'
+      return AppState.currentState !== 'active'
     }
     // Call signIn
     return this.signIn(p?.id)
