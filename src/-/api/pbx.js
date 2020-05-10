@@ -235,22 +235,20 @@ class PBX extends EventEmitter {
     }
   }
 
-  async getPhonebooks() {
-    const res = await this.pal('getPhonebooks')
+  // async getPhonebooks() {
+  //   const res = await this.pal('getPhonebooks')
 
-    return res.map(item => ({
-      name: item.phonebook,
-      shared: item.shared === 'true',
-    }))
-  }
+  //   return res.map(item => ({
+  //     name: item.phonebook,
+  //     shared: item.shared === 'true',
+  //   }))
+  // }
 
-  async getContacts(book, shared, opts = {}) {
+  async getContacts({ shared, offset, limit }) {
     const res = await this.pal('getContactList', {
-      phonebook: book,
       shared: shared === true ? 'true' : 'false',
-      search_text: opts.searchText,
-      offset: opts.offset,
-      limit: opts.limit,
+      offset,
+      limit,
     })
 
     return res.map(contact => ({

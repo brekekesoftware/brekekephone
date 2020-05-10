@@ -5,9 +5,7 @@ import {
   mdiInformation,
   mdiPhone,
 } from '@mdi/js'
-import debounce from 'lodash/debounce'
 import orderBy from 'lodash/orderBy'
-import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -17,14 +15,10 @@ import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
-import { StyleSheet, Text, View } from '../Rn'
+import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
-import { arrToMap } from '../utils/toMap'
 import UserItem from './UserItem'
-
-const numberOfContactsPerPage = 100
-const formatPhoneNumber = number => number.replace(/\D+/g, '')
 
 const css = StyleSheet.create({
   Loading: {
@@ -34,94 +28,50 @@ const css = StyleSheet.create({
 
 @observer
 class PageContactPhonebook extends React.Component {
-  @computed get phoneBookId() {
-    return contactStore.phoneBooks.map(p => p.id)
-  }
-  @computed get phoneBookById() {
-    return arrToMap(contactStore.phoneBooks, 'id', p => p)
-  }
-  state = {
-    loading: false,
-  }
   componentDidMount() {
     const id = setInterval(() => {
       if (!pbx.client) {
         return
       }
-      this.loadContactsFirstTime()
+      contactStore.loadContactsFirstTime()
       clearInterval(id)
     }, 300)
   }
 
-  loadContactsFirstTime = () => {
-    if (contactStore.alreadyLoadContactsFirstTime) {
-      return
-    }
-    this.loadContacts()
-    contactStore.alreadyLoadContactsFirstTime = true
-  }
-  loadContacts = debounce(() => {
-    const query = this.props
-    const book = query.book
-    const shared = true
-    const opts = {
-      limit: numberOfContactsPerPage,
-      offset: query.offset,
-      searchText: query.searchText,
-    }
-    this.setState({ loading: true })
-    pbx
-      .getContacts(book, shared, opts)
-      .then(contacts => {
-        contactStore.setPhonebook(contacts)
-      })
-      .catch(err => {
-        g.showError({
-          message: intlDebug`Failed to load contact list`,
-          err,
-        })
-      })
-      .then(() => {
-        this.setState({ loading: false })
-      })
-  }, 500)
-
-  call = number => {
-    number = formatPhoneNumber(number)
-    callStore.startCall(number)
-  }
-  create = () => {
-    g.goToPagePhonebookCreate({
-      book: this.props.book,
-    })
-  }
   update = id => {
     const contact = contactStore.getPhonebook(id)
-    if (!!contact.loaded) {
+    if (contact?.loaded) {
       g.goToPagePhonebookUpdate({
         contact: contact,
       })
     } else {
-      pbx
-        .getContact(id)
-        .then(ct => {
-          Object.assign(ct, { loaded: true })
-          contactStore.updatePhonebook(ct)
-          g.goToPagePhonebookUpdate({
-            contact: ct,
-          })
+      this.loadContactDetail(id, ct => {
+        g.goToPagePhonebookUpdate({
+          contact: ct,
         })
-        .catch(err => {
-          g.showError({
-            message: intlDebug`Failed to load contact detail for ${id}`,
-            err,
-          })
-        })
+      })
     }
   }
+
+  loadContactDetail = (id, cb) => {
+    pbx
+      .getContact(id)
+      .then(ct => {
+        Object.assign(ct, { loaded: true })
+        contactStore.upsertPhonebook(ct)
+        cb(ct)
+      })
+      .catch(err => {
+        g.showError({
+          message: intlDebug`Failed to load contact detail for ${id}`,
+          err,
+        })
+      })
+  }
+
   callRequest = (number, contact) => {
     if (number !== '') {
-      this.call(number)
+      callStore.startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(contact)
       g.showError({
@@ -131,6 +81,15 @@ class PageContactPhonebook extends React.Component {
   }
 
   onIcon0 = u => {
+    if (u.loaded) {
+      this._onIcon0(u)
+      return
+    }
+    this.loadContactDetail(u.id, () => {
+      this._onIcon0(u)
+    })
+  }
+  _onIcon0 = u => {
     if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
       this.callRequest('', u)
       return
@@ -203,16 +162,16 @@ class PageContactPhonebook extends React.Component {
         dropdown={[
           {
             label: intl`Create new contact`,
-            onPress: this.create,
+            onPress: g.goToPagePhonebookCreate,
           },
           {
             label: intl`Reload`,
-            onPress: this.loadContacts,
+            onPress: contactStore.loadContacts,
           },
         ]}
         menu="contact"
         subMenu="phonebook"
-        title={this.props.book || intl`Phonebook`}
+        title={intl`Phonebook`}
       >
         <Field
           label={intl`SHOW SHARED CONTACTS`}
@@ -225,7 +184,22 @@ class PageContactPhonebook extends React.Component {
           type="Switch"
           value={authStore.currentProfile.displaySharedContacts}
         />
-        {this.state.loading && (
+        <View>
+          {groups.map(_g => (
+            <React.Fragment key={_g.key}>
+              <Field isGroup label={_g.key} />
+              {_g.phonebooks.map((u, i) => (
+                <UserItem
+                  iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
+                  icons={[mdiPhone, mdiInformation]}
+                  key={i}
+                  name={u.name}
+                />
+              ))}
+            </React.Fragment>
+          ))}
+        </View>
+        {contactStore.loading ? (
           <Text
             style={css.Loading}
             warning
@@ -233,24 +207,17 @@ class PageContactPhonebook extends React.Component {
             normal
             center
           >{intl`Loading...`}</Text>
-        )}
-        {!this.state.loading && (
-          <View>
-            {groups.map(_g => (
-              <React.Fragment key={_g.key}>
-                <Field isGroup label={_g.key} />
-                {_g.phonebooks.map((u, i) => (
-                  <UserItem
-                    iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
-                    icons={[mdiPhone, mdiInformation]}
-                    key={i}
-                    name={u.name}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </View>
-        )}
+        ) : contactStore.hasLoadmore ? (
+          <TouchableOpacity onPress={contactStore.loadMoreContacts}>
+            <Text
+              style={css.Loading}
+              primary
+              small
+              normal
+              center
+            >{intl`Load more contacts`}</Text>
+          </TouchableOpacity>
+        ) : null}
       </Layout>
     )
   }

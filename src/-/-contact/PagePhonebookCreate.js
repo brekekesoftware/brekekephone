@@ -33,7 +33,7 @@ class PagePhonebookCreate extends React.Component {
           id: val.aid,
           name: `${phonebook.firstName} ${phonebook.lastName}`,
         })
-        contactStore.pushPhonebook(phonebook)
+        contactStore.upsertPhonebook(phonebook)
       })
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)

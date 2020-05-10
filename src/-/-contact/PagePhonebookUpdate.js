@@ -28,7 +28,7 @@ class PagePhonebookUpdate extends React.Component {
     Object.assign(phonebook, {
       name: `${phonebook.firstName} ${phonebook.lastName}`,
     })
-    contactStore.updatePhonebook(phonebook)
+    contactStore.upsertPhonebook(phonebook)
   }
   onSaveSuccess = () => {
     g.goToPageContactPhonebook()

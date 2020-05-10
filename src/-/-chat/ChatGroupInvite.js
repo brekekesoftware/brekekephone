@@ -1,6 +1,6 @@
 import { mdiCheck, mdiClose } from '@mdi/js'
 import sortBy from 'lodash/sortBy'
-import { computed, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -199,12 +199,12 @@ class UnreadChatNoti extends React.Component {
     this.prevLastMessageId = latestUnreadChat.lastMessage.id
     this.prevUnreadChatTimeoutId = setTimeout(this.clear, 5000)
   }
-  clear = () => {
-    this.unreadChat = null
+  @action clear = () => {
     if (this.prevUnreadChatTimeoutId) {
       clearTimeout(this.prevUnreadChatTimeoutId)
       this.prevUnreadChatTimeoutId = 0
     }
+    this.unreadChat = null
   }
   onUnreadPress = () => {
     const { id, isGroup } = this.unreadChat
@@ -215,9 +215,7 @@ class UnreadChatNoti extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.prevUnreadChatTimeoutId) {
-      clearTimeout(this.prevUnreadChatTimeoutId)
-    }
+    this.clear()
   }
 
   render() {
@@ -229,6 +227,7 @@ class UnreadChatNoti extends React.Component {
     Object.values(chatStore.messagesByThreadId).forEach(v => {
       void v.id
     })
+    void g.stacks[g.stacks.length - 1]
     if (!this.unreadChat) {
       return null
     }
