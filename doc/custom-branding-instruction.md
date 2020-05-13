@@ -1,7 +1,7 @@
 ### Custom branding build instruction
 
 - Make sure you are on `master` branch and has pulled all the latest changes
-- First you need to follow the README and make sure the app running well on your local environment
+- First you need to follow the [README](../README.md) and make sure the app running well on your local environment
 
 - To update app name and bundle identifier, follow these steps with order:
 
@@ -12,8 +12,6 @@
     - For example your new app bundle is `net.example.sip`, the directory tree will be `android/src/main/java/net/example/sip`
 
 - To update app logo, replace the following images with your new images but keep the same name:
-<details>
-  <summary>Click to see all the files:</summary>
 
 ```
 # For the icon of the app on android, these images need to be the same size:
@@ -35,8 +33,6 @@ android/src/main/res/mipmap-xxxhdpi/launch_screen.png
 # TODO
 ```
 
-</details>
-
 - To update app branding color:
 
   - For splash screen:
@@ -46,4 +42,4 @@ android/src/main/res/mipmap-xxxhdpi/launch_screen.png
     - Open `src/-/variables.js` and update the primary color there
     - You can also update other colors their as you want
 
-- For the push notification and build/distribution, please follow the instruction in README.md
+- For the push notification and build/distribution, please follow the instruction in [README](../README.md)

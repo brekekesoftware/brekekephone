@@ -1,6 +1,6 @@
 ### Quick access
 
-- [Custom branding build instruction](doc/custom-branding-instruction.md)
+- [Custom branding build instruction](./doc/custom-branding-instruction.md)
 
 ### Environment requirement
 
