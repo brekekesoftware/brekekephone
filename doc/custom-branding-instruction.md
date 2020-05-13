@@ -36,7 +36,7 @@ android/src/main/res/mipmap-xxxhdpi/launch_screen.png
 - To update app branding color:
 
   - For splash screen:
-    - Find and replace #74bf53 with your new color
+    - Find and replace `#74bf53` with your new color
     - Update `ios/Phone/Base.lproj/LaunchScreen.xib` at the node `<color key="backgroundColor"` with your new color
   - For other in app colors:
     - Open `src/-/variables.js` and update the primary color there
