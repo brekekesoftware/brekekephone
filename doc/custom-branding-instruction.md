@@ -42,4 +42,9 @@ android/src/main/res/mipmap-xxxhdpi/launch_screen.png
     - Open `src/-/variables.js` and update the primary color there
     - You can also update other colors their as you want
 
-- For the push notification and build/distribution, please follow the instruction in [README](../README.md)
+- For the push notification and build:
+  - Update google application id `22177122297` in `src/-/api/pbx.js`
+  - You may need to update the app version / build code here:
+    - `android/app/build.gradle` search for `versionCode` and `versionName`
+    - `ios/Phone/Info.plist` search for `CFBundleShortVersionString`
+  - Then try to follow some instruction in [README](../README.md) to configure push notification and have the production build, archive, and distribution
