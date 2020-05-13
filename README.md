@@ -1,5 +1,11 @@
+### Quick access
+
+- [Custom branding build instruction](doc/custom-branding-instruction.md)
+
 ### Environment requirement
 
+- Should have the latest node version 14.x
+  - You can use `nvm` to install and manage node versions: https://github.com/nvm-sh/nvm
 - Install `yarn` and use it instead of `npm`: `npm install -g yarn`
 - Install node packages:
 
@@ -12,24 +18,22 @@ yarn
 - Start the metro bundler and let it running
 
 ```sh
-react-native start
+yarn rn
 ```
 
 - If it has some strange errors, we may need to delete node_module then reset cache as well
 
 ```sh
-yarn cache clean && yarn --check-files && react-native start --reset-cache
+yarn cache clean && yarn --check-files && yarn rn --reset-cache
 ```
 
 ### Keystores and other credentials keys
 
 - You need to contact us to download or generate your own following files:
-
   - `android/src/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
-  - `src/api/turnConfig.js`
-
+  - `src/-/api/turnConfig.js`
 - Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.js` and keep the TURN feature turned off. Example of real config:
 
 ```js
@@ -48,6 +52,8 @@ export default {
 ```
 
 ### Android
+
+##### Android SDK tools
 
 - The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
 - Windows:
@@ -76,7 +82,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 - To run the virtual device:
   - Option 1: Using Android Studio: In AVD Manager, click the Run button on the Emulator we want to run
   - Option 2: Using command line tool: Execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it. If you are on Windows, you may need to `cd %USERPROFILE%\AppData\Local\Android\Sdk\emulator` first
-- Start the react native bundle at the project root: `react-native run-android`
+- Start the react native bundle at the project root: `yarn android`
 
 - Some errors:
   - If we can not run the emulator and it throws an error like: `Emulator: ERROR: x86 emulation currently requires hardware acceleration!`. Try to follow these steps to fix:
@@ -100,7 +106,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```sh
 adb devices
 adb -s DEVICE_ID reverse tcp:8081 tcp:8081
-react-native run-android --deviceId=DEVICE_ID
+yarn android --deviceId=DEVICE_ID
 ```
 
 ##### Build app in release mode and install it in a real device:
@@ -111,7 +117,7 @@ react-native run-android --deviceId=DEVICE_ID
 
 ### iOS
 
-- Development: `react-native run-ios`
+- Development: `yarn ios`
 - Sometimes we need to clear cache if it doesn't reflect changes or has some strange errors: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`
 - To have the push notification permision and other permission related popups show up again, we need to uninstall the app before reinstalling it
 
@@ -126,13 +132,17 @@ react-native run-android --deviceId=DEVICE_ID
 - Android
   - Ensure latest google-services.json
   - Ensure correct server api key in the sip proxy server
+    - Contact us at support@brekeke.com if you want to add your custom key/token
 - iOS
   - Ensure the push notification gets configured correctly in General, Info.plist, Phone.entitlements
   - Ensure correct api key (string or file) in sip proxy server
+    - Contact us at support@brekeke.com if you want to add your custom key/token
 
 ### Automation format tools
 
-- To run the format command for all possible files `yarn pret-`, we must install the following packages:
+- To have the js/ts files follow a single code format consistency, you can run `yarn pret`
+  - It will be automatically run in each commit via `husky` and `lint-staged`
+- To run the format command for all possible files `yarn f`, we must install the following packages:
 
 ```sh
 brew install clang-format google-java-format xmlstarlet
