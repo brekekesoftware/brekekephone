@@ -1,13 +1,14 @@
 import debounce from 'lodash/debounce'
-import { computed, observable } from 'mobx'
+import { autorun, computed, observable } from 'mobx'
+import RNCallKeep from 'react-native-callkeep'
 
 import sip from '../api/sip'
 import { intlDebug } from '../intl/intl'
 import { getUrlParams } from '../native/deeplink'
-import { AppState } from '../Rn'
+import { AppState, Platform } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
-import callStore from './callStore'
+import callStore, { uuidFromPushKit } from './callStore'
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field]
@@ -285,6 +286,32 @@ class AuthStore {
 }
 
 const authStore = new AuthStore()
+
+// Interval 5 seconds for push kit
+if (Platform.OS === 'ios') {
+  let pushKitIntervalId = 0
+  const clearPushKitInterval = () => {
+    if (pushKitIntervalId) {
+      clearInterval(pushKitIntervalId)
+      pushKitIntervalId = 0
+    }
+  }
+  const setPushKitInterval = () => {
+    clearPushKitInterval()
+    pushKitIntervalId = setInterval(() => {
+      callStore.recentPushKit = ''
+      callStore.recentPushKitAt = 0
+      RNCallKeep.endCall(uuidFromPushKit)
+    }, 5000)
+  }
+  autorun(() => {
+    if (authStore.sipState === 'success') {
+      setPushKitInterval()
+    } else {
+      clearPushKitInterval()
+    }
+  })
+}
 
 export { compareProfile }
 export default authStore

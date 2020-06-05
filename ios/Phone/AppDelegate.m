@@ -81,22 +81,27 @@
 
 //
 // react-native-voip-push-notification add PushKit delegate method
-// Handle updated push credentials
 - (void)pushRegistry:(PKPushRegistry *)registry
     didUpdatePushCredentials:(PKPushCredentials *)credentials
                      forType:(NSString *)type {
-  // Register VoIP push token (a property of PKPushCredentials) with server
   [RNVoipPushNotificationManager didUpdatePushCredentials:credentials
                                                   forType:(NSString *)type];
 }
-// Handle incoming pushes
 - (void)pushRegistry:(PKPushRegistry *)registry
     didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
                               forType:(NSString *)type {
-  // Process the received push
   [RNVoipPushNotificationManager
       didReceiveIncomingPushWithPayload:payload
                                 forType:(NSString *)type];
+
+  [RNCallKeep reportNewIncomingCall:@"00000000-0000-0000-0000-000000000000"
+                             handle:@"Brekeke Phone"
+                         handleType:@"generic"
+                           hasVideo:false
+                localizedCallerName:@"Loading..."
+                        fromPushKit:YES
+                            payload:NULL
+              withCompletionHandler:false];
 }
 
 @end

@@ -2,8 +2,20 @@ import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import g from '../global'
-import callStore from '../global/callStore'
+import authStore from '../global/authStore'
+import callStore, { uuidFromPushKit } from '../global/callStore'
 import intl, { intlDebug } from '../intl/intl'
+
+const shouldHandlePushKit = () =>
+  !callStore._calls.length || authStore.sipState !== 'success'
+
+let pushKitTimeoutId = 0
+const clearPushKitTimeout = () => {
+  if (pushKitTimeoutId) {
+    clearTimeout(pushKitTimeoutId)
+    pushKitTimeoutId = 0
+  }
+}
 
 export const setupCallKeep = async () => {
   if (Platform.OS === 'web') {
@@ -42,18 +54,19 @@ export const setupCallKeep = async () => {
   // callUUID (string)
   // name (string)
   RNCallKeep.addEventListener('didReceiveStartCallAction', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'didReceiveStartCallAction',
-    // })
+    //
   })
 
   // callUUID (string)
   RNCallKeep.addEventListener('answerCall', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'answerCall',
-    // })
+    if (e.callUUID === uuidFromPushKit) {
+      clearPushKitTimeout()
+      if (shouldHandlePushKit()) {
+        callStore.recentPushKit = 'answered'
+        setTimeout(() => RNCallKeep.endCall(e.callUUID), 1000)
+        return
+      }
+    }
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       RNCallKeep.endCall(e.callUUID)
@@ -63,6 +76,7 @@ export const setupCallKeep = async () => {
         // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
         // videoEnabled: false,
       })
+      RNCallKeep.backToForeground()
       RNCallKeep.setMutedCall(e.callUUID, false)
       RNCallKeep.setOnHold(e.callUUID, false)
     }
@@ -70,10 +84,13 @@ export const setupCallKeep = async () => {
 
   // callUUID (string)
   RNCallKeep.addEventListener('endCall', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'endCall',
-    // })
+    if (e.callUUID === uuidFromPushKit) {
+      clearPushKitTimeout()
+      if (shouldHandlePushKit() && !callStore.recentPushKit) {
+        callStore.recentPushKit = 'rejected'
+        return
+      }
+    }
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       //
@@ -104,10 +121,15 @@ export const setupCallKeep = async () => {
   // payload (object)
   //    VOIP push payload.
   RNCallKeep.addEventListener('didDisplayIncomingCall', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'didDisplayIncomingCall',
-    // })
+    if (e.callUUID === uuidFromPushKit) {
+      clearPushKitTimeout()
+      pushKitTimeoutId = setTimeout(() => RNCallKeep.endCall(e.callUUID), 20000)
+      callStore.recentPushKit = ''
+      callStore.recentPushKitAt = Date.now()
+      if (shouldHandlePushKit()) {
+        return
+      }
+    }
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       RNCallKeep.endCall(e.callUUID)
@@ -119,10 +141,6 @@ export const setupCallKeep = async () => {
   // muted (boolean)
   // callUUID (string)
   RNCallKeep.addEventListener('didPerformSetMutedCallAction', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'didPerformSetMutedCallAction',
-    // })
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       RNCallKeep.endCall(e.callUUID)
@@ -134,10 +152,6 @@ export const setupCallKeep = async () => {
   // hold (boolean)
   // callUUID (string)
   RNCallKeep.addEventListener('didToggleHoldCallAction', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'didToggleHoldCallAction',
-    // })
     const c = callStore.findByUuid(e.callUUID)
     if (!c?.callkeep) {
       RNCallKeep.endCall(e.callUUID)
@@ -150,9 +164,11 @@ export const setupCallKeep = async () => {
   //    The digits that emit the dtmf tone
   // callUUID (string)
   RNCallKeep.addEventListener('didPerformDTMFAction', e => {
-    // insertCallKeepEvent(e.callUUID, {
-    //   ...e,
-    //   name: 'didPerformDTMFAction',
-    // })
+    const c = callStore.findByUuid(e.callUUID)
+    if (!c?.callkeep) {
+      RNCallKeep.endCall(e.callUUID)
+    } else {
+      // TODO
+    }
   })
 }

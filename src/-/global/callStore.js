@@ -9,13 +9,15 @@ import { arrToMap } from '../utils/toMap'
 import g from '.'
 import Call from './Call'
 
-export const canUseCallKeep = () =>
-  Platform.OS !== 'web' && AppState.currentState !== 'active'
+export const uuidFromPushKit = '00000000-0000-0000-0000-000000000000'
 
 export class CallStore {
   constructor() {
     this._initDurationInterval()
   }
+
+  recentPushKit = ''
+  recentPushKitAt = 0
 
   @observable _calls = []
   @observable _currentCallId = undefined
@@ -71,9 +73,28 @@ export class CallStore {
       c = new Call()
       Object.assign(c, _c)
       this._calls = [c, ...this._calls]
-      if (canUseCallKeep()) {
+      //
+      const recentPushKit =
+        this.recentPushKit &&
+        Date.now() - this.recentPushKitAt < 20000 &&
+        this.recentPushKit
+      this.recentPushKit = ''
+      this.recentPushKitAt = 0
+      //
+      if (recentPushKit === 'answered') {
+        this.answerCall(c)
+      } else if (recentPushKit === 'rejected') {
+        c.hangup()
+      } else if (
+        Platform.OS === 'ios' ||
+        (Platform.OS === 'android' && AppState.currentState !== 'active')
+      ) {
         c.callkeep = true
         RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
+      }
+      //
+      if (Platform.OS === 'ios') {
+        setTimeout(() => RNCallKeep.endCall(uuidFromPushKit), 1000)
       }
     } else {
       Object.assign(c, _c)
@@ -106,6 +127,7 @@ export class CallStore {
       videoEnabled: c.remoteVideoEnabled,
       ...options,
     })
+    g.goToPageCallManage()
   }
 
   _startCallIntervalAt = 0
