@@ -102,6 +102,9 @@
                         fromPushKit:YES
                             payload:NULL
               withCompletionHandler:false];
+  
+  [RNCallKeep endCallWithUUID:@"00000000-0000-0000-0000-000000000000"
+                       reason:4];
 }
 
 @end

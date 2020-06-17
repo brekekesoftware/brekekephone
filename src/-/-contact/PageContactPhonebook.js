@@ -81,6 +81,9 @@ class PageContactPhonebook extends React.Component {
   }
 
   onIcon0 = u => {
+    if (!u) {
+      return
+    }
     if (u.loaded) {
       this._onIcon0(u)
       return
@@ -90,6 +93,10 @@ class PageContactPhonebook extends React.Component {
     })
   }
   _onIcon0 = u => {
+    if (!u) {
+      return
+    }
+
     if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
       this.callRequest('', u)
       return

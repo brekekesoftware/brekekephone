@@ -76,7 +76,6 @@ export const setupCallKeep = async () => {
         // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
         // videoEnabled: false,
       })
-      RNCallKeep.backToForeground()
       RNCallKeep.setMutedCall(e.callUUID, false)
       RNCallKeep.setOnHold(e.callUUID, false)
     }
