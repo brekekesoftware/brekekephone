@@ -13,8 +13,8 @@ import intl from '../intl/intl'
 import { TouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
-import UserItem from './UserItem'
 import DelayFlag from '../utils/DelayFlag'
+import UserItem from './UserItem'
 
 @observer
 class PageContactUsers extends React.Component {
@@ -24,8 +24,13 @@ class PageContactUsers extends React.Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    if (this.displayOfflineUsers.enabled !== authStore.currentProfile.displayOfflineUsers) {
-      this.displayOfflineUsers.setEnabled(authStore.currentProfile.displayOfflineUsers)
+    if (
+      this.displayOfflineUsers.enabled !==
+      authStore.currentProfile.displayOfflineUsers
+    ) {
+      this.displayOfflineUsers.setEnabled(
+        authStore.currentProfile.displayOfflineUsers,
+      )
     }
   }
 

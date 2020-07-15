@@ -8,9 +8,12 @@ export default class DelayFlag {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId)
     }
-    this.timeoutId = setTimeout(action(() => {
-      this.enabled = enabled
-      this.timeoutId = 0
-    }), 300)
+    this.timeoutId = setTimeout(
+      action(() => {
+        this.enabled = enabled
+        this.timeoutId = 0
+      }),
+      300,
+    )
   }
 }

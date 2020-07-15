@@ -4,7 +4,6 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { AppState } from 'react-native'
 import VoipPushNotification from 'react-native-voip-push-notification'
 
-import g from '../global'
 import parse from './PushNotification-parse'
 
 let voipApnsToken = ''
@@ -69,6 +68,7 @@ const PushNotification = {
       onNotification(n, initApp),
     )
     //
+    PushNotificationIOS.requestPermissions()
     VoipPushNotification.requestPermissions()
   },
   getVoipToken: () => {

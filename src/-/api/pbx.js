@@ -383,7 +383,7 @@ class PBX extends EventEmitter {
       }
       this.client.pnmanage(params, resolve, reject)
     }).catch(err => {
-      console.error('addApnsToken:', err)
+      console.error('addApnsToken:' + (voip ? ' voip:' : ''), err)
     })
 
   addFcmPnToken = ({ device_id, username, voip = false }) =>
@@ -401,7 +401,7 @@ class PBX extends EventEmitter {
       }
       this.client.pnmanage(params, resolve, reject)
     }).catch(err => {
-      console.error('addFcmPnToken:', err)
+      console.error('addFcmPnToken:' + (voip ? ' voip:' : ''), err)
     })
 
   addWebPnToken = ({ auth_secret, endpoint, key, username }) =>

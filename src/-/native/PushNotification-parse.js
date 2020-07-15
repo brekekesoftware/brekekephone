@@ -92,6 +92,12 @@ const parse = async raw => {
     n.from = matches?.[1] || ''
   }
   n.isCall = /call/i.test(n.body) || /call/i.test(n.title)
+  if (!n.isCall) {
+    return AppState.currentState !== 'active' ||
+      authStore.currentProfile?.pbxUsername !== n.to
+      ? n
+      : null
+  }
   // Call api to sign in
   const shouldPresentLocal = await authStore.signInByNotification(n)
   if (!shouldPresentLocal) {

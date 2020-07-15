@@ -69,7 +69,14 @@ class Api {
   }
 
   addPnToken = async phone => {
-    const t = await PushNotification.getToken()
+    let t = await PushNotification.getToken()
+    let tvoip = t
+    if (Platform.OS === 'ios') {
+      tvoip = await PushNotification.getVoipToken()
+      if (!t) {
+        t = tvoip
+      }
+    }
 
     if (!t) {
       return
@@ -80,14 +87,11 @@ class Api {
         username: phone.id,
         device_id: t,
       })
-      const t2 = await PushNotification.getVoipToken()
-      if (t2) {
-        await pbx.addApnsToken({
-          username: phone.id,
-          device_id: t2,
-          voip: true,
-        })
-      }
+      await pbx.addApnsToken({
+        username: phone.id,
+        device_id: tvoip || t,
+        voip: true,
+      })
     } else if (Platform.OS === 'android') {
       await pbx.addFcmPnToken({
         username: phone.id,
