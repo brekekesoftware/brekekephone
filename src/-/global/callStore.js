@@ -34,7 +34,7 @@ export class CallStore {
     )
   }
 
-  @action _updateCurrentCall = () => {
+  _updateCurrentCall = () => {
     let currentCall
     if (this._calls.length) {
       currentCall =
@@ -44,7 +44,7 @@ export class CallStore {
     }
     const currentCallId = currentCall?.id || undefined
     if (currentCallId !== this._currentCallId) {
-      this._currentCallId = currentCallId
+      setTimeout(action(() => (this._currentCallId = currentCallId)))
     }
     this._updateBackgroundCallsDebounce()
   }

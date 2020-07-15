@@ -21,7 +21,7 @@ if (Platform.OS !== 'web') {
   const [log, log1, log2] = ['log', 'log1', 'log2'].map(
     n => `${RNFS.DocumentDirectoryPath}/brekeke-phone-${n}.txt`,
   )
-  const limitedBytes = 4000000 // 4MB
+  const limitedBytes = 250000 // 250KB
 
   class DebugStore {
     // By default only error logs will be captured

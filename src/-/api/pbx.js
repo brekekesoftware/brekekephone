@@ -368,14 +368,14 @@ class PBX extends EventEmitter {
     })
   }
 
-  addApnsToken = ({ device_id, username }) =>
+  addApnsToken = ({ device_id, username, voip = false }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: 'set',
         service_id: '11',
-        application_id: 'com.brekeke.phonedev',
+        application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
         user_agent: 'react-native',
-        username,
+        username: username + (voip ? '@voip' : ''),
         device_id,
       }
       if (!this.client) {
@@ -386,14 +386,14 @@ class PBX extends EventEmitter {
       console.error('addApnsToken:', err)
     })
 
-  addFcmPnToken = ({ device_id, username }) =>
+  addFcmPnToken = ({ device_id, username, voip = false }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: 'set',
         service_id: '12',
         application_id: '22177122297',
         user_agent: 'react-native',
-        username,
+        username: username + (voip ? '@voip' : ''),
         device_id,
       }
       if (!this.client) {

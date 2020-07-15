@@ -217,8 +217,7 @@ class SIP extends EventEmitter {
     this.phone.setDefaultCallOptions(config)
     //
     this.phone.startWebRTC({
-      host: sipLoginOption.hostname,
-      port: sipLoginOption.port,
+      url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
       tls: true,
       tenant: sipLoginOption.tenant,
       user: sipLoginOption.username,

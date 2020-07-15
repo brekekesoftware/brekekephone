@@ -80,10 +80,23 @@ class Api {
         username: phone.id,
         device_id: t,
       })
+      const t2 = await PushNotification.getVoipToken()
+      if (t2) {
+        await pbx.addApnsToken({
+          username: phone.id,
+          device_id: t2,
+          voip: true,
+        })
+      }
     } else if (Platform.OS === 'android') {
       await pbx.addFcmPnToken({
         username: phone.id,
         device_id: t,
+      })
+      await pbx.addFcmPnToken({
+        username: phone.id,
+        device_id: t,
+        voip: true,
       })
     } else if (Platform.OS === 'web') {
       await pbx.addWebPnToken({

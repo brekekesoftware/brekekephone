@@ -14,9 +14,21 @@ import { TouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import UserItem from './UserItem'
+import DelayFlag from '../utils/DelayFlag'
 
 @observer
 class PageContactUsers extends React.Component {
+  displayOfflineUsers = new DelayFlag()
+
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+  componentDidUpdate() {
+    if (this.displayOfflineUsers.enabled !== authStore.currentProfile.displayOfflineUsers) {
+      this.displayOfflineUsers.setEnabled(authStore.currentProfile.displayOfflineUsers)
+    }
+  }
+
   getMatchUserIds() {
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
@@ -73,9 +85,9 @@ class PageContactUsers extends React.Component {
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
 
-    const { displayOfflineUsers, ucEnabled } = authStore.currentProfile
+    const { ucEnabled } = authStore.currentProfile
     const displayUsers =
-      !displayOfflineUsers && ucEnabled ? onlineUsers : allUsers
+      !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
 
     const map = {}
     displayUsers.forEach(u => {
