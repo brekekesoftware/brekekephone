@@ -52,7 +52,7 @@
     "react-native": "0.59.10",
     "react-native-callkeep": "3.0.14",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
-    "react-native-emoji-selector": "0.1.8",
+    "react-native-emoji-selector": "0.1.9",
     "react-native-exception-handler": "2.10.8",
     "react-native-fast-image": "6.1.1",
     "react-native-fcm": "github:brekekesoftware/react-native-fcm#afbddd1782afe9a6cf81c34f903e026b712d5579",
