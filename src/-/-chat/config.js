@@ -62,8 +62,8 @@ export const formatDateSemantic = d => {
     : date
 }
 
-export const formatDateTimeSemantic = d => {
-  d = moment(d)
+export const formatDateTimeSemantic = str => {
+  const d = moment(str)
   const t = moment()
   let date = ''
   if (d.format('yyyy') !== t.format('yyyy')) {
@@ -74,6 +74,6 @@ export const formatDateTimeSemantic = d => {
   if (date) {
     date = ' ' + date
   }
-  const time = d.format('HH:mm') // TODO intl
+  const time = moment(str).format('HH:mm') // TODO intl
   return time + date
 }

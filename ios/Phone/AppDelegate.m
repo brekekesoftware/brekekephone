@@ -1,11 +1,11 @@
 #import "AppDelegate.h"
 
 #import <PushKit/PushKit.h>
+#import <RNCPushNotificationIOS.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
-#import <RNCPushNotificationIOS.h>
 #import <UserNotifications/UserNotifications.h>
 
 #import "RNCallKeep.h"
@@ -123,7 +123,8 @@
                 // Empty handler to fix `There is no completion handler with
                 // notification id` error
             }];
-  completionHandler(UNNotificationPresentationOptionNone);
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
+                    UNAuthorizationOptionBadge);
 }
 - (void)application:(UIApplication *)application
     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
@@ -153,7 +154,8 @@
                 // Empty handler to fix `There is no completion handler with
                 // notification id` error
             }];
-  completionHandler(UNNotificationPresentationOptionNone);
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
+                    UNAuthorizationOptionBadge);
 }
 
 @end

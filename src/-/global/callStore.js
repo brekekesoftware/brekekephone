@@ -84,7 +84,10 @@ export class CallStore {
           this.answerCall(c)
         } else if (recentPushKit === 'rejected') {
           c.hangup()
-        } else if (AppState.currentState !== 'active') {
+        } else if (
+          Platform.OS === 'ios' ||
+          (Platform.OS === 'android' && AppState.currentState !== 'active')
+        ) {
           c.callkeep = true
           RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
         }
