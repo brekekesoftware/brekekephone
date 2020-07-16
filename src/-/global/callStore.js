@@ -74,27 +74,23 @@ export class CallStore {
       Object.assign(c, _c)
       this._calls = [c, ...this._calls]
       //
-      const recentPushKit =
-        this.recentPushKit &&
-        Date.now() - this.recentPushKitAt < 20000 &&
-        this.recentPushKit
-      this.recentPushKit = ''
-      this.recentPushKitAt = 0
-      //
-      if (recentPushKit === 'answered') {
-        this.answerCall(c)
-      } else if (recentPushKit === 'rejected') {
-        c.hangup()
-      } else if (
-        Platform.OS === 'ios' ||
-        (Platform.OS === 'android' && AppState.currentState !== 'active')
-      ) {
-        c.callkeep = true
-        RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
-      }
-      //
-      if (Platform.OS === 'ios') {
-        setTimeout(() => RNCallKeep.endCall(uuidFromPushKit), 1000)
+      if (c.incoming && !c.answered) {
+        const recentPushKit =
+          Date.now() - this.recentPushKitAt < 20000 && this.recentPushKit
+        this.recentPushKit = ''
+        this.recentPushKitAt = 0
+        //
+        if (recentPushKit === 'answered') {
+          this.answerCall(c)
+        } else if (recentPushKit === 'rejected') {
+          c.hangup()
+        } else if (AppState.currentState !== 'active') {
+          c.callkeep = true
+          RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
+        }
+        if (Platform.OS === 'ios') {
+          setTimeout(() => RNCallKeep.endCall(uuidFromPushKit), 1000)
+        }
       }
     } else {
       Object.assign(c, _c)

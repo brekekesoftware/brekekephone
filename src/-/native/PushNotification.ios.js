@@ -28,24 +28,16 @@ const onNotification = async (n, initApp) => {
   }
   //
   PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
-    badge = (badge || 0) + 1
+    badge = 1 + (Number(badge) || 0)
     if (AppState.currentState === 'active') {
       badge = 0
     }
-    if (n.isCall) {
-      VoipPushNotification.presentLocalNotification({
-        alertBody: n.body,
-        alertAction: 'Answer',
-        soundName: 'incallmanager_ringtone.mp3',
-        applicationIconBadgeNumber: badge,
-      })
-    } else {
-      PushNotificationIOS.presentLocalNotification({
-        alertBody: n.body,
-        alertAction: 'View',
-        applicationIconBadgeNumber: badge,
-      })
-    }
+    VoipPushNotification.presentLocalNotification({
+      alertBody: n.body,
+      alertAction: n.isCall ? 'Answer' : 'View',
+      soundName: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
+      applicationIconBadgeNumber: badge,
+    })
     PushNotificationIOS.setApplicationIconBadgeNumber(badge)
   })
 }
