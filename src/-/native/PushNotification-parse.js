@@ -64,7 +64,7 @@ const parseNotificationData = raw => {
   return null
 }
 
-const parse = async raw => {
+const parse = async (raw, isLocal = false) => {
   if (!raw) {
     return null
   }
@@ -76,13 +76,25 @@ const parse = async raw => {
   if (!n.body && !n.to) {
     return null
   }
-  // Skip local notification from ./PushNotification.android.js
+
   if (
+    isLocal ||
     raw.my_custom_data ||
     raw.is_local_notification ||
     n.my_custom_data ||
     n.is_local_notification
   ) {
+    const p = authStore.findProfile({
+      ...n,
+      pbxUsername: n.to,
+      pbxTenant: n.tenant,
+    })
+    if (authStore.signedInId === p?.id) {
+      authStore.reconnect()
+    }
+    if (p?.id && p.pushNotificationEnabled && !authStore.signedInId) {
+      authStore.signIn(p.id)
+    }
     return null
   }
   // Assign more fields to present local message in android/ios specific code

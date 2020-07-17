@@ -144,7 +144,7 @@ class PageContactUsers extends React.Component {
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={v => {
               g.upsertProfile({
-                id: authStore.currentProfile.id,
+                id: authStore.signedInId,
                 displayOfflineUsers: v,
               })
             }}

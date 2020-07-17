@@ -20,9 +20,9 @@ const onToken = t => {
   }
 }
 
-const onNotification = async (n, initApp) => {
+const onNotification = async (n, initApp, isLocal = false) => {
   initApp()
-  n = await parse(n)
+  n = await parse(n, isLocal)
   if (!n) {
     return
   }
@@ -57,11 +57,13 @@ const PushNotification = {
       onNotification(n, initApp),
     )
     PushNotificationIOS.addEventListener('localNotification', n =>
-      onNotification(n, initApp),
+      onNotification(n, initApp, true),
     )
     //
     PushNotificationIOS.requestPermissions()
     VoipPushNotification.requestPermissions()
+    //
+    onNotification(PushNotificationIOS.getInitialNotification(), initApp, true)
   },
   getVoipToken: () => {
     return Promise.resolve(voipApnsToken)

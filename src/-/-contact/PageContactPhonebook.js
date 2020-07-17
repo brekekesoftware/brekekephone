@@ -184,7 +184,7 @@ class PageContactPhonebook extends React.Component {
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={v => {
             g.upsertProfile({
-              id: authStore.currentProfile.id,
+              id: authStore.signedInId,
               displaySharedContacts: v,
             })
           }}
