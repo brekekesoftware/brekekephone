@@ -1,6 +1,8 @@
 ### Quick access
 
 - [Custom branding build instruction](./doc/custom-branding-instruction.md)
+- [Fix ios deprecated UIWebView instruction](./doc/fix-webview-ios-instruction.md)
+- [Network proxy setup instruction](./doc/network-proxy-setup-instruction.md)
 
 ### Environment requirement
 
