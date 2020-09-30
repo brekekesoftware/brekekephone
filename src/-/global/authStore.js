@@ -167,8 +167,13 @@ class AuthStore {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
+  }, 100)
+  reconnectWithUcLoginFromAnotherPlace = debounce(() => {
+    this.pbxTotalFailure = 0
+    this.sipTotalFailure = 0
+    this.ucTotalFailure = 0
     this.ucLoginFromAnotherPlace = false
-  }, 1000)
+  }, 100)
 
   handleUrlParams = async () => {
     await g.profilesLoaded
@@ -273,7 +278,7 @@ class AuthStore {
       return AppState.currentState !== 'active'
     }
     // Call signIn
-    return this.signIn(p?.id)
+    return this.signIn(p.id)
   }
 
   // id

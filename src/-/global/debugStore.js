@@ -21,7 +21,7 @@ if (Platform.OS !== 'web') {
   const [log, log1, log2] = ['log', 'log1', 'log2'].map(
     n => `${RNFS.DocumentDirectoryPath}/brekeke-phone-${n}.txt`,
   )
-  const limitedBytes = 250000 // 250KB
+  const maximumBytes = 250000 // 250KB
 
   class DebugStore {
     // By default only error logs will be captured
@@ -88,7 +88,7 @@ if (Platform.OS !== 'web') {
       this.logSizes[0] = Number(size)
       // If the size of log1 passes the limit
       //    we will copy it to log2 and clear the log1
-      if (this.logSizes[0] > limitedBytes) {
+      if (this.logSizes[0] > maximumBytes) {
         if (await RNFS.exists(log2)) {
           await RNFS.unlink(log2)
         }
@@ -167,28 +167,30 @@ if (Platform.OS !== 'web') {
         return
       }
       this.isCheckingForUpdate = true
-      ;(Platform.OS === 'android'
-        ? window
-            .fetch(
-              'https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en',
-            )
-            .then(res => res.text())
-            .then(t =>
-              t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
-            )
-        : window
-            .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
-            .then(res => res.json())
-            .then(j => j.results?.[0].version)
-      )
-        .then(v => {
-          if (!v) {
-            throw new Error('The returned version from app store is empty')
-          }
-          this.remoteVersion = v
-          this.remoteVersionLastCheck = Date.now()
-          this.isCheckingForUpdate = false
-        })
+      const p =
+        Platform.OS === 'android'
+          ? window
+              .fetch(
+                'https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en',
+              )
+              .then(res => res.text())
+              .then(t =>
+                t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
+              )
+          : window
+              .fetch(
+                'https://itunes.apple.com/lookup?bundleId=com.brekeke.phone',
+              )
+              .then(res => res.json())
+              .then(j => j.results?.[0].version)
+      p.then(v => {
+        if (!v) {
+          throw new Error('The returned version from app store is empty')
+        }
+        this.remoteVersion = v
+        this.remoteVersionLastCheck = Date.now()
+        this.isCheckingForUpdate = false
+      })
         .then(this.saveRemoteVersionToStorage)
         .catch(err => {
           g.showError({

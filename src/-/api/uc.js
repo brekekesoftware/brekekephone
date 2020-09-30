@@ -3,22 +3,22 @@ import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
 const codeMapUserStatus = {
-  '0': 'offline',
-  '1': 'online',
-  '2': 'idle',
-  '3': 'busy',
+  0: 'offline',
+  1: 'online',
+  2: 'idle',
+  3: 'busy',
 }
 const getUserStatusFromCode = code =>
   codeMapUserStatus[code] || codeMapUserStatus['0']
 
 const codeMapFileState = {
-  '0': 'waiting',
-  '1': 'waiting',
-  '2': 'started',
-  '3': 'success',
-  '4': 'stopped',
-  '5': 'stopped',
-  '6': 'failure',
+  0: 'waiting',
+  1: 'waiting',
+  2: 'started',
+  3: 'success',
+  4: 'stopped',
+  5: 'stopped',
+  6: 'failure',
 }
 const getFileStateFromCode = code =>
   codeMapFileState[code] || codeMapFileState['0']
@@ -47,7 +47,9 @@ class UC extends EventEmitter {
   }
 
   onUserUpdated = ev => {
-    if (!ev) return
+    if (!ev) {
+      return
+    }
 
     this.emit('user-updated', {
       id: ev.user_id,
@@ -59,7 +61,9 @@ class UC extends EventEmitter {
   }
 
   onTextReceived = ev => {
-    if (!ev || !ev.sender) return
+    if (!ev || !ev.sender) {
+      return
+    }
 
     ev.conf_id
       ? this.emit('group-chat-created', {
@@ -78,7 +82,9 @@ class UC extends EventEmitter {
   }
 
   onFileReceived = ev => {
-    if (!ev || !ev.fileInfo) return
+    if (!ev || !ev.fileInfo) {
+      return
+    }
 
     const file = {
       id: ev.fileInfo.file_id,
@@ -108,7 +114,9 @@ class UC extends EventEmitter {
   }
 
   onFileProgress = ev => {
-    if (!ev || !ev.fileInfo) return
+    if (!ev || !ev.fileInfo) {
+      return
+    }
 
     this.emit('file-progress', {
       id: ev.fileInfo.file_id,
@@ -118,7 +126,9 @@ class UC extends EventEmitter {
   }
 
   onFileFinished = ev => {
-    if (!ev || !ev.fileInfo) return
+    if (!ev || !ev.fileInfo) {
+      return
+    }
 
     this.emit('file-finished', {
       id: ev.fileInfo.file_id,
@@ -128,7 +138,9 @@ class UC extends EventEmitter {
   }
 
   onGroupInvited = ev => {
-    if (!ev || !ev.conference) return
+    if (!ev || !ev.conference) {
+      return
+    }
 
     this.emit('chat-group-invited', {
       id: ev.conference.conf_id,
@@ -139,7 +151,9 @@ class UC extends EventEmitter {
   }
 
   onGroupUpdated = ev => {
-    if (!ev || !ev.conference) return
+    if (!ev || !ev.conference) {
+      return
+    }
 
     if (ev.conference.conf_status === 0) {
       this.emit('chat-group-revoked', {
@@ -377,7 +391,9 @@ class UC extends EventEmitter {
       xhr.responseType = 'blob'
 
       xhr.onload = function (ev) {
-        if (this.status === 200) onres(this.response)
+        if (this.status === 200) {
+          onres(this.response)
+        }
       }
 
       this.client.acceptFileWithXhr(file, xhr, onerr)

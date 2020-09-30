@@ -120,7 +120,7 @@ class Api {
       })
     })
 
-    setTimeout(this.onPBXAndSipStarted, 170)
+    setTimeout(this.onPBXAndSipStarted)
   }
 
   onPBXConnectionStopped = () => {
@@ -167,7 +167,7 @@ class Api {
 
   onSIPConnectionStarted = () => {
     authStore.sipState = 'success'
-    setTimeout(this.onPBXAndSipStarted, 170)
+    setTimeout(this.onPBXAndSipStarted)
   }
 
   onSIPConnectionStopped = e => {

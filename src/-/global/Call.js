@@ -1,4 +1,5 @@
 import { action, computed, observable } from 'mobx'
+import { NativeModules, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as uuid } from 'react-native-uuid'
 
@@ -27,7 +28,12 @@ export default class Call {
   @observable createdAt = Date.now()
   @observable duration = 0
 
-  hangup = () => sip.hangupSession(this.id)
+  hangup = () => {
+    sip.hangupSession(this.id)
+    if (Platform.OS === 'android') {
+      NativeModules.ActivityStarter.closeMyActivity()
+    }
+  }
   hangupWithUnhold = () =>
     this.holding ? this.toggleHold().then(this.hangup) : this.hangup()
 

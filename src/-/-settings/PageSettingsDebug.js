@@ -28,10 +28,6 @@ const css = StyleSheet.create({
 @observer
 class PageSettingsDebug extends Component {
   render() {
-    const v = currentVersion
-    const nv = debugStore.remoteVersion
-    const ago = moment(debugStore.remoteVersionLastCheck).fromNow()
-
     return (
       <Layout
         description={intl`App information and debugging`}
@@ -87,13 +83,25 @@ class PageSettingsDebug extends Component {
               style={css.Text}
               warning={debugStore.isUpdateAvailable}
             >
-              {intl`Current version: ${v}`}
+              {intl`Current version: ${currentVersion}`}
               {'\n'}
               {debugStore.isCheckingForUpdate
                 ? intl`Checking for update...`
                 : debugStore.isUpdateAvailable
-                ? intl`A new version is available: ${nv}`
-                : intl`Brekeke Phone is up-to-date, checked ${ago}`}
+                ? intl`A new version is available: ${debugStore.remoteVersion}`
+                : intl`Brekeke Phone is up-to-date, checked ${moment(
+                    debugStore.remoteVersionLastCheck,
+                  ).fromNow()}`}
+            </Text>
+          </React.Fragment>
+        )}
+        {Platform.OS === 'web' && (
+          <React.Fragment>
+            <Text normal primary small style={css.Text}>
+              {intl`Current version: ${currentVersion}`}
+            </Text>
+            <Text normal warning small style={css.Text}>
+              {intl`You are running an in-browser version of Brekeke Phone`}
             </Text>
           </React.Fragment>
         )}

@@ -134,7 +134,9 @@ class PageChatGroupDetail extends React.Component {
 
   me = uc.me()
   resolveBuddy = creator => {
-    if (creator === this.me.id) return this.me
+    if (creator === this.me.id) {
+      return this.me
+    }
     return contactStore.getUCUser(creator) || {}
   }
   resolveChat = (id, index) => {

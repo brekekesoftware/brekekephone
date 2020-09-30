@@ -4,7 +4,9 @@ module.exports = {
   extends: 'react-app',
   plugins: ['import', 'simple-import-sort'],
   rules: {
-    quotes: [2, 'single'],
+    curly: [2, 'all'],
+    semi: [2, 'never'],
+    quotes: [2, 'single', { avoidEscape: true }],
     'sort-imports': 'off',
     'simple-import-sort/sort': 2,
     'import/first': 2,

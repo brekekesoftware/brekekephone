@@ -80,6 +80,15 @@ registerOnUnhandledError(unexpectedErr => {
   return false
 })
 
+if (Platform.OS === 'web') {
+  g.showPrompt({
+    title: intl`Action Required`,
+    message: intl`Brekeke Phone needs your action to work well on browser. Press OK to continue`,
+    confirmText: 'OK',
+    dismissText: false,
+  })
+}
+
 let alreadyInitApp = false
 PushNotification.register(() => {
   if (alreadyInitApp) {

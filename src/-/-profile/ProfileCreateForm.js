@@ -106,7 +106,7 @@ const ProfileCreateForm = observer(props => {
                 ? [
                     {
                       label: intl`Reconnect to server`,
-                      onPress: authStore.reconnect,
+                      onPress: authStore.reconnectWithUcLoginFromAnotherPlace,
                     },
                   ]
                 : []),

@@ -56,7 +56,7 @@ class PageSettingsOther extends Component {
             ? [
                 {
                   label: intl`Reconnect to server`,
-                  onPress: authStore.reconnect,
+                  onPress: authStore.reconnectWithUcLoginFromAnotherPlace,
                 },
               ]
             : []),

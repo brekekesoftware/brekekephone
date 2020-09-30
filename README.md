@@ -32,7 +32,7 @@ yarn cache clean && yarn --check-files && yarn rn --reset-cache
 ### Keystores and other credentials keys
 
 - You need to contact us to download or generate your own following files:
-  - `android/src/google-services.json`
+  - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
   - `src/-/api/turnConfig.js`
