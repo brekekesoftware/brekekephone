@@ -52,6 +52,7 @@
     "react-native": "0.59.10",
     "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#0a42941c8c74162676a71340a6ada510acd17af4",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
+    "react-native-draw-overlay": "1.0.1",
     "react-native-emoji-selector": "0.1.9",
     "react-native-exception-handler": "2.10.8",
     "react-native-fast-image": "6.1.1",
@@ -73,7 +74,7 @@
     "react-native-web-linear-gradient": "1.1.1",
     "react-native-webrtc": "1.75.3",
     "url-parse": "1.4.7",
-    "uuid": "8.3.0",
+    "uuid": "8.3.1",
     "validatorjs": "3.20.0"
   },
   "devDependencies": {

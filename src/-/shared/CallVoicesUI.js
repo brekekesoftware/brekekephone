@@ -7,11 +7,21 @@ import callStore from '../global/callStore'
 
 @observer
 class IncomingItem extends React.Component {
+  // Use setTimeout to prevent PN answered the call but still ring in a blink
+  timeoutId = 0
+
   componentDidMount() {
-    IncallManager.startRingtone('_BUNDLE_')
+    this.timeoutId = setTimeout(() => {
+      IncallManager.startRingtone('_BUNDLE_')
+      this.timeoutId = 0
+    }, 300)
   }
 
   componentWillUnmount() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = 0
+    }
     IncallManager.stopRingtone()
   }
 

@@ -239,7 +239,10 @@ if (Platform.OS === 'android') {
   let lastUuid = 0
   let lastTime = 0
   setInterval(() => {
-    if (callStore.recentPNActionAt && Date.now() - callStore.recentPNActionAt >= 15000) {
+    if (
+      callStore.recentPNActionAt &&
+      Date.now() - callStore.recentPNActionAt >= 15000
+    ) {
       NativeModules.IncomingCall.closeIncomingCallActivity()
     }
     const c = callStore.incomingCall

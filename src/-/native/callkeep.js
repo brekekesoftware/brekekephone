@@ -6,6 +6,7 @@ import {
   Platform,
 } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+// import RNDrawOverlay from 'react-native-draw-overlay'
 
 import g from '../global'
 import authStore from '../global/authStore'
@@ -235,3 +236,12 @@ export const setupCallKeep = async () => {
     )
   }
 }
+
+// RNDrawOverlay.askForDispalayOverOtherAppsPermission()
+//   .then(res => {
+//     //
+//   })
+//   .catch(e => {
+//     //
+//     console.error(e)
+//   })

@@ -86,6 +86,7 @@ dependencies {
   compile project(":@react-native-community_async-storage")
   compile project(":react-native-callkeep")
   compile project(":react-native-document-picker")
+  compile project(':react-native-draw-overlay')
   compile project(":react-native-exception-handler")
   compile project(":react-native-fast-image")
   compile project(":react-native-fcm")
