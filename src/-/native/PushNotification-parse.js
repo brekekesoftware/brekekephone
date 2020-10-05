@@ -1,5 +1,6 @@
 import get from 'lodash/get'
-import { AppState, NativeModules, Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
+import RNCallKeep from 'react-native-callkeep'
 
 import authStore from '../global/authStore'
 import callStore, { uuidFromPN } from '../global/callStore'
@@ -110,13 +111,22 @@ const parse = (raw, isLocal) => {
       ? n
       : null
   }
-  if (Platform.OS === 'android' && !callStore._calls.length) {
-    NativeModules.IncomingCall.showCall(uuidFromPN, n.to, false)
+  if (
+    AppState.currentState !== 'active' &&
+    Platform.OS === 'android' &&
+    !callStore._calls.length
+  ) {
+    lastPN = n
+    // NativeModules.IncomingCall.showCall(uuidFromPN, n.to, false)
+    RNCallKeep.displayIncomingCall(uuidFromPN, 'Brekeke Phone', n.to)
     callStore.recentPNActionAt = Date.now()
   }
   // Call api to sign in
   authStore.signInByNotification(n)
   return null
 }
+
+let lastPN = null
+export const getLastPN = () => lastPN
 
 export default parse

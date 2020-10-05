@@ -6,15 +6,17 @@ import {
   Platform,
 } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-// import RNDrawOverlay from 'react-native-draw-overlay'
 
+// import RNDrawOverlay from 'react-native-draw-overlay'
 import g from '../global'
 import authStore from '../global/authStore'
 import callStore, { uuidFromPN } from '../global/callStore'
 import intl, { intlDebug } from '../intl/intl'
+import { getLastPN } from '../native/PushNotification-parse'
 
 const shouldHandlePushKit = () =>
-  !callStore._calls.length || authStore.sipState !== 'success'
+  Platform.OS === 'ios' &&
+  (!callStore._calls.length || authStore.sipState !== 'success')
 
 let pushKitTimeoutId = 0
 const clearPushKitTimeout = () => {
@@ -187,6 +189,15 @@ export const setupCallKeep = async () => {
 
   if (Platform.OS === 'android') {
     RNCallKeep.addEventListener('showIncomingCallUi', e => {
+      if (e.callUUID === uuidFromPN) {
+        const n = getLastPN()
+        NativeModules.IncomingCall.showCall(
+          e.callUUID,
+          n?.to || 'Loading...',
+          false,
+        )
+        return
+      }
       const c = callStore.findByUuid(e.callUUID)
       if (!c?.callkeep) {
         RNCallKeep.endCall(e.callUUID)
