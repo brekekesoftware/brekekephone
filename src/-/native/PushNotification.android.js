@@ -62,8 +62,8 @@ const PushNotification = {
       FCM.on(RefreshToken, onToken)
       FCM.on(Notification, n => onNotification(n, initApp))
       await FCM.getFCMToken().then(onToken)
-      // const n = await FCM.getInitialNotification()
-      // onNotification(n, initApp)
+      const n = await FCM.getInitialNotification()
+      onNotification(n, initApp)
     } catch (err) {
       g.showError({
         message: 'Failed to initialize push notification',

@@ -264,4 +264,12 @@ const App = observer(() => {
   )
 })
 
+// Get permission for audio/video
+window.navigator
+  .getUserMedia({
+    audio: true,
+    video: true,
+  })
+  .then(stream => stream.getTracks().forEach(track => track.stop()))
+
 export default App

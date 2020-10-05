@@ -26,12 +26,12 @@ $.extends({
     // Log error to save it to the debug log
     const err = error.unexpectedErr || error.err
     if (err) {
-      const k = err.message?.intl || err.message
+      const k = err?.message?.intl || err?.message
       console.error(...(k ? [k, err] : [err]))
     }
     // Convert error message to string if it was constructed using intl.debug
-    if (err.message?.intl) {
-      err.message = `${err.message}`
+    if (err?.message?.intl) {
+      err.message = `${err?.message}`
     }
     $.alerts.push({ error: err })
     $.set('alertsCount', $.alerts.length)

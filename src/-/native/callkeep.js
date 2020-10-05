@@ -219,7 +219,7 @@ export const setupCallKeep = async () => {
       }
       callStore.answerCall(c)
       NativeModules.IncomingCall.closeIncomingCallActivity()
-      setTimeout(() => RNCallKeep.backToForeground())
+      RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', uuid => {
       if (uuid === uuidFromPN) {
