@@ -1,6 +1,9 @@
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
+
+import callStore from '../global/callStore'
 
 @observer
 class IncomingItem extends React.Component {
@@ -42,10 +45,12 @@ const OutgoingList = p =>
 
 const CallVoicesUI = observer(p => (
   <React.Fragment>
-    <IncomingList
-      ids={p.incomingCallIds.filter(i => i !== undefined)}
-      resolve={p.resolveCall}
-    />
+    {(Platform.OS !== 'android' || callStore.androidRingtone <= 0) && (
+      <IncomingList
+        ids={p.incomingCallIds.filter(i => i !== undefined)}
+        resolve={p.resolveCall}
+      />
+    )}
     <OutgoingList
       ids={p.outgoingCallIds.filter(i => i !== undefined)}
       resolve={p.resolveCall}

@@ -1,8 +1,8 @@
 import get from 'lodash/get'
-import { AppState, Platform } from 'react-native'
+import { AppState, NativeModules, Platform } from 'react-native'
 
 import authStore from '../global/authStore'
-import callStore from '../global/callStore'
+import callStore, { uuidFromPN } from '../global/callStore'
 
 const keysInCustomNotification = [
   'title',
@@ -64,7 +64,7 @@ const parseNotificationData = raw => {
   return null
 }
 
-const parse = async (raw, isLocal = false) => {
+const parse = (raw, isLocal) => {
   if (!raw) {
     return null
   }
@@ -110,28 +110,13 @@ const parse = async (raw, isLocal = false) => {
       ? n
       : null
   }
+  if (Platform.OS === 'android' && !callStore._calls.length) {
+    NativeModules.IncomingCall.showCall(uuidFromPN, n.to, false)
+    callStore.recentPNActionAt = Date.now()
+  }
   // Call api to sign in
-  const shouldPresentLocal = await authStore.signInByNotification(n)
-  if (!shouldPresentLocal) {
-    return null
-  }
-  // PN via callkeep
-  if (n.isCall && authStore.currentProfile?.pbxUsername === n.to) {
-    return new Promise(resolve => {
-      const intervalAt = Date.now()
-      const intervalId = setInterval(() => {
-        if (Date.now() - intervalAt > 20000) {
-          clearInterval(intervalId)
-          resolve(AppState.currentState === 'active' ? null : n)
-        } else if (callStore._calls.find(c => c.callkeep)) {
-          clearInterval(intervalId)
-          resolve(null)
-        }
-      }, 1000)
-    })
-  }
-  //
-  return n
+  authStore.signInByNotification(n)
+  return null
 }
 
 export default parse

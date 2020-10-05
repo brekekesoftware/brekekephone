@@ -35,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         protected List<ReactPackage> getPackages() {
           return Arrays.<ReactPackage>asList(
+              new IncomingCallReactPackage(),
               new AsyncStoragePackage(),
               new DocumentPickerPackage(),
               new FIRMessagingPackage(),

@@ -4,9 +4,9 @@ import React from 'react'
 import callStore from '../global/callStore'
 import CallVoicesUI from './CallVoicesUI'
 
-const isIncoming = call => !call.answered && call.incoming
-const isOutgoing = call => !call.answered && !call.incoming
-const isAnswered = call => call.answered
+const isIncoming = c => !c.answered && c.incoming && !c.rejected
+const isOutgoing = c => !c.answered && !c.incoming && !c.rejected
+const isAnswered = c => c.answered && !c.rejected
 
 @observer
 class CallVoices extends React.Component {

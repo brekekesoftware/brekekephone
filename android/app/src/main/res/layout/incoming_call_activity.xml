@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:background="@drawable/gradient" android:layout_height="match_parent" android:layout_width="match_parent" android:orientation="vertical" tools:context="com.brekeke.phone.IncomingCallActivity">
+  <TextView android:gravity="center" android:id="@+id/caller_name_text" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:layout_width="match_parent" android:text="@string/caller_name_text" android:textColor="#FFFFFF" android:textSize="36sp" android:textStyle="bold"/>
+  <TextView android:gravity="center" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:layout_width="match_parent" android:text="@string/brekeke_phone_text" android:textColor="#FFFFFF" android:textSize="20dp" android:textStyle="normal"/>
+  <RelativeLayout android:gravity="bottom" android:layout_height="434dp" android:layout_width="match_parent">
+    <LinearLayout android:layout_centerInParent="true" android:layout_height="wrap_content" android:layout_width="wrap_content">
+      <RelativeLayout android:layout_height="wrap_content" android:layout_width="wrap_content">
+        <TextView android:gravity="center" android:id="@+id/audio_video_text" android:layout_height="wrap_content" android:layout_marginBottom="20dp" android:layout_width="match_parent" android:text="@string/audio_video_text" android:textColor="#FFFFFF" android:textSize="20dp" android:textStyle="normal"/>
+      </RelativeLayout>
+    </LinearLayout>
+  </RelativeLayout>
+  <RelativeLayout android:layout_width="match_parent" android:layout_height="78dp" android:gravity="bottom">
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true">
+      <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <Button android:id="@+id/go_back_button" android:layout_width="65dp" android:layout_height="65dp" android:background="@drawable/button_style_blue" android:drawableLeft="@drawable/ic_answer" android:paddingLeft="13dp" android:paddingTop="39dp"/>
+        <Button android:id="@+id/trigger_alert_button" android:layout_marginLeft="200dp" android:layout_width="65dp" android:layout_height="65dp" android:background="@drawable/button_style_red" android:drawableLeft="@drawable/ic_hang_up" android:paddingLeft="13dp" android:paddingTop="39dp"/>
+      </RelativeLayout>
+    </LinearLayout>
+  </RelativeLayout>
+</LinearLayout>

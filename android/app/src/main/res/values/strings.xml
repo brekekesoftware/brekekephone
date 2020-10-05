@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Brekeke Phone Dev</string>
+  <string name="example_activity_title">ExampleActivity</string>
+  <string name="caller_name_text">Caller Name</string>
+  <string name="brekeke_phone_text">Brekeke Phone</string>
+  <string name="audio_video_text">Incoming Call</string>
 </resources>

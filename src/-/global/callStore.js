@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import { AppState, NativeModules, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 
@@ -9,15 +9,15 @@ import { arrToMap } from '../utils/toMap'
 import g from '.'
 import Call from './Call'
 
-export const uuidFromPushKit = '00000000-0000-0000-0000-000000000000'
+export const uuidFromPN = '00000000-0000-0000-0000-000000000000'
 
 export class CallStore {
   constructor() {
     this._initDurationInterval()
   }
 
-  recentPushKit = ''
-  recentPushKitAt = 0
+  recentPNAction = ''
+  recentPNActionAt = 0
 
   @observable _calls = []
   @observable _currentCallId = undefined
@@ -33,6 +33,8 @@ export class CallStore {
       c => c.id !== this._currentCallId && !(c.incoming && !c.answered),
     )
   }
+
+  @observable androidRingtone = 0
 
   _updateCurrentCall = () => {
     let currentCall
@@ -69,41 +71,49 @@ export class CallStore {
 
   @action upsertCall = _c => {
     let c = this._calls.find(c => c.id === _c.id)
-    if (!c) {
-      c = new Call()
+    if (c) {
       Object.assign(c, _c)
-      this._calls = [c, ...this._calls]
-      //
-      if (c.incoming && !c.answered) {
-        const recentPushKit =
-          Date.now() - this.recentPushKitAt < 20000 && this.recentPushKit
-        this.recentPushKit = ''
-        this.recentPushKitAt = 0
-        //
-        if (recentPushKit === 'answered') {
-          this.answerCall(c)
-        } else if (recentPushKit === 'rejected') {
-          c.hangup()
-        } else if (
-          Platform.OS === 'ios' ||
-          (Platform.OS === 'android' && AppState.currentState !== 'active')
-        ) {
-          c.callkeep = true
-          RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
-        }
-        if (Platform.OS === 'ios') {
-          setTimeout(() => RNCallKeep.endCall(uuidFromPushKit), 1000)
-        }
+      if (c.callkeep && c.answered) {
+        c.callkeep = false
+        RNCallKeep.endCall(c.uuid)
       }
+      return
+    }
+    //
+    c = new Call()
+    Object.assign(c, _c)
+    this._calls = [c, ...this._calls]
+    if (!c.incoming || c.answered) {
+      return
+    }
+    setTimeout(() => RNCallKeep.endCall(uuidFromPN), 1000)
+    //
+    const recentPNAction =
+      Date.now() - this.recentPNActionAt < 20000 && this.recentPNAction
+    this.recentPNAction = ''
+    this.recentPNActionAt = 0
+    //
+    if (recentPNAction === 'answered') {
+      this.answerCall(c)
+      c.answered = true
+      setTimeout(() => RNCallKeep.backToForeground())
+    } else if (recentPNAction === 'rejected') {
+      c.hangup()
+      c.rejected = true
     } else {
-      Object.assign(c, _c)
+      c.callkeep = true
+      RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
     }
   }
   @action removeCall = id => {
     const c = this._calls.find(c => c.id === id)
     this._calls = this._calls.filter(c => c.id !== id)
     if (c?.callkeep) {
+      c.callkeep = false
       RNCallKeep.endCall(c.uuid)
+    }
+    if (Platform.OS === 'android') {
+      NativeModules.IncomingCall.closeIncomingCallActivity()
     }
   }
 
@@ -121,12 +131,20 @@ export class CallStore {
   }
 
   @action answerCall = (c, options) => {
+    c.answered = true
     this._currentCallId = c.id
     sip.answerSession(c.id, {
       videoEnabled: c.remoteVideoEnabled,
       ...options,
     })
     g.goToPageCallManage()
+    if (c.callkeep) {
+      c.callkeep = false
+      RNCallKeep.endCall(c.uuid)
+    }
+    if (Platform.OS === 'android') {
+      NativeModules.IncomingCall.closeIncomingCallActivity()
+    }
   }
 
   _startCallIntervalAt = 0
@@ -202,8 +220,9 @@ if (Platform.OS !== 'web') {
   //   // TODO speaker
   //   // https://github.com/react-native-webrtc/react-native-callkeep/issues/78
   // })
+}
 
-  // End all callkeep when app active
+if (Platform.OS === 'ios') {
   AppState.addEventListener('change', () => {
     if (AppState.currentState === 'active') {
       callStore._calls
@@ -214,6 +233,27 @@ if (Platform.OS !== 'web') {
         })
     }
   })
+}
+
+if (Platform.OS === 'android') {
+  let lastUuid = 0
+  let lastTime = 0
+  setInterval(() => {
+    if (callStore.recentPNActionAt && Date.now() - callStore.recentPNActionAt >= 15000) {
+      NativeModules.IncomingCall.closeIncomingCallActivity()
+    }
+    const c = callStore.incomingCall
+    if (!c) {
+      return
+    }
+    if (lastUuid !== c.uuid) {
+      lastUuid = c.uuid
+      lastTime = Date.now()
+    } else if (Date.now() - lastTime >= 15000) {
+      c.hangup()
+      callStore.removeCall(c.id)
+    }
+  }, 1000)
 }
 
 export default callStore

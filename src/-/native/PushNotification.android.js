@@ -3,21 +3,10 @@ import './callkeep'
 import FCM, { FCMEvent } from 'react-native-fcm'
 
 import g from '../global'
-import { AppRegistry, AsyncStorage } from '../Rn'
+import { AppRegistry } from '../Rn'
 import parse from './PushNotification-parse'
 
 const { Notification, RefreshToken } = FCMEvent
-
-const getBadgeNumber = async () => {
-  let n = await AsyncStorage.getItem('androidBadgeNumber')
-  if (typeof n === 'string') {
-    n = n.replace(/\D+/g, '')
-  }
-  return parseInt(n) || 0
-}
-const setBadgeNumber = n => {
-  AsyncStorage.setItem('androidBadgeNumber', '' + n)
-}
 
 let fcmPnToken = ''
 const onToken = t => {
@@ -25,32 +14,34 @@ const onToken = t => {
     fcmPnToken = t
   }
 }
-const onNotification = async (n, initApp) => {
-  initApp()
-  n = await parse(n)
-  if (!n) {
-    return
+
+const onNotification = (n, initApp) => {
+  try {
+    initApp()
+    n = parse(n)
+    if (!n) {
+      return
+    }
+    //
+    FCM.presentLocalNotification({
+      body: 'Click to ' + (n.isCall ? 'answer' : 'view'),
+      title: n.title || n.body,
+      sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
+      number: 0,
+      priority: 'high',
+      show_in_foreground: true,
+      local_notification: true,
+      wake_screen: true,
+      ongoing: false,
+      lights: true,
+      channel: 'default',
+      icon: 'ic_launcher',
+      my_custom_data: 'local_notification',
+      is_local_notification: 'local_notification',
+    })
+  } catch (err) {
+    console.error(err)
   }
-  //
-  const badge = (await getBadgeNumber()) + 1
-  await setBadgeNumber(badge)
-  //
-  FCM.presentLocalNotification({
-    body: 'Click to ' + (n.isCall ? 'answer' : 'view'),
-    title: n.title || n.body,
-    sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
-    number: badge,
-    priority: 'high',
-    show_in_foreground: true,
-    local_notification: true,
-    wake_screen: true,
-    ongoing: false,
-    lights: true,
-    channel: 'default',
-    icon: 'ic_launcher',
-    my_custom_data: 'local_notification',
-    is_local_notification: 'local_notification',
-  })
 }
 
 const PushNotification = {
@@ -59,7 +50,7 @@ const PushNotification = {
   },
   register: async initApp => {
     try {
-      setTimeout(initApp)
+      initApp()
       await FCM.requestPermissions()
       FCM.enableDirectChannel()
       await FCM.createNotificationChannel({
@@ -71,8 +62,8 @@ const PushNotification = {
       FCM.on(RefreshToken, onToken)
       FCM.on(Notification, n => onNotification(n, initApp))
       await FCM.getFCMToken().then(onToken)
-      const n = await FCM.getInitialNotification()
-      onNotification(n, initApp)
+      // const n = await FCM.getInitialNotification()
+      // onNotification(n, initApp)
     } catch (err) {
       g.showError({
         message: 'Failed to initialize push notification',
@@ -81,21 +72,7 @@ const PushNotification = {
     }
   },
   resetBadgeNumber: () => {
-    setBadgeNumber(0)
-    FCM.presentLocalNotification({
-      body: 'Reset badge',
-      number: 0,
-      priority: 'high',
-      show_in_foreground: false,
-      local_notification: true,
-      wake_screen: false,
-      ongoing: false,
-      lights: false,
-      channel: 'default',
-      icon: 'ic_launcher',
-      my_custom_data: 'local_notification',
-      is_local_notification: 'local_notification',
-    })
+    // TODO
   },
 }
 

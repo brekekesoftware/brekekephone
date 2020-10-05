@@ -43,7 +43,7 @@ class CallNotify extends React.Component {
           <Text>
             {c.remoteVideoEnabled
               ? intl`Incoming video call`
-              : intl`Incoming voice call`}
+              : intl`Incoming audio call`}
           </Text>
         </View>
         <ButtonIcon

@@ -8,7 +8,7 @@ import { getUrlParams } from '../native/deeplink'
 import { AppState, Platform } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
-import callStore, { uuidFromPushKit } from './callStore'
+import callStore, { uuidFromPN } from './callStore'
 
 const compareField = (p1, p2, field) => {
   const v1 = p1[field]
@@ -293,27 +293,27 @@ class AuthStore {
 const authStore = new AuthStore()
 
 // Interval 5 seconds for push kit
-if (Platform.OS === 'ios') {
-  let pushKitIntervalId = 0
-  const clearPushKitInterval = () => {
-    if (pushKitIntervalId) {
-      clearInterval(pushKitIntervalId)
-      pushKitIntervalId = 0
+if (Platform.OS !== 'web') {
+  let pnIntervalId = 0
+  const clearPNInterval = () => {
+    if (pnIntervalId) {
+      clearInterval(pnIntervalId)
+      pnIntervalId = 0
     }
   }
-  const setPushKitInterval = () => {
-    clearPushKitInterval()
-    pushKitIntervalId = setInterval(() => {
-      callStore.recentPushKit = ''
-      callStore.recentPushKitAt = 0
-      RNCallKeep.endCall(uuidFromPushKit)
+  const setPNInterval = () => {
+    clearPNInterval()
+    pnIntervalId = setInterval(() => {
+      callStore.recentPNAction = ''
+      callStore.recentPNActionAt = 0
+      RNCallKeep.endCall(uuidFromPN)
     }, 5000)
   }
   autorun(() => {
     if (authStore.sipState === 'success') {
-      setPushKitInterval()
+      setPNInterval()
     } else {
-      clearPushKitInterval()
+      clearPNInterval()
     }
   })
 }

@@ -24,14 +24,16 @@ export default class Call {
 
   @observable incoming = false
   @observable answered = false
+  rejected = false
 
   @observable createdAt = Date.now()
   @observable duration = 0
 
   hangup = () => {
+    this.rejected = true
     sip.hangupSession(this.id)
     if (Platform.OS === 'android') {
-      NativeModules.ActivityStarter.closeMyActivity()
+      NativeModules.IncomingCall.closeIncomingCallActivity()
     }
   }
   hangupWithUnhold = () =>
