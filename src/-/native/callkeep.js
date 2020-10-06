@@ -209,6 +209,7 @@ export const setupCallKeep = async () => {
     const eventEmitter = new NativeEventEmitter(NativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', uuid => {
       if (uuid === uuidFromPN) {
+        RNCallKeep.backToForeground()
         callStore.recentPNAction = 'answered'
         return
       }

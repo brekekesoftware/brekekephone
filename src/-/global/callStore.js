@@ -96,7 +96,6 @@ export class CallStore {
     if (recentPNAction === 'answered') {
       this.answerCall(c)
       c.answered = true
-      RNCallKeep.backToForeground()
     } else if (recentPNAction === 'rejected') {
       c.hangup()
       c.rejected = true
