@@ -80,13 +80,25 @@ registerOnUnhandledError(unexpectedErr => {
   return false
 })
 
+const getAudioVideoPermission = () =>
+  window.navigator
+    .getUserMedia({
+      audio: true,
+      video: true,
+    })
+    .then(s => s.getTracks().forEach(t => t.stop()))
+
 if (Platform.OS === 'web') {
   g.showPrompt({
     title: intl`Action Required`,
     message: intl`Brekeke Phone needs your action to work well on browser. Press OK to continue`,
     confirmText: 'OK',
     dismissText: false,
+    onConfirm: getAudioVideoPermission,
+    onDismiss: getAudioVideoPermission,
   })
+} else {
+  getAudioVideoPermission()
 }
 
 let alreadyInitApp = false
@@ -263,13 +275,5 @@ const App = observer(() => {
     </View>
   )
 })
-
-// Get permission for audio/video
-window.navigator
-  .getUserMedia({
-    audio: true,
-    video: true,
-  })
-  .then(stream => stream.getTracks().forEach(track => track.stop()))
 
 export default App
