@@ -305,7 +305,7 @@ if (Platform.OS !== 'web') {
     clearPNInterval()
     pnIntervalId = setInterval(() => {
       callStore.recentPNAction = ''
-      callStore.recentPNActionAt = 0
+      callStore.recentPNAt = 0
       RNCallKeep.endCall(uuidFromPN)
     }, 5000)
   }

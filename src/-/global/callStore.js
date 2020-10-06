@@ -17,7 +17,7 @@ export class CallStore {
   }
 
   recentPNAction = ''
-  recentPNActionAt = 0
+  recentPNAt = 0
 
   @observable _calls = []
   @observable _currentCallId = undefined
@@ -89,9 +89,9 @@ export class CallStore {
     setTimeout(() => RNCallKeep.endCall(uuidFromPN), 1000)
     //
     const recentPNAction =
-      Date.now() - this.recentPNActionAt < 20000 && this.recentPNAction
+      Date.now() - this.recentPNAt < 20000 && this.recentPNAction
     this.recentPNAction = ''
-    this.recentPNActionAt = 0
+    this.recentPNAt = 0
     //
     if (recentPNAction === 'answered') {
       this.answerCall(c)
@@ -240,9 +240,10 @@ if (Platform.OS === 'android') {
   let lastTime = 0
   setInterval(() => {
     if (
-      callStore.recentPNActionAt &&
-      Date.now() - callStore.recentPNActionAt >= 15000
+      callStore.recentPNAt &&
+      Date.now() - callStore.recentPNAt >= 15000
     ) {
+      callStore.recentPNAt = 0
       NativeModules.IncomingCall.closeIncomingCallActivity()
     }
     const c = callStore.incomingCall

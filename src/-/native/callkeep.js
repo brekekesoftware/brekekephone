@@ -140,7 +140,7 @@ export const setupCallKeep = async () => {
       clearPushKitTimeout()
       pushKitTimeoutId = setTimeout(() => RNCallKeep.endCall(e.callUUID), 20000)
       callStore.recentPNAction = ''
-      callStore.recentPNActionAt = Date.now()
+      callStore.recentPNAt = Date.now()
       if (shouldHandlePushKit()) {
         return
       }

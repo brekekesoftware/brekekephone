@@ -119,7 +119,7 @@ const parse = (raw, isLocal) => {
     lastPN = n
     // NativeModules.IncomingCall.showCall(uuidFromPN, n.to, false)
     RNCallKeep.displayIncomingCall(uuidFromPN, 'Brekeke Phone', n.to)
-    callStore.recentPNActionAt = Date.now()
+    callStore.recentPNAt = Date.now()
   }
   // Call api to sign in
   authStore.signInByNotification(n)
