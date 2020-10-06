@@ -50,7 +50,7 @@
     "react-device-detect": "1.13.1",
     "react-dom": "16.13.1",
     "react-native": "0.59.10",
-    "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#0a42941c8c74162676a71340a6ada510acd17af4",
+    "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#3dac522e1cae0d776b3ede42fea33976405b6041",
     "react-native-document-picker": "github:Elyx0/react-native-document-picker#v3",
     "react-native-draw-overlay": "1.0.1",
     "react-native-emoji-selector": "0.1.9",
