@@ -1,4 +1,3 @@
-import useInterval from '@use-it/interval'
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 
@@ -34,10 +33,4 @@ export const useAnimationOnDidMount = props => {
   const [didMount, setDidMount] = useState(false)
   useEffect(() => setDidMount(true), [])
   return useAnimation(didMount, props)
-}
-
-export const useAnimationInterval = (props, duration = 300) => {
-  const [isStart, setIsStart] = useState(true)
-  useInterval(() => setIsStart(i => !i), duration)
-  return useAnimation(isStart, props, { duration })
 }

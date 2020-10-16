@@ -1,4 +1,3 @@
-import 'mobx-react/batchingForReactNative'
 import './shared'
 
 import {

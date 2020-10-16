@@ -1,4 +1,3 @@
-import 'mobx-react/batchingForReactDom'
 import './shared'
 
 import PropTypes from 'prop-types'

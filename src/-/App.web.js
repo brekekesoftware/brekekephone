@@ -1,6 +1,6 @@
 // Main entry for the create-react-app web bundle
 
-import { mdiAndroidHead, mdiApple, mdiWeb } from '@mdi/js'
+import { mdiAndroid, mdiApple, mdiWeb } from '@mdi/js'
 import qs from 'qs'
 import React, { useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
@@ -114,7 +114,7 @@ const AppSelection = () => {
             </Text>
             <Icon
               color="white"
-              path={isIOS ? mdiApple : mdiAndroidHead}
+              path={isIOS ? mdiApple : mdiAndroid}
               style={css.WebApp_Icon}
             />
           </TouchableOpacity>

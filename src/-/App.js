@@ -80,13 +80,20 @@ registerOnUnhandledError(unexpectedErr => {
   return false
 })
 
-const getAudioVideoPermission = () =>
-  window.navigator
-    .getUserMedia({
+const getAudioVideoPermission = () => {
+  const p = window.navigator.getUserMedia(
+    {
       audio: true,
       video: true,
-    })
-    .then(s => s.getTracks().forEach(t => t.stop()))
+    },
+    // web env
+    s => s.getTracks().forEach(t => t.stop()),
+    err => {},
+  )
+  if (p?.then) {
+    p.then(s => s.getTracks().forEach(t => t.stop()))
+  }
+}
 
 if (Platform.OS === 'web') {
   g.showPrompt({

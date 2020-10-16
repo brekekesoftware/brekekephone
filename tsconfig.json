@@ -12,7 +12,7 @@
     "noEmit": true,
     "isolatedModules": true,
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false, // TODO
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
@@ -26,7 +26,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
