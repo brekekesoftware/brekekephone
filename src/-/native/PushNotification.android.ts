@@ -1,9 +1,9 @@
 import './callkeep'
 
+import { AppRegistry } from 'react-native'
 import FCM, { FCMEvent } from 'react-native-fcm'
 
 import g from '../global'
-import { AppRegistry } from '../Rn'
 import parse from './PushNotification-parse'
 
 const { Notification, RefreshToken } = FCMEvent

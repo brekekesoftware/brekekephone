@@ -1,7 +1,8 @@
 import React from 'react'
+import { Keyboard, StyleSheet, View } from 'react-native'
 
 import intl from '../intl/intl'
-import { Keyboard, StyleSheet, TextInput, View } from '../Rn'
+import { RnTextInput } from '../Rn'
 
 const css = StyleSheet.create({
   ShowNumbers: {
@@ -24,7 +25,7 @@ const css = StyleSheet.create({
 
 const ShowNumber = p => (
   <View style={css.ShowNumbers}>
-    <TextInput
+    <RnTextInput
       blurOnSubmit
       keyboardType='default'
       multiline

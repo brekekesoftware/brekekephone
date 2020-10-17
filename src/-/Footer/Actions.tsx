@@ -1,9 +1,10 @@
 import { mdiCached, mdiKeyboardBackspace } from '@mdi/js'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import intl from '../intl/intl'
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   Actions: {
@@ -63,25 +64,25 @@ const Actions = p => {
   return (
     <View style={css.Actions}>
       {onBack && (
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={onBack}
           style={[css.Btn, css.Btn__back, !onMore && css.Btn__33]}
         >
-          <Icon
+          <RnIcon
             color={g.colors.danger}
             path={onBackIcon || mdiKeyboardBackspace}
           />
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       )}
       {onMore && (
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={onMore}
           style={[css.Btn, css.Btn__more, !onBack && css.Btn__33]}
         >
-          <Icon path={onMoreIcon || mdiCached} />
-        </TouchableOpacity>
+          <RnIcon path={onMoreIcon || mdiCached} />
+        </RnTouchableOpacity>
       )}
-      <TouchableOpacity
+      <RnTouchableOpacity
         onPress={onNext}
         style={[
           css.Btn,
@@ -93,10 +94,10 @@ const Actions = p => {
           },
         ]}
       >
-        <Text small style={css.Text}>
+        <RnText small style={css.Text}>
           {onNextText || intl`SAVE`}
-        </Text>
-      </TouchableOpacity>
+        </RnText>
+      </RnTouchableOpacity>
     </View>
   )
 }

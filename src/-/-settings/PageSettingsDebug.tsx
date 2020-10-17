@@ -3,11 +3,12 @@ import filesize from 'filesize'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import React, { Component } from 'react'
+import { Platform, StyleSheet } from 'react-native'
 
 import g from '../global'
 import debugStore from '../global/debugStore'
 import intl from '../intl/intl'
-import { Platform, StyleSheet, Text } from '../Rn'
+import { RnText } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import { currentVersion } from '../variables'
@@ -76,7 +77,7 @@ class PageSettingsDebug extends Component {
               onTouchPress={debugStore.openInStore}
               value={intl`Open Brekeke Phone on store`}
             />
-            <Text
+            <RnText
               normal
               primary={!debugStore.isUpdateAvailable}
               small
@@ -92,17 +93,17 @@ class PageSettingsDebug extends Component {
                 : intl`Brekeke Phone is up-to-date, checked ${moment(
                     debugStore.remoteVersionLastCheck,
                   ).fromNow()}`}
-            </Text>
+            </RnText>
           </React.Fragment>
         )}
         {Platform.OS === 'web' && (
           <React.Fragment>
-            <Text normal primary small style={css.Text}>
+            <RnText normal primary small style={css.Text}>
               {intl`Current version: ${currentVersion}`}
-            </Text>
-            <Text normal warning small style={css.Text}>
+            </RnText>
+            <RnText normal warning small style={css.Text}>
               {intl`You are running an in-browser version of Brekeke Phone`}
-            </Text>
+            </RnText>
           </React.Fragment>
         )}
       </Layout>

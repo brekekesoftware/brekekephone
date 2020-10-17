@@ -1,17 +1,11 @@
 import flow from 'lodash/flow'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import intl from '../intl/intl'
-import {
-  Animated,
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
 
 const css = StyleSheet.create({
@@ -79,7 +73,7 @@ const Alert = ({ error, prompt, ...props }) => {
       title,
       message:
         typeof message === 'string' ? (
-          <Text style={css.RootAlert_Message}>{message}</Text>
+          <RnText style={css.RootAlert_Message}>{message}</RnText>
         ) : (
           <View style={css.RootAlert_Message}>{message}</View>
         ),
@@ -96,10 +90,10 @@ const Alert = ({ error, prompt, ...props }) => {
       title: intl`Error`,
       message: (
         <React.Fragment>
-          <Text style={css.RootAlert_Message}>
+          <RnText style={css.RootAlert_Message}>
             {unexpectedErr ? intl`An unexpected error occurred` : message}
-          </Text>
-          {!!errMessage && <Text small>{errMessage}</Text>}
+          </RnText>
+          {!!errMessage && <RnText small>{errMessage}</RnText>}
         </React.Fragment>
       ),
       confirmText: intl`OK`,
@@ -119,7 +113,7 @@ const Alert = ({ error, prompt, ...props }) => {
           { opacity: a.opacity },
         ]}
       >
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={props.onDismiss}
           style={StyleSheet.absoluteFill}
         />
@@ -132,24 +126,27 @@ const Alert = ({ error, prompt, ...props }) => {
           },
         ]}
       >
-        <Text subTitle>{props.title}</Text>
+        <RnText subTitle>{props.title}</RnText>
         {props.message}
         <View style={css.RootAlert_Btns}>
           {props.dismissText && (
-            <TouchableOpacity
+            <RnTouchableOpacity
               onPress={props.onDismiss}
               style={[css.RootAlert_Btn, css.RootAlert_Btn__cancel]}
             >
-              <Text small style={css.RootAlert_BtnTxt}>
+              <RnText small style={css.RootAlert_BtnTxt}>
                 {props.dismissText}
-              </Text>
-            </TouchableOpacity>
+              </RnText>
+            </RnTouchableOpacity>
           )}
-          <TouchableOpacity onPress={props.onConfirm} style={css.RootAlert_Btn}>
-            <Text small style={css.RootAlert_BtnTxt}>
+          <RnTouchableOpacity
+            onPress={props.onConfirm}
+            style={css.RootAlert_Btn}
+          >
+            <RnText small style={css.RootAlert_BtnTxt}>
               {props.confirmText}
-            </Text>
-          </TouchableOpacity>
+            </RnText>
+          </RnTouchableOpacity>
         </View>
       </Animated.View>
     </View>

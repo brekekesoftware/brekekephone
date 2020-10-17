@@ -1,23 +1,20 @@
 import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import {
+  Clipboard,
+  Dimensions,
+  Linking,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import g from '../global'
 import intl, { intlDebug } from '../intl/intl'
-import {
-  Clipboard,
-  Dimensions,
-  Icon,
-  Image,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn'
+import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   Message: {
@@ -98,32 +95,32 @@ const css = StyleSheet.create({
 const File = observer(p => (
   <View style={[css.File, css.Message]}>
     {p.fileType === 'image' && (
-      <Image source={{ uri: p.url }} style={css.Image} />
+      <RnImage source={{ uri: p.url }} style={css.Image} />
     )}
     {p.fileType !== 'image' && (
       <View style={css.File_Icon}>
-        <Icon path={mdiFile} size={50} />
+        <RnIcon path={mdiFile} size={50} />
         <View style={css.Message_File_Info}>
-          <Text numberOfLines={1}>{p.name}</Text>
-          <Text>{p.size}</Text>
+          <RnText numberOfLines={1}>{p.name}</RnText>
+          <RnText>{p.size}</RnText>
         </View>
       </View>
     )}
     {p.state === 'waiting' && (
-      <TouchableOpacity
+      <RnTouchableOpacity
         onPress={p.reject}
         style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__reject]}
       >
-        <Icon color={g.colors.danger} path={mdiClose} />
-      </TouchableOpacity>
+        <RnIcon color={g.colors.danger} path={mdiClose} />
+      </RnTouchableOpacity>
     )}
     {!!p.incoming && p.state === 'waiting' && (
-      <TouchableOpacity
+      <RnTouchableOpacity
         onPress={p.accept}
         style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__accept]}
       >
-        <Icon color={g.colors.primary} path={mdiCheck} />
-      </TouchableOpacity>
+        <RnIcon color={g.colors.primary} path={mdiCheck} />
+      </RnTouchableOpacity>
     )}
 
     {/*//TODO: fix error UI component Progress*/}
@@ -145,19 +142,19 @@ const File = observer(p => (
     {/*)}*/}
 
     {p.state === 'success' && (
-      <Text
+      <RnText
         style={p.createdByMe && css.Message_File_Info__color}
-      >{intl`Success`}</Text>
+      >{intl`Success`}</RnText>
     )}
     {p.state === 'failure' && (
-      <Text
+      <RnText
         style={p.createdByMe && css.Message_File_Info__color}
-      >{intl`Failed`}</Text>
+      >{intl`Failed`}</RnText>
     )}
     {p.state === 'stopped' && (
-      <Text style={p.createdByMe && css.Message_File_Info__color}>
+      <RnText style={p.createdByMe && css.Message_File_Info__color}>
         {intl`Canceled`}
-      </Text>
+      </RnText>
     )}
   </View>
 ))
@@ -239,7 +236,7 @@ class Message extends React.Component<{
 
   render() {
     const p = this.props
-    const TextContainer = Platform.OS === 'web' ? View : TouchableOpacity
+    const TextContainer = Platform.OS === 'web' ? View : RnTouchableOpacity
     return (
       <React.Fragment>
         {!!p.text && (
@@ -249,7 +246,7 @@ class Message extends React.Component<{
               linkStyle={css.Link}
               onLongPress={this.onLinkLongPress}
             >
-              <Text>{p.text}</Text>
+              <RnText>{p.text}</RnText>
             </Hyperlink>
           </TextContainer>
         )}

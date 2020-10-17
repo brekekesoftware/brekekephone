@@ -1,16 +1,10 @@
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Keyboard, Platform, StyleSheet } from 'react-native'
 
 import g from '../global'
-import {
-  Icon,
-  Keyboard,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import AnimatedSize from '../shared/AnimatedSize'
 
 const css = StyleSheet.create({
@@ -38,18 +32,18 @@ const ToggleKeyboard = observer(({ onShowKeyboard }) => {
   }
   return (
     <AnimatedSize animateWidth>
-      <TouchableOpacity
+      <RnTouchableOpacity
         onPress={g.isKeyboardShowing ? Keyboard.dismiss : onShowKeyboard}
         style={css.ToggleKeyboard}
       >
         {/* Fix button size does not equal with the Actions */}
-        <Text style={css.Text}>{'\u200a'}</Text>
-        <Icon
+        <RnText style={css.Text}>{'\u200a'}</RnText>
+        <RnIcon
           path={
             g.isKeyboardShowing ? mdiKeyboardOffOutline : mdiKeyboardOutline
           }
         />
-      </TouchableOpacity>
+      </RnTouchableOpacity>
     </AnimatedSize>
   )
 })

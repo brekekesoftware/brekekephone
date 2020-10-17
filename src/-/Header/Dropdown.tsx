@@ -1,8 +1,9 @@
 import { mdiDotsVertical } from '@mdi/js'
 import React from 'react'
+import { StyleSheet } from 'react-native'
 
 import g from '../global'
-import { Icon, StyleSheet, Text, TouchableOpacity } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import AnimatedSize from '../shared/AnimatedSize'
 
 const css = StyleSheet.create({
@@ -55,7 +56,7 @@ const Dropdown = p => {
   const { close, compact, dropdown } = p
   return (
     <React.Fragment>
-      <TouchableOpacity
+      <RnTouchableOpacity
         activeOpacity={1}
         onPress={close}
         style={css.Backdrop}
@@ -65,7 +66,7 @@ const Dropdown = p => {
         style={[css.Dropdown, compact && css.Dropdown__compact]}
       >
         {dropdown.map(({ danger, label, onPress, primary, warning }, i) => (
-          <TouchableOpacity
+          <RnTouchableOpacity
             key={i}
             onPress={() => {
               close()
@@ -73,8 +74,8 @@ const Dropdown = p => {
             }}
             style={[css.Item, i === dropdown.length - 1 && css.Item__last]}
           >
-            <Text {...{ primary, warning, danger }}>{label}</Text>
-          </TouchableOpacity>
+            <RnText {...{ primary, warning, danger }}>{label}</RnText>
+          </RnTouchableOpacity>
         ))}
       </AnimatedSize>
     </React.Fragment>
@@ -82,9 +83,9 @@ const Dropdown = p => {
 }
 
 const DropdownBtn = ({ onPress }) => (
-  <TouchableOpacity onPress={onPress} style={css.Btn}>
-    <Icon path={mdiDotsVertical} />
-  </TouchableOpacity>
+  <RnTouchableOpacity onPress={onPress} style={css.Btn}>
+    <RnIcon path={mdiDotsVertical} />
+  </RnTouchableOpacity>
 )
 Dropdown.Btn = DropdownBtn
 

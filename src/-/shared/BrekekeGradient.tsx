@@ -1,8 +1,8 @@
 import React from 'react'
+import { StyleSheet } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
 import g from '../global'
-import { StyleSheet } from '../Rn'
 
 const css = StyleSheet.create({
   BrekekeGradient: {

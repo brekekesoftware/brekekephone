@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import g from '../global'
-import { StyleSheet, View } from '../Rn'
 import { toLowerCaseFirstChar } from '../utils/string'
 import { arrToMap } from '../utils/toMap'
 import Actions from './Actions'

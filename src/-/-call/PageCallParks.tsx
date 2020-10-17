@@ -6,7 +6,7 @@ import g from '../global'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import intl from '../intl/intl'
-import { Text, TouchableOpacity } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 
@@ -49,17 +49,17 @@ class PageCallParks extends React.Component<{
         {!ps.length && (
           <React.Fragment>
             <Field isGroup label={intl`PARK (0)`} />
-            <Text padding>{intl`This account has no park number`}</Text>
+            <RnText padding>{intl`This account has no park number`}</RnText>
           </React.Fragment>
         )}
         {ps.map((u, i) => (
-          <TouchableOpacity key={i} onPress={() => this.selectPark(u)}>
+          <RnTouchableOpacity key={i} onPress={() => this.selectPark(u)}>
             <UserItem
               key={i}
               name={intl`Park ${i + 1}: ${u}`}
               selected={p === u}
             />
-          </TouchableOpacity>
+          </RnTouchableOpacity>
         ))}
       </Layout>
     )

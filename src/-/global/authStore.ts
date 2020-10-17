@@ -1,11 +1,11 @@
 import debounce from 'lodash/debounce'
 import { autorun, computed, observable } from 'mobx'
+import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import sip from '../api/sip'
 import { intlDebug } from '../intl/intl'
 import { getUrlParams } from '../native/deeplink'
-import { AppState, Platform } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
 import callStore, { uuidFromPN } from './callStore'

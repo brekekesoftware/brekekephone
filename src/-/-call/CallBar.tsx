@@ -11,11 +11,12 @@ import {
 } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import callStore from '../global/callStore'
 import intl from '../intl/intl'
-import { Icon, Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
 import formatDuration from '../utils/formatDuration'
 
@@ -59,12 +60,12 @@ class CallBar extends React.Component {
     }
     return (
       <View style={css.CallBar}>
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={() => g.goToPageCallManage({ isFromCallBar: true })}
           style={css.CallBar_Outer}
         >
           <View style={css.CallBar_Icon}>
-            <Icon
+            <RnIcon
               color={c.incoming ? g.colors.primary : g.colors.warning}
               path={
                 c.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline
@@ -72,10 +73,10 @@ class CallBar extends React.Component {
             />
           </View>
           <View style={css.CallBar_Info}>
-            <Text style={css.Notify_Info_PartyName}>{c.title}</Text>
-            <Text>
+            <RnText style={css.Notify_Info_PartyName}>{c.title}</RnText>
+            <RnText>
               {c.answered ? formatDuration(c.duration) : intl`Dialing...`}
-            </Text>
+            </RnText>
           </View>
 
           <View style={css.CallBar_BtnCall}>
@@ -122,7 +123,7 @@ class CallBar extends React.Component {
               path={c.holding ? mdiPlay : mdiPause}
             />
           </View>
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       </View>
     )
   }

@@ -1,7 +1,8 @@
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   ButtonIcon: {
@@ -20,7 +21,7 @@ const css = StyleSheet.create({
 
 const ButtonIcon = ({ color, path, size = 24, ...p }) => (
   <View style={css.ButtonIcon}>
-    <TouchableOpacity
+    <RnTouchableOpacity
       disabled={p.disabled}
       onPress={p.onPress}
       style={[
@@ -35,14 +36,14 @@ const ButtonIcon = ({ color, path, size = 24, ...p }) => (
       <Svg height={size} viewBox='0 0 24 24' width={size}>
         <Path d={path} fill={color} />
       </Svg>
-    </TouchableOpacity>
+    </RnTouchableOpacity>
     {p.name && (
-      <Text
+      <RnText
         small
         style={[css.ButtonIcon_Name, p.textcolor && { color: p.textcolor }]}
       >
         {p.name}
-      </Text>
+      </RnText>
     )}
   </View>
 )

@@ -1,7 +1,8 @@
 import { mdiKeyboardBackspace } from '@mdi/js'
 import React from 'react'
+import { Animated, StyleSheet } from 'react-native'
 
-import { Animated, Icon, StyleSheet, TouchableOpacity } from '../Rn'
+import { RnIcon, RnTouchableOpacity } from '../Rn'
 import { useAnimation } from '../utils/animation'
 
 const css = StyleSheet.create({
@@ -26,11 +27,11 @@ const BackBtn = p => {
     paddingVertical: [20, 5],
   })
   return (
-    <TouchableOpacity onPress={onPress} style={css.BackBtn}>
+    <RnTouchableOpacity onPress={onPress} style={css.BackBtn}>
       <Animated.View style={[css.Inner, cssInnerA]}>
-        <Icon path={mdiKeyboardBackspace} />
+        <RnIcon path={mdiKeyboardBackspace} />
       </Animated.View>
-    </TouchableOpacity>
+    </RnTouchableOpacity>
   )
 }
 

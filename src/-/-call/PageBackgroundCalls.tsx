@@ -6,7 +6,7 @@ import UserItem from '../-contact/UserItem'
 import g from '../global'
 import callStore from '../global/callStore'
 import intl from '../intl/intl'
-import { TouchableOpacity } from '../Rn'
+import { RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import formatDuration from '../utils/formatDuration'
@@ -19,7 +19,7 @@ const PageBackgroundCalls = observer(() => (
   >
     <Field isGroup label={intl`CURRENT CALL`} />
     {(callStore.currentCall ? [callStore.currentCall] : []).map(c => (
-      <TouchableOpacity key={c.id} onPress={g.backToPageCallManage}>
+      <RnTouchableOpacity key={c.id} onPress={g.backToPageCallManage}>
         <UserItem
           iconFuncs={[c.hangupWithUnhold]}
           icons={[mdiPhoneHangup]}
@@ -30,12 +30,12 @@ const PageBackgroundCalls = observer(() => (
           selected
           {...c}
         />
-      </TouchableOpacity>
+      </RnTouchableOpacity>
     ))}
 
     <Field hasMargin isGroup label={intl`BACKGROUND CALLS`} />
     {callStore.backgroundCalls.map(c => (
-      <TouchableOpacity
+      <RnTouchableOpacity
         key={c.id}
         onPress={() => callStore.selectBackgroundCall(c)}
       >
@@ -52,7 +52,7 @@ const PageBackgroundCalls = observer(() => (
           }
           {...c}
         />
-      </TouchableOpacity>
+      </RnTouchableOpacity>
     ))}
   </Layout>
 ))

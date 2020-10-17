@@ -3,11 +3,12 @@ import CircularJson from 'circular-json'
 import debounce from 'lodash/debounce'
 import { computed, observable } from 'mobx'
 import moment from 'moment'
+import { Linking, Platform } from 'react-native'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import intl, { intlDebug } from '../intl/intl'
-import { AsyncStorage, Linking, Platform } from '../Rn'
+import { RnAsyncStorage } from '../Rn'
 import { currentVersion } from '../variables'
 import g from '.'
 
@@ -37,7 +38,7 @@ class DebugStore {
   @observable captureDebugLog = false
   toggleCaptureDebugLog = () => {
     this.captureDebugLog = !this.captureDebugLog
-    AsyncStorage.setItem(
+    RnAsyncStorage.setItem(
       'captureDebugLog',
       JSON.stringify(this.captureDebugLog),
     )
@@ -205,7 +206,7 @@ class DebugStore {
       })
   }
   saveRemoteVersionToStorage = () => {
-    AsyncStorage.setItem(
+    RnAsyncStorage.setItem(
       'remoteVersion',
       JSON.stringify({
         version: this.remoteVersion,
@@ -262,7 +263,7 @@ class DebugStore {
     )
     // Read debug log settings from storage
     promises.push(
-      AsyncStorage.getItem('captureDebugLog')
+      RnAsyncStorage.getItem('captureDebugLog')
         .then(v => v && (this.captureDebugLog = JSON.parse(v)))
         .catch(err => {
           g.showError({
@@ -273,7 +274,7 @@ class DebugStore {
     )
     // Read remote app version from storage
     promises.push(
-      AsyncStorage.getItem('remoteVersion')
+      RnAsyncStorage.getItem('remoteVersion')
         .then(v => JSON.parse(v))
         .then(v => {
           if (v) {

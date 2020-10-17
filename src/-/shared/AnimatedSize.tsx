@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
+import { Animated, StyleSheet, View } from 'react-native'
 
-import { Animated, StyleSheet, View } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
 
 const css = StyleSheet.create({

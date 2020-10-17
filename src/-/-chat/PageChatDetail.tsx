@@ -1,7 +1,7 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { ScrollView } from 'react-native'
+import { Platform, ScrollView, StyleSheet, View } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
 import uc from '../api/uc'
@@ -12,7 +12,7 @@ import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
 import pickFile from '../native/pickFile'
 import saveBlob from '../native/saveBlob'
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import Layout from '../shared/Layout'
 import { arrToMap } from '../utils/toMap'
 import { numberOfChatsPerLoad } from './config'
@@ -113,24 +113,24 @@ class PageChatDetail extends React.Component<{
         title={u?.name}
       >
         {loadingRecent ? (
-          <Text style={css.LoadMore}>{intl`Loading...`}</Text>
+          <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
-          <Text center style={[css.LoadMore, css.LoadMore__finished]}>
+          <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
             {this.chatIds.length === 0
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
-          </Text>
+          </RnText>
         ) : (
-          <TouchableOpacity
+          <RnTouchableOpacity
             onPress={loadingMore ? null : () => this.loadMore()}
           >
-            <Text
+            <RnText
               bold={!loadingMore}
               style={[css.LoadMore, !loadingMore && css.LoadMore__btn]}
             >
               {loadingMore ? intl`Loading...` : intl`Load more messages`}
-            </Text>
-          </TouchableOpacity>
+            </RnText>
+          </RnTouchableOpacity>
         )}
         <MessageList
           acceptFile={this.acceptFile}

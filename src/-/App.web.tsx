@@ -4,6 +4,7 @@ import { mdiAndroid, mdiApple, mdiWeb } from '@mdi/js'
 import qs from 'qs'
 import React, { ReactElement, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
+import { StyleSheet, View } from 'react-native'
 
 import brand from '../assets/brand.png'
 import logo from '../assets/logo.png'
@@ -11,7 +12,7 @@ import logo from '../assets/logo.png'
 import App from './App.tsx'
 import intl from './intl/intl'
 import parse from './native/deeplink-parse'
-import { Icon, Image, StyleSheet, Text, TouchableOpacity, View } from './Rn'
+import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
 import BrekekeGradient from './shared/BrekekeGradient'
 import v from './variables'
 
@@ -96,37 +97,37 @@ const AppSelection = () => {
       : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`
     child = (
       <React.Fragment>
-        <Image
+        <RnImage
           source={{
             uri: logo,
           }}
           style={css.WebApp_Logo}
         />
-        <Image
+        <RnImage
           source={{
             uri: brand,
           }}
           style={css.WebApp_Brand}
         />
         <a href={appUrl}>
-          <TouchableOpacity style={[css.WebApp_Btn, css.WebApp_Btn__app]}>
-            <Text small style={css.WebApp_BtnTxt__browser}>
+          <RnTouchableOpacity style={[css.WebApp_Btn, css.WebApp_Btn__app]}>
+            <RnText small style={css.WebApp_BtnTxt__browser}>
               {intl`OPEN IN APP`}
-            </Text>
-            <Icon
+            </RnText>
+            <RnIcon
               color='white'
               path={isIOS ? mdiApple : mdiAndroid}
               style={css.WebApp_Icon}
             />
-          </TouchableOpacity>
+          </RnTouchableOpacity>
         </a>
-        <TouchableOpacity
+        <RnTouchableOpacity
           onClick={() => setIsBrowser(true)}
           style={[css.WebApp_Btn, css.WebApp_Btn__browser]}
         >
-          <Text small>{intl`OPEN IN BROWSER`}</Text>
-          <Icon path={mdiWeb} style={css.WebApp_Icon} />
-        </TouchableOpacity>
+          <RnText small>{intl`OPEN IN BROWSER`}</RnText>
+          <RnIcon path={mdiWeb} style={css.WebApp_Icon} />
+        </RnTouchableOpacity>
       </React.Fragment>
     )
   }

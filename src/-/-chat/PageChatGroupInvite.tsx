@@ -1,6 +1,7 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
@@ -8,7 +9,7 @@ import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 
@@ -56,26 +57,28 @@ class PageChatGroupInvite extends React.Component<{
     return (
       <Layout onBack={this.back} title={intl`Inviting Group Member`}>
         <View style={css.PageChatGroupInvite_Outer}>
-          <Text style={css.PageChatGroupInvite_GroupName}>
+          <RnText style={css.PageChatGroupInvite_GroupName}>
             {chatStore.getGroup(this.props.groupId).name}
-          </Text>
-          <TouchableOpacity
+          </RnText>
+          <RnTouchableOpacity
             onPress={this.invite}
             style={css.PageChatGroupInvite_BtnSave}
           >
-            <Text style={css.PageChatGroupInvite_BtnText}>{intl`Invite`}</Text>
-          </TouchableOpacity>
-          <Text style={css.PageChatGroupInvite_Text}>{intl`Members`}</Text>
+            <RnText
+              style={css.PageChatGroupInvite_BtnText}
+            >{intl`Invite`}</RnText>
+          </RnTouchableOpacity>
+          <RnText style={css.PageChatGroupInvite_Text}>{intl`Members`}</RnText>
         </View>
         <Field isGroup />
         {this.buddyIds.map((id, i) => (
-          <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
+          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <UserItem
               key={id}
               {...this.resolveBuddy(id)}
               selected={this.state.selectedBuddy[id]}
             />
-          </TouchableOpacity>
+          </RnTouchableOpacity>
         ))}
       </Layout>
     )

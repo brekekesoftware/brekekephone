@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import chatStore from '../global/chatStore'
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import { menus } from '../shared/navigationConfig'
 
 export const css = StyleSheet.create({
@@ -54,24 +55,24 @@ const Navigation = ({ menu }) => (
       const totalUnreadChat = chatStore.unreadCount
       const showUnreadChat = !!totalUnreadChat && m.key === 'contact' && !active
       return (
-        <TouchableOpacity
+        <RnTouchableOpacity
           key={m.key}
           onPress={active ? null : m.navFn}
           style={css.Btn}
         >
           <View style={[css.BtnBg, active && css.BtnBg__active]}>
-            <Icon path={m.icon} />
+            <RnIcon path={m.icon} />
           </View>
           {showUnreadChat && (
             <View style={css.UnreadOuter}>
               <View style={css.Unread}>
-                <Text style={css.UnreadText} bold white center>
+                <RnText style={css.UnreadText} bold white center>
                   {totalUnreadChat}
-                </Text>
+                </RnText>
               </View>
             </View>
           )}
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       )
     })}
   </View>

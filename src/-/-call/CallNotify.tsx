@@ -1,11 +1,12 @@
 import { mdiCheck, mdiClose } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import callStore from '../global/callStore'
 import intl from '../intl/intl'
-import { StyleSheet, Text, View } from '../Rn'
+import { RnText } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
 
 const css = StyleSheet.create({
@@ -39,12 +40,12 @@ class CallNotify extends React.Component {
     return (
       <View style={css.Notify}>
         <View style={css.Notify_Info}>
-          <Text bold>{c.partyName || c.partyNumber}</Text>
-          <Text>
+          <RnText bold>{c.partyName || c.partyNumber}</RnText>
+          <RnText>
             {c.remoteVideoEnabled
               ? intl`Incoming video call`
               : intl`Incoming audio call`}
-          </Text>
+          </RnText>
         </View>
         <ButtonIcon
           bdcolor={g.colors.danger}

@@ -1,5 +1,5 @@
 import sortBy from 'lodash/sortBy'
-import uniq from 'lodash/uniq'
+import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
 import { arrToMap } from '../utils/toMap'
@@ -38,7 +38,10 @@ class ChatStore {
     }
     const messages = this.messagesByThreadId[threadId] || []
     messages.push(..._m)
-    this.messagesByThreadId[threadId] = sortBy(uniq(messages, 'id'), 'created')
+    this.messagesByThreadId[threadId] = sortBy(
+      uniqBy(messages, 'id'),
+      'created',
+    )
     const isGroup = this.groups.some((g: any) => g.id === threadId)
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,

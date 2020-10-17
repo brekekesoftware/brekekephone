@@ -8,6 +8,7 @@ import {
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import pbx from '../api/pbx'
 import g from '../global'
@@ -15,7 +16,7 @@ import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import UserItem from './UserItem'
@@ -211,23 +212,23 @@ class PageContactPhonebook extends React.Component {
           ))}
         </View>
         {contactStore.loading ? (
-          <Text
+          <RnText
             style={css.Loading}
             warning
             small
             normal
             center
-          >{intl`Loading...`}</Text>
+          >{intl`Loading...`}</RnText>
         ) : contactStore.hasLoadmore ? (
-          <TouchableOpacity onPress={contactStore.loadMoreContacts}>
-            <Text
+          <RnTouchableOpacity onPress={contactStore.loadMoreContacts}>
+            <RnText
               style={css.Loading}
               primary
               small
               normal
               center
-            >{intl`Load more contacts`}</Text>
-          </TouchableOpacity>
+            >{intl`Load more contacts`}</RnText>
+          </RnTouchableOpacity>
         ) : null}
       </Layout>
     )

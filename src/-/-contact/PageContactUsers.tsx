@@ -10,7 +10,7 @@ import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl from '../intl/intl'
-import { TouchableOpacity } from '../Rn'
+import { RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import DelayFlag from '../utils/DelayFlag'
@@ -156,7 +156,7 @@ class PageContactUsers extends React.Component {
           <React.Fragment key={_g.key}>
             <Field isGroup label={_g.key} />
             {_g.users.map((u, i) => (
-              <TouchableOpacity
+              <RnTouchableOpacity
                 key={i}
                 onPress={
                   authStore.currentProfile.ucEnabled
@@ -173,7 +173,7 @@ class PageContactUsers extends React.Component {
                   lastMessage={this.getLastMessageChat(u.id)?.text}
                   {...u}
                 />
-              </TouchableOpacity>
+              </RnTouchableOpacity>
             ))}
           </React.Fragment>
         ))}

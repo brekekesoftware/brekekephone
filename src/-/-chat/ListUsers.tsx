@@ -1,11 +1,12 @@
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet } from 'react-native'
 
 import UserItem from '../-contact/UserItem'
 import g from '../global'
 // import intl from '../intl/intl'
 import chatStore from '../global/chatStore'
-import { StyleSheet, TouchableOpacity } from '../Rn'
+import { RnTouchableOpacity } from '../Rn'
 import { formatDateTimeSemantic } from './config'
 
 const css = StyleSheet.create({
@@ -17,7 +18,7 @@ const css = StyleSheet.create({
 const ListUsers = p => (
   <React.Fragment>
     {p.recents.map(({ id, name, group, text, unread, created }) => (
-      <TouchableOpacity
+      <RnTouchableOpacity
         key={id}
         onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO group
         style={(unread || chatStore.getThreadConfig(id).isUnread) && css.Unread}
@@ -30,7 +31,7 @@ const ListUsers = p => (
           isRecentChat
           lastMessageDate={formatDateTimeSemantic(created)}
         />
-      </TouchableOpacity>
+      </RnTouchableOpacity>
     ))}
   </React.Fragment>
 )

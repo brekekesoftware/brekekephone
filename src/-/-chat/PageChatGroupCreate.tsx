@@ -8,7 +8,7 @@ import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
-import { TouchableOpacity } from '../Rn'
+import { RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import { arrToMap } from '../utils/toMap'
@@ -46,13 +46,13 @@ class PageChatGroupCreate extends React.Component {
         />
         <Field isGroup label={intl`Members`} />
         {this.buddyIds.map((id, i) => (
-          <TouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
+          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
             <UserItem
               key={id}
               {...this.buddyById[id]}
               selected={this.state.members.includes(id)}
             />
-          </TouchableOpacity>
+          </RnTouchableOpacity>
         ))}
       </Layout>
     )

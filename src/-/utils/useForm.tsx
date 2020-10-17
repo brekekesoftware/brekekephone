@@ -2,9 +2,9 @@ import flow from 'lodash/flow'
 import get from 'lodash/get'
 import { observer } from 'mobx-react'
 import React from 'react'
-import Validator from 'validatorjs'
+import { Platform } from 'react-native'
+import Validator, { Rules } from 'validatorjs'
 
-import { Platform } from '../Rn'
 import Field from '../shared/Field'
 import { arrToMap, mapToMap } from './toMap'
 import useStore from './useStore'
@@ -33,7 +33,7 @@ const useForm = () => {
         f => f.name,
         f => f.rule,
       )
-      const validator = new Validator(get($parent, k), rules)
+      const validator = new Validator(get($parent, k), rules as Rules)
       if (validator.fails()) {
         $.set(
           'errorMap',

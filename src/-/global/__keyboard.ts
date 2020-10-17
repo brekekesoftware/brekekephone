@@ -1,4 +1,5 @@
-import { Keyboard } from '../Rn'
+import { Keyboard } from 'react-native'
+
 import $ from './_'
 
 $.extends({

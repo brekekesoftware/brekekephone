@@ -1,7 +1,8 @@
 import React from 'react'
+import { Animated, StyleSheet } from 'react-native'
 
 import g from '../global'
-import { Animated, StyleSheet, Text } from '../Rn'
+import { RnText } from '../Rn'
 import { AnimatedText } from '../Rn/RnText'
 import { useAnimation } from '../utils/animation'
 
@@ -33,7 +34,7 @@ const Title = p => {
     <Animated.View style={[css.Container, cssContainerA]}>
       <AnimatedText style={[css.Title, cssTitleA]}>{title}</AnimatedText>
       {!compact && (
-        <Text style={css.Description}>{description || '\u200a'}</Text>
+        <RnText style={css.Description}>{description || '\u200a'}</RnText>
       )}
     </Animated.View>
   )

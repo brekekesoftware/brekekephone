@@ -2,9 +2,10 @@ import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
-import { StyleSheet, Text, View } from '../Rn'
+import { RnText } from '../Rn'
 import Avatar from '../shared/Avatar'
 import { groupByTimestamp } from './config'
 import Message from './Message'
@@ -70,7 +71,7 @@ const MessageList = observer(p => {
       {groupByTimestamp(list).map(({ date, groupByTime }, i) => (
         <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
           <View style={css.Border} />
-          <Text style={css.Date}>{date}</Text>
+          <RnText style={css.Date}>{date}</RnText>
           {(groupByTime as Array<{
             messages: any
             time: any
@@ -86,10 +87,10 @@ const MessageList = observer(p => {
                 <Avatar imgSource={c0.creatorAvatar} />
                 <View style={css.Right}>
                   <View style={css.Creator}>
-                    <Text bold singleLine>
+                    <RnText bold singleLine>
                       {name}
-                    </Text>
-                    <Text style={css.Time}>{time}</Text>
+                    </RnText>
+                    <RnText style={css.Time}>{time}</RnText>
                   </View>
                   <View>
                     {messages.map(m => (

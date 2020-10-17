@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import { css as fcss } from '../Footer/Navigation'
 import g from '../global'
 import chatStore from '../global/chatStore'
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import { getSubMenus } from '../shared/navigationConfig'
 
 const css = StyleSheet.create({
@@ -32,7 +33,7 @@ const css = StyleSheet.create({
   },
 })
 
-const Navigation = p => {
+const Navigation = observer(p => {
   const { menu, subMenu } = p
   return (
     <View style={css.Navigation}>
@@ -40,27 +41,27 @@ const Navigation = p => {
         const active = s.key === subMenu
         const totalUnreadChat = chatStore.unreadCount
         return (
-          <TouchableOpacity
+          <RnTouchableOpacity
             key={s.key}
             onPress={active ? null : s.navFn}
             style={[css.Btn, active && css.Btn__active]}
           >
-            <Text small style={active && css.Text__active}>
+            <RnText small style={active && css.Text__active}>
               {s.label}
-            </Text>
+            </RnText>
             {s.key === 'chat' && !!totalUnreadChat && (
               <View style={fcss.UnreadOuter}>
                 <View style={[fcss.Unread, css.Unread]}>
-                  <Text style={fcss.UnreadText} bold white center>
+                  <RnText style={fcss.UnreadText} bold white center>
                     {totalUnreadChat}
-                  </Text>
+                  </RnText>
                 </View>
               </View>
             )}
-          </TouchableOpacity>
+          </RnTouchableOpacity>
         )
       })}
     </View>
   )
-}
+})
 export default observer(Navigation)

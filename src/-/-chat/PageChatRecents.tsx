@@ -9,7 +9,7 @@ import authStore from '../global/authStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl from '../intl/intl'
-import { Text } from '../Rn'
+import { RnText } from '../Rn'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 import { arrToMap } from '../utils/toMap'
@@ -87,9 +87,9 @@ class PageChatRecents extends React.Component {
       >
         <Field isGroup label={intl`RECENT CHAT THREADS`} />
         {!arr.length && (
-          <Text center normal small warning style={{ marginTop: 5 }}>
+          <RnText center normal small warning style={{ marginTop: 5 }}>
             {intl`There's no active chat thread`}
-          </Text>
+          </RnText>
         )}
         <ListUsers
           recents={arr}

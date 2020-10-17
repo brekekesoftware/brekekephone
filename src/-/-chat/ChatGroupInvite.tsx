@@ -3,6 +3,7 @@ import sortBy from 'lodash/sortBy'
 import { action, computed, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
@@ -10,7 +11,7 @@ import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
 import { formatDateTimeSemantic } from './config'
 
@@ -50,8 +51,8 @@ const Notify = observer(p0 => {
       {p.type && (
         <React.Fragment>
           <View style={css.Notify_Info}>
-            <Text bold>{p.name}</Text>
-            <Text>{intl`Group chat invited by ${p.inviter}`}</Text>
+            <RnText bold>{p.name}</RnText>
+            <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
           </View>
           <ButtonIcon
             bdcolor={g.colors.danger}
@@ -254,7 +255,7 @@ class UnreadChatNoti extends React.Component {
     } = this.unreadChat
     return (
       <View style={[css.Notify, css.NotifyUnread]}>
-        <TouchableOpacity
+        <RnTouchableOpacity
           style={css.NotifyUnreadBtn}
           onPress={this.onUnreadPress}
         >
@@ -267,7 +268,7 @@ class UnreadChatNoti extends React.Component {
             isRecentChat
             lastMessageDate={formatDateTimeSemantic(created)}
           />
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       </View>
     )
   }

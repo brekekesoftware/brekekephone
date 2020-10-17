@@ -1,8 +1,9 @@
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
-import { Icon, StyleSheet, TextInput, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnTextInput, RnTouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   ChatInput: {
@@ -53,29 +54,32 @@ const ChatInput = p => {
   } = p
   return (
     <View style={css.ChatInput}>
-      <TouchableOpacity
-        onPress={openFilePicker}
+      <RnTouchableOpacity
+        RnIconress={openFilePicker}
         style={[css.Btn, css.Btn__file]}
       >
-        <Icon path={mdiPaperclip} size={20} />
-      </TouchableOpacity>
-      <TouchableOpacity
+        <RnIcon path={mdiPaperclip} size={20} />
+      </RnTouchableOpacity>
+      <RnTouchableOpacity
         onPress={onEmojiTurnOn}
         style={[css.Btn, css.Btn__emoji]}
       >
-        <Icon color='gray' path={mdiEmoticon} />
-      </TouchableOpacity>
-      <TextInput
+        <RnIcon color='gray' path={mdiEmoticon} />
+      </RnTouchableOpacity>
+      <RnTextInput
         blurOnSubmit={false}
         onChangeText={onTextChange}
-        onSelectionChange={onSelectionChange}
+        RnIconelectionChange={onSelectionChange}
         onSubmitEditing={onTextSubmit}
         style={css.Input}
         value={text}
       />
-      <TouchableOpacity onPress={onTextSubmit} style={[css.Btn, css.Btn__send]}>
-        <Icon color='white' path={mdiSend} />
-      </TouchableOpacity>
+      <RnTouchableOpacity
+        onPress={onTextSubmit}
+        style={[css.Btn, css.Btn__send]}
+      >
+        <RnIcon color='white' path={mdiSend} />
+      </RnTouchableOpacity>
     </View>
   )
 }

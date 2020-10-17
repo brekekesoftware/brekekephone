@@ -1,11 +1,12 @@
 import { mdiRecord } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import avatarPlaceholder from '../../assets/avatar-placeholder.png'
 import g from '../global'
 import authStore from '../global/authStore'
-import { Icon, Image, Platform, StyleSheet, View } from '../Rn'
+import { RnIcon, RnImage } from '../Rn'
 
 const css = StyleSheet.create({
   Avatar: {
@@ -43,10 +44,10 @@ const Avatar = observer(p0 => {
   return (
     <View style={[css.Avatar, style]}>
       <View style={css.ImageOuter}>
-        <Image source={imgSource} style={css.Image} />
+        <RnImage source={imgSource} style={css.Image} />
       </View>
       {authStore.currentProfile.ucEnabled && typeof status === 'string' && (
-        <Icon
+        <RnIcon
           color={statusMapColor[status]}
           path={mdiRecord}
           style={css.Status}

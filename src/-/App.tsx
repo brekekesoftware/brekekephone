@@ -5,6 +5,13 @@ import './utils/validator'
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
+import {
+  ActivityIndicator,
+  AppState,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -47,15 +54,7 @@ import { setupCallKeep } from './native/callkeep'
 // @ts-ignore
 import PushNotification from './native/PushNotification'
 import registerOnUnhandledError from './native/registerOnUnhandledError'
-import {
-  ActivityIndicator,
-  AppState,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from './Rn'
+import { RnStatusBar, RnText } from './Rn'
 import AnimatedSize from './shared/AnimatedSize'
 import CallVideos from './shared/CallVideos'
 import CallVoices from './shared/CallVoices'
@@ -251,7 +250,7 @@ const App = observer(() => {
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
-      <StatusBar />
+      <RnStatusBar />
       {shouldShowConnStatus && !!authStore.signedInId && (
         <AnimatedSize
           style={[
@@ -260,9 +259,9 @@ const App = observer(() => {
           ]}
         >
           <View style={css.App_ConnectionStatusInner}>
-            <Text small white>
+            <RnText small white>
               {connMessage}
-            </Text>
+            </RnText>
           </View>
         </AnimatedSize>
       )}

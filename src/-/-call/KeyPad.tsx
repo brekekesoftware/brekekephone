@@ -1,8 +1,9 @@
 import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js'
 import React from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
-import { Icon, Platform, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   KeyPad_Number: {
@@ -41,35 +42,35 @@ const KeyPad = p => (
     {keys.map((row, i) => (
       <View key={i} style={css.KeyPad_Number}>
         {row.map(key => (
-          <TouchableOpacity
+          <RnTouchableOpacity
             key={key}
             onPress={() => p.onPressNumber(key)}
             style={css.KeyPad_NumberBtn}
           >
-            <Text style={css.KeyPad_NumberTxt}>{key}</Text>
-          </TouchableOpacity>
+            <RnText style={css.KeyPad_NumberTxt}>{key}</RnText>
+          </RnTouchableOpacity>
         ))}
       </View>
     ))}
     <View style={css.KeyPad_Btn}>
-      <TouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
-        <Icon
+      <RnTouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
+        <RnIcon
           color={Platform.OS === 'web' ? 'white' : null}
           path={mdiKeyboard}
         />
-      </TouchableOpacity>
-      <TouchableOpacity
+      </RnTouchableOpacity>
+      <RnTouchableOpacity
         onPress={p.callVoice}
         style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call]}
       >
-        <Icon path={mdiPhone} />
-      </TouchableOpacity>
-      <TouchableOpacity
+        <RnIcon path={mdiPhone} />
+      </RnTouchableOpacity>
+      <RnTouchableOpacity
         onPress={() => p.onPressNumber('')}
         style={css.KeyPad_NumberBtn}
       >
-        <Icon path={mdiBackspace} />
-      </TouchableOpacity>
+        <RnIcon path={mdiBackspace} />
+      </RnTouchableOpacity>
     </View>
   </React.Fragment>
 )

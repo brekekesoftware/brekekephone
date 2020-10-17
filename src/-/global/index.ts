@@ -4,7 +4,8 @@ import './__picker'
 import './__stacker'
 import './_profiles'
 
-import { BackHandler, Keyboard } from '../Rn'
+import { BackHandler, Keyboard } from 'react-native'
+
 import v from '../variables'
 import g from './_'
 

@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react'
 import React, { useState } from 'react'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import Footer from '../Footer'
 import g from '../global'
 import Header from '../Header'
-import { ScrollView, StyleSheet, View } from '../Rn'
 import { toLowerCaseFirstChar } from '../utils/string'
 
 const css = StyleSheet.create({

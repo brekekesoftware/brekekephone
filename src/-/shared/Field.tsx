@@ -8,19 +8,16 @@ import flow from 'lodash/flow'
 import omit from 'lodash/omit'
 import { observer } from 'mobx-react'
 import React, { useRef } from 'react'
+import { Keyboard, Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import intl from '../intl/intl'
 import {
-  Icon,
-  Keyboard,
-  Platform,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+  RnIcon,
+  RnSwitch,
+  RnText,
+  RnTextInput,
+  RnTouchableOpacity,
 } from '../Rn'
 import useStore from '../utils/useStore'
 
@@ -166,9 +163,9 @@ const Field = observer(({ ...props }) => {
           props.hasMargin && css.Field__groupMargin,
         ]}
       >
-        <Text small style={css.Field_LabelTextGroup}>
+        <RnText small style={css.Field_LabelTextGroup}>
           {props.label}
-        </Text>
+        </RnText>
       </View>
     )
   }
@@ -187,34 +184,34 @@ const Field = observer(({ ...props }) => {
   if (props.onCreateBtnPress) {
     Object.assign(props, {
       iconRender: () => (
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
           style={[css.Field_Btn, css.Field_Btn__create, props.createBtnStyle]}
         >
-          <Icon
+          <RnIcon
             color={g.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
             style={props.createBtnIconStyle}
           />
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       ),
     })
   }
   if (props.onRemoveBtnPress) {
     Object.assign(props, {
       iconRender: () => (
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={props.onRemoveBtnPress}
           style={[css.Field_Btn, css.Field_Btn__remove, props.removeBtnStyle]}
         >
-          <Icon
+          <RnIcon
             color={g.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
             style={props.removeBtnIconStyle}
           />
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       ),
     })
   }
@@ -223,7 +220,7 @@ const Field = observer(({ ...props }) => {
       Object.assign(props, {
         valueRender:
           props.valueRender || (v => (v ? intl`Enabled` : intl`Disabled`)),
-        iconRender: v => <Switch enabled={v} style={css.Field_Switch} />,
+        iconRender: v => <RnSwitch enabled={v} style={css.Field_Switch} />,
         onTouchPress: () => {
           props.onValueChange(!props.value)
           Keyboard.dismiss()
@@ -245,7 +242,7 @@ const Field = observer(({ ...props }) => {
     } else {
       Object.assign(props, {
         inputElement: (
-          <TextInput
+          <RnTextInput
             ref={inputRef}
             {...omit(props, [
               'type',
@@ -282,12 +279,12 @@ const Field = observer(({ ...props }) => {
     props.inputElement = null
     props.onTouchPress = null
   }
-  const Container = props.onTouchPress ? TouchableOpacity : View
+  const Container = props.onTouchPress ? RnTouchableOpacity : View
   const label = (
     <View pointerEvents='none' style={css.Field_Label}>
-      <Text small style={css.Field_LabelText}>
+      <RnText small style={css.Field_LabelText}>
         {props.label}
-      </Text>
+      </RnText>
     </View>
   )
   return (
@@ -306,7 +303,7 @@ const Field = observer(({ ...props }) => {
         {Platform.OS !== 'web' && label}
         <View pointerEvents={($.isFocusing ? null : 'none') as any}>
           {props.inputElement || (
-            <TextInput
+            <RnTextInput
               disabled
               secureTextEntry={!!(props.secureTextEntry && props.value)}
               style={css.Field_TextInput}
@@ -323,7 +320,7 @@ const Field = observer(({ ...props }) => {
         {Platform.OS === 'web' && label}
         {(props.iconRender && props.iconRender(props.value)) ||
           (props.icon && (
-            <Icon
+            <RnIcon
               path={props.icon}
               pointerEvents='none'
               style={css.Field_Icon}
@@ -331,21 +328,21 @@ const Field = observer(({ ...props }) => {
           ))}
       </Container>
       {props.error && (
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={() => inputRef.current?.focus()}
           style={css.Field_Error}
         >
           <View style={css.Field_ErrorInner}>
-            <Icon
+            <RnIcon
               color={g.colors.danger}
               path={mdiCardsDiamond}
               style={css.Field_ErrorIcon}
             />
-            <Text small style={css.Field_ErrorLabel}>
+            <RnText small style={css.Field_ErrorLabel}>
               {props.error}
-            </Text>
+            </RnText>
           </View>
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       )}
     </React.Fragment>
   )

@@ -8,12 +8,13 @@ import {
 } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import FooterActions from '../Footer/Actions'
 import g from '../global'
 import authStore from '../global/authStore'
 import intl from '../intl/intl'
-import { StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
 
 const css = StyleSheet.create({
@@ -46,9 +47,9 @@ const ProfileSignInItem = observer(props => {
   if (props.empty) {
     return (
       <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
-        <Text subTitle>{intl`No account`}</Text>
-        <Text>{intl`There is no account created`}</Text>
-        <Text>{intl`Tap the below button to create one`}</Text>
+        <RnText subTitle>{intl`No account`}</RnText>
+        <RnText>{intl`There is no account created`}</RnText>
+        <RnText>{intl`Tap the below button to create one`}</RnText>
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
             onNext={g.goToPageProfileCreate}
@@ -63,7 +64,7 @@ const ProfileSignInItem = observer(props => {
     <View
       style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
     >
-      <TouchableOpacity onPress={() => g.goToPageProfileUpdate({ id: p.id })}>
+      <RnTouchableOpacity onPress={() => g.goToPageProfileUpdate({ id: p.id })}>
         <Field
           icon={mdiAccountCircleOutline}
           label={intl`USERNAME`}
@@ -72,7 +73,7 @@ const ProfileSignInItem = observer(props => {
         <Field icon={mdiApplication} label={intl`TENANT`} value={p.pbxTenant} />
         <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
         <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
-      </TouchableOpacity>
+      </RnTouchableOpacity>
       <Field
         label={intl`PUSH NOTIFICATION`}
         onValueChange={v =>
@@ -95,11 +96,11 @@ const ProfileSignInItem = observer(props => {
               message: (
                 <React.Fragment>
                   <View>
-                    <Text small>
+                    <RnText small>
                       {p.pbxUsername} - {p.pbxHostname}
-                    </Text>
+                    </RnText>
                   </View>
-                  <Text>{intl`Do you want to remove this account?`}</Text>
+                  <RnText>{intl`Do you want to remove this account?`}</RnText>
                 </React.Fragment>
               ),
               onConfirm: () => {

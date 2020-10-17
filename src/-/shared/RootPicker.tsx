@@ -1,18 +1,11 @@
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import intl from '../intl/intl'
-import {
-  Animated,
-  Dimensions,
-  Icon,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
 
 const css = StyleSheet.create({
@@ -81,7 +74,7 @@ const Picker = p => {
       <Animated.View
         style={[StyleSheet.absoluteFill, css.Picker_Backdrop, backdropCss]}
       >
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={g.dismissPicker}
           style={StyleSheet.absoluteFill}
         />
@@ -91,7 +84,7 @@ const Picker = p => {
           {p.options.map((o, i) => {
             const isSelected = `${p.selectedKey}` === `${o.key}`
             return (
-              <TouchableOpacity
+              <RnTouchableOpacity
                 key={i}
                 onPress={() => {
                   p.onSelect(o.key)
@@ -103,10 +96,10 @@ const Picker = p => {
                   isSelected && css.Picker_Option__selected,
                 ]}
               >
-                <Text style={isSelected && css.Picker_Text__selected}>
+                <RnText style={isSelected && css.Picker_Text__selected}>
                   {o.label}
-                </Text>
-                <Icon
+                </RnText>
+                <RnIcon
                   color={isSelected ? g.colors.primary : null}
                   path={
                     o.icon ||
@@ -114,23 +107,23 @@ const Picker = p => {
                   }
                   style={css.Picker_Icon}
                 />
-              </TouchableOpacity>
+              </RnTouchableOpacity>
             )
           })}
         </View>
-        <TouchableOpacity
+        <RnTouchableOpacity
           onPress={g.dismissPicker}
           style={[css.Picker_Option, css.Picker_Option__cancel]}
         >
-          <Text style={css.Picker_Text__cancel}>
+          <RnText style={css.Picker_Text__cancel}>
             {p.cancelLabel || intl`Cancel`}
-          </Text>
-          <Icon
+          </RnText>
+          <RnIcon
             color={g.colors.danger}
             path={mdiClose}
             style={css.Picker_Icon}
           />
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       </Animated.ScrollView>
     </View>
   )

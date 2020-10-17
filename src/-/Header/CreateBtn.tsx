@@ -1,8 +1,9 @@
 import { mdiPlus } from '@mdi/js'
 import React from 'react'
+import { StyleSheet } from 'react-native'
 
 import g from '../global'
-import { Icon, StyleSheet, TouchableOpacity } from '../Rn'
+import { RnIcon, RnTouchableOpacity } from '../Rn'
 
 const css = StyleSheet.create({
   CreateBtn: {
@@ -22,12 +23,12 @@ const css = StyleSheet.create({
 const CreateBtn = p => {
   const { onPress, white } = p
   return (
-    <TouchableOpacity
+    <RnTouchableOpacity
       onPress={onPress}
       style={[css.CreateBtn, white && css.CreateBtn__white]}
     >
-      <Icon color={white ? 'black' : 'white'} path={mdiPlus} />
-    </TouchableOpacity>
+      <RnIcon color={white ? 'black' : 'white'} path={mdiPlus} />
+    </RnTouchableOpacity>
   )
 }
 export default CreateBtn

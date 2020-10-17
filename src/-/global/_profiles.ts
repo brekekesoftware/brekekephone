@@ -4,7 +4,7 @@ import uniqBy from 'lodash/uniqBy'
 import { v4 as uuid } from 'react-native-uuid'
 
 import { intlDebug } from '../intl/intl'
-import { AsyncStorage } from '../Rn'
+import { RnAsyncStorage } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
 
@@ -73,7 +73,7 @@ g.extends({
     ucPort: '',
   }),
   loadProfilesFromLocalStorage: async () => {
-    let arr = await AsyncStorage.getItem('_api_profiles')
+    let arr = await RnAsyncStorage.getItem('_api_profiles')
     if (arr && !Array.isArray(arr)) {
       try {
         arr = JSON.parse(arr)
@@ -99,7 +99,7 @@ g.extends({
   saveProfilesToLocalStorage: async () => {
     try {
       const { profiles, profileData } = g
-      await AsyncStorage.setItem(
+      await RnAsyncStorage.setItem(
         '_api_profiles',
         JSON.stringify({ profiles, profileData }),
       )

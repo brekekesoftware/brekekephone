@@ -1,9 +1,10 @@
 import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import intl from '../intl/intl'
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import Avatar from '../shared/Avatar'
 
 const css = StyleSheet.create({
@@ -84,23 +85,23 @@ const UserItem = p0 => {
         <Avatar source={{ uri: avatar }} {...p} style={css.WithSpace} />
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
-            <Text black bold singleLine>
+            <RnText black bold singleLine>
               {name || partyNumber || id}
-            </Text>
+            </RnText>
             {!!statusText && (
-              <Text normal singleLine small style={css.Status}>
+              <RnText normal singleLine small style={css.Status}>
                 {statusText}
-              </Text>
+              </RnText>
             )}
           </View>
           {!isRecentCall && !!lastMessage && (
-            <Text normal singleLine small>
+            <RnText normal singleLine small>
               {lastMessage}
-            </Text>
+            </RnText>
           )}
           {isRecentCall && !lastMessage && (
             <View style={css.Detail}>
-              <Icon
+              <RnIcon
                 color={
                   incoming && !answered
                     ? g.colors.danger
@@ -118,23 +119,23 @@ const UserItem = p0 => {
                 size={14}
                 style={css.CallIcon}
               />
-              <Text normal small style={css.CallCreatedAt}>
+              <RnText normal small style={css.CallCreatedAt}>
                 {intl`at`} {created}
-              </Text>
+              </RnText>
             </View>
           )}
         </View>
         {!isRecentCall && !!lastMessage && isRecentChat && (
           <View style={css.LastDate}>
-            <Text normal singleLine small>
+            <RnText normal singleLine small>
               {lastMessageDate}
-            </Text>
+            </RnText>
           </View>
         )}
         {icons?.map((v, i) => (
-          <TouchableOpacity key={i} onPress={iconFuncs?.[i]}>
-            <Icon path={v} style={css.ButtonIcon} />
-          </TouchableOpacity>
+          <RnTouchableOpacity key={i} onPress={iconFuncs?.[i]}>
+            <RnIcon path={v} style={css.ButtonIcon} />
+          </RnTouchableOpacity>
         ))}
       </View>
     </View>

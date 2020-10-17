@@ -2,11 +2,12 @@ import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { View } from 'react-native'
 
 import g from '../global'
 import authStore from '../global/authStore'
 import intl from '../intl/intl'
-import { Text, View } from '../Rn'
+import { RnText } from '../Rn'
 import Layout from '../shared/Layout'
 import useForm from '../utils/useForm'
 import useStore from '../utils/useStore'
@@ -50,11 +51,11 @@ const ProfileCreateForm = observer(props => {
         title: intl`Remove Park`,
         message: (
           <React.Fragment>
-            <Text small>
+            <RnText small>
               Park {i + 1}: {$.profile.parks[i]}
-            </Text>
+            </RnText>
             <View />
-            <Text>{intl`Do you want to remove this park?`}</Text>
+            <RnText>{intl`Do you want to remove this park?`}</RnText>
           </React.Fragment>
         ),
         onConfirm: () => {

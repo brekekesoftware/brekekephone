@@ -2,7 +2,7 @@ import Handlebars from 'handlebars/dist/handlebars'
 import HandlebarsMoment from 'helper-moment'
 
 import g from '../global/_'
-import { AsyncStorage } from '../Rn'
+import { RnAsyncStorage } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import waitTimeout from '../utils/waitTimeout'
 import en from './en.json'
@@ -43,10 +43,10 @@ g.extends({
     g.localeLoading = false
   },
   getLocaleFromLocalStorage: async () => {
-    let locale = await AsyncStorage.getItem('locale')
+    let locale = await RnAsyncStorage.getItem('locale')
     if (!labels[locale]) {
       locale = 'en'
-      await AsyncStorage.setItem('locale', locale)
+      await RnAsyncStorage.setItem('locale', locale)
     }
     g.locale = locale
   },
@@ -58,7 +58,7 @@ g.extends({
     if (!labels[locale]) {
       locale = 'en'
     }
-    await AsyncStorage.setItem('locale', locale)
+    await RnAsyncStorage.setItem('locale', locale)
     await waitTimeout()
     g.locale = locale
     g.localeLoading = false

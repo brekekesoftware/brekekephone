@@ -6,12 +6,13 @@ import {
 } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
 import intl from '../intl/intl'
-import { Icon, StyleSheet, Text, TouchableOpacity, View } from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import Avatar from '../shared/Avatar'
 
 const css = StyleSheet.create({
@@ -88,59 +89,59 @@ class PageTransferAttend extends React.Component {
     const usertarget = this.resolveMatch(c.transferring)
     return (
       <View style={css.Outer}>
-        <Text center subTitle>{intl`Transferring`}</Text>
+        <RnText center subTitle>{intl`Transferring`}</RnText>
         <View style={css.Space} />
         <View style={[css.Inner, css.Inner__info]}>
           <View style={[css.Info, css.Info__from]}>
             <Avatar source={{ uri: usersource?.avatar }} />
-            <Text center singleLine small>
+            <RnText center singleLine small>
               {c.partyName}
-            </Text>
+            </RnText>
           </View>
           <View style={css.Arrow}>
-            <Icon path={mdiArrowRight} />
+            <RnIcon path={mdiArrowRight} />
           </View>
           <View style={[css.Info, css.Info__to]}>
             <Avatar source={{ uri: usertarget?.avatar }} />
-            <Text center singleLine small>
+            <RnText center singleLine small>
               {c.transferring}
-            </Text>
+            </RnText>
           </View>
         </View>
         <View style={css.Space} />
         <View style={css.Inner}>
           <View style={css.BtnOuter}>
-            <TouchableOpacity
+            <RnTouchableOpacity
               onPress={c.stopTransferring}
               style={[css.Btn, css.Btn__stop]}
             >
-              <Icon path={mdiPhoneOff} />
-            </TouchableOpacity>
-            <Text center singleLine small>
+              <RnIcon path={mdiPhoneOff} />
+            </RnTouchableOpacity>
+            <RnText center singleLine small>
               {intl`CANCEL`}
-            </Text>
+            </RnText>
           </View>
           <View style={css.BtnOuter}>
-            <TouchableOpacity
+            <RnTouchableOpacity
               onPress={c.hangup}
               style={[css.Btn, css.Btn__hangup]}
             >
-              <Icon path={mdiPhoneHangup} />
-            </TouchableOpacity>
-            <Text center singleLine small>
+              <RnIcon path={mdiPhoneHangup} />
+            </RnTouchableOpacity>
+            <RnText center singleLine small>
               {intl`TRANSFER`}
-            </Text>
+            </RnText>
           </View>
           <View style={css.BtnOuter}>
-            <TouchableOpacity
+            <RnTouchableOpacity
               onPress={c.conferenceTransferring}
               style={[css.Btn, css.Btn__conference]}
             >
-              <Icon path={mdiPhoneForward} />
-            </TouchableOpacity>
-            <Text center singleLine small>
+              <RnIcon path={mdiPhoneForward} />
+            </RnTouchableOpacity>
+            <RnText center singleLine small>
               {intl`CONFERENCE`}
-            </Text>
+            </RnText>
           </View>
         </View>
       </View>

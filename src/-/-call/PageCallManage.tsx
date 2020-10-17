@@ -17,11 +17,12 @@ import {
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import callStore from '../global/callStore'
 import intl from '../intl/intl'
-import { Platform, StyleSheet, TouchableOpacity, View } from '../Rn'
+import { RnTouchableOpacity } from '../Rn'
 import BrekekeGradient from '../shared/BrekekeGradient'
 import ButtonIcon from '../shared/ButtonIcon'
 import FieldButton from '../shared/FieldButton'
@@ -144,7 +145,7 @@ class PageCallManage extends React.Component<{
       <View style={css.Video}>
         <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
       </View>
-      <TouchableOpacity
+      <RnTouchableOpacity
         onPress={this.toggleButtons}
         style={StyleSheet.absoluteFill}
       />
@@ -154,7 +155,7 @@ class PageCallManage extends React.Component<{
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
-    const Container = isVideoEnabled ? TouchableOpacity : View
+    const Container = isVideoEnabled ? RnTouchableOpacity : View
     const activeColor = isVideoEnabled ? g.colors.primary : g.colors.warning
     const n = callStore.backgroundCalls.length
     return (

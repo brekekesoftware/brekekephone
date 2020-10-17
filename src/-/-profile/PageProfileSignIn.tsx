@@ -1,18 +1,11 @@
 import { mdiDotsHorizontal, mdiLadybug, mdiUnfoldMoreHorizontal } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { FlatList, Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import intl from '../intl/intl'
-import {
-  FlatList,
-  Icon,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from '../Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import BrekekeGradient from '../shared/BrekekeGradient'
 import Layout from '../shared/Layout'
 import { currentVersion } from '../variables'
@@ -99,40 +92,40 @@ const PageProfileSignIn = observer(() => {
         )}
         {!l && <ProfileSignInItem empty />}
       </Layout>
-      <TouchableOpacity
+      <RnTouchableOpacity
         onPress={g.goToPageSettingsDebug}
         style={css.CornerButton}
       >
         <View style={[css.CornerButton_Inner, css.CornerButton_Inner__info]}>
-          <Icon
+          <RnIcon
             color='white'
             path={mdiLadybug}
             size={16}
             style={[css.CornerButton_Icon, css.CornerButton_Icon__info]}
           />
-          <Text bold white>
+          <RnText bold white>
             {currentVersion}
-          </Text>
+          </RnText>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
+      </RnTouchableOpacity>
+      <RnTouchableOpacity
         onPress={g.localeLoading ? null : g.selectLocale}
         style={[css.CornerButton, css.CornerButton__language]}
       >
         <View
           style={[css.CornerButton_Inner, css.CornerButton_Inner__language]}
         >
-          <Text bold white>
+          <RnText bold white>
             {g.localeLoading ? '\u200a' : g.localeName}
-          </Text>
-          <Icon
+          </RnText>
+          <RnIcon
             color='white'
             path={g.localeLoading ? mdiDotsHorizontal : mdiUnfoldMoreHorizontal}
             size={16}
             style={[css.CornerButton_Icon, css.CornerButton_Icon__language]}
           />
         </View>
-      </TouchableOpacity>
+      </RnTouchableOpacity>
       <View style={css.Space} />
     </BrekekeGradient>
   )
