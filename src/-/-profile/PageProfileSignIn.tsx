@@ -105,7 +105,7 @@ const PageProfileSignIn = observer(() => {
       >
         <View style={[css.CornerButton_Inner, css.CornerButton_Inner__info]}>
           <Icon
-            color="white"
+            color='white'
             path={mdiLadybug}
             size={16}
             style={[css.CornerButton_Icon, css.CornerButton_Icon__info]}
@@ -126,7 +126,7 @@ const PageProfileSignIn = observer(() => {
             {g.localeLoading ? '\u200a' : g.localeName}
           </Text>
           <Icon
-            color="white"
+            color='white'
             path={g.localeLoading ? mdiDotsHorizontal : mdiUnfoldMoreHorizontal}
             size={16}
             style={[css.CornerButton_Icon, css.CornerButton_Icon__language]}

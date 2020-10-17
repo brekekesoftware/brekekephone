@@ -35,8 +35,8 @@ class PageCallKeypad extends React.Component {
         description={intl`Keypad dial manually`}
         fabOnNext={g.isKeyboardShowing ? this.callVoice : null}
         fabOnNextText={intl`DIAL`}
-        menu="call"
-        subMenu="keypad"
+        menu='call'
+        subMenu='keypad'
         title={intl`Keypad`}
       >
         <ShowNumber

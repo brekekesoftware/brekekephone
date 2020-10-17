@@ -1,7 +1,7 @@
 import stringify from 'json-stable-stringify'
 import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
-import {v4 as uuid } from 'react-native-uuid'
+import { v4 as uuid } from 'react-native-uuid'
 
 import { intlDebug } from '../intl/intl'
 import { AsyncStorage } from '../Rn'

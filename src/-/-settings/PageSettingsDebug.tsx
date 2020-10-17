@@ -55,7 +55,7 @@ class PageSettingsDebug extends Component {
             <Field
               label={intl`CAPTURE ALL DEBUG LOG`}
               onValueChange={debugStore.toggleCaptureDebugLog}
-              type="Switch"
+              type='Switch'
               value={debugStore.captureDebugLog}
             />
             <Field

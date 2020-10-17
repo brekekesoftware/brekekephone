@@ -63,7 +63,7 @@ const ChatInput = p => {
         onPress={onEmojiTurnOn}
         style={[css.Btn, css.Btn__emoji]}
       >
-        <Icon color="gray" path={mdiEmoticon} />
+        <Icon color='gray' path={mdiEmoticon} />
       </TouchableOpacity>
       <TextInput
         blurOnSubmit={false}
@@ -74,7 +74,7 @@ const ChatInput = p => {
         value={text}
       />
       <TouchableOpacity onPress={onTextSubmit} style={[css.Btn, css.Btn__send]}>
-        <Icon color="white" path={mdiSend} />
+        <Icon color='white' path={mdiSend} />
       </TouchableOpacity>
     </View>
   )

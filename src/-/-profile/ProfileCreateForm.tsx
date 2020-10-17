@@ -261,7 +261,7 @@ const ProfileCreateForm = observer(props => {
                 },
               ]),
         ]}
-        k="profile"
+        k='profile'
         onValidSubmit={$.onValidSubmit}
       />
     </Layout>

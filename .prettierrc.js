@@ -4,8 +4,13 @@ module.exports = {
   useTabs: false,
   semi: false,
   singleQuote: true,
+  quoteProps: 'as-needed',
+  jsxSingleQuote: true,
   trailingComma: 'all',
   bracketSpacing: true,
   jsxBracketSameLine: false,
   arrowParens: 'avoid',
+  requirePragma: false,
+  insertPragma: false,
+  endOfLine: 'lf',
 }

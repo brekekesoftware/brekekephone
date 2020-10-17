@@ -127,8 +127,8 @@ class PageContactUsers extends React.Component {
           }
           return desc
         })()}
-        menu="contact"
-        subMenu="users"
+        menu='contact'
+        subMenu='users'
         title={intl`Users`}
       >
         <Field
@@ -148,7 +148,7 @@ class PageContactUsers extends React.Component {
                 displayOfflineUsers: v,
               })
             }}
-            type="Switch"
+            type='Switch'
             value={authStore.currentProfile.displayOfflineUsers}
           />
         )}

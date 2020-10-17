@@ -8,7 +8,7 @@
 
 - Should have the latest node version 14.x
   - You can use `nvm` to install and manage node versions: https://github.com/nvm-sh/nvm
-- Install `yarn` and use it instead of `npm`: `npm install -g yarn`
+- Install `yarn` and use it instead of `npm`: `npm i -g yarn`
 - Install node packages:
 
 ```sh
@@ -142,11 +142,11 @@ yarn android --deviceId=DEVICE_ID
 
 ### Automation format tools
 
-- To have the js/ts files follow a single code format consistency, you can run `yarn pret`
-  - It will be automatically run in each commit via `husky` and `lint-staged`
-- To run the format command for all possible files `yarn f`, we must install the following packages:
+- To have the js/ts files follow a single code format consistency, you can run `yarn format`
+  - It will be automatically run in each commit using `husky` and `lint-staged`
+- To run the format command for all possible files `make format`, we must install the following packages (on macOS):
 
 ```sh
-brew install clang-format google-java-format xmlstarlet
-npm install -g imagemin-cli
+brew install make clang-format google-java-format xmlstarlet
+npm i -g imagemin-cli
 ```

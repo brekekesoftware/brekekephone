@@ -141,7 +141,7 @@ const ContactsCreateForm = observer(props => {
             label: intl`SHARED`,
           },
         ]}
-        k="phonebook"
+        k='phonebook'
         onValidSubmit={$.onValidSubmit}
       />
     </Layout>

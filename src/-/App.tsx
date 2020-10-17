@@ -211,7 +211,7 @@ const App = observer(() => {
   if (!g.profilesLoadedObservable) {
     return (
       <View style={css.LoadingFullscreen}>
-        <ActivityIndicator size="small" color="white" />
+        <ActivityIndicator size='small' color='white' />
       </View>
     )
   }

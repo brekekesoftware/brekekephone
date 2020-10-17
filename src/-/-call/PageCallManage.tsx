@@ -167,24 +167,24 @@ class PageCallManage extends React.Component<{
         <View style={!c.answered && css.Btns_Hidden}>
           <View style={css.Btns_Inner}>
             <ButtonIcon
-              bgcolor="white"
-              color="black"
+              bgcolor='white'
+              color='black'
               name={intl`TRANSFER`}
               noborder
               onPress={g.goToPageTransferDial}
               path={mdiCallSplit}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
             <ButtonIcon
-              bgcolor="white"
-              color="black"
+              bgcolor='white'
+              color='black'
               name={intl`PARK`}
               noborder
               onPress={g.goToPageCallParks2}
               path={mdiAlphaPCircle}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
             <ButtonIcon
               bgcolor={c.localVideoEnabled ? activeColor : 'white'}
@@ -194,7 +194,7 @@ class PageCallManage extends React.Component<{
               onPress={c.localVideoEnabled ? c.disableVideo : c.enableVideo}
               path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
             {Platform.OS !== 'web' && (
               <ButtonIcon
@@ -209,7 +209,7 @@ class PageCallManage extends React.Component<{
                     : mdiVolumeMedium
                 }
                 size={40}
-                textcolor="white"
+                textcolor='white'
               />
             )}
           </View>
@@ -223,7 +223,7 @@ class PageCallManage extends React.Component<{
               onPress={c.toggleMuted}
               path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
             <ButtonIcon
               bgcolor={c.recording ? activeColor : 'white'}
@@ -233,17 +233,17 @@ class PageCallManage extends React.Component<{
               onPress={c.toggleRecording}
               path={c.recording ? mdiRecordCircle : mdiRecord}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
             <ButtonIcon
-              bgcolor="white"
-              color="black"
+              bgcolor='white'
+              color='black'
               name={intl`DTMF`}
               noborder
               onPress={g.goToPageDtmfKeypad}
               path={mdiDialpad}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
             <ButtonIcon
               bgcolor={c.holding ? activeColor : 'white'}
@@ -253,7 +253,7 @@ class PageCallManage extends React.Component<{
               onPress={c.toggleHold}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
-              textcolor="white"
+              textcolor='white'
             />
           </View>
         </View>
@@ -272,12 +272,12 @@ class PageCallManage extends React.Component<{
     <View style={css.Hangup}>
       <ButtonIcon
         bgcolor={g.colors.danger}
-        color="white"
+        color='white'
         noborder
         onPress={c.hangup}
         path={mdiPhoneHangup}
         size={40}
-        textcolor="white"
+        textcolor='white'
       />
     </View>
   )

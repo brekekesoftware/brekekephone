@@ -130,7 +130,7 @@ class ChatGroupInvite extends React.Component {
         {...this.formatGroup(group)}
         accept={this.accept}
         reject={this.reject}
-        type="inviteChat"
+        type='inviteChat'
         loading={this.loading}
       />
     ))

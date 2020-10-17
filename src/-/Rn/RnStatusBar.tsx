@@ -37,7 +37,7 @@ const RnStatusBar = props =>
         props.transparent && css.RnStatusBar__transparent,
       ]}
     >
-      <StatusBar backgroundColor={v.hoverBg} barStyle="dark-content" />
+      <StatusBar backgroundColor={v.hoverBg} barStyle='dark-content' />
       <View style={css.Border} />
     </View>
   )

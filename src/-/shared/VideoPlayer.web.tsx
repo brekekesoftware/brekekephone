@@ -15,13 +15,13 @@ export default observer(p =>
   p.sourceObject ? (
     <video
       autoPlay
-      height="100%"
+      height='100%'
       ref={video => {
         if (video) {
           video.srcObject = p.sourceObject
         }
       }}
-      width="100%"
+      width='100%'
     />
   ) : (
     <ActivityIndicator style={css.loading} />

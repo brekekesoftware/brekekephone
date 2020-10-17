@@ -180,8 +180,8 @@ class PageContactPhonebook extends React.Component {
             onPress: contactStore.loadContacts,
           },
         ]}
-        menu="contact"
-        subMenu="phonebook"
+        menu='contact'
+        subMenu='phonebook'
         title={intl`Phonebook`}
       >
         <Field
@@ -192,7 +192,7 @@ class PageContactPhonebook extends React.Component {
               displaySharedContacts: v,
             })
           }}
-          type="Switch"
+          type='Switch'
           value={authStore.currentProfile.displaySharedContacts}
         />
         <View>

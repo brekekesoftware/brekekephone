@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 
-const jsonOutputPath = path.join(__dirname, './src/intl/en2.json')
+const jsonOutputPath = path.join(__dirname, './.babelPluginIntl.json')
 
 // Only add brackets if there's no existing brackets
 const withBrackets = (exprName, rawTemplate, i) =>
@@ -42,30 +42,7 @@ const babelPluginIntl = () => ({
         s.file.code.substring(e.start, e.end),
       )
       // Build data keys from expressions with their name as camelCase
-      const exprNames = exprs.map(e =>
-        e
-          .split(/\W+/g)
-          .filter(w => w)
-          .map((w, i) => (!i ? w : w.charAt(0).toUpperCase() + w.substr(1)))
-          .join(''),
-      )
-      // Check invalid/duplicated fields
-      const duplicatedMap = {}
-      exprNames.forEach((v, i) => {
-        if (!v) {
-          throw p.buildCodeFrameError(
-            `Can not build identifier for expression ${exprs[i]}`,
-          )
-        }
-        if (v in duplicatedMap) {
-          throw p.buildCodeFrameError(
-            `Duplicated identifier for expression ${
-              exprs[duplicatedMap[v]]
-            } and ${exprs[i]}`,
-          )
-        }
-        duplicatedMap[v] = i
-      })
+      const exprNames = exprs.map((e, i) => '$' + i)
       // Build the locations to automatically add brackets for fields
       const quasis = p.node.quasi.quasis.map(q => q.value.raw)
       const [rawTemplate, fieldLocations] = quasis.reduce(

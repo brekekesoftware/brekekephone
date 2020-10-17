@@ -48,8 +48,8 @@ class PageCallRecents extends React.Component {
     return (
       <Layout
         description={intl`Recent voicemails and calls`}
-        menu="call"
-        subMenu="recents"
+        menu='call'
+        subMenu='recents'
         title={intl`Recents`}
       >
         <Field

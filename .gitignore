@@ -62,3 +62,6 @@ google-services.json
 
 # Turn server config
 turnConfig.*
+
+# Intl output
+.babelPluginIntl.json

@@ -26,7 +26,7 @@ const ShowNumber = p => (
   <View style={css.ShowNumbers}>
     <TextInput
       blurOnSubmit
-      keyboardType="default"
+      keyboardType='default'
       multiline
       onChangeText={p.setTarget}
       onEndEditing={() => {

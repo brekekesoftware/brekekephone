@@ -1,24 +1,18 @@
 {
-  "name": "BrekekePhone",
+  "name": "brekekephone",
   "version": "2.5.2",
   "private": true,
   "homepage": "./",
   "scripts": {
     "start": "craco start",
     "build": "del-cli -f \"node_modules/.cache/babel*\" && craco build",
-    "intl": "del-cli -f \"src/intl/en.json\" && cross-env EXTRACT_INTL=1 yarn build",
+    "build:intl": "del-cli -f \".babelPluginIntl.json\" && cross-env EXTRACT_INTL=1 yarn build",
     "rn": "react-native start",
-    "ts": "tsc && type-coverage",
     "android": "react-native run-android",
-    "shake": "adb shell input keyevent 82",
+    "android:shake": "adb shell input keyevent 82",
     "ios": "react-native run-ios",
-    "pret": "eslint --ignore-path=.gitignore --fix --ext=.js,.ts,.tsx . && prettier --ignore-path=.gitignore --loglevel=error --write \"**/*.{html,js,ts,tsx,json,md}\"",
-    "f": "yarn pret && yarn f-objc && yarn f-java && yarn f-xml && yarn imagemin",
-    "f-objc": "yarn git-ls | egrep -h '.(h|m)$' | xargs clang-format -i -style=file",
-    "f-java": "yarn git-ls | egrep -h '.(java)$' | xargs google-java-format -i",
-    "f-xml": "yarn git-ls | egrep -h '.(xml|xib|xccheme|xcworkspacedata|plist)$' | xargs -L1 bash -c 'xmllint --format --output $0 $0'",
-    "imagemin": "yarn git-ls | egrep -h '.(png|jpg|gif|ico)$' | xargs -L1 bash -c 'imagemin $0 --out-dir $(dirname $0)'",
-    "git-ls": "bash -c 'comm -3 <(git ls-files) <(git ls-files -d)'"
+    "format": "eslint --ignore-path=.gitignore --fix --ext=.js,.ts,.tsx . && prettier --ignore-path=.gitignore --loglevel=error --write \"**/*.{html,js,ts,tsx,json,md}\"",
+    "format:check": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 . && prettier --ignore-path=.gitignore --list-different \"**/*.{js,ts,tsx,html,css,scss,json,md,yml}\" && tsc"
   },
   "dependencies": {
     "@callstack/async-storage": "2.0.3",
@@ -109,8 +103,11 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --fix",
-    "*.{html,scss,js,ts,tsx,json,md}": "prettier --write"
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{html,scss,json,md}": "prettier --write"
   },
   "browserslist": "ie 10-11"
 }

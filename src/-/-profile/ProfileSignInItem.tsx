@@ -78,13 +78,13 @@ const ProfileSignInItem = observer(props => {
         onValueChange={v =>
           g.upsertProfile({ id: p.id, pushNotificationEnabled: v })
         }
-        type="Switch"
+        type='Switch'
         value={p.pushNotificationEnabled}
       />
       <Field
         label={intl`UC`}
         onValueChange={v => g.upsertProfile({ id: p.id, ucEnabled: v })}
-        type="Switch"
+        type='Switch'
         value={p.ucEnabled}
       />
       <View style={css.ProfileSignInItem_Btns}>

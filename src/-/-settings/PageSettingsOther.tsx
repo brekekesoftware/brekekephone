@@ -66,8 +66,8 @@ class PageSettingsOther extends Component {
             danger: true,
           },
         ]}
-        menu="settings"
-        subMenu="other"
+        menu='settings'
+        subMenu='other'
         title={intl`Other Settings`}
       >
         <Field isGroup label={intl`LOCALIZATION`} />
@@ -90,7 +90,7 @@ class PageSettingsOther extends Component {
                 { key: 'offline', label: intl`Invisible` },
                 { key: 'busy', label: intl`Busy` },
               ]}
-              type="Picker"
+              type='Picker'
               value={this.state.status}
             />
             <Field

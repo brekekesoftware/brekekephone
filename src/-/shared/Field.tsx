@@ -284,7 +284,7 @@ const Field = observer(({ ...props }) => {
   }
   const Container = props.onTouchPress ? TouchableOpacity : View
   const label = (
-    <View pointerEvents="none" style={css.Field_Label}>
+    <View pointerEvents='none' style={css.Field_Label}>
       <Text small style={css.Field_LabelText}>
         {props.label}
       </Text>
@@ -325,7 +325,7 @@ const Field = observer(({ ...props }) => {
           (props.icon && (
             <Icon
               path={props.icon}
-              pointerEvents="none"
+              pointerEvents='none'
               style={css.Field_Icon}
             />
           ))}

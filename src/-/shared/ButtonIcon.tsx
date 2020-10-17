@@ -32,7 +32,7 @@ const ButtonIcon = ({ color, path, size = 24, ...p }) => (
         { borderColor: p.bdcolor },
       ]}
     >
-      <Svg height={size} viewBox="0 0 24 24" width={size}>
+      <Svg height={size} viewBox='0 0 24 24' width={size}>
         <Path d={path} fill={color} />
       </Svg>
     </TouchableOpacity>

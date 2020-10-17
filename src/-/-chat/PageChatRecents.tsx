@@ -81,8 +81,8 @@ class PageChatRecents extends React.Component {
             onPress: g.goToPageChatGroupCreate,
           },
         ]}
-        menu="contact"
-        subMenu="chat"
+        menu='contact'
+        subMenu='chat'
         title={intl`Chat`}
       >
         <Field isGroup label={intl`RECENT CHAT THREADS`} />

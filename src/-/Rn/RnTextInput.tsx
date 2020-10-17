@@ -16,7 +16,7 @@ const css = StyleSheet.create({
 const RnTextInput = forwardRef(
   ({ keyboardType, style, ...props }: TextInputProps, ref: any) => (
     <TextInput
-      autoCapitalize="none"
+      autoCapitalize='none'
       ref={ref}
       {...props}
       keyboardType={

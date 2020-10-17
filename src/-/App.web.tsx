@@ -114,7 +114,7 @@ const AppSelection = () => {
               {intl`OPEN IN APP`}
             </Text>
             <Icon
-              color="white"
+              color='white'
               path={isIOS ? mdiApple : mdiAndroid}
               style={css.WebApp_Icon}
             />

@@ -1,6 +1,6 @@
 // For react-native code
 
-const babelPluginIntl = require('./babelPluginIntl')
+const babelPluginIntl = require('./.babelPluginIntl')
 
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
