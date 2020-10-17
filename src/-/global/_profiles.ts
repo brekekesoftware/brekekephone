@@ -1,14 +1,12 @@
 import stringify from 'json-stable-stringify'
 import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
-import rnuuid from 'react-native-uuid'
+import {v4 as uuid } from 'react-native-uuid'
 
 import { intlDebug } from '../intl/intl'
 import { AsyncStorage } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
-
-const { v4: uuid } = rnuuid
 
 let resolveFn: Function | null
 const profilesLoaded = new Promise(resolve => {

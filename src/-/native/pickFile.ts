@@ -2,12 +2,10 @@ import { Platform } from 'react-native'
 import DocumentPicker0 from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
 import * as ImagePicker from 'react-native-full-image-picker'
-import rnuuid from 'react-native-uuid'
+import { v4 as uuid } from 'react-native-uuid'
 
 import g from '../global'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
-
-const { v4: uuid } = rnuuid
 
 ImagePicker.AlbumView.autoConvertPath = true
 ImagePicker.AlbumListView.autoConvertPath = true

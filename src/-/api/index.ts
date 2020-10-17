@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { Platform } from 'react-native'
-import rnuuid from 'react-native-uuid'
+import { v4 as uuid } from 'react-native-uuid'
 
 import g from '../global'
 import authStore from '../global/authStore'
@@ -14,8 +14,6 @@ import pbx from './pbx'
 import sip from './sip'
 import uc from './uc'
 import updatePhoneIndex from './updatePhoneIndex'
-
-const { v4: uuid } = rnuuid
 
 class Api {
   constructor() {

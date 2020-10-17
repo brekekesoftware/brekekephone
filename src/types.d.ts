@@ -1,7 +1,5 @@
 declare module 'react-native-uuid' {
-  import * as uuid from 'uuid'
-
-  export = uuid
+  export const v4: ()=> string
 }
 
 declare module '*.mp3' {

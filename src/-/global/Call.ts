@@ -1,14 +1,12 @@
 import { action, computed, observable } from 'mobx'
 import { NativeModules, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import rnuuid from 'react-native-uuid'
+import { v4 as uuid } from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { intlDebug } from '../intl/intl'
 import g from '.'
-
-const { v4: uuid } = rnuuid
 
 export default class Call {
   @observable id = ''

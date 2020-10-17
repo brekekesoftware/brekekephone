@@ -235,7 +235,7 @@ if (Platform.OS === 'ios') {
 }
 
 if (Platform.OS === 'android') {
-  let lastUuid = 0
+  let lastUuid = ''
   let lastTime = 0
   window.setInterval(() => {
     if (callStore.recentPNAt && Date.now() - callStore.recentPNAt >= 15000) {
