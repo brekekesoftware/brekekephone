@@ -3,3 +3,8 @@ declare module 'react-native-uuid' {
 
   export = uuid
 }
+
+declare module '*.mp3' {
+  const src: string
+  export default src
+}

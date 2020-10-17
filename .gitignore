@@ -61,4 +61,4 @@ GoogleService-Info.plist
 google-services.json
 
 # Turn server config
-turnConfig.js
+turnConfig.*
