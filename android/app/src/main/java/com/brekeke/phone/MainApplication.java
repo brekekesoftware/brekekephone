@@ -16,7 +16,6 @@ import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.rnfs.RNFSPackage;
-import com.toyberman.drawOverlay.RNDrawOverlayPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
 import io.wazo.callkeep.RNCallKeepPackage;
@@ -48,7 +47,6 @@ public class MainApplication extends Application implements ReactApplication {
               new ReactVideoPackage(),
               new RNCallKeepPackage(),
               new RNCameraPackage(),
-              new RNDrawOverlayPackage(),
               new RNFSPackage(),
               new RNSharePackage(),
               new SplashScreenReactPackage(),

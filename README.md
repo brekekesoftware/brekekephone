@@ -1,8 +1,8 @@
 ### Quick access
 
-- [Custom branding build instruction](./doc/custom-branding-instruction.md)
-- [Fix ios deprecated UIWebView instruction](./doc/fix-webview-ios-instruction.md)
-- [Network proxy setup instruction](./doc/network-proxy-setup-instruction.md)
+- [Custom branding build](./doc/custom-branding.md)
+- [Fix ios deprecated UIWebView](./doc/fix-webview-ios.md)
+- [Network proxy setup](./doc/network-proxy-setup.md)
 
 ### Environment requirement
 
@@ -147,6 +147,6 @@ yarn android --deviceId=DEVICE_ID
 - To run the format command for all possible files `make format`, we must install the following packages (on macOS):
 
 ```sh
-brew install make clang-format google-java-format xmlstarlet
+brew install make clang-format google-java-format
 npm i -g imagemin-cli
 ```

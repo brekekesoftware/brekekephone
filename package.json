@@ -5,14 +5,14 @@
   "homepage": "./",
   "scripts": {
     "start": "craco start",
-    "build": "del-cli -f \"node_modules/.cache/babel*\" && craco build",
-    "build:intl": "del-cli -f \".babelPluginIntl.json\" && cross-env EXTRACT_INTL=1 yarn build",
     "rn": "react-native start",
     "android": "react-native run-android",
     "android:shake": "adb shell input keyevent 82",
     "ios": "react-native run-ios",
-    "format": "eslint --ignore-path=.gitignore --fix --ext=.js,.ts,.tsx . && prettier --ignore-path=.gitignore --loglevel=error --write \"**/*.{html,js,ts,tsx,json,md}\"",
-    "format:check": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 . && prettier --ignore-path=.gitignore --list-different \"**/*.{js,ts,tsx,html,css,scss,json,md,yml}\" && tsc"
+    "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --ignore-path=.gitignore --loglevel=error --write \"**/*.{html,js,ts,tsx,json,md}\"",
+    "format:check": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 . && prettier --ignore-path=.gitignore --list-different \"**/*.{js,ts,tsx,html,css,scss,json,md,yml}\" && tsc",
+    "build": "del-cli -f \"node_modules/.cache/babel*\" && craco build",
+    "build:intl": "del-cli -f \".babelPluginIntl.json\" && cross-env EXTRACT_INTL=1 yarn build"
   },
   "dependencies": {
     "@callstack/async-storage": "2.0.3",
@@ -77,6 +77,7 @@
     "@babel/plugin-transform-modules-commonjs": "7.12.1",
     "@babel/plugin-transform-react-jsx": "7.12.1",
     "@craco/craco": "5.7.0",
+    "@prettier/plugin-xml": "0.12.0",
     "@types/react": "16.9.52",
     "@types/react-dom": "16.9.8",
     "@types/react-native": "0.57.65",

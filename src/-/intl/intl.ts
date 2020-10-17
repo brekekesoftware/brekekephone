@@ -90,17 +90,12 @@ const compileFn = (locale, k) => {
 type T = typeof String['raw']
 
 const intl = (k, data) => compileFn(g.locale, k)(data)
-const intlDebug0 = (k, data) => {
-  // Add English label to save debug log in showError
-  // In order to assign intl property to string we must use the String object
-  const l = new String(intl(k, data)) // eslint-disable-line no-new-wrappers
-  Object.assign(l, {
-    intl: compileFn('en', k)(data),
-  })
-  return l
-}
+const intlDebug0 = (k, data) => ({
+  label: intl(k, data),
+  en: compileFn('en', k)(data),
+})
 
 g.initLocale()
 
-export const intlDebug = intlDebug0 as T
+export const intlDebug = (intlDebug0 as any) as T
 export default intl as T

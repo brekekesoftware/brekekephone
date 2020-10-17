@@ -2,6 +2,7 @@ import React from 'react'
 
 import g from '../global'
 import { Animated, StyleSheet, Text } from '../Rn'
+import { AnimatedText } from '../Rn/RnText'
 import { useAnimation } from '../utils/animation'
 
 const css = StyleSheet.create({
@@ -30,7 +31,7 @@ const Title = p => {
   })
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
-      <Animated.Text style={[css.Title, cssTitleA]}>{title}</Animated.Text>
+      <AnimatedText style={[css.Title, cssTitleA]}>{title}</AnimatedText>
       {!compact && (
         <Text style={css.Description}>{description || '\u200a'}</Text>
       )}

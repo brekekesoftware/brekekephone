@@ -24,16 +24,18 @@ $.extends({
   },
   showError: error => {
     // Log error to save it to the debug log
+    // Convert error message to string if it was constructed using intlDebug
     const err = error.unexpectedErr || error.err
+    const en = error.message?.en || error.message
     if (err) {
-      const k = err?.message?.intl || err?.message
-      console.error(...(k ? [k, err] : [err]))
+      console.error(...(en ? [en, err] : [err]))
     }
-    // Convert error message to string if it was constructed using intl.debug
-    if (err?.message?.intl) {
-      err.message = `${err?.message}`
-    }
-    $.alerts.push({ error: err })
+    $.alerts.push({
+      error: {
+        ...error,
+        message: error.message?.label || error.message,
+      },
+    })
     $.set('alertsCount', $.alerts.length)
   },
   dismissAlert: () => {

@@ -1,7 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:drawable="@color/turtle_green"/>
+  <item android:drawable="@color/turtle_green" />
   <item>
-    <bitmap android:width="200dp" android:height="200dp" android:gravity="center" android:src="@mipmap/launch_screen"/>
+    <bitmap
+      android:width="200dp"
+      android:height="200dp"
+      android:gravity="center"
+      android:src="@mipmap/launch_screen"
+    />
   </item>
 </layer-list>

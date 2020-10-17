@@ -6,19 +6,19 @@ format:
 	make imagemin
 
 format-objc:
-	EXT="h|m" \
+	export EXT="h|m" \
 	&& make -s ls \
 	| xargs clang-format -i -style=file
 format-java:
-	EXT="java" \
+	export EXT="java" \
 	&& make -s ls \
 	| xargs google-java-format -i
 format-xml:
-	EXT="xml|xib|xccheme|xcworkspacedata|plist" \
+	export EXT="xml|xib|xcscheme|xcworkspacedata|plist|entitlements" \
 	&& make -s ls \
-	| xargs -L1 bash -c 'xmllint --format --output $$0 $$0'
+	| xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --loglevel=error --write
 imagemin:
-	EXT="png|jpg|gif|ico" \
+	export EXT="png|jpg|gif|ico" \
 	&& make -s ls \
 	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)'
 ls:

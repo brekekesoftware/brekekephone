@@ -95,7 +95,7 @@ const getAudioVideoPermission = () => {
     er,
   ) as unknown) as Promise<MediaStream>
   if (p?.then) {
-    p.then(cb)
+    p.then(cb).catch(er)
   }
 }
 

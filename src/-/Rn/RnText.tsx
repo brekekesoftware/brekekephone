@@ -90,8 +90,6 @@ const wrap = Component =>
   )
 
 const RnText = wrap(Text)
-Object.assign(Animated, {
-  Text: wrap(Animated.Text),
-})
+export const AnimatedText = wrap(Animated.Text) as any
 
 export default RnText
