@@ -55,7 +55,7 @@ const KeyPad = p => (
     <View style={css.KeyPad_Btn}>
       <RnTouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
         <RnIcon
-          color={Platform.OS === 'web' ? 'white' : null}
+          color={Platform.OS === 'web' ? 'white' : undefined}
           path={mdiKeyboard}
         />
       </RnTouchableOpacity>

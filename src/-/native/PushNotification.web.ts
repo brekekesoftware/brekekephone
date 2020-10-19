@@ -1,4 +1,4 @@
-const uint8ArrayToUrlBase64 = arr =>
+const uint8ArrayToUrlBase64 = (arr: ArrayBuffer) =>
   window
     .btoa(
       String.fromCharCode.apply(null, (new Uint8Array(arr) as any) as number[]),
@@ -6,7 +6,7 @@ const uint8ArrayToUrlBase64 = arr =>
     .replace(/[+/]/g, '-')
 
 const PushNotification = {
-  register: initApp => {
+  register: (initApp: Function) => {
     window.setTimeout(initApp)
     if (!window.Notification || window.Notification.permission === 'granted') {
       return
@@ -22,8 +22,8 @@ const PushNotification = {
       }))
     return {
       endpoint: sub.endpoint,
-      p256dh: uint8ArrayToUrlBase64(sub.getKey('p256dh')),
-      auth: uint8ArrayToUrlBase64(sub.getKey('auth')),
+      p256dh: uint8ArrayToUrlBase64(sub.getKey('p256dh') as ArrayBuffer),
+      auth: uint8ArrayToUrlBase64(sub.getKey('auth') as ArrayBuffer),
     }
   },
   resetBadgeNumber: () => {

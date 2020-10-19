@@ -1,28 +1,37 @@
 import './callkeep'
 
-import PushNotificationIOS from '@react-native-community/push-notification-ios'
+import PushNotificationIOS, {
+  PushNotification as PN,
+} from '@react-native-community/push-notification-ios'
 import { AppState } from 'react-native'
 import VoipPushNotification from 'react-native-voip-push-notification'
 
 import parse from './PushNotification-parse'
 
 let voipApnsToken = ''
-const onVoipToken = t => {
+const onVoipToken = (t: string) => {
   if (t) {
     voipApnsToken = t
   }
 }
 
 let apnsToken = ''
-const onToken = t => {
+const onToken = (t: string) => {
   if (t) {
     apnsToken = t
   }
 }
 
-const onNotification = async (n, initApp, isLocal = false) => {
+const onNotification = async (
+  n0: PN | null,
+  initApp: Function,
+  isLocal = false,
+) => {
   initApp()
-  n = await parse(n, isLocal)
+  const n: {
+    body: string
+    isCall: boolean
+  } = await parse(n0, isLocal)
   if (!n) {
     return
   }
@@ -43,27 +52,28 @@ const onNotification = async (n, initApp, isLocal = false) => {
 }
 
 const PushNotification = {
-  register: initApp => {
+  register: async (initApp: Function) => {
     window.setTimeout(initApp)
     //
     VoipPushNotification.addEventListener('register', onVoipToken)
-    VoipPushNotification.addEventListener('notification', n =>
+    VoipPushNotification.addEventListener('notification', (n: PN) =>
       onNotification(n, initApp),
     )
     VoipPushNotification.registerVoipToken()
     //
     PushNotificationIOS.addEventListener('register', onToken)
-    PushNotificationIOS.addEventListener('notification', n =>
+    PushNotificationIOS.addEventListener('notification', (n: PN) =>
       onNotification(n, initApp),
     )
-    PushNotificationIOS.addEventListener('localNotification', n =>
+    PushNotificationIOS.addEventListener('localNotification', (n: PN) =>
       onNotification(n, initApp, true),
     )
     //
     PushNotificationIOS.requestPermissions()
     VoipPushNotification.requestPermissions()
     //
-    onNotification(PushNotificationIOS.getInitialNotification(), initApp, true)
+    const n0 = await PushNotificationIOS.getInitialNotification()
+    onNotification(n0, initApp, true)
   },
   getVoipToken: () => {
     return Promise.resolve(voipApnsToken)

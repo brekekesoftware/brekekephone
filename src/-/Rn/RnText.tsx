@@ -1,5 +1,5 @@
 import pickBy from 'lodash/pickBy'
-import React, { forwardRef } from 'react'
+import React, { FC, forwardRef } from 'react'
 import { Animated, StyleSheet, Text, TextProps } from 'react-native'
 
 import v from '../variables'
@@ -89,7 +89,26 @@ const wrap = Component =>
     ),
   )
 
-const RnText = wrap(Text)
-export const AnimatedText = wrap(Animated.Text) as any
+export type RnTextT = FC<
+  TextProps & {
+    singleLine?: boolean
+    title?: boolean
+    subTitle?: boolean
+    small?: boolean
+    black?: boolean
+    white?: boolean
+    primary?: boolean
+    warning?: boolean
+    danger?: boolean
+    normal?: boolean
+    bold?: boolean
+    center?: boolean
+    right?: boolean
+    padding?: boolean
+  }
+>
+
+const RnText = wrap(Text) as RnTextT
+export const AnimatedText = wrap(Animated.Text) as RnTextT
 
 export default RnText

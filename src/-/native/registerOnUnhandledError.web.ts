@@ -1,4 +1,4 @@
-const registerOnUnhandledError = fn => {
+const registerOnUnhandledError = (fn: (err: ErrorEvent) => void) => {
   window.addEventListener('error', fn)
 }
 

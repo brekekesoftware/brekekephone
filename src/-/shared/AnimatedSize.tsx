@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
+import React, { FC, PropsWithChildren, useState } from 'react'
+import { Animated, StyleSheet, View, ViewProps } from 'react-native'
 
 import { useAnimationOnDidMount } from '../utils/animation'
 
@@ -18,25 +18,44 @@ const css = StyleSheet.create({
 
 // The style and innerStyle prop should only be used for positioning and theming
 // We should not use them for sizing like height/border/padding... -> use the children instead
-const AnimatedSize = p => {
+const AnimatedSize: FC<
+  ViewProps & {
+    animateWidth?: boolean
+    innerStyle?: ViewProps['style']
+  }
+> = p => {
   const [size, setSize] = useState(0)
   const Component = size ? Animation : Getter
   return <Component {...p} setSize={setSize} size={size} />
 }
 
-const Getter = ({ animateWidth, children, setSize }) => (
-  <View style={css.Getter}>
-    <View
-      onLayout={e =>
-        setSize(e.nativeEvent.layout[animateWidth ? 'width' : 'height'])
-      }
-      style={css.GetterInner}
-    >
-      {children}
+const Getter = (p: {
+  animateWidth?: boolean
+  children?: PropsWithChildren<{}>['children']
+  setSize: Function
+}) => {
+  const { animateWidth, children, setSize } = p
+  return (
+    <View style={css.Getter}>
+      <View
+        onLayout={e =>
+          setSize(e.nativeEvent.layout[animateWidth ? 'width' : 'height'])
+        }
+        style={css.GetterInner}
+      >
+        {children}
+      </View>
     </View>
-  </View>
-)
-const Animation = ({ animateWidth, children, innerStyle, size, style }) => {
+  )
+}
+const Animation = (p: {
+  animateWidth?: boolean
+  children?: PropsWithChildren<{}>['children']
+  innerStyle?: ViewProps['style']
+  size: number
+  style?: ViewProps['style']
+}) => {
+  const { animateWidth, children, innerStyle, size, style } = p
   const cssAnimation = useAnimationOnDidMount({
     [animateWidth ? 'width' : 'height']: [0, size],
   })

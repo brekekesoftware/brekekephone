@@ -39,7 +39,7 @@ class AuthStore {
   @observable ucLoginFromAnotherPlace = false
   @computed get pbxShouldAuth() {
     return (
-      this.signedInId &&
+      !!this.signedInId &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' && !this.pbxTotalFailure))
     )
@@ -104,7 +104,7 @@ class AuthStore {
     return this._profilesMap[id]
   }
 
-  @observable signedInId = null
+  @observable signedInId = ''
   @computed get currentProfile() {
     return this.getProfile(this.signedInId)
   }
@@ -152,7 +152,7 @@ class AuthStore {
     }
   }
   _signOut = () => {
-    this.signedInId = null
+    this.signedInId = ''
     this.pbxState = 'stopped'
     this.pbxTotalFailure = 0
     this.sipState = 'stopped'

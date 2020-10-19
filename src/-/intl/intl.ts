@@ -44,7 +44,7 @@ g.extends({
   },
   getLocaleFromLocalStorage: async () => {
     let locale = await RnAsyncStorage.getItem('locale')
-    if (!labels[locale]) {
+    if (!locale || !labels[locale]) {
       locale = 'en'
       await RnAsyncStorage.setItem('locale', locale)
     }

@@ -1,10 +1,10 @@
 import { Linking } from 'react-native'
 
 import authStore, { compareProfile } from '../global/authStore'
-import parse from './deeplink-parse'
+import parse, { UrlParams } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
-let urlParams = null
+let urlParams: UrlParams | null = null
 
 const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
@@ -14,7 +14,7 @@ const getUrlParams = () => {
   return Linking.getInitialURL().then(parse)
 }
 
-const setUrlParams = p => {
+const setUrlParams = (p: UrlParams) => {
   urlParams = p
 }
 

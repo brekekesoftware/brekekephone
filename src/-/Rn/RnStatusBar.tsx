@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
@@ -29,7 +29,7 @@ const css = StyleSheet.create({
   },
 })
 
-const RnStatusBar = props =>
+const RnStatusBar: FC<{ transparent?: boolean }> = props =>
   Platform.OS === 'web' ? null : (
     <View
       style={[

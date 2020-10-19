@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs'
 
-const saveBlob = (blob, name) => {
+const saveBlob = (blob: Blob, name: string) => {
   const fr = new FileReader()
   fr.onload = async () => {
     const r = fr.result as string

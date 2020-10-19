@@ -1,5 +1,5 @@
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import React, { FC } from 'react'
+import { StyleSheet, View, ViewProps } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import v from '../variables'
@@ -12,7 +12,14 @@ const css = StyleSheet.create({
   },
 })
 
-const Icon = ({ color, path, size = v.iconSize, viewBox, style, ...p }) => (
+const Icon: FC<
+  ViewProps & {
+    color?: string
+    path: string
+    size?: number
+    viewBox?: string
+  }
+> = ({ color, path, size = v.iconSize, viewBox, style, ...p }) => (
   <View {...p} style={[css.Icon, style]}>
     <Svg
       height={size}

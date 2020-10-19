@@ -15,13 +15,13 @@ class PageCallParks extends React.Component<{
   callParks2: boolean
 }> {
   state = {
-    selectedPark: null,
+    selectedPark: '',
   }
 
   selectPark = selectedPark => {
     this.setState({
       selectedPark:
-        selectedPark === this.state.selectedPark ? null : selectedPark,
+        selectedPark === this.state.selectedPark ? '' : selectedPark,
     })
   }
 

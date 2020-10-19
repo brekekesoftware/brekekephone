@@ -1,6 +1,6 @@
 import * as UCClient from 'brekekejs/lib/ucclient'
 import debounce from 'lodash/debounce'
-import { observe } from 'mobx'
+import { Lambda, observe } from 'mobx'
 
 import uc from '../api/uc'
 import { intlDebug } from '../intl/intl'
@@ -10,7 +10,7 @@ import chatStore from './chatStore'
 import contactStore from './contactStore'
 
 class AuthUC {
-  clearObserve: any
+  clearObserve?: Lambda
   auth() {
     this._auth2()
     uc.on('connection-stopped', this.onConnectionStopped)

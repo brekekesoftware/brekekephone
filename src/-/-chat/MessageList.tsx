@@ -84,7 +84,7 @@ const MessageList = observer(p => {
                 key={`${time}${id}`}
                 style={[css.TimeGroup, !j && css.TimeGroup__first]}
               >
-                <Avatar imgSource={c0.creatorAvatar} />
+                <Avatar source={c0.creatorAvatar} />
                 <View style={css.Right}>
                   <View style={css.Creator}>
                     <RnText bold singleLine>

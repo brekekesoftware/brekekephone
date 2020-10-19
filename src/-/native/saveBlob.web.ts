@@ -1,6 +1,6 @@
-const saveBlob = (blob, name) => {
-  const a = document.createElement('a') as any
-  a.style = 'display: none'
+const saveBlob = (blob: Blob, name: string) => {
+  const a = document.createElement('a')
+  a.setAttribute('style', 'display: none')
   let url = window.URL.createObjectURL(blob)
   a.href = url
   a.download = name

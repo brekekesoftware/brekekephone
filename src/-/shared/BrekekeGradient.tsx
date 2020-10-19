@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { StyleSheet } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
+import LinearGradient, {
+  LinearGradientProps,
+} from 'react-native-linear-gradient'
 
 import g from '../global'
 
@@ -11,7 +13,7 @@ const css = StyleSheet.create({
   },
 })
 
-const BrekekeGradient = props => (
+const BrekekeGradient: FC<Omit<LinearGradientProps, 'colors'>> = props => (
   <LinearGradient
     {...props}
     colors={[g.colors.primaryFn(0.2), g.revBg]}

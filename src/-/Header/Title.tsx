@@ -15,7 +15,7 @@ const css = StyleSheet.create({
     lineHeight: g.lineHeightTitle,
     fontWeight: 'bold',
     color: 'black',
-  },
+  } as any,
   Description: {
     color: g.subColor,
   },

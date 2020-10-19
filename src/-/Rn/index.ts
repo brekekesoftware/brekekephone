@@ -8,12 +8,12 @@ import Text0 from './RnText'
 import TextInput0 from './RnTextInput'
 import TouchableOpacity0 from './RnTouchableOpacity'
 
-const AsyncStorage = AsyncStorage0 as any
-const Icon = Icon0 as any
-const Image = Image0 as any
-const StatusBar = StatusBar0 as any
-const Switch = Switch0 as any
-const Text = Text0 as any
+const AsyncStorage = AsyncStorage0
+const Icon = Icon0
+const Image = Image0
+const StatusBar = StatusBar0
+const Switch = Switch0
+const Text = Text0
 const TextInput = TextInput0 as any
 const TouchableOpacity = TouchableOpacity0 as any
 

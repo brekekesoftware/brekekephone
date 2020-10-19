@@ -1,7 +1,8 @@
+import get from 'lodash/get'
 import qs from 'qs'
 import Url from 'url-parse'
 
-const parse = location => {
+const parse = (location: string | Url | null) => {
   if (!location) {
     return null
   }
@@ -11,7 +12,8 @@ const parse = location => {
   //
   const params = Object.assign(
     qs.parse(location.hash.replace(/^[^?]*\?*/, '')),
-    location.query || qs.parse(location.search.replace(/^\?*/, '')),
+    location.query ||
+      qs.parse((get(location, 'search') as string).replace(/^\?*/, '')),
   )
   //
   if (params.url) {
@@ -35,7 +37,16 @@ const parse = location => {
     params.port = '' + location.port
   }
   //
-  return params
+  return (params as unknown) as UrlParams
+}
+
+export interface UrlParams {
+  user: string
+  tenant: string
+  host: string
+  port: string
+  phone_idx: string
+  _wn: string
 }
 
 export default parse

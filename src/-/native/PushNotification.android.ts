@@ -1,7 +1,7 @@
 import './callkeep'
 
 import { AppRegistry } from 'react-native'
-import FCM, { FCMEvent } from 'react-native-fcm'
+import FCM, { FCMEvent, Notification as PN } from 'react-native-fcm'
 
 import g from '../global'
 import parse from './PushNotification-parse'
@@ -9,23 +9,26 @@ import parse from './PushNotification-parse'
 const { Notification, RefreshToken } = FCMEvent
 
 let fcmPnToken = ''
-const onToken = t => {
+const onToken = (t: string) => {
   if (t) {
     fcmPnToken = t
   }
 }
 
-const onNotification = (n, initApp) => {
+const onNotification = (n0: PN, initApp: Function) => {
   try {
     initApp()
-    n = parse(n)
+    const n: {
+      body: string
+      isCall: boolean
+    } = parse(n0)
     if (!n) {
       return
     }
     //
     FCM.presentLocalNotification({
       body: 'Click to ' + (n.isCall ? 'answer' : 'view'),
-      title: n.title || n.body,
+      title: n.body,
       sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
       number: 0,
       priority: 'high',
@@ -48,7 +51,7 @@ const PushNotification = {
   getToken: () => {
     return Promise.resolve(fcmPnToken)
   },
-  register: async initApp => {
+  register: async (initApp: Function) => {
     try {
       initApp()
       await FCM.requestPermissions()

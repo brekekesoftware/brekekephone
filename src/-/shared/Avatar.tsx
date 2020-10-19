@@ -1,7 +1,8 @@
 import { mdiRecord } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View, ViewProps } from 'react-native'
+import { FastImageSource } from 'react-native-fast-image'
 
 import avatarPlaceholder from '../../assets/avatar-placeholder.png'
 import g from '../global'
@@ -35,26 +36,36 @@ const statusMapColor = {
   offline: g.subColor,
 }
 
-const Avatar = observer(p0 => {
-  const { source, status, style } = p0
-  const uri =
-    (typeof source?.uri === 'string' && source?.uri) ||
-    (Platform.OS === 'web' && avatarPlaceholder)
-  const imgSource = uri ? { uri } : avatarPlaceholder
-  return (
-    <View style={[css.Avatar, style]}>
-      <View style={css.ImageOuter}>
-        <RnImage source={imgSource} style={css.Image} />
+const Avatar = observer(
+  (p: {
+    source?: string | { uri: string }
+    status?: string
+    style?: ViewProps['style']
+  }) => {
+    const { source, status, style } = p
+    const uri =
+      (typeof source !== 'string' &&
+        typeof source?.uri === 'string' &&
+        source?.uri) ||
+      (Platform.OS === 'web' && avatarPlaceholder)
+    const str = uri || avatarPlaceholder
+    const imgSource =
+      typeof str === 'string' ? { uri: str } : (uri as FastImageSource)
+    return (
+      <View style={[css.Avatar, style]}>
+        <View style={css.ImageOuter}>
+          <RnImage source={imgSource} style={css.Image} />
+        </View>
+        {authStore.currentProfile.ucEnabled && typeof status === 'string' && (
+          <RnIcon
+            color={statusMapColor[status]}
+            path={mdiRecord}
+            style={css.Status}
+          />
+        )}
       </View>
-      {authStore.currentProfile.ucEnabled && typeof status === 'string' && (
-        <RnIcon
-          color={statusMapColor[status]}
-          path={mdiRecord}
-          style={css.Status}
-        />
-      )}
-    </View>
-  )
-})
+    )
+  },
+)
 
 export default Avatar

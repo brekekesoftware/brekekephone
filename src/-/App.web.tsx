@@ -5,6 +5,7 @@ import qs from 'qs'
 import React, { ReactElement, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
+import Url from 'url-parse'
 
 import brand from '../assets/brand.png'
 import logo from '../assets/logo.png'
@@ -90,7 +91,7 @@ const AppSelection = () => {
   if (isBrowser) {
     child = <App />
   } else {
-    const params = parse(window.location)
+    const params = parse((window.location as unknown) as Url)
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`

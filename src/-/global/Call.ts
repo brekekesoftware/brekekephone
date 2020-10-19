@@ -45,11 +45,11 @@ export default class Call {
   enableVideo = () => sip.enableVideo(this.id)
   disableVideo = () => sip.disableVideo(this.id)
 
-  @observable remoteVideoStreamObject = null
-  voiceStreamObject = null
+  @observable remoteVideoStreamObject: MediaStream | null = null
+  voiceStreamObject: MediaStream | null = null
 
   @observable muted = false
-  @action toggleMuted = fromCallkeep => {
+  @action toggleMuted = (fromCallkeep?: boolean) => {
     this.muted = !this.muted
     if (this.callkeep && !fromCallkeep) {
       RNCallKeep.setMutedCall(this.uuid, this.muted)
@@ -62,9 +62,9 @@ export default class Call {
     this.recording = !this.recording
     return pbx
       .startRecordingTalker(this.pbxTenant, this.pbxTalkerId)
-      .catch(this._onToggleRecordingFailure)
+      .catch(this.onToggleRecordingFailure)
   }
-  @action _onToggleRecordingFailure = err => {
+  @action private onToggleRecordingFailure = (err: Error) => {
     this.recording = !this.recording
     const message = this.recording
       ? intlDebug`Failed to stop recording the call`
@@ -84,9 +84,9 @@ export default class Call {
           RNCallKeep.setOnHold(this.uuid, this.holding)
         }
       })
-      .catch(this._onToggleHoldFailure)
+      .catch(this.onToggleHoldFailure)
   }
-  @action _onToggleHoldFailure = err => {
+  @action private onToggleHoldFailure = (err: Error) => {
     this.holding = !this.holding
     const message = this.holding
       ? intlDebug`Failed to unhold the call`
@@ -95,21 +95,21 @@ export default class Call {
   }
 
   @observable transferring = ''
-  _prevTransferring = ''
-  transferBlind = number => {
+  private prevTransferring = ''
+  transferBlind = (number: string) => {
     g.backToPageCallManage()
     return pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
-      .catch(this._onTransferFailure)
+      .catch(this.onTransferFailure)
   }
-  @action transferAttended = number => {
+  @action transferAttended = (number: string) => {
     this.transferring = number
     g.backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
-      .catch(this._onTransferFailure)
+      .catch(this.onTransferFailure)
   }
-  @action _onTransferFailure = err => {
+  @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
     g.showError({
       message: intlDebug`Failed to transfer the call`,
@@ -118,14 +118,14 @@ export default class Call {
   }
 
   @action stopTransferring = () => {
-    this._prevTransferring = this.transferring
+    this.prevTransferring = this.transferring
     this.transferring = ''
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
-      .catch(this._onStopTransferringFailure)
+      .catch(this.onStopTransferringFailure)
   }
-  @action _onStopTransferringFailure = err => {
-    this.transferring = this._prevTransferring
+  @action private onStopTransferringFailure = (err: Error) => {
+    this.transferring = this.prevTransferring
     g.showError({
       message: intlDebug`Failed to stop the transfer`,
       err,
@@ -133,26 +133,26 @@ export default class Call {
   }
 
   @action conferenceTransferring = () => {
-    this._prevTransferring = this.transferring
+    this.prevTransferring = this.transferring
     this.transferring = ''
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
-      .catch(this._onConferenceTransferringFailure)
+      .catch(this.onConferenceTransferringFailure)
   }
-  @action _onConferenceTransferringFailure = err => {
-    this.transferring = this._prevTransferring
+  @action private onConferenceTransferringFailure = (err: Error) => {
+    this.transferring = this.prevTransferring
     g.showError({
       message: intlDebug`Failed to make conference for the transfer`,
       err,
     })
   }
 
-  @action park = number => {
+  @action park = (number: string) => {
     return pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
-      .catch(this._onParkFailure)
+      .catch(this.onParkFailure)
   }
-  _onParkFailure = err => {
+  private onParkFailure = (err: Error) => {
     g.showError({
       message: intlDebug`Failed to park the call`,
       err,

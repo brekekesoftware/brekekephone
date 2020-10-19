@@ -13,47 +13,54 @@ const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
 
+export interface Profile {
+  id: string
+  pbxHostname: string
+  pbxPort: string
+  pbxTenant: string
+  pbxUsername: string
+  pbxPassword: string
+  pbxPhoneIndex: '1' | '2' | '3' | '4'
+  pbxTurnEnabled: boolean
+  pushNotificationEnabled: boolean
+  parks: string[]
+  ucEnabled: boolean
+  ucHostname: string
+  ucPort: string
+  ucPathname: string
+  displaySharedContacts?: boolean
+  displayOfflineUsers?: boolean
+  navIndex?: number
+  navSubMenus?: string[]
+}
+export interface ProfileData {
+  id: string
+  accessToken: string
+  recentCalls: {
+    id: string
+    incoming: boolean
+    answered: boolean
+    partyName: string
+    partyNumber: string
+    created: number
+  }[]
+  recentChats: {
+    id: string // thread id
+    name: string
+    text: string
+    group: boolean
+    unread: boolean
+    created: number
+  }[]
+}
+
 g.extends({
   observable: {
-    // id: string
-    // pbxHostname: string
-    // pbxPort: string
-    // pbxTenant: string
-    // pbxUsername: string
-    // pbxPassword: string
-    // pbxPhoneIndex: string 1|2|3|4
-    // pbxTurnEnabled: boolean
-    // pushNotificationEnabled: boolean
-    // parks: string[]
-    // ucEnabled: boolean
-    // ucHostname: string
-    // ucPort: string
-    // ucPathname: string
-    // displaySharedContacts: boolean?
-    // displayOfflineUsers: boolean?
-    // navIndex?: number
-    // navSubMenus?: string[]
-    profiles: [],
+    profiles: ([] as any) as Profile[],
     get profilesMap() {
       return arrToMap(g.profiles, 'id', p => p)
     },
-    // id: string
-    // accessToken: string
-    // recentCalls[]
-    //    id: string
-    //    incoming: boolean
-    //    answered: boolean
-    //    partyName: string
-    //    partyNumber: string
-    //    created: Date
-    // recentChats[]
-    //    id: string // thread id
-    //    name: string
-    //    text: string
-    //    group: boolean
-    //    unread: boolean
-    //    created: number
-    profileData: [],
+    profileData: ([] as any) as ProfileData[],
     profilesLoadedObservable: false,
   },
   profilesLoaded,
@@ -67,24 +74,25 @@ g.extends({
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: true,
-    parks: [],
+    parks: ([] as any) as string[],
     ucEnabled: false,
     ucHostname: '',
     ucPort: '',
   }),
   loadProfilesFromLocalStorage: async () => {
     let arr = await RnAsyncStorage.getItem('_api_profiles')
+    let x: any
     if (arr && !Array.isArray(arr)) {
       try {
-        arr = JSON.parse(arr)
+        x = JSON.parse(arr)
       } catch (err) {
-        arr = null
+        x = null
       }
     }
-    if (arr) {
-      let { profileData, profiles } = arr
-      if (Array.isArray(arr)) {
-        profiles = arr
+    if (x) {
+      let { profileData, profiles } = x
+      if (Array.isArray(x)) {
+        profiles = x
         profileData = []
       }
       g.set('profiles', profiles)

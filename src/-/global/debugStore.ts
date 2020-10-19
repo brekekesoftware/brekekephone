@@ -275,7 +275,7 @@ class DebugStore {
     // Read remote app version from storage
     promises.push(
       RnAsyncStorage.getItem('remoteVersion')
-        .then(v => JSON.parse(v))
+        .then(v => v && JSON.parse(v))
         .then(v => {
           if (v) {
             this.remoteVersion = v.version

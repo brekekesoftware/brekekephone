@@ -11,7 +11,13 @@ const css = StyleSheet.create({
   },
 })
 
-export default observer(p =>
+declare global {
+  interface MediaStream {
+    toURL(): string
+  }
+}
+
+export default observer((p: { sourceObject: MediaStream }) =>
   p.sourceObject ? (
     <RTCView streamURL={p.sourceObject.toURL()} style={css.video} />
   ) : (
