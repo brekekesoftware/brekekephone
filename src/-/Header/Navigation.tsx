@@ -64,4 +64,4 @@ const Navigation = observer(p => {
     </View>
   )
 })
-export default observer(Navigation)
+export default Navigation
