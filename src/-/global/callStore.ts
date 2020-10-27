@@ -83,7 +83,7 @@ export class CallStore {
     c = new Call()
     Object.assign(c, _c)
     this._calls = [c, ...this._calls]
-    if (!c.incoming || c.answered) {
+    if (!c.incoming || c.answered || Platform.OS === 'web') {
       return
     }
     window.setTimeout(() => RNCallKeep.endCall(uuidFromPN), 1000)

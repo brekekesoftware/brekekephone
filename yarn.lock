@@ -2933,9 +2933,9 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-"brekekejs@github:brekekesoftware/brekekejs#b4ade72cef3c0bef1bdeca2819bb69c410913cac":
+"brekekejs@github:brekekesoftware/brekekejs#c1f0276c5a9abb4a0095b2c7793471ee0da3f339":
   version "0.0.0"
-  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/b4ade72cef3c0bef1bdeca2819bb69c410913cac"
+  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/c1f0276c5a9abb4a0095b2c7793471ee0da3f339"
   dependencies:
     url-parse "1.4.7"
 
@@ -7646,9 +7646,10 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-"jssip@github:brekekesoftware/jssip#1e8446f930647bf9ebb1c2e642a38684db5729fd":
+jssip@3.2.15:
   version "3.2.15"
-  resolved "https://codeload.github.com/brekekesoftware/jssip/tar.gz/1e8446f930647bf9ebb1c2e642a38684db5729fd"
+  resolved "https://registry.yarnpkg.com/jssip/-/jssip-3.2.15.tgz#b88489b4a963fb9f2cd3fde0120738ebeb64bcc3"
+  integrity sha512-kpKekINV3AObe6UFSTYiM5PfL5xKWTstUnG3S65vy6/GRlKhWk6XdivaH0X22RyAFPQuxskfpy99V/4MLhEdWg==
   dependencies:
     debug "^4.1.0"
     events "^3.0.0"

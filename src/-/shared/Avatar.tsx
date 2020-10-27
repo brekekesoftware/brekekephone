@@ -48,9 +48,9 @@ const Avatar = observer(
         typeof source?.uri === 'string' &&
         source?.uri) ||
       (Platform.OS === 'web' && avatarPlaceholder)
-    const str = uri || avatarPlaceholder
+      || avatarPlaceholder
     const imgSource =
-      typeof str === 'string' ? { uri: str } : (uri as FastImageSource)
+      typeof uri === 'string' ? { uri } : (uri as FastImageSource)
     return (
       <View style={[css.Avatar, style]}>
         <View style={css.ImageOuter}>

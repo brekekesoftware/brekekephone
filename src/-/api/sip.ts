@@ -210,15 +210,7 @@ class SIP extends EventEmitter {
       '/JsSIP ' +
       jssipVersion
     //
-    const config: any = (sipLoginOption.pbxTurnEnabled ? turnConfig : {}) || {}
-    if (!config.pcConfig) {
-      config.pcConfig = {}
-    }
-    if (!Array.isArray(config.pcConfig.iceServers)) {
-      config.pcConfig.iceServers = []
-    }
-    config.pcConfig.bundlePolicy = 'balanced'
-    this.phone.setDefaultCallOptions(config)
+    this.phone.setDefaultCallOptions(sipLoginOption.pbxTurnEnabled ? turnConfig : null)
     //
     this.phone.startWebRTC({
       url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
