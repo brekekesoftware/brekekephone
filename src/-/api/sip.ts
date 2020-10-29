@@ -10,10 +10,9 @@ import turnConfig from './turnConfig'
 
 class SIP extends EventEmitter {
   phone: any
-  _makeCallOptionsForAndoirOrIos: any
   init = async () => {
     const sourceId = await getFrontCameraSourceId()
-    this.phone = new window.Brekeke.WebrtcClient.Phone({
+    const phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
       multiSession: true,
       defaultOptions: {
@@ -64,10 +63,12 @@ class SIP extends EventEmitter {
       ctiAutoAnswer: true,
       eventTalk: true,
     })
-    this.phone.dtmfSendMode = 1
-    this.phone.ctiAutoAnswer = true
-    this.phone.eventTalk = true
-    const phone = this.phone
+    this.phone = phone
+
+    phone.dtmfSendMode = 1
+    phone.ctiAutoAnswer = true
+    phone.eventTalk = true
+
     const h = ev => {
       if (!ev) {
         return
@@ -82,7 +83,7 @@ class SIP extends EventEmitter {
       }
       return
     }
-    this.phone.addEventListener('phoneStatusChanged', h)
+    phone.addEventListener('phoneStatusChanged', h)
 
     // sessionId: "1"
     // sessionStatus: "dialing"
@@ -102,7 +103,7 @@ class SIP extends EventEmitter {
     // incomingMessage: null
     // remoteUserOptionsTable: {}
     // analyser: null
-    this.phone.addEventListener('sessionCreated', ev => {
+    phone.addEventListener('sessionCreated', ev => {
       if (!ev) {
         return
       }
@@ -115,7 +116,7 @@ class SIP extends EventEmitter {
         localVideoEnabled: ev.withVideo,
       })
     })
-    this.phone.addEventListener('sessionStatusChanged', ev => {
+    phone.addEventListener('sessionStatusChanged', ev => {
       if (!ev) {
         return
       }
@@ -145,11 +146,11 @@ class SIP extends EventEmitter {
       return
     })
 
-    this.phone.addEventListener('videoClientSessionCreated', ev => {
+    phone.addEventListener('videoClientSessionCreated', ev => {
       if (!ev) {
         return
       }
-      const session = this.phone.getSession(ev.sessionId)
+      const session = phone.getSession(ev.sessionId)
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId]
       this.emit('session-updated', {
@@ -159,7 +160,7 @@ class SIP extends EventEmitter {
         remoteVideoStreamObject: videoSession.remoteStreamObject,
       })
     })
-    this.phone.addEventListener('videoClientSessionEnded', ev => {
+    phone.addEventListener('videoClientSessionEnded', ev => {
       if (!ev) {
         return
       }
@@ -171,20 +172,9 @@ class SIP extends EventEmitter {
       })
     })
 
-    this.phone.addEventListener('rtcErrorOccurred', ev => {
+    phone.addEventListener('rtcErrorOccurred', ev => {
       console.error('sip.phone.rtcErrorOccurred:', ev) // TODO
     })
-
-    this._makeCallOptionsForAndoirOrIos = {
-      rtcOfferConstraints: {
-        mandatory: {
-          OfferToReceiveAudio: true,
-          OfferToReceiveVideo: false,
-          _____SKIP_Adapter_fixRTCOfferOptions_____: true,
-        },
-        optional: [],
-      },
-    }
   }
 
   async connect(sipLoginOption) {
@@ -210,7 +200,15 @@ class SIP extends EventEmitter {
       '/JsSIP ' +
       jssipVersion
     //
-    this.phone.setDefaultCallOptions(sipLoginOption.pbxTurnEnabled ? turnConfig : null)
+    const callOptions = ((sipLoginOption.pbxTurnEnabled && turnConfig) ||
+      {}) as any
+    if (!callOptions.pcConfig) {
+      callOptions.pcConfig = {}
+    }
+    if (!Array.isArray(callOptions.pcConfig.iceServers)) {
+      callOptions.pcConfig.iceServers = []
+    }
+    this.phone.setDefaultCallOptions(callOptions)
     //
     this.phone.startWebRTC({
       url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
@@ -232,11 +230,7 @@ class SIP extends EventEmitter {
   }
 
   createSession(number, opts: any = {}) {
-    const options =
-      Platform.OS === 'android' || Platform.OS === 'ios'
-        ? this._makeCallOptionsForAndoirOrIos
-        : null
-    this.phone.makeCall(number, options, opts.videoEnabled, undefined, '')
+    this.phone.makeCall(number, null, opts.videoEnabled, undefined, '')
   }
 
   hangupSession(sessionId) {

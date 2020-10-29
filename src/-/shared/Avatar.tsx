@@ -47,8 +47,8 @@ const Avatar = observer(
       (typeof source !== 'string' &&
         typeof source?.uri === 'string' &&
         source?.uri) ||
-      (Platform.OS === 'web' && avatarPlaceholder)
-      || avatarPlaceholder
+      (Platform.OS === 'web' && avatarPlaceholder) ||
+      avatarPlaceholder
     const imgSource =
       typeof uri === 'string' ? { uri } : (uri as FastImageSource)
     return (

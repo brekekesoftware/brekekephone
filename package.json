@@ -19,7 +19,7 @@
     "@mdi/js": "5.7.55",
     "@react-native-community/async-storage": "1.6.3",
     "@react-native-community/push-notification-ios": "1.6.1",
-    "brekekejs": "github:brekekesoftware/brekekejs#c1f0276c5a9abb4a0095b2c7793471ee0da3f339",
+    "brekekejs": "github:brekekesoftware/brekekejs#2274f2c10a09e4b8b55b7ae7bc2625643c5258e5",
     "buffer": "5.6.1",
     "circular-json": "0.5.9",
     "crypto-js": "3.3.0",
