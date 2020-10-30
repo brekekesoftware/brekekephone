@@ -24,7 +24,7 @@ const ButtonIcon: FC<{
   path: string
   size?: number
   disabled?: boolean
-  onPress?: Function
+  onPress?(): void
   style?: TouchableOpacityProps['style']
   bgcolor?: string
   noborder?: boolean

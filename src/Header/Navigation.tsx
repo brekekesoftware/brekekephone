@@ -43,7 +43,7 @@ const Navigation = observer(p => {
         return (
           <RnTouchableOpacity
             key={s.key}
-            onPress={active ? null : s.navFn}
+            onPress={active ? undefined : s.navFn}
             style={[css.Btn, active && css.Btn__active]}
           >
             <RnText small style={active && css.Text__active}>

@@ -55,7 +55,7 @@ const ChatInput = p => {
   return (
     <View style={css.ChatInput}>
       <RnTouchableOpacity
-        RnIconress={openFileRnPicker}
+        onPress={openFileRnPicker}
         style={[css.Btn, css.Btn__file]}
       >
         <RnIcon path={mdiPaperclip} size={20} />
@@ -69,7 +69,7 @@ const ChatInput = p => {
       <RnTextInput
         blurOnSubmit={false}
         onChangeText={onTextChange}
-        RnIconelectionChange={onSelectionChange}
+        onSelectionChange={onSelectionChange}
         onSubmitEditing={onTextSubmit}
         style={css.Input}
         value={text}

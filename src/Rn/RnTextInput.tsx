@@ -13,8 +13,12 @@ const css = StyleSheet.create({
   } as any,
 })
 
+export type RnTextInputProps = TextInputProps & {
+  disabled?: boolean
+}
+
 const RnTextInput = forwardRef(
-  ({ keyboardType, style, ...props }: TextInputProps, ref: any) => (
+  ({ keyboardType, style, ...props }: RnTextInputProps, ref: any) => (
     <TextInput
       autoCapitalize='none'
       ref={ref}

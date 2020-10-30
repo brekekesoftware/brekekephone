@@ -114,7 +114,7 @@ const PageProfileSignIn = observer(() => {
         </View>
       </RnTouchableOpacity>
       <RnTouchableOpacity
-        onPress={intlStore.localeLoading ? null : intlStore.selectLocale}
+        onPress={intlStore.localeLoading ? undefined : intlStore.selectLocale}
         style={[css.CornerButton, css.CornerButton__language]}
       >
         <View

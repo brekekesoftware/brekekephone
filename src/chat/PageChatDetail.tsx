@@ -124,7 +124,7 @@ class PageChatDetail extends React.Component<{
           </RnText>
         ) : (
           <RnTouchableOpacity
-            onPress={loadingMore ? null : () => this.loadMore()}
+            onPress={loadingMore ? undefined : () => this.loadMore()}
           >
             <RnText
               bold={!loadingMore}

@@ -19,14 +19,14 @@ interface Menu {
   defaultSubMenuKey: string
   defaultSubMenu: SubMenu
   subMenusMap: { [k: string]: SubMenu }
-  navFn: Function
+  navFn(): void
 }
 interface SubMenu {
   key: string
   label: string
   navFnKey: keyof typeof Nav
   ucRequired?: boolean
-  navFn: Function
+  navFn(): void
 }
 
 const genMenus = () => {

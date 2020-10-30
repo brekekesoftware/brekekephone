@@ -161,7 +161,7 @@ class PageCallManage extends React.Component<{
     const n = callStore.backgroundCalls.length
     return (
       <Container
-        onPress={isVideoEnabled ? this.toggleButtons : null}
+        onPress={isVideoEnabled ? this.toggleButtons : undefined}
         style={[css.Btns, isVideoEnabled && css.Btns__isVideoEnabled]}
       >
         <View style={css.Btns_VerticalMargin} />

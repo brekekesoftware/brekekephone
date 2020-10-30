@@ -57,7 +57,7 @@ const Navigation = ({ menu }) => (
       return (
         <RnTouchableOpacity
           key={m.key}
-          onPress={active ? null : m.navFn}
+          onPress={active ? undefined : m.navFn}
           style={css.Btn}
         >
           <View style={[css.BtnBg, active && css.BtnBg__active]}>

@@ -162,7 +162,7 @@ class PageContactUsers extends React.Component {
                 onPress={
                   authStore.currentProfile.ucEnabled
                     ? () => Nav.goToPageChatDetail({ buddy: u.id })
-                    : null
+                    : undefined
                 }
               >
                 <UserItem

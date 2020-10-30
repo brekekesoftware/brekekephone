@@ -14,8 +14,8 @@ const Image = Image0
 const StatusBar = StatusBar0
 const Switch = Switch0
 const Text = Text0
-const TextInput = TextInput0 as any
-const TouchableOpacity = TouchableOpacity0 as any
+const TextInput = TextInput0
+const TouchableOpacity = TouchableOpacity0
 
 export {
   AsyncStorage as RnAsyncStorage,

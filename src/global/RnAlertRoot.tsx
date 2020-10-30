@@ -79,8 +79,8 @@ const RnAlertR = ({
     message: string | ReactElement
     dismissText?: string | boolean
     confirmText?: string | boolean
-    onConfirm: Function
-    onDismiss: Function
+    onConfirm(): void
+    onDismiss(): void
   }
   if (prompt) {
     const { message, onConfirm, onDismiss, title, ...rest } = prompt
