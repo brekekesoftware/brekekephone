@@ -5,9 +5,9 @@ import React from 'react'
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
 import g from '../global'
-import Alert from '../global/Alert'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import { RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
@@ -79,7 +79,7 @@ class PageChatGroupCreate extends React.Component {
   create = () => {
     const { members, name } = this.state
     if (!name.trim()) {
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`Group name is required`,
       })
       return
@@ -94,7 +94,7 @@ class PageChatGroupCreate extends React.Component {
     g.goToPageChatRecents()
   }
   onCreateFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to create the group chat`,
       err,
     })

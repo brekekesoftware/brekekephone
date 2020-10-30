@@ -2,11 +2,11 @@ import moment from 'moment'
 import { Platform } from 'react-native'
 import { v4 as uuid } from 'react-native-uuid'
 
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import RnAlert from '../global/RnAlert'
 import { intlDebug } from '../intl/intl'
 // @ts-ignore
 import PushNotification from '../native/PushNotification'
@@ -115,7 +115,7 @@ class Api {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`Failed to load PBX users`,
         err,
       })

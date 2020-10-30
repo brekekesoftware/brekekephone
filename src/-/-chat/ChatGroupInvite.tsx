@@ -8,9 +8,9 @@ import { StyleSheet, View } from 'react-native'
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
 import g from '../global'
-import Alert from '../global/Alert'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
@@ -104,7 +104,7 @@ class ChatGroupInvite extends React.Component {
     chatStore.removeGroup(res.id)
   }
   onRejectFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to reject the group chat`,
       err,
     })
@@ -119,7 +119,7 @@ class ChatGroupInvite extends React.Component {
     this.loading = false
   }
   onAcceptFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to accept the group chat`,
       err,
     })

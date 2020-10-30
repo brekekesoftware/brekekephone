@@ -7,9 +7,9 @@ import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 import uc from '../api/uc'
 import ChatInput from '../Footer/ChatInput'
 import g from '../global'
-import Alert from '../global/Alert'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import pickFile from '../native/pickFile'
 import saveBlob from '../native/saveBlob'
@@ -92,7 +92,7 @@ class PageChatDetail extends React.Component<{
         onSelectionChange={this.onSelectionChange}
         onTextChange={this.setEditingText}
         onTextSubmit={this.submitEditingText}
-        openFilePicker={() => pickFile(this.sendFile)}
+        openFileRnPicker={() => pickFile(this.sendFile)}
         text={this.state.editingText}
       />
     )
@@ -264,7 +264,7 @@ class PageChatDetail extends React.Component<{
         window.setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
-        Alert.error({
+        RnAlert.error({
           message: intlDebug`Failed to get recent chats`,
           err,
         })
@@ -289,7 +289,7 @@ class PageChatDetail extends React.Component<{
         chatStore.pushMessages(id, chats)
       })
       .catch(err => {
-        Alert.error({
+        RnAlert.error({
           message: intlDebug`Failed to get more chats`,
           err,
         })
@@ -331,7 +331,7 @@ class PageChatDetail extends React.Component<{
     this.setState({ editingText: '' })
   }
   onSubmitEditingTextFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to send the message`,
       err,
     })
@@ -361,7 +361,7 @@ class PageChatDetail extends React.Component<{
     saveBlob(blob, file.name)
   }
   onAcceptFileFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to accept file`,
       err,
     })
@@ -370,7 +370,7 @@ class PageChatDetail extends React.Component<{
     uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
   onRejectFileFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to reject file`,
       err,
     })
@@ -409,7 +409,7 @@ class PageChatDetail extends React.Component<{
     chatStore.pushMessages(buddyId, res.chat)
   }
   onSendFileFailure = err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to send file`,
       err,
     })

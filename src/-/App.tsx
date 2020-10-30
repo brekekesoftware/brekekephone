@@ -43,13 +43,15 @@ import PageSettingsOther from './-settings/PageSettingsOther'
 import PageSettingsProfile from './-settings/PageSettingsProfile'
 import api from './api'
 import g from './global'
-import Alert from './global/Alert'
 import AuthPBX from './global/AuthPBX'
 import AuthSIP from './global/AuthSIP'
 import authStore from './global/authStore'
 import AuthUC from './global/AuthUC'
 import chatStore from './global/chatStore'
 import contactStore from './global/contactStore'
+import RnAlert from './global/RnAlert'
+import RnAlertRoot from './global/RnAlertRoot'
+import RnPickerRoot from './global/RnPickerRoot'
 import intl from './intl/intl'
 import { setupCallKeep } from './native/callkeep'
 // @ts-ignore
@@ -59,8 +61,6 @@ import { RnStatusBar, RnText } from './Rn'
 import AnimatedSize from './shared/AnimatedSize'
 import CallVideos from './shared/CallVideos'
 import CallVoices from './shared/CallVoices'
-import RootAlert from './shared/RootAlert'
-import RootPicker from './shared/RootPicker'
 import RootStacks from './shared/RootStacks'
 
 // API was a component but had been rewritten to a listener
@@ -77,7 +77,7 @@ AppState.addEventListener('change', () => {
   }
 })
 registerOnUnhandledError(unexpectedErr => {
-  batchRender(() => Alert.error({ unexpectedErr }))
+  batchRender(() => RnAlert.error({ unexpectedErr }))
   return false
 })
 
@@ -100,7 +100,7 @@ const getAudioVideoPermission = () => {
 }
 
 if (Platform.OS === 'web') {
-  Alert.prompt({
+  RnAlert.prompt({
     title: intl`Action Required`,
     message: intl`Brekeke Phone needs your action to work well on browser. Press OK to continue`,
     confirmText: 'OK',
@@ -279,8 +279,8 @@ const App = observer(() => {
       )}
       <View style={css.App_Inner}>
         <RootStacks />
-        <RootPicker />
-        <RootAlert />
+        <RnPickerRoot />
+        <RnAlertRoot />
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
     </View>

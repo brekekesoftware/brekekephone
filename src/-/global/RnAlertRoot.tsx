@@ -3,22 +3,22 @@ import { observer } from 'mobx-react'
 import React, { ReactElement } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import g from '../global'
-import Alert, { ErrorAlert2, PromptAlert } from '../global/Alert'
 import intl from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
+import g from '.'
+import RnAlert, { ErrorRnAlert2, PromptRnAlert } from './RnAlert'
 
 const css = StyleSheet.create({
-  RootAlert: {
+  RootRnAlert: {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  RootAlert_Backdrop: {
+  RootRnAlert_Backdrop: {
     backgroundColor: g.layerBg,
   },
-  RootAlert_Modal: {
+  RootRnAlert_Modal: {
     width: '90%',
     maxWidth: g.maxModalWidth,
     borderRadius: g.borderRadius,
@@ -26,49 +26,49 @@ const css = StyleSheet.create({
     backgroundColor: g.bg,
     ...g.boxShadow,
   },
-  RootAlert_Message: {
+  RootRnAlert_Message: {
     marginTop: 15,
   },
-  RootAlert_Err: {
+  RootRnAlert_Err: {
     alignSelf: 'flex-start',
   },
-  RootAlert_ErrTxt: {
+  RootRnAlert_ErrTxt: {
     color: g.colors.danger,
     fontWeight: g.fontWeight,
   },
-  RootAlert_ErrTxt__title: {
+  RootRnAlert_ErrTxt__title: {
     fontWeight: 'bold',
   },
-  RootAlert_Btns: {
+  RootRnAlert_Btns: {
     alignSelf: 'flex-end',
     flexDirection: 'row',
     top: 5,
     left: 5,
     marginTop: 15,
   },
-  RootAlert_Btn: {
+  RootRnAlert_Btn: {
     borderRadius: g.borderRadius,
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: g.colors.primary,
     width: 100,
   },
-  RootAlert_Btn__cancel: {
+  RootRnAlert_Btn__cancel: {
     backgroundColor: g.revBg,
     marginRight: 10,
   },
-  RootAlert_BtnTxt: {
+  RootRnAlert_BtnTxt: {
     textAlign: 'center',
     color: g.revColor,
   },
 })
 
-const AlertR = ({
+const RnAlertR = ({
   error,
   prompt,
 }: {
-  error?: ErrorAlert2
-  prompt?: PromptAlert
+  error?: ErrorRnAlert2
+  prompt?: PromptRnAlert
 }) => {
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
@@ -88,14 +88,14 @@ const AlertR = ({
       title,
       message:
         typeof message === 'string' ? (
-          <RnText style={css.RootAlert_Message}>{message}</RnText>
+          <RnText style={css.RootRnAlert_Message}>{message}</RnText>
         ) : (
-          <View style={css.RootAlert_Message}>{message}</View>
+          <View style={css.RootRnAlert_Message}>{message}</View>
         ),
       dismissText: intl`CANCEL`,
       confirmText: intl`REMOVE`,
-      onConfirm: flow([Alert.dismiss, onConfirm as any].filter(f => f)),
-      onDismiss: flow([Alert.dismiss, onDismiss as any].filter(f => f)),
+      onConfirm: flow([RnAlert.dismiss, onConfirm as any].filter(f => f)),
+      onDismiss: flow([RnAlert.dismiss, onDismiss as any].filter(f => f)),
       ...rest,
     }
   } else if (error) {
@@ -105,26 +105,26 @@ const AlertR = ({
       title: intl`Error`,
       message: (
         <React.Fragment>
-          <RnText style={css.RootAlert_Message}>
+          <RnText style={css.RootRnAlert_Message}>
             {unexpectedErr ? intl`An unexpected error occurred` : message}
           </RnText>
           {!!errMessage && <RnText small>{errMessage}</RnText>}
         </React.Fragment>
       ),
       confirmText: intl`OK`,
-      onConfirm: Alert.dismiss,
-      onDismiss: Alert.dismiss,
+      onConfirm: RnAlert.dismiss,
+      onDismiss: RnAlert.dismiss,
       ...rest,
     }
   } else {
     return null
   }
   return (
-    <View style={[StyleSheet.absoluteFill, css.RootAlert]}>
+    <View style={[StyleSheet.absoluteFill, css.RootRnAlert]}>
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
-          css.RootAlert_Backdrop,
+          css.RootRnAlert_Backdrop,
           { opacity: a.opacity },
         ]}
       >
@@ -135,7 +135,7 @@ const AlertR = ({
       </Animated.View>
       <Animated.View
         style={[
-          css.RootAlert_Modal,
+          css.RootRnAlert_Modal,
           {
             transform: [{ translateY: a.translateY }],
           },
@@ -143,22 +143,22 @@ const AlertR = ({
       >
         <RnText subTitle>{props.title}</RnText>
         {props.message}
-        <View style={css.RootAlert_Btns}>
+        <View style={css.RootRnAlert_Btns}>
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              style={[css.RootAlert_Btn, css.RootAlert_Btn__cancel]}
+              style={[css.RootRnAlert_Btn, css.RootRnAlert_Btn__cancel]}
             >
-              <RnText small style={css.RootAlert_BtnTxt}>
+              <RnText small style={css.RootRnAlert_BtnTxt}>
                 {props.dismissText}
               </RnText>
             </RnTouchableOpacity>
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            style={css.RootAlert_Btn}
+            style={css.RootRnAlert_Btn}
           >
-            <RnText small style={css.RootAlert_BtnTxt}>
+            <RnText small style={css.RootRnAlert_BtnTxt}>
               {props.confirmText}
             </RnText>
           </RnTouchableOpacity>
@@ -168,11 +168,11 @@ const AlertR = ({
   )
 }
 
-const RootAlert = observer(() => {
-  if (!Alert.alertsCount || !Alert.alerts[0]) {
+const RootRnAlert = observer(() => {
+  if (!RnAlert.alertsCount || !RnAlert.alerts[0]) {
     return null
   }
-  return <AlertR {...Alert.alerts[0]} />
+  return <RnAlertR {...RnAlert.alerts[0]} />
 })
 
-export default RootAlert
+export default RootRnAlert

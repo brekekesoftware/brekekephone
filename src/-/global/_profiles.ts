@@ -7,7 +7,7 @@ import { intlDebug } from '../intl/intl'
 import { RnAsyncStorage } from '../Rn'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
-import Alert from './Alert'
+import RnAlert from './RnAlert'
 
 let resolveFn: Function | null
 const profilesLoaded = new Promise(resolve => {
@@ -113,7 +113,7 @@ g.extends({
         JSON.stringify({ profiles, profileData }),
       )
     } catch (err) {
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`Failed to save accounts to local storage`,
         err,
       })

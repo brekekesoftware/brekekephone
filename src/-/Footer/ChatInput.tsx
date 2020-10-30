@@ -49,13 +49,13 @@ const ChatInput = p => {
     onSelectionChange,
     onTextChange,
     onTextSubmit,
-    openFilePicker,
+    openFileRnPicker,
     text,
   } = p
   return (
     <View style={css.ChatInput}>
       <RnTouchableOpacity
-        RnIconress={openFilePicker}
+        RnIconress={openFileRnPicker}
         style={[css.Btn, css.Btn__file]}
       >
         <RnIcon path={mdiPaperclip} size={20} />

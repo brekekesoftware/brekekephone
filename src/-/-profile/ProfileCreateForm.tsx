@@ -5,8 +5,8 @@ import React from 'react'
 import { View } from 'react-native'
 
 import g from '../global'
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
+import RnAlert from '../global/RnAlert'
 import intl from '../intl/intl'
 import { RnText } from '../Rn'
 import Layout from '../shared/Layout'
@@ -23,7 +23,7 @@ const ProfileCreateForm = observer(props => {
       addingPark: '',
     },
     resetAllFields: () => {
-      Alert.prompt({
+      RnAlert.prompt({
         title: intl`Reset`,
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
@@ -48,7 +48,7 @@ const ProfileCreateForm = observer(props => {
       })
     },
     onAddingParkRemove: i => {
-      Alert.prompt({
+      RnAlert.prompt({
         title: intl`Remove Park`,
         message: (
           <React.Fragment>
@@ -82,7 +82,7 @@ const ProfileCreateForm = observer(props => {
         props.onBack()
         return
       }
-      Alert.prompt({
+      RnAlert.prompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,
@@ -178,7 +178,7 @@ const ProfileCreateForm = observer(props => {
           },
           {
             disabled: props.footerLogout,
-            type: 'Picker',
+            type: 'RnPicker',
             name: 'pbxPhoneIndex',
             label: intl`PHONE`,
             rule: 'required',

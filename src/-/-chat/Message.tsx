@@ -13,8 +13,8 @@ import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import g from '../global'
-import Alert from '../global/Alert'
-import Picker from '../global/Picker'
+import RnAlert from '../global/RnAlert'
+import RnPicker from '../global/RnPicker'
 import intl, { intlDebug } from '../intl/intl'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '../Rn'
 
@@ -175,7 +175,7 @@ class Message extends React.Component<{
       return
     }
     if (!Linking.canOpenURL(url)) {
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`Can not open the url`,
       })
     } else {
@@ -183,7 +183,7 @@ class Message extends React.Component<{
     }
   }
   onLinkLongPress = url => {
-    Picker.open({
+    RnPicker.open({
       options: [
         {
           key: 2,
@@ -206,11 +206,11 @@ class Message extends React.Component<{
           icon: mdiDotsHorizontal,
         },
       ],
-      onSelect: k => this.onPickerSelect(k, url),
+      onSelect: k => this.onRnPickerSelect(k, url),
     })
   }
   onMessagePress = () => {
-    Picker.open({
+    RnPicker.open({
       options: [
         {
           key: 0,
@@ -223,11 +223,11 @@ class Message extends React.Component<{
           icon: mdiDotsHorizontal,
         },
       ],
-      onSelect: this.onPickerSelect,
+      onSelect: this.onRnPickerSelect,
     })
   }
 
-  onPickerSelect = (k, url) => {
+  onRnPickerSelect = (k, url) => {
     const message = k === 0 || k === 1 ? this.props.text : url
     if (k === 0 || k === 2) {
       Clipboard.setString(message)

@@ -1,6 +1,6 @@
 import { mdiDotsHorizontal } from '@mdi/js'
 
-import Alert from '../global/Alert'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 
 // Need to declare native intl here
@@ -28,7 +28,7 @@ export const pickFileNativeOptions = () => [
   },
 ]
 export const onPickFileNativeError = err => {
-  Alert.error({
+  RnAlert.error({
     message: intlDebug`Failed to pick file from system`,
     err,
   })

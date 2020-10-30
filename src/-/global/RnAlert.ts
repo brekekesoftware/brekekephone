@@ -3,45 +3,45 @@ import { ReactElement } from 'react'
 
 import { IntlDebug } from '../intl/intl'
 
-type CommonAlertFields = {
+type CommonRnAlertFields = {
   confirmText?: string | boolean
   dismissText?: string | boolean
 }
 
-export type PromptAlert = CommonAlertFields & {
+export type PromptRnAlert = CommonRnAlertFields & {
   title: string | ReactElement
   message: string | ReactElement
   onConfirm?: Function
   onDismiss?: Function
 }
-export type ErrorAlert = CommonAlertFields & {
+export type ErrorRnAlert = CommonRnAlertFields & {
   message?: IntlDebug
   err?: Error
   unexpectedErr?: Error
 }
-export type ErrorAlert2 = Omit<ErrorAlert, 'message'> & {
+export type ErrorRnAlert2 = Omit<ErrorRnAlert, 'message'> & {
   message?: string
 }
 
-export type Alert =
+export type RnAlert =
   | {
-      prompt: PromptAlert
+      prompt: PromptRnAlert
     }
   | {
-      error: ErrorAlert2
+      error: ErrorRnAlert2
     }
 
-export class AlertStore {
+export class RnAlertStore {
   // Need to put `alerts` out of the observable
   //  because ReactElement can not stay in the mobx state
   @observable alertsCount = 0
-  alerts: Alert[] = []
+  alerts: RnAlert[] = []
 
-  @action prompt = (prompt: PromptAlert) => {
+  @action prompt = (prompt: PromptRnAlert) => {
     this.alerts.push({ prompt })
     this.alertsCount = this.alerts.length
   }
-  @action error = (a: ErrorAlert) => {
+  @action error = (a: ErrorRnAlert) => {
     // Log error to save it to the debug log
     // Convert error message to string if it was constructed using intlDebug
     const err = a.unexpectedErr || a.err
@@ -63,4 +63,4 @@ export class AlertStore {
   }
 }
 
-export default new AlertStore()
+export default new RnAlertStore()

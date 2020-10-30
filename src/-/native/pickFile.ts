@@ -1,46 +1,46 @@
 import { Platform } from 'react-native'
-import DocumentPicker0 from 'react-native-document-picker'
+import DocumentRnPicker0 from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
-import * as ImagePicker from 'react-native-full-image-picker'
+import * as ImageRnPicker from 'react-native-full-image-picker'
 import { v4 as uuid } from 'react-native-uuid'
 
-import Picker from '../global/Picker'
+import RnPicker from '../global/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
 
-ImagePicker.AlbumView.autoConvertPath = true
-ImagePicker.AlbumListView.autoConvertPath = true
+ImageRnPicker.AlbumView.autoConvertPath = true
+ImageRnPicker.AlbumListView.autoConvertPath = true
 
-const DocumentPicker = DocumentPicker0 as any
+const DocumentRnPicker = DocumentRnPicker0 as any
 
 const actionSheetHandlers = [
   () =>
     new Promise(resolve => {
-      ImagePicker.getCamera({
+      ImageRnPicker.getCamera({
         callback: arr => resolve(arr[0]),
         maxSize: 1,
       })
     }),
   () =>
     new Promise(resolve => {
-      ImagePicker.getVideo({
+      ImageRnPicker.getVideo({
         callback: arr => resolve(arr[0]),
       })
     }),
   () =>
     new Promise(resolve => {
-      ImagePicker.getAlbum({
+      ImageRnPicker.getAlbum({
         callback: arr => resolve(arr[0]),
         maxSize: 1,
       })
     }),
   () =>
-    DocumentPicker.pick({
-      type: [DocumentPicker.types.allFiles],
+    DocumentRnPicker.pick({
+      type: [DocumentRnPicker.types.allFiles],
     }),
 ]
 
 const pickFile = cb =>
-  Picker.open({
+  RnPicker.open({
     options: pickFileNativeOptions(),
     onSelect: i => pickFileOnSelect(i, cb),
   })
@@ -55,7 +55,7 @@ const pickFileOnSelect = async (i, cb) => {
   try {
     file = await fn()
   } catch (err) {
-    if (!DocumentPicker.isCancel(err)) {
+    if (!DocumentRnPicker.isCancel(err)) {
       onPickFileNativeError(err)
     }
   }

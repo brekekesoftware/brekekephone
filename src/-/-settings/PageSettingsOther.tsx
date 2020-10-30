@@ -4,8 +4,8 @@ import React, { Component } from 'react'
 
 import uc from '../api/uc'
 import g from '../global'
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
@@ -42,7 +42,7 @@ class PageSettingsOther extends Component {
         })
       })
       .catch(err => {
-        Alert.error({
+        RnAlert.error({
           message: intlDebug`Failed to change UC status`,
           err,
         })
@@ -91,7 +91,7 @@ class PageSettingsOther extends Component {
                 { key: 'offline', label: intl`Invisible` },
                 { key: 'busy', label: intl`Busy` },
               ]}
-              type='Picker'
+              type='RnPicker'
               value={this.state.status}
             />
             <Field

@@ -1,12 +1,12 @@
 import g from '../global'
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import pbx from './pbx'
 
 const updatePhoneIndex = () =>
   updatePhoneIndexWithoutCatch().catch(err => {
-    Alert.error({
+    RnAlert.error({
       message: intlDebug`Failed to update phone index`,
       err,
     })
@@ -48,7 +48,7 @@ const updatePhoneIndexWithoutCatch = async () => {
     await setExtensionProperties()
   } else {
     return new Promise(resolve => {
-      Alert.prompt({
+      RnAlert.prompt({
         title: intl`Warning`,
         message: intl`This phone index is already in use. Do you want to continue?`,
         onConfirm: () => {
@@ -58,7 +58,7 @@ const updatePhoneIndexWithoutCatch = async () => {
               resolve(phone)
             })
             .catch(err => {
-              Alert.error({
+              RnAlert.error({
                 message: intlDebug`Failed to set extension properties`,
                 err,
               })

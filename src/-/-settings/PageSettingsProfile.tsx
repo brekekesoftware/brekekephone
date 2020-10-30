@@ -3,8 +3,8 @@ import React from 'react'
 
 import ProfileCreateForm from '../-profile/ProfileCreateForm'
 import g from '../global'
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
+import RnAlert from '../global/RnAlert'
 import intl from '../intl/intl'
 
 const PageSettingsProfile = observer(() => (
@@ -15,7 +15,7 @@ const PageSettingsProfile = observer(() => (
       if (!hasUnsavedChanges) {
         g.backToPageContactPhonebook()
       }
-      Alert.prompt({
+      RnAlert.prompt({
         title: intl`Save Account`,
         message: intl`Do you want to update your account?\nYou'll need to sign out and then sign in again.`,
         onConfirm: () => {

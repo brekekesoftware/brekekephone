@@ -12,11 +12,11 @@ import { StyleSheet, View } from 'react-native'
 
 import pbx from '../api/pbx'
 import g from '../global'
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
-import Picker from '../global/Picker'
+import RnAlert from '../global/RnAlert'
+import RnPicker from '../global/RnPicker'
 import intl, { intlDebug } from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
@@ -65,7 +65,7 @@ class PageContactPhonebook extends React.Component {
         cb(ct)
       })
       .catch(err => {
-        Alert.error({
+        RnAlert.error({
           message: intlDebug`Failed to load contact detail for ${id}`,
           err,
         })
@@ -77,7 +77,7 @@ class PageContactPhonebook extends React.Component {
       callStore.startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(contact)
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`This contact doesn't have any phone number`,
       })
     }
@@ -136,7 +136,7 @@ class PageContactPhonebook extends React.Component {
       this.callRequest(numbers[0].value, u)
       return
     }
-    Picker.open({
+    RnPicker.open({
       options: numbers.map(i => ({
         key: i.value,
         label: i.value,

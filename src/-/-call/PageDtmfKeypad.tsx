@@ -4,7 +4,7 @@ import React from 'react'
 
 import sip from '../api/sip'
 import g from '../global'
-import Alert from '../global/Alert'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import Layout from '../shared/Layout'
 import KeyPad from './KeyPad'
@@ -30,7 +30,7 @@ class PageDtmfKeypad extends React.Component<{
   callVoice = () => {
     this.txt = this.txt.trim()
     if (!this.txt) {
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`No target`,
       })
       return

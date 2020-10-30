@@ -7,9 +7,9 @@ import {
 } from 'react-native'
 import RNCallKeep0 from 'react-native-callkeep'
 
-import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import callStore, { uuidFromPN } from '../global/callStore'
+import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import { getLastPN } from './PushNotification-parse'
 
@@ -60,7 +60,7 @@ export const setupCallKeep = async () => {
       if (AppState.currentState !== 'active') {
         return
       }
-      Alert.error({
+      RnAlert.error({
         message: intlDebug`Can not get permission to show call notification`,
         err,
       })

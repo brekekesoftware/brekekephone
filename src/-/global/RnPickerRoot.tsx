@@ -3,67 +3,67 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import g from '../global'
-import Picker, { PickerOption } from '../global/Picker'
 import intl from '../intl/intl'
 import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
+import g from '.'
+import RnPicker, { RnPickerOption } from './RnPicker'
 
 const css = StyleSheet.create({
-  Picker: {
+  RnPicker: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  Picker_Backdrop: {
+  RnPicker_Backdrop: {
     backgroundColor: g.layerBg,
   },
-  Picker_Inner: {
+  RnPicker_Inner: {
     position: 'absolute',
     bottom: 15,
     width: '90%',
     maxWidth: g.maxModalWidth,
     maxHeight: '100%',
   },
-  Picker_Options: {
+  RnPicker_Options: {
     borderRadius: g.borderRadius,
     backgroundColor: g.bg,
     overflow: 'hidden',
   },
-  Picker_Option: {
+  RnPicker_Option: {
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
     borderColor: g.hoverBg,
   },
-  Picker_Option__last: {
+  RnPicker_Option__last: {
     borderBottomWidth: 0,
   },
-  Picker_Option__selected: {
+  RnPicker_Option__selected: {
     backgroundColor: g.hoverBg,
   },
-  Picker_Option__cancel: {
+  RnPicker_Option__cancel: {
     marginTop: 15,
     borderBottomWidth: 0,
     borderRadius: g.borderRadius,
     backgroundColor: g.bg,
   },
-  Picker_Text__selected: {
+  RnPicker_Text__selected: {
     fontWeight: 'bold',
     color: g.colors.primary,
   },
-  Picker_Text__cancel: {
+  RnPicker_Text__cancel: {
     fontWeight: 'bold',
     color: g.colors.danger,
   },
-  Picker_Icon: {
+  RnPicker_Icon: {
     position: 'absolute',
     top: 10,
     right: 10,
   },
 })
 
-const PickerR = (p: PickerOption) => {
+const RnPickerR = (p: RnPickerOption) => {
   const backdropCss = useAnimationOnDidMount({
     opacity: [0, 1],
   })
@@ -71,17 +71,17 @@ const PickerR = (p: PickerOption) => {
     translateY: [Dimensions.get('screen').height, 0],
   })
   return (
-    <View style={[StyleSheet.absoluteFill, css.Picker]}>
+    <View style={[StyleSheet.absoluteFill, css.RnPicker]}>
       <Animated.View
-        style={[StyleSheet.absoluteFill, css.Picker_Backdrop, backdropCss]}
+        style={[StyleSheet.absoluteFill, css.RnPicker_Backdrop, backdropCss]}
       >
         <RnTouchableOpacity
-          onPress={Picker.dismiss}
+          onPress={RnPicker.dismiss}
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
-      <Animated.ScrollView style={[css.Picker_Inner, { transform: [y] }]}>
-        <View style={css.Picker_Options}>
+      <Animated.ScrollView style={[css.RnPicker_Inner, { transform: [y] }]}>
+        <View style={css.RnPicker_Options}>
           {p.options.map((o, i) => {
             const isSelected = `${p.selectedKey}` === `${o.key}`
             return (
@@ -89,15 +89,15 @@ const PickerR = (p: PickerOption) => {
                 key={i}
                 onPress={() => {
                   p.onSelect(o.key)
-                  Picker.dismiss()
+                  RnPicker.dismiss()
                 }}
                 style={[
-                  css.Picker_Option,
-                  i + 1 === p.options.length && css.Picker_Option__last,
-                  isSelected && css.Picker_Option__selected,
+                  css.RnPicker_Option,
+                  i + 1 === p.options.length && css.RnPicker_Option__last,
+                  isSelected && css.RnPicker_Option__selected,
                 ]}
               >
-                <RnText style={isSelected && css.Picker_Text__selected}>
+                <RnText style={isSelected && css.RnPicker_Text__selected}>
                   {o.label}
                 </RnText>
                 <RnIcon
@@ -106,23 +106,23 @@ const PickerR = (p: PickerOption) => {
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
                   }
-                  style={css.Picker_Icon}
+                  style={css.RnPicker_Icon}
                 />
               </RnTouchableOpacity>
             )
           })}
         </View>
         <RnTouchableOpacity
-          onPress={Picker.dismiss}
-          style={[css.Picker_Option, css.Picker_Option__cancel]}
+          onPress={RnPicker.dismiss}
+          style={[css.RnPicker_Option, css.RnPicker_Option__cancel]}
         >
-          <RnText style={css.Picker_Text__cancel}>
+          <RnText style={css.RnPicker_Text__cancel}>
             {p.cancelLabel || intl`Cancel`}
           </RnText>
           <RnIcon
             color={g.colors.danger}
             path={mdiClose}
-            style={css.Picker_Icon}
+            style={css.RnPicker_Icon}
           />
         </RnTouchableOpacity>
       </Animated.ScrollView>
@@ -130,8 +130,8 @@ const PickerR = (p: PickerOption) => {
   )
 }
 
-const RootPicker = observer(
-  () => Picker.currentPicker && <PickerR {...Picker.currentPicker} />,
+const RootRnPicker = observer(
+  () => RnPicker.currentRnPicker && <RnPickerR {...RnPicker.currentRnPicker} />,
 )
 
-export default RootPicker
+export default RootRnPicker

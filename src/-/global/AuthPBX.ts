@@ -2,8 +2,8 @@ import { observe } from 'mobx'
 
 import pbx from '../api/pbx'
 import { intlDebug } from '../intl/intl'
-import Alert from './Alert'
 import authStore from './authStore'
+import RnAlert from './RnAlert'
 
 class AuthPBX {
   clearObserve: any
@@ -28,7 +28,7 @@ class AuthPBX {
       .catch(err => {
         authStore.pbxState = 'failure'
         authStore.pbxTotalFailure += 1
-        Alert.error({
+        RnAlert.error({
           message: intlDebug`Failed to connect to pbx`,
           err,
         })
