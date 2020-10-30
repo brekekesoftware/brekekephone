@@ -5,6 +5,7 @@ import React from 'react'
 import sip from '../api/sip'
 import g from '../global'
 import RnAlert from '../global/RnAlert'
+import RnKeyboard from '../global/RnKeyboard'
 import intl, { intlDebug } from '../intl/intl'
 import Layout from '../shared/Layout'
 import KeyPad from './KeyPad'
@@ -51,7 +52,7 @@ class PageDtmfKeypad extends React.Component<{
         <ShowNumber
           refInput={this.txtRef}
           selectionChange={
-            g.isKeyboardShowing
+            RnKeyboard.isKeyboardShowing
               ? null
               : e => {
                   Object.assign(this.txtSelection, {
@@ -65,7 +66,7 @@ class PageDtmfKeypad extends React.Component<{
           }}
           value={this.txt}
         />
-        {!g.isKeyboardShowing && (
+        {!RnKeyboard.isKeyboardShowing && (
           <KeyPad
             callVoice={this.callVoice}
             onPressNumber={v => {

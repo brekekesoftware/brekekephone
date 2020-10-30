@@ -1,4 +1,5 @@
 import $ from './_'
+import RnKeyboard from './RnKeyboard'
 
 $.extends({
   observable: {
@@ -21,7 +22,7 @@ $.extends({
   },
   registerStacks: ({ isRoot, ...pages }) => {
     const fnMap = Object.entries(pages).reduce((m, [k, v]) => {
-      const fn = $.waitKeyboard(stack => {
+      const fn = RnKeyboard.waitKeyboard(stack => {
         // Prevent multiple stacks from opening at the same time
         if ($.stackAnimating) {
           return
@@ -48,7 +49,7 @@ $.extends({
         })
         $.openStack(_stack)
       })
-      const backFn = $.waitKeyboard(() => {
+      const backFn = RnKeyboard.waitKeyboard(() => {
         $.set('stacks', s => {
           s.pop()
           return s

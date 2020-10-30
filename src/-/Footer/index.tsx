@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import g from '../global'
+import RnKeyboard from '../global/RnKeyboard'
 import { toLowerCaseFirstChar } from '../utils/string'
 import { arrToMap } from '../utils/toMap'
 import Actions from './Actions'
@@ -52,7 +53,8 @@ const Footer = observer(props => {
   const { onNext, render } = fabProps
   if (
     !render &&
-    ((!menu && !onNext && !g.isKeyboardShowing) || g.isKeyboardAnimating)
+    ((!menu && !onNext && !RnKeyboard.isKeyboardShowing) ||
+      RnKeyboard.isKeyboardAnimating)
   ) {
     return null
   }
@@ -60,12 +62,12 @@ const Footer = observer(props => {
     <View
       style={[
         css.Footer,
-        (render || !g.isKeyboardShowing) && css.Footer__noKeyboard,
+        (render || !RnKeyboard.isKeyboardShowing) && css.Footer__noKeyboard,
       ]}
     >
       {render ? (
         render()
-      ) : g.isKeyboardShowing ? (
+      ) : RnKeyboard.isKeyboardShowing ? (
         <ToggleKeyboard {...fabProps} />
       ) : onNext ? (
         <View style={css.ActionsOuter}>
@@ -76,7 +78,7 @@ const Footer = observer(props => {
           <View style={css.ActionsSpacing} />
         </View>
       ) : null}
-      {!g.isKeyboardShowing && menu && <Navigation menu={menu} />}
+      {!RnKeyboard.isKeyboardShowing && menu && <Navigation menu={menu} />}
     </View>
   )
 })

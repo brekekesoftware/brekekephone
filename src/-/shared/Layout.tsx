@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import Footer from '../Footer'
-import g from '../global'
+import RnKeyboard from '../global/RnKeyboard'
 import Header from '../Header'
 import { toLowerCaseFirstChar } from '../utils/string'
 
@@ -75,7 +75,7 @@ const Layout = observer(props => {
   let footerSpace = getBottomSpace()
   if (props.fabRender) {
     footerSpace += 40
-  } else if (!g.isKeyboardShowing) {
+  } else if (!RnKeyboard.isKeyboardShowing) {
     if (props.menu) {
       footerSpace += 48
     }

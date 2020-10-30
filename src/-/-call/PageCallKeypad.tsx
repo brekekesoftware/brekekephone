@@ -2,9 +2,9 @@ import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 
-import g from '../global'
 import callStore from '../global/callStore'
 import RnAlert from '../global/RnAlert'
+import RnKeyboard from '../global/RnKeyboard'
 import intl, { intlDebug } from '../intl/intl'
 import Layout from '../shared/Layout'
 import KeyPad from './KeyPad'
@@ -34,7 +34,7 @@ class PageCallKeypad extends React.Component {
     return (
       <Layout
         description={intl`Keypad dial manually`}
-        fabOnNext={g.isKeyboardShowing ? this.callVoice : null}
+        fabOnNext={RnKeyboard.isKeyboardShowing ? this.callVoice : null}
         fabOnNextText={intl`DIAL`}
         menu='call'
         subMenu='keypad'
@@ -43,7 +43,7 @@ class PageCallKeypad extends React.Component {
         <ShowNumber
           refInput={this.txtRef}
           selectionChange={
-            g.isKeyboardShowing
+            RnKeyboard.isKeyboardShowing
               ? null
               : e => {
                   Object.assign(this.txtSelection, {
@@ -57,7 +57,7 @@ class PageCallKeypad extends React.Component {
           }}
           value={this.txt}
         />
-        {!g.isKeyboardShowing && (
+        {!RnKeyboard.isKeyboardShowing && (
           <KeyPad
             callVoice={this.callVoice}
             onPressNumber={v => {

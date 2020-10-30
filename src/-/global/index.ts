@@ -1,4 +1,3 @@
-import './__keyboard'
 import './__stacker'
 import './_profiles'
 
@@ -7,13 +6,14 @@ import { BackHandler, Keyboard } from 'react-native'
 import v from '../variables'
 import g from './_'
 import RnAlert from './RnAlert'
+import RnKeyboard from './RnKeyboard'
 import RnPicker from './RnPicker'
 
 g.extends(v)
 
 // Handle android hardware back button press
 BackHandler.addEventListener('hardwareBackPress', () => {
-  if (g.isKeyboardShowing) {
+  if (RnKeyboard.isKeyboardShowing) {
     Keyboard.dismiss()
     return true
   }

@@ -4,6 +4,7 @@ import React from 'react'
 import { Keyboard, Platform, StyleSheet } from 'react-native'
 
 import g from '../global'
+import RnKeyboard from '../global/RnKeyboard'
 import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import AnimatedSize from '../shared/AnimatedSize'
 
@@ -27,20 +28,27 @@ const css = StyleSheet.create({
 })
 
 const ToggleKeyboard = observer(({ onShowKeyboard }) => {
-  if (Platform.OS === 'web' || (!g.isKeyboardShowing && !onShowKeyboard)) {
+  if (
+    Platform.OS === 'web' ||
+    (!RnKeyboard.isKeyboardShowing && !onShowKeyboard)
+  ) {
     return null
   }
   return (
     <AnimatedSize animateWidth>
       <RnTouchableOpacity
-        onPress={g.isKeyboardShowing ? Keyboard.dismiss : onShowKeyboard}
+        onPress={
+          RnKeyboard.isKeyboardShowing ? Keyboard.dismiss : onShowKeyboard
+        }
         style={css.ToggleKeyboard}
       >
         {/* Fix button size does not equal with the Actions */}
         <RnText style={css.Text}>{'\u200a'}</RnText>
         <RnIcon
           path={
-            g.isKeyboardShowing ? mdiKeyboardOffOutline : mdiKeyboardOutline
+            RnKeyboard.isKeyboardShowing
+              ? mdiKeyboardOffOutline
+              : mdiKeyboardOutline
           }
         />
       </RnTouchableOpacity>
