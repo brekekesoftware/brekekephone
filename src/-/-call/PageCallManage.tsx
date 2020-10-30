@@ -21,6 +21,7 @@ import { Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import callStore from '../global/callStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnTouchableOpacity } from '../Rn'
 import BrekekeGradient from '../shared/BrekekeGradient'
@@ -90,7 +91,7 @@ class PageCallManage extends React.Component<{
   componentDidUpdate() {
     this.hideButtonsIfVideo()
     if (!callStore.currentCall && !callStore.backgroundCalls.length) {
-      g.backToPageCallRecents()
+      Nav.backToPageCallRecents()
     }
   }
 
@@ -124,7 +125,7 @@ class PageCallManage extends React.Component<{
           : null
       }
       noScroll
-      onBack={g.backToPageCallRecents}
+      onBack={Nav.backToPageCallRecents}
       title={c?.title || intl`Connection failed`}
       transparent={!c?.transferring}
     >
@@ -172,7 +173,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              onPress={g.goToPageTransferDial}
+              onPress={Nav.goToPageTransferDial}
               path={mdiCallSplit}
               size={40}
               textcolor='white'
@@ -182,7 +183,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`PARK`}
               noborder
-              onPress={g.goToPageCallParks2}
+              onPress={Nav.goToPageCallParks2}
               path={mdiAlphaPCircle}
               size={40}
               textcolor='white'
@@ -241,7 +242,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`DTMF`}
               noborder
-              onPress={g.goToPageDtmfKeypad}
+              onPress={Nav.goToPageDtmfKeypad}
               path={mdiDialpad}
               size={40}
               textcolor='white'
@@ -261,7 +262,7 @@ class PageCallManage extends React.Component<{
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={g.goToPageBackgroundCalls}
+            onCreateBtnPress={Nav.goToPageBackgroundCalls}
             value={intl`${n} other calls are in background`}
           />
         )}

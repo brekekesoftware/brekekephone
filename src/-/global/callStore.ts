@@ -6,8 +6,8 @@ import IncallManager from 'react-native-incall-manager'
 
 import sip from '../api/sip'
 import { arrToMap } from '../utils/toMap'
-import g from '.'
 import Call from './Call'
+import Nav from './Nav'
 
 export const uuidFromPN = '00000000-0000-0000-0000-000000000000'
 
@@ -126,7 +126,7 @@ export class CallStore {
       c.toggleHold()
     }
     this._currentCallId = c.id
-    g.backToPageBackgroundCalls()
+    Nav.backToPageBackgroundCalls()
   }
 
   @action answerCall = (c: Call, options?: object) => {
@@ -136,7 +136,7 @@ export class CallStore {
       videoEnabled: c.remoteVideoEnabled,
       ...options,
     })
-    g.goToPageCallManage()
+    Nav.goToPageCallManage()
     if (c.callkeep) {
       c.callkeep = false
       RNCallKeep.endCall(c.uuid)
@@ -150,7 +150,7 @@ export class CallStore {
   _startCallIntervalId = 0
   startCall = (number: string, options = {}) => {
     sip.createSession(number, options)
-    g.goToPageCallManage()
+    Nav.goToPageCallManage()
     // Auto update _currentCallId
     this._currentCallId = undefined
     const prevIds = arrToMap(this._calls, 'id')

@@ -1,4 +1,3 @@
-import './__stacker'
 import './_profiles'
 
 import { BackHandler, Keyboard } from 'react-native'
@@ -8,6 +7,7 @@ import g from './_'
 import RnAlert from './RnAlert'
 import RnKeyboard from './RnKeyboard'
 import RnPicker from './RnPicker'
+import RnStacker from './RnStacker'
 
 g.extends(v)
 
@@ -25,8 +25,8 @@ BackHandler.addEventListener('hardwareBackPress', () => {
     RnPicker.dismiss()
     return true
   }
-  if (g.stacks.length > 1) {
-    g.stacks.pop()
+  if (RnStacker.stacks.length > 1) {
+    RnStacker.stacks.pop()
     return true
   }
   return false

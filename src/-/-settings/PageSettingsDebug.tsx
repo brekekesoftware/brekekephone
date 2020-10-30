@@ -5,8 +5,8 @@ import moment from 'moment'
 import React, { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 
-import g from '../global'
 import debugStore from '../global/debugStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnText } from '../Rn'
 import Field from '../shared/Field'
@@ -47,7 +47,7 @@ class PageSettingsDebug extends Component {
               ]
             : null
         }
-        onBack={g.backToPageProfileSignIn}
+        onBack={Nav.backToPageProfileSignIn}
         title={intl`Debug`}
       >
         {Platform.OS !== 'web' && (

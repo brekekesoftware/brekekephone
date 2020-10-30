@@ -2,9 +2,9 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import UserItem from '../-contact/UserItem'
-import g from '../global'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
@@ -42,7 +42,7 @@ class PageCallParks extends React.Component<{
         fabOnNext={p ? this.park : null}
         fabOnNextText={p2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={p2 ? null : 'call'}
-        onBack={p2 ? g.backToPageCallManage : null}
+        onBack={p2 ? Nav.backToPageCallManage : null}
         subMenu={p2 ? null : 'parks'}
         title={intl`Park`}
       >

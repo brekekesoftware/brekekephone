@@ -10,6 +10,8 @@ import {
 
 import g from '../global'
 import callStore from '../global/callStore'
+import Nav from '../global/Nav'
+import RnStacker from '../global/RnStacker'
 import VideoPlayer from './VideoPlayer'
 
 const css = StyleSheet.create({
@@ -107,7 +109,7 @@ class Control extends React.Component<{
   sourceObject: MediaStream
 }> {
   render() {
-    const s = g.stacks[g.stacks.length - 1]
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
       s.name === 'PageCallManage' ||
       s.name === 'PageTransferDial' ||
@@ -115,7 +117,7 @@ class Control extends React.Component<{
     ) {
       return null
     }
-    return <Mini {...this.props} onDoubleTap={g.goToPageCallManage} />
+    return <Mini {...this.props} onDoubleTap={Nav.goToPageCallManage} />
   }
 }
 

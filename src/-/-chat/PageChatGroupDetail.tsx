@@ -5,10 +5,10 @@ import { Platform, ScrollView } from 'react-native'
 
 import uc from '../api/uc'
 import ChatInput from '../Footer/ChatInput'
-import g from '../global'
 import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import pickFile from '../native/pickFile'
@@ -92,7 +92,7 @@ class PageChatGroupDetail extends React.Component<{
           },
         ]}
         fabRender={this.renderChatInput}
-        onBack={g.backToPageChatRecents}
+        onBack={Nav.backToPageChatRecents}
         title={gr?.name}
       >
         <MessageList
@@ -241,7 +241,7 @@ class PageChatGroupDetail extends React.Component<{
     uc.leaveChatGroup(this.props.groupId)
       .then(() => {
         chatStore.removeGroup(this.props.groupId)
-        g.goToPageChatRecents()
+        Nav.goToPageChatRecents()
       })
       .catch(err => {
         RnAlert.error({
@@ -252,7 +252,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   invite = () => {
-    g.goToPageChatGroupInvite({ groupId: this.props.groupId })
+    Nav.goToPageChatGroupInvite({ groupId: this.props.groupId })
   }
   call = (target, bVideoEnabled) => {
     callStore.startCall(target, {

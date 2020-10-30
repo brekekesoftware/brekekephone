@@ -4,9 +4,9 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import UserItem from '../-contact/UserItem'
-import g from '../global'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
@@ -19,7 +19,7 @@ class PageTransferDial extends React.Component {
   }
   componentDidUpdate() {
     if (this.prevId && this.prevId !== callStore.currentCall?.id) {
-      g.backToPageCallManage()
+      Nav.backToPageCallManage()
     }
     this.prevId = callStore.currentCall?.id
   }
@@ -63,7 +63,7 @@ class PageTransferDial extends React.Component {
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={g.backToPageCallManage}
+        onBack={Nav.backToPageCallManage}
         title={intl`Transfer`}
       >
         {groups.map(_g => (

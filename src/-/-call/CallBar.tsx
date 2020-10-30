@@ -15,6 +15,8 @@ import { Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
 import callStore from '../global/callStore'
+import Nav from '../global/Nav'
+import RnStacker from '../global/RnStacker'
 import intl from '../intl/intl'
 import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
@@ -53,7 +55,7 @@ const css = StyleSheet.create({
 class CallBar extends React.Component {
   render() {
     const bVisible =
-      g.stacks.filter(t => t.name === 'PageCallManage').length === 0
+      RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
     const c = callStore.currentCall
     if (!bVisible || !c || (c.incoming && !c.answered)) {
       return null
@@ -61,7 +63,7 @@ class CallBar extends React.Component {
     return (
       <View style={css.CallBar}>
         <RnTouchableOpacity
-          onPress={() => g.goToPageCallManage({ isFromCallBar: true })}
+          onPress={() => Nav.goToPageCallManage({ isFromCallBar: true })}
           style={css.CallBar_Outer}
         >
           <View style={css.CallBar_Icon}>

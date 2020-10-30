@@ -13,6 +13,7 @@ import { StyleSheet, View } from 'react-native'
 import FooterActions from '../Footer/Actions'
 import g from '../global'
 import authStore from '../global/authStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
@@ -53,7 +54,7 @@ const ProfileSignInItem = observer(props => {
         <RnText>{intl`Tap the below button to create one`}</RnText>
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
-            onNext={g.goToPageProfileCreate}
+            onNext={Nav.goToPageProfileCreate}
             onNextText={intl`CREATE NEW ACCOUNT`}
           />
         </View>
@@ -65,7 +66,9 @@ const ProfileSignInItem = observer(props => {
     <View
       style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
     >
-      <RnTouchableOpacity onPress={() => g.goToPageProfileUpdate({ id: p.id })}>
+      <RnTouchableOpacity
+        onPress={() => Nav.goToPageProfileUpdate({ id: p.id })}
+      >
         <Field
           icon={mdiAccountCircleOutline}
           label={intl`USERNAME`}
@@ -110,7 +113,7 @@ const ProfileSignInItem = observer(props => {
             })
           }}
           onBackIcon={mdiClose}
-          onMore={() => g.goToPageProfileUpdate({ id: p.id })}
+          onMore={() => Nav.goToPageProfileUpdate({ id: p.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
             authStore.signIn(p.id)

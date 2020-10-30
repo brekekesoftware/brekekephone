@@ -9,6 +9,7 @@ import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
@@ -160,7 +161,7 @@ class PageContactUsers extends React.Component {
                 key={i}
                 onPress={
                   authStore.currentProfile.ucEnabled
-                    ? () => g.goToPageChatDetail({ buddy: u.id })
+                    ? () => Nav.goToPageChatDetail({ buddy: u.id })
                     : null
                 }
               >

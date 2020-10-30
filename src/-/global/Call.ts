@@ -6,7 +6,7 @@ import { v4 as uuid } from 'react-native-uuid'
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { intlDebug } from '../intl/intl'
-import g from '.'
+import Nav from './Nav'
 import RnAlert from './RnAlert'
 
 export default class Call {
@@ -98,14 +98,14 @@ export default class Call {
   @observable transferring = ''
   private prevTransferring = ''
   transferBlind = (number: string) => {
-    g.backToPageCallManage()
+    Nav.backToPageCallManage()
     return pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
   @action transferAttended = (number: string) => {
     this.transferring = number
-    g.backToPageCallManage()
+    Nav.backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)

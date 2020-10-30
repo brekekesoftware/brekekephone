@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import sip from '../api/sip'
-import g from '../global'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import RnKeyboard from '../global/RnKeyboard'
 import intl, { intlDebug } from '../intl/intl'
@@ -39,14 +39,14 @@ class PageDtmfKeypad extends React.Component<{
     sip.createSession(this.txt, {
       videoEnabled: false,
     })
-    g.goToPageCallManage()
+    Nav.goToPageCallManage()
   }
 
   render() {
     return (
       <Layout
         description={intl`Keypad dial manually`}
-        onBack={g.backToPageCallManage}
+        onBack={Nav.backToPageCallManage}
         title={this.props.partyName}
       >
         <ShowNumber

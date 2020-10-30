@@ -10,7 +10,9 @@ import uc from '../api/uc'
 import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
+import RnStacker from '../global/RnStacker'
 import intl, { intlDebug } from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
@@ -187,11 +189,11 @@ class UnreadChatNoti extends React.Component {
     })
     //
     unreadChats = unreadChats.filter(c => {
-      const s = g.stacks[g.stacks.length - 1]
+      const s = RnStacker.stacks[RnStacker.stacks.length - 1]
       if (!s) {
         return true
       }
-      const { name, buddy, groupId } = s
+      const { name, buddy, groupId } = s as any
       if (name === 'PageChatRecents') {
         return false
       }
@@ -228,8 +230,8 @@ class UnreadChatNoti extends React.Component {
     const { id, isGroup } = this.unreadChat
     this.clear()
     return isGroup
-      ? g.goToPageChatGroupDetail({ groupId: id })
-      : g.goToPageChatDetail({ buddy: id })
+      ? Nav.goToPageChatGroupDetail({ groupId: id })
+      : Nav.goToPageChatDetail({ buddy: id })
   }
 
   componentWillUnmount() {
@@ -245,7 +247,7 @@ class UnreadChatNoti extends React.Component {
     Object.values(chatStore.messagesByThreadId).forEach((v: any) => {
       void v.id
     })
-    void g.stacks[g.stacks.length - 1]
+    void RnStacker.stacks[RnStacker.stacks.length - 1]
     if (!this.unreadChat) {
       return null
     }

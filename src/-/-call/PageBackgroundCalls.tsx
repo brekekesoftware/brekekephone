@@ -3,8 +3,8 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import UserItem from '../-contact/UserItem'
-import g from '../global'
 import callStore from '../global/callStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
@@ -14,12 +14,12 @@ import formatDuration from '../utils/formatDuration'
 const PageBackgroundCalls = observer(() => (
   <Layout
     compact
-    onBack={g.backToPageCallManage}
+    onBack={Nav.backToPageCallManage}
     title={intl`Background calls`}
   >
     <Field isGroup label={intl`CURRENT CALL`} />
     {(callStore.currentCall ? [callStore.currentCall] : []).map(c => (
-      <RnTouchableOpacity key={c.id} onPress={g.backToPageCallManage}>
+      <RnTouchableOpacity key={c.id} onPress={Nav.backToPageCallManage}>
         <UserItem
           iconFuncs={[c.hangupWithUnhold]}
           icons={[mdiPhoneHangup]}

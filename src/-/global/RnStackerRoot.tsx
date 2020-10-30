@@ -2,8 +2,9 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import g from '../global'
 import { useAnimationOnDidMount } from '../utils/animation'
+import g from '.'
+import RnStacker from './RnStacker'
 
 const css = StyleSheet.create({
   Stack: {
@@ -33,17 +34,19 @@ const Stack = ({ Component, ...p }) => {
   )
 }
 
-const RootStacks = observer(() =>
-  g.stacks.map((s, i) => (
-    <Stack
-      isBackgroundStack={
-        !(i + 1 === g.stacks.length) &&
-        !(i + 2 === g.stacks.length && g.stackAnimating)
-      }
-      key={i}
-      {...s}
-    />
-  )),
-)
+const RnStackerRoot = observer(() => (
+  <>
+    {RnStacker.stacks.map((s, i) => (
+      <Stack
+        isBackgroundStack={
+          !(i + 1 === RnStacker.stacks.length) &&
+          !(i + 2 === RnStacker.stacks.length && RnStacker.stackAnimating)
+        }
+        key={i}
+        {...s}
+      />
+    ))}
+  </>
+))
 
-export default RootStacks
+export default RnStackerRoot

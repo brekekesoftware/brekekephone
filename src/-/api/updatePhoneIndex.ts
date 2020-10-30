@@ -1,5 +1,5 @@
-import g from '../global'
 import authStore from '../global/authStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import pbx from './pbx'
@@ -10,7 +10,7 @@ const updatePhoneIndex = () =>
       message: intlDebug`Failed to update phone index`,
       err,
     })
-    g.goToPageProfileSignIn()
+    Nav.goToPageProfileSignIn()
     return null
   })
 
@@ -66,7 +66,7 @@ const updatePhoneIndexWithoutCatch = async () => {
             })
         },
         onDismiss: () => {
-          g.goToPageProfileSignIn()
+          Nav.goToPageProfileSignIn()
           resolve(null)
         },
       })

@@ -4,9 +4,9 @@ import React from 'react'
 
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
-import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import { RnTouchableOpacity } from '../Rn'
@@ -34,10 +34,10 @@ class PageChatGroupCreate extends React.Component {
   render() {
     return (
       <Layout
-        fabOnBack={g.goToPageChatRecents}
+        fabOnBack={Nav.goToPageChatRecents}
         fabOnNext={this.create}
         fabOnNextText={intl`CREATE`}
-        onBack={g.backToPageChatRecents}
+        onBack={Nav.backToPageChatRecents}
         title={intl`New Group`}
       >
         <Field
@@ -91,7 +91,7 @@ class PageChatGroupCreate extends React.Component {
   onCreateSuccess = group => {
     chatStore.upsertGroup(group)
     uc.joinChatGroup(group.id)
-    g.goToPageChatRecents()
+    Nav.goToPageChatRecents()
   }
   onCreateFailure = err => {
     RnAlert.error({

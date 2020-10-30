@@ -8,6 +8,7 @@ import g from '../global'
 import authStore from '../global/authStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnText } from '../Rn'
 import Field from '../shared/Field'
@@ -78,7 +79,7 @@ class PageChatRecents extends React.Component {
         dropdown={[
           {
             label: intl`Create group chat`,
-            onPress: g.goToPageChatGroupCreate,
+            onPress: Nav.goToPageChatGroupCreate,
           },
         ]}
         menu='contact'
@@ -94,9 +95,9 @@ class PageChatRecents extends React.Component {
         <ListUsers
           recents={arr}
           groupById={groupById}
-          onGroupSelect={groupId => g.goToPageChatGroupDetail({ groupId })}
+          onGroupSelect={groupId => Nav.goToPageChatGroupDetail({ groupId })}
           userById={userById}
-          onUserSelect={id => g.goToPageChatDetail({ buddy: id })}
+          onUserSelect={id => Nav.goToPageChatDetail({ buddy: id })}
         />
       </Layout>
     )

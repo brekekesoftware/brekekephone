@@ -8,6 +8,7 @@ import uc from '../api/uc'
 import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
@@ -119,7 +120,7 @@ class PageChatGroupInvite extends React.Component<{
     })
   }
   back = () => {
-    g.backToPageChatGroupDetail({ groupId: this.props.groupId })
+    Nav.backToPageChatGroupDetail({ groupId: this.props.groupId })
   }
 }
 

@@ -2,8 +2,8 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import pbx from '../api/pbx'
-import g from '../global'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import ContactsCreateForm from './ContactCreateForm'
@@ -16,10 +16,10 @@ class PagePhonebookCreate extends React.Component<{
     return (
       <ContactsCreateForm
         book={this.props.book || ''}
-        onBack={g.backToPageContactPhonebook}
+        onBack={Nav.backToPageContactPhonebook}
         onSave={p => {
           this.save(p)
-          g.goToPageContactPhonebook()
+          Nav.goToPageContactPhonebook()
         }}
         title={intl`New Phonebook`}
       />
@@ -42,7 +42,7 @@ class PagePhonebookCreate extends React.Component<{
       .catch(this.onSaveFailure)
   }
   onSaveSuccess = () => {
-    g.goToPageContactPhonebook()
+    Nav.goToPageContactPhonebook()
   }
   onSaveFailure = err => {
     RnAlert.error({

@@ -9,6 +9,7 @@ import ChatInput from '../Footer/ChatInput'
 import g from '../global'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import pickFile from '../native/pickFile'
@@ -110,7 +111,7 @@ class PageChatDetail extends React.Component<{
         containerOnScroll={this.onScroll}
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
-        onBack={g.backToPageChatRecents}
+        onBack={Nav.backToPageChatRecents}
         title={u?.name}
       >
         {loadingRecent ? (

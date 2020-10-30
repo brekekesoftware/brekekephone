@@ -6,6 +6,7 @@ import {
 
 import g from '../global'
 import authStore from '../global/authStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl from '../intl/intl'
 import { arrToMap } from '../utils/toMap'
@@ -22,7 +23,7 @@ interface Menu {
 interface SubMenu {
   key: string
   label: string
-  navFnKey: string
+  navFnKey: keyof typeof Nav
   ucRequired?: boolean
   navFn: Function
 }
@@ -106,7 +107,7 @@ const genMenus = () => {
           m.defaultSubMenu.navFn()
           return
         }
-        g[s.navFnKey]()
+        Nav[s.navFnKey]()
         saveNavigation(i, s.key)
       }
     })
@@ -148,7 +149,7 @@ const saveNavigation = (i, k) => {
   p.navSubMenus[i] = k
   g.saveProfilesToLocalStorage()
 }
-const normalizeSavedNavigation = () => {
+export const normalizeSavedNavigation = () => {
   const arr = menus()
   const p = authStore.currentProfile
   if (!arr[p.navIndex]) {
@@ -162,19 +163,6 @@ const normalizeSavedNavigation = () => {
       p.navSubMenus[i] = m.defaultSubMenuKey
     }
   })
-}
-
-g.goToPageIndex = () => {
-  if (!authStore.currentProfile) {
-    g.goToPageProfileSignIn()
-    return
-  }
-  const arr = menus()
-  normalizeSavedNavigation()
-  const p = authStore.currentProfile
-  const i = p.navIndex
-  const k = p.navSubMenus[i]
-  arr[i].subMenusMap[k].navFn()
 }
 
 export const getSubMenus = menu => {

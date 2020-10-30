@@ -1,7 +1,7 @@
-import { observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { Keyboard } from 'react-native'
 
-class KeyboardStore {
+class RnKeyboardStore {
   @observable isKeyboardShowing = false
   @observable isKeyboardAnimating = false
   waitKeyboardTimeoutId = 0
@@ -22,35 +22,50 @@ class KeyboardStore {
   }
 
   keyboardAnimatingTimeoutId = 0
-  setKeyboardAnimatingTimeout = () => {
+  @action setKeyboardAnimatingTimeout = () => {
     if (this.keyboardAnimatingTimeoutId) {
       clearTimeout(this.keyboardAnimatingTimeoutId)
     }
     this.isKeyboardAnimating = true
-    this.keyboardAnimatingTimeoutId = window.setTimeout(() => {
-      this.keyboardAnimatingTimeoutId = 0
-      this.isKeyboardAnimating = false
-    }, 300)
+    this.keyboardAnimatingTimeoutId = window.setTimeout(
+      action(() => {
+        this.keyboardAnimatingTimeoutId = 0
+        this.isKeyboardAnimating = false
+      }),
+      300,
+    )
   }
 }
 
-const RnKeyboard = new KeyboardStore()
+const RnKeyboard = new RnKeyboardStore()
 export default RnKeyboard
 
 // ios
-Keyboard.addListener('keyboardWillShow', () => {
-  RnKeyboard.setKeyboardAnimatingTimeout()
-  RnKeyboard.isKeyboardShowing = true
-})
-Keyboard.addListener('keyboardWillHide', () => {
-  RnKeyboard.setKeyboardAnimatingTimeout()
-  RnKeyboard.isKeyboardShowing = false
-})
+Keyboard.addListener(
+  'keyboardWillShow',
+  action(() => {
+    RnKeyboard.setKeyboardAnimatingTimeout()
+    RnKeyboard.isKeyboardShowing = true
+  }),
+)
+Keyboard.addListener(
+  'keyboardWillHide',
+  action(() => {
+    RnKeyboard.setKeyboardAnimatingTimeout()
+    RnKeyboard.isKeyboardShowing = false
+  }),
+)
 
 // android
-Keyboard.addListener('keyboardDidShow', () => {
-  RnKeyboard.isKeyboardShowing = true
-})
-Keyboard.addListener('keyboardDidHide', () => {
-  RnKeyboard.isKeyboardShowing = false
-})
+Keyboard.addListener(
+  'keyboardDidShow',
+  action(() => {
+    RnKeyboard.isKeyboardShowing = true
+  }),
+)
+Keyboard.addListener(
+  'keyboardDidHide',
+  action(() => {
+    RnKeyboard.isKeyboardShowing = false
+  }),
+)

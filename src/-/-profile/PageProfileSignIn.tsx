@@ -4,6 +4,7 @@ import React from 'react'
 import { FlatList, Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
+import Nav from '../global/Nav'
 import intl from '../intl/intl'
 import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import BrekekeGradient from '../shared/BrekekeGradient'
@@ -73,7 +74,7 @@ const PageProfileSignIn = observer(() => {
       <Layout
         description={intl`${l} accounts in total`}
         noScroll
-        onCreate={!!l && g.goToPageProfileCreate}
+        onCreate={!!l && Nav.goToPageProfileCreate}
         title={intl`Accounts`}
         transparent
       >
@@ -93,7 +94,7 @@ const PageProfileSignIn = observer(() => {
         {!l && <ProfileSignInItem empty />}
       </Layout>
       <RnTouchableOpacity
-        onPress={g.goToPageSettingsDebug}
+        onPress={Nav.goToPageSettingsDebug}
         style={css.CornerButton}
       >
         <View style={[css.CornerButton_Inner, css.CornerButton_Inner__info]}>

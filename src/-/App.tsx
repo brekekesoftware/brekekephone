@@ -17,30 +17,7 @@ import SplashScreen from 'react-native-splash-screen'
 
 import CallBar from './-call/CallBar'
 import CallNotify from './-call/CallNotify'
-import PageBackgroundCalls from './-call/PageBackgroundCalls'
-import PageCallKeypad from './-call/PageCallKeypad'
-import PageCallManage from './-call/PageCallManage'
-import PageCallParks from './-call/PageCallParks'
-import PageCallParks2 from './-call/PageCallParks2'
-import PageCallRecents from './-call/PageCallRecents'
-import PageDtmfKeypad from './-call/PageDtmfKeypad'
-import PageTransferDial from './-call/PageTransferDial'
 import ChatGroupInvite, { UnreadChatNoti } from './-chat/ChatGroupInvite'
-import PageChatDetail from './-chat/PageChatDetail'
-import PageChatGroupCreate from './-chat/PageChatGroupCreate'
-import PageChatGroupDetail from './-chat/PageChatGroupDetail'
-import PageChatGroupInvite from './-chat/PageChatGroupInvite'
-import PageChatRecents from './-chat/PageChatRecents'
-import PageContactPhonebook from './-contact/PageContactPhonebook'
-import PageContactUsers from './-contact/PageContactUsers'
-import PagePhonebookCreate from './-contact/PagePhonebookCreate'
-import PagePhonebookUpdate from './-contact/PagePhonebookUpdate'
-import PageProfileCreate from './-profile/PageProfileCreate'
-import PageProfileSignIn from './-profile/PageProfileSignIn'
-import PageProfileUpdate from './-profile/PageProfileUpdate'
-import PageSettingsDebug from './-settings/PageSettingsDebug'
-import PageSettingsOther from './-settings/PageSettingsOther'
-import PageSettingsProfile from './-settings/PageSettingsProfile'
 import api from './api'
 import g from './global'
 import AuthPBX from './global/AuthPBX'
@@ -49,9 +26,11 @@ import authStore from './global/authStore'
 import AuthUC from './global/AuthUC'
 import chatStore from './global/chatStore'
 import contactStore from './global/contactStore'
+import Nav from './global/Nav'
 import RnAlert from './global/RnAlert'
 import RnAlertRoot from './global/RnAlertRoot'
 import RnPickerRoot from './global/RnPickerRoot'
+import RootStacks from './global/RnStackerRoot'
 import intl from './intl/intl'
 import { setupCallKeep } from './native/callkeep'
 // @ts-ignore
@@ -61,7 +40,6 @@ import { RnStatusBar, RnText } from './Rn'
 import AnimatedSize from './shared/AnimatedSize'
 import CallVideos from './shared/CallVideos'
 import CallVoices from './shared/CallVoices'
-import RootStacks from './shared/RootStacks'
 
 // API was a component but had been rewritten to a listener
 void api
@@ -122,36 +100,7 @@ PushNotification.register(() => {
   setupCallKeep()
   g.loadProfilesFromLocalStorage()
 
-  g.registerStacks({
-    isRoot: true,
-    PageProfileSignIn,
-    PageChatRecents,
-    PageContactPhonebook,
-    PageContactUsers,
-    PageCallKeypad,
-    PageCallRecents,
-    PageSettingsOther,
-    PageCallParks,
-    PageSettingsProfile,
-  })
-  g.registerStacks({
-    PageProfileCreate,
-    PageProfileUpdate,
-    PagePhonebookCreate,
-    PagePhonebookUpdate,
-    PageCallManage,
-    PageBackgroundCalls,
-    PageTransferDial,
-    PageDtmfKeypad,
-    PageChatDetail,
-    PageChatGroupCreate,
-    PageChatGroupInvite,
-    PageChatGroupDetail,
-    PageSettingsDebug,
-    PageCallParks2,
-  })
-
-  g.goToPageIndex()
+  Nav.goToPageIndex()
   authStore.handleUrlParams()
 
   const authPBX = new AuthPBX()
@@ -159,7 +108,7 @@ PushNotification.register(() => {
   const authUC = new AuthUC()
 
   observe(authStore, 'signedInId', () => {
-    g.goToPageIndex()
+    Nav.goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
     if (authStore.signedInId) {

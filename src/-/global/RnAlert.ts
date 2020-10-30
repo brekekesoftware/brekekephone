@@ -57,7 +57,7 @@ export class RnAlertStore {
     })
     this.alertsCount = this.alerts.length
   }
-  dismiss = () => {
+  @action dismiss = () => {
     this.alerts.shift()
     this.alertsCount = this.alerts.length
   }

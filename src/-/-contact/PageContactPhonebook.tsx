@@ -15,6 +15,7 @@ import g from '../global'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
+import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import RnPicker from '../global/RnPicker'
 import intl, { intlDebug } from '../intl/intl'
@@ -44,12 +45,12 @@ class PageContactPhonebook extends React.Component {
   update = id => {
     const contact = contactStore.getPhonebook(id)
     if (contact?.loaded) {
-      g.goToPagePhonebookUpdate({
+      Nav.goToPagePhonebookUpdate({
         contact: contact,
       })
     } else {
       this.loadContactDetail(id, ct => {
-        g.goToPagePhonebookUpdate({
+        Nav.goToPagePhonebookUpdate({
           contact: ct,
         })
       })
@@ -176,7 +177,7 @@ class PageContactPhonebook extends React.Component {
         dropdown={[
           {
             label: intl`Create new contact`,
-            onPress: g.goToPagePhonebookCreate,
+            onPress: Nav.goToPagePhonebookCreate,
           },
           {
             label: intl`Reload`,
