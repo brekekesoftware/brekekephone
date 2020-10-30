@@ -29,7 +29,7 @@ import FieldButton from '../shared/FieldButton'
 import Layout from '../shared/Layout'
 import VideoPlayer from '../shared/VideoPlayer'
 import g from '../variables'
-import TransferringCall from './renderTransferringCall'
+import PageTransferAttend from './PageTransferAttend'
 
 const css = StyleSheet.create({
   Video: {
@@ -130,7 +130,7 @@ class PageCallManage extends React.Component<{
       transparent={!c?.transferring}
     >
       {!c ? null : c.transferring ? (
-        <TransferringCall />
+        <PageTransferAttend />
       ) : (
         <React.Fragment>
           {isVideoEnabled && this.renderVideo(c)}

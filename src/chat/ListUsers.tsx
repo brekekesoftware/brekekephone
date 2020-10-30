@@ -7,7 +7,7 @@ import UserItem from '../contact/UserItem'
 import chatStore from '../global/chatStore'
 import { RnTouchableOpacity } from '../Rn'
 import g from '../variables'
-import { formatDateTimeSemantic } from './config'
+import { formatDateTimeSemantic } from './chatConfig'
 
 const css = StyleSheet.create({
   Unread: {

@@ -16,7 +16,7 @@ import intl, { intlDebug } from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import ButtonIcon from '../shared/ButtonIcon'
 import g from '../variables'
-import { formatDateTimeSemantic } from './config'
+import { formatDateTimeSemantic } from './chatConfig'
 
 const css = StyleSheet.create({
   Notify: {

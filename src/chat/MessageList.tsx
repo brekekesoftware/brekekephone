@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native'
 import { RnText } from '../Rn'
 import Avatar from '../shared/Avatar'
 import g from '../variables'
-import { groupByTimestamp } from './config'
+import { groupByTimestamp } from './chatConfig'
 import Message from './Message'
 
 const css = StyleSheet.create({

@@ -17,7 +17,7 @@ import { RnText, RnTouchableOpacity } from '../Rn'
 import Layout from '../shared/Layout'
 import { arrToMap } from '../utils/toMap'
 import g from '../variables'
-import { numberOfChatsPerLoad } from './config'
+import { numberOfChatsPerLoad } from './chatConfig'
 import MessageList from './MessageList'
 
 const css = StyleSheet.create({

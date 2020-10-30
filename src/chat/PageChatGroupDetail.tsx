@@ -15,7 +15,7 @@ import pickFile from '../native/pickFile'
 import saveBlob from '../native/saveBlob'
 import Layout from '../shared/Layout'
 import { arrToMap } from '../utils/toMap'
-import { numberOfChatsPerLoad } from './config'
+import { numberOfChatsPerLoad } from './chatConfig'
 import MessageList from './MessageList'
 
 @observer
