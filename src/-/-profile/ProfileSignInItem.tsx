@@ -12,6 +12,7 @@ import { StyleSheet, View } from 'react-native'
 
 import FooterActions from '../Footer/Actions'
 import g from '../global'
+import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import intl from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
@@ -91,7 +92,7 @@ const ProfileSignInItem = observer(props => {
       <View style={css.ProfileSignInItem_Btns}>
         <FooterActions
           onBack={() => {
-            g.showPrompt({
+            Alert.showPrompt({
               title: intl`Remove Account`,
               message: (
                 <React.Fragment>

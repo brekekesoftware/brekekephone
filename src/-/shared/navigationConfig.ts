@@ -5,6 +5,7 @@ import {
 } from '@mdi/js'
 
 import g from '../global'
+import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import intl from '../intl/intl'
 import { arrToMap } from '../utils/toMap'
@@ -180,7 +181,7 @@ export const getSubMenus = menu => {
   const arr = menus()
   const m = arr.find(m => m.key === menu)
   if (!m) {
-    g.showError({
+    Alert.showError({
       unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
     })
     return []

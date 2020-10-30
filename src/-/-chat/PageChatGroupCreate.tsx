@@ -5,6 +5,7 @@ import React from 'react'
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
 import g from '../global'
+import Alert from '../global/Alert'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
@@ -78,7 +79,7 @@ class PageChatGroupCreate extends React.Component {
   create = () => {
     const { members, name } = this.state
     if (!name.trim()) {
-      g.showError({
+      Alert.showError({
         message: intlDebug`Group name is required`,
       })
       return
@@ -93,7 +94,7 @@ class PageChatGroupCreate extends React.Component {
     g.goToPageChatRecents()
   }
   onCreateFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to create the group chat`,
       err,
     })

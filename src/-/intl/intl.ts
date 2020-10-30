@@ -87,9 +87,7 @@ const compileFn = (locale, k) => {
   return fn
 }
 
-type T = typeof String['raw']
-
-const intl = (k, data) => compileFn(g.locale, k)(data)
+const intl0 = (k, data) => compileFn(g.locale, k)(data)
 const intlDebug0 = (k, data) => ({
   label: intl(k, data),
   en: compileFn('en', k)(data),
@@ -97,5 +95,17 @@ const intlDebug0 = (k, data) => ({
 
 g.initLocale()
 
-export const intlDebug = (intlDebug0 as any) as T
-export default intl as T
+export interface IntlDebug {
+  label: string
+  en: string
+}
+export const intlDebug = (intlDebug0 as unknown) as (
+  template: TemplateStringsArray,
+  ...substitutions: any[]
+) => IntlDebug
+
+const intl = (intl0 as unknown) as (
+  template: TemplateStringsArray,
+  ...substitutions: any[]
+) => string
+export default intl

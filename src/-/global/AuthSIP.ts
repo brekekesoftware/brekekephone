@@ -4,7 +4,7 @@ import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
 import { intlDebug } from '../intl/intl'
-import g from '.'
+import Alert from './Alert'
 import authStore from './authStore'
 
 class AuthSIP {
@@ -72,7 +72,7 @@ class AuthSIP {
       authStore.sipState = 'failure'
       authStore.sipTotalFailure += 1
       sip.disconnect()
-      g.showError({
+      Alert.showError({
         message: intlDebug`Failed to connect to SIP`,
         err,
       })

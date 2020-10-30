@@ -3,7 +3,7 @@ import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
 import React from 'react'
 
-import g from '../global'
+import Alert from '../global/Alert'
 import intl from '../intl/intl'
 import Layout from '../shared/Layout'
 import useForm from '../utils/useForm'
@@ -49,7 +49,7 @@ const ContactsCreateForm = observer(props => {
         props.onBack()
         return
       }
-      g.showPrompt({
+      Alert.showPrompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,

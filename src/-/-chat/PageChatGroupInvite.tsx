@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native'
 import UserItem from '../-contact/UserItem'
 import uc from '../api/uc'
 import g from '../global'
+import Alert from '../global/Alert'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
@@ -102,7 +103,7 @@ class PageChatGroupInvite extends React.Component<{
     const { selectedBuddy } = this.state
     const members = Object.keys(selectedBuddy)
     if (!members.length) {
-      g.showError({
+      Alert.showError({
         message: intlDebug`No buddy selected`,
       })
       return
@@ -112,7 +113,7 @@ class PageChatGroupInvite extends React.Component<{
       .then(this.back)
   }
   onInviteFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to invite group chat`,
       err,
     })

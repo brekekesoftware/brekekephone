@@ -3,7 +3,8 @@ import './callkeep'
 import { AppRegistry } from 'react-native'
 import FCM, { FCMEvent, Notification as PN } from 'react-native-fcm'
 
-import g from '../global'
+import Alert from '../global/Alert'
+import { intlDebug } from '../intl/intl'
 import parse from './PushNotification-parse'
 
 const { Notification, RefreshToken } = FCMEvent
@@ -68,8 +69,8 @@ const PushNotification = {
       const n = await FCM.getInitialNotification()
       onNotification(n, initApp)
     } catch (err) {
-      g.showError({
-        message: 'Failed to initialize push notification',
+      Alert.showError({
+        message: intlDebug`Failed to initialize push notification`,
         err,
       })
     }

@@ -13,6 +13,7 @@ import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import g from '../global'
+import Alert from '../global/Alert'
 import intl, { intlDebug } from '../intl/intl'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '../Rn'
 
@@ -173,7 +174,7 @@ class Message extends React.Component<{
       return
     }
     if (!Linking.canOpenURL(url)) {
-      g.showError({
+      Alert.showError({
         message: intlDebug`Can not open the url`,
       })
     } else {

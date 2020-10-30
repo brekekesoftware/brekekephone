@@ -7,6 +7,7 @@ import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 import uc from '../api/uc'
 import ChatInput from '../Footer/ChatInput'
 import g from '../global'
+import Alert from '../global/Alert'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
@@ -263,7 +264,7 @@ class PageChatDetail extends React.Component<{
         window.setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to get recent chats`,
           err,
         })
@@ -288,7 +289,7 @@ class PageChatDetail extends React.Component<{
         chatStore.pushMessages(id, chats)
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to get more chats`,
           err,
         })
@@ -330,7 +331,7 @@ class PageChatDetail extends React.Component<{
     this.setState({ editingText: '' })
   }
   onSubmitEditingTextFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to send the message`,
       err,
     })
@@ -360,7 +361,7 @@ class PageChatDetail extends React.Component<{
     saveBlob(blob, file.name)
   }
   onAcceptFileFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to accept file`,
       err,
     })
@@ -369,7 +370,7 @@ class PageChatDetail extends React.Component<{
     uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
   onRejectFileFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to reject file`,
       err,
     })
@@ -408,7 +409,7 @@ class PageChatDetail extends React.Component<{
     chatStore.pushMessages(buddyId, res.chat)
   }
   onSendFileFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to send file`,
       err,
     })

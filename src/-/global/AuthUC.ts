@@ -4,7 +4,7 @@ import { Lambda, observe } from 'mobx'
 
 import uc from '../api/uc'
 import { intlDebug } from '../intl/intl'
-import g from '.'
+import Alert from './Alert'
 import authStore from './authStore'
 import chatStore from './chatStore'
 import contactStore from './contactStore'
@@ -44,7 +44,7 @@ class AuthUC {
   onAuthFailure = err => {
     authStore.ucState = 'failure'
     authStore.ucTotalFailure += 1
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to connect to UC`,
       err,
     })
@@ -70,7 +70,7 @@ class AuthUC {
     })
   }
   onLoadUnreadChatsFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to load unread chat messages`,
       err,
     })

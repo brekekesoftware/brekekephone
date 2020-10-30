@@ -2,7 +2,7 @@ import moment from 'moment'
 import { Platform } from 'react-native'
 import { v4 as uuid } from 'react-native-uuid'
 
-import g from '../global'
+import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
@@ -115,7 +115,7 @@ class Api {
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch(err => {
-      g.showError({
+      Alert.showError({
         message: intlDebug`Failed to load PBX users`,
         err,
       })

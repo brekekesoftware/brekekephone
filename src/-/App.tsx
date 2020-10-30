@@ -43,6 +43,7 @@ import PageSettingsOther from './-settings/PageSettingsOther'
 import PageSettingsProfile from './-settings/PageSettingsProfile'
 import api from './api'
 import g from './global'
+import Alert from './global/Alert'
 import AuthPBX from './global/AuthPBX'
 import AuthSIP from './global/AuthSIP'
 import authStore from './global/authStore'
@@ -76,7 +77,7 @@ AppState.addEventListener('change', () => {
   }
 })
 registerOnUnhandledError(unexpectedErr => {
-  batchRender(() => g.showError({ unexpectedErr }))
+  batchRender(() => Alert.showError({ unexpectedErr }))
   return false
 })
 
@@ -99,7 +100,7 @@ const getAudioVideoPermission = () => {
 }
 
 if (Platform.OS === 'web') {
-  g.showPrompt({
+  Alert.showPrompt({
     title: intl`Action Required`,
     message: intl`Brekeke Phone needs your action to work well on browser. Press OK to continue`,
     confirmText: 'OK',

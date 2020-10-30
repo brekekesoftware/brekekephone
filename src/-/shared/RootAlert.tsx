@@ -1,9 +1,10 @@
 import flow from 'lodash/flow'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import g from '../global'
+import Alert, { ErrorAlert2, PromptAlert } from '../global/Alert'
 import intl from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
@@ -62,14 +63,28 @@ const css = StyleSheet.create({
   },
 })
 
-const Alert = ({ error, prompt, ...props }) => {
+const AlertR = ({
+  error,
+  prompt,
+}: {
+  error?: ErrorAlert2
+  prompt?: PromptAlert
+}) => {
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
     translateY: [Dimensions.get('screen').height, 0],
   })
+  let props: {
+    title: string | ReactElement
+    message: string | ReactElement
+    dismissText?: string | boolean
+    confirmText?: string | boolean
+    onConfirm: Function
+    onDismiss: Function
+  }
   if (prompt) {
     const { message, onConfirm, onDismiss, title, ...rest } = prompt
-    Object.assign(props, {
+    props = {
       title,
       message:
         typeof message === 'string' ? (
@@ -79,14 +94,14 @@ const Alert = ({ error, prompt, ...props }) => {
         ),
       dismissText: intl`CANCEL`,
       confirmText: intl`REMOVE`,
-      onConfirm: flow([g.dismissAlert, onConfirm].filter(f => f)),
-      onDismiss: flow([g.dismissAlert, onDismiss].filter(f => f)),
+      onConfirm: flow([Alert.dismiss, onConfirm as any].filter(f => f)),
+      onDismiss: flow([Alert.dismiss, onDismiss as any].filter(f => f)),
       ...rest,
-    })
+    }
   } else if (error) {
     const { err, message, unexpectedErr, ...rest } = error
     const errMessage = unexpectedErr?.message || err?.message || err
-    Object.assign(props, {
+    props = {
       title: intl`Error`,
       message: (
         <React.Fragment>
@@ -97,10 +112,10 @@ const Alert = ({ error, prompt, ...props }) => {
         </React.Fragment>
       ),
       confirmText: intl`OK`,
-      onConfirm: g.dismissAlert,
-      onDismiss: g.dismissAlert,
+      onConfirm: Alert.dismiss,
+      onDismiss: Alert.dismiss,
       ...rest,
-    })
+    }
   } else {
     return null
   }
@@ -154,10 +169,10 @@ const Alert = ({ error, prompt, ...props }) => {
 }
 
 const RootAlert = observer(() => {
-  if (!g.alertsCount || !g.alerts[0]) {
+  if (!Alert.alertsCount || !Alert.alerts[0]) {
     return null
   }
-  return <Alert {...g.alerts[0]} />
+  return <AlertR {...Alert.alerts[0]} />
 })
 
 export default RootAlert

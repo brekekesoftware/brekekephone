@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 
 import uc from '../api/uc'
 import g from '../global'
+import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import intl, { intlDebug } from '../intl/intl'
 import Field from '../shared/Field'
@@ -41,7 +42,7 @@ class PageSettingsOther extends Component {
         })
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to change UC status`,
           err,
         })

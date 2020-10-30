@@ -3,6 +3,7 @@ import React from 'react'
 
 import pbx from '../api/pbx'
 import g from '../global'
+import Alert from '../global/Alert'
 import contactStore from '../global/contactStore'
 import intl, { intlDebug } from '../intl/intl'
 import ContactsCreateForm from './ContactCreateForm'
@@ -36,7 +37,7 @@ class PagePhonebookUpdate extends React.Component<{
     g.goToPageContactPhonebook()
   }
   onSaveFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to save the contact`,
       err,
     })

@@ -5,6 +5,7 @@ import React from 'react'
 import { View } from 'react-native'
 
 import g from '../global'
+import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import intl from '../intl/intl'
 import { RnText } from '../Rn'
@@ -22,7 +23,7 @@ const ProfileCreateForm = observer(props => {
       addingPark: '',
     },
     resetAllFields: () => {
-      g.showPrompt({
+      Alert.showPrompt({
         title: intl`Reset`,
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
@@ -47,7 +48,7 @@ const ProfileCreateForm = observer(props => {
       })
     },
     onAddingParkRemove: i => {
-      g.showPrompt({
+      Alert.showPrompt({
         title: intl`Remove Park`,
         message: (
           <React.Fragment>
@@ -81,7 +82,7 @@ const ProfileCreateForm = observer(props => {
         props.onBack()
         return
       }
-      g.showPrompt({
+      Alert.showPrompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,

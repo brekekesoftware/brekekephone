@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import g from '../global'
+import Alert from '../global/Alert'
 import callStore from '../global/callStore'
 import intl, { intlDebug } from '../intl/intl'
 import Layout from '../shared/Layout'
@@ -21,7 +22,7 @@ class PageCallKeypad extends React.Component {
   callVoice = () => {
     this.txt = this.txt.trim()
     if (!this.txt) {
-      g.showError({
+      Alert.showError({
         message: intlDebug`No target to call`,
       })
       return

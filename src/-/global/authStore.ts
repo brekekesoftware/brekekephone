@@ -8,6 +8,7 @@ import { intlDebug } from '../intl/intl'
 import { getUrlParams } from '../native/deeplink'
 import { arrToMap } from '../utils/toMap'
 import g from './_'
+import Alert from './Alert'
 import callStore, { uuidFromPN } from './callStore'
 
 const compareField = (p1, p2, field) => {
@@ -120,14 +121,14 @@ class AuthStore {
     const d = g.getProfileData(p)
     if (!p.pbxPassword && !d.accessToken) {
       g.goToPageProfileUpdate({ id: p.id })
-      g.showError({
+      Alert.showError({
         message: intlDebug`The account password is empty`,
       })
       return true
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
       g.goToPageProfileUpdate({ id: p.id })
-      g.showError({
+      Alert.showError({
         message: intlDebug`The UC config is missing`,
       })
       return true

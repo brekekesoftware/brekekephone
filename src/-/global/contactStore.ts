@@ -5,7 +5,7 @@ import { action, computed, observable } from 'mobx'
 import pbx from '../api/pbx'
 import { intlDebug } from '../intl/intl'
 import { arrToMap } from '../utils/toMap'
-import g from '.'
+import Alert from './Alert'
 
 class ContactStore {
   @observable usersSearchTerm = ''
@@ -28,7 +28,7 @@ class ContactStore {
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to load contact list`,
           err,
         })

@@ -6,6 +6,7 @@ import { Platform, ScrollView } from 'react-native'
 import uc from '../api/uc'
 import ChatInput from '../Footer/ChatInput'
 import g from '../global'
+import Alert from '../global/Alert'
 import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
@@ -169,7 +170,7 @@ class PageChatGroupDetail extends React.Component<{
         window.setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to get recent chats`,
           err,
         })
@@ -194,7 +195,7 @@ class PageChatGroupDetail extends React.Component<{
         chatStore.pushMessages(this.props.groupId, chats)
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to get more chats`,
           err,
         })
@@ -226,7 +227,7 @@ class PageChatGroupDetail extends React.Component<{
         this.setState({ editingText: '' })
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to send the message`,
           err,
         })
@@ -243,7 +244,7 @@ class PageChatGroupDetail extends React.Component<{
         g.goToPageChatRecents()
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to leave the group`,
           err,
         })
@@ -306,7 +307,7 @@ class PageChatGroupDetail extends React.Component<{
     chatStore.pushMessages(groupId, res.chat)
   }
   onSendFileFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to send file`,
       err,
     })
@@ -337,7 +338,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   onAcceptFileFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to accept file`,
       err,
     })
@@ -346,7 +347,7 @@ class PageChatGroupDetail extends React.Component<{
     uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
   onRejectFileFailure = err => {
-    g.showError({
+    Alert.showError({
       message: intlDebug`Failed to reject file`,
       err,
     })

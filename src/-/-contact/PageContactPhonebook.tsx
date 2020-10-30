@@ -12,6 +12,7 @@ import { StyleSheet, View } from 'react-native'
 
 import pbx from '../api/pbx'
 import g from '../global'
+import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
@@ -63,7 +64,7 @@ class PageContactPhonebook extends React.Component {
         cb(ct)
       })
       .catch(err => {
-        g.showError({
+        Alert.showError({
           message: intlDebug`Failed to load contact detail for ${id}`,
           err,
         })
@@ -75,7 +76,7 @@ class PageContactPhonebook extends React.Component {
       callStore.startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(contact)
-      g.showError({
+      Alert.showError({
         message: intlDebug`This contact doesn't have any phone number`,
       })
     }
