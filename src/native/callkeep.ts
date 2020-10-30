@@ -5,15 +5,13 @@ import {
   NativeModules,
   Platform,
 } from 'react-native'
-import RNCallKeep0 from 'react-native-callkeep'
+import RNCallKeep, { Events, IOptions } from 'react-native-callkeep'
 
 import authStore from '../global/authStore'
 import callStore, { uuidFromPN } from '../global/callStore'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
 import { getLastPN } from './PushNotification-parse'
-
-const RNCallKeep = RNCallKeep0 as any
 
 const shouldHandlePushKit = () =>
   Platform.OS === 'ios' &&
@@ -49,11 +47,11 @@ export const setupCallKeep = async () => {
       imageName: 'phone_account_icon',
       additionalPermissions: [],
       allowSelfManaged: true,
-    },
+    } as IOptions['android'],
   })
     .then(() => {
       if (Platform.OS === 'android') {
-        RNCallKeep.promptAndroidPermissions()
+        ;(RNCallKeep as any)['promptAndroidPermissions']()
       }
     })
     .catch(err => {
@@ -66,16 +64,14 @@ export const setupCallKeep = async () => {
       })
     })
 
-  // handle (string)
-  //    Phone number of the callee
-  // callUUID (string)
-  // name (string)
-  RNCallKeep.addEventListener('didReceiveStartCallAction', e => {
-    //
-  })
+  RNCallKeep.addEventListener(
+    'didReceiveStartCallAction',
+    (e: { callUUID: string; handle: string; name: string }) => {
+      //
+    },
+  )
 
-  // callUUID (string)
-  RNCallKeep.addEventListener('answerCall', e => {
+  RNCallKeep.addEventListener('answerCall', (e: { callUUID: string }) => {
     if (e.callUUID === uuidFromPN) {
       clearPushKitTimeout()
       if (shouldHandlePushKit()) {
@@ -98,8 +94,7 @@ export const setupCallKeep = async () => {
     }
   })
 
-  // callUUID (string)
-  RNCallKeep.addEventListener('endCall', e => {
+  RNCallKeep.addEventListener('endCall', (e: { callUUID: string }) => {
     if (e.callUUID === uuidFromPN) {
       clearPushKitTimeout()
       if (shouldHandlePushKit() && !callStore.recentPNAction) {
@@ -120,98 +115,102 @@ export const setupCallKeep = async () => {
     // - Start playing ringback if it is an outgoing call
   })
 
-  // error (string)
-  //    iOS only.
-  // callUUID (string)
-  //    The UUID of the call.
-  // handle (string)
-  //    Phone number of the caller
-  // localizedCallerName (string)
-  //    Name of the caller to be displayed on the native UI
-  // hasVideo (string)
-  //    1 (video enabled)
-  //    0 (video not enabled)
-  // fromPushKit (string)
-  //    1 (call triggered from PushKit)
-  //    0 (call not triggered from PushKit)
-  // payload (object)
-  //    VOIP push payload.
-  RNCallKeep.addEventListener('didDisplayIncomingCall', e => {
-    if (e.callUUID === uuidFromPN) {
-      clearPushKitTimeout()
-      pushKitTimeoutId = window.setTimeout(
-        () => RNCallKeep.endCall(e.callUUID),
-        20000,
-      )
-      callStore.recentPNAction = ''
-      callStore.recentPNAt = Date.now()
-      if (shouldHandlePushKit()) {
-        return
-      }
-    }
-    const c = callStore.findByUuid(e.callUUID)
-    if (!c?.callkeep) {
-      RNCallKeep.endCall(e.callUUID)
-    } else {
-      c.callkeepDisplayed = true
-    }
-  })
-
-  // muted (boolean)
-  // callUUID (string)
-  RNCallKeep.addEventListener('didPerformSetMutedCallAction', e => {
-    const c = callStore.findByUuid(e.callUUID)
-    if (!c?.callkeep) {
-      RNCallKeep.endCall(e.callUUID)
-    } else if (e.muted !== c.muted) {
-      c.toggleMuted(true)
-    }
-  })
-
-  // hold (boolean)
-  // callUUID (string)
-  RNCallKeep.addEventListener('didToggleHoldCallAction', e => {
-    const c = callStore.findByUuid(e.callUUID)
-    if (!c?.callkeep) {
-      RNCallKeep.endCall(e.callUUID)
-    } else if (c.answered && e.hold !== c.holding) {
-      c.toggleHold(true)
-    }
-  })
-
-  // digits (string)
-  //    The digits that emit the dtmf tone
-  // callUUID (string)
-  RNCallKeep.addEventListener('didPerformDTMFAction', e => {
-    const c = callStore.findByUuid(e.callUUID)
-    if (!c?.callkeep) {
-      RNCallKeep.endCall(e.callUUID)
-    } else {
-      // TODO
-    }
-  })
-
-  if (Platform.OS === 'android') {
-    RNCallKeep.addEventListener('showIncomingCallUi', e => {
+  RNCallKeep.addEventListener(
+    'didDisplayIncomingCall',
+    (e: {
+      callUUID: string
+      handle: string
+      localizedCallerName: string
+      hasVideo: string // '0' | '1'
+      fromPushKit: string // '0' | '1'
+      payload: unknown // VOIP
+      error: string // ios only
+    }) => {
       if (e.callUUID === uuidFromPN) {
-        const n = getLastPN() as any
-        NativeModules.IncomingCall.showCall(
-          e.callUUID,
-          n?.to || 'Loading...',
-          false,
+        clearPushKitTimeout()
+        pushKitTimeoutId = window.setTimeout(
+          () => RNCallKeep.endCall(e.callUUID),
+          20000,
         )
-        return
+        callStore.recentPNAction = ''
+        callStore.recentPNAt = Date.now()
+        if (shouldHandlePushKit()) {
+          return
+        }
       }
       const c = callStore.findByUuid(e.callUUID)
       if (!c?.callkeep) {
         RNCallKeep.endCall(e.callUUID)
-        return
+      } else {
+        c.callkeepDisplayed = true
       }
-      NativeModules.IncomingCall.showCall(c.uuid, c.title, c.remoteVideoEnabled)
-    })
+    },
+  )
+
+  RNCallKeep.addEventListener(
+    'didPerformSetMutedCallAction',
+    (e: { callUUID: string; muted: boolean }) => {
+      const c = callStore.findByUuid(e.callUUID)
+      if (!c?.callkeep) {
+        RNCallKeep.endCall(e.callUUID)
+      } else if (e.muted !== c.muted) {
+        c.toggleMuted(true)
+      }
+    },
+  )
+
+  RNCallKeep.addEventListener(
+    'didToggleHoldCallAction',
+    (e: { callUUID: string; hold: boolean }) => {
+      const c = callStore.findByUuid(e.callUUID)
+      if (!c?.callkeep) {
+        RNCallKeep.endCall(e.callUUID)
+      } else if (c.answered && e.hold !== c.holding) {
+        c.toggleHold(true)
+      }
+    },
+  )
+
+  RNCallKeep.addEventListener(
+    'didPerformDTMFAction',
+    (e: { callUUID: string }) => {
+      const c = callStore.findByUuid(e.callUUID)
+      if (!c?.callkeep) {
+        RNCallKeep.endCall(e.callUUID)
+      } else {
+        // TODO
+      }
+    },
+  )
+
+  if (Platform.OS === 'android') {
+    RNCallKeep.addEventListener(
+      'showIncomingCallUi' as Events,
+      (e: { callUUID: string }) => {
+        if (e.callUUID === uuidFromPN) {
+          const n = getLastPN() as any
+          NativeModules.IncomingCall.showCall(
+            e.callUUID,
+            n?.to || 'Loading...',
+            false,
+          )
+          return
+        }
+        const c = callStore.findByUuid(e.callUUID)
+        if (!c?.callkeep) {
+          RNCallKeep.endCall(e.callUUID)
+          return
+        }
+        NativeModules.IncomingCall.showCall(
+          c.uuid,
+          c.title,
+          c.remoteVideoEnabled,
+        )
+      },
+    )
 
     const eventEmitter = new NativeEventEmitter(NativeModules.IncomingCall)
-    eventEmitter.addListener('answerCall', uuid => {
+    eventEmitter.addListener('answerCall', (uuid: string) => {
       if (uuid === uuidFromPN) {
         RNCallKeep.backToForeground()
         callStore.recentPNAction = 'answered'
@@ -226,7 +225,7 @@ export const setupCallKeep = async () => {
       NativeModules.IncomingCall.closeIncomingCallActivity()
       RNCallKeep.backToForeground()
     })
-    eventEmitter.addListener('rejectCall', uuid => {
+    eventEmitter.addListener('rejectCall', (uuid: string) => {
       if (uuid === uuidFromPN) {
         callStore.recentPNAction = 'rejected'
         return
@@ -252,12 +251,3 @@ export const setupCallKeep = async () => {
     )
   }
 }
-
-// RNDrawOverlay.askForDispalayOverOtherAppsPermission()
-//   .then(res => {
-//     //
-//   })
-//   .catch(e => {
-//     //
-//     console.error(e)
-//   })
