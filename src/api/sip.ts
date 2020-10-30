@@ -8,8 +8,23 @@ import appPackageJson from '../../package.json'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
 import turnConfig from './turnConfig'
 
+const sipCreateMediaConstraints = (sourceId?: string) => {
+  return ({
+    audio: false,
+    video: {
+      mandatory: {
+        minWidth: 0,
+        minHeight: 0,
+        minFrameRate: 0,
+      },
+      facingMode: Platform.OS === 'web' ? undefined : 'user',
+      optional: sourceId ? [{ sourceId }] : [],
+    },
+  } as unknown) as MediaStreamConstraints
+}
+
 class SIP extends EventEmitter {
-  phone: any
+  phone = (null as any) as typeof window.Brekeke.WebrtcClient.Phone
   init = async () => {
     const sourceId = await getFrontCameraSourceId()
     const phone = new window.Brekeke.WebrtcClient.Phone({
@@ -18,58 +33,20 @@ class SIP extends EventEmitter {
       defaultOptions: {
         videoOptions: {
           call: {
-            mediaConstraints: {
-              audio: false,
-              video: {
-                mandatory: {
-                  minWidth: 0,
-                  minHeight: 0,
-                  minFrameRate: 0,
-                },
-                facingMode: Platform.OS === 'web' ? undefined : 'user',
-                optional: sourceId
-                  ? [
-                      {
-                        sourceId,
-                      },
-                    ]
-                  : [],
-              },
-            },
+            mediaConstraints: sipCreateMediaConstraints(sourceId),
           },
           answer: {
-            mediaConstraints: {
-              audio: false,
-              video: {
-                mandatory: {
-                  minWidth: 0,
-                  minHeight: 0,
-                  minFrameRate: 0,
-                },
-                facingMode: Platform.OS === 'web' ? undefined : 'user',
-                optional: sourceId
-                  ? [
-                      {
-                        sourceId,
-                      },
-                    ]
-                  : [],
-              },
-            },
+            mediaConstraints: sipCreateMediaConstraints(sourceId),
           },
         },
       },
-      dtmfSendMode: 1,
+      dtmfSendMode: true,
       ctiAutoAnswer: true,
       eventTalk: true,
     })
     this.phone = phone
 
-    phone.dtmfSendMode = 1
-    phone.ctiAutoAnswer = true
-    phone.eventTalk = true
-
-    const h = ev => {
+    const h = (ev: { phoneStatus: 'started' | 'stopping' | 'stopped' }) => {
       if (!ev) {
         return
       }
@@ -225,12 +202,12 @@ class SIP extends EventEmitter {
   disconnect() {
     if (this.phone) {
       this.phone.stopWebRTC()
-      this.phone = null
+      this.phone = (null as any) as typeof window.Brekeke.WebrtcClient.Phone
     }
   }
 
   createSession(number, opts: any = {}) {
-    this.phone.makeCall(number, null, opts.videoEnabled, undefined, '')
+    this.phone.makeCall(number, null, opts.videoEnabled)
   }
 
   hangupSession(sessionId) {

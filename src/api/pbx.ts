@@ -5,12 +5,6 @@ import EventEmitter from 'eventemitter3'
 
 import profileStore from '../global/profileStore'
 
-declare global {
-  interface Window {
-    Brekeke: any
-  }
-}
-
 class PBX extends EventEmitter {
   client: any
 

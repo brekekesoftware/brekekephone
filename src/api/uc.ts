@@ -1,6 +1,23 @@
-import UCClient from 'brekekejs/lib/ucclient'
+import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
+
+import { Profile } from '../global/profileStore'
+import {
+  UcChatClient,
+  UcConference,
+  UcListeners,
+  UcLogger,
+  UcReceieveUnreadTextRes,
+  UcSearchTextsRes,
+  UcSendFileRes,
+  UcSendFilesRes,
+} from './brekekejs'
+
+const UCClient = UCClient0 as {
+  ChatClient: UcChatClient
+  Logger: UcLogger
+}
 
 const codeMapUserStatus = {
   0: 'offline',
@@ -24,7 +41,7 @@ const getFileStateFromCode = code =>
   codeMapFileState[code] || codeMapFileState['0']
 
 class UC extends EventEmitter {
-  client: any
+  client: UcChatClient
   constructor() {
     super()
     const logger = new UCClient.Logger('all')
@@ -33,7 +50,7 @@ class UC extends EventEmitter {
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
       buddyStatusChanged: this.onUserUpdated,
-      receivedTyping: null,
+      receivedTyping: undefined,
       receivedText: this.onTextReceived,
       fileReceived: this.onFileReceived,
       fileInfoChanged: this.onFileProgress,
@@ -43,11 +60,11 @@ class UC extends EventEmitter {
     })
   }
 
-  onConnectionStopped = ev => {
+  onConnectionStopped: UcListeners['forcedSignOut'] = ev => {
     this.emit('connection-stopped', ev)
   }
 
-  onUserUpdated = ev => {
+  onUserUpdated: UcListeners['buddyStatusChanged'] = ev => {
     if (!ev) {
       return
     }
@@ -61,7 +78,7 @@ class UC extends EventEmitter {
     })
   }
 
-  onTextReceived = ev => {
+  onTextReceived: UcListeners['receivedText'] = ev => {
     if (!ev || !ev.sender) {
       return
     }
@@ -82,7 +99,7 @@ class UC extends EventEmitter {
         })
   }
 
-  onFileReceived = ev => {
+  onFileReceived: UcListeners['fileReceived'] = ev => {
     if (!ev || !ev.fileInfo) {
       return
     }
@@ -114,7 +131,7 @@ class UC extends EventEmitter {
         })
   }
 
-  onFileProgress = ev => {
+  onFileProgress: UcListeners['fileInfoChanged'] = ev => {
     if (!ev || !ev.fileInfo) {
       return
     }
@@ -126,7 +143,7 @@ class UC extends EventEmitter {
     })
   }
 
-  onFileFinished = ev => {
+  onFileFinished: UcListeners['fileTerminated'] = ev => {
     if (!ev || !ev.fileInfo) {
       return
     }
@@ -138,7 +155,7 @@ class UC extends EventEmitter {
     })
   }
 
-  onGroupInvited = ev => {
+  onGroupInvited: UcListeners['invitedToConference'] = ev => {
     if (!ev || !ev.conference) {
       return
     }
@@ -151,7 +168,7 @@ class UC extends EventEmitter {
     })
   }
 
-  onGroupUpdated = ev => {
+  onGroupUpdated: UcListeners['conferenceMemberChanged'] = ev => {
     if (!ev || !ev.conference) {
       return
     }
@@ -174,7 +191,7 @@ class UC extends EventEmitter {
     })
   }
 
-  connect(profile, option?: object) {
+  connect(profile: Profile, option?: object) {
     return new Promise((onres, onerr) =>
       this.client.signIn(
         `https://${profile.ucHostname}:${profile.ucPort}`,
@@ -206,13 +223,13 @@ class UC extends EventEmitter {
     }
   }
 
-  setStatus(status, statusText) {
-    let num_status = 0
+  setStatus(status: string, statusText: string) {
+    let num_status = '0'
     if (status === 'online') {
-      num_status = 1
+      num_status = '1'
     }
     if (status === 'busy') {
-      num_status = 3
+      num_status = '3'
     }
     return new Promise((onres, onerr) =>
       this.client.changeStatus(num_status, statusText, onres, onerr),
@@ -236,7 +253,7 @@ class UC extends EventEmitter {
   }
 
   async getUnreadChats() {
-    const res: any = await new Promise((onres, onerr) => {
+    const res: UcReceieveUnreadTextRes = await new Promise((onres, onerr) => {
       this.client.receiveUnreadText(onres, onerr)
     })
 
@@ -257,8 +274,8 @@ class UC extends EventEmitter {
     }))
   }
 
-  async getBuddyChats(buddy, opts) {
-    const res: any = await new Promise((onres, onerr) =>
+  async getBuddyChats(buddy: string, opts) {
+    const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
       this.client.searchTexts(
         {
           user_id: buddy,
@@ -278,14 +295,17 @@ class UC extends EventEmitter {
 
     return res.logs.map(log => ({
       id: log.log_id,
-      text: log.ctype === 5 ? JSON.parse(log.content).name : log.content,
+      text:
+        log.ctype === 5
+          ? (JSON.parse(log.content).name as string)
+          : log.content,
       creator: log.sender.user_id,
       created: log.ltime,
     }))
   }
 
-  async getGroupChats(group, opts) {
-    const res: any = await new Promise((onres, onerr) =>
+  async getGroupChats(group: string, opts) {
+    const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
       this.client.searchTexts(
         {
           conf_id: group,
@@ -303,7 +323,6 @@ class UC extends EventEmitter {
       return []
     }
 
-    console.log('log mess', res)
     return res.logs.map(log => ({
       id: log.log_id,
       text: log.content,
@@ -312,7 +331,7 @@ class UC extends EventEmitter {
     }))
   }
 
-  sendBuddyChatText(buddy, text) {
+  sendBuddyChatText(buddy: string, text: string) {
     return new Promise((onres, onerr) =>
       this.client.sendText(
         text,
@@ -349,7 +368,9 @@ class UC extends EventEmitter {
   }
 
   async createChatGroup(name, members: string[] = []) {
-    const res: any = await new Promise((onres, onerr) => {
+    const res: {
+      conference: UcConference
+    } = await new Promise((onres, onerr) => {
       this.client.createConference(name, members, onres, onerr)
     })
 
@@ -362,7 +383,7 @@ class UC extends EventEmitter {
 
   async joinChatGroup(group) {
     await new Promise((onres, onerr) => {
-      this.client.joinConference(group, null, onres, onerr)
+      this.client.joinConference(group, undefined, onres, onerr)
     })
 
     return {
@@ -402,23 +423,33 @@ class UC extends EventEmitter {
     return res
   }
 
-  async rejectFile(file) {
+  async rejectFile(file: { id?: string; file_id_target?: string[] }) {
     if (file.file_id_target) {
       file.file_id_target.map(f => {
         return new Promise((onres, onerr) => {
-          this.client.cancelFile(f, onerr)
-          onres()
+          this.client.cancelFile(f, (err?: Error) => {
+            if (err) {
+              onerr(err)
+            } else {
+              onres()
+            }
+          })
         })
       })
-    } else {
+    } else if (file.id) {
       return new Promise((onres, onerr) => {
-        this.client.cancelFile(file.id, onerr)
-        onres()
+        this.client.cancelFile(file.id || '', (err?: Error) => {
+          if (err) {
+            onerr(err)
+          } else {
+            onres()
+          }
+        })
       })
     }
   }
 
-  async sendFile(user_id, file) {
+  async sendFile(user_id: string, file) {
     let input: any
 
     if (Platform.OS === 'web') {
@@ -459,7 +490,7 @@ class UC extends EventEmitter {
       }
     }
 
-    const res: any = await new Promise((onres, onerr) =>
+    const res: UcSendFileRes = await new Promise((onres, onerr) =>
       this.client.sendFile(
         {
           user_id,
@@ -487,7 +518,7 @@ class UC extends EventEmitter {
     }
   }
 
-  async sendFiles(conf_id, file) {
+  async sendFiles(conf_id: string, file) {
     let input: any
 
     if (Platform.OS === 'web') {
@@ -528,7 +559,7 @@ class UC extends EventEmitter {
       }
     }
 
-    const res: any = await new Promise((onres, onerr) =>
+    const res: UcSendFilesRes = await new Promise((onres, onerr) =>
       this.client.sendFiles(
         {
           conf_id,
@@ -544,7 +575,7 @@ class UC extends EventEmitter {
       file: {
         id: file_res.fileInfo.file_id,
         name: file_res.fileInfo.name,
-        file_id_target: file_res.fileInfos.map(f => f.file_id),
+        // file_id_target: file_res.fileInfos.map(f => f.file_id),
         size: file_res.fileInfo.size,
         state: getFileStateFromCode(file_res.fileInfo.status),
         transferPercent: file_res.fileInfo.progress,
