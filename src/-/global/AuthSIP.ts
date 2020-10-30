@@ -72,7 +72,7 @@ class AuthSIP {
       authStore.sipState = 'failure'
       authStore.sipTotalFailure += 1
       sip.disconnect()
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to connect to SIP`,
         err,
       })

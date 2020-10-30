@@ -60,7 +60,7 @@ export const setupCallKeep = async () => {
       if (AppState.currentState !== 'active') {
         return
       }
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Can not get permission to show call notification`,
         err,
       })

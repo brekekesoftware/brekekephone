@@ -78,7 +78,7 @@ class DebugStore {
   }
   writeFile = () =>
     this.writeFileWithoutCatch().catch(err => {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to write debug log to file`,
         err,
       })
@@ -107,7 +107,7 @@ class DebugStore {
 
   openLogFile = () =>
     this.openLogFileWithoutCatch().catch(err => {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to build and open log file`,
         err,
       })
@@ -133,7 +133,7 @@ class DebugStore {
   }
 
   clearLogFiles = () => {
-    Alert.showPrompt({
+    Alert.prompt({
       title: intl`Clear Logs`,
       message: intl`Do you want to clear all the log files?`,
       onConfirm: this.clearLogFilesWithoutPrompt,
@@ -142,7 +142,7 @@ class DebugStore {
   }
   clearLogFilesWithoutPrompt = () =>
     this.clearLogFilesWithoutCatch().catch(err => {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to clear the log files`,
         err,
       })
@@ -198,7 +198,7 @@ class DebugStore {
     })
       .then(this.saveRemoteVersionToStorage)
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to get app version from app store`,
           err,
         })
@@ -213,7 +213,7 @@ class DebugStore {
         lastCheck: this.remoteVersionLastCheck,
       }),
     ).catch(err => {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to save app version to storage`,
         err,
       })
@@ -242,7 +242,7 @@ class DebugStore {
         .then(e => (e ? RNFS.stat(l) : undefined))
         .then(e => (e ? (this.logSizes[i] = Number(e.size) || 0) : 0))
         .catch(err => {
-          Alert.showError({
+          Alert.error({
             message: intlDebug`Failed to read debug log file size`,
             err,
           })
@@ -255,7 +255,7 @@ class DebugStore {
       RNFS.exists(log)
         .then(e => (e ? RNFS.unlink(log) : undefined))
         .catch(err => {
-          Alert.showError({
+          Alert.error({
             message: intlDebug`Failed to delete unused debug log file`,
             err,
           })
@@ -266,7 +266,7 @@ class DebugStore {
       RnAsyncStorage.getItem('captureDebugLog')
         .then(v => v && (this.captureDebugLog = JSON.parse(v)))
         .catch(err => {
-          Alert.showError({
+          Alert.error({
             message: intlDebug`Failed to read debug log settings from storage`,
             err,
           })
@@ -284,7 +284,7 @@ class DebugStore {
           this.autoCheckForUpdate()
         })
         .catch(err => {
-          Alert.showError({
+          Alert.error({
             message: intlDebug`Failed to read app version from storage`,
             err,
           })

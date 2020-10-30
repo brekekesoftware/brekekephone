@@ -103,7 +103,7 @@ class PageChatGroupInvite extends React.Component<{
     const { selectedBuddy } = this.state
     const members = Object.keys(selectedBuddy)
     if (!members.length) {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`No buddy selected`,
       })
       return
@@ -113,7 +113,7 @@ class PageChatGroupInvite extends React.Component<{
       .then(this.back)
   }
   onInviteFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to invite group chat`,
       err,
     })

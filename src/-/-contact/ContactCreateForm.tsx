@@ -49,7 +49,7 @@ const ContactsCreateForm = observer(props => {
         props.onBack()
         return
       }
-      Alert.showPrompt({
+      Alert.prompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,

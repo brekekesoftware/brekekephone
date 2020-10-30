@@ -28,7 +28,7 @@ class AuthPBX {
       .catch(err => {
         authStore.pbxState = 'failure'
         authStore.pbxTotalFailure += 1
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to connect to pbx`,
           err,
         })

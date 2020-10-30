@@ -11,6 +11,7 @@ import React, { useRef } from 'react'
 import { Keyboard, Platform, StyleSheet, View } from 'react-native'
 
 import g from '../global'
+import Picker from '../global/Picker'
 import intl from '../intl/intl'
 import {
   RnIcon,
@@ -230,7 +231,7 @@ const Field = observer(({ ...props }) => {
       Object.assign(props, {
         valueRender: v => props.options.find(o => o.key === v)?.label || v,
         onTouchPress: () => {
-          g.openPicker({
+          Picker.open({
             options: props.options,
             selectedKey: props.value,
             onSelect: props.onValueChange,

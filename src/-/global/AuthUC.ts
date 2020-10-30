@@ -44,7 +44,7 @@ class AuthUC {
   onAuthFailure = err => {
     authStore.ucState = 'failure'
     authStore.ucTotalFailure += 1
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to connect to UC`,
       err,
     })
@@ -70,7 +70,7 @@ class AuthUC {
     })
   }
   onLoadUnreadChatsFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to load unread chat messages`,
       err,
     })

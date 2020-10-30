@@ -70,7 +70,7 @@ export default class Call {
     const message = this.recording
       ? intlDebug`Failed to stop recording the call`
       : intlDebug`Failed to start recording the call`
-    Alert.showError({ message, err })
+    Alert.error({ message, err })
   }
 
   @observable holding = false
@@ -92,7 +92,7 @@ export default class Call {
     const message = this.holding
       ? intlDebug`Failed to unhold the call`
       : intlDebug`Failed to hold the call`
-    Alert.showError({ message, err })
+    Alert.error({ message, err })
   }
 
   @observable transferring = ''
@@ -112,7 +112,7 @@ export default class Call {
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to transfer the call`,
       err,
     })
@@ -127,7 +127,7 @@ export default class Call {
   }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to stop the transfer`,
       err,
     })
@@ -142,7 +142,7 @@ export default class Call {
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to make conference for the transfer`,
       err,
     })
@@ -154,7 +154,7 @@ export default class Call {
       .catch(this.onParkFailure)
   }
   private onParkFailure = (err: Error) => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to park the call`,
       err,
     })

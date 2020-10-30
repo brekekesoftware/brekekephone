@@ -28,7 +28,7 @@ class ContactStore {
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
       })
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to load contact list`,
           err,
         })

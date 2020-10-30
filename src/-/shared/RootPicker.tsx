@@ -4,6 +4,7 @@ import React from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import g from '../global'
+import Picker, { PickerOption } from '../global/Picker'
 import intl from '../intl/intl'
 import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import { useAnimationOnDidMount } from '../utils/animation'
@@ -62,7 +63,7 @@ const css = StyleSheet.create({
   },
 })
 
-const Picker = p => {
+const PickerR = (p: PickerOption) => {
   const backdropCss = useAnimationOnDidMount({
     opacity: [0, 1],
   })
@@ -75,7 +76,7 @@ const Picker = p => {
         style={[StyleSheet.absoluteFill, css.Picker_Backdrop, backdropCss]}
       >
         <RnTouchableOpacity
-          onPress={g.dismissPicker}
+          onPress={Picker.dismiss}
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
@@ -88,7 +89,7 @@ const Picker = p => {
                 key={i}
                 onPress={() => {
                   p.onSelect(o.key)
-                  g.dismissPicker()
+                  Picker.dismiss()
                 }}
                 style={[
                   css.Picker_Option,
@@ -112,7 +113,7 @@ const Picker = p => {
           })}
         </View>
         <RnTouchableOpacity
-          onPress={g.dismissPicker}
+          onPress={Picker.dismiss}
           style={[css.Picker_Option, css.Picker_Option__cancel]}
         >
           <RnText style={css.Picker_Text__cancel}>
@@ -130,7 +131,7 @@ const Picker = p => {
 }
 
 const RootPicker = observer(
-  () => g.currentPicker && <Picker {...g.currentPicker} />,
+  () => Picker.currentPicker && <PickerR {...Picker.currentPicker} />,
 )
 
 export default RootPicker

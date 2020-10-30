@@ -170,7 +170,7 @@ class PageChatGroupDetail extends React.Component<{
         window.setTimeout(this.onContentSizeChange, 170)
       })
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to get recent chats`,
           err,
         })
@@ -195,7 +195,7 @@ class PageChatGroupDetail extends React.Component<{
         chatStore.pushMessages(this.props.groupId, chats)
       })
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to get more chats`,
           err,
         })
@@ -227,7 +227,7 @@ class PageChatGroupDetail extends React.Component<{
         this.setState({ editingText: '' })
       })
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to send the message`,
           err,
         })
@@ -244,7 +244,7 @@ class PageChatGroupDetail extends React.Component<{
         g.goToPageChatRecents()
       })
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to leave the group`,
           err,
         })
@@ -307,7 +307,7 @@ class PageChatGroupDetail extends React.Component<{
     chatStore.pushMessages(groupId, res.chat)
   }
   onSendFileFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to send file`,
       err,
     })
@@ -338,7 +338,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   onAcceptFileFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to accept file`,
       err,
     })
@@ -347,7 +347,7 @@ class PageChatGroupDetail extends React.Component<{
     uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
   onRejectFileFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to reject file`,
       err,
     })

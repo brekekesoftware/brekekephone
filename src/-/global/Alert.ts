@@ -37,11 +37,11 @@ export class AlertStore {
   @observable alertsCount = 0
   alerts: Alert[] = []
 
-  @action showPrompt = (prompt: PromptAlert) => {
+  @action prompt = (prompt: PromptAlert) => {
     this.alerts.push({ prompt })
     this.alertsCount = this.alerts.length
   }
-  @action showError = (a: ErrorAlert) => {
+  @action error = (a: ErrorAlert) => {
     // Log error to save it to the debug log
     // Convert error message to string if it was constructed using intlDebug
     const err = a.unexpectedErr || a.err

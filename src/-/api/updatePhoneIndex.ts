@@ -6,7 +6,7 @@ import pbx from './pbx'
 
 const updatePhoneIndex = () =>
   updatePhoneIndexWithoutCatch().catch(err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to update phone index`,
       err,
     })
@@ -48,7 +48,7 @@ const updatePhoneIndexWithoutCatch = async () => {
     await setExtensionProperties()
   } else {
     return new Promise(resolve => {
-      Alert.showPrompt({
+      Alert.prompt({
         title: intl`Warning`,
         message: intl`This phone index is already in use. Do you want to continue?`,
         onConfirm: () => {
@@ -58,7 +58,7 @@ const updatePhoneIndexWithoutCatch = async () => {
               resolve(phone)
             })
             .catch(err => {
-              Alert.showError({
+              Alert.error({
                 message: intlDebug`Failed to set extension properties`,
                 err,
               })

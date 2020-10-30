@@ -22,7 +22,7 @@ class PageCallKeypad extends React.Component {
   callVoice = () => {
     this.txt = this.txt.trim()
     if (!this.txt) {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`No target to call`,
       })
       return

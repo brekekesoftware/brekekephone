@@ -77,7 +77,7 @@ AppState.addEventListener('change', () => {
   }
 })
 registerOnUnhandledError(unexpectedErr => {
-  batchRender(() => Alert.showError({ unexpectedErr }))
+  batchRender(() => Alert.error({ unexpectedErr }))
   return false
 })
 
@@ -100,7 +100,7 @@ const getAudioVideoPermission = () => {
 }
 
 if (Platform.OS === 'web') {
-  Alert.showPrompt({
+  Alert.prompt({
     title: intl`Action Required`,
     message: intl`Brekeke Phone needs your action to work well on browser. Press OK to continue`,
     confirmText: 'OK',

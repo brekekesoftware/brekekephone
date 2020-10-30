@@ -14,6 +14,7 @@ import Share from 'react-native-share'
 
 import g from '../global'
 import Alert from '../global/Alert'
+import Picker from '../global/Picker'
 import intl, { intlDebug } from '../intl/intl'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '../Rn'
 
@@ -174,7 +175,7 @@ class Message extends React.Component<{
       return
     }
     if (!Linking.canOpenURL(url)) {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Can not open the url`,
       })
     } else {
@@ -182,7 +183,7 @@ class Message extends React.Component<{
     }
   }
   onLinkLongPress = url => {
-    g.openPicker({
+    Picker.open({
       options: [
         {
           key: 2,
@@ -209,7 +210,7 @@ class Message extends React.Component<{
     })
   }
   onMessagePress = () => {
-    g.openPicker({
+    Picker.open({
       options: [
         {
           key: 0,

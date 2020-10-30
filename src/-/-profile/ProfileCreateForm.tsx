@@ -23,7 +23,7 @@ const ProfileCreateForm = observer(props => {
       addingPark: '',
     },
     resetAllFields: () => {
-      Alert.showPrompt({
+      Alert.prompt({
         title: intl`Reset`,
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
@@ -48,7 +48,7 @@ const ProfileCreateForm = observer(props => {
       })
     },
     onAddingParkRemove: i => {
-      Alert.showPrompt({
+      Alert.prompt({
         title: intl`Remove Park`,
         message: (
           <React.Fragment>
@@ -82,7 +82,7 @@ const ProfileCreateForm = observer(props => {
         props.onBack()
         return
       }
-      Alert.showPrompt({
+      Alert.prompt({
         title: intl`Discard Changes`,
         message: intl`Do you want to discard all unsaved changes and go back?`,
         onConfirm: props.onBack,

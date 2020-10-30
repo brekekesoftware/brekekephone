@@ -10,7 +10,7 @@ declare global {
 const getFrontCameraSourceId = () => {
   const mediaDevices = window.navigator.mediaDevices
   if (!mediaDevices) {
-    Alert.showError({
+    Alert.error({
       unexpectedErr: new Error(
         'Can not access mediaDevices, check if your connection is https secured',
       ),
@@ -22,7 +22,7 @@ const getFrontCameraSourceId = () => {
     .then(a => a.find(i => /video/i.test(i.kind) && /front/i.test(i.facing)))
     .then(i => i?.id)
     .catch(err => {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to get front camera information`,
         err,
       })

@@ -92,7 +92,7 @@ const ProfileSignInItem = observer(props => {
       <View style={css.ProfileSignInItem_Btns}>
         <FooterActions
           onBack={() => {
-            Alert.showPrompt({
+            Alert.prompt({
               title: intl`Remove Account`,
               message: (
                 <React.Fragment>

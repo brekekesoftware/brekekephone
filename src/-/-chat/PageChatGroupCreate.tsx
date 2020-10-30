@@ -79,7 +79,7 @@ class PageChatGroupCreate extends React.Component {
   create = () => {
     const { members, name } = this.state
     if (!name.trim()) {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Group name is required`,
       })
       return
@@ -94,7 +94,7 @@ class PageChatGroupCreate extends React.Component {
     g.goToPageChatRecents()
   }
   onCreateFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to create the group chat`,
       err,
     })

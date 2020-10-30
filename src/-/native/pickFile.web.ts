@@ -28,7 +28,7 @@ export const pickFileNativeOptions = () => [
   },
 ]
 export const onPickFileNativeError = err => {
-  Alert.showError({
+  Alert.error({
     message: intlDebug`Failed to pick file from system`,
     err,
   })

@@ -104,7 +104,7 @@ class ChatGroupInvite extends React.Component {
     chatStore.removeGroup(res.id)
   }
   onRejectFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to reject the group chat`,
       err,
     })
@@ -119,7 +119,7 @@ class ChatGroupInvite extends React.Component {
     this.loading = false
   }
   onAcceptFailure = err => {
-    Alert.showError({
+    Alert.error({
       message: intlDebug`Failed to accept the group chat`,
       err,
     })

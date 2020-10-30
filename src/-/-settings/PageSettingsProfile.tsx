@@ -15,7 +15,7 @@ const PageSettingsProfile = observer(() => (
       if (!hasUnsavedChanges) {
         g.backToPageContactPhonebook()
       }
-      Alert.showPrompt({
+      Alert.prompt({
         title: intl`Save Account`,
         message: intl`Do you want to update your account?\nYou'll need to sign out and then sign in again.`,
         onConfirm: () => {

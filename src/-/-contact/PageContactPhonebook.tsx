@@ -16,6 +16,7 @@ import Alert from '../global/Alert'
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
 import contactStore from '../global/contactStore'
+import Picker from '../global/Picker'
 import intl, { intlDebug } from '../intl/intl'
 import { RnText, RnTouchableOpacity } from '../Rn'
 import Field from '../shared/Field'
@@ -64,7 +65,7 @@ class PageContactPhonebook extends React.Component {
         cb(ct)
       })
       .catch(err => {
-        Alert.showError({
+        Alert.error({
           message: intlDebug`Failed to load contact detail for ${id}`,
           err,
         })
@@ -76,7 +77,7 @@ class PageContactPhonebook extends React.Component {
       callStore.startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(contact)
-      Alert.showError({
+      Alert.error({
         message: intlDebug`This contact doesn't have any phone number`,
       })
     }
@@ -135,7 +136,7 @@ class PageContactPhonebook extends React.Component {
       this.callRequest(numbers[0].value, u)
       return
     }
-    g.openPicker({
+    Picker.open({
       options: numbers.map(i => ({
         key: i.value,
         label: i.value,

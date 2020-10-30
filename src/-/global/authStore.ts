@@ -121,14 +121,14 @@ class AuthStore {
     const d = g.getProfileData(p)
     if (!p.pbxPassword && !d.accessToken) {
       g.goToPageProfileUpdate({ id: p.id })
-      Alert.showError({
+      Alert.error({
         message: intlDebug`The account password is empty`,
       })
       return true
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
       g.goToPageProfileUpdate({ id: p.id })
-      Alert.showError({
+      Alert.error({
         message: intlDebug`The UC config is missing`,
       })
       return true

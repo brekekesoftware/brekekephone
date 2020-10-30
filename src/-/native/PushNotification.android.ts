@@ -69,7 +69,7 @@ const PushNotification = {
       const n = await FCM.getInitialNotification()
       onNotification(n, initApp)
     } catch (err) {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to initialize push notification`,
         err,
       })

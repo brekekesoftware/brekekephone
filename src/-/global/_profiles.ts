@@ -113,7 +113,7 @@ g.extends({
         JSON.stringify({ profiles, profileData }),
       )
     } catch (err) {
-      Alert.showError({
+      Alert.error({
         message: intlDebug`Failed to save accounts to local storage`,
         err,
       })

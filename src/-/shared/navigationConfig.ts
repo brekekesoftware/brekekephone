@@ -181,7 +181,7 @@ export const getSubMenus = menu => {
   const arr = menus()
   const m = arr.find(m => m.key === menu)
   if (!m) {
-    Alert.showError({
+    Alert.error({
       unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
     })
     return []
