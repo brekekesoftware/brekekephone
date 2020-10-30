@@ -6,6 +6,7 @@ import { FlatList, Platform, StyleSheet, View } from 'react-native'
 import g from '../global'
 import Nav from '../global/Nav'
 import intl from '../intl/intl'
+import intlStore from '../intl/intlStore'
 import { RnIcon, RnText, RnTouchableOpacity } from '../Rn'
 import BrekekeGradient from '../shared/BrekekeGradient'
 import Layout from '../shared/Layout'
@@ -110,18 +111,22 @@ const PageProfileSignIn = observer(() => {
         </View>
       </RnTouchableOpacity>
       <RnTouchableOpacity
-        onPress={g.localeLoading ? null : g.selectLocale}
+        onPress={intlStore.localeLoading ? null : intlStore.selectLocale}
         style={[css.CornerButton, css.CornerButton__language]}
       >
         <View
           style={[css.CornerButton_Inner, css.CornerButton_Inner__language]}
         >
           <RnText bold white>
-            {g.localeLoading ? '\u200a' : g.localeName}
+            {intlStore.localeLoading ? '\u200a' : intlStore.localeName}
           </RnText>
           <RnIcon
             color='white'
-            path={g.localeLoading ? mdiDotsHorizontal : mdiUnfoldMoreHorizontal}
+            path={
+              intlStore.localeLoading
+                ? mdiDotsHorizontal
+                : mdiUnfoldMoreHorizontal
+            }
             size={16}
             style={[css.CornerButton_Icon, css.CornerButton_Icon__language]}
           />

@@ -3,10 +3,10 @@ import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 
 import uc from '../api/uc'
-import g from '../global'
 import authStore from '../global/authStore'
 import RnAlert from '../global/RnAlert'
 import intl, { intlDebug } from '../intl/intl'
+import intlStore from '../intl/intlStore'
 import Field from '../shared/Field'
 import Layout from '../shared/Layout'
 
@@ -75,9 +75,9 @@ class PageSettingsOther extends Component {
         <Field
           icon={mdiTranslate}
           label={intl`LANGUAGE`}
-          onTouchPress={g.selectLocale}
-          value={g.locale}
-          valueRender={() => g.localeName}
+          onTouchPress={intlStore.selectLocale}
+          value={intlStore.locale}
+          valueRender={() => intlStore.localeName}
         />
         {authStore.currentProfile.ucEnabled && (
           <React.Fragment>

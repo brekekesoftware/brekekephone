@@ -9,6 +9,7 @@ import authStore from '../global/authStore'
 import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
 import intl from '../intl/intl'
+import intlStore from '../intl/intlStore'
 import { arrToMap } from '../utils/toMap'
 
 interface Menu {
@@ -122,11 +123,11 @@ const genMenus = () => {
   return arr
 }
 
-let lastLocale = g.locale
+let lastLocale = intlStore.locale
 let lastMenus = genMenus()
 export const menus = () => {
-  if (lastLocale !== g.locale) {
-    lastLocale = g.locale
+  if (lastLocale !== intlStore.locale) {
+    lastLocale = intlStore.locale
     lastMenus = genMenus()
   }
   return lastMenus
