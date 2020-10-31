@@ -11,3 +11,8 @@ declare module '*.mp3' {
   const src: string
   export default src
 }
+
+declare module 'brekekejs/lib/ucclient' {
+  const m: unknown
+  export default m
+}

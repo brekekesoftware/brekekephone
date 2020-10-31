@@ -53,7 +53,7 @@ class DebugStore {
   // Use a queue to write logs to file in batch
   logQueue: string[] = []
 
-  // The function to be called in src/-/captureConsoleOutput.js
+  // The function to be called in src/captureConsoleOutput.js
   captureConsoleOutput = (lv, ...args) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
@@ -296,7 +296,7 @@ class DebugStore {
 }
 
 if (Platform.OS !== 'web') {
-  // Assign to window to use in src/-/captureConsoleOutput.js
+  // Assign to window to use in src/captureConsoleOutput.js
   debugStore = window.debugStore = new DebugStore()
 
   // TODO call init together with other store

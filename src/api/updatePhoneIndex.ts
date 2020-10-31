@@ -5,7 +5,7 @@ import intl, { intlDebug } from '../intl/intl'
 import pbx from './pbx'
 
 const updatePhoneIndex = () =>
-  updatePhoneIndexWithoutCatch().catch(err => {
+  updatePhoneIndexWithoutCatch().catch((err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to update phone index`,
       err,
@@ -25,12 +25,12 @@ const updatePhoneIndexWithoutCatch = async () => {
   const phoneIdCorrect = phone.id === expectedPhoneId
   //
   const setExtensionProperties = async () => {
-    await pbx.pal('setExtensionProperties', {
+    await pbx.client.pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
       properties: {
         // See ./pbx getExtensionProperties for the detail of parameters
-        pnumber: extProps.phones.map(p => p.id).join(','),
+        pnumber: extProps.phones.map((p: { id: string }) => p.id).join(','),
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })

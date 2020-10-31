@@ -3,12 +3,13 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
-import profileStore from '../global/profileStore'
+import profileStore, { Profile } from '../global/profileStore'
+import { Pbx } from './brekekejs'
 
 class PBX extends EventEmitter {
-  client: any
+  client = (null as unknown) as Pbx
 
-  async connect(p) {
+  async connect(p: Profile) {
     if (this.client) {
       return Promise.reject(new Error('PAL client is connected'))
     }
@@ -27,6 +28,16 @@ class PBX extends EventEmitter {
       secure_login_password: false,
       phonetype: 'webphone',
     })
+
+    client.pal = (((method: keyof typeof client, params?: object) => {
+      return new Promise((onres, onerr) => {
+        const f = (client[method] as Function).bind(client)
+        if (typeof f !== 'function') {
+          return onerr(new Error(`PAL client doesn't support "${method}"`))
+        }
+        f(params, onres, onerr)
+      })
+    }) as unknown) as Pbx['pal']
 
     client.debugLevel = 2
     let timeout = 0
@@ -127,36 +138,22 @@ class PBX extends EventEmitter {
   disconnect() {
     if (this.client) {
       this.client.close()
-      this.client = null
+      this.client = (null as unknown) as Pbx
     }
   }
 
-  pal(method: string, params?: object): Promise<any> {
-    return new Promise((onres, onerr) => {
-      if (!this.client) {
-        return onerr(new Error('PAL client is not ready'))
-      }
-
-      if (typeof this.client[method] !== 'function') {
-        return onerr(new Error(`PAL client doesn't support "${method}"`))
-      }
-
-      this.client[method](params, onres, onerr)
-    })
-  }
-
   getConfig() {
-    return this.pal('getProductInfo')
+    return this.client.pal('getProductInfo', null)
   }
 
-  createSIPAccessToken(sipUsername) {
-    return this.pal('createAuthHeader', {
+  createSIPAccessToken(sipUsername: string) {
+    return this.client.pal('createAuthHeader', {
       username: sipUsername,
     })
   }
 
-  getUsers(tenant) {
-    return this.pal('getExtensions', {
+  getUsers(tenant: string) {
+    return this.client.pal('getExtensions', {
       tenant,
       pattern: '..*',
       limit: -1,
@@ -164,8 +161,8 @@ class PBX extends EventEmitter {
     })
   }
 
-  async getOtherUsers(tenant, userIds) {
-    const res = await this.pal('getExtensionProperties', {
+  async getOtherUsers(tenant: string, userIds: string | string[]) {
+    const res = await this.client.pal('getExtensionProperties', {
       tenant: tenant,
       extension: userIds,
       property_names: ['name'],
@@ -187,8 +184,8 @@ class PBX extends EventEmitter {
     return users
   }
 
-  async getUserForSelf(tenant, userId) {
-    const res = await this.pal('getExtensionProperties', {
+  async getUserForSelf(tenant: string, userId: string) {
+    const res = await this.client.pal('getExtensionProperties', {
       tenant: tenant,
       extension: userId,
 
@@ -203,7 +200,7 @@ class PBX extends EventEmitter {
       ],
     })
 
-    const pnumber = res[5].split(',')
+    const pnumber = ('' + res[5]).split(',')
 
     const phones = [
       {
@@ -236,7 +233,7 @@ class PBX extends EventEmitter {
   }
 
   // async getPhonebooks() {
-  //   const res = await this.pal('getPhonebooks')
+  //   const res = await this.client.pal('getPhonebooks')
 
   //   return res.map(item => ({
   //     name: item.phonebook,
@@ -244,8 +241,16 @@ class PBX extends EventEmitter {
   //   }))
   // }
 
-  async getContacts({ shared, offset, limit }) {
-    const res = await this.pal('getContactList', {
+  async getContacts({
+    shared,
+    offset,
+    limit,
+  }: {
+    shared: boolean
+    offset: number
+    limit: number
+  }) {
+    const res = await this.client.pal('getContactList', {
       shared: shared === true ? 'true' : 'false',
       offset,
       limit,
@@ -257,8 +262,8 @@ class PBX extends EventEmitter {
     }))
   }
 
-  async getContact(id) {
-    const res = await this.pal('getContact', {
+  async getContact(id: string) {
+    const res = await this.client.pal('getContact', {
       aid: id,
     })
     res.info = res.info || {}
@@ -280,8 +285,22 @@ class PBX extends EventEmitter {
     }
   }
 
-  setContact(contact) {
-    return this.pal('setContact', {
+  setContact(contact: {
+    id: string
+    book: string
+    shared: string
+    firstName: string
+    lastName: string
+    workNumber: string
+    homeNumber: string
+    cellNumber: string
+    address: string
+    job: string
+    email: string
+    company: string
+    hidden: string
+  }) {
+    return this.client.pal('setContact', {
       aid: contact.id,
       phonebook: contact.book,
       shared: contact.shared,
@@ -301,36 +320,36 @@ class PBX extends EventEmitter {
     })
   }
 
-  holdTalker(tenant, talker) {
-    return this.pal('hold', {
+  holdTalker(tenant: string, talker: string) {
+    return this.client.pal('hold', {
       tenant,
       tid: talker,
     })
   }
 
-  unholdTalker(tenant, talker) {
-    return this.pal('unhold', {
+  unholdTalker(tenant: string, talker: string) {
+    return this.client.pal('unhold', {
       tenant,
       tid: talker,
     })
   }
 
-  startRecordingTalker(tenant, talker) {
-    return this.pal('startRecording', {
+  startRecordingTalker(tenant: string, talker: string) {
+    return this.client.pal('startRecording', {
       tenant,
       tid: talker,
     })
   }
 
-  stopRecordingTalker(tenant, talker) {
-    return this.pal('stopRecording', {
+  stopRecordingTalker(tenant: string, talker: string) {
+    return this.client.pal('stopRecording', {
       tenant,
       tid: talker,
     })
   }
 
-  transferTalkerBlind(tenant, talker, toUser) {
-    return this.pal('transfer', {
+  transferTalkerBlind(tenant: string, talker: string, toUser: string) {
+    return this.client.pal('transfer', {
       tenant,
       user: toUser,
       tid: talker,
@@ -338,37 +357,45 @@ class PBX extends EventEmitter {
     })
   }
 
-  transferTalkerAttended(tenant, talker, toUser) {
-    return this.pal('transfer', {
+  transferTalkerAttended(tenant: string, talker: string, toUser: string) {
+    return this.client.pal('transfer', {
       tenant,
       user: toUser,
       tid: talker,
     })
   }
 
-  joinTalkerTransfer(tenant, talker) {
-    return this.pal('conference', {
+  joinTalkerTransfer(tenant: string, talker: string) {
+    return this.client.pal('conference', {
       tenant,
       tid: talker,
     })
   }
 
-  stopTalkerTransfer(tenant, talker) {
-    return this.pal('cancelTransfer', {
+  stopTalkerTransfer(tenant: string, talker: string) {
+    return this.client.pal('cancelTransfer', {
       tenant,
       tid: talker,
     })
   }
 
-  parkTalker(tenant, talker, atNumber) {
-    return this.pal('park', {
+  parkTalker(tenant: string, talker: string, atNumber: string) {
+    return this.client.pal('park', {
       tenant,
       tid: talker,
       number: atNumber,
     })
   }
 
-  addApnsToken = ({ device_id, username, voip = false }) =>
+  addApnsToken = ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: 'set',
@@ -381,12 +408,20 @@ class PBX extends EventEmitter {
       if (!this.client) {
         resolve(null)
       }
-      this.client.pnmanage(params, resolve, reject)
+      this.client.pal('pnmanage', params).then(resolve).catch(reject)
     }).catch(err => {
       console.error('addApnsToken:' + (voip ? ' voip:' : ''), err)
     })
 
-  addFcmPnToken = ({ device_id, username, voip = false }) =>
+  addFcmPnToken = ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: 'set',
@@ -399,12 +434,22 @@ class PBX extends EventEmitter {
       if (!this.client) {
         resolve(null)
       }
-      this.client.pnmanage(params, resolve, reject)
+      this.client.pal('pnmanage', params).then(resolve).catch(reject)
     }).catch(err => {
       console.error('addFcmPnToken:' + (voip ? ' voip:' : ''), err)
     })
 
-  addWebPnToken = ({ auth_secret, endpoint, key, username }) =>
+  addWebPnToken = ({
+    auth_secret,
+    endpoint,
+    key,
+    username,
+  }: {
+    auth_secret: string
+    endpoint: string
+    username: string
+    key: string
+  }) =>
     new Promise((resolve, reject) => {
       const params = {
         command: 'set',
@@ -419,7 +464,7 @@ class PBX extends EventEmitter {
       if (!this.client) {
         resolve(null)
       }
-      this.client.pnmanage(params, resolve, reject)
+      this.client.pal('pnmanage', params).then(resolve).catch(reject)
     }).catch(err => {
       console.error('addWebPnToken:', err)
     })

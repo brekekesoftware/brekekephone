@@ -10,10 +10,10 @@ const captureConsoleOutput = () => {
 
   const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
     (m, k) => {
-      const f = console[k].bind(console)
+      const f = console[k as keyof typeof console].bind(console)
       m[k] =
         Platform.OS === 'web'
-          ? (...args) =>
+          ? (...args: unknown[]) =>
               f(
                 ...args.map(a =>
                   // !a
@@ -29,11 +29,12 @@ const captureConsoleOutput = () => {
                 ),
               )
           : // debugStore was added globally in src/global/debugStore.js so it can be used here
-            (...args) => window.debugStore?.captureConsoleOutput(k, ...args)
+            (...args: unknown[]) =>
+              window.debugStore?.captureConsoleOutput(k, ...args)
       m[`_${k}`] = f
       return m
     },
-    {},
+    {} as { [k: string]: Function },
   )
 
   Object.entries(customConsoleObject).forEach(([k, v]) => {

@@ -35,7 +35,7 @@ yarn cache clean && yarn --check-files && yarn rn --reset-cache
   - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
-  - `src/-/api/turnConfig.ts`
+  - `src/api/turnConfig.ts`
 - Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off. Example of real config:
 
 ```js

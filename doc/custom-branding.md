@@ -59,11 +59,11 @@ src/assets/logo.png
     - Find and replace `#74bf53` with your new color
     - Update `ios/Phone/Base.lproj/LaunchScreen.xib` at the node `<color key="backgroundColor"` with your new color
   - For other in app colors:
-    - Open `src/-/variables.js` and update the primary color there
+    - Open `src/variables.js` and update the primary color there
     - You can also update other colors their as you want
 
 - For the push notification and build:
-  - Update google application id `22177122297` in `src/-/api/pbx.js`
+  - Update google application id `22177122297` in `src/api/pbx.js`
   - You may need to update the app version / build code here:
     - `android/app/build.gradle` search for `versionCode` and `versionName`
     - `ios/Phone/Info.plist` search for `CFBundleShortVersionString`

@@ -67,7 +67,7 @@ registerOnUnhandledError(unexpectedErr => {
 
 const getAudioVideoPermission = () => {
   const cb = (s: MediaStream) => s.getTracks().forEach(t => t.stop())
-  const er = err => {
+  const er = (err: MediaStreamError) => {
     /* TODO */
   }
   const p = (window.navigator.getUserMedia(

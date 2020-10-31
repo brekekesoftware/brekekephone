@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import { v4 as uuid } from 'react-native-uuid'
 
 import authStore from '../global/authStore'
+import Call from '../global/Call'
 import callStore from '../global/callStore'
 import chatStore from '../global/chatStore'
 import contactStore from '../global/contactStore'
@@ -69,7 +70,7 @@ class Api {
     this.addPnToken(webPhone)
   }
 
-  addPnToken = async phone => {
+  addPnToken = async (phone: { id: string }) => {
     let t = await PushNotification.getToken()
     let tvoip = t
     if (Platform.OS === 'ios') {
@@ -114,7 +115,7 @@ class Api {
   }
 
   onPBXConnectionStarted = () => {
-    this.loadPBXUsers().catch(err => {
+    this.loadPBXUsers().catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,
         err,
@@ -141,28 +142,28 @@ class Api {
     const username = authStore.currentProfile.pbxUsername
     const userIds = await pbx
       .getUsers(tenant)
-      .then(ids => ids.filter(id => id !== username))
+      .then((ids: string[]) => ids.filter(id => id !== username))
     const users = await pbx.getOtherUsers(tenant, userIds)
     contactStore.pbxUsers = users
   }
 
-  onPBXUserCalling = ev => {
+  onPBXUserCalling = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'calling')
   }
-  onPBXUserRinging = ev => {
+  onPBXUserRinging = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'ringing')
   }
-  onPBXUserTalking = ev => {
+  onPBXUserTalking = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'talking')
   }
-  onPBXUserHolding = ev => {
+  onPBXUserHolding = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'holding')
   }
-  onPBXUserHanging = ev => {
+  onPBXUserHanging = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, '')
   }
 
-  onVoiceMailUpdated = ev => {
+  onVoiceMailUpdated = (ev: { new: number }) => {
     callStore.newVoicemailCount = ev?.new || 0
   }
 
@@ -171,7 +172,7 @@ class Api {
     window.setTimeout(this.onPBXAndSipStarted)
   }
 
-  onSIPConnectionStopped = e => {
+  onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     if (!e?.reason && !e?.response) {
       authStore.sipState = 'stopped'
     } else {
@@ -187,7 +188,7 @@ class Api {
     sip.disconnect()
   }
 
-  onSIPSessionStarted = call => {
+  onSIPSessionStarted = (call: Call) => {
     const number = call.partyNumber
     if (number === '8') {
       call.partyName = 'Voicemails'
@@ -197,10 +198,10 @@ class Api {
     }
     callStore.upsertCall(call)
   }
-  onSIPSessionUpdated = call => {
+  onSIPSessionUpdated = (call: Call) => {
     callStore.upsertCall(call)
   }
-  onSIPSessionStopped = id => {
+  onSIPSessionStopped = (id: string) => {
     const call = callStore._calls.find(c => c.id === id)
     if (!call) {
       return
@@ -259,3 +260,8 @@ class Api {
 }
 
 export default new Api()
+
+interface UserTalkerEvent {
+  user: string
+  talker: string
+}

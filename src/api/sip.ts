@@ -5,6 +5,7 @@ import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
 import appPackageJson from '../../package.json'
+import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
 import turnConfig from './turnConfig'
 
@@ -24,7 +25,7 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
 }
 
 class SIP extends EventEmitter {
-  phone = (null as any) as typeof window.Brekeke.WebrtcClient.Phone
+  phone = (null as unknown) as Sip
   init = async () => {
     const sourceId = await getFrontCameraSourceId()
     const phone = new window.Brekeke.WebrtcClient.Phone({
@@ -154,7 +155,15 @@ class SIP extends EventEmitter {
     })
   }
 
-  async connect(sipLoginOption) {
+  async connect(sipLoginOption: {
+    hostname: string
+    port: string
+    pbxTurnEnabled: boolean
+    tenant: string
+    username: string
+    password: string
+    accessToken: string
+  }) {
     this.disconnect()
     await this.init()
     //
@@ -178,7 +187,7 @@ class SIP extends EventEmitter {
       jssipVersion
     //
     const callOptions = ((sipLoginOption.pbxTurnEnabled && turnConfig) ||
-      {}) as any
+      {}) as CallOptions
     if (!callOptions.pcConfig) {
       callOptions.pcConfig = {}
     }
@@ -202,32 +211,32 @@ class SIP extends EventEmitter {
   disconnect() {
     if (this.phone) {
       this.phone.stopWebRTC()
-      this.phone = (null as any) as typeof window.Brekeke.WebrtcClient.Phone
+      this.phone = (null as unknown) as Sip
     }
   }
 
-  createSession(number, opts: any = {}) {
+  createSession(number: string, opts: { videoEnabled?: boolean } = {}) {
     this.phone.makeCall(number, null, opts.videoEnabled)
   }
 
-  hangupSession(sessionId) {
+  hangupSession(sessionId: string) {
     const session = this.phone.getSession(sessionId)
     const rtcSession = session && session.rtcSession
     rtcSession && rtcSession.terminate()
   }
-  answerSession(sessionId, opts: any = {}) {
+  answerSession(sessionId: string, opts: { videoEnabled?: boolean } = {}) {
     this.phone.answer(sessionId, null, opts.videoEnabled)
   }
-  sendDTMF(dtmf, sessionId) {
+  sendDTMF(dtmf: string, sessionId: string) {
     this.phone.sendDTMF(dtmf, sessionId)
   }
-  enableVideo(sessionId) {
+  enableVideo(sessionId: string) {
     this.phone.setWithVideo(sessionId, true)
   }
-  disableVideo(sessionId) {
+  disableVideo(sessionId: string) {
     this.phone.setWithVideo(sessionId, false)
   }
-  setMuted(muted, sessionId) {
+  setMuted(muted: boolean, sessionId: string) {
     this.phone.setMuted({ main: muted }, sessionId)
   }
 }

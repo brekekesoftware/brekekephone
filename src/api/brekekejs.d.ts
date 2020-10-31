@@ -31,17 +31,17 @@ interface Brekeke {
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 export interface Pbx {
-  login(onres: () => void, onerr: (err: Error) => void): void
-  close(): void
+  login(onres: () => void, onerr: (err: Error) => void)
+  close()
 
   debugLevel: number
 
-  onClose?(): void
-  onError?(err: Error): void
-  notify_serverstatus?(e: PbxEvent['serverStatus']): void
-  notify_status?(e: PbxEvent['userStatus']): void
-  notify_park?(e: PbxEvent['park']): void
-  notify_voicemail?(e: PbxEvent['voicemail']): void
+  onClose?()
+  onError?(err: Error)
+  notify_serverstatus?(e: PbxEvent['serverStatus'])
+  notify_status?(e: PbxEvent['userStatus'])
+  notify_park?(e: PbxEvent['park'])
+  notify_voicemail?(e: PbxEvent['voicemail'])
 
   pal<K extends keyof PbxPal>(
     k: K,
@@ -72,13 +72,12 @@ export interface PbxPal {
     p: null,
     onres: (i: { 'sip.wss.port': string }) => void,
     onerr: (err: Error) => void,
-  ): void
-
+  )
   createAuthHeader(
     p: { username: string },
     onres: (authHeader: string) => void,
     onerr: (err: Error) => void,
-  ): void
+  )
 
   getExtensions(
     p: {
@@ -89,8 +88,7 @@ export interface PbxPal {
     },
     onres: (extensions: string[]) => void,
     onerr: (err: Error) => void,
-  ): void
-
+  )
   getExtensionProperties<T extends string | string[]>(
     p: {
       tenant: string
@@ -99,8 +97,7 @@ export interface PbxPal {
     },
     onres: (properties: T[]) => void,
     onerr: (err: Error) => void,
-  ): void
-
+  )
   setExtensionProperties(
     p: {
       tenant: string
@@ -115,7 +112,25 @@ export interface PbxPal {
     },
     onres: () => void,
     onerr: (err: Error) => void,
-  ): void
+  )
+
+  getContactList(
+    p: {
+      shared: string
+      offset: number
+      limit: number
+    },
+    onres: (res: { aid: string; display_name: string }[]) => void,
+    onerr: (err: Error) => void,
+  )
+  getContact(
+    p: {
+      aid: string
+    },
+    onres: (res: PbxContact) => void,
+    onerr: (err: Error) => void,
+  )
+  setContact(p: PbxContact, onres: () => void, onerr: (err: Error) => void)
 
   pnmanage(
     p: {
@@ -131,7 +146,62 @@ export interface PbxPal {
     },
     onres: () => void,
     onerr: (err: Error) => void,
-  ): void
+  )
+
+  hold(
+    p: {
+      tenant: string
+      tid: string
+    },
+    onres: () => void,
+    onerr: (err: Error) => void,
+  )
+  unhold: PbxPal['hold']
+
+  startRecording: PbxPal['hold']
+  stopRecording: PbxPal['hold']
+
+  transfer(
+    p: {
+      tenant: string
+      user: string
+      tid: string
+      mode?: string
+    },
+    onres: () => void,
+    onerr: (err: Error) => void,
+  )
+
+  conference: PbxPal['hold']
+  cancelTransfer: PbxPal['hold']
+
+  park(
+    p: {
+      tenant: string
+      tid: string
+      number: string
+    },
+    onres: () => void,
+    onerr: (err: Error) => void,
+  )
+}
+
+export interface PbxContact {
+  aid: string
+  phonebook: string
+  shared: string
+  info: {
+    $firstname: string
+    $lastname: string
+    $tel_work: string
+    $tel_home: string
+    $tel_mobile: string
+    $address: string
+    $company: string
+    $email: string
+    $title: string
+    $hidden: string
+  }
 }
 
 /* SIP */
@@ -159,12 +229,12 @@ export interface Sip {
   addEventListener<K extends keyof SipEventMap>(
     type: K,
     listener: (e: SipEventMap[K]) => void,
-  ): void
+  )
   removeEventListener<K extends keyof SipEventMap>(
     type: K,
     listener: (e: SipEventMap[K]) => void,
-  ): void
-  setDefaultCallOptions(options: CallOptions): void
+  )
+  setDefaultCallOptions(options: CallOptions)
 
   startWebRTC(options: {
     url?: string
@@ -177,16 +247,16 @@ export interface Sip {
     userAgent: string
     tls: boolean
     useVideoClient: boolean
-  }): void
-  stopWebRTC(): void
+  })
+  stopWebRTC()
 
   getSession(sessionId: string): Session
-  makeCall(number: string, options: null, videoEnabled: boolean): void
-  answer(sessionId: string, options: null, videoEnabled: boolean): void
-  setWithVideo(sessionId: string, withVideo: boolean): void
-  setMuted(options: { main: boolean }, sessionId: string): void
+  makeCall(number: string, options: null, videoEnabled?: boolean)
+  answer(sessionId: string, options: null, videoEnabled?: boolean)
+  setWithVideo(sessionId: string, withVideo?: boolean)
+  setMuted(options: { main: boolean }, sessionId: string)
 
-  sendDTMF(dtmf: string, sessionId: string): void
+  sendDTMF(dtmf: string, sessionId: string)
 }
 
 export interface CallOptions {
@@ -217,7 +287,7 @@ interface Session {
       }
     }
     direction: 'outgoing' | 'incoming'
-    terminate(): void
+    terminate()
   }
   withVideo: boolean
   remoteWithVideo: boolean
@@ -252,7 +322,7 @@ interface VideoSession {
 /* ------------------------------------------------------------------------- */
 export interface UcChatClient {
   new (log: UcLogger): UcChatClient
-  setEventListeners(listeners: UcListeners): void
+  setEventListeners(listeners: UcListeners)
   signIn(
     uri: string,
     path: string,
@@ -262,15 +332,15 @@ export interface UcChatClient {
     option?: object,
     onres: () => void,
     onerr: (err: Error) => void,
-  ): void
-  signOut(): void
+  )
+  signOut()
   getProfile(): {
     user_id: string
     name: string
     profile_image_url: string
   }
   getStatus(): {
-    status: '0' | '1' | '2' | '3'
+    status: number // 0 | 1 | 2 | 3
     display: string
   }
   changeStatus(
@@ -286,7 +356,7 @@ export interface UcChatClient {
     onres: (res: UcReceieveUnreadTextRes) => void,
     onerr: (err: Error) => void,
   )
-  readText(map: object): void
+  readText(map: object)
   searchTexts(
     opt: UcSearchTextsOpt,
     onres: (res: UcSearchTextsRes) => void,
@@ -334,9 +404,7 @@ export interface UcChatClient {
   )
   cancelFile(file_id: string, onerr: (err?: Error) => void)
   sendFile(
-    opt: {
-      user_id: string
-    },
+    opt: UcSendFileOpt,
     input: unknown,
     onres: (res: UcSendFileRes) => void,
     onerr: (err?: Error) => void,
@@ -353,7 +421,7 @@ export interface UcUser {
   user_id: string
   name: string
   profile_image_url: string
-  status: string
+  status: number
   display: string
 }
 export interface UcReceieveUnreadTextRes {
@@ -402,6 +470,9 @@ export interface UcConference {
   conf_id: string
   subject: string
 }
+export interface UcSendFileOpt {
+  user_id: string
+}
 export interface UcSendFileRes {
   text_id: string
   ltime: number
@@ -445,7 +516,7 @@ export interface UcEventMap {
     user_id: string
     name: string
     profile_image_url: string
-    status: '0' | '1' | '2' | '3'
+    status: number // 0 | 1 | 2 | 3
     display: string
   }
   receivedTyping: {
@@ -469,7 +540,7 @@ export interface UcEventMap {
       file_id: string
       name: string
       size: number
-      status: '0' | '1' | '2' | '3' | '4' | '5' | '6'
+      status: number // 0 | 1 | 2 | 3 | 4 | 5 | 6
       progress: number
       target: {
         user_id: string

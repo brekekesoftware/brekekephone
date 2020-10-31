@@ -25,8 +25,9 @@ const codeMapUserStatus = {
   2: 'idle',
   3: 'busy',
 }
-const getUserStatusFromCode = code =>
-  codeMapUserStatus[code] || codeMapUserStatus['0']
+const getUserStatusFromCode = (code: number) =>
+  codeMapUserStatus[code as keyof typeof codeMapUserStatus] ||
+  codeMapUserStatus['0']
 
 const codeMapFileState = {
   0: 'waiting',
@@ -37,8 +38,9 @@ const codeMapFileState = {
   5: 'stopped',
   6: 'failure',
 }
-const getFileStateFromCode = code =>
-  codeMapFileState[code] || codeMapFileState['0']
+const getFileStateFromCode = (code: number) =>
+  codeMapFileState[code as keyof typeof codeMapFileState] ||
+  codeMapFileState['0']
 
 class UC extends EventEmitter {
   client: UcChatClient
@@ -274,7 +276,15 @@ class UC extends EventEmitter {
     }))
   }
 
-  async getBuddyChats(buddy: string, opts) {
+  async getBuddyChats(
+    buddy: string,
+    opts: {
+      max: number
+      begin: number
+      end: number
+      asc?: boolean
+    },
+  ) {
     const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
       this.client.searchTexts(
         {
@@ -304,7 +314,15 @@ class UC extends EventEmitter {
     }))
   }
 
-  async getGroupChats(group: string, opts) {
+  async getGroupChats(
+    group: string,
+    opts: {
+      max: number
+      begin: number
+      end: number
+      asc?: boolean
+    },
+  ) {
     const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
       this.client.searchTexts(
         {
@@ -350,7 +368,7 @@ class UC extends EventEmitter {
     )
   }
 
-  sendGroupChatText(group, text) {
+  sendGroupChatText(group: string, text: string) {
     return new Promise((onres, onerr) =>
       this.client.sendConferenceText(
         text,
@@ -367,7 +385,7 @@ class UC extends EventEmitter {
     )
   }
 
-  async createChatGroup(name, members: string[] = []) {
+  async createChatGroup(name: string, members: string[] = []) {
     const res: {
       conference: UcConference
     } = await new Promise((onres, onerr) => {
@@ -381,7 +399,7 @@ class UC extends EventEmitter {
     }
   }
 
-  async joinChatGroup(group) {
+  async joinChatGroup(group: string) {
     await new Promise((onres, onerr) => {
       this.client.joinConference(group, undefined, onres, onerr)
     })
@@ -391,7 +409,7 @@ class UC extends EventEmitter {
     }
   }
 
-  async leaveChatGroup(group) {
+  async leaveChatGroup(group: string) {
     await new Promise((onres, onerr) => {
       this.client.leaveConference(group, onres, onerr)
     })
@@ -401,13 +419,13 @@ class UC extends EventEmitter {
     }
   }
 
-  inviteChatGroupMembers(group, members) {
+  inviteChatGroupMembers(group: string, members: string[]) {
     return new Promise((onres, onerr) => {
       this.client.inviteToConference(group, members, onres, onerr)
     })
   }
 
-  acceptFile(file) {
+  acceptFile(file: Blob) {
     const res = new Promise((onres, onerr) => {
       const xhr = new XMLHttpRequest()
       xhr.responseType = 'blob'
@@ -449,7 +467,7 @@ class UC extends EventEmitter {
     }
   }
 
-  async sendFile(user_id: string, file) {
+  async sendFile(user_id: string, file: Blob) {
     let input: any
 
     if (Platform.OS === 'web') {
@@ -518,7 +536,7 @@ class UC extends EventEmitter {
     }
   }
 
-  async sendFiles(conf_id: string, file) {
+  async sendFiles(conf_id: string, file: Blob) {
     let input: any
 
     if (Platform.OS === 'web') {
