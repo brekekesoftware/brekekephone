@@ -18,6 +18,9 @@ const updatePhoneIndexWithoutCatch = async () => {
   //
   const phoneIndex = parseInt(authStore.currentProfile.pbxPhoneIndex) || 4
   const extProps = authStore.userExtensionProperties
+  if (!extProps) {
+    return
+  }
   const phone = extProps.phones[phoneIndex - 1]
   const phoneTypeCorrect = phone.type === 'Web Phone'
   const { pbxTenant, pbxUsername } = authStore.currentProfile
@@ -25,6 +28,9 @@ const updatePhoneIndexWithoutCatch = async () => {
   const phoneIdCorrect = phone.id === expectedPhoneId
   //
   const setExtensionProperties = async () => {
+    if (!extProps) {
+      return
+    }
     await pbx.client.pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
@@ -57,7 +63,7 @@ const updatePhoneIndexWithoutCatch = async () => {
             .then(() => {
               resolve(phone)
             })
-            .catch(err => {
+            .catch((err: Error) => {
               RnAlert.error({
                 message: intlDebug`Failed to set extension properties`,
                 err,

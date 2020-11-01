@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable } from 'mobx'
 
@@ -6,6 +5,38 @@ import pbx from '../api/pbx'
 import { intlDebug } from '../intl/intl'
 import { arrToMap } from '../utils/toMap'
 import RnAlert from './RnAlert'
+
+export type PbxUser = {
+  id: string
+  name: string
+  talkers?: {
+    id: string
+    status: string // 'calling' | 'ringing' | 'talking' | 'holding'
+  }[]
+}
+export type UcUser = {
+  id: string
+  name: string
+  avatar: string
+  status: string // 'online' | 'offline' | 'idle' | 'busy'
+  statusText: string
+}
+export type Phonebook2 = {
+  id: string
+  name: string
+  book: string
+  firstName: string
+  lastName: string
+  workNumber: string
+  cellNumber: string
+  homeNumber: string
+  job: string
+  company: string
+  address: string
+  email: string
+  shared: boolean
+  loaded?: boolean
+}
 
 class ContactStore {
   @observable usersSearchTerm = ''
@@ -15,7 +46,7 @@ class ContactStore {
   @observable offset = 0
   numberOfContactsPerPage = 100
 
-  loadContacts = debounce(async () => {
+  loadContacts = async () => {
     this.loading = true
     await pbx
       .getContacts({
@@ -24,25 +55,26 @@ class ContactStore {
         limit: this.numberOfContactsPerPage,
       })
       .then(arr => {
-        this.setPhonebook(arr)
+        this.setPhonebook(arr as Phonebook2[])
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to load contact list`,
           err,
         })
       })
     this.loading = false
-  }, 500)
+  }
 
   @observable alreadyLoadContactsFirstTime = false
   @action loadContactsFirstTime = () => {
     if (this.alreadyLoadContactsFirstTime) {
       return
     }
-    this.loadContacts()
-    this.alreadyLoadContactsFirstTime = true
+    this.loadContacts()?.then(() => {
+      this.alreadyLoadContactsFirstTime = true
+    })
   }
 
   @action loadMoreContacts = () => {
@@ -50,17 +82,8 @@ class ContactStore {
     this.loadContacts()
   }
 
-  // id
-  // name
-  // talkers?[]
-  //   id
-  //   status
-  //     'calling'
-  //     'ringing'
-  //     'talking'
-  //     'holding'
-  @observable pbxUsers: any[] = []
-  setTalkerStatus = (userId, talkerId, status) => {
+  @observable pbxUsers: PbxUser[] = []
+  setTalkerStatus = (userId: string, talkerId: string, status: string) => {
     const user = this.getPBXUser(userId)
     if (!user) {
       return
@@ -85,23 +108,16 @@ class ContactStore {
   }
   //
   @computed get _pbxUsersMap() {
-    return arrToMap(this.pbxUsers, 'id', u => u)
+    return arrToMap(this.pbxUsers, 'id', (u: PbxUser) => u) as {
+      [k: string]: PbxUser
+    }
   }
-  getPBXUser = id => {
+  getPBXUser = (id: string) => {
     return this._pbxUsersMap[id]
   }
 
-  // id
-  // name
-  // avatar
-  // status
-  //   'online'
-  //   'offline'
-  //   'idle'
-  //   'busy'
-  // statusText
-  @observable ucUsers: any[] = []
-  updateUCUser = _u => {
+  @observable ucUsers: UcUser[] = []
+  updateUCUser = (_u: UcUser) => {
     const u = this.getUCUser(_u.id)
     if (!u) {
       return
@@ -110,30 +126,22 @@ class ContactStore {
     this.ucUsers = [...this.ucUsers]
   }
   @computed get _ucUsersMap() {
-    return arrToMap(this.ucUsers, 'id', u => u)
+    return arrToMap(this.ucUsers, 'id', (u: UcUser) => u) as {
+      [k: string]: UcUser
+    }
   }
-  getUCUser = id => {
+  getUCUser = (id: string) => {
     return this._ucUsersMap[id]
   }
 
-  // id
-  // book
-  // firstName
-  // lastName
-  // workNumber
-  // cellNumber
-  // homeNumber
-  // job
-  // company
-  // address
-  // email
-  // shared
-  @observable phoneBooks: any[] = []
+  @observable phoneBooks: Phonebook2[] = []
   @computed get _phoneBooksMap() {
-    return arrToMap(this.phoneBooks, 'id', u => u)
+    return arrToMap(this.phoneBooks, 'id', (u: Phonebook2) => u) as {
+      [k: string]: Phonebook2
+    }
   }
 
-  @action upsertPhonebook = _p => {
+  @action upsertPhonebook = (_p: Phonebook2) => {
     const p = this.getPhonebook(_p.id)
     if (!p) {
       this.phoneBooks.push(_p)
@@ -143,7 +151,7 @@ class ContactStore {
     this.phoneBooks = [...this.phoneBooks]
   }
 
-  @action setPhonebook = _p => {
+  @action setPhonebook = (_p: Phonebook2 | Phonebook2[]) => {
     if (!_p) {
       return
     }
@@ -153,7 +161,7 @@ class ContactStore {
     this.phoneBooks = uniqBy([...this.phoneBooks, ..._p], 'id')
   }
 
-  getPhonebook = id => {
+  getPhonebook = (id: string) => {
     return this._phoneBooksMap[id]
   }
 

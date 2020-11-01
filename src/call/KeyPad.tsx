@@ -37,7 +37,11 @@ const keys = [
   ['*', '0', '#'],
 ]
 
-const KeyPad = p => (
+const KeyPad = (p: {
+  onPressNumber(k: string): void
+  showKeyboard(): void
+  callVoice(): void
+}) => (
   <React.Fragment>
     {keys.map((row, i) => (
       <View key={i} style={css.KeyPad_Number}>

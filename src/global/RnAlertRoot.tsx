@@ -94,8 +94,12 @@ const RnAlertR = ({
         ),
       dismissText: intl`CANCEL`,
       confirmText: intl`REMOVE`,
-      onConfirm: flow([RnAlert.dismiss, onConfirm as any].filter(f => f)),
-      onDismiss: flow([RnAlert.dismiss, onDismiss as any].filter(f => f)),
+      onConfirm: flow(
+        [RnAlert.dismiss, onConfirm as any].filter((f: Function) => f),
+      ),
+      onDismiss: flow(
+        [RnAlert.dismiss, onDismiss as any].filter((f: Function) => f),
+      ),
       ...rest,
     }
   } else if (error) {

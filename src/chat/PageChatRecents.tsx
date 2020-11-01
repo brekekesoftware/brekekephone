@@ -5,7 +5,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import authStore from '../global/authStore'
-import chatStore from '../global/chatStore'
+import chatStore, { ChatMessage } from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import Nav from '../global/Nav'
 import profileStore from '../global/profileStore'
@@ -18,9 +18,9 @@ import ListUsers from './ListUsers'
 
 @observer
 class PageChatRecents extends React.Component {
-  getLastChat = id => {
+  getLastChat = (id: string) => {
     const chats = chatStore.messagesByThreadId[id] || []
-    return chats.length !== 0 ? chats[chats.length - 1] : {}
+    return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
   render() {
     const groupIds = chatStore.groups.filter(g => g.jointed).map(g => g.id)
@@ -31,13 +31,19 @@ class PageChatRecents extends React.Component {
     const recentFromStorage = authStore.currentData.recentChats.filter(
       c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
     )
-
-    const recentGroups = recentFromStorage.filter(c => c.group)
+    type ChatWithThreadId = ChatMessage & {
+      threadId: string
+    }
+    const recentGroups = (recentFromStorage.filter(
+      c => c.group,
+    ) as unknown) as ChatWithThreadId[]
     recentGroups.push(
       ...groupIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )
 
-    const recentUsers = recentFromStorage.filter(c => !c.group)
+    const recentUsers = (recentFromStorage.filter(
+      c => !c.group,
+    ) as unknown) as ChatWithThreadId[]
     recentUsers.push(
       ...threadIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )

@@ -61,7 +61,7 @@ class Api {
     }
 
     this.pbxAndSipStarted = 0
-    const webPhone = await updatePhoneIndex()
+    const webPhone = (await updatePhoneIndex()) as { id: string }
 
     if (!webPhone) {
       return
@@ -227,34 +227,78 @@ class Api {
     authStore.ucTotalFailure += 1
   }
 
-  onUCUserUpdated = ev => {
+  onUCUserUpdated = (ev: {
+    id: string
+    name: string
+    avatar: string
+    status: string
+    statusText: string
+  }) => {
     contactStore.updateUCUser(ev)
   }
 
-  onBuddyChatCreated = chat => {
+  onBuddyChatCreated = (chat: {
+    id: string
+    creator: string
+    text?: string
+    file?: string
+    created: number
+  }) => {
     chatStore.pushMessages(chat.creator, chat, true)
   }
-  onGroupChatCreated = chat => {
+  onGroupChatCreated = (chat: {
+    id: string
+    group: string
+    creator: string
+    text?: string
+    file?: string
+    created: number
+  }) => {
     chatStore.pushMessages(chat.group, chat, true)
   }
 
-  onChatGroupInvited = group => {
+  onChatGroupInvited = (group: {
+    id: string
+    name: string
+    inviter: string
+    members: string[]
+  }) => {
     chatStore.upsertGroup(group)
   }
-  onChatGroupUpdated = group => {
+  onChatGroupUpdated = (group: {
+    id: string
+    name: string
+    jointed: boolean
+    members: string[]
+  }) => {
     chatStore.upsertGroup(group)
   }
-  onChatGroupRevoked = group => {
+  onChatGroupRevoked = (group: { id: string }) => {
     chatStore.removeGroup(group.id)
   }
 
-  onFileReceived = file => {
+  onFileReceived = (file: {
+    id: string
+    name: string
+    size: number
+    incoming: boolean
+    state: string
+    transferPercent: number
+  }) => {
     chatStore.upsertFile(file)
   }
-  onFileProgress = file => {
+  onFileProgress = (file: {
+    id: string
+    state: string
+    transferPercent: number
+  }) => {
     chatStore.upsertFile(file)
   }
-  onFileFinished = file => {
+  onFileFinished = (file: {
+    id: string
+    state: string
+    transferPercent: number
+  }) => {
     chatStore.upsertFile(file)
   }
 }

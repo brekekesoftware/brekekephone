@@ -1,4 +1,4 @@
-import { observe } from 'mobx'
+import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -8,13 +8,13 @@ import authStore from './authStore'
 import RnAlert from './RnAlert'
 
 class AuthSIP {
-  clearObserve: any
+  clearObserve?: Lambda
   auth() {
     this._auth2()
     this.clearObserve = observe(authStore, 'sipShouldAuth', this._auth2)
   }
   dispose() {
-    void this.clearObserve?.()
+    this.clearObserve?.()
     authStore.sipState = 'stopped'
     sip.disconnect()
   }
@@ -42,12 +42,12 @@ class AuthSIP {
       console.error('Invalid PBX user config')
       return
     }
-    authStore.userExtensionProperties = pbxUserConfig
+    authStore.userExtensionProperties = pbxUserConfig as typeof authStore.userExtensionProperties
     //
     const language = pbxUserConfig.language
     void language
     //
-    const webPhone = await updatePhoneIndex()
+    const webPhone = (await updatePhoneIndex()) as { id: string }
     if (!webPhone) {
       return
     }
@@ -68,7 +68,7 @@ class AuthSIP {
     })
   }
   _auth = () => {
-    this._auth0().catch(err => {
+    this._auth0().catch((err: Error) => {
       authStore.sipState = 'failure'
       authStore.sipTotalFailure += 1
       sip.disconnect()

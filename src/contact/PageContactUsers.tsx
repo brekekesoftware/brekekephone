@@ -6,7 +6,7 @@ import React from 'react'
 
 import authStore from '../global/authStore'
 import callStore from '../global/callStore'
-import chatStore from '../global/chatStore'
+import chatStore, { ChatMessage } from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import Nav from '../global/Nav'
 import profileStore from '../global/profileStore'
@@ -84,7 +84,7 @@ class PageContactUsers extends React.Component {
 
   getLastMessageChat = id => {
     const chats = chatStore.messagesByThreadId[id] || []
-    return chats.length !== 0 ? chats[chats.length - 1] : {}
+    return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
 
   render() {

@@ -166,7 +166,7 @@ class UC extends EventEmitter {
       id: ev.conference.conf_id,
       name: ev.conference.subject,
       inviter: ev.conference.from.user_id,
-      buddies: ev.conference.user || [],
+      members: ev.conference.user || [],
     })
   }
 
@@ -279,11 +279,11 @@ class UC extends EventEmitter {
   async getBuddyChats(
     buddy: string,
     opts: {
-      max: number
-      begin: number
-      end: number
+      max?: number
+      begin?: number
+      end?: number
       asc?: boolean
-    },
+    } = {},
   ) {
     const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
       this.client.searchTexts(
@@ -307,7 +307,7 @@ class UC extends EventEmitter {
       id: log.log_id,
       text:
         log.ctype === 5
-          ? (JSON.parse(log.content).name as string)
+          ? (JSON.parse(log.content) as { name: string }).name
           : log.content,
       creator: log.sender.user_id,
       created: log.ltime,
@@ -317,11 +317,11 @@ class UC extends EventEmitter {
   async getGroupChats(
     group: string,
     opts: {
-      max: number
-      begin: number
-      end: number
+      max?: number
+      begin?: number
+      end?: number
       asc?: boolean
-    },
+    } = {},
   ) {
     const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
       this.client.searchTexts(

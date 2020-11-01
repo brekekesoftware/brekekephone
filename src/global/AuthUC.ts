@@ -1,13 +1,18 @@
-import * as UCClient from 'brekekejs/lib/ucclient'
+import UCClient0 from 'brekekejs/lib/ucclient'
 import debounce from 'lodash/debounce'
 import { Lambda, observe } from 'mobx'
 
+import { UcErrors } from '../api/brekekejs'
 import uc from '../api/uc'
 import { intlDebug } from '../intl/intl'
 import authStore from './authStore'
-import chatStore from './chatStore'
+import chatStore, { ChatMessage } from './chatStore'
 import contactStore from './contactStore'
 import RnAlert from './RnAlert'
+
+const UCClient = UCClient0 as {
+  Errors: UcErrors
+}
 
 class AuthUC {
   clearObserve?: Lambda
@@ -18,7 +23,7 @@ class AuthUC {
   }
   dispose() {
     uc.off('connection-stopped', this.onConnectionStopped)
-    void this.clearObserve?.()
+    this.clearObserve?.()
     uc.disconnect()
     authStore.ucState = 'stopped'
   }
@@ -41,7 +46,7 @@ class AuthUC {
       authStore.ucState = 'success'
     })
   }
-  onAuthFailure = err => {
+  onAuthFailure = (err: Error) => {
     authStore.ucState = 'failure'
     authStore.ucTotalFailure += 1
     RnAlert.error({
@@ -49,7 +54,7 @@ class AuthUC {
       err,
     })
   }
-  onConnectionStopped = e => {
+  onConnectionStopped = (e: { code: number }) => {
     authStore.ucState = 'failure'
     authStore.ucTotalFailure += 1
     authStore.ucLoginFromAnotherPlace =
@@ -64,12 +69,20 @@ class AuthUC {
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure)
-  onLoadUnreadChatsSuccess = chats => {
-    chats.forEach(chat => {
+  onLoadUnreadChatsSuccess = (
+    chats: {
+      id: string
+      text: string
+      creator: string | undefined
+      created: string
+    }[],
+  ) => {
+    chats.forEach(c0 => {
+      const chat = (c0 as unknown) as ChatMessage
       chatStore.pushMessages(chat.creator, [chat], true)
     })
   }
-  onLoadUnreadChatsFailure = err => {
+  onLoadUnreadChatsFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to load unread chat messages`,
       err,

@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-let debugStore
+let debugStore = (null as unknown) as DebugStore
 // The location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
 // The `log` will be used for combining the two above files in ios
@@ -54,7 +54,7 @@ class DebugStore {
   logQueue: string[] = []
 
   // The function to be called in src/captureConsoleOutput.js
-  captureConsoleOutput = (lv, ...args) => {
+  captureConsoleOutput = (lv: string, ...args: unknown[]) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
     }
@@ -62,22 +62,23 @@ class DebugStore {
       moment().format('YYYY/MM/DD HH:mm:ss') +
       ` ${lv.toUpperCase()} ` +
       args
-        .map(a =>
-          !a
+        .map((a0: unknown) => {
+          const a = a0 as Error
+          return !a
             ? `${a}`
             : a.message && a.stack
             ? a.message + ' ' + a.stack
             : typeof a === 'object'
             ? CircularJson.stringify(a)
-            : `${a}`,
-        )
+            : `${a}`
+        })
         .join(' ')
         .replace(/\s+/g, ' ')
     this.logQueue.push(msg)
     this.writeFileBatch()
   }
   writeFile = () =>
-    this.writeFileWithoutCatch().catch(err => {
+    this.writeFileWithoutCatch().catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to write debug log to file`,
         err,
@@ -106,7 +107,7 @@ class DebugStore {
   writeFileBatch = debounce(this.writeFile, 300, { maxWait: 1000 })
 
   openLogFile = () =>
-    this.openLogFileWithoutCatch().catch(err => {
+    this.openLogFileWithoutCatch().catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to build and open log file`,
         err,
@@ -141,7 +142,7 @@ class DebugStore {
     })
   }
   clearLogFilesWithoutPrompt = () =>
-    this.clearLogFilesWithoutCatch().catch(err => {
+    this.clearLogFilesWithoutCatch().catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to clear the log files`,
         err,
@@ -187,7 +188,13 @@ class DebugStore {
         : window
             .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
             .then(res => res.json())
-            .then(j => j.results?.[0].version)
+            .then(
+              (j: {
+                results?: {
+                  version: string
+                }[]
+              }) => j.results?.[0].version,
+            )
     p.then(v => {
       if (!v) {
         throw new Error('The returned version from app store is empty')
@@ -197,7 +204,7 @@ class DebugStore {
       this.isCheckingForUpdate = false
     })
       .then(this.saveRemoteVersionToStorage)
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to get app version from app store`,
           err,
@@ -212,7 +219,7 @@ class DebugStore {
         version: this.remoteVersion,
         lastCheck: this.remoteVersionLastCheck,
       }),
-    ).catch(err => {
+    ).catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to save app version to storage`,
         err,
@@ -241,7 +248,7 @@ class DebugStore {
       RNFS.exists(l)
         .then(e => (e ? RNFS.stat(l) : undefined))
         .then(e => (e ? (this.logSizes[i] = Number(e.size) || 0) : 0))
-        .catch(err => {
+        .catch((err: Error) => {
           RnAlert.error({
             message: intlDebug`Failed to read debug log file size`,
             err,
@@ -254,7 +261,7 @@ class DebugStore {
     promises.push(
       RNFS.exists(log)
         .then(e => (e ? RNFS.unlink(log) : undefined))
-        .catch(err => {
+        .catch((err: Error) => {
           RnAlert.error({
             message: intlDebug`Failed to delete unused debug log file`,
             err,
@@ -265,7 +272,7 @@ class DebugStore {
     promises.push(
       RnAsyncStorage.getItem('captureDebugLog')
         .then(v => v && (this.captureDebugLog = JSON.parse(v)))
-        .catch(err => {
+        .catch((err: Error) => {
           RnAlert.error({
             message: intlDebug`Failed to read debug log settings from storage`,
             err,
@@ -276,14 +283,14 @@ class DebugStore {
     promises.push(
       RnAsyncStorage.getItem('remoteVersion')
         .then(v => v && JSON.parse(v))
-        .then(v => {
+        .then((v: { version: string; lastCheck: number }) => {
           if (v) {
             this.remoteVersion = v.version
             this.remoteVersionLastCheck = v.lastCheck
           }
           this.autoCheckForUpdate()
         })
-        .catch(err => {
+        .catch((err: Error) => {
           RnAlert.error({
             message: intlDebug`Failed to read app version from storage`,
             err,

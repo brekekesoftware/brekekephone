@@ -21,7 +21,7 @@ const getFrontCameraSourceId = async () => {
     .enumerateDevices()
     .then(a => a.find(i => /video/i.test(i.kind) && /front/i.test(i.facing)))
     .then(i => i?.id || undefined)
-    .catch(err => {
+    .catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to get front camera information`,
         err,

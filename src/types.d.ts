@@ -1,3 +1,8 @@
+declare module 'brekekejs/lib/ucclient' {
+  const m: any
+  export default m
+}
+
 declare module 'react-native-uuid' {
   export const v4: () => string
 }
@@ -10,9 +15,4 @@ declare module 'validatorjs/src/lang/en' {
 declare module '*.mp3' {
   const src: string
   export default src
-}
-
-declare module 'brekekejs/lib/ucclient' {
-  const m: unknown
-  export default m
 }

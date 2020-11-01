@@ -1,12 +1,12 @@
 import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
-import { AppState, NativeModules, Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 
 import sip from '../api/sip'
 import { arrToMap } from '../utils/toMap'
-import Call from './Call'
+import Call, { NativeModules0 } from './Call'
 import Nav from './Nav'
 
 export const uuidFromPN = '00000000-0000-0000-0000-000000000000'
@@ -37,14 +37,14 @@ export class CallStore {
   @observable androidRingtone = 0
 
   _updateCurrentCall = () => {
-    let currentCall
+    let currentCall: Call | undefined
     if (this._calls.length) {
       currentCall =
         this._calls.find(c => c.id === this._currentCallId) ||
         this._calls.find(c => c.answered && !c.holding) ||
         this._calls[0]
     }
-    const currentCallId = currentCall?.id || undefined
+    const currentCallId = currentCall?.id
     if (currentCallId !== this._currentCallId) {
       window.setTimeout(action(() => (this._currentCallId = currentCallId)))
     }
@@ -69,7 +69,7 @@ export class CallStore {
     maxWait: 1000,
   })
 
-  @action upsertCall = _c => {
+  @action upsertCall = (_c: { id: string }) => {
     let c = this._calls.find(c => c.id === _c.id)
     if (c) {
       Object.assign(c, _c)
@@ -104,7 +104,7 @@ export class CallStore {
       RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
     }
   }
-  @action removeCall = id => {
+  @action removeCall = (id: string) => {
     const c = this._calls.find(c => c.id === id)
     this._calls = this._calls.filter(c => c.id !== id)
     if (c?.callkeep) {
@@ -112,16 +112,16 @@ export class CallStore {
       RNCallKeep.endCall(c.uuid)
     }
     if (Platform.OS === 'android') {
-      NativeModules.IncomingCall.closeIncomingCallActivity()
+      NativeModules0.IncomingCall.closeIncomingCallActivity()
     }
   }
 
-  findByUuid = uuid => this._calls.find(c => c.uuid === uuid)
-  @action removeByUuid = uuid => {
+  findByUuid = (uuid: string) => this._calls.find(c => c.uuid === uuid)
+  @action removeByUuid = (uuid: string) => {
     this._calls = this._calls.filter(c => c.uuid !== uuid)
   }
 
-  @action selectBackgroundCall = c => {
+  @action selectBackgroundCall = (c: Call) => {
     if (c.holding) {
       c.toggleHold()
     }
@@ -142,7 +142,7 @@ export class CallStore {
       RNCallKeep.endCall(c.uuid)
     }
     if (Platform.OS === 'android') {
-      NativeModules.IncomingCall.closeIncomingCallActivity()
+      NativeModules0.IncomingCall.closeIncomingCallActivity()
     }
   }
 
@@ -170,7 +170,7 @@ export class CallStore {
     }, 100)
   }
 
-  startVideoCall = number => {
+  startVideoCall = (number: string) => {
     this.startCall(number, {
       videoEnabled: true,
     })
@@ -240,7 +240,7 @@ if (Platform.OS === 'android') {
   window.setInterval(() => {
     if (callStore.recentPNAt && Date.now() - callStore.recentPNAt >= 15000) {
       callStore.recentPNAt = 0
-      NativeModules.IncomingCall.closeIncomingCallActivity()
+      NativeModules0.IncomingCall.closeIncomingCallActivity()
     }
     const c = callStore.incomingCall
     if (!c) {

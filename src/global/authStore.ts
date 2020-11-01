@@ -9,15 +9,15 @@ import { getUrlParams } from '../native/deeplink'
 import { arrToMap } from '../utils/toMap'
 import callStore, { uuidFromPN } from './callStore'
 import Nav from './Nav'
-import profileStore from './profileStore'
+import profileStore, { Profile } from './profileStore'
 import RnAlert from './RnAlert'
 
-const compareField = (p1, p2, field) => {
+const compareField = (p1: object, p2: object, field: string) => {
   const v1 = p1[field]
   const v2 = p2[field]
   return !v1 || !v2 || v1 === v2
 }
-const compareProfile = (p1, p2) => {
+const compareProfile = (p1: { pbxUsername: string }, p2: object) => {
   return (
     p1.pbxUsername && // Must have pbxUsername
     compareField(p1, p2, 'pbxUsername') &&
@@ -89,10 +89,18 @@ class AuthStore {
     ].some(s => s === 'failure')
   }
 
-  findProfile = _p => {
+  findProfile = (_p: Partial<Profile>) => {
     return profileStore.profiles.find(p => compareProfile(p, _p))
   }
-  pushRecentCall = call => {
+  pushRecentCall = (call: {
+    id: string
+    incoming: boolean
+    answered: boolean
+    partyName: string
+    partyNumber: string
+    duration: number
+    created: string
+  }) => {
     this.currentData.recentCalls = [call, ...this.currentData.recentCalls]
     if (this.currentData.recentCalls.length > 20) {
       this.currentData.recentCalls.pop()
@@ -100,9 +108,11 @@ class AuthStore {
     profileStore.saveProfilesToLocalStorage()
   }
   @computed get _profilesMap() {
-    return arrToMap(profileStore.profiles, 'id', p => p)
+    return arrToMap(profileStore.profiles, 'id', (p: Profile) => p) as {
+      [k: string]: Profile
+    }
   }
-  getProfile = id => {
+  getProfile = (id: string) => {
     return this._profilesMap[id]
   }
 
@@ -114,7 +124,7 @@ class AuthStore {
     const p = this.currentProfile
     return p && profileStore.getProfileData(p)
   }
-  signIn = id => {
+  signIn = (id: string) => {
     const p = this.getProfile(id)
     if (!p) {
       return false
@@ -254,7 +264,11 @@ class AuthStore {
     },
   )
 
-  signInByNotification = async n => {
+  signInByNotification = async (n: {
+    to: string
+    tenant: string
+    isCall: boolean
+  }) => {
     this.reconnect()
     await profileStore.profilesLoaded()
     // Find account for the notification target
@@ -283,13 +297,15 @@ class AuthStore {
     return this.signIn(p.id)
   }
 
-  // id
-  // name
-  // language
-  // phones[]
-  //   id
-  //   type
-  userExtensionProperties: any = null
+  userExtensionProperties: null | {
+    id: string
+    name: string
+    language: string
+    phones: {
+      id: string
+      type: string
+    }[]
+  } = null
 }
 
 const authStore = new AuthStore()

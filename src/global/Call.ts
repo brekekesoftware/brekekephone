@@ -9,6 +9,12 @@ import { intlDebug } from '../intl/intl'
 import Nav from './Nav'
 import RnAlert from './RnAlert'
 
+export const NativeModules0 = NativeModules as {
+  IncomingCall: {
+    closeIncomingCallActivity(): void
+  }
+}
+
 export default class Call {
   @observable id = ''
   @observable partyNumber = ''
@@ -34,7 +40,7 @@ export default class Call {
     this.rejected = true
     sip.hangupSession(this.id)
     if (Platform.OS === 'android') {
-      NativeModules.IncomingCall.closeIncomingCallActivity()
+      NativeModules0.IncomingCall.closeIncomingCallActivity()
     }
   }
   hangupWithUnhold = () =>

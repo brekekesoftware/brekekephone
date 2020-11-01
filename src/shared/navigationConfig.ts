@@ -157,7 +157,7 @@ export const normalizeSavedNavigation = () => {
     p.navIndex = 0
   }
   if (p.navSubMenus?.length !== arr.length) {
-    p.navSubMenus = arr.map(() => null)
+    p.navSubMenus = arr.map(() => '')
   }
   arr.forEach((m, i) => {
     if (!(p.navSubMenus[i] in m.subMenusMap)) {

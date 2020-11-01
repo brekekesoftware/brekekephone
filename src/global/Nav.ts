@@ -86,7 +86,7 @@ class Nav {
     normalizeSavedNavigation()
     const p = authStore.currentProfile
     const i = p.navIndex
-    const k = p.navSubMenus[i]
+    const k = p.navSubMenus?.[i]
     arr[i].subMenusMap[k].navFn()
   }
 }

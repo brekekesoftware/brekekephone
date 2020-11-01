@@ -5,17 +5,41 @@ import { computed, observable } from 'mobx'
 import { arrToMap } from '../utils/toMap'
 import authStore from './authStore'
 
+export type ChatMessage = {
+  id: string
+  text?: string
+  file?: string
+  creator: string
+  created: number
+}
+export type ChatFile = {
+  id: string
+  name: string
+  incoming: boolean
+  size: number
+  state: string // 'waiting' | 'started' | 'success' | 'stopped' | 'failure'
+  transferPercent: number
+}
+export type ChatMessageConfig = {
+  id: string
+  isUnread: boolean
+  isGroup: boolean
+  allMessagesLoaded?: boolean
+}
+export type ChatGroup = {
+  id: string
+  name: string
+  inviter: string
+  jointed: boolean
+  members: string[]
+}
+
 class ChatStore {
-  // id
-  // text
-  // file
-  // created
-  // creator
-  @observable messagesByThreadId = {}
-  @observable threadConfig = {}
+  @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
   @computed get unreadCount() {
     const idMap = {}
-    const l1 = Object.values(this.threadConfig).filter((v: any) => {
+    const l1 = Object.values(this.threadConfig).filter(v => {
       idMap[v.id] = true
       return v.isUnread && this.messagesByThreadId[v.id]?.length
     }).length
@@ -27,12 +51,19 @@ class ChatStore {
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
-    return sortBy(
-      Object.keys(this.messagesByThreadId),
-      k => this.messagesByThreadId[k].created,
-    )
+    return sortBy(Object.keys(this.messagesByThreadId), k => {
+      const messages = this.messagesByThreadId[k]
+      if (!messages?.length) {
+        return -1
+      }
+      return messages[0].created
+    })
   }
-  pushMessages = (threadId, _m, isUnread = false) => {
+  pushMessages = (
+    threadId: string,
+    _m: ChatMessage | ChatMessage[],
+    isUnread = false,
+  ) => {
     if (!Array.isArray(_m)) {
       _m = [_m]
     }
@@ -42,14 +73,19 @@ class ChatStore {
       uniqBy(messages, 'id'),
       'created',
     )
-    const isGroup = this.groups.some((g: any) => g.id === threadId)
+    const isGroup = this.groups.some(g => g.id === threadId)
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })
   }
 
-  getThreadConfig = id => this.threadConfig[id] || {}
-  updateThreadConfig = (id, isGroup, c) => {
+  getThreadConfig = (id: string) =>
+    this.threadConfig[id] || ({} as ChatMessageConfig)
+  updateThreadConfig = (
+    id: string,
+    isGroup: boolean,
+    c: Partial<ChatMessageConfig>,
+  ) => {
     this.threadConfig = {
       ...this.threadConfig,
       [id]: {
@@ -61,51 +97,37 @@ class ChatStore {
     }
   }
 
-  // id
-  // name
-  // incoming
-  // size
-  // state
-  //   'waiting'
-  //   'started'
-  //   'success'
-  //   'stopped'
-  //   'failure'
-  // transferPercent
-  @observable filesMap = {}
-  upsertFile = _f => {
+  @observable filesMap: { [k: string]: ChatFile } = {}
+  upsertFile = (_f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
     const f = this.filesMap[_f.id]
-    this.filesMap[_f.id] = f ? Object.assign(f, _f) : _f
+    this.filesMap[_f.id] = f ? Object.assign(f, _f) : (_f as ChatFile)
   }
-  removeFile = id => {
+  removeFile = (id: string) => {
     delete this.filesMap[id]
   }
 
-  // id
-  // name
-  // inviter
-  // jointed
-  // members
-  @observable groups: any = []
-  upsertGroup = _g => {
+  @observable groups: ChatGroup[] = []
+  upsertGroup = (_g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     const g = this.getGroup(_g.id)
     if (g) {
       Object.assign(g, _g)
     } else {
-      this.groups.push(_g)
+      this.groups.push(_g as ChatGroup)
     }
     this.groups = [...this.groups]
   }
-  removeGroup = id => {
+  removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]
     delete this.threadConfig[id]
     this.groups = this.groups.filter(g => g.id !== id)
   }
   //
   @computed get _groupsMap() {
-    return arrToMap(this.groups, 'id', g => g)
+    return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {
+      [k: string]: ChatGroup
+    }
   }
-  getGroup = id => {
+  getGroup = (id: string) => {
     return this._groupsMap[id]
   }
 

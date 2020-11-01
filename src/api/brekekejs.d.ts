@@ -130,7 +130,11 @@ export interface PbxPal {
     onres: (res: PbxContact) => void,
     onerr: (err: Error) => void,
   )
-  setContact(p: PbxContact, onres: () => void, onerr: (err: Error) => void)
+  setContact(
+    p: PbxContact,
+    onres: (res: PbxContact) => void,
+    onerr: (err: Error) => void,
+  )
 
   pnmanage(
     p: {
@@ -243,7 +247,6 @@ export interface Sip {
     tenant: string
     user: string
     auth: string
-    password: string
     userAgent: string
     tls: boolean
     useVideoClient: boolean
@@ -320,6 +323,10 @@ interface VideoSession {
 /* UC */
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
+export interface UcErrors {
+  PLEONASTIC_LOGIN: number
+}
+
 export interface UcChatClient {
   new (log: UcLogger): UcChatClient
   setEventListeners(listeners: UcListeners)
@@ -439,9 +446,9 @@ export interface UcMessage {
 export interface UcSearchTextsOpt {
   user_id?: string
   conf_id?: string
-  max: number
-  begin: number
-  end: number
+  max?: number
+  begin?: number
+  end?: number
   asc?: boolean
 }
 export interface UcSearchTextsRes {

@@ -31,7 +31,7 @@ class PBX extends EventEmitter {
 
     client.pal = (((method: keyof typeof client, params?: object) => {
       return new Promise((onres, onerr) => {
-        const f = (client[method] as Function).bind(client)
+        const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
           return onerr(new Error(`PAL client doesn't support "${method}"`))
         }
@@ -409,7 +409,7 @@ class PBX extends EventEmitter {
         resolve(null)
       }
       this.client.pal('pnmanage', params).then(resolve).catch(reject)
-    }).catch(err => {
+    }).catch((err: Error) => {
       console.error('addApnsToken:' + (voip ? ' voip:' : ''), err)
     })
 
@@ -435,7 +435,7 @@ class PBX extends EventEmitter {
         resolve(null)
       }
       this.client.pal('pnmanage', params).then(resolve).catch(reject)
-    }).catch(err => {
+    }).catch((err: Error) => {
       console.error('addFcmPnToken:' + (voip ? ' voip:' : ''), err)
     })
 
@@ -465,7 +465,7 @@ class PBX extends EventEmitter {
         resolve(null)
       }
       this.client.pal('pnmanage', params).then(resolve).catch(reject)
-    }).catch(err => {
+    }).catch((err: Error) => {
       console.error('addWebPnToken:', err)
     })
 }

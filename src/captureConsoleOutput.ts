@@ -34,7 +34,7 @@ const captureConsoleOutput = () => {
       m[`_${k}`] = f
       return m
     },
-    {} as { [k: string]: Function },
+    {} as { [k: string]: () => void },
   )
 
   Object.entries(customConsoleObject).forEach(([k, v]) => {

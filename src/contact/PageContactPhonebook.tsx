@@ -61,9 +61,13 @@ class PageContactPhonebook extends React.Component {
     pbx
       .getContact(id)
       .then(ct => {
-        Object.assign(ct, { loaded: true })
-        contactStore.upsertPhonebook(ct)
-        cb(ct)
+        const x = {
+          ...ct,
+          loaded: true,
+          name: ct.firstName + ' ' + ct.lastName,
+        }
+        contactStore.upsertPhonebook(x)
+        cb(x)
       })
       .catch(err => {
         RnAlert.error({

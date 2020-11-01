@@ -101,12 +101,16 @@ class SIP extends EventEmitter {
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId)
       }
-      const patch: any = {
+      const patch = {
         id: ev.sessionId,
         answered: ev.sessionStatus === 'connected',
         voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo,
         remoteVideoEnabled: ev.remoteWithVideo,
+        pbxTenant: '',
+        pbxRoomId: '',
+        pbxTalkerId: '',
+        pbxUsername: '',
       }
       if (ev.incomingMessage) {
         const pbxSessionInfo = ev.incomingMessage.getHeader(
@@ -161,7 +165,6 @@ class SIP extends EventEmitter {
     pbxTurnEnabled: boolean
     tenant: string
     username: string
-    password: string
     accessToken: string
   }) {
     this.disconnect()
@@ -201,7 +204,6 @@ class SIP extends EventEmitter {
       tls: true,
       tenant: sipLoginOption.tenant,
       user: sipLoginOption.username,
-      password: sipLoginOption.password,
       auth: sipLoginOption.accessToken,
       useVideoClient: true,
       userAgent: lUseragent,

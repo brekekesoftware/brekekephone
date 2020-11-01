@@ -1,4 +1,4 @@
-import { observe } from 'mobx'
+import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
 import { intlDebug } from '../intl/intl'
@@ -6,13 +6,13 @@ import authStore from './authStore'
 import RnAlert from './RnAlert'
 
 class AuthPBX {
-  clearObserve: any
+  clearObserve?: Lambda
   auth() {
     this._auth2()
     this.clearObserve = observe(authStore, 'pbxShouldAuth', this._auth2)
   }
   dispose() {
-    void this.clearObserve?.()
+    this.clearObserve?.()
     pbx.disconnect()
     authStore.pbxState = 'stopped'
   }
@@ -25,7 +25,7 @@ class AuthPBX {
       .then(() => {
         authStore.pbxState = 'success'
       })
-      .catch(err => {
+      .catch((err: Error) => {
         authStore.pbxState = 'failure'
         authStore.pbxTotalFailure += 1
         RnAlert.error({

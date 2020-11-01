@@ -6,7 +6,7 @@ import { Platform, ScrollView } from 'react-native'
 import uc from '../api/uc'
 import ChatInput from '../Footer/ChatInput'
 import callStore from '../global/callStore'
-import chatStore from '../global/chatStore'
+import chatStore, { ChatMessage } from '../global/chatStore'
 import contactStore from '../global/contactStore'
 import Nav from '../global/Nav'
 import RnAlert from '../global/RnAlert'
@@ -223,7 +223,7 @@ class PageChatGroupDetail extends React.Component<{
     this.submitting = true
     uc.sendGroupChatText(this.props.groupId, txt)
       .then(chat => {
-        chatStore.pushMessages(this.props.groupId, [chat])
+        chatStore.pushMessages(this.props.groupId, [chat as ChatMessage])
         this.setState({ editingText: '' })
       })
       .catch(err => {

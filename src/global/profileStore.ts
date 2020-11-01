@@ -31,8 +31,8 @@ export type Profile = {
   ucPathname?: string
   displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
-  navIndex?: number
-  navSubMenus?: string[]
+  navIndex: number
+  navSubMenus: string[]
 }
 export type ProfileData = {
   id: string
@@ -43,7 +43,7 @@ export type ProfileData = {
     answered: boolean
     partyName: string
     partyNumber: string
-    created: number
+    created: string
   }[]
   recentChats: {
     id: string // thread id
@@ -58,7 +58,9 @@ export type ProfileData = {
 class ProfileStore {
   @observable profiles: Profile[] = []
   @computed get profilesMap() {
-    return arrToMap(this.profiles, 'id', p => p) as { [k: string]: Profile }
+    return arrToMap(this.profiles, 'id', (p: Profile) => p) as {
+      [k: string]: Profile
+    }
   }
   @observable profileData: ProfileData[] = []
   @observable profilesLoadedObservable = false
@@ -77,10 +79,15 @@ class ProfileStore {
     ucEnabled: false,
     ucHostname: '',
     ucPort: '',
+    navIndex: -1,
+    navSubMenus: [],
   })
   loadProfilesFromLocalStorage = async () => {
     let arr = await RnAsyncStorage.getItem('_api_profiles')
-    let x: any
+    let x: {
+      profiles: Profile[]
+      profileData: ProfileData[]
+    } | null = null
     if (arr && !Array.isArray(arr)) {
       try {
         x = JSON.parse(arr)
@@ -167,7 +174,7 @@ class ProfileStore {
     return d
   }
   updateProfileDataDebounced = debounce(
-    d => {
+    (d: ProfileData) => {
       if (d.id === this.profileData[0]?.id) {
         return
       }
