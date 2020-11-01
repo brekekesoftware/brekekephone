@@ -7,10 +7,10 @@ import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import Url from 'url-parse'
 
-import brand from '../assets/brand.png'
-import logo from '../assets/logo.png'
 // @ts-ignore
 import App from './App.tsx'
+import brand from './assets/brand.png'
+import logo from './assets/logo.png'
 import intl from './intl/intl'
 import parse from './native/deeplink-parse'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
