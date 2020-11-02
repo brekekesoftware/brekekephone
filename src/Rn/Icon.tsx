@@ -27,7 +27,7 @@ const Icon: FC<
       viewBox={viewBox || '0 0 24 24'}
       width={size}
     >
-      <Path d={path} fill={color} />
+      <Path d={path} fill={color || 'black'} />
     </Svg>
   </View>
 )

@@ -1,37 +1,58 @@
 import { Platform } from 'react-native'
 import DocumentRnPicker0 from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
-import * as ImageRnPicker from 'react-native-full-image-picker'
+import ImagePicker from 'react-native-image-picker'
 import { v4 as uuid } from 'react-native-uuid'
 
 import RnPicker from '../global/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
 
-ImageRnPicker.AlbumView.autoConvertPath = true
-ImageRnPicker.AlbumListView.autoConvertPath = true
-
 const DocumentRnPicker = DocumentRnPicker0 as any
 
 const actionSheetHandlers = [
   () =>
-    new Promise(resolve => {
-      ImageRnPicker.getCamera({
-        callback: arr => resolve(arr[0]),
-        maxSize: 1,
-      })
+    new Promise((resolve, reject) => {
+      ImagePicker.launchCamera(
+        {
+          mediaType: 'photo',
+          cameraType: 'back',
+        },
+        res =>
+          res.didCancel
+            ? resolve()
+            : res.error
+            ? reject(res.error)
+            : resolve(res),
+      )
     }),
   () =>
-    new Promise(resolve => {
-      ImageRnPicker.getVideo({
-        callback: arr => resolve(arr[0]),
-      })
+    new Promise((resolve, reject) => {
+      ImagePicker.launchCamera(
+        {
+          mediaType: 'video',
+          cameraType: 'back',
+        },
+        res =>
+          res.didCancel
+            ? resolve()
+            : res.error
+            ? reject(res.error)
+            : resolve(res),
+      )
     }),
   () =>
-    new Promise(resolve => {
-      ImageRnPicker.getAlbum({
-        callback: arr => resolve(arr[0]),
-        maxSize: 1,
-      })
+    new Promise((resolve, reject) => {
+      ImagePicker.launchImageLibrary(
+        {
+          mediaType: 'mixed',
+        },
+        res =>
+          res.didCancel
+            ? resolve()
+            : res.error
+            ? reject(res.error)
+            : resolve(res),
+      )
     }),
   () =>
     DocumentRnPicker.pick({

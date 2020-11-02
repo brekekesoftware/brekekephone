@@ -111,7 +111,7 @@ class PageChatDetail extends React.Component<{
         containerOnScroll={this.onScroll}
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
-        onBack={Nav.backToPageChatRecents}
+        onBack={Nav().backToPageChatRecents}
         title={u?.name}
       >
         {loadingRecent ? (

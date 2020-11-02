@@ -63,7 +63,7 @@ class CallBar extends React.Component {
     return (
       <View style={css.CallBar}>
         <RnTouchableOpacity
-          onPress={() => Nav.goToPageCallManage({ isFromCallBar: true })}
+          onPress={() => Nav().goToPageCallManage({ isFromCallBar: true })}
           style={css.CallBar_Outer}
         >
           <View style={css.CallBar_Icon}>

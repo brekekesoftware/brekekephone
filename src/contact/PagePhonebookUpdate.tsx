@@ -15,10 +15,10 @@ class PagePhonebookUpdate extends React.Component<{
   render() {
     return (
       <ContactsCreateForm
-        onBack={Nav.backToPageContactPhonebook}
+        onBack={Nav().backToPageContactPhonebook}
         onSave={p => {
           this.save(p)
-          Nav.goToPageContactPhonebook()
+          Nav().goToPageContactPhonebook()
         }}
         title={intl`Update Phonebook`}
         updatingPhonebook={this.props.contact}
@@ -34,7 +34,7 @@ class PagePhonebookUpdate extends React.Component<{
     contactStore.upsertPhonebook(phonebook)
   }
   onSaveSuccess = () => {
-    Nav.goToPageContactPhonebook()
+    Nav().goToPageContactPhonebook()
   }
   onSaveFailure = err => {
     RnAlert.error({

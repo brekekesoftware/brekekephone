@@ -14,12 +14,12 @@ import formatDuration from '../utils/formatDuration'
 const PageBackgroundCalls = observer(() => (
   <Layout
     compact
-    onBack={Nav.backToPageCallManage}
+    onBack={Nav().backToPageCallManage}
     title={intl`Background calls`}
   >
     <Field isGroup label={intl`CURRENT CALL`} />
     {(callStore.currentCall ? [callStore.currentCall] : []).map(c => (
-      <RnTouchableOpacity key={c.id} onPress={Nav.backToPageCallManage}>
+      <RnTouchableOpacity key={c.id} onPress={Nav().backToPageCallManage}>
         <UserItem
           iconFuncs={[c.hangupWithUnhold]}
           icons={[mdiPhoneHangup]}

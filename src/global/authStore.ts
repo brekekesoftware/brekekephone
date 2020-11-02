@@ -131,14 +131,14 @@ class AuthStore {
     }
     const d = profileStore.getProfileData(p)
     if (!p.pbxPassword && !d.accessToken) {
-      Nav.goToPageProfileUpdate({ id: p.id })
+      Nav().goToPageProfileUpdate({ id: p.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
       })
       return true
     }
     if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
-      Nav.goToPageProfileUpdate({ id: p.id })
+      Nav().goToPageProfileUpdate({ id: p.id })
       RnAlert.error({
         message: intlDebug`The UC config is missing`,
       })
@@ -224,7 +224,7 @@ class AuthStore {
       if (p.pbxPassword || d.accessToken) {
         this.signIn(p.id)
       } else {
-        Nav.goToPageProfileUpdate({ id: p.id })
+        Nav().goToPageProfileUpdate({ id: p.id })
       }
       return
     }
@@ -243,7 +243,7 @@ class AuthStore {
     if (d.accessToken) {
       this.signIn(newP.id)
     } else {
-      Nav.goToPageProfileUpdate({ id: newP.id })
+      Nav().goToPageProfileUpdate({ id: newP.id })
     }
   }
 

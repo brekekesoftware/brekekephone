@@ -126,7 +126,7 @@ export class CallStore {
       c.toggleHold()
     }
     this._currentCallId = c.id
-    Nav.backToPageBackgroundCalls()
+    Nav().backToPageBackgroundCalls()
   }
 
   @action answerCall = (c: Call, options?: object) => {
@@ -136,7 +136,7 @@ export class CallStore {
       videoEnabled: c.remoteVideoEnabled,
       ...options,
     })
-    Nav.goToPageCallManage()
+    Nav().goToPageCallManage()
     if (c.callkeep) {
       c.callkeep = false
       RNCallKeep.endCall(c.uuid)
@@ -150,7 +150,7 @@ export class CallStore {
   _startCallIntervalId = 0
   startCall = (number: string, options = {}) => {
     sip.createSession(number, options)
-    Nav.goToPageCallManage()
+    Nav().goToPageCallManage()
     // Auto update _currentCallId
     this._currentCallId = undefined
     const prevIds = arrToMap(this._calls, 'id')

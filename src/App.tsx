@@ -1,6 +1,7 @@
 import './captureConsoleOutput'
 import './polyfill'
 import './utils/validator'
+import './global/Nav2' // Fix circular dependencies
 
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
@@ -127,7 +128,7 @@ PushNotification.register(() => {
   setupCallKeep()
   profileStore.loadProfilesFromLocalStorage()
 
-  Nav.goToPageIndex()
+  Nav().goToPageIndex()
   authStore.handleUrlParams()
 
   const authPBX = new AuthPBX()
@@ -135,7 +136,7 @@ PushNotification.register(() => {
   const authUC = new AuthUC()
 
   observe(authStore, 'signedInId', () => {
-    Nav.goToPageIndex()
+    Nav().goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
     if (authStore.signedInId) {

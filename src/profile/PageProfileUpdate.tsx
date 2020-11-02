@@ -8,10 +8,10 @@ import ProfileCreateForm from './ProfileCreateForm'
 
 const PageProfileUpdate = observer(props => (
   <ProfileCreateForm
-    onBack={Nav.backToPageProfileSignIn}
+    onBack={Nav().backToPageProfileSignIn}
     onSave={p => {
       profileStore.upsertProfile(p)
-      Nav.backToPageProfileSignIn()
+      Nav().backToPageProfileSignIn()
     }}
     title={intl`Update Account`}
     updatingProfile={profileStore.profilesMap[props.id]}

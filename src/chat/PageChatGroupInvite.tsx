@@ -120,7 +120,7 @@ class PageChatGroupInvite extends React.Component<{
     })
   }
   back = () => {
-    Nav.backToPageChatGroupDetail({ groupId: this.props.groupId })
+    Nav().backToPageChatGroupDetail({ groupId: this.props.groupId })
   }
 }
 

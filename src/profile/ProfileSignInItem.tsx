@@ -55,7 +55,7 @@ const ProfileSignInItem = observer(props => {
         <RnText>{intl`Tap the below button to create one`}</RnText>
         <View style={css.ProfileSignInItem_Btns}>
           <FooterActions
-            onNext={Nav.goToPageProfileCreate}
+            onNext={Nav().goToPageProfileCreate}
             onNextText={intl`CREATE NEW ACCOUNT`}
           />
         </View>
@@ -68,7 +68,7 @@ const ProfileSignInItem = observer(props => {
       style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
     >
       <RnTouchableOpacity
-        onPress={() => Nav.goToPageProfileUpdate({ id: p.id })}
+        onPress={() => Nav().goToPageProfileUpdate({ id: p.id })}
       >
         <Field
           icon={mdiAccountCircleOutline}
@@ -116,7 +116,7 @@ const ProfileSignInItem = observer(props => {
             })
           }}
           onBackIcon={mdiClose}
-          onMore={() => Nav.goToPageProfileUpdate({ id: p.id })}
+          onMore={() => Nav().goToPageProfileUpdate({ id: p.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
             authStore.signIn(p.id)

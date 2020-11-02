@@ -39,14 +39,14 @@ class PageDtmfKeypad extends React.Component<{
     sip.createSession(this.txt, {
       videoEnabled: false,
     })
-    Nav.goToPageCallManage()
+    Nav().goToPageCallManage()
   }
 
   render() {
     return (
       <Layout
         description={intl`Keypad dial manually`}
-        onBack={Nav.backToPageCallManage}
+        onBack={Nav().backToPageCallManage}
         title={this.props.partyName}
       >
         <ShowNumber

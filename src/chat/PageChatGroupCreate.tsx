@@ -34,10 +34,10 @@ class PageChatGroupCreate extends React.Component {
   render() {
     return (
       <Layout
-        fabOnBack={Nav.goToPageChatRecents}
+        fabOnBack={Nav().goToPageChatRecents}
         fabOnNext={this.create}
         fabOnNextText={intl`CREATE`}
-        onBack={Nav.backToPageChatRecents}
+        onBack={Nav().backToPageChatRecents}
         title={intl`New Group`}
       >
         <Field
@@ -91,7 +91,7 @@ class PageChatGroupCreate extends React.Component {
   onCreateSuccess = group => {
     chatStore.upsertGroup(group)
     uc.joinChatGroup(group.id)
-    Nav.goToPageChatRecents()
+    Nav().goToPageChatRecents()
   }
   onCreateFailure = err => {
     RnAlert.error({

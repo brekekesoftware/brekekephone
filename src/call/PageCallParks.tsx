@@ -42,7 +42,7 @@ class PageCallParks extends React.Component<{
         fabOnNext={p ? this.park : null}
         fabOnNextText={p2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={p2 ? null : 'call'}
-        onBack={p2 ? Nav.backToPageCallManage : null}
+        onBack={p2 ? Nav().backToPageCallManage : null}
         subMenu={p2 ? null : 'parks'}
         title={intl`Park`}
       >

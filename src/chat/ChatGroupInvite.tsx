@@ -230,8 +230,8 @@ class UnreadChatNoti extends React.Component {
     const { id, isGroup } = this.unreadChat
     this.clear()
     return isGroup
-      ? Nav.goToPageChatGroupDetail({ groupId: id })
-      : Nav.goToPageChatDetail({ buddy: id })
+      ? Nav().goToPageChatGroupDetail({ groupId: id })
+      : Nav().goToPageChatDetail({ buddy: id })
   }
 
   componentWillUnmount() {

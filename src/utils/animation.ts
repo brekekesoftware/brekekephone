@@ -7,7 +7,11 @@ export const animationOption = {
   duration: 150,
 }
 
-export function useAnimation<T extends object>(
+type AnimationProps = {
+  [k: string]: any // []
+}
+
+export function useAnimation<T extends AnimationProps>(
   enabled: boolean,
   props: T,
   options?: Animated.TimingAnimationConfig,
@@ -22,6 +26,7 @@ export function useAnimation<T extends object>(
       ...animationOption,
       ...options,
       toValue: enabled ? 1 : 0,
+      useNativeDriver: false,
     })
     t.start()
     return () => t.stop()
@@ -31,10 +36,12 @@ export function useAnimation<T extends object>(
       inputRange: [0, 1],
       outputRange: props[k],
     }),
-  ) as T
+  ) as {
+    [k in keyof T]: T[k][0]
+  }
 }
 
-export function useAnimationOnDidMount<T extends object>(props: T) {
+export function useAnimationOnDidMount<T extends AnimationProps>(props: T) {
   const [didMount, setDidMount] = useState(false)
   useEffect(() => setDidMount(true), [])
   return useAnimation(didMount, props)

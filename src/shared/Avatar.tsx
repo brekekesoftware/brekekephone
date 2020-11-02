@@ -2,7 +2,7 @@ import { mdiRecord } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
 import { Platform, StyleSheet, View, ViewProps } from 'react-native'
-import { FastImageSource } from 'react-native-fast-image'
+import { FastImageProps } from 'react-native-fast-image'
 
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
 import authStore from '../global/authStore'
@@ -50,7 +50,7 @@ const Avatar = observer(
       (Platform.OS === 'web' && avatarPlaceholder) ||
       avatarPlaceholder
     const imgSource =
-      typeof uri === 'string' ? { uri } : (uri as FastImageSource)
+      typeof uri === 'string' ? { uri } : (uri as FastImageProps['source'])
     return (
       <View style={[css.Avatar, style]}>
         <View style={css.ImageOuter}>

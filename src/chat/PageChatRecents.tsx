@@ -85,7 +85,7 @@ class PageChatRecents extends React.Component {
         dropdown={[
           {
             label: intl`Create group chat`,
-            onPress: Nav.goToPageChatGroupCreate,
+            onPress: Nav().goToPageChatGroupCreate,
           },
         ]}
         menu='contact'
@@ -101,9 +101,9 @@ class PageChatRecents extends React.Component {
         <ListUsers
           recents={arr}
           groupById={groupById}
-          onGroupSelect={groupId => Nav.goToPageChatGroupDetail({ groupId })}
+          onGroupSelect={groupId => Nav().goToPageChatGroupDetail({ groupId })}
           userById={userById}
-          onUserSelect={id => Nav.goToPageChatDetail({ buddy: id })}
+          onUserSelect={id => Nav().goToPageChatDetail({ buddy: id })}
         />
       </Layout>
     )

@@ -24,7 +24,7 @@ interface Menu {
 interface SubMenu {
   key: string
   label: string
-  navFnKey: keyof typeof Nav
+  navFnKey: keyof ReturnType<typeof Nav>
   ucRequired?: boolean
   navFn(): void
 }
@@ -108,7 +108,7 @@ const genMenus = () => {
           m.defaultSubMenu.navFn()
           return
         }
-        Nav[s.navFnKey]()
+        Nav()[s.navFnKey]()
         saveNavigation(i, s.key)
       }
     })

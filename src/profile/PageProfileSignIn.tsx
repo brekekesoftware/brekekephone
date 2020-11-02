@@ -76,7 +76,7 @@ const PageProfileSignIn = observer(() => {
       <Layout
         description={intl`${l} accounts in total`}
         noScroll
-        onCreate={!!l && Nav.goToPageProfileCreate}
+        onCreate={!!l && Nav().goToPageProfileCreate}
         title={intl`Accounts`}
         transparent
       >
@@ -98,7 +98,7 @@ const PageProfileSignIn = observer(() => {
         {!l && <ProfileSignInItem empty />}
       </Layout>
       <RnTouchableOpacity
-        onPress={Nav.goToPageSettingsDebug}
+        onPress={Nav().goToPageSettingsDebug}
         style={css.CornerButton}
       >
         <View style={[css.CornerButton_Inner, css.CornerButton_Inner__info]}>

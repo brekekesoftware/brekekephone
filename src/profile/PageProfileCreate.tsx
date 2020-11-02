@@ -7,10 +7,10 @@ import ProfileCreateForm from './ProfileCreateForm'
 
 const PageProfileCreate = () => (
   <ProfileCreateForm
-    onBack={Nav.backToPageProfileSignIn}
+    onBack={Nav().backToPageProfileSignIn}
     onSave={p => {
       profileStore.upsertProfile(p)
-      Nav.backToPageProfileSignIn()
+      Nav().backToPageProfileSignIn()
     }}
     title={intl`New Account`}
   />

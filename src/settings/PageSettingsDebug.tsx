@@ -47,7 +47,7 @@ class PageSettingsDebug extends Component {
               ]
             : null
         }
-        onBack={Nav.backToPageProfileSignIn}
+        onBack={Nav().backToPageProfileSignIn}
         title={intl`Debug`}
       >
         {Platform.OS !== 'web' && (

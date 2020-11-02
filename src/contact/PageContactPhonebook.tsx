@@ -45,12 +45,12 @@ class PageContactPhonebook extends React.Component {
   update = id => {
     const contact = contactStore.getPhonebook(id)
     if (contact?.loaded) {
-      Nav.goToPagePhonebookUpdate({
+      Nav().goToPagePhonebookUpdate({
         contact: contact,
       })
     } else {
       this.loadContactDetail(id, ct => {
-        Nav.goToPagePhonebookUpdate({
+        Nav().goToPagePhonebookUpdate({
           contact: ct,
         })
       })
@@ -181,7 +181,7 @@ class PageContactPhonebook extends React.Component {
         dropdown={[
           {
             label: intl`Create new contact`,
-            onPress: Nav.goToPagePhonebookCreate,
+            onPress: Nav().goToPagePhonebookCreate,
           },
           {
             label: intl`Reload`,

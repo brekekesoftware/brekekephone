@@ -117,7 +117,7 @@ class Control extends React.Component<{
     ) {
       return null
     }
-    return <Mini {...this.props} onDoubleTap={Nav.goToPageCallManage} />
+    return <Mini {...this.props} onDoubleTap={Nav().goToPageCallManage} />
   }
 }
 

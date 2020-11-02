@@ -1,12 +1,18 @@
 import 'es6-shim'
 import 'es7-shim'
 
-import MD5 from 'crypto-js/md5'
-import JsSIP from 'jssip/lib/JsSIP'
+import JsSIP from 'jssip'
+import MD5 from 'md5'
 
-// @ts-ignore
+declare global {
+  interface Window {
+    JsSIP: typeof JsSIP
+    CryptoJS: {
+      MD5: Function
+    }
+  }
+}
+
 // Dependency for brekekejs
 window.JsSIP = window.JsSIP || JsSIP
-// @ts-ignore
-// Dependency for brekekejs
-window.CryptoJS = { MD5 }
+window.CryptoJS = window.CryptoJS || { MD5 }

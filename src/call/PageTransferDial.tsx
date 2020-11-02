@@ -19,7 +19,7 @@ class PageTransferDial extends React.Component {
   }
   componentDidUpdate() {
     if (this.prevId && this.prevId !== callStore.currentCall?.id) {
-      Nav.backToPageCallManage()
+      Nav().backToPageCallManage()
     }
     this.prevId = callStore.currentCall?.id
   }
@@ -63,7 +63,7 @@ class PageTransferDial extends React.Component {
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={Nav.backToPageCallManage}
+        onBack={Nav().backToPageCallManage}
         title={intl`Transfer`}
       >
         {groups.map(_g => (

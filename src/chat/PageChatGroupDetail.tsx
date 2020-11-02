@@ -92,7 +92,7 @@ class PageChatGroupDetail extends React.Component<{
           },
         ]}
         fabRender={this.renderChatInput}
-        onBack={Nav.backToPageChatRecents}
+        onBack={Nav().backToPageChatRecents}
         title={gr?.name}
       >
         <MessageList
@@ -241,7 +241,7 @@ class PageChatGroupDetail extends React.Component<{
     uc.leaveChatGroup(this.props.groupId)
       .then(() => {
         chatStore.removeGroup(this.props.groupId)
-        Nav.goToPageChatRecents()
+        Nav().goToPageChatRecents()
       })
       .catch(err => {
         RnAlert.error({
@@ -252,7 +252,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   invite = () => {
-    Nav.goToPageChatGroupInvite({ groupId: this.props.groupId })
+    Nav().goToPageChatGroupInvite({ groupId: this.props.groupId })
   }
   call = (target, bVideoEnabled) => {
     callStore.startCall(target, {

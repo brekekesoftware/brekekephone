@@ -10,7 +10,7 @@ const updatePhoneIndex = () =>
       message: intlDebug`Failed to update phone index`,
       err,
     })
-    Nav.goToPageProfileSignIn()
+    Nav().goToPageProfileSignIn()
     return null
   })
 
@@ -72,7 +72,7 @@ const updatePhoneIndexWithoutCatch = async () => {
             })
         },
         onDismiss: () => {
-          Nav.goToPageProfileSignIn()
+          Nav().goToPageProfileSignIn()
           resolve(null)
         },
       })

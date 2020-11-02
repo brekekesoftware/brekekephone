@@ -91,7 +91,7 @@ class PageCallManage extends React.Component<{
   componentDidUpdate() {
     this.hideButtonsIfVideo()
     if (!callStore.currentCall && !callStore.backgroundCalls.length) {
-      Nav.backToPageCallRecents()
+      Nav().backToPageCallRecents()
     }
   }
 
@@ -125,7 +125,7 @@ class PageCallManage extends React.Component<{
           : null
       }
       noScroll
-      onBack={Nav.backToPageCallRecents}
+      onBack={Nav().backToPageCallRecents}
       title={c?.title || intl`Connection failed`}
       transparent={!c?.transferring}
     >
@@ -173,7 +173,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              onPress={Nav.goToPageTransferDial}
+              onPress={Nav().goToPageTransferDial}
               path={mdiCallSplit}
               size={40}
               textcolor='white'
@@ -183,7 +183,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`PARK`}
               noborder
-              onPress={Nav.goToPageCallParks2}
+              onPress={Nav().goToPageCallParks2}
               path={mdiAlphaPCircle}
               size={40}
               textcolor='white'
@@ -242,7 +242,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`DTMF`}
               noborder
-              onPress={Nav.goToPageDtmfKeypad}
+              onPress={Nav().goToPageDtmfKeypad}
               path={mdiDialpad}
               size={40}
               textcolor='white'
@@ -262,7 +262,7 @@ class PageCallManage extends React.Component<{
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={Nav.goToPageBackgroundCalls}
+            onCreateBtnPress={Nav().goToPageBackgroundCalls}
             value={intl`${n} other calls are in background`}
           />
         )}
