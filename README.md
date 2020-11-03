@@ -119,12 +119,15 @@ yarn android --deviceId=DEVICE_ID
 
 ### iOS
 
-- Development: `yarn ios`
+- CocoaPods is required: https://cocoapods.org/
+- Install Pods: `cd ios && pod install --repo-update`
+- Start development: `yarn ios`
 - Sometimes we need to clear cache if it doesn't reflect changes or has some strange errors: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`
 - To have the push notification permision and other permission related popups show up again, we need to uninstall the app before reinstalling it
 
 ##### Build app for distribution
 
+- Download bitcode for react-native-webrtc: `cd node_modules/react-native-webrtc/tools && bash downloadBitcode.sh`
 - Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution to manually upload to our server so the others can download and test
 - We can also choose to validate for App Store to see if it has any issue, then distribute it to App Store for a new release

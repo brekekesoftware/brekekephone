@@ -101,7 +101,13 @@ export class CallStore {
       c.rejected = true
     } else {
       c.callkeep = true
-      RNCallKeep.displayIncomingCall(c.uuid, 'Brekeke Phone', c.partyNumber)
+      RNCallKeep.displayIncomingCall(
+        c.uuid,
+        'Brekeke Phone',
+        c.partyNumber,
+        'generic',
+        c.remoteVideoEnabled,
+      )
     }
   }
   @action removeCall = (id: string) => {
