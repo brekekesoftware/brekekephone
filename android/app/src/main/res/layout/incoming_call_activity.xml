@@ -7,7 +7,7 @@
   android:layout_height="fill_parent"
   android:orientation="vertical"
   android:paddingBottom="20dp"
-  tools:context="com.brekeke.phone.IncomingCallActivity"
+  tools:context="com.brekeke.phonedev.IncomingCallActivity"
 >
   <TextView
     android:gravity="center"

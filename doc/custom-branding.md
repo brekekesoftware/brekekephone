@@ -8,7 +8,7 @@
   - Find and replace all the matches `Brekeke Phone Dev` with your new app name, this will be the display name of the app when user install on their phone
   - Find and replace all the mathces `Brekeke Phone` with your new app name, this will be the name displays inside the app after user open up
   - Find and replace all the matches `com.brekeke.phonedev` with your new app bundle
-  - Rename the directory tree from `android/src/main/java/com/brekeke/phone` with your new app bundle
+  - Rename the directory tree from `android/src/main/java/com/brekeke/phonedev` with your new app bundle
     - For example your new app bundle is `net.example.sip`, the directory tree will be `android/src/main/java/net/example/sip`
 
 - To update app logo, replace the following images with your new images but keep the same name:

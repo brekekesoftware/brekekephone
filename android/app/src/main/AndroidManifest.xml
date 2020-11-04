@@ -119,8 +119,5 @@
         <data android:scheme="brekekeapp" android:host="open" />
       </intent-filter>
     </activity>
-    <activity
-      android:name="com.facebook.react.devsupport.DevSettingsActivity"
-    />
   </application>
 </manifest>

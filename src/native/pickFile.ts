@@ -1,13 +1,11 @@
 import { Platform } from 'react-native'
-import DocumentRnPicker0 from 'react-native-document-picker'
+import DocumentRnPicker from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
 import ImagePicker from 'react-native-image-picker'
 import { v4 as uuid } from 'react-native-uuid'
 
 import RnPicker from '../global/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
-
-const DocumentRnPicker = DocumentRnPicker0 as any
 
 const actionSheetHandlers = [
   () =>
@@ -16,6 +14,9 @@ const actionSheetHandlers = [
         {
           mediaType: 'photo',
           cameraType: 'back',
+          storageOptions: {
+            privateDirectory: true,
+          },
         },
         res =>
           res.didCancel

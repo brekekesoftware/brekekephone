@@ -10498,9 +10498,10 @@ react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4:
   version "3.0.14"
   resolved "https://codeload.github.com/brekekesoftware/react-native-callkeep/tar.gz/3dac522e1cae0d776b3ede42fea33976405b6041"
 
-"react-native-document-picker@github:Elyx0/react-native-document-picker#v3":
-  version "3.2.0"
-  resolved "https://codeload.github.com/Elyx0/react-native-document-picker/tar.gz/96648f0e532545e2289d6a99cdf74327b2b3b984"
+react-native-document-picker@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-4.1.0.tgz#8092c09727018587da34358bf731fe948d4171a5"
+  integrity sha512-tHYNng9GrnVrOoLk9K2j+T1xa8gAfC2Mk2dbJq32QBYD3zkHGMkFYGd2FZt0nuYxCBnd768tOQWuEZXwXM1tsg==
 
 react-native-emoji-selector@0.1.9:
   version "0.1.9"

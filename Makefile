@@ -14,7 +14,7 @@ format-java:
 	&& make -s ls \
 	| xargs google-java-format -i
 format-xml:
-	export EXT="xml|xib|xcscheme|xcworkspacedata|plist|entitlements" \
+	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" \
 	&& make -s ls \
 	| xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --loglevel=error --write
 imagemin:

@@ -247,8 +247,8 @@ PODS:
     - React-cxxreact (= 0.63.3)
     - React-jsi (= 0.63.3)
   - React-jsinspector (0.63.3)
-  - react-native-document-picker (3.2.0):
-    - React
+  - react-native-document-picker (4.1.0):
+    - React-Core
   - react-native-image-picker (2.3.4):
     - React-Core
   - react-native-splash-screen (3.2.0):
@@ -542,7 +542,7 @@ SPEC CHECKSUMS:
   React-jsi: df07aa95b39c5be3e41199921509bfa929ed2b9d
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
-  react-native-document-picker: e3516aff0dcf65ee0785d9bcf190eb10e2261154
+  react-native-document-picker: d870e0a41510b241d5b764e7a2b5ccf129af7967
   react-native-image-picker: c6d75c4ab2cf46f9289f341242b219cb3c1180d3
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-webrtc: 86d841823e66d68cc1f86712db1c2956056bf0c2

@@ -95,7 +95,7 @@ const AppSelection = () => {
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phonedev;end`
     child = (
       <React.Fragment>
         <RnImage
