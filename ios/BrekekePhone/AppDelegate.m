@@ -62,6 +62,8 @@ static void InitializeFlipper(UIApplication *application) {
       [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
 
+  [RNSplashScreen show];
+
   return YES;
 }
 

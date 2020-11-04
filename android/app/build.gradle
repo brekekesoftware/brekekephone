@@ -10,6 +10,8 @@ apply from: "../../node_modules/react-native/react.gradle"
 
 def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
+def jscFlavor = "org.webkit:android-jsc:+"
+def enableHermes = false
 
 android {
   compileSdkVersion rootProject.ext.compileSdkVersion
@@ -17,7 +19,7 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
-  //
+
   signingConfigs {
     release {
       storeFile file("../keystores/release.keystore")
@@ -26,15 +28,16 @@ android {
       keyPassword "my-release-keyPw"
     }
   }
-  //
+
   defaultConfig {
     applicationId "com.brekeke.phonedev"
     versionCode 30001
     versionName "3.0.0"
+    minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
   }
-  //
+
   splits {
     abi {
       reset()
@@ -43,7 +46,7 @@ android {
       include "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
     }
   }
-  //
+
   buildTypes {
     release {
       minifyEnabled enableProguardInReleaseBuilds
@@ -52,58 +55,43 @@ android {
       // debuggable true
     }
   }
-  // applicationVariants are e.g. debug, release
+
   applicationVariants.all { variant ->
     variant.outputs.each { output ->
-      // For each separate APK per architecture, set a unique version code as described here:
-      // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
       def versionCodes = ["x86":1,"x86_64":2,"armeabi-v7a":3,"arm64-v8a":4]
       def abi = output.getFilter(OutputFile.ABI)
-      if (abi != null) { // null for the universal-debug, universal-release variants
+      if (abi != null) {
         output.versionCodeOverride = versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
       }
     }
   }
-  //
 }
 
 dependencies {
-  compile fileTree(include: ["*.jar"], dir: "libs")
-  compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-  compile "com.facebook.react:react-native:+"
-  // https://github.com/evollu/react-native-fcm/issues/1111
-  compile "com.google.firebase:firebase-core:16.0.3"
-  compile "com.google.firebase:firebase-messaging:17.6.0"
-  //
-  compile (project(":react-native-camera")) {
-    exclude group: "com.google.android.gms"
-    exclude group: "com.android.support"
-    compile "com.android.support:exifinterface:28.+"
-    compile ("com.google.android.gms:play-services-vision:12.0.1") {
-      force = true
-    }
+  implementation fileTree(dir: "libs", include: ["*.jar"])
+  implementation "com.facebook.react:react-native:+"
+
+  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+  debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+    exclude group:"com.facebook.fbjni"
   }
-  compile project(":@react-native-community_async-storage")
-  compile project(":react-native-callkeep")
-  compile project(":react-native-document-picker")
-  compile project(":react-native-exception-handler")
-  compile project(":react-native-fast-image")
-  compile project(":react-native-fcm")
-  compile project(":react-native-fs")
-  compile project(":react-native-incall-manager")
-  compile project(":react-native-linear-gradient")
-  compile project(":react-native-share")
-  compile project(":react-native-splash-screen")
-  compile project(":react-native-svg")
-  compile project(":react-native-video")
-  compile project(":react-native-webrtc")
+  debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+    exclude group:"com.facebook.flipper"
+    exclude group:"com.squareup.okhttp3", module:"okhttp"
+  }
+  debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+    exclude group:"com.facebook.flipper"
+  }
+
+  if (enableHermes) {
+    def hermesPath = "../../node_modules/hermes-engine/android/"
+    debugImplementation files(hermesPath + "hermes-debug.aar")
+    releaseImplementation files(hermesPath + "hermes-release.aar")
+  } else {
+    implementation jscFlavor
+  }
 }
 
-// Run this once to be able to run the application with BUCK
-// puts all compile dependencies into folder libs for BUCK to use
-task copyDownloadableDepsToLibs(type: Copy) {
-  from configurations.compile
-  into "libs"
-}
-
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply plugin: "com.google.gms.google-services"

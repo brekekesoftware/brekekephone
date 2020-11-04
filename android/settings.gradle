@@ -1,34 +1,3 @@
-rootProject.name = "BrekekePhone"
-
-include ":@react-native-community_async-storage"
-project(":@react-native-community_async-storage").projectDir = new File(rootProject.projectDir, "../node_modules/@react-native-community/async-storage/android")
-include ":react-native-callkeep"
-project(":react-native-callkeep").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-callkeep/android")
-include ":react-native-camera"
-project(":react-native-camera").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-camera/android")
-include ":react-native-document-picker"
-project(":react-native-document-picker").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-document-picker/android")
-include ":react-native-exception-handler"
-project(":react-native-exception-handler").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-exception-handler/android")
-include ":react-native-fast-image"
-project(":react-native-fast-image").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-fast-image/android")
-include ":react-native-fcm"
-project(":react-native-fcm").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-fcm/android")
-include ":react-native-fs"
-project(":react-native-fs").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-fs/android")
-include ":react-native-incall-manager"
-project(":react-native-incall-manager").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-incall-manager/android")
-include ":react-native-linear-gradient"
-project(":react-native-linear-gradient").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-linear-gradient/android")
-include ":react-native-share"
-project(":react-native-share").projectDir = new File(rootProject.projectDir,  "../node_modules/react-native-share/android")
-include ":react-native-splash-screen"
-project(":react-native-splash-screen").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-splash-screen/android")
-include ":react-native-svg"
-project(":react-native-svg").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-svg/android")
-include ":react-native-video"
-project(":react-native-video").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-video/android-exoplayer")
-include ":react-native-webrtc"
-project(":react-native-webrtc").projectDir = new File(rootProject.projectDir, "../node_modules/react-native-webrtc/android")
-
-include ":app"
+rootProject.name = 'BrekekePhone'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'

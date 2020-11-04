@@ -231,7 +231,7 @@ if (Platform.OS === 'ios') {
   AppState.addEventListener('change', () => {
     if (AppState.currentState === 'active') {
       callStore._calls
-        .filter(c => c.callkeep)
+        .filter(c => c.callkeep && c.answered)
         .forEach(c => {
           c.callkeep = false
           RNCallKeep.endCall(c.uuid)
