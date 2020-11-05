@@ -59,7 +59,7 @@ src/assets/logo.png
     - Find and replace `#74bf53` with your new color
     - Update `ios/BrekekePhone/LaunchScreen.storyboard` at the node `<color key="backgroundColor"` with your new color
   - For other in app colors:
-    - Open `src/variables.js` and update the primary color there
+    - Open `src/components/variables.ts` and update the primary color there
     - You can also update other colors their as you want
 
 - For the push notification and build:

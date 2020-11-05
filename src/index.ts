@@ -1,6 +1,6 @@
 import { AppRegistry, Platform } from 'react-native'
 
-import App from './App'
+import App from './components/App'
 
 AppRegistry.registerComponent('BrekekePhone', () => App)
 

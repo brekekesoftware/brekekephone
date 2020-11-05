@@ -2,7 +2,7 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
-import { Profile } from '../global/profileStore'
+import { Profile } from '../stores/profileStore'
 import {
   UcChatClient,
   UcConference,

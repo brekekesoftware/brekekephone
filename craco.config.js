@@ -3,7 +3,7 @@ const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const babelPluginIntl = require('./.babelPluginIntl')
 
-const nullAlias = path.join(__dirname, './src/null.ts')
+const nullAlias = path.join(__dirname, './src/polyfill/null.ts')
 
 module.exports = {
   babel: {

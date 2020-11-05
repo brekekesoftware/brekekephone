@@ -5,7 +5,7 @@ import React from 'react'
 import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 
-import Field from '../shared/Field'
+import Field from '../components/Field'
 import { arrToMap, mapToMap } from './toMap'
 import useStore from './useStore'
 

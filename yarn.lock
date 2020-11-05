@@ -1869,6 +1869,11 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-native-incall-manager@3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@types/react-native-incall-manager/-/react-native-incall-manager-3.2.0.tgz#135dbf639358b1aec5cc7be758d0b47fc3a560dd"
+  integrity sha512-nHA4eX4rfyMv4VyPgvjIePYMDzF+JIF8SCx4yaBY6wGZVN6fXTxxoI4q453IcmnCh9j8wk2fLrheB7RVo2GAEg==
+
 "@types/react-native-keyboard-spacer@0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/react-native-keyboard-spacer/-/react-native-keyboard-spacer-0.4.1.tgz#2bc5bf42df1c99ddd99bd5be0f0815df3f28e938"
@@ -3134,10 +3139,10 @@ buffer-xor@^1.0.3:
   resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
   integrity sha1-JuYe0UIvtw3ULm42cp7VHYVf6Nk=
 
-buffer@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-6.0.0.tgz#5af63d0ccb2a3f72ceb347344a43a610c7dd583c"
-  integrity sha512-Sxdxq98A+Y9kRjO/3+mc2IAxIyTAKqzBiYKpeo5EluWnw9535rI4fN8DeMGsiQqpqqaWtFtTdxQgHnku6IEjCA==
+buffer@6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/buffer/-/buffer-6.0.1.tgz#3cbea8c1463e5a0779e30b66d4c88c6ffa182ac2"
+  integrity sha512-rVAXBwEcEoYtxnHSO5iWyhzV/O1WMtkUYWlfdLS7FjU4PnSJJHEfHXi/uHPI5EwltmOA794gN3bm3/pzuctWjQ==
   dependencies:
     base64-js "^1.3.1"
     ieee754 "^1.2.1"

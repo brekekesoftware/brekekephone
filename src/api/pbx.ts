@@ -3,7 +3,7 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
-import profileStore, { Profile } from '../global/profileStore'
+import profileStore, { Profile } from '../stores/profileStore'
 import { Pbx } from './brekekejs'
 
 class PBX extends EventEmitter {

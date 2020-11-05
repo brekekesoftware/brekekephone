@@ -1,7 +1,7 @@
-import authStore from '../global/authStore'
-import Nav from '../global/Nav'
-import RnAlert from '../global/RnAlert'
-import intl, { intlDebug } from '../intl/intl'
+import authStore from '../stores/authStore'
+import intl, { intlDebug } from '../stores/intl'
+import Nav from '../stores/Nav'
+import RnAlert from '../stores/RnAlert'
 import pbx from './pbx'
 
 const updatePhoneIndex = () =>
