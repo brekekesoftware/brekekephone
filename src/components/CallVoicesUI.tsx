@@ -43,9 +43,7 @@ const IncomingList: FC<{
 
 class OutgoingItem extends React.Component {
   componentDidMount() {
-    IncallManager.start({
-      ringback: '_BUNDLE_',
-    })
+    IncallManager.startRingback('_BUNDLE_')
   }
 
   componentWillUnmount() {

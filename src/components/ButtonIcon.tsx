@@ -47,8 +47,8 @@ const ButtonIcon: FC<{
           { borderColor: p.bdcolor },
         ]}
       >
-        <Svg height={size} viewBox='0 0 24 24' width={p.size}>
-          <Path d={p.path} fill={p.color} />
+        <Svg height={size} viewBox='0 0 24 24' width={size}>
+          <Path d={p.path} fill={p.color || 'black'} />
         </Svg>
       </RnTouchableOpacity>
       {p.name && (
