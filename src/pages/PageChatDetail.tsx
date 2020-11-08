@@ -1,7 +1,15 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { Platform, ScrollView, StyleSheet, View } from 'react-native'
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInputSelectionChangeEventData,
+  View,
+} from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
 import uc from '../api/uc'
@@ -11,7 +19,7 @@ import ChatInput from '../components/FooterChatInput'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import g from '../components/variables'
-import chatStore from '../stores/chatStore'
+import chatStore, { ChatMessage } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -46,8 +54,8 @@ class PageChatDetail extends React.Component<{
     return arrToMap(
       chatStore.messagesByThreadId[this.props.buddy] || [],
       'id',
-      m => m,
-    )
+      (m: ChatMessage) => m,
+    ) as { [k: string]: ChatMessage }
   }
   state = {
     loadingRecent: false,
@@ -158,7 +166,9 @@ class PageChatDetail extends React.Component<{
     )
   }
 
-  onSelectionChange = event => {
+  onSelectionChange = (
+    event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+  ) => {
     const selection = event.nativeEvent.selection
     this.editingTextReplace = false
     if (selection.start !== selection.end) {
@@ -174,7 +184,7 @@ class PageChatDetail extends React.Component<{
       )
     }
   }
-  emojiSelectFunc = emoji => {
+  emojiSelectFunc = (emoji: string) => {
     let newText = this.edittingTextEmoji.concat(emoji)
     if (this.state.editingText === '') {
       this.setState({ editingText: emoji })
@@ -202,7 +212,7 @@ class PageChatDetail extends React.Component<{
   }
 
   view?: ScrollView
-  setViewRef = ref => {
+  setViewRef = (ref: ScrollView) => {
     this.view = ref
   }
   _justMounted = true
@@ -220,20 +230,19 @@ class PageChatDetail extends React.Component<{
       }
     }
   }
-  onScroll = ev => {
-    ev = ev.nativeEvent
-    const layoutSize = ev.layoutMeasurement
+  onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const layoutSize = ev.nativeEvent.layoutMeasurement
     const layoutHeight = layoutSize.height
-    const contentOffset = ev.contentOffset
-    const contentSize = ev.contentSize
+    const contentOffset = ev.nativeEvent.contentOffset
+    const contentSize = ev.nativeEvent.contentSize
     const contentHeight = contentSize.height
     const paddingToBottom = 20
     this._closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
   }
-  resolveChat = id => {
-    const chat = this.chatById[id]
-    const file = chatStore.filesMap[chat.file]
+  resolveChat = (id: string) => {
+    const chat = this.chatById[id] as ChatMessage
+    const file = chatStore.filesMap[chat.file || '']
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
     return {
@@ -248,7 +257,7 @@ class PageChatDetail extends React.Component<{
     }
   }
   me = uc.me()
-  resolveCreator = creator => {
+  resolveCreator = (creator: string) => {
     if (creator === this.me.id) {
       return this.me
     }
@@ -264,7 +273,7 @@ class PageChatDetail extends React.Component<{
         chatStore.pushMessages(id, chats)
         window.setTimeout(this.onContentSizeChange, 170)
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to get recent chats`,
           err,
@@ -279,7 +288,7 @@ class PageChatDetail extends React.Component<{
     this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
-    const oldestChat = this.chatById[this.chatIds[0]] || {}
+    const oldestChat = (this.chatById[this.chatIds[0]] || {}) as ChatMessage
     const oldestCreated = oldestChat.created || 0
     const max = this.numberOfChatsPerLoadMore
     const end = oldestCreated
@@ -289,7 +298,7 @@ class PageChatDetail extends React.Component<{
       .then(chats => {
         chatStore.pushMessages(id, chats)
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to get more chats`,
           err,
@@ -309,7 +318,7 @@ class PageChatDetail extends React.Component<{
       })
   }
 
-  setEditingText = editingText => {
+  setEditingText = (editingText: string) => {
     this.setState({ editingText })
   }
   submitting = false
@@ -327,31 +336,33 @@ class PageChatDetail extends React.Component<{
         this.submitting = false
       })
   }
-  onSubmitEditingTextSuccess = chat => {
-    chatStore.pushMessages(this.props.buddy, chat)
+  onSubmitEditingTextSuccess = (chat: unknown) => {
+    chatStore.pushMessages(this.props.buddy, chat as ChatMessage)
     this.setState({ editingText: '' })
   }
-  onSubmitEditingTextFailure = err => {
+  onSubmitEditingTextFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to send the message`,
       err,
     })
   }
-  acceptFile = file => {
+  acceptFile = (file: { id: string; name: string }) => {
     uc.acceptFile(file.id)
-      .then(blob => this.onAcceptFileSuccess(blob, file))
+      .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
       .catch(this.onAcceptFileFailure)
   }
 
-  onAcceptFileSuccess = (blob, file) => {
+  onAcceptFileSuccess = (blob: Blob, file: { id: string; name: string }) => {
     const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+    const fileType = type.includes(
+      file.name.split('.').pop()?.toUpperCase() || '',
+    )
       ? 'image'
       : 'other'
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      await Object.assign(chatStore.filesMap[file.id], {
+      Object.assign(chatStore.filesMap[file.id], {
         url: url,
         fileType: fileType,
       })
@@ -361,23 +372,23 @@ class PageChatDetail extends React.Component<{
 
     saveBlob(blob, file.name)
   }
-  onAcceptFileFailure = err => {
+  onAcceptFileFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to accept file`,
       err,
     })
   }
-  rejectFile = file => {
+  rejectFile = (file: object) => {
     uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
-  onRejectFileFailure = err => {
+  onRejectFileFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to reject file`,
       err,
     })
   }
 
-  readFile = file => {
+  readFile = (file: { type: string; name: string; uri: string }) => {
     if (Platform.OS === 'web') {
       const reader = new FileReader()
 
@@ -386,34 +397,34 @@ class PageChatDetail extends React.Component<{
         const url = event.target?.result
         this.setState({ blobFile: { url: url, fileType: fileType } })
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL((file as unknown) as Blob)
     } else {
       const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-      const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+      const fileType = type.includes(
+        file.name.split('.').pop()?.toUpperCase() || '',
+      )
         ? 'image'
         : 'other'
       this.setState({ blobFile: { url: file.uri, fileType: fileType } })
     }
   }
 
-  sendFile = file => {
+  sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUCUser(this.props.buddy)
-    uc.sendFile(u?.id, file)
-      .then(this.onSendFileSuccess)
-      .catch(this.onSendFileFailure)
-  }
-  onSendFileSuccess = res => {
-    const buddyId = this.props.buddy
-    Object.assign(res.file, this.state.blobFile)
-    chatStore.upsertFile(res.file)
-    chatStore.pushMessages(buddyId, res.chat)
-  }
-  onSendFileFailure = err => {
-    RnAlert.error({
-      message: intlDebug`Failed to send file`,
-      err,
-    })
+    uc.sendFile(u?.id, (file as unknown) as Blob)
+      .then(res => {
+        const buddyId = this.props.buddy
+        Object.assign(res.file, this.state.blobFile)
+        chatStore.upsertFile(res.file)
+        chatStore.pushMessages(buddyId, res.chat)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to send file`,
+          err,
+        })
+      })
   }
 }
 

@@ -1,5 +1,12 @@
-import React from 'react'
-import { Keyboard, StyleSheet, View } from 'react-native'
+import React, { FC, RefObject } from 'react'
+import {
+  Keyboard,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInput,
+  TextInputSelectionChangeEventData,
+  View,
+} from 'react-native'
 
 import intl from '../stores/intl'
 import { RnTextInput } from './Rn'
@@ -23,7 +30,14 @@ const css = StyleSheet.create({
   },
 })
 
-const ShowNumber = p => (
+const ShowNumber: FC<{
+  setTarget(v: string): void
+  selectionChange?(
+    e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+  ): void
+  refInput: RefObject<TextInput>
+  value: string
+}> = p => (
   <View style={css.ShowNumbers}>
     <RnTextInput
       blurOnSubmit

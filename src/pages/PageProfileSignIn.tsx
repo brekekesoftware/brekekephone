@@ -12,7 +12,7 @@ import g, { currentVersion } from '../components/variables'
 import intl from '../stores/intl'
 import intlStore from '../stores/intlStore'
 import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
+import profileStore, { Profile } from '../stores/profileStore'
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -87,7 +87,7 @@ const PageProfileSignIn = observer(() => {
               toJS(profileStore.profiles) /* Fix observable inside FlatList */
             }
             horizontal
-            keyExtractor={(item: any) => item.id}
+            keyExtractor={(item: Profile) => item.id}
             renderItem={({ index, item }) => (
               <ProfileSignInItem id={item.id} last={index === l - 1} />
             )}

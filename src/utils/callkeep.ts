@@ -1,13 +1,9 @@
 import { action } from 'mobx'
-import {
-  AppState,
-  NativeEventEmitter,
-  NativeModules,
-  Platform,
-} from 'react-native'
+import { AppState, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events, IOptions } from 'react-native-callkeep'
 
 import authStore from '../stores/authStore'
+import { NativeModules0 } from '../stores/Call'
 import callStore, { uuidFromPN } from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
@@ -54,7 +50,7 @@ export const setupCallKeep = async () => {
         ;(RNCallKeep as any)['promptAndroidPermissions']()
       }
     })
-    .catch(err => {
+    .catch((err: Error) => {
       if (AppState.currentState !== 'active') {
         return
       }
@@ -188,8 +184,8 @@ export const setupCallKeep = async () => {
       'showIncomingCallUi' as Events,
       (e: { callUUID: string }) => {
         if (e.callUUID === uuidFromPN) {
-          const n = getLastPN() as any
-          NativeModules.IncomingCall.showCall(
+          const n = getLastPN()
+          NativeModules0.IncomingCall.showCall(
             e.callUUID,
             n?.to || 'Loading...',
             false,
@@ -201,7 +197,7 @@ export const setupCallKeep = async () => {
           RNCallKeep.endCall(e.callUUID)
           return
         }
-        NativeModules.IncomingCall.showCall(
+        NativeModules0.IncomingCall.showCall(
           c.uuid,
           c.title,
           c.remoteVideoEnabled,
@@ -209,7 +205,7 @@ export const setupCallKeep = async () => {
       },
     )
 
-    const eventEmitter = new NativeEventEmitter(NativeModules.IncomingCall)
+    const eventEmitter = new NativeEventEmitter(NativeModules0.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
       if (uuid === uuidFromPN) {
         RNCallKeep.backToForeground()
@@ -222,7 +218,7 @@ export const setupCallKeep = async () => {
         return
       }
       callStore.answerCall(c)
-      NativeModules.IncomingCall.closeIncomingCallActivity()
+      NativeModules0.IncomingCall.closeIncomingCallActivity()
       RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {

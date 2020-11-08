@@ -7,7 +7,7 @@ import {
   mdiWeb,
 } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import authStore from '../stores/authStore'
@@ -46,8 +46,12 @@ const css = StyleSheet.create({
   },
 })
 
-const ProfileSignInItem = observer(props => {
-  if (props.empty) {
+const ProfileSignInItem: FC<{
+  empty?: boolean
+  id?: string
+  last?: boolean
+}> = observer(props => {
+  if (props.empty || !props.id) {
     return (
       <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
         <RnText subTitle>{intl`No account`}</RnText>
@@ -81,7 +85,7 @@ const ProfileSignInItem = observer(props => {
       </RnTouchableOpacity>
       <Field
         label={intl`PUSH NOTIFICATION`}
-        onValueChange={v =>
+        onValueChange={(v: boolean) =>
           profileStore.upsertProfile({ id: p.id, pushNotificationEnabled: v })
         }
         type='Switch'
@@ -89,7 +93,7 @@ const ProfileSignInItem = observer(props => {
       />
       <Field
         label={intl`UC`}
-        onValueChange={v =>
+        onValueChange={(v: boolean) =>
           profileStore.upsertProfile({ id: p.id, ucEnabled: v })
         }
         type='Switch'

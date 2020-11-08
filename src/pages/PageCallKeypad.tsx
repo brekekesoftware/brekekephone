@@ -1,6 +1,11 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
+import {
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputSelectionChangeEventData,
+} from 'react-native'
 
 import KeyPad from '../components/CallKeyPad'
 import ShowNumber from '../components/CallShowNumbers'
@@ -13,7 +18,7 @@ import RnKeyboard from '../stores/RnKeyboard'
 @observer
 class PageCallKeypad extends React.Component {
   @observable txt = ''
-  txtRef = React.createRef<HTMLInputElement>()
+  txtRef = React.createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
@@ -44,15 +49,17 @@ class PageCallKeypad extends React.Component {
           refInput={this.txtRef}
           selectionChange={
             RnKeyboard.isKeyboardShowing
-              ? null
-              : e => {
+              ? undefined
+              : (
+                  e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+                ) => {
                   Object.assign(this.txtSelection, {
                     start: e.nativeEvent.selection.start,
                     end: e.nativeEvent.selection.end,
                   })
                 }
           }
-          setTarget={v => {
+          setTarget={(v: string) => {
             this.txt = v
           }}
           value={this.txt}

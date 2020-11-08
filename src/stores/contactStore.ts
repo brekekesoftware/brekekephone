@@ -36,6 +36,7 @@ export type Phonebook2 = {
   email: string
   shared: boolean
   loaded?: boolean
+  hidden: boolean
 }
 
 class ContactStore {

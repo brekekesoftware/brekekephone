@@ -1,7 +1,12 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { Platform, ScrollView } from 'react-native'
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  ScrollView,
+} from 'react-native'
 
 import uc from '../api/uc'
 import { numberOfChatsPerLoad } from '../components/chatConfig'
@@ -31,8 +36,8 @@ class PageChatGroupDetail extends React.Component<{
     return arrToMap(
       chatStore.messagesByThreadId[this.props.groupId] || [],
       'id',
-      m => m,
-    )
+      (m: ChatMessage) => m,
+    ) as { [k: string]: ChatMessage }
   }
 
   state = {
@@ -108,7 +113,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   view?: ScrollView
-  setViewRef = ref => {
+  setViewRef = (ref: ScrollView) => {
     this.view = ref
   }
 
@@ -124,12 +129,11 @@ class PageChatGroupDetail extends React.Component<{
       }
     }
   }
-  onScroll = ev => {
-    ev = ev.nativeEvent
-    const layoutSize = ev.layoutMeasurement
+  onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const layoutSize = ev.nativeEvent.layoutMeasurement
     const layoutHeight = layoutSize.height
-    const contentOffset = ev.contentOffset
-    const contentSize = ev.contentSize
+    const contentOffset = ev.nativeEvent.contentOffset
+    const contentSize = ev.nativeEvent.contentSize
     const contentHeight = contentSize.height
     const paddingToBottom = 20
     this._closeToBottom =
@@ -137,16 +141,16 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   me = uc.me()
-  resolveBuddy = creator => {
+  resolveBuddy = (creator: string) => {
     if (creator === this.me.id) {
       return this.me
     }
     return contactStore.getUCUser(creator) || {}
   }
-  resolveChat = (id, index) => {
-    const chat = this.chatById[id]
+  resolveChat = (id: string) => {
+    const chat = this.chatById[id] as ChatMessage
     const text = chat.text
-    const file = chatStore.filesMap[chat.file]
+    const file = chatStore.filesMap[chat.file || '']
     const creator = this.resolveBuddy(chat.creator)
     return {
       id,
@@ -169,7 +173,7 @@ class PageChatGroupDetail extends React.Component<{
         chatStore.pushMessages(this.props.groupId, chats)
         window.setTimeout(this.onContentSizeChange, 170)
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to get recent chats`,
           err,
@@ -182,7 +186,7 @@ class PageChatGroupDetail extends React.Component<{
 
   loadMore = () => {
     this.setState({ loadingMore: true })
-    const oldestChat = this.chatById[this.chatIds[0]] || {}
+    const oldestChat = (this.chatById[this.chatIds[0]] || {}) as ChatMessage
     const oldestCreated = oldestChat.created || 0
     const max = numberOfChatsPerLoad
     const end = oldestCreated
@@ -194,7 +198,7 @@ class PageChatGroupDetail extends React.Component<{
       .then(chats => {
         chatStore.pushMessages(this.props.groupId, chats)
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to get more chats`,
           err,
@@ -205,7 +209,7 @@ class PageChatGroupDetail extends React.Component<{
       })
   }
 
-  setEditingText = editingText => {
+  setEditingText = (editingText: string) => {
     this.setState({
       editingText,
     })
@@ -226,7 +230,7 @@ class PageChatGroupDetail extends React.Component<{
         chatStore.pushMessages(this.props.groupId, [chat as ChatMessage])
         this.setState({ editingText: '' })
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to send the message`,
           err,
@@ -243,7 +247,7 @@ class PageChatGroupDetail extends React.Component<{
         chatStore.removeGroup(this.props.groupId)
         Nav().goToPageChatRecents()
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to leave the group`,
           err,
@@ -254,7 +258,7 @@ class PageChatGroupDetail extends React.Component<{
   invite = () => {
     Nav().goToPageChatGroupInvite({ groupId: this.props.groupId })
   }
-  call = (target, bVideoEnabled) => {
+  call = (target: string, bVideoEnabled: boolean) => {
     callStore.startCall(target, {
       videoEnabled: bVideoEnabled,
     })
@@ -274,7 +278,7 @@ class PageChatGroupDetail extends React.Component<{
     this.call(target, true)
   }
 
-  readFile = file => {
+  readFile = (file: { type: string; name: string; uri: string }) => {
     if (Platform.OS === 'web') {
       const reader = new FileReader()
 
@@ -283,50 +287,65 @@ class PageChatGroupDetail extends React.Component<{
         const url = event.target?.result
         this.setState({ blobFile: { url: url, fileType: fileType } })
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL((file as unknown) as Blob)
     } else {
       const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-      const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+      const fileType = type.includes(
+        file.name.split('.').pop()?.toUpperCase() || '',
+      )
         ? 'image'
         : 'other'
       this.setState({ blobFile: { url: file.uri, fileType: fileType } })
     }
   }
 
-  sendFile = file => {
+  sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
-    uc.sendFiles(groupId, file)
+    uc.sendFiles(groupId, (file as unknown) as Blob)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure)
   }
-  onSendFileSuccess = res => {
+  onSendFileSuccess = (res: {
+    file: {
+      id: string
+    }
+    chat: ChatMessage
+  }) => {
     const groupId = this.props.groupId
     Object.assign(res.file, this.state.blobFile)
     chatStore.upsertFile(res.file)
     chatStore.pushMessages(groupId, res.chat)
   }
-  onSendFileFailure = err => {
+  onSendFileFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to send file`,
       err,
     })
   }
-  acceptFile = file => {
+  acceptFile = (file: { id: string; name: string }) => {
     uc.acceptFile(file.id)
-      .then(blob => this.onAcceptFileSuccess(blob, file))
+      .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
       .catch(this.onAcceptFileFailure)
   }
 
-  onAcceptFileSuccess = (blob, file) => {
+  onAcceptFileSuccess = (
+    blob: Blob,
+    file: {
+      id: string
+      name: string
+    },
+  ) => {
     const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(file.name.split('.').pop().toUpperCase())
+    const fileType = type.includes(
+      file.name.split('.').pop()?.toUpperCase() || '',
+    )
       ? 'image'
       : 'other'
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      await Object.assign(chatStore.filesMap[file.id], {
+      Object.assign(chatStore.filesMap[file.id], {
         url: url,
         fileType: fileType,
       })
@@ -337,16 +356,16 @@ class PageChatGroupDetail extends React.Component<{
     saveBlob(blob, file.name)
   }
 
-  onAcceptFileFailure = err => {
+  onAcceptFileFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to accept file`,
       err,
     })
   }
-  rejectFile = file => {
+  rejectFile = (file: { id: string }) => {
     uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
-  onRejectFileFailure = err => {
+  onRejectFileFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to reject file`,
       err,

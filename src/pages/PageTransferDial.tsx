@@ -24,7 +24,7 @@ class PageTransferDial extends React.Component {
     this.prevId = callStore.currentCall?.id
   }
 
-  resolveMatch = id => {
+  resolveMatch = (id: string) => {
     const match = contactStore.getPBXUser(id)
     const ucUser = contactStore.getUCUser(id) || {}
     return {
@@ -40,7 +40,9 @@ class PageTransferDial extends React.Component {
 
   render() {
     const users = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
-    const map = {}
+    type User = typeof users[0]
+
+    const map = {} as { [k: string]: User[] }
     users.forEach(u => {
       u.name = u.name || u.number || ''
       let c0 = u.name.charAt(0).toUpperCase()
@@ -52,6 +54,7 @@ class PageTransferDial extends React.Component {
       }
       map[c0].push(u)
     })
+
     let groups = Object.keys(map).map(k => ({
       key: k,
       users: map[k],
@@ -60,6 +63,7 @@ class PageTransferDial extends React.Component {
     groups.forEach(g => {
       g.users = orderBy(g.users, 'name')
     })
+
     return (
       <Layout
         description={intl`Select target to start transfer`}

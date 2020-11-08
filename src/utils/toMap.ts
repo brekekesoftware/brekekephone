@@ -14,12 +14,12 @@ export const arrToMap = (
     {},
   ) as object
 export const mapToMap = (
-  map: object,
+  map: { [k: string]: unknown },
   k?: string | Function,
   v?: string | Function,
 ) =>
   arrToMap(
     Object.keys(map),
-    typeof k === 'function' ? k : ki => (k ? get(map[ki], k) : ki),
-    typeof v === 'function' ? v : ki => (v ? get(map[ki], v) : true),
+    typeof k === 'function' ? k : (ki: string) => (k ? get(map[ki], k) : ki),
+    typeof v === 'function' ? v : (ki: string) => (v ? get(map[ki], v) : true),
   ) as object

@@ -28,10 +28,7 @@ const onNotification = async (
   isLocal = false,
 ) => {
   initApp()
-  const n: {
-    body: string
-    isCall: boolean
-  } = await parse(n0, isLocal)
+  const n = parse((n0 as unknown) as { [k: string]: unknown }, isLocal)
   if (!n) {
     return
   }

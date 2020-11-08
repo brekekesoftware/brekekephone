@@ -425,14 +425,14 @@ class UC extends EventEmitter {
     })
   }
 
-  acceptFile(file: Blob) {
+  acceptFile(file: string) {
     const res = new Promise((onres, onerr) => {
       const xhr = new XMLHttpRequest()
       xhr.responseType = 'blob'
 
       xhr.onload = function () {
         if (this.status === 200) {
-          onres(this.response)
+          onres(this['response'])
         }
       }
 
@@ -468,40 +468,38 @@ class UC extends EventEmitter {
   }
 
   async sendFile(user_id: string, file: Blob) {
-    let input: any
-
+    let inputw: HTMLInputElement | null = null
     if (Platform.OS === 'web') {
-      input = document.createElement('input')
-      input.type = 'file'
-      input.name = 'file'
-
-      input.files = (() => {
-        let b: any
-
+      inputw = document.createElement('input')
+      inputw.type = 'file'
+      inputw.name = 'file'
+      inputw.files = (() => {
+        let b: DataTransfer | null = null
         if (window.DataTransfer) {
           b = new DataTransfer()
         } else if (window.ClipboardEvent) {
           b = new ClipboardEvent('').clipboardData
-        } else {
+        }
+        if (!b) {
           console.error('Can not set input.files')
-          return
+          return null
         }
 
-        b.items.add(file)
+        b.items.add(file as File)
         return b.files
       })()
-
       const form = document.createElement('form')
-      form.appendChild(input)
-    } else {
-      const fd = new FormData()
+      form.appendChild(inputw)
+    }
 
+    let inputrn: object | null = null
+    if (Platform.OS !== 'web') {
+      const fd = new FormData()
       fd.append('file', {
         ...file,
         type: 'multipart/form-data',
       })
-
-      input = {
+      inputrn = {
         form: 'This is not a form element, see app/apis/uc.js for detail',
         files: [file],
         __rnFormData: fd,
@@ -513,7 +511,7 @@ class UC extends EventEmitter {
         {
           user_id,
         },
-        input,
+        inputw || inputrn,
         onres,
         onerr,
       ),
@@ -537,32 +535,32 @@ class UC extends EventEmitter {
   }
 
   async sendFiles(conf_id: string, file: Blob) {
-    let input: any
-
+    let inputw: HTMLInputElement | null = null
     if (Platform.OS === 'web') {
-      input = document.createElement('input')
-      input.type = 'file'
-      input.name = 'file'
-
-      input.files = (() => {
-        let b: any
-
+      inputw = document.createElement('input')
+      inputw.type = 'file'
+      inputw.name = 'file'
+      inputw.files = (() => {
+        let b: DataTransfer | null = null
         if (window.DataTransfer) {
           b = new DataTransfer()
         } else if (window.ClipboardEvent) {
-          b = new ClipboardEvent('').clipboardData
-        } else {
-          console.error('Can not set input.files')
-          return
+          const e = new ClipboardEvent('')
+          b = e.clipboardData
         }
-
-        b.items.add(file)
+        if (!b) {
+          console.error('Can not set input.files')
+          return null
+        }
+        b.items.add(file as File)
         return b.files
       })()
-
       const form = document.createElement('form')
-      form.appendChild(input)
-    } else {
+      form.appendChild(inputw)
+    }
+
+    let inputrn: object | null = null
+    if (Platform.OS !== 'web') {
       const fd = new FormData()
 
       fd.append('file', {
@@ -570,7 +568,7 @@ class UC extends EventEmitter {
         type: 'multipart/form-data',
       })
 
-      input = {
+      inputrn = {
         form: 'This is not a form element, see app/apis/uc.js for detail',
         files: [file],
         __rnFormData: fd,
@@ -581,7 +579,7 @@ class UC extends EventEmitter {
       this.client.sendFiles(
         {
           conf_id,
-          input,
+          input: inputw || inputrn,
         },
         [file],
         onres,

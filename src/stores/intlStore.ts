@@ -12,11 +12,11 @@ export const labels = {
   en,
   ja,
   vi,
-}
+} as { [k: string]: string[] }
 export const enLabelsMapIndex = arrToMap(
   en,
-  k => k,
-  (_, i) => i,
+  (k: string) => k,
+  (_: string, i: number) => i,
 )
 
 export const localeOptions = [
@@ -42,7 +42,7 @@ export class IntlStore {
   }
   private getLocaleFromLocalStorage = async () => {
     let locale = await RnAsyncStorage.getItem('locale')
-    if (!locale || !labels[locale]) {
+    if (!locale || !labels[locale as 'en']) {
       locale = 'en'
       await RnAsyncStorage.setItem('locale', locale)
     }
@@ -50,14 +50,14 @@ export class IntlStore {
       this.locale = locale || 'en'
     })
   }
-  private setLocale = async locale => {
+  private setLocale = async (locale: string) => {
     if (this.localeLoading || locale === this.locale) {
       return
     }
     runInAction(() => {
       this.localeLoading = true
     })
-    if (!labels[locale]) {
+    if (!labels[locale as 'en']) {
       locale = 'en'
     }
     await RnAsyncStorage.setItem('locale', locale)

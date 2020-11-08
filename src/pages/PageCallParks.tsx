@@ -18,7 +18,7 @@ class PageCallParks extends React.Component<{
     selectedPark: '',
   }
 
-  selectPark = selectedPark => {
+  selectPark = (selectedPark: string) => {
     this.setState({
       selectedPark:
         selectedPark === this.state.selectedPark ? '' : selectedPark,

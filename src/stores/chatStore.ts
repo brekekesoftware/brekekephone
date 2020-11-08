@@ -38,7 +38,7 @@ class ChatStore {
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
   @computed get unreadCount() {
-    const idMap = {}
+    const idMap: { [k: string]: boolean } = {}
     const l1 = Object.values(this.threadConfig).filter(v => {
       idMap[v.id] = true
       return v.isUnread && this.messagesByThreadId[v.id]?.length

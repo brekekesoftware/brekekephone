@@ -10,7 +10,7 @@ import {
 } from 'react-native-webrtc'
 
 window.URL = window.URL || {}
-window.URL.createObjectURL = stream => stream.toURL()
+window.URL.createObjectURL = (stream: MediaStream) => stream.toURL()
 
 window.RTCPeerConnection = window.RTCPeerConnection || RTCPeerConnection
 window.RTCIceCandidate = window.RTCIceCandidate || RTCIceCandidate

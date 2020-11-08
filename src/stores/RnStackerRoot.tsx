@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import { ReactComponentLike } from 'prop-types'
+import React, { FC } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import g from '../components/variables'
@@ -15,7 +16,11 @@ const css = StyleSheet.create({
   },
 })
 
-const Stack = ({ Component, ...p }) => {
+const Stack: FC<{
+  Component: ReactComponentLike
+  isRoot?: boolean
+  isBackgroundStack: boolean
+}> = ({ Component, ...p }) => {
   const x = useAnimationOnDidMount({
     translateX: [Dimensions.get('screen').width, 0],
   })

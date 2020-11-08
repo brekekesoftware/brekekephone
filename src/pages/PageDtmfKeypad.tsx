@@ -1,6 +1,11 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
+import {
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputSelectionChangeEventData,
+} from 'react-native'
 
 import sip from '../api/sip'
 import KeyPad from '../components/CallKeyPad'
@@ -17,14 +22,14 @@ class PageDtmfKeypad extends React.Component<{
   partyName: string
 }> {
   @observable txt = ''
-  txtRef = React.createRef<HTMLInputElement>()
+  txtRef = React.createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
     this.txtRef.current?.focus()
   }
 
-  sendKey = key => {
+  sendKey = (key: string) => {
     sip.sendDTMF(key, this.props.callId)
   }
 
@@ -53,15 +58,17 @@ class PageDtmfKeypad extends React.Component<{
           refInput={this.txtRef}
           selectionChange={
             RnKeyboard.isKeyboardShowing
-              ? null
-              : e => {
+              ? undefined
+              : (
+                  e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+                ) => {
                   Object.assign(this.txtSelection, {
                     start: e.nativeEvent.selection.start,
                     end: e.nativeEvent.selection.end,
                   })
                 }
           }
-          setTarget={v => {
+          setTarget={(v: string) => {
             this.txt = v
           }}
           value={this.txt}

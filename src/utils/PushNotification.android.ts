@@ -19,10 +19,7 @@ const onToken = (t: string) => {
 const onNotification = (n0: PN, initApp: Function) => {
   try {
     initApp()
-    const n: {
-      body: string
-      isCall: boolean
-    } = parse(n0)
+    const n = parse(n0)
     if (!n) {
       return
     }

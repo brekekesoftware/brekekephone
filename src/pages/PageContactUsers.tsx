@@ -42,7 +42,7 @@ class PageContactUsers extends React.Component {
     ])
     return userIds.filter(this.isMatchUser)
   }
-  resolveUser = id => {
+  resolveUser = (id: string) => {
     const pbxUser = contactStore.getPBXUser(id) || {}
     const ucUser = contactStore.getUCUser(id) || {}
     const u = {
@@ -51,19 +51,19 @@ class PageContactUsers extends React.Component {
     }
     return u
   }
-  isMatchUser = id => {
+  isMatchUser = (id: string) => {
     if (!id) {
       return false
     }
     let userId = id
-    let pbxUserName
+    let pbxUserName: string
     const pbxUser = contactStore.getPBXUser(id)
     if (pbxUser) {
       pbxUserName = pbxUser.name
     } else {
       pbxUserName = ''
     }
-    let ucUserName
+    let ucUserName: string
     const ucUser = contactStore.getUCUser(id)
     if (ucUser) {
       ucUserName = ucUser.name
@@ -82,7 +82,7 @@ class PageContactUsers extends React.Component {
     )
   }
 
-  getLastMessageChat = id => {
+  getLastMessageChat = (id: string) => {
     const chats = chatStore.messagesByThreadId[id] || []
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
@@ -90,12 +90,13 @@ class PageContactUsers extends React.Component {
   render() {
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
+    type User = typeof allUsers[0]
 
     const { ucEnabled } = authStore.currentProfile
     const displayUsers =
       !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
 
-    const map = {}
+    const map = {} as { [k: string]: User[] }
     displayUsers.forEach(u => {
       u.name = u.name || u.id || ''
       let c0 = u.name.charAt(0).toUpperCase()
@@ -107,6 +108,7 @@ class PageContactUsers extends React.Component {
       }
       map[c0].push(u)
     })
+
     let groups = Object.keys(map).map(k => ({
       key: k,
       users: map[k],
@@ -115,6 +117,7 @@ class PageContactUsers extends React.Component {
     groups.forEach(g => {
       g.users = orderBy(g.users, 'name')
     })
+
     return (
       <Layout
         description={(() => {
@@ -135,7 +138,7 @@ class PageContactUsers extends React.Component {
         <Field
           icon={mdiMagnify}
           label={intl`SEARCH FOR USERS`}
-          onValueChange={v => {
+          onValueChange={(v: string) => {
             contactStore.usersSearchTerm = v
           }}
           value={contactStore.usersSearchTerm}
@@ -143,7 +146,7 @@ class PageContactUsers extends React.Component {
         {ucEnabled && (
           <Field
             label={intl`SHOW OFFLINE USERS`}
-            onValueChange={v => {
+            onValueChange={(v: boolean) => {
               profileStore.upsertProfile({
                 id: authStore.signedInId,
                 displayOfflineUsers: v,

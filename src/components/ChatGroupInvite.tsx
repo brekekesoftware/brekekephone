@@ -2,10 +2,11 @@ import { mdiCheck, mdiClose } from '@mdi/js'
 import sortBy from 'lodash/sortBy'
 import { action, computed, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import uc from '../api/uc'
+import Call from '../stores/Call'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
@@ -47,11 +48,20 @@ const css = StyleSheet.create({
   },
 })
 
-const Notify = observer(p0 => {
+const Notify: FC<{
+  id: string
+  call?: Call
+  type: string
+  name: string
+  inviter: string
+  reject: Function
+  accept: Function
+  loading: boolean
+}> = observer(p0 => {
   const { call: c, ...p } = p0
   return (
     <View style={css.Notify}>
-      {p.type && (
+      {!!p.type && (
         <>
           <View style={css.Notify_Info}>
             <RnText bold>{p.name}</RnText>
@@ -87,7 +97,7 @@ class ChatGroupInvite extends React.Component {
     return chatStore.groups.filter(g => !g.jointed).map(g => g.id)
   }
 
-  formatGroup = group => {
+  formatGroup = (group: string) => {
     const { id, inviter, name } = chatStore.getGroup(group) || {}
     const inviterName = contactStore.getUCUser(inviter)?.name
     return {
@@ -97,21 +107,21 @@ class ChatGroupInvite extends React.Component {
     }
   }
   // TODO: rejected but existed in chat home => error when click.
-  reject = group => {
+  reject = (group: string) => {
     uc.leaveChatGroup(group)
       .then(this.onRejectSuccess)
       .catch(this.onRejectFailure)
   }
-  onRejectSuccess = res => {
+  onRejectSuccess = (res: { id: string }) => {
     chatStore.removeGroup(res.id)
   }
-  onRejectFailure = err => {
+  onRejectFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to reject the group chat`,
       err,
     })
   }
-  accept = group => {
+  accept = (group: string) => {
     this.loading = true
     uc.joinChatGroup(group)
       .then(this.onAcceptSuccess)
@@ -120,7 +130,7 @@ class ChatGroupInvite extends React.Component {
   onAcceptSuccess = () => {
     this.loading = false
   }
-  onAcceptFailure = err => {
+  onAcceptFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to accept the group chat`,
       err,
@@ -147,11 +157,11 @@ class UnreadChatNoti extends React.Component {
     id: string
     isGroup: boolean
     lastMessage: {
-      text: string
+      text?: string
       created: number
     }
   } = null
-  alreadyShowNoti = {}
+  alreadyShowNoti: { [k: string]: boolean } = {}
   prevLastMessageId = ''
   prevUnreadChatTimeoutId = 0
 
@@ -168,12 +178,9 @@ class UnreadChatNoti extends React.Component {
       return
     }
     let unreadChats = Object.entries(chatStore.threadConfig)
-      .filter(
-        ([k, v]) =>
-          (v as any).isUnread && chatStore.messagesByThreadId[k]?.length,
-      )
+      .filter(([k, v]) => v.isUnread && chatStore.messagesByThreadId[k]?.length)
       .map(([k, v]) => ({
-        ...(v as any),
+        ...v,
         lastMessage:
           chatStore.messagesByThreadId[k][
             chatStore.messagesByThreadId[k].length - 1
@@ -189,11 +196,15 @@ class UnreadChatNoti extends React.Component {
     })
     //
     unreadChats = unreadChats.filter(c => {
-      const s = RnStacker.stacks[RnStacker.stacks.length - 1]
+      const s = (RnStacker.stacks[RnStacker.stacks.length - 1] as unknown) as {
+        name: string
+        buddy: string
+        groupId: string
+      }
       if (!s) {
         return true
       }
-      const { name, buddy, groupId } = s as any
+      const { name, buddy, groupId } = s
       if (name === 'PageChatRecents') {
         return false
       }
@@ -239,13 +250,15 @@ class UnreadChatNoti extends React.Component {
   }
 
   render() {
-    Object.values(chatStore.threadConfig).forEach((v: any) => {
-      Object.values(v).forEach((v2: any) => {
+    Object.values(chatStore.threadConfig).forEach(v => {
+      Object.values(v).forEach(v2 => {
         void v2
       })
     })
-    Object.values(chatStore.messagesByThreadId).forEach((v: any) => {
-      void v.id
+    Object.values(chatStore.messagesByThreadId).forEach(v => {
+      v.forEach(v2 => {
+        void v2.id
+      })
     })
     void RnStacker.stacks[RnStacker.stacks.length - 1]
     if (!this.unreadChat) {

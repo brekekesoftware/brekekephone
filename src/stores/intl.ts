@@ -5,26 +5,32 @@ import intlStore, { enLabelsMapIndex, labels } from './intlStore'
 
 Handlebars.registerHelper('moment', HandlebarsMoment)
 
-const compileFn = (locale, k) => {
-  const arr = labels[locale]
-  const i = enLabelsMapIndex[k]
+type CompileFn = (data: unknown) => string
+
+const compileFn = (locale: string, k: string): CompileFn => {
+  const arr = labels[locale as 'en']
+  const i = enLabelsMapIndex[k as keyof typeof enLabelsMapIndex]
   //
-  let fn = arr[i]
+  let fn = (arr[i] as unknown) as CompileFn
   if (!fn || typeof fn !== 'function') {
     fn = Handlebars.compile(k)
   }
   if (i !== undefined) {
-    arr[i] = fn
+    arr[i] = (fn as unknown) as string
   }
   //
   return fn
 }
 
-const intl0 = (k, data) => compileFn(intlStore.locale, k)(data)
-const intlDebug0 = (k, data) => ({
-  label: intl(k, data),
-  en: compileFn('en', k)(data),
-})
+const intl0 = (k: string, data: unknown) => {
+  return compileFn(intlStore.locale, k)(data)
+}
+const intlDebug0 = (k: string, data: unknown) => {
+  return {
+    label: intl0(k, data),
+    en: compileFn('en', k)(data),
+  }
+}
 
 intlStore.initLocale()
 

@@ -6,38 +6,55 @@ import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 
 import Field from '../components/Field'
+import { CreatedStore } from './createStore'
 import { arrToMap, mapToMap } from './toMap'
 import useStore from './useStore'
 
+const noop = () => {}
+
 const useForm = () => {
-  const $ = (useStore($ => ({
+  const f0 = (
+    $: CreatedStore & {
+      dirtyMap: { [k: string]: boolean }
+      errorMap: { [k: string]: string }
+      props: {
+        $: CreatedStore
+        fields: FormField[]
+        k: string
+        onValidSubmit: Function
+      }
+      submit: Function
+      onFieldBlur: Function
+      onFieldChange: Function
+    },
+  ) => ({
     observable: {
       dirtyMap: {},
       errorMap: {},
     },
     props: {},
-    onFieldBlur: k => {
+    onFieldBlur: (k: string) => {
       $.set(`dirtyMap.${k}`, true)
     },
-    onFieldChange: (k, v) => {
+    onFieldChange: (k: string, v: string) => {
       // TODO batch, remember k
-      const rule = $.props.fields.find(f => f.name === k)?.rule
-      const validator = rule && new Validator({ [k]: v }, { [k]: rule })
+      const rule = $.props.fields.find((f: FormField) => f.name === k)?.rule
+      const validator = rule ? new Validator({ [k]: v }, { [k]: rule }) : null
       $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k))
     },
     // Submit function to use outside of the hook
     submit: () => {
       const { $: $parent, fields, k, onValidSubmit } = $.props
       const rules = arrToMap(
-        fields.filter(f => f.rule && !f.disabled),
-        f => f.name,
-        f => f.rule,
-      )
+        fields.filter((f: FormField) => f.rule && !f.disabled),
+        (f: FormField) => f.name,
+        (f: FormField) => f.rule,
+      ) as { [k: string]: unknown }
       const validator = new Validator(get($parent, k), rules as Rules)
       if (validator.fails()) {
         $.set(
           'errorMap',
-          mapToMap(rules, undefined, k => validator.errors.first(k)),
+          mapToMap(rules, undefined, (k: string) => validator.errors.first(k)),
         )
         // TODO show toast
       } else {
@@ -48,36 +65,42 @@ const useForm = () => {
       }
       $.set(
         'dirtyMap',
-        arrToMap(fields, f => f.name),
+        arrToMap(fields, (f: FormField) => f.name),
       )
     },
     // Form component
-    render: observer(props => {
-      $.props = props
+    render: observer((props: object) => {
+      $.props = Object.assign($.props, props)
       const { $: $parent, fields, k } = $.props
       const RnForm = Platform.OS === 'web' ? 'form' : React.Fragment
       const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
       return (
-        <RnForm {...formProps}>
-          {fields.map((f, i) => (
+        <RnForm {...(formProps as object)}>
+          {fields.map((f: FormField, i: number) => (
             <Field
               key={i}
               {...f}
-              error={!f.disabled && $.dirtyMap[f.name] && $.errorMap[f.name]}
+              error={
+                !f.disabled && $.dirtyMap[f.name]
+                  ? $.errorMap[f.name]
+                  : undefined
+              }
               onBlur={() => $.onFieldBlur(f.name)}
               // Mark this field dirty
               onValueChange={flow(
                 [
                   // Add change handler to trigger validate
                   // TODO update all flows to regular funcs
-                  v => {
+                  (v: string) => {
                     $.onFieldChange(f.name, v)
                     return v
                   },
                   // Default change handler from store
                   f.onValueChange === undefined
-                    ? !f.disabled && (v => $parent.set(k + '.' + f.name, v))
-                    : f.onValueChange,
+                    ? !f.disabled
+                      ? (v: string) => $parent.set(k + '.' + f.name, v)
+                      : noop
+                    : (...args: unknown[]) => f.onValueChange(...args),
                 ].filter(f => f),
               )}
               // Error
@@ -90,14 +113,22 @@ const useForm = () => {
         </RnForm>
       )
     }),
-  })) as unknown) as FormContext
+  })
+  const $ = (useStore(f0) as unknown) as FormContext
   return [$.render, $.submit, $.onFieldChange]
 }
 
 export default useForm
 
-interface FormContext {
+export type FormContext = {
   render: Function
   submit(): void
   onFieldChange(f: string, v: string): void
+}
+export type FormField = {
+  name: string
+  disabled: boolean
+  value: string
+  onValueChange: Function
+  rule: string
 }

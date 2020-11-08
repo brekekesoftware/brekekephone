@@ -1,19 +1,25 @@
 import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 import { View } from 'react-native'
 
 import authStore from '../stores/authStore'
 import intl from '../stores/intl'
-import profileStore from '../stores/profileStore'
+import profileStore, { Profile } from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
 import useForm from '../utils/useForm'
 import useStore from '../utils/useStore'
 import Layout from './Layout'
 import { RnText } from './Rn'
 
-const ProfileCreateForm = observer(props => {
+const ProfileCreateForm: FC<{
+  updatingProfile?: Profile
+  onBack: Function
+  onSave: Function
+  footerLogout?: boolean
+  title: string
+}> = observer(props => {
   const m = () => ({
     observable: {
       profile: {
@@ -27,7 +33,7 @@ const ProfileCreateForm = observer(props => {
         title: intl`Reset`,
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
-          $.set('profile', p => ({
+          $.set('profile', (p: Profile) => ({
             ...profileStore.genEmptyProfile(),
             ...cloneDeep(props.updatingProfile),
             id: p.id,
@@ -38,7 +44,7 @@ const ProfileCreateForm = observer(props => {
     },
     //
     onAddingParkSubmit: () => {
-      $.set('profile', p => {
+      $.set('profile', (p: Profile) => {
         $.addingPark = $.addingPark.trim()
         if ($.addingPark) {
           p.parks.push($.addingPark)
@@ -47,7 +53,7 @@ const ProfileCreateForm = observer(props => {
         return p
       })
     },
-    onAddingParkRemove: i => {
+    onAddingParkRemove: (i: number) => {
       RnAlert.prompt({
         title: intl`Remove Park`,
         message: (
@@ -60,7 +66,7 @@ const ProfileCreateForm = observer(props => {
           </>
         ),
         onConfirm: () => {
-          $.set('profile', p => {
+          $.set('profile', (p: Profile) => {
             p.parks = p.parks.filter((_, _i) => _i !== i)
             return p
           })
@@ -209,8 +215,8 @@ const ProfileCreateForm = observer(props => {
             type: 'Switch',
             name: 'ucEnabled',
             label: intl`UC`,
-            onValueChange: v => {
-              $.set('profile', p => {
+            onValueChange: (v: boolean) => {
+              $.set('profile', (p: Profile) => {
                 if (v && !p.ucHostname && !p.ucPort) {
                   p.ucHostname = p.pbxHostname
                   p.ucPort = p.pbxPort
@@ -258,7 +264,7 @@ const ProfileCreateForm = observer(props => {
                   name: 'parks[new]',
                   label: intl`NEW PARK`,
                   value: $.addingPark,
-                  onValueChange: v => $.set('addingPark', v),
+                  onValueChange: (v: string) => $.set('addingPark', v),
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),

@@ -13,13 +13,14 @@ import intl from '../stores/intl'
 
 @observer
 class PageCallRecents extends React.Component {
-  isMatchUser = call => {
+  isMatchUser = (call: typeof authStore.currentData.recentCalls[0]) => {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id
     }
+    return ''
   }
 
-  getAvatar = id => {
+  getAvatar = (id: string) => {
     const ucUser = contactStore.getUCUser(id) || {}
     return {
       id: id,
@@ -54,7 +55,7 @@ class PageCallRecents extends React.Component {
         <Field
           icon={mdiMagnify}
           label={intl`SEARCH NAME, PHONE NUMBER ...`}
-          onValueChange={v => {
+          onValueChange={(v: string) => {
             contactStore.callSearchRecents = v
           }}
           value={contactStore.callSearchRecents}

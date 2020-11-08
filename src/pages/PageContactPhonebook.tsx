@@ -17,7 +17,7 @@ import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import authStore from '../stores/authStore'
 import callStore from '../stores/callStore'
-import contactStore from '../stores/contactStore'
+import contactStore, { Phonebook2 } from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
@@ -42,14 +42,14 @@ class PageContactPhonebook extends React.Component {
     }, 300)
   }
 
-  update = id => {
+  update = (id: string) => {
     const contact = contactStore.getPhonebook(id)
     if (contact?.loaded) {
       Nav().goToPagePhonebookUpdate({
         contact: contact,
       })
     } else {
-      this.loadContactDetail(id, ct => {
+      this.loadContactDetail(id, (ct: Phonebook2) => {
         Nav().goToPagePhonebookUpdate({
           contact: ct,
         })
@@ -57,7 +57,7 @@ class PageContactPhonebook extends React.Component {
     }
   }
 
-  loadContactDetail = (id, cb) => {
+  loadContactDetail = (id: string, cb: Function) => {
     pbx
       .getContact(id)
       .then(ct => {
@@ -65,11 +65,12 @@ class PageContactPhonebook extends React.Component {
           ...ct,
           loaded: true,
           name: ct.firstName + ' ' + ct.lastName,
+          hidden: ct.hidden === 'true',
         }
         contactStore.upsertPhonebook(x)
         cb(x)
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to load contact detail for ${id}`,
           err,
@@ -77,18 +78,18 @@ class PageContactPhonebook extends React.Component {
       })
   }
 
-  callRequest = (number, contact) => {
+  callRequest = (number: string, u: Phonebook2) => {
     if (number !== '') {
       callStore.startCall(number.replace(/\s+/g, ''))
     } else {
-      this.update(contact)
+      this.update(u.id)
       RnAlert.error({
         message: intlDebug`This contact doesn't have any phone number`,
       })
     }
   }
 
-  onIcon0 = u => {
+  onIcon0 = (u: Phonebook2) => {
     if (!u) {
       return
     }
@@ -100,7 +101,7 @@ class PageContactPhonebook extends React.Component {
       this._onIcon0(u)
     })
   }
-  _onIcon0 = u => {
+  _onIcon0 = (u: Phonebook2) => {
     if (!u) {
       return
     }
@@ -147,7 +148,7 @@ class PageContactPhonebook extends React.Component {
         label: i.value,
         icon: i.icon,
       })),
-      onSelect: e => this.callRequest(e, u),
+      onSelect: (e: string) => this.callRequest(e, u),
     })
   }
 
@@ -156,7 +157,8 @@ class PageContactPhonebook extends React.Component {
     if (!authStore.currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true)
     }
-    const map = {}
+
+    const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
       let c0 = u.name.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
@@ -167,6 +169,7 @@ class PageContactPhonebook extends React.Component {
       }
       map[c0].push(u)
     })
+
     let groups = Object.keys(map).map(k => ({
       key: k,
       phonebooks: map[k],
@@ -194,7 +197,7 @@ class PageContactPhonebook extends React.Component {
       >
         <Field
           label={intl`SHOW SHARED CONTACTS`}
-          onValueChange={v => {
+          onValueChange={(v: boolean) => {
             profileStore.upsertProfile({
               id: authStore.signedInId,
               displaySharedContacts: v,

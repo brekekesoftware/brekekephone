@@ -31,7 +31,7 @@ export function useAnimation<T extends AnimationProps>(
     t.start()
     return () => t.stop()
   }, [enabled, options, v])
-  return mapToMap(props, undefined, k =>
+  return mapToMap(props, undefined, (k: string) =>
     v.interpolate({
       inputRange: [0, 1],
       outputRange: props[k],

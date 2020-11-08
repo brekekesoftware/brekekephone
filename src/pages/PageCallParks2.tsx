@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { FC } from 'react'
 
 import PageCallParks from './PageCallParks'
 
-export default p => <PageCallParks {...p} callParks2 />
+const PageCallParks2: FC<object> = p => <PageCallParks {...p} callParks2 />
+
+export default PageCallParks2

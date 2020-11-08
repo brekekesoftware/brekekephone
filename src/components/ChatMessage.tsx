@@ -1,6 +1,6 @@
 import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -88,13 +88,23 @@ const css = StyleSheet.create({
     padding: 0,
     ...Platform.select({
       web: {
-        display: 'inline' as any,
+        display: ('inline' as unknown) as undefined,
       },
     }),
   },
 })
 
-const File = observer(p => (
+const File: FC<Partial<{
+  fileType: string
+  url: string
+  name: string
+  size: string
+  state: string
+  reject(): void
+  incoming: boolean
+  accept(): void
+  createdByMe: boolean
+}>> = observer(p => (
   <View style={[css.File, css.Message]}>
     {p.fileType === 'image' && (
       <RnImage source={{ uri: p.url }} style={css.Image} />
@@ -169,7 +179,7 @@ class Message extends React.Component<{
   rejectFile: Function
   createdByMe: boolean
 }> {
-  onLinkPress = url => {
+  onLinkPress = (url: string) => {
     if (Platform.OS === 'web') {
       window.open(url, '_blank', 'noopener')
       return
@@ -182,7 +192,7 @@ class Message extends React.Component<{
       Linking.openURL(url)
     }
   }
-  onLinkLongPress = url => {
+  onLinkLongPress = (url: string) => {
     RnPicker.open({
       options: [
         {
@@ -206,7 +216,7 @@ class Message extends React.Component<{
           icon: mdiDotsHorizontal,
         },
       ],
-      onSelect: k => this.onRnPickerSelect(k, url),
+      onSelect: (k: number) => this.onRnPickerSelect(k, url),
     })
   }
   onMessagePress = () => {
@@ -227,7 +237,7 @@ class Message extends React.Component<{
     })
   }
 
-  onRnPickerSelect = (k, url) => {
+  onRnPickerSelect = (k: number, url: string) => {
     const message = k === 0 || k === 1 ? this.props.text : url
     if (k === 0 || k === 2) {
       Clipboard.setString(message)

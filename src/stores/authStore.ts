@@ -13,8 +13,8 @@ import profileStore, { Profile } from './profileStore'
 import RnAlert from './RnAlert'
 
 const compareField = (p1: object, p2: object, field: string) => {
-  const v1 = p1[field]
-  const v2 = p2[field]
+  const v1 = p1[field as keyof typeof p1]
+  const v2 = p2[field as keyof typeof p2]
   return !v1 || !v2 || v1 === v2
 }
 const compareProfile = (p1: { pbxUsername: string }, p2: object) => {

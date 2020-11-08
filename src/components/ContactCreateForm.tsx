@@ -1,8 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 
+import { Phonebook2 } from '../stores/contactStore'
 import intl from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import useForm from '../utils/useForm'
@@ -24,7 +25,13 @@ const genEmptyPhonebook = () => {
   }
 }
 
-const ContactsCreateForm = observer(props => {
+const ContactsCreateForm: FC<{
+  updatingPhonebook?: Phonebook2
+  book?: string
+  onBack: Function
+  onSave: Function
+  title: string
+}> = observer(props => {
   const m = () => ({
     observable: {
       phonebook: {

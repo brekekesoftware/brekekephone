@@ -27,14 +27,14 @@ export const pickFileNativeOptions = () => [
     icon: mdiDotsHorizontal,
   },
 ]
-export const onPickFileNativeError = err => {
+export const onPickFileNativeError = (err: Error) => {
   RnAlert.error({
     message: intlDebug`Failed to pick file from system`,
     err,
   })
 }
 
-const pickFile = cb => {
+const pickFile = (cb: Function) => {
   const input = document.createElement('input')
   input.type = 'file'
   input.onchange = function () {

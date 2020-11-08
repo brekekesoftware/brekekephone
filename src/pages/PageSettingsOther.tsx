@@ -23,16 +23,16 @@ class PageSettingsOther extends Component {
       statusText: me.statusText,
     })
   }
-  setStatusText = statusText => {
+  setStatusText = (statusText: string) => {
     this.setState({ statusText })
   }
   submitStatusText = () => {
     this.setStatus(this.state.status, this.state.statusText)
   }
-  submitStatus = status => {
+  submitStatus = (status: string) => {
     this.setStatus(status, this.state.statusText)
   }
-  setStatus = (status, statusText) => {
+  setStatus = (status: string, statusText: string) => {
     uc.setStatus(status, statusText)
       .then(() => {
         const me = uc.me()
@@ -41,7 +41,7 @@ class PageSettingsOther extends Component {
           statusText: me.statusText,
         })
       })
-      .catch(err => {
+      .catch((err: Error) => {
         RnAlert.error({
           message: intlDebug`Failed to change UC status`,
           err,

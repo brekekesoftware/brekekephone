@@ -1,14 +1,15 @@
 import { useRef } from 'react'
 
-import createStore from './createStore'
+import createStore, { CreatedStore } from './createStore'
 
 const useStore = (mixin?: Function) => {
-  const r = useRef<ReturnType<typeof createStore>>()
+  const r = useRef<CreatedStore>()
   if (!r.current) {
     if (mixin && typeof mixin !== 'function') {
       throw new Error(`useStore: mixin must be a function, found ${mixin}`)
     }
-    r.current = createStore(mixin)
+    const op = () => ({})
+    r.current = createStore(mixin || op)
   }
   return r.current
 }

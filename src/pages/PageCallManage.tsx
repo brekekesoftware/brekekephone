@@ -26,6 +26,7 @@ import Layout from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import g from '../components/variables'
 import VideoPlayer from '../components/VideoPlayer'
+import Call from '../stores/Call'
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -109,7 +110,7 @@ class PageCallManage extends React.Component<{
     }
   }
 
-  renderCall = (c, isVideoEnabled) => (
+  renderCall = (c?: Call, isVideoEnabled?: boolean) => (
     <Layout
       compact
       dropdown={
@@ -140,7 +141,7 @@ class PageCallManage extends React.Component<{
       )}
     </Layout>
   )
-  renderVideo = c => (
+  renderVideo = (c: Call) => (
     <>
       <View style={css.Video_Space} />
       <View style={css.Video}>
@@ -152,7 +153,7 @@ class PageCallManage extends React.Component<{
       />
     </>
   )
-  renderBtns = (c, isVideoEnabled) => {
+  renderBtns = (c: Call, isVideoEnabled?: boolean) => {
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
@@ -270,7 +271,7 @@ class PageCallManage extends React.Component<{
       </Container>
     )
   }
-  renderHangupBtn = c => (
+  renderHangupBtn = (c: Call) => (
     <View style={css.Hangup}>
       <ButtonIcon
         bgcolor={g.colors.danger}

@@ -52,7 +52,7 @@ class PageChatGroupInvite extends React.Component<{
     return contactStore.ucUsers.map(u => u.id).filter(this.isNotMember)
   }
   state = {
-    selectedBuddy: {},
+    selectedBuddy: {} as { [k: string]: boolean },
   }
 
   render() {
@@ -86,10 +86,10 @@ class PageChatGroupInvite extends React.Component<{
     )
   }
 
-  isNotMember = buddy =>
+  isNotMember = (buddy: string) =>
     !chatStore.getGroup(this.props.groupId).members?.includes(buddy)
-  resolveBuddy = buddy => contactStore.getUCUser(buddy)
-  toggleBuddy = buddy => {
+  resolveBuddy = (buddy: string) => contactStore.getUCUser(buddy)
+  toggleBuddy = (buddy: string) => {
     let { selectedBuddy } = this.state
     selectedBuddy = {
       ...selectedBuddy,
@@ -113,7 +113,7 @@ class PageChatGroupInvite extends React.Component<{
       .catch(this.onInviteFailure)
       .then(this.back)
   }
-  onInviteFailure = err => {
+  onInviteFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to invite group chat`,
       err,

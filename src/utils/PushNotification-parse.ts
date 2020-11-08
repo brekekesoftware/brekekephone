@@ -18,7 +18,7 @@ const keysInCustomNotification = [
   'is_local_notification',
 ]
 
-const _parseNotificationData = (...fields) =>
+const _parseNotificationData = (...fields: object[]): ParsedPN =>
   fields
     .filter(f => !!f)
     .map(f => {
@@ -29,7 +29,7 @@ const _parseNotificationData = (...fields) =>
       }
       return f
     })
-    .reduce((map, f) => {
+    .reduce((map: { [k: string]: unknown }, f: { [k: string]: unknown }) => {
       if (!f || typeof f !== 'object') {
         return map
       }
@@ -41,7 +41,7 @@ const _parseNotificationData = (...fields) =>
       })
       return map
     }, {})
-const parseNotificationData = raw => {
+const parseNotificationData = (raw: object) => {
   if (Platform.OS === 'android') {
     return _parseNotificationData(
       raw,
@@ -65,12 +65,15 @@ const parseNotificationData = raw => {
   return null
 }
 
-const parse = (raw: any, isLocal = false) => {
+const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return null
   }
+
   const n = parseNotificationData(raw)
-  // Guard for invalid notification
+  if (!n) {
+    return null
+  }
   if (!n.body) {
     n.body = n.message || n.title
   }
@@ -80,8 +83,8 @@ const parse = (raw: any, isLocal = false) => {
 
   if (
     isLocal ||
-    raw.my_custom_data ||
-    raw.is_local_notification ||
+    raw['my_custom_data'] ||
+    raw['is_local_notification'] ||
     n.my_custom_data ||
     n.is_local_notification
   ) {
@@ -126,7 +129,21 @@ const parse = (raw: any, isLocal = false) => {
   return null
 }
 
-let lastPN = null
+export type ParsedPN = {
+  title: string
+  body: string
+  message: string
+  from: string
+  to: string
+  tenant: string
+  pbxHostname: string
+  pbxPort: string
+  my_custom_data: unknown
+  is_local_notification: boolean
+  isCall: boolean
+}
+
+let lastPN: ParsedPN | null = null
 export const getLastPN = () => lastPN
 
 export default parse

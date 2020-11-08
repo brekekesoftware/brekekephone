@@ -1,9 +1,10 @@
 import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import { ChatMessage } from '../stores/chatStore'
 import Avatar from './Avatar'
 import { groupByTimestamp } from './chatConfig'
 import Message from './ChatMessage'
@@ -57,7 +58,14 @@ const css = StyleSheet.create({
   },
 })
 
-const MessageList = observer(p => {
+const MessageList: FC<{
+  acceptFile: Function
+  list: ChatMessage[]
+  loadMore: Function
+  rejectFile: Function
+  resolveChat: Function
+  isGroupChat?: boolean
+}> = observer(p => {
   let { acceptFile, list, loadMore, rejectFile, resolveChat } = p
   // TODO unique and sort right after fetching
   if (!Array.isArray(list)) {
@@ -73,11 +81,14 @@ const MessageList = observer(p => {
           <View style={css.Border} />
           <RnText style={css.Date}>{date}</RnText>
           {(groupByTime as Array<{
-            messages: any
-            time: any
+            messages: ChatMessage[]
+            time: string
           }>).map(({ messages, time }, j) => {
             const id = messages[0]?.id
-            const c0 = resolveChat(id)
+            const c0 = resolveChat(id) as ChatMessage & {
+              creatorName: string
+              creatorAvatar: string
+            }
             const name = c0?.creatorName
             return (
               <View

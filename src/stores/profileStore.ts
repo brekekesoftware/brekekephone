@@ -51,7 +51,7 @@ export type ProfileData = {
     text: string
     group: boolean
     unread: boolean
-    created: number
+    created: string
   }[]
 }
 

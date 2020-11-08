@@ -8,7 +8,7 @@ import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import chatStore from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
+import contactStore, { UcUser } from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
@@ -20,7 +20,9 @@ class PageChatGroupCreate extends React.Component {
     return contactStore.ucUsers.map(u => u.id)
   }
   @computed get buddyById() {
-    return arrToMap(contactStore.ucUsers, 'id', u => u)
+    return arrToMap(contactStore.ucUsers, 'id', (u: UcUser) => u) as {
+      [k: string]: UcUser
+    }
   }
 
   state: {
@@ -59,12 +61,12 @@ class PageChatGroupCreate extends React.Component {
     )
   }
 
-  setName = name => {
+  setName = (name: string) => {
     this.setState({
       name,
     })
   }
-  toggleBuddy = buddy => {
+  toggleBuddy = (buddy: string) => {
     const { members } = this.state
     if (members.includes(buddy)) {
       this.setState({
@@ -88,12 +90,12 @@ class PageChatGroupCreate extends React.Component {
       .then(this.onCreateSuccess)
       .catch(this.onCreateFailure)
   }
-  onCreateSuccess = group => {
+  onCreateSuccess = (group: { id: string; name: string; jointed: boolean }) => {
     chatStore.upsertGroup(group)
     uc.joinChatGroup(group.id)
     Nav().goToPageChatRecents()
   }
-  onCreateFailure = err => {
+  onCreateFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to create the group chat`,
       err,

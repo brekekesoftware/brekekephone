@@ -1,6 +1,11 @@
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js'
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import React, { FC } from 'react'
+import {
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInputSelectionChangeEventData,
+  View,
+} from 'react-native'
 
 import { RnIcon, RnTextInput, RnTouchableOpacity } from './Rn'
 import g from './variables'
@@ -43,7 +48,16 @@ const css = StyleSheet.create({
   },
 })
 
-const ChatInput = p => {
+const ChatInput: FC<{
+  onEmojiTurnOn?(): void
+  onSelectionChange?(
+    event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+  ): void
+  onTextChange(txt: string): void
+  onTextSubmit(): void
+  openFileRnPicker(): void
+  text: string
+}> = p => {
   const {
     onEmojiTurnOn,
     onSelectionChange,

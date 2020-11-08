@@ -53,7 +53,7 @@ const Footer: FC<{
   } = arrToMap(
     Object.keys(props).filter(k => k.startsWith('fab')),
     (k: string) => toLowerCaseFirstChar(k.replace('fab', '')),
-    (k: string) => props[k],
+    (k: string) => props[k as keyof typeof props],
   ) as any
   const { menu } = props
   const { onNext, render } = fabProps

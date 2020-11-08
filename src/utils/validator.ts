@@ -9,8 +9,10 @@ Validator.useLang('en')
 
 Validator.register(
   'hostname',
-  v0 => {
-    const v = v0 as string
+  v => {
+    if (typeof v !== 'string') {
+      return false
+    }
     return !(
       /[^\w-.]/.test(v) || // any special character except - . => invalid
       /^[-.]/.test(v) || // special character at the beginning => invalid
@@ -25,8 +27,10 @@ Validator.register(
 
 Validator.register(
   'port',
-  v0 => {
-    const v = v0 as string
+  v => {
+    if (typeof v !== 'string') {
+      return false
+    }
     return !(
       /\D/.test(v) || // non numeric character => invalid
       /^0/.test(v) || // starts with 0 => invalid

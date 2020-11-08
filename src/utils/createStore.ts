@@ -2,35 +2,50 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 import { extendObservable } from 'mobx'
 
-const createStore = (mixin?: Function, ...args) => {
+const createStore = (mixin: Function, ...args: unknown[]) => {
   const $ = {
-    set: (k, v) => {
+    set: (k: string, v: unknown) => {
       set($, k, typeof v === 'function' ? v(get($, k)) : v)
     },
-    upsert: (k, v, idKey = 'id') => {
-      $.set(k, arr => {
-        const updated = arr.reduce((u, _v) => {
-          if (!u && _v[idKey] === v[idKey]) {
-            Object.assign(_v, v)
-            return true
-          }
-          return u
-        }, false)
+    upsert: (k: string, v: { [k: string]: unknown }, idKey = 'id') => {
+      $.set(k, (arr: { [k: string]: unknown }[]) => {
+        const updated = arr.reduce(
+          (u: boolean, _v: { [k: string]: unknown }) => {
+            if (!u && _v[idKey] === v[idKey]) {
+              Object.assign(_v, v)
+              return true
+            }
+            return u
+          },
+          false,
+        )
         if (!updated) {
           arr.push(v)
         }
         return arr
       })
     },
-    remove: (k, id, idKey = 'id') => {
-      $.set(k, arr => arr.filter(v => v[idKey] !== id))
+    remove: (k: string, id: string, idKey = 'id') => {
+      $.set(k, (arr: { [k: string]: unknown }[]) =>
+        arr.filter(v => v[idKey] !== id),
+      )
     },
-    extends: (mx, ...a) => {
+    extends: (
+      mx:
+        | Function
+        | {
+            observable?: object
+          },
+      ...a: unknown[]
+    ) => {
       if (!mx) {
         return
       }
       if (typeof mx === 'function') {
         mx = mx($, ...a)
+      }
+      if (typeof mx === 'function') {
+        return
       }
       const ks = (mx.observable ? Object.keys(mx.observable) : []).concat(
         Object.keys(mx),
@@ -50,3 +65,5 @@ const createStore = (mixin?: Function, ...args) => {
 }
 
 export default createStore
+
+export type CreatedStore = ReturnType<typeof createStore>

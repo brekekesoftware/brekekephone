@@ -29,7 +29,7 @@ class PBX extends EventEmitter {
       phonetype: 'webphone',
     })
 
-    client.pal = (((method: keyof typeof client, params?: object) => {
+    client.pal = (((method: keyof Pbx, params?: object) => {
       return new Promise((onres, onerr) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
@@ -288,7 +288,7 @@ class PBX extends EventEmitter {
   setContact(contact: {
     id: string
     book: string
-    shared: string
+    shared: boolean
     firstName: string
     lastName: string
     workNumber: string
@@ -298,12 +298,12 @@ class PBX extends EventEmitter {
     job: string
     email: string
     company: string
-    hidden: string
+    hidden: boolean
   }) {
     return this.client.pal('setContact', {
       aid: contact.id,
       phonebook: contact.book,
-      shared: contact.shared,
+      shared: contact.shared ? 'true' : 'false',
 
       info: {
         $firstname: contact.firstName,
@@ -315,7 +315,7 @@ class PBX extends EventEmitter {
         $title: contact.job,
         $email: contact.email,
         $company: contact.company,
-        $hidden: contact.hidden,
+        $hidden: contact.hidden ? 'true' : 'false',
       },
     })
   }

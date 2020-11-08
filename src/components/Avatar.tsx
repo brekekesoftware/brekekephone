@@ -58,7 +58,7 @@ const Avatar = observer(
         </View>
         {authStore.currentProfile.ucEnabled && typeof status === 'string' && (
           <RnIcon
-            color={statusMapColor[status]}
+            color={statusMapColor[status as keyof typeof statusMapColor]}
             path={mdiRecord}
             style={css.Status}
           />

@@ -5,14 +5,14 @@ import ProfileCreateForm from '../components/ProfileCreateForm'
 import authStore from '../stores/authStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
+import profileStore, { Profile } from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
 
 const PageSettingsProfile = observer(() => (
   <ProfileCreateForm
     footerLogout
     onBack={Nav().backToPageContactUsers}
-    onSave={(p, hasUnsavedChanges) => {
+    onSave={(p: Profile, hasUnsavedChanges: boolean) => {
       if (!hasUnsavedChanges) {
         Nav().backToPageContactPhonebook()
       }

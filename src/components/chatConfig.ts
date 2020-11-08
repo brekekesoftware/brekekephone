@@ -1,11 +1,12 @@
 import moment from 'moment'
 
 import uc from '../api/uc'
+import { ChatMessage } from '../stores/chatStore'
 import intl from '../stores/intl'
 
 export const numberOfChatsPerLoad = 20
 
-export const groupByTimestamp = arr => {
+export const groupByTimestamp = (arr: ChatMessage[]) => {
   const me = uc.me()
   const groupByDate: {
     date: string
@@ -52,8 +53,8 @@ export const groupByTimestamp = arr => {
   return groupByDate
 }
 
-export const formatDateSemantic = d => {
-  d = moment(d)
+export const formatDateSemantic = (d0: number | string) => {
+  const d = moment(d0)
   const t = moment()
   if (d.format('yyyy') !== t.format('yyyy')) {
     return d.format('DD/MM/yyyy') // TODO intl
@@ -68,7 +69,7 @@ export const formatDateSemantic = d => {
     : date
 }
 
-export const formatDateTimeSemantic = str => {
+export const formatDateTimeSemantic = (str: number | string) => {
   const d = moment(str)
   const t = moment()
   let date = ''

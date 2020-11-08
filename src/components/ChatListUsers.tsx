@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 // import intl from '../stores/intl'
@@ -15,7 +15,20 @@ const css = StyleSheet.create({
   },
 })
 
-const ListUsers = p => (
+const ListUsers: FC<{
+  recents: {
+    id: string
+    name: string
+    group: boolean
+    text: string
+    unread: boolean
+    created: string
+  }[]
+  onGroupSelect: Function
+  onUserSelect: Function
+  groupById: { [k: string]: object }
+  userById: { [k: string]: object }
+}> = p => (
   <>
     {p.recents.map(({ id, name, group, text, unread, created }) => (
       <RnTouchableOpacity

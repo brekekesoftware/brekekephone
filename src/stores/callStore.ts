@@ -159,7 +159,7 @@ export class CallStore {
     Nav().goToPageCallManage()
     // Auto update _currentCallId
     this._currentCallId = undefined
-    const prevIds = arrToMap(this._calls, 'id')
+    const prevIds = arrToMap(this._calls, 'id') as { [k: string]: boolean }
     if (this._startCallIntervalId) {
       clearInterval(this._startCallIntervalId)
     }

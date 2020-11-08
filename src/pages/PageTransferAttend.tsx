@@ -72,7 +72,7 @@ const css = StyleSheet.create({
 
 @observer
 class PageTransferAttend extends React.Component {
-  resolveMatch = id => {
+  resolveMatch = (id: string) => {
     const ucUser = contactStore.getUCUser(id) || {}
     return {
       avatar: ucUser.avatar,

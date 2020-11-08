@@ -405,7 +405,7 @@ export interface UcChatClient {
     onerr: (err: Error) => void,
   )
   acceptFileWithXhr(
-    file: Blob,
+    file: unknown,
     xhr: XMLHttpRequest,
     onerr: (err: Error) => void,
   )

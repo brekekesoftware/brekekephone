@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-export default observer((p: { sourceObject: MediaStream }) =>
+export default observer((p: { sourceObject?: MediaStream | null }) =>
   p.sourceObject ? (
     <RTCView streamURL={p.sourceObject.toURL()} style={css.video} />
   ) : (

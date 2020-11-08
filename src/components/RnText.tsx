@@ -82,7 +82,9 @@ const wrap = (Component: Function) =>
             .sort(k =>
               k === 'title' || k === 'subTitle' || k === 'small' ? -1 : 1,
             )
-            .map(k => props[k] && css[k]),
+            .map(
+              k => props[k as keyof typeof props] && css[k as keyof typeof css],
+            ),
           style,
         ]}
       />

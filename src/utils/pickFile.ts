@@ -61,21 +61,31 @@ const actionSheetHandlers = [
     }),
 ]
 
-const pickFile = cb =>
+const pickFile = (cb: Function) =>
   RnPicker.open({
     options: pickFileNativeOptions(),
-    onSelect: i => pickFileOnSelect(i, cb),
+    onSelect: (i: number) => pickFileOnSelect(i, cb),
   })
 
-const pickFileOnSelect = async (i, cb) => {
+const pickFileOnSelect = async (i: number, cb: Function) => {
   const fn = actionSheetHandlers[i]
   if (!fn) {
     return
   }
-  //
-  let file: any = null
+
+  type File = {
+    uri: string
+    fileName: string
+    filename: string
+    name: string
+    fileSize: number
+    filesize: number
+    size: number
+    type: string
+  }
+  let file: File | null = null
   try {
-    file = await fn()
+    file = (await fn()) as File
   } catch (err) {
     if (!DocumentRnPicker.isCancel(err)) {
       onPickFileNativeError(err)
@@ -84,10 +94,11 @@ const pickFileOnSelect = async (i, cb) => {
   if (!file?.uri) {
     return
   }
-  //
-  const getName = p => p && p.split(/[\\/]/g).pop().replace(/\?.+$/, '')
+
+  const getName = (p: string) =>
+    p && p.split(/[\\/]/g).pop()?.replace(/\?.+$/, '')
   let name = file.fileName || file.filename || file.name || getName(file.uri)
-  let size = file.fileSize || file.filesize || file.size || 0
+  let size: string | number = file.fileSize || file.filesize || file.size || 0
   if (!size) {
     try {
       const stat = await RNFS.stat(file.uri)
@@ -95,8 +106,8 @@ const pickFileOnSelect = async (i, cb) => {
       size = stat.size
     } catch (err) {}
   }
-  //
-  let ext = name.split('.').pop().replace(/\?.+$/, '')
+
+  let ext = name?.split('.').pop()?.replace(/\?.+$/, '')
   if (Platform.OS === 'ios' && ext === name) {
     name = uuid()
     switch (file.type) {
@@ -113,11 +124,13 @@ const pickFileOnSelect = async (i, cb) => {
         break
     }
   }
-  //
-  if (!name.toLowerCase().endsWith(ext.toLowerCase())) {
+  if (!ext) {
+    ext = 'unknown'
+  }
+  if (!name?.toLowerCase().endsWith(ext.toLowerCase())) {
     name = name + '.' + ext
   }
-  //
+
   cb({ uri: file.uri, name, size })
 }
 
