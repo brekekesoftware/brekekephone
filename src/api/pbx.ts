@@ -11,7 +11,9 @@ class PBX extends EventEmitter {
 
   async connect(p: Profile) {
     if (this.client) {
-      return Promise.reject(new Error('PAL client is connected'))
+      // return Promise.reject(new Error('PAL client is connected'))
+      // TODO
+      return
     }
 
     const d = profileStore.getProfileData(p)
@@ -28,6 +30,7 @@ class PBX extends EventEmitter {
       secure_login_password: false,
       phonetype: 'webphone',
     })
+    this.client = client
 
     client.pal = (((method: keyof Pbx, params?: object) => {
       return new Promise((onres, onerr) => {
@@ -55,7 +58,6 @@ class PBX extends EventEmitter {
     ])
 
     clearTimeout(timeout)
-    this.client = client
 
     client.onClose = () => {
       this.emit('connection-stopped')

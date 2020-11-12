@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce'
 import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
@@ -67,17 +68,23 @@ class AuthSIP {
       pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
     })
   }
-  _auth = () => {
-    this._auth0().catch((err: Error) => {
-      authStore.sipState = 'failure'
-      authStore.sipTotalFailure += 1
-      sip.disconnect()
-      RnAlert.error({
-        message: intlDebug`Failed to connect to SIP`,
-        err,
+  _auth = debounce(
+    () => {
+      this._auth0().catch((err: Error) => {
+        authStore.sipState = 'failure'
+        authStore.sipTotalFailure += 1
+        sip.disconnect()
+        RnAlert.error({
+          message: intlDebug`Failed to connect to SIP`,
+          err,
+        })
       })
-    })
-  }
+    },
+    300,
+    {
+      maxWait: 1000,
+    },
+  )
   _auth2 = () => authStore.sipShouldAuth && this._auth()
 }
 

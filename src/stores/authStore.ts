@@ -121,8 +121,7 @@ class AuthStore {
     return this.getProfile(this.signedInId)
   }
   @computed get currentData() {
-    const p = this.currentProfile
-    return p && profileStore.getProfileData(p)
+    return profileStore.getProfileData(this.currentProfile)
   }
   signIn = (id: string) => {
     const p = this.getProfile(id)

@@ -149,8 +149,8 @@ class ProfileStore {
     this.profiles = this.profiles.filter(p => p.id !== id)
     this.saveProfilesToLocalStorage()
   }
-  getProfileData = (p: Profile) => {
-    if (!p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
+  getProfileData = (p: Profile | null | undefined) => {
+    if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
       return {
         id: '',
         accessToken: '',
