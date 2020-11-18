@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -10,11 +10,11 @@
     "android:shake": "adb shell input keyevent 82",
     "ios": "react-native run-ios",
     "ios:bitcode": "cd node_modules/react-native-webrtc/tools && bash downloadBitcode.sh",
-    "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --ignore-path=.gitignore --loglevel=error --write \"**/*.{html,js,ts,tsx,json,md}\"",
-    "format:check": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 . && prettier --ignore-path=.gitignore --list-different \"**/*.{js,ts,tsx,html,css,scss,json,md,yml}\"",
+    "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --ignore-path=.gitignore --loglevel=error --write .",
+    "format:check": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 . && prettier --ignore-path=.gitignore --list-different .",
     "ts": "tsc && type-coverage",
-    "build": "del-cli -f \"node_modules/.cache/babel*\" && craco build",
-    "build:intl": "del-cli -f \".babelPluginIntl.json\" && cross-env EXTRACT_INTL=1 yarn build"
+    "build": "del-cli -f node_modules/.cache/babel* && craco build",
+    "build:intl": "del-cli -f .babelPluginIntl.json && cross-env EXTRACT_INTL=1 yarn build"
   },
   "dependencies": {
     "@callstack/async-storage": "2.0.3",

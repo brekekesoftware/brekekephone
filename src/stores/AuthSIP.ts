@@ -78,7 +78,7 @@ class AuthSIP {
       username: webPhone.id,
       accessToken: sipAccessToken,
       pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
-      dtmfSendMode,
+      dtmfSendMode: Number(dtmfSendMode),
       turnConfig,
     })
   }

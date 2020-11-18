@@ -41,7 +41,7 @@ class SIP extends EventEmitter {
           },
         },
       },
-      dtmfSendMode: String(o.dtmfSendMode) === '0' ? 0 : 1,
+      dtmfSendMode: isNaN(o.dtmfSendMode) ? 1 : o.dtmfSendMode,
       ctiAutoAnswer: 1,
       eventTalk: 1,
     })
@@ -249,6 +249,6 @@ export interface SipLoginOption {
   tenant: string
   username: string
   accessToken: string
-  dtmfSendMode: number | string
+  dtmfSendMode: number
   turnConfig?: RTCIceServer
 }
