@@ -59,6 +59,18 @@ class AuthSIP {
       return
     }
     //
+    const dtmfSendMode = pbxConfig['webrtcclient.dtmfSendMode']
+    const turnServer = pbxConfig['webphone.turn.server']
+    const turnUser = pbxConfig['webphone.turn.username']
+    const turnCred = pbxConfig['webphone.turn.credential']
+    const turnConfig: RTCIceServer | undefined = turnServer
+      ? {
+          urls: turnServer.split(',').map(s => s.trim()),
+          username: turnUser,
+          credential: turnCred,
+        }
+      : undefined
+    //
     await sip.connect({
       hostname: authStore.currentProfile.pbxHostname,
       port: sipWSSPort,
@@ -66,6 +78,8 @@ class AuthSIP {
       username: webPhone.id,
       accessToken: sipAccessToken,
       pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
+      dtmfSendMode,
+      turnConfig,
     })
   }
   _auth = debounce(

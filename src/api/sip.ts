@@ -26,11 +26,11 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
 
 class SIP extends EventEmitter {
   phone = (null as unknown) as Sip
-  init = async () => {
+  init = async (o: SipLoginOption) => {
     const sourceId = await getFrontCameraSourceId()
     const phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
-      multiSession: true,
+      multiSession: 1,
       defaultOptions: {
         videoOptions: {
           call: {
@@ -41,9 +41,9 @@ class SIP extends EventEmitter {
           },
         },
       },
-      dtmfSendMode: true,
-      ctiAutoAnswer: true,
-      eventTalk: true,
+      dtmfSendMode: String(o.dtmfSendMode) === '0' ? 0 : 1,
+      ctiAutoAnswer: 1,
+      eventTalk: 1,
     })
     this.phone = phone
 
@@ -159,16 +159,9 @@ class SIP extends EventEmitter {
     })
   }
 
-  async connect(sipLoginOption: {
-    hostname: string
-    port: string
-    pbxTurnEnabled: boolean
-    tenant: string
-    username: string
-    accessToken: string
-  }) {
+  async connect(sipLoginOption: SipLoginOption) {
     this.disconnect()
-    await this.init()
+    await this.init(sipLoginOption)
     //
     let platformOs: string = Platform.OS
     if (platformOs === 'ios') {
@@ -196,6 +189,9 @@ class SIP extends EventEmitter {
     }
     if (!Array.isArray(callOptions.pcConfig.iceServers)) {
       callOptions.pcConfig.iceServers = []
+    }
+    if (sipLoginOption.turnConfig) {
+      callOptions.pcConfig.iceServers.push(sipLoginOption.turnConfig)
     }
     this.phone.setDefaultCallOptions(callOptions)
     //
@@ -245,3 +241,14 @@ class SIP extends EventEmitter {
 
 const sip = new SIP()
 export default sip
+
+export interface SipLoginOption {
+  hostname: string
+  port: string
+  pbxTurnEnabled: boolean
+  tenant: string
+  username: string
+  accessToken: string
+  dtmfSendMode: number | string
+  turnConfig?: RTCIceServer
+}
