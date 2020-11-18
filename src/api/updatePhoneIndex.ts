@@ -31,7 +31,7 @@ const updatePhoneIndexWithoutCatch = async () => {
     if (!extProps) {
       return
     }
-    await pbx.client.pal('setExtensionProperties', {
+    await pbx.client._pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
       properties: {

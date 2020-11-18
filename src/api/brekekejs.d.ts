@@ -4,27 +4,26 @@ declare global {
   }
 }
 
-interface Brekeke {
+export interface Brekeke {
   pbx: {
-    getPal(
-      wsUri: string,
-      options: {
-        tenant: string
-        login_user: string
-        login_password: string
-        _wn: string
-        park: string[]
-        voicemail: string
-        user: string
-        status: boolean
-        secure_login_password: boolean
-        phonetype: string
-      },
-    ): Pbx
+    getPal(wsUri: string, options: GetPalOptions): Pbx
   }
   WebrtcClient: {
     Phone: Sip
   }
+}
+
+export interface GetPalOptions {
+  tenant: string
+  login_user: string
+  login_password: string
+  _wn: string
+  park: string[]
+  voicemail: string
+  user: string
+  status: boolean
+  secure_login_password: boolean
+  phonetype: string
 }
 
 /* PBX */
@@ -43,7 +42,8 @@ export interface Pbx {
   notify_park?(e: PbxEvent['park'])
   notify_voicemail?(e: PbxEvent['voicemail'])
 
-  pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
+  // not actually exist in the sdk, should be added manually
+  _pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
     ...p: P extends undefined ? [] : [P]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
@@ -70,7 +70,13 @@ export interface PbxEvent {
 export interface PbxPal {
   getProductInfo(
     p: undefined,
-    onres: (i: { 'sip.wss.port': string }) => void,
+    onres: (i: {
+      'sip.wss.port': string
+      'webrtcclient.dtmfSendMode': number | string
+      'webphone.turn.server': string
+      'webphone.turn.username': string
+      'webphone.turn.credential': string
+    }) => void,
     onerr: (err: Error) => void,
   )
   createAuthHeader(
@@ -214,10 +220,10 @@ export interface PbxContact {
 export interface Sip {
   new (options: {
     logLevel: string
-    multiSession: boolean
-    dtmfSendMode: boolean
-    ctiAutoAnswer: boolean
-    eventTalk: boolean
+    multiSession: number
+    dtmfSendMode: number
+    ctiAutoAnswer: number
+    eventTalk: number
     defaultOptions: {
       videoOptions: {
         call: {
