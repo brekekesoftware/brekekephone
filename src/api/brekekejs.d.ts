@@ -43,9 +43,9 @@ export interface Pbx {
   notify_park?(e: PbxEvent['park'])
   notify_voicemail?(e: PbxEvent['voicemail'])
 
-  pal<K extends keyof PbxPal>(
+  pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
-    p: Parameters<PbxPal[K]>[0],
+    ...p: P extends undefined ? [] : [P]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
 }
 
@@ -69,7 +69,7 @@ export interface PbxEvent {
 
 export interface PbxPal {
   getProductInfo(
-    p: null,
+    p: undefined,
     onres: (i: { 'sip.wss.port': string }) => void,
     onerr: (err: Error) => void,
   )

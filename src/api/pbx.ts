@@ -145,7 +145,7 @@ class PBX extends EventEmitter {
   }
 
   getConfig() {
-    return this.client.pal('getProductInfo', null)
+    return this.client.pal('getProductInfo')
   }
 
   createSIPAccessToken(sipUsername: string) {

@@ -1,24 +1,12 @@
 const path = require('path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
-const babelPluginIntl = require('./.babelPluginIntl')
+const babel = require('./.babelrc')
 
 const nullAlias = path.join(__dirname, './src/polyfill/null.ts')
 
 module.exports = {
-  babel: {
-    plugins: [
-      babelPluginIntl,
-      ['@babel/plugin-proposal-decorators', { legacy: true }],
-      ['@babel/plugin-proposal-class-properties', { loose: true }],
-      ['@babel/plugin-transform-modules-commonjs', { loose: true }],
-      '@babel/plugin-proposal-optional-chaining',
-      '@babel/plugin-transform-react-jsx',
-    ],
-    loaderOptions: {
-      exclude: /node_modules\/(?!react-native).*(node_modules|dist)/,
-    },
-  },
+  babel,
   webpack: {
     alias: {
       '@react-native-community/async-storage': '@callstack/async-storage',

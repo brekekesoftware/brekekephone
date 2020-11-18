@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx'
-import { EventSubscriptionVendor, NativeModules, Platform } from 'react-native'
+import { NativeModule, NativeModules, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as uuid } from 'react-native-uuid'
 
@@ -10,7 +10,7 @@ import Nav from './Nav'
 import RnAlert from './RnAlert'
 
 export const NativeModules0 = NativeModules as {
-  IncomingCall: EventSubscriptionVendor & {
+  IncomingCall: NativeModule & {
     closeIncomingCallActivity(): void
     showCall(uuid: string, callerName: string, withVideo?: boolean): void
   }
