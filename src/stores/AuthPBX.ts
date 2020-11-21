@@ -36,9 +36,9 @@ class AuthPBX {
           })
         })
     },
-    300,
+    50,
     {
-      maxWait: 1000,
+      maxWait: 300,
     },
   )
   _auth2 = () => authStore.pbxShouldAuth && this._auth()

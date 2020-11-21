@@ -36,9 +36,17 @@ class AuthUC {
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure)
   }
-  _auth2 = debounce(() => authStore.ucShouldAuth && this._auth(), 100, {
-    maxWait: 300,
-  })
+  _auth2 = debounce(
+    () => {
+      if (authStore.ucShouldAuth) {
+        this._auth()
+      }
+    },
+    50,
+    {
+      maxWait: 300,
+    },
+  )
 
   onAuthSuccess = () => {
     this.loadUsers()

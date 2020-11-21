@@ -10,6 +10,7 @@ import callStore, { uuidFromPN } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
 import profileStore, { Profile } from './profileStore'
+import { setAuthStore } from './reconnectAndWaitSip'
 import RnAlert from './RnAlert'
 
 const compareField = (p1: object, p2: object, field: string) => {
@@ -29,7 +30,7 @@ const compareProfile = (p1: { pbxUsername: string }, p2: object) => {
 
 type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
 
-class AuthStore {
+export class AuthStore {
   @observable pbxState: ConnectionState = 'stopped'
   @observable pbxTotalFailure = 0
   @observable sipState: ConnectionState = 'stopped'
@@ -288,7 +289,11 @@ class AuthStore {
     }
     // In case the app is already signed in
     if (this.signedInId) {
-      if (n.isCall && !callStore._calls.length) {
+      if (
+        n.isCall &&
+        !callStore._calls.length &&
+        Date.now() > callStore.recentCallActivityAt + 30000
+      ) {
         // Sip call should come before PN
         // If PN came and still no sip call it is likely disconnected
         // Set states to failure to reconnect them
@@ -343,6 +348,8 @@ if (Platform.OS !== 'web') {
     }
   })
 }
+
+setAuthStore(authStore)
 
 export { compareProfile }
 export default authStore

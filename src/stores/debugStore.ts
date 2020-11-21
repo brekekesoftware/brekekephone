@@ -28,7 +28,7 @@ const [log, log1, log2] = ['log', 'log1', 'log2'].map(n =>
     ? ''
     : `${RNFS.DocumentDirectoryPath}/brekeke-phone-${n}.txt`,
 )
-const maximumBytes = 250000 // 250KB
+const maximumBytes = 100000 // 100KB
 
 class DebugStore {
   // By default only error logs will be captured

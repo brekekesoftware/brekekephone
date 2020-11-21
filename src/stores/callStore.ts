@@ -8,6 +8,7 @@ import sip from '../api/sip'
 import { arrToMap } from '../utils/toMap'
 import Call, { NativeModules0 } from './Call'
 import Nav from './Nav'
+import { reconnectAndWaitSip } from './reconnectAndWaitSip'
 
 export const uuidFromPN = '00000000-0000-0000-0000-000000000000'
 
@@ -20,6 +21,7 @@ export class CallStore {
   recentPNAt = 0
 
   @observable _calls: Call[] = []
+  recentCallActivityAt = 0
   @observable _currentCallId?: string = undefined
   @computed get incomingCall() {
     return this._calls.find(c => c.incoming && !c.answered)
@@ -70,6 +72,7 @@ export class CallStore {
   })
 
   @action upsertCall = (_c: { id: string }) => {
+    this.recentCallActivityAt = Date.now()
     let c = this._calls.find(c => c.id === _c.id)
     if (c) {
       Object.assign(c, _c)
@@ -111,6 +114,7 @@ export class CallStore {
     }
   }
   @action removeCall = (id: string) => {
+    this.recentCallActivityAt = Date.now()
     const c = this._calls.find(c => c.id === id)
     this._calls = this._calls.filter(c => c.id !== id)
     if (c?.callkeep) {
@@ -155,7 +159,14 @@ export class CallStore {
   _startCallIntervalAt = 0
   _startCallIntervalId = 0
   startCall = (number: string, options = {}) => {
-    sip.createSession(number, options)
+    let reconnectCalled = false
+    const _startCall = () => sip.createSession(number, options)
+    try {
+      _startCall()
+    } catch (err) {
+      reconnectAndWaitSip(_startCall)
+      reconnectCalled = true
+    }
     Nav().goToPageCallManage()
     // Auto update _currentCallId
     this._currentCallId = undefined
@@ -166,6 +177,18 @@ export class CallStore {
     this._startCallIntervalAt = Date.now()
     this._startCallIntervalId = window.setInterval(() => {
       const currentCallId = this._calls.map(c => c.id).find(id => !prevIds[id])
+      // If after 3 secs, there's no call in the store
+      // It's likely a connection issue occurred
+      if (
+        !reconnectCalled &&
+        !currentCallId &&
+        Date.now() > this._startCallIntervalAt + 3000
+      ) {
+        clearInterval(this._startCallIntervalId)
+        this._startCallIntervalId = 0
+        reconnectAndWaitSip(() => sip.createSession(number, options))
+        return
+      }
       if (currentCallId) {
         this._currentCallId = currentCallId
       }
