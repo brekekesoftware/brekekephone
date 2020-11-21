@@ -30,7 +30,7 @@ export interface GetPalOptions {
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 export interface Pbx {
-  login(onres: () => void, onerr: (err: Error) => void)
+  login(resolve: () => void, reject: (err: Error) => void)
   close()
 
   debugLevel: number
@@ -70,19 +70,19 @@ export interface PbxEvent {
 export interface PbxPal {
   getProductInfo(
     p: undefined,
-    onres: (i: {
+    resolve: (i: {
       'sip.wss.port': string
       'webrtcclient.dtmfSendMode': number | string
       'webphone.turn.server': string
       'webphone.turn.username': string
       'webphone.turn.credential': string
     }) => void,
-    onerr: (err: Error) => void,
+    reject: (err: Error) => void,
   )
   createAuthHeader(
     p: { username: string },
-    onres: (authHeader: string) => void,
-    onerr: (err: Error) => void,
+    resolve: (authHeader: string) => void,
+    reject: (err: Error) => void,
   )
 
   getExtensions(
@@ -92,8 +92,8 @@ export interface PbxPal {
       type: 'user'
       limit: number
     },
-    onres: (extensions: string[]) => void,
-    onerr: (err: Error) => void,
+    resolve: (extensions: string[]) => void,
+    reject: (err: Error) => void,
   )
   getExtensionProperties<T extends string | string[]>(
     p: {
@@ -101,8 +101,8 @@ export interface PbxPal {
       extension: T
       property_names: string[]
     },
-    onres: (properties: T[]) => void,
-    onerr: (err: Error) => void,
+    resolve: (properties: T[]) => void,
+    reject: (err: Error) => void,
   )
   setExtensionProperties(
     p: {
@@ -116,8 +116,8 @@ export interface PbxPal {
         pnumber: string
       }
     },
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
 
   getContactList(
@@ -126,20 +126,20 @@ export interface PbxPal {
       offset: number
       limit: number
     },
-    onres: (res: { aid: string; display_name: string }[]) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: { aid: string; display_name: string }[]) => void,
+    reject: (err: Error) => void,
   )
   getContact(
     p: {
       aid: string
     },
-    onres: (res: PbxContact) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: PbxContact) => void,
+    reject: (err: Error) => void,
   )
   setContact(
     p: PbxContact,
-    onres: (res: PbxContact) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: PbxContact) => void,
+    reject: (err: Error) => void,
   )
 
   pnmanage(
@@ -154,8 +154,8 @@ export interface PbxPal {
       auth_secret?: string
       key?: string
     },
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
 
   hold(
@@ -163,8 +163,8 @@ export interface PbxPal {
       tenant: string
       tid: string
     },
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
   unhold: PbxPal['hold']
 
@@ -178,8 +178,8 @@ export interface PbxPal {
       tid: string
       mode?: string
     },
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
 
   conference: PbxPal['hold']
@@ -191,8 +191,8 @@ export interface PbxPal {
       tid: string
       number: string
     },
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
 }
 
@@ -277,7 +277,10 @@ export interface CallOptions {
 
 export interface SipEventMap {
   phoneStatusChanged: {
-    phoneStatus: 'started' | 'stopping' | 'stopped'
+    phoneStatus: 'starting' | 'started' | 'stopping' | 'stopped'
+    from: string
+    reason: string
+    response: unknown
   }
   sessionCreated: Session
   sessionStatusChanged: Session
@@ -343,8 +346,8 @@ export interface UcChatClient {
     pbxUsername: string,
     pbxPassword: string,
     option?: object,
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
   signOut()
   getProfile(): {
@@ -359,74 +362,74 @@ export interface UcChatClient {
   changeStatus(
     status: string,
     dislay: string,
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
   getBuddylist(): {
     user: UcUser[]
   }
   receiveUnreadText(
-    onres: (res: UcReceieveUnreadTextRes) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: UcReceieveUnreadTextRes) => void,
+    reject: (err: Error) => void,
   )
   readText(map: object)
   searchTexts(
     opt: UcSearchTextsOpt,
-    onres: (res: UcSearchTextsRes) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: UcSearchTextsRes) => void,
+    reject: (err: Error) => void,
   )
   sendText(
     text: string,
     opt: UcSendTextOpt,
-    onres: (res: UcSendTextRes) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: UcSendTextRes) => void,
+    reject: (err: Error) => void,
   )
   sendConferenceText(
     text: string,
     conf_id: string,
-    onres: (res: UcSendTextRes) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: UcSendTextRes) => void,
+    reject: (err: Error) => void,
   )
   createConference(
     subject: string,
     members: string[],
-    onres: (res: UcCreateConferenceRes) => void,
-    onerr: (err: Error) => void,
+    resolve: (res: UcCreateConferenceRes) => void,
+    reject: (err: Error) => void,
   )
   joinConference(
     conf_id: string,
     opt?: unknown,
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
   leaveConference(
     conf_id: string,
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
   inviteToConference(
     conf_id: string,
     members: string[],
-    onres: () => void,
-    onerr: (err: Error) => void,
+    resolve: () => void,
+    reject: (err: Error) => void,
   )
   acceptFileWithXhr(
     file: unknown,
     xhr: XMLHttpRequest,
-    onerr: (err: Error) => void,
+    reject: (err: Error) => void,
   )
-  cancelFile(file_id: string, onerr: (err?: Error) => void)
+  cancelFile(file_id: string, reject: (err?: Error) => void)
   sendFile(
     opt: UcSendFileOpt,
     input: unknown,
-    onres: (res: UcSendFileRes) => void,
-    onerr: (err?: Error) => void,
+    resolve: (res: UcSendFileRes) => void,
+    reject: (err?: Error) => void,
   )
   sendFiles(
     opt: UcSendFilesOpt,
     file: unknown[],
-    onres: (res: UcSendFilesRes) => void,
-    onerr: (err?: Error) => void,
+    resolve: (res: UcSendFilesRes) => void,
+    reject: (err?: Error) => void,
   )
 }
 

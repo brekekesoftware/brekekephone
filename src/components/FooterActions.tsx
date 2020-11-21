@@ -50,15 +50,17 @@ const css = StyleSheet.create({
   },
 })
 
-const Actions: FC<Partial<{
-  onBack(): void
-  onBackIcon: string
-  onMore(): void
-  onMoreIcon: string
-  onNext(): void
-  onNextColor: string
-  onNextText: string
-}>> = p => {
+const Actions: FC<
+  Partial<{
+    onBack(): void
+    onBackIcon: string
+    onMore(): void
+    onMoreIcon: string
+    onNext(): void
+    onNextColor: string
+    onNextText: string
+  }>
+> = p => {
   const {
     onBack,
     onBackIcon,

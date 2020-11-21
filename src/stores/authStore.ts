@@ -27,16 +27,14 @@ const compareProfile = (p1: { pbxUsername: string }, p2: object) => {
   )
 }
 
+type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
+
 class AuthStore {
-  // 'stopped'
-  // 'connecting'
-  // 'success'
-  // 'failure'
-  @observable pbxState = 'stopped'
+  @observable pbxState: ConnectionState = 'stopped'
   @observable pbxTotalFailure = 0
-  @observable sipState = 'stopped'
+  @observable sipState: ConnectionState = 'stopped'
   @observable sipTotalFailure = 0
-  @observable ucState = 'stopped'
+  @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
   @observable ucLoginFromAnotherPlace = false
   @computed get pbxShouldAuth() {
@@ -174,17 +172,21 @@ class AuthStore {
     this.ucLoginFromAnotherPlace = false
   }
 
-  reconnect = debounce(() => {
+  reconnect = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
-  }, 100)
-  reconnectWithUcLoginFromAnotherPlace = debounce(() => {
-    this.pbxTotalFailure = 0
-    this.sipTotalFailure = 0
-    this.ucTotalFailure = 0
+  }
+  reconnectWithSetStates = () => {
+    this.reconnect()
+    this.pbxState = 'failure'
+    this.sipState = 'failure'
+    this.ucState = 'failure'
+  }
+  reconnectWithUcLoginFromAnotherPlace = () => {
+    this.reconnect()
     this.ucLoginFromAnotherPlace = false
-  }, 100)
+  }
 
   handleUrlParams = async () => {
     await profileStore.profilesLoaded()
@@ -286,6 +288,13 @@ class AuthStore {
     }
     // In case the app is already signed in
     if (this.signedInId) {
+      if (n.isCall && !callStore._calls.length) {
+        // Sip call should come before PN
+        // If PN came and still no sip call it is likely disconnected
+        // Set states to failure to reconnect them
+        this.reconnectWithSetStates()
+        return false
+      }
       // Always show notification if the signed in id is another account
       if (this.signedInId !== p.id) {
         return true

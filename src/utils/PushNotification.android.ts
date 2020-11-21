@@ -81,7 +81,7 @@ const PushNotification = {
 // { callUUID, handle, name }
 AppRegistry.registerHeadlessTask('RNCallKeepBackgroundMessage', () => () => {
   // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
-  return Promise.resolve()
+  return Promise.resolve(undefined)
 })
 
 export default PushNotification

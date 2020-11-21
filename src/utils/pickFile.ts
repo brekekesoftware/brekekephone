@@ -20,7 +20,7 @@ const actionSheetHandlers = [
         },
         res =>
           res.didCancel
-            ? resolve()
+            ? resolve(null)
             : res.error
             ? reject(res.error)
             : resolve(res),
@@ -35,7 +35,7 @@ const actionSheetHandlers = [
         },
         res =>
           res.didCancel
-            ? resolve()
+            ? resolve(null)
             : res.error
             ? reject(res.error)
             : resolve(res),
@@ -49,7 +49,7 @@ const actionSheetHandlers = [
         },
         res =>
           res.didCancel
-            ? resolve()
+            ? resolve(null)
             : res.error
             ? reject(res.error)
             : resolve(res),

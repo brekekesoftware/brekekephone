@@ -159,39 +159,41 @@ const css = StyleSheet.create({
 
 const noop = () => {}
 
-const Field: FC<Partial<{
-  isGroup: boolean
-  hasMargin: boolean
-  label: string
-  onCreateBtnPress(): void
-  onValueChange: Function
-  createBtnStyle: TouchableOpacityProps['style']
-  createBtnIcon: string
-  createBtnIconStyle: ViewProps['style']
-  removeBtnStyle: TouchableOpacityProps['style']
-  removeBtnIcon: string
-  removeBtnIconStyle: ViewProps['style']
-  onRemoveBtnPress(): void
-  type: 'Switch' | 'RnPicker'
-  valueRender: Function
-  value: string | boolean
-  options: {
-    key: string
+const Field: FC<
+  Partial<{
+    isGroup: boolean
+    hasMargin: boolean
     label: string
-  }[]
-  icon: string
-  onBlur(): void
-  onFocus(): void
-  onSubmitEditing(): void
-  style: TextInputProps['style']
-  disabled: boolean
-  inputElement: ReactElementLike | null
-  onTouchPress(): void
-  transparent: boolean
-  secureTextEntry: boolean
-  iconRender: Function
-  error: string
-}>> = observer(({ ...props }) => {
+    onCreateBtnPress(): void
+    onValueChange: Function
+    createBtnStyle: TouchableOpacityProps['style']
+    createBtnIcon: string
+    createBtnIconStyle: ViewProps['style']
+    removeBtnStyle: TouchableOpacityProps['style']
+    removeBtnIcon: string
+    removeBtnIconStyle: ViewProps['style']
+    onRemoveBtnPress(): void
+    type: 'Switch' | 'RnPicker'
+    valueRender: Function
+    value: string | boolean
+    options: {
+      key: string
+      label: string
+    }[]
+    icon: string
+    onBlur(): void
+    onFocus(): void
+    onSubmitEditing(): void
+    style: TextInputProps['style']
+    disabled: boolean
+    inputElement: ReactElementLike | null
+    onTouchPress(): void
+    transparent: boolean
+    secureTextEntry: boolean
+    iconRender: Function
+    error: string
+  }>
+> = observer(({ ...props }) => {
   if (props.isGroup) {
     return (
       <View

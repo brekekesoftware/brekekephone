@@ -194,7 +194,7 @@ class UC extends EventEmitter {
   }
 
   connect(profile: Profile, option?: object) {
-    return new Promise((onres, onerr) =>
+    return new Promise((resolve, reject) =>
       this.client.signIn(
         `https://${profile.ucHostname}:${profile.ucPort}`,
         profile.ucPathname || 'uc',
@@ -202,8 +202,8 @@ class UC extends EventEmitter {
         profile.pbxUsername,
         profile.pbxPassword,
         option,
-        onres,
-        onerr,
+        () => resolve(undefined),
+        reject,
       ),
     )
   }
@@ -233,8 +233,13 @@ class UC extends EventEmitter {
     if (status === 'busy') {
       num_status = '3'
     }
-    return new Promise((onres, onerr) =>
-      this.client.changeStatus(num_status, statusText, onres, onerr),
+    return new Promise((resolve, reject) =>
+      this.client.changeStatus(
+        num_status,
+        statusText,
+        () => resolve(undefined),
+        reject,
+      ),
     )
   }
 
@@ -255,9 +260,11 @@ class UC extends EventEmitter {
   }
 
   async getUnreadChats() {
-    const res: UcReceieveUnreadTextRes = await new Promise((onres, onerr) => {
-      this.client.receiveUnreadText(onres, onerr)
-    })
+    const res: UcReceieveUnreadTextRes = await new Promise(
+      (resolve, reject) => {
+        this.client.receiveUnreadText(resolve, reject)
+      },
+    )
 
     if (!res || !Array.isArray(res.messages)) {
       return []
@@ -285,7 +292,7 @@ class UC extends EventEmitter {
       asc?: boolean
     } = {},
   ) {
-    const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
+    const res: UcSearchTextsRes = await new Promise((resolve, reject) =>
       this.client.searchTexts(
         {
           user_id: buddy,
@@ -294,8 +301,8 @@ class UC extends EventEmitter {
           end: opts.end,
           asc: opts.asc,
         },
-        onres,
-        onerr,
+        resolve,
+        reject,
       ),
     )
 
@@ -323,7 +330,7 @@ class UC extends EventEmitter {
       asc?: boolean
     } = {},
   ) {
-    const res: UcSearchTextsRes = await new Promise((onres, onerr) =>
+    const res: UcSearchTextsRes = await new Promise((resolve, reject) =>
       this.client.searchTexts(
         {
           conf_id: group,
@@ -332,8 +339,8 @@ class UC extends EventEmitter {
           end: opts.end,
           asc: opts.asc,
         },
-        onres,
-        onerr,
+        resolve,
+        reject,
       ),
     )
 
@@ -350,37 +357,37 @@ class UC extends EventEmitter {
   }
 
   sendBuddyChatText(buddy: string, text: string) {
-    return new Promise((onres, onerr) =>
+    return new Promise((resolve, reject) =>
       this.client.sendText(
         text,
         {
           user_id: buddy,
         },
         res =>
-          onres({
+          resolve({
             id: res.text_id,
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
           }),
-        onerr,
+        reject,
       ),
     )
   }
 
   sendGroupChatText(group: string, text: string) {
-    return new Promise((onres, onerr) =>
+    return new Promise((resolve, reject) =>
       this.client.sendConferenceText(
         text,
         group,
         res =>
-          onres({
+          resolve({
             id: res.text_id,
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
           }),
-        onerr,
+        reject,
       ),
     )
   }
@@ -388,8 +395,8 @@ class UC extends EventEmitter {
   async createChatGroup(name: string, members: string[] = []) {
     const res: {
       conference: UcConference
-    } = await new Promise((onres, onerr) => {
-      this.client.createConference(name, members, onres, onerr)
+    } = await new Promise((resolve, reject) => {
+      this.client.createConference(name, members, resolve, reject)
     })
 
     return {
@@ -400,8 +407,13 @@ class UC extends EventEmitter {
   }
 
   async joinChatGroup(group: string) {
-    await new Promise((onres, onerr) => {
-      this.client.joinConference(group, undefined, onres, onerr)
+    await new Promise((resolve, reject) => {
+      this.client.joinConference(
+        group,
+        undefined,
+        () => resolve(undefined),
+        reject,
+      )
     })
 
     return {
@@ -410,8 +422,8 @@ class UC extends EventEmitter {
   }
 
   async leaveChatGroup(group: string) {
-    await new Promise((onres, onerr) => {
-      this.client.leaveConference(group, onres, onerr)
+    await new Promise((resolve, reject) => {
+      this.client.leaveConference(group, () => resolve(undefined), reject)
     })
 
     return {
@@ -420,23 +432,28 @@ class UC extends EventEmitter {
   }
 
   inviteChatGroupMembers(group: string, members: string[]) {
-    return new Promise((onres, onerr) => {
-      this.client.inviteToConference(group, members, onres, onerr)
+    return new Promise((resolve, reject) => {
+      this.client.inviteToConference(
+        group,
+        members,
+        () => resolve(undefined),
+        reject,
+      )
     })
   }
 
   acceptFile(file: string) {
-    const res = new Promise((onres, onerr) => {
+    const res = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhr.responseType = 'blob'
 
       xhr.onload = function () {
         if (this.status === 200) {
-          onres(this['response'])
+          resolve(this['response'])
         }
       }
 
-      this.client.acceptFileWithXhr(file, xhr, onerr)
+      this.client.acceptFileWithXhr(file, xhr, reject)
     })
     return res
   }
@@ -444,23 +461,23 @@ class UC extends EventEmitter {
   async rejectFile(file: { id?: string; file_id_target?: string[] }) {
     if (file.file_id_target) {
       file.file_id_target.map(f => {
-        return new Promise((onres, onerr) => {
+        return new Promise((resolve, reject) => {
           this.client.cancelFile(f, (err?: Error) => {
             if (err) {
-              onerr(err)
+              reject(err)
             } else {
-              onres()
+              resolve(undefined)
             }
           })
         })
       })
     } else if (file.id) {
-      return new Promise((onres, onerr) => {
+      return new Promise((resolve, reject) => {
         this.client.cancelFile(file.id || '', (err?: Error) => {
           if (err) {
-            onerr(err)
+            reject(err)
           } else {
-            onres()
+            resolve(undefined)
           }
         })
       })
@@ -506,14 +523,14 @@ class UC extends EventEmitter {
       }
     }
 
-    const res: UcSendFileRes = await new Promise((onres, onerr) =>
+    const res: UcSendFileRes = await new Promise((resolve, reject) =>
       this.client.sendFile(
         {
           user_id,
         },
         inputw || inputrn,
-        onres,
-        onerr,
+        resolve,
+        reject,
       ),
     )
     return {
@@ -575,15 +592,15 @@ class UC extends EventEmitter {
       }
     }
 
-    const res: UcSendFilesRes = await new Promise((onres, onerr) =>
+    const res: UcSendFilesRes = await new Promise((resolve, reject) =>
       this.client.sendFiles(
         {
           conf_id,
           input: inputw || inputrn,
         },
         [file],
-        onres,
-        onerr,
+        resolve,
+        reject,
       ),
     )
     const file_res = res.infoList[0]

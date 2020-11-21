@@ -29,17 +29,19 @@ const css = StyleSheet.create({
   },
 })
 
-const Header: FC<Partial<{
-  compact: boolean
-  description: string
-  dropdown: HeaderDropdownItem[]
-  menu: string
-  onBack(): void
-  onCreate(): void
-  subMenu: string
-  title: string
-  transparent: boolean
-}>> = p => {
+const Header: FC<
+  Partial<{
+    compact: boolean
+    description: string
+    dropdown: HeaderDropdownItem[]
+    menu: string
+    onBack(): void
+    onCreate(): void
+    subMenu: string
+    title: string
+    transparent: boolean
+  }>
+> = p => {
   const {
     compact,
     description,

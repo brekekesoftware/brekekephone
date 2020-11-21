@@ -45,12 +45,14 @@ const css = StyleSheet.create({
   },
 })
 
-const FieldButton: FC<Partial<{
-  style: TouchableOpacityProps['style']
-  onCreateBtnPress(): void
-  label: string
-  value: string
-}>> = p0 => {
+const FieldButton: FC<
+  Partial<{
+    style: TouchableOpacityProps['style']
+    onCreateBtnPress(): void
+    label: string
+    value: string
+  }>
+> = p0 => {
   const { style, ...p } = p0
   return (
     <RnTouchableOpacity

@@ -33,12 +33,12 @@ class PBX extends EventEmitter {
     this.client = client
 
     client._pal = (((method: keyof Pbx, params?: object) => {
-      return new Promise((onres, onerr) => {
+      return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
-          return onerr(new Error(`PAL client doesn't support "${method}"`))
+          return reject(new Error(`PAL client doesn't support "${method}"`))
         }
-        f(params, onres, onerr)
+        f(params, resolve, reject)
       })
     }) as unknown) as Pbx['_pal']
 
@@ -46,14 +46,14 @@ class PBX extends EventEmitter {
     let timeout = 0
 
     await Promise.race([
-      new Promise((_, onerr) => {
+      new Promise((_, reject) => {
         timeout = window.setTimeout(() => {
           client.close()
-          onerr(new Error('Timeout'))
+          reject(new Error('Timeout'))
         }, 10000)
       }),
-      new Promise((onres, onerr) => {
-        client.login(onres, onerr)
+      new Promise((resolve, reject) => {
+        client.login(() => resolve(undefined), reject)
       }),
     ])
 

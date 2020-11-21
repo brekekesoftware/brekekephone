@@ -94,17 +94,19 @@ const css = StyleSheet.create({
   },
 })
 
-const File: FC<Partial<{
-  fileType: string
-  url: string
-  name: string
-  size: string
-  state: string
-  reject(): void
-  incoming: boolean
-  accept(): void
-  createdByMe: boolean
-}>> = observer(p => (
+const File: FC<
+  Partial<{
+    fileType: string
+    url: string
+    name: string
+    size: string
+    state: string
+    reject(): void
+    incoming: boolean
+    accept(): void
+    createdByMe: boolean
+  }>
+> = observer(p => (
   <View style={[css.File, css.Message]}>
     {p.fileType === 'image' && (
       <RnImage source={{ uri: p.url }} style={css.Image} />

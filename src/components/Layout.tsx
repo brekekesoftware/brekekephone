@@ -32,25 +32,27 @@ const css = StyleSheet.create({
   },
 })
 
-const Layout: FC<Partial<{
-  compact: boolean
-  containerOnContentSizeChange: Function
-  containerOnScroll: Function
-  containerRef: Function
-  description: string
-  dropdown: HeaderDropdownItem[]
-  fabOnBack(): void
-  fabOnNext(): void
-  fabOnNextText: string
-  fabRender(): void
-  menu: string
-  noScroll: boolean
-  onBack(): void
-  onCreate(): void
-  subMenu: string
-  title: string
-  transparent: boolean
-}>> = observer(props => {
+const Layout: FC<
+  Partial<{
+    compact: boolean
+    containerOnContentSizeChange: Function
+    containerOnScroll: Function
+    containerRef: Function
+    description: string
+    dropdown: HeaderDropdownItem[]
+    fabOnBack(): void
+    fabOnNext(): void
+    fabOnNextText: string
+    fabRender(): void
+    menu: string
+    noScroll: boolean
+    onBack(): void
+    onCreate(): void
+    subMenu: string
+    title: string
+    transparent: boolean
+  }>
+> = observer(props => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
 
   props = { ...props } // Clone so it can be mutated

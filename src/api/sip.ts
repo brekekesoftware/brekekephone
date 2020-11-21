@@ -47,7 +47,7 @@ class SIP extends EventEmitter {
     })
     this.phone = phone
 
-    const h = (ev: { phoneStatus: 'started' | 'stopping' | 'stopped' }) => {
+    const h = (ev: { phoneStatus: string }) => {
       if (!ev) {
         return
       }

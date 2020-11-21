@@ -60,23 +60,25 @@ const css = StyleSheet.create({
   },
 })
 
-const UserItem: FC<Partial<{
-  answered: boolean
-  avatar: string
-  created: string
-  iconFuncs: Function[]
-  icons: string[]
-  id: string
-  incoming: boolean
-  isRecentCall: boolean
-  isRecentChat: boolean
-  lastMessage: string
-  lastMessageDate: string
-  name: string
-  partyNumber: string
-  selected: boolean
-  statusText: string
-}>> = p0 => {
+const UserItem: FC<
+  Partial<{
+    answered: boolean
+    avatar: string
+    created: string
+    iconFuncs: Function[]
+    icons: string[]
+    id: string
+    incoming: boolean
+    isRecentCall: boolean
+    isRecentChat: boolean
+    lastMessage: string
+    lastMessageDate: string
+    name: string
+    partyNumber: string
+    selected: boolean
+    statusText: string
+  }>
+> = p0 => {
   const {
     answered,
     avatar,
