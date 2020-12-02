@@ -198,7 +198,6 @@ class SIP extends EventEmitter {
     this.phone.startWebRTC({
       url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
       tls: true,
-      tenant: sipLoginOption.tenant,
       user: sipLoginOption.username,
       auth: sipLoginOption.accessToken,
       useVideoClient: true,
@@ -246,7 +245,6 @@ export interface SipLoginOption {
   hostname: string
   port: string
   pbxTurnEnabled: boolean
-  tenant: string
   username: string
   accessToken: string
   dtmfSendMode: number

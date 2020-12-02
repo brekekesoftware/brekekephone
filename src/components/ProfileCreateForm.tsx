@@ -104,7 +104,7 @@ const ProfileCreateForm: FC<{
     M0['observable'] &
     ReturnType<typeof useStore>
   const $ = (useStore(m) as any) as M
-  const [Form, submitForm, revalidate] = useForm()
+  const [Form, submitForm] = useForm()
   return (
     <Layout
       description={
@@ -217,31 +217,10 @@ const ProfileCreateForm: FC<{
             label: intl`UC`,
             onValueChange: (v: boolean) => {
               $.set('profile', (p: Profile) => {
-                if (v && !p.ucHostname && !p.ucPort) {
-                  p.ucHostname = p.pbxHostname
-                  p.ucPort = p.pbxPort
-                  // TODO
-                  // revalidate('ucHostname', 'ucPort');
-                  revalidate('ucHostname', p.ucHostname)
-                  revalidate('ucPort', p.ucPort)
-                }
                 p.ucEnabled = v
                 return p
               })
             },
-          },
-          {
-            disabled: props.footerLogout || !$.profile.ucEnabled,
-            name: 'ucHostname',
-            label: intl`HOSTNAME`,
-            rule: 'required|hostname',
-          },
-          {
-            keyboardType: 'numeric',
-            disabled: props.footerLogout || !$.profile.ucEnabled,
-            name: 'ucPort',
-            label: intl`PORT`,
-            rule: 'required|port',
           },
           {
             isGroup: true,

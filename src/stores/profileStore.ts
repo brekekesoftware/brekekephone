@@ -26,9 +26,6 @@ export type Profile = {
   pushNotificationEnabled: boolean
   parks: string[]
   ucEnabled: boolean
-  ucHostname: string
-  ucPort: string
-  ucPathname?: string
   displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
   navIndex: number
@@ -77,8 +74,6 @@ class ProfileStore {
     pushNotificationEnabled: true,
     parks: ([] as any) as string[],
     ucEnabled: false,
-    ucHostname: '',
-    ucPort: '',
     navIndex: -1,
     navSubMenus: [],
   })
@@ -135,13 +130,6 @@ class ProfileStore {
       this.profiles.push(p as Profile)
     } else {
       Object.assign(p0, p)
-    }
-    if (p.ucEnabled) {
-      const p0 = this.profiles.find(_ => _.id === p.id)
-      if (p0 && !p0.ucHostname && !p0.ucPort) {
-        p0.ucHostname = p0.pbxHostname
-        p0.ucPort = p0.pbxPort
-      }
     }
     this.saveProfilesToLocalStorage()
   }

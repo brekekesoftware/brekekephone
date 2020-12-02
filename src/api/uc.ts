@@ -193,15 +193,19 @@ class UC extends EventEmitter {
     })
   }
 
-  connect(profile: Profile, option?: object) {
+  connect(profile: Profile, ucHost: string) {
+    if (ucHost.indexOf(':') < 0) {
+      ucHost += ':443'
+    }
+    const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
     return new Promise((resolve, reject) =>
       this.client.signIn(
-        `https://${profile.ucHostname}:${profile.ucPort}`,
-        profile.ucPathname || 'uc',
+        `${ucScheme}://${ucHost}`,
+        'uc',
         profile.pbxTenant,
         profile.pbxUsername,
         profile.pbxPassword,
-        option,
+        undefined,
         () => resolve(undefined),
         reject,
       ),

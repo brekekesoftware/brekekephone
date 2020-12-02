@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-export interface Brekeke {
+export type Brekeke = {
   pbx: {
     getPal(wsUri: string, options: GetPalOptions): Pbx
   }
@@ -13,7 +13,7 @@ export interface Brekeke {
   }
 }
 
-export interface GetPalOptions {
+export type GetPalOptions = {
   tenant: string
   login_user: string
   login_password: string
@@ -29,7 +29,7 @@ export interface GetPalOptions {
 /* PBX */
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
-export interface Pbx {
+export type Pbx = {
   login(resolve: () => void, reject: (err: Error) => void)
   close()
 
@@ -49,7 +49,7 @@ export interface Pbx {
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
 }
 
-export interface PbxEvent {
+export type PbxEvent = {
   serverStatus: {
     status: 'active' | 'inactive'
   }
@@ -67,7 +67,7 @@ export interface PbxEvent {
   }
 }
 
-export interface PbxPal {
+export type PbxPal = {
   getProductInfo(
     p: undefined,
     resolve: (i: {
@@ -76,6 +76,7 @@ export interface PbxPal {
       'webphone.turn.server': string
       'webphone.turn.username': string
       'webphone.turn.credential': string
+      'webphone.uc.host': string
     }) => void,
     reject: (err: Error) => void,
   )
@@ -196,7 +197,7 @@ export interface PbxPal {
   )
 }
 
-export interface PbxContact {
+export type PbxContact = {
   aid: string
   phonebook: string
   shared: string
@@ -217,7 +218,7 @@ export interface PbxContact {
 /* SIP */
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
-export interface Sip {
+export type Sip = {
   new (options: {
     logLevel: string
     multiSession: number
@@ -234,6 +235,7 @@ export interface Sip {
         }
       }
     }
+    configuration?: SipConfiguration
   }): Sip
 
   addEventListener<K extends keyof SipEventMap>(
@@ -244,21 +246,11 @@ export interface Sip {
     type: K,
     listener: (e: SipEventMap[K]) => void,
   )
-  setDefaultCallOptions(options: CallOptions)
 
-  startWebRTC(options: {
-    url?: string
-    host?: string
-    port?: string
-    tenant: string
-    user: string
-    auth: string
-    userAgent: string
-    tls: boolean
-    useVideoClient: boolean
-  })
+  startWebRTC(configuration: SipConfiguration)
   stopWebRTC()
 
+  setDefaultCallOptions(options: CallOptions)
   getSession(sessionId: string): Session
   makeCall(number: string, options: null, videoEnabled?: boolean)
   answer(sessionId: string, options: null, videoEnabled?: boolean)
@@ -268,27 +260,47 @@ export interface Sip {
   sendDTMF(dtmf: string, sessionId: string)
 }
 
-export interface CallOptions {
+export type SipConfiguration = {
+  url?: string
+  host?: string
+  port?: string
+  tls?: boolean
+
+  user: string
+  auth?: string
+  password?: string
+
+  useVideoClient?: boolean
+  videoClientUser?: string
+
+  user_agent?: string
+  userAgent?: string
+  register?: boolean
+  socketKeepAlive?: number
+}
+
+export type CallOptions = {
   pcConfig?: {
     iceServers?: RTCIceServer[]
     bundlePolicy?: RTCBundlePolicy
   }
 }
 
-export interface SipEventMap {
-  phoneStatusChanged: {
-    phoneStatus: 'starting' | 'started' | 'stopping' | 'stopped'
-    from: string
-    reason: string
-    response: unknown
-  }
+export type SipEventMap = {
+  phoneStatusChanged: PhoneStatusChangedEvent
   sessionCreated: Session
   sessionStatusChanged: Session
   videoClientSessionCreated: VideoSession
   videoClientSessionEnded: VideoSession
   rtcErrorOccurred: Error
 }
-interface Session {
+export type PhoneStatusChangedEvent = {
+  phoneStatus: 'starting' | 'started' | 'stopping' | 'stopped'
+  from: string
+  reason: string
+  response: unknown
+}
+export type Session = {
   sessionId: string
   sessionStatus: 'dialing' | 'terminated' | 'connected'
   rtcSession: {
@@ -324,7 +336,7 @@ interface Session {
   remoteUserOptionsTable: null
   analyzer: null
 }
-interface VideoSession {
+export type VideoSession = {
   sessionId: string
   videoClientSessionId: string
 }
@@ -332,11 +344,11 @@ interface VideoSession {
 /* UC */
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
-export interface UcErrors {
+export type UcErrors = {
   PLEONASTIC_LOGIN: number
 }
 
-export interface UcChatClient {
+export type UcChatClient = {
   new (log: UcLogger): UcChatClient
   setEventListeners(listeners: UcListeners)
   signIn(
@@ -433,17 +445,17 @@ export interface UcChatClient {
   )
 }
 
-export interface UcUser {
+export type UcUser = {
   user_id: string
   name: string
   profile_image_url: string
   status: number
   display: string
 }
-export interface UcReceieveUnreadTextRes {
+export type UcReceieveUnreadTextRes = {
   messages: UcMessage[]
 }
-export interface UcMessage {
+export type UcMessage = {
   requires_read: boolean
   received_text_id: string
   text: string
@@ -452,7 +464,7 @@ export interface UcMessage {
   }
   sent_ltime: string
 }
-export interface UcSearchTextsOpt {
+export type UcSearchTextsOpt = {
   user_id?: string
   conf_id?: string
   max?: number
@@ -460,10 +472,10 @@ export interface UcSearchTextsOpt {
   end?: number
   asc?: boolean
 }
-export interface UcSearchTextsRes {
+export type UcSearchTextsRes = {
   logs: UcMessageLog[]
 }
-export interface UcMessageLog {
+export type UcMessageLog = {
   log_id: string
   ctype: number // content type
   content: string
@@ -472,48 +484,48 @@ export interface UcMessageLog {
   }
   ltime: number
 }
-export interface UcSendTextOpt {
+export type UcSendTextOpt = {
   user_id: string
 }
-export interface UcSendTextRes {
+export type UcSendTextRes = {
   text_id: string
   ltime: number
 }
-export interface UcCreateConferenceRes {
+export type UcCreateConferenceRes = {
   conference: UcConference
 }
-export interface UcConference {
+export type UcConference = {
   conf_id: string
   subject: string
 }
-export interface UcSendFileOpt {
+export type UcSendFileOpt = {
   user_id: string
 }
-export interface UcSendFileRes {
+export type UcSendFileRes = {
   text_id: string
   ltime: number
   fileInfo: UcFileInfo
 }
-export interface UcFileInfo {
+export type UcFileInfo = {
   file_id: string
   name: string
   size: number
   status: number
   progress: number
 }
-export interface UcSendFilesOpt {
+export type UcSendFilesOpt = {
   conf_id: string
   input: unknown
 }
-export interface UcSendFilesRes {
+export type UcSendFilesRes = {
   infoList: UcSendFileRes[]
 }
 
-export interface UcLogger {
+export type UcLogger = {
   new (lv: string): UcLogger
 }
 
-export interface UcListeners {
+export type UcListeners = {
   forcedSignOut?: (e: UcEventMap['forcedSignOut']) => void
   buddyStatusChanged?: (e: UcEventMap['buddyStatusChanged']) => void
   receivedTyping?: (e: UcEventMap['receivedTyping']) => void
@@ -524,7 +536,7 @@ export interface UcListeners {
   invitedToConference?: (e: UcEventMap['invitedToConference']) => void
   conferenceMemberChanged?: (e: UcEventMap['conferenceMemberChanged']) => void
 }
-export interface UcEventMap {
+export type UcEventMap = {
   forcedSignOut: {
     code: string
   }

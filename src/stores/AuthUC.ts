@@ -3,6 +3,7 @@ import debounce from 'lodash/debounce'
 import { Lambda, observe } from 'mobx'
 
 import { UcErrors } from '../api/brekekejs'
+import pbx from '../api/pbx'
 import uc from '../api/uc'
 import authStore from './authStore'
 import chatStore, { ChatMessage } from './chatStore'
@@ -28,18 +29,23 @@ class AuthUC {
     authStore.ucState = 'stopped'
   }
 
-  _auth = () => {
+  _auth = async () => {
     uc.disconnect()
     authStore.ucState = 'connecting'
     authStore.ucLoginFromAnotherPlace = false
-    uc.connect(authStore.currentProfile)
+    const c = await pbx.getConfig()
+    uc.connect(
+      authStore.currentProfile,
+      c['webphone.uc.host'] ||
+        `${authStore.currentProfile.pbxHostname}:${authStore.currentProfile.pbxPort}`,
+    )
       .then(this.onAuthSuccess)
       .catch(this.onAuthFailure)
   }
   _auth2 = debounce(
     () => {
       if (authStore.ucShouldAuth) {
-        this._auth()
+        this._auth().catch(this.onAuthFailure)
       }
     },
     50,

@@ -63,6 +63,7 @@ export class AuthStore {
       this.currentProfile?.ucEnabled &&
       !this.ucLoginFromAnotherPlace &&
       !this.isSignInByNotification &&
+      this.pbxState === 'success' &&
       (this.ucState === 'stopped' ||
         (this.ucState === 'failure' && !this.ucTotalFailure))
     )
@@ -132,13 +133,6 @@ export class AuthStore {
       Nav().goToPageProfileUpdate({ id: p.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
-      })
-      return true
-    }
-    if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
-      Nav().goToPageProfileUpdate({ id: p.id })
-      RnAlert.error({
-        message: intlDebug`The UC config is missing`,
       })
       return true
     }
