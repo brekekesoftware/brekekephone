@@ -30,7 +30,7 @@ export type GetPalOptions = {
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 export type Pbx = {
-  login(resolve: () => void, reject: (err: Error) => void)
+  login(resolve: () => void, reject: ErrorHandler)
   close()
 
   debugLevel: number
@@ -70,131 +70,129 @@ export type PbxEvent = {
 export type PbxPal = {
   getProductInfo(
     p: undefined,
-    resolve: (i: {
-      'sip.wss.port': string
-      'webrtcclient.dtmfSendMode': number | string
-      'webphone.turn.server': string
-      'webphone.turn.username': string
-      'webphone.turn.credential': string
-      'webphone.uc.host': string
-    }) => void,
-    reject: (err: Error) => void,
+    resolve: (i: PbxGetProductInfoRes) => void,
+    reject: ErrorHandler,
   )
   createAuthHeader(
-    p: { username: string },
+    p: PbxCreateAuthHeaderParam,
     resolve: (authHeader: string) => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
 
   getExtensions(
-    p: {
-      tenant: string
-      pattern: '..*'
-      type: 'user'
-      limit: number
-    },
+    p: PbxGetExtensionsParam,
     resolve: (extensions: string[]) => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
   getExtensionProperties<T extends string | string[]>(
-    p: {
-      tenant: string
-      extension: T
-      property_names: string[]
-    },
+    p: PbxGetExtensionPropertiesParam,
     resolve: (properties: T[]) => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
   setExtensionProperties(
-    p: {
-      tenant: string
-      extension: string
-      properties: {
-        p1_ptype?: string
-        p2_ptype?: string
-        p3_ptype?: string
-        p4_ptype?: string
-        pnumber: string
-      }
-    },
+    p: PbxSetExtensionPropertiesParam,
     resolve: () => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
 
   getContactList(
-    p: {
-      shared: string
-      offset: number
-      limit: number
-    },
+    p: PbxGetContactListParam,
     resolve: (res: { aid: string; display_name: string }[]) => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
   getContact(
-    p: {
-      aid: string
-    },
+    p: PbxGetContactParam,
     resolve: (res: PbxContact) => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
   setContact(
     p: PbxContact,
     resolve: (res: PbxContact) => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
 
-  pnmanage(
-    p: {
-      command: string
-      service_id: string
-      application_id: string
-      user_agent: string
-      username: string
-      device_id?: string
-      endpoint?: string
-      auth_secret?: string
-      key?: string
-    },
-    resolve: () => void,
-    reject: (err: Error) => void,
-  )
+  pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler)
 
-  hold(
-    p: {
-      tenant: string
-      tid: string
-    },
-    resolve: () => void,
-    reject: (err: Error) => void,
-  )
+  hold(p: PalHoldParam, resolve: () => void, reject: ErrorHandler)
   unhold: PbxPal['hold']
 
   startRecording: PbxPal['hold']
   stopRecording: PbxPal['hold']
 
-  transfer(
-    p: {
-      tenant: string
-      user: string
-      tid: string
-      mode?: string
-    },
-    resolve: () => void,
-    reject: (err: Error) => void,
-  )
+  transfer(p: PalTransferParam, resolve: () => void, reject: ErrorHandler)
 
   conference: PbxPal['hold']
   cancelTransfer: PbxPal['hold']
 
-  park(
-    p: {
-      tenant: string
-      tid: string
-      number: string
-    },
-    resolve: () => void,
-    reject: (err: Error) => void,
-  )
+  park(p: PalParkParam, resolve: () => void, reject: ErrorHandler)
+}
+export type PbxGetProductInfoRes = {
+  'sip.wss.port': string
+  'webrtcclient.dtmfSendMode': number | string
+  'webphone.turn.server': string
+  'webphone.turn.username': string
+  'webphone.turn.credential': string
+  'webphone.uc.host': string
+}
+export type PbxCreateAuthHeaderParam = {
+  username: string
+}
+export type PbxGetExtensionsParam = {
+  tenant: string
+  pattern: '..*'
+  type: 'user'
+  limit: number
+}
+export type PbxGetExtensionPropertiesParam = {
+  tenant: string
+  extension: T
+  property_names: string[]
+}
+export type PbxSetExtensionPropertiesParam = {
+  tenant: string
+  extension: string
+  properties: PbxExtensionProperties
+}
+export type PbxExtensionProperties = {
+  p1_ptype?: string
+  p2_ptype?: string
+  p3_ptype?: string
+  p4_ptype?: string
+  pnumber: string
+}
+export type PbxGetContactListParam = {
+  shared: string
+  offset: number
+  limit: number
+}
+export type PbxGetContactParam = {
+  aid: string
+}
+export type PbxPnmanageParam = {
+  command: string
+  service_id: string
+  application_id: string
+  user_agent: string
+  username: string
+  device_id?: string
+  endpoint?: string
+  auth_secret?: string
+  key?: string
+}
+export type PbxHoldParam = {
+  tenant: string
+  tid: string
+}
+export type PbxTransferParam = {
+  tenant: string
+  user: string
+  tid: string
+  mode?: string
+}
+export type PbxParkParam = {
+  tenant: string
+  tid: string
+  number: string
 }
 
 export type PbxContact = {
@@ -219,24 +217,7 @@ export type PbxContact = {
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 export type Sip = {
-  new (options: {
-    logLevel: string
-    multiSession: number
-    dtmfSendMode: number
-    ctiAutoAnswer: number
-    eventTalk: number
-    defaultOptions: {
-      videoOptions: {
-        call: {
-          mediaConstraints: MediaStreamConstraints
-        }
-        answer: {
-          mediaConstraints: MediaStreamConstraints
-        }
-      }
-    }
-    configuration?: SipConfiguration
-  }): Sip
+  new (o: SipConstructorOptions): Sip
 
   addEventListener<K extends keyof SipEventMap>(
     type: K,
@@ -260,6 +241,25 @@ export type Sip = {
   sendDTMF(dtmf: string, sessionId: string)
 }
 
+export type SipConstructorOptions = {
+  logLevel: string
+  multiSession: number
+  dtmfSendMode: number
+  ctiAutoAnswer: number
+  eventTalk: number
+  defaultOptions: {
+    videoOptions: {
+      call: {
+        mediaConstraints: MediaStreamConstraints
+      }
+      answer: {
+        mediaConstraints: MediaStreamConstraints
+      }
+    }
+  }
+  configuration?: Partial<SipConfiguration>
+}
+
 export type SipConfiguration = {
   url?: string
   host?: string
@@ -276,7 +276,7 @@ export type SipConfiguration = {
   user_agent?: string
   userAgent?: string
   register?: boolean
-  socketKeepAlive?: number
+  socketKeepAlive?: number // unit: second
 }
 
 export type CallOptions = {
@@ -359,7 +359,7 @@ export type UcChatClient = {
     pbxPassword: string,
     option?: object,
     resolve: () => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
   signOut()
   getProfile(): {
@@ -375,73 +375,65 @@ export type UcChatClient = {
     status: string,
     dislay: string,
     resolve: () => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
   getBuddylist(): {
     user: UcUser[]
   }
   receiveUnreadText(
-    resolve: (res: UcReceieveUnreadTextRes) => void,
-    reject: (err: Error) => void,
+    resolve: (res: UcReceieveUnreadText) => void,
+    reject: ErrorHandler,
   )
   readText(map: object)
   searchTexts(
-    opt: UcSearchTextsOpt,
-    resolve: (res: UcSearchTextsRes) => void,
-    reject: (err: Error) => void,
+    opt: UcSearchTextsParam,
+    resolve: (res: UcSearchTexts) => void,
+    reject: ErrorHandler,
   )
   sendText(
     text: string,
-    opt: UcSendTextOpt,
-    resolve: (res: UcSendTextRes) => void,
-    reject: (err: Error) => void,
+    opt: UcSendTextParam,
+    resolve: (res: UcSendText) => void,
+    reject: ErrorHandler,
   )
   sendConferenceText(
     text: string,
     conf_id: string,
-    resolve: (res: UcSendTextRes) => void,
-    reject: (err: Error) => void,
+    resolve: (res: UcSendText) => void,
+    reject: ErrorHandler,
   )
   createConference(
     subject: string,
     members: string[],
-    resolve: (res: UcCreateConferenceRes) => void,
-    reject: (err: Error) => void,
+    resolve: (res: UcCreateConference) => void,
+    reject: ErrorHandler,
   )
   joinConference(
     conf_id: string,
     opt?: unknown,
     resolve: () => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
-  leaveConference(
-    conf_id: string,
-    resolve: () => void,
-    reject: (err: Error) => void,
-  )
+  leaveConference(conf_id: string, resolve: () => void, reject: ErrorHandler)
   inviteToConference(
     conf_id: string,
     members: string[],
     resolve: () => void,
-    reject: (err: Error) => void,
+    reject: ErrorHandler,
   )
-  acceptFileWithXhr(
-    file: unknown,
-    xhr: XMLHttpRequest,
-    reject: (err: Error) => void,
-  )
-  cancelFile(file_id: string, reject: (err?: Error) => void)
+  acceptFileWithXhr(file: unknown, xhr: XMLHttpRequest, reject: ErrorHandler)
+  cancelFile(file_id: string, reject: ErrorHandler)
   sendFile(
-    opt: UcSendFileOpt,
+    opt: UcSendFileParam,
     input: unknown,
-    resolve: (res: UcSendFileRes) => void,
-    reject: (err?: Error) => void,
+    resolve: (res: UcSendFile) => void,
+    reject: ErrorHandler,
   )
   sendFiles(
-    opt: UcSendFilesOpt,
+    opt: UcSendFilesParam,
     file: unknown[],
-    resolve: (res: UcSendFilesRes) => void,
-    reject: (err?: Error) => void,
+    resolve: (res: UcSendFiles) => void,
+    reject: ErrorHandler,
   )
 }
 
@@ -452,7 +444,7 @@ export type UcUser = {
   status: number
   display: string
 }
-export type UcReceieveUnreadTextRes = {
+export type UcReceieveUnreadText = {
   messages: UcMessage[]
 }
 export type UcMessage = {
@@ -464,7 +456,7 @@ export type UcMessage = {
   }
   sent_ltime: string
 }
-export type UcSearchTextsOpt = {
+export type UcSearchTextsParam = {
   user_id?: string
   conf_id?: string
   max?: number
@@ -472,7 +464,7 @@ export type UcSearchTextsOpt = {
   end?: number
   asc?: boolean
 }
-export type UcSearchTextsRes = {
+export type UcSearchTexts = {
   logs: UcMessageLog[]
 }
 export type UcMessageLog = {
@@ -484,24 +476,24 @@ export type UcMessageLog = {
   }
   ltime: number
 }
-export type UcSendTextOpt = {
+export type UcSendTextParam = {
   user_id: string
 }
-export type UcSendTextRes = {
+export type UcSendText = {
   text_id: string
   ltime: number
 }
-export type UcCreateConferenceRes = {
+export type UcCreateConference = {
   conference: UcConference
 }
 export type UcConference = {
   conf_id: string
   subject: string
 }
-export type UcSendFileOpt = {
+export type UcSendFileParam = {
   user_id: string
 }
-export type UcSendFileRes = {
+export type UcSendFile = {
   text_id: string
   ltime: number
   fileInfo: UcFileInfo
@@ -513,12 +505,12 @@ export type UcFileInfo = {
   status: number
   progress: number
 }
-export type UcSendFilesOpt = {
+export type UcSendFilesParam = {
   conf_id: string
   input: unknown
 }
-export type UcSendFilesRes = {
-  infoList: UcSendFileRes[]
+export type UcSendFiles = {
+  infoList: UcSendFile[]
 }
 
 export type UcLogger = {
@@ -597,3 +589,5 @@ export type UcEventMap = {
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
 }
+
+type ErrorHandler = (err: Error) => void
