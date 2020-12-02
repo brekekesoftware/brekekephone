@@ -80,10 +80,7 @@ const MessageList: FC<{
         <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
           <View style={css.Border} />
           <RnText style={css.Date}>{date}</RnText>
-          {(groupByTime as Array<{
-            messages: ChatMessage[]
-            time: string
-          }>).map(({ messages, time }, j) => {
+          {groupByTime.map(({ messages, time }, j) => {
             const id = messages[0]?.id
             const c0 = resolveChat(id) as ChatMessage & {
               creatorName: string

@@ -239,6 +239,7 @@ export type Sip = {
   setMuted(options: { main: boolean }, sessionId: string)
 
   sendDTMF(dtmf: string, sessionId: string)
+  getPhoneStatus(): string
 }
 
 export type SipConstructorOptions = {

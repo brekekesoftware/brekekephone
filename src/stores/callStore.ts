@@ -4,6 +4,7 @@ import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 
+import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { arrToMap } from '../utils/toMap'
 import Call, { NativeModules0 } from './Call'
@@ -158,11 +159,14 @@ export class CallStore {
 
   _startCallIntervalAt = 0
   _startCallIntervalId = 0
-  startCall = (number: string, options = {}) => {
+  startCall = async (number: string, options = {}) => {
     let reconnectCalled = false
-    const _startCall = () => sip.createSession(number, options)
+    const _startCall = async () => {
+      await pbx.getConfig()
+      sip.createSession(number, options)
+    }
     try {
-      _startCall()
+      await _startCall()
     } catch (err) {
       reconnectAndWaitSip(_startCall)
       reconnectCalled = true

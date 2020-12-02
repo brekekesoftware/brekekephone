@@ -3,6 +3,7 @@ import { autorun, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
+import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { getUrlParams } from '../utils/deeplink'
 import { arrToMap } from '../utils/toMap'
@@ -267,6 +268,15 @@ export class AuthStore {
   }) => {
     this.reconnect()
     await profileStore.profilesLoaded()
+    try {
+      await pbx.getConfig()
+    } catch (err) {
+      this.reconnectWithSetStates()
+    }
+    const s = sip.phone.getPhoneStatus()
+    if (s !== 'starting' && s !== 'started') {
+      this.reconnectWithSetStates()
+    }
     // Find account for the notification target
     const p = this.findProfile({
       ...n,
