@@ -402,7 +402,7 @@ class PBX extends EventEmitter {
       const params = {
         command: 'set',
         service_id: '11',
-        application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+        application_id: 'com.brekeke.phone' + (voip ? '.voip' : ''),
         user_agent: 'react-native',
         username: username + (voip ? '@voip' : ''),
         device_id,

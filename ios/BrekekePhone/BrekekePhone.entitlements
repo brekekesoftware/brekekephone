@@ -21,7 +21,7 @@
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.brekeke.phonedev</string>
+		<string>$(AppIdentifierPrefix)com.brekeke.phone</string>
 	</array>
 </dict>
 </plist>
