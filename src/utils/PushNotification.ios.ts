@@ -4,7 +4,7 @@ import PushNotificationIOS, {
   PushNotification as PN,
 } from '@react-native-community/push-notification-ios'
 import { AppState } from 'react-native'
-import VoipPushNotification from 'react-native-voip-push-notification'
+import Voip from 'react-native-voip-push-notification'
 
 import parse from './PushNotification-parse'
 
@@ -38,7 +38,7 @@ const onNotification = async (
     if (AppState.currentState === 'active') {
       badge = 0
     }
-    VoipPushNotification.presentLocalNotification({
+    Voip.presentLocalNotification({
       alertBody: n.body,
       alertAction: n.isCall ? 'Answer' : 'View',
       soundName: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
@@ -52,11 +52,26 @@ const PushNotification = {
   register: async (initApp: Function) => {
     window.setTimeout(initApp)
     //
-    VoipPushNotification.addEventListener('register', onVoipToken)
-    VoipPushNotification.addEventListener('notification', (n: PN) =>
-      onNotification(n, initApp),
+    Voip.addEventListener('register', onVoipToken)
+    Voip.addEventListener('notification', (n: PN) => onNotification(n, initApp))
+    Voip.addEventListener(
+      'didLoadWithEvents',
+      (e: { name: string; data: PN }[]) => {
+        if (!e?.length) {
+          return
+        }
+        e.forEach(({ name, data }) => {
+          if (name === Voip.RNVoipPushRemoteNotificationsRegisteredEvent) {
+            if (typeof data === 'string') {
+              apnsToken = data
+            }
+          } else if (name === Voip.RNVoipPushRemoteNotificationReceivedEvent) {
+            onNotification(data, initApp)
+          }
+        })
+      },
     )
-    VoipPushNotification.registerVoipToken()
+    Voip.registerVoipToken()
     //
     PushNotificationIOS.addEventListener('register', onToken)
     PushNotificationIOS.addEventListener('notification', (n: PN) =>
@@ -67,7 +82,7 @@ const PushNotification = {
     )
     //
     PushNotificationIOS.requestPermissions()
-    VoipPushNotification.requestPermissions()
+    Voip.requestPermissions()
     //
     const n0 = await PushNotificationIOS.getInitialNotification()
     onNotification(n0, initApp, true)

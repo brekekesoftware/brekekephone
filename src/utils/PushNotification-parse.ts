@@ -56,9 +56,12 @@ const parseNotificationData = (raw: object) => {
   if (Platform.OS === 'ios') {
     return _parseNotificationData(
       raw,
+      get(raw, 'custom_notification'),
+      get(raw, 'aps'),
+      get(raw, 'aps.alert'),
       get(raw, '_data'),
-      get(raw, '_alert'),
       get(raw, '_data.custom_notification'),
+      get(raw, '_alert'),
     )
   }
   // TODO handle web

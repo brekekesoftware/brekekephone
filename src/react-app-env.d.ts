@@ -15,6 +15,8 @@ declare module 'react-native-voip-push-notification' {
     addEventListener: Function
     registerVoipToken: Function
     requestPermissions: Function
+    RNVoipPushRemoteNotificationsRegisteredEvent: string
+    RNVoipPushRemoteNotificationReceivedEvent: string
   }
   export default m
 }

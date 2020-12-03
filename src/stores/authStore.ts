@@ -268,22 +268,13 @@ export class AuthStore {
   }) => {
     this.reconnect()
     await profileStore.profilesLoaded()
-    try {
-      await pbx.getConfig()
-    } catch (err) {
-      this.reconnectWithSetStates()
-    }
-    const s = sip.phone.getPhoneStatus()
-    if (s !== 'starting' && s !== 'started') {
-      this.reconnectWithSetStates()
-    }
     // Find account for the notification target
     const p = this.findProfile({
       ...n,
       pbxUsername: n.to,
       pbxTenant: n.tenant,
     })
-    if (!p?.id || !p.pushNotificationEnabled) {
+    if (!p?.id) {
       return false
     }
     // Use isSignInByNotification to disable UC auto sign in for a while
@@ -293,6 +284,15 @@ export class AuthStore {
     }
     // In case the app is already signed in
     if (this.signedInId) {
+      try {
+        await pbx.getConfig()
+        const s = sip.phone.getPhoneStatus()
+        if (s !== 'starting' && s !== 'started') {
+          throw new Error('SIP not started')
+        }
+      } catch (err) {
+        this.reconnectWithSetStates()
+      }
       if (
         n.isCall &&
         !callStore._calls.length &&
