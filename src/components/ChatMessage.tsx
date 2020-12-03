@@ -53,7 +53,7 @@ const css = StyleSheet.create({
     flexDirection: 'row',
   },
   Message_File_Button: {
-    width: 'fit-content',
+    flex: 1,
     paddingVertical: 1,
     paddingHorizontal: 8,
     fontSize: 12,
@@ -62,11 +62,13 @@ const css = StyleSheet.create({
   },
   Message_File_Cancel_Button: {
     color: g.colors.danger,
-    border: `1px solid ${g.colors.danger}`,
+    borderWidth: 1,
+    borderColor: g.colors.danger,
   },
   Message_File_Accept_Button: {
     backgroundColor: g.colors.primary,
-    border: `1px solid ${g.colors.primary}`,
+    borderWidth: 1,
+    borderColor: g.colors.primary,
     marginLeft: 4,
     color: '#fff',
   },
@@ -75,16 +77,22 @@ const css = StyleSheet.create({
     alignItems: 'flex-start',
   },
   Message_File_Preview_Info: {
-    width: 'calc(100vw - 119px)',
     marginLeft: 5,
+    ...Platform.select({
+      web: {
+        width: 'calc(100vw - 119px)',
+      },
+      default: {
+        width: Dimensions.get('screen').width - 119,
+      },
+    }),
   },
   Message_File_Preview_Info_Size: {
     color: '#b5b5b5',
     fontSize: 13,
   },
   Message_File_Preview_Status: {
-    fontStyle: 'italic',
-    fontWeight: '400',
+    fontWeight: g.fontWeight,
   },
   Message_File_Preview_Status__Success: {
     color: g.colors.primary,
