@@ -1,4 +1,4 @@
-import { mdiCheck, mdiClose, mdiDotsHorizontal, mdiFile } from '@mdi/js'
+import { mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import {
@@ -41,46 +41,56 @@ const css = StyleSheet.create({
   },
   //
   File: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     marginTop: 10,
   },
-  File__createdByMe: {
-    // alignSelf: 'flex-end',
-    left: 5,
-    paddingLeft: 10,
-    paddingRight: 15,
-    backgroundColor: g.colors.primaryFn(0.5),
+  Image: {
+    width: 150,
+    height: 150,
   },
-  File_Icon: {
-    flexDirection: 'column',
+
+  Message_File_Button_Wrapper: {
+    flexDirection: 'row',
+  },
+  Message_File_Button: {
+    width: 'fit-content',
+    paddingVertical: 1,
+    paddingHorizontal: 8,
+    fontSize: 12,
+    marginTop: 4,
+    borderRadius: 4,
+  },
+  Message_File_Cancel_Button: {
+    color: g.colors.danger,
+    border: `1px solid ${g.colors.danger}`,
+  },
+  Message_File_Accept_Button: {
+    backgroundColor: g.colors.primary,
+    border: `1px solid ${g.colors.primary}`,
+    marginLeft: 4,
+    color: '#fff',
+  },
+  Message_File_Preview_Wrapper: {
+    flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  Message_File_Info: {
+  Message_File_Preview_Info: {
+    width: 'calc(100vw - 119px)',
     marginLeft: 5,
   },
-  Message_File_Info__color: {
-    color: g.revColor,
+  Message_File_Preview_Info_Size: {
+    color: '#b5b5b5',
+    fontSize: 13,
   },
-  Image: {
-    width: 75,
-    height: 75,
+  Message_File_Preview_Status: {
+    fontStyle: 'italic',
+    fontWeight: '400',
   },
-  Message_File_Btn: {
-    borderWidth: 1 / 2,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginLeft: 20,
-    marginTop: 5,
+  Message_File_Preview_Status__Success: {
+    color: g.colors.primary,
   },
-  Message_File_Btn_borderColor__white: {
-    borderColor: g.revColor,
-  },
-  Message_File_Btn_borderColor__accept: {
-    borderColor: g.colors.primary,
-  },
-  Message_File_Btn_borderColor__reject: {
-    borderColor: g.colors.danger,
+  Message_File_Preview_Status__Failed: {
+    color: g.colors.danger,
   },
 
   Link: {
@@ -112,30 +122,36 @@ const File: FC<
       <RnImage source={{ uri: p.url }} style={css.Image} />
     )}
     {p.fileType !== 'image' && (
-      <View style={css.File_Icon}>
+      <View style={css.Message_File_Preview_Wrapper}>
         <RnIcon path={mdiFile} size={50} />
-        <View style={css.Message_File_Info}>
+        <View style={css.Message_File_Preview_Info}>
           <RnText numberOfLines={1}>{p.name}</RnText>
-          <RnText>{p.size}</RnText>
+          <RnText style={css.Message_File_Preview_Info_Size}>
+            {p.size} KB
+          </RnText>
         </View>
       </View>
     )}
-    {p.state === 'waiting' && (
-      <RnTouchableOpacity
-        onPress={p.reject}
-        style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__reject]}
-      >
-        <RnIcon color={g.colors.danger} path={mdiClose} />
-      </RnTouchableOpacity>
-    )}
-    {!!p.incoming && p.state === 'waiting' && (
-      <RnTouchableOpacity
-        onPress={p.accept}
-        style={[css.Message_File_Btn, css.Message_File_Btn_borderColor__accept]}
-      >
-        <RnIcon color={g.colors.primary} path={mdiCheck} />
-      </RnTouchableOpacity>
-    )}
+    <View style={css.Message_File_Button_Wrapper}>
+      {p.state === 'waiting' && (
+        <RnTouchableOpacity onPress={p.reject}>
+          <RnText
+            style={[css.Message_File_Button, css.Message_File_Cancel_Button]}
+          >
+            Cancel
+          </RnText>
+        </RnTouchableOpacity>
+      )}
+      {!!p.incoming && p.state === 'waiting' && (
+        <RnTouchableOpacity onPress={p.accept}>
+          <RnText
+            style={[css.Message_File_Button, css.Message_File_Accept_Button]}
+          >
+            Accept
+          </RnText>
+        </RnTouchableOpacity>
+      )}
+    </View>
 
     {/*//TODO: fix error UI component Progress*/}
 
@@ -157,17 +173,32 @@ const File: FC<
 
     {p.state === 'success' && (
       <RnText
-        style={p.createdByMe && css.Message_File_Info__color}
-      >{intl`Success`}</RnText>
+        style={[
+          css.Message_File_Preview_Status,
+          css.Message_File_Preview_Status__Success,
+        ]}
+      >
+        ({intl`Success`})
+      </RnText>
     )}
     {p.state === 'failure' && (
       <RnText
-        style={p.createdByMe && css.Message_File_Info__color}
-      >{intl`Failed`}</RnText>
+        style={[
+          css.Message_File_Preview_Status,
+          css.Message_File_Preview_Status__Failed,
+        ]}
+      >
+        ({intl`Failed`})
+      </RnText>
     )}
     {p.state === 'stopped' && (
-      <RnText style={p.createdByMe && css.Message_File_Info__color}>
-        {intl`Canceled`}
+      <RnText
+        style={[
+          css.Message_File_Preview_Status,
+          css.Message_File_Preview_Status__Failed,
+        ]}
+      >
+        ({intl`Canceled`})
       </RnText>
     )}
   </View>
