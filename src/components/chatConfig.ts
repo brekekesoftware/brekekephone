@@ -10,18 +10,19 @@ export const groupByTimestamp = (arr: ChatMessage[]) => {
   const me = uc.me()
   const groupByDate: {
     date: string
-    groupByTime: {}[]
+    groupByTime: {
+      time: string
+      messages: ChatMessage[]
+      createdByMe: boolean
+    }[]
   }[] = []
   if (!arr?.length) {
     return groupByDate
   }
   let lastDate: string
   let groupByTime: typeof groupByDate[0]['groupByTime']
-  let lastMessage: {
-    creator: string
-    created: number
-  }
-  let messages: Array<typeof lastMessage>
+  let lastMessage: ChatMessage
+  let messages: ChatMessage[]
   arr.forEach(m => {
     const d = moment(m.created)
     const date = d.format('MMM D')

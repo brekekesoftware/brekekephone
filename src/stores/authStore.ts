@@ -3,6 +3,7 @@ import { autorun, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
+import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { getUrlParams } from '../utils/deeplink'
 import { arrToMap } from '../utils/toMap'
@@ -63,6 +64,7 @@ export class AuthStore {
       this.currentProfile?.ucEnabled &&
       !this.ucLoginFromAnotherPlace &&
       !this.isSignInByNotification &&
+      this.pbxState === 'success' &&
       (this.ucState === 'stopped' ||
         (this.ucState === 'failure' && !this.ucTotalFailure))
     )
@@ -132,13 +134,6 @@ export class AuthStore {
       Nav().goToPageProfileUpdate({ id: p.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
-      })
-      return true
-    }
-    if (p.ucEnabled && (!p.ucHostname || !p.ucPort)) {
-      Nav().goToPageProfileUpdate({ id: p.id })
-      RnAlert.error({
-        message: intlDebug`The UC config is missing`,
       })
       return true
     }
@@ -279,7 +274,7 @@ export class AuthStore {
       pbxUsername: n.to,
       pbxTenant: n.tenant,
     })
-    if (!p?.id || !p.pushNotificationEnabled) {
+    if (!p?.id) {
       return false
     }
     // Use isSignInByNotification to disable UC auto sign in for a while
@@ -289,6 +284,15 @@ export class AuthStore {
     }
     // In case the app is already signed in
     if (this.signedInId) {
+      try {
+        await pbx.getConfig()
+        const s = sip.phone.getPhoneStatus()
+        if (s !== 'starting' && s !== 'started') {
+          throw new Error('SIP not started')
+        }
+      } catch (err) {
+        this.reconnectWithSetStates()
+      }
       if (
         n.isCall &&
         !callStore._calls.length &&

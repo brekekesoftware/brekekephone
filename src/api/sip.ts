@@ -25,7 +25,7 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
 }
 
 class SIP extends EventEmitter {
-  phone = (null as unknown) as Sip
+  phone: Sip = null!
   init = async (o: SipLoginOption) => {
     const sourceId = await getFrontCameraSourceId()
     const phone = new window.Brekeke.WebrtcClient.Phone({
@@ -44,6 +44,9 @@ class SIP extends EventEmitter {
       dtmfSendMode: isNaN(o.dtmfSendMode) ? 1 : o.dtmfSendMode,
       ctiAutoAnswer: 1,
       eventTalk: 1,
+      configuration: {
+        socketKeepAlive: 60,
+      },
     })
     this.phone = phone
 
@@ -198,7 +201,6 @@ class SIP extends EventEmitter {
     this.phone.startWebRTC({
       url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
       tls: true,
-      tenant: sipLoginOption.tenant,
       user: sipLoginOption.username,
       auth: sipLoginOption.accessToken,
       useVideoClient: true,
@@ -209,7 +211,7 @@ class SIP extends EventEmitter {
   disconnect() {
     if (this.phone) {
       this.phone.stopWebRTC()
-      this.phone = (null as unknown) as Sip
+      this.phone = null!
     }
   }
 
@@ -246,7 +248,6 @@ export interface SipLoginOption {
   hostname: string
   port: string
   pbxTurnEnabled: boolean
-  tenant: string
   username: string
   accessToken: string
   dtmfSendMode: number

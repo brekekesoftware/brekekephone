@@ -8,10 +8,10 @@ import {
   UcConference,
   UcListeners,
   UcLogger,
-  UcReceieveUnreadTextRes,
-  UcSearchTextsRes,
-  UcSendFileRes,
-  UcSendFilesRes,
+  UcReceieveUnreadText,
+  UcSearchTexts,
+  UcSendFile,
+  UcSendFiles,
 } from './brekekejs'
 
 const UCClient = UCClient0 as {
@@ -193,15 +193,19 @@ class UC extends EventEmitter {
     })
   }
 
-  connect(profile: Profile, option?: object) {
+  connect(profile: Profile, ucHost: string) {
+    if (ucHost.indexOf(':') < 0) {
+      ucHost += ':443'
+    }
+    const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
     return new Promise((resolve, reject) =>
       this.client.signIn(
-        `https://${profile.ucHostname}:${profile.ucPort}`,
-        profile.ucPathname || 'uc',
+        `${ucScheme}://${ucHost}`,
+        'uc',
         profile.pbxTenant,
         profile.pbxUsername,
         profile.pbxPassword,
-        option,
+        undefined,
         () => resolve(undefined),
         reject,
       ),
@@ -260,11 +264,9 @@ class UC extends EventEmitter {
   }
 
   async getUnreadChats() {
-    const res: UcReceieveUnreadTextRes = await new Promise(
-      (resolve, reject) => {
-        this.client.receiveUnreadText(resolve, reject)
-      },
-    )
+    const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
+      this.client.receiveUnreadText(resolve, reject)
+    })
 
     if (!res || !Array.isArray(res.messages)) {
       return []
@@ -292,7 +294,7 @@ class UC extends EventEmitter {
       asc?: boolean
     } = {},
   ) {
-    const res: UcSearchTextsRes = await new Promise((resolve, reject) =>
+    const res: UcSearchTexts = await new Promise((resolve, reject) =>
       this.client.searchTexts(
         {
           user_id: buddy,
@@ -330,7 +332,7 @@ class UC extends EventEmitter {
       asc?: boolean
     } = {},
   ) {
-    const res: UcSearchTextsRes = await new Promise((resolve, reject) =>
+    const res: UcSearchTexts = await new Promise((resolve, reject) =>
       this.client.searchTexts(
         {
           conf_id: group,
@@ -523,7 +525,7 @@ class UC extends EventEmitter {
       }
     }
 
-    const res: UcSendFileRes = await new Promise((resolve, reject) =>
+    const res: UcSendFile = await new Promise((resolve, reject) =>
       this.client.sendFile(
         {
           user_id,
@@ -592,7 +594,7 @@ class UC extends EventEmitter {
       }
     }
 
-    const res: UcSendFilesRes = await new Promise((resolve, reject) =>
+    const res: UcSendFiles = await new Promise((resolve, reject) =>
       this.client.sendFiles(
         {
           conf_id,

@@ -74,7 +74,6 @@ class AuthSIP {
     await sip.connect({
       hostname: authStore.currentProfile.pbxHostname,
       port: sipWSSPort,
-      tenant: authStore.currentProfile.pbxTenant,
       username: webPhone.id,
       accessToken: sipAccessToken,
       pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
