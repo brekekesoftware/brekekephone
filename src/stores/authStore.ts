@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import { autorun, computed, observable } from 'mobx'
+import { action, autorun, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
@@ -7,6 +7,7 @@ import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { getUrlParams } from '../utils/deeplink'
 import { arrToMap } from '../utils/toMap'
+import waitTimeout from '../utils/waitTimeout'
 import callStore, { uuidFromPN } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
@@ -156,7 +157,7 @@ export class AuthStore {
       this._signOut()
     }
   }
-  _signOut = () => {
+  @action _signOut = () => {
     this.signedInId = ''
     this.pbxState = 'stopped'
     this.pbxTotalFailure = 0
@@ -168,18 +169,18 @@ export class AuthStore {
     this.ucLoginFromAnotherPlace = false
   }
 
-  reconnect = () => {
+  @action reconnect = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
   }
-  reconnectWithSetStates = () => {
+  @action reconnectWithSetStates = () => {
     this.reconnect()
     this.pbxState = 'failure'
     this.sipState = 'failure'
     this.ucState = 'failure'
   }
-  reconnectWithUcLoginFromAnotherPlace = () => {
+  @action reconnectWithUcLoginFromAnotherPlace = () => {
     this.reconnect()
     this.ucLoginFromAnotherPlace = false
   }
@@ -285,24 +286,23 @@ export class AuthStore {
     // In case the app is already signed in
     if (this.signedInId) {
       try {
-        await pbx.getConfig()
-        const s = sip.phone.getPhoneStatus()
-        if (s !== 'starting' && s !== 'started') {
-          throw new Error('SIP not started')
-        }
-      } catch (err) {
-        this.reconnectWithSetStates()
-      }
-      if (
-        n.isCall &&
-        !callStore._calls.length &&
-        Date.now() > callStore.recentCallActivityAt + 30000
-      ) {
-        // Sip call should come before PN
         // If PN came and still no sip call it is likely disconnected
         // Set states to failure to reconnect them
+        await waitTimeout(1000)
+        if (
+          n.isCall &&
+          !callStore._calls.length &&
+          Date.now() > callStore.recentCallActivityAt + 30000
+        ) {
+          await pbx.getConfig()
+          const s = sip.phone.getPhoneStatus()
+          if (s !== 'starting' && s !== 'started') {
+            throw new Error(`SIP not started: ${s}`)
+          }
+        }
+      } catch (err) {
+        console.error(`signInByNotification: trying to reconnect, err=${err}`)
         this.reconnectWithSetStates()
-        return false
       }
       // Always show notification if the signed in id is another account
       if (this.signedInId !== p.id) {

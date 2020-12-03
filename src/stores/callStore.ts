@@ -190,7 +190,7 @@ export class CallStore {
       ) {
         clearInterval(this._startCallIntervalId)
         this._startCallIntervalId = 0
-        reconnectAndWaitSip(() => sip.createSession(number, options))
+        reconnectAndWaitSip(_startCall)
         return
       }
       if (currentCallId) {
