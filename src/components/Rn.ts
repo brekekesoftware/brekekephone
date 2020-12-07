@@ -1,4 +1,4 @@
-import AsyncStorage0 from '@react-native-community/async-storage'
+import AsyncStorage0 from '@react-native-async-storage/async-storage'
 import Image0 from 'react-native-fast-image'
 
 import Icon0 from './RnIcon'

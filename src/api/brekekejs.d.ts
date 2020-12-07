@@ -113,18 +113,18 @@ export type PbxPal = {
 
   pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler)
 
-  hold(p: PalHoldParam, resolve: () => void, reject: ErrorHandler)
+  hold(p: PbxHoldParam, resolve: () => void, reject: ErrorHandler)
   unhold: PbxPal['hold']
 
   startRecording: PbxPal['hold']
   stopRecording: PbxPal['hold']
 
-  transfer(p: PalTransferParam, resolve: () => void, reject: ErrorHandler)
+  transfer(p: PbxTransferParam, resolve: () => void, reject: ErrorHandler)
 
   conference: PbxPal['hold']
   cancelTransfer: PbxPal['hold']
 
-  park(p: PalParkParam, resolve: () => void, reject: ErrorHandler)
+  park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler)
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
