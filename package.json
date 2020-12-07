@@ -123,5 +123,6 @@
     ],
     "*.{html,scss,json,md}": "prettier --write"
   },
+  "cracoConfig": ".cracorc.js",
   "browserslist": "ie 10-11"
 }
