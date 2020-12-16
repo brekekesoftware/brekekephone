@@ -398,22 +398,18 @@ class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) =>
-    new Promise((resolve, reject) => {
-      const params = {
+    this.client
+      ._pal('pnmanage', {
         command: 'set',
         service_id: '11',
         application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
         user_agent: 'react-native',
         username: username + (voip ? '@voip' : ''),
         device_id,
-      }
-      if (!this.client) {
-        resolve(null)
-      }
-      this.client._pal('pnmanage', params).then(resolve).catch(reject)
-    }).catch((err: Error) => {
-      console.error('addApnsToken:' + (voip ? ' voip:' : ''), err)
-    })
+      })
+      .catch((err: Error) => {
+        console.error('addApnsToken:' + (voip ? ' voip:' : ''), err)
+      })
 
   addFcmPnToken = ({
     device_id,
@@ -424,22 +420,18 @@ class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) =>
-    new Promise((resolve, reject) => {
-      const params = {
+    this.client
+      ._pal('pnmanage', {
         command: 'set',
         service_id: '12',
         application_id: '22177122297',
         user_agent: 'react-native',
         username: username + (voip ? '@voip' : ''),
         device_id,
-      }
-      if (!this.client) {
-        resolve(null)
-      }
-      this.client._pal('pnmanage', params).then(resolve).catch(reject)
-    }).catch((err: Error) => {
-      console.error('addFcmPnToken:' + (voip ? ' voip:' : ''), err)
-    })
+      })
+      .catch((err: Error) => {
+        console.error('addFcmPnToken:' + (voip ? ' voip:' : ''), err)
+      })
 
   addWebPnToken = ({
     auth_secret,
@@ -452,8 +444,8 @@ class PBX extends EventEmitter {
     username: string
     key: string
   }) =>
-    new Promise((resolve, reject) => {
-      const params = {
+    this.client
+      ._pal('pnmanage', {
         command: 'set',
         service_id: '13',
         application_id: '22177122297',
@@ -462,14 +454,10 @@ class PBX extends EventEmitter {
         endpoint,
         auth_secret,
         key,
-      }
-      if (!this.client) {
-        resolve(null)
-      }
-      this.client._pal('pnmanage', params).then(resolve).catch(reject)
-    }).catch((err: Error) => {
-      console.error('addWebPnToken:', err)
-    })
+      })
+      .catch((err: Error) => {
+        console.error('addWebPnToken:', err)
+      })
 }
 
 export default new PBX()
