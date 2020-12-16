@@ -19,6 +19,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import api from '../api'
+import { syncPnTokenForAllAccounts } from '../api/syncPnToken'
 import AuthPBX from '../stores/AuthPBX'
 import AuthSIP from '../stores/AuthSIP'
 import authStore from '../stores/authStore'
@@ -126,7 +127,11 @@ PushNotification.register(() => {
   alreadyInitApp = true
 
   setupCallKeep()
-  profileStore.loadProfilesFromLocalStorage()
+  profileStore.loadProfilesFromLocalStorage().then(() => {
+    if (AppState.currentState === 'active') {
+      syncPnTokenForAllAccounts()
+    }
+  })
 
   Nav().goToPageIndex()
   authStore.handleUrlParams()

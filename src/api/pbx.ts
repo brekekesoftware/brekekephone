@@ -6,7 +6,7 @@ import EventEmitter from 'eventemitter3'
 import profileStore, { Profile } from '../stores/profileStore'
 import { Pbx } from './brekekejs'
 
-class PBX extends EventEmitter {
+export class PBX extends EventEmitter {
   client = (null as unknown) as Pbx
 
   async connect(p: Profile) {
@@ -207,19 +207,19 @@ class PBX extends EventEmitter {
     const phones = [
       {
         id: pnumber[0],
-        type: res[1],
+        type: res[1] as string,
       },
       {
         id: pnumber[1],
-        type: res[2],
+        type: res[2] as string,
       },
       {
         id: pnumber[2],
-        type: res[3],
+        type: res[3] as string,
       },
       {
         id: pnumber[3],
-        type: res[4],
+        type: res[4] as string,
       },
     ]
 
@@ -228,9 +228,9 @@ class PBX extends EventEmitter {
 
     return {
       id: userId,
-      name: userName,
+      name: userName as string,
       phones,
-      language: lang,
+      language: lang as string,
     }
   }
 
@@ -389,7 +389,7 @@ class PBX extends EventEmitter {
     })
   }
 
-  addApnsToken = ({
+  setApnsToken = ({
     device_id,
     username,
     voip = false,
@@ -398,20 +398,16 @@ class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) =>
-    this.client
-      ._pal('pnmanage', {
-        command: 'set',
-        service_id: '11',
-        application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-        user_agent: 'react-native',
-        username: username + (voip ? '@voip' : ''),
-        device_id,
-      })
-      .catch((err: Error) => {
-        console.error('addApnsToken:' + (voip ? ' voip:' : ''), err)
-      })
+    this.client._pal('pnmanage', {
+      command: 'set',
+      service_id: '11',
+      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
 
-  addFcmPnToken = ({
+  setFcmPnToken = ({
     device_id,
     username,
     voip = false,
@@ -420,18 +416,50 @@ class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) =>
-    this.client
-      ._pal('pnmanage', {
-        command: 'set',
-        service_id: '12',
-        application_id: '22177122297',
-        user_agent: 'react-native',
-        username: username + (voip ? '@voip' : ''),
-        device_id,
-      })
-      .catch((err: Error) => {
-        console.error('addFcmPnToken:' + (voip ? ' voip:' : ''), err)
-      })
+    this.client._pal('pnmanage', {
+      command: 'set',
+      service_id: '12',
+      application_id: '22177122297',
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
+
+  removeApnsToken = ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) =>
+    this.client._pal('pnmanage', {
+      command: 'remove',
+      service_id: '11',
+      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
+
+  removeFcmPnToken = ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) =>
+    this.client._pal('pnmanage', {
+      command: 'remove',
+      service_id: '12',
+      application_id: '22177122297',
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
 
   addWebPnToken = ({
     auth_secret,

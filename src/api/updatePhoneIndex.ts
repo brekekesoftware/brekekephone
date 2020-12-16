@@ -14,16 +14,22 @@ const updatePhoneIndex = () =>
     return null
   })
 
-const updatePhoneIndexWithoutCatch = async () => {
+export const updatePhoneIndexWithoutCatch = async (
+  p = authStore.currentProfile,
+  api = pbx,
+): Promise<null | {
+  id: string
+  type: string
+}> => {
   //
-  const phoneIndex = parseInt(authStore.currentProfile.pbxPhoneIndex) || 4
-  const extProps = authStore.userExtensionProperties
+  const phoneIndex = parseInt(p.pbxPhoneIndex) || 4
+  const extProps = await api.getUserForSelf(p.pbxTenant, p.pbxUsername)
   if (!extProps) {
-    return
+    return null
   }
   const phone = extProps.phones[phoneIndex - 1]
   const phoneTypeCorrect = phone.type === 'Web Phone'
-  const { pbxTenant, pbxUsername } = authStore.currentProfile
+  const { pbxTenant, pbxUsername } = p
   const expectedPhoneId = `${pbxTenant}_${pbxUsername}_phone${phoneIndex}_webphone`
   const phoneIdCorrect = phone.id === expectedPhoneId
   //
@@ -31,7 +37,7 @@ const updatePhoneIndexWithoutCatch = async () => {
     if (!extProps) {
       return
     }
-    await pbx.client._pal('setExtensionProperties', {
+    await api.client._pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
       properties: {
@@ -40,7 +46,9 @@ const updatePhoneIndexWithoutCatch = async () => {
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })
-    authStore.userExtensionProperties = extProps
+    if (p === authStore.currentProfile) {
+      authStore.userExtensionProperties = extProps
+    }
   }
   //
   if (phoneTypeCorrect && phoneIdCorrect) {

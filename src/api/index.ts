@@ -13,6 +13,7 @@ import RnAlert from '../stores/RnAlert'
 import PushNotification from '../utils/PushNotification'
 import pbx from './pbx'
 import sip from './sip'
+import { syncPnToken, syncPnTokenForAllAccounts } from './syncPnToken'
 import uc from './uc'
 import updatePhoneIndex from './updatePhoneIndex'
 
@@ -44,75 +45,6 @@ class Api {
     uc.on('file-progress', this.onFileProgress)
     uc.on('file-finished', this.onFileFinished)
   }
-  pbxAndSipStarted = 0
-
-  onPBXAndSipStarted = async () => {
-    try {
-      await this._onPBXAndSipStarted()
-    } catch (err) {
-      console.error('api.onPBXAndSipStarted:', err)
-    }
-  }
-
-  _onPBXAndSipStarted = async () => {
-    if (this.pbxAndSipStarted < 1) {
-      this.pbxAndSipStarted += 1
-      return
-    }
-
-    this.pbxAndSipStarted = 0
-    const webPhone = (await updatePhoneIndex()) as { id: string }
-
-    if (!webPhone) {
-      return
-    }
-
-    this.addPnToken(webPhone)
-  }
-
-  addPnToken = async (phone: { id: string }) => {
-    let t = await PushNotification.getToken()
-    let tvoip = t
-    if (Platform.OS === 'ios') {
-      tvoip = await PushNotification.getVoipToken()
-      if (!t) {
-        t = tvoip
-      }
-    }
-
-    if (!t) {
-      return
-    }
-
-    if (Platform.OS === 'ios') {
-      await pbx.addApnsToken({
-        username: phone.id,
-        device_id: t,
-      })
-      await pbx.addApnsToken({
-        username: phone.id,
-        device_id: tvoip || t,
-        voip: true,
-      })
-    } else if (Platform.OS === 'android') {
-      await pbx.addFcmPnToken({
-        username: phone.id,
-        device_id: t,
-      })
-      await pbx.addFcmPnToken({
-        username: phone.id,
-        device_id: t,
-        voip: true,
-      })
-    } else if (Platform.OS === 'web') {
-      await pbx.addWebPnToken({
-        username: phone.id,
-        endpoint: t.endpoint,
-        auth_secret: t.auth,
-        key: t.p256dh,
-      })
-    }
-  }
 
   onPBXConnectionStarted = () => {
     this.loadPBXUsers().catch((err: Error) => {
@@ -121,8 +53,9 @@ class Api {
         err,
       })
     })
-
-    window.setTimeout(this.onPBXAndSipStarted)
+    syncPnToken(authStore.currentProfile).then(() =>
+      syncPnTokenForAllAccounts(),
+    )
   }
 
   onPBXConnectionStopped = () => {
@@ -169,7 +102,6 @@ class Api {
 
   onSIPConnectionStarted = () => {
     authStore.sipState = 'success'
-    window.setTimeout(this.onPBXAndSipStarted)
   }
 
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {

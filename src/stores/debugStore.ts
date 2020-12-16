@@ -54,7 +54,7 @@ class DebugStore {
   logQueue: string[] = []
 
   // The function to be called in src/utils/captureConsoleOutput.js
-  captureConsoleOutput = (lv: string, ...args: unknown[]) => {
+  captureConsoleOutput = (lv: string, ...args: Error[]) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
     }
@@ -62,12 +62,11 @@ class DebugStore {
       moment().format('YYYY/MM/DD HH:mm:ss') +
       ` ${lv.toUpperCase()} ` +
       args
-        .map((a0: unknown) => {
-          const a = a0 as Error
+        .map(a => {
           return !a
             ? `${a}`
-            : a.message && a.stack
-            ? a.message + ' ' + a.stack
+            : a.message
+            ? a.message
             : typeof a === 'object'
             ? CircularJson.stringify(a)
             : `${a}`
