@@ -54,6 +54,7 @@ const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
   }
   const voipParams = {
     ...params,
+    device_id: tvoip,
     voip: true,
   }
   await fn(params)
