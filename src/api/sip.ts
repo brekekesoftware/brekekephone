@@ -24,7 +24,7 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
   } as unknown) as MediaStreamConstraints
 }
 
-class SIP extends EventEmitter {
+export class SIP extends EventEmitter {
   phone: Sip = null!
   init = async (o: SipLoginOption) => {
     const sourceId = await getFrontCameraSourceId()

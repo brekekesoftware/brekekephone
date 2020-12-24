@@ -138,60 +138,60 @@ static void InitializeFlipper(UIApplication *application) {
   completion();
 }
 
-// - (void)application:(UIApplication *)application
-//     didRegisterUserNotificationSettings:
-//         (UIUserNotificationSettings *)notificationSettings {
-//   [RNCPushNotificationIOS
-//       didRegisterUserNotificationSettings:notificationSettings];
-// }
-// - (void)application:(UIApplication *)application
-//     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-//   [RNCPushNotificationIOS
-//       didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-// }
-// - (void)application:(UIApplication *)application
-//     didReceiveRemoteNotification:(NSDictionary *)userInfo
-//           fetchCompletionHandler:
-//               (void (^)(UIBackgroundFetchResult))completionHandler {
-//   [RNCPushNotificationIOS
-//       didReceiveRemoteNotification:userInfo
-//             fetchCompletionHandler:^void(UIBackgroundFetchResult result){
-//                 // Empty handler to fix `There is no completion handler with
-//                 // notification id` error
-//             }];
-//   completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
-//                     UNAuthorizationOptionBadge);
-// }
-// - (void)application:(UIApplication *)application
-//     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-//   [RNCPushNotificationIOS
-//       didFailToRegisterForRemoteNotificationsWithError:error];
-// }
-// - (void)application:(UIApplication *)application
-//     didReceiveLocalNotification:(UILocalNotification *)notification {
-//   [RNCPushNotificationIOS didReceiveLocalNotification:notification];
-// }
+- (void)application:(UIApplication *)application
+    didRegisterUserNotificationSettings:
+        (UIUserNotificationSettings *)notificationSettings {
+  [RNCPushNotificationIOS
+      didRegisterUserNotificationSettings:notificationSettings];
+}
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNCPushNotificationIOS
+      didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+- (void)application:(UIApplication *)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [RNCPushNotificationIOS
+      didFailToRegisterForRemoteNotificationsWithError:error];
+}
+- (void)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)userInfo
+          fetchCompletionHandler:
+              (void (^)(UIBackgroundFetchResult))completionHandler {
+  [RNCPushNotificationIOS
+      didReceiveRemoteNotification:userInfo
+            fetchCompletionHandler:^void(UIBackgroundFetchResult result){
+                // Empty handler to fix `There is no completion handler with
+                // notification id` error
+            }];
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
+                    UNAuthorizationOptionBadge);
+}
+- (void)application:(UIApplication *)application
+    didReceiveLocalNotification:(UILocalNotification *)notification {
+  [RNCPushNotificationIOS didReceiveLocalNotification:notification];
+}
 
-// - (void)userNotificationCenter:(UNUserNotificationCenter *)center
-//     didReceiveNotificationResponse:(UNNotificationResponse *)response
-//              withCompletionHandler:(void (^)(void))completionHandler {
-//   [RNCPushNotificationIOS didReceiveNotificationResponse:response];
-//   completionHandler();
-// }
-// - (void)userNotificationCenter:(UNUserNotificationCenter *)center
-//        willPresentNotification:(UNNotification *)notification
-//          withCompletionHandler:
-//              (void (^)(UNNotificationPresentationOptions options))
-//                  completionHandler {
-//   NSDictionary *userInfo = notification.request.content.userInfo;
-//   [RNCPushNotificationIOS
-//       didReceiveRemoteNotification:userInfo
-//             fetchCompletionHandler:^void(UIBackgroundFetchResult result){
-//                 // Empty handler to fix `There is no completion handler with
-//                 // notification id` error
-//             }];
-//   completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
-//                     UNAuthorizationOptionBadge);
-// }
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+    didReceiveNotificationResponse:(UNNotificationResponse *)response
+             withCompletionHandler:(void (^)(void))completionHandler {
+  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
+  completionHandler();
+}
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:
+             (void (^)(UNNotificationPresentationOptions options))
+                 completionHandler {
+  NSDictionary *userInfo = notification.request.content.userInfo;
+  [RNCPushNotificationIOS
+      didReceiveRemoteNotification:userInfo
+            fetchCompletionHandler:^void(UIBackgroundFetchResult result){
+                // Empty handler to fix `There is no completion handler with
+                // notification id` error
+            }];
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
+                    UNAuthorizationOptionBadge);
+}
 
 @end

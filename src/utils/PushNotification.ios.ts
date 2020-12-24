@@ -63,7 +63,7 @@ const PushNotification = {
         e.forEach(({ name, data }) => {
           if (name === Voip.RNVoipPushRemoteNotificationsRegisteredEvent) {
             if (typeof data === 'string') {
-              apnsToken = data
+              onVoipToken(data)
             }
           } else if (name === Voip.RNVoipPushRemoteNotificationReceivedEvent) {
             onNotification(data, initApp)

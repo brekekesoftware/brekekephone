@@ -42,7 +42,7 @@ const getFileStateFromCode = (code: number) =>
   codeMapFileState[code as keyof typeof codeMapFileState] ||
   codeMapFileState['0']
 
-class UC extends EventEmitter {
+export class UC extends EventEmitter {
   client: UcChatClient
   constructor() {
     super()

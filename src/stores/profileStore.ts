@@ -4,6 +4,7 @@ import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as uuid } from 'react-native-uuid'
 
+import { syncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
 import { arrToMap } from '../utils/toMap'
 import { intlDebug } from './intl'
@@ -24,6 +25,7 @@ export type Profile = {
   pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
   pbxTurnEnabled: boolean
   pushNotificationEnabled: boolean
+  pushNotificationEnabledSynced?: boolean
   parks: string[]
   ucEnabled: boolean
   displaySharedContacts?: boolean
@@ -53,6 +55,8 @@ export type ProfileData = {
 }
 
 class ProfileStore {
+  @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+
   @observable profiles: Profile[] = []
   @computed get profilesMap() {
     return arrToMap(this.profiles, 'id', (p: Profile) => p) as {
@@ -129,7 +133,14 @@ class ProfileStore {
     if (!p0) {
       this.profiles.push(p as Profile)
     } else {
+      const pn0 = p0.pushNotificationEnabled
       Object.assign(p0, p)
+      if (
+        typeof p.pushNotificationEnabled === 'boolean' &&
+        p.pushNotificationEnabled !== pn0
+      ) {
+        syncPnToken(p0)
+      }
     }
     this.saveProfilesToLocalStorage()
   }

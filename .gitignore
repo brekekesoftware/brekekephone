@@ -64,7 +64,7 @@ coverage
 *.jsbundle
 
 # CocoaPods
-/ios/Pods/
+*/Pods
 
 # Google service keys for firebase
 GoogleService-Info.plist

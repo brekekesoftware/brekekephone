@@ -14,22 +14,19 @@ const captureConsoleOutput = () => {
       const f = f0.bind(console) as Function
       m[k] =
         Platform.OS === 'web'
-          ? (...args: unknown[]) =>
+          ? (...args: Error[]) =>
               f(
                 ...args.map(a =>
-                  // !a
-                  //   ? `${a}`
-                  //   : a.message && a.stack
-                  //   ? a.message + ' ' + a.stack
-                  //   : typeof a === 'object'
-                  //   ? CircularJSON.stringify(a)
-                  //   : `${a}`
-                  a && typeof a === 'object'
+                  !a
+                    ? `${a}`
+                    : a.message
+                    ? a.message
+                    : typeof a === 'object'
                     ? CircularJSON.stringify(a)
                     : `${a}`,
                 ),
               )
-          : (...args: unknown[]) =>
+          : (...args: Error[]) =>
               // debugStore was added globally in src/stores/debugStore.js
               //    so it can be used here
               window.debugStore?.captureConsoleOutput(k, ...args)

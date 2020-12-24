@@ -35,15 +35,17 @@ class AuthSIP {
       return
     }
     //
-    const pbxUserConfig = await pbx.getUserForSelf(
-      authStore.currentProfile.pbxTenant,
-      authStore.currentProfile.pbxUsername,
-    )
+    authStore.userExtensionProperties =
+      authStore.userExtensionProperties ||
+      (await pbx.getUserForSelf(
+        authStore.currentProfile.pbxTenant,
+        authStore.currentProfile.pbxUsername,
+      ))
+    const pbxUserConfig = authStore.userExtensionProperties
     if (!pbxUserConfig) {
       console.error('Invalid PBX user config')
       return
     }
-    authStore.userExtensionProperties = pbxUserConfig as typeof authStore.userExtensionProperties
     //
     const language = pbxUserConfig.language
     void language

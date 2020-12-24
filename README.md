@@ -1,12 +1,11 @@
 ### Quick access
 
-- [Custom branding build](./doc/custom-branding.md)
-- [Fix ios deprecated UIWebView](./doc/fix-webview-ios.md)
-- [Network proxy setup](./doc/network-proxy-setup.md)
+- [Custom branding build](./.doc/custom-branding.md)
+- [Network proxy setup](./.doc/network-proxy-setup.md)
 
 ### Environment requirement
 
-- Should have the latest node version 14.x
+- Should have the latest node version 12.x LTS
   - You can use `nvm` to install and manage node versions: https://github.com/nvm-sh/nvm
 - Install `yarn` and use it instead of `npm`: `npm i -g yarn`
 - Install node packages:
