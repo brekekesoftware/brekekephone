@@ -2,6 +2,7 @@ import '../utils/captureConsoleOutput'
 import '../polyfill'
 import '../utils/validator'
 import '../stores/Nav2' // Fix circular dependencies
+import '../api/syncPnToken2' // Fix circular dependencies
 
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
@@ -19,7 +20,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import api from '../api'
-import { syncPnTokenForAllAccounts } from '../api/syncPnToken'
+import { SyncPnToken } from '../api/syncPnToken'
 import AuthPBX from '../stores/AuthPBX'
 import AuthSIP from '../stores/AuthSIP'
 import authStore from '../stores/authStore'
@@ -129,7 +130,7 @@ PushNotification.register(() => {
   setupCallKeep()
   profileStore.loadProfilesFromLocalStorage().then(() => {
     if (AppState.currentState === 'active') {
-      syncPnTokenForAllAccounts()
+      SyncPnToken().syncForAllAccounts()
     }
   })
 

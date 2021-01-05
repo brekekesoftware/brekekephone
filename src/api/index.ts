@@ -1,5 +1,4 @@
 import moment from 'moment'
-import { Platform } from 'react-native'
 import { v4 as uuid } from 'react-native-uuid'
 
 import authStore from '../stores/authStore'
@@ -9,13 +8,10 @@ import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
-// @ts-ignore
-import PushNotification from '../utils/PushNotification'
 import pbx from './pbx'
 import sip from './sip'
-import { syncPnToken, syncPnTokenForAllAccounts } from './syncPnToken'
+import { SyncPnToken } from './syncPnToken'
 import uc from './uc'
-import updatePhoneIndex from './updatePhoneIndex'
 
 class Api {
   constructor() {
@@ -53,9 +49,9 @@ class Api {
         err,
       })
     })
-    syncPnToken(authStore.currentProfile).then(() =>
-      syncPnTokenForAllAccounts(),
-    )
+    SyncPnToken()
+      .sync(authStore.currentProfile)
+      .then(() => SyncPnToken().syncForAllAccounts())
   }
 
   onPBXConnectionStopped = () => {
