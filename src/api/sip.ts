@@ -7,6 +7,7 @@ import { Platform } from 'react-native'
 import appPackageJson from '../../package.json'
 import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
+import pbx from './pbx'
 import turnConfig from './turnConfig'
 
 const sipCreateMediaConstraints = (sourceId?: string) => {
@@ -227,8 +228,23 @@ export class SIP extends EventEmitter {
   answerSession(sessionId: string, opts: { videoEnabled?: boolean } = {}) {
     this.phone.answer(sessionId, null, opts.videoEnabled)
   }
-  sendDTMF(dtmf: string, sessionId: string) {
-    this.phone.sendDTMF(dtmf, sessionId)
+  async sendDTMF(p: {
+    signal: string
+    sessionId: string
+    tenant: string
+    talkerId: string
+  }) {
+    const c = await pbx.getConfig()
+    const dtmfSendMode = c['webrtcclient.dtmfSendMode']
+    if (dtmfSendMode && dtmfSendMode !== 'false' && dtmfSendMode !== '0') {
+      await pbx.client._pal('sendDTMF', {
+        signal: p.signal,
+        tenant: p.tenant,
+        talker_id: p.talkerId,
+      })
+      return
+    }
+    this.phone.sendDTMF(p.signal, p.sessionId)
   }
   enableVideo(sessionId: string) {
     this.phone.setWithVideo(sessionId, true)

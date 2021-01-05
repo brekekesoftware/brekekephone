@@ -4,7 +4,7 @@ import 'brekekejs/lib/pal'
 import EventEmitter from 'eventemitter3'
 
 import profileStore, { Profile } from '../stores/profileStore'
-import { Pbx } from './brekekejs'
+import { Pbx, PbxGetProductInfoRes } from './brekekejs'
 
 export class PBX extends EventEmitter {
   client = (null as unknown) as Pbx
@@ -144,8 +144,12 @@ export class PBX extends EventEmitter {
     }
   }
 
-  getConfig() {
-    return this.client._pal('getProductInfo')
+  private pbxConfig?: PbxGetProductInfoRes
+  async getConfig() {
+    if (!this.pbxConfig) {
+      this.pbxConfig = await this.client._pal('getProductInfo')
+    }
+    return this.pbxConfig
   }
 
   createSIPAccessToken(sipUsername: string) {

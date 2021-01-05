@@ -29,7 +29,7 @@ export type GetPalOptions = {
 /* PBX */
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
-export type Pbx = {
+export type Pbx = PbxPal & {
   login(resolve: () => void, reject: ErrorHandler)
   close()
 
@@ -97,7 +97,7 @@ export type PbxPal = {
 
   getContactList(
     p: PbxGetContactListParam,
-    resolve: (res: { aid: string; display_name: string }[]) => void,
+    resolve: (res: PbxGetContactListItem[]) => void,
     reject: ErrorHandler,
   )
   getContact(
@@ -125,10 +125,13 @@ export type PbxPal = {
   cancelTransfer: PbxPal['hold']
 
   park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler)
+
+  sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler)
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
   'webrtcclient.dtmfSendMode': number | string
+  'webphone.dtmf.pal': string
   'webphone.turn.server': string
   'webphone.turn.username': string
   'webphone.turn.credential': string
@@ -164,6 +167,10 @@ export type PbxGetContactListParam = {
   shared: string
   offset: number
   limit: number
+}
+export type PbxGetContactListItem = {
+  aid: string
+  display_name: string
 }
 export type PbxGetContactParam = {
   aid: string
@@ -211,6 +218,11 @@ export type PbxContact = {
     $title: string
     $hidden: string
   }
+}
+export type PbxSendDtmfParam = {
+  tenant: string
+  talker_id: string
+  signal: string
 }
 
 /* SIP */
