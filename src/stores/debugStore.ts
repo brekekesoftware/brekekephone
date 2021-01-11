@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer'
-import CircularJson from 'circular-json'
 import debounce from 'lodash/debounce'
 import { computed, observable } from 'mobx'
 import moment from 'moment'
@@ -54,25 +53,10 @@ class DebugStore {
   logQueue: string[] = []
 
   // The function to be called in src/utils/captureConsoleOutput.js
-  captureConsoleOutput = (lv: string, ...args: Error[]) => {
+  captureConsoleOutput = (lv: string, msg: string) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
     }
-    const msg =
-      moment().format('YYYY/MM/DD HH:mm:ss') +
-      ` ${lv.toUpperCase()} ` +
-      args
-        .map(a => {
-          return !a
-            ? `${a}`
-            : a.message
-            ? a.message
-            : typeof a === 'object'
-            ? CircularJson.stringify(a)
-            : `${a}`
-        })
-        .join(' ')
-        .replace(/\s+/g, ' ')
     this.logQueue.push(msg)
     this.writeFileBatch()
   }

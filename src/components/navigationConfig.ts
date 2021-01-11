@@ -4,7 +4,7 @@ import {
   mdiPhoneOutline,
 } from '@mdi/js'
 
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import intl from '../stores/intl'
 import intlStore from '../stores/intlStore'
 import Nav from '../stores/Nav'
@@ -104,7 +104,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !authStore.currentProfile.ucEnabled) {
+        if (s.ucRequired && !getAuthStore().currentProfile.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
@@ -113,7 +113,7 @@ const genMenus = () => {
       }
     })
     m.navFn = () => {
-      let k = authStore.currentProfile.navSubMenus?.[i]
+      let k = getAuthStore().currentProfile.navSubMenus?.[i]
       if (!(k in m.subMenusMap)) {
         k = m.defaultSubMenuKey
       }
@@ -136,7 +136,7 @@ export const menus = () => {
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const p = authStore.currentProfile
+  const p = getAuthStore().currentProfile
   if (!m || !p) {
     return
   }
@@ -152,7 +152,7 @@ const saveNavigation = (i: number, k: string) => {
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const p = authStore.currentProfile
+  const p = getAuthStore().currentProfile
   if (!arr[p.navIndex]) {
     p.navIndex = 0
   }
@@ -176,6 +176,6 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !authStore.currentProfile.ucEnabled),
+    s => !(s.ucRequired && !getAuthStore().currentProfile.ucEnabled),
   )
 }

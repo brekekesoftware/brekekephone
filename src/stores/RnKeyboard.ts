@@ -24,7 +24,7 @@ class RnKeyboardStore {
   keyboardAnimatingTimeoutId = 0
   @action setKeyboardAnimatingTimeout = () => {
     if (this.keyboardAnimatingTimeoutId) {
-      clearTimeout(this.keyboardAnimatingTimeoutId)
+      window.clearTimeout(this.keyboardAnimatingTimeoutId)
     }
     this.isKeyboardAnimating = true
     this.keyboardAnimatingTimeoutId = window.setTimeout(

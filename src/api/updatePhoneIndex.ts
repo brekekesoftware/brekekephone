@@ -1,4 +1,4 @@
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
@@ -15,7 +15,7 @@ const updatePhoneIndex = () =>
   })
 
 export const updatePhoneIndexWithoutCatch = async (
-  p = authStore.currentProfile,
+  p = getAuthStore().currentProfile,
   api = pbx,
 ): Promise<null | {
   id: string
@@ -46,8 +46,8 @@ export const updatePhoneIndexWithoutCatch = async (
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })
-    if (p === authStore.currentProfile) {
-      authStore.userExtensionProperties = extProps
+    if (p === getAuthStore().currentProfile) {
+      getAuthStore().userExtensionProperties = extProps
     }
   }
   //

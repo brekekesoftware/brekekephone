@@ -1,32 +1,28 @@
-import { action } from 'mobx'
 import { AppState, NativeEventEmitter, Platform } from 'react-native'
-import RNCallKeep, { Events, IOptions } from 'react-native-callkeep'
+import RNCallKeep from 'react-native-callkeep'
 
-import authStore from '../stores/authStore'
-import { NativeModules0 } from '../stores/Call'
-import callStore, { uuidFromPN } from '../stores/callStore'
+import sip from '../api/sip'
+import callStore from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
-import { getLastPN } from './PushNotification-parse'
-
-const shouldHandlePushKit = () =>
-  Platform.OS === 'ios' &&
-  (!callStore._calls.length || authStore.sipState !== 'success')
-
-let pushKitTimeoutId = 0
-const clearPushKitTimeout = () => {
-  if (pushKitTimeoutId) {
-    clearTimeout(pushKitTimeoutId)
-    pushKitTimeoutId = 0
-  }
-}
+import { getLastCallPn } from './PushNotification-parse'
+import { RnNativeModules } from './RnNativeModules'
 
 export const setupCallKeep = async () => {
   if (Platform.OS === 'web') {
     return
   }
 
-  RNCallKeep.setAvailable(true)
+  if (Platform.OS === 'android') {
+    RNCallKeep.setAvailable(true)
+    RNCallKeep.setForegroundServiceSettings({
+      channelId: 'com.brekeke.phone',
+      channelName: 'Foreground service for Brekeke Phone',
+      notificationTitle: 'Brekeke Phone is running on background',
+      notificationIcon: 'ic_launcher',
+    })
+    RNCallKeep.canMakeMultipleCalls(false)
+  }
 
   await RNCallKeep.setup({
     ios: {
@@ -42,12 +38,14 @@ export const setupCallKeep = async () => {
       okButton: intl`OK`,
       imageName: 'phone_account_icon',
       additionalPermissions: [],
+      // Android self-managed connection service forked version
       allowSelfManaged: true,
-    } as IOptions['android'],
+    },
   })
     .then(() => {
       if (Platform.OS === 'android') {
-        ;(RNCallKeep as any)['promptAndroidPermissions']()
+        // Android self-managed connection service forked version
+        return RNCallKeep.promptAndroidPermissions()
       }
     })
     .catch((err: Error) => {
@@ -60,178 +58,142 @@ export const setupCallKeep = async () => {
       })
     })
 
-  RNCallKeep.addEventListener(
-    'didReceiveStartCallAction',
-    (e: { callUUID: string; handle: string; name: string }) => {
-      //
-    },
-  )
-
-  RNCallKeep.addEventListener('answerCall', (e: { callUUID: string }) => {
-    if (e.callUUID === uuidFromPN) {
-      clearPushKitTimeout()
-      if (shouldHandlePushKit()) {
-        callStore.recentPNAction = 'answered'
-        window.setTimeout(() => RNCallKeep.endCall(e.callUUID), 1000)
-        return
-      }
+  const onDidLoadWithEvents = (e: { name: string; data: unknown }[]) => {
+    e.forEach(e => {
+      handlers[e.name.replace('RNCallKeep', 'on')]?.(e.data)
+    })
+  }
+  const onAnswerCallAction = (e: { callUUID: string }) => {
+    if (Platform.OS === 'android') {
+      // Use the custom native incoming call module for android
+      return
     }
-    const c = callStore.findByUuid(e.callUUID)
-    if (!c?.callkeep) {
-      RNCallKeep.endCall(e.callUUID)
-    } else {
-      callStore.answerCall(c, {
-        // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
-        // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
-        // videoEnabled: false,
+    const uuid = e.callUUID.toLowerCase()
+    callStore.onCallKeepAnswerCall(uuid)
+  }
+  const onEndCallAction = (e: { callUUID: string }) => {
+    if (Platform.OS === 'android') {
+      // Use the custom native incoming call module for android
+      return
+    }
+    const uuid = e.callUUID.toLowerCase()
+    callStore.onCallKeepEndCall(uuid)
+  }
+  const onDidDisplayIncomingCall = (e: {
+    callUUID: string
+    handle: string
+    localizedCallerName: string
+    hasVideo: string // '0' | '1'
+    fromPushKit: string // '0' | '1'
+    payload: unknown // VOIP
+    error: string // ios only
+  }) => {
+    const uuid = e.callUUID.toLowerCase()
+    // Try set the caller name from last known PN
+    const n = getLastCallPn()
+    if (
+      n?.from &&
+      e.localizedCallerName === 'Loading...' &&
+      e.handle === 'Loading'
+    ) {
+      RNCallKeep.updateDisplay(uuid, n.from, 'Brekeke Phone')
+    }
+    // Call event handler in callStore
+    callStore.onCallKeepDidDisplayIncomingCall(uuid)
+  }
+  const onDidPerformSetMutedCallAction = (e: {
+    callUUID: string
+    muted: boolean
+  }) => {
+    if (Platform.OS === 'android') {
+      // Use the custom native incoming call module for android
+      return
+    }
+    const uuid = e.callUUID.toLowerCase()
+    const c = callStore.calls.find(c => c.callkeepUuid === uuid)
+    if (c && c.muted !== e.muted) {
+      c.toggleMuted(true)
+    }
+  }
+  const onDidToggleHoldCallAction = (e: {
+    callUUID: string
+    hold: boolean
+  }) => {
+    if (Platform.OS === 'android') {
+      // Use the custom native incoming call module for android
+      return
+    }
+    const uuid = e.callUUID.toLowerCase()
+    const c = callStore.calls.find(c => c.callkeepUuid === uuid)
+    if (c && c.holding !== e.hold) {
+      c.toggleHold(true)
+    }
+  }
+  const onDidPerformDTMFAction = (e: { callUUID: string; digits: string }) => {
+    if (Platform.OS === 'android') {
+      // Use the custom native incoming call module for android
+      return
+    }
+    const uuid = e.callUUID.toLowerCase()
+    const c = callStore.calls.find(c => c.callkeepUuid === uuid)
+    if (c) {
+      sip.sendDTMF({
+        sessionId: c.id,
+        signal: e.digits.charAt(e.digits.length - 1),
+        talkerId: c.pbxTalkerId,
+        tenant: c.pbxTenant,
       })
-      RNCallKeep.setMutedCall(e.callUUID, false)
-      RNCallKeep.setOnHold(e.callUUID, false)
     }
-  })
+  }
+  const onShowIncomingCallUi = (e: { callUUID: string }) => {
+    const uuid = e.callUUID.toLowerCase()
+    RnNativeModules.IncomingCall.showCall(
+      uuid,
+      getLastCallPn()?.from || 'Loading...',
+      !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
+    )
+  }
+  const handlers: { [k: string]: Function } = {
+    onAnswerCallAction,
+    onEndCallAction,
+    onDidDisplayIncomingCall,
+    onDidPerformSetMutedCallAction,
+    onDidToggleHoldCallAction,
+    onDidPerformDTMFAction,
+    onShowIncomingCallUi,
+  }
 
-  RNCallKeep.addEventListener('endCall', (e: { callUUID: string }) => {
-    if (e.callUUID === uuidFromPN) {
-      clearPushKitTimeout()
-      if (shouldHandlePushKit() && !callStore.recentPNAction) {
-        callStore.recentPNAction = 'rejected'
-        return
-      }
-    }
-    const c = callStore.findByUuid(e.callUUID)
-    if (!c?.callkeep) {
-      //
-    } else {
-      c.hangupWithUnhold()
-    }
-  })
-
-  RNCallKeep.addEventListener('didActivateAudioSession', () => {
-    // you might want to do following things when receiving this event:
-    // - Start playing ringback if it is an outgoing call
-  })
-
+  RNCallKeep.addEventListener('didLoadWithEvents', onDidLoadWithEvents)
+  RNCallKeep.addEventListener('answerCall', onAnswerCallAction)
+  RNCallKeep.addEventListener('endCall', onEndCallAction)
   RNCallKeep.addEventListener(
     'didDisplayIncomingCall',
-    (e: {
-      callUUID: string
-      handle: string
-      localizedCallerName: string
-      hasVideo: string // '0' | '1'
-      fromPushKit: string // '0' | '1'
-      payload: unknown // VOIP
-      error: string // ios only
-    }) => {
-      if (e.callUUID === uuidFromPN) {
-        clearPushKitTimeout()
-        pushKitTimeoutId = window.setTimeout(
-          () => RNCallKeep.endCall(e.callUUID),
-          20000,
-        )
-        callStore.recentPNAction = ''
-        callStore.recentPNAt = Date.now()
-        if (shouldHandlePushKit()) {
-          return
-        }
-      }
-      const c = callStore.findByUuid(e.callUUID)
-      if (!c?.callkeep) {
-        RNCallKeep.endCall(e.callUUID)
-      } else {
-        c.callkeepDisplayed = true
-      }
-    },
+    onDidDisplayIncomingCall,
   )
-
   RNCallKeep.addEventListener(
     'didPerformSetMutedCallAction',
-    (e: { callUUID: string; muted: boolean }) => {
-      const c = callStore.findByUuid(e.callUUID)
-      if (!c?.callkeep) {
-        RNCallKeep.endCall(e.callUUID)
-      } else if (e.muted !== c.muted) {
-        c.toggleMuted(true)
-      }
-    },
+    onDidPerformSetMutedCallAction,
   )
-
   RNCallKeep.addEventListener(
     'didToggleHoldCallAction',
-    (e: { callUUID: string; hold: boolean }) => {
-      const c = callStore.findByUuid(e.callUUID)
-      if (!c?.callkeep) {
-        RNCallKeep.endCall(e.callUUID)
-      } else if (c.answered && e.hold !== c.holding) {
-        c.toggleHold(true)
-      }
-    },
+    onDidToggleHoldCallAction,
   )
+  RNCallKeep.addEventListener('didPerformDTMFAction', onDidPerformDTMFAction)
 
-  RNCallKeep.addEventListener(
-    'didPerformDTMFAction',
-    (e: { callUUID: string }) => {
-      const c = callStore.findByUuid(e.callUUID)
-      if (!c?.callkeep) {
-        RNCallKeep.endCall(e.callUUID)
-      } else {
-        // TODO
-      }
-    },
-  )
-
+  // Android self-managed connection service forked version
   if (Platform.OS === 'android') {
-    RNCallKeep.addEventListener(
-      'showIncomingCallUi' as Events,
-      (e: { callUUID: string }) => {
-        if (e.callUUID === uuidFromPN) {
-          const n = getLastPN()
-          NativeModules0.IncomingCall.showCall(
-            e.callUUID,
-            n?.to || 'Loading...',
-            false,
-          )
-          return
-        }
-        const c = callStore.findByUuid(e.callUUID)
-        if (!c?.callkeep) {
-          RNCallKeep.endCall(e.callUUID)
-          return
-        }
-        NativeModules0.IncomingCall.showCall(
-          c.uuid,
-          c.title,
-          c.remoteVideoEnabled,
-        )
-      },
-    )
-
-    const eventEmitter = new NativeEventEmitter(NativeModules0.IncomingCall)
+    RNCallKeep.addEventListener('showIncomingCallUi', onShowIncomingCallUi)
+    const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
-      if (uuid === uuidFromPN) {
-        RNCallKeep.backToForeground()
-        callStore.recentPNAction = 'answered'
-        return
-      }
-      const c = callStore.findByUuid(uuid)
-      if (!c?.callkeep) {
-        RNCallKeep.endCall(uuid)
-        return
-      }
-      callStore.answerCall(c)
-      NativeModules0.IncomingCall.closeIncomingCallActivity()
+      uuid = uuid.toLowerCase()
+      callStore.onCallKeepAnswerCall(uuid)
+      RnNativeModules.IncomingCall.closeIncomingCallActivity()
       RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      if (uuid === uuidFromPN) {
-        callStore.recentPNAction = 'rejected'
-        return
-      }
-      const c = callStore.findByUuid(uuid)
-      if (!c?.callkeep) {
-        RNCallKeep.endCall(uuid)
-        return
-      }
-      c.hangup()
+      uuid = uuid.toLowerCase()
+      callStore.onCallKeepEndCall(uuid)
+      RnNativeModules.IncomingCall.closeIncomingCallActivity()
     })
   }
 }

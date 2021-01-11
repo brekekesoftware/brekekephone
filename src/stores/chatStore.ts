@@ -3,7 +3,7 @@ import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
 import { arrToMap } from '../utils/toMap'
-import authStore from './authStore'
+import { getAuthStore } from './authStore'
 
 export type ChatMessage = {
   id: string
@@ -43,7 +43,7 @@ class ChatStore {
       idMap[v.id] = true
       return v.isUnread && this.messagesByThreadId[v.id]?.length
     }).length
-    const l2 = authStore.currentData.recentChats.filter(
+    const l2 = getAuthStore().currentData.recentChats.filter(
       c => !idMap[c.id] && c.unread,
     ).length
     return l1 + l2

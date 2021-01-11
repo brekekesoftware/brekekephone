@@ -2,7 +2,7 @@ import debounce from 'lodash/debounce'
 import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
-import authStore from './authStore'
+import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
@@ -10,26 +10,26 @@ class AuthPBX {
   clearObserve?: Lambda
   auth() {
     this._auth2()
-    this.clearObserve = observe(authStore, 'pbxShouldAuth', this._auth2)
+    this.clearObserve = observe(getAuthStore(), 'pbxShouldAuth', this._auth2)
   }
   dispose() {
     this.clearObserve?.()
     pbx.disconnect()
-    authStore.pbxState = 'stopped'
+    getAuthStore().pbxState = 'stopped'
   }
 
   _auth = debounce(
     () => {
       pbx.disconnect()
-      authStore.pbxState = 'connecting'
+      getAuthStore().pbxState = 'connecting'
       pbx
-        .connect(authStore.currentProfile)
+        .connect(getAuthStore().currentProfile)
         .then(() => {
-          authStore.pbxState = 'success'
+          getAuthStore().pbxState = 'success'
         })
         .catch((err: Error) => {
-          authStore.pbxState = 'failure'
-          authStore.pbxTotalFailure += 1
+          getAuthStore().pbxState = 'failure'
+          getAuthStore().pbxTotalFailure += 1
           RnAlert.error({
             message: intlDebug`Failed to connect to pbx`,
             err,
@@ -41,7 +41,7 @@ class AuthPBX {
       maxWait: 300,
     },
   )
-  _auth2 = () => authStore.pbxShouldAuth && this._auth()
+  _auth2 = () => getAuthStore().pbxShouldAuth && this._auth()
 }
 
 export default AuthPBX

@@ -9,13 +9,14 @@ import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
+import BackgroundTimer from 'react-native-background-timer'
 
 import pbx from '../api/pbx'
 import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import contactStore, { Phonebook2 } from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
@@ -33,13 +34,13 @@ const css = StyleSheet.create({
 @observer
 class PageContactPhonebook extends React.Component {
   componentDidMount() {
-    const id = window.setInterval(() => {
+    const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
         return
       }
       contactStore.loadContactsFirstTime()
-      clearInterval(id)
-    }, 300)
+      BackgroundTimer.clearInterval(id)
+    }, 1000)
   }
 
   update = (id: string) => {
@@ -154,7 +155,7 @@ class PageContactPhonebook extends React.Component {
 
   render() {
     let phonebooks = contactStore.phoneBooks
-    if (!authStore.currentProfile.displaySharedContacts) {
+    if (!getAuthStore().currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true)
     }
 
@@ -199,12 +200,12 @@ class PageContactPhonebook extends React.Component {
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
             profileStore.upsertProfile({
-              id: authStore.signedInId,
+              id: getAuthStore().signedInId,
               displaySharedContacts: v,
             })
           }}
           type='Switch'
-          value={authStore.currentProfile.displaySharedContacts}
+          value={getAuthStore().currentProfile.displaySharedContacts}
         />
         <View>
           {groups.map(_g => (

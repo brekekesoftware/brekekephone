@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 import uc from '../api/uc'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import intl, { intlDebug } from '../stores/intl'
 import intlStore from '../stores/intlStore'
 import RnAlert from '../stores/RnAlert'
@@ -53,17 +53,17 @@ class PageSettingsOther extends Component {
       <Layout
         description={intl`Other settings for PBX/UC`}
         dropdown={[
-          ...(authStore.isConnFailure
+          ...(getAuthStore().isConnFailure
             ? [
                 {
                   label: intl`Reconnect to server`,
-                  onPress: authStore.reconnectWithUcLoginFromAnotherPlace,
+                  onPress: getAuthStore().reconnectWithUcLoginFromAnotherPlace,
                 },
               ]
             : []),
           {
             label: intl`Logout`,
-            onPress: authStore.signOut,
+            onPress: getAuthStore().signOut,
             danger: true,
           },
         ]}
@@ -79,11 +79,11 @@ class PageSettingsOther extends Component {
           value={intlStore.locale}
           valueRender={() => intlStore.localeName}
         />
-        {authStore.currentProfile.ucEnabled && (
+        {getAuthStore().currentProfile.ucEnabled && (
           <>
             <Field isGroup label={intl`UC`} />
             <Field
-              disabled={!authStore.currentProfile.ucEnabled}
+              disabled={!getAuthStore().currentProfile.ucEnabled}
               label={intl`STATUS`}
               onValueChange={this.submitStatus}
               options={[
@@ -96,7 +96,7 @@ class PageSettingsOther extends Component {
             />
             <Field
               createBtnIcon={mdiCheck}
-              disabled={!authStore.currentProfile.ucEnabled}
+              disabled={!getAuthStore().currentProfile.ucEnabled}
               label={intl`STATUS NOTE`}
               onCreateBtnPress={this.submitStatusText}
               onSubmitEditing={this.submitStatusText}

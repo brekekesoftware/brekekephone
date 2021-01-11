@@ -1,20 +1,18 @@
-import { AuthStore } from './authStore'
+import BackgroundTimer from 'react-native-background-timer'
 
-// circular dep
-let authStore: AuthStore = null!
-export const setAuthStore = (s: AuthStore) => {
-  authStore = s
-}
+import { getAuthStore } from './authStore'
 
 export const reconnectAndWaitSip = (fn: Function) => {
-  authStore.reconnectWithSetStates()
+  getAuthStore().reconnectWithSetStates()
   const at = Date.now()
-  const id = setInterval(() => {
-    if (Date.now() > at + 10000) {
-      clearInterval(id)
-    } else if (authStore.sipState === 'success') {
-      clearInterval(id)
+  const id = BackgroundTimer.setInterval(() => {
+    const enoughTimePassed = Date.now() > at + 10000
+    const isSipConnected = getAuthStore().sipState === 'success'
+    if (enoughTimePassed || isSipConnected) {
+      BackgroundTimer.clearInterval(id)
+    }
+    if (!enoughTimePassed && isSipConnected) {
       fn()
     }
-  }, 100)
+  }, 300)
 }

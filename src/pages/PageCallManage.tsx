@@ -223,7 +223,7 @@ class PageCallManage extends React.Component<{
               color={c.muted ? 'white' : 'black'}
               name={c.muted ? intl`UNMUTE` : intl`MUTE`}
               noborder
-              onPress={c.toggleMuted}
+              onPress={() => c.toggleMuted()}
               path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
               size={40}
               textcolor='white'
@@ -253,7 +253,7 @@ class PageCallManage extends React.Component<{
               color={c.holding ? 'white' : 'black'}
               name={c.holding ? intl`UNHOLD` : intl`HOLD`}
               noborder
-              onPress={c.toggleHold}
+              onPress={() => c.toggleHold()}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
               textcolor='white'

@@ -49,17 +49,19 @@ const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
     return
   }
 
-  const params = {
-    username: webPhone.id,
-    device_id: t,
+  if (t) {
+    await fn({
+      username: webPhone.id,
+      device_id: t,
+    })
   }
-  const voipParams = {
-    ...params,
-    device_id: tvoip,
-    voip: true,
+  if (tvoip) {
+    await fn({
+      username: webPhone.id,
+      device_id: tvoip,
+      voip: true,
+    })
   }
-  await fn(params)
-  await fn(voipParams)
 
   pbx.disconnect()
 

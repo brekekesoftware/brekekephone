@@ -22,7 +22,7 @@ import PageSettingsDebug from '../pages/PageSettingsDebug'
 import PageSettingsOther from '../pages/PageSettingsOther'
 import PageSettingsProfile from '../pages/PageSettingsProfile'
 import PageTransferDial from '../pages/PageTransferDial'
-import authStore from './authStore'
+import { getAuthStore } from './authStore'
 import { setNav } from './Nav'
 import RnStacker from './RnStacker'
 
@@ -79,13 +79,13 @@ export class Nav {
   backToPageCallParks2 = back({ PageCallParks2 })
 
   goToPageIndex = () => {
-    if (!authStore.currentProfile) {
+    if (!getAuthStore().currentProfile) {
       this.goToPageProfileSignIn()
       return
     }
     const arr = menus()
     normalizeSavedNavigation()
-    const p = authStore.currentProfile
+    const p = getAuthStore().currentProfile
     const i = p.navIndex
     const k = p.navSubMenus?.[i]
     arr[i].subMenusMap[k].navFn()

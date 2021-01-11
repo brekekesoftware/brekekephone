@@ -3,6 +3,7 @@ import 'brekekejs/lib/webrtcclient'
 
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
+import BackgroundTimer from 'react-native-background-timer'
 
 import appPackageJson from '../../package.json'
 import { CallOptions, Sip } from './brekekejs'
@@ -60,8 +61,11 @@ export class SIP extends EventEmitter {
       }
       if (ev.phoneStatus === 'stopping' || ev.phoneStatus === 'stopped') {
         phone.removeEventListener('phoneStatusChanged', h)
-        window.setTimeout(() => this.disconnect())
-        window.setTimeout(() => this.emit('connection-stopped', ev), 300)
+        BackgroundTimer.setTimeout(() => this.disconnect(), 0)
+        BackgroundTimer.setTimeout(
+          () => this.emit('connection-stopped', ev),
+          300,
+        )
       }
       return
     }

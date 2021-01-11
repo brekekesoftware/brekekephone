@@ -5,7 +5,7 @@ import { Platform, StyleSheet, View, ViewProps } from 'react-native'
 import { FastImageProps } from 'react-native-fast-image'
 
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import { RnIcon, RnImage } from './Rn'
 import g from './variables'
 
@@ -56,13 +56,14 @@ const Avatar = observer(
         <View style={css.ImageOuter}>
           <RnImage source={imgSource} style={css.Image} />
         </View>
-        {authStore.currentProfile.ucEnabled && typeof status === 'string' && (
-          <RnIcon
-            color={statusMapColor[status as keyof typeof statusMapColor]}
-            path={mdiRecord}
-            style={css.Status}
-          />
-        )}
+        {getAuthStore().currentProfile.ucEnabled &&
+          typeof status === 'string' && (
+            <RnIcon
+              color={statusMapColor[status as keyof typeof statusMapColor]}
+              path={mdiRecord}
+              style={css.Status}
+            />
+          )}
       </View>
     )
   },

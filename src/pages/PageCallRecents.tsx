@@ -6,14 +6,15 @@ import React from 'react'
 import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
+import { AuthStore } from '../stores/authStore2'
 import callStore from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
 
 @observer
 class PageCallRecents extends React.Component {
-  isMatchUser = (call: typeof authStore.currentData.recentCalls[0]) => {
+  isMatchUser = (call: AuthStore['currentData']['recentCalls'][0]) => {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id
     }
@@ -28,7 +29,9 @@ class PageCallRecents extends React.Component {
     }
   }
   getMatchedCalls = () => {
-    const calls = authStore.currentData.recentCalls.filter(this.isMatchUser)
+    const calls = getAuthStore().currentData.recentCalls.filter(
+      this.isMatchUser,
+    )
     // Backward compatibility to remove invalid items from the previous versions
     const filteredCalls = calls.filter(
       c =>

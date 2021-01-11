@@ -8,6 +8,7 @@ import { Pbx, PbxGetProductInfoRes } from './brekekejs'
 
 export class PBX extends EventEmitter {
   client = (null as unknown) as Pbx
+  private connectTimeoutId = 0
 
   async connect(p: Profile) {
     if (this.client) {
@@ -43,13 +44,15 @@ export class PBX extends EventEmitter {
     }) as unknown) as Pbx['_pal']
 
     client.debugLevel = 2
-    let timeout = 0
 
     await Promise.race([
       new Promise((_, reject) => {
-        timeout = window.setTimeout(() => {
+        this.connectTimeoutId = window.setTimeout(() => {
           client.close()
-          reject(new Error('Timeout'))
+          // Fix case already reconnected
+          if (client === this.client) {
+            reject(new Error('Timeout'))
+          }
         }, 10000)
       }),
       new Promise((resolve, reject) => {
@@ -57,7 +60,7 @@ export class PBX extends EventEmitter {
       }),
     ])
 
-    clearTimeout(timeout)
+    this.clearConnectTimeoutId()
 
     client.onClose = () => {
       this.emit('connection-stopped')
@@ -137,10 +140,17 @@ export class PBX extends EventEmitter {
     return
   }
 
-  disconnect() {
+  disconnect = () => {
     if (this.client) {
       this.client.close()
       this.client = (null as unknown) as Pbx
+    }
+    this.clearConnectTimeoutId()
+  }
+  private clearConnectTimeoutId = () => {
+    if (this.connectTimeoutId) {
+      window.clearTimeout(this.connectTimeoutId)
+      this.connectTimeoutId = 0
     }
   }
 

@@ -9,7 +9,7 @@ import ListUsers from '../components/ChatListUsers'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText } from '../components/Rn'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import chatStore, { ChatMessage } from '../stores/chatStore'
 import contactStore, { UcUser } from '../stores/contactStore'
 import intl from '../stores/intl'
@@ -33,7 +33,7 @@ class PageChatRecents extends React.Component {
       [k: string]: UcUser
     }
 
-    const recentFromStorage = authStore.currentData.recentChats.filter(
+    const recentFromStorage = getAuthStore().currentData.recentChats.filter(
       c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
     )
 
@@ -86,8 +86,10 @@ class PageChatRecents extends React.Component {
       while (arr2.length > 20) {
         arr2.pop()
       }
-      if (stringify(authStore.currentData.recentChats) !== stringify(arr2)) {
-        authStore.currentData.recentChats = arr2
+      if (
+        stringify(getAuthStore().currentData.recentChats) !== stringify(arr2)
+      ) {
+        getAuthStore().currentData.recentChats = arr2
         profileStore.saveProfilesToLocalStorage()
       }
     })

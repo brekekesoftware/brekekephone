@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import ProfileCreateForm from '../components/ProfileCreateForm'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore, { Profile } from '../stores/profileStore'
@@ -22,13 +22,13 @@ const PageSettingsProfile = observer(() => (
         onConfirm: () => {
           profileStore.upsertProfile(p)
           Nav().goToPageProfileSignIn()
-          window.setTimeout(() => authStore.signIn(p.id), 300)
+          window.setTimeout(() => getAuthStore().signIn(p.id), 300)
         },
         confirmText: intl`SAVE`,
       })
     }}
     title={intl`Current Account`}
-    updatingProfile={authStore.currentProfile}
+    updatingProfile={getAuthStore().currentProfile}
   />
 ))
 
