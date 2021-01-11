@@ -15,8 +15,6 @@ public class IncomingCallActivity extends Activity {
   private MediaPlayer mp;
 
   private void startRingtone() {
-    IncomingCallModule.emit("startRingtone", null);
-
     Context ctx = getApplicationContext();
     AudioManager am = ((AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE));
     am.setMode(AudioManager.MODE_RINGTONE);
@@ -36,7 +34,6 @@ public class IncomingCallActivity extends Activity {
   }
 
   private void stopRingtone() {
-    IncomingCallModule.emit("stopRingtone", null);
     mp.stop();
     mp.release();
   }

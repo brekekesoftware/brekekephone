@@ -233,17 +233,5 @@ export const setupCallKeep = async () => {
       }
       c.hangup()
     })
-    eventEmitter.addListener(
-      'startRingtone',
-      action(() => {
-        callStore.androidRingtone++
-      }),
-    )
-    eventEmitter.addListener(
-      'stopRingtone',
-      action(() => {
-        callStore.androidRingtone--
-      }),
-    )
   }
 }

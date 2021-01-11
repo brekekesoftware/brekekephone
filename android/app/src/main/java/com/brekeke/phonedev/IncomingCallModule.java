@@ -8,7 +8,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import javax.annotation.Nonnull;
 
 class IncomingCallModule extends ReactContextBaseJavaModule {
-  static String PN_UUID = "00000000-0000-0000-0000-000000000000";
   private static RCTDeviceEventEmitter eventEmitter = null;
 
   static void emit(String name, String data) {
