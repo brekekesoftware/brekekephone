@@ -57,6 +57,10 @@ class DebugStore {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
     }
+    msg =
+      moment().format('YYYY/MM/DD HH:mm:ss.SSS') +
+      ` [${lv.toUpperCase().padStart(5)}] ` +
+      msg
     this.logQueue.push(msg)
     this.writeFileBatch()
   }
