@@ -10,7 +10,7 @@ export class PBX extends EventEmitter {
   client = (null as unknown) as Pbx
   private connectTimeoutId = 0
 
-  async connect(p: Profile) {
+  connect = async (p: Profile) => {
     if (this.client) {
       // return Promise.reject(new Error('PAL client is connected'))
       // TODO
@@ -157,20 +157,20 @@ export class PBX extends EventEmitter {
   }
 
   private pbxConfig?: PbxGetProductInfoRes
-  async getConfig() {
+  getConfig = async () => {
     if (!this.pbxConfig) {
       this.pbxConfig = await this.client._pal('getProductInfo')
     }
     return this.pbxConfig
   }
 
-  createSIPAccessToken(sipUsername: string) {
+  createSIPAccessToken = (sipUsername: string) => {
     return this.client._pal('createAuthHeader', {
       username: sipUsername,
     })
   }
 
-  getUsers(tenant: string) {
+  getUsers = (tenant: string) => {
     return this.client._pal('getExtensions', {
       tenant,
       pattern: '..*',
@@ -179,7 +179,7 @@ export class PBX extends EventEmitter {
     })
   }
 
-  async getOtherUsers(tenant: string, userIds: string | string[]) {
+  getOtherUsers = async (tenant: string, userIds: string | string[]) => {
     const res = await this.client._pal('getExtensionProperties', {
       tenant: tenant,
       extension: userIds,
@@ -202,7 +202,7 @@ export class PBX extends EventEmitter {
     return users
   }
 
-  async getUserForSelf(tenant: string, userId: string) {
+  getUserForSelf = async (tenant: string, userId: string) => {
     const res = await this.client._pal('getExtensionProperties', {
       tenant: tenant,
       extension: userId,
@@ -250,16 +250,7 @@ export class PBX extends EventEmitter {
     }
   }
 
-  // async getPhonebooks() {
-  //   const res = await this.client._pal('getPhonebooks')
-
-  //   return res.map(item => ({
-  //     name: item.phonebook,
-  //     shared: item.shared === 'true',
-  //   }))
-  // }
-
-  async getContacts({
+  getContacts = async ({
     shared,
     offset,
     limit,
@@ -267,7 +258,7 @@ export class PBX extends EventEmitter {
     shared: boolean
     offset: number
     limit: number
-  }) {
+  }) => {
     const res = await this.client._pal('getContactList', {
       shared: shared === true ? 'true' : 'false',
       offset,
@@ -280,7 +271,7 @@ export class PBX extends EventEmitter {
     }))
   }
 
-  async getContact(id: string) {
+  getContact = async (id: string) => {
     const res = await this.client._pal('getContact', {
       aid: id,
     })
@@ -303,7 +294,7 @@ export class PBX extends EventEmitter {
     }
   }
 
-  setContact(contact: {
+  setContact = (contact: {
     id: string
     book: string
     shared: boolean
@@ -317,7 +308,7 @@ export class PBX extends EventEmitter {
     email: string
     company: string
     hidden: boolean
-  }) {
+  }) => {
     return this.client._pal('setContact', {
       aid: contact.id,
       phonebook: contact.book,
@@ -338,35 +329,35 @@ export class PBX extends EventEmitter {
     })
   }
 
-  holdTalker(tenant: string, talker: string) {
+  holdTalker = (tenant: string, talker: string) => {
     return this.client._pal('hold', {
       tenant,
       tid: talker,
     })
   }
 
-  unholdTalker(tenant: string, talker: string) {
+  unholdTalker = (tenant: string, talker: string) => {
     return this.client._pal('unhold', {
       tenant,
       tid: talker,
     })
   }
 
-  startRecordingTalker(tenant: string, talker: string) {
+  startRecordingTalker = (tenant: string, talker: string) => {
     return this.client._pal('startRecording', {
       tenant,
       tid: talker,
     })
   }
 
-  stopRecordingTalker(tenant: string, talker: string) {
+  stopRecordingTalker = (tenant: string, talker: string) => {
     return this.client._pal('stopRecording', {
       tenant,
       tid: talker,
     })
   }
 
-  transferTalkerBlind(tenant: string, talker: string, toUser: string) {
+  transferTalkerBlind = (tenant: string, talker: string, toUser: string) => {
     return this.client._pal('transfer', {
       tenant,
       user: toUser,
@@ -375,7 +366,7 @@ export class PBX extends EventEmitter {
     })
   }
 
-  transferTalkerAttended(tenant: string, talker: string, toUser: string) {
+  transferTalkerAttended = (tenant: string, talker: string, toUser: string) => {
     return this.client._pal('transfer', {
       tenant,
       user: toUser,
@@ -383,21 +374,21 @@ export class PBX extends EventEmitter {
     })
   }
 
-  joinTalkerTransfer(tenant: string, talker: string) {
+  joinTalkerTransfer = (tenant: string, talker: string) => {
     return this.client._pal('conference', {
       tenant,
       tid: talker,
     })
   }
 
-  stopTalkerTransfer(tenant: string, talker: string) {
+  stopTalkerTransfer = (tenant: string, talker: string) => {
     return this.client._pal('cancelTransfer', {
       tenant,
       tid: talker,
     })
   }
 
-  parkTalker(tenant: string, talker: string, atNumber: string) {
+  parkTalker = (tenant: string, talker: string, atNumber: string) => {
     return this.client._pal('park', {
       tenant,
       tid: talker,
@@ -413,8 +404,8 @@ export class PBX extends EventEmitter {
     device_id: string
     username: string
     voip?: boolean
-  }) =>
-    this.client._pal('pnmanage', {
+  }) => {
+    return this.client._pal('pnmanage', {
       command: 'set',
       service_id: '11',
       application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
@@ -422,6 +413,7 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+  }
 
   setFcmPnToken = ({
     device_id,
@@ -431,8 +423,8 @@ export class PBX extends EventEmitter {
     device_id: string
     username: string
     voip?: boolean
-  }) =>
-    this.client._pal('pnmanage', {
+  }) => {
+    return this.client._pal('pnmanage', {
       command: 'set',
       service_id: '12',
       application_id: '22177122297',
@@ -440,6 +432,7 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+  }
 
   removeApnsToken = ({
     device_id,
@@ -449,8 +442,8 @@ export class PBX extends EventEmitter {
     device_id: string
     username: string
     voip?: boolean
-  }) =>
-    this.client._pal('pnmanage', {
+  }) => {
+    return this.client._pal('pnmanage', {
       command: 'remove',
       service_id: '11',
       application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
@@ -458,6 +451,7 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+  }
 
   removeFcmPnToken = ({
     device_id,
@@ -467,8 +461,8 @@ export class PBX extends EventEmitter {
     device_id: string
     username: string
     voip?: boolean
-  }) =>
-    this.client._pal('pnmanage', {
+  }) => {
+    return this.client._pal('pnmanage', {
       command: 'remove',
       service_id: '12',
       application_id: '22177122297',
@@ -476,6 +470,7 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+  }
 
   addWebPnToken = ({
     auth_secret,
@@ -487,8 +482,8 @@ export class PBX extends EventEmitter {
     endpoint: string
     username: string
     key: string
-  }) =>
-    this.client
+  }) => {
+    return this.client
       ._pal('pnmanage', {
         command: 'set',
         service_id: '13',
@@ -502,6 +497,7 @@ export class PBX extends EventEmitter {
       .catch((err: Error) => {
         console.error('addWebPnToken:', err)
       })
+  }
 }
 
 export default new PBX()

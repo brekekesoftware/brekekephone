@@ -193,7 +193,7 @@ export class UC extends EventEmitter {
     })
   }
 
-  connect(profile: Profile, ucHost: string) {
+  connect = (profile: Profile, ucHost: string) => {
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
     }
@@ -212,11 +212,11 @@ export class UC extends EventEmitter {
     )
   }
 
-  disconnect() {
+  disconnect = () => {
     this.client.signOut()
   }
 
-  me() {
+  me = () => {
     const profile = this.client.getProfile() || {}
     const status = this.client.getStatus() || {}
 
@@ -229,7 +229,7 @@ export class UC extends EventEmitter {
     }
   }
 
-  setStatus(status: string, statusText: string) {
+  setStatus = (status: string, statusText: string) => {
     let num_status = '0'
     if (status === 'online') {
       num_status = '1'
@@ -247,7 +247,7 @@ export class UC extends EventEmitter {
     )
   }
 
-  getUsers() {
+  getUsers = () => {
     const buddyList = this.client.getBuddylist()
 
     if (!buddyList || !Array.isArray(buddyList.user)) {
@@ -263,7 +263,7 @@ export class UC extends EventEmitter {
     }))
   }
 
-  async getUnreadChats() {
+  getUnreadChats = async () => {
     const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
       this.client.receiveUnreadText(resolve, reject)
     })
@@ -285,7 +285,7 @@ export class UC extends EventEmitter {
     }))
   }
 
-  async getBuddyChats(
+  getBuddyChats = async (
     buddy: string,
     opts: {
       max?: number
@@ -293,7 +293,7 @@ export class UC extends EventEmitter {
       end?: number
       asc?: boolean
     } = {},
-  ) {
+  ) => {
     const res: UcSearchTexts = await new Promise((resolve, reject) =>
       this.client.searchTexts(
         {
@@ -323,7 +323,7 @@ export class UC extends EventEmitter {
     }))
   }
 
-  async getGroupChats(
+  getGroupChats = async (
     group: string,
     opts: {
       max?: number
@@ -331,7 +331,7 @@ export class UC extends EventEmitter {
       end?: number
       asc?: boolean
     } = {},
-  ) {
+  ) => {
     const res: UcSearchTexts = await new Promise((resolve, reject) =>
       this.client.searchTexts(
         {
@@ -358,7 +358,7 @@ export class UC extends EventEmitter {
     }))
   }
 
-  sendBuddyChatText(buddy: string, text: string) {
+  sendBuddyChatText = (buddy: string, text: string) => {
     return new Promise((resolve, reject) =>
       this.client.sendText(
         text,
@@ -377,7 +377,7 @@ export class UC extends EventEmitter {
     )
   }
 
-  sendGroupChatText(group: string, text: string) {
+  sendGroupChatText = (group: string, text: string) => {
     return new Promise((resolve, reject) =>
       this.client.sendConferenceText(
         text,
@@ -394,7 +394,7 @@ export class UC extends EventEmitter {
     )
   }
 
-  async createChatGroup(name: string, members: string[] = []) {
+  createChatGroup = async (name: string, members: string[] = []) => {
     const res: {
       conference: UcConference
     } = await new Promise((resolve, reject) => {
@@ -408,7 +408,7 @@ export class UC extends EventEmitter {
     }
   }
 
-  async joinChatGroup(group: string) {
+  joinChatGroup = async (group: string) => {
     await new Promise((resolve, reject) => {
       this.client.joinConference(
         group,
@@ -423,7 +423,7 @@ export class UC extends EventEmitter {
     }
   }
 
-  async leaveChatGroup(group: string) {
+  leaveChatGroup = async (group: string) => {
     await new Promise((resolve, reject) => {
       this.client.leaveConference(group, () => resolve(undefined), reject)
     })
@@ -433,7 +433,7 @@ export class UC extends EventEmitter {
     }
   }
 
-  inviteChatGroupMembers(group: string, members: string[]) {
+  inviteChatGroupMembers = (group: string, members: string[]) => {
     return new Promise((resolve, reject) => {
       this.client.inviteToConference(
         group,
@@ -444,7 +444,7 @@ export class UC extends EventEmitter {
     })
   }
 
-  acceptFile(file: string) {
+  acceptFile = (file: string) => {
     const res = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhr.responseType = 'blob'
@@ -460,7 +460,7 @@ export class UC extends EventEmitter {
     return res
   }
 
-  async rejectFile(file: { id?: string; file_id_target?: string[] }) {
+  rejectFile = async (file: { id?: string; file_id_target?: string[] }) => {
     if (file.file_id_target) {
       file.file_id_target.map(f => {
         return new Promise((resolve, reject) => {
@@ -486,7 +486,7 @@ export class UC extends EventEmitter {
     }
   }
 
-  async sendFile(user_id: string, file: Blob) {
+  sendFile = async (user_id: string, file: Blob) => {
     let inputw: HTMLInputElement | null = null
     if (Platform.OS === 'web') {
       inputw = document.createElement('input')
@@ -553,7 +553,7 @@ export class UC extends EventEmitter {
     }
   }
 
-  async sendFiles(conf_id: string, file: Blob) {
+  sendFiles = async (conf_id: string, file: Blob) => {
     let inputw: HTMLInputElement | null = null
     if (Platform.OS === 'web') {
       inputw = document.createElement('input')

@@ -31,11 +31,14 @@ export class CallStore {
       this.autoEndCallKeepTimerId = 0
     }
   }
-  private getIncomingEmptyCallkeep = (uuid: string) =>
+  private getIncomingEmptyCallkeep = (
+    uuid: string,
+    includingAnswered?: boolean,
+  ) =>
     this.calls.find(
       c =>
         c.incoming &&
-        !c.answered &&
+        (includingAnswered ? true : !c.answered) &&
         !c.callkeepAlreadyHandled &&
         (!c.callkeepUuid || c.callkeepUuid === uuid),
     )
@@ -43,16 +46,12 @@ export class CallStore {
     // Always end the call if it rings too long > 20s without picking up
     this.clearAutoEndCallKeepTimer()
     this.autoEndCallKeepTimerId = BackgroundTimer.setTimeout(() => {
-      const c = this.calls.find(c => c.callkeepUuid === uuid && !c.answered)
-      if (c) {
-        c.hangup()
-      } else {
-        RNCallKeep.endCall(uuid)
-        RnNativeModules.IncomingCall.closeIncomingCallActivity()
-      }
+      this.calls.find(c => c.callkeepUuid === uuid && !c.answered)?.hangup()
+      RNCallKeep.endCall(uuid)
+      RnNativeModules.IncomingCall.closeIncomingCallActivity()
     }, 20000)
     // Find the current incoming call which is not callkeep
-    const c = this.getIncomingEmptyCallkeep(uuid)
+    const c = this.getIncomingEmptyCallkeep(uuid, true)
     if (c?.answered) {
       // If the call is existing and already answered, can end the callkeep displaying
       // We assume that the app is being used in foreground (not quite exactly but assume)

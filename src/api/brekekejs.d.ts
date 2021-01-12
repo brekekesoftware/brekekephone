@@ -30,17 +30,17 @@ export type GetPalOptions = {
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 export type Pbx = PbxPal & {
-  login(resolve: () => void, reject: ErrorHandler)
-  close()
+  login(resolve: () => void, reject: ErrorHandler): void
+  close(): void
 
   debugLevel: number
 
-  onClose?()
-  onError?(err: Error)
-  notify_serverstatus?(e: PbxEvent['serverStatus'])
-  notify_status?(e: PbxEvent['userStatus'])
-  notify_park?(e: PbxEvent['park'])
-  notify_voicemail?(e: PbxEvent['voicemail'])
+  onClose?(): void
+  onError?(err: Error): void
+  notify_serverstatus?(e: PbxEvent['serverStatus']): void
+  notify_status?(e: PbxEvent['userStatus']): void
+  notify_park?(e: PbxEvent['park']): void
+  notify_voicemail?(e: PbxEvent['voicemail']): void
 
   // not actually exist in the sdk, should be added manually
   _pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
@@ -72,61 +72,61 @@ export type PbxPal = {
     p: undefined,
     resolve: (i: PbxGetProductInfoRes) => void,
     reject: ErrorHandler,
-  )
+  ): void
   createAuthHeader(
     p: PbxCreateAuthHeaderParam,
     resolve: (authHeader: string) => void,
     reject: ErrorHandler,
-  )
+  ): void
 
   getExtensions(
     p: PbxGetExtensionsParam,
     resolve: (extensions: string[]) => void,
     reject: ErrorHandler,
-  )
+  ): void
   getExtensionProperties<T extends string | string[]>(
     p: PbxGetExtensionPropertiesParam,
     resolve: (properties: T[]) => void,
     reject: ErrorHandler,
-  )
+  ): void
   setExtensionProperties(
     p: PbxSetExtensionPropertiesParam,
     resolve: () => void,
     reject: ErrorHandler,
-  )
+  ): void
 
   getContactList(
     p: PbxGetContactListParam,
     resolve: (res: PbxGetContactListItem[]) => void,
     reject: ErrorHandler,
-  )
+  ): void
   getContact(
     p: PbxGetContactParam,
     resolve: (res: PbxContact) => void,
     reject: ErrorHandler,
-  )
+  ): void
   setContact(
     p: PbxContact,
     resolve: (res: PbxContact) => void,
     reject: ErrorHandler,
-  )
+  ): void
 
-  pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler)
+  pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler): void
 
-  hold(p: PbxHoldParam, resolve: () => void, reject: ErrorHandler)
+  hold(p: PbxHoldParam, resolve: () => void, reject: ErrorHandler): void
   unhold: PbxPal['hold']
 
   startRecording: PbxPal['hold']
   stopRecording: PbxPal['hold']
 
-  transfer(p: PbxTransferParam, resolve: () => void, reject: ErrorHandler)
+  transfer(p: PbxTransferParam, resolve: () => void, reject: ErrorHandler): void
 
   conference: PbxPal['hold']
   cancelTransfer: PbxPal['hold']
 
-  park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler)
+  park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler): void
 
-  sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler)
+  sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
@@ -234,23 +234,23 @@ export type Sip = {
   addEventListener<K extends keyof SipEventMap>(
     type: K,
     listener: (e: SipEventMap[K]) => void,
-  )
+  ): void
   removeEventListener<K extends keyof SipEventMap>(
     type: K,
     listener: (e: SipEventMap[K]) => void,
-  )
+  ): void
 
-  startWebRTC(configuration: SipConfiguration)
-  stopWebRTC()
+  startWebRTC(configuration: SipConfiguration): void
+  stopWebRTC(): void
 
-  setDefaultCallOptions(options: CallOptions)
+  setDefaultCallOptions(options: CallOptions): void
   getSession(sessionId: string): Session
-  makeCall(number: string, options: null, videoEnabled?: boolean)
-  answer(sessionId: string, options: null, videoEnabled?: boolean)
-  setWithVideo(sessionId: string, withVideo?: boolean)
-  setMuted(options: { main: boolean }, sessionId: string)
+  makeCall(number: string, options: null, videoEnabled?: boolean): void
+  answer(sessionId: string, options: null, videoEnabled?: boolean): void
+  setWithVideo(sessionId: string, withVideo?: boolean): void
+  setMuted(options: { main: boolean }, sessionId: string): void
 
-  sendDTMF(dtmf: string, sessionId: string)
+  sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
 }
 
@@ -324,7 +324,7 @@ export type Session = {
       }
     }
     direction: 'outgoing' | 'incoming'
-    terminate()
+    terminate(): void
   }
   withVideo: boolean
   remoteWithVideo: boolean
@@ -363,7 +363,7 @@ export type UcErrors = {
 
 export type UcChatClient = {
   new (log: UcLogger): UcChatClient
-  setEventListeners(listeners: UcListeners)
+  setEventListeners(listeners: UcListeners): void
   signIn(
     uri: string,
     path: string,
@@ -373,8 +373,8 @@ export type UcChatClient = {
     option?: object,
     resolve: () => void,
     reject: ErrorHandler,
-  )
-  signOut()
+  ): void
+  signOut(): void
   getProfile(): {
     user_id: string
     name: string
@@ -397,57 +397,65 @@ export type UcChatClient = {
     resolve: (res: UcReceieveUnreadText) => void,
     reject: ErrorHandler,
   )
-  readText(map: object)
+  readText(map: object): void
   searchTexts(
     opt: UcSearchTextsParam,
     resolve: (res: UcSearchTexts) => void,
     reject: ErrorHandler,
-  )
+  ): void
   sendText(
     text: string,
     opt: UcSendTextParam,
     resolve: (res: UcSendText) => void,
     reject: ErrorHandler,
-  )
+  ): void
   sendConferenceText(
     text: string,
     conf_id: string,
     resolve: (res: UcSendText) => void,
     reject: ErrorHandler,
-  )
+  ): void
   createConference(
     subject: string,
     members: string[],
     resolve: (res: UcCreateConference) => void,
     reject: ErrorHandler,
-  )
+  ): void
   joinConference(
     conf_id: string,
     opt?: unknown,
     resolve: () => void,
     reject: ErrorHandler,
-  )
-  leaveConference(conf_id: string, resolve: () => void, reject: ErrorHandler)
+  ): void
+  leaveConference(
+    conf_id: string,
+    resolve: () => void,
+    reject: ErrorHandler,
+  ): void
   inviteToConference(
     conf_id: string,
     members: string[],
     resolve: () => void,
     reject: ErrorHandler,
-  )
-  acceptFileWithXhr(file: unknown, xhr: XMLHttpRequest, reject: ErrorHandler)
-  cancelFile(file_id: string, reject: ErrorHandler)
+  ): void
+  acceptFileWithXhr(
+    file: unknown,
+    xhr: XMLHttpRequest,
+    reject: ErrorHandler,
+  ): void
+  cancelFile(file_id: string, reject: ErrorHandler): void
   sendFile(
     opt: UcSendFileParam,
     input: unknown,
     resolve: (res: UcSendFile) => void,
     reject: ErrorHandler,
-  )
+  ): void
   sendFiles(
     opt: UcSendFilesParam,
     file: unknown[],
     resolve: (res: UcSendFiles) => void,
     reject: ErrorHandler,
-  )
+  ): void
 }
 
 export type UcUser = {

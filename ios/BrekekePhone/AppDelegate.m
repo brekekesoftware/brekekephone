@@ -137,7 +137,7 @@ static void InitializeFlipper(UIApplication *application) {
                    supportsGrouping:NO
                  supportsUngrouping:NO
                         fromPushKit:YES
-                            payload:nil
+                            payload:NULL
               withCompletionHandler:false];
   // --- don't need to call this if we do on the js side.
   completion();
