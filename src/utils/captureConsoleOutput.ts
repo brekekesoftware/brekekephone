@@ -14,20 +14,22 @@ const formatErrors = (...errs: Error[]) => {
       : `${e}`,
   )
   let tpl = msgs.shift() || ''
-  // Remove %c for the debug lib
-  const m: { [k: number]: boolean } = {}
-  const regex = /%\w/g
-  let mi = 0
-  let match: RegExpExecArray | null = null
-  while ((match = regex.exec(tpl)) !== null) {
-    if (match[0] === '%c') {
-      m[mi] = true
+  // Remove %c on web from the debug lib
+  if (Platform.OS === 'web') {
+    const m: { [k: number]: boolean } = {}
+    const regex = /%\w/g
+    let mi = 0
+    let match: RegExpExecArray | null = null
+    while ((match = regex.exec(tpl)) !== null) {
+      if (match[0] === '%c') {
+        m[mi] = true
+      }
+      mi++
     }
-    mi++
+    tpl = tpl.replace(/%c/g, '')
+    msgs = msgs.filter((_, i) => !m[i])
   }
-  tpl = tpl.replace(/%c/g, '')
-  msgs = msgs.filter((_, i) => !m[i])
-  // More cleanup for the debug lib
+  // More cleanup from the debug lib
   let msg = format(tpl, ...msgs)
   const i = /\W(@|at)(\W|http)/.exec(msg)?.index || -1
   if (i >= 0) {
