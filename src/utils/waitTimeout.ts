@@ -1,4 +1,4 @@
-import BackgroundTimer from 'react-native-background-timer'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const waitTimeout = (time = 300) =>
   new Promise(resolve => {

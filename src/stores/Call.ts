@@ -1,10 +1,8 @@
 import { action, computed, observable } from 'mobx'
-import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
-import { RnNativeModules } from '../utils/RnNativeModules'
 import { CallStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'

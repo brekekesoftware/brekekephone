@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx'
-import BackgroundTimer from 'react-native-background-timer'
+
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 export class Timer {
   @observable now = Date.now()

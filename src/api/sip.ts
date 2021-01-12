@@ -3,9 +3,9 @@ import 'brekekejs/lib/webrtcclient'
 
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
-import BackgroundTimer from 'react-native-background-timer'
 
 import appPackageJson from '../../package.json'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
 import pbx from './pbx'

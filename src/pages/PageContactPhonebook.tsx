@@ -9,7 +9,6 @@ import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import BackgroundTimer from 'react-native-background-timer'
 
 import pbx from '../api/pbx'
 import UserItem from '../components/ContactUserItem'
@@ -24,6 +23,7 @@ import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
 import RnPicker from '../stores/RnPicker'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   Loading: {

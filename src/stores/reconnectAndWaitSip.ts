@@ -1,5 +1,4 @@
-import BackgroundTimer from 'react-native-background-timer'
-
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore } from './authStore'
 
 export const reconnectAndWaitSip = (fn: Function) => {
