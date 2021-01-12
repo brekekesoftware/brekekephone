@@ -27,6 +27,7 @@ export const setupCallKeep = async () => {
   await RNCallKeep.setup({
     ios: {
       appName: 'Brekeke Phone',
+      imageName: 'callkit.png',
       // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
       // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
       supportsVideo: false,

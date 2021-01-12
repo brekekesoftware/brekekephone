@@ -144,7 +144,7 @@ export class AuthStore {
           window.clearInterval(id)
           this._signOut()
         }
-      }, 300)
+      }, 500)
     } else {
       this._signOut()
     }
@@ -166,11 +166,9 @@ export class AuthStore {
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
   }
-  @action reconnectWithSetStates = () => {
+  @action reconnectSip = () => {
     this.reconnect()
-    this.pbxState = 'stopped'
     this.sipState = 'stopped'
-    this.ucState = 'stopped'
   }
   @action reconnectWithUcLoginFromAnotherPlace = () => {
     this.reconnect()
@@ -275,35 +273,29 @@ export class AuthStore {
       this.isSignInByNotification = true
       this.clearSignInByNotification()
     }
-    // In case the app is already signed in
-    if (this.signedInId) {
-      try {
-        // If PN came and still no sip call it is likely disconnected
-        // Set states to failure to reconnect them
-        await waitTimeout(1000)
-        if (
-          n.isCall &&
-          !callStore.calls.length &&
-          Date.now() > callStore.recentCallActivityAt + 30000
-        ) {
-          await pbx.getConfig()
-          const s = sip.phone.getPhoneStatus()
-          if (s !== 'starting' && s !== 'started') {
-            throw new Error(`SIP not started: ${s}`)
-          }
-        }
-      } catch (err) {
-        console.error(`signInByNotification: trying to reconnect, err=${err}`)
-        this.reconnectWithSetStates()
-      }
-      // Always show notification if the signed in id is another account
-      if (this.signedInId !== p.id) {
-        return true
-      }
-      return AppState.currentState !== 'active'
+    if (this.signedInId !== p.id) {
+      return this.signIn(p.id)
     }
-    // Call signIn
-    return this.signIn(p.id)
+    // PN of current signed in account
+    try {
+      // If PN came and still no sip call it is likely disconnected
+      // Set states to failure to reconnect them
+      await waitTimeout(1000)
+      if (
+        n.isCall &&
+        !callStore.calls.length &&
+        Date.now() > callStore.recentCallActivityAt + 30000
+      ) {
+        await pbx.getConfig()
+        const s = sip.phone.getPhoneStatus()
+        if (s !== 'starting' && s !== 'started') {
+          throw new Error(`SIP not started: ${s}`)
+        }
+      }
+    } catch (err) {
+      this.reconnectSip()
+    }
+    return false
   }
 
   userExtensionProperties: null | {

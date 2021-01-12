@@ -2,7 +2,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore } from './authStore'
 
 export const reconnectAndWaitSip = (fn: Function) => {
-  getAuthStore().reconnectWithSetStates()
+  getAuthStore().reconnectSip()
   const at = Date.now()
   const id = BackgroundTimer.setInterval(() => {
     const enoughTimePassed = Date.now() > at + 10000
@@ -13,5 +13,5 @@ export const reconnectAndWaitSip = (fn: Function) => {
     if (!enoughTimePassed && isSipConnected) {
       fn()
     }
-  }, 300)
+  }, 500)
 }

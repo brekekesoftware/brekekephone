@@ -31,32 +31,24 @@ export class CallStore {
       this.autoEndCallKeepTimerId = 0
     }
   }
-  private getIncomingEmptyCallkeep = (
-    uuid: string,
-    includingAnswered?: boolean,
-  ) =>
+  private getIncomingCallkeep = (uuid: string, includingAnswered?: boolean) =>
     this.calls.find(
       c =>
         c.incoming &&
-        (includingAnswered ? true : !c.answered) &&
         !c.callkeepAlreadyHandled &&
-        (!c.callkeepUuid || c.callkeepUuid === uuid),
+        (!c.callkeepUuid || c.callkeepUuid === uuid) &&
+        (includingAnswered ? true : !c.answered),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Always end the call if it rings too long > 20s without picking up
     this.clearAutoEndCallKeepTimer()
     this.autoEndCallKeepTimerId = BackgroundTimer.setTimeout(() => {
-      this.calls.find(c => c.callkeepUuid === uuid && !c.answered)?.hangup()
-      RNCallKeep.endCall(uuid)
-      RnNativeModules.IncomingCall.closeIncomingCallActivity()
+      const c = this.calls.find(c => c.callkeepUuid === uuid && !c.answered)
+      return c ? c.hangup() : this.endCallKeep({ callkeepUuid: uuid })
     }, 20000)
     // Find the current incoming call which is not callkeep
-    const c = this.getIncomingEmptyCallkeep(uuid, true)
-    if (c?.answered) {
-      // If the call is existing and already answered, can end the callkeep displaying
-      // We assume that the app is being used in foreground (not quite exactly but assume)
-      RNCallKeep.endCall(uuid)
-    } else if (c) {
+    const c = this.getIncomingCallkeep(uuid)
+    if (c) {
       // If the call is existing and not answered yet, we'll mark that call as displaying in callkeep
       // We assume that the app is being used in foreground (not quite exactly but assume)
       c.callkeepUuid = uuid
@@ -72,30 +64,30 @@ export class CallStore {
     }
   }
   onCallKeepAnswerCall = (uuid: string) => {
-    const c = this.getIncomingEmptyCallkeep(uuid)
+    const c = this.getIncomingCallkeep(uuid)
     if (c) {
       this.answerCall(c)
-      c.callkeepAlreadyHandled = true
     } else {
       if (this.recentPn) {
         this.recentPn.action = 'answered'
       }
-      RNCallKeep.endCall(uuid)
     }
     this.clearAutoEndCallKeepTimer()
   }
   onCallKeepEndCall = (uuid: string) => {
-    const c = this.getIncomingEmptyCallkeep(uuid)
+    const c = this.getIncomingCallkeep(uuid, true)
     if (c) {
       c.hangup()
-      c.callkeepAlreadyHandled = true
-    } else if (this.recentPn && !this.recentPn.action) {
+    } else if (this.recentPn /* && !this.recentPn.action*/) {
       this.recentPn.action = 'rejected'
     }
     this.clearAutoEndCallKeepTimer()
   }
 
-  endCallKeep = (c?: Call) => {
+  endCallKeep = (c?: {
+    callkeepUuid: string
+    callkeepAlreadyHandled?: boolean
+  }) => {
     this.recentPn = undefined
     if (c?.callkeepUuid) {
       const uuid = c.callkeepUuid
@@ -127,9 +119,6 @@ export class CallStore {
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
       Object.assign(cExisting, cPartial)
-      if (cExisting.callkeepUuid && cExisting.answered) {
-        this.endCallKeep(cExisting)
-      }
       return
     }
     // Construct a new call
@@ -151,14 +140,9 @@ export class CallStore {
       return
     }
     if (c.answered || !recentPnUuid) {
-      this.endCallKeep(c)
       return
     }
     // Handle PN logic
-    if (recentPnAction) {
-      c.callkeepAlreadyHandled = true
-      this.endCallKeep(c)
-    }
     if (recentPnAction === 'answered') {
       this.answerCall(c)
     } else if (recentPnAction === 'rejected') {
@@ -203,7 +187,6 @@ export class CallStore {
       ...options,
     })
     Nav().goToPageCallManage()
-    this.endCallKeep(c)
   }
 
   private startCallIntervalAt = 0
@@ -252,7 +235,7 @@ export class CallStore {
       if (currentCallId || Date.now() - this.startCallIntervalAt > 10000) {
         this.clearStartCallIntervalTimer()
       }
-    }, 100)
+    }, 500)
   }
 
   startVideoCall = (number: string) => {
