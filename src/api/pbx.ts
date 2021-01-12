@@ -17,6 +17,8 @@ export class PBX extends EventEmitter {
       return
     }
 
+    this.pbxConfig = undefined
+
     const d = profileStore.getProfileData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
