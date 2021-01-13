@@ -11,6 +11,7 @@ import sip from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { RnNativeModules } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
+import waitTimeout from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import Call from './Call'
 import Nav from './Nav'
@@ -199,7 +200,11 @@ export class CallStore {
   }
   startCall = async (number: string, options = {}) => {
     let reconnectCalled = false
-    const startCall = async () => {
+    const startCall = async (fromReconnect?: boolean) => {
+      if (fromReconnect) {
+        // Do not call sip too frequencely on reconnect
+        await waitTimeout(3000)
+      }
       await pbx.getConfig()
       sip.createSession(number, options)
     }
@@ -210,7 +215,7 @@ export class CallStore {
       reconnectCalled = true
     }
     Nav().goToPageCallManage()
-    // Auto update _currentCallId
+    // Auto update currentCallId
     this.currentCallId = undefined
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
     this.clearStartCallIntervalTimer()

@@ -10,8 +10,11 @@ export const reconnectAndWaitSip = (fn: Function) => {
     if (enoughTimePassed || isSipConnected) {
       BackgroundTimer.clearInterval(id)
     }
-    if (!enoughTimePassed && isSipConnected) {
-      fn()
+    if (enoughTimePassed) {
+      return
+    }
+    if (isSipConnected) {
+      fn(true)
     }
   }, 500)
 }
