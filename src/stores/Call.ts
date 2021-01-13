@@ -29,7 +29,8 @@ export default class Call {
   }
 
   callkeepUuid = ''
-  callkeepAlreadyHandled = false
+  callkeepAlreadyAnswered = false
+  callkeepAlreadyRejected = false
 
   hangup = () => {
     sip.hangupSession(this.id)

@@ -36,9 +36,9 @@ export class CallStore {
     this.calls.find(
       c =>
         c.incoming &&
-        !c.callkeepAlreadyHandled &&
+        !c.callkeepAlreadyRejected &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
-        (includingAnswered ? true : !c.answered),
+        (includingAnswered ? true : !c.answered && !c.callkeepAlreadyAnswered),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Always end the call if it rings too long > 20s without picking up
@@ -67,6 +67,7 @@ export class CallStore {
   onCallKeepAnswerCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid)
     if (c) {
+      c.callkeepAlreadyAnswered = true
       this.answerCall(c)
     } else {
       if (this.recentPn) {
@@ -79,21 +80,22 @@ export class CallStore {
     const c = this.getIncomingCallkeep(uuid, true)
     if (c) {
       c.hangup()
-    } else if (this.recentPn /* && !this.recentPn.action*/) {
+    } else if (this.recentPn) {
       this.recentPn.action = 'rejected'
     }
     this.clearAutoEndCallKeepTimer()
   }
 
-  endCallKeep = (c?: {
-    callkeepUuid: string
-    callkeepAlreadyHandled?: boolean
-  }) => {
+  endCallKeep = (
+    // To keep reference on the Call type, use Pick
+    c?: Pick<Call, 'callkeepUuid'> &
+      Partial<Pick<Call, 'callkeepAlreadyRejected'>>,
+  ) => {
     this.recentPn = undefined
     if (c?.callkeepUuid) {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
-      c.callkeepAlreadyHandled = true
+      c.callkeepAlreadyRejected = true
       RNCallKeep.endCall(uuid)
     }
     RnNativeModules.IncomingCall.closeIncomingCallActivity()
@@ -145,6 +147,7 @@ export class CallStore {
     }
     // Handle PN logic
     if (recentPnAction === 'answered') {
+      c.callkeepAlreadyAnswered = true
       this.answerCall(c)
     } else if (recentPnAction === 'rejected') {
       c.hangup()
@@ -188,6 +191,9 @@ export class CallStore {
       ...options,
     })
     Nav().goToPageCallManage()
+    if (c.callkeepUuid && !c.callkeepAlreadyAnswered) {
+      RNCallKeep.answerIncomingCall(c.callkeepUuid)
+    }
   }
 
   private startCallIntervalAt = 0
