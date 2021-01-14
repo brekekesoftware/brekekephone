@@ -37,7 +37,7 @@
     "moment": "2.29.1",
     "polished": "4.0.5",
     "prop-types": "15.7.2",
-    "qs": "6.9.4",
+    "qs": "6.9.6",
     "react": "17.0.1",
     "react-art": "17.0.1",
     "react-device-detect": "1.15.0",
@@ -107,7 +107,7 @@
     "metro-react-native-babel-preset": "0.64.0",
     "prettier": "2.2.1",
     "react-scripts": "3.4.4",
-    "type-coverage": "2.14.8",
+    "type-coverage": "2.14.9",
     "typescript": "4.1.3"
   },
   "typeCoverage": {
