@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce'
 import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
@@ -9,10 +8,14 @@ import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
 class AuthSIP {
-  clearObserve?: Lambda
+  private clearObserve?: Lambda
   auth() {
-    this._auth2()
-    this.clearObserve = observe(getAuthStore(), 'sipShouldAuth', this._auth2)
+    this.authWithCheck()
+    this.clearObserve = observe(
+      getAuthStore(),
+      'sipShouldAuth',
+      this.authWithCheck,
+    )
   }
   dispose() {
     this.clearObserve?.()
@@ -20,7 +23,7 @@ class AuthSIP {
     sip.disconnect()
   }
 
-  _auth0 = async () => {
+  private authWithoutCatch = async () => {
     getAuthStore().sipState = 'connecting'
     //
     const pbxConfig = await pbx.getConfig()
@@ -83,24 +86,20 @@ class AuthSIP {
       turnConfig,
     })
   }
-  _auth = debounce(
-    () => {
-      this._auth0().catch((err: Error) => {
-        getAuthStore().sipState = 'failure'
-        getAuthStore().sipTotalFailure += 1
-        sip.disconnect()
-        RnAlert.error({
-          message: intlDebug`Failed to connect to SIP`,
-          err,
-        })
+  private authWithCheck = () => {
+    if (!getAuthStore().sipShouldAuth) {
+      return
+    }
+    this.authWithoutCatch().catch((err: Error) => {
+      getAuthStore().sipState = 'failure'
+      getAuthStore().sipTotalFailure += 1
+      sip.disconnect()
+      RnAlert.error({
+        message: intlDebug`Failed to connect to SIP`,
+        err,
       })
-    },
-    50,
-    {
-      maxWait: 300,
-    },
-  )
-  _auth2 = () => getAuthStore().sipShouldAuth && this._auth()
+    })
+  }
 }
 
 export default AuthSIP
