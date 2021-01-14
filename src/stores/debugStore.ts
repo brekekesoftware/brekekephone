@@ -84,9 +84,7 @@ class DebugStore {
     // If the size of log1 passes the limit
     //    we will copy it to log2 and clear the log1
     if (this.logSizes[0] > maximumBytes) {
-      if (await RNFS.exists(log2)) {
-        await RNFS.unlink(log2)
-      }
+      await RNFS.unlink(log2).catch(e => void e)
       await RNFS.moveFile(log1, log2)
       this.logSizes[1] = this.logSizes[0]
     }
