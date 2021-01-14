@@ -43,10 +43,10 @@ export const setupCallKeep = async () => {
       allowSelfManaged: true,
     },
   })
-    .then(() => {
+    .then(async () => {
       if (Platform.OS === 'android') {
         // Android self-managed connection service forked version
-        return RNCallKeep.promptAndroidPermissions()
+        await RNCallKeep.promptAndroidPermissions()
       }
     })
     .catch((err: Error) => {
