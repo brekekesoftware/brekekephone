@@ -2,7 +2,7 @@ import { action, observable } from 'mobx'
 
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 
-export class Timer {
+export class TimerStore {
   @observable now = Date.now()
   constructor() {
     BackgroundTimer.setInterval(this.updateNow, 1000)
@@ -12,4 +12,4 @@ export class Timer {
   }
 }
 
-export default new Timer()
+export default new TimerStore()

@@ -7,7 +7,7 @@ import { CallStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
 import RnAlert from './RnAlert'
-import Timer from './Timer'
+import timerStore from './timerStore'
 
 export default class Call {
   constructor(private store: CallStore) {}
@@ -25,7 +25,7 @@ export default class Call {
   @observable answered = false
   @observable answeredAt = 0
   @computed get duration() {
-    return this.answeredAt && Timer.now - this.answeredAt
+    return this.answeredAt && timerStore.now - this.answeredAt
   }
 
   callkeepUuid = ''

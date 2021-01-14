@@ -117,10 +117,15 @@ export class CallStore {
     )
   }
 
-  @action upsertCall = (cPartial: { id: string }) => {
+  @action upsertCall = (
+    cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
+  ) => {
     this.recentCallActivityAt = Date.now()
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
+      if (!cExisting.answered && cPartial.answered) {
+        cPartial.answeredAt = Date.now()
+      }
       Object.assign(cExisting, cPartial)
       return
     }
