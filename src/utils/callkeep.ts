@@ -94,8 +94,7 @@ export const setupCallKeep = async () => {
     const n = getLastCallPn()
     if (
       n?.from &&
-      e.localizedCallerName === 'Loading...' &&
-      e.handle === 'Loading'
+      (e.localizedCallerName === 'Loading...' || e.handle === 'Loading...')
     ) {
       RNCallKeep.updateDisplay(uuid, n.from, 'Brekeke Phone')
     }
