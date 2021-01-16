@@ -25,6 +25,7 @@ export class CallStore {
   }
   recentCallActivityAt = 0
 
+  private prevCallKeepUuid?: string
   private autoEndCallKeepTimerId = 0
   private clearAutoEndCallKeepTimer = () => {
     if (this.autoEndCallKeepTimerId) {
@@ -56,6 +57,7 @@ export class CallStore {
       RNCallKeep.updateDisplay(uuid, c.partyName, 'Brekeke Phone', {
         hasVideo: c.remoteVideoEnabled,
       })
+      this.recentPn = undefined
     } else {
       // Otherwise save the data for later process
       this.recentPn = {
@@ -63,24 +65,33 @@ export class CallStore {
         at: Date.now(),
       }
     }
+    // Allow 1 ringing callkeep only
+    if (this.prevCallKeepUuid) {
+      const prevCall = this.calls.find(
+        c => c.callkeepUuid === this.prevCallKeepUuid,
+      )
+      if (prevCall) {
+        prevCall.callkeepAlreadyRejected = true
+      }
+      RNCallKeep.endCall(this.prevCallKeepUuid)
+    }
+    this.prevCallKeepUuid = uuid
   }
   onCallKeepAnswerCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid)
     if (c) {
       c.callkeepAlreadyAnswered = true
       this.answerCall(c)
-    } else {
-      if (this.recentPn) {
-        this.recentPn.action = 'answered'
-      }
+    } else if (this.recentPn?.uuid === uuid) {
+      this.recentPn.action = 'answered'
     }
     this.clearAutoEndCallKeepTimer()
   }
   onCallKeepEndCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid, true)
-    if (c) {
+    if (c && !c.callkeepAlreadyRejected) {
       c.hangup()
-    } else if (this.recentPn) {
+    } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
     }
     this.clearAutoEndCallKeepTimer()
@@ -95,8 +106,10 @@ export class CallStore {
     if (c?.callkeepUuid) {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
-      c.callkeepAlreadyRejected = true
-      RNCallKeep.endCall(uuid)
+      if (!c.callkeepAlreadyRejected) {
+        c.callkeepAlreadyRejected = true
+        RNCallKeep.endCall(uuid)
+      }
     }
     RnNativeModules.IncomingCall.closeIncomingCallActivity()
     this.clearAutoEndCallKeepTimer()
@@ -133,33 +146,32 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
-    // Check and assign callkeep uuid
+    // Get and check callkeep
     let recentPnUuid = ''
     let recentPnAction: string | undefined
     if (this.recentPn && Date.now() - this.recentPn.at < 20000) {
       recentPnUuid = this.recentPn.uuid
       recentPnAction = this.recentPn.action
     }
+    if (Platform.OS === 'web' || !recentPnUuid || !c.incoming || c.answered) {
+      return
+    }
+    // Assign callkeep to the call and handle logic
     if (recentPnUuid) {
       c.callkeepUuid = recentPnUuid
     }
-    // Check the case which is not PN incoming call
-    if (!c.incoming || Platform.OS === 'web') {
+    if (!recentPnAction) {
+      RNCallKeep.updateDisplay(recentPnUuid, c.partyName, 'Brekeke Phone', {
+        hasVideo: c.remoteVideoEnabled,
+      })
       return
     }
-    if (c.answered || !recentPnUuid) {
-      return
-    }
-    // Handle PN logic
     if (recentPnAction === 'answered') {
       c.callkeepAlreadyAnswered = true
       this.answerCall(c)
     } else if (recentPnAction === 'rejected') {
+      c.callkeepAlreadyRejected = true
       c.hangup()
-    } else {
-      RNCallKeep.updateDisplay(recentPnUuid, c.partyName, 'Brekeke Phone', {
-        hasVideo: c.remoteVideoEnabled,
-      })
     }
   }
   @action removeCall = (id: string) => {
