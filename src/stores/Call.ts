@@ -32,6 +32,19 @@ export default class Call {
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
 
+  answer = (options?: object) => {
+    this.answered = true
+    this.store.currentCallId = this.id
+    sip.answerSession(this.id, {
+      videoEnabled: this.remoteVideoEnabled,
+      ...options,
+    })
+    Nav().goToPageCallManage()
+    if (this.callkeepUuid && !this.callkeepAlreadyAnswered) {
+      RNCallKeep.answerIncomingCall(this.callkeepUuid)
+    }
+  }
+
   hangup = () => {
     sip.hangupSession(this.id)
     this.store.endCallKeep(this)

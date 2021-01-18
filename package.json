@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.6.12",
+  "version": "2.6.14",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -16,7 +16,7 @@
     "ts": "tsc && type-coverage"
   },
   "dependencies": {
-    "@mdi/js": "5.8.55",
+    "@mdi/js": "5.9.55",
     "@react-native-async-storage/async-storage": "1.13.2",
     "@react-native-community/push-notification-ios": "1.8.0",
     "brekekejs": "github:brekekesoftware/brekekejs#04db0debaa9b45a42d8e7c37321b9ca0c9c75670",
@@ -62,7 +62,7 @@
     "react-native-svg": "12.1.0",
     "react-native-svg-web": "1.0.9",
     "react-native-uuid": "1.4.9",
-    "react-native-voip-push-notification": "3.0.0",
+    "react-native-voip-push-notification": "3.1.0",
     "react-native-web": "0.14.10",
     "react-native-web-linear-gradient": "1.1.1",
     "react-native-webrtc": "1.75.3",
@@ -102,7 +102,7 @@
     "eslint-plugin-react-app": "6.2.2",
     "eslint-plugin-simple-import-sort": "7.0.0",
     "fs-extra": "9.0.1",
-    "husky": "4.3.7",
+    "husky": "4.3.8",
     "lint-staged": "10.5.3",
     "metro-react-native-babel-preset": "0.64.0",
     "prettier": "2.2.1",

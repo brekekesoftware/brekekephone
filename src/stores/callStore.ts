@@ -33,18 +33,24 @@ export class CallStore {
       this.autoEndCallKeepTimerId = 0
     }
   }
-  private getIncomingCallkeep = (uuid: string, includingAnswered?: boolean) =>
+  private getIncomingCallkeep = (
+    uuid: string,
+    o?: { includingAnswered: boolean },
+  ) =>
     this.calls.find(
       c =>
         c.incoming &&
         !c.callkeepAlreadyRejected &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
-        (includingAnswered ? true : !c.answered && !c.callkeepAlreadyAnswered),
+        (o?.includingAnswered
+          ? true
+          : !c.answered && !c.callkeepAlreadyAnswered),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Always end the call if it rings too long > 20s without picking up
     this.clearAutoEndCallKeepTimer()
     this.autoEndCallKeepTimerId = BackgroundTimer.setTimeout(() => {
+      this.autoEndCallKeepTimerId = 0
       const c = this.calls.find(c => c.callkeepUuid === uuid && !c.answered)
       return c ? c.hangup() : this.endCallKeep({ callkeepUuid: uuid })
     }, 20000)
@@ -79,22 +85,25 @@ export class CallStore {
   }
   onCallKeepAnswerCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid)
-    if (c) {
+    if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
-      this.answerCall(c)
+      c.answer()
+      this.clearAutoEndCallKeepTimer()
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'answered'
     }
-    this.clearAutoEndCallKeepTimer()
   }
   onCallKeepEndCall = (uuid: string) => {
-    const c = this.getIncomingCallkeep(uuid, true)
-    if (c && !c.callkeepAlreadyRejected) {
+    const c = this.getIncomingCallkeep(uuid, {
+      includingAnswered: true,
+    })
+    if (c) {
+      c.callkeepAlreadyRejected = true
       c.hangup()
+      this.clearAutoEndCallKeepTimer()
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
     }
-    this.clearAutoEndCallKeepTimer()
   }
 
   endCallKeep = (
@@ -106,10 +115,8 @@ export class CallStore {
     if (c?.callkeepUuid) {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
-      if (!c.callkeepAlreadyRejected) {
-        c.callkeepAlreadyRejected = true
-        RNCallKeep.endCall(uuid)
-      }
+      c.callkeepAlreadyRejected = true
+      RNCallKeep.endCall(uuid)
     }
     RnNativeModules.IncomingCall.closeIncomingCallActivity()
     this.clearAutoEndCallKeepTimer()
@@ -119,7 +126,7 @@ export class CallStore {
   @computed get incomingCall() {
     return this.calls.find(c => c.incoming && !c.answered)
   }
-  @observable private currentCallId?: string = undefined
+  @observable currentCallId?: string = undefined
   @computed get currentCall() {
     this.updateCurrentCallDebounce()
     return this.calls.find(c => c.id === this.currentCallId)
@@ -168,11 +175,12 @@ export class CallStore {
     }
     if (recentPnAction === 'answered') {
       c.callkeepAlreadyAnswered = true
-      this.answerCall(c)
+      c.answer()
     } else if (recentPnAction === 'rejected') {
       c.callkeepAlreadyRejected = true
       c.hangup()
     }
+    this.clearAutoEndCallKeepTimer()
   }
   @action removeCall = (id: string) => {
     this.recentCallActivityAt = Date.now()
@@ -200,19 +208,6 @@ export class CallStore {
     Nav().backToPageBackgroundCalls()
   }
 
-  @action answerCall = (c: Call, options?: object) => {
-    c.answered = true
-    this.currentCallId = c.id
-    sip.answerSession(c.id, {
-      videoEnabled: c.remoteVideoEnabled,
-      ...options,
-    })
-    Nav().goToPageCallManage()
-    if (c.callkeepUuid && !c.callkeepAlreadyAnswered) {
-      RNCallKeep.answerIncomingCall(c.callkeepUuid)
-    }
-  }
-
   private startCallIntervalAt = 0
   private startCallIntervalId = 0
   private clearStartCallIntervalTimer = () => {
@@ -223,8 +218,8 @@ export class CallStore {
   }
   startCall = async (number: string, options = {}) => {
     let reconnectCalled = false
-    const startCall = async (fromReconnect?: boolean) => {
-      if (fromReconnect) {
+    const startCall = async (isReconnect?: boolean) => {
+      if (isReconnect) {
         // Do not call sip too frequencely on reconnect
         await waitTimeout(3000)
       }

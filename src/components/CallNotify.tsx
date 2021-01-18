@@ -58,7 +58,7 @@ class CallNotify extends React.Component {
         <ButtonIcon
           bdcolor={g.colors.primary}
           color={g.colors.primary}
-          onPress={() => callStore.answerCall(c)}
+          onPress={() => c.answer()}
           path={mdiCheck}
           size={20}
           style={css.Notify_Btn_accept}

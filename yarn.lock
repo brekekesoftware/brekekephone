@@ -1511,10 +1511,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@mdi/js@5.8.55":
-  version "5.8.55"
-  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-5.8.55.tgz#630bc5fafd8b1d2f6e63489a9ab170177559e41b"
-  integrity sha512-2bvln56SW6V/nSDC/0/NTu1bMF/CgSyZox8mcWbAPWElBN3UYIrukKDUckEER8ifr8X2YJl1RLKQqi7T7qLzmg==
+"@mdi/js@5.9.55":
+  version "5.9.55"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-5.9.55.tgz#8f5bc4d924c23f30dab20545ddc768e778bbc882"
+  integrity sha512-BbeHMgeK2/vjdJIRnx12wvQ6s8xAYfvMmEAVsUx9b+7GiQGQ9Za8jpwp17dMKr9CgKRvemlAM4S7S3QOtEbp4A==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -6499,10 +6499,10 @@ human-signals@^1.1.1:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
   integrity sha512-SEQu7vl8KjNL2eoGBLF3+wAjpsNfA9XMlXAYj/3EdaNfAlxKthD1xjEQfGOUhllCGGJVNY34bRr6lPINhNjyZw==
 
-husky@4.3.7:
-  version "4.3.7"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-4.3.7.tgz#ca47bbe6213c1aa8b16bbd504530d9600de91e88"
-  integrity sha512-0fQlcCDq/xypoyYSJvEuzbDPHFf8ZF9IXKJxlrnvxABTSzK1VPT2RKYQKrcgJ+YD39swgoB6sbzywUqFxUiqjw==
+husky@4.3.8:
+  version "4.3.8"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-4.3.8.tgz#31144060be963fd6850e5cc8f019a1dfe194296d"
+  integrity sha512-LCqqsB0PzJQ/AlCgfrfzRe3e3+NvmefAdKQhRYpxS4u6clblBoDdzzvHi8fmxKRzvMxPY/1WZWzomPZww0Anow==
   dependencies:
     chalk "^4.0.0"
     ci-info "^2.0.0"
@@ -10948,10 +10948,10 @@ react-native-uuid@1.4.9:
   dependencies:
     randombytes "^2.0.3"
 
-react-native-voip-push-notification@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-3.0.0.tgz#c4e04f0da19e8fc7b3807429e8e730d384127a2c"
-  integrity sha512-Ba+R3IdHUKDRjyXnCrGFgnvxI06tuswJkdTztCDVX5k5xZhWii/8GBnor4Dq4vy487zQPjGHbneIO07hHkwBqg==
+react-native-voip-push-notification@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-3.1.0.tgz#51a7af6c5cbba00c13f3d34da67fa433ed032997"
+  integrity sha512-F28Y1luWaYLq38cRYue+TICz6TaEMWuesSHhSlQFPb1/sCVqwmGOZiMhmne1zCAyoW8OkuuaJl2rrosM2UsTMQ==
 
 react-native-web-linear-gradient@1.1.1:
   version "1.1.1"
