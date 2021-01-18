@@ -1,22 +1,17 @@
 import { action, computed, observable } from 'mobx'
-import { NativeModule, NativeModules, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import { v4 as uuid } from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
+import { CallStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
 import RnAlert from './RnAlert'
-
-export const NativeModules0 = NativeModules as {
-  IncomingCall: NativeModule & {
-    closeIncomingCallActivity(): void
-    showCall(uuid: string, callerName: string, withVideo?: boolean): void
-  }
-}
+import timerStore from './timerStore'
 
 export default class Call {
+  constructor(private store: CallStore) {}
+
   @observable id = ''
   @observable partyNumber = ''
   @observable partyName = ''
@@ -26,23 +21,33 @@ export default class Call {
     return this.partyName || this.partyNumber || this.pbxTalkerId || this.id
   }
 
-  uuid = uuid()
-  callkeep = false
-  callkeepDisplayed = false
-
   @observable incoming = false
   @observable answered = false
-  rejected = false
+  @observable answeredAt = 0
+  @computed get duration() {
+    return this.answeredAt && timerStore.now - this.answeredAt
+  }
 
-  @observable createdAt = Date.now()
-  @observable duration = 0
+  callkeepUuid = ''
+  callkeepAlreadyAnswered = false
+  callkeepAlreadyRejected = false
+
+  answer = (options?: object) => {
+    this.answered = true
+    this.store.currentCallId = this.id
+    sip.answerSession(this.id, {
+      videoEnabled: this.remoteVideoEnabled,
+      ...options,
+    })
+    Nav().goToPageCallManage()
+    if (this.callkeepUuid && !this.callkeepAlreadyAnswered) {
+      RNCallKeep.answerIncomingCall(this.callkeepUuid)
+    }
+  }
 
   hangup = () => {
-    this.rejected = true
     sip.hangupSession(this.id)
-    if (Platform.OS === 'android') {
-      NativeModules0.IncomingCall.closeIncomingCallActivity()
-    }
+    this.store.endCallKeep(this)
   }
   hangupWithUnhold = () =>
     this.holding ? this.toggleHold().then(this.hangup) : this.hangup()
@@ -57,10 +62,10 @@ export default class Call {
   voiceStreamObject: MediaStream | null = null
 
   @observable muted = false
-  @action toggleMuted = (fromCallkeep?: boolean) => {
+  @action toggleMuted = (fromCallKeep?: boolean) => {
     this.muted = !this.muted
-    if (this.callkeep && !fromCallkeep) {
-      RNCallKeep.setMutedCall(this.uuid, this.muted)
+    if (fromCallKeep && this.callkeepUuid) {
+      RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
     }
     return sip.setMuted(this.muted, this.id)
   }
@@ -81,18 +86,15 @@ export default class Call {
   }
 
   @observable holding = false
-  @action toggleHold = (fromCallkeep?: boolean) => {
+  @action toggleHold = (fromCallKeep?: boolean) => {
     this.holding = !this.holding
+    if (fromCallKeep && this.callkeepUuid) {
+      RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
+    }
     return pbx[this.holding ? 'holdTalker' : 'unholdTalker'](
       this.pbxTenant,
       this.pbxTalkerId,
-    )
-      .then(() => {
-        if (this.callkeep && !fromCallkeep) {
-          RNCallKeep.setOnHold(this.uuid, this.holding)
-        }
-      })
-      .catch(this.onToggleHoldFailure)
+    ).catch(this.onToggleHoldFailure)
   }
   @action private onToggleHoldFailure = (err: Error) => {
     this.holding = !this.holding

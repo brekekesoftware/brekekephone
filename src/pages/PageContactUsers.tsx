@@ -8,7 +8,7 @@ import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import chatStore, { ChatMessage } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
@@ -27,10 +27,10 @@ class PageContactUsers extends React.Component {
   componentDidUpdate() {
     if (
       this.displayOfflineUsers.enabled !==
-      authStore.currentProfile.displayOfflineUsers
+      getAuthStore().currentProfile.displayOfflineUsers
     ) {
       this.displayOfflineUsers.setEnabled(
-        authStore.currentProfile.displayOfflineUsers,
+        getAuthStore().currentProfile.displayOfflineUsers,
       )
     }
   }
@@ -92,7 +92,7 @@ class PageContactUsers extends React.Component {
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
     type User = typeof allUsers[0]
 
-    const { ucEnabled } = authStore.currentProfile
+    const { ucEnabled } = getAuthStore().currentProfile
     const displayUsers =
       !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
 
@@ -148,12 +148,12 @@ class PageContactUsers extends React.Component {
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={(v: boolean) => {
               profileStore.upsertProfile({
-                id: authStore.signedInId,
+                id: getAuthStore().signedInId,
                 displayOfflineUsers: v,
               })
             }}
             type='Switch'
-            value={authStore.currentProfile.displayOfflineUsers}
+            value={getAuthStore().currentProfile.displayOfflineUsers}
           />
         )}
         {groups.map(_g => (
@@ -163,7 +163,7 @@ class PageContactUsers extends React.Component {
               <RnTouchableOpacity
                 key={i}
                 onPress={
-                  authStore.currentProfile.ucEnabled
+                  getAuthStore().currentProfile.ucEnabled
                     ? () => Nav().goToPageChatDetail({ buddy: u.id })
                     : undefined
                 }

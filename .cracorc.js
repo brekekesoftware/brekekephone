@@ -19,6 +19,7 @@ module.exports = {
       'react-native-incall-manager': nullAlias,
       'react-native-share': nullAlias,
       'react-native-splash-screen': nullAlias,
+      'react-native-background-timer': nullAlias,
     },
     configure: {
       resolve: {

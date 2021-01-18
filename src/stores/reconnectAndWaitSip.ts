@@ -1,20 +1,20 @@
-import { AuthStore } from './authStore'
-
-// circular dep
-let authStore: AuthStore = null!
-export const setAuthStore = (s: AuthStore) => {
-  authStore = s
-}
+import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { getAuthStore } from './authStore'
 
 export const reconnectAndWaitSip = (fn: Function) => {
-  authStore.reconnectWithSetStates()
+  getAuthStore().reconnectSip()
   const at = Date.now()
-  const id = setInterval(() => {
-    if (Date.now() > at + 10000) {
-      clearInterval(id)
-    } else if (authStore.sipState === 'success') {
-      clearInterval(id)
-      fn()
+  const id = BackgroundTimer.setInterval(() => {
+    const enoughTimePassed = Date.now() > at + 10000
+    const isSipConnected = getAuthStore().sipState === 'success'
+    if (enoughTimePassed || isSipConnected) {
+      BackgroundTimer.clearInterval(id)
     }
-  }, 100)
+    if (enoughTimePassed) {
+      return
+    }
+    if (isSipConnected) {
+      fn(true)
+    }
+  }, 500)
 }

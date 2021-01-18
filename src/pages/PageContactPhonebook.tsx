@@ -15,7 +15,7 @@ import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import contactStore, { Phonebook2 } from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
@@ -23,6 +23,7 @@ import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
 import RnPicker from '../stores/RnPicker'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   Loading: {
@@ -33,13 +34,13 @@ const css = StyleSheet.create({
 @observer
 class PageContactPhonebook extends React.Component {
   componentDidMount() {
-    const id = window.setInterval(() => {
+    const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
         return
       }
       contactStore.loadContactsFirstTime()
-      clearInterval(id)
-    }, 300)
+      BackgroundTimer.clearInterval(id)
+    }, 1000)
   }
 
   update = (id: string) => {
@@ -154,7 +155,7 @@ class PageContactPhonebook extends React.Component {
 
   render() {
     let phonebooks = contactStore.phoneBooks
-    if (!authStore.currentProfile.displaySharedContacts) {
+    if (!getAuthStore().currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true)
     }
 
@@ -199,12 +200,12 @@ class PageContactPhonebook extends React.Component {
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
             profileStore.upsertProfile({
-              id: authStore.signedInId,
+              id: getAuthStore().signedInId,
               displaySharedContacts: v,
             })
           }}
           type='Switch'
-          value={authStore.currentProfile.displaySharedContacts}
+          value={getAuthStore().currentProfile.displaySharedContacts}
         />
         <View>
           {groups.map(_g => (

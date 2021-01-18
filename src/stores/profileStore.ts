@@ -4,7 +4,7 @@ import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as uuid } from 'react-native-uuid'
 
-import { syncPnToken } from '../api/syncPnToken'
+import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
 import { arrToMap } from '../utils/toMap'
 import { intlDebug } from './intl'
@@ -139,7 +139,7 @@ class ProfileStore {
         typeof p.pushNotificationEnabled === 'boolean' &&
         p.pushNotificationEnabled !== pn0
       ) {
-        syncPnToken(p0)
+        SyncPnToken().sync(p0)
       }
     }
     this.saveProfilesToLocalStorage()

@@ -41,7 +41,7 @@ export function useAnimation<T extends AnimationProps>(
   }
 }
 
-export function useAnimationOnDidMount<T extends AnimationProps>(props: T) {
+export const useAnimationOnDidMount = <T extends AnimationProps>(props: T) => {
   const [didMount, setDidMount] = useState(false)
   useEffect(() => setDidMount(true), [])
   return useAnimation(didMount, props)

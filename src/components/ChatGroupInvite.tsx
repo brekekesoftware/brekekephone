@@ -229,7 +229,7 @@ class UnreadChatNoti extends React.Component {
   }
   @action clear = () => {
     if (this.prevUnreadChatTimeoutId) {
-      clearTimeout(this.prevUnreadChatTimeoutId)
+      window.clearTimeout(this.prevUnreadChatTimeoutId)
       this.prevUnreadChatTimeoutId = 0
     }
     this.unreadChat = null

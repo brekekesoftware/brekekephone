@@ -5,14 +5,14 @@ import Call from '../stores/Call'
 import callStore from '../stores/callStore'
 import CallVoicesUI from './CallVoicesUI'
 
-const isIncoming = (c: Call) => !c.answered && c.incoming && !c.rejected
-const isOutgoing = (c: Call) => !c.answered && !c.incoming && !c.rejected
-const isAnswered = (c: Call) => c.answered && !c.rejected
+const isIncoming = (c: Call) => !c.answered && c.incoming
+const isOutgoing = (c: Call) => !c.answered && !c.incoming
+const isAnswered = (c: Call) => c.answered
 
 @observer
 class CallVoices extends React.Component {
   render() {
-    const calls: Call[] = callStore._calls // TODO
+    const calls: Call[] = callStore.calls // TODO
     const m = calls.reduce((m, c) => {
       m[c.id] = c
       return m

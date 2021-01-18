@@ -247,7 +247,9 @@ PODS:
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
   - React-jsinspector (0.63.4)
-  - react-native-document-picker (4.1.1):
+  - react-native-background-timer (2.4.1):
+    - React-Core
+  - react-native-document-picker (4.2.0):
     - React-Core
   - react-native-image-picker (2.3.4):
     - React-Core
@@ -319,7 +321,7 @@ PODS:
     - React-Core
   - ReactNativeIncallManager (3.3.0):
     - React
-  - RNCallKeep (3.0.14):
+  - RNCallKeep (4.0.1):
     - React
   - RNCAsyncStorage (1.13.2):
     - React
@@ -331,7 +333,7 @@ PODS:
     - SDWebImageWebPCoder (~> 0.6.1)
   - RNFS (2.16.6):
     - React
-  - RNShare (4.1.0):
+  - RNShare (5.1.0):
     - React-Core
   - RNSVG (12.1.0):
     - React
@@ -385,6 +387,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
@@ -462,6 +465,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-background-timer:
+    :path: "../node_modules/react-native-background-timer"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
   react-native-image-picker:
@@ -542,7 +547,8 @@ SPEC CHECKSUMS:
   React-jsi: a0418934cf48f25b485631deb27c64dc40fb4c31
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
-  react-native-document-picker: c9cbeb5445188a805ab19fa4061115d38fe1ea63
+  react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
+  react-native-document-picker: 44ecae7103090b6789cca010f06f5205fd1cb66e
   react-native-image-picker: c6d75c4ab2cf46f9289f341242b219cb3c1180d3
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-webrtc: 86d841823e66d68cc1f86712db1c2956056bf0c2
@@ -558,12 +564,12 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   ReactNativeExceptionHandler: f1638ffd507ef1b1794af25884fa0eb30dd5c551
   ReactNativeIncallManager: a840ef75640518065742a893e6c6ff98ee820039
-  RNCallKeep: 80fe428bbd868036a425455d9a064a37c3ec26e0
+  RNCallKeep: eac6e6b4892f1b1c2890a1ce6d5f5451d7543c57
   RNCAsyncStorage: 05bae7ecfab1cbd5441993f1ca098f7c3b3f8d0e
   RNCPushNotificationIOS: 61a7c72bd1ebad3568025957d001e0f0e7b32191
   RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNShare: 106a76243ac90f43ddb9028dcb78ade406b8adff
+  RNShare: fed99fd743f80ca255903c1da46fc9a6430efab6
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNVoipPushNotification: e6c0c6958a440d6b5291368d8f3626e6bccbba1d
   SDWebImage: b69257f4ab14e9b6a2ef53e910fdf914d8f757c1

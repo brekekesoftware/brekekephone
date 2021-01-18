@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { View } from 'react-native'
 
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import intl from '../stores/intl'
 import profileStore, { Profile } from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
@@ -115,17 +115,18 @@ const ProfileCreateForm: FC<{
       dropdown={
         props.footerLogout
           ? [
-              ...(authStore.isConnFailure
+              ...(getAuthStore().isConnFailure
                 ? [
                     {
                       label: intl`Reconnect to server`,
-                      onPress: authStore.reconnectWithUcLoginFromAnotherPlace,
+                      onPress: getAuthStore()
+                        .reconnectWithUcLoginFromAnotherPlace,
                     },
                   ]
                 : []),
               {
                 label: intl`Logout`,
-                onPress: authStore.signOut,
+                onPress: getAuthStore().signOut,
                 danger: true,
               },
             ]

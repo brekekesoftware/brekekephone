@@ -14,12 +14,12 @@ class IncomingItem extends React.Component {
     this.timeoutId = window.setTimeout(() => {
       IncallManager.startRingtone('_BUNDLE_')
       this.timeoutId = 0
-    }, 300)
+    }, 1000)
   }
 
   componentWillUnmount() {
     if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
+      window.clearTimeout(this.timeoutId)
       this.timeoutId = 0
     }
     IncallManager.stopRingtone()
@@ -73,7 +73,7 @@ const CallVoicesUI: FC<{
   resolveCall: Function
 }> = p => (
   <>
-    {(Platform.OS !== 'android' || callStore.androidRingtone <= 0) && (
+    {Platform.OS !== 'android' && (
       <IncomingList
         ids={p.incomingCallIds.filter(i => i !== undefined)}
         resolve={p.resolveCall}

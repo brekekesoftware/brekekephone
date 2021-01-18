@@ -1,206 +1,264 @@
 import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import moment from 'moment'
+import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
+import { v4 as uuid } from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { RnNativeModules } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
-import Call, { NativeModules0 } from './Call'
+import waitTimeout from '../utils/waitTimeout'
+import { getAuthStore } from './authStore'
+import Call from './Call'
 import Nav from './Nav'
 import { reconnectAndWaitSip } from './reconnectAndWaitSip'
 
-export const uuidFromPN = '00000000-0000-0000-0000-000000000000'
-
 export class CallStore {
-  constructor() {
-    this._initDurationInterval()
+  private recentPn?: {
+    uuid: string
+    at: number
+    action?: 'answered' | 'rejected'
   }
-
-  recentPNAction = ''
-  recentPNAt = 0
-
-  @observable _calls: Call[] = []
   recentCallActivityAt = 0
-  @observable _currentCallId?: string = undefined
-  @computed get incomingCall() {
-    return this._calls.find(c => c.incoming && !c.answered)
+
+  private prevCallKeepUuid?: string
+  private autoEndCallKeepTimerId = 0
+  private clearAutoEndCallKeepTimer = () => {
+    if (this.autoEndCallKeepTimerId) {
+      BackgroundTimer.clearTimeout(this.autoEndCallKeepTimerId)
+      this.autoEndCallKeepTimerId = 0
+    }
   }
+  private getIncomingCallkeep = (
+    uuid: string,
+    o?: { includingAnswered: boolean },
+  ) =>
+    this.calls.find(
+      c =>
+        c.incoming &&
+        !c.callkeepAlreadyRejected &&
+        (!c.callkeepUuid || c.callkeepUuid === uuid) &&
+        (o?.includingAnswered
+          ? true
+          : !c.answered && !c.callkeepAlreadyAnswered),
+    )
+  onCallKeepDidDisplayIncomingCall = (uuid: string) => {
+    // Always end the call if it rings too long > 20s without picking up
+    this.clearAutoEndCallKeepTimer()
+    this.autoEndCallKeepTimerId = BackgroundTimer.setTimeout(() => {
+      this.autoEndCallKeepTimerId = 0
+      const c = this.calls.find(c => c.callkeepUuid === uuid && !c.answered)
+      return c ? c.hangup() : this.endCallKeep({ callkeepUuid: uuid })
+    }, 20000)
+    // Find the current incoming call which is not callkeep
+    const c = this.getIncomingCallkeep(uuid)
+    if (c) {
+      // If the call is existing and not answered yet, we'll mark that call as displaying in callkeep
+      // We assume that the app is being used in foreground (not quite exactly but assume)
+      c.callkeepUuid = uuid
+      RNCallKeep.updateDisplay(uuid, c.partyName, 'Brekeke Phone', {
+        hasVideo: c.remoteVideoEnabled,
+      })
+      this.recentPn = undefined
+    } else {
+      // Otherwise save the data for later process
+      this.recentPn = {
+        uuid,
+        at: Date.now(),
+      }
+    }
+    // Allow 1 ringing callkeep only
+    if (this.prevCallKeepUuid) {
+      const prevCall = this.calls.find(
+        c => c.callkeepUuid === this.prevCallKeepUuid,
+      )
+      if (prevCall) {
+        prevCall.callkeepAlreadyRejected = true
+      }
+      RNCallKeep.endCall(this.prevCallKeepUuid)
+    }
+    this.prevCallKeepUuid = uuid
+  }
+  onCallKeepAnswerCall = (uuid: string) => {
+    const c = this.getIncomingCallkeep(uuid)
+    if (c && !c.callkeepAlreadyAnswered) {
+      c.callkeepAlreadyAnswered = true
+      c.answer()
+      this.clearAutoEndCallKeepTimer()
+    } else if (this.recentPn?.uuid === uuid) {
+      this.recentPn.action = 'answered'
+    }
+  }
+  onCallKeepEndCall = (uuid: string) => {
+    const c = this.getIncomingCallkeep(uuid, {
+      includingAnswered: true,
+    })
+    if (c) {
+      c.callkeepAlreadyRejected = true
+      c.hangup()
+      this.clearAutoEndCallKeepTimer()
+    } else if (this.recentPn?.uuid === uuid) {
+      this.recentPn.action = 'rejected'
+    }
+  }
+
+  endCallKeep = (
+    // To keep reference on the Call type, use Pick
+    c?: Pick<Call, 'callkeepUuid'> &
+      Partial<Pick<Call, 'callkeepAlreadyRejected'>>,
+  ) => {
+    this.recentPn = undefined
+    if (c?.callkeepUuid) {
+      const uuid = c.callkeepUuid
+      c.callkeepUuid = ''
+      c.callkeepAlreadyRejected = true
+      RNCallKeep.endCall(uuid)
+    }
+    RnNativeModules.IncomingCall.closeIncomingCallActivity()
+    this.clearAutoEndCallKeepTimer()
+  }
+
+  @observable calls: Call[] = []
+  @computed get incomingCall() {
+    return this.calls.find(c => c.incoming && !c.answered)
+  }
+  @observable currentCallId?: string = undefined
   @computed get currentCall() {
-    this._updateCurrentCallDebounce()
-    return this._calls.find(c => c.id === this._currentCallId)
+    this.updateCurrentCallDebounce()
+    return this.calls.find(c => c.id === this.currentCallId)
   }
   @computed get backgroundCalls() {
-    return this._calls.filter(
-      c => c.id !== this._currentCallId && !(c.incoming && !c.answered),
+    return this.calls.filter(
+      c => c.id !== this.currentCallId && (!c.incoming || c.answered),
     )
   }
 
-  @observable androidRingtone = 0
-
-  _updateCurrentCall = () => {
-    let currentCall: Call | undefined
-    if (this._calls.length) {
-      currentCall =
-        this._calls.find(c => c.id === this._currentCallId) ||
-        this._calls.find(c => c.answered && !c.holding) ||
-        this._calls[0]
-    }
-    const currentCallId = currentCall?.id
-    if (currentCallId !== this._currentCallId) {
-      window.setTimeout(action(() => (this._currentCallId = currentCallId)))
-    }
-    this._updateBackgroundCallsDebounce()
-  }
-  _updateCurrentCallDebounce = debounce(this._updateCurrentCall, 500, {
-    maxWait: 1000,
-  })
-  @action _updateBackgroundCalls = () => {
-    // Auto hold background calls
-    this._calls
-      .filter(
-        c =>
-          c.id !== this._currentCallId &&
-          c.answered &&
-          !c.transferring &&
-          !c.holding,
-      )
-      .forEach(c => c.toggleHold())
-  }
-  _updateBackgroundCallsDebounce = debounce(this._updateBackgroundCalls, 500, {
-    maxWait: 1000,
-  })
-
-  @action upsertCall = (_c: { id: string }) => {
+  @action upsertCall = (
+    cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
+  ) => {
     this.recentCallActivityAt = Date.now()
-    let c = this._calls.find(c => c.id === _c.id)
-    if (c) {
-      Object.assign(c, _c)
-      if (c.callkeep && c.answered) {
-        c.callkeep = false
-        RNCallKeep.endCall(c.uuid)
+    const cExisting = this.calls.find(c => c.id === cPartial.id)
+    if (cExisting) {
+      if (!cExisting.answered && cPartial.answered) {
+        cPartial.answeredAt = Date.now()
       }
+      Object.assign(cExisting, cPartial)
       return
     }
-    //
-    c = new Call()
-    Object.assign(c, _c)
-    this._calls = [c, ...this._calls]
-    if (!c.incoming || c.answered || Platform.OS === 'web') {
+    // Construct a new call
+    const c = new Call(this)
+    Object.assign(c, cPartial)
+    this.calls = [c, ...this.calls]
+    // Get and check callkeep
+    let recentPnUuid = ''
+    let recentPnAction: string | undefined
+    if (this.recentPn && Date.now() - this.recentPn.at < 20000) {
+      recentPnUuid = this.recentPn.uuid
+      recentPnAction = this.recentPn.action
+    }
+    if (Platform.OS === 'web' || !recentPnUuid || !c.incoming || c.answered) {
       return
     }
-    window.setTimeout(() => RNCallKeep.endCall(uuidFromPN), 1000)
-    //
-    const recentPNAction =
-      Date.now() - this.recentPNAt < 20000 && this.recentPNAction
-    this.recentPNAction = ''
-    this.recentPNAt = 0
-    //
-    if (recentPNAction === 'answered') {
-      this.answerCall(c)
-      c.answered = true
-    } else if (recentPNAction === 'rejected') {
+    // Assign callkeep to the call and handle logic
+    if (recentPnUuid) {
+      c.callkeepUuid = recentPnUuid
+    }
+    if (!recentPnAction) {
+      RNCallKeep.updateDisplay(recentPnUuid, c.partyName, 'Brekeke Phone', {
+        hasVideo: c.remoteVideoEnabled,
+      })
+      return
+    }
+    if (recentPnAction === 'answered') {
+      c.callkeepAlreadyAnswered = true
+      c.answer()
+    } else if (recentPnAction === 'rejected') {
+      c.callkeepAlreadyRejected = true
       c.hangup()
-      c.rejected = true
-    } else {
-      c.callkeep = true
-      RNCallKeep.displayIncomingCall(
-        c.uuid,
-        'Brekeke Phone',
-        c.partyNumber,
-        'generic',
-        c.remoteVideoEnabled,
-      )
     }
+    this.clearAutoEndCallKeepTimer()
   }
   @action removeCall = (id: string) => {
     this.recentCallActivityAt = Date.now()
-    const c = this._calls.find(c => c.id === id)
-    this._calls = this._calls.filter(c => c.id !== id)
-    if (c?.callkeep) {
-      c.callkeep = false
-      RNCallKeep.endCall(c.uuid)
+    const c = this.calls.find(c => c.id === id)
+    if (c) {
+      getAuthStore().pushRecentCall({
+        id: uuid(),
+        incoming: c.incoming,
+        answered: c.answered,
+        partyName: c.partyName,
+        partyNumber: c.partyNumber,
+        duration: c.duration,
+        created: moment().format('HH:mm - MMM D'),
+      })
     }
-    if (Platform.OS === 'android') {
-      NativeModules0.IncomingCall.closeIncomingCallActivity()
-    }
-  }
-
-  findByUuid = (uuid: string) => this._calls.find(c => c.uuid === uuid)
-  @action removeByUuid = (uuid: string) => {
-    this._calls = this._calls.filter(c => c.uuid !== uuid)
+    this.calls = this.calls.filter(c => c.id !== id)
+    this.endCallKeep(c)
   }
 
   @action selectBackgroundCall = (c: Call) => {
     if (c.holding) {
       c.toggleHold()
     }
-    this._currentCallId = c.id
+    this.currentCallId = c.id
     Nav().backToPageBackgroundCalls()
   }
 
-  @action answerCall = (c: Call, options?: object) => {
-    c.answered = true
-    this._currentCallId = c.id
-    sip.answerSession(c.id, {
-      videoEnabled: c.remoteVideoEnabled,
-      ...options,
-    })
-    Nav().goToPageCallManage()
-    if (c.callkeep) {
-      c.callkeep = false
-      RNCallKeep.endCall(c.uuid)
-    }
-    if (Platform.OS === 'android') {
-      NativeModules0.IncomingCall.closeIncomingCallActivity()
+  private startCallIntervalAt = 0
+  private startCallIntervalId = 0
+  private clearStartCallIntervalTimer = () => {
+    if (this.startCallIntervalId) {
+      BackgroundTimer.clearInterval(this.startCallIntervalId)
+      this.startCallIntervalId = 0
     }
   }
-
-  _startCallIntervalAt = 0
-  _startCallIntervalId = 0
   startCall = async (number: string, options = {}) => {
     let reconnectCalled = false
-    const _startCall = async () => {
+    const startCall = async (isReconnect?: boolean) => {
+      if (isReconnect) {
+        // Do not call sip too frequencely on reconnect
+        await waitTimeout(3000)
+      }
       await pbx.getConfig()
       sip.createSession(number, options)
     }
     try {
-      await _startCall()
+      await startCall()
     } catch (err) {
-      reconnectAndWaitSip(_startCall)
+      reconnectAndWaitSip(startCall)
       reconnectCalled = true
     }
     Nav().goToPageCallManage()
-    // Auto update _currentCallId
-    this._currentCallId = undefined
-    const prevIds = arrToMap(this._calls, 'id') as { [k: string]: boolean }
-    if (this._startCallIntervalId) {
-      clearInterval(this._startCallIntervalId)
-    }
-    this._startCallIntervalAt = Date.now()
-    this._startCallIntervalId = window.setInterval(() => {
-      const currentCallId = this._calls.map(c => c.id).find(id => !prevIds[id])
-      // If after 3 secs, there's no call in the store
+    // Auto update currentCallId
+    this.currentCallId = undefined
+    const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
+    this.clearStartCallIntervalTimer()
+    this.startCallIntervalAt = Date.now()
+    this.startCallIntervalId = BackgroundTimer.setInterval(() => {
+      const currentCallId = this.calls.map(c => c.id).find(id => !prevIds[id])
+      // If after 3s and there's no call in the store
       // It's likely a connection issue occurred
       if (
         !reconnectCalled &&
         !currentCallId &&
-        Date.now() > this._startCallIntervalAt + 3000
+        Date.now() - this.startCallIntervalAt > 3000
       ) {
-        clearInterval(this._startCallIntervalId)
-        this._startCallIntervalId = 0
-        reconnectAndWaitSip(_startCall)
+        this.clearStartCallIntervalTimer()
+        reconnectAndWaitSip(startCall)
         return
       }
       if (currentCallId) {
-        this._currentCallId = currentCallId
+        this.currentCallId = currentCallId
       }
-      if (currentCallId || Date.now() > this._startCallIntervalAt + 10000) {
-        clearInterval(this._startCallIntervalId)
-        this._startCallIntervalId = 0
+      // Add a guard of 10s to clear the interval
+      if (currentCallId || Date.now() - this.startCallIntervalAt > 10000) {
+        this.clearStartCallIntervalTimer()
       }
-    }, 100)
+    }, 500)
   }
 
   startVideoCall = (number: string) => {
@@ -208,6 +266,46 @@ export class CallStore {
       videoEnabled: true,
     })
   }
+
+  private updateCurrentCall = () => {
+    let currentCall: Call | undefined
+    if (this.calls.length) {
+      currentCall =
+        this.calls.find(c => c.id === this.currentCallId) ||
+        this.calls.find(c => c.answered && !c.holding) ||
+        this.calls[0]
+    }
+    const currentCallId = currentCall?.id
+    if (currentCallId !== this.currentCallId) {
+      BackgroundTimer.setTimeout(
+        action(() => (this.currentCallId = currentCallId)),
+        300,
+      )
+    }
+    this.updateBackgroundCallsDebounce()
+  }
+  private updateCurrentCallDebounce = debounce(this.updateCurrentCall, 500, {
+    maxWait: 1000,
+  })
+  @action private updateBackgroundCalls = () => {
+    // Auto hold background calls
+    this.calls
+      .filter(
+        c =>
+          c.id !== this.currentCallId &&
+          c.answered &&
+          !c.transferring &&
+          !c.holding,
+      )
+      .forEach(c => c.toggleHold())
+  }
+  private updateBackgroundCallsDebounce = debounce(
+    this.updateBackgroundCalls,
+    500,
+    {
+      maxWait: 1000,
+    },
+  )
 
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
@@ -223,25 +321,8 @@ export class CallStore {
   @observable videoPositionT = 25
   @observable videoPositionL = 5
 
-  _durationIntervalId = 0
-  _initDurationInterval = () => {
-    this._durationIntervalId = window.setInterval(this._updateDuration, 100)
-  }
-  @action _updateDuration = () => {
-    this._calls
-      .filter(c => c.answered)
-      .forEach(c => {
-        c.duration += 100
-      })
-  }
-
   dispose = () => {
-    if (this._startCallIntervalId) {
-      clearInterval(this._startCallIntervalId)
-      this._startCallIntervalId = 0
-    }
-    // Dont need to dispose duration interval id
-    // Because the store is currently global static
+    this.clearStartCallIntervalTimer()
   }
 }
 
@@ -252,41 +333,6 @@ if (Platform.OS !== 'web') {
   //   // TODO speaker
   //   // https://github.com/react-native-webrtc/react-native-callkeep/issues/78
   // })
-}
-
-if (Platform.OS === 'ios') {
-  AppState.addEventListener('change', () => {
-    if (AppState.currentState === 'active') {
-      callStore._calls
-        .filter(c => c.callkeep && c.answered)
-        .forEach(c => {
-          c.callkeep = false
-          RNCallKeep.endCall(c.uuid)
-        })
-    }
-  })
-}
-
-if (Platform.OS === 'android') {
-  let lastUuid = ''
-  let lastTime = 0
-  window.setInterval(() => {
-    if (callStore.recentPNAt && Date.now() - callStore.recentPNAt >= 15000) {
-      callStore.recentPNAt = 0
-      NativeModules0.IncomingCall.closeIncomingCallActivity()
-    }
-    const c = callStore.incomingCall
-    if (!c) {
-      return
-    }
-    if (lastUuid !== c.uuid) {
-      lastUuid = c.uuid
-      lastTime = Date.now()
-    } else if (Date.now() - lastTime >= 15000) {
-      c.hangup()
-      callStore.removeCall(c.id)
-    }
-  }, 1000)
 }
 
 export default callStore

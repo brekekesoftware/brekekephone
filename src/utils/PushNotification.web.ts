@@ -7,7 +7,7 @@ const uint8ArrayToUrlBase64 = (arr: ArrayBuffer) =>
 
 const PushNotification = {
   register: (initApp: Function) => {
-    window.setTimeout(initApp)
+    initApp()
     if (!window.Notification || window.Notification.permission === 'granted') {
       return
     }

@@ -10,7 +10,7 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
@@ -136,7 +136,7 @@ const ProfileSignInItem: FC<{
           onMore={() => Nav().goToPageProfileUpdate({ id: p.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
-            authStore.signIn(p.id)
+            getAuthStore().signIn(p.id)
           }}
           onNextText={intl`SIGN IN`}
         />

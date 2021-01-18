@@ -1,12 +1,14 @@
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+import { v4 as uuid } from 'react-native-uuid'
 
-import authStore from '../stores/authStore'
-import callStore, { uuidFromPN } from '../stores/callStore'
+import { getAuthStore } from '../stores/authStore'
+import callStore from '../stores/callStore'
 
 const keysInCustomNotification = [
   'title',
+  'alert',
   'body',
   'message',
   'from',
@@ -18,7 +20,7 @@ const keysInCustomNotification = [
   'is_local_notification',
 ]
 
-const _parseNotificationData = (...fields: object[]): ParsedPN =>
+const _parseNotificationData = (...fields: object[]): ParsedPn =>
   fields
     .filter(f => !!f)
     .map(f => {
@@ -78,7 +80,7 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
   if (!n.body) {
-    n.body = n.message || n.title
+    n.body = n.message || n.title || n.alert
   }
   if (!n.body && !n.to) {
     return null
@@ -91,50 +93,50 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
     n.my_custom_data ||
     n.is_local_notification
   ) {
-    const p = authStore.findProfile({
+    const p = getAuthStore().findProfile({
       ...n,
       pbxUsername: n.to,
       pbxTenant: n.tenant,
     })
-    if (authStore.signedInId === p?.id) {
-      authStore.reconnect()
+    if (getAuthStore().signedInId === p?.id) {
+      getAuthStore().reconnect()
     }
-    if (p?.id && p.pushNotificationEnabled && !authStore.signedInId) {
-      authStore.signIn(p.id)
+    if (p?.id && !getAuthStore().signedInId) {
+      getAuthStore().signIn(p.id)
     }
     return null
   }
-  // Assign more fields to present local message in android/ios specific code
+  const re = /from\s+(.+)\s+to\s+(\S+)/
+  const matches = re.exec(n.title) || re.exec(n.body)
   if (!n.from) {
-    const re = /from\s+([^:]+)/
-    const matches = re.exec(n.title) || re.exec(n.body)
     n.from = matches?.[1] || ''
+  }
+  if (!n.to) {
+    n.to = matches?.[2] || ''
   }
   n.isCall = /call/i.test(n.body) || /call/i.test(n.title)
   if (!n.isCall) {
     return AppState.currentState !== 'active' ||
-      authStore.currentProfile?.pbxUsername !== n.to
+      getAuthStore().currentProfile?.pbxUsername !== n.to
       ? n
       : null
   }
+  lastCallPn = n
   if (
-    AppState.currentState !== 'active' &&
     Platform.OS === 'android' &&
-    !callStore._calls.length
+    !callStore.calls.filter(c => c.incoming && c.answered).length
   ) {
-    lastPN = n
-    // NativeModules.IncomingCall.showCall(uuidFromPN, n.to, false)
-    RNCallKeep.displayIncomingCall(uuidFromPN, 'Brekeke Phone', n.to)
-    callStore.recentPNAt = Date.now()
+    RNCallKeep.displayIncomingCall(uuid(), 'Brekeke Phone', n.to)
   }
   // Call api to sign in
-  authStore.signInByNotification(n)
+  getAuthStore().signInByNotification(n)
   return null
 }
 
-export type ParsedPN = {
+export type ParsedPn = {
   title: string
   body: string
+  alert: string
   message: string
   from: string
   to: string
@@ -146,7 +148,7 @@ export type ParsedPN = {
   isCall: boolean
 }
 
-let lastPN: ParsedPN | null = null
-export const getLastPN = () => lastPN
+let lastCallPn: ParsedPn | null = null
+export const getLastCallPn = () => lastCallPn
 
 export default parse

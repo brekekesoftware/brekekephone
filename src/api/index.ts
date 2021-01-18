@@ -1,21 +1,14 @@
-import moment from 'moment'
-import { Platform } from 'react-native'
-import { v4 as uuid } from 'react-native-uuid'
-
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import Call from '../stores/Call'
 import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
-// @ts-ignore
-import PushNotification from '../utils/PushNotification'
 import pbx from './pbx'
 import sip from './sip'
-import { syncPnToken, syncPnTokenForAllAccounts } from './syncPnToken'
+import { SyncPnToken } from './syncPnToken'
 import uc from './uc'
-import updatePhoneIndex from './updatePhoneIndex'
 
 class Api {
   constructor() {
@@ -53,26 +46,26 @@ class Api {
         err,
       })
     })
-    syncPnToken(authStore.currentProfile).then(() =>
-      syncPnTokenForAllAccounts(),
-    )
+    SyncPnToken()
+      .sync(getAuthStore().currentProfile)
+      .then(() => SyncPnToken().syncForAllAccounts())
   }
 
   onPBXConnectionStopped = () => {
-    authStore.pbxState = 'stopped'
+    getAuthStore().pbxState = 'stopped'
   }
 
   onPBXConnectionTimeout = () => {
-    authStore.pbxState = 'failure'
-    authStore.pbxTotalFailure += 1
+    getAuthStore().pbxState = 'failure'
+    getAuthStore().pbxTotalFailure += 1
   }
 
   loadPBXUsers = async () => {
-    if (!authStore.currentProfile) {
+    if (!getAuthStore().currentProfile) {
       return
     }
-    const tenant = authStore.currentProfile.pbxTenant
-    const username = authStore.currentProfile.pbxUsername
+    const tenant = getAuthStore().currentProfile.pbxTenant
+    const username = getAuthStore().currentProfile.pbxUsername
     const userIds = await pbx
       .getUsers(tenant)
       .then((ids: string[]) => ids.filter(id => id !== username))
@@ -101,22 +94,22 @@ class Api {
   }
 
   onSIPConnectionStarted = () => {
-    authStore.sipState = 'success'
+    getAuthStore().sipState = 'success'
   }
 
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     if (!e?.reason && !e?.response) {
-      authStore.sipState = 'stopped'
+      getAuthStore().sipState = 'stopped'
     } else {
-      authStore.sipState = 'failure'
-      authStore.sipTotalFailure += 1
+      getAuthStore().sipState = 'failure'
+      getAuthStore().sipTotalFailure += 1
     }
     window.setTimeout(() => sip.disconnect(), 300)
   }
 
   onSIPConnectionTimeout = () => {
-    authStore.sipState = 'failure'
-    authStore.sipTotalFailure += 1
+    getAuthStore().sipState = 'failure'
+    getAuthStore().sipTotalFailure += 1
     sip.disconnect()
   }
 
@@ -134,29 +127,16 @@ class Api {
     callStore.upsertCall(call)
   }
   onSIPSessionStopped = (id: string) => {
-    const call = callStore._calls.find(c => c.id === id)
-    if (!call) {
-      return
-    }
-    authStore.pushRecentCall({
-      id: uuid(),
-      incoming: call.incoming,
-      answered: call.answered,
-      partyName: call.partyName,
-      partyNumber: call.partyNumber,
-      duration: call.duration,
-      created: moment().format('HH:mm - MMM D'),
-    })
-    callStore.removeCall(call.id)
+    callStore.removeCall(id)
   }
 
   onUCConnectionStopped = () => {
-    authStore.ucState = 'stopped'
+    getAuthStore().ucState = 'stopped'
   }
 
   onUCConnectionTimeout = () => {
-    authStore.ucState = 'failure'
-    authStore.ucTotalFailure += 1
+    getAuthStore().ucState = 'failure'
+    getAuthStore().ucTotalFailure += 1
   }
 
   onUCUserUpdated = (ev: {

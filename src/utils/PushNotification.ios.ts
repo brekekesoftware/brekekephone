@@ -38,11 +38,12 @@ const onNotification = async (
     if (AppState.currentState === 'active') {
       badge = 0
     }
-    Voip.presentLocalNotification({
-      alertBody: n.body,
-      alertAction: n.isCall ? 'Answer' : 'View',
-      soundName: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
-      applicationIconBadgeNumber: badge,
+    PushNotificationIOS.addNotificationRequest({
+      id: 'call',
+      title: n.body,
+      body: n.isCall ? 'Answer' : 'View',
+      sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
+      badge: badge,
     })
     PushNotificationIOS.setApplicationIconBadgeNumber(badge)
   })
@@ -50,7 +51,7 @@ const onNotification = async (
 
 const PushNotification = {
   register: async (initApp: Function) => {
-    window.setTimeout(initApp)
+    initApp()
     //
     Voip.addEventListener('register', onVoipToken)
     Voip.addEventListener('notification', (n: PN) => onNotification(n, initApp))

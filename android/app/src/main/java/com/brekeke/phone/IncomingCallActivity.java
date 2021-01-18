@@ -15,8 +15,6 @@ public class IncomingCallActivity extends Activity {
   private MediaPlayer mp;
 
   private void startRingtone() {
-    IncomingCallModule.emit("startRingtone", null);
-
     Context ctx = getApplicationContext();
     AudioManager am = ((AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE));
     am.setMode(AudioManager.MODE_RINGTONE);
@@ -36,7 +34,6 @@ public class IncomingCallActivity extends Activity {
   }
 
   private void stopRingtone() {
-    IncomingCallModule.emit("stopRingtone", null);
     mp.stop();
     mp.release();
   }
@@ -87,10 +84,7 @@ public class IncomingCallActivity extends Activity {
     callerNameTextView.setText(callerName);
     Boolean isVideoCall = b.getBoolean("isVideoCall");
     TextView audioVideoTextView = (TextView) findViewById(R.id.audio_video_text);
-    audioVideoTextView.setText(
-        uuid == IncomingCallModule.PN_UUID
-            ? "Incoming Call"
-            : "Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
+    audioVideoTextView.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
 
     findViewById(R.id.go_back_button)
         .setOnClickListener(

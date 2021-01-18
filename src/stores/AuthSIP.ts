@@ -1,27 +1,30 @@
-import debounce from 'lodash/debounce'
 import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
-import authStore from './authStore'
+import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
 class AuthSIP {
-  clearObserve?: Lambda
+  private clearObserve?: Lambda
   auth() {
-    this._auth2()
-    this.clearObserve = observe(authStore, 'sipShouldAuth', this._auth2)
+    this.authWithCheck()
+    this.clearObserve = observe(
+      getAuthStore(),
+      'sipShouldAuth',
+      this.authWithCheck,
+    )
   }
   dispose() {
     this.clearObserve?.()
-    authStore.sipState = 'stopped'
+    getAuthStore().sipState = 'stopped'
     sip.disconnect()
   }
 
-  _auth0 = async () => {
-    authStore.sipState = 'connecting'
+  private authWithoutCatch = async () => {
+    getAuthStore().sipState = 'connecting'
     //
     const pbxConfig = await pbx.getConfig()
     if (!pbxConfig) {
@@ -35,13 +38,13 @@ class AuthSIP {
       return
     }
     //
-    authStore.userExtensionProperties =
-      authStore.userExtensionProperties ||
+    getAuthStore().userExtensionProperties =
+      getAuthStore().userExtensionProperties ||
       (await pbx.getUserForSelf(
-        authStore.currentProfile.pbxTenant,
-        authStore.currentProfile.pbxUsername,
+        getAuthStore().currentProfile.pbxTenant,
+        getAuthStore().currentProfile.pbxUsername,
       ))
-    const pbxUserConfig = authStore.userExtensionProperties
+    const pbxUserConfig = getAuthStore().userExtensionProperties
     if (!pbxUserConfig) {
       console.error('Invalid PBX user config')
       return
@@ -74,33 +77,29 @@ class AuthSIP {
       : undefined
     //
     await sip.connect({
-      hostname: authStore.currentProfile.pbxHostname,
+      hostname: getAuthStore().currentProfile.pbxHostname,
       port: sipWSSPort,
       username: webPhone.id,
       accessToken: sipAccessToken,
-      pbxTurnEnabled: authStore.currentProfile.pbxTurnEnabled,
+      pbxTurnEnabled: getAuthStore().currentProfile.pbxTurnEnabled,
       dtmfSendMode: Number(dtmfSendMode),
       turnConfig,
     })
   }
-  _auth = debounce(
-    () => {
-      this._auth0().catch((err: Error) => {
-        authStore.sipState = 'failure'
-        authStore.sipTotalFailure += 1
-        sip.disconnect()
-        RnAlert.error({
-          message: intlDebug`Failed to connect to SIP`,
-          err,
-        })
+  private authWithCheck = () => {
+    if (!getAuthStore().sipShouldAuth) {
+      return
+    }
+    this.authWithoutCatch().catch((err: Error) => {
+      getAuthStore().sipState = 'failure'
+      getAuthStore().sipTotalFailure += 1
+      sip.disconnect()
+      RnAlert.error({
+        message: intlDebug`Failed to connect to SIP`,
+        err,
       })
-    },
-    50,
-    {
-      maxWait: 300,
-    },
-  )
-  _auth2 = () => authStore.sipShouldAuth && this._auth()
+    })
+  }
 }
 
 export default AuthSIP

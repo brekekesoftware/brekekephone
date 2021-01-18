@@ -95,7 +95,7 @@ class CallBar extends React.Component {
                     <ButtonIcon
                       bdcolor={g.borderBg}
                       color={c.muted ? g.colors.primary : g.color}
-                      onPress={c.toggleMuted}
+                      onPress={() => c.toggleMuted()}
                       path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
                     />
                     {Platform.OS !== 'web' && (
@@ -121,7 +121,7 @@ class CallBar extends React.Component {
             <ButtonIcon
               bdcolor={g.borderBg}
               color={c.holding ? g.colors.primary : g.color}
-              onPress={c.toggleHold}
+              onPress={() => c.toggleHold()}
               path={c.holding ? mdiPlay : mdiPause}
             />
           </View>

@@ -11,6 +11,8 @@ import sip from '../api/sip'
 import KeyPad from '../components/CallKeyPad'
 import ShowNumber from '../components/CallShowNumbers'
 import Layout from '../components/Layout'
+import { getAuthStore } from '../stores/authStore'
+import callStore from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
@@ -30,7 +32,13 @@ class PageDtmfKeypad extends React.Component<{
   }
 
   sendKey = (key: string) => {
-    sip.sendDTMF(key, this.props.callId)
+    const c = callStore.calls.find(c => c.id === this.props.callId)
+    sip.sendDTMF({
+      signal: key,
+      sessionId: this.props.callId,
+      tenant: c?.pbxTenant || getAuthStore().currentProfile.pbxTenant,
+      talkerId: c?.pbxTalkerId || c?.partyNumber || c?.partyName || '',
+    })
   }
 
   callVoice = () => {

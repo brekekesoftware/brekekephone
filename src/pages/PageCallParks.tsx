@@ -5,7 +5,7 @@ import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -33,7 +33,7 @@ class PageCallParks extends React.Component<{
   }
 
   render() {
-    const ps = authStore.currentProfile.parks
+    const ps = getAuthStore().currentProfile.parks
     const p = this.state.selectedPark
     const p2 = this.props.callParks2
     return (

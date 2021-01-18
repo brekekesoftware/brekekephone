@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer'
-import CircularJson from 'circular-json'
 import debounce from 'lodash/debounce'
 import { computed, observable } from 'mobx'
 import moment from 'moment'
@@ -54,25 +53,14 @@ class DebugStore {
   logQueue: string[] = []
 
   // The function to be called in src/utils/captureConsoleOutput.js
-  captureConsoleOutput = (lv: string, ...args: Error[]) => {
+  captureConsoleOutput = (lv: string, msg: string) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
     }
-    const msg =
-      moment().format('YYYY/MM/DD HH:mm:ss') +
-      ` ${lv.toUpperCase()} ` +
-      args
-        .map(a => {
-          return !a
-            ? `${a}`
-            : a.message
-            ? a.message
-            : typeof a === 'object'
-            ? CircularJson.stringify(a)
-            : `${a}`
-        })
-        .join(' ')
-        .replace(/\s+/g, ' ')
+    msg =
+      moment().format('YYYY/MM/DD HH:mm:ss.SSS') +
+      ` [${lv.toUpperCase().padStart(5)}] ` +
+      msg
     this.logQueue.push(msg)
     this.writeFileBatch()
   }
@@ -96,9 +84,7 @@ class DebugStore {
     // If the size of log1 passes the limit
     //    we will copy it to log2 and clear the log1
     if (this.logSizes[0] > maximumBytes) {
-      if (await RNFS.exists(log2)) {
-        await RNFS.unlink(log2)
-      }
+      await RNFS.unlink(log2).catch((e: Error) => void e)
       await RNFS.moveFile(log1, log2)
       this.logSizes[1] = this.logSizes[0]
     }

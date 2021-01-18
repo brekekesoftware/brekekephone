@@ -5,8 +5,10 @@ import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
 import appPackageJson from '../../package.json'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
+import pbx from './pbx'
 import turnConfig from './turnConfig'
 
 const sipCreateMediaConstraints = (sourceId?: string) => {
@@ -59,8 +61,11 @@ export class SIP extends EventEmitter {
       }
       if (ev.phoneStatus === 'stopping' || ev.phoneStatus === 'stopped') {
         phone.removeEventListener('phoneStatusChanged', h)
-        window.setTimeout(() => this.disconnect())
-        window.setTimeout(() => this.emit('connection-stopped', ev), 300)
+        BackgroundTimer.setTimeout(() => this.disconnect(), 0)
+        BackgroundTimer.setTimeout(
+          () => this.emit('connection-stopped', ev),
+          300,
+        )
       }
       return
     }
@@ -162,7 +167,7 @@ export class SIP extends EventEmitter {
     })
   }
 
-  async connect(sipLoginOption: SipLoginOption) {
+  connect = async (sipLoginOption: SipLoginOption) => {
     this.disconnect()
     await this.init(sipLoginOption)
     //
@@ -208,36 +213,54 @@ export class SIP extends EventEmitter {
     })
   }
 
-  disconnect() {
+  disconnect = () => {
     if (this.phone) {
       this.phone.stopWebRTC()
       this.phone = null!
     }
   }
 
-  createSession(number: string, opts: { videoEnabled?: boolean } = {}) {
-    this.phone.makeCall(number, null, opts.videoEnabled)
+  createSession = (number: string, opts: { videoEnabled?: boolean } = {}) => {
+    return this.phone.makeCall(number, null, opts.videoEnabled)
   }
 
-  hangupSession(sessionId: string) {
+  hangupSession = (sessionId: string) => {
     const session = this.phone.getSession(sessionId)
     const rtcSession = session && session.rtcSession
-    rtcSession && rtcSession.terminate()
+    return rtcSession && rtcSession.terminate()
   }
-  answerSession(sessionId: string, opts: { videoEnabled?: boolean } = {}) {
-    this.phone.answer(sessionId, null, opts.videoEnabled)
+  answerSession = (
+    sessionId: string,
+    opts: { videoEnabled?: boolean } = {},
+  ) => {
+    return this.phone.answer(sessionId, null, opts.videoEnabled)
   }
-  sendDTMF(dtmf: string, sessionId: string) {
-    this.phone.sendDTMF(dtmf, sessionId)
+  sendDTMF = async (p: {
+    signal: string
+    sessionId: string
+    tenant: string
+    talkerId: string
+  }) => {
+    const c = await pbx.getConfig()
+    const dtmfSendMode = c['webrtcclient.dtmfSendMode']
+    if (dtmfSendMode && dtmfSendMode !== 'false' && dtmfSendMode !== '0') {
+      await pbx.client._pal('sendDTMF', {
+        signal: p.signal,
+        tenant: p.tenant,
+        talker_id: p.talkerId,
+      })
+      return
+    }
+    return this.phone.sendDTMF(p.signal, p.sessionId)
   }
-  enableVideo(sessionId: string) {
-    this.phone.setWithVideo(sessionId, true)
+  enableVideo = (sessionId: string) => {
+    return this.phone.setWithVideo(sessionId, true)
   }
-  disableVideo(sessionId: string) {
-    this.phone.setWithVideo(sessionId, false)
+  disableVideo = (sessionId: string) => {
+    return this.phone.setWithVideo(sessionId, false)
   }
-  setMuted(muted: boolean, sessionId: string) {
-    this.phone.setMuted({ main: muted }, sessionId)
+  setMuted = (muted: boolean, sessionId: string) => {
+    return this.phone.setMuted({ main: muted }, sessionId)
   }
 }
 

@@ -1,8 +1,3 @@
-import '../utils/captureConsoleOutput'
-import '../polyfill'
-import '../utils/validator'
-import '../stores/Nav2' // Fix circular dependencies
-
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
@@ -19,10 +14,10 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import api from '../api'
-import { syncPnTokenForAllAccounts } from '../api/syncPnToken'
+import { SyncPnToken } from '../api/syncPnToken'
 import AuthPBX from '../stores/AuthPBX'
 import AuthSIP from '../stores/AuthSIP'
-import authStore from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import AuthUC from '../stores/AuthUC'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
@@ -52,18 +47,16 @@ import g from './variables'
 // API was a component but had been rewritten to a listener
 void api
 
-// Must wrap in window.setTimeout to make sure
-//    there's no state change when rendering
-const batchRender = window.setTimeout
-
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
-    authStore.reconnect()
+    getAuthStore().reconnect()
     PushNotification.resetBadgeNumber()
   }
 })
 registerOnUnhandledError(unexpectedErr => {
-  batchRender(() => RnAlert.error({ unexpectedErr }))
+  // Must wrap in window.setTimeout to make sure
+  //    there's no state change when rendering
+  window.setTimeout(() => RnAlert.error({ unexpectedErr }))
   return false
 })
 
@@ -129,23 +122,23 @@ PushNotification.register(() => {
   setupCallKeep()
   profileStore.loadProfilesFromLocalStorage().then(() => {
     if (AppState.currentState === 'active') {
-      syncPnTokenForAllAccounts()
+      SyncPnToken().syncForAllAccounts()
     }
   })
 
   Nav().goToPageIndex()
-  authStore.handleUrlParams()
+  getAuthStore().handleUrlParams()
 
   const authPBX = new AuthPBX()
   const authSIP = new AuthSIP()
   const authUC = new AuthUC()
 
-  observe(authStore, 'signedInId', () => {
+  observe(getAuthStore(), 'signedInId', () => {
     Nav().goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
-    if (authStore.signedInId) {
-      authStore.reconnect()
+    if (getAuthStore().signedInId) {
+      getAuthStore().reconnect()
       authPBX.auth()
       authSIP.auth()
       authUC.auth()
@@ -208,7 +201,7 @@ const App = observer(() => {
     pbxTotalFailure,
     sipTotalFailure,
     ucTotalFailure,
-  } = authStore
+  } = getAuthStore()
   let service = ''
   let isRetrying = false
   if (pbxConnectingOrFailure) {
@@ -234,7 +227,7 @@ const App = observer(() => {
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <RnStatusBar />
-      {shouldShowConnStatus && !!authStore.signedInId && (
+      {shouldShowConnStatus && !!getAuthStore().signedInId && (
         <AnimatedSize
           style={[
             css.App_ConnectionStatus,
@@ -249,7 +242,7 @@ const App = observer(() => {
         </AnimatedSize>
       )}
 
-      {!!authStore.signedInId && (
+      {!!getAuthStore().signedInId && (
         <>
           <CallNotify />
           <CallBar />
