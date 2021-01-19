@@ -337,7 +337,7 @@ PODS:
     - React-Core
   - RNSVG (12.1.0):
     - React
-  - RNVoipPushNotification (3.0.0):
+  - RNVoipPushNotification (3.1.0):
     - React-Core
   - SDWebImage (5.9.4):
     - SDWebImage/Core (= 5.9.4)
@@ -571,7 +571,7 @@ SPEC CHECKSUMS:
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNShare: fed99fd743f80ca255903c1da46fc9a6430efab6
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-  RNVoipPushNotification: e6c0c6958a440d6b5291368d8f3626e6bccbba1d
+  RNVoipPushNotification: d076a99d761f91cf6042172ec8390b6e4360f9b2
   SDWebImage: b69257f4ab14e9b6a2ef53e910fdf914d8f757c1
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
