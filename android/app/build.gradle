@@ -31,8 +31,8 @@ android {
 
   defaultConfig {
     applicationId "com.brekeke.phone"
-    versionCode 32654
-    versionName "2.6.14"
+    versionCode 32655
+    versionName "2.6.15"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
