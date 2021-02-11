@@ -6,7 +6,6 @@ import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { getUrlParams } from '../utils/deeplink'
 import { arrToMap } from '../utils/toMap'
-import waitTimeout from '../utils/waitTimeout'
 import { compareProfile, setAuthStore } from './authStore'
 import callStore from './callStore'
 import { intlDebug } from './intl'
@@ -166,6 +165,10 @@ export class AuthStore {
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
   }
+  @action reconnectPbx = () => {
+    this.reconnect()
+    this.pbxState = 'stopped'
+  }
   @action reconnectSip = () => {
     this.reconnect()
     this.sipState = 'stopped'
@@ -277,23 +280,25 @@ export class AuthStore {
       return this.signIn(p.id)
     }
     // PN of current signed in account
-    try {
-      // If PN came and still no sip call it is likely disconnected
-      // Set states to failure to reconnect them
-      await waitTimeout(1000)
-      if (
-        n.isCall &&
-        !callStore.calls.length &&
-        Date.now() > callStore.recentCallActivityAt + 30000
-      ) {
-        await pbx.getConfig()
-        const s = sip.phone.getPhoneStatus()
-        if (s !== 'starting' && s !== 'started') {
-          throw new Error(`SIP not started: ${s}`)
+    // If PN came and still no sip call it is likely disconnected
+    // Set states to failure to reconnect them
+    if (
+      n.isCall &&
+      !callStore.calls.length &&
+      Date.now() > callStore.recentCallActivityAt + 30000
+    ) {
+      await pbx.client?._pal('getProductInfo').catch(err => {
+        if (authStore.pbxState === 'connecting') {
+          return
         }
+        console.error(`PN debug: PBX reconnect: getProductInfo() error=${err}`)
+        this.reconnectPbx()
+      })
+      const s = sip.phone?.getPhoneStatus()
+      if (s && s !== 'starting' && s !== 'started') {
+        console.error(`PN debug: SIP reconnect: getPhoneStatus()=${s}`)
+        this.reconnectSip()
       }
-    } catch (err) {
-      this.reconnectSip()
     }
     return false
   }
