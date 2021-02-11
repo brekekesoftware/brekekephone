@@ -249,7 +249,7 @@ PODS:
   - React-jsinspector (0.63.4)
   - react-native-background-timer (2.4.1):
     - React-Core
-  - react-native-document-picker (4.2.0):
+  - react-native-document-picker (4.3.0):
     - React-Core
   - react-native-image-picker (2.3.4):
     - React-Core
@@ -323,8 +323,8 @@ PODS:
     - React
   - RNCallKeep (4.0.1):
     - React
-  - RNCAsyncStorage (1.13.2):
-    - React
+  - RNCAsyncStorage (1.13.4):
+    - React-Core
   - RNCPushNotificationIOS (1.8.0):
     - React-Core
   - RNFastImage (8.3.4):
@@ -333,7 +333,7 @@ PODS:
     - SDWebImageWebPCoder (~> 0.6.1)
   - RNFS (2.16.6):
     - React
-  - RNShare (5.1.0):
+  - RNShare (5.1.1):
     - React-Core
   - RNSVG (12.1.0):
     - React
@@ -548,7 +548,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
-  react-native-document-picker: 44ecae7103090b6789cca010f06f5205fd1cb66e
+  react-native-document-picker: 20f652c2402d3ddc81f396d8167c3bd978add4a2
   react-native-image-picker: c6d75c4ab2cf46f9289f341242b219cb3c1180d3
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-webrtc: 86d841823e66d68cc1f86712db1c2956056bf0c2
@@ -565,11 +565,11 @@ SPEC CHECKSUMS:
   ReactNativeExceptionHandler: f1638ffd507ef1b1794af25884fa0eb30dd5c551
   ReactNativeIncallManager: a840ef75640518065742a893e6c6ff98ee820039
   RNCallKeep: eac6e6b4892f1b1c2890a1ce6d5f5451d7543c57
-  RNCAsyncStorage: 05bae7ecfab1cbd5441993f1ca098f7c3b3f8d0e
+  RNCAsyncStorage: 44539979e1f234262d64d3ce86ec21cceb1b2c5e
   RNCPushNotificationIOS: 61a7c72bd1ebad3568025957d001e0f0e7b32191
   RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNShare: fed99fd743f80ca255903c1da46fc9a6430efab6
+  RNShare: 6779fdd48e6246a8c79276a5b5e74a0f0d61a1ec
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNVoipPushNotification: d076a99d761f91cf6042172ec8390b6e4360f9b2
   SDWebImage: b69257f4ab14e9b6a2ef53e910fdf914d8f757c1
@@ -579,4 +579,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: ae4cfb125267f2d26f16c50d3712989c945c409f
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1
