@@ -153,6 +153,7 @@ class Api {
     id: string
     creator: string
     text?: string
+    type: number
     file?: string
     created: number
   }) => {
@@ -163,6 +164,7 @@ class Api {
     group: string
     creator: string
     text?: string
+    type: number
     file?: string
     created: number
   }) => {

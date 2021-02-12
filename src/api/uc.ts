@@ -4,7 +4,6 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
-import authStore from '../stores/authStore2'
 import intl from '../stores/intl'
 import { Profile } from '../stores/profileStore'
 import formatDuration from '../utils/formatDuration'
@@ -573,6 +572,7 @@ export class UC extends EventEmitter {
       chat: {
         id: res.text_id,
         file: res.fileInfo.file_id,
+        type: -1, // TODO
         creator: this.client.getProfile().user_id,
         created: res.ltime,
       },
@@ -645,6 +645,7 @@ export class UC extends EventEmitter {
       chat: {
         id: file_res.text_id,
         file: file_res.fileInfo.file_id,
+        type: -1, // TODO
         creator: this.client.getProfile().user_id,
         created: file_res.ltime,
       },
