@@ -48,6 +48,7 @@ export type ProfileData = {
     id: string // thread id
     name: string
     text: string
+    type: number
     group: boolean
     unread: boolean
     created: string

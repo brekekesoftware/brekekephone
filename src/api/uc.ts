@@ -4,12 +4,16 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import authStore from '../stores/authStore2'
+import intl from '../stores/intl'
 import { Profile } from '../stores/profileStore'
+import formatDuration from '../utils/formatDuration'
 import {
   UcChatClient,
   UcConference,
   UcListeners,
   UcLogger,
+  UcMessageLog,
   UcReceieveUnreadText,
   UcSearchTexts,
   UcSendFile,
@@ -287,6 +291,25 @@ export class UC extends EventEmitter {
     }))
   }
 
+  private formatText = (l: UcMessageLog) => {
+    let text = l.content
+    if (l.ctype !== 1) {
+      let o: {
+        name?: string
+        talklen?: number
+      } = {}
+      try {
+        o = JSON.parse(l.content)
+      } catch (err) {}
+      if (o.talklen) {
+        text = intl`Call duration: ${formatDuration(o.talklen)}`
+      } else if (o.name) {
+        text = o.name
+      }
+    }
+    return text
+  }
+
   getBuddyChats = async (
     buddy: string,
     opts: {
@@ -314,15 +337,15 @@ export class UC extends EventEmitter {
       return []
     }
 
-    return res.logs.map(log => ({
-      id: log.log_id,
-      text:
-        log.ctype === 5
-          ? (JSON.parse(log.content) as { name: string }).name
-          : log.content,
-      creator: log.sender.user_id,
-      created: log.ltime,
-    }))
+    return res.logs.map(l => {
+      return {
+        id: l.log_id,
+        text: this.formatText(l),
+        type: l.ctype,
+        creator: l.sender.user_id,
+        created: l.ltime,
+      }
+    })
   }
 
   getGroupChats = async (
@@ -352,11 +375,12 @@ export class UC extends EventEmitter {
       return []
     }
 
-    return res.logs.map(log => ({
-      id: log.log_id,
-      text: log.content,
-      creator: log.sender.user_id,
-      created: log.ltime,
+    return res.logs.map(l => ({
+      id: l.log_id,
+      text: this.formatText(l),
+      type: l.ctype,
+      creator: l.sender.user_id,
+      created: l.ltime,
     }))
   }
 

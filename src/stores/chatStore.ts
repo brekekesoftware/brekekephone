@@ -9,6 +9,7 @@ export type ChatMessage = {
   id: string
   text?: string
   file?: string
+  type: number
   creator: string
   created: number
 }

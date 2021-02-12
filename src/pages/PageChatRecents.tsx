@@ -72,6 +72,7 @@ class PageChatRecents extends React.Component {
         id,
         name,
         text: c.text || '',
+        type: c.type,
         group: !!group,
         unread,
         created: c.created,
@@ -82,7 +83,8 @@ class PageChatRecents extends React.Component {
     arr = orderBy(arr, 'created').reverse()
 
     window.setTimeout(() => {
-      const arr2 = [...arr]
+      // Not show other message content type different than normal text chat
+      const arr2 = [...arr].filter(c => c.type === 1)
       while (arr2.length > 20) {
         arr2.pop()
       }
