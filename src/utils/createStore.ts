@@ -55,8 +55,10 @@ const createStore = (mixin: Function, ...args: unknown[]) => {
           throw new Error(`createStore.extends: Duplicated key ${k}`)
         }
       })
-      extendObservable($, mx.observable)
-      delete mx.observable
+      if (mx.observable) {
+        extendObservable($, mx.observable)
+        delete mx.observable
+      }
       Object.assign($, mx)
     },
   }
