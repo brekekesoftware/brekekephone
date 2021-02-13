@@ -1,4 +1,3 @@
-import stringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
@@ -88,12 +87,8 @@ class PageChatRecents extends React.Component {
       while (arr2.length > 20) {
         arr2.pop()
       }
-      if (
-        stringify(getAuthStore().currentData.recentChats) !== stringify(arr2)
-      ) {
-        getAuthStore().currentData.recentChats = arr2
-        profileStore.saveProfilesToLocalStorage()
-      }
+      getAuthStore().currentData.recentChats = arr2
+      profileStore.saveProfilesToLocalStorage()
     })
 
     return (
