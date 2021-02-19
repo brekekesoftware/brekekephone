@@ -8,6 +8,7 @@ import { v4 as uuid } from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
+import uc from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { RnNativeModules } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
@@ -195,6 +196,9 @@ export class CallStore {
         duration: c.duration,
         created: moment().format('HH:mm - MMM D'),
       })
+      if (uc.client && c.duration && !c.incoming) {
+        uc.sendCallResult(c.duration, c.partyNumber)
+      }
     }
     this.calls = this.calls.filter(c => c.id !== id)
     this.endCallKeep(c)

@@ -409,6 +409,20 @@ export type UcChatClient = {
     resolve: (res: UcSendText) => void,
     reject: ErrorHandler,
   ): void
+  sendCallResult(
+    options?: {
+      user_id?: string
+      tenant?: string
+      conf_id?: string
+      targets?: {
+        user_id: string
+        tenant?: string
+      }[]
+    },
+    text: string,
+    resolve: (res: UcSendText) => void,
+    reject: ErrorHandler,
+  ): void
   sendConferenceText(
     text: string,
     conf_id: string,
@@ -503,6 +517,8 @@ export type UcSendTextParam = {
 export type UcSendText = {
   text_id: string
   ltime: number
+  tstamp: number
+  topic_id?: string
 }
 export type UcCreateConference = {
   conference: UcConference
@@ -609,6 +625,50 @@ export type UcEventMap = {
     }
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
+}
+
+export type UcConstants = {
+  STATUS_OFFLINE: 0
+  STATUS_AVAILABLE: 1
+  STATUS_IDLE: 2
+  STATUS_BUSY: 3
+  USER_TYPE_SYSTEM_ADMIN: 1
+  USER_TYPE_TENANT_ADMIN: 2
+  USER_TYPE_TENANT_USER: 3
+  USER_TYPE_TENANT_GUEST: 4
+  BUDDY_MODE_MANUAL: 0
+  BUDDY_MODE_AUTO: 1
+  BUDDY_MODE_GROUP: 2
+  CONF_STATUS_INACTIVE: 0
+  CONF_STATUS_INVITED: 1
+  CONF_STATUS_JOINED: 2
+  CONF_STATUS_INVITED_WEBCHAT: 5
+  FILE_STATUS_UNPREPARED: 0
+  FILE_STATUS_UNACCEPTED: 1
+  FILE_STATUS_TRANSFERRING: 2
+  FILE_STATUS_COMPLETED: 3
+  FILE_STATUS_LOCAL_CANCEL: 4
+  FILE_STATUS_REMOTE_CANCEL: 5
+  FILE_STATUS_ERROR: 6
+  CALL_STATUS_TERMINATED: 0
+  CALL_STATUS_INCOMING: 1
+  CALL_STATUS_ANSWERING: 2
+  CALL_STATUS_DIALING: 3
+  CALL_STATUS_PROGRESS: 4
+  CALL_STATUS_TALKING: 5
+  CALL_DIRECTION_UNKNOWN: 0
+  CALL_DIRECTION_INCOMING: 1
+  CALL_DIRECTION_OUTGOING: 2
+  STREAM_STATUS_DIALING: 3
+  STREAM_STATUS_TALKING: 5
+  CTYPE_TEXT: 1
+  CTYPE_FILE_REQUEST: 5
+  CTYPE_FILE_ACCEPT: 6
+  CTYPE_FILE_REJECT: 7
+  CTYPE_FILE_CANCEL: 8
+  CTYPE_FILE_PROGRESS: 9
+  CTYPE_CALL_RESULT: 26
+  CTYPE_OBJECT: 101
 }
 
 type ErrorHandler = (err: Error) => void

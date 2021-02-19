@@ -14,6 +14,7 @@ import contactStore, { UcUser } from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
+import { formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
 @observer
@@ -70,7 +71,7 @@ class PageChatRecents extends React.Component {
       return {
         id,
         name,
-        text: c.text || '',
+        text: formatChatContent(c),
         type: c.type,
         group: !!group,
         unread,

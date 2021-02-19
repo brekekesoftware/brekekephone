@@ -15,6 +15,7 @@ import Share from 'react-native-share'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import RnPicker from '../stores/RnPicker'
+import { formatChatContent } from '../utils/formatChatContent'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
@@ -47,6 +48,11 @@ const css = StyleSheet.create({
   Image: {
     width: 150,
     height: 150,
+  },
+
+  Message__call: {
+    fontSize: g.fontSizeSmall,
+    color: g.colors.warning,
   },
 
   Message_File_Button_Wrapper: {
@@ -215,6 +221,8 @@ const File: FC<
 @observer
 class Message extends React.Component<{
   text: string
+  type?: number
+  creatorId: string
   file: string
   acceptFile: Function
   rejectFile: Function
@@ -299,7 +307,9 @@ class Message extends React.Component<{
               linkStyle={css.Link}
               onLongPress={this.onLinkLongPress}
             >
-              <RnText>{p.text}</RnText>
+              <RnText style={p.type !== 1 && css.Message__call}>
+                {formatChatContent(p)}
+              </RnText>
             </Hyperlink>
           </TextContainer>
         )}

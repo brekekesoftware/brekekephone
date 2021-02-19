@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native'
 
 import uc from '../api/uc'
 import Call from '../stores/Call'
-import chatStore from '../stores/chatStore'
+import chatStore, { ChatMessage } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -177,15 +177,19 @@ class UnreadChatNoti extends React.Component {
     if (this.unreadChat) {
       return
     }
+    const f = (arr: ChatMessage[]) =>
+      arr?.filter(c => c.type === 1 || (c.text && !c.text.startsWith('{')))
     let unreadChats = Object.entries(chatStore.threadConfig)
-      .filter(([k, v]) => v.isUnread && chatStore.messagesByThreadId[k]?.length)
-      .map(([k, v]) => ({
-        ...v,
-        lastMessage:
-          chatStore.messagesByThreadId[k][
-            chatStore.messagesByThreadId[k].length - 1
-          ],
-      }))
+      .filter(
+        ([k, v]) => v.isUnread && f(chatStore.messagesByThreadId[k])?.length,
+      )
+      .map(([k, v]) => {
+        const arr = f(chatStore.messagesByThreadId[k])
+        return {
+          ...v,
+          lastMessage: arr[arr.length - 1],
+        }
+      })
       .filter(
         c =>
           !this.alreadyShowNoti[c.lastMessage.id] &&

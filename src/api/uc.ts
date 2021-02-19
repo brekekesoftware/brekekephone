@@ -4,25 +4,26 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
-import intl from '../stores/intl'
 import { Profile } from '../stores/profileStore'
-import formatDuration from '../utils/formatDuration'
 import {
   UcChatClient,
   UcConference,
+  UcConstants,
   UcListeners,
   UcLogger,
-  UcMessageLog,
   UcReceieveUnreadText,
   UcSearchTexts,
   UcSendFile,
   UcSendFiles,
 } from './brekekejs'
 
-const UCClient = UCClient0 as {
+const { ChatClient, Logger, Constants } = UCClient0 as {
   ChatClient: UcChatClient
   Logger: UcLogger
+  Constants: UcConstants
 }
+
+export { ChatClient, Constants, Logger }
 
 const codeMapUserStatus = {
   0: 'offline',
@@ -51,8 +52,8 @@ export class UC extends EventEmitter {
   client: UcChatClient
   constructor() {
     super()
-    const logger = new UCClient.Logger('all')
-    this.client = new UCClient.ChatClient(logger)
+    const logger = new Logger('all')
+    this.client = new ChatClient(logger)
 
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
@@ -290,25 +291,6 @@ export class UC extends EventEmitter {
     }))
   }
 
-  private formatText = (l: UcMessageLog) => {
-    let text = l.content
-    if (l.ctype !== 1) {
-      let o: {
-        name?: string
-        talklen?: number
-      } = {}
-      try {
-        o = JSON.parse(l.content)
-      } catch (err) {}
-      if (o.talklen) {
-        text = intl`Call duration: ${formatDuration(o.talklen)}`
-      } else if (o.name) {
-        text = o.name
-      }
-    }
-    return text
-  }
-
   getBuddyChats = async (
     buddy: string,
     opts: {
@@ -339,7 +321,7 @@ export class UC extends EventEmitter {
     return res.logs.map(l => {
       return {
         id: l.log_id,
-        text: this.formatText(l),
+        text: l.content,
         type: l.ctype,
         creator: l.sender.user_id,
         created: l.ltime,
@@ -376,7 +358,7 @@ export class UC extends EventEmitter {
 
     return res.logs.map(l => ({
       id: l.log_id,
-      text: this.formatText(l),
+      text: l.content,
       type: l.ctype,
       creator: l.sender.user_id,
       created: l.ltime,
@@ -396,6 +378,26 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
+            ctype: Constants.CTYPE_TEXT,
+          }),
+        reject,
+      ),
+    )
+  }
+
+  sendCallResult = (duration: number, target: string) => {
+    const text = JSON.stringify({ talklen: duration })
+    return new Promise((resolve, reject) =>
+      this.client.sendCallResult(
+        { user_id: target },
+        text,
+        res =>
+          resolve({
+            id: res.text_id,
+            text,
+            creator: this.client.getProfile().user_id,
+            created: res.ltime,
+            ctype: Constants.CTYPE_CALL_RESULT,
           }),
         reject,
       ),

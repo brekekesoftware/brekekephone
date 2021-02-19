@@ -251,6 +251,7 @@ class PageChatDetail extends React.Component<{
       creatorName: creator.name || creator.id,
       creatorAvatar: creator.avatar,
       text,
+      type: chat.type,
       file,
       created: chat.created,
       createdByMe: creator.id === this.me.id,

@@ -83,7 +83,9 @@ class PageContactUsers extends React.Component {
   }
 
   getLastMessageChat = (id: string) => {
-    const chats = chatStore.messagesByThreadId[id] || []
+    const chats = (chatStore.messagesByThreadId[id] || []).filter(
+      c => c.type === 1 || (c.text && !c.text.startsWith('{')),
+    )
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
 

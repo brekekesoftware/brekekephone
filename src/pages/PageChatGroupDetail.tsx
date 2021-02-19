@@ -159,6 +159,7 @@ class PageChatGroupDetail extends React.Component<{
       creatorAvatar: creator.avatar,
       file,
       text,
+      type: chat.type,
       created: chat.created,
       createdByMe: creator.id === this.me.id,
     }
