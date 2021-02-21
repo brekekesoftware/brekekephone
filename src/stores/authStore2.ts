@@ -287,7 +287,7 @@ export class AuthStore {
       !callStore.calls.length &&
       Date.now() > callStore.recentCallActivityAt + 30000
     ) {
-      await pbx.client?._pal('getProductInfo').catch(err => {
+      await pbx.client?._pal('getProductInfo').catch((err: Error) => {
         if (authStore.pbxState === 'connecting') {
           return
         }
