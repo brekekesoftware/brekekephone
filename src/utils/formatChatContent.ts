@@ -3,20 +3,21 @@ import intl from '../stores/intl'
 import formatDuration from './formatDuration'
 
 export const formatChatContent = (c: {
-  text: string
+  text?: string
   creatorId?: string
   type?: number
   ctype?: number
 }) => {
   const type = c.type || c.ctype
   let text = c.text || ''
+  const originalText = text
   if (type !== 1) {
     let o: {
       name?: string
       talklen?: number
     } = {}
     try {
-      o = JSON.parse(c.text)
+      o = JSON.parse(text)
     } catch (err) {}
     if (typeof o.talklen === 'number' || typeof o.talklen === 'string') {
       text = !c.creatorId
@@ -34,10 +35,21 @@ export const formatChatContent = (c: {
   if (isTextOnly) {
     text = text.replace(/ \.txt$/, '')
   }
-  isTextOnly = isTextOnly || type === 1 || !c.text.startsWith('{')
+  isTextOnly = isTextOnly || type === 1 || !originalText.startsWith('{')
 
   return {
     text,
     isTextOnly,
   }
 }
+
+export const filterTextOnly = <
+  T extends {
+    text?: string
+    creatorId?: string
+    type?: number
+    ctype?: number
+  }
+>(
+  arr?: T[],
+): T[] => (arr || []).filter(c => formatChatContent(c).isTextOnly)

@@ -7,12 +7,13 @@ import { StyleSheet, View } from 'react-native'
 
 import uc from '../api/uc'
 import Call from '../stores/Call'
-import chatStore, { ChatMessage } from '../stores/chatStore'
+import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import RnStacker from '../stores/RnStacker'
+import { filterTextOnly } from '../utils/formatChatContent'
 import ButtonIcon from './ButtonIcon'
 import { formatDateTimeSemantic } from './chatConfig'
 import UserItem from './ContactUserItem'
@@ -177,14 +178,13 @@ class UnreadChatNoti extends React.Component {
     if (this.unreadChat) {
       return
     }
-    const f = (arr: ChatMessage[]) =>
-      arr?.filter(c => c.type === 1 || (c.text && !c.text.startsWith('{')))
     let unreadChats = Object.entries(chatStore.threadConfig)
       .filter(
-        ([k, v]) => v.isUnread && f(chatStore.messagesByThreadId[k])?.length,
+        ([k, v]) =>
+          v.isUnread && filterTextOnly(chatStore.messagesByThreadId[k])?.length,
       )
       .map(([k, v]) => {
-        const arr = f(chatStore.messagesByThreadId[k])
+        const arr = filterTextOnly(chatStore.messagesByThreadId[k])
         return {
           ...v,
           lastMessage: arr[arr.length - 1],

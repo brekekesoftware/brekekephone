@@ -16,6 +16,7 @@ import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
 import DelayFlag from '../utils/DelayFlag'
+import { filterTextOnly } from '../utils/formatChatContent'
 
 @observer
 class PageContactUsers extends React.Component {
@@ -83,9 +84,7 @@ class PageContactUsers extends React.Component {
   }
 
   getLastMessageChat = (id: string) => {
-    const chats = (chatStore.messagesByThreadId[id] || []).filter(
-      c => c.type === 1 || (c.text && !c.text.startsWith('{')),
-    )
+    const chats = filterTextOnly(chatStore.messagesByThreadId[id])
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
 

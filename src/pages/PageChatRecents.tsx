@@ -4,6 +4,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { Group } from 'react-native'
 
+import { UcMessageLog } from '../api/brekekejs'
 import ListUsers from '../components/ChatListUsers'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
@@ -14,7 +15,7 @@ import contactStore, { UcUser } from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
-import { formatChatContent } from '../utils/formatChatContent'
+import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
 @observer
@@ -73,7 +74,7 @@ class PageChatRecents extends React.Component {
         id,
         name,
         text,
-        type: isTextOnly ? 1 : c.type,
+        type: isTextOnly ? 1 : c.type || ((c as unknown) as UcMessageLog).ctype,
         group: !!group,
         unread,
         created: c.created,
@@ -82,10 +83,11 @@ class PageChatRecents extends React.Component {
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
     arr = uniqBy(arr, 'id')
     arr = orderBy(arr, 'created').reverse()
+    arr = filterTextOnly(arr)
+    // Not show other message content type different than normal text chat
 
     window.setTimeout(() => {
-      // Not show other message content type different than normal text chat
-      const arr2 = [...arr].filter(c => c.type === 1)
+      const arr2 = [...arr]
       while (arr2.length > 20) {
         arr2.pop()
       }
