@@ -298,18 +298,17 @@ class Message extends React.Component<{
   render() {
     const p = this.props
     const TextContainer = Platform.OS === 'web' ? View : RnTouchableOpacity
+    const { text, isTextOnly } = formatChatContent(p)
     return (
       <>
-        {!!p.text && (
+        {!!text && (
           <TextContainer style={css.Message} onLongPress={this.onMessagePress}>
             <Hyperlink
               onPress={this.onLinkPress}
               linkStyle={css.Link}
               onLongPress={this.onLinkLongPress}
             >
-              <RnText style={p.type !== 1 && css.Message__call}>
-                {formatChatContent(p)}
-              </RnText>
+              <RnText style={!isTextOnly && css.Message__call}>{text}</RnText>
             </Hyperlink>
           </TextContainer>
         )}

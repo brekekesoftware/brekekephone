@@ -6,9 +6,11 @@ export const formatChatContent = (c: {
   text: string
   creatorId?: string
   type?: number
+  ctype?: number
 }) => {
-  let text = c.text
-  if (c.type !== 1) {
+  const type = c.type || c.ctype
+  let text = c.text || ''
+  if (type !== 1) {
     let o: {
       name?: string
       talklen?: number
@@ -26,5 +28,16 @@ export const formatChatContent = (c: {
       text = o.name
     }
   }
-  return text
+
+  // Fix migrate error from apps backend?
+  let isTextOnly = text.endsWith(' .txt')
+  if (isTextOnly) {
+    text = text.replace(/ \.txt$/, '')
+  }
+  isTextOnly = isTextOnly || type === 1 || !c.text.startsWith('{')
+
+  return {
+    text,
+    isTextOnly,
+  }
 }

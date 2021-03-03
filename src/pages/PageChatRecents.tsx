@@ -68,11 +68,12 @@ class PageChatRecents extends React.Component {
       if (typeof unread !== 'boolean') {
         unread = c.unread || false
       }
+      const { text, isTextOnly } = formatChatContent(c)
       return {
         id,
         name,
-        text: formatChatContent(c),
-        type: c.type,
+        text,
+        type: isTextOnly ? 1 : c.type,
         group: !!group,
         unread,
         created: c.created,
