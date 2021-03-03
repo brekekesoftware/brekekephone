@@ -321,6 +321,7 @@
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BrekekePhone/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
