@@ -105,6 +105,9 @@ export class CallStore {
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
     }
+    if (this.prevCallKeepUuid === uuid) {
+      this.prevCallKeepUuid = undefined
+    }
   }
 
   endCallKeep = (
