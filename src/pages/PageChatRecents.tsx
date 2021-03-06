@@ -1,3 +1,4 @@
+import stableStringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
@@ -82,7 +83,9 @@ class PageChatRecents extends React.Component {
     }
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
     arr = uniqBy(arr, 'id')
-    arr = orderBy(arr, 'created').reverse()
+    arr = orderBy(arr, 'created')
+      .filter(c => !!c.created)
+      .reverse()
     arr = filterTextOnly(arr)
     // Not show other message content type different than normal text chat
 
@@ -90,6 +93,12 @@ class PageChatRecents extends React.Component {
       const arr2 = [...arr]
       while (arr2.length > 20) {
         arr2.pop()
+      }
+      if (
+        stableStringify(arr2) ===
+        stableStringify(getAuthStore().currentData.recentChats)
+      ) {
+        return
       }
       getAuthStore().currentData.recentChats = arr2
       profileStore.saveProfilesToLocalStorage()
