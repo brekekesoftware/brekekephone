@@ -119,7 +119,7 @@ static void InitializeFlipper(UIApplication *application) {
     didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
                               forType:(PKPushType)type
                 withCompletionHandler:(void (^)(void))completion {
-  NSString *uuid = [[NSUUID UUID] UUIDString];
+  NSString *uuid = [[[NSUUID UUID] UUIDString] lowercaseString];
   // --- only required if we want to call `completion()` on the js side
   // [RNVoipPushNotificationManager
   //     addCompletionHandler:uuid

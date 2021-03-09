@@ -34,7 +34,7 @@ const css = StyleSheet.create({
 class CallNotify extends React.Component {
   render() {
     const c = callStore.incomingCall
-    if (!c) {
+    if (!c || callStore.recentPn?.action) {
       return null
     }
     return (
