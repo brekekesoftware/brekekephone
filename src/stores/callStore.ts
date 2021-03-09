@@ -205,6 +205,10 @@ export class CallStore {
     }
     this.calls = this.calls.filter(c => c.id !== id)
     this.endCallKeep(c)
+    if (!this.calls.length && Platform.OS !== 'web') {
+      this.isLoudSpeakerEnabled = false
+      IncallManager.setForceSpeakerphoneOn(false)
+    }
   }
 
   @action selectBackgroundCall = (c: Call) => {
