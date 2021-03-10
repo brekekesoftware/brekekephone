@@ -23,8 +23,42 @@ class AuthSIP {
     sip.disconnect()
   }
 
+  private authPnWithoutCatch = async () => {
+    const s = getAuthStore()
+    const p = s.sipPn
+    if (!p) {
+      console.error('Invalid sip PN login logic')
+      return
+    }
+    const turnConfig: RTCIceServer | undefined = p.turnServer
+      ? {
+          urls: p.turnServer.split(',').map(s => s.trim()),
+          username: p.turnUsername,
+          credential: p.turnCredential,
+        }
+      : undefined
+    let dtmfSendMode = Number(p.dtmfPal)
+    if (isNaN(dtmfSendMode)) {
+      dtmfSendMode = p.dtmfPal === 'false' || p.dtmfPal === '0' ? 0 : 1
+    }
+    await sip.connect({
+      hostname: s.currentProfile.pbxHostname,
+      port: p.sipWssPort,
+      username: p.phoneId,
+      accessToken: p.sipAuth,
+      pbxTurnEnabled: s.currentProfile.pbxTurnEnabled,
+      dtmfSendMode,
+      turnConfig,
+    })
+  }
+
   private authWithoutCatch = async () => {
-    getAuthStore().sipState = 'connecting'
+    const s = getAuthStore()
+    s.sipState = 'connecting'
+    if (s.sipPn?.sipAuth) {
+      this.authPnWithoutCatch()
+      return
+    }
     //
     const pbxConfig = await pbx.getConfig()
     if (!pbxConfig) {

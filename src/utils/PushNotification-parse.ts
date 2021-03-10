@@ -18,6 +18,14 @@ const keysInCustomNotification = [
   'pbxPort',
   'my_custom_data',
   'is_local_notification',
+  // Quick login sip
+  'phone.id',
+  'auth',
+  'sip.wss.port',
+  'webphone.dtmf.pal',
+  'webphone.turn.server',
+  'webphone.turn.username',
+  'webphone.turn.credential',
 ]
 
 const _parseNotificationData = (...fields: object[]): ParsedPn =>
@@ -86,6 +94,23 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
 
+  const phoneId = get(n, 'phone.id')
+  const sipAuth = get(n, 'auth')
+  const sipWssPort = get(n, 'sip.wss.port')
+  const dtmfPal = get(n, 'webphone.dtmf.pal')
+  const turnServer = get(n, 'webphone.turn.server')
+  const turnUsername = get(n, 'webphone.turn.username')
+  const turnCredential = get(n, 'webphone.turn.credential')
+  n.sipPn = {
+    phoneId,
+    sipAuth,
+    sipWssPort,
+    dtmfPal,
+    turnServer,
+    turnUsername,
+    turnCredential,
+  }
+
   if (
     isLocal ||
     raw['my_custom_data'] ||
@@ -146,6 +171,16 @@ export type ParsedPn = {
   my_custom_data: unknown
   is_local_notification: boolean
   isCall: boolean
+  sipPn: SipPn
+}
+export type SipPn = {
+  phoneId: string
+  sipAuth: string
+  sipWssPort: string
+  dtmfPal: string
+  turnServer: string
+  turnUsername: string
+  turnCredential: string
 }
 
 let lastCallPn: ParsedPn | null = null

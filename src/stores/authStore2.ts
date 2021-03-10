@@ -1,10 +1,11 @@
 import debounce from 'lodash/debounce'
-import { action, computed, observable } from 'mobx'
+import { action, computed, observable, runInAction } from 'mobx'
 import { AppState } from 'react-native'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { getUrlParams } from '../utils/deeplink'
+import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { arrToMap } from '../utils/toMap'
 import { compareProfile, setAuthStore } from './authStore'
 import callStore from './callStore'
@@ -17,6 +18,8 @@ import RnAppState from './RnAppState'
 export type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
 
 export class AuthStore {
+  @observable sipPn?: SipPn
+
   @observable pbxState: ConnectionState = 'stopped'
   @observable pbxTotalFailure = 0
   @observable sipState: ConnectionState = 'stopped'
@@ -26,7 +29,8 @@ export class AuthStore {
   @observable ucLoginFromAnotherPlace = false
   @computed get pbxShouldAuth() {
     return (
-      !!this.signedInId &&
+      this.signedInId &&
+      !this.sipPn?.sipAuth &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' &&
           !this.pbxTotalFailure &&
@@ -38,11 +42,15 @@ export class AuthStore {
   }
   @computed get sipShouldAuth() {
     return (
-      this.pbxState === 'success' &&
-      (this.sipState === 'stopped' ||
-        (this.sipState === 'failure' &&
-          !this.sipTotalFailure &&
-          RnAppState.currentState === 'active'))
+      (this.signedInId &&
+        this.sipPn?.sipAuth &&
+        this.sipState !== 'connecting' &&
+        this.sipState !== 'success') ||
+      (this.pbxState === 'success' &&
+        (this.sipState === 'stopped' ||
+          (this.sipState === 'failure' &&
+            !this.sipTotalFailure &&
+            RnAppState.currentState === 'active')))
     )
   }
   @computed get sipConnectingOrFailure() {
@@ -255,11 +263,10 @@ export class AuthStore {
     },
   )
 
-  signInByNotification = async (n: {
-    to: string
-    tenant: string
-    isCall: boolean
-  }) => {
+  signInByNotification = async (n: ParsedPn) => {
+    runInAction(() => {
+      this.sipPn = n.sipPn
+    })
     this.reconnect()
     await profileStore.profilesLoaded()
     // Find account for the notification target

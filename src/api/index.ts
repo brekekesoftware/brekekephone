@@ -1,3 +1,5 @@
+import { action } from 'mobx'
+
 import { getAuthStore } from '../stores/authStore'
 import Call from '../stores/Call'
 import callStore from '../stores/callStore'
@@ -46,6 +48,9 @@ class Api {
         err,
       })
     })
+    if (getAuthStore().isSignInByNotification) {
+      return
+    }
     SyncPnToken()
       .sync(getAuthStore().currentProfile)
       .then(() => SyncPnToken().syncForAllAccounts())
@@ -93,8 +98,10 @@ class Api {
     callStore.newVoicemailCount = ev?.new || 0
   }
 
-  onSIPConnectionStarted = () => {
-    getAuthStore().sipState = 'success'
+  @action onSIPConnectionStarted = () => {
+    const s = getAuthStore()
+    s.sipState = 'success'
+    s.sipPn = undefined
   }
 
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
