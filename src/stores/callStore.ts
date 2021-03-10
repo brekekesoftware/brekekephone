@@ -19,14 +19,14 @@ import Nav from './Nav'
 import { reconnectAndWaitSip } from './reconnectAndWaitSip'
 
 export class CallStore {
-  private recentPn?: {
+  recentPn?: {
     uuid: string
     at: number
     action?: 'answered' | 'rejected'
   }
   recentCallActivityAt = 0
 
-  private prevCallKeepUuid?: string
+  prevCallKeepUuid?: string
   private autoEndCallKeepTimerId = 0
   private clearAutoEndCallKeepTimer = () => {
     if (this.autoEndCallKeepTimerId) {
@@ -80,9 +80,15 @@ export class CallStore {
       if (prevCall) {
         prevCall.callkeepAlreadyRejected = true
       }
-      RNCallKeep.endCall(this.prevCallKeepUuid)
+      endCallKeep(this.prevCallKeepUuid)
     }
     this.prevCallKeepUuid = uuid
+    // New timeout logic
+    callkeepMap[uuid] = {
+      uuid,
+      at: Date.now(),
+    }
+    setAutoEndCallKeepTimer()
   }
   onCallKeepAnswerCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid)
@@ -120,7 +126,7 @@ export class CallStore {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
       c.callkeepAlreadyRejected = true
-      RNCallKeep.endCall(uuid)
+      endCallKeep(uuid)
     }
     RnNativeModules.IncomingCall.closeIncomingCallActivity()
     this.clearAutoEndCallKeepTimer()
@@ -339,11 +345,69 @@ export class CallStore {
 
 const callStore = new CallStore()
 
-if (Platform.OS !== 'web') {
-  // autorun(() => {
-  //   // TODO speaker
-  //   // https://github.com/react-native-webrtc/react-native-callkeep/issues/78
-  // })
+let callkeepMap: {
+  [uuid: string]: {
+    uuid: string
+    at: number
+  }
+} = {}
+let autoEndCallKeepTimerId = 0
+const clearAutoEndCallKeepTimer = () => {
+  if (Platform.OS === 'web' || !autoEndCallKeepTimerId) {
+    return
+  }
+  BackgroundTimer.clearInterval(autoEndCallKeepTimerId)
+  autoEndCallKeepTimerId = 0
+}
+const setAutoEndCallKeepTimer = () => {
+  if (Platform.OS === 'web') {
+    return
+  }
+  clearAutoEndCallKeepTimer()
+  autoEndCallKeepTimerId = BackgroundTimer.setInterval(() => {
+    const n = Date.now()
+    if (
+      !callStore.calls.length &&
+      (!callStore.recentPn || n - callStore.recentPn.at > 20000)
+    ) {
+      callkeepMap = {}
+    } else {
+      const prev = callStore.prevCallKeepUuid
+      Object.values(callkeepMap).forEach(k => {
+        const d2 = n - k.at
+        const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
+        if ((d2 > 20000 && !c) || (prev && prev !== k.uuid)) {
+          if (c) {
+            c.callkeepUuid = ''
+            c.callkeepAlreadyRejected = true
+          }
+          endCallKeep(k.uuid)
+          if (prev === k.uuid) {
+            callStore.recentPn = undefined
+          }
+        }
+      })
+    }
+    if (!Object.keys(callkeepMap).length) {
+      // clearAutoEndCallKeepTimer()
+      RNCallKeep.endAllCalls()
+      RnNativeModules.IncomingCall.closeIncomingCallActivity()
+    }
+  }, 1000)
+}
+const endCallKeep = (uuid: string) => {
+  delete callkeepMap[uuid]
+  const n = Date.now()
+  if (
+    !callStore.calls.length &&
+    (!callStore.recentPn || n - callStore.recentPn.at > 20000)
+  ) {
+    RNCallKeep.endAllCalls()
+    callStore.recentPn = undefined
+  } else {
+    RNCallKeep.endCall(uuid.toLowerCase())
+    RNCallKeep.endCall(uuid.toUpperCase())
+  }
 }
 
 export default callStore
