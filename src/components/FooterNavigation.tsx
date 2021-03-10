@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import authStore from '../stores/authStore2'
 import chatStore from '../stores/chatStore'
 import { menus } from './navigationConfig'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
@@ -55,7 +56,11 @@ const Navigation: FC<{
     {menus().map(m => {
       const active = m.key === menu
       const totalUnreadChat = chatStore.unreadCount
-      const showUnreadChat = !!totalUnreadChat && m.key === 'contact' && !active
+      const showUnreadChat =
+        authStore.currentProfile?.ucEnabled &&
+        !!totalUnreadChat &&
+        m.key === 'contact' &&
+        !active
       return (
         <RnTouchableOpacity
           key={m.key}
