@@ -18,7 +18,7 @@ import RnAppState from './RnAppState'
 export type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
 
 export class AuthStore {
-  @observable sipPn?: SipPn
+  @observable sipPn: Partial<SipPn> = {}
 
   @observable pbxState: ConnectionState = 'stopped'
   @observable pbxTotalFailure = 0
@@ -264,9 +264,7 @@ export class AuthStore {
   )
 
   signInByNotification = async (n: ParsedPn) => {
-    runInAction(() => {
-      this.sipPn = n.sipPn
-    })
+    this.sipPn = n.sipPn
     this.reconnect()
     await profileStore.profilesLoaded()
     // Find account for the notification target
@@ -294,6 +292,14 @@ export class AuthStore {
       !callStore.calls.length &&
       Date.now() > callStore.recentCallActivityAt + 30000
     ) {
+      const s = sip.phone?.getPhoneStatus()
+      if (s && s !== 'starting' && s !== 'started') {
+        console.error(`PN debug: SIP reconnect: getPhoneStatus()=${s}`)
+        this.reconnectSip()
+      }
+      if (this.sipPn.sipAuth) {
+        return
+      }
       await pbx.client?._pal('getProductInfo').catch((err: Error) => {
         if (authStore.pbxState === 'connecting') {
           return
@@ -301,11 +307,6 @@ export class AuthStore {
         console.error(`PN debug: PBX reconnect: getProductInfo() error=${err}`)
         this.reconnectPbx()
       })
-      const s = sip.phone?.getPhoneStatus()
-      if (s && s !== 'starting' && s !== 'started') {
-        console.error(`PN debug: SIP reconnect: getPhoneStatus()=${s}`)
-        this.reconnectSip()
-      }
     }
     return false
   }

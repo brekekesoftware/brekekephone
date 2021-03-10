@@ -94,13 +94,13 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
 
-  const phoneId = get(n, 'phone.id')
-  const sipAuth = get(n, 'auth')
-  const sipWssPort = get(n, 'sip.wss.port')
-  const dtmfPal = get(n, 'webphone.dtmf.pal')
-  const turnServer = get(n, 'webphone.turn.server')
-  const turnUsername = get(n, 'webphone.turn.username')
-  const turnCredential = get(n, 'webphone.turn.credential')
+  const phoneId: string = get(n, 'phone.id')
+  const sipAuth: string = get(n, 'auth')
+  const sipWssPort: string = get(n, 'sip.wss.port')
+  const dtmfPal: string = get(n, 'webphone.dtmf.pal')
+  const turnServer: string = get(n, 'webphone.turn.server')
+  const turnUsername: string = get(n, 'webphone.turn.username')
+  const turnCredential: string = get(n, 'webphone.turn.credential')
   n.sipPn = {
     phoneId,
     sipAuth,

@@ -43,9 +43,9 @@ class AuthSIP {
     }
     await sip.connect({
       hostname: s.currentProfile.pbxHostname,
-      port: p.sipWssPort,
-      username: p.phoneId,
-      accessToken: p.sipAuth,
+      port: p.sipWssPort || '',
+      username: p.phoneId || '',
+      accessToken: p.sipAuth || '',
       pbxTurnEnabled: s.currentProfile.pbxTurnEnabled,
       dtmfSendMode,
       turnConfig,

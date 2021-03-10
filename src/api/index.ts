@@ -6,6 +6,7 @@ import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
+import { waitSip } from '../stores/reconnectAndWaitSip'
 import RnAlert from '../stores/RnAlert'
 import pbx from './pbx'
 import sip from './sip'
@@ -42,42 +43,40 @@ class Api {
   }
 
   onPBXConnectionStarted = () => {
-    this.loadPBXUsers().catch((err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to load PBX users`,
-        err,
-      })
+    waitSip(async () => {
+      const s = getAuthStore()
+      if (!s.currentProfile) {
+        return
+      }
+      try {
+        const tenant = getAuthStore().currentProfile.pbxTenant
+        const username = getAuthStore().currentProfile.pbxUsername
+        const userIds = await pbx
+          .getUsers(tenant)
+          .then((ids: string[]) => ids.filter(id => id !== username))
+        const users = await pbx.getOtherUsers(tenant, userIds)
+        contactStore.pbxUsers = users
+      } catch (err: unknown) {
+        RnAlert.error({
+          message: intlDebug`Failed to load PBX users`,
+          err: err as Error,
+        })
+      }
+      if (getAuthStore().isSignInByNotification) {
+        return
+      }
+      SyncPnToken()
+        .sync(getAuthStore().currentProfile)
+        .then(() => SyncPnToken().syncForAllAccounts())
     })
-    if (getAuthStore().isSignInByNotification) {
-      return
-    }
-    SyncPnToken()
-      .sync(getAuthStore().currentProfile)
-      .then(() => SyncPnToken().syncForAllAccounts())
   }
-
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'
   }
-
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
     getAuthStore().pbxTotalFailure += 1
   }
-
-  loadPBXUsers = async () => {
-    if (!getAuthStore().currentProfile) {
-      return
-    }
-    const tenant = getAuthStore().currentProfile.pbxTenant
-    const username = getAuthStore().currentProfile.pbxUsername
-    const userIds = await pbx
-      .getUsers(tenant)
-      .then((ids: string[]) => ids.filter(id => id !== username))
-    const users = await pbx.getOtherUsers(tenant, userIds)
-    contactStore.pbxUsers = users
-  }
-
   onPBXUserCalling = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'calling')
   }
@@ -93,7 +92,6 @@ class Api {
   onPBXUserHanging = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, '')
   }
-
   onVoiceMailUpdated = (ev: { new: number }) => {
     callStore.newVoicemailCount = ev?.new || 0
   }
@@ -101,9 +99,8 @@ class Api {
   @action onSIPConnectionStarted = () => {
     const s = getAuthStore()
     s.sipState = 'success'
-    s.sipPn = undefined
+    s.sipPn = {}
   }
-
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     if (!e?.reason && !e?.response) {
       getAuthStore().sipState = 'stopped'
@@ -113,13 +110,11 @@ class Api {
     }
     window.setTimeout(() => sip.disconnect(), 300)
   }
-
   onSIPConnectionTimeout = () => {
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
     sip.disconnect()
   }
-
   onSIPSessionStarted = (call: Call) => {
     const number = call.partyNumber
     if (number === '8') {
@@ -140,12 +135,10 @@ class Api {
   onUCConnectionStopped = () => {
     getAuthStore().ucState = 'stopped'
   }
-
   onUCConnectionTimeout = () => {
     getAuthStore().ucState = 'failure'
     getAuthStore().ucTotalFailure += 1
   }
-
   onUCUserUpdated = (ev: {
     id: string
     name: string
@@ -155,7 +148,6 @@ class Api {
   }) => {
     contactStore.updateUCUser(ev)
   }
-
   onBuddyChatCreated = (chat: {
     id: string
     creator: string
@@ -177,7 +169,6 @@ class Api {
   }) => {
     chatStore.pushMessages(chat.group, chat, true)
   }
-
   onChatGroupInvited = (group: {
     id: string
     name: string
@@ -197,7 +188,6 @@ class Api {
   onChatGroupRevoked = (group: { id: string }) => {
     chatStore.removeGroup(group.id)
   }
-
   onFileReceived = (file: {
     id: string
     name: string
