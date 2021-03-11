@@ -160,6 +160,7 @@ export class AuthStore {
     this.signedInId = ''
     this.pbxState = 'stopped'
     this.pbxTotalFailure = 0
+    console.error('SIP PN debug: set sipState stopped sign out')
     this.sipState = 'stopped'
     sip.disconnect()
     this.sipTotalFailure = 0
@@ -178,6 +179,7 @@ export class AuthStore {
     this.pbxState = 'stopped'
   }
   @action reconnectSip = () => {
+    console.error('SIP PN debug: set sipState stopped reconnect')
     this.reconnect()
     this.sipState = 'stopped'
   }
@@ -264,6 +266,7 @@ export class AuthStore {
   )
 
   signInByNotification = async (n: ParsedPn) => {
+    console.error('SIP PN debug: signInByNotification')
     this.sipPn = n.sipPn
     this.reconnect()
     await profileStore.profilesLoaded()

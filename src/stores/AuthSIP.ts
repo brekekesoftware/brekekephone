@@ -1,3 +1,4 @@
+import { debounce } from 'lodash'
 import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
@@ -10,14 +11,15 @@ import RnAlert from './RnAlert'
 class AuthSIP {
   private clearObserve?: Lambda
   auth() {
-    this.authWithCheck()
+    this.authWithCheckDebounced()
     this.clearObserve = observe(
       getAuthStore(),
       'sipShouldAuth',
-      this.authWithCheck,
+      this.authWithCheckDebounced,
     )
   }
   dispose() {
+    console.error('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
     getAuthStore().sipState = 'stopped'
     sip.disconnect()
@@ -26,8 +28,8 @@ class AuthSIP {
   private authPnWithoutCatch = async () => {
     const s = getAuthStore()
     const p = s.sipPn
-    if (!p) {
-      console.error('Invalid sip PN login logic')
+    if (!p || !p.sipAuth) {
+      console.error('SIP PN debug: Invalid sip PN login logic')
       return
     }
     const turnConfig: RTCIceServer | undefined = p.turnServer
@@ -56,9 +58,11 @@ class AuthSIP {
     const s = getAuthStore()
     s.sipState = 'connecting'
     if (s.sipPn.sipAuth) {
+      console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
       this.authPnWithoutCatch()
       return
     }
+    console.error('SIP PN debug: AuthSIP.authWithoutCatch')
     //
     const pbxConfig = await pbx.getConfig()
     if (!pbxConfig) {
@@ -125,6 +129,7 @@ class AuthSIP {
       return
     }
     this.authWithoutCatch().catch((err: Error) => {
+      console.error('SIP PN debug: set sipState failure catch')
       getAuthStore().sipState = 'failure'
       getAuthStore().sipTotalFailure += 1
       sip.disconnect()
@@ -134,6 +139,7 @@ class AuthSIP {
       })
     })
   }
+  private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
 
 export default AuthSIP

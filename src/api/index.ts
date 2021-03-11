@@ -97,20 +97,24 @@ class Api {
   }
 
   @action onSIPConnectionStarted = () => {
+    console.error('SIP PN debug: set sipState succsess')
     const s = getAuthStore()
     s.sipState = 'success'
     s.sipPn = {}
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     if (!e?.reason && !e?.response) {
+      console.error('SIP PN debug: set sipState stopped')
       getAuthStore().sipState = 'stopped'
     } else {
+      console.error('SIP PN debug: set sipState failure stopped')
       getAuthStore().sipState = 'failure'
       getAuthStore().sipTotalFailure += 1
     }
     window.setTimeout(() => sip.disconnect(), 300)
   }
   onSIPConnectionTimeout = () => {
+    console.error('SIP PN debug: set sipState failure timeout')
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
     sip.disconnect()

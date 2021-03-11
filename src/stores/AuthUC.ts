@@ -1,4 +1,5 @@
 import UCClient0 from 'brekekejs/lib/ucclient'
+import { debounce } from 'lodash'
 import { Lambda, observe } from 'mobx'
 
 import { UcErrors } from '../api/brekekejs'
@@ -17,12 +18,12 @@ const UCClient = UCClient0 as {
 class AuthUC {
   private clearObserve?: Lambda
   auth() {
-    this.authWitchCheck()
+    this.authWithCheckDebounced()
     uc.on('connection-stopped', this.onConnectionStopped)
     this.clearObserve = observe(
       getAuthStore(),
       'ucShouldAuth',
-      this.authWitchCheck,
+      this.authWithCheckDebounced,
     )
   }
   dispose() {
@@ -62,6 +63,7 @@ class AuthUC {
       })
     })
   }
+  private authWithCheckDebounced = debounce(this.authWitchCheck, 300)
 
   private onConnectionStopped = (e: { code: number }) => {
     getAuthStore().ucState = 'failure'

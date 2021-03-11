@@ -1,3 +1,4 @@
+import { debounce } from 'lodash'
 import { Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
@@ -8,11 +9,11 @@ import RnAlert from './RnAlert'
 class AuthPBX {
   private clearObserve?: Lambda
   auth() {
-    this.authWithCheck()
+    this.authWithCheckDebounced()
     this.clearObserve = observe(
       getAuthStore(),
       'pbxShouldAuth',
-      this.authWithCheck,
+      this.authWithCheckDebounced,
     )
   }
   dispose() {
@@ -41,6 +42,7 @@ class AuthPBX {
         })
       })
   }
+  private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
 
 export default AuthPBX
