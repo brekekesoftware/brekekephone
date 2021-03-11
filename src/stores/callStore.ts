@@ -351,11 +351,13 @@ let callkeepMap: {
     at: number
   }
 } = {}
+let totalEmptyCallsAttempt = 0
 let autoEndCallKeepTimerId = 0
 const clearAutoEndCallKeepTimer = () => {
   if (Platform.OS === 'web' || !autoEndCallKeepTimerId) {
     return
   }
+  totalEmptyCallsAttempt = 0
   BackgroundTimer.clearInterval(autoEndCallKeepTimerId)
   autoEndCallKeepTimerId = 0
 }
@@ -389,7 +391,10 @@ const setAutoEndCallKeepTimer = () => {
       })
     }
     if (!Object.keys(callkeepMap).length) {
-      // clearAutoEndCallKeepTimer()
+      totalEmptyCallsAttempt += 1
+      if (totalEmptyCallsAttempt > 2) {
+        clearAutoEndCallKeepTimer()
+      }
       RNCallKeep.endAllCalls()
       RnNativeModules.IncomingCall.closeIncomingCallActivity()
     }
@@ -405,8 +410,7 @@ const endCallKeep = (uuid: string) => {
     RNCallKeep.endAllCalls()
     callStore.recentPn = undefined
   } else {
-    RNCallKeep.endCall(uuid.toLowerCase())
-    RNCallKeep.endCall(uuid.toUpperCase())
+    RNCallKeep.endCall(uuid)
   }
 }
 

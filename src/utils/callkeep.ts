@@ -69,7 +69,7 @@ export const setupCallKeep = async () => {
       // Use the custom native incoming call module for android
       return
     }
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     callStore.onCallKeepAnswerCall(uuid)
   }
   const onEndCallAction = (e: { callUUID: string }) => {
@@ -77,7 +77,7 @@ export const setupCallKeep = async () => {
       // Use the custom native incoming call module for android
       return
     }
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     callStore.onCallKeepEndCall(uuid)
   }
   const onDidDisplayIncomingCall = (e: {
@@ -89,7 +89,7 @@ export const setupCallKeep = async () => {
     payload: unknown // VOIP
     error: string // ios only
   }) => {
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     // Try set the caller name from last known PN
     const n = getLastCallPn()
     if (
@@ -109,7 +109,7 @@ export const setupCallKeep = async () => {
       // Use the custom native incoming call module for android
       return
     }
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
       c.toggleMuted(true)
@@ -123,7 +123,7 @@ export const setupCallKeep = async () => {
       // Use the custom native incoming call module for android
       return
     }
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
       c.toggleHold(true)
@@ -134,7 +134,7 @@ export const setupCallKeep = async () => {
       // Use the custom native incoming call module for android
       return
     }
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c) {
       sip.sendDTMF({
@@ -146,7 +146,7 @@ export const setupCallKeep = async () => {
     }
   }
   const onShowIncomingCallUi = (e: { callUUID: string }) => {
-    const uuid = e.callUUID.toLowerCase()
+    const uuid = e.callUUID.toUpperCase()
     RnNativeModules.IncomingCall.showCall(
       uuid,
       getLastCallPn()?.from || 'Loading...',
@@ -185,13 +185,13 @@ export const setupCallKeep = async () => {
     RNCallKeep.addEventListener('showIncomingCallUi', onShowIncomingCallUi)
     const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
-      uuid = uuid.toLowerCase()
+      uuid = uuid.toUpperCase()
       callStore.onCallKeepAnswerCall(uuid)
       RnNativeModules.IncomingCall.closeIncomingCallActivity()
       RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      uuid = uuid.toLowerCase()
+      uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
       RnNativeModules.IncomingCall.closeIncomingCallActivity()
     })

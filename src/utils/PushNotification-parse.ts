@@ -151,7 +151,7 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
     Platform.OS === 'android' &&
     !callStore.calls.filter(c => c.incoming && c.answered).length
   ) {
-    RNCallKeep.displayIncomingCall(uuid(), 'Brekeke Phone', n.to)
+    RNCallKeep.displayIncomingCall(uuid().toUpperCase(), 'Brekeke Phone', n.to)
   }
   // Call api to sign in
   getAuthStore().signInByNotification(n)
