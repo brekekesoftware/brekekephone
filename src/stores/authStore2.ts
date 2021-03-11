@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import { action, computed, observable, runInAction } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 import pbx from '../api/pbx'

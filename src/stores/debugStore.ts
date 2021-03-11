@@ -60,7 +60,7 @@ class DebugStore {
     msg =
       moment().format('YYYY/MM/DD HH:mm:ss.SSS') +
       ` [${lv.toUpperCase().padStart(5)}] ` +
-      msg
+      msg.replace(/\s*:\s+log@\/.+$/, '')
     this.logQueue.push(msg)
     this.writeFileBatch()
   }
