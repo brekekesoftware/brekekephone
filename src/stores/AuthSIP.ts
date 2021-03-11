@@ -55,7 +55,7 @@ class AuthSIP {
   private authWithoutCatch = async () => {
     const s = getAuthStore()
     s.sipState = 'connecting'
-    if (s.sipPn?.sipAuth) {
+    if (s.sipPn.sipAuth) {
       this.authPnWithoutCatch()
       return
     }

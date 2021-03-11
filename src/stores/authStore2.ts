@@ -30,7 +30,7 @@ export class AuthStore {
   @computed get pbxShouldAuth() {
     return (
       this.signedInId &&
-      !this.sipPn?.sipAuth &&
+      !this.sipPn.sipAuth &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' &&
           !this.pbxTotalFailure &&
@@ -43,7 +43,7 @@ export class AuthStore {
   @computed get sipShouldAuth() {
     return (
       (this.signedInId &&
-        this.sipPn?.sipAuth &&
+        this.sipPn.sipAuth &&
         this.sipState !== 'connecting' &&
         this.sipState !== 'success') ||
       (this.pbxState === 'success' &&

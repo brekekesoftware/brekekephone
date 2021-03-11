@@ -27,13 +27,6 @@ export class CallStore {
   recentCallActivityAt = 0
 
   prevCallKeepUuid?: string
-  private autoEndCallKeepTimerId = 0
-  private clearAutoEndCallKeepTimer = () => {
-    if (this.autoEndCallKeepTimerId) {
-      BackgroundTimer.clearTimeout(this.autoEndCallKeepTimerId)
-      this.autoEndCallKeepTimerId = 0
-    }
-  }
   private getIncomingCallkeep = (
     uuid: string,
     o?: { includingAnswered: boolean },
@@ -48,13 +41,6 @@ export class CallStore {
           : !c.answered && !c.callkeepAlreadyAnswered),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
-    // Always end the call if it rings too long > 20s without picking up
-    this.clearAutoEndCallKeepTimer()
-    this.autoEndCallKeepTimerId = BackgroundTimer.setTimeout(() => {
-      this.autoEndCallKeepTimerId = 0
-      const c = this.calls.find(c => c.callkeepUuid === uuid && !c.answered)
-      return c ? c.hangup() : this.endCallKeep({ callkeepUuid: uuid })
-    }, 20000)
     // Find the current incoming call which is not callkeep
     const c = this.getIncomingCallkeep(uuid)
     if (c) {
@@ -95,7 +81,6 @@ export class CallStore {
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
-      this.clearAutoEndCallKeepTimer()
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'answered'
     }
@@ -107,7 +92,6 @@ export class CallStore {
     if (c) {
       c.callkeepAlreadyRejected = true
       c.hangup()
-      this.clearAutoEndCallKeepTimer()
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
     }
@@ -129,7 +113,6 @@ export class CallStore {
       endCallKeep(uuid)
     }
     RnNativeModules.IncomingCall.closeIncomingCallActivity()
-    this.clearAutoEndCallKeepTimer()
   }
 
   @observable calls: Call[] = []
@@ -190,7 +173,6 @@ export class CallStore {
       c.callkeepAlreadyRejected = true
       c.hangup()
     }
-    this.clearAutoEndCallKeepTimer()
   }
   @action removeCall = (id: string) => {
     this.recentCallActivityAt = Date.now()
