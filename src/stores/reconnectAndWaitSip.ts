@@ -6,7 +6,7 @@ export const reconnectAndWaitSip = (fn: Function) => {
   waitSip(fn)
 }
 
-export const waitSip = (fn: Function) => {
+export const waitSip = (fn: Function, forceCallFn = false) => {
   const at = Date.now()
   const id = BackgroundTimer.setInterval(() => {
     const enoughTimePassed = Date.now() > at + 10000
@@ -15,6 +15,9 @@ export const waitSip = (fn: Function) => {
       BackgroundTimer.clearInterval(id)
     }
     if (enoughTimePassed) {
+      if (forceCallFn) {
+        fn(false)
+      }
       return
     }
     if (isSipConnected) {

@@ -49,7 +49,7 @@
     "react-dom": "17.0.1",
     "react-native": "0.63.4",
     "react-native-background-timer": "2.4.1",
-    "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#c9778cfc35e46c272bfab185126e72670b26ebf5",
+    "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#5ba21d657351822babc1669b0d5cda118c6753bb",
     "react-native-document-picker": "4.3.0",
     "react-native-emoji-selector": "0.2.0",
     "react-native-exception-handler": "2.10.9",

@@ -138,9 +138,10 @@ static void InitializeFlipper(UIApplication *application) {
                  supportsUngrouping:NO
                         fromPushKit:YES
                             payload:NULL
-              withCompletionHandler:false];
-  // --- don't need to call this if we do on the js side.
-  completion();
+              withCompletionHandler:completion];
+  // --- don't need to call this if we do on the js side
+  // --- already add completion in above reportNewIncomingCall
+  // completion();
 }
 
 - (void)application:(UIApplication *)application
