@@ -123,7 +123,7 @@ const AppSelection = () => {
           </RnTouchableOpacity>
         </a>
         <RnTouchableOpacity
-          onClick={() => setIsBrowser(true)}
+          onPress={() => setIsBrowser(true)}
           style={[css.WebApp_Btn, css.WebApp_Btn__browser]}
         >
           <RnText small>{intl`OPEN IN BROWSER`}</RnText>

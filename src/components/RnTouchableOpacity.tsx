@@ -1,11 +1,7 @@
 import React, { FC, forwardRef } from 'react'
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 
-export type RnTouchableOpacityProps = TouchableOpacityProps & {
-  onClick?: Function
-}
-
-const RnTouchableOpacity: FC<RnTouchableOpacityProps> = forwardRef(
+const RnTouchableOpacity: FC<TouchableOpacityProps> = forwardRef(
   (props, ref) => (
     <TouchableOpacity
       activeOpacity={0.8}
