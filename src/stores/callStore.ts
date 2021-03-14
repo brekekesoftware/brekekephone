@@ -26,6 +26,12 @@ export class CallStore {
   }
   recentCallActivityAt = 0
 
+  cancelRecentPn = () => {
+    const uuid = this.recentPn?.uuid || this.prevCallKeepUuid || ''
+    console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
+    endCallKeep(uuid)
+  }
+
   prevCallKeepUuid?: string
   private getIncomingCallkeep = (
     uuid: string,

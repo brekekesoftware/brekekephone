@@ -5,6 +5,7 @@ import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
 import appPackageJson from '../../package.json'
+import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
@@ -210,6 +211,20 @@ export class SIP extends EventEmitter {
       auth: sipLoginOption.accessToken,
       useVideoClient: true,
       userAgent: lUseragent,
+    })
+
+    console.error('SIP PN debug: added listener on _ua')
+
+    const ua = (this.phone as any)._ua
+    ua?.on('newNotify', (e: any) => {
+      const d = e?.request?.data
+      const canceled = d && /INVITE,.+, Canceled/.test(d)
+      console.error(
+        `SIP PN debug: newNotify fired on _ua, canceled=${canceled}`,
+      )
+      if (canceled) {
+        cancelRecentPn()
+      }
     })
   }
 
