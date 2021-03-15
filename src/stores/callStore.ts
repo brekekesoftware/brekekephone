@@ -2,7 +2,7 @@ import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import moment from 'moment'
 import { Platform } from 'react-native'
-import RNCallKeep from 'react-native-callkeep'
+import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as uuid } from 'react-native-uuid'
 
@@ -380,7 +380,7 @@ const setAutoEndCallKeepTimer = () => {
     }
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
-      if (totalEmptyCallsAttempt > 2) {
+      if (totalEmptyCallsAttempt > 10) {
         clearAutoEndCallKeepTimer()
       }
       RNCallKeep.endAllCalls()
@@ -398,8 +398,10 @@ const endCallKeep = (uuid: string) => {
     RNCallKeep.endAllCalls()
     callStore.recentPn = undefined
   } else {
+    RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
   }
+  RNCallKeep.reportEndCallWithUUID(uuid, CONSTANTS.END_CALL_REASONS.REMOTE_ENDED)
 }
 
 export default callStore
