@@ -117,6 +117,7 @@ PushNotification.register(() => {
   if (alreadyInitApp) {
     return
   }
+  const s = getAuthStore()
   alreadyInitApp = true
 
   setupCallKeep()
@@ -127,18 +128,18 @@ PushNotification.register(() => {
   })
 
   Nav().goToPageIndex()
-  getAuthStore().handleUrlParams()
+  s.handleUrlParams()
 
   const authPBX = new AuthPBX()
   const authSIP = new AuthSIP()
   const authUC = new AuthUC()
 
-  observe(getAuthStore(), 'signedInId', () => {
+  observe(s, 'signedInId', () => {
     Nav().goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
-    if (getAuthStore().signedInId) {
-      getAuthStore().reconnect()
+    if (s.signedInId) {
+      s.reconnect()
       authPBX.auth()
       authSIP.auth()
       authUC.auth()
@@ -190,7 +191,7 @@ const App = observer(() => {
       </View>
     )
   }
-
+  const s = getAuthStore()
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -201,7 +202,8 @@ const App = observer(() => {
     pbxTotalFailure,
     sipTotalFailure,
     ucTotalFailure,
-  } = getAuthStore()
+    signedInId,
+  } = s
   let service = ''
   let isRetrying = false
   if (pbxConnectingOrFailure) {
@@ -227,7 +229,7 @@ const App = observer(() => {
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <RnStatusBar />
-      {shouldShowConnStatus && !!getAuthStore().signedInId && (
+      {shouldShowConnStatus && !!signedInId && (
         <AnimatedSize
           style={[
             css.App_ConnectionStatus,
@@ -242,7 +244,7 @@ const App = observer(() => {
         </AnimatedSize>
       )}
 
-      {!!getAuthStore().signedInId && (
+      {!!signedInId && (
         <>
           <CallNotify />
           <CallBar />

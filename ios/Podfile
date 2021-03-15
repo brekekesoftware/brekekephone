@@ -5,10 +5,13 @@ platform :ios, '11.0'
 
 target 'BrekekePhone' do
   config = use_native_modules!
-  use_react_native!(:path => config["reactNativePath"])
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => false
+  )
 
-  use_flipper!
+  use_flipper!()
   post_install do |installer|
-    flipper_post_install(installer)
+    react_native_post_install(installer)
   end
 end

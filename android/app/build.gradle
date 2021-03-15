@@ -14,6 +14,7 @@ def jscFlavor = "org.webkit:android-jsc:+"
 def enableHermes = false
 
 android {
+  ndkVersion rootProject.ext.ndkVersion
   compileSdkVersion rootProject.ext.compileSdkVersion
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -31,8 +32,8 @@ android {
 
   defaultConfig {
     applicationId "com.brekeke.phonedev"
-    versionCode 207002
-    versionName "2.7.2"
+    versionCode 207003
+    versionName "2.7.3"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
@@ -61,7 +62,8 @@ android {
       def versionCodes = ["x86":1,"x86_64":2,"armeabi-v7a":3,"arm64-v8a":4]
       def abi = output.getFilter(OutputFile.ABI)
       if (abi != null) {
-        output.versionCodeOverride = versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
+        output.versionCodeOverride =
+          defaultConfig.versionCode * 1000 + versionCodes.get(abi)
       }
     }
   }
