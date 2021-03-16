@@ -52,6 +52,7 @@ class AuthSIP {
       dtmfSendMode,
       turnConfig,
     })
+    getAuthStore().sipPn = {}
   }
 
   private authWithoutCatch = async () => {

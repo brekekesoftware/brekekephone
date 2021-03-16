@@ -401,7 +401,10 @@ const endCallKeep = (uuid: string) => {
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
   }
-  RNCallKeep.reportEndCallWithUUID(uuid, CONSTANTS.END_CALL_REASONS.REMOTE_ENDED)
+  RNCallKeep.reportEndCallWithUUID(
+    uuid,
+    CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
+  )
 }
 
 export default callStore

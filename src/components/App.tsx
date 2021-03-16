@@ -18,7 +18,9 @@ import { SyncPnToken } from '../api/syncPnToken'
 import AuthPBX from '../stores/AuthPBX'
 import AuthSIP from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
+import authStore from '../stores/authStore2'
 import AuthUC from '../stores/AuthUC'
+import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
@@ -87,8 +89,13 @@ if (Platform.OS === 'web') {
     onConfirm: getAudioVideoPermission,
     onDismiss: getAudioVideoPermission,
   })
-} else {
-  getAudioVideoPermission()
+} else if (
+  AppState.currentState === 'active' &&
+  !callStore.calls.length &&
+  !callStore.recentPn &&
+  !authStore.sipPn.sipAuth
+) {
+  // getAudioVideoPermission()
 }
 
 // Handle android hardware back button press
