@@ -22,7 +22,7 @@ import { arrToMap } from '../utils/toMap'
 @observer
 class PageChatRecents extends React.Component {
   getLastChat = (id: string) => {
-    const chats = chatStore.messagesByThreadId[id] || []
+    const chats = filterTextOnly(chatStore.messagesByThreadId[id] || [])
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
   render() {

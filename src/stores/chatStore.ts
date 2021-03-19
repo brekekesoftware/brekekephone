@@ -2,6 +2,7 @@ import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
+import { filterTextOnly } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'
 
@@ -40,12 +41,16 @@ class ChatStore {
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
-    const l1 = Object.values(this.threadConfig).filter(v => {
-      idMap[v.id] = true
-      return v.isUnread && this.messagesByThreadId[v.id]?.length
-    }).length
-    const l2 = getAuthStore().currentData.recentChats.filter(
-      c => !idMap[c.id] && c.unread,
+    const l1 = filterTextOnly(
+      Object.values(this.threadConfig).filter(v => {
+        idMap[v.id] = true
+        return v.isUnread && this.messagesByThreadId[v.id]?.length
+      }) as any,
+    ).length
+    const l2 = filterTextOnly(
+      getAuthStore().currentData.recentChats.filter(
+        c => !idMap[c.id] && c.unread,
+      ),
     ).length
     return l1 + l2
   }
@@ -75,6 +80,10 @@ class ChatStore {
       'created',
     )
     const isGroup = this.groups.some(g => g.id === threadId)
+    const a2 = filterTextOnly(_m)
+    if (!a2.length) {
+      return
+    }
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })
