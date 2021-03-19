@@ -95,7 +95,7 @@ if (Platform.OS === 'web') {
   !callStore.recentPn &&
   !authStore.sipPn.sipAuth
 ) {
-  // getAudioVideoPermission()
+  getAudioVideoPermission()
 }
 
 // Handle android hardware back button press
