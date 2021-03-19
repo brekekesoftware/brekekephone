@@ -82,11 +82,21 @@ class PageChatRecents extends React.Component {
       }
     }
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
+    arr = filterTextOnly(arr)
     arr = uniqBy(arr, 'id')
+    const arrMap = arr.reduce((m, c) => {
+      m[c.id] = true
+      return m
+    }, {} as { [k: string]: boolean })
+    filterTextOnly(getAuthStore().currentData.recentChats).forEach(c => {
+      if (!arrMap[c.id]) {
+        arr.push(c)
+      }
+    })
     arr = orderBy(arr, 'created')
       .filter(c => !!c.created)
       .reverse()
-    arr = filterTextOnly(arr)
+
     // Not show other message content type different than normal text chat
 
     window.setTimeout(() => {
