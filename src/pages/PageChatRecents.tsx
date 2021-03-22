@@ -100,7 +100,7 @@ class PageChatRecents extends React.Component {
     // Not show other message content type different than normal text chat
 
     window.setTimeout(() => {
-      const arr2 = [...arr].filter(c => c.created && !c.group)
+      const arr2 = [...arr].filter(c => c.created || c.group)
       while (arr2.length > 20) {
         arr2.pop()
       }
