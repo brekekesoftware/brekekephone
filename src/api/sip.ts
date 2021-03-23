@@ -215,17 +215,29 @@ export class SIP extends EventEmitter {
 
     console.error('SIP PN debug: added listener on _ua')
 
-    const ua = (this.phone as any)._ua
-    ua?.on('newNotify', (e: any) => {
-      const d = e?.request?.data
-      const canceled = d && /INVITE,.+, Canceled/.test(d)
-      console.error(
-        `SIP PN debug: newNotify fired on _ua, canceled=${canceled}`,
-      )
-      if (canceled) {
-        cancelRecentPn()
+    // temporary cancel PN via SIP ua
+    const ua = ((this.phone as unknown) as {
+      _ua: {
+        on: Function
       }
-    })
+    })._ua
+    ua?.on(
+      'newNotify',
+      (e: {
+        request: {
+          data: string
+        }
+      }) => {
+        const d = e?.request?.data
+        const canceled = d && /INVITE,.+, Canceled/.test(d)
+        console.error(
+          `SIP PN debug: newNotify fired on _ua, canceled=${canceled}`,
+        )
+        if (canceled) {
+          cancelRecentPn()
+        }
+      },
+    )
   }
 
   disconnect = () => {

@@ -27,6 +27,10 @@ const keysInCustomNotification = [
   'webphone.turn.username',
   'webphone.turn.credential',
 ]
+// new logic to parse x_ keys
+keysInCustomNotification.forEach(k => {
+  keysInCustomNotification.push('x_' + k)
+})
 
 const _parseNotificationData = (...fields: object[]): ParsedPn =>
   fields
@@ -56,11 +60,12 @@ const parseNotificationData = (raw: object) => {
     return _parseNotificationData(
       raw,
       get(raw, 'fcm'),
-      get(raw, 'data'),
       get(raw, 'alert'),
+      get(raw, 'alert.custom_notification'),
+      get(raw, 'data'),
       get(raw, 'data.alert'),
-      get(raw, 'custom_notification'),
       get(raw, 'data.custom_notification'),
+      get(raw, 'custom_notification'),
     )
   }
   if (Platform.OS === 'ios') {
@@ -69,14 +74,20 @@ const parseNotificationData = (raw: object) => {
       get(raw, 'custom_notification'),
       get(raw, 'aps'),
       get(raw, 'aps.alert'),
+      get(raw, 'aps.custom_notification'),
+      get(raw, 'data'),
+      get(raw, 'data.custom_notification'),
       get(raw, '_data'),
       get(raw, '_data.custom_notification'),
       get(raw, '_alert'),
+      get(raw, '_alert.custom_notification'),
     )
   }
   // TODO handle web
   return null
 }
+
+const isNoU = (v: unknown) => v === null || v === undefined
 
 const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
@@ -87,6 +98,20 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!n) {
     return null
   }
+
+  // new logic to parse x_ keys
+  const n2 = n as { [k: string]: unknown }
+  Object.entries(n).forEach(([k, v]) => {
+    if (!k.startsWith('x_') || isNoU(v)) {
+      return
+    }
+    const k2 = k.substr(2)
+    // if (!isNoU(n2[k2])) {
+    //   return
+    // }
+    n2[k2] = v
+  })
+
   if (!n.body) {
     n.body = n.message || n.title || n.alert
   }
