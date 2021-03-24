@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.7.6",
+  "version": "2.7.7",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -49,7 +49,7 @@
     "react-dom": "17.0.1",
     "react-native": "0.64.0",
     "react-native-background-timer": "2.4.1",
-    "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#5ba21d657351822babc1669b0d5cda118c6753bb",
+    "react-native-callkeep": "github:brekekesoftware/react-native-callkeep#aa86630a79ed920898ead873e8d1c20b02f6bf11",
     "react-native-document-picker": "4.3.0",
     "react-native-emoji-selector": "0.2.0",
     "react-native-exception-handler": "2.10.9",

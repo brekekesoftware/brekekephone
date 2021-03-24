@@ -5,23 +5,21 @@ import sip from '../api/sip'
 import callStore from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
+import { BackgroundTimer } from './BackgroundTimer'
 import { getLastCallPn } from './PushNotification-parse'
 import { RnNativeModules } from './RnNativeModules'
 
-export const setupCallKeep = async () => {
-  if (Platform.OS === 'web') {
+let alreadSetupCallKeep = false
+
+export const _setupCallKeep = async () => {
+  if (alreadSetupCallKeep) {
     return
   }
+  alreadSetupCallKeep = true
 
-  if (Platform.OS === 'android') {
-    RNCallKeep.setAvailable(true)
-    RNCallKeep.setForegroundServiceSettings({
-      channelId: 'com.brekeke.phone',
-      channelName: 'Foreground service for Brekeke Phone',
-      notificationTitle: 'Brekeke Phone is running on background',
-      notificationIcon: 'ic_launcher',
-    })
-    RNCallKeep.canMakeMultipleCalls(false)
+  const calls = await RNCallKeep.getCalls()
+  if (Object.keys(calls).length) {
+    return
   }
 
   await RNCallKeep.setup({
@@ -58,6 +56,25 @@ export const setupCallKeep = async () => {
         err,
       })
     })
+}
+
+export const setupCallKeep = async () => {
+  if (Platform.OS === 'web') {
+    return
+  }
+
+  if (Platform.OS === 'android') {
+    RNCallKeep.setAvailable(true)
+    RNCallKeep.setForegroundServiceSettings({
+      channelId: 'com.brekeke.phone',
+      channelName: 'Foreground service for Brekeke Phone',
+      notificationTitle: 'Brekeke Phone is running on background',
+      notificationIcon: 'ic_launcher',
+    })
+    RNCallKeep.canMakeMultipleCalls(false)
+  }
+
+  await _setupCallKeep()
 
   const onDidLoadWithEvents = (e: { name: string; data: unknown }[]) => {
     e.forEach(e => {
@@ -73,6 +90,7 @@ export const setupCallKeep = async () => {
     callStore.onCallKeepAnswerCall(uuid)
   }
   const onEndCallAction = (e: { callUUID: string }) => {
+    BackgroundTimer.setTimeout(_setupCallKeep, 0)
     if (Platform.OS === 'android') {
       // Use the custom native incoming call module for android
       return
