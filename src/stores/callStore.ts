@@ -380,7 +380,7 @@ const setAutoEndCallKeepTimer = () => {
     }
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
-      if (totalEmptyCallsAttempt > 10) {
+      if (totalEmptyCallsAttempt > 2) {
         clearAutoEndCallKeepTimer()
       }
       RNCallKeep.endAllCalls()

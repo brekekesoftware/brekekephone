@@ -130,24 +130,51 @@ class ProfileStore {
     }
   }
   @action upsertProfile = (p: Partial<Profile>) => {
-    const p0 = this.profiles.find(_ => _.id === p.id)
-    if (!p0) {
+    const p1 = this.profiles.find(_ => _.id === p.id)
+    if (!p1) {
       this.profiles.push(p as Profile)
     } else {
-      const pn0 = p0.pushNotificationEnabled
-      Object.assign(p0, p)
-      if (
+      const pn1 = p1.pushNotificationEnabled
+      const p0 = { ...p1 }
+      Object.assign(p1, p)
+      const id0 = getAccountUniqueId(p0)
+      const id1 = getAccountUniqueId(p1)
+      if (id0 !== id1) {
+        const pn0 = p0.pushNotificationEnabled
+        p0.pushNotificationEnabled = false
+        SyncPnToken().sync(p0, {
+          onError: () => {
+            // Revert on error? Disabled
+            Object.assign(p1, p0, {
+              pushNotificationEnabled: pn0,
+            })
+          },
+        })
+      } else if (
         typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== pn0
+        p.pushNotificationEnabled !== pn1
       ) {
-        SyncPnToken().sync(p0)
+        SyncPnToken().sync(p1)
       }
     }
     this.saveProfilesToLocalStorage()
   }
   @action removeProfile = (id: string) => {
+    const profiles0 = [...this.profiles]
+    const p0 = this.profiles.find(p => p.id === id)
     this.profiles = this.profiles.filter(p => p.id !== id)
     this.saveProfilesToLocalStorage()
+    if (p0) {
+      const pn0 = p0.pushNotificationEnabled
+      p0.pushNotificationEnabled = false
+      SyncPnToken().sync(p0, {
+        onError: () => {
+          // Revert on error? Disabled
+          p0.pushNotificationEnabled = pn0
+          this.profiles = profiles0
+        },
+      })
+    }
   }
   getProfileData = (p: Profile | null | undefined) => {
     if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
@@ -158,12 +185,7 @@ class ProfileStore {
         recentChats: [],
       }
     }
-    const id = stringify({
-      u: p.pbxUsername,
-      t: p.pbxTenant,
-      h: p.pbxHostname,
-      p: p.pbxPort,
-    })
+    const id = getAccountUniqueId(p)
     const d = this.profileData.find(d => d.id === id) || {
       id,
       accessToken: '',
@@ -191,5 +213,13 @@ class ProfileStore {
     { maxWait: 3000 },
   )
 }
+
+export const getAccountUniqueId = (p: Profile) =>
+  stringify({
+    u: p.pbxUsername,
+    t: p.pbxTenant,
+    h: p.pbxHostname,
+    p: p.pbxPort,
+  })
 
 export default new ProfileStore()

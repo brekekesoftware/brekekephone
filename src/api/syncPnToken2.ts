@@ -73,9 +73,17 @@ const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
   profileStore.pnSyncLoadingMap[p.id] = false
 }
 
-const syncPnToken = (p: Profile, pbx?: PBX, silent = false) =>
+const syncPnToken = (
+  p: Profile,
+  {
+    pbx,
+    silent = false,
+    onError,
+  }: { pbx?: PBX; silent?: boolean; onError?: Function } = {},
+) =>
   syncPnTokenWithoutCatch(p, pbx).catch((err: Error) => {
     profileStore.pnSyncLoadingMap[p.id] = false
+    // onError?.() // TODO
     if (silent) {
       console.error(
         `Failed to sync Push Notification settings for ${p.pbxUsername}`,
@@ -94,7 +102,7 @@ const syncPnTokenForAllAccounts = (silent = false) => {
     if (p.pushNotificationEnabledSynced) {
       return
     }
-    syncPnToken(p, undefined, silent)
+    syncPnToken(p, { silent })
   })
 }
 
