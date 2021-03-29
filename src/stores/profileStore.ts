@@ -149,6 +149,7 @@ class ProfileStore {
               pushNotificationEnabled: pn0,
             })
           },
+          noUpsert: true,
         })
       } else if (
         typeof p.pushNotificationEnabled === 'boolean' &&
@@ -174,6 +175,7 @@ class ProfileStore {
           p0.pushNotificationEnabled = pn0
           this.profiles = profiles0
         },
+        noUpsert: true,
       })
     }
   }

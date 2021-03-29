@@ -9,7 +9,10 @@ import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndexWithoutCatch } from './updatePhoneIndex'
 
-const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
+const syncPnTokenWithoutCatch = async (
+  p: Profile,
+  { pbx, noUpsert }: Pick<SyncPnTokenOption, 'pbx' | 'noUpsert'>,
+) => {
   if (Platform.OS === 'web') {
     console.error('PN sync debug: invalid platform')
     return
@@ -75,23 +78,26 @@ const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
 
   pbx.disconnect()
 
-  profileStore.upsertProfile({
-    id: p.id,
-    pushNotificationEnabledSynced: true,
-  })
+  if (!noUpsert) {
+    profileStore.upsertProfile({
+      id: p.id,
+      pushNotificationEnabledSynced: true,
+    })
+  }
 
   profileStore.pnSyncLoadingMap[p.id] = false
 }
 
-const syncPnToken = (
-  p: Profile,
-  {
-    pbx,
-    silent = false,
-    onError,
-  }: { pbx?: PBX; silent?: boolean; onError?: Function } = {},
-) =>
-  syncPnTokenWithoutCatch(p, pbx).catch((err: Error) => {
+export interface SyncPnTokenOption {
+  pbx?: PBX
+  silent?: boolean
+  onError?: Function
+  noUpsert?: boolean
+}
+
+const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
+  const { pbx, silent = false, onError } = o
+  return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
     profileStore.pnSyncLoadingMap[p.id] = false
     // onError?.() // TODO
     if (silent) {
@@ -106,6 +112,7 @@ const syncPnToken = (
       err,
     })
   })
+}
 
 const syncPnTokenForAllAccounts = (silent = false) => {
   profileStore.profiles.forEach(p => {
