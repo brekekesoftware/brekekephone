@@ -11,10 +11,12 @@ import { updatePhoneIndexWithoutCatch } from './updatePhoneIndex'
 
 const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
   if (Platform.OS === 'web') {
+    console.error('PN sync debug: invalid platform')
     return
   }
 
   if (profileStore.pnSyncLoadingMap[p.id]) {
+    console.error('PN sync debug: sync is loading')
     return
   }
   profileStore.pnSyncLoadingMap[p.id] = true
@@ -23,6 +25,7 @@ const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
   await pbx.connect(p)
   const webPhone = await updatePhoneIndexWithoutCatch(p, pbx)
   if (!webPhone) {
+    console.error('PN sync debug: can not find webphone')
     return
   }
 
@@ -46,8 +49,15 @@ const syncPnTokenWithoutCatch = async (p: Profile, pbx?: PBX) => {
         : pbx.removeFcmPnToken
       : null
   if (!fn) {
+    console.error('PN sync debug: invalid platform')
     return
   }
+
+  console.error(
+    `PN sync debug: trying to turn ${
+      p.pushNotificationEnabled ? 'on' : 'off'
+    } PN for account ${p.pbxUsername}`,
+  )
 
   if (t) {
     await fn({

@@ -154,6 +154,7 @@ class ProfileStore {
         typeof p.pushNotificationEnabled === 'boolean' &&
         p.pushNotificationEnabled !== pn1
       ) {
+        p1.pushNotificationEnabledSynced = false
         SyncPnToken().sync(p1)
       }
     }
