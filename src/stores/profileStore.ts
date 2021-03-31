@@ -144,10 +144,11 @@ class ProfileStore {
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {
           onError: () => {
-            // Revert on error? Disabled
-            Object.assign(p1, p0, {
-              pushNotificationEnabled: pn0,
-            })
+            // Revert on error?
+            // Object.assign(p1, p0, {
+            //   pushNotificationEnabled: pn0,
+            // })
+            // this.saveProfilesToLocalStorage()
           },
           noUpsert: true,
         })
@@ -171,9 +172,10 @@ class ProfileStore {
       p0.pushNotificationEnabled = false
       SyncPnToken().sync(p0, {
         onError: () => {
-          // Revert on error? Disabled
-          p0.pushNotificationEnabled = pn0
-          this.profiles = profiles0
+          // Revert on error?
+          // p0.pushNotificationEnabled = pn0
+          // this.profiles = profiles0
+          // this.saveProfilesToLocalStorage()
         },
         noUpsert: true,
       })
