@@ -64,8 +64,7 @@ public class IncomingCallActivity extends Activity {
           ViewGroup triggerAlertBtnLayout = (ViewGroup) triggerAlertBtn.getParent();
           triggerAlertBtnLayout.removeView(triggerAlertBtn);
         }
-        closedWithCheckDeviceLocked = true
-        stopRingtone();
+        closedWithCheckDeviceLocked = true;
         return;
       }
     }
@@ -133,6 +132,9 @@ public class IncomingCallActivity extends Activity {
 
   @Override
   protected void onDestroy() {
+    if (closedWithCheckDeviceLocked) {
+      IncomingCallModule.emit("showCall", "");
+    }
     stopRingtone();
     super.onDestroy();
   }

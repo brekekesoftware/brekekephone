@@ -215,14 +215,15 @@ export const setupCallKeep = async () => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepAnswerCall(uuid)
       IncomingCall.closeIncomingCallActivity(true)
-      // TODO not working with the IncomingCallActivity.java
-      // We can not keep the activity if we use this method
-      // RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
       IncomingCall.closeIncomingCallActivity()
+    })
+    // In case of answer call when phone locked
+    eventEmitter.addListener('showCall', () => {
+      RNCallKeep.backToForeground()
     })
   }
 }
