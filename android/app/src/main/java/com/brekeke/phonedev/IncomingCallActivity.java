@@ -36,9 +36,20 @@ public class IncomingCallActivity extends Activity {
     mp.start();
   }
 
-  private void stopRingtone() {
-    mp.stop();
-    mp.release();
+  private void forceStopRingtone() {
+    try {
+      mp.stop();
+      mp.release();
+    } catch (Exception e) {
+    }
+  }
+
+  private void forceFinish() {
+    closed = true;
+    try {
+      finish();
+    } catch (Exception e) {
+    }
   }
 
   private Boolean closed = false;
@@ -65,14 +76,11 @@ public class IncomingCallActivity extends Activity {
           triggerAlertBtnLayout.removeView(triggerAlertBtn);
         }
         closedWithCheckDeviceLocked = true;
+        forceStopRingtone();
         return;
       }
     }
-    closed = true;
-    try {
-      finish();
-    } catch (Exception e) {
-    }
+    forceFinish();
   }
 
   @Override
@@ -131,11 +139,22 @@ public class IncomingCallActivity extends Activity {
   }
 
   @Override
+  protected void onPause() {
+    // On home button press
+    // TODO it is now taking ~5s until main rn app open, we'll try improve this later
+    if (closedWithCheckDeviceLocked) {
+      forceFinish();
+    }
+    super.onPause();
+  }
+
+  @Override
   protected void onDestroy() {
     if (closedWithCheckDeviceLocked) {
       IncomingCallModule.emit("showCall", "");
+    } else {
+      forceStopRingtone();
     }
-    stopRingtone();
     super.onDestroy();
   }
 }
