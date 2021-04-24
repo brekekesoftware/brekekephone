@@ -42,6 +42,7 @@ public class IncomingCallActivity extends Activity {
   }
 
   private Boolean closed = false;
+  private Boolean closedWithCheckDeviceLocked = false;
 
   public void closeIncomingCallActivity(Boolean checkDeviceLocked) {
     if (closed) {
@@ -63,9 +64,9 @@ public class IncomingCallActivity extends Activity {
           ViewGroup triggerAlertBtnLayout = (ViewGroup) triggerAlertBtn.getParent();
           triggerAlertBtnLayout.removeView(triggerAlertBtn);
         }
-        // TODO not working yet
-        // stopRingtone();
-        // return;
+        closedWithCheckDeviceLocked = true
+        stopRingtone();
+        return;
       }
     }
     closed = true;

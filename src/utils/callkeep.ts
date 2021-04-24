@@ -217,7 +217,7 @@ export const setupCallKeep = async () => {
       IncomingCall.closeIncomingCallActivity(true)
       // TODO not working with the IncomingCallActivity.java
       // We can not keep the activity if we use this method
-      RNCallKeep.backToForeground()
+      // RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
