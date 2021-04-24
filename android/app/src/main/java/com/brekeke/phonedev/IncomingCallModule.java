@@ -35,21 +35,21 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void showCall(@Nonnull String uuid, @Nonnull String callerName, @Nonnull Boolean isVideoCall) {
-    this.closeIncomingCallActivity();
-    Intent i = new Intent(getReactApplicationContext(), IncomingCallActivity.class);
+    closeIncomingCallActivity(false); // Close the current PN screen if any
+    Intent i = new Intent(reactContext, IncomingCallActivity.class);
     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     i.putExtra("uuid", uuid);
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
-    (getReactApplicationContext()).startActivity(i);
+    reactContext.startActivity(i);
   }
 
   @ReactMethod
-  void closeIncomingCallActivity() {
+  void closeIncomingCallActivity(Boolean checkDeviceLocked) {
     if (IncomingCallModule.activity == null) {
       return;
     }
-    IncomingCallModule.activity.closeIncomingCallActivity();
+    IncomingCallModule.activity.closeIncomingCallActivity(checkDeviceLocked);
     IncomingCallModule.activity = null;
   }
 }

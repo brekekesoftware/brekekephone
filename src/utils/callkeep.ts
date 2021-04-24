@@ -7,20 +7,25 @@ import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from './BackgroundTimer'
 import { getLastCallPn } from './PushNotification-parse'
-import { RnNativeModules } from './RnNativeModules'
+import { IncomingCall, RnNativeModules } from './RnNativeModules'
 
 let alreadSetupCallKeep = false
 
-export const _setupCallKeep = async () => {
+const _setupCallKeep = async () => {
   if (alreadSetupCallKeep) {
     return
   }
-  alreadSetupCallKeep = true
 
-  const calls = await RNCallKeep.getCalls()
-  if (Object.keys(calls).length) {
+  // Do not re-setup ios calls
+  // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
+  if (
+    Platform.OS === 'ios' &&
+    Object.keys(await RNCallKeep.getCalls()).length
+  ) {
     return
   }
+
+  alreadSetupCallKeep = true
 
   await RNCallKeep.setup({
     ios: {
@@ -38,17 +43,26 @@ export const _setupCallKeep = async () => {
       imageName: 'phone_account_icon',
       additionalPermissions: [],
       // Android self-managed connection service forked version
-      allowSelfManaged: true,
+      selfManaged: true,
     },
   })
-    .then(async () => {
+    .then(() => {
+      RNCallKeep.registerPhoneAccount()
+      RNCallKeep.registerAndroidEvents()
+      RNCallKeep.setAvailable(true)
+      RNCallKeep.canMakeMultipleCalls(false)
       if (Platform.OS === 'android') {
-        // Android self-managed connection service forked version
-        await RNCallKeep.promptAndroidPermissions()
+        RNCallKeep.setForegroundServiceSettings({
+          channelId: 'com.brekeke.phone',
+          channelName: 'Foreground service for Brekeke Phone',
+          notificationTitle: 'Brekeke Phone is running on background',
+          notificationIcon: 'ic_launcher',
+        })
       }
     })
     .catch((err: Error) => {
       if (AppState.currentState !== 'active') {
+        console.error(err)
         return
       }
       RnAlert.error({
@@ -63,17 +77,6 @@ export const setupCallKeep = async () => {
     return
   }
 
-  if (Platform.OS === 'android') {
-    RNCallKeep.setAvailable(true)
-    RNCallKeep.setForegroundServiceSettings({
-      channelId: 'com.brekeke.phone',
-      channelName: 'Foreground service for Brekeke Phone',
-      notificationTitle: 'Brekeke Phone is running on background',
-      notificationIcon: 'ic_launcher',
-    })
-    RNCallKeep.canMakeMultipleCalls(false)
-  }
-
   await _setupCallKeep()
 
   const onDidLoadWithEvents = (e: { name: string; data: unknown }[]) => {
@@ -82,8 +85,8 @@ export const setupCallKeep = async () => {
     })
   }
   const onAnswerCallAction = (e: { callUUID: string }) => {
+    // Use the custom native incoming call module for android
     if (Platform.OS === 'android') {
-      // Use the custom native incoming call module for android
       return
     }
     const uuid = e.callUUID.toUpperCase()
@@ -91,8 +94,8 @@ export const setupCallKeep = async () => {
   }
   const onEndCallAction = (e: { callUUID: string }) => {
     BackgroundTimer.setTimeout(_setupCallKeep, 0)
+    // Use the custom native incoming call module for android
     if (Platform.OS === 'android') {
-      // Use the custom native incoming call module for android
       return
     }
     const uuid = e.callUUID.toUpperCase()
@@ -108,6 +111,10 @@ export const setupCallKeep = async () => {
     error: string // ios only
   }) => {
     const uuid = e.callUUID.toUpperCase()
+    // Use the custom native incoming call module for android
+    if (Platform.OS === 'android') {
+      return
+    }
     // Try set the caller name from last known PN
     const n = getLastCallPn()
     if (
@@ -123,8 +130,8 @@ export const setupCallKeep = async () => {
     callUUID: string
     muted: boolean
   }) => {
+    // Use the custom native incoming call module for android
     if (Platform.OS === 'android') {
-      // Use the custom native incoming call module for android
       return
     }
     const uuid = e.callUUID.toUpperCase()
@@ -137,8 +144,8 @@ export const setupCallKeep = async () => {
     callUUID: string
     hold: boolean
   }) => {
+    // Use the custom native incoming call module for android
     if (Platform.OS === 'android') {
-      // Use the custom native incoming call module for android
       return
     }
     const uuid = e.callUUID.toUpperCase()
@@ -148,8 +155,8 @@ export const setupCallKeep = async () => {
     }
   }
   const onDidPerformDTMFAction = (e: { callUUID: string; digits: string }) => {
+    // Use the custom native incoming call module for android
     if (Platform.OS === 'android') {
-      // Use the custom native incoming call module for android
       return
     }
     const uuid = e.callUUID.toUpperCase()
@@ -165,7 +172,9 @@ export const setupCallKeep = async () => {
   }
   const onShowIncomingCallUi = (e: { callUUID: string }) => {
     const uuid = e.callUUID.toUpperCase()
-    RnNativeModules.IncomingCall.showCall(
+    RNCallKeep.endAllCalls()
+    callStore.onCallKeepDidDisplayIncomingCall(uuid)
+    IncomingCall.showCall(
       uuid,
       getLastCallPn()?.from || 'Loading...',
       !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
@@ -205,13 +214,15 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('answerCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepAnswerCall(uuid)
-      RnNativeModules.IncomingCall.closeIncomingCallActivity()
+      IncomingCall.closeIncomingCallActivity(true)
+      // TODO not working with the IncomingCallActivity.java
+      // We can not keep the activity if we use this method
       RNCallKeep.backToForeground()
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
-      RnNativeModules.IncomingCall.closeIncomingCallActivity()
+      IncomingCall.closeIncomingCallActivity()
     })
   }
 }

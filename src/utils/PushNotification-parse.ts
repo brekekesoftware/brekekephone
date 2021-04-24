@@ -172,10 +172,8 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
       : null
   }
   lastCallPn = n
-  if (
-    Platform.OS === 'android' &&
-    !callStore.calls.filter(c => c.incoming && c.answered).length
-  ) {
+  if (Platform.OS === 'android') {
+    RNCallKeep.endAllCalls()
     RNCallKeep.displayIncomingCall(uuid().toUpperCase(), 'Brekeke Phone', n.to)
   }
   // Call api to sign in

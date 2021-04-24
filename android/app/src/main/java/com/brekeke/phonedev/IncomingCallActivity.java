@@ -1,13 +1,16 @@
 package com.brekeke.phonedev;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 
@@ -40,13 +43,34 @@ public class IncomingCallActivity extends Activity {
 
   private Boolean closed = false;
 
-  public void closeIncomingCallActivity() {
-    if (this.closed) {
+  public void closeIncomingCallActivity(Boolean checkDeviceLocked) {
+    if (closed) {
       return;
     }
-    this.closed = true;
+    if (checkDeviceLocked) {
+      Context ctx = getApplicationContext();
+      KeyguardManager km = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
+      if (km.isDeviceLocked()) {
+        TextView audioVideoTextView = (TextView) findViewById(R.id.audio_video_text);
+        audioVideoTextView.setText("Call is in progress\nUnlock your phone to continue");
+        Button goBackBtn = (Button) findViewById(R.id.go_back_button);
+        if (goBackBtn != null) {
+          ViewGroup goBackBtnLayout = (ViewGroup) goBackBtn.getParent();
+          goBackBtnLayout.removeView(goBackBtn);
+        }
+        Button triggerAlertBtn = (Button) findViewById(R.id.trigger_alert_button);
+        if (triggerAlertBtn != null) {
+          ViewGroup triggerAlertBtnLayout = (ViewGroup) triggerAlertBtn.getParent();
+          triggerAlertBtnLayout.removeView(triggerAlertBtn);
+        }
+        // TODO not working yet
+        // stopRingtone();
+        // return;
+      }
+    }
+    closed = true;
     try {
-      this.finish();
+      finish();
     } catch (Exception e) {
     }
   }
@@ -54,10 +78,10 @@ public class IncomingCallActivity extends Activity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    this.startRingtone();
+    startRingtone();
 
     if (IncomingCallModule.activity != null) {
-      IncomingCallModule.activity.closeIncomingCallActivity();
+      IncomingCallModule.activity.closeIncomingCallActivity(false);
     }
     IncomingCallModule.activity = this;
 
@@ -66,7 +90,7 @@ public class IncomingCallActivity extends Activity {
       b = savedInstanceState;
     }
     if (b == null) {
-      closeIncomingCallActivity();
+      closeIncomingCallActivity(false);
       return;
     }
 
@@ -91,7 +115,7 @@ public class IncomingCallActivity extends Activity {
             new View.OnClickListener() {
               @Override
               public void onClick(View view) {
-                closeIncomingCallActivity();
+                closeIncomingCallActivity(true);
                 IncomingCallModule.emit("answerCall", uuid);
               }
             });
@@ -100,7 +124,7 @@ public class IncomingCallActivity extends Activity {
             new View.OnClickListener() {
               @Override
               public void onClick(View view) {
-                closeIncomingCallActivity();
+                closeIncomingCallActivity(false);
                 IncomingCallModule.emit("rejectCall", uuid);
               }
             });
@@ -108,7 +132,7 @@ public class IncomingCallActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    this.stopRingtone();
+    stopRingtone();
     super.onDestroy();
   }
 }

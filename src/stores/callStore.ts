@@ -10,7 +10,7 @@ import pbx from '../api/pbx'
 import sip from '../api/sip'
 import uc from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { RnNativeModules } from '../utils/RnNativeModules'
+import { IncomingCall } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import waitTimeout from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
@@ -118,7 +118,7 @@ export class CallStore {
       c.callkeepAlreadyRejected = true
       endCallKeep(uuid)
     }
-    RnNativeModules.IncomingCall.closeIncomingCallActivity()
+    IncomingCall.closeIncomingCallActivity()
   }
 
   @observable calls: Call[] = []
@@ -384,7 +384,7 @@ const setAutoEndCallKeepTimer = () => {
         clearAutoEndCallKeepTimer()
       }
       RNCallKeep.endAllCalls()
-      RnNativeModules.IncomingCall.closeIncomingCallActivity()
+      IncomingCall.closeIncomingCallActivity()
     }
   }, 1000)
 }

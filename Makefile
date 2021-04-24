@@ -3,7 +3,6 @@ format:
 	make format-objc
 	make format-java
 	make format-xml
-	make imagemin
 
 format-objc:
 	export EXT="h|m" \
