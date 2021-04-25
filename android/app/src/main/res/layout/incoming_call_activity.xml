@@ -95,4 +95,21 @@
       </RelativeLayout>
     </LinearLayout>
   </RelativeLayout>
+
+  <Button
+      android:visibility="invisible"
+      android:id="@+id/btn_unlock"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Unlock"
+      android:background="@drawable/button_unlock_style"
+      android:textColor="@color/white"
+      android:textSize="16dp"
+      android:layout_marginBottom="30dp"
+      android:gravity="bottom"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true"
+      android:paddingHorizontal="30dp"
+      android:paddingVertical="15dp"
+      />
 </RelativeLayout>

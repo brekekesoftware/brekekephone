@@ -75,12 +75,19 @@ public class IncomingCallActivity extends Activity {
           ViewGroup triggerAlertBtnLayout = (ViewGroup) triggerAlertBtn.getParent();
           triggerAlertBtnLayout.removeView(triggerAlertBtn);
         }
+        Button btnUnlock = (Button) findViewById(R.id.btn_unlock);
+        btnUnlock.setVisibility(View.VISIBLE);
+        btnUnlock.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            forceFinish();
+          }
+        });
         closedWithCheckDeviceLocked = true;
         forceStopRingtone();
         return;
       }
     }
-    forceFinish();
   }
 
   @Override
