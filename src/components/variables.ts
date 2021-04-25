@@ -62,9 +62,9 @@ const v = {
   },
   colors: {
     //
-    primary: '#609b3a',
-    warning: '#f1af20',
-    danger: '#dc0f39',
+    primary: '#609B3A',
+    warning: '#F1AF20',
+    danger: '#DC0F39',
     primaryFn: (lv: number) =>
       lv > 0
         ? fn.lighten(lv, v.colors.primary)

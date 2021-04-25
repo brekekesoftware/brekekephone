@@ -2,7 +2,7 @@
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  android:background="@drawable/gradient"
+  android:background="@drawable/bg_incoming_call_screen"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:orientation="vertical"
@@ -11,12 +11,12 @@
 >
   <TextView
     android:gravity="center"
-    android:id="@+id/caller_name_text"
+    android:id="@+id/txt_caller_name"
     android:layout_height="wrap_content"
     android:layout_marginTop="20dp"
     android:layout_width="match_parent"
-    android:text="@string/caller_name_text"
-    android:textColor="#FFFFFF"
+    android:text="Caller Name"
+    android:textColor="@color/white"
     android:textSize="36sp"
     android:textStyle="bold"
   />
@@ -25,8 +25,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="6dp"
     android:layout_width="match_parent"
-    android:text="@string/brekeke_phone_text"
-    android:textColor="#FFFFFF"
+    android:text="Brekeke Phone"
+    android:textColor="@color/white"
     android:textSize="20dp"
     android:textStyle="normal"
   />
@@ -46,12 +46,12 @@
       >
         <TextView
           android:gravity="center"
-          android:id="@+id/audio_video_text"
+          android:id="@+id/txt_call_status"
           android:layout_height="wrap_content"
           android:layout_marginBottom="20dp"
           android:layout_width="match_parent"
-          android:text="@string/audio_video_text"
-          android:textColor="#FFFFFF"
+          android:text="Incoming Call"
+          android:textColor="@color/white"
           android:textSize="20dp"
           android:textStyle="normal"
         />
@@ -74,42 +74,36 @@
         android:layout_height="wrap_content"
       >
         <Button
-          android:id="@+id/go_back_button"
+          android:id="@+id/btn_close"
           android:layout_width="65dp"
           android:layout_height="65dp"
-          android:background="@drawable/button_style_blue"
+          android:background="@drawable/btn_close"
+          android:drawableLeft="@drawable/ic_close"
+          android:paddingLeft="13dp"
+          android:paddingTop="39dp"
+          android:visibility="invisible"
+          android:layout_centerHorizontal="true"
+        />
+        <Button
+          android:id="@+id/btn_answer"
+          android:layout_width="65dp"
+          android:layout_height="65dp"
+          android:background="@drawable/btn_answer"
           android:drawableLeft="@drawable/ic_answer"
           android:paddingLeft="13dp"
           android:paddingTop="39dp"
         />
         <Button
-          android:id="@+id/trigger_alert_button"
+          android:id="@+id/btn_reject"
           android:layout_marginLeft="200dp"
           android:layout_width="65dp"
           android:layout_height="65dp"
-          android:background="@drawable/button_style_red"
-          android:drawableLeft="@drawable/ic_hang_up"
+          android:background="@drawable/btn_reject"
+          android:drawableLeft="@drawable/ic_reject"
           android:paddingLeft="13dp"
           android:paddingTop="39dp"
         />
       </RelativeLayout>
     </LinearLayout>
   </RelativeLayout>
-
-  <Button
-      android:visibility="invisible"
-      android:id="@+id/btn_unlock"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Unlock"
-      android:background="@drawable/button_unlock_style"
-      android:textColor="@color/white"
-      android:textSize="16dp"
-      android:layout_marginBottom="30dp"
-      android:gravity="bottom"
-      android:layout_alignParentBottom="true"
-      android:layout_centerHorizontal="true"
-      android:paddingHorizontal="30dp"
-      android:paddingVertical="15dp"
-      />
 </RelativeLayout>

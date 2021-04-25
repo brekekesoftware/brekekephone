@@ -37,7 +37,7 @@
   >
     <activity
       android:name=".IncomingCallActivity"
-      android:label="@string/example_activity_title"
+      android:label="IncomingCallActivity"
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
     />

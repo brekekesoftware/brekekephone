@@ -5,7 +5,7 @@
     <!-- Customize your theme here. -->
   </style>
   <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowBackground">@drawable/background_splash</item>
+    <item name="android:windowBackground">@drawable/bg_splash_screen</item>
     <item name="android:statusBarColor">@color/turtle_green</item>
   </style>
 </resources>

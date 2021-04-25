@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
-  <color name="turtle_green">#74bf53</color>
+  <color name="turtle_green">#74BF53</color>
+  <color name="turtle_green_darken">#65B342</color>
+  <color name="reject">#DC0F39</color>
+  <color name="reject_darken">#C60D33</color>
   <color name="white">#FFFFFF</color>
+  <color name="white_darken">#E5E5E5</color>
+  <color name="black">#000000</color>
+  <color name="gradient_start">#94CA71</color>
+  <color name="gradient_end">#191919</color>
 </resources>
