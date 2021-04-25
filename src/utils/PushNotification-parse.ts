@@ -4,7 +4,6 @@ import RNCallKeep from 'react-native-callkeep'
 import { v4 as uuid } from 'react-native-uuid'
 
 import { getAuthStore } from '../stores/authStore'
-import callStore from '../stores/callStore'
 
 const keysInCustomNotification = [
   'title',
@@ -26,6 +25,8 @@ const keysInCustomNotification = [
   'webphone.turn.server',
   'webphone.turn.username',
   'webphone.turn.credential',
+  // Others
+  'pn-id',
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
@@ -88,6 +89,7 @@ const parseNotificationData = (raw: object) => {
 }
 
 const isNoU = (v: unknown) => v === null || v === undefined
+const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
 const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
@@ -118,6 +120,12 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!n.body && !n.to) {
     return null
   }
+
+  const pnId: string = get(n, 'pn-id')
+  if (Platform.OS === 'android' && pnId && androidAlreadyProccessedPn[pnId]) {
+    return
+  }
+  androidAlreadyProccessedPn[pnId] = true
 
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
