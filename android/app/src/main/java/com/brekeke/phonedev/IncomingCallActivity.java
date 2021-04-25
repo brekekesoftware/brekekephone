@@ -63,18 +63,20 @@ public class IncomingCallActivity extends Activity {
       Context ctx = getApplicationContext();
       KeyguardManager km = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
       if (km.isDeviceLocked()) {
-        TextView audioVideoTextView = (TextView) findViewById(R.id.audio_video_text);
-        audioVideoTextView.setText("Call is in progress\nUnlock your phone to continue");
-        Button goBackBtn = (Button) findViewById(R.id.go_back_button);
-        if (goBackBtn != null) {
-          ViewGroup goBackBtnLayout = (ViewGroup) goBackBtn.getParent();
-          goBackBtnLayout.removeView(goBackBtn);
+        TextView txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
+        txtCallStatus.setText("Call is in progress\nUnlock your phone to continue");
+        Button btnAnswer = (Button) findViewById(R.id.btn_answer);
+        if (btnAnswer != null) {
+          ViewGroup goBackBtnLayout = (ViewGroup) btnAnswer.getParent();
+          goBackBtnLayout.removeView(btnAnswer);
         }
-        Button triggerAlertBtn = (Button) findViewById(R.id.trigger_alert_button);
-        if (triggerAlertBtn != null) {
-          ViewGroup triggerAlertBtnLayout = (ViewGroup) triggerAlertBtn.getParent();
-          triggerAlertBtnLayout.removeView(triggerAlertBtn);
+        Button btnReject = (Button) findViewById(R.id.btn_reject);
+        if (btnReject != null) {
+          ViewGroup triggerAlertBtnLayout = (ViewGroup) btnReject.getParent();
+          triggerAlertBtnLayout.removeView(btnReject);
         }
+        Button btnUnlock = (Button) findViewById(R.id.btn_close);
+        btnUnlock.setVisibility(View.VISIBLE);
         closedWithCheckDeviceLocked = true;
         forceStopRingtone();
         return;
@@ -112,28 +114,36 @@ public class IncomingCallActivity extends Activity {
 
     String uuid = b.getString("uuid");
     String callerName = b.getString("callerName");
-    TextView callerNameTextView = (TextView) findViewById(R.id.caller_name_text);
-    callerNameTextView.setText(callerName);
+    TextView txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
+    txtCallerName.setText(callerName);
     Boolean isVideoCall = b.getBoolean("isVideoCall");
-    TextView audioVideoTextView = (TextView) findViewById(R.id.audio_video_text);
-    audioVideoTextView.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
+    TextView txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
+    txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
 
-    findViewById(R.id.go_back_button)
+    findViewById(R.id.btn_answer)
         .setOnClickListener(
             new View.OnClickListener() {
               @Override
-              public void onClick(View view) {
+              public void onClick(View v) {
                 closeIncomingCallActivity(true);
                 IncomingCallModule.emit("answerCall", uuid);
               }
             });
-    findViewById(R.id.trigger_alert_button)
+    findViewById(R.id.btn_reject)
         .setOnClickListener(
             new View.OnClickListener() {
               @Override
-              public void onClick(View view) {
+              public void onClick(View v) {
                 closeIncomingCallActivity(false);
                 IncomingCallModule.emit("rejectCall", uuid);
+              }
+            });
+    findViewById(R.id.btn_close)
+        .setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                forceFinish();
               }
             });
   }
