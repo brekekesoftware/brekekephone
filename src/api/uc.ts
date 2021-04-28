@@ -9,12 +9,14 @@ import {
   UcChatClient,
   UcConference,
   UcConstants,
+  UcEventMap,
   UcListeners,
   UcLogger,
   UcReceieveUnreadText,
   UcSearchTexts,
   UcSendFile,
   UcSendFiles,
+  UcWebchatConferenceText,
 } from './brekekejs'
 
 const { ChatClient, Logger, Constants } = UCClient0 as {
@@ -90,6 +92,11 @@ export class UC extends EventEmitter {
     if (!ev || !ev.sender) {
       return
     }
+    // handle update message on list webchat
+    this.emit('received-webchat-text', {
+      conf_id: ev.conf_id,
+      text: ev.text,
+    })
 
     ev.conf_id
       ? this.emit('group-chat-created', {
@@ -167,36 +174,44 @@ export class UC extends EventEmitter {
     if (!ev || !ev.conference) {
       return
     }
-
-    this.emit('chat-group-invited', {
-      id: ev.conference.conf_id,
-      name: ev.conference.subject,
-      inviter: ev.conference.from.user_id,
-      members: ev.conference.user || [],
-    })
+    // webchat: invited from guest
+    if (ev.conference?.invite_properties?.webchatfromguest) {
+      this.emit('webchat-invited', ev.conference)
+    } else {
+      this.emit('chat-group-invited', {
+        id: ev.conference.conf_id,
+        name: ev.conference.subject,
+        inviter: ev.conference.from.user_id,
+        members: ev.conference.user || [],
+      })
+    }
   }
 
   onGroupUpdated: UcListeners['conferenceMemberChanged'] = ev => {
     if (!ev || !ev.conference) {
       return
     }
+    // webchat: update webchat
+    if (ev.conference?.invite_properties?.webchatfromguest) {
+      this.emit('webchat-updated', ev.conference)
+    } else {
+      if (ev.conference.conf_status === 0) {
+        this.emit('chat-group-revoked', {
+          id: ev.conference.conf_id,
+        })
 
-    if (ev.conference.conf_status === 0) {
-      this.emit('chat-group-revoked', {
+        return
+      }
+
+      this.emit('chat-group-updated', {
         id: ev.conference.conf_id,
+        name: ev.conference.subject,
+        jointed: ev.conference.conf_status === 2,
+        members: (ev.conference.user || [])
+          .filter(user => user.conf_status === 2)
+          .map(user => user.user_id),
       })
-
-      return
     }
-
-    this.emit('chat-group-updated', {
-      id: ev.conference.conf_id,
-      name: ev.conference.subject,
-      jointed: ev.conference.conf_status === 2,
-      members: (ev.conference.user || [])
-        .filter(user => user.conf_status === 2)
-        .map(user => user.user_id),
-    })
   }
 
   connect = (profile: Profile, ucHost: string) => {
@@ -255,7 +270,6 @@ export class UC extends EventEmitter {
 
   getUsers = () => {
     const buddyList = this.client.getBuddylist()
-
     if (!buddyList || !Array.isArray(buddyList.user)) {
       return []
     }
@@ -450,6 +464,26 @@ export class UC extends EventEmitter {
     }
   }
 
+  answerWebchatConference = async (conf_id: string) => {
+    await new Promise((resolve, reject) => {
+      this.client.joinConference(
+        conf_id,
+        { exclusive: true },
+        () => resolve(undefined),
+        reject,
+      )
+    })
+  }
+  joinWebchatConference = async (conf_id: string) => {
+    await new Promise((resolve, reject) => {
+      this.client.joinConference(
+        conf_id,
+        { exclusive: false },
+        () => resolve(undefined),
+        reject,
+      )
+    })
+  }
   leaveChatGroup = async (group: string) => {
     await new Promise((resolve, reject) => {
       this.client.leaveConference(group, () => resolve(undefined), reject)
@@ -652,6 +686,16 @@ export class UC extends EventEmitter {
         created: file_res.ltime,
       },
     }
+  }
+
+  peekWebchatConferenceText = async (conf_id: string) => {
+    const res: UcWebchatConferenceText = await new Promise((resolve, reject) =>
+      this.client.peekWebchatConferenceText({ conf_id }, resolve, reject),
+    )
+    if (!res.messages.length) {
+      return []
+    }
+    return res.messages.map(message => message.text)
   }
 }
 

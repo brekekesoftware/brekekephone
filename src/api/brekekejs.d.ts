@@ -393,6 +393,7 @@ export type UcChatClient = {
   getBuddylist(): {
     user: UcUser[]
   }
+
   receiveUnreadText(
     resolve: (res: UcReceieveUnreadText) => void,
     reject: ErrorHandler,
@@ -437,7 +438,7 @@ export type UcChatClient = {
   ): void
   joinConference(
     conf_id: string,
-    opt?: unknown,
+    opt?: UcJoinConferenceOption,
     resolve: () => void,
     reject: ErrorHandler,
   ): void
@@ -470,8 +471,59 @@ export type UcChatClient = {
     resolve: (res: UcSendFiles) => void,
     reject: ErrorHandler,
   ): void
+  peekWebchatConferenceText(
+    opt: UcWebchatParams,
+    resolve: (res: UcWebchatConferenceText) => void,
+    reject: ErrorHandler,
+  ): void
 }
 
+export type UcJoinConferenceOption = {
+  exclusive: boolean
+}
+export type UcFuncError = {
+  code: number //	コード
+  message: string //	メッセージ
+}
+export type UcWebchatConferenceText = {
+  hasMore: boolean //	一度に全て受信できなかった場合はtrue
+  messages: {
+    sender: {
+      tenant: string //	送信元テナント
+      user_id: string //	送信元ユーザーID
+    }
+    text: string //	送信されたテキスト
+    object?: object //	送信されたオブジェクト (無い場合はundefined)
+    conf_id?: string //	会議ID (会議でない場合はnull)
+    ctype: number //	コンテントタイプ (コンテントタイプ定数)
+    received_text_id: string //受信テキストID
+    ltime: string //	受信日時
+    tstamp: number //	受信日時
+    sent_ltime: string //	送信日時
+    sent_tstamp: number //送信日時
+    requires_read: boolean //	既読通知が必要かどうか
+  }[]
+}
+export type UcWebchat = {
+  conf_id: string
+  messageList: object
+  conf_status: number
+  creator: {
+    tenant: string
+    user_id: string
+    user_name: string
+    conf_status: number
+  }
+  assigned: {
+    tenant: string
+    user_id: string
+    conf_status: number
+  }
+  webchatinfo: object
+  created_tstamp: number
+  baseTime: number
+  isTalking: boolean
+}
 export type UcUser = {
   user_id: string
   name: string
@@ -542,6 +594,9 @@ export type UcFileInfo = {
   status: number
   progress: number
 }
+export type UcWebchatParams = {
+  conf_id: string
+}
 export type UcSendFilesParam = {
   conf_id: string
   input: unknown
@@ -564,6 +619,50 @@ export type UcListeners = {
   fileTerminated?: (e: UcEventMap['fileTerminated']) => void
   invitedToConference?: (e: UcEventMap['invitedToConference']) => void
   conferenceMemberChanged?: (e: UcEventMap['conferenceMemberChanged']) => void
+}
+
+export type ReceivedText = {
+  sender: {
+    tenant: string //	送信元テナント
+    user_id: string //	送信元ユーザーID
+  }
+  text: string //		送信されたテキスト
+  conf_id?: string //	会議ID (会議でない場合はnull)
+  ctype: number //	コンテントタイプ (コンテントタイプ定数)
+  received_text_id: string //受信テキストID
+  topic_id: string //	会話ID
+  ltime: string //		受信日時
+  tstamp: number //	受信日時
+  sent_ltime: string //	送信日時
+  sent_tstamp: number //送信日時
+  requires_read: boolean //	既読通知が必要かどうか
+}
+
+export type Conference = {
+  conf_id: string
+  subject: string
+  created_time: string
+  created_tstamp: number
+  from: {
+    user_id: string
+  }
+  user?: {
+    user_id: string
+    conf_status: 0 | 2
+  }[]
+  conf_status: number
+  assigned: {
+    tenant: string // 担当者のテナント (ウェブチャット以外の場合は空文字列)
+    user_id: string //	担当者のユーザーID (同上)
+    conf_status: number //	担当者の会議ステータス番号 (会議ステータス定数)
+  }
+  webchatinfo: object | any
+  invite_properties: {
+    invisible: boolean //		招待されたときに他の参加者に見えない場合はtrue
+    rejoinable: boolean //		再参加可能離脱後の自動再招待の場合はtrue
+    webchatfromguest?: object //	ゲストからのウェブチャットの招待でない場合はnull
+  }
+  texts: string[] // text display on list webchat
 }
 export type UcEventMap = {
   forcedSignOut: {
@@ -611,18 +710,7 @@ export type UcEventMap = {
   fileInfoChanged: UcEventMap['fileReceived']
   fileTerminated: UcEventMap['fileReceived']
   invitedToConference: {
-    conference: {
-      conf_id: string
-      subject: string
-      from: {
-        user_id: string
-      }
-      user?: {
-        user_id: string
-        conf_status: 0 | 2
-      }[]
-      conf_status: 0 | 2
-    }
+    conference: Conference
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
 }
