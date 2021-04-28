@@ -1,19 +1,8 @@
-import {
-  mdiClose,
-  mdiPhoneIncoming,
-  mdiPhoneMissed,
-  mdiPhoneOutgoing,
-} from '@mdi/js'
 import moment from 'moment'
-import React, { FC, useEffect, useMemo, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import React, { FC, useEffect, useState } from 'react'
+import { StyleSheet } from 'react-native'
 
-import { Conference } from '../api/brekekejs'
-import uc, { Constants } from '../api/uc'
-import intl from '../stores/intl'
-import webchatStore from '../stores/webchatStore'
-import Avatar from './Avatar'
-import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
+import { RnText } from './Rn'
 
 const css = StyleSheet.create({
   Text: {
@@ -51,7 +40,7 @@ const TimeCountUp: FC<{
       const result = secondsToTime(diff)
       const timeString = result.m + ':' + result.s
       setTimer(timeString)
-    }, 100)
+    }, 1000)
     return () => {
       clearInterval(idInterval)
     }

@@ -1,6 +1,4 @@
-import sortBy from 'lodash/sortBy'
-import uniqBy from 'lodash/uniqBy'
-import { computed, observable } from 'mobx'
+import { observable } from 'mobx'
 
 import { Conference } from '../api/brekekejs'
 import uc from '../api/uc'

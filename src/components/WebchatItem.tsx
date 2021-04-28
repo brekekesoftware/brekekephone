@@ -1,19 +1,13 @@
-import {
-  mdiClose,
-  mdiPhoneIncoming,
-  mdiPhoneMissed,
-  mdiPhoneOutgoing,
-} from '@mdi/js'
-import moment from 'moment'
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import { mdiClose } from '@mdi/js'
+import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import uc, { Constants } from '../api/uc'
 import intl from '../stores/intl'
+import Nav from '../stores/Nav'
 import webchatStore from '../stores/webchatStore'
-import Avatar from './Avatar'
-import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
+import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import TimeCountUp from './TimeCountUp'
 import g from './variables'
 
@@ -70,13 +64,17 @@ const WebchatItem: FC<{
 
   const answerPress = React.useCallback(() => {
     uc.answerWebchatConference(data.conf_id)
+    Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
-  const showPress = React.useCallback(() => {}, [])
+  const showPress = React.useCallback(() => {
+    Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
+  }, [])
 
   const joinPress = React.useCallback(() => {
     uc.joinWebchatConference(data.conf_id)
     webchatStore.getMessages(data.conf_id)
+    Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
   const closePress = React.useCallback(() => {
@@ -119,7 +117,6 @@ const WebchatItem: FC<{
           </RnText>
         </RnTouchableOpacity>
       </View>
-
       {!isEnabledAnswer ? (
         <RnText normal singleLine small style={css.Text}>
           {data?.assigned?.user_id || ''}
