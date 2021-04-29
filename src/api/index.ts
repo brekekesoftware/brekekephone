@@ -8,7 +8,6 @@ import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import { waitSip } from '../stores/reconnectAndWaitSip'
 import RnAlert from '../stores/RnAlert'
-import webchatStore from '../stores/webchatStore'
 import { Conference, UcEventMap } from './brekekejs'
 import pbx from './pbx'
 import sip from './sip'
@@ -35,9 +34,6 @@ class Api {
     uc.on('connection-stopped', this.onUCConnectionStopped)
     uc.on('user-updated', this.onUCUserUpdated)
     uc.on('buddy-chat-created', this.onBuddyChatCreated)
-    uc.on('webchat-invited', this.onWebchatInvited)
-    uc.on('webchat-updated', this.onWebchatUpdated)
-    uc.on('received-webchat-text', this.onRecivedWebchatText)
     uc.on('group-chat-created', this.onGroupChatCreated)
     uc.on('chat-group-invited', this.onChatGroupInvited)
     uc.on('chat-group-revoked', this.onChatGroupRevoked)
@@ -168,9 +164,7 @@ class Api {
   }) => {
     chatStore.pushMessages(chat.creator, chat, true)
   }
-  onRecivedWebchatText = (item: { conf_id: string; text: string }) => {
-    webchatStore.pushMessages(item.conf_id, item.text)
-  }
+
   onGroupChatCreated = (chat: {
     id: string
     group: string
@@ -181,18 +175,15 @@ class Api {
     created: number
   }) => {
     chatStore.pushMessages(chat.group, chat, true)
+    chatStore.updateWebchatMessages(chat)
   }
-  onWebchatUpdated = (conference: Conference) => {
-    webchatStore.upsertWebchats(conference)
-  }
-  onWebchatInvited = (conference: Conference) => {
-    webchatStore.upsertWebchats(conference)
-  }
+
   onChatGroupInvited = (group: {
     id: string
     name: string
     inviter: string
     members: string[]
+    webchat: Conference
   }) => {
     chatStore.upsertGroup(group)
   }
@@ -201,6 +192,7 @@ class Api {
     name: string
     jointed: boolean
     members: string[]
+    webchat: Conference
   }) => {
     chatStore.upsertGroup(group)
   }

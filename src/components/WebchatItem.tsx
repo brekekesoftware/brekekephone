@@ -4,9 +4,9 @@ import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import uc, { Constants } from '../api/uc'
+import chatStore, { ChatGroup } from '../stores/chatStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import webchatStore from '../stores/webchatStore'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import TimeCountUp from './TimeCountUp'
 import g from './variables'
@@ -50,17 +50,20 @@ const css = StyleSheet.create({
 
 const WebchatItem: FC<{
   data: Conference
-}> = ({ data }) => {
+  messages: string[]
+}> = ({ data, messages }) => {
+  // const data = p.webchat
   // CONF_STATUS_INACTIVE: 0 => disable all , show close
   // CONF_STATUS_INVITED: 1 => enabled join
   // CONF_STATUS_JOINED: 2 => enable show
   // CONF_STATUS_INVITED_WEBCHAT: 5 => enabled answer
+
   const isEnabledAnswer =
     data.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT
   const isEnabledJoin = data.conf_status === Constants.CONF_STATUS_INVITED
   const isDisplayClose = data.conf_status === Constants.CONF_STATUS_INACTIVE
   const isDisplayShow = data.conf_status === Constants.CONF_STATUS_JOINED
-  const textDisplay = data.texts.slice(Math.max(data.texts.length - 5, 0))
+  const textDisplay = messages.slice(Math.max(messages.length - 5, 0))
 
   const answerPress = React.useCallback(() => {
     uc.answerWebchatConference(data.conf_id)
@@ -69,16 +72,16 @@ const WebchatItem: FC<{
 
   const showPress = React.useCallback(() => {
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
-  }, [])
+  }, [data.conf_id])
 
   const joinPress = React.useCallback(() => {
     uc.joinWebchatConference(data.conf_id)
-    webchatStore.getMessages(data.conf_id)
+    chatStore.getMessages(data.conf_id)
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
   const closePress = React.useCallback(() => {
-    webchatStore.removeWebchatItem(data.conf_id)
+    chatStore.removeWebchatItem(data.conf_id)
   }, [data.conf_id])
 
   return (

@@ -13,18 +13,17 @@ import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
+import chatStore from '../stores/chatStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
-import webchatStore from '../stores/webchatStore'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
 @observer
 class PageWebChat extends React.Component {
   render() {
-    const arr = webchatStore?.webchats || []
-
+    const arr = chatStore.groups.filter(group => group.webchat)
     return (
       <Layout
         description={intl`UC recent active chat`}

@@ -93,10 +93,10 @@ export class UC extends EventEmitter {
       return
     }
     // handle update message on list webchat
-    this.emit('received-webchat-text', {
-      conf_id: ev.conf_id,
-      text: ev.text,
-    })
+    // this.emit('received-webchat-text', {
+    //   conf_id: ev.conf_id,
+    //   text: ev.text,
+    // })
 
     ev.conf_id
       ? this.emit('group-chat-created', {
@@ -105,6 +105,7 @@ export class UC extends EventEmitter {
           text: ev.text,
           creator: ev.sender.user_id,
           created: ev.sent_ltime,
+          conf_id: ev.conf_id,
         })
       : this.emit('buddy-chat-created', {
           id: ev.received_text_id,
@@ -175,16 +176,14 @@ export class UC extends EventEmitter {
       return
     }
     // webchat: invited from guest
-    if (ev.conference?.invite_properties?.webchatfromguest) {
-      this.emit('webchat-invited', ev.conference)
-    } else {
-      this.emit('chat-group-invited', {
-        id: ev.conference.conf_id,
-        name: ev.conference?.subject || ev.conference?.creator?.user_name || '',
-        inviter: ev.conference.from.user_id,
-        members: ev.conference.user || [],
-      })
-    }
+    const isWebchat = ev.conference?.invite_properties?.webchatfromguest
+    this.emit('chat-group-invited', {
+      id: ev.conference.conf_id,
+      name: ev.conference?.subject || ev.conference?.creator?.user_name || '',
+      inviter: ev.conference.from.user_id,
+      members: ev.conference.user || [],
+      webchat: isWebchat ? ev.conference : null,
+    })
   }
 
   onGroupUpdated: UcListeners['conferenceMemberChanged'] = ev => {
@@ -192,13 +191,21 @@ export class UC extends EventEmitter {
       return
     }
     // webchat: update webchat
-    this.emit('webchat-updated', ev.conference)
-
+    const isWebchat = ev.conference?.invite_properties?.webchatfromguest
     if (ev.conference.conf_status === 0) {
-      this.emit('chat-group-revoked', {
-        id: ev.conference.conf_id,
-      })
-
+      // logic if webchat user will be close via button
+      if (isWebchat) {
+        this.emit('chat-group-updated', {
+          id: ev.conference.conf_id,
+          name:
+            ev.conference?.subject || ev.conference?.creator?.user_name || '',
+          webchat: isWebchat ? ev.conference : null,
+        })
+      } else {
+        this.emit('chat-group-revoked', {
+          id: ev.conference.conf_id,
+        })
+      }
       return
     }
 
@@ -209,6 +216,7 @@ export class UC extends EventEmitter {
       members: (ev.conference.user || [])
         .filter(user => user.conf_status === 2)
         .map(user => user.user_id),
+      webchat: isWebchat ? ev.conference : null,
     })
   }
 
