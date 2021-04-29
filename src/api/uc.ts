@@ -180,7 +180,7 @@ export class UC extends EventEmitter {
     } else {
       this.emit('chat-group-invited', {
         id: ev.conference.conf_id,
-        name: ev.conference.subject,
+        name: ev.conference?.subject || ev.conference?.creator?.user_name || '',
         inviter: ev.conference.from.user_id,
         members: ev.conference.user || [],
       })
@@ -192,26 +192,24 @@ export class UC extends EventEmitter {
       return
     }
     // webchat: update webchat
-    if (ev.conference?.invite_properties?.webchatfromguest) {
-      this.emit('webchat-updated', ev.conference)
-    } else {
-      if (ev.conference.conf_status === 0) {
-        this.emit('chat-group-revoked', {
-          id: ev.conference.conf_id,
-        })
+    this.emit('webchat-updated', ev.conference)
 
-        return
-      }
-
-      this.emit('chat-group-updated', {
+    if (ev.conference.conf_status === 0) {
+      this.emit('chat-group-revoked', {
         id: ev.conference.conf_id,
-        name: ev.conference.subject,
-        jointed: ev.conference.conf_status === 2,
-        members: (ev.conference.user || [])
-          .filter(user => user.conf_status === 2)
-          .map(user => user.user_id),
       })
+
+      return
     }
+
+    this.emit('chat-group-updated', {
+      id: ev.conference.conf_id,
+      name: ev.conference?.subject || ev.conference?.creator?.user_name || '',
+      jointed: ev.conference.conf_status === 2,
+      members: (ev.conference.user || [])
+        .filter(user => user.conf_status === 2)
+        .map(user => user.user_id),
+    })
   }
 
   connect = (profile: Profile, ucHost: string) => {

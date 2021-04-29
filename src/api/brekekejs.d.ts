@@ -646,6 +646,12 @@ export type Conference = {
   from: {
     user_id: string
   }
+  creator: {
+    tenant: string //		作成者のテナント
+    user_id: string // 		作成者のユーザーID
+    user_name: string //		作成者の名前
+    conf_status: number // 作成者の会議ステータス番号 (会議ステータス定数)
+  }
   user?: {
     user_id: string
     conf_status: 0 | 2
