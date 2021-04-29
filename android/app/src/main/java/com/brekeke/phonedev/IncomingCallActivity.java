@@ -55,34 +55,33 @@ public class IncomingCallActivity extends Activity {
   private Boolean closed = false;
   private Boolean closedWithCheckDeviceLocked = false;
 
-  public void closeIncomingCallActivity(Boolean checkDeviceLocked) {
+  public Boolean closeIncomingCallActivity(Boolean checkDeviceLocked) {
     if (closed) {
-      return;
+      return true;
     }
-    if (checkDeviceLocked) {
-      Context ctx = getApplicationContext();
-      KeyguardManager km = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
-      if (km.isDeviceLocked()) {
-        TextView txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
-        txtCallStatus.setText("Call is in progress\nUnlock your phone to continue");
-        Button btnAnswer = (Button) findViewById(R.id.btn_answer);
-        if (btnAnswer != null) {
-          ViewGroup goBackBtnLayout = (ViewGroup) btnAnswer.getParent();
-          goBackBtnLayout.removeView(btnAnswer);
-        }
-        Button btnReject = (Button) findViewById(R.id.btn_reject);
-        if (btnReject != null) {
-          ViewGroup triggerAlertBtnLayout = (ViewGroup) btnReject.getParent();
-          triggerAlertBtnLayout.removeView(btnReject);
-        }
-        Button btnUnlock = (Button) findViewById(R.id.btn_close);
-        btnUnlock.setVisibility(View.VISIBLE);
-        closedWithCheckDeviceLocked = true;
-        forceStopRingtone();
-        return;
-      }
+    closedWithCheckDeviceLocked = checkDeviceLocked;
+    if (!checkDeviceLocked
+        || !((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
+            .isDeviceLocked()) {
+      forceFinish();
+      return true;
     }
-    forceFinish();
+    TextView txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
+    txtCallStatus.setText("Call is in progress\nUnlock your phone to continue");
+    Button btnAnswer = (Button) findViewById(R.id.btn_answer);
+    if (btnAnswer != null) {
+      ViewGroup goBackBtnLayout = (ViewGroup) btnAnswer.getParent();
+      goBackBtnLayout.removeView(btnAnswer);
+    }
+    Button btnReject = (Button) findViewById(R.id.btn_reject);
+    if (btnReject != null) {
+      ViewGroup triggerAlertBtnLayout = (ViewGroup) btnReject.getParent();
+      triggerAlertBtnLayout.removeView(btnReject);
+    }
+    Button btnUnlock = (Button) findViewById(R.id.btn_close);
+    btnUnlock.setVisibility(View.VISIBLE);
+    forceStopRingtone();
+    return false;
   }
 
   @Override
@@ -162,9 +161,8 @@ public class IncomingCallActivity extends Activity {
   protected void onDestroy() {
     if (closedWithCheckDeviceLocked) {
       IncomingCallModule.emit("showCall", "");
-    } else {
-      forceStopRingtone();
     }
+    forceStopRingtone();
     super.onDestroy();
   }
 }

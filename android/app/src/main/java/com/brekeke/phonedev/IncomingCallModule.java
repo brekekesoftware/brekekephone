@@ -49,7 +49,8 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
     if (IncomingCallModule.activity == null) {
       return;
     }
-    IncomingCallModule.activity.closeIncomingCallActivity(checkDeviceLocked);
-    IncomingCallModule.activity = null;
+    if (IncomingCallModule.activity.closeIncomingCallActivity(checkDeviceLocked)) {
+      IncomingCallModule.activity = null;
+    }
   }
 }

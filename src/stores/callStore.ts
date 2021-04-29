@@ -87,6 +87,7 @@ export class CallStore {
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
+      console.error('SIP PN debug: answer by onCallKeepAnswerCall')
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'answered'
     }
@@ -98,6 +99,7 @@ export class CallStore {
     if (c) {
       c.callkeepAlreadyRejected = true
       c.hangup()
+      console.error('SIP PN debug: reject by onCallKeepEndCall')
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
     }
@@ -154,10 +156,10 @@ export class CallStore {
     this.calls = [c, ...this.calls]
     // Get and check callkeep
     let recentPnUuid = ''
-    let recentPnAction: string | undefined
+    let recentPnAction = ''
     if (this.recentPn && Date.now() - this.recentPn.at < 20000) {
       recentPnUuid = this.recentPn.uuid
-      recentPnAction = this.recentPn.action
+      recentPnAction = this.recentPn.action || ''
     }
     if (Platform.OS === 'web' || !recentPnUuid || !c.incoming || c.answered) {
       return
@@ -175,9 +177,11 @@ export class CallStore {
     if (recentPnAction === 'answered') {
       c.callkeepAlreadyAnswered = true
       c.answer()
+      console.error('SIP PN debug: answer by recentPnAction')
     } else if (recentPnAction === 'rejected') {
       c.callkeepAlreadyRejected = true
       c.hangup()
+      console.error('SIP PN debug: reject by recentPnAction')
     }
   }
   @action removeCall = (id: string) => {
