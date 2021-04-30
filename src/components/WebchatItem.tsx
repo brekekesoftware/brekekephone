@@ -108,7 +108,7 @@ const WebchatItem: FC<{
           </RnTouchableOpacity>
         )}
         <RnTouchableOpacity
-          // disabled={!isEnabledJoin}
+          disabled={!isEnabledJoin}
           onPress={joinPress}
           style={[
             css.BtnText,

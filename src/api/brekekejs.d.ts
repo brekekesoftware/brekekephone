@@ -482,26 +482,26 @@ export type UcJoinConferenceOption = {
   exclusive: boolean
 }
 export type UcFuncError = {
-  code: number //	コード
-  message: string //	メッセージ
+  code: number
+  message: string
 }
 export type UcWebchatConferenceText = {
-  hasMore: boolean //	一度に全て受信できなかった場合はtrue
+  hasMore: boolean
   messages: {
     sender: {
-      tenant: string //	送信元テナント
-      user_id: string //	送信元ユーザーID
+      tenant: string
+      user_id: string
     }
-    text: string //	送信されたテキスト
-    object?: object //	送信されたオブジェクト (無い場合はundefined)
-    conf_id?: string //	会議ID (会議でない場合はnull)
-    ctype: number //	コンテントタイプ (コンテントタイプ定数)
-    received_text_id: string //受信テキストID
-    ltime: string //	受信日時
-    tstamp: number //	受信日時
-    sent_ltime: string //	送信日時
-    sent_tstamp: number //送信日時
-    requires_read: boolean //	既読通知が必要かどうか
+    text: string
+    object?: object
+    conf_id?: string
+    ctype: number
+    received_text_id: string
+    ltime: string
+    tstamp: number
+    sent_ltime: string
+    sent_tstamp: number
+    requires_read: boolean
   }[]
 }
 export type UcWebchat = {
@@ -623,19 +623,19 @@ export type UcListeners = {
 
 export type ReceivedText = {
   sender: {
-    tenant: string //	送信元テナント
-    user_id: string //	送信元ユーザーID
+    tenant: string
+    user_id: string
   }
-  text: string //		送信されたテキスト
-  conf_id?: string //	会議ID (会議でない場合はnull)
-  ctype: number //	コンテントタイプ (コンテントタイプ定数)
-  received_text_id: string //受信テキストID
-  topic_id: string //	会話ID
-  ltime: string //		受信日時
-  tstamp: number //	受信日時
-  sent_ltime: string //	送信日時
-  sent_tstamp: number //送信日時
-  requires_read: boolean //	既読通知が必要かどうか
+  text: string
+  conf_id?: string
+  ctype: number
+  received_text_id: string
+  topic_id: string
+  ltime: string
+  tstamp: number
+  sent_ltime: string
+  sent_tstamp: number
+  requires_read: boolean
 }
 
 export type Conference = {
@@ -647,10 +647,10 @@ export type Conference = {
     user_id: string
   }
   creator: {
-    tenant: string //		作成者のテナント
-    user_id: string // 		作成者のユーザーID
-    user_name: string //		作成者の名前
-    conf_status: number // 作成者の会議ステータス番号 (会議ステータス定数)
+    tenant: string
+    user_id: string
+    user_name: string
+    conf_status: number
   }
   user?: {
     user_id: string
@@ -658,15 +658,19 @@ export type Conference = {
   }[]
   conf_status: number
   assigned: {
-    tenant: string // 担当者のテナント (ウェブチャット以外の場合は空文字列)
-    user_id: string //	担当者のユーザーID (同上)
-    conf_status: number //	担当者の会議ステータス番号 (会議ステータス定数)
+    tenant: string
+    user_id: string
+    conf_status: number
   }
-  webchatinfo: object | any
+  webchatinfo: {
+    profinfo_formatted: string
+    profinfo_json: object
+    conf_ext: string
+  }
   invite_properties: {
-    invisible: boolean //		招待されたときに他の参加者に見えない場合はtrue
-    rejoinable: boolean //		再参加可能離脱後の自動再招待の場合はtrue
-    webchatfromguest?: object //	ゲストからのウェブチャットの招待でない場合はnull
+    invisible: boolean
+    rejoinable: boolean
+    webchatfromguest?: object
   }
   texts: string[] // text display on list webchat
 }
