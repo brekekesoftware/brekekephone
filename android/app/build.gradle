@@ -31,7 +31,7 @@ android {
   }
 
   defaultConfig {
-    applicationId "com.brekeke.phonedev"
+    applicationId "com.brekeke.phone"
     versionCode 207024
     versionName "2.7.24"
     minSdkVersion rootProject.ext.minSdkVersion
