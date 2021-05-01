@@ -37,7 +37,7 @@ export type ChatGroup = {
   inviter: string
   jointed: boolean
   members: string[]
-  webchat: Conference | undefined | null // check group is webchat
+  webchat?: Conference // check group is webchat
   webchatMessages: string[] // update webchat messages when have event chat
 }
 
@@ -100,12 +100,12 @@ class ChatStore {
       return
     }
     this.groups = this.groups.map(item => {
-      const messages = item?.webchatMessages || ([] as string[])
+      const messages = item.webchatMessages || ([] as string[])
       const newItem = {
         ...item,
-        webchatMessages: [...messages, chat?.text || ''],
+        webchatMessages: [...messages, chat.text || ''],
       }
-      return item.id === chat.conf_id && item?.webchat ? newItem : item
+      return item.id === chat.conf_id && item.webchat ? newItem : item
     })
   }
   removeWebchatItem = (conf_id: string) => {
@@ -113,9 +113,10 @@ class ChatStore {
   }
   getMessages = async (conf_id: string) => {
     const messages = await uc.peekWebchatConferenceText(conf_id)
+    console.log({ messages })
+
     if (messages.length > 0) {
       this.groups = this.groups.map(item => {
-        const messages = item?.webchatMessages || ([] as string[])
         const newItem = {
           ...item,
           webchatMessages: item.webchatMessages.concat(messages),
@@ -155,15 +156,15 @@ class ChatStore {
   @observable groups: ChatGroup[] = []
   upsertGroup = (_g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
-    if (!_g?.webchatMessages) {
+    if (!_g.webchatMessages) {
       _g = { ..._g, webchatMessages: [] as string[] } as ChatGroup
     }
     const g = this.getGroup(_g.id)
     if (g) {
-      if (_g?.webchat) {
+      if (_g.webchat) {
         const newItem = {
           ..._g,
-          webchatMessages: g?.webchatMessages || ([] as string[]),
+          webchatMessages: g.webchatMessages || ([] as string[]),
         }
         Object.assign(g, newItem)
       } else {

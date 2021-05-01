@@ -9,7 +9,6 @@ import {
   UcChatClient,
   UcConference,
   UcConstants,
-  UcEventMap,
   UcListeners,
   UcLogger,
   UcReceieveUnreadText,
@@ -176,10 +175,10 @@ export class UC extends EventEmitter {
       return
     }
     // webchat: invited from guest
-    const isWebchat = ev.conference?.invite_properties?.webchatfromguest
+    const isWebchat = ev.conference.invite_properties?.webchatfromguest
     this.emit('chat-group-invited', {
       id: ev.conference.conf_id,
-      name: ev.conference?.subject || ev.conference?.creator?.user_name || '',
+      name: ev.conference.subject || ev.conference.creator.user_name || '',
       inviter: ev.conference.from.user_id,
       members: ev.conference.user || [],
       webchat: isWebchat ? ev.conference : null,
@@ -191,14 +190,13 @@ export class UC extends EventEmitter {
       return
     }
     // webchat: update webchat
-    const isWebchat = ev.conference?.invite_properties?.webchatfromguest
+    const isWebchat = ev.conference.invite_properties?.webchatfromguest
     if (ev.conference.conf_status === 0) {
       // logic if webchat user will be close via button
       if (isWebchat) {
         this.emit('chat-group-updated', {
           id: ev.conference.conf_id,
-          name:
-            ev.conference?.subject || ev.conference?.creator?.user_name || '',
+          name: ev.conference.subject || ev.conference.creator.user_name || '',
           webchat: isWebchat ? ev.conference : null,
         })
       } else {
@@ -211,7 +209,7 @@ export class UC extends EventEmitter {
 
     this.emit('chat-group-updated', {
       id: ev.conference.conf_id,
-      name: ev.conference?.subject || ev.conference?.creator?.user_name || '',
+      name: ev.conference.subject || ev.conference.creator.user_name || '',
       jointed: ev.conference.conf_status === 2,
       members: (ev.conference.user || [])
         .filter(user => user.conf_status === 2)

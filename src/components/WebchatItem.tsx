@@ -1,14 +1,16 @@
 import { mdiClose } from '@mdi/js'
+import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import uc, { Constants } from '../api/uc'
-import chatStore, { ChatGroup } from '../stores/chatStore'
+import chatStore from '../stores/chatStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
+import timerStore from '../stores/timerStore'
+import formatDuration from '../utils/formatDuration'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import TimeCountUp from './TimeCountUp'
 import g from './variables'
 
 const css = StyleSheet.create({
@@ -71,6 +73,7 @@ const WebchatItem: FC<{
   }, [data.conf_id])
 
   const showPress = React.useCallback(() => {
+    chatStore.getMessages(data.conf_id)
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
@@ -122,14 +125,16 @@ const WebchatItem: FC<{
       </View>
       {!isEnabledAnswer ? (
         <RnText normal singleLine small style={css.Text}>
-          {data?.assigned?.user_id || ''}
+          {data.assigned.user_id || ''}
         </RnText>
       ) : (
-        <TimeCountUp created_time={data.created_time} />
+        <RnText normal singleLine small style={css.Text}>
+          {formatDuration(timerStore.now - data.created_tstamp)}
+        </RnText>
       )}
 
       <RnText normal singleLine small style={css.Text}>
-        {data?.webchatinfo?.profinfo_formatted || ''}
+        {data.webchatinfo.profinfo_formatted || ''}
       </RnText>
       <RnText
         normal
@@ -149,4 +154,4 @@ const WebchatItem: FC<{
     </View>
   )
 }
-export default WebchatItem
+export default observer(WebchatItem)
