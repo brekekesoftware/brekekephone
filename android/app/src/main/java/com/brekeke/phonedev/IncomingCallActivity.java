@@ -44,23 +44,33 @@ public class IncomingCallActivity extends Activity {
     }
   }
 
+  private Boolean closed = false;
+  private Boolean closedWithAnswerPressed = false;
+
   private void forceFinish() {
     closed = true;
     try {
       finish();
     } catch (Exception e) {
+      checkAndEmitShowCall();
     }
   }
 
-  private Boolean closed = false;
-  private Boolean closedWithCheckDeviceLocked = false;
+  private void checkAndEmitShowCall() {
+    if (closedWithAnswerPressed) {
+      ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
+          .requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
+      IncomingCallModule.emit("showCall", "");
+    }
+  }
 
-  public Boolean closeIncomingCallActivity(Boolean checkDeviceLocked) {
+  public Boolean closeIncomingCallActivity(Boolean isAnswerPressed) {
     if (closed) {
       return true;
     }
-    closedWithCheckDeviceLocked = checkDeviceLocked;
-    if (!checkDeviceLocked
+    closedWithAnswerPressed = isAnswerPressed;
+
+    if (!isAnswerPressed
         || !((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
             .isDeviceLocked()) {
       forceFinish();
@@ -137,6 +147,7 @@ public class IncomingCallActivity extends Activity {
                 IncomingCallModule.emit("rejectCall", uuid);
               }
             });
+
     findViewById(R.id.btn_close)
         .setOnClickListener(
             new View.OnClickListener() {
@@ -151,7 +162,7 @@ public class IncomingCallActivity extends Activity {
   protected void onPause() {
     // On home button press
     // TODO it is now taking ~5s until main rn app open, we'll try improve this later
-    if (closedWithCheckDeviceLocked) {
+    if (closedWithAnswerPressed) {
       forceFinish();
     }
     super.onPause();
@@ -159,9 +170,7 @@ public class IncomingCallActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    if (closedWithCheckDeviceLocked) {
-      IncomingCallModule.emit("showCall", "");
-    }
+    checkAndEmitShowCall();
     forceStopRingtone();
     super.onDestroy();
   }

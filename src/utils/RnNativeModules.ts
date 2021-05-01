@@ -8,7 +8,7 @@ const Polyfill = {
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
   IncomingCall: NativeModule & {
-    closeIncomingCallActivity(checkPhoneLocked: boolean): void
+    closeIncomingCallActivity(isAnswerPressed: boolean): void
     showCall(uuid: string, callerName: string, withVideo?: boolean): void
   }
 }
@@ -16,7 +16,7 @@ const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
 export const RnNativeModules = M
 
 export const IncomingCall = {
-  closeIncomingCallActivity: (checkPhoneLocked?: boolean) =>
-    M.IncomingCall.closeIncomingCallActivity(!!checkPhoneLocked),
+  closeIncomingCallActivity: (isAnswerPressed?: boolean) =>
+    M.IncomingCall.closeIncomingCallActivity(!!isAnswerPressed),
   showCall: M.IncomingCall.showCall,
 }

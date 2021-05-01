@@ -120,7 +120,6 @@ export class CallStore {
       c.callkeepAlreadyRejected = true
       endCallKeep(uuid)
     }
-    IncomingCall.closeIncomingCallActivity()
   }
 
   @observable calls: Call[] = []
@@ -384,11 +383,21 @@ const setAutoEndCallKeepTimer = () => {
     }
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
-      if (totalEmptyCallsAttempt > 2) {
-        clearAutoEndCallKeepTimer()
+      const endAllCalls = () => {
+        if (totalEmptyCallsAttempt > 2) {
+          clearAutoEndCallKeepTimer()
+        }
+        RNCallKeep.endAllCalls()
       }
-      RNCallKeep.endAllCalls()
-      IncomingCall.closeIncomingCallActivity()
+      if (Platform.OS === 'ios') {
+        endAllCalls()
+      } else if (
+        callStore.recentPn?.action !== 'answered' &&
+        !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
+      ) {
+        endAllCalls()
+        IncomingCall.closeIncomingCallActivity()
+      }
     }
   }, 1000)
 }
