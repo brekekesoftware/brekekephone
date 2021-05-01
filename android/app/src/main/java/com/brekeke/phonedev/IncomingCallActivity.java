@@ -70,6 +70,13 @@ public class IncomingCallActivity extends Activity {
     }
     closedWithAnswerPressed = isAnswerPressed;
 
+    // TODO test behavior of this case
+    Boolean requestUnlockOnAnswer = true;
+    if (requestUnlockOnAnswer) {
+      forceFinish();
+      return true;
+    }
+
     if (!isAnswerPressed
         || !((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
             .isDeviceLocked()) {
