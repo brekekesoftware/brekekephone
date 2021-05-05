@@ -9,7 +9,7 @@ import RnAlert from './RnAlert'
 class AuthPBX {
   private clearObserve?: Lambda
   auth() {
-    this.authWithCheckDebounced()
+    this.authWithCheck()
     this.clearObserve = observe(
       getAuthStore(),
       'pbxShouldAuth',

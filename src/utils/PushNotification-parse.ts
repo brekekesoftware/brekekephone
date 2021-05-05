@@ -4,6 +4,7 @@ import RNCallKeep from 'react-native-callkeep'
 import { v4 as uuid } from 'react-native-uuid'
 
 import { getAuthStore } from '../stores/authStore'
+import waitTimeout from './waitTimeout'
 
 const keysInCustomNotification = [
   'title',
@@ -91,7 +92,7 @@ const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
-const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
+const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return null
   }
@@ -186,6 +187,7 @@ const parse = (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   // Call api to sign in
   getAuthStore().signInByNotification(n)
+  await waitTimeout(3000)
   return null
 }
 
