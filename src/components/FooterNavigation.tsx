@@ -56,9 +56,11 @@ const Navigation: FC<{
     {menus().map(m => {
       const active = m.key === menu
       const totalUnreadChat = chatStore.unreadCount
+      const totalNoticesWebchat = chatStore.numberNoticesWebchat
+      const totalNoticesContact = totalUnreadChat + totalNoticesWebchat
       const showUnreadChat =
         authStore.currentProfile?.ucEnabled &&
-        !!totalUnreadChat &&
+        !!totalNoticesContact &&
         m.key === 'contact' &&
         !active
       return (
@@ -74,7 +76,7 @@ const Navigation: FC<{
             <View style={css.UnreadOuter}>
               <View style={css.Unread}>
                 <RnText style={css.UnreadText} bold white center>
-                  {totalUnreadChat}
+                  {totalUnreadChat + totalNoticesWebchat}
                 </RnText>
               </View>
             </View>

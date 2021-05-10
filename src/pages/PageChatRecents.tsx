@@ -6,6 +6,7 @@ import React from 'react'
 import { Group } from 'react-native'
 
 import { UcMessageLog } from '../api/brekekejs'
+import { Constants } from '../api/uc'
 import ListUsers from '../components/ChatListUsers'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
@@ -26,8 +27,13 @@ class PageChatRecents extends React.Component {
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
   render() {
-    const groupIds = chatStore.groups.filter(g => g.jointed).map(g => g.id)
+    const groupIds = chatStore.groups
+      .filter(g => g.jointed)
+      .filter(g => !g.webchat)
+      .map(g => g.id)
+
     const threadIds = chatStore.threadIdsOrderedByRecent
+    console.log({ groupIds, threadIds })
     const groupById = arrToMap(chatStore.groups, 'id', (g: Group) => g) as {
       [k: string]: Group
     }
@@ -38,7 +44,7 @@ class PageChatRecents extends React.Component {
     const recentFromStorage = getAuthStore().currentData.recentChats.filter(
       c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
     )
-
+    console.log({ recentFromStorage })
     type WithThreadId = {
       threadId: string
     }
@@ -70,6 +76,7 @@ class PageChatRecents extends React.Component {
       if (typeof unread !== 'boolean') {
         unread = c.unread || false
       }
+
       const { text, isTextOnly } = formatChatContent(c)
       return {
         id,
@@ -81,7 +88,13 @@ class PageChatRecents extends React.Component {
         created: c.created,
       }
     }
+    console.log({ recentGroups, recentUsers })
+
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
+    // don't display webchat
+    const webchats = chatStore.groups.filter(group => group.webchat)
+    arr = arr.filter(c => !webchats.some(g => g.id === c.id))
+
     arr = filterTextOnly(arr)
     arr = uniqBy(arr, 'id')
     const arrMap = arr.reduce((m, c) => {
@@ -93,6 +106,7 @@ class PageChatRecents extends React.Component {
         arr.push(c)
       }
     })
+
     arr = orderBy(arr, ['created', 'name'])
       // .filter(c => !!c.created && !c.group)
       .reverse()

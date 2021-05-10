@@ -3,7 +3,7 @@ import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
 import { Conference } from '../api/brekekejs'
-import uc from '../api/uc'
+import uc, { Constants } from '../api/uc'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'
@@ -59,6 +59,13 @@ class ChatStore {
     ).length
     return l1 + l2
   }
+  @computed get numberNoticesWebchat() {
+    return this.groups.filter(
+      s =>
+        s.webchat &&
+        s.webchat.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT,
+    )?.length
+  }
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
@@ -75,6 +82,14 @@ class ChatStore {
     _m: ChatMessage | ChatMessage[],
     isUnread = false,
   ) => {
+    // check update message for Webchat
+    const isGroup = this.groups.some(g => g.id === threadId)
+    const isGroupWebchat = isGroup && this.getGroup(threadId).webchat
+    // if(isGroupWebchat) {
+    //   this.updateWebchatMessages(_m as ChatMessage)
+    //   // return
+    // }
+
     if (!Array.isArray(_m)) {
       _m = [_m]
     }
@@ -84,9 +99,9 @@ class ChatStore {
       uniqBy(messages, 'id'),
       'created',
     )
-    const isGroup = this.groups.some(g => g.id === threadId)
+
     const a2 = filterTextOnly(_m)
-    if (!a2.length) {
+    if (!a2.length || isGroupWebchat) {
       return
     }
     this.updateThreadConfig(threadId, isGroup, {

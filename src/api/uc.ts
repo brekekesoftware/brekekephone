@@ -197,6 +197,7 @@ export class UC extends EventEmitter {
         this.emit('chat-group-updated', {
           id: ev.conference.conf_id,
           name: ev.conference.subject || ev.conference.creator.user_name || '',
+          jointed: false,
           webchat: isWebchat ? ev.conference : null,
         })
       } else {
