@@ -443,8 +443,8 @@ export type UcChatClient = {
     reject: ErrorHandler,
   ): void
   leaveConference(
-    conf_id: string,
-    resolve: () => void,
+    opt: UcLeaveConferenceOption,
+    resolve: (res: UcResponseLeaveConf) => void,
     reject: ErrorHandler,
   ): void
   inviteToConference(
@@ -480,6 +480,15 @@ export type UcChatClient = {
 
 export type UcJoinConferenceOption = {
   exclusive: boolean
+}
+export type UcLeaveConferenceOption = {
+  conf_id: string
+  rejoinable: boolean
+}
+export type UcResponseLeaveConf = {
+  closes: boolean
+  ltime: string
+  tstamp: number
 }
 export type UcFuncError = {
   code: number

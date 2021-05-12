@@ -8,13 +8,13 @@ import {
   ScrollView,
 } from 'react-native'
 
-import uc from '../api/uc'
+import uc, { Constants } from '../api/uc'
 import { numberOfChatsPerLoad } from '../components/chatConfig'
 import MessageList from '../components/ChatMessageList'
 import ChatInput from '../components/FooterChatInput'
 import Layout from '../components/Layout'
 import callStore from '../stores/callStore'
-import chatStore, { ChatMessage } from '../stores/chatStore'
+import chatStore, { ChatGroup, ChatMessage } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -56,6 +56,17 @@ class PageChatGroupDetail extends React.Component<{
       this.loadRecent()
     } else {
       window.setTimeout(this.onContentSizeChange, 170)
+    }
+    chatStore.updateThreadConfig(this.props.groupId, true, {
+      isUnread: false,
+    })
+  }
+  componentDidUpdate() {
+    const { groupId } = this.props
+    if (chatStore.getThreadConfig(groupId).isUnread) {
+      chatStore.updateThreadConfig(groupId, false, {
+        isUnread: false,
+      })
     }
   }
 
@@ -144,6 +155,10 @@ class PageChatGroupDetail extends React.Component<{
   resolveBuddy = (creator: string) => {
     if (creator === this.me.id) {
       return this.me
+    }
+    if (creator.startsWith('#')) {
+      // check message come from guest
+      return { id: creator.replace('#', ''), name: 'Guest', avatar: null }
     }
     return contactStore.getUCUser(creator) || {}
   }
@@ -241,12 +256,32 @@ class PageChatGroupDetail extends React.Component<{
         this.submitting = false
       })
   }
-
+  updateConfStatus = (conf_id: string, isClose: boolean) => {
+    const g = chatStore.getGroup(conf_id)
+    const newItem = {
+      ...g,
+      webchat: {
+        ...g.webchat,
+        conf_status: isClose
+          ? Constants.CONF_STATUS_INACTIVE
+          : Constants.CONF_STATUS_INVITED,
+      },
+    } as ChatGroup
+    chatStore.upsertGroup(newItem)
+  }
   leave = () => {
-    uc.leaveChatGroup(this.props.groupId)
-      .then(() => {
-        chatStore.removeGroup(this.props.groupId)
-        Nav().goToPageChatRecents()
+    const conf_id = this.props.groupId
+    uc.leaveChatConference(conf_id, true)
+      .then(res => {
+        const isWebchat = chatStore.isWebchat(conf_id)
+        if (isWebchat) {
+          // leave webchat then close conference
+          // update conf_status
+          this.updateConfStatus(conf_id, res.closes)
+        } else {
+          chatStore.removeGroup(this.props.groupId)
+        }
+        Nav().backToPageChatRecents()
       })
       .catch((err: Error) => {
         RnAlert.error({

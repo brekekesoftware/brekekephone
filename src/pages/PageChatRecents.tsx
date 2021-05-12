@@ -27,13 +27,14 @@ class PageChatRecents extends React.Component {
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
   render() {
-    const groupIds = chatStore.groups
-      .filter(g => g.jointed)
-      .filter(g => !g.webchat)
-      .map(g => g.id)
+    const webchatInactive = chatStore.groups.filter(
+      g => g.webchat && g.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
+    )
+
+    const groupIds = chatStore.groups.filter(g => g.jointed).map(g => g.id)
 
     const threadIds = chatStore.threadIdsOrderedByRecent
-    console.log({ groupIds, threadIds })
+
     const groupById = arrToMap(chatStore.groups, 'id', (g: Group) => g) as {
       [k: string]: Group
     }
@@ -44,7 +45,6 @@ class PageChatRecents extends React.Component {
     const recentFromStorage = getAuthStore().currentData.recentChats.filter(
       c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
     )
-    console.log({ recentFromStorage })
     type WithThreadId = {
       threadId: string
     }
@@ -76,7 +76,12 @@ class PageChatRecents extends React.Component {
       if (typeof unread !== 'boolean') {
         unread = c.unread || false
       }
-
+      // check webchat inactive
+      const isWebchat = chatStore.isWebchat(id)
+      const isWebchatJoined = chatStore.isWebchatJoined(id)
+      if (isWebchat && !isWebchatJoined) {
+        unread = true
+      }
       const { text, isTextOnly } = formatChatContent(c)
       return {
         id,
@@ -88,31 +93,27 @@ class PageChatRecents extends React.Component {
         created: c.created,
       }
     }
-    console.log({ recentGroups, recentUsers })
-
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
-    // don't display webchat
-    const webchats = chatStore.groups.filter(group => group.webchat)
-    arr = arr.filter(c => !webchats.some(g => g.id === c.id))
-
     arr = filterTextOnly(arr)
     arr = uniqBy(arr, 'id')
     const arrMap = arr.reduce((m, c) => {
       m[c.id] = true
       return m
     }, {} as { [k: string]: boolean })
+
     filterTextOnly(getAuthStore().currentData.recentChats).forEach(c => {
       if (!arrMap[c.id]) {
         arr.push(c)
       }
     })
 
+    // don't display webchat
+    arr = arr.filter(c => !webchatInactive.some(g => g.id === c.id))
     arr = orderBy(arr, ['created', 'name'])
       // .filter(c => !!c.created && !c.group)
       .reverse()
 
     // Not show other message content type different than normal text chat
-
     window.setTimeout(() => {
       const arr2 = [...arr].filter(c => c.created || c.group)
       while (arr2.length > 20) {

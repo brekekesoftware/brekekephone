@@ -12,6 +12,7 @@ import {
   UcListeners,
   UcLogger,
   UcReceieveUnreadText,
+  UcResponseLeaveConf,
   UcSearchTexts,
   UcSendFile,
   UcSendFiles,
@@ -102,7 +103,7 @@ export class UC extends EventEmitter {
           id: ev.received_text_id,
           group: ev.conf_id,
           text: ev.text,
-          creator: ev.sender.user_id,
+          creator: !ev.sender.user_id,
           created: ev.sent_ltime,
           conf_id: ev.conf_id,
         })
@@ -191,12 +192,15 @@ export class UC extends EventEmitter {
     }
     // webchat: update webchat
     const isWebchat = ev.conference.invite_properties?.webchatfromguest
+    const name =
+      (ev.conference?.subject || ev.conference.creator?.user_name || '') +
+      (isWebchat ? ' - Webchat' : '')
     if (ev.conference.conf_status === 0) {
       // logic if webchat user will be close via button
       if (isWebchat) {
         this.emit('chat-group-updated', {
           id: ev.conference.conf_id,
-          name: ev.conference.subject || ev.conference.creator.user_name || '',
+          name: name,
           jointed: false,
           webchat: isWebchat ? ev.conference : null,
         })
@@ -210,7 +214,7 @@ export class UC extends EventEmitter {
 
     this.emit('chat-group-updated', {
       id: ev.conference.conf_id,
-      name: ev.conference.subject || ev.conference.creator.user_name || '',
+      name: name,
       jointed: ev.conference.conf_status === 2,
       members: (ev.conference.user || [])
         .filter(user => user.conf_status === 2)
@@ -489,9 +493,19 @@ export class UC extends EventEmitter {
       )
     })
   }
+  leaveChatConference = async (conf_id: string, rejoinable: boolean) => {
+    const result: UcResponseLeaveConf = await new Promise((resolve, reject) => {
+      this.client.leaveConference({ conf_id, rejoinable }, resolve, reject)
+    })
+    return result
+  }
   leaveChatGroup = async (group: string) => {
     await new Promise((resolve, reject) => {
-      this.client.leaveConference(group, () => resolve(undefined), reject)
+      this.client.leaveConference(
+        { conf_id: group, rejoinable: false },
+        () => resolve(undefined),
+        reject,
+      )
     })
 
     return {

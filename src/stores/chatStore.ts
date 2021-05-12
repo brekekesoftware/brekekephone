@@ -77,19 +77,33 @@ class ChatStore {
       return messages[0].created
     })
   }
+  getWebChatInactiveIds() {
+    return this.groups
+      .filter(
+        g =>
+          g.webchat && g.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
+      )
+      .map(item => item.id)
+  }
+  isWebchatJoined(conf_id: string) {
+    return this.groups
+      .filter(
+        g =>
+          g.webchat && g.webchat.conf_status === Constants.CONF_STATUS_JOINED,
+      )
+      .some(w => w.id === conf_id)
+  }
+  isWebchat(conf_id: string) {
+    return this.groups.filter(g => g.webchat).some(w => w.id === conf_id)
+  }
   pushMessages = (
     threadId: string,
     _m: ChatMessage | ChatMessage[],
     isUnread = false,
   ) => {
-    // check update message for Webchat
     const isGroup = this.groups.some(g => g.id === threadId)
-    const isGroupWebchat = isGroup && this.getGroup(threadId).webchat
-    // if(isGroupWebchat) {
-    //   this.updateWebchatMessages(_m as ChatMessage)
-    //   // return
-    // }
-
+    const isWebchatJoined = this.isWebchatJoined(threadId)
+    const isWebchat = this.isWebchat(threadId)
     if (!Array.isArray(_m)) {
       _m = [_m]
     }
@@ -99,9 +113,8 @@ class ChatStore {
       uniqBy(messages, 'id'),
       'created',
     )
-
     const a2 = filterTextOnly(_m)
-    if (!a2.length || isGroupWebchat) {
+    if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
     }
     this.updateThreadConfig(threadId, isGroup, {
@@ -114,22 +127,25 @@ class ChatStore {
     if (!chat.text || !chat.conf_id) {
       return
     }
+
     this.groups = this.groups.map(item => {
       const messages = item.webchatMessages || ([] as string[])
+      const isJoined =
+        item.webchat?.conf_status === Constants.CONF_STATUS_JOINED
       const newItem = {
         ...item,
         webchatMessages: [...messages, chat.text || ''],
       }
-      return item.id === chat.conf_id && item.webchat ? newItem : item
+      return item.id === chat.conf_id && isJoined && item.webchat
+        ? newItem
+        : item
     })
   }
   removeWebchatItem = (conf_id: string) => {
-    this.groups = this.groups.filter(item => item.id !== conf_id)
+    this.removeGroup(conf_id)
   }
   getMessages = async (conf_id: string) => {
     const messages = await uc.peekWebchatConferenceText(conf_id)
-    console.log({ messages })
-
     if (messages.length > 0) {
       this.groups = this.groups.map(item => {
         const newItem = {

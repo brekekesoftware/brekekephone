@@ -48,6 +48,9 @@ const css = StyleSheet.create({
   icon: {
     padding: 10,
   },
+  bgUnread: {
+    backgroundColor: g.colors.primaryFn(0.5),
+  },
 })
 
 const WebchatItem: FC<{
@@ -88,7 +91,7 @@ const WebchatItem: FC<{
   }, [data.conf_id])
 
   return (
-    <View style={css.Row}>
+    <View style={[css.Row, isEnabledAnswer ? css.bgUnread : null]}>
       <View style={css.Column}>
         {isEnabledAnswer ? (
           <RnTouchableOpacity onPress={answerPress} style={[css.BtnText]}>
