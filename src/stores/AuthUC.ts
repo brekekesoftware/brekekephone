@@ -18,7 +18,7 @@ const UCClient = UCClient0 as {
 class AuthUC {
   private clearObserve?: Lambda
   auth() {
-    this.authWithCheckDebounced()
+    this.authWithCheck()
     uc.on('connection-stopped', this.onConnectionStopped)
     this.clearObserve = observe(
       getAuthStore(),
@@ -50,7 +50,7 @@ class AuthUC {
       getAuthStore().ucState = 'success'
     })
   }
-  private authWitchCheck = () => {
+  private authWithCheck = () => {
     if (!getAuthStore().ucShouldAuth) {
       return
     }
@@ -63,7 +63,7 @@ class AuthUC {
       })
     })
   }
-  private authWithCheckDebounced = debounce(this.authWitchCheck, 300)
+  private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 
   private onConnectionStopped = (e: { code: number }) => {
     getAuthStore().ucState = 'failure'

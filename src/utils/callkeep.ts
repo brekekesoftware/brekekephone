@@ -172,13 +172,13 @@ export const setupCallKeep = async () => {
   }
   const onShowIncomingCallUi = (e: { callUUID: string }) => {
     const uuid = e.callUUID.toUpperCase()
-    RNCallKeep.endAllCalls()
-    callStore.onCallKeepDidDisplayIncomingCall(uuid)
     IncomingCall.showCall(
       uuid,
       getLastCallPn()?.from || 'Loading...',
       !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
     )
+    callStore.onCallKeepDidDisplayIncomingCall(uuid)
+    RNCallKeep.endAllCalls()
   }
   const handlers: { [k: string]: Function } = {
     onAnswerCallAction,

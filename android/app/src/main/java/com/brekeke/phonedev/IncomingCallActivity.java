@@ -44,45 +44,61 @@ public class IncomingCallActivity extends Activity {
     }
   }
 
+  private Boolean closed = false;
+  private Boolean closedWithAnswerPressed = false;
+
   private void forceFinish() {
     closed = true;
     try {
       finish();
     } catch (Exception e) {
+      checkAndEmitShowCall();
     }
   }
 
-  private Boolean closed = false;
-  private Boolean closedWithCheckDeviceLocked = false;
+  private void checkAndEmitShowCall() {
+    if (closedWithAnswerPressed) {
+      ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
+          .requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
+      IncomingCallModule.emit("showCall", "");
+    }
+  }
 
-  public void closeIncomingCallActivity(Boolean checkDeviceLocked) {
+  public Boolean closeIncomingCallActivity(Boolean isAnswerPressed) {
     if (closed) {
-      return;
+      return true;
     }
-    if (checkDeviceLocked) {
-      Context ctx = getApplicationContext();
-      KeyguardManager km = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
-      if (km.isDeviceLocked()) {
-        TextView txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
-        txtCallStatus.setText("Call is in progress\nUnlock your phone to continue");
-        Button btnAnswer = (Button) findViewById(R.id.btn_answer);
-        if (btnAnswer != null) {
-          ViewGroup goBackBtnLayout = (ViewGroup) btnAnswer.getParent();
-          goBackBtnLayout.removeView(btnAnswer);
-        }
-        Button btnReject = (Button) findViewById(R.id.btn_reject);
-        if (btnReject != null) {
-          ViewGroup triggerAlertBtnLayout = (ViewGroup) btnReject.getParent();
-          triggerAlertBtnLayout.removeView(btnReject);
-        }
-        Button btnUnlock = (Button) findViewById(R.id.btn_close);
-        btnUnlock.setVisibility(View.VISIBLE);
-        closedWithCheckDeviceLocked = true;
-        forceStopRingtone();
-        return;
-      }
+    closedWithAnswerPressed = isAnswerPressed;
+
+    // TODO test behavior of this case
+    Boolean requestUnlockOnAnswer = true;
+    if (requestUnlockOnAnswer) {
+      forceFinish();
+      return true;
     }
-    forceFinish();
+
+    if (!isAnswerPressed
+        || !((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
+            .isDeviceLocked()) {
+      forceFinish();
+      return true;
+    }
+    TextView txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
+    txtCallStatus.setText("Call is in progress\nUnlock your phone to continue");
+    Button btnAnswer = (Button) findViewById(R.id.btn_answer);
+    if (btnAnswer != null) {
+      ViewGroup goBackBtnLayout = (ViewGroup) btnAnswer.getParent();
+      goBackBtnLayout.removeView(btnAnswer);
+    }
+    Button btnReject = (Button) findViewById(R.id.btn_reject);
+    if (btnReject != null) {
+      ViewGroup triggerAlertBtnLayout = (ViewGroup) btnReject.getParent();
+      triggerAlertBtnLayout.removeView(btnReject);
+    }
+    Button btnUnlock = (Button) findViewById(R.id.btn_close);
+    btnUnlock.setVisibility(View.VISIBLE);
+    forceStopRingtone();
+    return false;
   }
 
   @Override
@@ -138,6 +154,7 @@ public class IncomingCallActivity extends Activity {
                 IncomingCallModule.emit("rejectCall", uuid);
               }
             });
+
     findViewById(R.id.btn_close)
         .setOnClickListener(
             new View.OnClickListener() {
@@ -152,7 +169,7 @@ public class IncomingCallActivity extends Activity {
   protected void onPause() {
     // On home button press
     // TODO it is now taking ~5s until main rn app open, we'll try improve this later
-    if (closedWithCheckDeviceLocked) {
+    if (closedWithAnswerPressed) {
       forceFinish();
     }
     super.onPause();
@@ -160,11 +177,8 @@ public class IncomingCallActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    if (closedWithCheckDeviceLocked) {
-      IncomingCallModule.emit("showCall", "");
-    } else {
-      forceStopRingtone();
-    }
+    checkAndEmitShowCall();
+    forceStopRingtone();
     super.onDestroy();
   }
 }
