@@ -23,6 +23,7 @@ import PageSettingsOther from '../pages/PageSettingsOther'
 import PageSettingsProfile from '../pages/PageSettingsProfile'
 import PageTransferChooseUser from '../pages/PageTransferChooseUser'
 import PageTransferDial from '../pages/PageTransferDial'
+import PageWebChat from '../pages/PageWebChat'
 import { getAuthStore } from './authStore'
 import { setNav } from './Nav'
 import RnStacker from './RnStacker'
@@ -80,6 +81,7 @@ export class Nav {
   backToPageSettingsDebug = back({ PageSettingsDebug })
   goToPageCallParks2 = go({ PageCallParks2 })
   backToPageCallParks2 = back({ PageCallParks2 })
+  goToPageWebChat = go({ PageWebChat }, true)
 
   goToPageIndex = () => {
     if (!getAuthStore().currentProfile) {

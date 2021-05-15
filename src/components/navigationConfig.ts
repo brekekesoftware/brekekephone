@@ -51,6 +51,12 @@ const genMenus = () => {
           navFnKey: 'goToPageChatRecents',
           ucRequired: true,
         },
+        {
+          key: 'webchat',
+          label: intl`WEBCHAT`,
+          navFnKey: 'goToPageWebChat',
+          ucRequired: true,
+        },
       ],
       defaultSubMenuKey: 'users',
     },

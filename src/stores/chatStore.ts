@@ -2,6 +2,8 @@ import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
+import { Conference } from '../api/brekekejs'
+import uc, { Constants } from '../api/uc'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'
@@ -13,6 +15,7 @@ export type ChatMessage = {
   type: number
   creator: string
   created: number
+  conf_id?: string
 }
 export type ChatFile = {
   id: string
@@ -34,6 +37,8 @@ export type ChatGroup = {
   inviter: string
   jointed: boolean
   members: string[]
+  webchat?: Conference // check group is webchat
+  webchatMessages: string[] // update webchat messages when have event chat
 }
 
 class ChatStore {
@@ -54,6 +59,13 @@ class ChatStore {
     ).length
     return l1 + l2
   }
+  @computed get numberNoticesWebchat() {
+    return this.groups.filter(
+      s =>
+        s.webchat &&
+        s.webchat.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT,
+    )?.length
+  }
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
@@ -65,11 +77,33 @@ class ChatStore {
       return messages[0].created
     })
   }
+  getWebChatInactiveIds() {
+    return this.groups
+      .filter(
+        g =>
+          g.webchat && g.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
+      )
+      .map(item => item.id)
+  }
+  isWebchatJoined(conf_id: string) {
+    return this.groups
+      .filter(
+        g =>
+          g.webchat && g.webchat.conf_status === Constants.CONF_STATUS_JOINED,
+      )
+      .some(w => w.id === conf_id)
+  }
+  isWebchat(conf_id: string) {
+    return this.groups.filter(g => g.webchat).some(w => w.id === conf_id)
+  }
   pushMessages = (
     threadId: string,
     _m: ChatMessage | ChatMessage[],
     isUnread = false,
   ) => {
+    const isGroup = this.groups.some(g => g.id === threadId)
+    const isWebchatJoined = this.isWebchatJoined(threadId)
+    const isWebchat = this.isWebchat(threadId)
     if (!Array.isArray(_m)) {
       _m = [_m]
     }
@@ -79,14 +113,48 @@ class ChatStore {
       uniqBy(messages, 'id'),
       'created',
     )
-    const isGroup = this.groups.some(g => g.id === threadId)
     const a2 = filterTextOnly(_m)
-    if (!a2.length) {
+    if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
     }
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })
+  }
+
+  updateWebchatMessages = (chat: ChatMessage) => {
+    // update messages for webchat groups
+    if (!chat.text || !chat.conf_id) {
+      return
+    }
+
+    this.groups = this.groups.map(item => {
+      const messages = item.webchatMessages || ([] as string[])
+      const isJoined =
+        item.webchat?.conf_status === Constants.CONF_STATUS_JOINED
+      const newItem = {
+        ...item,
+        webchatMessages: [...messages, chat.text || ''],
+      }
+      return item.id === chat.conf_id && isJoined && item.webchat
+        ? newItem
+        : item
+    })
+  }
+  removeWebchatItem = (conf_id: string) => {
+    this.removeGroup(conf_id)
+  }
+  getMessages = async (conf_id: string) => {
+    const messages = await uc.peekWebchatConferenceText(conf_id)
+    if (messages.length > 0) {
+      this.groups = this.groups.map(item => {
+        const newItem = {
+          ...item,
+          webchatMessages: item.webchatMessages.concat(messages),
+        }
+        return item.id === conf_id ? newItem : item
+      })
+    }
   }
 
   getThreadConfig = (id: string) =>
@@ -118,9 +186,21 @@ class ChatStore {
 
   @observable groups: ChatGroup[] = []
   upsertGroup = (_g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
+    // add default webchatMessages
+    if (!_g.webchatMessages) {
+      _g = { ..._g, webchatMessages: [] as string[] } as ChatGroup
+    }
     const g = this.getGroup(_g.id)
     if (g) {
-      Object.assign(g, _g)
+      if (_g.webchat) {
+        const newItem = {
+          ..._g,
+          webchatMessages: g.webchatMessages || ([] as string[]),
+        }
+        Object.assign(g, newItem)
+      } else {
+        Object.assign(g, _g)
+      }
     } else {
       this.groups.push(_g as ChatGroup)
     }
@@ -131,7 +211,7 @@ class ChatStore {
     delete this.threadConfig[id]
     this.groups = this.groups.filter(g => g.id !== id)
   }
-  //
+
   @computed get _groupsMap() {
     return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {
       [k: string]: ChatGroup

@@ -95,7 +95,8 @@ const Notify: FC<{
 class ChatGroupInvite extends React.Component {
   @observable loading = false
   @computed get groupIds() {
-    return chatStore.groups.filter(g => !g.jointed).map(g => g.id)
+    // update logic if from webchat don't show notify
+    return chatStore.groups.filter(g => !g.webchat && !g.jointed).map(g => g.id)
   }
 
   formatGroup = (group: string) => {
@@ -205,10 +206,17 @@ class UnreadChatNoti extends React.Component {
         buddy: string
         groupId: string
       }
+      const isWebchat = chatStore.isWebchat(c.id)
+      const isWebchatJoined = chatStore.isWebchatJoined(c.id)
+
       if (!s) {
         return true
       }
+      if (isWebchat && !isWebchatJoined) {
+        return false
+      }
       const { name, buddy, groupId } = s
+
       if (name === 'PageChatRecents') {
         return false
       }
@@ -218,6 +226,7 @@ class UnreadChatNoti extends React.Component {
       if (name === 'PageChatGroupDetail' && c.isGroup && groupId === c.id) {
         return false
       }
+
       return true
     })
     //

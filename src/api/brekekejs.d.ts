@@ -393,6 +393,7 @@ export type UcChatClient = {
   getBuddylist(): {
     user: UcUser[]
   }
+
   receiveUnreadText(
     resolve: (res: UcReceieveUnreadText) => void,
     reject: ErrorHandler,
@@ -437,13 +438,13 @@ export type UcChatClient = {
   ): void
   joinConference(
     conf_id: string,
-    opt?: unknown,
+    opt?: UcJoinConferenceOption,
     resolve: () => void,
     reject: ErrorHandler,
   ): void
   leaveConference(
-    conf_id: string,
-    resolve: () => void,
+    opt: UcLeaveConferenceOption,
+    resolve: (res: UcResponseLeaveConf) => void,
     reject: ErrorHandler,
   ): void
   inviteToConference(
@@ -470,8 +471,68 @@ export type UcChatClient = {
     resolve: (res: UcSendFiles) => void,
     reject: ErrorHandler,
   ): void
+  peekWebchatConferenceText(
+    opt: UcWebchatParams,
+    resolve: (res: UcWebchatConferenceText) => void,
+    reject: ErrorHandler,
+  ): void
 }
 
+export type UcJoinConferenceOption = {
+  exclusive: boolean
+}
+export type UcLeaveConferenceOption = {
+  conf_id: string
+  rejoinable: boolean
+}
+export type UcResponseLeaveConf = {
+  closes: boolean
+  ltime: string
+  tstamp: number
+}
+export type UcFuncError = {
+  code: number
+  message: string
+}
+export type UcWebchatConferenceText = {
+  hasMore: boolean
+  messages: {
+    sender: {
+      tenant: string
+      user_id: string
+    }
+    text: string
+    object?: object
+    conf_id?: string
+    ctype: number
+    received_text_id: string
+    ltime: string
+    tstamp: number
+    sent_ltime: string
+    sent_tstamp: number
+    requires_read: boolean
+  }[]
+}
+export type UcWebchat = {
+  conf_id: string
+  messageList: object
+  conf_status: number
+  creator: {
+    tenant: string
+    user_id: string
+    user_name: string
+    conf_status: number
+  }
+  assigned: {
+    tenant: string
+    user_id: string
+    conf_status: number
+  }
+  webchatinfo: object
+  created_tstamp: number
+  baseTime: number
+  isTalking: boolean
+}
 export type UcUser = {
   user_id: string
   name: string
@@ -542,6 +603,9 @@ export type UcFileInfo = {
   status: number
   progress: number
 }
+export type UcWebchatParams = {
+  conf_id: string
+}
 export type UcSendFilesParam = {
   conf_id: string
   input: unknown
@@ -564,6 +628,60 @@ export type UcListeners = {
   fileTerminated?: (e: UcEventMap['fileTerminated']) => void
   invitedToConference?: (e: UcEventMap['invitedToConference']) => void
   conferenceMemberChanged?: (e: UcEventMap['conferenceMemberChanged']) => void
+}
+
+export type ReceivedText = {
+  sender: {
+    tenant: string
+    user_id: string
+  }
+  text: string
+  conf_id?: string
+  ctype: number
+  received_text_id: string
+  topic_id: string
+  ltime: string
+  tstamp: number
+  sent_ltime: string
+  sent_tstamp: number
+  requires_read: boolean
+}
+
+export type Conference = {
+  conf_id: string
+  subject: string
+  created_time: string
+  created_tstamp: number
+  from: {
+    user_id: string
+  }
+  creator: {
+    tenant: string
+    user_id: string
+    user_name: string
+    conf_status: number
+  }
+  user?: {
+    user_id: string
+    conf_status: 0 | 2
+  }[]
+  conf_status: number
+  assigned: {
+    tenant: string
+    user_id: string
+    conf_status: number
+  }
+  webchatinfo: {
+    profinfo_formatted: string
+    profinfo_json: object
+    conf_ext: string
+  }
+  invite_properties: {
+    invisible: boolean
+    rejoinable: boolean
+    webchatfromguest?: object
+  }
+  texts: string[] // text display on list webchat
 }
 export type UcEventMap = {
   forcedSignOut: {
@@ -611,18 +729,7 @@ export type UcEventMap = {
   fileInfoChanged: UcEventMap['fileReceived']
   fileTerminated: UcEventMap['fileReceived']
   invitedToConference: {
-    conference: {
-      conf_id: string
-      subject: string
-      from: {
-        user_id: string
-      }
-      user?: {
-        user_id: string
-        conf_status: 0 | 2
-      }[]
-      conf_status: 0 | 2
-    }
+    conference: Conference
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
 }

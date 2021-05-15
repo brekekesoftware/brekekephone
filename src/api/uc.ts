@@ -12,9 +12,11 @@ import {
   UcListeners,
   UcLogger,
   UcReceieveUnreadText,
+  UcResponseLeaveConf,
   UcSearchTexts,
   UcSendFile,
   UcSendFiles,
+  UcWebchatConferenceText,
 } from './brekekejs'
 
 const { ChatClient, Logger, Constants } = UCClient0 as {
@@ -90,6 +92,11 @@ export class UC extends EventEmitter {
     if (!ev || !ev.sender) {
       return
     }
+    // handle update message on list webchat
+    // this.emit('received-webchat-text', {
+    //   conf_id: ev.conf_id,
+    //   text: ev.text,
+    // })
 
     ev.conf_id
       ? this.emit('group-chat-created', {
@@ -98,6 +105,7 @@ export class UC extends EventEmitter {
           text: ev.text,
           creator: ev.sender.user_id,
           created: ev.sent_ltime,
+          conf_id: ev.conf_id,
         })
       : this.emit('buddy-chat-created', {
           id: ev.received_text_id,
@@ -167,12 +175,14 @@ export class UC extends EventEmitter {
     if (!ev || !ev.conference) {
       return
     }
-
+    // webchat: invited from guest
+    const isWebchat = ev.conference.invite_properties?.webchatfromguest
     this.emit('chat-group-invited', {
       id: ev.conference.conf_id,
-      name: ev.conference.subject,
+      name: ev.conference.subject || ev.conference.creator.user_name || '',
       inviter: ev.conference.from.user_id,
       members: ev.conference.user || [],
+      webchat: isWebchat ? ev.conference : null,
     })
   }
 
@@ -180,22 +190,36 @@ export class UC extends EventEmitter {
     if (!ev || !ev.conference) {
       return
     }
-
+    // webchat: update webchat
+    const isWebchat = ev.conference.invite_properties?.webchatfromguest
+    const name =
+      (ev.conference?.subject || ev.conference.creator?.user_name || '') +
+      (isWebchat ? ' - Webchat' : '')
     if (ev.conference.conf_status === 0) {
-      this.emit('chat-group-revoked', {
-        id: ev.conference.conf_id,
-      })
-
+      // logic if webchat user will be close via button
+      if (isWebchat) {
+        this.emit('chat-group-updated', {
+          id: ev.conference.conf_id,
+          name: name,
+          jointed: false,
+          webchat: isWebchat ? ev.conference : null,
+        })
+      } else {
+        this.emit('chat-group-revoked', {
+          id: ev.conference.conf_id,
+        })
+      }
       return
     }
 
     this.emit('chat-group-updated', {
       id: ev.conference.conf_id,
-      name: ev.conference.subject,
+      name: name,
       jointed: ev.conference.conf_status === 2,
       members: (ev.conference.user || [])
         .filter(user => user.conf_status === 2)
         .map(user => user.user_id),
+      webchat: isWebchat ? ev.conference : null,
     })
   }
 
@@ -255,7 +279,6 @@ export class UC extends EventEmitter {
 
   getUsers = () => {
     const buddyList = this.client.getBuddylist()
-
     if (!buddyList || !Array.isArray(buddyList.user)) {
       return []
     }
@@ -450,9 +473,39 @@ export class UC extends EventEmitter {
     }
   }
 
+  answerWebchatConference = async (conf_id: string) => {
+    await new Promise((resolve, reject) => {
+      this.client.joinConference(
+        conf_id,
+        { exclusive: true },
+        () => resolve(undefined),
+        reject,
+      )
+    })
+  }
+  joinWebchatConference = async (conf_id: string) => {
+    await new Promise((resolve, reject) => {
+      this.client.joinConference(
+        conf_id,
+        { exclusive: false },
+        () => resolve(undefined),
+        reject,
+      )
+    })
+  }
+  leaveChatConference = async (conf_id: string, rejoinable: boolean) => {
+    const result: UcResponseLeaveConf = await new Promise((resolve, reject) => {
+      this.client.leaveConference({ conf_id, rejoinable }, resolve, reject)
+    })
+    return result
+  }
   leaveChatGroup = async (group: string) => {
     await new Promise((resolve, reject) => {
-      this.client.leaveConference(group, () => resolve(undefined), reject)
+      this.client.leaveConference(
+        { conf_id: group, rejoinable: false },
+        () => resolve(undefined),
+        reject,
+      )
     })
 
     return {
@@ -652,6 +705,16 @@ export class UC extends EventEmitter {
         created: file_res.ltime,
       },
     }
+  }
+
+  peekWebchatConferenceText = async (conf_id: string) => {
+    const res: UcWebchatConferenceText = await new Promise((resolve, reject) =>
+      this.client.peekWebchatConferenceText({ conf_id }, resolve, reject),
+    )
+    if (!res.messages.length) {
+      return []
+    }
+    return res.messages.map(message => message.text)
   }
 }
 

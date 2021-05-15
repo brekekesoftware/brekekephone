@@ -8,6 +8,7 @@ import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import { waitSip } from '../stores/reconnectAndWaitSip'
 import RnAlert from '../stores/RnAlert'
+import { Conference } from './brekekejs'
 import pbx from './pbx'
 import sip from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -159,9 +160,11 @@ class Api {
     type: number
     file?: string
     created: number
+    conf_id: string
   }) => {
     chatStore.pushMessages(chat.creator, chat, true)
   }
+
   onGroupChatCreated = (chat: {
     id: string
     group: string
@@ -172,12 +175,15 @@ class Api {
     created: number
   }) => {
     chatStore.pushMessages(chat.group, chat, true)
+    chatStore.updateWebchatMessages(chat)
   }
+
   onChatGroupInvited = (group: {
     id: string
     name: string
     inviter: string
     members: string[]
+    webchat: Conference
   }) => {
     chatStore.upsertGroup(group)
   }
@@ -186,6 +192,7 @@ class Api {
     name: string
     jointed: boolean
     members: string[]
+    webchat: Conference
   }) => {
     chatStore.upsertGroup(group)
   }
