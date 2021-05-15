@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native'
 
 import chatStore from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
-import { getSubMenus } from './navigationConfig'
+import { getSubMenus, getTabs } from './navigationConfig'
 import { RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
@@ -36,11 +36,15 @@ const css = StyleSheet.create({
 const Navigation: FC<{
   menu: string
   subMenu: string
+  isTab?: boolean
 }> = observer(p => {
-  const { menu, subMenu } = p
+  const { menu, subMenu, isTab } = p
+  const tabs = isTab ? getTabs(menu) : getSubMenus(menu)
+  console.log({ tabs })
+
   return (
     <View style={css.Navigation}>
-      {getSubMenus(menu).map(s => {
+      {tabs.map(s => {
         const active = s.key === subMenu
         const totalUnreadChat = chatStore.unreadCount
         return (

@@ -21,6 +21,7 @@ import PageProfileUpdate from '../pages/PageProfileUpdate'
 import PageSettingsDebug from '../pages/PageSettingsDebug'
 import PageSettingsOther from '../pages/PageSettingsOther'
 import PageSettingsProfile from '../pages/PageSettingsProfile'
+import PageTransferChooseUser from '../pages/PageTransferChooseUser'
 import PageTransferDial from '../pages/PageTransferDial'
 import { getAuthStore } from './authStore'
 import { setNav } from './Nav'
@@ -30,6 +31,8 @@ const go = RnStacker.createGoTo
 const back = RnStacker.createBackTo
 
 export class Nav {
+  goToPageTransferChooseUser = go({ PageTransferChooseUser }, true)
+  backToPageTransferChooseUser = back({ PageTransferChooseUser }, true)
   goToPageProfileSignIn = go({ PageProfileSignIn }, true)
   backToPageProfileSignIn = back({ PageProfileSignIn }, true)
   goToPageChatRecents = go({ PageChatRecents }, true)
@@ -61,8 +64,8 @@ export class Nav {
   backToPageCallManage = back({ PageCallManage })
   goToPageBackgroundCalls = go({ PageBackgroundCalls })
   backToPageBackgroundCalls = back({ PageBackgroundCalls })
-  goToPageTransferDial = go({ PageTransferDial })
-  backToPageTransferDial = back({ PageTransferDial })
+  goToPageTransferDial = go({ PageTransferDial }, true)
+  backToPageTransferDial = back({ PageTransferDial }, true)
   goToPageDtmfKeypad = go({ PageDtmfKeypad })
   backToPageDtmfKeypad = back({ PageDtmfKeypad })
   goToPageChatDetail = go({ PageChatDetail })

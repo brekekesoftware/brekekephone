@@ -1,15 +1,20 @@
-import { mdiPhone, mdiPhoneForward } from '@mdi/js'
-import orderBy from 'lodash/orderBy'
+import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
+import {
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputSelectionChangeEventData,
+} from 'react-native'
 
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
+import KeyPad from '../components/CallKeyPad'
+import ShowNumber from '../components/CallShowNumbers'
 import Layout from '../components/Layout'
 import callStore from '../stores/callStore'
-import contactStore from '../stores/contactStore'
-import intl from '../stores/intl'
+import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
+import RnAlert from '../stores/RnAlert'
+import RnKeyboard from '../stores/RnKeyboard'
 
 @observer
 class PageTransferDial extends React.Component {
@@ -24,68 +29,89 @@ class PageTransferDial extends React.Component {
     this.prevId = callStore.currentCall?.id
   }
 
-  resolveMatch = (id: string) => {
-    const match = contactStore.getPBXUser(id)
-    const ucUser = contactStore.getUCUser(id) || {}
-    return {
-      name: match.name,
-      avatar: ucUser.avatar,
-      number: id,
-      calling: !!match.talkers?.filter(t => t.status === 'calling').length,
-      ringing: !!match.talkers?.filter(t => t.status === 'ringing').length,
-      talking: !!match.talkers?.filter(t => t.status === 'talking').length,
-      holding: !!match.talkers?.filter(t => t.status === 'holding').length,
+  @observable txt = ''
+  txtRef = React.createRef<TextInput>()
+  txtSelection = { start: 0, end: 0 }
+
+  showKeyboard = () => {
+    this.txtRef.current?.focus()
+  }
+
+  transferBlind = () => {
+    this.txt = this.txt.trim()
+    if (!this.txt) {
+      RnAlert.error({
+        message: intlDebug`No target`,
+      })
+      return
     }
+    callStore.currentCall?.transferBlind(this.txt)
+  }
+  transferAttended = () => {
+    this.txt = this.txt.trim()
+    if (!this.txt) {
+      RnAlert.error({
+        message: intlDebug`No target`,
+      })
+      return
+    }
+    callStore.currentCall?.transferAttended(this.txt)
   }
 
   render() {
-    const users = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
-    type User = typeof users[0]
-
-    const map = {} as { [k: string]: User[] }
-    users.forEach(u => {
-      u.name = u.name || u.number || ''
-      let c0 = u.name.charAt(0).toUpperCase()
-      if (!/[A-Z]/.test(c0)) {
-        c0 = '#'
-      }
-      if (!map[c0]) {
-        map[c0] = []
-      }
-      map[c0].push(u)
-    })
-
-    let groups = Object.keys(map).map(k => ({
-      key: k,
-      users: map[k],
-    }))
-    groups = orderBy(groups, 'key')
-    groups.forEach(g => {
-      g.users = orderBy(g.users, 'name')
-    })
-
     return (
       <Layout
         description={intl`Select target to start transfer`}
         onBack={Nav().backToPageCallManage}
+        menu={'call_transfer'}
+        subMenu={'external_number'}
+        isTab
         title={intl`Transfer`}
       >
-        {groups.map(_g => (
-          <React.Fragment key={_g.key}>
-            <Field isGroup label={_g.key} />
-            {_g.users.map((u, i) => (
-              <UserItem
-                iconFuncs={[
-                  () => callStore.currentCall?.transferAttended(u.number),
-                  () => callStore.currentCall?.transferBlind(u.number),
-                ]}
-                icons={[mdiPhoneForward, mdiPhone]}
-                key={i}
-                {...u}
-              />
-            ))}
-          </React.Fragment>
-        ))}
+        <ShowNumber
+          refInput={this.txtRef}
+          selectionChange={
+            RnKeyboard.isKeyboardShowing
+              ? undefined
+              : (
+                  e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+                ) => {
+                  Object.assign(this.txtSelection, {
+                    start: e.nativeEvent.selection.start,
+                    end: e.nativeEvent.selection.end,
+                  })
+                }
+          }
+          setTarget={(v: string) => {
+            this.txt = v
+          }}
+          value={this.txt}
+        />
+        {!RnKeyboard.isKeyboardShowing && (
+          <KeyPad
+            callVoice={this.transferBlind}
+            callVoiceForward={this.transferAttended}
+            onPressNumber={v => {
+              const { end, start } = this.txtSelection
+              let min = Math.min(start, end)
+              let max = Math.max(start, end)
+              const isDelete = v === ''
+              if (isDelete) {
+                if (start === end && start) {
+                  min = min - 1
+                }
+              }
+              // Update text to trigger render
+              const t = this.txt
+              this.txt = t.substring(0, min) + v + t.substring(max)
+              //
+              const p = min + (isDelete ? 0 : 1)
+              this.txtSelection.start = p
+              this.txtSelection.end = p
+            }}
+            showKeyboard={this.showKeyboard}
+          />
+        )}
       </Layout>
     )
   }
