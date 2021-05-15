@@ -103,7 +103,7 @@ export class UC extends EventEmitter {
           id: ev.received_text_id,
           group: ev.conf_id,
           text: ev.text,
-          creator: !ev.sender.user_id,
+          creator: ev.sender.user_id,
           created: ev.sent_ltime,
           conf_id: ev.conf_id,
         })
