@@ -1,4 +1,4 @@
-import { mdiBackspace, mdiKeyboard, mdiPhone } from '@mdi/js'
+import { mdiBackspace, mdiKeyboard, mdiPhone, mdiPhoneForward } from '@mdi/js'
 import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
@@ -28,6 +28,23 @@ const css = StyleSheet.create({
     borderRadius: 40,
     paddingVertical: 20,
   },
+  KeyPad_Btn__call_2: {
+    backgroundColor: g.colors.primary,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    borderRadius: 25,
+    // paddingVertical: 10,
+  },
+  KeyPad_view: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: g.colors.primaryFn(0.5),
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 50,
+    borderRadius: 50 / 2,
+  },
 })
 
 const keys = [
@@ -41,6 +58,7 @@ const KeyPad = (p: {
   onPressNumber(k: string): void
   showKeyboard(): void
   callVoice(): void
+  callVoiceForward?(): void
 }) => (
   <>
     {keys.map((row, i) => (
@@ -63,12 +81,25 @@ const KeyPad = (p: {
           path={mdiKeyboard}
         />
       </RnTouchableOpacity>
-      <RnTouchableOpacity
-        onPress={p.callVoice}
-        style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call]}
-      >
-        <RnIcon path={mdiPhone} />
-      </RnTouchableOpacity>
+      <View style={p.callVoiceForward ? css.KeyPad_view : {}}>
+        {p.callVoiceForward && (
+          <RnTouchableOpacity
+            onPress={p.callVoiceForward}
+            style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call_2]}
+          >
+            <RnIcon path={mdiPhoneForward} />
+          </RnTouchableOpacity>
+        )}
+        <RnTouchableOpacity
+          onPress={p.callVoice}
+          style={[
+            css.KeyPad_NumberBtn,
+            !p.callVoiceForward ? css.KeyPad_Btn__call : css.KeyPad_Btn__call_2,
+          ]}
+        >
+          <RnIcon path={mdiPhone} />
+        </RnTouchableOpacity>
+      </View>
       <RnTouchableOpacity
         onPress={() => p.onPressNumber('')}
         style={css.KeyPad_NumberBtn}

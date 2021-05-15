@@ -92,7 +92,7 @@ class PageCallManage extends React.Component<{
   componentDidUpdate() {
     this.hideButtonsIfVideo()
     if (!callStore.currentCall && !callStore.backgroundCalls.length) {
-      Nav().backToPageCallRecents()
+      Nav().goToPageCallRecents()
     }
   }
 
@@ -126,7 +126,7 @@ class PageCallManage extends React.Component<{
           : undefined
       }
       noScroll
-      onBack={Nav().backToPageCallRecents}
+      onBack={Nav().goToPageCallRecents}
       title={c?.title || intl`Connection failed`}
       transparent={!c?.transferring}
     >
@@ -174,7 +174,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              onPress={Nav().goToPageTransferDial}
+              onPress={Nav().goToPageTransferChooseUser}
               path={mdiCallSplit}
               size={40}
               textcolor='white'

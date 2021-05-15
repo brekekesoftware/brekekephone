@@ -45,6 +45,7 @@ const css = StyleSheet.create({
 
 const Footer: FC<{
   menu: string
+  isTab?: boolean
 }> = observer(props => {
   const fabProps: {
     onNext?(): void
@@ -55,7 +56,7 @@ const Footer: FC<{
     (k: string) => toLowerCaseFirstChar(k.replace('fab', '')),
     (k: string) => props[k as keyof typeof props],
   ) as any
-  const { menu } = props
+  const { menu, isTab } = props
   const { onNext, render } = fabProps
   if (
     !render &&
@@ -84,7 +85,9 @@ const Footer: FC<{
           <View style={css.ActionsSpacing} />
         </View>
       ) : null}
-      {!RnKeyboard.isKeyboardShowing && menu && <Navigation menu={menu} />}
+      {!RnKeyboard.isKeyboardShowing && menu && !isTab && (
+        <Navigation menu={menu} />
+      )}
     </View>
   )
 })

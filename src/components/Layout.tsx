@@ -12,6 +12,7 @@ import { getBottomSpace } from 'react-native-iphone-x-helper'
 import RnKeyboard from '../stores/RnKeyboard'
 import { toLowerCaseFirstChar } from '../utils/string'
 import Footer from './Footer'
+import ToggleKeyboard from './FooterToggleKeyboard'
 import Header from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
 
@@ -51,6 +52,7 @@ const Layout: FC<
     subMenu: string
     title: string
     transparent: boolean
+    isTab?: boolean
   }>
 > = observer(props => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -111,7 +113,6 @@ const Layout: FC<
       footerSpace += 56
     }
   }
-
   return (
     <>
       <Container {...containerProps}>
@@ -119,8 +120,9 @@ const Layout: FC<
         {props.children}
         <View style={css.FooterSpaceInsideScroller} />
       </Container>
-      <View style={{ height: footerSpace }} />
-      <Footer {...props} menu={props.menu as string} />
+
+      {!props.isTab && <View style={{ height: footerSpace }} />}
+      {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />
     </>
   )

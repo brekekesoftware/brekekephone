@@ -5,7 +5,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native'
 import { Constants } from '../api/uc'
 import chatStore from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
-import { getSubMenus } from './navigationConfig'
+import { getSubMenus, getTabs } from './navigationConfig'
 import { RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
@@ -42,8 +42,10 @@ const css = StyleSheet.create({
 const Navigation: FC<{
   menu: string
   subMenu: string
+  isTab?: boolean
 }> = observer(p => {
-  const { menu, subMenu } = p
+  const { menu, subMenu, isTab } = p
+  const tabs = isTab ? getTabs(menu) : getSubMenus(menu)
 
   const renderIconNotices = useCallback(
     (totalNotice: number, style?: ViewStyle) => {
@@ -62,7 +64,7 @@ const Navigation: FC<{
 
   return (
     <View style={css.Navigation}>
-      {getSubMenus(menu).map(s => {
+      {tabs.map(s => {
         const active = s.key === subMenu
         const totalUnreadChat = chatStore.unreadCount
         const totalNoticesWebchat = chatStore.numberNoticesWebchat
