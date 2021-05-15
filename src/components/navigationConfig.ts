@@ -166,6 +166,49 @@ export const normalizeSavedNavigation = () => {
   })
 }
 
+export const getTabs = (tab: string) => {
+  const arr = ([
+    {
+      key: 'call_transfer',
+      icon: null,
+      subMenus: [
+        {
+          key: 'list_user',
+          label: intl`USER`,
+          navFnKey: 'goToPageTransferChooseUser',
+        },
+        {
+          key: 'external_number',
+          label: intl`EXTERNAL NUMBER`,
+          navFnKey: 'goToPageTransferDial',
+        },
+      ],
+      defaultSubMenuKey: 'list_user',
+    },
+  ] as unknown) as Menu[]
+
+  arr.forEach((m, i) => {
+    m.subMenusMap = arrToMap(
+      m.subMenus,
+      (s: SubMenu) => s.key,
+      (s: SubMenu) => s,
+    ) as Menu['subMenusMap']
+    m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
+    m.subMenus.forEach(s => {
+      s.navFn = () => {
+        Nav()[s.navFnKey]()
+      }
+    })
+  })
+  const m = arr.find(m => m.key === tab)
+  if (!m) {
+    RnAlert.error({
+      unexpectedErr: new Error(`Can not find sub menus for ${tab}`),
+    })
+    return []
+  }
+  return m.subMenus as SubMenu[]
+}
 export const getSubMenus = (menu: string) => {
   const arr = menus()
   const m = arr.find(m => m.key === menu)

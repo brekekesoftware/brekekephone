@@ -40,6 +40,7 @@ const Header: FC<
     subMenu: string
     title: string
     transparent: boolean
+    isTab?: boolean
   }>
 > = p => {
   const {
@@ -51,6 +52,7 @@ const Header: FC<
     onCreate,
     subMenu,
     title,
+    isTab,
     transparent,
   } = p
   const [dropdownActive, setDropdownActive] = useState(false)
@@ -77,7 +79,9 @@ const Header: FC<
               <DropdownBtn onPress={() => setDropdownActive(true)} />
             )}
           </View>
-          {menu && <Navigation menu={menu} subMenu={subMenu as string} />}
+          {menu && (
+            <Navigation isTab={isTab} menu={menu} subMenu={subMenu as string} />
+          )}
         </View>
       </View>
       {dropdown && dropdownActive && (
