@@ -185,7 +185,7 @@ export const getTabs = (tab: string) => {
         },
         {
           key: 'external_number',
-          label: intl`EXTERNAL NUMBER`,
+          label: intl`KEYPAD`,
           navFnKey: 'goToPageTransferDial',
         },
       ],

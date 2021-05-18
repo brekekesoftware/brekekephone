@@ -30,8 +30,8 @@ import RnStacker from './RnStacker'
 
 const go = RnStacker.createGoTo
 const back = RnStacker.createBackTo
-
 export class Nav {
+  backToFirstStack = RnStacker.backToFirstStack
   goToPageTransferChooseUser = go({ PageTransferChooseUser }, true)
   backToPageTransferChooseUser = back({ PageTransferChooseUser }, true)
   goToPageProfileSignIn = go({ PageProfileSignIn }, true)
