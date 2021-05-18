@@ -54,11 +54,13 @@ const css = StyleSheet.create({
   WebApp_Logo: {
     width: 80,
     height: 80,
+    opacity: 0,
   },
   WebApp_Brand: {
     width: 150,
     height: 54,
     marginTop: 10,
+    opacity: 0,
   },
   WebApp_Btn: {
     position: 'relative',
