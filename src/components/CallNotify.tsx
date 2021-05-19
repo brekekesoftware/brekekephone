@@ -1,32 +1,89 @@
-import { mdiCheck, mdiClose } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
+import UserAvatar from 'react-native-user-avatar'
 
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
-import ButtonIcon from './ButtonIcon'
 import { RnText } from './Rn'
-import g from './variables'
 
 const css = StyleSheet.create({
+  linearGradient: {
+    zIndex: 1,
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+  },
   Notify: {
+    flex: 1,
+  },
+  NotifyContainer: {
+    flex: 1,
+    marginBottom: 100,
+  },
+  Notify_Btn_Side_By_Side: {
+    flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: g.borderBg,
-    backgroundColor: g.hoverBg,
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
   },
   Notify_Info: {
-    flex: 1,
-    paddingLeft: 12,
-    paddingVertical: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '30%',
   },
   Notify_Btn_reject: {
-    borderColor: g.colors.danger,
+    width: 80,
+    height: 80,
   },
   Notify_Btn_accept: {
-    borderColor: g.colors.primary,
+    width: 80,
+    height: 80,
+  },
+  MobileNumber: {
+    color: '#2276FF',
+    fontSize: 25,
+    lineHeight: 28,
+  },
+  UserNumber: {
+    color: '#2F3443',
+    fontSize: 25,
+    lineHeight: 28,
+  },
+  FlagLogo: {
+    width: 20,
+    height: 14,
+    marginRight: 10,
+  },
+  ActionBtnText: {
+    fontSize: 16,
+    color: '#2F3443',
+    marginTop: 7,
+  },
+  PoweredBy: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 40,
+  },
+  PoweredByText: {
+    color: '#BCC4CC',
+    fontSize: 11,
+  },
+  qooqieLogo: {
+    width: 56.3,
+    height: 14,
+    marginLeft: 10,
+  },
+  actionBtnContainer: {
+    alignItems: 'center',
+  },
+  CallerName: {
+    color: '#2F3443',
+    fontSize: 26,
+    lineHeight: 28,
+    margin: 5,
   },
 })
 
@@ -37,33 +94,86 @@ class CallNotify extends React.Component {
     if (!c || callStore.recentPn?.action) {
       return null
     }
+
+    let callerId = 'KNOWN'
+    let callerName = 'Leugo  Jong'
+    let callerNumber = '0800 - 3232 23 21'
+
+    // let callerId = "UNKNOWN";
+    // let callerId = "USER";
+    // let callerNumber = c.partyNumber || "203";
+
     return (
-      <View style={css.Notify}>
-        <View style={css.Notify_Info}>
-          <RnText bold>{c.partyName || c.partyNumber}</RnText>
-          <RnText>
+      <LinearGradient
+        colors={['#FFFFFF', '#E7F3FF']}
+        style={css.linearGradient}
+        locations={[0, 0.3, 0.9]}
+      >
+        <View style={css.Notify}>
+          <View style={css.Notify_Info}>
+            {callerId == 'KNOWN' && (
+              <>
+                <UserAvatar size={66} name={callerName} bgColor={'#2276ff'} />
+                <RnText style={css.CallerName}>{callerName}</RnText>
+              </>
+            )}
+
+            {callerId != 'USER' && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Image
+                  source={require('../assets/country.png')}
+                  style={css.FlagLogo}
+                ></Image>
+                <RnText style={css.MobileNumber}>{callerNumber}</RnText>
+              </View>
+            )}
+
+            {callerId == 'USER' && (
+              <RnText style={css.UserNumber}>{callerNumber}</RnText>
+            )}
+            {/* <RnText>
             {c.remoteVideoEnabled
               ? intl`Incoming video call`
               : intl`Incoming audio call`}
-          </RnText>
+          </RnText> */}
+          </View>
+          <View style={css.NotifyContainer}>
+            <View style={css.Notify_Btn_Side_By_Side}>
+              <View style={css.actionBtnContainer}>
+                <TouchableOpacity onPress={() => c.hangup()}>
+                  <Image
+                    source={require('../assets/decline-call.png')}
+                    style={css.Notify_Btn_reject}
+                  ></Image>
+                </TouchableOpacity>
+                <RnText style={css.ActionBtnText}>{'Weiger'}</RnText>
+              </View>
+              <View style={css.actionBtnContainer}>
+                <TouchableOpacity onPress={() => c.answer()}>
+                  <Image
+                    source={require('../assets/accepted-call.png')}
+                    style={css.Notify_Btn_accept}
+                  ></Image>
+                </TouchableOpacity>
+                <RnText style={css.ActionBtnText}>{'Accepteer'}</RnText>
+              </View>
+            </View>
+            <View style={css.PoweredBy}>
+              <RnText style={css.PoweredByText}>{'powered by'}</RnText>
+              <Image
+                source={require('../assets/qooqie-logo.png')}
+                style={css.qooqieLogo}
+              ></Image>
+            </View>
+          </View>
         </View>
-        <ButtonIcon
-          bdcolor={g.colors.danger}
-          color={g.colors.danger}
-          onPress={c.hangup}
-          path={mdiClose}
-          size={20}
-          style={css.Notify_Btn_reject}
-        />
-        <ButtonIcon
-          bdcolor={g.colors.primary}
-          color={g.colors.primary}
-          onPress={() => c.answer()}
-          path={mdiCheck}
-          size={20}
-          style={css.Notify_Btn_accept}
-        />
-      </View>
+      </LinearGradient>
     )
   }
 }
