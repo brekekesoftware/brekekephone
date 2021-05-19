@@ -140,7 +140,6 @@ class ProfileStore {
       const id0 = getAccountUniqueId(p0)
       const id1 = getAccountUniqueId(p1)
       if (id0 !== id1) {
-        const pn0 = p0.pushNotificationEnabled
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {
           onError: () => {
@@ -163,12 +162,10 @@ class ProfileStore {
     this.saveProfilesToLocalStorage()
   }
   @action removeProfile = (id: string) => {
-    const profiles0 = [...this.profiles]
     const p0 = this.profiles.find(p => p.id === id)
     this.profiles = this.profiles.filter(p => p.id !== id)
     this.saveProfilesToLocalStorage()
     if (p0) {
-      const pn0 = p0.pushNotificationEnabled
       p0.pushNotificationEnabled = false
       SyncPnToken().sync(p0, {
         onError: () => {

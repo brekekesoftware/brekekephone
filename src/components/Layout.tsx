@@ -12,7 +12,6 @@ import { getBottomSpace } from 'react-native-iphone-x-helper'
 import RnKeyboard from '../stores/RnKeyboard'
 import { toLowerCaseFirstChar } from '../utils/string'
 import Footer from './Footer'
-import ToggleKeyboard from './FooterToggleKeyboard'
 import Header from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
 
