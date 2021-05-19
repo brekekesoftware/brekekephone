@@ -117,6 +117,14 @@ class ContactStore {
     return this._pbxUsersMap[id]
   }
 
+  getPartyName = async (id: string, callback: Function) => {
+    await pbx.getContactByNumber({ search_text: id }).then(res => {
+      if (res && res.length) {
+        callback(res[0].name)
+      }
+    })
+  }
+
   @observable ucUsers: UcUser[] = []
   updateUCUser = (_u: UcUser) => {
     const u = this.getUCUser(_u.id)

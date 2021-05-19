@@ -1,20 +1,15 @@
 import { observer } from 'mobx-react'
 import React from 'react'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
 import UserAvatar from 'react-native-user-avatar'
 
 import callStore from '../stores/callStore'
+import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
+import CustomGradient from './CustomGradient'
 import { RnText } from './Rn'
 
 const css = StyleSheet.create({
-  linearGradient: {
-    zIndex: 1,
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-  },
   Notify: {
     flex: 1,
   },
@@ -83,42 +78,47 @@ const css = StyleSheet.create({
     color: '#2F3443',
     fontSize: 26,
     lineHeight: 28,
-    margin: 5,
+    margin: 7,
   },
 })
 
 @observer
 class CallNotify extends React.Component {
+  state = {
+    callerName: '',
+  }
   render() {
     const c = callStore.incomingCall
     if (!c || callStore.recentPn?.action) {
       return null
     }
 
-    let callerId = 'KNOWN'
-    let callerName = 'Leugo  Jong'
-    let callerNumber = '0800 - 3232 23 21'
-
-    // let callerId = "UNKNOWN";
-    // let callerId = "USER";
-    // let callerNumber = c.partyNumber || "203";
+    if (c.partyName && c.partyName != c.partyNumber) {
+      this.setState({ callerName: c.partyName })
+    } else {
+      contactStore.getPartyName(c.partyNumber, (value: String) =>
+        this.setState({ callerName: value }),
+      )
+    }
+    let callerNumber = c.partyNumber
+    let isUserCalling = !callerNumber.includes('+')
 
     return (
-      <LinearGradient
-        colors={['#FFFFFF', '#E7F3FF']}
-        style={css.linearGradient}
-        locations={[0, 0.3, 0.9]}
-      >
+      <CustomGradient>
         <View style={css.Notify}>
           <View style={css.Notify_Info}>
-            {callerId == 'KNOWN' && (
+            {!!this.state.callerName && (
               <>
-                <UserAvatar size={66} name={callerName} bgColor={'#2276ff'} />
-                <RnText style={css.CallerName}>{callerName}</RnText>
+                <UserAvatar
+                  size={66}
+                  name={this.state.callerName}
+                  bgColor={'#2276ff'}
+                />
+                <RnText style={css.CallerName}>{this.state.callerName}</RnText>
               </>
             )}
 
-            {callerId != 'USER' && (
+            {!isUserCalling && (
               <View
                 style={{
                   flexDirection: 'row',
@@ -134,7 +134,7 @@ class CallNotify extends React.Component {
               </View>
             )}
 
-            {callerId == 'USER' && (
+            {!!isUserCalling && (
               <RnText style={css.UserNumber}>{callerNumber}</RnText>
             )}
             {/* <RnText>
@@ -173,7 +173,7 @@ class CallNotify extends React.Component {
             </View>
           </View>
         </View>
-      </LinearGradient>
+      </CustomGradient>
     )
   }
 }
