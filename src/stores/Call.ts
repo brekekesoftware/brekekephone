@@ -107,7 +107,7 @@ export default class Call {
   @observable transferring = ''
   private prevTransferring = ''
   transferBlind = (number: string) => {
-    Nav().backToPageCallManage()
+    Nav().goToPageCallRecents()
     return pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)

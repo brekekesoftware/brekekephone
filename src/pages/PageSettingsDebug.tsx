@@ -102,7 +102,7 @@ class PageSettingsDebug extends Component {
               {intl`Current version: ${currentVersion}`}
             </RnText>
             <RnText normal warning small style={css.Text}>
-              {intl`You are running an in-browser version of Brekeke Phone`}
+              {intl`You are running an in-browser version of Web Phone`}
             </RnText>
           </>
         )}

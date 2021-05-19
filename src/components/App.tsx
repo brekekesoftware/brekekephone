@@ -83,7 +83,7 @@ const getAudioVideoPermission = () => {
 if (Platform.OS === 'web') {
   RnAlert.prompt({
     title: intl`Action Required`,
-    message: intl`Brekeke Phone needs your action to work well on browser. Press OK to continue`,
+    message: intl`Web Phone needs your action to work well on browser. Press OK to continue`,
     confirmText: 'OK',
     dismissText: false,
     onConfirm: getAudioVideoPermission,
