@@ -2,7 +2,6 @@ import { observer } from 'mobx-react'
 import React, { FC, useCallback } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 
-import { Constants } from '../api/uc'
 import chatStore from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
 import { getSubMenus, getTabs } from './navigationConfig'

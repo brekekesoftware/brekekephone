@@ -10,7 +10,6 @@ import callStore from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
 
 @observer
 class PageTransferChooseUser extends React.Component {

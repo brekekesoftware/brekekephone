@@ -96,7 +96,7 @@ export interface SyncPnTokenOption {
 }
 
 const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
-  const { pbx, silent = false, onError } = o
+  const { silent = false } = o
   return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
     profileStore.pnSyncLoadingMap[p.id] = false
     // onError?.() // TODO
