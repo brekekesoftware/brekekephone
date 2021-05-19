@@ -10,6 +10,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
+import IncallManager from 'react-native-incall-manager'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -188,6 +189,7 @@ const App = observer(() => {
   useEffect(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
+      IncallManager.start()
     }
   }, [])
 
