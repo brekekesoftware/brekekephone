@@ -51,7 +51,9 @@ import g from './variables'
 void api
 
 //ref: https://github.com/react-native-webrtc/react-native-incall-manager/issues/160#issuecomment-844259595
-IncallManager.start()
+if (Platform.OS !== 'web') {
+  IncallManager.start()
+}
 
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
