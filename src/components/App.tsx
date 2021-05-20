@@ -50,6 +50,9 @@ import g from './variables'
 // API was a component but had been rewritten to a listener
 void api
 
+//ref: https://github.com/react-native-webrtc/react-native-incall-manager/issues/160#issuecomment-844259595
+IncallManager.start()
+
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().reconnect()
@@ -98,7 +101,6 @@ if (Platform.OS === 'web') {
 ) {
   getAudioVideoPermission()
 }
-
 // Handle android hardware back button press
 BackHandler.addEventListener('hardwareBackPress', () => {
   if (RnKeyboard.isKeyboardShowing) {
@@ -189,7 +191,6 @@ const App = observer(() => {
   useEffect(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
-      IncallManager.start()
     }
   }, [])
 
