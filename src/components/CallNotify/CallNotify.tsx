@@ -7,7 +7,7 @@ import contactStore from '../../stores/contactStore'
 import CustomImages from '../../utils/CustomImages'
 import CallButtons from '../CallButtons/CallButtons'
 import CallerInfo from '../CallerInfo/CallerInfo'
-import CustomGradient from '../CustomGradient'
+import CustomGradient from '../CustomGradient/CustomGradient'
 import PoweredBy from '../PoweredBy/PoweredBy'
 import styles from './Styles'
 

@@ -1,24 +1,17 @@
 import React, { FC } from 'react'
-import { StyleSheet } from 'react-native'
 import LinearGradient, {
   LinearGradientProps,
 } from 'react-native-linear-gradient'
 
-const css = StyleSheet.create({
-  CustomGradient: {
-    zIndex: 1,
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-  },
-})
+import CustomColors from '../../utils/CustomColors'
+import styles from './Styles'
 
 const CustomGradient: FC<Omit<LinearGradientProps, 'colors'>> = props => (
   <LinearGradient
     {...props}
-    colors={['#FFFFFF', '#E7F3FF']}
+    colors={[CustomColors.White, CustomColors.AliceBlue]}
     locations={[0, 0.3, 0.9]}
-    style={[css.CustomGradient, props.style]}
+    style={[styles.CustomGradient, props.style]}
   />
 )
 
