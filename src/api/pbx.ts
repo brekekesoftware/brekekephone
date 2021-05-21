@@ -250,18 +250,6 @@ export class PBX extends EventEmitter {
     }
   }
 
-  getContactByNumber = async ({ search_text }: { search_text: string }) => {
-    const res = await this.client._pal('getContactList', {
-      search_text,
-      shared: 'true',
-    })
-
-    return res.map(contact => ({
-      id: contact.aid,
-      name: contact.display_name,
-    }))
-  }
-
   getContacts = async ({
     shared,
     offset,
