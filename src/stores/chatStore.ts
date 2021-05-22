@@ -38,7 +38,6 @@ export type ChatGroup = {
   jointed: boolean
   members: string[]
   webchat?: Conference // check group is webchat
-  webchatMessages: string[] // update webchat messages when have event chat
 }
 
 class ChatStore {
@@ -113,6 +112,7 @@ class ChatStore {
       uniqBy(messages, 'id'),
       'created',
     )
+
     const a2 = filterTextOnly(_m)
     if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
@@ -122,39 +122,8 @@ class ChatStore {
     })
   }
 
-  updateWebchatMessages = (chat: ChatMessage) => {
-    // update messages for webchat groups
-    if (!chat.text || !chat.conf_id) {
-      return
-    }
-
-    this.groups = this.groups.map(item => {
-      const messages = item.webchatMessages || ([] as string[])
-      const isJoined =
-        item.webchat?.conf_status === Constants.CONF_STATUS_JOINED
-      const newItem = {
-        ...item,
-        webchatMessages: [...messages, chat.text || ''],
-      }
-      return item.id === chat.conf_id && isJoined && item.webchat
-        ? newItem
-        : item
-    })
-  }
   removeWebchatItem = (conf_id: string) => {
     this.removeGroup(conf_id)
-  }
-  getMessages = async (conf_id: string) => {
-    const messages = await uc.peekWebchatConferenceText(conf_id)
-    if (messages.length > 0) {
-      this.groups = this.groups.map(item => {
-        const newItem = {
-          ...item,
-          webchatMessages: item.webchatMessages.concat(messages),
-        }
-        return item.id === conf_id ? newItem : item
-      })
-    }
   }
 
   getThreadConfig = (id: string) =>
@@ -187,20 +156,10 @@ class ChatStore {
   @observable groups: ChatGroup[] = []
   upsertGroup = (_g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
-    if (!_g.webchatMessages) {
-      _g = { ..._g, webchatMessages: [] as string[] } as ChatGroup
-    }
+
     const g = this.getGroup(_g.id)
     if (g) {
-      if (_g.webchat) {
-        const newItem = {
-          ..._g,
-          webchatMessages: g.webchatMessages || ([] as string[]),
-        }
-        Object.assign(g, newItem)
-      } else {
-        Object.assign(g, _g)
-      }
+      Object.assign(g, _g)
     } else {
       this.groups.push(_g as ChatGroup)
     }

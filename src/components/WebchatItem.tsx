@@ -55,14 +55,13 @@ const css = StyleSheet.create({
 
 const WebchatItem: FC<{
   data: Conference
-  messages: string[]
-}> = ({ data, messages }) => {
+}> = ({ data }) => {
   // const data = p.webchat
   // CONF_STATUS_INACTIVE: 0 => disable all , show close
   // CONF_STATUS_INVITED: 1 => enabled join
   // CONF_STATUS_JOINED: 2 => enable show
   // CONF_STATUS_INVITED_WEBCHAT: 5 => enabled answer
-
+  const messages = chatStore.messagesByThreadId[data.conf_id] || []
   const isEnabledAnswer =
     data.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT
   const isEnabledJoin = data.conf_status === Constants.CONF_STATUS_INVITED
@@ -76,13 +75,11 @@ const WebchatItem: FC<{
   }, [data.conf_id])
 
   const showPress = React.useCallback(() => {
-    chatStore.getMessages(data.conf_id)
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
   const joinPress = React.useCallback(() => {
     uc.joinWebchatConference(data.conf_id)
-    chatStore.getMessages(data.conf_id)
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
@@ -146,7 +143,7 @@ const WebchatItem: FC<{
         // numberOfLines={5}
       >
         {textDisplay.map((text, i, { length }) => {
-          return `${text}${i === length - 1 ? '' : '\n'}`
+          return `${text.text}${i === length - 1 ? '' : '\n'}`
         })}
       </RnText>
       {isDisplayClose && (
