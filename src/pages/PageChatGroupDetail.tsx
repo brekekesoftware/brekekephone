@@ -6,6 +6,7 @@ import {
   NativeSyntheticEvent,
   Platform,
   ScrollView,
+  StyleSheet,
 } from 'react-native'
 
 import uc, { Constants } from '../api/uc'
@@ -13,6 +14,9 @@ import { numberOfChatsPerLoad } from '../components/chatConfig'
 import MessageList from '../components/ChatMessageList'
 import ChatInput from '../components/FooterChatInput'
 import Layout from '../components/Layout'
+import RnText from '../components/RnText'
+import RnTouchableOpacity from '../components/RnTouchableOpacity'
+import g from '../components/variables'
 import callStore from '../stores/callStore'
 import chatStore, { ChatGroup, ChatMessage } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
@@ -23,6 +27,20 @@ import pickFile from '../utils/pickFile'
 import saveBlob from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 
+const css = StyleSheet.create({
+  LoadMore: {
+    alignSelf: 'center',
+    paddingBottom: 15,
+    fontSize: g.fontSizeSmall,
+    paddingHorizontal: 10,
+  },
+  LoadMore__btn: {
+    color: g.colors.primary,
+  },
+  LoadMore__finished: {
+    color: g.colors.warning,
+  },
+})
 @observer
 class PageChatGroupDetail extends React.Component<{
   groupId: string
@@ -50,13 +68,10 @@ class PageChatGroupDetail extends React.Component<{
       fileType: '',
     },
   }
+  numberOfChatsPerLoadMore = numberOfChatsPerLoad
+
   componentDidMount() {
-    const noChat = !this.chatIds.length
-    if (noChat) {
-      this.loadRecent()
-    } else {
-      window.setTimeout(this.onContentSizeChange, 170)
-    }
+    this.loadRecent()
     chatStore.updateThreadConfig(this.props.groupId, true, {
       isUnread: false,
     })
@@ -81,7 +96,11 @@ class PageChatGroupDetail extends React.Component<{
     )
   }
   render() {
-    const gr = chatStore.getGroup(this.props.groupId)
+    const id = this.props.groupId
+    const gr = chatStore.getGroup(id)
+    const { allMessagesLoaded } = chatStore.getThreadConfig(id)
+    const { loadingMore, loadingRecent } = this.state
+    const chats = chatStore.messagesByThreadId[this.props.groupId]
     return (
       <Layout
         compact
@@ -111,10 +130,30 @@ class PageChatGroupDetail extends React.Component<{
         onBack={Nav().backToPageChatRecents}
         title={gr?.name}
       >
+        {loadingRecent ? (
+          <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
+        ) : allMessagesLoaded ? (
+          <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
+            {this.chatIds.length === 0
+              ? intl`There's currently no message in this thread`
+              : intl`All messages in this thread have been loaded`}
+          </RnText>
+        ) : (
+          <RnTouchableOpacity
+            onPress={loadingMore ? undefined : () => this.loadMore()}
+          >
+            <RnText
+              bold={!loadingMore}
+              style={[css.LoadMore, !loadingMore && css.LoadMore__btn]}
+            >
+              {loadingMore ? intl`Loading...` : intl`Load more messages`}
+            </RnText>
+          </RnTouchableOpacity>
+        )}
         <MessageList
           acceptFile={this.acceptFile}
           isGroupChat
-          list={chatStore.messagesByThreadId[this.props.groupId]}
+          list={chats}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
           resolveChat={this.resolveChat}
@@ -202,9 +241,11 @@ class PageChatGroupDetail extends React.Component<{
 
   loadMore = () => {
     this.setState({ loadingMore: true })
+    this.numberOfChatsPerLoadMore =
+      this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
     const oldestChat = (this.chatById[this.chatIds[0]] || {}) as ChatMessage
     const oldestCreated = oldestChat.created || 0
-    const max = numberOfChatsPerLoad
+    const max = this.numberOfChatsPerLoadMore
     const end = oldestCreated
     const query = {
       max,
@@ -222,6 +263,15 @@ class PageChatGroupDetail extends React.Component<{
       })
       .then(() => {
         this.setState({ loadingMore: false })
+      })
+      .then(() => {
+        const id = this.props.groupId
+        const totalChatLoaded = chatStore.messagesByThreadId[id]?.length || 0
+        if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
+          chatStore.updateThreadConfig(id, true, {
+            allMessagesLoaded: true,
+          })
+        }
       })
   }
 

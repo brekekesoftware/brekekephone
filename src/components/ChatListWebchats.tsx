@@ -10,13 +10,7 @@ const ListWebchats: FC<{
   <>
     {p.datas.map(
       (item: ChatGroup) =>
-        item.webchat && (
-          <WebchatItem
-            key={item.id}
-            data={item.webchat}
-            messages={item.webchatMessages}
-          />
-        ),
+        item.webchat && <WebchatItem key={item.id} data={item.webchat} />,
     )}
   </>
 )

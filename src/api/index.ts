@@ -175,7 +175,6 @@ class Api {
     created: number
   }) => {
     chatStore.pushMessages(chat.group, chat, true)
-    chatStore.updateWebchatMessages(chat)
   }
 
   onChatGroupInvited = (group: {
