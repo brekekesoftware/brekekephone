@@ -2,6 +2,7 @@ import stringify from 'json-stable-stringify'
 import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable, runInAction } from 'mobx'
+import { Platform } from 'react-native'
 import { v4 as uuid } from 'react-native-uuid'
 
 import { SyncPnToken } from '../api/syncPnToken'
@@ -76,7 +77,7 @@ class ProfileStore {
     pbxPassword: '',
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
-    pushNotificationEnabled: true,
+    pushNotificationEnabled: Platform.OS === 'web' ? false : true,
     parks: ([] as any) as string[],
     ucEnabled: false,
     navIndex: -1,
