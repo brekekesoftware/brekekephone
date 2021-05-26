@@ -76,40 +76,45 @@ const useForm = () => {
       const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
       return (
         <RnForm {...(formProps as object)}>
-          {fields.map((f: FormField, i: number) => (
-            <Field
-              key={i}
-              {...f}
-              error={
-                !f.disabled && $.dirtyMap[f.name]
-                  ? $.errorMap[f.name]
-                  : undefined
-              }
-              onBlur={() => $.onFieldBlur(f.name)}
-              // Mark this field dirty
-              onValueChange={flow(
-                [
-                  // Add change handler to trigger validate
-                  // TODO update all flows to regular funcs
-                  (v: string) => {
-                    $.onFieldChange(f.name, v)
-                    return v
-                  },
-                  // Default change handler from store
-                  f.onValueChange === undefined
-                    ? !f.disabled
-                      ? (v: string) => $parent.set(k + '.' + f.name, v)
-                      : noop
-                    : (...args: unknown[]) => f.onValueChange(...args),
-                ].filter(f => f),
-              )}
-              // Error
-              value={
-                // Default value from store
-                f.value === undefined ? get($parent, k + '.' + f.name) : f.value
-              }
-            />
-          ))}
+          {fields.map(
+            (f: FormField, i: number) =>
+              !f.hidden && (
+                <Field
+                  key={i}
+                  {...f}
+                  error={
+                    !f.disabled && $.dirtyMap[f.name]
+                      ? $.errorMap[f.name]
+                      : undefined
+                  }
+                  onBlur={() => $.onFieldBlur(f.name)}
+                  // Mark this field dirty
+                  onValueChange={flow(
+                    [
+                      // Add change handler to trigger validate
+                      // TODO update all flows to regular funcs
+                      (v: string) => {
+                        $.onFieldChange(f.name, v)
+                        return v
+                      },
+                      // Default change handler from store
+                      f.onValueChange === undefined
+                        ? !f.disabled
+                          ? (v: string) => $parent.set(k + '.' + f.name, v)
+                          : noop
+                        : (...args: unknown[]) => f.onValueChange(...args),
+                    ].filter(f => f),
+                  )}
+                  // Error
+                  value={
+                    // Default value from store
+                    f.value === undefined
+                      ? get($parent, k + '.' + f.name)
+                      : f.value
+                  }
+                />
+              ),
+          )}
         </RnForm>
       )
     }),
@@ -131,4 +136,5 @@ export type FormField = {
   value: string
   onValueChange: Function
   rule: string
+  hidden?: boolean
 }

@@ -3,7 +3,7 @@ import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
 import { Conference } from '../api/brekekejs'
-import uc, { Constants } from '../api/uc'
+import { Constants } from '../api/uc'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'

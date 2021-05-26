@@ -8,7 +8,7 @@ import {
 } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { FC } from 'react'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import intl from '../stores/intl'
@@ -78,6 +78,7 @@ const ProfileSignInItem: FC<{
       </View>
     )
   }
+  const isWeb = Platform.OS === 'web'
   const p = profileStore.profilesMap[props.id]
   const isLoading = profileStore.pnSyncLoadingMap[props.id]
   return (
@@ -96,14 +97,16 @@ const ProfileSignInItem: FC<{
         <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
         <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
       </RnTouchableOpacity>
-      <Field
-        label={intl`PUSH NOTIFICATION`}
-        onValueChange={(v: boolean) =>
-          profileStore.upsertProfile({ id: p.id, pushNotificationEnabled: v })
-        }
-        type='Switch'
-        value={p.pushNotificationEnabled}
-      />
+      {!isWeb && (
+        <Field
+          label={intl`PUSH NOTIFICATION`}
+          onValueChange={(v: boolean) =>
+            profileStore.upsertProfile({ id: p.id, pushNotificationEnabled: v })
+          }
+          type='Switch'
+          value={p.pushNotificationEnabled}
+        />
+      )}
       <Field
         label={intl`UC`}
         onValueChange={(v: boolean) =>

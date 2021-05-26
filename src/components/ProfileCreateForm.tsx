@@ -2,7 +2,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
 import React, { FC } from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import intl from '../stores/intl'
@@ -20,6 +20,7 @@ const ProfileCreateForm: FC<{
   footerLogout?: boolean
   title: string
 }> = observer(props => {
+  const isWeb = Platform.OS === 'web'
   const m = () => ({
     observable: {
       profile: {
@@ -205,6 +206,7 @@ const ProfileCreateForm: FC<{
             type: 'Switch',
             name: 'pushNotificationEnabled',
             label: intl`PUSH NOTIFICATION`,
+            hidden: isWeb,
           },
           {
             isGroup: true,
