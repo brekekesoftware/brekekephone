@@ -119,8 +119,6 @@ class ProfileStore {
   saveProfilesToLocalStorage = async () => {
     try {
       const { profiles, profileData } = this
-      console.log(profiles)
-
       await RnAsyncStorage.setItem(
         '_api_profiles',
         JSON.stringify({ profiles, profileData }),
