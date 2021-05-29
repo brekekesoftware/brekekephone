@@ -3,26 +3,29 @@ import React, { FC } from 'react'
 import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
-import callStore from '../stores/callStore'
-
 @observer
 class IncomingItem extends React.Component {
   // Use window.setTimeout to prevent PN answered the call but still ring in a blink
   timeoutId = 0
 
   componentDidMount() {
-    this.timeoutId = window.setTimeout(() => {
-      IncallManager.startRingtone('_BUNDLE_')
-      this.timeoutId = 0
-    }, 1000)
+    if (Platform.OS === 'android') {
+      this.timeoutId = window.setTimeout(() => {
+        IncallManager.startRingtone('_BUNDLE_')
+        this.timeoutId = 0
+      }, 1000)
+    }
   }
 
   componentWillUnmount() {
-    if (this.timeoutId) {
-      window.clearTimeout(this.timeoutId)
-      this.timeoutId = 0
+    if (Platform.OS === 'android') {
+      if (this.timeoutId) {
+        window.clearTimeout(this.timeoutId)
+        this.timeoutId = 0
+      } else {
+        IncallManager.stopRingtone()
+      }
     }
-    IncallManager.stopRingtone()
   }
 
   render() {

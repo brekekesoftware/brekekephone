@@ -51,7 +51,7 @@ import g from './variables'
 void api
 
 // ref: https://github.com/react-native-webrtc/react-native-incall-manager/issues/160#issuecomment-844259595
-if (Platform.OS !== 'web') {
+if (Platform.OS === 'android') {
   IncallManager.start()
 }
 
