@@ -13,7 +13,13 @@ class AnsweredItem extends React.Component<{
     if (!this.audioRef.current) {
       return
     }
-    this.audioRef.current.srcObject = this.props.voiceStreamObject
+    if (
+      this.props.voiceStreamObject &&
+      this.props.voiceStreamObject !== this.audioRef.current.srcObject
+    ) {
+      this.audioRef.current.srcObject = this.props.voiceStreamObject
+      this.audioRef.current.play()
+    }
   }
   componentDidUpdate() {
     this.componentDidMount()

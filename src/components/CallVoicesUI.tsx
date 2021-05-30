@@ -1,73 +1,31 @@
-import { observer } from 'mobx-react'
 import React, { FC } from 'react'
-import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
-@observer
 class IncomingItem extends React.Component {
-  // Use window.setTimeout to prevent PN answered the call but still ring in a blink
-  timeoutId = 0
-
   componentDidMount() {
-    if (Platform.OS === 'android') {
-      this.timeoutId = window.setTimeout(() => {
-        IncallManager.startRingtone('_BUNDLE_')
-        this.timeoutId = 0
-      }, 1000)
-    }
+    // For incoming call we already have callkit PN
+    // We dont need to play ringtone here, it may the casue of the issue no voice in ios
+    // IncallManager.startRingtone('_BUNDLE_')
   }
-
   componentWillUnmount() {
-    if (Platform.OS === 'android') {
-      if (this.timeoutId) {
-        window.clearTimeout(this.timeoutId)
-        this.timeoutId = 0
-      } else {
-        IncallManager.stopRingtone()
-      }
-    }
+    // IncallManager.stopRingtone()
   }
-
   render() {
     return null
   }
 }
-
-const IncomingList: FC<{
-  ids: string[]
-  resolve: Function
-}> = p => (
-  <>
-    {p.ids.map(id => (
-      <IncomingItem key={id} {...p.resolve(id)} />
-    ))}
-  </>
-)
 
 class OutgoingItem extends React.Component {
   componentDidMount() {
     IncallManager.startRingback('_BUNDLE_')
   }
-
   componentWillUnmount() {
     IncallManager.stopRingback()
   }
-
   render() {
     return null
   }
 }
-
-const OutgoingList: FC<{
-  ids: string[]
-  resolve: Function
-}> = p => (
-  <>
-    {p.ids.map(id => (
-      <OutgoingItem key={id} {...p.resolve(id)} />
-    ))}
-  </>
-)
 
 const CallVoicesUI: FC<{
   incomingCallIds: string[]
@@ -76,16 +34,8 @@ const CallVoicesUI: FC<{
   resolveCall: Function
 }> = p => (
   <>
-    {Platform.OS !== 'android' && (
-      <IncomingList
-        ids={p.incomingCallIds.filter(i => i !== undefined)}
-        resolve={p.resolveCall}
-      />
-    )}
-    <OutgoingList
-      ids={p.outgoingCallIds.filter(i => i !== undefined)}
-      resolve={p.resolveCall}
-    />
+    {p.incomingCallIds.filter(i => i).length ? <IncomingItem /> : null}
+    {p.outgoingCallIds.filter(i => i).length ? <OutgoingItem /> : null}
   </>
 )
 

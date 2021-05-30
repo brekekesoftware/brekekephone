@@ -76,11 +76,7 @@ export class CallStore {
     }
     this.prevCallKeepUuid = uuid
     // New timeout logic
-    callkeepMap[uuid] = {
-      uuid,
-      at: Date.now(),
-    }
-    setAutoEndCallKeepTimer()
+    setAutoEndCallKeepTimer(uuid)
   }
   onCallKeepAnswerCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid)
@@ -246,25 +242,41 @@ export class CallStore {
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
+    // Start call logic in RNCallKeep
+    let newUuid = ''
+    if (Platform.OS === 'ios') {
+      newUuid = uuid().toUpperCase()
+      RNCallKeep.startCall(newUuid, number, 'Brekeke Phone')
+      RNCallKeep.reportConnectingOutgoingCallWithUUID(newUuid)
+      setAutoEndCallKeepTimer(newUuid)
+    }
     this.startCallIntervalId = BackgroundTimer.setInterval(() => {
-      const currentCallId = this.calls.map(c => c.id).find(id => !prevIds[id])
+      const currentCall = this.calls.find(c => !prevIds[c.id])
+      if (currentCall) {
+        if (newUuid) {
+          currentCall.callkeepUuid = newUuid
+          RNCallKeep.reportConnectedOutgoingCallWithUUID(newUuid)
+        }
+        this.currentCallId = currentCall.id
+        this.clearStartCallIntervalTimer()
+        return
+      }
+      // Add a guard of 10s to clear the interval
+      if (Date.now() - this.startCallIntervalAt > 10000) {
+        if (newUuid) {
+          RNCallKeep.endCall(newUuid)
+        }
+        this.clearStartCallIntervalTimer()
+        return
+      }
       // If after 3s and there's no call in the store
       // It's likely a connection issue occurred
       if (
+        !currentCall &&
         !reconnectCalled &&
-        !currentCallId &&
         Date.now() - this.startCallIntervalAt > 3000
       ) {
-        this.clearStartCallIntervalTimer()
         reconnectAndWaitSip(startCall)
-        return
-      }
-      if (currentCallId) {
-        this.currentCallId = currentCallId
-      }
-      // Add a guard of 10s to clear the interval
-      if (currentCallId || Date.now() - this.startCallIntervalAt > 10000) {
-        this.clearStartCallIntervalTimer()
       }
     }, 500)
   }
@@ -352,10 +364,15 @@ const clearAutoEndCallKeepTimer = () => {
   BackgroundTimer.clearInterval(autoEndCallKeepTimerId)
   autoEndCallKeepTimerId = 0
 }
-const setAutoEndCallKeepTimer = () => {
+const setAutoEndCallKeepTimer = (uuid: string) => {
   if (Platform.OS === 'web') {
     return
   }
+  callkeepMap[uuid] = {
+    uuid,
+    at: Date.now(),
+  }
+
   clearAutoEndCallKeepTimer()
   autoEndCallKeepTimerId = BackgroundTimer.setInterval(() => {
     const n = Date.now()

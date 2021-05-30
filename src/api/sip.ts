@@ -13,7 +13,7 @@ import pbx from './pbx'
 import turnConfig from './turnConfig'
 
 const sipCreateMediaConstraints = (sourceId?: string) => {
-  return ({
+  return {
     audio: false,
     video: {
       mandatory: {
@@ -24,7 +24,7 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
       facingMode: Platform.OS === 'web' ? undefined : 'user',
       optional: sourceId ? [{ sourceId }] : [],
     },
-  } as unknown) as MediaStreamConstraints
+  } as unknown as MediaStreamConstraints
 }
 
 export class SIP extends EventEmitter {
@@ -122,9 +122,8 @@ export class SIP extends EventEmitter {
         pbxUsername: '',
       }
       if (ev.incomingMessage) {
-        const pbxSessionInfo = ev.incomingMessage.getHeader(
-          'X-PBX-Session-Info',
-        )
+        const pbxSessionInfo =
+          ev.incomingMessage.getHeader('X-PBX-Session-Info')
         if (typeof pbxSessionInfo === 'string') {
           const infos = pbxSessionInfo.split(';')
           patch.pbxTenant = infos[0]
@@ -216,11 +215,13 @@ export class SIP extends EventEmitter {
     console.error('SIP PN debug: added listener on _ua')
 
     // temporary cancel PN via SIP ua
-    const ua = ((this.phone as unknown) as {
-      _ua: {
-        on: Function
+    const ua = (
+      this.phone as unknown as {
+        _ua: {
+          on: Function
+        }
       }
-    })._ua
+    )._ua
     ua?.on(
       'newNotify',
       (e: {

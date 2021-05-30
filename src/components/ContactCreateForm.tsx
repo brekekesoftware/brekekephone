@@ -71,7 +71,7 @@ const ContactsCreateForm: FC<{
   })
   type M0 = ReturnType<typeof m>
   type M = Omit<M0, 'observable'> & M0['observable']
-  const $ = (useStore(m) as any) as M
+  const $ = useStore(m) as any as M
 
   const [Form, submitForm] = useForm()
   const disabled = props.updatingPhonebook?.shared

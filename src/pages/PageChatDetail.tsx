@@ -398,7 +398,7 @@ class PageChatDetail extends React.Component<{
         const url = event.target?.result
         this.setState({ blobFile: { url: url, fileType: fileType } })
       }
-      reader.readAsDataURL((file as unknown) as Blob)
+      reader.readAsDataURL(file as unknown as Blob)
     } else {
       const type = ['PNG', 'JPG', 'JPEG', 'GIF']
       const fileType = type.includes(
@@ -413,7 +413,7 @@ class PageChatDetail extends React.Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUCUser(this.props.buddy)
-    uc.sendFile(u?.id, (file as unknown) as Blob)
+    uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)

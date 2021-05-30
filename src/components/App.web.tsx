@@ -93,7 +93,7 @@ const AppSelection = () => {
   if (isBrowser) {
     child = <App />
   } else {
-    const params = parse((window.location as unknown) as Url)
+    const params = parse(window.location as unknown as Url)
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`

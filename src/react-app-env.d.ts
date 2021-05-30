@@ -9,6 +9,11 @@ declare module 'react-native-uuid' {
   export const v4: () => string
 }
 
+declare module 'jssip' {
+  const m: unknown
+  export default m
+}
+
 declare module 'react-native-voip-push-notification' {
   const m: {
     presentLocalNotification: Function

@@ -1,7 +1,7 @@
 const uint8ArrayToUrlBase64 = (arr: ArrayBuffer) =>
   window
     .btoa(
-      String.fromCharCode.apply(null, (new Uint8Array(arr) as any) as number[]),
+      String.fromCharCode.apply(null, new Uint8Array(arr) as any as number[]),
     )
     .replace(/[+/]/g, '-')
 

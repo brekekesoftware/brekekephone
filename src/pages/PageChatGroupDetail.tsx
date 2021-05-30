@@ -373,7 +373,7 @@ class PageChatGroupDetail extends React.Component<{
         const url = event.target?.result
         this.setState({ blobFile: { url: url, fileType: fileType } })
       }
-      reader.readAsDataURL((file as unknown) as Blob)
+      reader.readAsDataURL(file as unknown as Blob)
     } else {
       const type = ['PNG', 'JPG', 'JPEG', 'GIF']
       const fileType = type.includes(
@@ -388,7 +388,7 @@ class PageChatGroupDetail extends React.Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
-    uc.sendFiles(groupId, (file as unknown) as Blob)
+    uc.sendFiles(groupId, file as unknown as Blob)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure)
   }

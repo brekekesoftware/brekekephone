@@ -112,7 +112,7 @@ const css = StyleSheet.create({
     padding: 0,
     ...Platform.select({
       web: {
-        display: ('inline' as unknown) as undefined,
+        display: 'inline' as unknown as undefined,
       },
     }),
   },

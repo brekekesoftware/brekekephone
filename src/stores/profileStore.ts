@@ -78,7 +78,7 @@ class ProfileStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
-    parks: ([] as any) as string[],
+    parks: [] as any as string[],
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],
@@ -104,10 +104,7 @@ class ProfileStore {
       }
       runInAction(() => {
         this.profiles = profiles
-        this.profileData = (uniqBy(
-          profileData,
-          'id',
-        ) as unknown) as ProfileData[]
+        this.profileData = uniqBy(profileData, 'id') as unknown as ProfileData[]
       })
     }
     if (resolveFn) {

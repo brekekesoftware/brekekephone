@@ -104,7 +104,7 @@ const ProfileCreateForm: FC<{
   type M = Omit<M0, 'observable'> &
     M0['observable'] &
     ReturnType<typeof useStore>
-  const $ = (useStore(m) as any) as M
+  const $ = useStore(m) as any as M
   const [Form, submitForm] = useForm()
   return (
     <Layout
@@ -120,8 +120,8 @@ const ProfileCreateForm: FC<{
                 ? [
                     {
                       label: intl`Reconnect to server`,
-                      onPress: getAuthStore()
-                        .reconnectWithUcLoginFromAnotherPlace,
+                      onPress:
+                        getAuthStore().reconnectWithUcLoginFromAnotherPlace,
                     },
                   ]
                 : []),

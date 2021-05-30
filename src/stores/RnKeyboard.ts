@@ -6,20 +6,22 @@ class RnKeyboardStore {
   @observable isKeyboardAnimating = false
   waitKeyboardTimeoutId = 0
 
-  waitKeyboard = (fn: Function) => (...args: unknown[]) => {
-    if (this.waitKeyboardTimeoutId) {
-      return
+  waitKeyboard =
+    (fn: Function) =>
+    (...args: unknown[]) => {
+      if (this.waitKeyboardTimeoutId) {
+        return
+      }
+      if (!this.isKeyboardShowing) {
+        fn(...args)
+        return
+      }
+      Keyboard.dismiss()
+      this.waitKeyboardTimeoutId = window.setTimeout(() => {
+        this.waitKeyboardTimeoutId = 0
+        fn(...args)
+      }, 300)
     }
-    if (!this.isKeyboardShowing) {
-      fn(...args)
-      return
-    }
-    Keyboard.dismiss()
-    this.waitKeyboardTimeoutId = window.setTimeout(() => {
-      this.waitKeyboardTimeoutId = 0
-      fn(...args)
-    }, 300)
-  }
 
   keyboardAnimatingTimeoutId = 0
   @action setKeyboardAnimatingTimeout = () => {

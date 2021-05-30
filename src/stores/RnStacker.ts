@@ -64,15 +64,15 @@ export class RnStackerStore {
       }),
     )
   }
-  createBackTo = (o: { [k: string]: ReactComponentLike }, isRoot = false) => (
-    ...args: unknown[]
-  ) => {
-    if (this.stacks.length > 1) {
-      RnKeyboard.waitKeyboard(this.dismiss)()
-    } else {
-      this.createGoTo(o, isRoot)(...args)
+  createBackTo =
+    (o: { [k: string]: ReactComponentLike }, isRoot = false) =>
+    (...args: unknown[]) => {
+      if (this.stacks.length > 1) {
+        RnKeyboard.waitKeyboard(this.dismiss)()
+      } else {
+        this.createGoTo(o, isRoot)(...args)
+      }
     }
-  }
   popAllStack = RnKeyboard.waitKeyboard(
     action(() => {
       while (this.stacks.length > 1) {

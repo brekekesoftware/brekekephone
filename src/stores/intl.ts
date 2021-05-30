@@ -11,12 +11,12 @@ const compileFn = (locale: string, k: string): CompileFn => {
   const arr = labels[locale as 'en']
   const i = enLabelsMapIndex[k as keyof typeof enLabelsMapIndex]
   //
-  let fn = (arr[i] as unknown) as CompileFn
+  let fn = arr[i] as unknown as CompileFn
   if (!fn || typeof fn !== 'function') {
     fn = Handlebars.compile(k)
   }
   if (i !== undefined) {
-    arr[i] = (fn as unknown) as string
+    arr[i] = fn as unknown as string
   }
   //
   return fn
@@ -38,12 +38,12 @@ export interface IntlDebug {
   label: string
   en: string
 }
-export const intlDebug = (intlDebug0 as unknown) as (
+export const intlDebug = intlDebug0 as unknown as (
   template: TemplateStringsArray,
   ...substitutions: any[]
 ) => IntlDebug
 
-const intl = (intl0 as unknown) as (
+const intl = intl0 as unknown as (
   template: TemplateStringsArray,
   ...substitutions: any[]
 ) => string

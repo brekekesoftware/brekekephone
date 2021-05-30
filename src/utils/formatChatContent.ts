@@ -49,7 +49,7 @@ export const filterTextOnly = <
     creatorId?: string
     type?: number
     ctype?: number
-  }
+  },
 >(
   arr?: T[],
 ): T[] => (arr || []).filter(c => formatChatContent(c).isTextOnly)

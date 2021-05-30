@@ -73,14 +73,14 @@ const getAudioVideoPermission = () => {
   const er = (err: MediaStreamError) => {
     /* TODO */
   }
-  const p = (window.navigator.getUserMedia(
+  const p = window.navigator.getUserMedia(
     {
       audio: true,
       video: true,
     },
     cb,
     er,
-  ) as unknown) as Promise<MediaStream>
+  ) as unknown as Promise<MediaStream>
   if (p?.then) {
     p.then(cb).catch(er)
   }

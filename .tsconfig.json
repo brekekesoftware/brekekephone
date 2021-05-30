@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Basic Options */
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
     // "lib": [],
     "allowJs": false,
     "checkJs": false,
@@ -19,8 +19,9 @@
     "noEmit": true,
     // "importHelpers": true,
     // "downlevelIteration": true,
-    // "isolatedModules": true,
-    "skipLibCheck": true, // TODO
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
 
     /* Strict Type-Checking Options */
     "strict": true,
@@ -38,7 +39,7 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Module Resolution Options */
-    // "moduleResolution": "node",
+    "moduleResolution": "node",
     // "baseUrl": "./",
     // "paths": {},
     // "rootDirs": [],

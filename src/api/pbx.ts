@@ -7,7 +7,7 @@ import profileStore, { Profile } from '../stores/profileStore'
 import { Pbx, PbxGetProductInfoRes } from './brekekejs'
 
 export class PBX extends EventEmitter {
-  client = (null as unknown) as Pbx
+  client = null as unknown as Pbx
   private connectTimeoutId = 0
 
   connect = async (p: Profile) => {
@@ -35,7 +35,7 @@ export class PBX extends EventEmitter {
     })
     this.client = client
 
-    client._pal = (((method: keyof Pbx, params?: object) => {
+    client._pal = ((method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
@@ -43,7 +43,7 @@ export class PBX extends EventEmitter {
         }
         f(params, resolve, reject)
       })
-    }) as unknown) as Pbx['_pal']
+    }) as unknown as Pbx['_pal']
 
     client.debugLevel = 2
 
@@ -145,7 +145,7 @@ export class PBX extends EventEmitter {
   disconnect = () => {
     if (this.client) {
       this.client.close()
-      this.client = (null as unknown) as Pbx
+      this.client = null as unknown as Pbx
     }
     this.clearConnectTimeoutId()
   }

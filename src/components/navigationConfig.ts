@@ -173,7 +173,7 @@ export const normalizeSavedNavigation = () => {
 }
 
 export const getTabs = (tab: string) => {
-  const arr = ([
+  const arr = [
     {
       key: 'call_transfer',
       icon: null,
@@ -191,7 +191,7 @@ export const getTabs = (tab: string) => {
       ],
       defaultSubMenuKey: 'list_user',
     },
-  ] as unknown) as Menu[]
+  ] as unknown as Menu[]
 
   arr.forEach((m, i) => {
     m.subMenusMap = arrToMap(

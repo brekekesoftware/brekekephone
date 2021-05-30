@@ -3,7 +3,6 @@ import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { Group } from 'react-native'
 
 import { UcMessageLog } from '../api/brekekejs'
 import { Constants } from '../api/uc'
@@ -12,7 +11,7 @@ import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import chatStore, { ChatMessage } from '../stores/chatStore'
+import chatStore, { ChatGroup, ChatMessage } from '../stores/chatStore'
 import contactStore, { UcUser } from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -35,8 +34,8 @@ class PageChatRecents extends React.Component {
 
     const threadIds = chatStore.threadIdsOrderedByRecent
 
-    const groupById = arrToMap(chatStore.groups, 'id', (g: Group) => g) as {
-      [k: string]: Group
+    const groupById = arrToMap(chatStore.groups, 'id', (g: ChatGroup) => g) as {
+      [k: string]: ChatGroup
     }
     const userById = arrToMap(contactStore.ucUsers, 'id', (u: UcUser) => u) as {
       [k: string]: UcUser
@@ -51,22 +50,22 @@ class PageChatRecents extends React.Component {
     type ChatFromStorage = typeof recentFromStorage[0] & WithThreadId
     type ChatWithThreadId = ChatMessage & WithThreadId
 
-    const recentGroups = (recentFromStorage.filter(
+    const recentGroups = recentFromStorage.filter(
       c => c.group,
-    ) as unknown) as ChatWithThreadId[]
+    ) as unknown as ChatWithThreadId[]
     recentGroups.push(
       ...groupIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )
 
-    const recentUsers = (recentFromStorage.filter(
+    const recentUsers = recentFromStorage.filter(
       c => !c.group,
-    ) as unknown) as ChatWithThreadId[]
+    ) as unknown as ChatWithThreadId[]
     recentUsers.push(
       ...threadIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )
 
     const fn = (group: boolean) => (c0: ChatWithThreadId) => {
-      const c = (c0 as unknown) as ChatFromStorage
+      const c = c0 as unknown as ChatFromStorage
       const id = typeof c.group === 'boolean' ? c.id : c.threadId
       const x = (group ? groupById : userById)[id] as {
         name: string
@@ -87,7 +86,7 @@ class PageChatRecents extends React.Component {
         id,
         name,
         text,
-        type: isTextOnly ? 1 : c.type || ((c as unknown) as UcMessageLog).ctype,
+        type: isTextOnly ? 1 : c.type || (c as unknown as UcMessageLog).ctype,
         group: !!group,
         unread,
         created: c.created,

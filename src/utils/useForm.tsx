@@ -119,7 +119,7 @@ const useForm = () => {
       )
     }),
   })
-  const $ = (useStore(f0) as unknown) as FormContext
+  const $ = useStore(f0) as unknown as FormContext
   return [$.render, $.submit, $.onFieldChange]
 }
 
