@@ -35,6 +35,10 @@ export default class Call {
   answer = (options?: object) => {
     this.answered = true
     this.store.currentCallId = this.id
+    // Hold other calls
+    this.store.calls
+      .filter(c => c.id !== this.id && c.answered && !c.holding)
+      .forEach(c => c.toggleHold())
     sip.answerSession(this.id, {
       videoEnabled: this.remoteVideoEnabled,
       ...options,
