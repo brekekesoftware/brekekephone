@@ -39,7 +39,7 @@ const css = StyleSheet.create({
   },
   Input: {
     flex: 1,
-    lineHeight: g.iconSize,
+    // lineHeight: g.iconSize,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderTopWidth: 1,
