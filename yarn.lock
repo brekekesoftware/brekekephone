@@ -2695,7 +2695,7 @@ anser@^1.4.9:
   resolved "https://registry.yarnpkg.com/anser/-/anser-1.4.10.tgz#befa3eddf282684bd03b63dcda3927aef8c2e35b"
   integrity sha512-hCv9AqTQ8ycjpSd3upOJd7vFwW1JaoYQ7tpham03GJ1ca8/65rqn0RpaWpItOAd6ylW9wAw6luXYPJIyPFVOww==
 
-ansi-colors@^3.0.0, ansi-colors@^3.2.1:
+ansi-colors@^3.0.0:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"
   integrity sha512-hHUXGagefjN2iRrID63xckIvotOXOojhQKWIPUZ4mNUZ9nLZW+7FMNoE1lOkEhNWYsx/7ysGIuJYCiMAA9FnrA==
@@ -7749,12 +7749,11 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
-jssip@3.2.17:
-  version "3.2.17"
-  resolved "https://registry.yarnpkg.com/jssip/-/jssip-3.2.17.tgz#8c687e3e0c61215533351cd897b1ff5dc25fe7c0"
-  integrity sha512-3x/MVUwau3yGSb288d4tEmdJRCgFMbwjrzvIpwtMSAQPkZVHO7+H6MYJM3KniKzLAtMv4lXS8NRo3nywvrOXjg==
+jssip@3.2.15:
+  version "3.2.15"
+  resolved "https://registry.yarnpkg.com/jssip/-/jssip-3.2.15.tgz#b88489b4a963fb9f2cd3fde0120738ebeb64bcc3"
+  integrity sha512-kpKekINV3AObe6UFSTYiM5PfL5xKWTstUnG3S65vy6/GRlKhWk6XdivaH0X22RyAFPQuxskfpy99V/4MLhEdWg==
   dependencies:
-    ansi-colors "^3.2.1"
     debug "^4.1.0"
     events "^3.0.0"
     sdp-transform "^2.4.1"

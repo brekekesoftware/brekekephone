@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.7.21",
+  "version": "2.7.22",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -35,7 +35,7 @@
     "handlebars": "4.7.7",
     "helper-moment": "0.2.0",
     "json-stable-stringify": "1.0.1",
-    "jssip": "3.2.17",
+    "jssip": "3.2.15",
     "lodash": "4.17.21",
     "md5": "2.3.0",
     "mobx": "5.15.7",
