@@ -1,5 +1,7 @@
 import { action, computed, observable } from 'mobx'
+import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+import IncallManager from 'react-native-incall-manager'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -68,7 +70,7 @@ export default class Call {
   @observable muted = false
   @action toggleMuted = (fromCallKeep?: boolean) => {
     this.muted = !this.muted
-    if (fromCallKeep && this.callkeepUuid) {
+    if (!fromCallKeep && this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
     }
     return sip.setMuted(this.muted, this.id)
@@ -92,8 +94,19 @@ export default class Call {
   @observable holding = false
   @action toggleHold = (fromCallKeep?: boolean) => {
     this.holding = !this.holding
-    if (fromCallKeep && this.callkeepUuid) {
-      RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
+    if (!fromCallKeep) {
+      if (this.callkeepUuid) {
+        RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
+      }
+      // Hack to fix no voice after unhold
+      if (Platform.OS === 'ios' && !this.holding) {
+        setTimeout(() => {
+          IncallManager.setForceSpeakerphoneOn(!this.store.isLoudSpeakerEnabled)
+        }, 500)
+        setTimeout(() => {
+          IncallManager.setForceSpeakerphoneOn(this.store.isLoudSpeakerEnabled)
+        }, 1000)
+      }
     }
     return pbx[this.holding ? 'holdTalker' : 'unholdTalker'](
       this.pbxTenant,
