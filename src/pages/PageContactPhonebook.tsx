@@ -175,6 +175,7 @@ class PageContactPhonebook extends React.Component {
       key: k,
       phonebooks: map[k],
     }))
+
     groups = orderBy(groups, 'key')
     groups.forEach(g => {
       g.phonebooks = orderBy(g.phonebooks, 'name')

@@ -245,6 +245,7 @@ class PageChatDetail extends React.Component<{
     const file = chatStore.filesMap[chat.file || '']
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
+
     return {
       id,
       creatorId: creator.id,

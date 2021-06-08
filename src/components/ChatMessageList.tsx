@@ -5,6 +5,7 @@ import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { ChatMessage } from '../stores/chatStore'
+import contactStore from '../stores/contactStore'
 import Avatar from './Avatar'
 import { groupByTimestamp } from './chatConfig'
 import Message from './ChatMessage'
@@ -85,14 +86,21 @@ const MessageList: FC<{
             const c0 = resolveChat(id) as ChatMessage & {
               creatorName: string
               creatorAvatar: string
+              creatorId: string
             }
             const name = c0?.creatorName
+            const status = contactStore.ucUsers.find(
+              u => u.id === c0.creatorId,
+            )?.status
             return (
               <View
                 key={`${time}${id}`}
                 style={[css.TimeGroup, !j && css.TimeGroup__first]}
               >
-                <Avatar source={c0.creatorAvatar} />
+                <Avatar
+                  source={{ uri: c0.creatorAvatar as string }}
+                  status={status}
+                />
                 <View style={css.Right}>
                   <View style={css.Creator}>
                     <RnText bold singleLine>

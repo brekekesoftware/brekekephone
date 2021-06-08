@@ -1,4 +1,13 @@
-import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
+import {
+  mdiChat,
+  mdiChatOutline,
+  mdiChatPlusOutline,
+  mdiMagnify,
+  mdiMessage,
+  mdiMessageTextOutline,
+  mdiPhone,
+  mdiVideo,
+} from '@mdi/js'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import React from 'react'
@@ -11,6 +20,7 @@ import { AuthStore } from '../stores/authStore2'
 import callStore from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
+import Nav from '../stores/Nav'
 
 @observer
 class PageCallRecents extends React.Component {
@@ -74,8 +84,10 @@ class PageCallRecents extends React.Component {
               () => callStore.startVideoCall(c.partyNumber),
               () => callStore.startCall(c.partyNumber),
             ]}
+            {...contactStore.ucUsers.find(u => u.id === c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
+            canChat
             key={i}
             {...this.getAvatar(c.partyNumber)}
             {...c}
