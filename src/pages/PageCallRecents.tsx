@@ -74,8 +74,10 @@ class PageCallRecents extends React.Component {
               () => callStore.startVideoCall(c.partyNumber),
               () => callStore.startCall(c.partyNumber),
             ]}
+            {...contactStore.getUCUser(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
+            canChat
             key={i}
             {...this.getAvatar(c.partyNumber)}
             {...c}

@@ -70,18 +70,14 @@ class PageTransferDial extends React.Component {
       >
         <ShowNumber
           refInput={this.txtRef}
-          selectionChange={
-            RnKeyboard.isKeyboardShowing
-              ? undefined
-              : (
-                  e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-                ) => {
-                  Object.assign(this.txtSelection, {
-                    start: e.nativeEvent.selection.start,
-                    end: e.nativeEvent.selection.end,
-                  })
-                }
-          }
+          selectionChange={(
+            e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+          ) => {
+            Object.assign(this.txtSelection, {
+              start: e.nativeEvent.selection.end,
+              end: e.nativeEvent.selection.end,
+            })
+          }}
           setTarget={(v: string) => {
             this.txt = v
           }}

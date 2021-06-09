@@ -3,6 +3,7 @@ import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import intl from '../stores/intl'
+import Nav from '../stores/Nav'
 import Avatar from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
@@ -77,6 +78,7 @@ const UserItem: FC<
     partyNumber: string
     selected: boolean
     statusText: string
+    canChat: boolean
   }>
 > = p0 => {
   const {
@@ -95,10 +97,15 @@ const UserItem: FC<
     partyNumber,
     selected,
     statusText,
+    canChat,
     ...p
   } = p0
+  const Container = canChat ? RnTouchableOpacity : View
   return (
-    <View style={css.Outer}>
+    <Container
+      style={css.Outer}
+      onPress={() => Nav().goToPageChatDetail({ buddy: partyNumber })}
+    >
       <View style={[css.Inner, selected && css.Inner_selected]}>
         <Avatar
           source={{ uri: avatar as string }}
@@ -160,7 +167,7 @@ const UserItem: FC<
           </RnTouchableOpacity>
         ))}
       </View>
-    </View>
+    </Container>
   )
 }
 export default UserItem
