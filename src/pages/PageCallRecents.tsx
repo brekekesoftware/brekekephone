@@ -84,7 +84,7 @@ class PageCallRecents extends React.Component {
               () => callStore.startVideoCall(c.partyNumber),
               () => callStore.startCall(c.partyNumber),
             ]}
-            {...contactStore.ucUsers.find(u => u.id === c.partyNumber)}
+            {...contactStore.getUCUser(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
             canChat
