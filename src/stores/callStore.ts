@@ -276,7 +276,9 @@ export class CallStore {
         !reconnectCalled &&
         Date.now() - this.startCallIntervalAt > 3000
       ) {
-        reconnectAndWaitSip(startCall)
+        reconnectCalled = true
+        reconnectAndWaitSip(sipCreateSession)
+        this.clearStartCallIntervalTimer()
       }
     }, 500)
   }
