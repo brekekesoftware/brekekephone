@@ -220,9 +220,8 @@ class DebugStore {
     )
   }
   autoCheckForUpdate = () => {
-    // Check for update in every 14 days
-    // https://softwareengineering.stackexchange.com/questions/202316
-    if (Date.now() - this.remoteVersionLastCheck > 14 * 24 * 60 * 60 * 1000) {
+    // Check for update in every day
+    if (Date.now() - this.remoteVersionLastCheck > 24 * 60 * 60 * 1000) {
       this.checkForUpdate()
     }
   }

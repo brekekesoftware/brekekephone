@@ -6,22 +6,14 @@ export const reconnectAndWaitSip = (fn: Function) => {
   waitSip(fn)
 }
 
-export const waitSip = (fn: Function, forceCallFn = false) => {
+export const waitSip = (fn: Function) => {
   const at = Date.now()
   const id = BackgroundTimer.setInterval(() => {
-    const enoughTimePassed = Date.now() > at + 10000
+    const enoughTimePassed = Date.now() - at > 10000
     const isSipConnected = getAuthStore().sipState === 'success'
     if (enoughTimePassed || isSipConnected) {
       BackgroundTimer.clearInterval(id)
-    }
-    if (enoughTimePassed) {
-      if (forceCallFn) {
-        fn(false)
-      }
-      return
-    }
-    if (isSipConnected) {
-      fn(true)
+      fn(isSipConnected)
     }
   }, 500)
 }

@@ -147,7 +147,7 @@ export class AuthStore {
       const intervalStartedAt = Date.now()
       const id = window.setInterval(() => {
         // TODO show/hide loader
-        if (!callStore.calls.length || Date.now() > intervalStartedAt + 3000) {
+        if (!callStore.calls.length || Date.now() - intervalStartedAt > 3000) {
           window.clearInterval(id)
           this.resetState()
         }
@@ -293,7 +293,7 @@ export class AuthStore {
     if (
       n.isCall &&
       !callStore.calls.length &&
-      Date.now() > callStore.recentCallActivityAt + 30000
+      Date.now() - callStore.recentCallActivityAt > 30000
     ) {
       const s = sip.phone?.getPhoneStatus()
       if (s && s !== 'starting' && s !== 'started') {

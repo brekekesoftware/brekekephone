@@ -12,7 +12,6 @@ import uc from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { IncomingCall } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
-import waitTimeout from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import Call from './Call'
 import Nav from './Nav'
@@ -136,11 +135,12 @@ export class CallStore {
   @action upsertCall = (
     cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
   ) => {
-    this.recentCallActivityAt = Date.now()
+    const now = Date.now()
+    this.recentCallActivityAt = now
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
       if (!cExisting.answered && cPartial.answered) {
-        cPartial.answeredAt = Date.now()
+        cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
       return
@@ -152,7 +152,7 @@ export class CallStore {
     // Get and check callkeep
     let recentPnUuid = ''
     let recentPnAction = ''
-    if (this.recentPn && Date.now() - this.recentPn.at < 20000) {
+    if (this.recentPn && now - this.recentPn.at < 20000) {
       recentPnUuid = this.recentPn.uuid
       recentPnAction = this.recentPn.action || ''
     }
@@ -222,26 +222,16 @@ export class CallStore {
   }
   startCall = async (number: string, options = {}) => {
     let reconnectCalled = false
-    const startCall = async (isReconnect?: boolean) => {
-      if (isReconnect) {
-        // Do not call sip too frequencely on reconnect
-        await waitTimeout(3000)
-      }
-      await pbx.getConfig()
-      sip.createSession(number, options)
-    }
+    const sipCreateSession = () => sip.createSession(number, options)
     try {
-      await startCall()
+      // Try to call pbx first to see if there's any error with the network
+      await pbx.getConfig()
+      sipCreateSession()
     } catch (err) {
-      reconnectAndWaitSip(startCall)
       reconnectCalled = true
+      reconnectAndWaitSip(sipCreateSession)
     }
     Nav().goToPageCallManage()
-    // Auto update currentCallId
-    this.currentCallId = undefined
-    const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
-    this.clearStartCallIntervalTimer()
-    this.startCallIntervalAt = Date.now()
     // Start call logic in RNCallKeep
     let newUuid = ''
     if (Platform.OS === 'ios') {
@@ -250,6 +240,13 @@ export class CallStore {
       RNCallKeep.reportConnectingOutgoingCallWithUUID(newUuid)
       setAutoEndCallKeepTimer(newUuid)
     }
+    // Check for each 0.5s
+    // Auto update currentCallId
+    this.currentCallId = undefined
+    const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
+    // And if after 3s there's no call in store, reconnect
+    this.clearStartCallIntervalTimer()
+    this.startCallIntervalAt = Date.now()
     this.startCallIntervalId = BackgroundTimer.setInterval(() => {
       const currentCall = this.calls.find(c => !prevIds[c.id])
       if (currentCall) {
@@ -261,21 +258,18 @@ export class CallStore {
         this.clearStartCallIntervalTimer()
         return
       }
+      const diff = Date.now() - this.startCallIntervalAt
       // Add a guard of 10s to clear the interval
-      if (Date.now() - this.startCallIntervalAt > 10000) {
+      if (diff > 10000) {
         if (newUuid) {
           RNCallKeep.endCall(newUuid)
         }
         this.clearStartCallIntervalTimer()
         return
       }
-      // If after 3s and there's no call in the store
+      // And if after 3s there's no call in store, reconnect
       // It's likely a connection issue occurred
-      if (
-        !currentCall &&
-        !reconnectCalled &&
-        Date.now() - this.startCallIntervalAt > 3000
-      ) {
+      if (!currentCall && !reconnectCalled && diff > 3000) {
         reconnectCalled = true
         reconnectAndWaitSip(sipCreateSession)
         this.clearStartCallIntervalTimer()
@@ -426,10 +420,9 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 }
 const endCallKeep = (uuid: string) => {
   delete callkeepMap[uuid]
-  const n = Date.now()
   if (
     !callStore.calls.length &&
-    (!callStore.recentPn || n - callStore.recentPn.at > 20000)
+    (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)
   ) {
     RNCallKeep.endAllCalls()
     callStore.recentPn = undefined

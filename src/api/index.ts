@@ -69,7 +69,7 @@ class Api {
       SyncPnToken()
         .sync(getAuthStore().currentProfile)
         .then(() => SyncPnToken().syncForAllAccounts())
-    }, true)
+    })
   }
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'
