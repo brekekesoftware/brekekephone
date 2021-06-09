@@ -34,10 +34,6 @@ module.exports = {
         },
       },
     ],
-    // remove popup rules from @typescript-eslint
-    '@typescript-eslint/no-unused-expressions': 0,
-    '@typescript-eslint/no-unused-vars': 0,
-    '@typescript-eslint/no-use-before-define': 0,
   },
   settings: {
     react: {
