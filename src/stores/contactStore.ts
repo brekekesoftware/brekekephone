@@ -73,11 +73,10 @@ class ContactStore {
     if (this.alreadyLoadContactsFirstTime) {
       return
     }
-    this.loadContacts()?.then(() => {
+    this.loadContacts().then(() => {
       this.alreadyLoadContactsFirstTime = true
     })
   }
-
   @action loadMoreContacts = () => {
     this.offset += this.numberOfContactsPerPage
     this.loadContacts()
@@ -85,19 +84,19 @@ class ContactStore {
 
   @observable pbxUsers: PbxUser[] = []
   setTalkerStatus = (userId: string, talkerId: string, status: string) => {
-    const user = this.getPBXUser(userId)
-    if (!user) {
+    const u = this.getPbxUserById(userId)
+    if (!u) {
       return
     }
-    if (!user.talkers) {
-      user.talkers = []
+    if (!u.talkers) {
+      u.talkers = []
     }
     if (!status) {
-      user.talkers = user.talkers.filter(t => t.id !== talkerId)
+      u.talkers = u.talkers.filter(t => t.id !== talkerId)
     } else {
-      const talker = user.talkers.find(t => t.id === talkerId)
+      const talker = u.talkers.find(t => t.id === talkerId)
       if (!talker) {
-        user.talkers.push({
+        u.talkers.push({
           id: talkerId,
           status,
         })
@@ -107,63 +106,59 @@ class ContactStore {
     }
     this.pbxUsers = [...this.pbxUsers]
   }
-  //
-  @computed get _pbxUsersMap() {
+  @computed private get pbxUsersMap() {
     return arrToMap(this.pbxUsers, 'id', (u: PbxUser) => u) as {
       [k: string]: PbxUser
     }
   }
-  getPBXUser = (id: string) => {
-    return this._pbxUsersMap[id]
+  getPbxUserById = (id: string) => {
+    return this.pbxUsersMap[id]
   }
 
   @observable ucUsers: UcUser[] = []
-  updateUCUser = (_u: UcUser) => {
-    const u = this.getUCUser(_u.id)
-    if (!u) {
+  updateUcUser = (u: UcUser) => {
+    const u0 = this.getUcUserById(u.id)
+    if (!u0) {
       return
     }
-    Object.assign(u, _u)
+    Object.assign(u0, u)
     this.ucUsers = [...this.ucUsers]
   }
-  @computed get _ucUsersMap() {
+  @computed private get ucUsersMap() {
     return arrToMap(this.ucUsers, 'id', (u: UcUser) => u) as {
       [k: string]: UcUser
     }
   }
-  getUCUser = (id: string) => {
-    return this._ucUsersMap[id]
+  getUcUserById = (id: string) => {
+    return this.ucUsersMap[id]
   }
 
   @observable phoneBooks: Phonebook2[] = []
-  @computed get _phoneBooksMap() {
+  @action upsertPhonebook = (p: Phonebook2) => {
+    const p0 = this.getPhonebookById(p.id)
+    if (!p0) {
+      this.phoneBooks.push(p)
+    } else {
+      Object.assign(p0, p)
+    }
+    this.phoneBooks = [...this.phoneBooks]
+  }
+  @action setPhonebook = (p: Phonebook2 | Phonebook2[]) => {
+    if (!p) {
+      return
+    }
+    if (!Array.isArray(p)) {
+      p = [p]
+    }
+    this.phoneBooks = uniqBy([...this.phoneBooks, ...p], 'id')
+  }
+  @computed private get phoneBooksMap() {
     return arrToMap(this.phoneBooks, 'id', (u: Phonebook2) => u) as {
       [k: string]: Phonebook2
     }
   }
-
-  @action upsertPhonebook = (_p: Phonebook2) => {
-    const p = this.getPhonebook(_p.id)
-    if (!p) {
-      this.phoneBooks.push(_p)
-    } else {
-      Object.assign(p, _p)
-    }
-    this.phoneBooks = [...this.phoneBooks]
-  }
-
-  @action setPhonebook = (_p: Phonebook2 | Phonebook2[]) => {
-    if (!_p) {
-      return
-    }
-    if (!Array.isArray(_p)) {
-      _p = [_p]
-    }
-    this.phoneBooks = uniqBy([...this.phoneBooks, ..._p], 'id')
-  }
-
-  getPhonebook = (id: string) => {
-    return this._phoneBooksMap[id]
+  getPhonebookById = (id: string) => {
+    return this.phoneBooksMap[id]
   }
 
   clearStore = () => {

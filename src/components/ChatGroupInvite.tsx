@@ -100,8 +100,8 @@ class ChatGroupInvite extends React.Component {
   }
 
   formatGroup = (group: string) => {
-    const { id, inviter, name } = chatStore.getGroup(group) || {}
-    const inviterName = contactStore.getUCUser(inviter)?.name
+    const { id, inviter, name } = chatStore.getGroupById(group) || {}
+    const inviterName = contactStore.getUcUserById(inviter)?.name
     return {
       id: id,
       name,
@@ -291,8 +291,8 @@ class UnreadChatNoti extends React.Component {
           <UserItem
             key={id}
             {...(isGroup
-              ? chatStore.groups.find(g => g.id === id)
-              : contactStore.ucUsers.find(u => u.id === id))}
+              ? chatStore.getGroupById(id)
+              : contactStore.getUcUserById(id))}
             lastMessage={text}
             isRecentChat
             lastMessageDate={formatDateTimeSemantic(created)}

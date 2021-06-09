@@ -109,7 +109,7 @@ class PageChatDetail extends React.Component<{
 
   render() {
     const { buddy: id } = this.props
-    const u = contactStore.getUCUser(id)
+    const u = contactStore.getUcUserById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
     return (
@@ -215,18 +215,19 @@ class PageChatDetail extends React.Component<{
   setViewRef = (ref: ScrollView) => {
     this.view = ref
   }
-  _justMounted = true
-  _closeToBottom = true
+
+  private justMounted = true
+  private closeToBottom = true
   onContentSizeChange = () => {
     if (!this.view) {
       return
     }
-    if (this._closeToBottom) {
+    if (this.closeToBottom) {
       this.view?.scrollToEnd({
-        animated: !this._justMounted,
+        animated: !this.justMounted,
       })
-      if (this._justMounted) {
-        this._justMounted = false
+      if (this.justMounted) {
+        this.justMounted = false
       }
     }
   }
@@ -237,12 +238,12 @@ class PageChatDetail extends React.Component<{
     const contentSize = ev.nativeEvent.contentSize
     const contentHeight = contentSize.height
     const paddingToBottom = 20
-    this._closeToBottom =
+    this.closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
   }
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
-    const file = chatStore.filesMap[chat.file || '']
+    const file = chatStore.getFileById(chat.file)
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
 
@@ -263,7 +264,7 @@ class PageChatDetail extends React.Component<{
     if (creator === this.me.id) {
       return this.me
     }
-    return contactStore.getUCUser(creator) || {}
+    return contactStore.getUcUserById(creator) || {}
   }
   loadRecent = () => {
     this.setState({ loadingRecent: true })
@@ -364,7 +365,7 @@ class PageChatDetail extends React.Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      Object.assign(chatStore.filesMap[file.id], {
+      Object.assign(chatStore.getFileById(file.id), {
         url: url,
         fileType: fileType,
       })
@@ -413,7 +414,7 @@ class PageChatDetail extends React.Component<{
 
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
-    const u = contactStore.getUCUser(this.props.buddy)
+    const u = contactStore.getUcUserById(this.props.buddy)
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
         const buddyId = this.props.buddy

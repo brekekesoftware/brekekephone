@@ -25,8 +25,8 @@ class PageTransferChooseUser extends React.Component {
   }
 
   resolveMatch = (id: string) => {
-    const match = contactStore.getPBXUser(id)
-    const ucUser = contactStore.getUCUser(id) || {}
+    const match = contactStore.getPbxUserById(id)
+    const ucUser = contactStore.getUcUserById(id) || {}
     return {
       name: match.name,
       avatar: ucUser.avatar,
@@ -73,10 +73,10 @@ class PageTransferChooseUser extends React.Component {
         isTab
         title={intl`Transfer`}
       >
-        {groups.map(_g => (
-          <React.Fragment key={_g.key}>
-            <Field isGroup label={_g.key} />
-            {_g.users.map((u, i) => (
+        {groups.map(g => (
+          <React.Fragment key={g.key}>
+            <Field isGroup label={g.key} />
+            {g.users.map((u, i) => (
               <UserItem
                 iconFuncs={[
                   () => callStore.currentCall?.transferAttended(u.number),

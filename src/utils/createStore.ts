@@ -10,9 +10,9 @@ const createStore = (mixin: Function, ...args: unknown[]) => {
     upsert: (k: string, v: { [k: string]: unknown }, idKey = 'id') => {
       $.set(k, (arr: { [k: string]: unknown }[]) => {
         const updated = arr.reduce(
-          (u: boolean, _v: { [k: string]: unknown }) => {
-            if (!u && _v[idKey] === v[idKey]) {
-              Object.assign(_v, v)
+          (u: boolean, v0: { [k: string]: unknown }) => {
+            if (!u && v0[idKey] === v[idKey]) {
+              Object.assign(v0, v)
               return true
             }
             return u

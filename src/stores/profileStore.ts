@@ -128,7 +128,7 @@ class ProfileStore {
     }
   }
   @action upsertProfile = (p: Partial<Profile>) => {
-    const p1 = this.profiles.find(_ => _.id === p.id)
+    const p1 = this.profiles.find(p0 => p0.id === p.id)
     if (!p1) {
       this.profiles.push(p as Profile)
     } else {

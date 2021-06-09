@@ -16,7 +16,7 @@ export const labels = {
 export const enLabelsMapIndex = arrToMap(
   en,
   (k: string) => k,
-  (_: string, i: number) => i,
+  (k: string, i: number) => i,
 )
 
 export const localeOptions = [

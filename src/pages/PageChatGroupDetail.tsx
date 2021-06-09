@@ -97,7 +97,7 @@ class PageChatGroupDetail extends React.Component<{
   }
   render() {
     const id = this.props.groupId
-    const gr = chatStore.getGroup(id)
+    const gr = chatStore.getGroupById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
     const chats = chatStore.messagesByThreadId[this.props.groupId]
@@ -167,15 +167,15 @@ class PageChatGroupDetail extends React.Component<{
     this.view = ref
   }
 
-  _justMounted = true
-  _closeToBottom = true
+  private justMounted = true
+  private closeToBottom = true
   onContentSizeChange = () => {
-    if (this._closeToBottom) {
+    if (this.closeToBottom) {
       this.view?.scrollToEnd({
-        animated: !this._justMounted,
+        animated: !this.justMounted,
       })
-      if (this._justMounted) {
-        this._justMounted = false
+      if (this.justMounted) {
+        this.justMounted = false
       }
     }
   }
@@ -186,7 +186,7 @@ class PageChatGroupDetail extends React.Component<{
     const contentSize = ev.nativeEvent.contentSize
     const contentHeight = contentSize.height
     const paddingToBottom = 20
-    this._closeToBottom =
+    this.closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
   }
 
@@ -199,12 +199,12 @@ class PageChatGroupDetail extends React.Component<{
       // check message come from guest
       return { id: creator.replace('#', ''), name: 'Guest', avatar: null }
     }
-    return contactStore.getUCUser(creator) || {}
+    return contactStore.getUcUserById(creator) || {}
   }
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
     const text = chat.text
-    const file = chatStore.filesMap[chat.file || '']
+    const file = chatStore.getFileById(chat.file)
     const creator = this.resolveBuddy(chat.creator)
     return {
       id,
@@ -307,7 +307,7 @@ class PageChatGroupDetail extends React.Component<{
       })
   }
   updateConfStatus = (conf_id: string, isClose: boolean) => {
-    const g = chatStore.getGroup(conf_id)
+    const g = chatStore.getGroupById(conf_id)
     const newItem = {
       ...g,
       webchat: {
@@ -431,7 +431,7 @@ class PageChatGroupDetail extends React.Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      Object.assign(chatStore.filesMap[file.id], {
+      Object.assign(chatStore.getFileById(file.id), {
         url: url,
         fileType: fileType,
       })

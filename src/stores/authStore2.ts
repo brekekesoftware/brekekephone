@@ -90,8 +90,8 @@ export class AuthStore {
     ].some(s => s === 'failure')
   }
 
-  findProfile = (_p: Partial<Profile>) => {
-    return profileStore.profiles.find(p => compareProfile(p, _p))
+  findProfile = (p: Partial<Profile>) => {
+    return profileStore.profiles.find(p0 => compareProfile(p0, p))
   }
   pushRecentCall = (call: {
     id: string
@@ -108,13 +108,13 @@ export class AuthStore {
     }
     profileStore.saveProfilesToLocalStorage()
   }
-  @computed get _profilesMap() {
+  @computed private get profilesMap() {
     return arrToMap(profileStore.profiles, 'id', (p: Profile) => p) as {
       [k: string]: Profile
     }
   }
   getProfile = (id: string) => {
-    return this._profilesMap[id]
+    return this.profilesMap[id]
   }
 
   @observable signedInId = ''
@@ -149,14 +149,14 @@ export class AuthStore {
         // TODO show/hide loader
         if (!callStore.calls.length || Date.now() > intervalStartedAt + 3000) {
           window.clearInterval(id)
-          this._signOut()
+          this.resetState()
         }
       }, 500)
     } else {
-      this._signOut()
+      this.resetState()
     }
   }
-  @action _signOut = () => {
+  @action private resetState = () => {
     this.signedInId = ''
     this.pbxState = 'stopped'
     this.pbxTotalFailure = 0

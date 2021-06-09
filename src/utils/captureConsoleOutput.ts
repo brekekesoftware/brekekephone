@@ -27,7 +27,7 @@ const formatErrors = (...errs: Error[]) => {
       mi++
     }
     tpl = tpl.replace(/%c/g, '')
-    msgs = msgs.filter((_, i) => !m[i])
+    msgs = msgs.filter((m0, i) => !m[i])
   }
   // More cleanup from the debug lib
   let msg = format(tpl, ...msgs)

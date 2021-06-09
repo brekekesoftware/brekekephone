@@ -68,7 +68,7 @@ const ProfileCreateForm: FC<{
         ),
         onConfirm: () => {
           $.set('profile', (p: Profile) => {
-            p.parks = p.parks.filter((_, _i) => _i !== i)
+            p.parks = p.parks.filter((p0, i0) => i0 !== i)
             return p
           })
         },

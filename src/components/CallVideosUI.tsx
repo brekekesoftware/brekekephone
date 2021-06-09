@@ -48,7 +48,7 @@ type Props = {
 class Mini extends React.Component<Props> {
   panResponder: PanResponderInstance
   view?: View
-  _lastTap?: number
+  private lastTap?: number
 
   state = {}
   constructor(props: Props) {
@@ -98,12 +98,12 @@ class Mini extends React.Component<Props> {
     if (
       gesture.dx <= 10 &&
       gesture.dy <= 10 &&
-      this._lastTap &&
-      n - this._lastTap <= 500
+      this.lastTap &&
+      n - this.lastTap <= 500
     ) {
       this.props.onDoubleTap()
     }
-    this._lastTap = n
+    this.lastTap = n
   }
 }
 

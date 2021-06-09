@@ -97,23 +97,23 @@ class ChatStore {
   }
   pushMessages = (
     threadId: string,
-    _m: ChatMessage | ChatMessage[],
+    m: ChatMessage | ChatMessage[],
     isUnread = false,
   ) => {
     const isGroup = this.groups.some(g => g.id === threadId)
     const isWebchatJoined = this.isWebchatJoined(threadId)
     const isWebchat = this.isWebchat(threadId)
-    if (!Array.isArray(_m)) {
-      _m = [_m]
+    if (!Array.isArray(m)) {
+      m = [m]
     }
     const messages = this.messagesByThreadId[threadId] || []
-    messages.push(..._m)
+    messages.push(...m)
     this.messagesByThreadId[threadId] = sortBy(
       uniqBy(messages, 'id'),
       'created',
     )
 
-    const a2 = filterTextOnly(_m)
+    const a2 = filterTextOnly(m)
     if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
     }
@@ -144,24 +144,24 @@ class ChatStore {
     }
   }
 
-  @observable filesMap: { [k: string]: ChatFile } = {}
-  upsertFile = (_f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
-    const f = this.filesMap[_f.id]
-    this.filesMap[_f.id] = f ? Object.assign(f, _f) : (_f as ChatFile)
+  @observable private filesMap: { [k: string]: ChatFile } = {}
+  upsertFile = (f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
+    const f0 = this.filesMap[f.id]
+    this.filesMap[f.id] = f0 ? Object.assign(f0, f) : (f as ChatFile)
   }
   removeFile = (id: string) => {
     delete this.filesMap[id]
   }
+  getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
 
   @observable groups: ChatGroup[] = []
-  upsertGroup = (_g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
+  upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
-
-    const g = this.getGroup(_g.id)
-    if (g) {
-      Object.assign(g, _g)
+    const g0 = this.getGroupById(g.id)
+    if (g0) {
+      Object.assign(g0, g)
     } else {
-      this.groups.push(_g as ChatGroup)
+      this.groups.push(g as ChatGroup)
     }
     this.groups = [...this.groups]
   }
@@ -170,14 +170,13 @@ class ChatStore {
     delete this.threadConfig[id]
     this.groups = this.groups.filter(g => g.id !== id)
   }
-
-  @computed get _groupsMap() {
+  @computed private get groupsMap() {
     return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {
       [k: string]: ChatGroup
     }
   }
-  getGroup = (id: string) => {
-    return this._groupsMap[id]
+  getGroupById = (id: string) => {
+    return this.groupsMap[id]
   }
 
   clearStore = () => {

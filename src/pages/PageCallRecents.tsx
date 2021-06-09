@@ -22,7 +22,7 @@ class PageCallRecents extends React.Component {
   }
 
   getAvatar = (id: string) => {
-    const ucUser = contactStore.getUCUser(id) || {}
+    const ucUser = contactStore.getUcUserById(id) || {}
     return {
       id: id,
       avatar: ucUser.avatar,
@@ -74,7 +74,7 @@ class PageCallRecents extends React.Component {
               () => callStore.startVideoCall(c.partyNumber),
               () => callStore.startCall(c.partyNumber),
             ]}
-            {...contactStore.getUCUser(c.partyNumber)}
+            {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
             canChat={getAuthStore().currentProfile.ucEnabled}

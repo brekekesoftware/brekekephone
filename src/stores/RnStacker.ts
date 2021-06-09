@@ -47,20 +47,20 @@ export class RnStackerStore {
           }, 1000)
         }
         //
-        let _stack = {} as RnStack
+        let stack0 = {} as RnStack
         // It fails if the param is an event
         //    or something not enumerable
         if (stack && !stack.nativeEvent) {
           try {
-            Object.assign(_stack, stack)
+            Object.assign(stack0, stack)
           } catch (err) {}
         }
-        Object.assign(_stack, {
+        Object.assign(stack0, {
           name,
           Component,
           isRoot,
         })
-        this.openStack(_stack)
+        this.openStack(stack0)
       }),
     )
   }

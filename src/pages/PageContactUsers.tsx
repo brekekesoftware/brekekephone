@@ -44,8 +44,8 @@ class PageContactUsers extends React.Component {
     return userIds.filter(this.isMatchUser)
   }
   resolveUser = (id: string) => {
-    const pbxUser = contactStore.getPBXUser(id) || {}
-    const ucUser = contactStore.getUCUser(id) || {}
+    const pbxUser = contactStore.getPbxUserById(id) || {}
+    const ucUser = contactStore.getUcUserById(id) || {}
     const u = {
       ...pbxUser,
       ...ucUser,
@@ -58,14 +58,14 @@ class PageContactUsers extends React.Component {
     }
     let userId = id
     let pbxUserName: string
-    const pbxUser = contactStore.getPBXUser(id)
+    const pbxUser = contactStore.getPbxUserById(id)
     if (pbxUser) {
       pbxUserName = pbxUser.name
     } else {
       pbxUserName = ''
     }
     let ucUserName: string
-    const ucUser = contactStore.getUCUser(id)
+    const ucUser = contactStore.getUcUserById(id)
     if (ucUser) {
       ucUserName = ucUser.name
     } else {
@@ -157,10 +157,10 @@ class PageContactUsers extends React.Component {
             value={getAuthStore().currentProfile.displayOfflineUsers}
           />
         )}
-        {groups.map(_g => (
-          <React.Fragment key={_g.key}>
-            <Field isGroup label={_g.key} />
-            {_g.users.map((u, i) => (
+        {groups.map(g => (
+          <React.Fragment key={g.key}>
+            <Field isGroup label={g.key} />
+            {g.users.map((u, i) => (
               <RnTouchableOpacity
                 key={i}
                 onPress={

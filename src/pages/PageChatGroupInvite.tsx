@@ -60,7 +60,7 @@ class PageChatGroupInvite extends React.Component<{
       <Layout onBack={this.back} title={intl`Inviting Group Member`}>
         <View style={css.PageChatGroupInvite_Outer}>
           <RnText style={css.PageChatGroupInvite_GroupName}>
-            {chatStore.getGroup(this.props.groupId).name}
+            {chatStore.getGroupById(this.props.groupId).name}
           </RnText>
           <RnTouchableOpacity
             onPress={this.invite}
@@ -87,8 +87,8 @@ class PageChatGroupInvite extends React.Component<{
   }
 
   isNotMember = (buddy: string) =>
-    !chatStore.getGroup(this.props.groupId).members?.includes(buddy)
-  resolveBuddy = (buddy: string) => contactStore.getUCUser(buddy)
+    !chatStore.getGroupById(this.props.groupId).members?.includes(buddy)
+  resolveBuddy = (buddy: string) => contactStore.getUcUserById(buddy)
   toggleBuddy = (buddy: string) => {
     let { selectedBuddy } = this.state
     selectedBuddy = {

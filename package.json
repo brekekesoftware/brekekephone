@@ -14,11 +14,11 @@
     "build": "del-cli -f node_modules/.cache/babel* && craco build",
     "intl": "del-cli -f .babelPluginIntl.json && cross-env EXTRACT_INTL=1 yarn build",
     "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --loglevel=error --ignore-path=.gitignore --write .",
-    "check-all": "yarn check-eslint && yarn check-prettier && yarn check-typescript && yarn check-type-coverage",
-    "check-eslint": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 .",
-    "check-prettier": "prettier --ignore-path=.gitignore --list-different .",
-    "check-typescript": "tsc",
-    "check-type-coverage": "type-coverage --ignoreCatch --atLeast=100",
+    "test": "yarn test:eslint && yarn test:prettier && yarn test:typescript && yarn test:type-coverage",
+    "test:eslint": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 .",
+    "test:prettier": "prettier --ignore-path=.gitignore --list-different .",
+    "test:typescript": "tsc",
+    "test:type-coverage": "type-coverage --ignoreCatch --atLeast=100",
     "postinstall": "husky install"
   },
   "dependencies": {

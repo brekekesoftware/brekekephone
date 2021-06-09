@@ -44,7 +44,7 @@ class PageContactPhonebook extends React.Component {
   }
 
   update = (id: string) => {
-    const contact = contactStore.getPhonebook(id)
+    const contact = contactStore.getPhonebookById(id)
     if (contact?.loaded) {
       Nav().goToPagePhonebookUpdate({
         contact: contact,
@@ -94,62 +94,59 @@ class PageContactPhonebook extends React.Component {
     if (!u) {
       return
     }
+    const onIcon0 = (u: Phonebook2) => {
+      if (!u) {
+        return
+      }
+      if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
+        this.callRequest('', u)
+        return
+      }
+      const numbers: {
+        key: string
+        value: string
+        icon: string
+      }[] = []
+      if (u.workNumber !== '') {
+        numbers.push({
+          key: 'workNumber',
+          value: u.workNumber,
+          icon: mdiBriefcase,
+        })
+      }
+      if (u.cellNumber !== '') {
+        numbers.push({
+          key: 'cellNumber',
+          value: u.cellNumber,
+          icon: mdiCellphone,
+        })
+      }
+      if (u.homeNumber !== '') {
+        numbers.push({
+          key: 'homeNumber',
+          value: u.homeNumber,
+          icon: mdiHome,
+        })
+      }
+      if (numbers.length === 1) {
+        this.callRequest(numbers[0].value, u)
+        return
+      }
+      RnPicker.open({
+        options: numbers.map(i => ({
+          key: i.value,
+          label: i.value,
+          icon: i.icon,
+        })),
+        onSelect: (e: string) => this.callRequest(e, u),
+      })
+    }
     if (u.loaded) {
-      this._onIcon0(u)
+      onIcon0(u)
       return
     }
     this.loadContactDetail(u.id, () => {
-      this._onIcon0(u)
-    })
-  }
-  _onIcon0 = (u: Phonebook2) => {
-    if (!u) {
-      return
-    }
-
-    if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
-      this.callRequest('', u)
-      return
-    }
-
-    const numbers: {
-      key: string
-      value: string
-      icon: string
-    }[] = []
-    if (u.workNumber !== '') {
-      numbers.push({
-        key: 'workNumber',
-        value: u.workNumber,
-        icon: mdiBriefcase,
-      })
-    }
-    if (u.cellNumber !== '') {
-      numbers.push({
-        key: 'cellNumber',
-        value: u.cellNumber,
-        icon: mdiCellphone,
-      })
-    }
-    if (u.homeNumber !== '') {
-      numbers.push({
-        key: 'homeNumber',
-        value: u.homeNumber,
-        icon: mdiHome,
-      })
-    }
-
-    if (numbers.length === 1) {
-      this.callRequest(numbers[0].value, u)
-      return
-    }
-    RnPicker.open({
-      options: numbers.map(i => ({
-        key: i.value,
-        label: i.value,
-        icon: i.icon,
-      })),
-      onSelect: (e: string) => this.callRequest(e, u),
+      onIcon0(u)
     })
   }
 
@@ -209,10 +206,10 @@ class PageContactPhonebook extends React.Component {
           value={getAuthStore().currentProfile.displaySharedContacts}
         />
         <View>
-          {groups.map(_g => (
-            <React.Fragment key={_g.key}>
-              <Field isGroup label={_g.key} />
-              {_g.phonebooks.map((u, i) => (
+          {groups.map(g => (
+            <React.Fragment key={g.key}>
+              <Field isGroup label={g.key} />
+              {g.phonebooks.map((u, i) => (
                 <UserItem
                   iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}

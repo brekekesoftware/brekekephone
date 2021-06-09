@@ -70,7 +70,7 @@ class PageChatGroupCreate extends React.Component {
     const { members } = this.state
     if (members.includes(buddy)) {
       this.setState({
-        members: members.filter(_ => _ !== buddy),
+        members: members.filter(id => id !== buddy),
       })
     } else {
       this.setState({

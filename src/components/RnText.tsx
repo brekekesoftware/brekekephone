@@ -75,7 +75,7 @@ const wrap = (Component: Function) =>
       <Component
         numberOfLines={singleLine ? 1 : 999}
         ref={ref}
-        {...pickBy(props, (_, k) => !(k in css))}
+        {...pickBy(props, (p, k) => !(k in css))}
         style={[
           css.RnText,
           ...Object.keys(props)

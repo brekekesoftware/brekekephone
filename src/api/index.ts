@@ -126,7 +126,7 @@ class Api {
       call.partyName = 'Voicemails'
     }
     if (!call.partyName) {
-      call.partyName = contactStore.getPBXUser(number)?.name
+      call.partyName = contactStore.getPbxUserById(number)?.name
     }
     callStore.upsertCall(call)
   }
@@ -151,7 +151,7 @@ class Api {
     status: string
     statusText: string
   }) => {
-    contactStore.updateUCUser(ev)
+    contactStore.updateUcUser(ev)
   }
   onBuddyChatCreated = (chat: {
     id: string

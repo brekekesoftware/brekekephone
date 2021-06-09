@@ -89,7 +89,7 @@ const MessageList: FC<{
               creatorId: string
             }
             const name = c0?.creatorName
-            const status = contactStore.getUCUser(c0.creatorId)?.status
+            const status = contactStore.getUcUserById(c0.creatorId)?.status
             return (
               <View
                 key={`${time}${id}`}

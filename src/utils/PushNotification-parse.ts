@@ -34,7 +34,7 @@ keysInCustomNotification.forEach(k => {
   keysInCustomNotification.push('x_' + k)
 })
 
-const _parseNotificationData = (...fields: object[]): ParsedPn =>
+const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
   fields
     .filter(f => !!f)
     .map(f => {
@@ -59,7 +59,7 @@ const _parseNotificationData = (...fields: object[]): ParsedPn =>
     }, {})
 const parseNotificationData = (raw: object) => {
   if (Platform.OS === 'android') {
-    return _parseNotificationData(
+    return parseNotificationDataMultiple(
       raw,
       get(raw, 'fcm'),
       get(raw, 'alert'),
@@ -71,7 +71,7 @@ const parseNotificationData = (raw: object) => {
     )
   }
   if (Platform.OS === 'ios') {
-    return _parseNotificationData(
+    return parseNotificationDataMultiple(
       raw,
       get(raw, 'custom_notification'),
       get(raw, 'aps'),
