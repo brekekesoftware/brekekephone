@@ -30,7 +30,7 @@
         android:left="10dp"
         android:bottom="10dp"
         android:right="10dp"
-        android:drawable="@drawable/ic_speaker_hight"
+        android:drawable="@drawable/ic_speaker_on"
       >
       </item>
     </layer-list>

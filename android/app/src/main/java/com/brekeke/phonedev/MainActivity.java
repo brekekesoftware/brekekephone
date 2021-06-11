@@ -1,8 +1,6 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;

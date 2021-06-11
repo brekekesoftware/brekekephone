@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
   <string name="app_name">Brekeke Phone Dev</string>
-  <string name="mute">MUTE</string>
-  <string name="unute">UNMUTE</string>
-  <string name="hold">HOLD</string>
-  <string name="unhold">UNHOLD</string>
 </resources>

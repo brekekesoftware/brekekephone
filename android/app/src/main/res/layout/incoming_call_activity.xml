@@ -9,7 +9,6 @@
   android:paddingBottom="20dp"
   tools:context="com.brekeke.phonedev.IncomingCallActivity"
 >
-
   <RelativeLayout
     android:id="@+id/view_call_manage"
     android:layout_width="match_parent"
@@ -127,9 +126,7 @@
             android:layout_height="wrap_content"
           />
         </LinearLayout>
-
       </LinearLayout>
-
       <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -241,7 +238,6 @@
       android:layout_marginBottom="0dp"
       android:layout_centerInParent="true"
     >
-
       <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -258,7 +254,6 @@
       </RelativeLayout>
     </LinearLayout>
   </RelativeLayout>
-
   <TextView
     android:gravity="center"
     android:id="@+id/txt_caller_name"
@@ -280,7 +275,6 @@
     android:textSize="20dp"
     android:textStyle="normal"
   />
-
   <RelativeLayout
     android:id="@+id/view_incoming_call"
     android:layout_width="match_parent"
@@ -289,12 +283,10 @@
     android:gravity="bottom"
     tools:visibility="visible"
   >
-
     <RelativeLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
     >
-
       <TextView
         android:id="@+id/txt_call_status"
         android:layout_width="match_parent"
@@ -307,18 +299,15 @@
         android:textStyle="normal"
       />
     </RelativeLayout>
-
     <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerInParent="true"
     >
-
       <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
       >
-
         <Button
           android:id="@+id/btn_close"
           android:layout_width="65dp"
@@ -330,7 +319,6 @@
           android:paddingTop="39dp"
           android:visibility="invisible"
         />
-
         <Button
           android:id="@+id/btn_answer"
           android:layout_width="65dp"
@@ -340,7 +328,6 @@
           android:paddingLeft="13dp"
           android:paddingTop="39dp"
         />
-
         <Button
           android:id="@+id/btn_reject"
           android:layout_width="65dp"
