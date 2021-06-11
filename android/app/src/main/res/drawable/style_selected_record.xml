@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_selected="false">
+    <layer-list>
+      <item>
+        <shape android:shape="oval">
+          <solid android:color="@color/white" />
+        </shape>
+      </item>
+      <item android:top="10dp"
+          android:left="10dp"
+          android:bottom="10dp"
+          android:right="10dp"
+          android:drawable="@drawable/ic_record">
+      </item>
+    </layer-list>
+
+  </item>
+  <item android:state_selected="true">
+    <layer-list>
+      <item>
+        <shape android:shape="oval">
+          <solid android:color="@color/yellow" />
+        </shape>
+      </item>
+      <item android:top="10dp"
+          android:left="10dp"
+          android:bottom="10dp"
+          android:right="10dp"
+          android:drawable="@drawable/ic_recording">
+      </item>
+    </layer-list>
+
+  </item>
+</selector>

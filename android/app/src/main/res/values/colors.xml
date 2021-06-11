@@ -9,4 +9,6 @@
   <color name="black">#000000</color>
   <color name="gradient_start">#94CA71</color>
   <color name="gradient_end">#191919</color>
+  <color name="yellow">#F1AF20</color>
+  <color name="yellow_darken">#AAF1AF20</color>
 </resources>

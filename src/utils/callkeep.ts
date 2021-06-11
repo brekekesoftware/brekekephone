@@ -4,6 +4,7 @@ import RNCallKeep, { Events } from 'react-native-callkeep'
 import sip from '../api/sip'
 import callStore from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
+import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from './BackgroundTimer'
 import { getLastCallPn } from './PushNotification-parse'
@@ -235,6 +236,40 @@ export const setupCallKeep = async () => {
       callStore.onCallKeepEndCall(uuid)
       IncomingCall.closeIncomingCallActivity()
       RNCallKeep.endAllCalls()
+    })
+    eventEmitter.addListener('endCall', (uuid: string) => {
+      uuid = uuid.toUpperCase()
+      callStore.onCallKeepEndCall(uuid)
+      RNCallKeep.endAllCalls()
+    })
+    eventEmitter.addListener('transfer', (uuid: string) => {
+      Nav().goToPageTransferChooseUser()
+    })
+    eventEmitter.addListener('park', (uuid: string) => {
+      Nav().goToPageCallParks2()
+    })
+    eventEmitter.addListener('video', (uuid: string) => {
+      const c = callStore.currentCall
+      if (c) {
+        c.localVideoEnabled ? c.disableVideo() : c.enableVideo()
+      }
+    })
+    eventEmitter.addListener('speaker', (uuid: string) => {
+      callStore.toggleLoudSpeaker()
+    })
+    eventEmitter.addListener('mute', (uuid: string) => {
+      callStore.currentCall?.toggleMuted()
+    })
+    eventEmitter.addListener('record', (uuid: string) => {
+      callStore.currentCall?.toggleRecording()
+    })
+    eventEmitter.addListener('dtmf', (uuid: string) => {
+      Nav().goToPageDtmfKeypad()
+    })
+    eventEmitter.addListener('hold', (uuid: string) => {
+      callStore.currentCall?.toggleHold()
+      // RNCallKeep.setCurrentCallActive(uuid)
+      // RNCallKeep.setOnHold(uuid, false)
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('showCall', () => {
