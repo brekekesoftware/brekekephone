@@ -7,11 +7,13 @@
           <solid android:color="@color/white" />
         </shape>
       </item>
-      <item android:top="10dp"
-          android:left="10dp"
-          android:bottom="10dp"
-          android:right="10dp"
-          android:drawable="@drawable/ic_video_off">
+      <item
+        android:top="10dp"
+        android:left="10dp"
+        android:bottom="10dp"
+        android:right="10dp"
+        android:drawable="@drawable/ic_video_off"
+      >
       </item>
     </layer-list>
 
@@ -23,11 +25,13 @@
           <solid android:color="@color/yellow" />
         </shape>
       </item>
-      <item android:top="10dp"
-          android:left="10dp"
-          android:bottom="10dp"
-          android:right="10dp"
-          android:drawable="@drawable/ic_video">
+      <item
+        android:top="10dp"
+        android:left="10dp"
+        android:bottom="10dp"
+        android:right="10dp"
+        android:drawable="@drawable/ic_video"
+      >
       </item>
     </layer-list>
 

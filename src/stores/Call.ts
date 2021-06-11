@@ -107,6 +107,10 @@ export default class Call {
           IncallManager.setForceSpeakerphoneOn(this.store.isLoudSpeakerEnabled)
         }, 1000)
       }
+    } else {
+      if (this.callkeepUuid) {
+        RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
+      }
     }
     return pbx[this.holding ? 'holdTalker' : 'unholdTalker'](
       this.pbxTenant,
