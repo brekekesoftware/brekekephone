@@ -169,10 +169,12 @@ export class AuthStore {
     this.ucLoginFromAnotherPlace = false
   }
 
+  lastSipAuth = 0
   @action reconnect = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
+    this.lastSipAuth = 0
   }
   @action reconnectPbx = () => {
     this.reconnect()
