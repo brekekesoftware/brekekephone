@@ -46,16 +46,15 @@ class Api {
   onPBXConnectionStarted = () => {
     waitSip(async () => {
       const s = getAuthStore()
-      if (!s.currentProfile) {
+      const p = s.currentProfile
+      if (!p || s.pbxState !== 'success') {
         return
       }
       try {
-        const tenant = getAuthStore().currentProfile.pbxTenant
-        const username = getAuthStore().currentProfile.pbxUsername
         const userIds = await pbx
-          .getUsers(tenant)
-          .then((ids: string[]) => ids.filter(id => id !== username))
-        const users = await pbx.getOtherUsers(tenant, userIds)
+          .getUsers(p.pbxTenant)
+          .then((ids: string[]) => ids.filter(id => id !== p.pbxUsername))
+        const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
         contactStore.pbxUsers = users
       } catch (err: unknown) {
         RnAlert.error({
@@ -63,11 +62,11 @@ class Api {
           err: err as Error,
         })
       }
-      if (getAuthStore().isSignInByNotification) {
+      if (s.isSignInByNotification) {
         return
       }
       SyncPnToken()
-        .sync(getAuthStore().currentProfile)
+        .sync(p)
         .then(() => SyncPnToken().syncForAllAccounts())
     })
   }
