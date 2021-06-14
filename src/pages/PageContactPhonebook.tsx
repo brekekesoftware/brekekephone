@@ -62,6 +62,9 @@ class PageContactPhonebook extends React.Component {
     pbx
       .getContact(id)
       .then(ct => {
+        if (!ct) {
+          return
+        }
         const x = {
           ...ct,
           loaded: true,

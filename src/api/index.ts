@@ -1,12 +1,11 @@
 import { action } from 'mobx'
 
-import { getAuthStore } from '../stores/authStore'
+import { getAuthStore, waitPbx, waitSip } from '../stores/authStore'
 import Call from '../stores/Call'
 import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
-import { waitSip } from '../stores/reconnectAndWaitSip'
 import RnAlert from '../stores/RnAlert'
 import { Conference } from './brekekejs'
 import pbx from './pbx'
@@ -43,33 +42,37 @@ class Api {
     uc.on('file-finished', this.onFileFinished)
   }
 
-  onPBXConnectionStarted = () => {
-    waitSip(async () => {
-      const s = getAuthStore()
-      if (!s.currentProfile) {
+  onPBXConnectionStarted = async () => {
+    await waitSip()
+    const s = getAuthStore()
+    const p = s.currentProfile
+    try {
+      await waitPbx()
+      if (s.pbxState !== 'success') {
         return
       }
-      try {
-        const tenant = getAuthStore().currentProfile.pbxTenant
-        const username = getAuthStore().currentProfile.pbxUsername
-        const userIds = await pbx
-          .getUsers(tenant)
-          .then((ids: string[]) => ids.filter(id => id !== username))
-        const users = await pbx.getOtherUsers(tenant, userIds)
-        contactStore.pbxUsers = users
-      } catch (err: unknown) {
-        RnAlert.error({
-          message: intlDebug`Failed to load PBX users`,
-          err: err as Error,
-        })
-      }
-      if (getAuthStore().isSignInByNotification) {
+      const ids = await pbx.getUsers(p.pbxTenant)
+      if (!ids) {
         return
       }
-      SyncPnToken()
-        .sync(getAuthStore().currentProfile)
-        .then(() => SyncPnToken().syncForAllAccounts())
-    })
+      const userIds = ids.filter(id => id !== p.pbxUsername)
+      const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
+      if (!users) {
+        return
+      }
+      contactStore.pbxUsers = users
+    } catch (err: unknown) {
+      RnAlert.error({
+        message: intlDebug`Failed to load PBX users`,
+        err: err as Error,
+      })
+    }
+    if (s.isSignInByNotification) {
+      return
+    }
+    SyncPnToken()
+      .sync(p)
+      .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'

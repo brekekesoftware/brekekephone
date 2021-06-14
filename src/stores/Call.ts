@@ -81,14 +81,19 @@ export default class Call {
     this.recording = !this.recording
     return pbx
       .startRecordingTalker(this.pbxTenant, this.pbxTalkerId)
+      .then(this.onToggleRecordingFailure)
       .catch(this.onToggleRecordingFailure)
   }
-  @action private onToggleRecordingFailure = (err: Error) => {
-    this.recording = !this.recording
-    const message = this.recording
-      ? intlDebug`Failed to stop recording the call`
-      : intlDebug`Failed to start recording the call`
-    RnAlert.error({ message, err })
+  @action private onToggleRecordingFailure = (err: Error | boolean) => {
+    if (typeof err !== 'boolean' || !err) {
+      this.recording = !this.recording
+    }
+    if (typeof err !== 'boolean') {
+      const message = this.recording
+        ? intlDebug`Failed to stop recording the call`
+        : intlDebug`Failed to start recording the call`
+      RnAlert.error({ message, err })
+    }
   }
 
   @observable holding = false
@@ -112,17 +117,21 @@ export default class Call {
         RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
       }
     }
-    return pbx[this.holding ? 'holdTalker' : 'unholdTalker'](
-      this.pbxTenant,
-      this.pbxTalkerId,
-    ).catch(this.onToggleHoldFailure)
+    const fn = this.holding ? pbx.holdTalker : pbx.unholdTalker
+    return fn(this.pbxTenant, this.pbxTalkerId)
+      .then(this.onToggleHoldFailure)
+      .catch(this.onToggleHoldFailure)
   }
-  @action private onToggleHoldFailure = (err: Error) => {
-    this.holding = !this.holding
-    const message = this.holding
-      ? intlDebug`Failed to unhold the call`
-      : intlDebug`Failed to hold the call`
-    RnAlert.error({ message, err })
+  @action private onToggleHoldFailure = (err: Error | boolean) => {
+    if (typeof err !== 'boolean' || !err) {
+      this.holding = !this.holding
+    }
+    if (typeof err !== 'boolean') {
+      const message = this.holding
+        ? intlDebug`Failed to unhold the call`
+        : intlDebug`Failed to hold the call`
+      RnAlert.error({ message, err })
+    }
   }
 
   @observable transferring = ''

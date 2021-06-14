@@ -1,3 +1,4 @@
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { AuthStore } from './authStore2'
 
 // circular dep
@@ -21,3 +22,29 @@ export const compareProfile = (p1: { pbxUsername: string }, p2: object) => {
     compareField(p1, p2, 'pbxPort')
   )
 }
+
+export const reconnectAndWaitSip = async () => {
+  authStore.reconnectSip()
+  await waitSip()
+}
+
+const wait = (fn: Function, name: 'pbxState' | 'sipState' | 'ucState') => {
+  const at = Date.now()
+  const s = getAuthStore()
+  if (s[name] === 'success') {
+    fn(true)
+    return
+  }
+  const id = BackgroundTimer.setInterval(() => {
+    const enoughTimePassed = Date.now() - at > 12000
+    const isConnected = s[name] === 'success'
+    if (enoughTimePassed || isConnected) {
+      BackgroundTimer.clearInterval(id)
+      fn(isConnected)
+    }
+  }, 500)
+}
+
+export const waitPbx = () => new Promise(r => wait(r, 'pbxState'))
+export const waitSip = () => new Promise(r => wait(r, 'sipState'))
+export const waitUc = () => new Promise(r => wait(r, 'ucState'))

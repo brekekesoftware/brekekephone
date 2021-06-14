@@ -6,7 +6,6 @@ import { Platform } from 'react-native'
 
 import appPackageJson from '../../package.json'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
 import pbx from './pbx'
@@ -58,17 +57,14 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.phoneStatus === 'started') {
-        return this.emit('connection-started')
+        this.emit('connection-started')
+        return
       }
       if (ev.phoneStatus === 'stopping' || ev.phoneStatus === 'stopped') {
         phone.removeEventListener('phoneStatusChanged', h)
-        BackgroundTimer.setTimeout(() => this.disconnect(), 0)
-        BackgroundTimer.setTimeout(
-          () => this.emit('connection-stopped', ev),
-          300,
-        )
+        this.emit('connection-stopped', ev)
+        this.disconnect()
       }
-      return
     }
     phone.addEventListener('phoneStatusChanged', h)
 
@@ -270,6 +266,9 @@ export class SIP extends EventEmitter {
     talkerId: string
   }) => {
     const c = await pbx.getConfig()
+    if (!c) {
+      return
+    }
     const dtmfSendMode = c['webrtcclient.dtmfSendMode']
     if (dtmfSendMode && dtmfSendMode !== 'false' && dtmfSendMode !== '0') {
       await pbx.client._pal('sendDTMF', {

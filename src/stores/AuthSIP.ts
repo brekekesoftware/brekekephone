@@ -4,59 +4,66 @@ import { Lambda, observe } from 'mobx'
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
 class AuthSIP {
   private clearObserve?: Lambda
+
   auth() {
     this.authWithCheck()
-    this.clearObserve = observe(
-      getAuthStore(),
-      'sipShouldAuth',
-      this.authWithCheckDebounced,
-    )
+    const s = getAuthStore()
+    this.clearObserve = observe(s, 'sipShouldAuth', this.authWithCheckDebounced)
   }
   dispose() {
     console.error('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
-    getAuthStore().sipState = 'stopped'
+    const s = getAuthStore()
+    s.sipState = 'stopped'
+    s.lastSipAuth = 0
     sip.disconnect()
   }
 
   private authPnWithoutCatch = async () => {
     const s = getAuthStore()
-    const p = s.sipPn
-    if (!p || !p.sipAuth) {
+    const p = s.currentProfile
+    if (!p) {
+      console.error('SIP PN debug: Already signed out after long await')
+      return
+    }
+    const pn = s.sipPn
+    if (!pn || !pn.sipAuth) {
       console.error('SIP PN debug: Invalid sip PN login logic')
       return
     }
-    const turnConfig: RTCIceServer | undefined = p.turnServer
+    const turnConfig: RTCIceServer | undefined = pn.turnServer
       ? {
-          urls: p.turnServer.split(',').map(s => s.trim()),
-          username: p.turnUsername,
-          credential: p.turnCredential,
+          urls: pn.turnServer.split(',').map(s => s.trim()),
+          username: pn.turnUsername,
+          credential: pn.turnCredential,
         }
       : undefined
-    let dtmfSendMode = Number(p.dtmfPal)
+    let dtmfSendMode = Number(pn.dtmfPal)
     if (isNaN(dtmfSendMode)) {
-      dtmfSendMode = p.dtmfPal === 'false' || p.dtmfPal === '0' ? 0 : 1
+      dtmfSendMode = pn.dtmfPal === 'false' || pn.dtmfPal === '0' ? 0 : 1
     }
     await sip.connect({
-      hostname: s.currentProfile.pbxHostname,
-      port: p.sipWssPort || '',
-      username: p.phoneId || '',
-      accessToken: p.sipAuth || '',
-      pbxTurnEnabled: s.currentProfile.pbxTurnEnabled,
+      hostname: p.pbxHostname,
+      port: pn.sipWssPort || '',
+      username: pn.phoneId || '',
+      accessToken: pn.sipAuth || '',
+      pbxTurnEnabled: p.pbxTurnEnabled,
       dtmfSendMode,
       turnConfig,
     })
-    getAuthStore().sipPn = {}
+    s.sipPn = {}
   }
 
   private authWithoutCatch = async () => {
     const s = getAuthStore()
+    s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
     if (s.sipPn.sipAuth) {
       console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
@@ -77,13 +84,17 @@ class AuthSIP {
       return
     }
     //
-    getAuthStore().userExtensionProperties =
-      getAuthStore().userExtensionProperties ||
-      (await pbx.getUserForSelf(
-        getAuthStore().currentProfile.pbxTenant,
-        getAuthStore().currentProfile.pbxUsername,
-      ))
-    const pbxUserConfig = getAuthStore().userExtensionProperties
+    let p = s.currentProfile
+    if (!p) {
+      console.error('SIP PN debug: Already signed out after long await')
+      return
+    }
+    //
+    s.userExtensionProperties =
+      s.userExtensionProperties ||
+      (await pbx.getUserForSelf(p.pbxTenant, p.pbxUsername)) ||
+      s.userExtensionProperties
+    const pbxUserConfig = s.userExtensionProperties
     if (!pbxUserConfig) {
       console.error('Invalid PBX user config')
       return
@@ -115,24 +126,34 @@ class AuthSIP {
         }
       : undefined
     //
+    p = s.currentProfile
+    if (!p) {
+      console.error('SIP PN debug: Already signed out after long await')
+      return
+    }
     await sip.connect({
-      hostname: getAuthStore().currentProfile.pbxHostname,
+      hostname: p.pbxHostname,
       port: sipWSSPort,
       username: webPhone.id,
       accessToken: sipAccessToken,
-      pbxTurnEnabled: getAuthStore().currentProfile.pbxTurnEnabled,
+      pbxTurnEnabled: p.pbxTurnEnabled,
       dtmfSendMode: Number(dtmfSendMode),
       turnConfig,
     })
   }
   private authWithCheck = () => {
-    if (!getAuthStore().sipShouldAuth) {
+    const s = getAuthStore()
+    if (Date.now() - s.lastSipAuth < 2000) {
+      BackgroundTimer.setTimeout(this.authWithCheckDebounced, 10000)
+      return
+    }
+    if (!s.sipShouldAuth) {
       return
     }
     this.authWithoutCatch().catch((err: Error) => {
       console.error('SIP PN debug: set sipState failure catch')
-      getAuthStore().sipState = 'failure'
-      getAuthStore().sipTotalFailure += 1
+      s.sipState = 'failure'
+      s.sipTotalFailure += 1
       sip.disconnect()
       RnAlert.error({
         message: intlDebug`Failed to connect to SIP`,

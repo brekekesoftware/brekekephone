@@ -20,43 +20,44 @@ class AuthUC {
   auth() {
     this.authWithCheck()
     uc.on('connection-stopped', this.onConnectionStopped)
-    this.clearObserve = observe(
-      getAuthStore(),
-      'ucShouldAuth',
-      this.authWithCheckDebounced,
-    )
+    const s = getAuthStore()
+    this.clearObserve = observe(s, 'ucShouldAuth', this.authWithCheckDebounced)
   }
   dispose() {
     uc.off('connection-stopped', this.onConnectionStopped)
     this.clearObserve?.()
     uc.disconnect()
-    getAuthStore().ucState = 'stopped'
+    const s = getAuthStore()
+    s.ucState = 'stopped'
   }
 
   private authWithoutCatch = async () => {
     uc.disconnect()
-    getAuthStore().ucState = 'connecting'
-    getAuthStore().ucLoginFromAnotherPlace = false
+    const s = getAuthStore()
+    s.ucState = 'connecting'
+    s.ucLoginFromAnotherPlace = false
     const c = await pbx.getConfig()
+    if (!c) {
+      throw new Error('AuthUC.authWithoutCatch pbx.getConfig() undefined')
+    }
     await uc.connect(
-      getAuthStore().currentProfile,
+      s.currentProfile,
       c['webphone.uc.host'] ||
-        `${getAuthStore().currentProfile.pbxHostname}:${
-          getAuthStore().currentProfile.pbxPort
-        }`,
+        `${s.currentProfile.pbxHostname}:${s.currentProfile.pbxPort}`,
     )
     this.loadUsers()
     this.loadUnreadChats().then(() => {
-      getAuthStore().ucState = 'success'
+      s.ucState = 'success'
     })
   }
   private authWithCheck = () => {
-    if (!getAuthStore().ucShouldAuth) {
+    const s = getAuthStore()
+    if (!s.ucShouldAuth) {
       return
     }
     this.authWithoutCatch().catch((err: Error) => {
-      getAuthStore().ucState = 'failure'
-      getAuthStore().ucTotalFailure += 1
+      s.ucState = 'failure'
+      s.ucTotalFailure += 1
       RnAlert.error({
         message: intlDebug`Failed to connect to UC`,
         err,
@@ -66,10 +67,10 @@ class AuthUC {
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 
   private onConnectionStopped = (e: { code: number }) => {
-    getAuthStore().ucState = 'failure'
-    getAuthStore().ucTotalFailure += 1
-    getAuthStore().ucLoginFromAnotherPlace =
-      e.code === UCClient.Errors.PLEONASTIC_LOGIN
+    const s = getAuthStore()
+    s.ucState = 'failure'
+    s.ucTotalFailure += 1
+    s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
   }
   private loadUsers = () => {
     const users = uc.getUsers()
