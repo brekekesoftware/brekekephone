@@ -3,7 +3,7 @@ import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable, runInAction } from 'mobx'
 import { Platform } from 'react-native'
-import { v4 as uuid } from 'react-native-uuid'
+import { v4 as newUuid } from 'react-native-uuid'
 
 import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
@@ -69,7 +69,7 @@ class ProfileStore {
   @observable profilesLoadedObservable = false
   profilesLoaded = () => profilesLoaded
   genEmptyProfile = (): Profile => ({
-    id: uuid(),
+    id: newUuid(),
     pbxTenant: '',
     pbxUsername: '',
     pbxHostname: '',

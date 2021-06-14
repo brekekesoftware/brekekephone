@@ -10,32 +10,33 @@ class AuthPBX {
   private clearObserve?: Lambda
   auth() {
     this.authWithCheck()
-    this.clearObserve = observe(
-      getAuthStore(),
-      'pbxShouldAuth',
-      this.authWithCheckDebounced,
-    )
+    const s = getAuthStore()
+    this.clearObserve = observe(s, 'pbxShouldAuth', this.authWithCheckDebounced)
   }
   dispose() {
+    console.error('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()
     pbx.disconnect()
-    getAuthStore().pbxState = 'stopped'
+    const s = getAuthStore()
+    s.pbxState = 'stopped'
   }
 
   private authWithCheck = () => {
-    if (!getAuthStore().pbxShouldAuth) {
+    const s = getAuthStore()
+    if (!s.pbxShouldAuth) {
       return
     }
+    console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
-    getAuthStore().pbxState = 'connecting'
+    s.pbxState = 'connecting'
     pbx
-      .connect(getAuthStore().currentProfile)
+      .connect(s.currentProfile)
       .then(() => {
-        getAuthStore().pbxState = 'success'
+        s.pbxState = 'success'
       })
       .catch((err: Error) => {
-        getAuthStore().pbxState = 'failure'
-        getAuthStore().pbxTotalFailure += 1
+        s.pbxState = 'failure'
+        s.pbxTotalFailure += 1
         RnAlert.error({
           message: intlDebug`Failed to connect to pbx`,
           err,

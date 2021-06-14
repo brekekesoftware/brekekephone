@@ -4,18 +4,21 @@ import moment from 'moment'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
-import { v4 as uuid } from 'react-native-uuid'
+import { v4 as newUuid } from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import uc from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import {
+  deleteCallPnData,
+  getCallPnData,
+} from '../utils/PushNotification-parse'
 import { IncomingCall } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
-import { getAuthStore } from './authStore'
+import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import Call from './Call'
 import Nav from './Nav'
-import { reconnectAndWaitSip } from './reconnectAndWaitSip'
 
 export class CallStore {
   recentPn?: {
@@ -34,20 +37,24 @@ export class CallStore {
   prevCallKeepUuid?: string
   private getIncomingCallkeep = (
     uuid: string,
-    o?: { includingAnswered: boolean },
+    o?: {
+      includingAnswered?: boolean
+      from?: string
+    },
   ) =>
     this.calls.find(
       c =>
         c.incoming &&
         !c.callkeepAlreadyRejected &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
-        (o?.includingAnswered
-          ? true
-          : !c.answered && !c.callkeepAlreadyAnswered),
+        (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
+        (!o?.from || c.partyNumber === o.from),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Find the current incoming call which is not callkeep
-    const c = this.getIncomingCallkeep(uuid)
+    const c = this.getIncomingCallkeep(uuid, {
+      from: getCallPnData(uuid)?.from,
+    })
     if (c) {
       // If the call is existing and not answered yet, we'll mark that call as displaying in callkeep
       // We assume that the app is being used in foreground (not quite exactly but assume)
@@ -78,7 +85,9 @@ export class CallStore {
     setAutoEndCallKeepTimer(uuid)
   }
   onCallKeepAnswerCall = (uuid: string) => {
-    const c = this.getIncomingCallkeep(uuid)
+    const c = this.getIncomingCallkeep(uuid, {
+      from: getCallPnData(uuid)?.from,
+    })
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
@@ -90,6 +99,7 @@ export class CallStore {
   onCallKeepEndCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid, {
       includingAnswered: true,
+      from: getCallPnData(uuid)?.from,
     })
     if (c) {
       c.callkeepAlreadyRejected = true
@@ -101,6 +111,7 @@ export class CallStore {
     if (this.prevCallKeepUuid === uuid) {
       this.prevCallKeepUuid = undefined
     }
+    deleteCallPnData(uuid)
   }
 
   endCallKeep = (
@@ -184,7 +195,7 @@ export class CallStore {
     const c = this.calls.find(c => c.id === id)
     if (c) {
       getAuthStore().pushRecentCall({
-        id: uuid(),
+        id: newUuid(),
         incoming: c.incoming,
         answered: c.answered,
         partyName: c.partyName,
@@ -229,16 +240,16 @@ export class CallStore {
       sipCreateSession()
     } catch (err) {
       reconnectCalled = true
-      reconnectAndWaitSip(sipCreateSession)
+      reconnectAndWaitSip().then(sipCreateSession)
     }
     Nav().goToPageCallManage()
     // Start call logic in RNCallKeep
-    let newUuid = ''
+    let uuid = ''
     if (Platform.OS === 'ios') {
-      newUuid = uuid().toUpperCase()
-      RNCallKeep.startCall(newUuid, number, 'Brekeke Phone')
-      RNCallKeep.reportConnectingOutgoingCallWithUUID(newUuid)
-      setAutoEndCallKeepTimer(newUuid)
+      uuid = newUuid().toUpperCase()
+      RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
+      RNCallKeep.reportConnectingOutgoingCallWithUUID(uuid)
+      setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s
     // Auto update currentCallId
@@ -250,9 +261,9 @@ export class CallStore {
     this.startCallIntervalId = BackgroundTimer.setInterval(() => {
       const currentCall = this.calls.find(c => !prevIds[c.id])
       if (currentCall) {
-        if (newUuid) {
-          currentCall.callkeepUuid = newUuid
-          RNCallKeep.reportConnectedOutgoingCallWithUUID(newUuid)
+        if (uuid) {
+          currentCall.callkeepUuid = uuid
+          RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
         }
         this.currentCallId = currentCall.id
         this.clearStartCallIntervalTimer()
@@ -261,8 +272,8 @@ export class CallStore {
       const diff = Date.now() - this.startCallIntervalAt
       // Add a guard of 10s to clear the interval
       if (diff > 10000) {
-        if (newUuid) {
-          RNCallKeep.endCall(newUuid)
+        if (uuid) {
+          endCallKeep(uuid)
         }
         this.clearStartCallIntervalTimer()
         return
@@ -271,7 +282,7 @@ export class CallStore {
       // It's likely a connection issue occurred
       if (!currentCall && !reconnectCalled && diff > 3000) {
         reconnectCalled = true
-        reconnectAndWaitSip(sipCreateSession)
+        reconnectAndWaitSip().then(sipCreateSession)
         this.clearStartCallIntervalTimer()
       }
     }, 500)
@@ -300,10 +311,10 @@ export class CallStore {
     }
     this.updateBackgroundCallsDebounce()
   }
-  private updateCurrentCallDebounce = debounce(this.updateCurrentCall, 500, {
+  updateCurrentCallDebounce = debounce(this.updateCurrentCall, 500, {
     maxWait: 1000,
   })
-  @action private updateBackgroundCalls = () => {
+  private updateBackgroundCalls = () => {
     // Auto hold background calls
     this.calls
       .filter(
@@ -315,13 +326,9 @@ export class CallStore {
       )
       .forEach(c => c.toggleHold())
   }
-  private updateBackgroundCallsDebounce = debounce(
-    this.updateBackgroundCalls,
-    500,
-    {
-      maxWait: 1000,
-    },
-  )
+  updateBackgroundCallsDebounce = debounce(this.updateBackgroundCalls, 500, {
+    maxWait: 1000,
+  })
 
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
@@ -416,9 +423,13 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         IncomingCall.closeIncomingCallActivity()
       }
     }
-  }, 1000)
+    //
+    callStore.updateCurrentCallDebounce()
+    callStore.updateBackgroundCallsDebounce()
+  }, 500)
 }
 const endCallKeep = (uuid: string) => {
+  deleteCallPnData(uuid)
   delete callkeepMap[uuid]
   if (
     !callStore.calls.length &&

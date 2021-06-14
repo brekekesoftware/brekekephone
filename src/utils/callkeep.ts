@@ -6,7 +6,7 @@ import callStore from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from './BackgroundTimer'
-import { getLastCallPn } from './PushNotification-parse'
+import { getCallPnData } from './PushNotification-parse'
 import { IncomingCall, RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
@@ -125,7 +125,7 @@ export const setupCallKeep = async () => {
       return
     }
     // Try set the caller name from last known PN
-    const n = getLastCallPn()
+    const n = getCallPnData(uuid)
     if (
       n?.from &&
       (e.localizedCallerName === 'Loading...' || e.handle === 'Loading...')
@@ -216,7 +216,7 @@ export const setupCallKeep = async () => {
       const uuid = e.callUUID.toUpperCase()
       IncomingCall.showCall(
         uuid,
-        getLastCallPn()?.from || 'Loading...',
+        getCallPnData(uuid)?.from || 'Loading...',
         !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
       )
       callStore.onCallKeepDidDisplayIncomingCall(uuid)

@@ -1,7 +1,7 @@
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import { v4 as uuid } from 'react-native-uuid'
+import { v4 as newUuid } from 'react-native-uuid'
 
 import { getAuthStore } from '../stores/authStore'
 import waitTimeout from './waitTimeout'
@@ -180,10 +180,12 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       ? n
       : null
   }
-  lastCallPn = n
+  lastCallPnData = n
   if (Platform.OS === 'android') {
     RNCallKeep.endAllCalls()
-    RNCallKeep.displayIncomingCall(uuid().toUpperCase(), 'Brekeke Phone', n.to)
+    const uuid = newUuid().toUpperCase()
+    callPnDataMap[uuid] = n
+    RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
   // Call api to sign in
   getAuthStore().signInByNotification(n)
@@ -216,7 +218,13 @@ export type SipPn = {
   turnCredential: string
 }
 
-let lastCallPn: ParsedPn | null = null
-export const getLastCallPn = () => lastCallPn
+let callPnDataMap: { [k: string]: ParsedPn } = {}
+export const deleteCallPnData = (uuid: string) => {
+  delete callPnDataMap[uuid]
+}
+
+let lastCallPnData: ParsedPn | undefined = undefined
+export const getCallPnData = (uuid?: string) =>
+  (uuid && callPnDataMap[uuid]) || lastCallPnData
 
 export default parse

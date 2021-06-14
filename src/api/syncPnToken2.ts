@@ -76,6 +76,7 @@ const syncPnTokenWithoutCatch = async (
     })
   }
 
+  console.error('PBX PN debug: disconnect by syncPnToken')
   pbx.disconnect()
 
   if (!noUpsert) {

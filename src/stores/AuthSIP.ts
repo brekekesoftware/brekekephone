@@ -13,14 +13,14 @@ class AuthSIP {
   private clearObserve?: Lambda
 
   auth() {
-    const s = getAuthStore()
     this.authWithCheck()
+    const s = getAuthStore()
     this.clearObserve = observe(s, 'sipShouldAuth', this.authWithCheckDebounced)
   }
   dispose() {
-    const s = getAuthStore()
     console.error('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
+    const s = getAuthStore()
     s.sipState = 'stopped'
     s.lastSipAuth = 0
     sip.disconnect()
@@ -92,7 +92,8 @@ class AuthSIP {
     //
     s.userExtensionProperties =
       s.userExtensionProperties ||
-      (await pbx.getUserForSelf(p.pbxTenant, p.pbxUsername))
+      (await pbx.getUserForSelf(p.pbxTenant, p.pbxUsername)) ||
+      s.userExtensionProperties
     const pbxUserConfig = s.userExtensionProperties
     if (!pbxUserConfig) {
       console.error('Invalid PBX user config')

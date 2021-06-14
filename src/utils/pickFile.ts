@@ -2,7 +2,7 @@ import { Platform } from 'react-native'
 import DocumentRnPicker from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
 import ImagePicker from 'react-native-image-picker'
-import { v4 as uuid } from 'react-native-uuid'
+import { v4 as newUuid } from 'react-native-uuid'
 
 import RnPicker from '../stores/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
@@ -109,7 +109,7 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
 
   let ext = name?.split('.').pop()?.replace(/\?.+$/, '')
   if (Platform.OS === 'ios' && ext === name) {
-    name = uuid()
+    name = newUuid()
     switch (file.type) {
       case 'image':
         ext = 'jpg'

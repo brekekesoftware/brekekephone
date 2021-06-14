@@ -32,6 +32,9 @@ class PagePhonebookCreate extends React.Component<{
         ...phonebook,
       })
       .then(val => {
+        if (!val) {
+          return
+        }
         phonebook = Object.assign(phonebook, {
           id: val.aid,
           name: `${phonebook.firstName} ${phonebook.lastName}`,
