@@ -249,7 +249,9 @@ export const setupCallKeep = async () => {
       }, 500)
     })
     eventEmitter.addListener('park', (uuid: string) => {
-      Nav().goToPageCallParks2()
+      setTimeout(() => {
+        Nav().goToPageCallParks2()
+      }, 500)
     })
     eventEmitter.addListener('video', (uuid: string) => {
       const c = callStore.currentCall
