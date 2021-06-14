@@ -143,7 +143,7 @@ export const setupCallKeep = async () => {
     const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
-      c.toggleMuted(true)
+      c.toggleMuted()
     }
   }
   const didToggleHoldCallAction = (
@@ -154,7 +154,7 @@ export const setupCallKeep = async () => {
     const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
-      c.toggleHold(true)
+      c.toggleHold()
     }
   }
   const didPerformDTMFAction = (

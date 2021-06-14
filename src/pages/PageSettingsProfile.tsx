@@ -7,6 +7,7 @@ import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore, { Profile } from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const PageSettingsProfile = observer(() => (
   <ProfileCreateForm
@@ -22,7 +23,7 @@ const PageSettingsProfile = observer(() => (
         onConfirm: () => {
           profileStore.upsertProfile(p)
           Nav().goToPageProfileSignIn()
-          window.setTimeout(() => getAuthStore().signIn(p.id), 300)
+          BackgroundTimer.setTimeout(() => getAuthStore().signIn(p.id), 300)
         },
         confirmText: intl`SAVE`,
       })

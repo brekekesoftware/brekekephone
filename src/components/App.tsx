@@ -34,6 +34,7 @@ import RnPicker from '../stores/RnPicker'
 import RnPickerRoot from '../stores/RnPickerRoot'
 import RnStacker from '../stores/RnStacker'
 import RootStacks from '../stores/RnStackerRoot'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
 // @ts-ignore
 import PushNotification from '../utils/PushNotification'
@@ -64,7 +65,7 @@ AppState.addEventListener('change', () => {
 registerOnUnhandledError(unexpectedErr => {
   // Must wrap in window.setTimeout to make sure
   //    there's no state change when rendering
-  window.setTimeout(() => RnAlert.error({ unexpectedErr }))
+  BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 0)
   return false
 })
 

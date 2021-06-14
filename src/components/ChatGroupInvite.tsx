@@ -13,6 +13,7 @@ import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import RnStacker from '../stores/RnStacker'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import ButtonIcon from './ButtonIcon'
 import { formatDateTimeSemantic } from './chatConfig'
@@ -240,11 +241,11 @@ class UnreadChatNoti extends React.Component {
     //
     this.unreadChat = latestUnreadChat
     this.prevLastMessageId = latestUnreadChat.lastMessage.id
-    this.prevUnreadChatTimeoutId = window.setTimeout(this.clear, 5000)
+    this.prevUnreadChatTimeoutId = BackgroundTimer.setTimeout(this.clear, 5000)
   }
   @action clear = () => {
     if (this.prevUnreadChatTimeoutId) {
-      window.clearTimeout(this.prevUnreadChatTimeoutId)
+      BackgroundTimer.clearTimeout(this.prevUnreadChatTimeoutId)
       this.prevUnreadChatTimeoutId = 0
     }
     this.unreadChat = null

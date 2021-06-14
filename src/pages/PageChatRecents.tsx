@@ -16,6 +16,7 @@ import contactStore, { UcUser } from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
@@ -114,7 +115,7 @@ class PageChatRecents extends React.Component {
       .reverse()
 
     // Not show other message content type different than normal text chat
-    window.setTimeout(() => {
+    BackgroundTimer.setTimeout(() => {
       const arr2 = [...arr].filter(c => c.created || c.group)
       while (arr2.length > 20) {
         arr2.pop()
@@ -127,7 +128,7 @@ class PageChatRecents extends React.Component {
       }
       getAuthStore().currentData.recentChats = arr2
       profileStore.saveProfilesToLocalStorage()
-    })
+    }, 0)
 
     return (
       <Layout

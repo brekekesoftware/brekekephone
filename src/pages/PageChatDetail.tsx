@@ -24,6 +24,7 @@ import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import pickFile from '../utils/pickFile'
 import saveBlob from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
@@ -76,7 +77,7 @@ class PageChatDetail extends React.Component<{
     if (noChat) {
       this.loadRecent()
     } else {
-      window.setTimeout(this.onContentSizeChange, 170)
+      BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
     }
     const { buddy: id } = this.props
     chatStore.updateThreadConfig(id, false, {
@@ -274,7 +275,7 @@ class PageChatDetail extends React.Component<{
     })
       .then(chats => {
         chatStore.pushMessages(id, chats)
-        window.setTimeout(this.onContentSizeChange, 170)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
       })
       .catch((err: Error) => {
         RnAlert.error({

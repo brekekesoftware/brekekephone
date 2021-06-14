@@ -5,6 +5,7 @@ import IncallManager from 'react-native-incall-manager'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { CallStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
@@ -68,9 +69,9 @@ export default class Call {
   voiceStreamObject: MediaStream | null = null
 
   @observable muted = false
-  @action toggleMuted = (fromCallKeep?: boolean) => {
+  @action toggleMuted = () => {
     this.muted = !this.muted
-    if (!fromCallKeep && this.callkeepUuid) {
+    if (this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
     }
     return sip.setMuted(this.muted, this.id)
@@ -97,21 +98,19 @@ export default class Call {
   }
 
   @observable holding = false
-  @action toggleHold = (fromCallKeep?: boolean) => {
+  @action toggleHold = () => {
     this.holding = !this.holding
-    if (!fromCallKeep) {
-      if (this.callkeepUuid) {
-        RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
-      }
-      // Hack to fix no voice after unhold
-      if (Platform.OS === 'ios' && !this.holding) {
-        setTimeout(() => {
-          IncallManager.setForceSpeakerphoneOn(!this.store.isLoudSpeakerEnabled)
-        }, 500)
-        setTimeout(() => {
-          IncallManager.setForceSpeakerphoneOn(this.store.isLoudSpeakerEnabled)
-        }, 1000)
-      }
+    if (this.callkeepUuid && !this.holding) {
+      // Hack to fix no voice after unhold: only setOnHold in unhold case
+      RNCallKeep.setOnHold(this.callkeepUuid, false)
+    }
+    // Hack to fix no voice after unhold: try toggling speaker
+    // TODO temporary disable with !true &&
+    if (!true && Platform.OS === 'ios' && !this.holding) {
+      IncallManager.setForceSpeakerphoneOn(!this.store.isLoudSpeakerEnabled)
+      BackgroundTimer.setTimeout(() => {
+        IncallManager.setForceSpeakerphoneOn(this.store.isLoudSpeakerEnabled)
+      }, 0)
     }
     const fn = this.holding ? pbx.holdTalker : pbx.unholdTalker
     return fn(this.pbxTenant, this.pbxTalkerId)
@@ -121,6 +120,10 @@ export default class Call {
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (typeof err !== 'boolean' || !err) {
       this.holding = !this.holding
+      if (this.callkeepUuid && !this.holding) {
+        // Hack to fix no voice after unhold: only setOnHold in unhold case
+        RNCallKeep.setOnHold(this.callkeepUuid, false)
+      }
     }
     if (typeof err !== 'boolean') {
       const message = this.holding

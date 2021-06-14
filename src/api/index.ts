@@ -7,6 +7,7 @@ import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Conference } from './brekekejs'
 import pbx from './pbx'
 import sip from './sip'
@@ -115,7 +116,7 @@ class Api {
       getAuthStore().sipState = 'failure'
       getAuthStore().sipTotalFailure += 1
     }
-    window.setTimeout(() => sip.disconnect(), 300)
+    BackgroundTimer.setTimeout(() => sip.disconnect(), 300)
   }
   onSIPConnectionTimeout = () => {
     console.error('SIP PN debug: set sipState failure timeout')

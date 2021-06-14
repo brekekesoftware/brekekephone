@@ -1,14 +1,16 @@
 import { action, observable } from 'mobx'
 
+import { BackgroundTimer } from './BackgroundTimer'
+
 export default class DelayFlag {
   @observable enabled = false
   timeoutId = 0
 
   setEnabled = (enabled?: boolean) => {
     if (this.timeoutId) {
-      window.clearTimeout(this.timeoutId)
+      BackgroundTimer.clearTimeout(this.timeoutId)
     }
-    this.timeoutId = window.setTimeout(
+    this.timeoutId = BackgroundTimer.setTimeout(
       action(() => {
         this.enabled = !!enabled
         this.timeoutId = 0

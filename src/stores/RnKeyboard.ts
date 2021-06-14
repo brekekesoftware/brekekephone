@@ -1,6 +1,8 @@
 import { action, observable } from 'mobx'
 import { Keyboard } from 'react-native'
 
+import { BackgroundTimer } from '../utils/BackgroundTimer'
+
 class RnKeyboardStore {
   @observable isKeyboardShowing = false
   @observable isKeyboardAnimating = false
@@ -17,7 +19,7 @@ class RnKeyboardStore {
         return
       }
       Keyboard.dismiss()
-      this.waitKeyboardTimeoutId = window.setTimeout(() => {
+      this.waitKeyboardTimeoutId = BackgroundTimer.setTimeout(() => {
         this.waitKeyboardTimeoutId = 0
         fn(...args)
       }, 300)
@@ -26,10 +28,10 @@ class RnKeyboardStore {
   keyboardAnimatingTimeoutId = 0
   @action setKeyboardAnimatingTimeout = () => {
     if (this.keyboardAnimatingTimeoutId) {
-      window.clearTimeout(this.keyboardAnimatingTimeoutId)
+      BackgroundTimer.clearTimeout(this.keyboardAnimatingTimeoutId)
     }
     this.isKeyboardAnimating = true
-    this.keyboardAnimatingTimeoutId = window.setTimeout(
+    this.keyboardAnimatingTimeoutId = BackgroundTimer.setTimeout(
       action(() => {
         this.keyboardAnimatingTimeoutId = 0
         this.isKeyboardAnimating = false
