@@ -5,6 +5,7 @@ import EventEmitter from 'eventemitter3'
 
 import { waitPbx } from '../stores/authStore'
 import profileStore, { Profile } from '../stores/profileStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Pbx, PbxGetProductInfoRes } from './brekekejs'
 
 export class PBX extends EventEmitter {
@@ -52,7 +53,7 @@ export class PBX extends EventEmitter {
 
     await Promise.race([
       new Promise((_, reject) => {
-        this.connectTimeoutId = window.setTimeout(() => {
+        this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
           client.close()
           // Fix case already reconnected
           if (client === this.client) {
@@ -155,7 +156,7 @@ export class PBX extends EventEmitter {
   }
   private clearConnectTimeoutId = () => {
     if (this.connectTimeoutId) {
-      window.clearTimeout(this.connectTimeoutId)
+      BackgroundTimer.clearTimeout(this.connectTimeoutId)
       this.connectTimeoutId = 0
     }
   }

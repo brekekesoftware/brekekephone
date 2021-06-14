@@ -4,6 +4,7 @@ import { AppState } from 'react-native'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { arrToMap } from '../utils/toMap'
@@ -145,10 +146,10 @@ export class AuthStore {
     callStore.calls.forEach(c => c.hangupWithUnhold())
     if (callStore.calls.length > 0) {
       const intervalStartedAt = Date.now()
-      const id = window.setInterval(() => {
+      const id = BackgroundTimer.setInterval(() => {
         // TODO show/hide loader
         if (!callStore.calls.length || Date.now() - intervalStartedAt > 3000) {
-          window.clearInterval(id)
+          BackgroundTimer.clearInterval(id)
           this.resetState()
         }
       }, 500)
@@ -256,7 +257,7 @@ export class AuthStore {
       // clearSignInByNotification will activate UC login
       // We will only allow UC login when the app is active
       if (AppState.currentState !== 'active') {
-        window.setTimeout(this.clearSignInByNotification, 17)
+        BackgroundTimer.setTimeout(this.clearSignInByNotification, 17)
       } else {
         this.isSignInByNotification = false
       }

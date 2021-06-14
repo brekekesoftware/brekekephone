@@ -16,6 +16,7 @@ import contactStore, { UcUser } from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
@@ -27,10 +28,11 @@ class PageChatRecents extends React.Component {
   }
   render() {
     const webchatInactive = chatStore.groups.filter(
-      g => g.webchat && g.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
+      gr =>
+        gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
     )
 
-    const groupIds = chatStore.groups.filter(g => g.jointed).map(g => g.id)
+    const groupIds = chatStore.groups.filter(gr => gr.jointed).map(gr => gr.id)
 
     const threadIds = chatStore.threadIdsOrderedByRecent
 
@@ -107,13 +109,13 @@ class PageChatRecents extends React.Component {
     })
 
     // don't display webchat
-    arr = arr.filter(c => !webchatInactive.some(g => g.id === c.id))
+    arr = arr.filter(c => !webchatInactive.some(gr => gr.id === c.id))
     arr = orderBy(arr, ['created', 'name'])
       // .filter(c => !!c.created && !c.group)
       .reverse()
 
     // Not show other message content type different than normal text chat
-    window.setTimeout(() => {
+    BackgroundTimer.setTimeout(() => {
       const arr2 = [...arr].filter(c => c.created || c.group)
       while (arr2.length > 20) {
         arr2.pop()
@@ -126,7 +128,7 @@ class PageChatRecents extends React.Component {
       }
       getAuthStore().currentData.recentChats = arr2
       profileStore.saveProfilesToLocalStorage()
-    })
+    }, 0)
 
     return (
       <Layout

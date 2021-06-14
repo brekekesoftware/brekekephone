@@ -79,28 +79,28 @@ class ChatStore {
   getWebChatInactiveIds() {
     return this.groups
       .filter(
-        g =>
-          g.webchat && g.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
+        gr =>
+          gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
       )
       .map(item => item.id)
   }
   isWebchatJoined(conf_id: string) {
     return this.groups
       .filter(
-        g =>
-          g.webchat && g.webchat.conf_status === Constants.CONF_STATUS_JOINED,
+        gr =>
+          gr.webchat && gr.webchat.conf_status === Constants.CONF_STATUS_JOINED,
       )
       .some(w => w.id === conf_id)
   }
   isWebchat(conf_id: string) {
-    return this.groups.filter(g => g.webchat).some(w => w.id === conf_id)
+    return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
   }
   pushMessages = (
     threadId: string,
     m: ChatMessage | ChatMessage[],
     isUnread = false,
   ) => {
-    const isGroup = this.groups.some(g => g.id === threadId)
+    const isGroup = this.groups.some(gr => gr.id === threadId)
     const isWebchatJoined = this.isWebchatJoined(threadId)
     const isWebchat = this.isWebchat(threadId)
     if (!Array.isArray(m)) {
@@ -168,7 +168,7 @@ class ChatStore {
   removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]
     delete this.threadConfig[id]
-    this.groups = this.groups.filter(g => g.id !== id)
+    this.groups = this.groups.filter(gr => gr.id !== id)
   }
   @computed private get groupsMap() {
     return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {

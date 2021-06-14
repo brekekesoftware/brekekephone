@@ -2,6 +2,7 @@ import { action, observable } from 'mobx'
 import { ReactComponentLike } from 'prop-types'
 import { SyntheticEvent } from 'react'
 
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import RnKeyboard from './RnKeyboard'
 
 export type RnStack = {
@@ -42,7 +43,7 @@ export class RnStackerStore {
         }
         if (!isRoot) {
           this.stackAnimating = true
-          window.setTimeout(() => {
+          BackgroundTimer.setTimeout(() => {
             this.stackAnimating = false
           }, 1000)
         }

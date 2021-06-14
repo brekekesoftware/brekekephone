@@ -66,8 +66,9 @@ const UserItem: FC<
     answered: boolean
     avatar: string
     created: string
-    iconFuncs: Function[]
     icons: string[]
+    iconColors: string[]
+    iconFuncs: Function[]
     id: string
     incoming: boolean
     isRecentCall: boolean
@@ -85,8 +86,9 @@ const UserItem: FC<
     answered,
     avatar,
     created,
-    iconFuncs,
     icons,
+    iconColors,
+    iconFuncs,
     id,
     incoming,
     isRecentCall,
@@ -163,7 +165,7 @@ const UserItem: FC<
         )}
         {icons?.map((v, i) => (
           <RnTouchableOpacity key={i} onPress={() => iconFuncs?.[i]()}>
-            <RnIcon path={v} style={css.ButtonIcon} />
+            <RnIcon path={v} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
       </View>
