@@ -96,7 +96,9 @@ class ChatGroupInvite extends React.Component {
   @observable loading = false
   @computed get groupIds() {
     // update logic if from webchat don't show notify
-    return chatStore.groups.filter(g => !g.webchat && !g.jointed).map(g => g.id)
+    return chatStore.groups
+      .filter(gr => !gr.webchat && !gr.jointed)
+      .map(gr => gr.id)
   }
 
   formatGroup = (group: string) => {

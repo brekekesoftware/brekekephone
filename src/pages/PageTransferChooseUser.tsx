@@ -60,8 +60,8 @@ class PageTransferChooseUser extends React.Component {
       users: map[k],
     }))
     groups = orderBy(groups, 'key')
-    groups.forEach(g => {
-      g.users = orderBy(g.users, 'name')
+    groups.forEach(gr => {
+      gr.users = orderBy(gr.users, 'name')
     })
 
     return (
@@ -73,10 +73,10 @@ class PageTransferChooseUser extends React.Component {
         isTab
         title={intl`Transfer`}
       >
-        {groups.map(g => (
-          <React.Fragment key={g.key}>
-            <Field isGroup label={g.key} />
-            {g.users.map((u, i) => (
+        {groups.map(gr => (
+          <React.Fragment key={gr.key}>
+            <Field isGroup label={gr.key} />
+            {gr.users.map((u, i) => (
               <UserItem
                 iconFuncs={[
                   () => callStore.currentCall?.transferAttended(u.number),

@@ -6,6 +6,7 @@ import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
+import g from '../components/variables'
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -21,8 +22,9 @@ const PageBackgroundCalls = observer(() => (
     {(callStore.currentCall ? [callStore.currentCall] : []).map(c => (
       <RnTouchableOpacity key={c.id} onPress={Nav().backToPageCallManage}>
         <UserItem
-          iconFuncs={[c.hangupWithUnhold]}
           icons={[mdiPhoneHangup]}
+          iconColors={[g.colors.danger]}
+          iconFuncs={[c.hangupWithUnhold]}
           key={c.id}
           lastMessage={
             !c.answered ? intl`Dialing...` : formatDuration(c.duration)

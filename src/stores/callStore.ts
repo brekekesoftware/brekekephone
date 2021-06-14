@@ -1,7 +1,7 @@
 import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import moment from 'moment'
-import { AppState, Platform } from 'react-native'
+import { Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'react-native-uuid'
@@ -170,6 +170,7 @@ export class CallStore {
     if (Platform.OS === 'web' || !recentPnUuid || !c.incoming || c.answered) {
       return
     }
+    this.recentPn = undefined
     // Assign callkeep to the call and handle logic
     if (recentPnUuid) {
       c.callkeepUuid = recentPnUuid
@@ -449,6 +450,6 @@ const endCallKeep = (uuid: string) => {
 
 // Hack to fix the case call from RNCallKeep gets stuck
 // Hopefully the user will open the app and it triggers the timer
-AppState.addEventListener('change', () => setAutoEndCallKeepTimer())
+// AppState.addEventListener('change', () => setAutoEndCallKeepTimer())
 
 export default callStore

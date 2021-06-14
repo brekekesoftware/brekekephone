@@ -177,8 +177,8 @@ class PageContactPhonebook extends React.Component {
     }))
 
     groups = orderBy(groups, 'key')
-    groups.forEach(g => {
-      g.phonebooks = orderBy(g.phonebooks, 'name')
+    groups.forEach(gr => {
+      gr.phonebooks = orderBy(gr.phonebooks, 'name')
     })
     return (
       <Layout
@@ -209,10 +209,10 @@ class PageContactPhonebook extends React.Component {
           value={getAuthStore().currentProfile.displaySharedContacts}
         />
         <View>
-          {groups.map(g => (
-            <React.Fragment key={g.key}>
-              <Field isGroup label={g.key} />
-              {g.phonebooks.map((u, i) => (
+          {groups.map(gr => (
+            <React.Fragment key={gr.key}>
+              <Field isGroup label={gr.key} />
+              {gr.phonebooks.map((u, i) => (
                 <UserItem
                   iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}
