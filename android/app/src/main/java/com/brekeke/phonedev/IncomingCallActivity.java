@@ -240,7 +240,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
-      onDestroyCheckAndEmitShowCall();
+      onDestroyBackToForeground();
     }
   }
 
@@ -256,15 +256,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   @Override
   protected void onDestroy() {
-    onDestroyCheckAndEmitShowCall();
+    onDestroyBackToForeground();
     forceStopRingtone();
     super.onDestroy();
   }
 
-  private void onDestroyCheckAndEmitShowCall() {
+  private void onDestroyBackToForeground() {
     if (closedWithAnswerPressed) {
       km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
-      IncomingCallModule.emit("showCall", "");
+      IncomingCallModule.emit("backToForeground", "");
     }
   }
 

@@ -5,7 +5,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-import javax.annotation.Nonnull;
 
 class IncomingCallModule extends ReactContextBaseJavaModule {
   private static RCTDeviceEventEmitter eventEmitter = null;
@@ -34,7 +33,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void showCall(@Nonnull String uuid, @Nonnull String callerName, @Nonnull Boolean isVideoCall) {
+  void showCall(String uuid, String callerName, Boolean isVideoCall) {
     closeIncomingCallActivity(false); // Close the current PN screen if any
     Intent i = new Intent(reactContext, IncomingCallActivity.class);
     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

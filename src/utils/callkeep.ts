@@ -282,7 +282,7 @@ export const setupCallKeep = async () => {
       callStore.currentCall?.toggleHold()
     })
     // In case of answer call when phone locked
-    eventEmitter.addListener('showCall', () => {
+    eventEmitter.addListener('backToForeground', () => {
       RNCallKeep.backToForeground()
     })
   }
