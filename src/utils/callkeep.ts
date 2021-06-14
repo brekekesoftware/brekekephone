@@ -235,7 +235,6 @@ export const setupCallKeep = async () => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
       IncomingCall.closeIncomingCallActivity()
-
       RNCallKeep.endAllCalls()
     })
     eventEmitter.addListener('endCall', (uuid: string) => {
@@ -244,40 +243,43 @@ export const setupCallKeep = async () => {
       // RNCallKeep.endAllCalls()
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      setTimeout(() => {
+      BackgroundTimer.setTimeout(() => {
         Nav().goToPageTransferChooseUser()
       }, 500)
     })
+
     eventEmitter.addListener('park', (uuid: string) => {
-      setTimeout(() => {
+      BackgroundTimer.setTimeout(() => {
         Nav().goToPageCallParks2()
       }, 500)
     })
+
     eventEmitter.addListener('video', (uuid: string) => {
       const c = callStore.currentCall
       if (c) {
         c.localVideoEnabled ? c.disableVideo() : c.enableVideo()
       }
     })
+
     eventEmitter.addListener('speaker', (uuid: string) => {
       callStore.toggleLoudSpeaker()
     })
+
     eventEmitter.addListener('mute', (uuid: string) => {
-      callStore.currentCall?.toggleMuted(true)
+      callStore.currentCall?.toggleMuted()
     })
+
     eventEmitter.addListener('record', (uuid: string) => {
       callStore.currentCall?.toggleRecording()
     })
+
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      setTimeout(() => {
+      BackgroundTimer.setTimeout(() => {
         Nav().goToPageDtmfKeypad()
       }, 500)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.currentCall?.toggleHold(true)
-    })
-    eventEmitter.addListener('unhold', (uuid: string) => {
-      callStore.currentCall?.toggleHold(true)
+      callStore.currentCall?.toggleHold()
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('showCall', () => {
