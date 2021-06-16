@@ -234,7 +234,6 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('rejectCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
-      IncomingCall.closeIncomingCallActivity()
       RNCallKeep.endAllCalls()
     })
     eventEmitter.addListener('endCall', (uuid: string) => {

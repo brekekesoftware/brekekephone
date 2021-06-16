@@ -1,8 +1,10 @@
 package com.brekeke.phonedev;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.KeyEvent;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -18,11 +21,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 
+import static com.brekeke.phonedev.IncomingCallModule.incomingCallActivities;
+
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   private MediaPlayer mp;
   private KeyguardManager km;
 
-  private RelativeLayout vManageCall, vIncomingCall;
+  private RelativeLayout vManageCall, vIncomingCall, vIncomingThreeBtn;
   private Button btnAnswer,
       btnReject,
       btnTransfer,
@@ -33,7 +38,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnRecord,
       btnDtmf,
       btnHold,
-      btnEndcall;
+      btnEndcall,
+      btnDecilinne,
+      btnEndAccept,
+      btnHoldAccept;
   private TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
   private String uuid, callerName;
   private Boolean isVideoCall;
@@ -43,14 +51,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    startRingtone();
+    this.startRingtone();
     km = ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE));
-
-    if (IncomingCallModule.activity != null) {
-      IncomingCallModule.activity.closeIncomingCallActivity(false);
-    }
-    IncomingCallModule.activity = this;
-
+    incomingCallActivities.add(this);
+    Log.d("DEV", "onCreate:activitys::size::" + incomingCallActivities.size());
+    Log.d("DEV", "onCreate:StackActivity::size: " + this.getNumberActivitys());
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
@@ -74,6 +79,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     vManageCall = (RelativeLayout) findViewById(R.id.view_call_manage);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
+    vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
+
+    getIncomingLayout().setVisibility(View.VISIBLE);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -86,6 +94,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf = (Button) findViewById(R.id.btn_dtmf);
     btnHold = (Button) findViewById(R.id.btn_hold);
     btnEndcall = (Button) findViewById(R.id.btn_end_call);
+    btnDecilinne = (Button) findViewById(R.id.btn_deciline);
+    btnEndAccept = (Button) findViewById(R.id.btn_end_accept);
+    btnHoldAccept = (Button) findViewById(R.id.btn_hold_accept);
 
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
@@ -98,6 +109,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf.setOnClickListener(this);
     btnHold.setOnClickListener(this);
     btnEndcall.setOnClickListener(this);
+    btnDecilinne.setOnClickListener(this);
+    btnEndAccept.setOnClickListener(this);
+    btnHoldAccept.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
@@ -108,14 +122,53 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
   }
 
+  private RelativeLayout getIncomingLayout() {
+//    if (incomingCallActivities.size() > 1) {
+//      return vIncomingThreeBtn;
+//    } else {
+//      return vIncomingCall;
+//    }
+    // for handle 2 button answer and reject (multiple call)
+    return vIncomingCall;
+  }
+
+  private IncomingCallActivity getPreviousIncoming() {
+    int size = incomingCallActivities.size();
+    if(size >= 2){
+      return incomingCallActivities.get(size - 2);
+    }else{
+      return null;
+    }
+  }
+
+  public void showOtherCall(String uuid, String callerName, Boolean isVideoCall) {
+    // show new call => stop ringstone
+    this.forceStopRingtone();
+    Intent i = new Intent(this, IncomingCallActivity.class);
+    i.putExtra("uuid", uuid);
+    i.putExtra("callerName", callerName);
+    i.putExtra("isVideoCall", isVideoCall);
+    this.startActivity(i);
+    Log.d("DEV", "showOtherCall:activitys::size: " + incomingCallActivities.size());
+
+  }
+
+  private int getNumberActivitys() {
+    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+    ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
+    return info.numActivities;
+  }
+
   private void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     closeIncomingCallActivity(true);
   }
 
   private void onBtnRejectClick(View v) {
+    forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
-    closeIncomingCallActivity(false);
+    incomingCallActivities.remove(incomingCallActivities.size() - 1);
+    Log.d("DEV", "dev::onBtnRejectClick:activitys.size:: " + incomingCallActivities.size());
   }
 
   private void onBtnTransferClick(View v) {
@@ -179,13 +232,47 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void onBtnEndCallClick(View v) {
+    forceFinish();
     IncomingCallModule.emit("endCall", uuid);
-    closeIncomingCallActivity(false);
+    incomingCallActivities.remove(incomingCallActivities.size() - 1);
+  }
+
+  private void onBtnDecilineClick(View v) {
+    forceFinish();
+    IncomingCallModule.emit("rejectCall", uuid);
+    incomingCallActivities.remove(incomingCallActivities.size() - 1);
+  }
+
+  private void onBtnHoldAcceptClick(View v) {
+    Log.d(
+        "DEV",
+        "onBtnHoldAcceptClick:getPreviousIncoming::uuid:: " + this.getPreviousIncoming().uuid);
+    IncomingCallModule.emit("answerCall", uuid);
+    IncomingCallModule.emit("hold", this.getPreviousIncoming().uuid);
+    closeIncomingCallActivity(true);
+  }
+
+  private void onBtnEndAcceptClick(View v) {
+    Log.d(
+        "DEV",
+        "onBtnEndAcceptClick:getPreviousIncoming::uuid:: " + this.getPreviousIncoming().uuid);
+    IncomingCallModule.emit("answerCall", uuid);
+    IncomingCallModule.emit("endCall", this.getPreviousIncoming().uuid);
+    closeIncomingCallActivity(true);
   }
 
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
+      case R.id.btn_hold_accept:
+        onBtnHoldAcceptClick(v);
+        break;
+      case R.id.btn_end_accept:
+        onBtnEndAcceptClick(v);
+        break;
+      case R.id.btn_deciline:
+        onBtnDecilineClick(v);
+        break;
       case R.id.btn_answer:
         onBtnAnswerClick(v);
         break;
@@ -233,7 +320,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       forceFinish();
       return true;
     }
-    vIncomingCall.setVisibility(View.GONE);
+    getIncomingLayout().setVisibility(View.GONE);
     vManageCall.setVisibility(View.VISIBLE);
     forceStopRingtone();
     return false;
@@ -249,12 +336,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    Log.d("DEV", "onResume:" + uuid);
+  }
+
+  @Override
   protected void onPause() {
-    // On home button press
-    // TODO it is now taking ~5s until main rn app open, we'll try improve this later
-    if (closedWithAnswerPressed) {
-      forceFinish();
-    }
+    Log.d("DEV", "onPause:" + uuid);
     super.onPause();
   }
 
@@ -307,11 +396,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       Context ctx = getApplicationContext();
       Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
       vib.cancel();
-    } catch (Exception e) {
-    }
-    try {
-      mp.stop();
-      mp.release();
     } catch (Exception e) {
     }
   }
