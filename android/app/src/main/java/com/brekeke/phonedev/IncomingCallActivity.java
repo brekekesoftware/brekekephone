@@ -6,7 +6,11 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -271,15 +275,28 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   private void startRingtone() {
     Context ctx = getApplicationContext();
     AudioManager am = ((AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE));
+    int mode = am.getRingerMode();
+    if (mode == AudioManager.RINGER_MODE_SILENT) {
+      return;
+    }
+    Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
+    long[] pattern = {0, 1000, 1000};
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
+    } else {
+      vib.vibrate(pattern, 0);
+    }
     am.setMode(AudioManager.MODE_RINGTONE);
-    AudioAttributes attr =
-        new AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-            .setLegacyStreamType(AudioManager.STREAM_RING)
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-            .build();
-    int id = am.generateAudioSessionId();
-    mp = MediaPlayer.create(ctx, R.raw.incallmanager_ringtone, attr, id);
+    mp =
+        MediaPlayer.create(
+            ctx,
+            R.raw.incallmanager_ringtone,
+            new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setLegacyStreamType(AudioManager.STREAM_RING)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .build(),
+            am.generateAudioSessionId());
     mp.setVolume(1.0f, 1.0f);
     mp.setLooping(true);
     mp.start();
@@ -287,9 +304,26 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   private void forceStopRingtone() {
     try {
+      Context ctx = getApplicationContext();
+      Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
+      vib.cancel();
+    } catch (Exception e) {
+    }
+    try {
       mp.stop();
       mp.release();
     } catch (Exception e) {
     }
+  }
+
+  @Override
+  public boolean onKeyDown(int k, KeyEvent e) {
+    forceStopRingtone();
+    return super.onKeyDown(k, e);
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent e) {
+    return onKeyDown(e.getAction(), e);
   }
 }
