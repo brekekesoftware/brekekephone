@@ -1,14 +1,22 @@
 import React, { FC } from 'react'
 import IncallManager from 'react-native-incall-manager'
 
+import { getAuthStore } from '../stores/authStore'
+
 class IncomingItem extends React.Component {
+  needToStopRingtone = false
   componentDidMount() {
     // For incoming call we already have callkit PN
     // We dont need to play ringtone here, it may the casue of the issue no voice in ios
-    // IncallManager.startRingtone('_BUNDLE_')
+    if (!getAuthStore().currentProfile?.pushNotificationEnabled) {
+      IncallManager.startRingtone('_BUNDLE_')
+      this.needToStopRingtone = true
+    }
   }
   componentWillUnmount() {
-    // IncallManager.stopRingtone()
+    if (this.needToStopRingtone) {
+      IncallManager.stopRingtone()
+    }
   }
   render() {
     return null
