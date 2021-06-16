@@ -11,6 +11,8 @@ class IncomingItem extends React.Component {
     if (!getAuthStore().currentProfile?.pushNotificationEnabled) {
       IncallManager.startRingtone('_BUNDLE_')
       this.needToStopRingtone = true
+      // TODO stop ringtone if user press hardware button
+      // https://www.npmjs.com/package/react-native-keyevent
     }
   }
   componentWillUnmount() {

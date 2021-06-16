@@ -1,5 +1,7 @@
 package com.brekeke.phonedev;
 
+import static com.brekeke.phonedev.IncomingCallModule.incomingCallActivities;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.KeyguardManager;
@@ -12,16 +14,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.view.KeyEvent;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
-
-import static com.brekeke.phonedev.IncomingCallModule.incomingCallActivities;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   private MediaPlayer mp;
@@ -123,20 +123,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private RelativeLayout getIncomingLayout() {
-//    if (incomingCallActivities.size() > 1) {
-//      return vIncomingThreeBtn;
-//    } else {
-//      return vIncomingCall;
-//    }
+    //    if (incomingCallActivities.size() > 1) {
+    //      return vIncomingThreeBtn;
+    //    } else {
+    //      return vIncomingCall;
+    //    }
     // for handle 2 button answer and reject (multiple call)
     return vIncomingCall;
   }
 
   private IncomingCallActivity getPreviousIncoming() {
     int size = incomingCallActivities.size();
-    if(size >= 2){
+    if (size >= 2) {
       return incomingCallActivities.get(size - 2);
-    }else{
+    } else {
       return null;
     }
   }
@@ -150,7 +150,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     i.putExtra("isVideoCall", isVideoCall);
     this.startActivity(i);
     Log.d("DEV", "showOtherCall:activitys::size: " + incomingCallActivities.size());
-
   }
 
   private int getNumberActivitys() {

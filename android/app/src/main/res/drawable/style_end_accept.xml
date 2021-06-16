@@ -8,10 +8,10 @@
         </shape>
       </item>
       <item
-          android:top="20dp"
-          android:left="20dp"
-          android:drawable="@drawable/ic_answer"
-          >
+        android:top="20dp"
+        android:left="20dp"
+        android:drawable="@drawable/ic_answer"
+      >
       </item>
     </layer-list>
   </item>
