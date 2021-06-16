@@ -41,6 +41,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnEndcall,
       btnDecilinne,
       btnEndAccept,
+      btnUnlock,
       btnHoldAccept;
   private TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
   private String uuid, callerName;
@@ -97,6 +98,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDecilinne = (Button) findViewById(R.id.btn_deciline);
     btnEndAccept = (Button) findViewById(R.id.btn_end_accept);
     btnHoldAccept = (Button) findViewById(R.id.btn_hold_accept);
+    btnUnlock = (Button) findViewById(R.id.btn_unlock);
 
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
@@ -112,6 +114,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDecilinne.setOnClickListener(this);
     btnEndAccept.setOnClickListener(this);
     btnHoldAccept.setOnClickListener(this);
+    btnUnlock.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
@@ -132,12 +135,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return vIncomingCall;
   }
 
-  private IncomingCallActivity getPreviousIncoming() {
+  private void popIncomingCallActivitys() {
+    int size = incomingCallActivities.size();
+    if (size >= 1) {
+      incomingCallActivities.remove(size - 1);
+    }
+  }
+
+  private String getPreviousIncomingUUID() {
     int size = incomingCallActivities.size();
     if (size >= 2) {
-      return incomingCallActivities.get(size - 2);
+      return incomingCallActivities.get(size - 2).uuid;
     } else {
-      return null;
+      return "";
     }
   }
 
@@ -149,7 +159,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
     this.startActivity(i);
-    Log.d("DEV", "showOtherCall:activitys::size: " + incomingCallActivities.size());
   }
 
   private int getNumberActivitys() {
@@ -166,7 +175,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   private void onBtnRejectClick(View v) {
     forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
-    incomingCallActivities.remove(incomingCallActivities.size() - 1);
+    popIncomingCallActivitys();
     Log.d("DEV", "dev::onBtnRejectClick:activitys.size:: " + incomingCallActivities.size());
   }
 
@@ -233,36 +242,87 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   private void onBtnEndCallClick(View v) {
     forceFinish();
     IncomingCallModule.emit("endCall", uuid);
-    incomingCallActivities.remove(incomingCallActivities.size() - 1);
+    popIncomingCallActivitys();
   }
 
   private void onBtnDecilineClick(View v) {
     forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
-    incomingCallActivities.remove(incomingCallActivities.size() - 1);
+    popIncomingCallActivitys();
   }
 
   private void onBtnHoldAcceptClick(View v) {
-    Log.d(
-        "DEV",
-        "onBtnHoldAcceptClick:getPreviousIncoming::uuid:: " + this.getPreviousIncoming().uuid);
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallModule.emit("hold", this.getPreviousIncoming().uuid);
+    IncomingCallModule.emit("hold", this.getPreviousIncomingUUID());
     closeIncomingCallActivity(true);
   }
 
   private void onBtnEndAcceptClick(View v) {
-    Log.d(
-        "DEV",
-        "onBtnEndAcceptClick:getPreviousIncoming::uuid:: " + this.getPreviousIncoming().uuid);
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallModule.emit("endCall", this.getPreviousIncoming().uuid);
+    IncomingCallModule.emit("endCall", this.getPreviousIncomingUUID());
     closeIncomingCallActivity(true);
+  }
+
+  private void onBtnUnlockClick(View v) {
+    incomingCallActivities.forEach(
+        incomingCallActivity -> {
+          incomingCallActivity.forceFinish();
+        });
+  }
+
+  private void onRequestUnlock(View v) {
+    km.requestDismissKeyguard(
+        this,
+        new KeyguardManager.KeyguardDismissCallback() {
+          @Override
+          public void onDismissError() {
+            super.onDismissError();
+            Log.d("DEV", "unlock:onDismissError::");
+          }
+
+          @Override
+          public void onDismissSucceeded() {
+            super.onDismissSucceeded();
+            Log.d("DEV", "unlock:onDismissSucceeded::");
+            onProcessAction(v);
+          }
+
+          @Override
+          public void onDismissCancelled() {
+            super.onDismissCancelled();
+            Log.d("DEV", "unlock:onDismissCancelled::");
+          }
+        });
+  }
+
+  private void onProcessAction(View v) {
+    switch (v.getId()) {
+      case R.id.btn_unlock:
+        onBtnUnlockClick(v);
+        break;
+      case R.id.btn_transfer:
+        onBtnTransferClick(v);
+        break;
+      case R.id.btn_park:
+        onBtnParkClick(v);
+        break;
+      case R.id.btn_video:
+        onBtnVideoClick(v);
+        break;
+      case R.id.btn_dtmf:
+        onBtnDtmfClick(v);
+        break;
+      default:
+        break;
+    }
   }
 
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
+      case R.id.btn_unlock:
+        onRequestUnlock(v);
+        break;
       case R.id.btn_hold_accept:
         onBtnHoldAcceptClick(v);
         break;
@@ -279,13 +339,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onBtnRejectClick(v);
         break;
       case R.id.btn_transfer:
-        onBtnTransferClick(v);
+        onRequestUnlock(v);
         break;
       case R.id.btn_park:
-        onBtnParkClick(v);
+        onRequestUnlock(v);
         break;
       case R.id.btn_video:
-        onBtnVideoClick(v);
+        onRequestUnlock(v);
         break;
       case R.id.btn_speaker:
         onBtnSpeakerClick(v);
@@ -297,7 +357,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onBtnRecordClick(v);
         break;
       case R.id.btn_dtmf:
-        onBtnDtmfClick(v);
+        onRequestUnlock(v);
         break;
       case R.id.btn_hold:
         onBtnHoldClick(v);
@@ -348,7 +408,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   @Override
   protected void onDestroy() {
-    onDestroyBackToForeground();
+    //    onDestroyBackToForeground();
     forceStopRingtone();
     super.onDestroy();
   }
@@ -395,6 +455,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       Context ctx = getApplicationContext();
       Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
       vib.cancel();
+    } catch (Exception e) {
+    }
+    try {
+      mp.stop();
+      mp.release();
     } catch (Exception e) {
     }
   }

@@ -227,7 +227,6 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('answerCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepAnswerCall(uuid)
-      IncomingCall.closeIncomingCallActivity(true)
       RNCallKeep.setCurrentCallActive(uuid)
       RNCallKeep.setOnHold(uuid, false)
     })
