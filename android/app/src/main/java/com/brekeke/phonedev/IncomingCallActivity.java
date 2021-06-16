@@ -55,8 +55,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     this.startRingtone();
     km = ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE));
     incomingCallActivities.add(this);
-    Log.d("DEV", "onCreate:activitys::size::" + incomingCallActivities.size());
-    Log.d("DEV", "onCreate:StackActivity::size: " + this.getNumberActivitys());
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
@@ -176,7 +174,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
     popIncomingCallActivitys();
-    Log.d("DEV", "dev::onBtnRejectClick:activitys.size:: " + incomingCallActivities.size());
   }
 
   private void onBtnTransferClick(View v) {
@@ -277,20 +274,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           @Override
           public void onDismissError() {
             super.onDismissError();
-            Log.d("DEV", "unlock:onDismissError::");
           }
 
           @Override
           public void onDismissSucceeded() {
             super.onDismissSucceeded();
-            Log.d("DEV", "unlock:onDismissSucceeded::");
             onProcessAction(v);
           }
 
           @Override
           public void onDismissCancelled() {
             super.onDismissCancelled();
-            Log.d("DEV", "unlock:onDismissCancelled::");
           }
         });
   }
@@ -375,7 +369,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       return true;
     }
     closedWithAnswerPressed = isAnswerPressed;
-    if (!isAnswerPressed || !km.isDeviceLocked()) {
+    // isKeyguardLocked() - Return whether the keyguard is currently locked.
+    // isDeviceLocked() - Returns whether the device is currently locked and requires a PIN, pattern
+    // or password to unlock.
+    if (!isAnswerPressed || !km.isKeyguardLocked()) {
       forceFinish();
       return true;
     }
@@ -397,12 +394,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onResume() {
     super.onResume();
-    Log.d("DEV", "onResume:" + uuid);
   }
 
   @Override
   protected void onPause() {
-    Log.d("DEV", "onPause:" + uuid);
     super.onPause();
   }
 

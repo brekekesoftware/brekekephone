@@ -38,7 +38,6 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void showCall(String uuid, String callerName, Boolean isVideoCall) {
-    Log.d("DEV", "showCall:request_code:: " + incomingCallActivities.size());
     if (incomingCallActivities.size() == 0) {
       Intent i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
