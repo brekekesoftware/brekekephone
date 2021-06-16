@@ -90,7 +90,7 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      console.error(ev.incomingMessage)
+      console.error(ev.incomingMessage?.getHeader('X-PN-ID'))
       this.emit('session-started', {
         id: ev.sessionId,
         incoming: ev.rtcSession.direction === 'incoming',
