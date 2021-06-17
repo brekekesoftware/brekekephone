@@ -120,11 +120,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public RelativeLayout getIncomingLayout() {
-    if (IncomingCallModule.activities.size() > 1) {
-      return vIncomingThreeBtn;
-    } else {
-      return vIncomingCall;
-    }
+    // if (IncomingCallModule.activities.size() > 1) {
+    //   return vIncomingThreeBtn;
+    // } else {
+    //   return vIncomingCall;
+    // }
+    return vIncomingCall;
   }
 
   public void popIncomingCallActivitys() {

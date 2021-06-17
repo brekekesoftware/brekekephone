@@ -220,6 +220,8 @@ export const setupCallKeep = async () => {
         getCallPnData(uuid)?.from || 'Loading...',
         !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
       )
+      // showCall2Btn
+      // showCall3Btn
       callStore.onCallKeepDidDisplayIncomingCall(uuid)
     })
     // Events from our custom IncomingCall module
