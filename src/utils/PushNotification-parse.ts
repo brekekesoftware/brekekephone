@@ -122,12 +122,11 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
 
-  const pnId: string = get(n, 'pn-id')
-  if (Platform.OS === 'android' && pnId && androidAlreadyProccessedPn[pnId]) {
+  n.id = get(n, 'pn-id')
+  if (Platform.OS === 'android' && n.id && androidAlreadyProccessedPn[n.id]) {
     return
   }
-  androidAlreadyProccessedPn[pnId] = true
-
+  androidAlreadyProccessedPn[n.id] = true
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
   const sipWssPort: string = get(n, 'sip.wss.port')
@@ -194,6 +193,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
 }
 
 export type ParsedPn = {
+  id: string
   title: string
   body: string
   alert: string

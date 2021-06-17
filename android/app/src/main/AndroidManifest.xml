@@ -38,6 +38,7 @@
     <activity
       android:name=".IncomingCallActivity"
       android:label="IncomingCallActivity"
+      android:launchMode="standard"
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
     />

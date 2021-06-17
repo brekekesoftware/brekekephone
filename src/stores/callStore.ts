@@ -14,7 +14,6 @@ import {
   deleteCallPnData,
   getCallPnData,
 } from '../utils/PushNotification-parse'
-import { IncomingCall } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import Call from './Call'
@@ -421,7 +420,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
       ) {
         endAllCalls()
-        IncomingCall.closeIncomingCallActivity()
+        // IncomingCall.closeIncomingCallActivity()
       }
     }
     //

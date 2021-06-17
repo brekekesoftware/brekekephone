@@ -6,6 +6,7 @@ import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
 
 public class MainActivity extends ReactActivity {
+
   @Override
   protected String getMainComponentName() {
     return "BrekekePhone";
