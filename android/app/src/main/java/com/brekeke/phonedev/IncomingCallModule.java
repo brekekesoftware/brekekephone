@@ -1,13 +1,10 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
-import android.util.Log;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-import java.util.ArrayList;
 
 class IncomingCallModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter = null;
