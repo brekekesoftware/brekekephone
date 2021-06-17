@@ -1,6 +1,8 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
+import android.util.Log;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -15,7 +17,6 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
-  public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
 
   public ReactApplicationContext reactContext;
 
@@ -38,45 +39,48 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void showCall(String uuid, String callerName, Boolean isVideoCall) {
     Intent i;
-    if (activities.isEmpty()) {
+    if (mgr.isEmpty()) {
       i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     } else {
-      IncomingCallActivity prev = activities.get(activities.size() - 1);
+      IncomingCallActivity prev = mgr.last();
       prev.forceStopRingtone();
       i = new Intent(prev, IncomingCallActivity.class);
     }
+
     i.putExtra("uuid", uuid);
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
-    if (activities.isEmpty()) {
+
+    if (mgr.isEmpty()) {
       reactContext.startActivity(i);
     } else {
-      activities.get(activities.size() - 1).startActivity(i);
+      mgr.last().startActivity(i);
     }
   }
 
   @ReactMethod
-  void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
-    if (activities.isEmpty()) {
+  void closeIncomingCallActivity(Boolean isAnswerPressed, String uuid) {
+    if (mgr.isEmpty()) {
       return;
     }
     // TODO loop for each activities
-    if (activities.get(activities.size() - 1).closeIncomingCallActivity(isAnswerPressed)) {
-      activities.remove(activities.size() - 1);
+    if (uuid == null) {
+      if (mgr.last().closeIncomingCallActivity(isAnswerPressed)) {
+        mgr.pop();
+      }
+    } else {
+      mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
     }
   }
 
   @ReactMethod
   void closeAllIncomingCallActivities() {
-    // TODO
+    mgr.finishAll();
   }
 
   @ReactMethod
   void setOnHold(String uuid, Boolean hold) {
-    try {
-      mgr.by(uuid).btnHold.setSelected(hold)
-    } catch(Exception ex) {
-    }
+    mgr.at(uuid).updateUIBtnHold(hold);
   }
 }

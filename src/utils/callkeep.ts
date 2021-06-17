@@ -220,8 +220,6 @@ export const setupCallKeep = async () => {
         getCallPnData(uuid)?.from || 'Loading...',
         !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
       )
-      // showCall2Btn
-      // showCall3Btn
       callStore.onCallKeepDidDisplayIncomingCall(uuid)
     })
     // Events from our custom IncomingCall module
@@ -240,7 +238,7 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('endCall', (uuid: string) => {
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
-      // RNCallKeep.endAllCalls()
+      RNCallKeep.endAllCalls()
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
       BackgroundTimer.setTimeout(() => {
@@ -280,6 +278,8 @@ export const setupCallKeep = async () => {
     })
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.currentCall?.toggleHold()
+      callStore.currentCall &&
+        IncomingCall.setOnHold(uuid, callStore.currentCall?.holding)
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
