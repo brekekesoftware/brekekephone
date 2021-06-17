@@ -1,12 +1,9 @@
 package com.brekeke.phonedev;
 
-import static com.brekeke.phonedev.IncomingCallModule.incomingCallActivities;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -53,7 +50,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     super.onCreate(savedInstanceState);
     this.startRingtone();
     km = ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE));
-    incomingCallActivities.add(this);
+    IncomingCallModule.activities.add(this);
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
@@ -123,7 +120,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private RelativeLayout getIncomingLayout() {
-    //    if (incomingCallActivities.size() > 1) {
+    //    if (IncomingCallModule.activities.size() > 1) {
     //      return vIncomingThreeBtn;
     //    } else {
     //      return vIncomingCall;
@@ -133,29 +130,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void popIncomingCallActivitys() {
-    int size = incomingCallActivities.size();
+    int size = IncomingCallModule.activities.size();
     if (size >= 1) {
-      incomingCallActivities.remove(size - 1);
+      IncomingCallModule.activities.remove(size - 1);
     }
   }
 
   private String getPreviousIncomingUUID() {
-    int size = incomingCallActivities.size();
+    int size = IncomingCallModule.activities.size();
     if (size >= 2) {
-      return incomingCallActivities.get(size - 2).uuid;
+      return IncomingCallModule.activities.get(size - 2).uuid;
     } else {
       return "";
     }
-  }
-
-  public void showOtherCall(String uuid, String callerName, Boolean isVideoCall) {
-    // show new call => stop ringstone
-    this.forceStopRingtone();
-    Intent i = new Intent(this, IncomingCallActivity.class);
-    i.putExtra("uuid", uuid);
-    i.putExtra("callerName", callerName);
-    i.putExtra("isVideoCall", isVideoCall);
-    this.startActivity(i);
   }
 
   private int getNumberActivitys() {
@@ -260,7 +247,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void onBtnUnlockClick(View v) {
-    incomingCallActivities.forEach(
+    IncomingCallModule.activities.forEach(
         incomingCallActivity -> {
           incomingCallActivity.forceFinish();
         });
@@ -402,13 +389,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   @Override
   protected void onDestroy() {
-    //    onDestroyBackToForeground();
+    onDestroyBackToForeground();
     forceStopRingtone();
     super.onDestroy();
   }
 
   private void onDestroyBackToForeground() {
-    if (closedWithAnswerPressed) {
+    if (closedWithAnswerPressed && IncomingCallModule.activities.size() == 1) {
       km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
       IncomingCallModule.emit("backToForeground", "");
     }
@@ -444,7 +431,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     mp.start();
   }
 
-  private void forceStopRingtone() {
+  public void forceStopRingtone() {
     try {
       Context ctx = getApplicationContext();
       Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);

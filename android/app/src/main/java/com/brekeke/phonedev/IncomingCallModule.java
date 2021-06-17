@@ -14,8 +14,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
     eventEmitter.emit(name, data);
   }
 
-  public static ArrayList<IncomingCallActivity> incomingCallActivities =
-      new ArrayList<IncomingCallActivity>();
+  public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
 
   private ReactApplicationContext reactContext;
 
@@ -37,29 +36,38 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void showCall(String uuid, String callerName, Boolean isVideoCall) {
-    if (incomingCallActivities.size() == 0) {
-      Intent i = new Intent(reactContext, IncomingCallActivity.class);
+    Intent i;
+    if (activities.isEmpty()) {
+      i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      i.putExtra("uuid", uuid);
-      i.putExtra("callerName", callerName);
-      i.putExtra("isVideoCall", isVideoCall);
+    } else {
+      IncomingCallActivity prev = activities.get(activities.size() - 1);
+      prev.forceStopRingtone();
+      i = new Intent(prev, IncomingCallActivity.class);
+    }
+    i.putExtra("uuid", uuid);
+    i.putExtra("callerName", callerName);
+    i.putExtra("isVideoCall", isVideoCall);
+    if (activities.isEmpty()) {
       reactContext.startActivity(i);
     } else {
-      incomingCallActivities
-          .get(incomingCallActivities.size() - 1)
-          .showOtherCall(uuid, callerName, isVideoCall);
+      activities.get(activities.size() - 1).startActivity(i);
     }
   }
 
   @ReactMethod
-  void closeIncomingCallActivity(Boolean isAnswerPressed) {
-    if (incomingCallActivities.isEmpty() == true) {
+  void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
+    if (activities.isEmpty()) {
       return;
     }
-    if (incomingCallActivities
-        .get(incomingCallActivities.size() - 1)
-        .closeIncomingCallActivity(isAnswerPressed)) {
-      incomingCallActivities.remove(incomingCallActivities.size() - 1);
+    // TODO loop for each activities
+    if (activities.get(activities.size() - 1).closeIncomingCallActivity(isAnswerPressed)) {
+      activities.remove(activities.size() - 1);
     }
+  }
+
+  @ReactMethod
+  void closeAllIncomingCallActivities() {
+    // TODO
   }
 }
