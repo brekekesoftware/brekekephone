@@ -8,15 +8,16 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import java.util.ArrayList;
 
 class IncomingCallModule extends ReactContextBaseJavaModule {
-  private static RCTDeviceEventEmitter eventEmitter = null;
+  public static RCTDeviceEventEmitter eventEmitter = null;
 
   static void emit(String name, String data) {
     eventEmitter.emit(name, data);
   }
 
+  public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
   public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
 
-  private ReactApplicationContext reactContext;
+  public ReactApplicationContext reactContext;
 
   IncomingCallModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -69,5 +70,13 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void closeAllIncomingCallActivities() {
     // TODO
+  }
+
+  @ReactMethod
+  void setOnHold(String uuid, Boolean hold) {
+    try {
+      mgr.by(uuid).btnHold.setSelected(hold)
+    } catch(Exception ex) {
+    }
   }
 }

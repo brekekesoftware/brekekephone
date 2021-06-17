@@ -20,11 +20,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  private MediaPlayer mp;
-  private KeyguardManager km;
+  public MediaPlayer mp;
+  public KeyguardManager km;
 
-  private RelativeLayout vManageCall, vIncomingCall, vIncomingThreeBtn;
-  private Button btnAnswer,
+  public RelativeLayout vManageCall, vIncomingCall, vIncomingThreeBtn;
+  public Button btnAnswer,
       btnReject,
       btnTransfer,
       btnPark,
@@ -39,11 +39,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnEndAccept,
       btnUnlock,
       btnHoldAccept;
-  private TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
-  private String uuid, callerName;
-  private Boolean isVideoCall;
+  public TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
+  public String uuid, callerName;
+  public Boolean isVideoCall;
 
-  private Boolean closed = false, closedWithAnswerPressed = false;
+  public Boolean closed = false, closedWithAnswerPressed = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,65 +119,59 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
   }
 
-  private RelativeLayout getIncomingLayout() {
-    //    if (IncomingCallModule.activities.size() > 1) {
-    //      return vIncomingThreeBtn;
-    //    } else {
-    //      return vIncomingCall;
-    //    }
-    // for handle 2 button answer and reject (multiple call)
-    return vIncomingCall;
+  public RelativeLayout getIncomingLayout() {
+    if (IncomingCallModule.activities.size() > 1) {
+      return vIncomingThreeBtn;
+    } else {
+      return vIncomingCall;
+    }
   }
 
-  private void popIncomingCallActivitys() {
+  public void popIncomingCallActivitys() {
     int size = IncomingCallModule.activities.size();
     if (size >= 1) {
       IncomingCallModule.activities.remove(size - 1);
     }
   }
 
-  private String getPreviousIncomingUUID() {
-    int size = IncomingCallModule.activities.size();
-    if (size >= 2) {
-      return IncomingCallModule.activities.get(size - 2).uuid;
-    } else {
-      return "";
-    }
+  public String getPreviousIncomingUUID() {
+    IncomingCallActivity prev = IncomingCallModule.mgr.before(this.uuid).uuid;
+    return prev == null ? '' : prev.uuid;
   }
 
-  private int getNumberActivitys() {
+  public int getNumberActivitys() {
     ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
     ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
     return info.numActivities;
   }
 
-  private void onBtnAnswerClick(View v) {
+  public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     closeIncomingCallActivity(true);
   }
 
-  private void onBtnRejectClick(View v) {
+  public void onBtnRejectClick(View v) {
     forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
     popIncomingCallActivitys();
   }
 
-  private void onBtnTransferClick(View v) {
+  public void onBtnTransferClick(View v) {
     IncomingCallModule.emit("transfer", uuid);
     forceFinish();
   }
 
-  private void onBtnParkClick(View v) {
+  public void onBtnParkClick(View v) {
     IncomingCallModule.emit("park", uuid);
     forceFinish();
   }
 
-  private void onBtnVideoClick(View v) {
+  public void onBtnVideoClick(View v) {
     IncomingCallModule.emit("video", uuid);
     forceFinish();
   }
 
-  private void onBtnSpeakerClick(View v) {
+  public void onBtnSpeakerClick(View v) {
     if (v.isSelected()) {
       btnSpeaker.setSelected(false);
     } else {
@@ -186,7 +180,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("speaker", uuid);
   }
 
-  private void onBtnMuteClick(View v) {
+  public void onBtnMuteClick(View v) {
     if (v.isSelected()) {
       btnMute.setSelected(false);
       txtMuteBtn.setText("MUTE");
@@ -197,7 +191,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("mute", uuid);
   }
 
-  private void onBtnRecordClick(View v) {
+  public void onBtnRecordClick(View v) {
     if (v.isSelected()) {
       btnRecord.setSelected(false);
     } else {
@@ -206,12 +200,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("record", uuid);
   }
 
-  private void onBtnDtmfClick(View v) {
+  public void onBtnDtmfClick(View v) {
     IncomingCallModule.emit("dtmf", uuid);
     forceFinish();
   }
 
-  private void onBtnHoldClick(View v) {
+  public void onBtnHoldClick(View v) {
     if (v.isSelected()) {
       btnHold.setSelected(false);
       txtHoldBtn.setText("HOLD");
@@ -222,38 +216,38 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("hold", uuid);
   }
 
-  private void onBtnEndCallClick(View v) {
+  public void onBtnEndCallClick(View v) {
     forceFinish();
     IncomingCallModule.emit("endCall", uuid);
     popIncomingCallActivitys();
   }
 
-  private void onBtnDecilineClick(View v) {
+  public void onBtnDecilineClick(View v) {
     forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
     popIncomingCallActivitys();
   }
 
-  private void onBtnHoldAcceptClick(View v) {
+  public void onBtnHoldAcceptClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     IncomingCallModule.emit("hold", this.getPreviousIncomingUUID());
     closeIncomingCallActivity(true);
   }
 
-  private void onBtnEndAcceptClick(View v) {
+  public void onBtnEndAcceptClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     IncomingCallModule.emit("endCall", this.getPreviousIncomingUUID());
     closeIncomingCallActivity(true);
   }
 
-  private void onBtnUnlockClick(View v) {
+  public void onBtnUnlockClick(View v) {
     IncomingCallModule.activities.forEach(
         incomingCallActivity -> {
           incomingCallActivity.forceFinish();
         });
   }
 
-  private void onRequestUnlock(View v) {
+  public void onRequestUnlock(View v) {
     km.requestDismissKeyguard(
         this,
         new KeyguardManager.KeyguardDismissCallback() {
@@ -275,7 +269,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         });
   }
 
-  private void onProcessAction(View v) {
+  public void onProcessAction(View v) {
     switch (v.getId()) {
       case R.id.btn_unlock:
         onBtnUnlockClick(v);
@@ -368,7 +362,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return false;
   }
 
-  private void forceFinish() {
+  public void forceFinish() {
     closed = true;
     try {
       finish();
@@ -394,14 +388,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     super.onDestroy();
   }
 
-  private void onDestroyBackToForeground() {
+  public void onDestroyBackToForeground() {
     if (closedWithAnswerPressed && IncomingCallModule.activities.size() == 1) {
       km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
       IncomingCallModule.emit("backToForeground", "");
     }
   }
 
-  private void startRingtone() {
+  public void startRingtone() {
     Context ctx = getApplicationContext();
     AudioManager am = ((AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE));
     int mode = am.getRingerMode();
