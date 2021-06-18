@@ -12,7 +12,12 @@ public class IncomingCallActivityManager {
   public ArrayList<IncomingCallActivity> getList() {
     return activities;
   }
-
+  public void removeUUID(String uuid){
+    int index = this.getItemIndex(uuid);
+    if(index != -1){
+      activities.remove(index);
+    }
+  }
   public int getNumberActivitys(Activity a) {
     ActivityManager manager = (ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE);
     ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
@@ -24,6 +29,7 @@ public class IncomingCallActivityManager {
         incomingCallActivity -> {
           incomingCallActivity.forceFinish();
         });
+    activities.clear();
   }
 
   public IncomingCallActivity last() {
