@@ -368,7 +368,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
-      onDestroyBackToForeground();
+      // don't need, handle on event onAppBackgrounded
     }
   }
 
@@ -394,31 +394,23 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if(mgr.isEmpty()){
       return;
     }
+    // event app in background
     if (mgr.last().uuid == uuid) {
-      Log.d("DEV", "App in background::"+ uuid + "::size::"+ mgr.getList().size());
       this.forceStopRingtone();
       IncomingCallModule.emit("backToForeground", "");
+      km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
       mgr.finishAll();
     }
   }
-
   @OnLifecycleEvent(Lifecycle.Event.ON_START)
   private void onAppForegrounded() {
-
   }
 
   @Override
   protected void onDestroy() {
-    onDestroyBackToForeground();
+    // instead by event app in background
     forceStopRingtone();
     super.onDestroy();
-  }
-
-  public void onDestroyBackToForeground() {
-    if (closedWithAnswerPressed && mgr.getItemIndex(uuid) == 0) {
-      km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
-      IncomingCallModule.emit("backToForeground", "");
-    }
   }
 
   public void startRingtone() {
