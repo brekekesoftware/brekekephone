@@ -25,7 +25,8 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
-public class IncomingCallActivity extends Activity implements View.OnClickListener, LifecycleObserver {
+public class IncomingCallActivity extends Activity
+    implements View.OnClickListener, LifecycleObserver {
   public MediaPlayer mp;
   public KeyguardManager km;
 
@@ -53,7 +54,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
-    Log.d("DEV", "onCreate: "+ uuid);
+    Log.d("DEV", "onCreate: " + uuid);
     super.onCreate(savedInstanceState);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     this.startRingtone();
@@ -79,7 +80,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     isVideoCall = b.getBoolean("isVideoCall");
-    Log.d("DEV", "UUID::"+ uuid + "::isVideo::" + isVideoCall);
+    Log.d("DEV", "UUID::" + uuid + "::isVideo::" + isVideoCall);
     vManageCall = (RelativeLayout) findViewById(R.id.view_call_manage);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
@@ -129,9 +130,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateUIBtnVideo(isVideoCall);
   }
 
-  public void updateUIBtnVideo(Boolean isVideoCall){
+  public void updateUIBtnVideo(Boolean isVideoCall) {
     btnVideo.setSelected(isVideoCall);
   }
+
   public RelativeLayout getIncomingLayout() {
     // if (IncomingCallModule.activities.size() > 1) {
     //   return vIncomingThreeBtn;
@@ -389,9 +391,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onStop() {
     super.onStop();
   }
+
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
   private void onAppBackgrounded() {
-    if(mgr.isEmpty()){
+    if (mgr.isEmpty()) {
       return;
     }
     // event app in background
@@ -402,9 +405,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       mgr.finishAll();
     }
   }
+
   @OnLifecycleEvent(Lifecycle.Event.ON_START)
-  private void onAppForegrounded() {
-  }
+  private void onAppForegrounded() {}
 
   @Override
   protected void onDestroy() {
@@ -462,8 +465,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
     forceStopRingtone();
-    if(e.getKeyCode() == KeyEvent.KEYCODE_HOME){
-      Log.d("DEV","onKeyDown::KEYCODE_HOME");
+    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {
+      Log.d("DEV", "onKeyDown::KEYCODE_HOME");
     }
     return super.onKeyDown(k, e);
   }

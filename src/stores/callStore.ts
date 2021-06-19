@@ -38,14 +38,15 @@ export class CallStore {
   private getIncomingCallkeep = (
     uuid: string,
     o?: {
-      includingAnswered?: boolean
       from?: string
+      includingAnswered?: boolean
+      includeCallkeepAlreadyRejected?: boolean
     },
   ) =>
     this.calls.find(
       c =>
         c.incoming &&
-        !c.callkeepAlreadyRejected &&
+        (o?.includeCallkeepAlreadyRejected || !c.callkeepAlreadyRejected) &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
         (!o?.from || c.partyNumber === o.from),
@@ -98,8 +99,9 @@ export class CallStore {
   }
   onCallKeepEndCall = (uuid: string) => {
     const c = this.getIncomingCallkeep(uuid, {
-      includingAnswered: true,
       from: getCallPnData(uuid)?.from,
+      includingAnswered: true,
+      includeCallkeepAlreadyRejected: Platform.OS === 'android',
     })
     if (c) {
       c.callkeepAlreadyRejected = true
