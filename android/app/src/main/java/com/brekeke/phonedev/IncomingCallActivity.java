@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,8 +20,13 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
-public class IncomingCallActivity extends Activity implements View.OnClickListener {
+public class IncomingCallActivity extends Activity
+    implements View.OnClickListener, LifecycleObserver {
   public MediaPlayer mp;
   public KeyguardManager km;
 
@@ -44,11 +50,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public String uuid, callerName;
   public Boolean isVideoCall;
 
-  public Boolean closed = false, closedWithAnswerPressed = false;
+  public Boolean closed = false, closedWithAnswerPressed = false, isActivityStarted = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
+    Log.d("DEV", "onCreate: " + uuid);
     super.onCreate(savedInstanceState);
+    ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     this.startRingtone();
     km = ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE));
     mgr.push(this);
@@ -72,7 +80,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     isVideoCall = b.getBoolean("isVideoCall");
-
+    Log.d("DEV", "UUID::" + uuid + "::isVideo::" + isVideoCall);
     vManageCall = (RelativeLayout) findViewById(R.id.view_call_manage);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
@@ -118,6 +126,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     txtCallerName.setText(callerName);
     txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
+
+    updateUIBtnVideo(isVideoCall);
+  }
+
+  public void updateUIBtnVideo(Boolean isVideoCall) {
+    btnVideo.setSelected(isVideoCall);
   }
 
   public RelativeLayout getIncomingLayout() {
@@ -146,17 +160,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnTransferClick(View v) {
     IncomingCallModule.emit("transfer", uuid);
-    forceFinish();
+    mgr.finishAll();
   }
 
   public void onBtnParkClick(View v) {
     IncomingCallModule.emit("park", uuid);
-    forceFinish();
+    mgr.finishAll();
   }
 
   public void onBtnVideoClick(View v) {
     IncomingCallModule.emit("video", uuid);
-    forceFinish();
+    mgr.finishAll();
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -190,7 +204,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnDtmfClick(View v) {
     IncomingCallModule.emit("dtmf", uuid);
-    forceFinish();
+    mgr.finishAll();
   }
 
   public void updateUIBtnHold(Boolean isHold) {
@@ -205,13 +219,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnHoldClick(View v) {
-    //    if (v.isSelected()) {
-    //      btnHold.setSelected(false);
-    //      txtHoldBtn.setText("HOLD");
-    //    } else {
-    //      btnHold.setSelected(true);
-    //      txtHoldBtn.setText("UNHOLD");
-    //    }
     IncomingCallModule.emit("hold", uuid);
   }
 
@@ -363,7 +370,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
-      onDestroyBackToForeground();
+      // don't need, handle on event onAppBackgrounded
     }
   }
 
@@ -381,17 +388,32 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   @Override
-  protected void onDestroy() {
-    onDestroyBackToForeground();
-    forceStopRingtone();
-    super.onDestroy();
+  protected void onStop() {
+    super.onStop();
   }
 
-  public void onDestroyBackToForeground() {
-    if (closedWithAnswerPressed && mgr.getItemIndex(uuid) == 0) {
-      km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
-      IncomingCallModule.emit("backToForeground", "");
+  @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+  private void onAppBackgrounded() {
+    if (mgr.isEmpty()) {
+      return;
     }
+    // event app in background
+    if (mgr.last().uuid == uuid) {
+      this.forceStopRingtone();
+      IncomingCallModule.emit("backToForeground", "");
+      km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
+      mgr.finishAll();
+    }
+  }
+
+  @OnLifecycleEvent(Lifecycle.Event.ON_START)
+  private void onAppForegrounded() {}
+
+  @Override
+  protected void onDestroy() {
+    // instead by event app in background
+    forceStopRingtone();
+    super.onDestroy();
   }
 
   public void startRingtone() {
@@ -443,6 +465,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
     forceStopRingtone();
+    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {
+      Log.d("DEV", "onKeyDown::KEYCODE_HOME");
+    }
     return super.onKeyDown(k, e);
   }
 
