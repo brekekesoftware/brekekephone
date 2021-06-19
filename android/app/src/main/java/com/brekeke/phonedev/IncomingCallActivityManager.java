@@ -88,7 +88,7 @@ public class IncomingCallActivityManager {
       return null;
     }
     int index = this.getItemIndex(uuid);
-    if (index == -1) {
+    if (index == -1 || index == 0) {
       return null;
     } else {
       return activities.get(index - 1);

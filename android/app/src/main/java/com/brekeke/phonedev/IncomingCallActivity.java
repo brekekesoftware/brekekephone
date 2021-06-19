@@ -5,6 +5,7 @@ import static com.brekeke.phonedev.IncomingCallModule.mgr;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -21,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
@@ -145,11 +147,22 @@ public class IncomingCallActivity extends Activity
 
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallActivity itemBefore = mgr.before(uuid);
-    closeIncomingCallActivity(true);
-    if (itemBefore != null && itemBefore.closedWithAnswerPressed) {
-      IncomingCallModule.emit("hold", itemBefore.uuid);
+    State a = ProcessLifecycleOwner.get().getLifecycle().getCurrentState();
+     Log.d("DEV:", "onBtnAnswerClick: "+ a.name());
+    // case app state don't lock should be open app
+    if(km.isKeyguardLocked()){
+      IncomingCallActivity itemBefore = mgr.before(uuid);
+      closeIncomingCallActivity(true);
+      if (itemBefore != null && itemBefore.closedWithAnswerPressed) {
+        IncomingCallModule.emit("hold", itemBefore.uuid);
+      }
+    }else {
+      this.startActivity( new Intent(getApplicationContext(), MainActivity.class));
+      mgr.finishAll();
+
     }
+
+
   }
 
   public void onBtnRejectClick(View v) {
@@ -407,7 +420,9 @@ public class IncomingCallActivity extends Activity
   }
 
   @OnLifecycleEvent(Lifecycle.Event.ON_START)
-  private void onAppForegrounded() {}
+  private void onAppForegrounded() {
+    Log.d("DEV:", "onAppForegrounded: ");
+  }
 
   @Override
   protected void onDestroy() {

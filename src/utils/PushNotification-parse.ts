@@ -180,10 +180,11 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       : null
   }
   lastCallPnData = n
-  if (Platform.OS === 'android') {
+  if (Platform.OS === 'android' && AppState.currentState !== 'active') {
     RNCallKeep.endAllCalls()
     const uuid = newUuid().toUpperCase()
     callPnDataMap[uuid] = n
+    console.log('dev:', { lastCallPnData })
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
   // Call api to sign in
