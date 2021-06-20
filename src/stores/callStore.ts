@@ -31,6 +31,7 @@ export class CallStore {
   cancelRecentPn = () => {
     const uuid = this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
+    console.log('DEV::cancelRecentPn::endCallKeep')
     endCallKeep(uuid)
   }
 
@@ -42,8 +43,52 @@ export class CallStore {
       includingAnswered?: boolean
       includeCallkeepAlreadyRejected?: boolean
     },
-  ) =>
-    this.calls.find(
+  ) => {
+    console.log({ o })
+
+    for (let item of this.calls) {
+      if (item.incoming) {
+        console.log('item.incoming')
+        if (
+          o?.includeCallkeepAlreadyRejected ||
+          !item.callkeepAlreadyRejected
+        ) {
+          console.log({
+            includeCallkeepAlreadyRejected: o?.includeCallkeepAlreadyRejected,
+          })
+          console.log({ callkeepAlreadyRejected: item.callkeepAlreadyRejected })
+          if (!item.callkeepUuid || item.callkeepUuid === uuid) {
+            console.log({ callkeepUuid: item?.callkeepUuid, uuid })
+            if (
+              o?.includingAnswered ||
+              (!item.answered && !item.callkeepAlreadyAnswered)
+            ) {
+              console.log({
+                includingAnswered: o?.includingAnswered,
+                answered: item?.answered,
+                callkeepAlreadyAnswered: item?.callkeepAlreadyAnswered,
+              })
+
+              console.log({ partyNumber: item?.partyNumber, from: o?.from })
+              if (!o?.from || item.partyNumber === o.from) {
+                // console.log({partyNumber:item?.partyNumber, from: o?.from})
+              }
+            }
+          }
+        }
+      }
+      if (
+        item.incoming &&
+        (o?.includeCallkeepAlreadyRejected || !item.callkeepAlreadyRejected) &&
+        (!item.callkeepUuid || item.callkeepUuid === uuid) &&
+        (o?.includingAnswered ||
+          (!item.answered && !item.callkeepAlreadyAnswered)) &&
+        (!o?.from || item.partyNumber === o.from)
+      ) {
+        console.log({ itemCheck: item })
+      }
+    }
+    const result = this.calls.find(
       c =>
         c.incoming &&
         (o?.includeCallkeepAlreadyRejected || !c.callkeepAlreadyRejected) &&
@@ -51,6 +96,9 @@ export class CallStore {
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
         (!o?.from || c.partyNumber === o.from),
     )
+
+    return result
+  }
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Find the current incoming call which is not callkeep
     const c = this.getIncomingCallkeep(uuid, {
@@ -71,16 +119,18 @@ export class CallStore {
         at: Date.now(),
       }
     }
-    // Allow 1 ringing callkeep only
-    if (this.prevCallKeepUuid) {
-      const prevCall = this.calls.find(
-        c => c.callkeepUuid === this.prevCallKeepUuid,
-      )
-      if (prevCall) {
-        prevCall.callkeepAlreadyRejected = true
-      }
-      endCallKeep(this.prevCallKeepUuid)
-    }
+    // comment to make clear logic:??
+    // // Allow 1 ringing callkeep only
+    // if (this.prevCallKeepUuid) {
+    //   const prevCall = this.calls.find(
+    //     c => c.callkeepUuid === this.prevCallKeepUuid,
+    //   )
+    //   if (prevCall) {
+    //     prevCall.callkeepAlreadyRejected = true
+    //   }
+    //   console.log('DEV::onCallKeepDidDisplayIncomingCall::endCallKeep')
+    //   endCallKeep(this.prevCallKeepUuid)
+    // }
     this.prevCallKeepUuid = uuid
     // New timeout logic
     setAutoEndCallKeepTimer(uuid)
@@ -98,6 +148,7 @@ export class CallStore {
     }
   }
   onCallKeepEndCall = (uuid: string) => {
+    console.log('dev::', { uuid, itemPN: getCallPnData(uuid) })
     const c = this.getIncomingCallkeep(uuid, {
       from: getCallPnData(uuid)?.from,
       includingAnswered: true,
@@ -126,6 +177,7 @@ export class CallStore {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
       c.callkeepAlreadyRejected = true
+      console.log('DEV::endCallKeep::endCallKeep')
       endCallKeep(uuid)
     }
   }
@@ -162,6 +214,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
+
     // Get and check callkeep
     let recentPnUuid = ''
     let recentPnAction = ''
@@ -211,6 +264,7 @@ export class CallStore {
       }
     }
     this.calls = this.calls.filter(c => c.id !== id)
+    console.log('DEV::removeCall::endCallKeep')
     this.endCallKeep(c)
     if (!this.calls.length && Platform.OS !== 'web') {
       this.isLoudSpeakerEnabled = false
@@ -276,6 +330,7 @@ export class CallStore {
       // Add a guard of 10s to clear the interval
       if (diff > 10000) {
         if (uuid) {
+          console.log('DEV::startCall::startCall')
           endCallKeep(uuid)
         }
         this.clearStartCallIntervalTimer()
@@ -391,22 +446,27 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
     ) {
       callkeepMap = {}
     } else {
-      const prev = callStore.prevCallKeepUuid
-      Object.values(callkeepMap).forEach(k => {
-        const d2 = n - k.at
-        const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
-        if ((d2 > 20000 && !c) || (prev && prev !== k.uuid)) {
-          if (c) {
-            c.callkeepUuid = ''
-            c.callkeepAlreadyRejected = true
-          }
-          endCallKeep(k.uuid)
-          if (prev === k.uuid) {
-            callStore.recentPn = undefined
-          }
-        }
-      })
+      // comment to make clear logic ??
+      // const prev = callStore.prevCallKeepUuid
+      // Object.values(callkeepMap).forEach(k => {
+      //   const d2 = n - k.at
+      //   const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
+      //   if ((d2 > 20000 && !c) || (prev && prev !== k.uuid)) {
+      //     if (c) {
+      //       c.callkeepUuid = ''
+      //       c.callkeepAlreadyRejected = true
+      //       c.hangup()
+      //     }
+      //     console.log('dev::timmout:endCallKeep',{callkeepMapLenght: Object.keys(callkeepMap).length} )
+      //     // IncomingCall.closeIncomingCallActivity(false,k.uuid)
+      //     endCallKeep(k.uuid)
+      //     if (prev === k.uuid) {
+      //       callStore.recentPn = undefined
+      //     }
+      //   }
+      // })
     }
+
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
       const endAllCalls = () => {
@@ -423,7 +483,8 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
       ) {
         endAllCalls()
-        // IncomingCall.closeIncomingCallActivity(false)
+        console.log('DEV::Calls', { calls: callStore.calls })
+        IncomingCall.closeIncomingCallActivity(false)
       }
     }
     //
@@ -432,8 +493,15 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   }, 500)
 }
 const endCallKeep = (uuid: string) => {
+  console.log('dev::endCallKeep', { uuid })
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
+  // const c = callStore.calls.find(c => c.callkeepUuid === uuid)
+  // console.log('dev::endCallKeep',{c: !!c} )
+  // if(c){
+  //   c.hangup()
+  // }
+  IncomingCall.closeIncomingCallActivity(false, uuid)
   if (
     !callStore.calls.length &&
     (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)

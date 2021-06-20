@@ -1,6 +1,7 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
+import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -36,6 +37,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void showCall(String uuid, String callerName, Boolean isVideoCall) {
     Intent i;
+    Log.d("DEV:", "showCall::mgr::size " +mgr.getList().size());
     if (mgr.isEmpty()) {
       i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -58,6 +60,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void closeIncomingCallActivity(Boolean isAnswerPressed, String uuid) {
+    Log.d("DEV:", "closeIncomingCallActivity: ");
     if (mgr.isEmpty()) {
       return;
     }
@@ -67,7 +70,11 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
         mgr.pop();
       }
     } else {
-      mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
+      try{
+        mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
+      }catch (Exception ex){
+
+      }
     }
   }
 

@@ -53,6 +53,7 @@ export default class Call {
   }
 
   hangup = () => {
+    console.log('DEV::hangup')
     sip.hangupSession(this.id)
     this.store.endCallKeep(this)
   }

@@ -180,11 +180,11 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       : null
   }
   lastCallPnData = n
-  if (Platform.OS === 'android' && AppState.currentState !== 'active') {
+  if (Platform.OS === 'android') {
     RNCallKeep.endAllCalls()
     const uuid = newUuid().toUpperCase()
     callPnDataMap[uuid] = n
-    console.log('dev:', { lastCallPnData })
+    console.log('dev:', { callPnDataMap })
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
   // Call api to sign in
@@ -222,10 +222,12 @@ export type SipPn = {
 let callPnDataMap: { [k: string]: ParsedPn } = {}
 export const deleteCallPnData = (uuid: string) => {
   delete callPnDataMap[uuid]
+  console.log('delete', { uuid, callPnDataMap })
 }
 
 let lastCallPnData: ParsedPn | undefined = undefined
-export const getCallPnData = (uuid?: string) =>
-  (uuid && callPnDataMap[uuid]) || lastCallPnData
+export const getCallPnData = (uuid?: string) => {
+  return (uuid && callPnDataMap[uuid]) || lastCallPnData
+}
 
 export default parse

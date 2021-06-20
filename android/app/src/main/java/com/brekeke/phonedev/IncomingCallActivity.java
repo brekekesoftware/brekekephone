@@ -157,33 +157,41 @@ public class IncomingCallActivity extends Activity
         IncomingCallModule.emit("hold", itemBefore.uuid);
       }
     }else {
-      this.startActivity( new Intent(getApplicationContext(), MainActivity.class));
+      IncomingCallModule.emit("backToForeground", "");
       mgr.finishAll();
-
     }
 
 
   }
 
   public void onBtnRejectClick(View v) {
-    forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
+    int numberActivity =  mgr.getNumberActivitys(this);
     mgr.pop();
+    if(numberActivity == 1){
+      ExitActivity.exitApplication(this);
+    }else{
+      forceFinish();
+    }
   }
 
   public void onBtnTransferClick(View v) {
     IncomingCallModule.emit("transfer", uuid);
     mgr.finishAll();
+    IncomingCallModule.emit("backToForeground", uuid);
   }
 
   public void onBtnParkClick(View v) {
     IncomingCallModule.emit("park", uuid);
     mgr.finishAll();
+    IncomingCallModule.emit("backToForeground", uuid);
   }
 
   public void onBtnVideoClick(View v) {
     IncomingCallModule.emit("video", uuid);
     mgr.finishAll();
+    IncomingCallModule.emit("backToForeground", uuid);
+
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -236,14 +244,19 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onBtnEndCallClick(View v) {
-    forceFinish();
     IncomingCallModule.emit("endCall", uuid);
+    int numberActivity =  mgr.getNumberActivitys(this);
     mgr.pop();
+    if(numberActivity == 1){
+      ExitActivity.exitApplication(this);
+    }else{
+      forceFinish();
+    }
   }
 
   public void onBtnDeclineClick(View v) {
-    forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
+    forceFinish();
     mgr.pop();
   }
 
@@ -260,6 +273,7 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onBtnUnlockClick(View v) {
+    IncomingCallModule.emit("backToForeground","");
     mgr.finishAll();
   }
 
@@ -407,6 +421,7 @@ public class IncomingCallActivity extends Activity
 
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
   private void onAppBackgrounded() {
+    Log.d("DEV","onAppBackgrounded");
     if (mgr.isEmpty()) {
       return;
     }
@@ -421,7 +436,6 @@ public class IncomingCallActivity extends Activity
 
   @OnLifecycleEvent(Lifecycle.Event.ON_START)
   private void onAppForegrounded() {
-    Log.d("DEV:", "onAppForegrounded: ");
   }
 
   @Override

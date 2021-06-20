@@ -215,6 +215,7 @@ export const setupCallKeep = async () => {
   if (Platform.OS === 'android') {
     RNCallKeep.addEventListener('showIncomingCallUi', (e: TEvent) => {
       const uuid = e.callUUID.toUpperCase()
+      console.log('DEV::showIncomingCallUi')
       IncomingCall.showCall(
         uuid,
         getCallPnData(uuid)?.from || 'Loading...',
@@ -225,35 +226,40 @@ export const setupCallKeep = async () => {
     // Events from our custom IncomingCall module
     const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
+      console.log('DEV::answerCall::' + uuid)
       uuid = uuid.toUpperCase()
       callStore.onCallKeepAnswerCall(uuid)
       RNCallKeep.setCurrentCallActive(uuid)
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      console.log({ DEV: 'rejectCall::' + uuid })
+      console.log('DEV::rejectCall::' + uuid)
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
       RNCallKeep.endAllCalls()
     })
     eventEmitter.addListener('endCall', (uuid: string) => {
+      console.log('DEV::endCall::' + uuid)
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
       RNCallKeep.endAllCalls()
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
+      console.log('DEV::transfer::' + uuid)
       BackgroundTimer.setTimeout(() => {
         Nav().goToPageTransferChooseUser()
       }, 500)
     })
 
     eventEmitter.addListener('park', (uuid: string) => {
+      console.log('DEV::park::' + uuid)
       BackgroundTimer.setTimeout(() => {
         Nav().goToPageCallParks2()
       }, 500)
     })
 
     eventEmitter.addListener('video', (uuid: string) => {
+      console.log('DEV::video::' + uuid)
       const c = callStore.currentCall
       if (c) {
         c.localVideoEnabled ? c.disableVideo() : c.enableVideo()
@@ -261,23 +267,28 @@ export const setupCallKeep = async () => {
     })
 
     eventEmitter.addListener('speaker', (uuid: string) => {
+      console.log('DEV::speaker::' + uuid)
       callStore.toggleLoudSpeaker()
     })
 
     eventEmitter.addListener('mute', (uuid: string) => {
+      console.log('DEV::mute::' + uuid)
       callStore.currentCall?.toggleMuted()
     })
 
     eventEmitter.addListener('record', (uuid: string) => {
+      console.log('DEV::record::' + uuid)
       callStore.currentCall?.toggleRecording()
     })
 
     eventEmitter.addListener('dtmf', (uuid: string) => {
+      console.log('DEV::dtmf::' + uuid)
       BackgroundTimer.setTimeout(() => {
         Nav().goToPageDtmfKeypad()
       }, 500)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
+      console.log('DEV::hold::' + uuid)
       callStore.currentCall?.toggleHold()
       callStore.currentCall &&
         IncomingCall.setOnHold(uuid, callStore.currentCall?.holding)
