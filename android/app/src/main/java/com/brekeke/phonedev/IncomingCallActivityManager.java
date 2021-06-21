@@ -22,6 +22,7 @@ public class IncomingCallActivityManager {
 
   public int getNumberActivitys(Activity a) {
     ActivityManager manager = (ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE);
+    // Check null before get()
     ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
     return info.numActivities;
   }
@@ -35,11 +36,11 @@ public class IncomingCallActivityManager {
   }
 
   public IncomingCallActivity last() {
-    return activities.get(activities.size() - 1);
+    return activities.isEmpty() ? null : activities.get(activities.size() - 1);
   }
 
   public IncomingCallActivity first() {
-    return activities.get(0);
+    return activities.isEmpty() ? null : activities.get(0);
   }
 
   public boolean isEmpty() {
@@ -58,7 +59,7 @@ public class IncomingCallActivityManager {
 
   public IncomingCallActivity at(String uuid) {
     for (IncomingCallActivity item : activities) {
-      if (item.uuid.equals(uuid)) {
+      if (item.uuid == uuid) {
         return item;
       }
     }
@@ -68,7 +69,7 @@ public class IncomingCallActivityManager {
   public int getItemIndex(String uuid) {
     int index = -1;
     for (int i = 0; i < activities.size(); i++) {
-      if (activities.get(i).uuid.equals(uuid)) {
+      if (activities.get(i).uuid == uuid) {
         return i;
       }
     }
@@ -99,12 +100,8 @@ public class IncomingCallActivityManager {
     if (activities.size() <= 1) {
       return null;
     }
-    int index =
-        IntStream.range(0, activities.size())
-            .filter(i -> activities.get(i).uuid.equals(uuid))
-            .findFirst() // first occurrence
-            .orElse(-1);
-    if (index == activities.size() - 2) {
+    int index = this.getItemIndex(uuid);
+    if (index == -1 || index == activities.size() - 1) {
       return null;
     } else {
       return activities.get(index + 1);
