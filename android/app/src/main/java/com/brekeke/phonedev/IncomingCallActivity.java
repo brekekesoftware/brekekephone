@@ -384,6 +384,7 @@ public class IncomingCallActivity extends Activity
     // or password to unlock.
     if (!isAnswerPressed || !km.isKeyguardLocked()) {
       forceFinish();
+      mgr.removeUUID(uuid);
       return true;
     }
     getIncomingLayout().setVisibility(View.GONE);

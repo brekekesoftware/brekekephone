@@ -3,6 +3,7 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
@@ -15,16 +16,25 @@ public class IncomingCallActivityManager {
 
   public void removeUUID(String uuid) {
     int index = this.getItemIndex(uuid);
+    Log.d("DEV::", "removeUUID::index::"+ index + "::size::"+ activities.size());
     if (index != -1) {
       activities.remove(index);
     }
+    Log.d("DEV::", "removeUUID::"+ uuid + "::size::"+ activities.size());
   }
 
   public int getNumberActivitys(Activity a) {
     ActivityManager manager = (ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE);
-    // Check null before get()
-    ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
-    return info.numActivities;
+    int numberActivitys = 1; // default have 1 activity runing
+    // getRunningTasks will be throw exception
+    try {
+      ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
+      numberActivitys = info.numActivities;
+    }catch (Exception ex){
+      numberActivitys = 1;
+      Log.e("brekeke", "getNumberActivitys: "+ ex.getMessage() );
+    }
+    return numberActivitys;
   }
 
   public void finishAll() {
@@ -59,7 +69,9 @@ public class IncomingCallActivityManager {
 
   public IncomingCallActivity at(String uuid) {
     for (IncomingCallActivity item : activities) {
-      if (item.uuid == uuid) {
+      Log.d("DEV::", "at::uuid::" + item.uuid);
+      if (item.uuid.equals(uuid)) {
+        Log.d("DEV::", "at::uuid::" + item.uuid);
         return item;
       }
     }
@@ -69,7 +81,7 @@ public class IncomingCallActivityManager {
   public int getItemIndex(String uuid) {
     int index = -1;
     for (int i = 0; i < activities.size(); i++) {
-      if (activities.get(i).uuid == uuid) {
+      if (activities.get(i).uuid.equals(uuid)) {
         return i;
       }
     }
