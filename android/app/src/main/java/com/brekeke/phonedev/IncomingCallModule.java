@@ -59,22 +59,14 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void closeIncomingCallActivity(Boolean isAnswerPressed, String uuid) {
+  void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
     Log.d("DEV:", "closeIncomingCallActivity: ");
     if (mgr.isEmpty()) {
       return;
     }
-    // TODO loop for each activities
-    if (uuid == null) {
-      if (mgr.last().closeIncomingCallActivity(isAnswerPressed)) {
-        mgr.pop();
-      }
-    } else {
-      try{
-        mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
-      }catch (Exception ex){
-
-      }
+    try{
+      mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
+    }catch (Exception ex){
     }
   }
 
