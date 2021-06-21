@@ -225,61 +225,38 @@ export const setupCallKeep = async () => {
     // Events from our custom IncomingCall module
     const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
-      uuid = uuid.toUpperCase()
-      callStore.onCallKeepAnswerCall(uuid)
-      RNCallKeep.setCurrentCallActive(uuid)
+      callStore.onCallKeepAnswerCall(uuid.toUpperCase())
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      uuid = uuid.toUpperCase()
-      callStore.onCallKeepEndCall(uuid)
-      RNCallKeep.endAllCalls()
+      callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('endCall', (uuid: string) => {
-      uuid = uuid.toUpperCase()
-      callStore.onCallKeepEndCall(uuid)
-      RNCallKeep.endAllCalls()
+      callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        Nav().goToPageTransferChooseUser()
-      }, 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 500)
     })
-
     eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        Nav().goToPageCallParks2()
-      }, 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 500)
     })
-
     eventEmitter.addListener('video', (uuid: string) => {
-      const c = callStore.currentCall
-      if (c) {
-        c.localVideoEnabled ? c.disableVideo() : c.enableVideo()
-      }
+      callStore.currentCall?.toggleVideo()
     })
-
     eventEmitter.addListener('speaker', (uuid: string) => {
       callStore.toggleLoudSpeaker()
     })
-
     eventEmitter.addListener('mute', (uuid: string) => {
       callStore.currentCall?.toggleMuted()
     })
-
     eventEmitter.addListener('record', (uuid: string) => {
       callStore.currentCall?.toggleRecording()
     })
-
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        Nav().goToPageDtmfKeypad()
-      }, 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 500)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.currentCall?.toggleHold()
-      callStore.currentCall &&
-        IncomingCall.setOnHold(uuid, callStore.currentCall?.holding)
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {

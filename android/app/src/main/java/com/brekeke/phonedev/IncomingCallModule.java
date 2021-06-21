@@ -36,23 +36,21 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void showCall(String uuid, String callerName, Boolean isVideoCall) {
     Intent i;
-    if (mgr.isEmpty()) {
+    IncomingCallActivity prev = mgr.last();
+    if (prev == null) {
       i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     } else {
-      IncomingCallActivity prev = mgr.last();
       prev.forceStopRingtone();
       i = new Intent(prev, IncomingCallActivity.class);
     }
-
     i.putExtra("uuid", uuid);
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
-
-    if (mgr.isEmpty()) {
+    if (prev == null) {
       reactContext.startActivity(i);
     } else {
-      mgr.last().startActivity(i);
+      prev.startActivity(i);
     }
   }
 
@@ -73,7 +71,10 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void setOnHold(String uuid, Boolean hold) {
-    mgr.at(uuid).updateUIBtnHold(hold);
+  void setOnHold(String uuid, Boolean holding) {
+    try {
+      mgr.at(uuid).updateBtnHoldUI(holding);
+    } catch (Exception ex) {
+    }
   }
 }

@@ -203,13 +203,13 @@ public class IncomingCallActivity extends Activity
     IncomingCallModule.emit("dtmf", uuid);
   }
 
-  public void updateUIBtnHold(Boolean isHold) {
+  public void updateBtnHoldUI(Boolean holding) {
     runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            btnHold.setSelected(isHold);
-            txtHoldBtn.setText(isHold ? "HOLD" : "UNHOLD");
+            btnHold.setSelected(holding);
+            txtHoldBtn.setText(holding ? "UNHOLD" : "HOLD");
           }
         });
   }

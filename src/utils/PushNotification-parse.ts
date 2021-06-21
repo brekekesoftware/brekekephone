@@ -224,8 +224,7 @@ export const deleteCallPnData = (uuid: string) => {
 }
 
 let lastCallPnData: ParsedPn | undefined = undefined
-export const getCallPnData = (uuid?: string) => {
-  return (uuid && callPnDataMap[uuid]) || lastCallPnData
-}
+export const getCallPnData = (uuid?: string) =>
+  (uuid && callPnDataMap[uuid]) || lastCallPnData
 
 export default parse

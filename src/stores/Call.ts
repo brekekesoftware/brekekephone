@@ -1,11 +1,9 @@
 import { action, computed, observable } from 'mobx'
-import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import IncallManager from 'react-native-incall-manager'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { IncomingCall } from '../utils/RnNativeModules'
 import { CallStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
@@ -65,6 +63,8 @@ export default class Call {
   @observable remoteVideoEnabled = false
   enableVideo = () => sip.enableVideo(this.id)
   disableVideo = () => sip.disableVideo(this.id)
+  toggleVideo = () =>
+    this.localVideoEnabled ? this.disableVideo() : this.enableVideo()
 
   @observable remoteVideoStreamObject: MediaStream | null = null
   voiceStreamObject: MediaStream | null = null
@@ -105,14 +105,7 @@ export default class Call {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)
     }
-    // Hack to fix no voice after unhold: try toggling speaker
-    // TODO temporary disable with !true &&
-    if (!true && Platform.OS === 'ios' && !this.holding) {
-      IncallManager.setForceSpeakerphoneOn(!this.store.isLoudSpeakerEnabled)
-      BackgroundTimer.setTimeout(() => {
-        IncallManager.setForceSpeakerphoneOn(this.store.isLoudSpeakerEnabled)
-      }, 0)
-    }
+    IncomingCall.setOnHold(this.callkeepUuid, this.holding)
     const fn = this.holding ? pbx.holdTalker : pbx.unholdTalker
     return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
@@ -125,6 +118,7 @@ export default class Call {
         // Hack to fix no voice after unhold: only setOnHold in unhold case
         RNCallKeep.setOnHold(this.callkeepUuid, false)
       }
+      IncomingCall.setOnHold(this.callkeepUuid, this.holding)
     }
     if (typeof err !== 'boolean') {
       const message = this.holding

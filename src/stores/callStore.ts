@@ -109,6 +109,7 @@ export class CallStore {
       console.error('SIP PN debug: reject by onCallKeepEndCall')
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
+      IncomingCall.closeIncomingCallActivity(uuid)
     }
     if (this.prevCallKeepUuid === uuid) {
       this.prevCallKeepUuid = undefined
@@ -416,8 +417,8 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
           clearAutoEndCallKeepTimer()
         }
         RNCallKeep.endAllCalls()
-        callStore.recentPn = undefined
         IncomingCall.closeAllIncomingCallActivities()
+        callStore.recentPn = undefined
       }
       if (Platform.OS === 'ios') {
         endAllCalls()
@@ -436,12 +437,13 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 const endCallKeep = (uuid: string) => {
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
-  IncomingCall.closeIncomingCallActivity(uuid, false)
+  IncomingCall.closeIncomingCallActivity(uuid)
   if (
     !callStore.calls.length &&
     (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)
   ) {
     RNCallKeep.endAllCalls()
+    IncomingCall.closeAllIncomingCallActivities()
     callStore.recentPn = undefined
   } else {
     RNCallKeep.rejectCall(uuid)
