@@ -19,17 +19,16 @@ public class IncomingCallActivityManager {
     }
   }
 
-  public int getNumberActivitys(Activity a) {
-    ActivityManager manager = (ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE);
-    int numberActivitys = 1; // default have 1 activity runing
-    // getRunningTasks will be throw exception
+  public boolean shouldUseExitActivity(Activity a) {
     try {
-      ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
-      numberActivitys = info.numActivities;
+      return ((ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE))
+              .getRunningTasks(1)
+              .get(0)
+              .numActivities
+          == 1;
     } catch (Exception ex) {
-      numberActivitys = 1;
+      return true;
     }
-    return numberActivitys;
   }
 
   public void finishAll() {
@@ -81,7 +80,7 @@ public class IncomingCallActivityManager {
     return index;
   }
 
-  public String getUuidOfBeforeItem(String uuid) {
+  public String getUuidBefore(String uuid) {
     return this.before(uuid) == null ? "" : this.before(uuid).uuid;
   }
 
