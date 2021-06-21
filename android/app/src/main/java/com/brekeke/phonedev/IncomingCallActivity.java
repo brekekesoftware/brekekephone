@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -55,7 +54,6 @@ public class IncomingCallActivity extends Activity
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
-    Log.d("DEV", "onCreate: " + uuid);
     super.onCreate(savedInstanceState);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     this.startRingtone();
@@ -81,7 +79,6 @@ public class IncomingCallActivity extends Activity
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     isVideoCall = b.getBoolean("isVideoCall");
-    Log.d("DEV", "UUID::" + uuid + "::isVideo::" + isVideoCall);
     vManageCall = (RelativeLayout) findViewById(R.id.view_call_manage);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
@@ -147,14 +144,8 @@ public class IncomingCallActivity extends Activity
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     State a = ProcessLifecycleOwner.get().getLifecycle().getCurrentState();
-    Log.d("DEV:", "onBtnAnswerClick: " + a.name());
-    // case app state don't lock should be open app
     if (km.isKeyguardLocked()) {
-      IncomingCallActivity itemBefore = mgr.before(uuid);
       closeIncomingCallActivity(true);
-      if (itemBefore != null && itemBefore.closedWithAnswerPressed) {
-        IncomingCallModule.emit("hold", itemBefore.uuid);
-      }
     } else {
       IncomingCallModule.emit("backToForeground", "");
       mgr.finishAll();
@@ -257,8 +248,8 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onBtnHoldAcceptClick(View v) {
+    // Should auto hold the previous one in js after answer
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallModule.emit("hold", mgr.getUuidOfBeforeItem(uuid));
     closeIncomingCallActivity(true);
   }
 
@@ -418,7 +409,6 @@ public class IncomingCallActivity extends Activity
 
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
   private void onAppBackgrounded() {
-    Log.d("DEV", "onAppBackgrounded");
     if (mgr.isEmpty()) {
       return;
     }
@@ -490,9 +480,7 @@ public class IncomingCallActivity extends Activity
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
     forceStopRingtone();
-    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {
-      Log.d("DEV", "onKeyDown::KEYCODE_HOME");
-    }
+    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {}
     return super.onKeyDown(k, e);
   }
 

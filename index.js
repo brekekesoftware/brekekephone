@@ -2,11 +2,9 @@
 // https://stackoverflow.com/questions/60729710
 try {
   if (typeof __DEV__ !== 'undefined') {
-    const { DevSettings, Platform } = require('react-native')
-    if (Platform.OS === 'ios') {
-      DevSettings._nativeModule.setHotLoadingEnabled(true)
-      DevSettings._nativeModule.setHotLoadingEnabled(false)
-    }
+    const { DevSettings } = require('react-native')
+    DevSettings._nativeModule.setHotLoadingEnabled(true)
+    DevSettings._nativeModule.setHotLoadingEnabled(false)
   }
 } catch (err) {
   console.error(err)

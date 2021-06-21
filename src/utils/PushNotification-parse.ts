@@ -184,7 +184,6 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     RNCallKeep.endAllCalls()
     const uuid = newUuid().toUpperCase()
     callPnDataMap[uuid] = n
-    console.log('dev:', { callPnDataMap })
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
   // Call api to sign in
@@ -222,7 +221,6 @@ export type SipPn = {
 let callPnDataMap: { [k: string]: ParsedPn } = {}
 export const deleteCallPnData = (uuid: string) => {
   delete callPnDataMap[uuid]
-  console.log('delete', { uuid, callPnDataMap })
 }
 
 let lastCallPnData: ParsedPn | undefined = undefined

@@ -31,7 +31,6 @@ export class CallStore {
   cancelRecentPn = () => {
     const uuid = this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
-    console.log('DEV::cancelRecentPn::endCallKeep')
     endCallKeep(uuid)
   }
 
@@ -43,52 +42,8 @@ export class CallStore {
       includingAnswered?: boolean
       includeCallkeepAlreadyRejected?: boolean
     },
-  ) => {
-    console.log({ o })
-
-    for (let item of this.calls) {
-      if (item.incoming) {
-        console.log('item.incoming')
-        if (
-          o?.includeCallkeepAlreadyRejected ||
-          !item.callkeepAlreadyRejected
-        ) {
-          console.log({
-            includeCallkeepAlreadyRejected: o?.includeCallkeepAlreadyRejected,
-          })
-          console.log({ callkeepAlreadyRejected: item.callkeepAlreadyRejected })
-          if (!item.callkeepUuid || item.callkeepUuid === uuid) {
-            console.log({ callkeepUuid: item?.callkeepUuid, uuid })
-            if (
-              o?.includingAnswered ||
-              (!item.answered && !item.callkeepAlreadyAnswered)
-            ) {
-              console.log({
-                includingAnswered: o?.includingAnswered,
-                answered: item?.answered,
-                callkeepAlreadyAnswered: item?.callkeepAlreadyAnswered,
-              })
-
-              console.log({ partyNumber: item?.partyNumber, from: o?.from })
-              if (!o?.from || item.partyNumber === o.from) {
-                // console.log({partyNumber:item?.partyNumber, from: o?.from})
-              }
-            }
-          }
-        }
-      }
-      if (
-        item.incoming &&
-        (o?.includeCallkeepAlreadyRejected || !item.callkeepAlreadyRejected) &&
-        (!item.callkeepUuid || item.callkeepUuid === uuid) &&
-        (o?.includingAnswered ||
-          (!item.answered && !item.callkeepAlreadyAnswered)) &&
-        (!o?.from || item.partyNumber === o.from)
-      ) {
-        console.log({ itemCheck: item })
-      }
-    }
-    const result = this.calls.find(
+  ) =>
+    this.calls.find(
       c =>
         c.incoming &&
         (o?.includeCallkeepAlreadyRejected || !c.callkeepAlreadyRejected) &&
@@ -96,9 +51,6 @@ export class CallStore {
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
         (!o?.from || c.partyNumber === o.from),
     )
-
-    return result
-  }
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Find the current incoming call which is not callkeep
     const c = this.getIncomingCallkeep(uuid, {
@@ -119,8 +71,7 @@ export class CallStore {
         at: Date.now(),
       }
     }
-    // comment to make clear logic:??
-    // for ios: Allow 1 ringing callkeep only
+    // Allow 1 ringing callkeep only on ios
     if (this.prevCallKeepUuid && Platform.OS === 'ios') {
       const prevCall = this.calls.find(
         c => c.callkeepUuid === this.prevCallKeepUuid,
@@ -128,7 +79,6 @@ export class CallStore {
       if (prevCall) {
         prevCall.callkeepAlreadyRejected = true
       }
-      console.log('DEV::onCallKeepDidDisplayIncomingCall::endCallKeep')
       endCallKeep(this.prevCallKeepUuid)
     }
     this.prevCallKeepUuid = uuid
@@ -148,7 +98,6 @@ export class CallStore {
     }
   }
   onCallKeepEndCall = (uuid: string) => {
-    console.log('dev::', { uuid, itemPN: getCallPnData(uuid) })
     const c = this.getIncomingCallkeep(uuid, {
       from: getCallPnData(uuid)?.from,
       includingAnswered: true,
@@ -177,7 +126,6 @@ export class CallStore {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
       c.callkeepAlreadyRejected = true
-      console.log('DEV::endCallKeep::endCallKeep')
       endCallKeep(uuid)
     }
   }
@@ -264,7 +212,6 @@ export class CallStore {
       }
     }
     this.calls = this.calls.filter(c => c.id !== id)
-    console.log('DEV::removeCall::endCallKeep')
     this.endCallKeep(c)
     if (!this.calls.length && Platform.OS !== 'web') {
       this.isLoudSpeakerEnabled = false
@@ -330,7 +277,6 @@ export class CallStore {
       // Add a guard of 10s to clear the interval
       if (diff > 10000) {
         if (uuid) {
-          console.log('DEV::startCall::startCall')
           endCallKeep(uuid)
         }
         this.clearStartCallIntervalTimer()
@@ -446,8 +392,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
     ) {
       callkeepMap = {}
     } else {
-      // comment to make clear logic ??
-      // xử lý sau 20s thì endcall
       const prev = callStore.prevCallKeepUuid
       Object.values(callkeepMap).forEach(k => {
         const d2 = n - k.at
@@ -457,9 +401,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
             c.callkeepUuid = ''
             c.callkeepAlreadyRejected = true
           }
-          console.log('dev::timmout:endCallKeep', {
-            callkeepMapLenght: Object.keys(callkeepMap).length,
-          })
           endCallKeep(k.uuid)
           if (prev === k.uuid) {
             callStore.recentPn = undefined
@@ -476,6 +417,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         }
         RNCallKeep.endAllCalls()
         callStore.recentPn = undefined
+        IncomingCall.closeAllIncomingCallActivities()
       }
       if (Platform.OS === 'ios') {
         endAllCalls()
@@ -484,12 +426,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
       ) {
         endAllCalls()
-        console.log('DEV::Calls', { calls: callStore.calls })
-        // finish for last call
-        if (callStore.calls.length) {
-          const call = callStore.calls[callStore.calls.length - 1]
-          IncomingCall.closeIncomingCallActivity(call.callkeepUuid, false)
-        }
       }
     }
     //
@@ -498,7 +434,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   }, 500)
 }
 const endCallKeep = (uuid: string) => {
-  console.log('dev::endCallKeep', { uuid })
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
   IncomingCall.closeIncomingCallActivity(uuid, false)

@@ -90,9 +90,9 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      console.error(ev.incomingMessage?.getHeader('X-PN-ID'))
       this.emit('session-started', {
         id: ev.sessionId,
+        pnId: ev.incomingMessage?.getHeader('X-PN-ID'),
         incoming: ev.rtcSession.direction === 'incoming',
         partyNumber: ev.rtcSession.remote_identity.uri.user,
         partyName: ev.rtcSession.remote_identity.display_name,
