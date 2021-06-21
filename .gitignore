@@ -59,6 +59,7 @@ package-lock.json
 .env.production.local
 .env
 coverage
+.husky/_
 
 # Bundle artifact
 *.jsbundle
