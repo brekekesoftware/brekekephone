@@ -122,10 +122,6 @@ public class IncomingCallActivity extends Activity
     txtCallerName.setText(callerName);
     txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
 
-    updateBtnVideoUI(isVideoCall);
-  }
-
-  public void updateBtnVideoUI(Boolean isVideoCall) {
     btnVideo.setSelected(isVideoCall);
   }
 
@@ -143,19 +139,16 @@ public class IncomingCallActivity extends Activity
     if (km.isKeyguardLocked()) {
       closeIncomingCallActivity(true);
     } else {
-      IncomingCallModule.emit("backToForeground", "");
-      IncomingCallModule.mgr.finishAll();
+      IncomingCallModule.mgr.removeAll();
     }
   }
 
   public void onBtnRejectClick(View v) {
     IncomingCallModule.emit("rejectCall", uuid);
-    IncomingCallModule.mgr.pop();
-    if (IncomingCallModule.mgr.shouldUseExitActivity()) {
+    if (IncomingCallModule.mgr.shouldUseExitActivity(this)) {
       ExitActivity.exitApplication(this);
-    } else {
-      forceFinish();
     }
+    IncomingCallModule.mgr.remove(uuid);
   }
 
   public void onBtnTransferClick(View v) {
@@ -218,22 +211,6 @@ public class IncomingCallActivity extends Activity
     IncomingCallModule.emit("hold", uuid);
   }
 
-  public void onBtnEndCallClick(View v) {
-    IncomingCallModule.emit("endCall", uuid);
-    IncomingCallModule.mgr.pop();
-    if (IncomingCallModule.mgr.shouldUseExitActivity()) {
-      ExitActivity.exitApplication(this);
-    } else {
-      forceFinish();
-    }
-  }
-
-  public void onBtnDeclineClick(View v) {
-    IncomingCallModule.emit("rejectCall", uuid);
-    forceFinish();
-    IncomingCallModule.mgr.pop();
-  }
-
   public void onBtnHoldAcceptClick(View v) {
     // Should auto hold the previous one in js after answer
     IncomingCallModule.emit("answerCall", uuid);
@@ -242,12 +219,12 @@ public class IncomingCallActivity extends Activity
 
   public void onBtnEndAcceptClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallModule.emit("endCall", IncomingCallModule.mgr.getUuidBefore(uuid));
+    IncomingCallModule.emit("endCall", IncomingCallModule.mgr.uuidBefore(uuid));
     closeIncomingCallActivity(true);
   }
 
   public void onBtnUnlockClick(View v) {
-    // Already invoked in onDismissSucceeded
+    // Already invoked in onKeyguardDismissSucceeded
   }
 
   public void onRequestUnlock(View v) {
@@ -257,12 +234,12 @@ public class IncomingCallActivity extends Activity
           @Override
           public void onDismissSucceeded() {
             super.onDismissSucceeded();
-            onDismissSucceeded(v);
+            onKeyguardDismissSucceeded(v);
           }
         });
   }
 
-  public void onDismissSucceeded(View v) {
+  public void onKeyguardDismissSucceeded(View v) {
     switch (v.getId()) {
       case R.id.btn_unlock:
         onBtnUnlockClick(v);
@@ -282,8 +259,7 @@ public class IncomingCallActivity extends Activity
       default:
         break;
     }
-    IncomingCallModule.emit("backToForeground", "");
-    IncomingCallModule.mgr.finishAll();
+    IncomingCallModule.mgr.removeAll();
   }
 
   @Override
@@ -299,7 +275,7 @@ public class IncomingCallActivity extends Activity
         onBtnEndAcceptClick(v);
         break;
       case R.id.btn_deciline:
-        onBtnDeclineClick(v);
+        onBtnRejectClick(v);
         break;
       case R.id.btn_answer:
         onBtnAnswerClick(v);
@@ -332,7 +308,7 @@ public class IncomingCallActivity extends Activity
         onBtnHoldClick(v);
         break;
       case R.id.btn_end_call:
-        onBtnEndCallClick(v);
+        onBtnRejectClick(v);
         break;
       default:
         break;
@@ -344,12 +320,8 @@ public class IncomingCallActivity extends Activity
       return true;
     }
     closedWithAnswerPressed = isAnswerPressed;
-    // isKeyguardLocked() - Return whether the keyguard is currently locked.
-    // isDeviceLocked() - Returns whether the device is currently locked and requires a PIN, pattern
-    // or password to unlock.
     if (!isAnswerPressed || !km.isKeyguardLocked()) {
-      forceFinish();
-      IncomingCallModule.mgr.removeUUID(uuid);
+      IncomingCallModule.mgr.remove(uuid);
       return true;
     }
     getIncomingLayout().setVisibility(View.GONE);
@@ -363,7 +335,6 @@ public class IncomingCallActivity extends Activity
     try {
       finish();
     } catch (Exception e) {
-      // don't need, handle on event onAppBackgrounded
     }
   }
 
@@ -375,36 +346,27 @@ public class IncomingCallActivity extends Activity
     }
   }
 
-  @Override
-  protected void onPause() {
-    super.onPause();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-  }
-
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-  private void onAppBackgrounded() {
-    if (IncomingCallModule.mgr.isEmpty()) {
+  public void onAppBackgrounded() {
+    forceStopRingtone();
+    if (IncomingCallModule.mgr.activities.size() != 1) {
       return;
     }
-    // event app in background
-    if (IncomingCallModule.mgr.last().uuid == uuid) {
-      this.forceStopRingtone();
-      IncomingCallModule.emit("backToForeground", "");
-      km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {});
-      IncomingCallModule.mgr.finishAll();
+    if (closedWithAnswerPressed) {
+      km.requestDismissKeyguard(
+          this,
+          new KeyguardManager.KeyguardDismissCallback() {
+            @Override
+            public void onDismissSucceeded() {
+              super.onDismissSucceeded();
+              IncomingCallModule.mgr.removeAll();
+            }
+          });
     }
   }
-
-  @OnLifecycleEvent(Lifecycle.Event.ON_START)
-  private void onAppForegrounded() {}
 
   @Override
   protected void onDestroy() {
-    // instead by event app in background
     forceStopRingtone();
     super.onDestroy();
   }
@@ -458,7 +420,6 @@ public class IncomingCallActivity extends Activity
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
     forceStopRingtone();
-    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {}
     return super.onKeyDown(k, e);
   }
 

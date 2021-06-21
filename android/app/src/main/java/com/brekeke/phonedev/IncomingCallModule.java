@@ -6,10 +6,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-class IncomingCallModule extends ReactContextBaseJavaModule {
+public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter = null;
 
-  static void emit(String name, String data) {
+  public static void emit(String name, String data) {
     eventEmitter.emit(name, data);
   }
 
@@ -34,7 +34,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void showCall(String uuid, String callerName, Boolean isVideoCall) {
+  public void showCall(String uuid, String callerName, Boolean isVideoCall) {
     Intent i;
     IncomingCallActivity prev = mgr.last();
     if (prev == null) {
@@ -47,6 +47,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
     i.putExtra("uuid", uuid);
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
+
     if (prev == null) {
       reactContext.startActivity(i);
     } else {
@@ -55,8 +56,8 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
-    if (mgr.isEmpty()) {
+  public void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
+    if (mgr.activities.isEmpty()) {
       return;
     }
     try {
@@ -66,12 +67,12 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void closeAllIncomingCallActivities() {
-    mgr.finishAll();
+  public void closeAllIncomingCallActivities() {
+    mgr.removeAll();
   }
 
   @ReactMethod
-  void setOnHold(String uuid, Boolean holding) {
+  public void setOnHold(String uuid, Boolean holding) {
     try {
       mgr.at(uuid).updateBtnHoldUI(holding);
     } catch (Exception ex) {

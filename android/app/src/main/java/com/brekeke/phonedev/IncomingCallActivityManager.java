@@ -6,59 +6,30 @@ import android.content.Context;
 import java.util.ArrayList;
 
 public class IncomingCallActivityManager {
-  public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
-
-  public ArrayList<IncomingCallActivity> getList() {
-    return activities;
-  }
-
-  public void removeUUID(String uuid) {
-    int index = this.getItemIndex(uuid);
-    if (index != -1) {
-      activities.remove(index);
-    }
-  }
-
-  public boolean shouldUseExitActivity(Activity a) {
-    try {
-      return ((ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE))
-              .getRunningTasks(1)
-              .get(0)
-              .numActivities
-          == 1;
-    } catch (Exception ex) {
-      return true;
-    }
-  }
-
-  public void finishAll() {
-    activities.forEach(
-        incomingCallActivity -> {
-          incomingCallActivity.forceFinish();
-        });
-    activities.clear();
-  }
-
-  public IncomingCallActivity last() {
-    return activities.isEmpty() ? null : activities.get(activities.size() - 1);
-  }
-
-  public IncomingCallActivity first() {
-    return activities.isEmpty() ? null : activities.get(0);
-  }
-
-  public boolean isEmpty() {
-    return activities.isEmpty();
-  }
+  public ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
 
   public void push(IncomingCallActivity item) {
     activities.add(item);
   }
 
-  public void pop() {
-    if (activities.size() >= 1) {
-      activities.remove(activities.size() - 1);
+  public void remove(String uuid) {
+    IncomingCallActivity a = at(uuid);
+    if (a != null) {
+      a.forceFinish();
     }
+    int i = index(uuid);
+    if (i != -1) {
+      activities.remove(i);
+    }
+  }
+
+  public void removeAll() {
+    activities.forEach(
+        incomingCallActivity -> {
+          incomingCallActivity.forceFinish();
+        });
+    activities.clear();
+    IncomingCallModule.emit("backToForeground", "");
   }
 
   public IncomingCallActivity at(String uuid) {
@@ -70,33 +41,34 @@ public class IncomingCallActivityManager {
     return null;
   }
 
-  public int getItemIndex(String uuid) {
-    int index = -1;
-    for (int i = 0; i < activities.size(); i++) {
-      if (activities.get(i).uuid.equals(uuid)) {
+  public int index(String uuid) {
+    int i = 0;
+    for (IncomingCallActivity item : activities) {
+      if (item.uuid.equals(uuid)) {
         return i;
       }
+      i++;
     }
-    return index;
+    return -1;
   }
 
-  public String getUuidBefore(String uuid) {
-    return this.before(uuid) == null ? "" : this.before(uuid).uuid;
+  public IncomingCallActivity first() {
+    return activities.isEmpty() ? null : activities.get(0);
   }
 
-  public String getUuidOfAfterItem(String uuid) {
-    return this.after(uuid) == null ? "" : this.after(uuid).uuid;
+  public IncomingCallActivity last() {
+    return activities.isEmpty() ? null : activities.get(activities.size() - 1);
   }
 
   public IncomingCallActivity before(String uuid) {
     if (activities.size() <= 1) {
       return null;
     }
-    int index = this.getItemIndex(uuid);
-    if (index == -1 || index == 0) {
+    int i = index(uuid);
+    if (i == -1 || i == 0) {
       return null;
     } else {
-      return activities.get(index - 1);
+      return activities.get(i - 1);
     }
   }
 
@@ -104,11 +76,31 @@ public class IncomingCallActivityManager {
     if (activities.size() <= 1) {
       return null;
     }
-    int index = this.getItemIndex(uuid);
-    if (index == -1 || index == activities.size() - 1) {
+    int i = index(uuid);
+    if (i == -1 || i == activities.size() - 1) {
       return null;
     } else {
-      return activities.get(index + 1);
+      return activities.get(i + 1);
+    }
+  }
+
+  public String uuidBefore(String uuid) {
+    return before(uuid) == null ? "" : before(uuid).uuid;
+  }
+
+  public String uuidAfter(String uuid) {
+    return after(uuid) == null ? "" : after(uuid).uuid;
+  }
+
+  public Boolean shouldUseExitActivity(Activity a) {
+    try {
+      return ((ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE))
+              .getRunningTasks(1)
+              .get(0)
+              .numActivities
+          == 1;
+    } catch (Exception ex) {
+      return true;
     }
   }
 }

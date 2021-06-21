@@ -231,9 +231,6 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('rejectCall', (uuid: string) => {
       callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
-    eventEmitter.addListener('endCall', (uuid: string) => {
-      callStore.onCallKeepEndCall(uuid.toUpperCase())
-    })
     eventEmitter.addListener('transfer', (uuid: string) => {
       BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 500)
     })
