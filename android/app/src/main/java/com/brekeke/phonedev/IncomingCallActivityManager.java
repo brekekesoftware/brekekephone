@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 public class IncomingCallActivityManager {
   public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
@@ -16,11 +15,11 @@ public class IncomingCallActivityManager {
 
   public void removeUUID(String uuid) {
     int index = this.getItemIndex(uuid);
-    Log.d("DEV::", "removeUUID::index::"+ index + "::size::"+ activities.size());
+    Log.d("DEV::", "removeUUID::index::" + index + "::size::" + activities.size());
     if (index != -1) {
       activities.remove(index);
     }
-    Log.d("DEV::", "removeUUID::"+ uuid + "::size::"+ activities.size());
+    Log.d("DEV::", "removeUUID::" + uuid + "::size::" + activities.size());
   }
 
   public int getNumberActivitys(Activity a) {
@@ -30,9 +29,9 @@ public class IncomingCallActivityManager {
     try {
       ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
       numberActivitys = info.numActivities;
-    }catch (Exception ex){
+    } catch (Exception ex) {
       numberActivitys = 1;
-      Log.e("brekeke", "getNumberActivitys: "+ ex.getMessage() );
+      Log.e("brekeke", "getNumberActivitys: " + ex.getMessage());
     }
     return numberActivitys;
   }

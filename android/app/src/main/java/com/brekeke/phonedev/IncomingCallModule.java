@@ -37,7 +37,7 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void showCall(String uuid, String callerName, Boolean isVideoCall) {
     Intent i;
-    Log.d("DEV:", "showCall::mgr::size " +mgr.getList().size());
+    Log.d("DEV:", "showCall::mgr::size " + mgr.getList().size());
     if (mgr.isEmpty()) {
       i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -60,14 +60,14 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
-    Log.d("DEV:", "closeIncomingCallActivity: "+ uuid +"::isAnswerPressed::"+isAnswerPressed);
+    Log.d("DEV:", "closeIncomingCallActivity: " + uuid + "::isAnswerPressed::" + isAnswerPressed);
     if (mgr.isEmpty()) {
       return;
     }
-    try{
+    try {
       mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
-    }catch (Exception ex){
-      Log.d("DEV::", "closeIncomingCallActivity::"+ ex.getMessage());
+    } catch (Exception ex) {
+      Log.d("DEV::", "closeIncomingCallActivity::" + ex.getMessage());
     }
   }
 

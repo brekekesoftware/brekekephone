@@ -45,7 +45,8 @@
     <activity
       android:name=".ExitActivity"
       android:theme="@android:style/Theme.NoDisplay"
-      android:autoRemoveFromRecents="true"/>
+      android:autoRemoveFromRecents="true"
+    />
     <!-- fcm -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"

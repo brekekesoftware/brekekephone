@@ -5,7 +5,6 @@ import static com.brekeke.phonedev.IncomingCallModule.mgr;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -148,29 +147,27 @@ public class IncomingCallActivity extends Activity
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     State a = ProcessLifecycleOwner.get().getLifecycle().getCurrentState();
-     Log.d("DEV:", "onBtnAnswerClick: "+ a.name());
+    Log.d("DEV:", "onBtnAnswerClick: " + a.name());
     // case app state don't lock should be open app
-    if(km.isKeyguardLocked()){
+    if (km.isKeyguardLocked()) {
       IncomingCallActivity itemBefore = mgr.before(uuid);
       closeIncomingCallActivity(true);
       if (itemBefore != null && itemBefore.closedWithAnswerPressed) {
         IncomingCallModule.emit("hold", itemBefore.uuid);
       }
-    }else {
+    } else {
       IncomingCallModule.emit("backToForeground", "");
       mgr.finishAll();
     }
-
-
   }
 
   public void onBtnRejectClick(View v) {
     IncomingCallModule.emit("rejectCall", uuid);
-    int numberActivity =  mgr.getNumberActivitys(this);
+    int numberActivity = mgr.getNumberActivitys(this);
     mgr.pop();
-    if(numberActivity == 1){
+    if (numberActivity == 1) {
       ExitActivity.exitApplication(this);
-    }else{
+    } else {
       forceFinish();
     }
   }
@@ -191,7 +188,6 @@ public class IncomingCallActivity extends Activity
     IncomingCallModule.emit("video", uuid);
     mgr.finishAll();
     IncomingCallModule.emit("backToForeground", uuid);
-
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -245,11 +241,11 @@ public class IncomingCallActivity extends Activity
 
   public void onBtnEndCallClick(View v) {
     IncomingCallModule.emit("endCall", uuid);
-    int numberActivity =  mgr.getNumberActivitys(this);
+    int numberActivity = mgr.getNumberActivitys(this);
     mgr.pop();
-    if(numberActivity == 1){
+    if (numberActivity == 1) {
       ExitActivity.exitApplication(this);
-    }else{
+    } else {
       forceFinish();
     }
   }
@@ -273,7 +269,7 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onBtnUnlockClick(View v) {
-    IncomingCallModule.emit("backToForeground","");
+    IncomingCallModule.emit("backToForeground", "");
     mgr.finishAll();
   }
 
@@ -422,7 +418,7 @@ public class IncomingCallActivity extends Activity
 
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
   private void onAppBackgrounded() {
-    Log.d("DEV","onAppBackgrounded");
+    Log.d("DEV", "onAppBackgrounded");
     if (mgr.isEmpty()) {
       return;
     }
@@ -436,8 +432,7 @@ public class IncomingCallActivity extends Activity
   }
 
   @OnLifecycleEvent(Lifecycle.Event.ON_START)
-  private void onAppForegrounded() {
-  }
+  private void onAppForegrounded() {}
 
   @Override
   protected void onDestroy() {
