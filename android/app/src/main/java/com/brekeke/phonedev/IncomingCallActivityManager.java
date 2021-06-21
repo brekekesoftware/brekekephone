@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 public class IncomingCallActivityManager {
   public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
@@ -22,8 +21,15 @@ public class IncomingCallActivityManager {
 
   public int getNumberActivitys(Activity a) {
     ActivityManager manager = (ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE);
-    ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
-    return info.numActivities;
+    int numberActivitys = 1; // default have 1 activity runing
+    // getRunningTasks will be throw exception
+    try {
+      ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
+      numberActivitys = info.numActivities;
+    } catch (Exception ex) {
+      numberActivitys = 1;
+    }
+    return numberActivitys;
   }
 
   public void finishAll() {
@@ -35,11 +41,11 @@ public class IncomingCallActivityManager {
   }
 
   public IncomingCallActivity last() {
-    return activities.get(activities.size() - 1);
+    return activities.isEmpty() ? null : activities.get(activities.size() - 1);
   }
 
   public IncomingCallActivity first() {
-    return activities.get(0);
+    return activities.isEmpty() ? null : activities.get(0);
   }
 
   public boolean isEmpty() {
@@ -88,7 +94,7 @@ public class IncomingCallActivityManager {
       return null;
     }
     int index = this.getItemIndex(uuid);
-    if (index == -1) {
+    if (index == -1 || index == 0) {
       return null;
     } else {
       return activities.get(index - 1);
@@ -99,12 +105,8 @@ public class IncomingCallActivityManager {
     if (activities.size() <= 1) {
       return null;
     }
-    int index =
-        IntStream.range(0, activities.size())
-            .filter(i -> activities.get(i).uuid.equals(uuid))
-            .findFirst() // first occurrence
-            .orElse(-1);
-    if (index == activities.size() - 2) {
+    int index = this.getItemIndex(uuid);
+    if (index == -1 || index == activities.size() - 1) {
       return null;
     } else {
       return activities.get(index + 1);

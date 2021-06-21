@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
@@ -54,7 +54,6 @@ public class IncomingCallActivity extends Activity
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
-    Log.d("DEV", "onCreate: " + uuid);
     super.onCreate(savedInstanceState);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     this.startRingtone();
@@ -80,7 +79,6 @@ public class IncomingCallActivity extends Activity
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     isVideoCall = b.getBoolean("isVideoCall");
-    Log.d("DEV", "UUID::" + uuid + "::isVideo::" + isVideoCall);
     vManageCall = (RelativeLayout) findViewById(R.id.view_call_manage);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
@@ -145,32 +143,42 @@ public class IncomingCallActivity extends Activity
 
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallActivity itemBefore = mgr.before(uuid);
-    closeIncomingCallActivity(true);
-    if (itemBefore != null && itemBefore.closedWithAnswerPressed) {
-      IncomingCallModule.emit("hold", itemBefore.uuid);
+    State a = ProcessLifecycleOwner.get().getLifecycle().getCurrentState();
+    if (km.isKeyguardLocked()) {
+      closeIncomingCallActivity(true);
+    } else {
+      IncomingCallModule.emit("backToForeground", "");
+      mgr.finishAll();
     }
   }
 
   public void onBtnRejectClick(View v) {
-    forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
+    int numberActivity = mgr.getNumberActivitys(this);
     mgr.pop();
+    if (numberActivity == 1) {
+      ExitActivity.exitApplication(this);
+    } else {
+      forceFinish();
+    }
   }
 
   public void onBtnTransferClick(View v) {
     IncomingCallModule.emit("transfer", uuid);
     mgr.finishAll();
+    IncomingCallModule.emit("backToForeground", uuid);
   }
 
   public void onBtnParkClick(View v) {
     IncomingCallModule.emit("park", uuid);
     mgr.finishAll();
+    IncomingCallModule.emit("backToForeground", uuid);
   }
 
   public void onBtnVideoClick(View v) {
     IncomingCallModule.emit("video", uuid);
     mgr.finishAll();
+    IncomingCallModule.emit("backToForeground", uuid);
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -223,20 +231,25 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onBtnEndCallClick(View v) {
-    forceFinish();
     IncomingCallModule.emit("endCall", uuid);
+    int numberActivity = mgr.getNumberActivitys(this);
     mgr.pop();
+    if (numberActivity == 1) {
+      ExitActivity.exitApplication(this);
+    } else {
+      forceFinish();
+    }
   }
 
   public void onBtnDeclineClick(View v) {
-    forceFinish();
     IncomingCallModule.emit("rejectCall", uuid);
+    forceFinish();
     mgr.pop();
   }
 
   public void onBtnHoldAcceptClick(View v) {
+    // Should auto hold the previous one in js after answer
     IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallModule.emit("hold", mgr.getUuidOfBeforeItem(uuid));
     closeIncomingCallActivity(true);
   }
 
@@ -247,6 +260,7 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onBtnUnlockClick(View v) {
+    IncomingCallModule.emit("backToForeground", "");
     mgr.finishAll();
   }
 
@@ -357,6 +371,7 @@ public class IncomingCallActivity extends Activity
     // or password to unlock.
     if (!isAnswerPressed || !km.isKeyguardLocked()) {
       forceFinish();
+      mgr.removeUUID(uuid);
       return true;
     }
     getIncomingLayout().setVisibility(View.GONE);
@@ -465,9 +480,7 @@ public class IncomingCallActivity extends Activity
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
     forceStopRingtone();
-    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {
-      Log.d("DEV", "onKeyDown::KEYCODE_HOME");
-    }
+    if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {}
     return super.onKeyDown(k, e);
   }
 

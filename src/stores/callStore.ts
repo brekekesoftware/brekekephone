@@ -71,8 +71,8 @@ export class CallStore {
         at: Date.now(),
       }
     }
-    // Allow 1 ringing callkeep only
-    if (this.prevCallKeepUuid) {
+    // Allow 1 ringing callkeep only on ios
+    if (this.prevCallKeepUuid && Platform.OS === 'ios') {
       const prevCall = this.calls.find(
         c => c.callkeepUuid === this.prevCallKeepUuid,
       )
@@ -162,6 +162,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
+
     // Get and check callkeep
     let recentPnUuid = ''
     let recentPnAction = ''
@@ -407,6 +408,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         }
       })
     }
+
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
       const endAllCalls = () => {
@@ -415,6 +417,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         }
         RNCallKeep.endAllCalls()
         callStore.recentPn = undefined
+        IncomingCall.closeAllIncomingCallActivities()
       }
       if (Platform.OS === 'ios') {
         endAllCalls()
@@ -423,7 +426,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
       ) {
         endAllCalls()
-        // IncomingCall.closeIncomingCallActivity(false)
       }
     }
     //
@@ -434,6 +436,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 const endCallKeep = (uuid: string) => {
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
+  IncomingCall.closeIncomingCallActivity(uuid, false)
   if (
     !callStore.calls.length &&
     (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)

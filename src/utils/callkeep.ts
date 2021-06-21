@@ -231,7 +231,6 @@ export const setupCallKeep = async () => {
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      console.log({ DEV: 'rejectCall::' + uuid })
       uuid = uuid.toUpperCase()
       callStore.onCallKeepEndCall(uuid)
       RNCallKeep.endAllCalls()

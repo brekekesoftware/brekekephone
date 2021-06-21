@@ -3,13 +3,15 @@ import { NativeModule, NativeModules, Platform } from 'react-native'
 const Polyfill = {
   IncomingCall: {
     closeIncomingCallActivity() {},
+    closeAllIncomingCallActivities() {},
     showCall() {},
     setOnHold() {},
   },
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
   IncomingCall: NativeModule & {
-    closeIncomingCallActivity(isAnswerPressed: boolean, uuid?: string): void
+    closeIncomingCallActivity(uuid: string, isAnswerPressed: boolean): void
+    closeAllIncomingCallActivities(): void
     showCall(uuid: string, callerName: string, withVideo?: boolean): void
     setOnHold(uuid: string, callerName: boolean): void
   }
@@ -18,8 +20,9 @@ const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
 export const RnNativeModules = M
 
 export const IncomingCall = {
-  closeIncomingCallActivity: (isAnswerPressed?: boolean, uuid?: string) =>
-    M.IncomingCall.closeIncomingCallActivity(!!isAnswerPressed, uuid),
+  closeIncomingCallActivity: (uuid: string, isAnswerPressed?: boolean) =>
+    M.IncomingCall.closeIncomingCallActivity(uuid, !!isAnswerPressed),
+  closeAllIncomingCallActivities: M.IncomingCall.closeAllIncomingCallActivities,
   showCall: M.IncomingCall.showCall,
   setOnHold: M.IncomingCall.setOnHold,
 }

@@ -16,6 +16,7 @@ export default class Call {
   constructor(private store: CallStore) {}
 
   @observable id = ''
+  @observable pnId = ''
   @observable partyNumber = ''
   @observable partyName = ''
   @observable pbxTalkerId = ''
