@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class IncomingCallActivityManager {
   public ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
 
-  public void push(IncomingCallActivity item) {
-    activities.add(item);
+  public void push(IncomingCallActivity a) {
+    activities.add(a);
   }
 
   public void remove(String uuid) {
@@ -24,18 +24,17 @@ public class IncomingCallActivityManager {
   }
 
   public void removeAll() {
-    activities.forEach(
-        incomingCallActivity -> {
-          incomingCallActivity.forceFinish();
-        });
+    for (IncomingCallActivity a : activities) {
+      a.forceFinish();
+    }
     activities.clear();
     IncomingCallModule.emit("backToForeground", "");
   }
 
   public IncomingCallActivity at(String uuid) {
-    for (IncomingCallActivity item : activities) {
-      if (item.uuid.equals(uuid)) {
-        return item;
+    for (IncomingCallActivity a : activities) {
+      if (a.uuid.equals(uuid)) {
+        return a;
       }
     }
     return null;
@@ -43,8 +42,8 @@ public class IncomingCallActivityManager {
 
   public int index(String uuid) {
     int i = 0;
-    for (IncomingCallActivity item : activities) {
-      if (item.uuid.equals(uuid)) {
+    for (IncomingCallActivity a : activities) {
+      if (a.uuid.equals(uuid)) {
         return i;
       }
       i++;
