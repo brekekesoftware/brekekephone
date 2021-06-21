@@ -14,12 +14,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
-
   public ReactApplicationContext reactContext;
+  public static ReactApplicationContext ctx;
 
   IncomingCallModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.reactContext = reactContext;
+    IncomingCallModule.ctx = reactContext;
   }
 
   @Override
@@ -62,7 +63,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     }
     try {
       mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
-    } catch (Exception ex) {
+    } catch (Exception e) {
     }
   }
 
@@ -75,7 +76,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public void setOnHold(String uuid, Boolean holding) {
     try {
       mgr.at(uuid).updateBtnHoldUI(holding);
-    } catch (Exception ex) {
+    } catch (Exception e) {
     }
   }
 }

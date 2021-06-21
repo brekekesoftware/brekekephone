@@ -98,7 +98,7 @@ public class IncomingCallActivityManager {
               .get(0)
               .numActivities
           == 1;
-    } catch (Exception ex) {
+    } catch (Exception e) {
       return true;
     }
   }

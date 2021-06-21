@@ -60,6 +60,7 @@ package-lock.json
 .env
 coverage
 .husky/_
+.husky/.gitignore
 
 # Bundle artifact
 *.jsbundle
