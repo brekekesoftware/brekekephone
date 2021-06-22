@@ -29,7 +29,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       }
     }
     if (main == null) {
-      ExitActivity.exitApplication(ctx);
+      Intent i = new Intent(ctx, ExitActivity.class);
+      i.addFlags(
+          Intent.FLAG_ACTIVITY_NEW_TASK
+              | Intent.FLAG_ACTIVITY_CLEAR_TASK
+              | Intent.FLAG_ACTIVITY_NO_ANIMATION
+              | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      ctx.startActivity(i);
     }
   }
 
