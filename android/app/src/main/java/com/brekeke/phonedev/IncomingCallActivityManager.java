@@ -10,15 +10,12 @@ public class IncomingCallActivityManager {
   }
 
   public void remove(String uuid) {
-    try {
-      if (!at(uuid).answered) {
-        IncomingCallModule.tryBackToBackground();
+    IncomingCallActivity a = at(uuid);
+    if (a != null) {
+      a.forceFinish();
+      if (!a.answered) {
+        IncomingCallModule.tryExitClearTask(a);
       }
-    } catch (Exception e) {
-    }
-    try {
-      at(uuid).forceFinish();
-    } catch (Exception e) {
     }
     try {
       activities.remove(index(uuid));
@@ -41,7 +38,7 @@ public class IncomingCallActivityManager {
     } catch (Exception e) {
     }
     if (!atLeastOneAnswerPressed) {
-      IncomingCallModule.tryBackToBackground();
+      IncomingCallModule.tryExitClearTask(last());
     }
   }
 

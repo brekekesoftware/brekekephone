@@ -1,5 +1,6 @@
 package com.brekeke.phonedev;
 
+import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -19,12 +20,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static ReactApplicationContext ctx;
   public static Boolean firstShowCallAppActive = false;
 
-  public static void tryBackToBackground() {
-    try {
-      if (!firstShowCallAppActive) {
-        ctx.getCurrentActivity().moveTaskToBack(true);
-      }
-    } catch (Exception e) {
+  public static void tryExitClearTask(IncomingCallActivity a) {
+    Activity main = ctx.getCurrentActivity();
+    if (main != null && !firstShowCallAppActive) {
+      main.moveTaskToBack(true);
+    }
+    if (main == null) {
+      ExitActivity.exitApplication(a);
     }
   }
 
@@ -79,7 +81,8 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void closeIncomingCallActivity(String uuid) {
     try {
-      mgr.at(uuid).closeIncomingCallActivity(false);
+      mgr.at(uuid).answered = false;
+      mgr.remove(uuid);
     } catch (Exception e) {
     }
   }

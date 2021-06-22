@@ -1,7 +1,6 @@
 package com.brekeke.phonedev;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.media.AudioAttributes;
@@ -54,7 +53,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       b = savedInstanceState;
     }
     if (b == null) {
-      closeIncomingCallActivity(false);
+      IncomingCallModule.mgr.remove(uuid);
       return;
     }
 
@@ -121,7 +120,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
-      closeIncomingCallActivity(true);
+      onAnswerCheckLocked();
     } else {
       IncomingCallModule.mgr.removeAllAndBackToForeground();
     }
@@ -131,17 +130,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("rejectCall", uuid);
     answered = false;
     IncomingCallModule.mgr.remove(uuid);
-    try {
-      if (((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE))
-              .getRunningTasks(1)
-              .get(0)
-              .numActivities
-          == 1) {
-        ExitActivity.exitApplication(this);
-      }
-    } catch (Exception e) {
-      ExitActivity.exitApplication(this);
-    }
   }
 
   public void onBtnTransferClick(View v) {
@@ -207,13 +195,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnHoldAcceptClick(View v) {
     // Should auto hold the previous one in js after answer
     IncomingCallModule.emit("answerCall", uuid);
-    closeIncomingCallActivity(true);
+    onAnswerCheckLocked();
   }
 
   public void onBtnEndAcceptClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     IncomingCallModule.emit("endCall", IncomingCallModule.mgr.uuidBefore(uuid));
-    closeIncomingCallActivity(true);
+    onAnswerCheckLocked();
   }
 
   public void onBtnUnlockClick(View v) {
@@ -308,19 +296,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public Boolean closeIncomingCallActivity(Boolean isAnswerPressed) {
-    if (closed) {
-      return true;
-    }
-    answered = isAnswerPressed;
-    if (!isAnswerPressed || !IncomingCallModule.isLocked()) {
+  public void onAnswerCheckLocked() {
+    answered = true;
+    if (!IncomingCallModule.isLocked()) {
       IncomingCallModule.mgr.remove(uuid);
-      return true;
+      return;
     }
     vIncomingCall.setVisibility(View.GONE);
     vManageCall.setVisibility(View.VISIBLE);
     forceStopRingtone();
-    return false;
   }
 
   public void forceFinish() {
