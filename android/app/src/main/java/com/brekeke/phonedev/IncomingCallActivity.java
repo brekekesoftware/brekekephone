@@ -139,7 +139,7 @@ public class IncomingCallActivity extends Activity
     if (km.isKeyguardLocked()) {
       closeIncomingCallActivity(true);
     } else {
-      IncomingCallModule.mgr.removeAll();
+      IncomingCallModule.mgr.removeAllAndBackToForeground();
     }
   }
 
@@ -259,7 +259,7 @@ public class IncomingCallActivity extends Activity
       default:
         break;
     }
-    IncomingCallModule.mgr.removeAll();
+    IncomingCallModule.mgr.removeAllAndBackToForeground();
   }
 
   @Override
@@ -359,7 +359,7 @@ public class IncomingCallActivity extends Activity
             @Override
             public void onDismissSucceeded() {
               super.onDismissSucceeded();
-              IncomingCallModule.mgr.removeAll();
+              IncomingCallModule.mgr.removeAllAndBackToForeground();
             }
           });
     }

@@ -219,6 +219,7 @@ export const setupCallKeep = async () => {
         uuid,
         getCallPnData(uuid)?.from || 'Loading...',
         !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
+        AppState.currentState === 'active',
       )
       callStore.onCallKeepDidDisplayIncomingCall(uuid)
     })

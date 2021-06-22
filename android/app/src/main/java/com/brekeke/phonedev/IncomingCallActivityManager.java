@@ -13,21 +13,32 @@ public class IncomingCallActivityManager {
   }
 
   public void remove(String uuid) {
-    IncomingCallActivity a = at(uuid);
-    if (a != null) {
-      a.forceFinish();
+    try {
+      if (!IncomingCallModule.firstShowCallAppActive) {
+        IncomingCallModule.ctx.getCurrentActivity().moveTaskToBack(true);
+      }
+    } catch (Exception e) {
     }
-    int i = index(uuid);
-    if (i != -1) {
-      activities.remove(i);
+    try {
+      at(uuid).forceFinish();
+    } catch (Exception e) {
+    }
+    try {
+      activities.remove(index(uuid));
+    } catch (Exception e) {
     }
   }
 
   public void removeAll() {
     for (IncomingCallActivity a : activities) {
+      a.closedWithAnswerPressed = false;
       a.forceFinish();
     }
     activities.clear();
+  }
+
+  public void removeAllAndBackToForeground() {
+    removeAll();
     IncomingCallModule.emit("backToForeground", "");
   }
 
@@ -52,43 +63,36 @@ public class IncomingCallActivityManager {
   }
 
   public IncomingCallActivity first() {
-    return activities.isEmpty() ? null : activities.get(0);
+    try {
+      return activities.get(0);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public IncomingCallActivity last() {
-    return activities.isEmpty() ? null : activities.get(activities.size() - 1);
+    try {
+      return activities.get(activities.size() - 1);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public IncomingCallActivity before(String uuid) {
-    if (activities.size() <= 1) {
+    try {
+      return activities.get(index(uuid) - 1);
+    } catch (Exception e) {
       return null;
-    }
-    int i = index(uuid);
-    if (i == -1 || i == 0) {
-      return null;
-    } else {
-      return activities.get(i - 1);
-    }
-  }
-
-  public IncomingCallActivity after(String uuid) {
-    if (activities.size() <= 1) {
-      return null;
-    }
-    int i = index(uuid);
-    if (i == -1 || i == activities.size() - 1) {
-      return null;
-    } else {
-      return activities.get(i + 1);
     }
   }
 
   public String uuidBefore(String uuid) {
-    return before(uuid) == null ? "" : before(uuid).uuid;
-  }
-
-  public String uuidAfter(String uuid) {
-    return after(uuid) == null ? "" : after(uuid).uuid;
+    try {
+      IncomingCallActivity a = before(uuid);
+      return a == null ? "" : a.uuid;
+    } catch (Exception e) {
+      return "";
+    }
   }
 
   public Boolean shouldUseExitActivity(Activity a) {

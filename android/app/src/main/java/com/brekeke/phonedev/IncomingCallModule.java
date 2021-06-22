@@ -14,8 +14,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
-  public ReactApplicationContext reactContext;
   public static ReactApplicationContext ctx;
+  public static Boolean firstShowCallAppActive = false;
+
+  public ReactApplicationContext reactContext;
 
   IncomingCallModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -35,12 +37,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void showCall(String uuid, String callerName, Boolean isVideoCall) {
+  public void showCall(String uuid, String callerName, Boolean isVideoCall, Boolean isAppActive) {
     Intent i;
     IncomingCallActivity prev = mgr.last();
     if (prev == null) {
       i = new Intent(reactContext, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      firstShowCallAppActive = isAppActive;
     } else {
       prev.forceStopRingtone();
       i = new Intent(prev, IncomingCallActivity.class);
@@ -57,12 +60,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
-    if (mgr.activities.isEmpty()) {
-      return;
-    }
+  public void closeIncomingCallActivity(String uuid) {
     try {
-      mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
+      mgr.at(uuid).closeIncomingCallActivity(false);
     } catch (Exception e) {
     }
   }
