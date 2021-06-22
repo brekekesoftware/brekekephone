@@ -12,9 +12,8 @@
         android:left="15dp"
         android:bottom="0dp"
         android:right="0dp"
-        android:drawable="@drawable/ic_close_2"
-      >
-      </item>
+        android:drawable="@drawable/ic_close_2btn_overlap"
+      />
       <item android:top="30dp" android:left="30dp">
         <shape android:shape="oval">
           <solid android:color="@color/turtle_green" />
@@ -23,10 +22,8 @@
       <item
         android:top="50dp"
         android:left="50dp"
-        android:drawable="@drawable/ic_answer_2"
-      >
-      </item>
-
+        android:drawable="@drawable/ic_answer_2btn_overlap"
+      />
     </layer-list>
   </item>
 </selector>

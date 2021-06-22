@@ -10,7 +10,7 @@
   tools:context="com.brekeke.phonedev.IncomingCallActivity"
 >
   <RelativeLayout
-    android:id="@+id/view_call_manage"
+    android:id="@+id/view_incoming_call_manage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
@@ -46,12 +46,12 @@
       >
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
-        <Button
+          <Button
             android:id="@+id/btn_transfer"
             android:layout_width="65dp"
             android:layout_height="65dp"
@@ -60,22 +60,22 @@
             android:paddingLeft="13dp"
             android:paddingTop="39dp"
           />
-        <TextView
+          <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="TRANSFER"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
-      </LinearLayout>
+        </LinearLayout>
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_park"
@@ -88,58 +88,58 @@
           />
           <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="PARK"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_video"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:background="@drawable/style_selected_video"
+            android:background="@drawable/btn_video"
           />
           <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="VIDEO"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_speaker"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:background="@drawable/style_selected_speaker"
+            android:background="@drawable/btn_speaker"
           />
           <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="SPEAKER"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
       </LinearLayout>
@@ -150,57 +150,57 @@
       >
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_mute"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:background="@drawable/style_selected_mute"
+            android:background="@drawable/btn_mute"
           />
           <TextView
-            android:id="@+id/txt_mute"
+            android:id="@+id/txt_mute_btn"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="MUTE"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_record"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:background="@drawable/style_selected_record"
+            android:background="@drawable/btn_record"
           />
           <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="RECORD"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_dtmf"
@@ -213,41 +213,40 @@
           />
           <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="DTMF"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
         <LinearLayout
           android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           android:gravity="center"
           android:layout_margin="5dp"
-          android:layout_height="wrap_content"
         >
           <Button
             android:id="@+id/btn_hold"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:background="@drawable/style_selected_hold"
+            android:background="@drawable/btn_hold"
           />
           <TextView
-            android:id="@+id/txt_hold"
+            android:id="@+id/txt_hold_btn"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="HOLD"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:textSize="14dp"
             android:textStyle="bold"
-            android:layout_height="wrap_content"
           />
         </LinearLayout>
       </LinearLayout>
     </LinearLayout>
-
     <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -274,9 +273,9 @@
   <TextView
     android:gravity="center"
     android:id="@+id/txt_caller_name"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="20dp"
-    android:layout_width="match_parent"
     android:text="Caller Name"
     android:textColor="@color/white"
     android:textSize="36sp"
@@ -284,9 +283,9 @@
   />
   <TextView
     android:gravity="center"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="6dp"
-    android:layout_width="match_parent"
     android:text="Brekeke Phone"
     android:textColor="@color/white"
     android:textSize="20dp"
@@ -359,7 +358,7 @@
     </LinearLayout>
   </RelativeLayout>
   <RelativeLayout
-    android:id="@+id/view_incoming_call_hold"
+    android:id="@+id/view_incoming_call_3btn"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentBottom="true"
@@ -385,45 +384,44 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerInParent="true"
+      android:layout_marginBottom="20dp"
     >
-
-
-        <LinearLayout
+      <LinearLayout
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
         android:layout_margin="5dp"
-        android:layout_height="wrap_content"
       >
-          <Button
-          android:id="@+id/btn_end_accept"
-          android:layout_width="65dp"
+        <Button
+          android:id="@+id/btn_answer_end"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerHorizontal="true"
           android:background="@android:color/transparent"
-          android:drawableLeft="@drawable/style_end_accept"
+          android:drawableLeft="@drawable/btn_answer_end"
         />
-          <TextView
+        <TextView
           android:layout_width="wrap_content"
-          android:text='End &amp; Accept'
+          android:layout_height="wrap_content"
+          android:text='END &amp; ACCEPT'
           android:textColor="@color/white"
           android:paddingTop="5dp"
           android:textSize="14dp"
           android:textStyle="bold"
-          android:layout_height="wrap_content"
         />
-        </LinearLayout>
+      </LinearLayout>
       <LinearLayout
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
         android:layout_margin="5dp"
         android:paddingHorizontal="30dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_height="wrap_content"
       >
         <Button
-          android:id="@+id/btn_deciline"
+          android:id="@+id/btn_decline"
           android:layout_width="65dp"
           android:layout_height="65dp"
           android:background="@drawable/btn_reject"
@@ -433,40 +431,41 @@
         />
         <TextView
           android:layout_width="wrap_content"
-          android:text="Deciline"
+          android:layout_height="wrap_content"
+          android:text="DECLINE"
           android:textColor="@color/white"
           android:paddingTop="5dp"
           android:textSize="14dp"
           android:textStyle="bold"
-          android:layout_height="wrap_content"
         />
       </LinearLayout>
-        <LinearLayout
+      <LinearLayout
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
         android:layout_margin="5dp"
-        android:layout_height="wrap_content"
         android:layout_marginLeft="200dp"
       >
-          <Button
-          android:id="@+id/btn_hold_accept"
-          android:layout_width="65dp"
+        <Button
+          android:id="@+id/btn_answer_hold"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerHorizontal="true"
           android:background="@android:color/transparent"
-          android:drawableLeft="@drawable/style_end_accept"
+          android:drawableRight="@drawable/btn_answer_end"
         />
-          <TextView
+        <!-- TODO add and change icon btn_answer_end -> btn_answer_hold -->
+        <TextView
           android:layout_width="wrap_content"
-          android:text='Hold &amp; Accept'
+          android:layout_height="wrap_content"
+          android:text='HOLD &amp; ACCEPT'
           android:textColor="@color/white"
           android:paddingTop="5dp"
           android:textSize="14dp"
           android:textStyle="bold"
-          android:layout_height="wrap_content"
         />
-        </LinearLayout>
+      </LinearLayout>
     </LinearLayout>
   </RelativeLayout>
 </RelativeLayout>

@@ -12,11 +12,9 @@
         android:left="10dp"
         android:bottom="10dp"
         android:right="10dp"
-        android:drawable="@drawable/ic_speaker"
-      >
-      </item>
+        android:drawable="@drawable/ic_mute"
+      />
     </layer-list>
-
   </item>
   <item android:state_selected="true">
     <layer-list>
@@ -30,9 +28,8 @@
         android:left="10dp"
         android:bottom="10dp"
         android:right="10dp"
-        android:drawable="@drawable/ic_speaker_on"
-      >
-      </item>
+        android:drawable="@drawable/ic_mute_active"
+      />
     </layer-list>
   </item>
 </selector>

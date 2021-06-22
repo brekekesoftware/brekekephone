@@ -232,6 +232,12 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('rejectCall', (uuid: string) => {
       callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
+    eventEmitter.addListener('answerCall+end', (uuid: string) => {
+      // TODO this logic is not fully correct:
+      // Should use the currentCall BEFORE showCall
+      callStore.currentCall?.hangup()
+      callStore.onCallKeepAnswerCall(uuid.toUpperCase())
+    })
     eventEmitter.addListener('transfer', (uuid: string) => {
       BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 300)
     })

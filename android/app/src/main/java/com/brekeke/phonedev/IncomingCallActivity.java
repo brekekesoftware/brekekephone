@@ -21,9 +21,13 @@ import androidx.annotation.Nullable;
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public MediaPlayer mp;
 
-  public RelativeLayout vManageCall, vIncomingCall, vIncomingThreeBtn;
+  public RelativeLayout vIncoming, vIncoming3Btn, vIncomingManage;
   public Button btnAnswer,
       btnReject,
+      btnAnswerEnd,
+      btnAnswerHold,
+      btnDecline,
+      btnUnlock,
       btnTransfer,
       btnPark,
       btnVideo,
@@ -32,11 +36,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnRecord,
       btnDtmf,
       btnHold,
-      btnEndcall,
-      btnDecilinne,
-      btnEndAccept,
-      btnUnlock,
-      btnHoldAccept;
+      btnEndcall;
   public TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
   public String uuid, callerName;
   public boolean isVideoCall;
@@ -68,14 +68,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     isVideoCall = b.getBoolean("isVideoCall");
-    vManageCall = (RelativeLayout) findViewById(R.id.view_call_manage);
-    vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
-    vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
+    vIncoming = (RelativeLayout) findViewById(R.id.view_incoming_call);
+    vIncoming3Btn = (RelativeLayout) findViewById(R.id.view_incoming_call_3btn);
+    vIncomingManage = (RelativeLayout) findViewById(R.id.view_incoming_call_manage);
 
-    vIncomingCall.setVisibility(View.VISIBLE);
+    vIncoming.setVisibility(View.VISIBLE);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
+    btnDecline = (Button) findViewById(R.id.btn_decline);
+
+    btnAnswerEnd = (Button) findViewById(R.id.btn_answer_end);
+    btnAnswerHold = (Button) findViewById(R.id.btn_answer_hold);
+
+    btnUnlock = (Button) findViewById(R.id.btn_unlock);
     btnTransfer = (Button) findViewById(R.id.btn_transfer);
     btnPark = (Button) findViewById(R.id.btn_park);
     btnVideo = (Button) findViewById(R.id.btn_video);
@@ -85,13 +91,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf = (Button) findViewById(R.id.btn_dtmf);
     btnHold = (Button) findViewById(R.id.btn_hold);
     btnEndcall = (Button) findViewById(R.id.btn_end_call);
-    btnDecilinne = (Button) findViewById(R.id.btn_deciline);
-    btnEndAccept = (Button) findViewById(R.id.btn_end_accept);
-    btnHoldAccept = (Button) findViewById(R.id.btn_hold_accept);
-    btnUnlock = (Button) findViewById(R.id.btn_unlock);
 
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
+
+    btnAnswerEnd.setOnClickListener(this);
+    btnAnswerHold.setOnClickListener(this);
+    btnDecline.setOnClickListener(this);
+
+    btnUnlock.setOnClickListener(this);
     btnTransfer.setOnClickListener(this);
     btnPark.setOnClickListener(this);
     btnVideo.setOnClickListener(this);
@@ -101,15 +109,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf.setOnClickListener(this);
     btnHold.setOnClickListener(this);
     btnEndcall.setOnClickListener(this);
-    btnDecilinne.setOnClickListener(this);
-    btnEndAccept.setOnClickListener(this);
-    btnHoldAccept.setOnClickListener(this);
-    btnUnlock.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
-    txtHoldBtn = (TextView) findViewById(R.id.txt_hold);
-    txtMuteBtn = (TextView) findViewById(R.id.txt_mute);
+    txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
+    txtMuteBtn = (TextView) findViewById(R.id.txt_mute_btn);
 
     txtCallerName.setText(callerName);
     txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
@@ -192,15 +196,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("hold", uuid);
   }
 
-  public void onBtnHoldAcceptClick(View v) {
+  public void onBtnAnswerHoldClick(View v) {
     // Should auto hold the previous one in js after answer
     IncomingCallModule.emit("answerCall", uuid);
     onAnswerCheckLocked();
   }
 
-  public void onBtnEndAcceptClick(View v) {
-    IncomingCallModule.emit("answerCall", uuid);
-    IncomingCallModule.emit("endCall", IncomingCallModule.mgr.uuidBefore(uuid));
+  public void onBtnAnswerEndClick(View v) {
+    IncomingCallModule.emit("answerCall+end", uuid);
     onAnswerCheckLocked();
   }
 
@@ -246,23 +249,26 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
-      case R.id.btn_unlock:
-        onRequestUnlock(v);
-        break;
-      case R.id.btn_hold_accept:
-        onBtnHoldAcceptClick(v);
-        break;
-      case R.id.btn_end_accept:
-        onBtnEndAcceptClick(v);
-        break;
-      case R.id.btn_deciline:
-        onBtnRejectClick(v);
-        break;
+        // vIcoming
       case R.id.btn_answer:
         onBtnAnswerClick(v);
         break;
       case R.id.btn_reject:
         onBtnRejectClick(v);
+        break;
+        // vIncoming3Btn
+      case R.id.btn_answer_hold:
+        onBtnAnswerHoldClick(v);
+        break;
+      case R.id.btn_answer_end:
+        onBtnAnswerEndClick(v);
+        break;
+      case R.id.btn_decline:
+        onBtnRejectClick(v);
+        break;
+        // vIncomingManage
+      case R.id.btn_unlock:
+        onRequestUnlock(v);
         break;
       case R.id.btn_transfer:
         onRequestUnlock(v);
@@ -302,8 +308,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       IncomingCallModule.mgr.remove(uuid);
       return;
     }
-    vIncomingCall.setVisibility(View.GONE);
-    vManageCall.setVisibility(View.VISIBLE);
+    vIncoming.setVisibility(View.GONE);
+    vIncomingManage.setVisibility(View.VISIBLE);
     forceStopRingtone();
   }
 
