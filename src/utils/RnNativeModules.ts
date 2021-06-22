@@ -6,6 +6,7 @@ const Polyfill = {
     closeAllIncomingCallActivities() {},
     showCall() {},
     setOnHold() {},
+    isLocked() {},
   },
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
@@ -19,6 +20,7 @@ const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
       isAppActive: boolean,
     ): void
     setOnHold(uuid: string, holding: boolean): void
+    isLocked(): Promise<boolean>
   }
 }
 
@@ -30,4 +32,5 @@ export const IncomingCall = {
   closeAllIncomingCallActivities: M.IncomingCall.closeAllIncomingCallActivities,
   showCall: M.IncomingCall.showCall,
   setOnHold: M.IncomingCall.setOnHold,
+  isLocked: M.IncomingCall.isLocked,
 }

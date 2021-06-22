@@ -152,7 +152,7 @@ export class AuthStore {
           BackgroundTimer.clearInterval(id)
           this.resetState()
         }
-      }, 500)
+      }, 1000)
     } else {
       this.resetState()
     }

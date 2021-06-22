@@ -45,7 +45,7 @@ export class RnStackerStore {
           this.stackAnimating = true
           BackgroundTimer.setTimeout(() => {
             this.stackAnimating = false
-          }, 1000)
+          }, 300)
         }
         //
         let stack0 = {} as RnStack

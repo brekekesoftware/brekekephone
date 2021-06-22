@@ -65,7 +65,7 @@ AppState.addEventListener('change', () => {
 registerOnUnhandledError(unexpectedErr => {
   // Must wrap in window.setTimeout to make sure
   //    there's no state change when rendering
-  BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 0)
+  BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
   return false
 })
 

@@ -50,17 +50,6 @@ public class IncomingCallActivityManager {
     return null;
   }
 
-  public int index(String uuid) {
-    int i = 0;
-    for (IncomingCallActivity a : activities) {
-      if (a.uuid.equals(uuid)) {
-        return i;
-      }
-      i++;
-    }
-    return -1;
-  }
-
   public IncomingCallActivity first() {
     try {
       return activities.get(0);
@@ -87,11 +76,21 @@ public class IncomingCallActivityManager {
 
   public String uuidBefore(String uuid) {
     try {
-      IncomingCallActivity a = before(uuid);
-      return a == null ? "" : a.uuid;
+      return before(uuid).uuid;
     } catch (Exception e) {
       return "";
     }
+  }
+
+  public int index(String uuid) {
+    int i = 0;
+    for (IncomingCallActivity a : activities) {
+      if (a.uuid.equals(uuid)) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
   }
 
   public Boolean shouldUseExitActivity(Activity a) {

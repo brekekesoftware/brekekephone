@@ -1,6 +1,9 @@
 package com.brekeke.phonedev;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -18,27 +21,31 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   public static void tryBackToBackground() {
     try {
-      if (!IncomingCallModule.firstShowCallAppActive) {
-        IncomingCallModule.ctx.getCurrentActivity().moveTaskToBack(true);
+      if (!firstShowCallAppActive) {
+        ctx.getCurrentActivity().moveTaskToBack(true);
       }
     } catch (Exception e) {
     }
   }
 
+  public static KeyguardManager km;
+
+  public static Boolean isLocked() {
+    return km.isKeyguardLocked() || km.isDeviceLocked();
+  }
+
   public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
 
-  public ReactApplicationContext reactContext;
-
-  IncomingCallModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    this.reactContext = reactContext;
-    IncomingCallModule.ctx = reactContext;
+  IncomingCallModule(ReactApplicationContext c) {
+    super(c);
+    ctx = c;
+    km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    eventEmitter = reactContext.getJSModule(RCTDeviceEventEmitter.class);
+    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
   }
 
   @Override
@@ -51,7 +58,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     Intent i;
     IncomingCallActivity prev = mgr.last();
     if (prev == null) {
-      i = new Intent(reactContext, IncomingCallActivity.class);
+      i = new Intent(ctx, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       firstShowCallAppActive = isAppActive;
     } else {
@@ -63,7 +70,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     i.putExtra("isVideoCall", isVideoCall);
 
     if (prev == null) {
-      reactContext.startActivity(i);
+      ctx.startActivity(i);
     } else {
       prev.startActivity(i);
     }
@@ -88,5 +95,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       mgr.at(uuid).updateBtnHoldUI(holding);
     } catch (Exception e) {
     }
+  }
+
+  @ReactMethod
+  public void isLocked(Promise p) {
+    p.resolve(isLocked());
   }
 }

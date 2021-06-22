@@ -227,7 +227,7 @@ class PageChatGroupDetail extends React.Component<{
     })
       .then(chats => {
         chatStore.pushMessages(this.props.groupId, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
       })
       .catch((err: Error) => {
         RnAlert.error({

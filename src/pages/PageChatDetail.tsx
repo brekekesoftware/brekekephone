@@ -77,7 +77,7 @@ class PageChatDetail extends React.Component<{
     if (noChat) {
       this.loadRecent()
     } else {
-      BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
+      BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
     }
     const { buddy: id } = this.props
     chatStore.updateThreadConfig(id, false, {
@@ -275,7 +275,7 @@ class PageChatDetail extends React.Component<{
     })
       .then(chats => {
         chatStore.pushMessages(id, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
       })
       .catch((err: Error) => {
         RnAlert.error({

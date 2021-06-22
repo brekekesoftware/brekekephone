@@ -25,7 +25,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 public class IncomingCallActivity extends Activity
     implements View.OnClickListener, LifecycleObserver {
   public MediaPlayer mp;
-  public KeyguardManager km;
 
   public RelativeLayout vManageCall, vIncomingCall, vIncomingThreeBtn;
   public Button btnAnswer,
@@ -52,7 +51,6 @@ public class IncomingCallActivity extends Activity
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    km = ((KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE));
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     IncomingCallModule.mgr.push(this);
     startRingtone();
@@ -136,7 +134,7 @@ public class IncomingCallActivity extends Activity
 
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
-    if (km.isKeyguardLocked()) {
+    if (IncomingCallModule.isLocked()) {
       closeIncomingCallActivity(true);
     } else {
       IncomingCallModule.mgr.removeAllAndBackToForeground();
@@ -228,7 +226,7 @@ public class IncomingCallActivity extends Activity
   }
 
   public void onRequestUnlock(View v) {
-    km.requestDismissKeyguard(
+    IncomingCallModule.km.requestDismissKeyguard(
         this,
         new KeyguardManager.KeyguardDismissCallback() {
           @Override
@@ -320,7 +318,7 @@ public class IncomingCallActivity extends Activity
       return true;
     }
     closedWithAnswerPressed = isAnswerPressed;
-    if (!isAnswerPressed || !km.isKeyguardLocked()) {
+    if (!isAnswerPressed || !IncomingCallModule.isLocked()) {
       IncomingCallModule.mgr.remove(uuid);
       return true;
     }
@@ -353,7 +351,7 @@ public class IncomingCallActivity extends Activity
       return;
     }
     if (closedWithAnswerPressed) {
-      km.requestDismissKeyguard(
+      IncomingCallModule.km.requestDismissKeyguard(
           this,
           new KeyguardManager.KeyguardDismissCallback() {
             @Override

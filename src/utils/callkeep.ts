@@ -219,7 +219,7 @@ export const setupCallKeep = async () => {
         uuid,
         getCallPnData(uuid)?.from || 'Loading...',
         !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
-        AppState.currentState === 'active',
+        AppState.currentState === 'active' || isBackgroundLocked,
       )
       callStore.onCallKeepDidDisplayIncomingCall(uuid)
     })
@@ -233,10 +233,10 @@ export const setupCallKeep = async () => {
       callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 300)
     })
     eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 300)
     })
     eventEmitter.addListener('video', (uuid: string) => {
       callStore.currentCall?.toggleVideo()
@@ -251,7 +251,7 @@ export const setupCallKeep = async () => {
       callStore.currentCall?.toggleRecording()
     })
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.currentCall?.toggleHold()
@@ -261,4 +261,21 @@ export const setupCallKeep = async () => {
       RNCallKeep.backToForeground()
     })
   }
+}
+
+let isBackgroundLocked = false
+if (Platform.OS === 'android') {
+  // If it is locked right after blur, we assume it was put in background because of lock
+  AppState.addEventListener('change', () => {
+    if (AppState.currentState === 'active') {
+      isBackgroundLocked = false
+      return
+    }
+    if (isBackgroundLocked) {
+      return
+    }
+    BackgroundTimer.setTimeout(async () => {
+      isBackgroundLocked = await IncomingCall.isLocked()
+    }, 300)
+  })
 }

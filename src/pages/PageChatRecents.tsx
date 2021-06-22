@@ -128,7 +128,7 @@ class PageChatRecents extends React.Component {
       }
       getAuthStore().currentData.recentChats = arr2
       profileStore.saveProfilesToLocalStorage()
-    }, 0)
+    }, 300)
 
     return (
       <Layout
