@@ -395,13 +395,10 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
     } else {
       const prev = callStore.prevCallKeepUuid
       Object.values(callkeepMap).forEach(k => {
-        const d2 = n - k.at
-        const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
-        if ((d2 > 20000 && !c) || (prev && prev !== k.uuid)) {
-          if (c) {
-            c.callkeepUuid = ''
-            c.callkeepAlreadyRejected = true
-          }
+        if (
+          n - k.at > 20000 &&
+          !callStore.calls.find(c => c.callkeepUuid === k.uuid)
+        ) {
           endCallKeep(k.uuid)
           if (prev === k.uuid) {
             callStore.recentPn = undefined
@@ -412,21 +409,14 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
-      const endAllCalls = () => {
-        if (totalEmptyCallsAttempt > 2) {
-          clearAutoEndCallKeepTimer()
-        }
-        RNCallKeep.endAllCalls()
-        IncomingCall.closeAllIncomingCallActivities()
-        callStore.recentPn = undefined
+      if (totalEmptyCallsAttempt > 2) {
+        clearAutoEndCallKeepTimer()
       }
-      if (Platform.OS === 'ios') {
-        endAllCalls()
-      } else if (
+      if (
         callStore.recentPn?.action !== 'answered' &&
         !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
       ) {
-        endAllCalls()
+        endCallKeepAll()
       }
     }
     //
@@ -442,9 +432,7 @@ const endCallKeep = (uuid: string) => {
     !callStore.calls.length &&
     (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)
   ) {
-    RNCallKeep.endAllCalls()
-    IncomingCall.closeAllIncomingCallActivities()
-    callStore.recentPn = undefined
+    endCallKeepAll()
   } else {
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
@@ -453,6 +441,11 @@ const endCallKeep = (uuid: string) => {
     uuid,
     CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
   )
+}
+const endCallKeepAll = () => {
+  RNCallKeep.endAllCalls()
+  IncomingCall.closeAllIncomingCallActivities()
+  callStore.recentPn = undefined
 }
 
 // Hack to fix the case call from RNCallKeep gets stuck

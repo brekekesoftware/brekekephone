@@ -181,7 +181,6 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   lastCallPnData = n
   if (Platform.OS === 'android') {
-    RNCallKeep.endAllCalls()
     const uuid = newUuid().toUpperCase()
     callPnDataMap[uuid] = n
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)

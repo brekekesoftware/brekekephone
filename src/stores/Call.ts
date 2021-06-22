@@ -87,9 +87,10 @@ export default class Call {
       .catch(this.onToggleRecordingFailure)
   }
   @action private onToggleRecordingFailure = (err: Error | boolean) => {
-    if (typeof err !== 'boolean' || !err) {
-      this.recording = !this.recording
+    if (err === true) {
+      return
     }
+    this.recording = !this.recording
     if (typeof err !== 'boolean') {
       const message = this.recording
         ? intlDebug`Failed to stop recording the call`
@@ -112,14 +113,15 @@ export default class Call {
       .catch(this.onToggleHoldFailure)
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
-    if (typeof err !== 'boolean' || !err) {
-      this.holding = !this.holding
-      if (this.callkeepUuid && !this.holding) {
-        // Hack to fix no voice after unhold: only setOnHold in unhold case
-        RNCallKeep.setOnHold(this.callkeepUuid, false)
-      }
-      IncomingCall.setOnHold(this.callkeepUuid, this.holding)
+    if (err === true) {
+      return
     }
+    this.holding = !this.holding
+    if (this.callkeepUuid && !this.holding) {
+      // Hack to fix no voice after unhold: only setOnHold in unhold case
+      RNCallKeep.setOnHold(this.callkeepUuid, false)
+    }
+    IncomingCall.setOnHold(this.callkeepUuid, this.holding)
     if (typeof err !== 'boolean') {
       const message = this.holding
         ? intlDebug`Failed to unhold the call`
