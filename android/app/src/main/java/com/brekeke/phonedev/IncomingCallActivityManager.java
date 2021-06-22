@@ -10,10 +10,15 @@ public class IncomingCallActivityManager {
   }
 
   public void remove(String uuid) {
-    IncomingCallActivity a = at(uuid);
-    if (a != null && !a.answered) {
-      IncomingCallModule.tryBackToBackground();
-      a.forceFinish();
+    try {
+      if (!at(uuid).answered) {
+        IncomingCallModule.tryBackToBackground();
+      }
+    } catch (Exception e) {
+    }
+    try {
+      at(uuid).forceFinish();
+    } catch (Exception e) {
     }
     try {
       activities.remove(index(uuid));

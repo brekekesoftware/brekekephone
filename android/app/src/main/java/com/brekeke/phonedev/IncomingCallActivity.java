@@ -129,6 +129,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnRejectClick(View v) {
     IncomingCallModule.emit("rejectCall", uuid);
+    answered = false;
+    IncomingCallModule.mgr.remove(uuid);
     try {
       if (((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE))
               .getRunningTasks(1)
@@ -140,7 +142,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } catch (Exception e) {
       ExitActivity.exitApplication(this);
     }
-    IncomingCallModule.mgr.remove(uuid);
   }
 
   public void onBtnTransferClick(View v) {
