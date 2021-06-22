@@ -366,6 +366,7 @@ class PageChatDetail extends React.Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
+      console.log({ url })
       Object.assign(chatStore.getFileById(file.id), {
         url: url,
         fileType: fileType,

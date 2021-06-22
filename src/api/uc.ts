@@ -119,6 +119,12 @@ export class UC extends EventEmitter {
     if (!ev || !ev.fileInfo) {
       return
     }
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
+    const fileType = type.includes(
+      ev.fileInfo.name.split('.').pop()?.toUpperCase() || '',
+    )
+      ? 'image'
+      : 'other'
 
     const file = {
       id: ev.fileInfo.file_id,
@@ -127,6 +133,7 @@ export class UC extends EventEmitter {
       incoming: true,
       state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
+      fileType: fileType,
     }
 
     this.emit('file-received', file)

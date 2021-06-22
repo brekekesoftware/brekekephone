@@ -1,6 +1,6 @@
 import { mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -12,11 +12,18 @@ import {
 import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
+import { ChatFile } from '../stores/chatStore'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import RnPicker from '../stores/RnPicker'
 import { formatChatContent } from '../utils/formatChatContent'
-import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
+import {
+  RnIcon,
+  RnImage,
+  RnImageLoader,
+  RnText,
+  RnTouchableOpacity,
+} from './Rn'
 import g from './variables'
 
 const css = StyleSheet.create({
@@ -130,93 +137,103 @@ const File: FC<
     accept(): void
     createdByMe: boolean
   }>
-> = observer(p => (
-  <View style={[css.File, css.Message]}>
-    {p.fileType === 'image' && (
-      <RnImage source={{ uri: p.url }} style={css.Image} />
-    )}
-    {p.fileType !== 'image' && (
-      <View style={css.Message_File_Preview_Wrapper}>
-        <RnIcon path={mdiFile} size={50} />
-        <View style={css.Message_File_Preview_Info}>
-          <RnText numberOfLines={1}>{p.name}</RnText>
-          <RnText style={css.Message_File_Preview_Info_Size}>
-            {p.size} KB
-          </RnText>
-        </View>
-      </View>
-    )}
-    <View style={css.Message_File_Button_Wrapper}>
-      {p.state === 'waiting' && (
-        <RnTouchableOpacity onPress={p.reject}>
-          <RnText
-            style={[css.Message_File_Button, css.Message_File_Cancel_Button]}
-          >
-            Cancel
-          </RnText>
-        </RnTouchableOpacity>
+> = observer(p => {
+  // console.log({p})
+  useEffect(() => {
+    console.log('compoent did mounnt')
+    p.accept && p.accept()
+    return () => {}
+  }, [])
+
+  return (
+    <View style={[css.File, css.Message]}>
+      {p.fileType === 'image' && (
+        // <RnImage source={{ uri: p.url }} style={css.Image} />
+        <RnImageLoader {...p} style={css.Image} />
       )}
-      {!!p.incoming && p.state === 'waiting' && (
-        <RnTouchableOpacity onPress={p.accept}>
-          <RnText
-            style={[css.Message_File_Button, css.Message_File_Accept_Button]}
-          >
-            Accept
-          </RnText>
-        </RnTouchableOpacity>
+      {p.fileType !== 'image' && (
+        <View style={css.Message_File_Preview_Wrapper}>
+          <RnIcon path={mdiFile} size={50} />
+          <View style={css.Message_File_Preview_Info}>
+            <RnText numberOfLines={1}>{p.name}</RnText>
+            <RnText style={css.Message_File_Preview_Info_Size}>
+              {p.size} KB
+            </RnText>
+          </View>
+        </View>
+      )}
+      <View style={css.Message_File_Button_Wrapper}>
+        {p.state === 'waiting' && p.fileType !== 'image' && (
+          <RnTouchableOpacity onPress={p.reject}>
+            <RnText
+              style={[css.Message_File_Button, css.Message_File_Cancel_Button]}
+            >
+              Cancel
+            </RnText>
+          </RnTouchableOpacity>
+        )}
+        {!!p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
+          <RnTouchableOpacity onPress={p.accept}>
+            <RnText
+              style={[css.Message_File_Button, css.Message_File_Accept_Button]}
+            >
+              Accept
+            </RnText>
+          </RnTouchableOpacity>
+        )}
+      </View>
+
+      {/*//TODO: fix error UI component Progress*/}
+
+      {/*{p.state === `started` && (*/}
+      {/*  <TouchableOpacity onPress={p.reject} >*/}
+      {/*    <Progress*/}
+      {/*      bgColor={g.bg}*/}
+      {/*      borderWidth={1}*/}
+      {/*      color={g.colors.primary}*/}
+      {/*      percent={p.state === `percent`}*/}
+      {/*      radius={g.fontSizeTitle}*/}
+      {/*      shadowColor={g.bg}*/}
+      {/*    >*/}
+      {/*      <Icon color={g.colors.danger} path={mdiClose} />*/}
+
+      {/*    </Progress>*/}
+      {/*  </TouchableOpacity>*/}
+      {/*)}*/}
+
+      {p.state === 'success' && (
+        <RnText
+          style={[
+            css.Message_File_Preview_Status,
+            css.Message_File_Preview_Status__Success,
+          ]}
+        >
+          ({intl`Success`})
+        </RnText>
+      )}
+      {p.state === 'failure' && (
+        <RnText
+          style={[
+            css.Message_File_Preview_Status,
+            css.Message_File_Preview_Status__Failed,
+          ]}
+        >
+          ({intl`Failed`})
+        </RnText>
+      )}
+      {p.state === 'stopped' && (
+        <RnText
+          style={[
+            css.Message_File_Preview_Status,
+            css.Message_File_Preview_Status__Failed,
+          ]}
+        >
+          ({intl`Canceled`})
+        </RnText>
       )}
     </View>
-
-    {/*//TODO: fix error UI component Progress*/}
-
-    {/*{p.state === `started` && (*/}
-    {/*  <TouchableOpacity onPress={p.reject} >*/}
-    {/*    <Progress*/}
-    {/*      bgColor={g.bg}*/}
-    {/*      borderWidth={1}*/}
-    {/*      color={g.colors.primary}*/}
-    {/*      percent={p.state === `percent`}*/}
-    {/*      radius={g.fontSizeTitle}*/}
-    {/*      shadowColor={g.bg}*/}
-    {/*    >*/}
-    {/*      <Icon color={g.colors.danger} path={mdiClose} />*/}
-
-    {/*    </Progress>*/}
-    {/*  </TouchableOpacity>*/}
-    {/*)}*/}
-
-    {p.state === 'success' && (
-      <RnText
-        style={[
-          css.Message_File_Preview_Status,
-          css.Message_File_Preview_Status__Success,
-        ]}
-      >
-        ({intl`Success`})
-      </RnText>
-    )}
-    {p.state === 'failure' && (
-      <RnText
-        style={[
-          css.Message_File_Preview_Status,
-          css.Message_File_Preview_Status__Failed,
-        ]}
-      >
-        ({intl`Failed`})
-      </RnText>
-    )}
-    {p.state === 'stopped' && (
-      <RnText
-        style={[
-          css.Message_File_Preview_Status,
-          css.Message_File_Preview_Status__Failed,
-        ]}
-      >
-        ({intl`Canceled`})
-      </RnText>
-    )}
-  </View>
-))
+  )
+})
 
 @observer
 class Message extends React.Component<{
