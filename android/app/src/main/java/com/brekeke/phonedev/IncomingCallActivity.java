@@ -1,6 +1,7 @@
 package com.brekeke.phonedev;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.media.AudioAttributes;
@@ -17,13 +18,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-import androidx.lifecycle.ProcessLifecycleOwner;
 
-public class IncomingCallActivity extends Activity
-    implements View.OnClickListener, LifecycleObserver {
+public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public MediaPlayer mp;
 
   public RelativeLayout vManageCall, vIncomingCall, vIncomingThreeBtn;
@@ -46,12 +42,11 @@ public class IncomingCallActivity extends Activity
   public String uuid, callerName;
   public Boolean isVideoCall;
 
-  public Boolean closed = false, closedWithAnswerPressed = false, isActivityStarted = false;
+  public Boolean closed = false, paused = false, answered = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     IncomingCallModule.mgr.push(this);
     startRingtone();
     Bundle b = getIntent().getExtras();
@@ -78,7 +73,7 @@ public class IncomingCallActivity extends Activity
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncomingThreeBtn = (RelativeLayout) findViewById(R.id.view_incoming_call_hold);
 
-    getIncomingLayout().setVisibility(View.VISIBLE);
+    vIncomingCall.setVisibility(View.VISIBLE);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -123,15 +118,6 @@ public class IncomingCallActivity extends Activity
     btnVideo.setSelected(isVideoCall);
   }
 
-  public RelativeLayout getIncomingLayout() {
-    // if (IncomingCallModule.activities.size() > 1) {
-    //   return vIncomingThreeBtn;
-    // } else {
-    //   return vIncomingCall;
-    // }
-    return vIncomingCall;
-  }
-
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
@@ -143,7 +129,15 @@ public class IncomingCallActivity extends Activity
 
   public void onBtnRejectClick(View v) {
     IncomingCallModule.emit("rejectCall", uuid);
-    if (IncomingCallModule.mgr.shouldUseExitActivity(this)) {
+    try {
+      if (((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE))
+              .getRunningTasks(1)
+              .get(0)
+              .numActivities
+          == 1) {
+        ExitActivity.exitApplication(this);
+      }
+    } catch (Exception e) {
       ExitActivity.exitApplication(this);
     }
     IncomingCallModule.mgr.remove(uuid);
@@ -317,12 +311,12 @@ public class IncomingCallActivity extends Activity
     if (closed) {
       return true;
     }
-    closedWithAnswerPressed = isAnswerPressed;
+    answered = isAnswerPressed;
     if (!isAnswerPressed || !IncomingCallModule.isLocked()) {
       IncomingCallModule.mgr.remove(uuid);
       return true;
     }
-    getIncomingLayout().setVisibility(View.GONE);
+    vIncomingCall.setVisibility(View.GONE);
     vManageCall.setVisibility(View.VISIBLE);
     forceStopRingtone();
     return false;
@@ -337,35 +331,27 @@ public class IncomingCallActivity extends Activity
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
-    if (!closedWithAnswerPressed && mp == null) {
-      startRingtone();
-    }
+  protected void onPause() {
+    forceStopRingtone();
+    paused = true;
+    IncomingCallModule.mgr.onAcitivityStop();
+    super.onPause();
   }
 
-  @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-  public void onAppBackgrounded() {
-    forceStopRingtone();
-    if (IncomingCallModule.mgr.activities.size() != 1) {
-      return;
+  @Override
+  protected void onResume() {
+    if (!answered && mp == null) {
+      startRingtone();
     }
-    if (closedWithAnswerPressed) {
-      IncomingCallModule.km.requestDismissKeyguard(
-          this,
-          new KeyguardManager.KeyguardDismissCallback() {
-            @Override
-            public void onDismissSucceeded() {
-              super.onDismissSucceeded();
-              IncomingCallModule.mgr.removeAllAndBackToForeground();
-            }
-          });
-    }
+    paused = false;
+    super.onResume();
   }
 
   @Override
   protected void onDestroy() {
     forceStopRingtone();
+    closed = true;
+    IncomingCallModule.mgr.onAcitivityStop();
     super.onDestroy();
   }
 

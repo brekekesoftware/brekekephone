@@ -1,8 +1,5 @@
 package com.brekeke.phonedev;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 import java.util.ArrayList;
 
 public class IncomingCallActivityManager {
@@ -13,10 +10,10 @@ public class IncomingCallActivityManager {
   }
 
   public void remove(String uuid) {
-    IncomingCallModule.tryBackToBackground();
-    try {
-      at(uuid).forceFinish();
-    } catch (Exception e) {
+    IncomingCallActivity a = at(uuid);
+    if (a != null && !a.answered) {
+      IncomingCallModule.tryBackToBackground();
+      a.forceFinish();
     }
     try {
       activities.remove(index(uuid));
@@ -25,14 +22,21 @@ public class IncomingCallActivityManager {
   }
 
   public void removeAll() {
-    IncomingCallModule.tryBackToBackground();
+    if (activities.size() <= 0) {
+      return;
+    }
+    Boolean atLeastOneAnswerPressed = false;
     try {
       for (IncomingCallActivity a : activities) {
-        a.closedWithAnswerPressed = false;
+        atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
+        a.answered = false;
         a.forceFinish();
       }
       activities.clear();
     } catch (Exception e) {
+    }
+    if (!atLeastOneAnswerPressed) {
+      IncomingCallModule.tryBackToBackground();
     }
   }
 
@@ -93,15 +97,19 @@ public class IncomingCallActivityManager {
     return -1;
   }
 
-  public Boolean shouldUseExitActivity(Activity a) {
-    try {
-      return ((ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE))
-              .getRunningTasks(1)
-              .get(0)
-              .numActivities
-          == 1;
-    } catch (Exception e) {
-      return true;
+  public void onAcitivityStop() {
+    Boolean anyRunning = false, anyAnswered = false;
+    for (IncomingCallActivity a : activities) {
+      if (!a.closed && !a.paused) {
+        anyRunning = true;
+      }
+      if (a.answered) {
+        anyAnswered = true;
+      }
     }
+    if (anyRunning || !anyAnswered) {
+      return;
+    }
+    removeAllAndBackToForeground();
   }
 }
