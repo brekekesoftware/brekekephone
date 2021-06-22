@@ -97,7 +97,7 @@ public class IncomingCallActivityManager {
     return -1;
   }
 
-  public void onAcitivityStop() {
+  public void onActivityStop() {
     Boolean anyRunning = false, anyAnswered = false;
     for (IncomingCallActivity a : activities) {
       if (!a.closed && !a.paused) {
