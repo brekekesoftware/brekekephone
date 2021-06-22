@@ -13,9 +13,19 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     eventEmitter.emit(name, data);
   }
 
-  public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
   public static ReactApplicationContext ctx;
   public static Boolean firstShowCallAppActive = false;
+
+  public static void tryBackToBackground() {
+    try {
+      if (!IncomingCallModule.firstShowCallAppActive) {
+        IncomingCallModule.ctx.getCurrentActivity().moveTaskToBack(true);
+      }
+    } catch (Exception e) {
+    }
+  }
+
+  public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
 
   public ReactApplicationContext reactContext;
 

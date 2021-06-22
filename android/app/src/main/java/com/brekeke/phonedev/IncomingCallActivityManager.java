@@ -13,12 +13,7 @@ public class IncomingCallActivityManager {
   }
 
   public void remove(String uuid) {
-    try {
-      if (!IncomingCallModule.firstShowCallAppActive) {
-        IncomingCallModule.ctx.getCurrentActivity().moveTaskToBack(true);
-      }
-    } catch (Exception e) {
-    }
+    IncomingCallModule.tryBackToBackground();
     try {
       at(uuid).forceFinish();
     } catch (Exception e) {
@@ -30,11 +25,15 @@ public class IncomingCallActivityManager {
   }
 
   public void removeAll() {
-    for (IncomingCallActivity a : activities) {
-      a.closedWithAnswerPressed = false;
-      a.forceFinish();
+    IncomingCallModule.tryBackToBackground();
+    try {
+      for (IncomingCallActivity a : activities) {
+        a.closedWithAnswerPressed = false;
+        a.forceFinish();
+      }
+      activities.clear();
+    } catch (Exception e) {
     }
-    activities.clear();
   }
 
   public void removeAllAndBackToForeground() {
