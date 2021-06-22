@@ -71,8 +71,8 @@ export class CallStore {
         at: Date.now(),
       }
     }
-    // Allow 1 ringing callkeep only on ios
-    if (this.prevCallKeepUuid && Platform.OS === 'ios') {
+    // ios allow only 1 ringing callkeep
+    if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
       const prevCall = this.calls.find(
         c => c.callkeepUuid === this.prevCallKeepUuid,
       )
@@ -82,7 +82,6 @@ export class CallStore {
       endCallKeep(this.prevCallKeepUuid)
     }
     this.prevCallKeepUuid = uuid
-    // New timeout logic
     setAutoEndCallKeepTimer(uuid)
   }
   onCallKeepAnswerCall = (uuid: string) => {
@@ -214,7 +213,7 @@ export class CallStore {
     }
     this.calls = this.calls.filter(c => c.id !== id)
     this.endCallKeep(c)
-    if (!this.calls.length && Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
     }
@@ -376,14 +375,12 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   if (Platform.OS === 'web') {
     return
   }
-
   if (uuid) {
     callkeepMap[uuid] = {
       uuid,
       at: Date.now(),
     }
   }
-
   clearAutoEndCallKeepTimer()
   autoEndCallKeepTimerId = BackgroundTimer.setInterval(() => {
     const n = Date.now()
@@ -392,21 +389,15 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
       (!callStore.recentPn || n - callStore.recentPn.at > 20000)
     ) {
       callkeepMap = {}
-    } else {
-      const prev = callStore.prevCallKeepUuid
-      Object.values(callkeepMap).forEach(k => {
-        if (
-          n - k.at > 20000 &&
-          !callStore.calls.find(c => c.callkeepUuid === k.uuid)
-        ) {
-          endCallKeep(k.uuid)
-          if (prev === k.uuid) {
-            callStore.recentPn = undefined
-          }
-        }
-      })
     }
-
+    Object.values(callkeepMap).forEach(k => {
+      if (
+        n - k.at > 20000 &&
+        !callStore.calls.find(c => c.callkeepUuid === k.uuid)
+      ) {
+        endCallKeep(k.uuid)
+      }
+    })
     if (!Object.keys(callkeepMap).length) {
       totalEmptyCallsAttempt += 1
       if (totalEmptyCallsAttempt > 2) {
@@ -419,7 +410,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         endCallKeepAll()
       }
     }
-    //
     callStore.updateCurrentCallDebounce()
     callStore.updateBackgroundCallsDebounce()
   }, 500)
@@ -427,7 +417,9 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 const endCallKeep = (uuid: string) => {
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
-  IncomingCall.closeIncomingCallActivity(uuid)
+  if (callStore.recentPn?.uuid === uuid) {
+    callStore.recentPn = undefined
+  }
   if (
     !callStore.calls.length &&
     (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)
@@ -441,15 +433,12 @@ const endCallKeep = (uuid: string) => {
     uuid,
     CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
   )
+  IncomingCall.closeIncomingCallActivity(uuid)
 }
 const endCallKeepAll = () => {
   RNCallKeep.endAllCalls()
   IncomingCall.closeAllIncomingCallActivities()
   callStore.recentPn = undefined
 }
-
-// Hack to fix the case call from RNCallKeep gets stuck
-// Hopefully the user will open the app and it triggers the timer
-// AppState.addEventListener('change', () => setAutoEndCallKeepTimer())
 
 export default callStore
