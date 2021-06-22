@@ -11,15 +11,16 @@ public class IncomingCallActivityManager {
 
   public void remove(String uuid) {
     IncomingCallActivity a = at(uuid);
-    if (a != null) {
-      a.forceFinish();
-      if (!a.answered) {
-        IncomingCallModule.tryExitClearTask(a);
-      }
+    if (a == null) {
+      return;
     }
     try {
       activities.remove(index(uuid));
     } catch (Exception e) {
+    }
+    a.forceFinish();
+    if (!a.answered) {
+      IncomingCallModule.tryExitClearTask();
     }
   }
 
@@ -27,18 +28,17 @@ public class IncomingCallActivityManager {
     if (activities.size() <= 0) {
       return;
     }
-    Boolean atLeastOneAnswerPressed = false;
+    boolean atLeastOneAnswerPressed = false;
     try {
       for (IncomingCallActivity a : activities) {
         atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
-        a.answered = false;
         a.forceFinish();
       }
       activities.clear();
     } catch (Exception e) {
     }
     if (!atLeastOneAnswerPressed) {
-      IncomingCallModule.tryExitClearTask(last());
+      IncomingCallModule.tryExitClearTask();
     }
   }
 
@@ -100,7 +100,7 @@ public class IncomingCallActivityManager {
   }
 
   public void onActivityStop() {
-    Boolean anyRunning = false, anyAnswered = false;
+    boolean anyRunning = false, anyAnswered = false;
     for (IncomingCallActivity a : activities) {
       if (!a.closed && !a.paused) {
         anyRunning = true;

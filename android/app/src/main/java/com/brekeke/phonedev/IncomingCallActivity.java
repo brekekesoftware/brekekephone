@@ -39,9 +39,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnHoldAccept;
   public TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
   public String uuid, callerName;
-  public Boolean isVideoCall;
+  public boolean isVideoCall;
 
-  public Boolean closed = false, paused = false, answered = false;
+  public boolean closed = false, paused = false, answered = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -177,7 +177,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("dtmf", uuid);
   }
 
-  public void updateBtnHoldUI(Boolean holding) {
+  public void updateBtnHoldUI(boolean holding) {
     runOnUiThread(
         new Runnable() {
           @Override

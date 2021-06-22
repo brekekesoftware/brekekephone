@@ -11,28 +11,31 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 public class IncomingCallModule extends ReactContextBaseJavaModule {
-  public static RCTDeviceEventEmitter eventEmitter = null;
+  public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
     eventEmitter.emit(name, data);
   }
 
+  public static Activity main;
   public static ReactApplicationContext ctx;
-  public static Boolean firstShowCallAppActive = false;
+  public static boolean firstShowCallAppActive = false;
 
-  public static void tryExitClearTask(IncomingCallActivity a) {
-    Activity main = ctx.getCurrentActivity();
-    if (main != null && !firstShowCallAppActive) {
-      main.moveTaskToBack(true);
+  public static void tryExitClearTask() {
+    if (!firstShowCallAppActive) {
+      try {
+        main.moveTaskToBack(true);
+      } catch (Exception e) {
+      }
     }
     if (main == null) {
-      ExitActivity.exitApplication(a);
+      ExitActivity.exitApplication(ctx);
     }
   }
 
   public static KeyguardManager km;
 
-  public static Boolean isLocked() {
+  public static boolean isLocked() {
     return km.isKeyguardLocked() || km.isDeviceLocked();
   }
 
@@ -56,7 +59,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void showCall(String uuid, String callerName, Boolean isVideoCall, Boolean isAppActive) {
+  public void showCall(String uuid, String callerName, boolean isVideoCall, boolean isAppActive) {
     Intent i;
     IncomingCallActivity prev = mgr.last();
     if (prev == null) {
@@ -93,7 +96,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setOnHold(String uuid, Boolean holding) {
+  public void setOnHold(String uuid, boolean holding) {
     try {
       mgr.at(uuid).updateBtnHoldUI(holding);
     } catch (Exception e) {
