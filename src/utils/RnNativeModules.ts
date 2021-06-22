@@ -2,11 +2,11 @@ import { NativeModule, NativeModules, Platform } from 'react-native'
 
 const Polyfill = {
   IncomingCall: {
-    closeIncomingCallActivity() {},
-    closeAllIncomingCallActivities() {},
-    showCall() {},
-    setOnHold() {},
-    isLocked() {},
+    closeIncomingCallActivity: () => undefined,
+    closeAllIncomingCallActivities: () => undefined,
+    showCall: () => undefined,
+    setOnHold: () => undefined,
+    isLocked: () => Promise.resolve(false),
   },
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {

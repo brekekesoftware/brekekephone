@@ -219,7 +219,7 @@ export const setupCallKeep = async () => {
         uuid,
         getCallPnData(uuid)?.from || 'Loading...',
         !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
-        AppState.currentState === 'active' || isBackgroundLocked,
+        AppState.currentState === 'active' || isForegroundLocked,
       )
       callStore.onCallKeepDidDisplayIncomingCall(uuid)
     })
@@ -263,19 +263,19 @@ export const setupCallKeep = async () => {
   }
 }
 
-let isBackgroundLocked = false
+let isForegroundLocked = false
 if (Platform.OS === 'android') {
   // If it is locked right after blur, we assume it was put in background because of lock
   AppState.addEventListener('change', () => {
     if (AppState.currentState === 'active') {
-      isBackgroundLocked = false
+      isForegroundLocked = false
       return
     }
-    if (isBackgroundLocked) {
+    if (isForegroundLocked) {
       return
     }
     BackgroundTimer.setTimeout(async () => {
-      isBackgroundLocked = await IncomingCall.isLocked()
+      isForegroundLocked = await IncomingCall.isLocked()
     }, 300)
   })
 }
