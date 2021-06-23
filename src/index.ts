@@ -5,11 +5,20 @@ import './stores/Nav2' // Fix circular dependencies
 import './stores/authStore2' // Fix circular dependencies
 import './api/syncPnToken2' // Fix circular dependencies
 
+import { configure } from 'mobx'
 import { AppRegistry, Platform } from 'react-native'
 
 import App from './components/App'
 import callStore from './stores/callStore'
 import { setCallStore } from './stores/cancelRecentPn'
+
+configure({
+  enforceActions: 'never',
+  computedRequiresReaction: false,
+  observableRequiresReaction: false,
+  reactionRequiresObservable: false,
+  disableErrorBoundaries: true,
+})
 
 setCallStore(callStore)
 AppRegistry.registerComponent('BrekekePhone', () => App)

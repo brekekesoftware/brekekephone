@@ -10,12 +10,19 @@ class AuthPBX {
   private clearObserve?: Lambda
   auth() {
     this.authWithCheck()
-    const s = getAuthStore()
-    this.clearObserve = observe(s, 'pbxShouldAuth', this.authWithCheckDebounced)
+    if (!this.clearObserve) {
+      const s = getAuthStore()
+      this.clearObserve = observe(
+        s,
+        'pbxShouldAuth',
+        this.authWithCheckDebounced,
+      )
+    }
   }
   dispose() {
     console.error('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()
+    this.clearObserve = undefined
     pbx.disconnect()
     const s = getAuthStore()
     s.pbxState = 'stopped'
@@ -46,4 +53,4 @@ class AuthPBX {
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
 
-export default AuthPBX
+export const authPBX = new AuthPBX()

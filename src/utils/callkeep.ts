@@ -2,13 +2,15 @@ import { AppState, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import sip from '../api/sip'
-import callStore from '../stores/callStore'
+import callStore, {
+  getCallPnData,
+  showIncomingCallUi,
+} from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from './BackgroundTimer'
-import { getCallPnData } from './PushNotification-parse'
-import { IncomingCall, RnNativeModules } from './RnNativeModules'
+import { RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
 
@@ -73,10 +75,10 @@ const setupCallKeepWithCheck = async () => {
     })
 }
 
-type TEvent = {
+export type TEvent = {
   callUUID: string
 }
-type TEventDidLoad = {
+export type TEventDidLoad = {
   name: string
   data: unknown
 }
@@ -213,16 +215,7 @@ export const setupCallKeep = async () => {
 
   // Android self-managed connection service forked version
   if (Platform.OS === 'android') {
-    RNCallKeep.addEventListener('showIncomingCallUi', (e: TEvent) => {
-      const uuid = e.callUUID.toUpperCase()
-      IncomingCall.showCall(
-        uuid,
-        getCallPnData(uuid)?.from || 'Loading...',
-        !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
-        AppState.currentState === 'active' || isForegroundLocked,
-      )
-      callStore.onCallKeepDidDisplayIncomingCall(uuid)
-    })
+    RNCallKeep.addEventListener('showIncomingCallUi', showIncomingCallUi)
     // Events from our custom IncomingCall module
     const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
@@ -267,21 +260,4 @@ export const setupCallKeep = async () => {
       RNCallKeep.backToForeground()
     })
   }
-}
-
-let isForegroundLocked = false
-if (Platform.OS === 'android') {
-  // If it is locked right after blur, we assume it was put in background because of lock
-  AppState.addEventListener('change', () => {
-    if (AppState.currentState === 'active') {
-      isForegroundLocked = false
-      return
-    }
-    if (isForegroundLocked) {
-      return
-    }
-    BackgroundTimer.setTimeout(async () => {
-      isForegroundLocked = await IncomingCall.isLocked()
-    }, 300)
-  })
 }

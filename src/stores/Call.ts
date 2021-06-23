@@ -53,7 +53,7 @@ export default class Call {
 
   hangup = () => {
     sip.hangupSession(this.id)
-    this.store.endCallKeep(this)
+    this.store.endCallKeepByCall(this)
   }
   hangupWithUnhold = () =>
     this.holding ? this.toggleHold().then(this.hangup) : this.hangup()

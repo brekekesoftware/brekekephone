@@ -16,11 +16,11 @@ import SplashScreen from 'react-native-splash-screen'
 
 import api from '../api'
 import { SyncPnToken } from '../api/syncPnToken'
-import AuthPBX from '../stores/AuthPBX'
-import AuthSIP from '../stores/AuthSIP'
+import { authPBX } from '../stores/AuthPBX'
+import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
 import authStore from '../stores/authStore2'
-import AuthUC from '../stores/AuthUC'
+import { authUC } from '../stores/AuthUC'
 import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
@@ -142,10 +142,6 @@ PushNotification.register(() => {
 
   Nav().goToPageIndex()
   s.handleUrlParams()
-
-  const authPBX = new AuthPBX()
-  const authSIP = new AuthSIP()
-  const authUC = new AuthUC()
 
   observe(s, 'signedInId', () => {
     Nav().goToPageIndex()

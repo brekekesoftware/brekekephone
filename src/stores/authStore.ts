@@ -30,14 +30,13 @@ export const reconnectAndWaitSip = async () => {
 
 const wait = (fn: Function, name: 'pbxState' | 'sipState' | 'ucState') => {
   const at = Date.now()
-  const s = getAuthStore()
-  if (s[name] === 'success') {
+  if (authStore[name] === 'success') {
     fn(true)
     return
   }
   const id = BackgroundTimer.setInterval(() => {
-    const enoughTimePassed = Date.now() - at > 12000
-    const isConnected = s[name] === 'success'
+    const enoughTimePassed = Date.now() - at > 10000
+    const isConnected = authStore[name] === 'success'
     if (enoughTimePassed || isConnected) {
       BackgroundTimer.clearInterval(id)
       fn(isConnected)

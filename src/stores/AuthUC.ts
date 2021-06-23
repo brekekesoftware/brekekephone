@@ -102,4 +102,4 @@ class AuthUC {
   }
 }
 
-export default AuthUC
+export const authUC = new AuthUC()

@@ -164,4 +164,4 @@ class AuthSIP {
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
 
-export default AuthSIP
+export const authSIP = new AuthSIP()

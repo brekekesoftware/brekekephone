@@ -4,6 +4,12 @@ import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'react-native-uuid'
 
 import { getAuthStore } from '../stores/authStore'
+import {
+  hasCallKeepRunning,
+  setCallPnData,
+  setLastCallPnData,
+  showIncomingCallUi,
+} from '../stores/callStore'
 import waitTimeout from './waitTimeout'
 
 const keysInCustomNotification = [
@@ -179,17 +185,21 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       ? n
       : null
   }
-  lastCallPnData = n
+  setLastCallPnData(n)
   if (Platform.OS === 'android') {
     const uuid = newUuid().toUpperCase()
-    callPnDataMap[uuid] = n
+    setCallPnData(uuid, n)
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
+    if (hasCallKeepRunning()) {
+      showIncomingCallUi({ callUUID: uuid })
+    }
   }
-  // Call api to sign in
   getAuthStore().signInByNotification(n)
-  await waitTimeout(3000)
+  // let pbx/sip connect by this awaiting time
+  await waitTimeout(10000)
   return null
 }
+export default parse
 
 export type ParsedPn = {
   id: string
@@ -216,14 +226,3 @@ export type SipPn = {
   turnUsername: string
   turnCredential: string
 }
-
-let callPnDataMap: { [k: string]: ParsedPn } = {}
-export const deleteCallPnData = (uuid: string) => {
-  delete callPnDataMap[uuid]
-}
-
-let lastCallPnData: ParsedPn | undefined = undefined
-export const getCallPnData = (uuid?: string) =>
-  (uuid && callPnDataMap[uuid]) || lastCallPnData
-
-export default parse

@@ -1,5 +1,6 @@
 import { action } from 'mobx'
 
+import { authPBX } from '../stores/AuthPBX'
 import { getAuthStore, waitPbx, waitSip } from '../stores/authStore'
 import Call from '../stores/Call'
 import callStore from '../stores/callStore'
@@ -106,6 +107,7 @@ class Api {
     const s = getAuthStore()
     s.sipState = 'success'
     s.sipPn = {}
+    authPBX.auth()
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     if (!e?.reason && !e?.response) {

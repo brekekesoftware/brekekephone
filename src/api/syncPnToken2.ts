@@ -11,7 +11,7 @@ import { updatePhoneIndexWithoutCatch } from './updatePhoneIndex'
 
 const syncPnTokenWithoutCatch = async (
   p: Profile,
-  { pbx, noUpsert }: Pick<SyncPnTokenOption, 'pbx' | 'noUpsert'>,
+  { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   if (Platform.OS === 'web') {
     console.error('PN sync debug: invalid platform')
@@ -24,8 +24,9 @@ const syncPnTokenWithoutCatch = async (
   }
   profileStore.pnSyncLoadingMap[p.id] = true
 
-  pbx = pbx || new PBX()
+  const pbx = new PBX()
   await pbx.connect(p)
+
   const webPhone = await updatePhoneIndexWithoutCatch(p, pbx)
   if (!webPhone) {
     console.error('PN sync debug: can not find webphone')
@@ -90,9 +91,7 @@ const syncPnTokenWithoutCatch = async (
 }
 
 export interface SyncPnTokenOption {
-  pbx?: PBX
   silent?: boolean
-  onError?: Function
   noUpsert?: boolean
 }
 
@@ -100,7 +99,6 @@ const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
   const { silent = false } = o
   return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
     profileStore.pnSyncLoadingMap[p.id] = false
-    // onError?.() // TODO
     if (silent) {
       console.error(
         `Failed to sync Push Notification settings for ${p.pbxUsername}`,
