@@ -370,6 +370,7 @@
       android:layout_height="wrap_content"
     >
       <TextView
+        android:id="@+id/txt_call_status_3btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -430,15 +431,6 @@
           android:paddingLeft="25dp"
           android:paddingTop="42dp"
         />
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="DECLINE"
-          android:textColor="@color/white"
-          android:paddingTop="5dp"
-          android:textSize="14dp"
-          android:textStyle="bold"
-        />
       </LinearLayout>
       <LinearLayout
         android:layout_width="wrap_content"
@@ -456,7 +448,6 @@
           android:background="@android:color/transparent"
           android:drawableRight="@drawable/btn_answer_hold"
         />
-        <!-- TODO add and change icon btn_answer_end -> btn_answer_hold -->
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"

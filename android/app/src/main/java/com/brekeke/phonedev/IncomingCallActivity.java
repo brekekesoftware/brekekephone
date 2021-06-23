@@ -37,7 +37,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnDtmf,
       btnHold,
       btnEndcall;
-  public TextView txtCallerName, txtCallStatus, txtHoldBtn, txtMuteBtn;
+  public TextView txtCallerName, txtCallStatus, txtCallStatus3Btn, txtHoldBtn, txtMuteBtn;
   public String uuid, callerName;
   public boolean isVideoCall;
 
@@ -71,8 +71,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vIncoming = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncoming3Btn = (RelativeLayout) findViewById(R.id.view_incoming_call_3btn);
     vIncomingManage = (RelativeLayout) findViewById(R.id.view_incoming_call_manage);
-    vIncoming3Btn.setVisibility(View.VISIBLE);
-//    vIncoming.setVisibility(View.VISIBLE);
+
+    vIncoming.setVisibility(View.VISIBLE);
+    // vIncoming3Btn.setVisibility(View.VISIBLE);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -112,11 +113,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
+    txtCallStatus3Btn = (TextView) findViewById(R.id.txt_call_status_3btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtMuteBtn = (TextView) findViewById(R.id.txt_mute_btn);
 
     txtCallerName.setText(callerName);
-    txtCallStatus.setText("Incoming " + (isVideoCall ? "Video" : "Audio") + " Call");
+    String status = "Incoming " + (isVideoCall ? "Video" : "Audio") + " Call";
+    txtCallStatus.setText(status);
+    txtCallStatus3Btn.setText(status);
 
     btnVideo.setSelected(isVideoCall);
   }
