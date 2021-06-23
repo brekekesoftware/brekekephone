@@ -350,7 +350,7 @@ class PageChatDetail extends React.Component<{
       err,
     })
   }
-  acceptFile = (file: { id: string; name: string }) => {
+  acceptFile = (file: { id: string; name: string; fileType: string }) => {
     uc.acceptFile(file.id)
       .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
       .catch(this.onAcceptFileFailure)

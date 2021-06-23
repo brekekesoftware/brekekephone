@@ -25,6 +25,7 @@ export type ChatFile = {
   state: string // 'waiting' | 'started' | 'success' | 'stopped' | 'failure'
   transferPercent: number
   fileType: string
+  url?: string
 }
 export type ChatMessageConfig = {
   id: string

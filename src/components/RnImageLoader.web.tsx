@@ -1,13 +1,14 @@
 import React, { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
+  Dimensions,
+  Linking,
   Platform,
   Pressable,
   StyleSheet,
   View,
   ViewProps,
 } from 'react-native'
-import ImageView from 'react-native-image-viewing'
 
 import { ChatFile } from '../stores/chatStore'
 import { RnImage } from './Rn'
@@ -33,14 +34,16 @@ const css = StyleSheet.create({
 })
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
-  console.log({ state, url })
-
-  const [visible, setIsVisible] = useState(false)
-  const images = [{ uri: url }]
-
   const onShowImage = useCallback(() => {
-    images.length > 0 && setIsVisible(true)
-  }, [images])
+    console.log({ url })
+    // window.open(url, '_blank')
+    const win = window.open('')
+    win?.document.write(
+      '<iframe src="' +
+        url +
+        '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:70%; height:70%;" allowfullscreen></iframe>',
+    )
+  }, [url])
 
   return (
     <View style={css.Image}>
@@ -50,14 +53,6 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
       <RnTouchableOpacity onPress={onShowImage}>
         <RnImage source={{ uri: url }} style={css.Image} />
       </RnTouchableOpacity>
-      <ImageView
-        images={images}
-        imageIndex={0}
-        visible={visible}
-        onRequestClose={() => setIsVisible(false)}
-        swipeToCloseEnabled={true}
-        doubleTapToZoomEnabled={true}
-      />
     </View>
   )
 }
