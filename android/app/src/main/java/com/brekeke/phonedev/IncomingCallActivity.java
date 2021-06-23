@@ -71,8 +71,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vIncoming = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vIncoming3Btn = (RelativeLayout) findViewById(R.id.view_incoming_call_3btn);
     vIncomingManage = (RelativeLayout) findViewById(R.id.view_incoming_call_manage);
-
-    vIncoming.setVisibility(View.VISIBLE);
+    vIncoming3Btn.setVisibility(View.VISIBLE);
+//    vIncoming.setVisibility(View.VISIBLE);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
