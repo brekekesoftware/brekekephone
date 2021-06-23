@@ -328,8 +328,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onPause() {
     forceStopRingtone();
-    // paused = true;
-    // IncomingCallModule.mgr.onActivityStop();
+    paused = true;
+    IncomingCallModule.mgr.onActivityStop();
     super.onPause();
   }
 
@@ -338,7 +338,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (!answered && mp == null) {
       startRingtone();
     }
-    // paused = false;
+    paused = false;
     super.onResume();
   }
 

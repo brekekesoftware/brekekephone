@@ -413,6 +413,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   }, 500)
 }
 const endCallKeep = (uuid: string) => {
+  console.error('PN callkeep debug: endCallKeep ' + uuid)
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
   if (callStore.prevCallKeepUuid === uuid) {
@@ -434,6 +435,7 @@ const endCallKeep = (uuid: string) => {
   IncomingCall.closeIncomingCallActivity(uuid)
 }
 const endCallKeepAll = () => {
+  console.error('PN callkeep debug: endCallKeepAll')
   RNCallKeep.endAllCalls()
   IncomingCall.closeAllIncomingCallActivities()
   callStore.recentPn = undefined
