@@ -93,7 +93,7 @@ const css = StyleSheet.create({
     alignItems: 'flex-start',
   },
   Message_File_Preview_Info: {
-    marginLeft: 5,
+    marginLeft: 0,
     ...Platform.select({
       web: {
         width: 'calc(100vw - 119px)',

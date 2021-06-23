@@ -1,3 +1,4 @@
+import { mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
@@ -9,6 +10,7 @@ import {
   View,
   ViewProps,
 } from 'react-native'
+import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
 import { RnImage } from './Rn'
@@ -31,12 +33,16 @@ const css = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
   },
+  ImageBroken: {
+    marginLeft: -20,
+    marginTop: -20,
+  },
 })
+const size = 150
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
+  const isLoading = state !== 'success' && state !== 'failure'
   const onShowImage = useCallback(() => {
-    console.log({ url })
-    // window.open(url, '_blank')
     const win = window.open('')
     win?.document.write(
       '<iframe src="' +
@@ -47,12 +53,21 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
 
   return (
     <View style={css.Image}>
-      {state !== 'success' && (
+      {isLoading && (
         <ActivityIndicator size='small' color='white' style={css.Loading} />
       )}
-      <RnTouchableOpacity onPress={onShowImage}>
-        <RnImage source={{ uri: url }} style={css.Image} />
-      </RnTouchableOpacity>
+      {state === 'success' && (
+        <RnTouchableOpacity onPress={onShowImage}>
+          <RnImage source={{ uri: url }} style={css.Image} />
+        </RnTouchableOpacity>
+      )}
+      {state === 'failure' && (
+        <View style={css.ImageBroken}>
+          <Svg height={size} viewBox='0 0 24 24' width={size}>
+            <Path d={mdiImageBrokenVariant} fill={'grey'} />
+          </Svg>
+        </View>
+      )}
     </View>
   )
 }
