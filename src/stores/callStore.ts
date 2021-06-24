@@ -89,9 +89,12 @@ export class CallStore {
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
+      this.recentPn = undefined
       console.error('SIP PN debug: answer by onCallKeepAnswerCall')
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'answered'
+    } else {
+      this.recentPn = undefined
     }
   }
   onCallKeepEndCall = (uuid: string) => {
@@ -103,9 +106,12 @@ export class CallStore {
     if (c) {
       c.callkeepAlreadyRejected = true
       c.hangup()
+      this.recentPn = undefined
       console.error('SIP PN debug: reject by onCallKeepEndCall')
     } else if (this.recentPn?.uuid === uuid) {
       this.recentPn.action = 'rejected'
+    } else {
+      this.recentPn = undefined
     }
     endCallKeep(uuid)
   }
@@ -120,9 +126,6 @@ export class CallStore {
       c.callkeepUuid = ''
       c.callkeepAlreadyRejected = true
       endCallKeep(uuid)
-      if (uuid === this.recentPn?.uuid) {
-        this.recentPn = undefined
-      }
     }
   }
 
@@ -383,6 +386,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   autoEndCallKeepTimerId = BackgroundTimer.setInterval(() => {
     const n = Date.now()
     if (
+      Platform.OS === 'ios' &&
       !callStore.calls.length &&
       (!callStore.recentPn || n - callStore.recentPn.at > 20000)
     ) {
@@ -402,6 +406,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         clearAutoEndCallKeepTimer()
       }
       if (
+        Platform.OS === 'ios' &&
         callStore.recentPn?.action !== 'answered' &&
         !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
       ) {
@@ -416,8 +421,12 @@ const endCallKeep = (uuid: string) => {
   console.error('PN callkeep debug: endCallKeep ' + uuid)
   deleteCallPnData(uuid)
   delete callkeepMap[uuid]
-  if (callStore.prevCallKeepUuid === uuid) {
+  if (uuid === callStore.prevCallKeepUuid) {
     callStore.prevCallKeepUuid = undefined
+    callStore.recentPn = undefined
+  }
+  if (uuid === callStore.recentPn?.uuid) {
+    callStore.recentPn = undefined
   }
   if (
     !callStore.calls.length &&

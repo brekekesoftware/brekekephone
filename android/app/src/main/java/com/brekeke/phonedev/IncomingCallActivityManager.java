@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 public class IncomingCallActivityManager {
   public ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
-
-  public void push(IncomingCallActivity a) {
-    activities.add(a);
-  }
+  // Manually manage activities size:
+  // Try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
+  public int activitiesSize = 0;
 
   public void remove(String uuid) {
     IncomingCallActivity a = at(uuid);
@@ -99,10 +98,13 @@ public class IncomingCallActivityManager {
     return -1;
   }
 
-  public void onActivityStop() {
+  public void onActivityPauseOrDestroy() {
+    if (activitiesSize > 1) {
+      return;
+    }
     boolean anyRunning = false, anyAnswered = false;
     for (IncomingCallActivity a : activities) {
-      if (!a.closed && !a.paused) {
+      if (!a.closed || !a.paused) {
         anyRunning = true;
       }
       if (a.answered) {

@@ -46,7 +46,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IncomingCallModule.mgr.push(this);
+    IncomingCallModule.mgr.activities.add(this);
     startRingtone();
     Bundle b = getIntent().getExtras();
     if (b == null) {
@@ -128,7 +128,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnAnswerClick(View v) {
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
-      onAnswerCheckLocked();
+      onAnswerButLocked();
     } else {
       IncomingCallModule.mgr.removeAllAndBackToForeground();
     }
@@ -203,12 +203,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnAnswerHoldClick(View v) {
     // Should auto hold the previous one in js after answer
     IncomingCallModule.emit("answerCall", uuid);
-    onAnswerCheckLocked();
+    onAnswerButLocked();
   }
 
   public void onBtnAnswerEndClick(View v) {
     IncomingCallModule.emit("answerCall+end", uuid);
-    onAnswerCheckLocked();
+    onAnswerButLocked();
   }
 
   public void onBtnUnlockClick(View v) {
@@ -306,7 +306,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void onAnswerCheckLocked() {
+  public void onAnswerButLocked() {
     answered = true;
     if (!IncomingCallModule.isLocked()) {
       IncomingCallModule.mgr.remove(uuid);
@@ -329,7 +329,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onPause() {
     forceStopRingtone();
     paused = true;
-    IncomingCallModule.mgr.onActivityStop();
+    IncomingCallModule.mgr.onActivityPauseOrDestroy();
     super.onPause();
   }
 
@@ -346,7 +346,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onDestroy() {
     forceStopRingtone();
     closed = true;
-    IncomingCallModule.mgr.onActivityStop();
+    IncomingCallModule.mgr.onActivityPauseOrDestroy();
+    IncomingCallModule.mgr.activitiesSize--;
     super.onDestroy();
   }
 

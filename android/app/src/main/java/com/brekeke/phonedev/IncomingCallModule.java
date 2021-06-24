@@ -66,6 +66,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void showCall(String uuid, String callerName, boolean isVideoCall, boolean isAppActive) {
+    mgr.activitiesSize++;
     Intent i;
     IncomingCallActivity prev = mgr.last();
     if (prev == null) {
