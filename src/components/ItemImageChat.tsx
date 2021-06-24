@@ -104,7 +104,7 @@ const css = StyleSheet.create({
     }),
   },
   Message_File_Preview_Info_Size: {
-    color: '#9e9e9e',
+    color: g.colors.greyTextChat,
     fontSize: 13,
   },
   Message_File_Preview_Status: {
@@ -137,14 +137,15 @@ const ItemImageChat: FC<ChatFile> = observer(p => {
     if (!file.id && !file.name) {
       return
     }
-    const reader = new FileReader()
-    reader.onload = async event => {
-      const url = event.target?.result
-      Object.assign(chatStore.getFileById(file.id), {
-        url: url,
-      })
-    }
-    reader.readAsDataURL(blob)
+    // const reader = new FileReader()
+    // reader.onload = async event => {
+    //   console.log({event: event.target})
+    //   const url = event.target?.result
+    //   Object.assign(chatStore.getFileById(file.id), {
+    //     url: url,
+    //   })
+    // }
+    // reader.readAsDataURL(blob)
     saveBlob(blob, file.name)
   }
 

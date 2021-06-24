@@ -1,20 +1,6 @@
-import {
-  mdiAlphaPCircle,
-  mdiFileImage,
-  mdiFileImageOutline,
-  mdiImageBroken,
-  mdiImageBrokenVariant,
-} from '@mdi/js'
+import { mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useState } from 'react'
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-  ViewProps,
-} from 'react-native'
-import { Colors } from 'react-native/Libraries/NewAppScreen'
+import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
 import ImageView from 'react-native-image-viewing'
 import Svg, { Path } from 'react-native-svg'
 
@@ -67,11 +53,14 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
         </RnTouchableOpacity>
       )}
       {state === 'failure' && (
-        <View style={css.ImageBroken}>
-          <Svg height={size} viewBox='0 0 24 24' width={size}>
-            <Path d={mdiImageBrokenVariant} fill={'grey'} />
-          </Svg>
-        </View>
+        <Svg
+          preserveAspectRatio='xMinYMin slice'
+          height={size}
+          viewBox='3 3  18 18'
+          width={size}
+        >
+          <Path d={mdiImageBrokenVariant} fill={g.colors.greyTextChat} />
+        </Svg>
       )}
       <ImageView
         images={images}

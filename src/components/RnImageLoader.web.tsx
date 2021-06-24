@@ -10,11 +10,12 @@ import {
   View,
   ViewProps,
 } from 'react-native'
-import Svg, { Path } from 'react-native-svg'
+import Svg, { G, Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
 import { RnImage } from './Rn'
 import RnTouchableOpacity from './RnTouchableOpacity'
+import g from './variables'
 
 const css = StyleSheet.create({
   Image: {
@@ -27,18 +28,23 @@ const css = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    backgroundColor: '#00000090',
+    backgroundColor: g.layerBg,
     width: 150,
     height: 150,
     borderRadius: 5,
     overflow: 'hidden',
   },
   ImageBroken: {
-    marginLeft: -20,
-    marginTop: -20,
+    marginLeft: 0,
+    marginTop: 0,
+    backgroundColor: 'blue',
+    aspectRatio: 1,
+    alignItems: 'center',
+    width: '100%',
+    height: 150,
   },
 })
-const size = 150
+const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
   const isLoading = state !== 'success' && state !== 'failure'
@@ -62,11 +68,14 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
         </RnTouchableOpacity>
       )}
       {state === 'failure' && (
-        <View style={css.ImageBroken}>
-          <Svg height={size} viewBox='0 0 24 24' width={size}>
-            <Path d={mdiImageBrokenVariant} fill={'grey'} />
-          </Svg>
-        </View>
+        <Svg
+          preserveAspectRatio='xMinYMin slice'
+          height={size}
+          viewBox='3 3  18 18'
+          width={size}
+        >
+          <Path d={mdiImageBrokenVariant} fill={g.colors.greyTextChat} />
+        </Svg>
       )}
     </View>
   )

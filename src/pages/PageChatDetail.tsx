@@ -419,6 +419,8 @@ class PageChatDetail extends React.Component<{
     const u = contactStore.getUcUserById(this.props.buddy)
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
+        console.log({ res })
+
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)
         chatStore.upsertFile(res.file)

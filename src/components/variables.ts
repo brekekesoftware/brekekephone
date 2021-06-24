@@ -62,6 +62,7 @@ const v = {
   },
   colors: {
     //
+    greyTextChat: '#9e9e9e',
     primary: '#609B3A',
     warning: '#F1AF20',
     danger: '#DC0F39',
