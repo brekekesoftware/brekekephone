@@ -22,7 +22,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static boolean firstShowCallAppActive = false;
 
   public static void tryExitClearTask() {
-    if (!firstShowCallAppActive && mgr.activities.isEmpty()) {
+    if (!mgr.activities.isEmpty()) {
+      return;
+    }
+    if (!firstShowCallAppActive) {
       try {
         main.moveTaskToBack(true);
       } catch (Exception e) {

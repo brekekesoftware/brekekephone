@@ -29,7 +29,7 @@ export class CallStore {
   cancelRecentPn = () => {
     const uuid = this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
-    endCallKeep(uuid)
+    endCallKeep(uuid, true)
   }
 
   prevCallKeepUuid?: string
@@ -125,7 +125,7 @@ export class CallStore {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
       c.callkeepAlreadyRejected = true
-      endCallKeep(uuid)
+      endCallKeep(uuid, true)
     }
   }
 
@@ -417,7 +417,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
     callStore.updateBackgroundCallsDebounce()
   }, 500)
 }
-const endCallKeep = (uuid: string) => {
+const endCallKeep = (uuid: string, clearRecentPn?: boolean) => {
   console.error('PN callkeep debug: endCallKeep ' + uuid)
   if (
     !callStore.calls.length &&
@@ -436,9 +436,11 @@ const endCallKeep = (uuid: string) => {
   delete callkeepMap[uuid]
   if (uuid === callStore.prevCallKeepUuid) {
     callStore.prevCallKeepUuid = undefined
-    callStore.recentPn = undefined
   }
-  if (uuid === callStore.recentPn?.uuid) {
+  if (
+    clearRecentPn &&
+    (uuid === callStore.prevCallKeepUuid || uuid === callStore.recentPn?.uuid)
+  ) {
     callStore.recentPn = undefined
   }
   IncomingCall.closeIncomingCallActivity(uuid)
