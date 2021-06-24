@@ -98,22 +98,17 @@ public class IncomingCallActivityManager {
     return -1;
   }
 
+  // To open app when:
+  // - call is answered and
+  // - on pause (click home when locked) or destroy (click answer when forground)
+  // TODO handle case multiple calls
   public void onActivityPauseOrDestroy() {
     if (activitiesSize > 1) {
       return;
     }
-    boolean anyRunning = false, anyAnswered = false;
-    for (IncomingCallActivity a : activities) {
-      if (!a.closed || !a.paused) {
-        anyRunning = true;
-      }
-      if (a.answered) {
-        anyAnswered = true;
-      }
+    IncomingCallActivity a = last();
+    if (a != null && a.answered && (a.closed || a.paused)) {
+      removeAllAndBackToForeground();
     }
-    if (anyRunning || !anyAnswered) {
-      return;
-    }
-    removeAllAndBackToForeground();
   }
 }
