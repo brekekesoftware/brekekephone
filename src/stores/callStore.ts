@@ -398,7 +398,9 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
         if (c && !c.answered && !c.callkeepAlreadyAnswered) {
           c.hangup()
         }
-        endCallKeep(k.uuid)
+        if (!c) {
+          endCallKeep(k.uuid)
+        }
       }
     })
     if (!Object.keys(callkeepMap).length) {
