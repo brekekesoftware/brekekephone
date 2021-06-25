@@ -106,9 +106,11 @@ public class IncomingCallActivityManager {
     if (activitiesSize > 1) {
       return;
     }
-    IncomingCallActivity a = last();
-    if (a != null && a.answered && (a.closed || a.paused)) {
-      removeAllAndBackToForeground();
+    try {
+      if (last().answered) {
+        removeAllAndBackToForeground();
+      }
+    } catch (Exception e) {
     }
   }
 }
