@@ -25,7 +25,7 @@ import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import pickFile from '../utils/pickFile'
-import saveBlob from '../utils/saveBlob'
+import { saveBlob } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({

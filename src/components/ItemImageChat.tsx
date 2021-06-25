@@ -1,6 +1,6 @@
 import { mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React, { FC, useEffect } from 'react'
+import React, { FC, useCallback, useEffect } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -19,7 +19,7 @@ import RnAlert from '../stores/RnAlert'
 import RnPicker from '../stores/RnPicker'
 import { formatBytes } from '../utils/formatBytes'
 import { formatChatContent } from '../utils/formatChatContent'
-import saveBlob from '../utils/saveBlob'
+import { saveBlobImage } from '../utils/saveBlob'
 import {
   RnIcon,
   RnImage,
@@ -129,36 +129,28 @@ const css = StyleSheet.create({
 })
 
 const ItemImageChat: FC<ChatFile> = observer(p => {
-  const file = { id: p.id, name: p.name }
-  const onAcceptFileSuccess = (
-    blob: Blob,
-    file: { id: string; name: string },
-  ) => {
-    if (!file.id && !file.name) {
-      return
-    }
-    // const reader = new FileReader()
-    // reader.onload = async event => {
-    //   console.log({event: event.target})
-    //   const url = event.target?.result
-    //   Object.assign(chatStore.getFileById(file.id), {
-    //     url: url,
-    //   })
-    // }
-    // reader.readAsDataURL(blob)
-    saveBlob(blob, file.name)
-  }
+  console.log('saveBlob', p)
+  const updateItemChat = useCallback(
+    (id: string, url: string, state: string) => {
+      Object.assign(chatStore.getFileById(p.id), {
+        url: url,
+        state: state,
+      })
+    },
+    [p.id],
+  )
 
-  const onAcceptFileFailure = (err: Error) => {}
   useEffect(() => {
-    file &&
-      file.id &&
-      file.name &&
-      uc
-        .acceptFile(file.id)
-        .then(blob => onAcceptFileSuccess(blob as Blob, file))
-        .catch(onAcceptFileFailure)
-  }, [file])
+    if (p.incoming) {
+      saveBlobImage(p.id, p.name)
+        .then(url => {
+          updateItemChat(p.id, url as string, 'success')
+        })
+        .catch(error => {
+          updateItemChat(p.id, '', 'failure')
+        })
+    }
+  }, [p.id, p.name, p.incoming, updateItemChat])
 
   return (
     <View>

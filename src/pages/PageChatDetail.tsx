@@ -26,7 +26,7 @@ import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import pickFile from '../utils/pickFile'
-import saveBlob from '../utils/saveBlob'
+import { saveBlob } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
@@ -366,7 +366,6 @@ class PageChatDetail extends React.Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      console.log({ url })
       Object.assign(chatStore.getFileById(file.id), {
         url: url,
         fileType: fileType,
@@ -419,10 +418,9 @@ class PageChatDetail extends React.Component<{
     const u = contactStore.getUcUserById(this.props.buddy)
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
-        console.log({ res })
-
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)
+        console.log('saveBlobSend', { sendChat: res.file })
         chatStore.upsertFile(res.file)
         chatStore.pushMessages(buddyId, res.chat)
       })

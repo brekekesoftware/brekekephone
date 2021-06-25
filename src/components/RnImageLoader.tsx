@@ -1,6 +1,13 @@
 import { mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useState } from 'react'
-import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+  ViewProps,
+} from 'react-native'
 import ImageView from 'react-native-image-viewing'
 import Svg, { Path } from 'react-native-svg'
 
@@ -32,9 +39,8 @@ const css = StyleSheet.create({
   },
 })
 const size = 150
-const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
-  console.log({ state, url })
-
+const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
+  console.log('saveBlobLoader', { id, url, state, name })
   const [visible, setIsVisible] = useState(false)
   const images = [{ uri: url }]
   const isLoading = state !== 'success' && state !== 'failure'
@@ -42,12 +48,13 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
     images.length > 0 && setIsVisible(true)
   }, [images])
 
+  // const ImageShow = Platform.OS === 'android'?Image:RnImage
   return (
     <View style={css.Image}>
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={css.Loading} />
       )}
-      {state === 'success' && (
+      {state === 'success' && url && (
         <RnTouchableOpacity onPress={onShowImage}>
           <RnImage source={{ uri: url }} style={css.Image} />
         </RnTouchableOpacity>
