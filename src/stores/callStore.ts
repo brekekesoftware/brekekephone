@@ -26,8 +26,17 @@ export class CallStore {
   }
   recentCallActivityAt = 0
 
-  cancelRecentPn = (uuid?: string) => {
-    uuid = uuid || this.recentPn?.uuid || this.prevCallKeepUuid || ''
+  cancelRecentPn = (pnId?: string) => {
+    if (!pnId) {
+      return
+    }
+    const uuid =
+      Object.entries(callPnDataMap).filter(
+        ([uuid, n]) => n.id === pnId,
+      )[0][0] ||
+      this.recentPn?.uuid ||
+      this.prevCallKeepUuid ||
+      ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
     endCallKeep(uuid, true)
   }
@@ -499,5 +508,5 @@ const deleteCallPnData = (uuid: string) => {
 
 let lastCallPnData: ParsedPn | undefined = undefined
 export const setLastCallPnData = (data: ParsedPn) => [(lastCallPnData = data)]
-export const getCallPnData = (uuid?: string) =>
-  (uuid && callPnDataMap[uuid]) || lastCallPnData
+export const getCallPnData = (uuid: string) =>
+  callPnDataMap[uuid] || lastCallPnData

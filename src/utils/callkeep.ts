@@ -4,12 +4,14 @@ import RNCallKeep, { Events } from 'react-native-callkeep'
 import sip from '../api/sip'
 import callStore, {
   getCallPnData,
+  setCallPnData,
   showIncomingCallUi,
 } from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from './BackgroundTimer'
+import { parseNotificationData } from './PushNotification-parse'
 import { RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
@@ -118,7 +120,7 @@ export const setupCallKeep = async () => {
       localizedCallerName: string
       hasVideo: string // '0' | '1'
       fromPushKit: string // '0' | '1'
-      payload: unknown // VOIP
+      payload: object // VOIP
       error: string // ios only
     },
   ) => {
@@ -128,7 +130,12 @@ export const setupCallKeep = async () => {
       return
     }
     // Try set the caller name from last known PN
-    const n = getCallPnData(uuid)
+    let n = parseNotificationData(e.payload)
+    if (n) {
+      setCallPnData(uuid, n)
+    } else {
+      n = getCallPnData(uuid)
+    }
     if (
       n?.from &&
       (e.localizedCallerName === 'Loading...' || e.handle === 'Loading...')

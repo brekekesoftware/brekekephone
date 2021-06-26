@@ -63,9 +63,10 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
       })
       return map
     }, {})
-const parseNotificationData = (raw: object) => {
+export const parseNotificationData = (raw: object) => {
+  let n: ParsedPn | null = null
   if (Platform.OS === 'android') {
-    return parseNotificationDataMultiple(
+    n = parseNotificationDataMultiple(
       raw,
       get(raw, 'fcm'),
       get(raw, 'alert'),
@@ -77,7 +78,7 @@ const parseNotificationData = (raw: object) => {
     )
   }
   if (Platform.OS === 'ios') {
-    return parseNotificationDataMultiple(
+    n = parseNotificationDataMultiple(
       raw,
       get(raw, 'custom_notification'),
       get(raw, 'aps'),
@@ -91,19 +92,6 @@ const parseNotificationData = (raw: object) => {
       get(raw, '_alert.custom_notification'),
     )
   }
-  // TODO handle web
-  return null
-}
-
-const isNoU = (v: unknown) => v === null || v === undefined
-const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
-
-const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
-  if (!raw) {
-    return null
-  }
-
-  const n = parseNotificationData(raw)
   if (!n) {
     return null
   }
@@ -120,19 +108,8 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     // }
     n2[k2] = v
   })
-
-  if (!n.body) {
-    n.body = n.message || n.title || n.alert
-  }
-  if (!n.body && !n.to) {
-    return null
-  }
-
   n.id = get(n, 'pn-id')
-  if (Platform.OS === 'android' && n.id && androidAlreadyProccessedPn[n.id]) {
-    return
-  }
-  androidAlreadyProccessedPn[n.id] = true
+
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
   const sipWssPort: string = get(n, 'sip.wss.port')
@@ -148,6 +125,55 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     turnServer,
     turnUsername,
     turnCredential,
+  }
+
+  if (!n.body) {
+    n.body = n.message || n.title || n.alert
+  }
+  if (!n.body) {
+    return null
+  }
+
+  const r1 = /from\s+(.+)\s+to\s+(\S+)/i
+  const matches =
+    r1.exec(n.body) ||
+    r1.exec(n.title) ||
+    r1.exec(n.message) ||
+    r1.exec(n.alert)
+  if (!n.from) {
+    n.from = matches?.[1] || ''
+  }
+  if (!n.to) {
+    n.to = matches?.[2] || ''
+  }
+
+  const r2 = /call from/i
+  n.isCall =
+    r2.test(n.body) ||
+    r1.test(n.title) ||
+    r1.test(n.message) ||
+    r1.test(n.alert)
+
+  return n
+}
+
+const isNoU = (v: unknown) => v === null || v === undefined
+const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
+
+const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
+  if (!raw) {
+    return null
+  }
+  const n = parseNotificationData(raw)
+  if (!n) {
+    return null
+  }
+
+  if (Platform.OS === 'android') {
+    if (n.id && androidAlreadyProccessedPn[n.id]) {
+      return null
+    }
+    androidAlreadyProccessedPn[n.id] = true
   }
 
   if (
@@ -170,15 +196,6 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     }
     return null
   }
-  const re = /from\s+(.+)\s+to\s+(\S+)/
-  const matches = re.exec(n.title) || re.exec(n.body)
-  if (!n.from) {
-    n.from = matches?.[1] || ''
-  }
-  if (!n.to) {
-    n.to = matches?.[2] || ''
-  }
-  n.isCall = /call/i.test(n.body) || /call/i.test(n.title)
   if (!n.isCall) {
     return AppState.currentState !== 'active' ||
       getAuthStore().currentProfile?.pbxUsername !== n.to

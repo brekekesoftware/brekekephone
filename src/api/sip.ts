@@ -226,14 +226,10 @@ export class SIP extends EventEmitter {
           data: string
         }
       }) => {
-        const d = e?.request?.data
-        const canceled = d && /INVITE,.+, Canceled/.test(d)
-        console.error(
-          `SIP PN debug: newNotify fired on _ua, data=${d} canceled=${canceled}`,
-        )
-        if (canceled) {
-          cancelRecentPn()
-        }
+        const rg = /(\w+)\W*INVITE\s*,.+,\s*Canceled/
+        const pnId = e?.request?.data?.match(rg)?.[1]
+        console.error(`SIP PN debug: newNotify fired on _ua, pnId=${pnId}`)
+        cancelRecentPn(pnId)
       },
     )
   }

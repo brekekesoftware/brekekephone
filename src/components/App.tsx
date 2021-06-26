@@ -193,13 +193,6 @@ const App = observer(() => {
     }
   }, [])
 
-  if (!profileStore.profilesLoadedObservable) {
-    return (
-      <View style={css.LoadingFullscreen}>
-        <ActivityIndicator size='small' color='white' />
-      </View>
-    )
-  }
   const s = getAuthStore()
   const {
     isConnFailure,
@@ -253,22 +246,25 @@ const App = observer(() => {
         </AnimatedSize>
       )}
 
-      {!!signedInId && (
-        <>
-          <CallNotify />
-          <CallBar />
-          <CallVideos />
-          <CallVoices />
-          <ChatGroupInvite />
-          <UnreadChatNoti />
-        </>
-      )}
+      <CallNotify />
+      <CallBar />
+      <CallVideos />
+      <CallVoices />
+      <ChatGroupInvite />
+      <UnreadChatNoti />
+
       <View style={css.App_Inner}>
         <RootStacks />
         <RnPickerRoot />
         <RnAlertRoot />
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
+
+      {!profileStore.profilesLoadedObservable && (
+        <View style={css.LoadingFullscreen}>
+          <ActivityIndicator size='small' color='white' />
+        </View>
+      )}
     </View>
   )
 })

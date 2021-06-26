@@ -4,6 +4,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
 import ButtonIcon from './ButtonIcon'
@@ -52,7 +53,11 @@ class CallNotify extends React.Component {
 
   render() {
     const c = callStore.calls.find(c => c.incoming && !c.answered)
-    if (!c || callStore.recentPn || !this.visible) {
+    if (
+      !c ||
+      (getAuthStore().currentProfile?.pushNotificationEnabled &&
+        (callStore.recentPn || !this.visible))
+    ) {
       return null
     }
     return (
