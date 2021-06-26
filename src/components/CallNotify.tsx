@@ -33,7 +33,7 @@ const css = StyleSheet.create({
 @observer
 class CallNotify extends React.Component {
   render() {
-    const c = callStore.incomingCall()
+    const c = callStore.calls.find(c => c.incoming && !c.answered)
     if (!c || callStore.recentPn?.action) {
       return null
     }

@@ -1,6 +1,6 @@
 import UCClient0 from 'brekekejs/lib/ucclient'
 import { debounce } from 'lodash'
-import { Lambda, observe } from 'mobx'
+import { action, Lambda, observe } from 'mobx'
 
 import { UcErrors } from '../api/brekekejs'
 import pbx from '../api/pbx'
@@ -23,7 +23,7 @@ class AuthUC {
     const s = getAuthStore()
     this.clearObserve = observe(s, 'ucShouldAuth', this.authWithCheckDebounced)
   }
-  dispose() {
+  @action dispose = () => {
     uc.off('connection-stopped', this.onConnectionStopped)
     this.clearObserve?.()
     uc.disconnect()
@@ -31,7 +31,7 @@ class AuthUC {
     s.ucState = 'stopped'
   }
 
-  private authWithoutCatch = async () => {
+  @action private authWithoutCatch = async () => {
     uc.disconnect()
     const s = getAuthStore()
     s.ucState = 'connecting'
@@ -46,33 +46,37 @@ class AuthUC {
         `${s.currentProfile.pbxHostname}:${s.currentProfile.pbxPort}`,
     )
     this.loadUsers()
-    this.loadUnreadChats().then(() => {
-      s.ucState = 'success'
-    })
+    this.loadUnreadChats().then(
+      action(() => {
+        s.ucState = 'success'
+      }),
+    )
   }
   private authWithCheck = () => {
     const s = getAuthStore()
     if (!s.ucShouldAuth) {
       return
     }
-    this.authWithoutCatch().catch((err: Error) => {
-      s.ucState = 'failure'
-      s.ucTotalFailure += 1
-      RnAlert.error({
-        message: intlDebug`Failed to connect to UC`,
-        err,
-      })
-    })
+    this.authWithoutCatch().catch(
+      action((err: Error) => {
+        s.ucState = 'failure'
+        s.ucTotalFailure += 1
+        RnAlert.error({
+          message: intlDebug`Failed to connect to UC`,
+          err,
+        })
+      }),
+    )
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 
-  private onConnectionStopped = (e: { code: number }) => {
+  @action private onConnectionStopped = (e: { code: number }) => {
     const s = getAuthStore()
     s.ucState = 'failure'
     s.ucTotalFailure += 1
     s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
   }
-  private loadUsers = () => {
+  @action private loadUsers = () => {
     const users = uc.getUsers()
     contactStore.ucUsers = users
   }
@@ -81,7 +85,7 @@ class AuthUC {
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure)
-  private onLoadUnreadChatsSuccess = (
+  @action private onLoadUnreadChatsSuccess = (
     chats: {
       id: string
       text: string

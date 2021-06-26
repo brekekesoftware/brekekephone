@@ -5,7 +5,7 @@ import './stores/Nav2' // Fix circular dependencies
 import './stores/authStore2' // Fix circular dependencies
 import './api/syncPnToken2' // Fix circular dependencies
 
-import { configure } from 'mobx'
+import { configure, onReactionError } from 'mobx'
 import { AppRegistry, Platform } from 'react-native'
 
 import App from './components/App'
@@ -17,7 +17,10 @@ configure({
   computedRequiresReaction: false,
   observableRequiresReaction: false,
   reactionRequiresObservable: false,
-  disableErrorBoundaries: true,
+  disableErrorBoundaries: false,
+})
+onReactionError(err => {
+  console.error(err)
 })
 
 setCallStore(callStore)

@@ -61,7 +61,12 @@ export class Nav {
   backToPagePhonebookCreate = back({ PagePhonebookCreate })
   goToPagePhonebookUpdate = go({ PagePhonebookUpdate })
   backToPagePhonebookUpdate = back({ PagePhonebookUpdate })
-  goToPageCallManage = go({ PageCallManage })
+  goToPageCallManage = (...args: unknown[]) => {
+    if (RnStacker.stacks.some(s => s.Component === PageCallManage)) {
+      return
+    }
+    go({ PageCallManage })(args)
+  }
   backToPageCallManage = back({ PageCallManage })
   goToPageBackgroundCalls = go({ PageBackgroundCalls })
   backToPageBackgroundCalls = back({ PageBackgroundCalls })

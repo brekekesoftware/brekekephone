@@ -19,7 +19,7 @@ import Call from './Call'
 import Nav from './Nav'
 
 export class CallStore {
-  recentPn?: {
+  @observable recentPn?: {
     uuid: string
     at: number
     action?: 'answered' | 'rejected'
@@ -130,7 +130,6 @@ export class CallStore {
   }
 
   @observable calls: Call[] = []
-  incomingCall = () => this.calls.find(c => c.incoming && !c.answered)
   @observable currentCallId: string = ''
   currentCall = () => {
     BackgroundTimer.setTimeout(this.updateCurrentCallDebounce, 17)
@@ -245,7 +244,7 @@ export class CallStore {
     Nav().goToPageCallManage()
     // Start call logic in RNCallKeep
     let uuid = ''
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'ios' && !Object.keys(callkeepMap).length) {
       uuid = newUuid().toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       RNCallKeep.reportConnectingOutgoingCallWithUUID(uuid)
@@ -259,13 +258,13 @@ export class CallStore {
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
     this.startCallIntervalId = BackgroundTimer.setInterval(() => {
-      const currentCall = this.calls.find(c => !prevIds[c.id])
-      if (currentCall) {
+      const curr = this.calls.find(c => !prevIds[c.id])
+      if (curr) {
         if (uuid) {
-          currentCall.callkeepUuid = uuid
+          curr.callkeepUuid = uuid
           RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
         }
-        this.currentCallId = currentCall.id
+        this.currentCallId = curr.id
         this.clearStartCallIntervalTimer()
         return
       }
@@ -280,7 +279,7 @@ export class CallStore {
       }
       // And if after 3s there's no call in store, reconnect
       // It's likely a connection issue occurred
-      if (!currentCall && !reconnectCalled && diff > 3000) {
+      if (!curr && !reconnectCalled && diff > 3000) {
         reconnectCalled = true
         reconnectAndWaitSip().then(sipCreateSession)
         this.clearStartCallIntervalTimer()
@@ -295,14 +294,14 @@ export class CallStore {
   }
 
   private updateCurrentCall = () => {
-    let currentCall: Call | undefined
+    let curr: Call | undefined
     if (this.calls.length) {
-      currentCall =
+      curr =
         this.calls.find(c => c.id === this.currentCallId) ||
         this.calls.find(c => c.answered && !c.holding) ||
         this.calls[0]
     }
-    const currentCallId = currentCall?.id || ''
+    const currentCallId = curr?.id || ''
     if (currentCallId !== this.currentCallId) {
       BackgroundTimer.setTimeout(
         action(() => (this.currentCallId = currentCallId)),

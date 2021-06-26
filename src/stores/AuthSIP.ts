@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { Lambda, observe } from 'mobx'
+import { action, Lambda, observe, runInAction } from 'mobx'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -17,7 +17,7 @@ class AuthSIP {
     const s = getAuthStore()
     this.clearObserve = observe(s, 'sipShouldAuth', this.authWithCheckDebounced)
   }
-  dispose() {
+  @action dispose = () => {
     console.error('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
     const s = getAuthStore()
@@ -58,10 +58,12 @@ class AuthSIP {
       dtmfSendMode,
       turnConfig,
     })
-    s.sipPn = {}
+    runInAction(() => {
+      s.sipPn = {}
+    })
   }
 
-  private authWithoutCatch = async () => {
+  @action private authWithoutCatch = async () => {
     const s = getAuthStore()
     s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
@@ -150,16 +152,18 @@ class AuthSIP {
     if (!s.sipShouldAuth) {
       return
     }
-    this.authWithoutCatch().catch((err: Error) => {
-      console.error('SIP PN debug: set sipState failure catch')
-      s.sipState = 'failure'
-      s.sipTotalFailure += 1
-      sip.disconnect()
-      RnAlert.error({
-        message: intlDebug`Failed to connect to SIP`,
-        err,
-      })
-    })
+    this.authWithoutCatch().catch(
+      action((err: Error) => {
+        console.error('SIP PN debug: set sipState failure catch')
+        s.sipState = 'failure'
+        s.sipTotalFailure += 1
+        sip.disconnect()
+        RnAlert.error({
+          message: intlDebug`Failed to connect to SIP`,
+          err,
+        })
+      }),
+    )
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
