@@ -228,7 +228,7 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('answerCall+end', (uuid: string) => {
       // TODO this logic is not fully correct:
       // Should use the currentCall BEFORE showCall
-      callStore.currentCall?.hangup()
+      callStore.currentCall()?.hangup()
       callStore.onCallKeepAnswerCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
@@ -238,22 +238,22 @@ export const setupCallKeep = async () => {
       BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 300)
     })
     eventEmitter.addListener('video', (uuid: string) => {
-      callStore.currentCall?.toggleVideo()
+      callStore.currentCall()?.toggleVideo()
     })
     eventEmitter.addListener('speaker', (uuid: string) => {
       callStore.toggleLoudSpeaker()
     })
     eventEmitter.addListener('mute', (uuid: string) => {
-      callStore.currentCall?.toggleMuted()
+      callStore.currentCall()?.toggleMuted()
     })
     eventEmitter.addListener('record', (uuid: string) => {
-      callStore.currentCall?.toggleRecording()
+      callStore.currentCall()?.toggleRecording()
     })
     eventEmitter.addListener('dtmf', (uuid: string) => {
       BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.currentCall?.toggleHold()
+      callStore.currentCall()?.toggleHold()
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {

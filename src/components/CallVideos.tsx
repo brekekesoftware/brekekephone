@@ -7,9 +7,10 @@ import CallVideosUI from './CallVideosUI'
 @observer
 class CallVideos extends React.Component {
   render() {
+    const c = callStore.currentCall()
     return (
       <CallVideosUI
-        callIds={(callStore.currentCall ? [callStore.currentCall] : [])
+        callIds={(c ? [c] : [])
           .filter(
             c =>
               c.videoSessionId && c.localVideoEnabled && c.remoteVideoEnabled,
@@ -21,7 +22,7 @@ class CallVideos extends React.Component {
   }
 
   resolveCall = () => ({
-    sourceObject: callStore.currentCall?.remoteVideoStreamObject,
+    sourceObject: callStore.currentCall()?.remoteVideoStreamObject,
   })
 }
 

@@ -229,7 +229,7 @@ export class SIP extends EventEmitter {
         const d = e?.request?.data
         const canceled = d && /INVITE,.+, Canceled/.test(d)
         console.error(
-          `SIP PN debug: newNotify fired on _ua, canceled=${canceled}`,
+          `SIP PN debug: newNotify fired on _ua, data=${d} canceled=${canceled}`,
         )
         if (canceled) {
           cancelRecentPn()

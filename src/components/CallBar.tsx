@@ -56,7 +56,7 @@ class CallBar extends React.Component {
   render() {
     const bVisible =
       RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
-    const c = callStore.currentCall
+    const c = callStore.currentCall()
     if (!bVisible || !c || (c.incoming && !c.answered)) {
       return null
     }

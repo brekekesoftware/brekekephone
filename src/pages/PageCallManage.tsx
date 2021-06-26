@@ -103,7 +103,7 @@ class PageCallManage extends React.Component<{
     if (
       !this.props.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      callStore.currentCall?.remoteVideoEnabled
+      callStore.currentCall()?.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
@@ -286,7 +286,7 @@ class PageCallManage extends React.Component<{
   )
 
   render() {
-    const c = callStore.currentCall
+    const c = callStore.currentCall()
     const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
     const Container = isVideoEnabled ? React.Fragment : BrekekeGradient
     return <Container>{this.renderCall(c, isVideoEnabled)}</Container>

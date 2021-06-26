@@ -14,6 +14,18 @@ import Nav from '../stores/Nav'
 class PageCallParks extends React.Component<{
   callParks2: boolean
 }> {
+  prevId?: string
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+  componentDidUpdate() {
+    const c = callStore.currentCall()
+    if (this.prevId && this.prevId !== c?.id) {
+      Nav().backToPageCallManage()
+    }
+    this.prevId = c?.id
+  }
+
   state = {
     selectedPark: '',
   }
@@ -28,7 +40,7 @@ class PageCallParks extends React.Component<{
   park = () => {
     const p = this.state.selectedPark
     return this.props.callParks2
-      ? callStore.currentCall?.park(p)
+      ? callStore.currentCall()?.park(p)
       : callStore.startCall(p || '')
   }
 
@@ -36,6 +48,8 @@ class PageCallParks extends React.Component<{
     const ps = getAuthStore().currentProfile.parks
     const p = this.state.selectedPark
     const p2 = this.props.callParks2
+    void callStore.currentCall() // trigger componentDidUpdate
+
     return (
       <Layout
         description={intl`Your park numbers`}

@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import { action, computed, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import moment from 'moment'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
@@ -26,8 +26,8 @@ export class CallStore {
   }
   recentCallActivityAt = 0
 
-  cancelRecentPn = () => {
-    const uuid = this.recentPn?.uuid || this.prevCallKeepUuid || ''
+  cancelRecentPn = (uuid?: string) => {
+    uuid = uuid || this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
     endCallKeep(uuid, true)
   }
@@ -130,19 +130,16 @@ export class CallStore {
   }
 
   @observable calls: Call[] = []
-  @computed get incomingCall() {
-    return this.calls.find(c => c.incoming && !c.answered)
-  }
-  @observable currentCallId?: string = undefined
-  @computed get currentCall() {
-    this.updateCurrentCallDebounce()
+  incomingCall = () => this.calls.find(c => c.incoming && !c.answered)
+  @observable currentCallId: string = ''
+  currentCall = () => {
+    BackgroundTimer.setTimeout(this.updateCurrentCallDebounce, 17)
     return this.calls.find(c => c.id === this.currentCallId)
   }
-  @computed get backgroundCalls() {
-    return this.calls.filter(
+  backgroundCalls = () =>
+    this.calls.filter(
       c => c.id !== this.currentCallId && (!c.incoming || c.answered),
     )
-  }
 
   @action upsertCall = (
     cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
@@ -256,7 +253,7 @@ export class CallStore {
     }
     // Check for each 0.5s
     // Auto update currentCallId
-    this.currentCallId = undefined
+    this.currentCallId = ''
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
     // And if after 3s there's no call in store, reconnect
     this.clearStartCallIntervalTimer()
@@ -305,16 +302,16 @@ export class CallStore {
         this.calls.find(c => c.answered && !c.holding) ||
         this.calls[0]
     }
-    const currentCallId = currentCall?.id
+    const currentCallId = currentCall?.id || ''
     if (currentCallId !== this.currentCallId) {
       BackgroundTimer.setTimeout(
         action(() => (this.currentCallId = currentCallId)),
-        300,
+        17,
       )
     }
-    this.updateBackgroundCallsDebounce()
+    BackgroundTimer.setTimeout(this.updateBackgroundCallsDebounce, 17)
   }
-  updateCurrentCallDebounce = debounce(this.updateCurrentCall, 500, {
+  updateCurrentCallDebounce = debounce(this.updateCurrentCall, 300, {
     maxWait: 1000,
   })
   private updateBackgroundCalls = () => {
@@ -329,7 +326,7 @@ export class CallStore {
       )
       .forEach(c => c.toggleHold())
   }
-  updateBackgroundCallsDebounce = debounce(this.updateBackgroundCalls, 500, {
+  updateBackgroundCallsDebounce = debounce(this.updateBackgroundCalls, 300, {
     maxWait: 1000,
   })
 
