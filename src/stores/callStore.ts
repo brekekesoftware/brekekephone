@@ -33,7 +33,7 @@ export class CallStore {
     const uuid =
       Object.entries(callPnDataMap).filter(
         ([uuid, n]) => n.id === pnId,
-      )[0][0] ||
+      )[0]?.[0] ||
       this.recentPn?.uuid ||
       this.prevCallKeepUuid ||
       ''
