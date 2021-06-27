@@ -7,6 +7,8 @@ public class IncomingCallActivityManager {
   // Manually manage activities size:
   // Try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
   public int activitiesSize = 0;
+  // Calls size from js
+  public int callsSize = 0;
 
   public void remove(String uuid) {
     IncomingCallActivity a = at(uuid);
@@ -109,6 +111,20 @@ public class IncomingCallActivityManager {
     try {
       if (last().answered) {
         removeAllAndBackToForeground();
+      }
+    } catch (Exception e) {
+    }
+    setBackgroundCalls(callsSize);
+  }
+
+  public void setBackgroundCalls(int n) {
+    callsSize = n;
+    try {
+      for (IncomingCallActivity a : activities) {
+        try {
+          a.uiSetBackgroundCalls(n);
+        } catch (Exception e) {
+        }
       }
     } catch (Exception e) {
     }

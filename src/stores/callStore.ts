@@ -166,6 +166,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
+    IncomingCall.setBackgroundCalls(this.calls.length)
 
     // Get and check callkeep
     let recentPnUuid = ''
@@ -221,6 +222,7 @@ export class CallStore {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
     }
+    IncomingCall.setBackgroundCalls(this.calls.length)
   }
 
   @action selectBackgroundCall = (c: Call) => {

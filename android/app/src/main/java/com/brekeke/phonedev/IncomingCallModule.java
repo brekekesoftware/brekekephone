@@ -108,9 +108,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setOnHold(String uuid, boolean holding) {
     try {
-      mgr.at(uuid).updateBtnHoldUI(holding);
+      mgr.at(uuid).uiSetBtnHold(holding);
     } catch (Exception e) {
     }
+  }
+
+  @ReactMethod
+  public void setBackgroundCalls(int n) {
+    mgr.setBackgroundCalls(n);
   }
 
   @ReactMethod

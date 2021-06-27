@@ -264,7 +264,11 @@ class PageCallManage extends React.Component<{
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageBackgroundCalls}
-            value={intl`${n} other calls are in background`}
+            value={
+              n > 1
+                ? intl`${n} other calls are in background`
+                : intl`${n} other call is in background`
+            }
           />
         )}
         <View style={css.Btns_VerticalMargin} />

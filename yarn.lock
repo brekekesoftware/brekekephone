@@ -10963,9 +10963,9 @@ react-native-background-timer@2.4.1:
   resolved "https://registry.yarnpkg.com/react-native-background-timer/-/react-native-background-timer-2.4.1.tgz#a3bc1cafa8c1e3aeefd0611de120298b67978a0f"
   integrity sha512-TE4Kiy7jUyv+hugxDxitzu38sW1NqjCk4uE5IgU2WevLv7sZacaBc6PZKOShNRPGirLl1NWkaG3LDEkdb9Um5g==
 
-"react-native-callkeep@github:brekekesoftware/react-native-callkeep#29576224ab851499173a5aa438e763b48f0f0389":
-  version "4.2.0-brekeke-001"
-  resolved "https://codeload.github.com/brekekesoftware/react-native-callkeep/tar.gz/29576224ab851499173a5aa438e763b48f0f0389"
+"react-native-callkeep@github:brekekesoftware/react-native-callkeep#13470c530d09c1d4a74742d6dd49abd9aea08de4":
+  version "4.2.0-brekeke-002"
+  resolved "https://codeload.github.com/brekekesoftware/react-native-callkeep/tar.gz/13470c530d09c1d4a74742d6dd49abd9aea08de4"
 
 react-native-codegen@^0.0.6:
   version "0.0.6"
