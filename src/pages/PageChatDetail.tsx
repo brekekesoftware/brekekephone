@@ -77,7 +77,7 @@ class PageChatDetail extends React.Component<{
     if (noChat) {
       this.loadRecent()
     } else {
-      BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
+      BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
     }
     const { buddy: id } = this.props
     chatStore.updateThreadConfig(id, false, {
@@ -191,7 +191,7 @@ class PageChatDetail extends React.Component<{
     }
   }
   emojiSelectFunc = (emoji: string) => {
-    let newText = this.edittingTextEmoji.concat(emoji)
+    const newText = this.edittingTextEmoji.concat(emoji)
     if (this.state.editingText === '') {
       this.setState({ editingText: emoji })
       this.edittingTextEmoji = emoji
@@ -280,7 +280,7 @@ class PageChatDetail extends React.Component<{
     })
       .then(chats => {
         chatStore.pushMessages(id, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 170)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
       })
       .catch((err: Error) => {
         RnAlert.error({

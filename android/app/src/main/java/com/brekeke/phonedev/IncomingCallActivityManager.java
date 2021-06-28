@@ -1,115 +1,132 @@
 package com.brekeke.phonedev;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 import java.util.ArrayList;
 
 public class IncomingCallActivityManager {
-  public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
+  public ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
+  // Manually manage activities size:
+  // Try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
+  public int activitiesSize = 0;
+  // Calls size from js
+  public int callsSize = 0;
 
-  public ArrayList<IncomingCallActivity> getList() {
-    return activities;
-  }
-
-  public void removeUUID(String uuid) {
-    int index = this.getItemIndex(uuid);
-    if (index != -1) {
-      activities.remove(index);
+  public void remove(String uuid) {
+    IncomingCallActivity a = at(uuid);
+    if (a == null) {
+      return;
     }
-  }
-
-  public int getNumberActivitys(Activity a) {
-    ActivityManager manager = (ActivityManager) a.getSystemService(Context.ACTIVITY_SERVICE);
-    int numberActivitys = 1; // default have 1 activity runing
-    // getRunningTasks will be throw exception
     try {
-      ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
-      numberActivitys = info.numActivities;
-    } catch (Exception ex) {
-      numberActivitys = 1;
+      activities.remove(index(uuid));
+    } catch (Exception e) {
     }
-    return numberActivitys;
-  }
-
-  public void finishAll() {
-    activities.forEach(
-        incomingCallActivity -> {
-          incomingCallActivity.forceFinish();
-        });
-    activities.clear();
-  }
-
-  public IncomingCallActivity last() {
-    return activities.isEmpty() ? null : activities.get(activities.size() - 1);
-  }
-
-  public IncomingCallActivity first() {
-    return activities.isEmpty() ? null : activities.get(0);
-  }
-
-  public boolean isEmpty() {
-    return activities.isEmpty();
-  }
-
-  public void push(IncomingCallActivity item) {
-    activities.add(item);
-  }
-
-  public void pop() {
-    if (activities.size() >= 1) {
-      activities.remove(activities.size() - 1);
+    a.forceFinish();
+    if (!a.answered) {
+      IncomingCallModule.tryExitClearTask();
     }
+  }
+
+  public void removeAll() {
+    if (activities.size() <= 0) {
+      return;
+    }
+    boolean atLeastOneAnswerPressed = false;
+    try {
+      for (IncomingCallActivity a : activities) {
+        atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
+        a.forceFinish();
+      }
+      activities.clear();
+    } catch (Exception e) {
+    }
+    if (!atLeastOneAnswerPressed) {
+      IncomingCallModule.tryExitClearTask();
+    }
+  }
+
+  public void removeAllAndBackToForeground() {
+    removeAll();
+    IncomingCallModule.emit("backToForeground", "");
   }
 
   public IncomingCallActivity at(String uuid) {
-    for (IncomingCallActivity item : activities) {
-      if (item.uuid.equals(uuid)) {
-        return item;
+    for (IncomingCallActivity a : activities) {
+      if (a.uuid.equals(uuid)) {
+        return a;
       }
     }
     return null;
   }
 
-  public int getItemIndex(String uuid) {
-    int index = -1;
-    for (int i = 0; i < activities.size(); i++) {
-      if (activities.get(i).uuid.equals(uuid)) {
-        return i;
-      }
+  public IncomingCallActivity first() {
+    try {
+      return activities.get(0);
+    } catch (Exception e) {
+      return null;
     }
-    return index;
   }
 
-  public String getUuidOfBeforeItem(String uuid) {
-    return this.before(uuid) == null ? "" : this.before(uuid).uuid;
-  }
-
-  public String getUuidOfAfterItem(String uuid) {
-    return this.after(uuid) == null ? "" : this.after(uuid).uuid;
+  public IncomingCallActivity last() {
+    try {
+      return activities.get(activities.size() - 1);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public IncomingCallActivity before(String uuid) {
-    if (activities.size() <= 1) {
+    try {
+      return activities.get(index(uuid) - 1);
+    } catch (Exception e) {
       return null;
-    }
-    int index = this.getItemIndex(uuid);
-    if (index == -1 || index == 0) {
-      return null;
-    } else {
-      return activities.get(index - 1);
     }
   }
 
-  public IncomingCallActivity after(String uuid) {
-    if (activities.size() <= 1) {
-      return null;
+  public String uuidBefore(String uuid) {
+    try {
+      return before(uuid).uuid;
+    } catch (Exception e) {
+      return "";
     }
-    int index = this.getItemIndex(uuid);
-    if (index == -1 || index == activities.size() - 1) {
-      return null;
-    } else {
-      return activities.get(index + 1);
+  }
+
+  public int index(String uuid) {
+    int i = 0;
+    for (IncomingCallActivity a : activities) {
+      if (a.uuid.equals(uuid)) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
+  }
+
+  // To open app when:
+  // - call is answered and
+  // - on pause (click home when locked) or destroy (click answer when forground)
+  // TODO handle case multiple calls
+  public void onActivityPauseOrDestroy() {
+    if (activitiesSize > 1) {
+      return;
+    }
+    try {
+      if (last().answered) {
+        removeAllAndBackToForeground();
+      }
+    } catch (Exception e) {
+    }
+    setBackgroundCalls(callsSize);
+  }
+
+  public void setBackgroundCalls(int n) {
+    callsSize = n;
+    try {
+      for (IncomingCallActivity a : activities) {
+        try {
+          a.uiSetBackgroundCalls(n);
+        } catch (Exception e) {
+        }
+      }
+    } catch (Exception e) {
     }
   }
 }

@@ -18,10 +18,11 @@ class PageTransferChooseUser extends React.Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    if (this.prevId && this.prevId !== callStore.currentCall?.id) {
+    const c = callStore.currentCall()
+    if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
-    this.prevId = callStore.currentCall?.id
+    this.prevId = c?.id
   }
 
   resolveMatch = (id: string) => {
@@ -63,7 +64,7 @@ class PageTransferChooseUser extends React.Component {
     groups.forEach(gr => {
       gr.users = orderBy(gr.users, 'name')
     })
-
+    const c = callStore.currentCall()
     return (
       <Layout
         description={intl`Select target to start transfer`}
@@ -79,8 +80,8 @@ class PageTransferChooseUser extends React.Component {
             {gr.users.map((u, i) => (
               <UserItem
                 iconFuncs={[
-                  () => callStore.currentCall?.transferAttended(u.number),
-                  () => callStore.currentCall?.transferBlind(u.number),
+                  () => c?.transferAttended(u.number),
+                  () => c?.transferBlind(u.number),
                 ]}
                 icons={[mdiPhoneForward, mdiPhone]}
                 key={i}

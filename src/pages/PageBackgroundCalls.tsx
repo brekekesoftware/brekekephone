@@ -1,4 +1,4 @@
-import { mdiPhoneHangup } from '@mdi/js'
+import { mdiPhone, mdiPhoneHangup } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -12,51 +12,78 @@ import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import formatDuration from '../utils/formatDuration'
 
-const PageBackgroundCalls = observer(() => (
-  <Layout
-    compact
-    onBack={Nav().backToPageCallManage}
-    title={intl`Background calls`}
-  >
-    <Field isGroup label={intl`CURRENT CALL`} />
-    {(callStore.currentCall ? [callStore.currentCall] : []).map(c => (
-      <RnTouchableOpacity key={c.id} onPress={Nav().backToPageCallManage}>
-        <UserItem
-          icons={[mdiPhoneHangup]}
-          iconColors={[g.colors.danger]}
-          iconFuncs={[c.hangupWithUnhold]}
-          key={c.id}
-          lastMessage={
-            !c.answered ? intl`Dialing...` : formatDuration(c.duration)
-          }
-          selected
-          {...c}
-        />
-      </RnTouchableOpacity>
-    ))}
+const PageBackgroundCalls = observer(() => {
+  const c = callStore.currentCall()
+  const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
+  return (
+    <Layout
+      compact
+      onBack={Nav().backToPageCallManage}
+      title={intl`Background calls`}
+    >
+      <Field isGroup label={intl`CURRENT CALL`} />
+      {(c ? [c] : []).map(c => (
+        <RnTouchableOpacity key={c.id} onPress={Nav().backToPageCallManage}>
+          <UserItem
+            icons={[mdiPhoneHangup]}
+            iconColors={[g.colors.danger]}
+            iconFuncs={[c.hangupWithUnhold]}
+            key={c.id}
+            lastMessage={
+              !c.answered ? intl`Dialing...` : formatDuration(c.duration)
+            }
+            selected
+            {...c}
+          />
+        </RnTouchableOpacity>
+      ))}
 
-    <Field hasMargin isGroup label={intl`BACKGROUND CALLS`} />
-    {callStore.backgroundCalls.map(c => (
-      <RnTouchableOpacity
-        key={c.id}
-        onPress={() => callStore.selectBackgroundCall(c)}
-      >
-        <UserItem
-          iconFuncs={[c.hangupWithUnhold]}
-          icons={[mdiPhoneHangup]}
+      <Field hasMargin isGroup label={intl`BACKGROUND CALLS`} />
+      {bg.map(c => (
+        <RnTouchableOpacity
           key={c.id}
-          lastMessage={
-            !c.answered
-              ? intl`Dialing...`
-              : c.transferring
-              ? intl`Transferring`
-              : intl`On hold`
+          onPress={
+            !c.answered && c.incoming
+              ? undefined
+              : () => callStore.selectBackgroundCall(c)
           }
-          {...c}
-        />
-      </RnTouchableOpacity>
-    ))}
-  </Layout>
-))
+        >
+          <UserItem
+            icons={[
+              mdiPhoneHangup,
+              ...(!c.answered && c.incoming ? [mdiPhone] : []),
+            ]}
+            iconColors={[
+              g.colors.danger,
+              ...(!c.answered && c.incoming ? [g.colors.primary] : []),
+            ]}
+            iconFuncs={[
+              c.hangupWithUnhold,
+              ...(!c.answered && c.incoming
+                ? [
+                    () => {
+                      c.answer()
+                      callStore.selectBackgroundCall(c)
+                    },
+                  ]
+                : []),
+            ]}
+            key={c.id}
+            lastMessage={
+              !c.answered
+                ? c.incoming
+                  ? intl`Incoming call`
+                  : intl`Dialing...`
+                : c.transferring
+                ? intl`Transferring`
+                : intl`On hold`
+            }
+            {...c}
+          />
+        </RnTouchableOpacity>
+      ))}
+    </Layout>
+  )
+})
 
 export default PageBackgroundCalls

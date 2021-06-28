@@ -1,8 +1,10 @@
 import { mdiCheck, mdiClose } from '@mdi/js'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
 import ButtonIcon from './ButtonIcon'
@@ -32,9 +34,30 @@ const css = StyleSheet.create({
 
 @observer
 class CallNotify extends React.Component {
+  @observable visible = false
+  prevHasPn = false
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+
+  @action
+  componentDidUpdate() {
+    const hasPn = !!callStore.recentPn
+    if (hasPn) {
+      this.visible = false
+    } else if (this.prevHasPn) {
+      this.visible = true
+    }
+    this.prevHasPn = hasPn
+  }
+
   render() {
-    const c = callStore.incomingCall
-    if (!c || callStore.recentPn?.action) {
+    const c = callStore.calls.find(c => c.incoming && !c.answered)
+    if (
+      !c ||
+      (getAuthStore().currentProfile?.pushNotificationEnabled &&
+        (callStore.recentPn || !this.visible))
+    ) {
       return null
     }
     return (

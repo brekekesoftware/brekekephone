@@ -2,27 +2,29 @@ import { NativeModule, NativeModules, Platform } from 'react-native'
 
 const Polyfill = {
   IncomingCall: {
-    closeIncomingCallActivity() {},
-    closeAllIncomingCallActivities() {},
-    showCall() {},
-    setOnHold() {},
+    closeIncomingCallActivity: () => undefined,
+    closeAllIncomingCallActivities: () => undefined,
+    showCall: () => undefined,
+    setOnHold: () => undefined,
+    setBackgroundCalls: () => undefined,
+    isLocked: () => Promise.resolve(false),
   },
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
   IncomingCall: NativeModule & {
-    closeIncomingCallActivity(uuid: string, isAnswerPressed: boolean): void
+    closeIncomingCallActivity(uuid: string): void
     closeAllIncomingCallActivities(): void
-    showCall(uuid: string, callerName: string, withVideo?: boolean): void
-    setOnHold(uuid: string, callerName: boolean): void
+    showCall(
+      uuid: string,
+      callerName: string,
+      withVideo: boolean,
+      isAppActive: boolean,
+    ): void
+    setOnHold(uuid: string, holding: boolean): void
+    setBackgroundCalls(n: number): void
+    isLocked(): Promise<boolean>
   }
 }
 
 export const RnNativeModules = M
-
-export const IncomingCall = {
-  closeIncomingCallActivity: (uuid: string, isAnswerPressed?: boolean) =>
-    M.IncomingCall.closeIncomingCallActivity(uuid, !!isAnswerPressed),
-  closeAllIncomingCallActivities: M.IncomingCall.closeAllIncomingCallActivities,
-  showCall: M.IncomingCall.showCall,
-  setOnHold: M.IncomingCall.setOnHold,
-}
+export const IncomingCall = M.IncomingCall

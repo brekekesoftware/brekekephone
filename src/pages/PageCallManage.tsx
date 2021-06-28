@@ -91,7 +91,7 @@ class PageCallManage extends React.Component<{
   }
   componentDidUpdate() {
     this.hideButtonsIfVideo()
-    if (!callStore.currentCall && !callStore.backgroundCalls.length) {
+    if (!callStore.calls.length) {
       Nav().goToPageCallRecents()
     }
   }
@@ -103,7 +103,7 @@ class PageCallManage extends React.Component<{
     if (
       !this.props.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      callStore.currentCall?.remoteVideoEnabled
+      callStore.currentCall()?.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
@@ -154,12 +154,14 @@ class PageCallManage extends React.Component<{
     </>
   )
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
+    const n = callStore.calls.filter(
+      c => c.id !== callStore.currentCallId,
+    ).length
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
     const Container = isVideoEnabled ? RnTouchableOpacity : View
     const activeColor = isVideoEnabled ? g.colors.primary : g.colors.warning
-    const n = callStore.backgroundCalls.length
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
@@ -264,7 +266,11 @@ class PageCallManage extends React.Component<{
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageBackgroundCalls}
-            value={intl`${n} other calls are in background`}
+            value={
+              n > 1
+                ? intl`${n} other calls are in background`
+                : intl`${n} other call is in background`
+            }
           />
         )}
         <View style={css.Btns_VerticalMargin} />
@@ -286,7 +292,8 @@ class PageCallManage extends React.Component<{
   )
 
   render() {
-    const c = callStore.currentCall
+    const c = callStore.currentCall()
+    void callStore.calls.length // trigger componentDidUpdate
     const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
     const Container = isVideoEnabled ? React.Fragment : BrekekeGradient
     return <Container>{this.renderCall(c, isVideoEnabled)}</Container>

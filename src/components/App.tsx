@@ -16,11 +16,11 @@ import SplashScreen from 'react-native-splash-screen'
 
 import api from '../api'
 import { SyncPnToken } from '../api/syncPnToken'
-import AuthPBX from '../stores/AuthPBX'
-import AuthSIP from '../stores/AuthSIP'
+import { authPBX } from '../stores/AuthPBX'
+import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
 import authStore from '../stores/authStore2'
-import AuthUC from '../stores/AuthUC'
+import { authUC } from '../stores/AuthUC'
 import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
@@ -65,7 +65,7 @@ AppState.addEventListener('change', () => {
 registerOnUnhandledError(unexpectedErr => {
   // Must wrap in window.setTimeout to make sure
   //    there's no state change when rendering
-  BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 0)
+  BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
   return false
 })
 
@@ -143,10 +143,6 @@ PushNotification.register(() => {
   Nav().goToPageIndex()
   s.handleUrlParams()
 
-  const authPBX = new AuthPBX()
-  const authSIP = new AuthSIP()
-  const authUC = new AuthUC()
-
   observe(s, 'signedInId', () => {
     Nav().goToPageIndex()
     chatStore.clearStore()
@@ -197,13 +193,6 @@ const App = observer(() => {
     }
   }, [])
 
-  if (!profileStore.profilesLoadedObservable) {
-    return (
-      <View style={css.LoadingFullscreen}>
-        <ActivityIndicator size='small' color='white' />
-      </View>
-    )
-  }
   const s = getAuthStore()
   const {
     isConnFailure,
@@ -257,22 +246,25 @@ const App = observer(() => {
         </AnimatedSize>
       )}
 
-      {!!signedInId && (
-        <>
-          <CallNotify />
-          <CallBar />
-          <CallVideos />
-          <CallVoices />
-          <ChatGroupInvite />
-          <UnreadChatNoti />
-        </>
-      )}
+      <CallNotify />
+      <CallBar />
+      <CallVideos />
+      <CallVoices />
+      <ChatGroupInvite />
+      <UnreadChatNoti />
+
       <View style={css.App_Inner}>
         <RootStacks />
         <RnPickerRoot />
         <RnAlertRoot />
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
+
+      {!profileStore.profilesLoadedObservable && (
+        <View style={css.LoadingFullscreen}>
+          <ActivityIndicator size='small' color='white' />
+        </View>
+      )}
     </View>
   )
 })

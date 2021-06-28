@@ -23,10 +23,10 @@ class PageTransferDial extends React.Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    if (this.prevId && this.prevId !== callStore.currentCall?.id) {
+    if (this.prevId && this.prevId !== callStore.currentCall()?.id) {
       Nav().backToPageCallManage()
     }
-    this.prevId = callStore.currentCall?.id
+    this.prevId = callStore.currentCall()?.id
   }
 
   @observable txt = ''
@@ -45,7 +45,7 @@ class PageTransferDial extends React.Component {
       })
       return
     }
-    callStore.currentCall?.transferBlind(this.txt)
+    callStore.currentCall()?.transferBlind(this.txt)
   }
   transferAttended = () => {
     this.txt = this.txt.trim()
@@ -55,7 +55,7 @@ class PageTransferDial extends React.Component {
       })
       return
     }
-    callStore.currentCall?.transferAttended(this.txt)
+    callStore.currentCall()?.transferAttended(this.txt)
   }
 
   render() {
@@ -90,7 +90,7 @@ class PageTransferDial extends React.Component {
             onPressNumber={v => {
               const { end, start } = this.txtSelection
               let min = Math.min(start, end)
-              let max = Math.max(start, end)
+              const max = Math.max(start, end)
               const isDelete = v === ''
               if (isDelete) {
                 if (start === end && start) {

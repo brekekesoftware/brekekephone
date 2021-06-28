@@ -1,31 +1,65 @@
 package com.brekeke.phonedev;
 
+import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-class IncomingCallModule extends ReactContextBaseJavaModule {
-  public static RCTDeviceEventEmitter eventEmitter = null;
+public class IncomingCallModule extends ReactContextBaseJavaModule {
+  public static RCTDeviceEventEmitter eventEmitter;
 
-  static void emit(String name, String data) {
+  public static void emit(String name, String data) {
     eventEmitter.emit(name, data);
+  }
+
+  public static Activity main;
+  public static ReactApplicationContext ctx;
+  public static boolean firstShowCallAppActive = false;
+
+  public static void tryExitClearTask() {
+    if (!mgr.activities.isEmpty()) {
+      return;
+    }
+    if (!firstShowCallAppActive) {
+      try {
+        main.moveTaskToBack(true);
+      } catch (Exception e) {
+      }
+    }
+    if (main == null) {
+      Intent i = new Intent(ctx, ExitActivity.class);
+      i.addFlags(
+          Intent.FLAG_ACTIVITY_NEW_TASK
+              | Intent.FLAG_ACTIVITY_CLEAR_TASK
+              | Intent.FLAG_ACTIVITY_NO_ANIMATION
+              | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      ctx.startActivity(i);
+    }
+  }
+
+  public static KeyguardManager km;
+
+  public static boolean isLocked() {
+    return km.isKeyguardLocked() || km.isDeviceLocked();
   }
 
   public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
 
-  public ReactApplicationContext reactContext;
-
-  IncomingCallModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    this.reactContext = reactContext;
+  IncomingCallModule(ReactApplicationContext c) {
+    super(c);
+    ctx = c;
+    km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    eventEmitter = reactContext.getJSModule(RCTDeviceEventEmitter.class);
+    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
   }
 
   @Override
@@ -34,46 +68,58 @@ class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void showCall(String uuid, String callerName, Boolean isVideoCall) {
+  public void showCall(String uuid, String callerName, boolean isVideoCall, boolean isAppActive) {
+    mgr.activitiesSize++;
     Intent i;
-    if (mgr.isEmpty()) {
-      i = new Intent(reactContext, IncomingCallActivity.class);
+    IncomingCallActivity prev = mgr.last();
+    if (prev == null) {
+      i = new Intent(ctx, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      firstShowCallAppActive = isAppActive;
     } else {
-      IncomingCallActivity prev = mgr.last();
       prev.forceStopRingtone();
       i = new Intent(prev, IncomingCallActivity.class);
     }
-
     i.putExtra("uuid", uuid);
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
 
-    if (mgr.isEmpty()) {
-      reactContext.startActivity(i);
+    if (prev == null) {
+      ctx.startActivity(i);
     } else {
-      mgr.last().startActivity(i);
+      prev.startActivity(i);
     }
   }
 
   @ReactMethod
-  void closeIncomingCallActivity(String uuid, Boolean isAnswerPressed) {
-    if (mgr.isEmpty()) {
-      return;
-    }
+  public void closeIncomingCallActivity(String uuid) {
     try {
-      mgr.at(uuid).closeIncomingCallActivity(isAnswerPressed);
-    } catch (Exception ex) {
+      mgr.at(uuid).answered = false;
+      mgr.remove(uuid);
+    } catch (Exception e) {
     }
   }
 
   @ReactMethod
-  void closeAllIncomingCallActivities() {
-    mgr.finishAll();
+  public void closeAllIncomingCallActivities() {
+    mgr.removeAll();
   }
 
   @ReactMethod
-  void setOnHold(String uuid, Boolean hold) {
-    mgr.at(uuid).updateUIBtnHold(hold);
+  public void setOnHold(String uuid, boolean holding) {
+    try {
+      mgr.at(uuid).uiSetBtnHold(holding);
+    } catch (Exception e) {
+    }
+  }
+
+  @ReactMethod
+  public void setBackgroundCalls(int n) {
+    mgr.setBackgroundCalls(n);
+  }
+
+  @ReactMethod
+  public void isLocked(Promise p) {
+    p.resolve(isLocked());
   }
 }

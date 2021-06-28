@@ -32,8 +32,8 @@ android {
 
   defaultConfig {
     applicationId "com.brekeke.phonedev"
-    versionCode 207028
-    versionName "2.7.28"
+    versionCode 207039
+    versionName "2.7.39"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
@@ -73,7 +73,6 @@ dependencies {
   implementation fileTree(dir: "libs", include: ["*.jar"])
   implementation "com.facebook.react:react-native:+"
   implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-  implementation "android.arch.lifecycle:extensions:1.1.1"
 
   debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
     exclude group:"com.facebook.fbjni"

@@ -6,6 +6,23 @@ import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
 
 public class MainActivity extends ReactActivity {
+  @Override
+  protected void onStart() {
+    IncomingCallModule.main = this;
+    super.onStart();
+  }
+
+  // @Override
+  // protected void onDestroy() {
+  //   IncomingCallModule.main = null;
+  //   super.onDestroy();
+  // }
+
+  @Override
+  public void onBackPressed() {
+    // Do not exit on back pressed
+    moveTaskToBack(true);
+  }
 
   @Override
   protected String getMainComponentName() {

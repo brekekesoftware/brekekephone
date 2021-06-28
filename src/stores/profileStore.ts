@@ -84,7 +84,7 @@ class ProfileStore {
     navSubMenus: [],
   })
   loadProfilesFromLocalStorage = async () => {
-    let arr = await RnAsyncStorage.getItem('_api_profiles')
+    const arr = await RnAsyncStorage.getItem('_api_profiles')
     let x: {
       profiles: Profile[]
       profileData: ProfileData[]
@@ -140,13 +140,6 @@ class ProfileStore {
       if (id0 !== id1) {
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {
-          onError: () => {
-            // Revert on error?
-            // Object.assign(p1, p0, {
-            //   pushNotificationEnabled: pn0,
-            // })
-            // this.saveProfilesToLocalStorage()
-          },
           noUpsert: true,
         })
       } else if (
@@ -166,12 +159,6 @@ class ProfileStore {
     if (p0) {
       p0.pushNotificationEnabled = false
       SyncPnToken().sync(p0, {
-        onError: () => {
-          // Revert on error?
-          // p0.pushNotificationEnabled = pn0
-          // this.profiles = profiles0
-          // this.saveProfilesToLocalStorage()
-        },
         noUpsert: true,
       })
     }

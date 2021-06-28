@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { Lambda, observe } from 'mobx'
+import { action, Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
 import { getAuthStore } from './authStore'
@@ -10,18 +10,26 @@ class AuthPBX {
   private clearObserve?: Lambda
   auth() {
     this.authWithCheck()
-    const s = getAuthStore()
-    this.clearObserve = observe(s, 'pbxShouldAuth', this.authWithCheckDebounced)
+    if (!this.clearObserve) {
+      const s = getAuthStore()
+      this.clearObserve = observe(
+        s,
+        'pbxShouldAuth',
+        this.authWithCheckDebounced,
+      )
+    }
   }
-  dispose() {
+
+  @action dispose = () => {
     console.error('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()
+    this.clearObserve = undefined
     pbx.disconnect()
     const s = getAuthStore()
     s.pbxState = 'stopped'
   }
 
-  private authWithCheck = () => {
+  @action private authWithCheck = () => {
     const s = getAuthStore()
     if (!s.pbxShouldAuth) {
       return
@@ -31,19 +39,23 @@ class AuthPBX {
     s.pbxState = 'connecting'
     pbx
       .connect(s.currentProfile)
-      .then(() => {
-        s.pbxState = 'success'
-      })
-      .catch((err: Error) => {
-        s.pbxState = 'failure'
-        s.pbxTotalFailure += 1
-        RnAlert.error({
-          message: intlDebug`Failed to connect to pbx`,
-          err,
-        })
-      })
+      .then(
+        action(() => {
+          s.pbxState = 'success'
+        }),
+      )
+      .catch(
+        action((err: Error) => {
+          s.pbxState = 'failure'
+          s.pbxTotalFailure += 1
+          RnAlert.error({
+            message: intlDebug`Failed to connect to pbx`,
+            err,
+          })
+        }),
+      )
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
 
-export default AuthPBX
+export const authPBX = new AuthPBX()

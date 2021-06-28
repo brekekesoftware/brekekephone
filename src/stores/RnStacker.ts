@@ -45,10 +45,10 @@ export class RnStackerStore {
           this.stackAnimating = true
           BackgroundTimer.setTimeout(() => {
             this.stackAnimating = false
-          }, 1000)
+          }, 300)
         }
         //
-        let stack0 = {} as RnStack
+        const stack0 = {} as RnStack
         // It fails if the param is an event
         //    or something not enumerable
         if (stack && !stack.nativeEvent) {
@@ -74,18 +74,6 @@ export class RnStackerStore {
         this.createGoTo(o, isRoot)(...args)
       }
     }
-  popAllStack = RnKeyboard.waitKeyboard(
-    action(() => {
-      while (this.stacks.length > 1) {
-        this.stacks.pop()
-      }
-    }),
-  )
-  backToFirstStack = () => {
-    if (this.stacks.length > 1) {
-      RnKeyboard.waitKeyboard(this.popAllStack)()
-    }
-  }
 }
 
 export default new RnStackerStore()

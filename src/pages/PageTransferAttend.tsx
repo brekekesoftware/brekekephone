@@ -14,6 +14,7 @@ import g from '../components/variables'
 import callStore from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
+import Nav from '../stores/Nav'
 
 const css = StyleSheet.create({
   Outer: {
@@ -72,6 +73,18 @@ const css = StyleSheet.create({
 
 @observer
 class PageTransferAttend extends React.Component {
+  prevId?: string
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+  componentDidUpdate() {
+    const c = callStore.currentCall()
+    if (this.prevId && this.prevId !== c?.id) {
+      Nav().backToPageCallManage()
+    }
+    this.prevId = c?.id
+  }
+
   resolveMatch = (id: string) => {
     const ucUser = contactStore.getUcUserById(id) || {}
     return {
@@ -81,7 +94,7 @@ class PageTransferAttend extends React.Component {
   }
 
   render() {
-    const c = callStore.currentCall
+    const c = callStore.currentCall()
     if (!c) {
       return null
     }

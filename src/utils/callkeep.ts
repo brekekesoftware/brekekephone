@@ -2,13 +2,18 @@ import { AppState, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import sip from '../api/sip'
-import callStore from '../stores/callStore'
+import callStore, {
+  getCallPnData,
+  hasCallKeepRunning,
+  setCallPnData,
+  showIncomingCallUi,
+} from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from './BackgroundTimer'
-import { getCallPnData } from './PushNotification-parse'
-import { IncomingCall, RnNativeModules } from './RnNativeModules'
+import { parseNotificationData } from './PushNotification-parse'
+import { RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
 
@@ -21,7 +26,9 @@ const setupCallKeepWithCheck = async () => {
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
   if (
     Platform.OS === 'ios' &&
-    Object.keys(await RNCallKeep.getCalls()).length
+    (Object.keys(await RNCallKeep.getCalls()).length ||
+      hasCallKeepRunning() ||
+      AppState.currentState !== 'active')
   ) {
     return
   }
@@ -73,10 +80,10 @@ const setupCallKeepWithCheck = async () => {
     })
 }
 
-type TEvent = {
+export type TEvent = {
   callUUID: string
 }
-type TEventDidLoad = {
+export type TEventDidLoad = {
   name: string
   data: unknown
 }
@@ -116,7 +123,7 @@ export const setupCallKeep = async () => {
       localizedCallerName: string
       hasVideo: string // '0' | '1'
       fromPushKit: string // '0' | '1'
-      payload: unknown // VOIP
+      payload: object // VOIP
       error: string // ios only
     },
   ) => {
@@ -126,7 +133,12 @@ export const setupCallKeep = async () => {
       return
     }
     // Try set the caller name from last known PN
-    const n = getCallPnData(uuid)
+    let n = parseNotificationData(e.payload)
+    if (n) {
+      setCallPnData(uuid, n)
+    } else {
+      n = getCallPnData(uuid)
+    }
     if (
       n?.from &&
       (e.localizedCallerName === 'Loading...' || e.handle === 'Loading...')
@@ -213,73 +225,45 @@ export const setupCallKeep = async () => {
 
   // Android self-managed connection service forked version
   if (Platform.OS === 'android') {
-    RNCallKeep.addEventListener('showIncomingCallUi', (e: TEvent) => {
-      const uuid = e.callUUID.toUpperCase()
-      IncomingCall.showCall(
-        uuid,
-        getCallPnData(uuid)?.from || 'Loading...',
-        !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
-      )
-      callStore.onCallKeepDidDisplayIncomingCall(uuid)
-    })
+    RNCallKeep.addEventListener('showIncomingCallUi', showIncomingCallUi)
     // Events from our custom IncomingCall module
     const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
     eventEmitter.addListener('answerCall', (uuid: string) => {
-      uuid = uuid.toUpperCase()
-      callStore.onCallKeepAnswerCall(uuid)
-      RNCallKeep.setCurrentCallActive(uuid)
+      callStore.onCallKeepAnswerCall(uuid.toUpperCase())
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      uuid = uuid.toUpperCase()
-      callStore.onCallKeepEndCall(uuid)
-      RNCallKeep.endAllCalls()
+      callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
-    eventEmitter.addListener('endCall', (uuid: string) => {
-      uuid = uuid.toUpperCase()
-      callStore.onCallKeepEndCall(uuid)
-      RNCallKeep.endAllCalls()
+    eventEmitter.addListener('answerCall+end', (uuid: string) => {
+      // TODO this logic is not fully correct:
+      // Should use the currentCall BEFORE showCall
+      callStore.currentCall()?.hangup()
+      callStore.onCallKeepAnswerCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        Nav().goToPageTransferChooseUser()
-      }, 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 300)
     })
-
     eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        Nav().goToPageCallParks2()
-      }, 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 300)
     })
-
     eventEmitter.addListener('video', (uuid: string) => {
-      const c = callStore.currentCall
-      if (c) {
-        c.localVideoEnabled ? c.disableVideo() : c.enableVideo()
-      }
+      callStore.currentCall()?.toggleVideo()
     })
-
     eventEmitter.addListener('speaker', (uuid: string) => {
       callStore.toggleLoudSpeaker()
     })
-
     eventEmitter.addListener('mute', (uuid: string) => {
-      callStore.currentCall?.toggleMuted()
+      callStore.currentCall()?.toggleMuted()
     })
-
     eventEmitter.addListener('record', (uuid: string) => {
-      callStore.currentCall?.toggleRecording()
+      callStore.currentCall()?.toggleRecording()
     })
-
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        Nav().goToPageDtmfKeypad()
-      }, 500)
+      BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.currentCall?.toggleHold()
-      callStore.currentCall &&
-        IncomingCall.setOnHold(uuid, callStore.currentCall?.holding)
+      callStore.currentCall()?.toggleHold()
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {

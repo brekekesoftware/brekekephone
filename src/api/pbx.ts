@@ -110,7 +110,6 @@ export class PBX extends EventEmitter {
       if (!e) {
         return
       }
-
       switch (e.status) {
         case '14':
         case '2':
@@ -143,7 +142,6 @@ export class PBX extends EventEmitter {
           return
       }
     }
-    return
   }
 
   disconnect = () => {

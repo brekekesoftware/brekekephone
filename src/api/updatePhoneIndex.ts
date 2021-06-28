@@ -10,6 +10,7 @@ const updatePhoneIndex = () =>
       message: intlDebug`Failed to update phone index`,
       err,
     })
+    getAuthStore().signOut()
     Nav().goToPageProfileSignIn()
     return null
   })
