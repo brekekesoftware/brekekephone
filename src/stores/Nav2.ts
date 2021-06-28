@@ -31,7 +31,6 @@ import RnStacker from './RnStacker'
 const go = RnStacker.createGoTo
 const back = RnStacker.createBackTo
 export class Nav {
-  backToFirstStack = RnStacker.backToFirstStack
   goToPageTransferChooseUser = go({ PageTransferChooseUser }, true)
   backToPageTransferChooseUser = back({ PageTransferChooseUser }, true)
   goToPageProfileSignIn = go({ PageProfileSignIn }, true)
@@ -61,12 +60,7 @@ export class Nav {
   backToPagePhonebookCreate = back({ PagePhonebookCreate })
   goToPagePhonebookUpdate = go({ PagePhonebookUpdate })
   backToPagePhonebookUpdate = back({ PagePhonebookUpdate })
-  goToPageCallManage = (...args: unknown[]) => {
-    if (RnStacker.stacks.some(s => s.Component === PageCallManage)) {
-      return
-    }
-    go({ PageCallManage })(args)
-  }
+  goToPageCallManage = go({ PageCallManage })
   backToPageCallManage = back({ PageCallManage })
   goToPageBackgroundCalls = go({ PageBackgroundCalls })
   backToPageBackgroundCalls = back({ PageBackgroundCalls })

@@ -74,18 +74,6 @@ export class RnStackerStore {
         this.createGoTo(o, isRoot)(...args)
       }
     }
-  popAllStack = RnKeyboard.waitKeyboard(
-    action(() => {
-      while (this.stacks.length > 1) {
-        this.stacks.pop()
-      }
-    }),
-  )
-  backToFirstStack = () => {
-    if (this.stacks.length > 1) {
-      RnKeyboard.waitKeyboard(this.popAllStack)()
-    }
-  }
 }
 
 export default new RnStackerStore()

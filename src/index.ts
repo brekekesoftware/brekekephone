@@ -19,7 +19,7 @@ configure({
   reactionRequiresObservable: false,
   disableErrorBoundaries: false,
 })
-onReactionError(err => {
+onReactionError((err: Error) => {
   console.error(err)
 })
 
