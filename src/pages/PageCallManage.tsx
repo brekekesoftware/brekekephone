@@ -91,7 +91,7 @@ class PageCallManage extends React.Component<{
   }
   componentDidUpdate() {
     this.hideButtonsIfVideo()
-    if (!callStore.currentCall() && !callStore.backgroundCalls().length) {
+    if (!callStore.calls.length) {
       Nav().goToPageCallRecents()
     }
   }
@@ -154,7 +154,9 @@ class PageCallManage extends React.Component<{
     </>
   )
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
-    const n = callStore.backgroundCalls().length
+    const n = callStore.calls.filter(
+      c => c.id !== callStore.currentCallId,
+    ).length
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }

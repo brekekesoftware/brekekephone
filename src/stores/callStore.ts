@@ -144,10 +144,6 @@ export class CallStore {
     BackgroundTimer.setTimeout(this.updateCurrentCallDebounce, 17)
     return this.calls.find(c => c.id === this.currentCallId)
   }
-  backgroundCalls = () =>
-    this.calls.filter(
-      c => c.id !== this.currentCallId && (!c.incoming || c.answered),
-    )
 
   @action upsertCall = (
     cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
@@ -230,7 +226,7 @@ export class CallStore {
       c.toggleHold()
     }
     this.currentCallId = c.id
-    Nav().backToPageBackgroundCalls()
+    Nav().backToPageCallManage()
   }
 
   private startCallIntervalAt = 0

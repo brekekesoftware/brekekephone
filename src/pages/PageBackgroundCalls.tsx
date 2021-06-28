@@ -1,4 +1,4 @@
-import { mdiPhoneHangup } from '@mdi/js'
+import { mdiPhone, mdiPhoneHangup } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -14,7 +14,7 @@ import formatDuration from '../utils/formatDuration'
 
 const PageBackgroundCalls = observer(() => {
   const c = callStore.currentCall()
-  const bg = callStore.backgroundCalls()
+  const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
   return (
     <Layout
       compact
@@ -42,15 +42,38 @@ const PageBackgroundCalls = observer(() => {
       {bg.map(c => (
         <RnTouchableOpacity
           key={c.id}
-          onPress={() => callStore.selectBackgroundCall(c)}
+          onPress={
+            !c.answered && c.incoming
+              ? undefined
+              : () => callStore.selectBackgroundCall(c)
+          }
         >
           <UserItem
-            iconFuncs={[c.hangupWithUnhold]}
-            icons={[mdiPhoneHangup]}
+            icons={[
+              mdiPhoneHangup,
+              ...(!c.answered && c.incoming ? [mdiPhone] : []),
+            ]}
+            iconColors={[
+              g.colors.danger,
+              ...(!c.answered && c.incoming ? [g.colors.primary] : []),
+            ]}
+            iconFuncs={[
+              c.hangupWithUnhold,
+              ...(!c.answered && c.incoming
+                ? [
+                    () => {
+                      c.answer()
+                      callStore.selectBackgroundCall(c)
+                    },
+                  ]
+                : []),
+            ]}
             key={c.id}
             lastMessage={
               !c.answered
-                ? intl`Dialing...`
+                ? c.incoming
+                  ? intl`Incoming call`
+                  : intl`Dialing...`
                 : c.transferring
                 ? intl`Transferring`
                 : intl`On hold`
