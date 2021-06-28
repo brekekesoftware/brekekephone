@@ -1,7 +1,9 @@
 import React, { FC } from 'react'
+import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
 import { getAuthStore } from '../stores/authStore'
+import callStore from '../stores/callStore'
 
 class IncomingItem extends React.Component {
   needToStopRingtone = false
@@ -18,6 +20,10 @@ class IncomingItem extends React.Component {
   componentWillUnmount() {
     if (this.needToStopRingtone) {
       IncallManager.stopRingtone()
+      if (Platform.OS === 'android') {
+        // Bug speaker auto turn on after call stopRingtone/stopRingback
+        IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+      }
     }
   }
   render() {
@@ -31,6 +37,10 @@ class OutgoingItem extends React.Component {
   }
   componentWillUnmount() {
     IncallManager.stopRingback()
+    if (Platform.OS === 'android') {
+      // Bug speaker auto turn on after call stopRingtone/stopRingback
+      IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+    }
   }
   render() {
     return null
