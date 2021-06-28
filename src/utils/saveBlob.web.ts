@@ -11,17 +11,20 @@ export const saveBlob = (blob: Blob, name: string) => {
 }
 export const saveBlobImage = (id: string, name: string) => {
   return new Promise(async (resolve, reject) => {
-    const fr = new FileReader()
     try {
-      // console.log('saveBlob','startDownload')
       const data: Blob = (await uc.acceptFile(id)) as Blob
-      const a = document.createElement('a')
-      a.setAttribute('style', 'display: none')
-      let url = window.URL.createObjectURL(data)
-      a.href = url
-      a.download = name
-      a.click()
-      window.URL.revokeObjectURL(url)
+      const fr = new FileReader()
+      fr.onload = async () => {
+        const r = fr.result as string
+        const cache = await caches.open(id)
+        const imageResponse = new Response(r)
+        cache.put(id, imageResponse)
+        resolve(r)
+      }
+      fr.onerror = err => {
+        console.error('saveBlob', err)
+      }
+      fr.readAsDataURL(data)
     } catch (error) {
       reject(error)
     }

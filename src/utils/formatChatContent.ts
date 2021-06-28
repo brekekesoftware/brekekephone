@@ -1,4 +1,5 @@
 import { getAuthStore } from '../stores/authStore'
+import { ChatTarget } from '../stores/chatStore'
 import intl from '../stores/intl'
 import formatDuration from './formatDuration'
 
@@ -15,6 +16,9 @@ export const formatChatContent = (c: {
     let o: {
       name?: string
       talklen?: number
+      file_id?: string
+      additionals?: []
+      target?: ChatTarget
     } = {}
     try {
       o = JSON.parse(text)
@@ -25,7 +29,9 @@ export const formatChatContent = (c: {
         : c.creatorId === getAuthStore().currentProfile?.pbxUsername
         ? intl`Outgoing call, duration: ${formatDuration(o.talklen)}`
         : intl`Incoming call, duration: ${formatDuration(o.talklen)}`
-    } else if (o.name) {
+    } else if (o.name && o.file_id) {
+      text = `${o.name} ${!o.additionals ? `-> ${o.target?.user_id}` : ''}`
+    } else if (o.name && !o.file_id) {
       text = o.name
     }
   }

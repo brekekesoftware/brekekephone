@@ -575,8 +575,6 @@ export class UC extends EventEmitter {
 
   sendFile = async (user_id: string, file: Blob) => {
     let inputw: HTMLInputElement | null = null
-    console.log({ sendFile: file.type })
-
     if (Platform.OS === 'web') {
       inputw = document.createElement('input')
       inputw.type = 'file'

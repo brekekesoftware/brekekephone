@@ -1,16 +1,7 @@
 import { mdiImageBrokenVariant } from '@mdi/js'
-import React, { FC, useCallback, useState } from 'react'
-import {
-  ActivityIndicator,
-  Dimensions,
-  Linking,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-  ViewProps,
-} from 'react-native'
-import Svg, { G, Path } from 'react-native-svg'
+import React, { FC, useCallback } from 'react'
+import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
+import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
 import { RnImage } from './Rn'
@@ -18,13 +9,13 @@ import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
 const css = StyleSheet.create({
-  Image: {
+  image: {
     width: 150,
     height: 150,
     borderRadius: 5,
     overflow: 'hidden',
   },
-  Loading: {
+  loading: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -34,7 +25,7 @@ const css = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
   },
-  ImageBroken: {
+  imageBroken: {
     marginLeft: 0,
     marginTop: 0,
     backgroundColor: 'blue',
@@ -47,7 +38,6 @@ const css = StyleSheet.create({
 const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
-  const isLoading = state !== 'success' && state !== 'failure'
   const onShowImage = useCallback(() => {
     const win = window.open('')
     win?.document.write(
@@ -56,18 +46,22 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
         '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:70%; height:70%;" allowfullscreen></iframe>',
     )
   }, [url])
+  const isLoading =
+    state !== 'success' && state !== 'failure' && state !== 'stopped'
+  const isLoadFailed = state === 'failure' || state === 'stopped'
+  const isLoadSuccess = state === 'success' && url
 
   return (
-    <View style={css.Image}>
+    <View style={css.image}>
       {isLoading && (
-        <ActivityIndicator size='small' color='white' style={css.Loading} />
+        <ActivityIndicator size='small' color='white' style={css.loading} />
       )}
-      {state === 'success' && (
+      {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <RnImage source={{ uri: url }} style={css.Image} />
+          <RnImage source={{ uri: url }} style={css.image} />
         </RnTouchableOpacity>
       )}
-      {state === 'failure' && (
+      {isLoadFailed && (
         <Svg
           preserveAspectRatio='xMinYMin slice'
           height={size}

@@ -17,13 +17,13 @@ import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
 const css = StyleSheet.create({
-  Image: {
+  image: {
     width: 150,
     height: 150,
     borderRadius: 5,
     overflow: 'hidden',
   },
-  Loading: {
+  loading: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -33,33 +33,34 @@ const css = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
   },
-  ImageBroken: {
+  imageBroken: {
     marginLeft: -20,
     marginTop: -20,
   },
 })
 const size = 150
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
-  console.log('saveBlobLoader', { id, url, state, name })
   const [visible, setIsVisible] = useState(false)
   const images = [{ uri: url }]
-  const isLoading = state !== 'success' && state !== 'failure'
   const onShowImage = useCallback(() => {
     images.length > 0 && setIsVisible(true)
   }, [images])
-
-  // const ImageShow = Platform.OS === 'android'?Image:RnImage
+  const isLoading =
+    state !== 'success' && state !== 'failure' && state !== 'stopped'
+  const isLoadFailed = state === 'failure' || state === 'stopped'
+  const isLoadSuccess = state === 'success' && url
+  const ImageShow = Platform.OS === 'android' ? Image : RnImage
   return (
-    <View style={css.Image}>
+    <View style={css.image}>
       {isLoading && (
-        <ActivityIndicator size='small' color='white' style={css.Loading} />
+        <ActivityIndicator size='small' color='white' style={css.loading} />
       )}
-      {state === 'success' && url && (
+      {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <RnImage source={{ uri: url }} style={css.Image} />
+          <ImageShow source={{ uri: url }} style={css.image} />
         </RnTouchableOpacity>
       )}
-      {state === 'failure' && (
+      {isLoadFailed && (
         <Svg
           preserveAspectRatio='xMinYMin slice'
           height={size}

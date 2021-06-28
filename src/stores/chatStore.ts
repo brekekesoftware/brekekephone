@@ -5,6 +5,7 @@ import { computed, observable } from 'mobx'
 import { Conference } from '../api/brekekejs'
 import { Constants } from '../api/uc'
 import { filterTextOnly } from '../utils/formatChatContent'
+import { saveBlobImage } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'
 
@@ -26,6 +27,11 @@ export type ChatFile = {
   transferPercent: number
   fileType: string
   url?: string
+  target?: ChatTarget
+}
+export type ChatTarget = {
+  tenant: string
+  user_id: string
 }
 export type ChatMessageConfig = {
   id: string
@@ -147,9 +153,31 @@ class ChatStore {
   }
 
   @observable private filesMap: { [k: string]: ChatFile } = {}
+
+  download = (f: ChatFile) => {
+    saveBlobImage(f.id)
+      .then(url => {
+        this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
+          url: url,
+        })
+      })
+      .catch(error => {
+        this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
+          url: '',
+        })
+      })
+  }
   upsertFile = (f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
     const f0 = this.filesMap[f.id]
-    this.filesMap[f.id] = f0 ? Object.assign(f0, f) : (f as ChatFile)
+    console.log('upsertFileF0', { f0: f })
+    if (!f0) {
+      this.filesMap[f.id] = f as ChatFile
+      if (f.incoming && f.fileType === 'image') {
+        this.download(f as ChatFile)
+      }
+    } else {
+      this.filesMap[f.id] = Object.assign(f0, f)
+    }
   }
   removeFile = (id: string) => {
     delete this.filesMap[id]

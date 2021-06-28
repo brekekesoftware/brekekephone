@@ -113,6 +113,7 @@ class PageChatDetail extends React.Component<{
     const u = contactStore.getUcUserById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
+
     return (
       <Layout
         compact
@@ -242,12 +243,12 @@ class PageChatDetail extends React.Component<{
     this.closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
   }
+
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
-    const file = chatStore.getFileById(chat.file)
+    let file = chatStore.getFileById(chat.file)
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
-
     return {
       id,
       creatorId: creator.id,
@@ -420,7 +421,8 @@ class PageChatDetail extends React.Component<{
       .then(res => {
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)
-        console.log('saveBlobSend', { sendChat: res.file })
+        Object.assign(res.file, { target: { user_id: buddyId } })
+        // console.log('sendFile', {file: res.file})
         chatStore.upsertFile(res.file)
         chatStore.pushMessages(buddyId, res.chat)
       })
