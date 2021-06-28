@@ -20,7 +20,6 @@ export const saveBlob = (blob: Blob, name: string) => {
   fr.readAsDataURL(blob)
 }
 export const saveBlobImage = (id: string) => {
-  console.log('saveBlobImage', id)
   return new Promise(async (resolve, reject) => {
     const fr = new FileReader()
     try {

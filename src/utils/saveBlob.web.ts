@@ -16,7 +16,7 @@ export const saveBlobImage = (id: string, name: string) => {
       const fr = new FileReader()
       fr.onload = async () => {
         const r = fr.result as string
-        const cache = await caches.open(id)
+        const cache = await caches.open('CACHE_IMAGE_CHAT')
         const imageResponse = new Response(r)
         cache.put(id, imageResponse)
         resolve(r)

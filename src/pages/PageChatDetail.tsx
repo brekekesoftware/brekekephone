@@ -92,7 +92,11 @@ class PageChatDetail extends React.Component<{
       })
     }
   }
-
+  componentWillUnmount() {
+    if (Platform.OS === 'web') {
+      caches.delete('CACHE_IMAGE_CHAT')
+    }
+  }
   renderChatInput = () => {
     return (
       <ChatInput
@@ -422,7 +426,6 @@ class PageChatDetail extends React.Component<{
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)
         Object.assign(res.file, { target: { user_id: buddyId } })
-        // console.log('sendFile', {file: res.file})
         chatStore.upsertFile(res.file)
         chatStore.pushMessages(buddyId, res.chat)
       })

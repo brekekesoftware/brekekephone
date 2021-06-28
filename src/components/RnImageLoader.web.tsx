@@ -4,8 +4,7 @@ import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
-import { RnImage } from './Rn'
-import RnTouchableOpacity from './RnTouchableOpacity'
+import { RnImage, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
 const css = StyleSheet.create({

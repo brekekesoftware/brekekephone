@@ -47,7 +47,6 @@ export type ChatGroup = {
   members: string[]
   webchat?: Conference // check group is webchat
 }
-
 class ChatStore {
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
@@ -169,7 +168,6 @@ class ChatStore {
   }
   upsertFile = (f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
     const f0 = this.filesMap[f.id]
-    console.log('upsertFileF0', { f0: f })
     if (!f0) {
       this.filesMap[f.id] = f as ChatFile
       if (f.incoming && f.fileType === 'image') {
