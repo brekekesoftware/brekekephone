@@ -66,7 +66,7 @@ class PageCallKeypad extends React.Component {
             onPressNumber={v => {
               const { end, start } = this.txtSelection
               let min = Math.min(start, end)
-              let max = Math.max(start, end)
+              const max = Math.max(start, end)
               const isDelete = v === ''
               if (isDelete) {
                 if (start === end && start) {

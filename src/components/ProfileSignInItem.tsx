@@ -11,6 +11,7 @@ import React, { FC } from 'react'
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
+import { endCallKeepAll } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
@@ -140,6 +141,8 @@ const ProfileSignInItem: FC<{
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
             getAuthStore().signIn(p.id)
+            // Try to end callkeep if it's stuck
+            endCallKeepAll()
           }}
           onNextText={intl`SIGN IN`}
         />

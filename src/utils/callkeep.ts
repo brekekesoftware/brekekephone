@@ -4,6 +4,7 @@ import RNCallKeep, { Events } from 'react-native-callkeep'
 import sip from '../api/sip'
 import callStore, {
   getCallPnData,
+  hasCallKeepRunning,
   setCallPnData,
   showIncomingCallUi,
 } from '../stores/callStore'
@@ -25,7 +26,9 @@ const setupCallKeepWithCheck = async () => {
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
   if (
     Platform.OS === 'ios' &&
-    Object.keys(await RNCallKeep.getCalls()).length
+    (Object.keys(await RNCallKeep.getCalls()).length ||
+      hasCallKeepRunning() ||
+      AppState.currentState !== 'active')
   ) {
     return
   }

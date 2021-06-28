@@ -186,7 +186,7 @@ class PageChatDetail extends React.Component<{
     }
   }
   emojiSelectFunc = (emoji: string) => {
-    let newText = this.edittingTextEmoji.concat(emoji)
+    const newText = this.edittingTextEmoji.concat(emoji)
     if (this.state.editingText === '') {
       this.setState({ editingText: emoji })
       this.edittingTextEmoji = emoji

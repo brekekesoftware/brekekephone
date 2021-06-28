@@ -67,7 +67,8 @@ const MessageList: FC<{
   resolveChat: Function
   isGroupChat?: boolean
 }> = observer(p => {
-  let { acceptFile, list, loadMore, rejectFile, resolveChat } = p
+  const { acceptFile, loadMore, rejectFile, resolveChat } = p
+  let { list } = p
   // TODO unique and sort right after fetching
   if (!Array.isArray(list)) {
     list = []

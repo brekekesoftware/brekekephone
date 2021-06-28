@@ -212,7 +212,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     }
   }
   getAuthStore().signInByNotification(n)
-  // let pbx/sip connect by this awaiting time
+  // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
   return null
 }

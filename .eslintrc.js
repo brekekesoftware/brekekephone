@@ -8,7 +8,7 @@ module.exports = {
     node: true,
   },
   rules: {
-    // only fixable rules
+    // Fixable rules
     curly: [1, 'all'],
     semi: [1, 'never'],
     quotes: [1, 'single', { avoidEscape: true }],
@@ -20,7 +20,7 @@ module.exports = {
     'import/newline-after-import': 1,
     'import/no-duplicates': 1,
     'import/no-extraneous-dependencies': 1,
-    // compatible with prettier
+    // Compatible with prettier
     '@typescript-eslint/member-delimiter-style': [
       1,
       {
@@ -34,6 +34,8 @@ module.exports = {
         },
       },
     ],
+    // Some other rules
+    'prefer-const': 1,
   },
   settings: {
     react: {

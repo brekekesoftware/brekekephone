@@ -48,7 +48,7 @@ export class RnStackerStore {
           }, 300)
         }
         //
-        let stack0 = {} as RnStack
+        const stack0 = {} as RnStack
         // It fails if the param is an event
         //    or something not enumerable
         if (stack && !stack.nativeEvent) {

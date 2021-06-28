@@ -359,19 +359,17 @@ const callStore = new CallStore()
 export default callStore
 
 // Logic to end call if timeout of 20s
-let callkeepMap: {
+const callkeepMap: {
   [uuid: string]: {
     uuid: string
     at: number
   }
 } = {}
-let totalEmptyCallsAttempt = 0
 let autoEndCallKeepTimerId = 0
 const clearAutoEndCallKeepTimer = () => {
   if (Platform.OS === 'web' || !autoEndCallKeepTimerId) {
     return
   }
-  totalEmptyCallsAttempt = 0
   BackgroundTimer.clearInterval(autoEndCallKeepTimerId)
   autoEndCallKeepTimerId = 0
 }
@@ -388,13 +386,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   clearAutoEndCallKeepTimer()
   autoEndCallKeepTimerId = BackgroundTimer.setInterval(() => {
     const n = Date.now()
-    if (
-      Platform.OS === 'ios' &&
-      !callStore.calls.length &&
-      (!callStore.recentPn || n - callStore.recentPn.at > 20000)
-    ) {
-      callkeepMap = {}
-    }
     Object.values(callkeepMap).forEach(k => {
       if (n - k.at > 20000) {
         const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
@@ -407,17 +398,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
       }
     })
     if (!Object.keys(callkeepMap).length) {
-      totalEmptyCallsAttempt += 1
-      if (totalEmptyCallsAttempt > 2) {
-        clearAutoEndCallKeepTimer()
-      }
-      if (
-        Platform.OS === 'ios' &&
-        callStore.recentPn?.action !== 'answered' &&
-        !callStore.calls.find(c => c.answered || c.callkeepAlreadyAnswered)
-      ) {
-        endCallKeepAll()
-      }
+      clearAutoEndCallKeepTimer()
     }
     callStore.updateCurrentCallDebounce()
     callStore.updateBackgroundCallsDebounce()
@@ -425,20 +406,13 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 }
 const endCallKeep = (uuid: string, clearRecentPn?: boolean) => {
   console.error('PN callkeep debug: endCallKeep ' + uuid)
-  if (
-    !callStore.calls.length &&
-    (!callStore.recentPn || Date.now() - callStore.recentPn.at > 20000)
-  ) {
-    endCallKeepAll()
-  } else {
-    RNCallKeep.rejectCall(uuid)
-    RNCallKeep.endCall(uuid)
-  }
+  RNCallKeep.rejectCall(uuid)
+  RNCallKeep.endCall(uuid)
   RNCallKeep.reportEndCallWithUUID(
     uuid,
     CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
   )
-  deleteCallPnData(uuid)
+  delete callPnDataMap[uuid]
   delete callkeepMap[uuid]
   if (uuid === callStore.prevCallKeepUuid) {
     callStore.prevCallKeepUuid = undefined
@@ -451,11 +425,9 @@ const endCallKeep = (uuid: string, clearRecentPn?: boolean) => {
   }
   IncomingCall.closeIncomingCallActivity(uuid)
 }
-const endCallKeepAll = () => {
-  console.error('PN callkeep debug: endCallKeepAll')
+export const endCallKeepAll = () => {
   RNCallKeep.endAllCalls()
   IncomingCall.closeAllIncomingCallActivities()
-  callStore.recentPn = undefined
 }
 
 // Move from callkeep.ts to avoid circular dependencies
@@ -496,12 +468,9 @@ export const showIncomingCallUi = (e: TEvent) => {
 }
 
 // Move from pushNotification-parse.ts to avoid circular dependencies
-let callPnDataMap: { [k: string]: ParsedPn } = {}
+const callPnDataMap: { [k: string]: ParsedPn } = {}
 export const setCallPnData = (uuid: string, data: ParsedPn) => {
   callPnDataMap[uuid] = data
-}
-const deleteCallPnData = (uuid: string) => {
-  delete callPnDataMap[uuid]
 }
 
 let lastCallPnData: ParsedPn | undefined = undefined

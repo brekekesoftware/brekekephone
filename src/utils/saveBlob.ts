@@ -5,7 +5,7 @@ const saveBlob = (blob: Blob, name: string) => {
   fr.onload = async () => {
     const r = fr.result as string
     const b64 = r.replace(/^data:.*base64,/, '')
-    let p = `${RNFS.DocumentDirectoryPath}/${name}`
+    const p = `${RNFS.DocumentDirectoryPath}/${name}`
     try {
       await RNFS.writeFile(p, b64, 'base64')
     } catch (err) {

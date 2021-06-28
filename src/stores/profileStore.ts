@@ -84,7 +84,7 @@ class ProfileStore {
     navSubMenus: [],
   })
   loadProfilesFromLocalStorage = async () => {
-    let arr = await RnAsyncStorage.getItem('_api_profiles')
+    const arr = await RnAsyncStorage.getItem('_api_profiles')
     let x: {
       profiles: Profile[]
       profileData: ProfileData[]

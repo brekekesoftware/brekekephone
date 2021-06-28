@@ -1,7 +1,7 @@
 const saveBlob = (blob: Blob, name: string) => {
   const a = document.createElement('a')
   a.setAttribute('style', 'display: none')
-  let url = window.URL.createObjectURL(blob)
+  const url = window.URL.createObjectURL(blob)
   a.href = url
   a.download = name
   a.click()
