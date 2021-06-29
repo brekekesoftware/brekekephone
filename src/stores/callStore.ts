@@ -220,7 +220,6 @@ export class CallStore {
   }
 
   @action selectBackgroundCall = (c: Call) => {
-    console.error('callStore.selectBackgroundCall')
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
@@ -268,6 +267,7 @@ export class CallStore {
       if (curr) {
         if (uuid) {
           curr.callkeepUuid = uuid
+          this.prevCallKeepUuid = uuid
           RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
         }
         this.currentCallId = curr.id

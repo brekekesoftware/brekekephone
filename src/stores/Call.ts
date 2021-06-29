@@ -54,7 +54,6 @@ export default class Call {
 
   isAboutToHangup = false
   hangupWithUnhold = async () => {
-    console.error('Call.hangupWithUnhold')
     this.isAboutToHangup = true
     if (this.holding) {
       if (!(await this.toggleHold())) {
@@ -64,7 +63,6 @@ export default class Call {
       }
       await waitTimeout()
     }
-    console.error('sip.hangupSession(this.id)')
     sip.hangupSession(this.id)
     this.store.endCallKeepByCall(this)
   }
@@ -121,7 +119,6 @@ export default class Call {
 
   @observable holding = false
   @action private toggleHold = () => {
-    console.error(`toggleHold holding=${this.holding}`)
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
     if (this.callkeepUuid && !this.holding) {
@@ -135,7 +132,6 @@ export default class Call {
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
-      console.error(`toggleHold success holding=${this.holding}`)
       return true
     }
     this.holding = !this.holding
