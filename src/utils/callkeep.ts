@@ -167,7 +167,7 @@ export const setupCallKeep = async () => {
     const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
-      c.toggleHold()
+      c.toggleHoldWithCheck()
     }
   }
   const didPerformDTMFAction = (
@@ -193,7 +193,7 @@ export const setupCallKeep = async () => {
     if (Platform.OS === 'android') {
       callStore.calls
         .filter(c => c.answered && !c.holding)
-        .forEach(c => c.toggleHold())
+        .forEach(c => c.toggleHoldWithCheck())
     }
   }
 
@@ -263,7 +263,7 @@ export const setupCallKeep = async () => {
       BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.currentCall()?.toggleHold()
+      callStore.currentCall()?.toggleHoldWithCheck()
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {

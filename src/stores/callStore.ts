@@ -222,8 +222,9 @@ export class CallStore {
   }
 
   @action selectBackgroundCall = (c: Call) => {
+    console.error('callStore.selectBackgroundCall')
     if (c.holding) {
-      c.toggleHold()
+      c.toggleHoldWithCheck()
     }
     this.currentCallId = c.id
     Nav().backToPageCallManage()
@@ -328,9 +329,10 @@ export class CallStore {
           c.id !== this.currentCallId &&
           c.answered &&
           !c.transferring &&
-          !c.holding,
+          !c.holding &&
+          !c.isAboutToHangup,
       )
-      .forEach(c => c.toggleHold())
+      .forEach(c => c.toggleHoldWithCheck())
   }
   updateBackgroundCallsDebounce = debounce(this.updateBackgroundCalls, 300, {
     maxWait: 1000,

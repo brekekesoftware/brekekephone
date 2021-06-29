@@ -4,6 +4,7 @@ import RNCallKeep from 'react-native-callkeep'
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { IncomingCall } from '../utils/RnNativeModules'
+import waitTimeout from '../utils/waitTimeout'
 import { CallStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
@@ -40,7 +41,7 @@ export default class Call {
     // Hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
-      .forEach(c => c.toggleHold())
+      .forEach(c => c.toggleHoldWithCheck())
     sip.answerSession(this.id, {
       videoEnabled: this.remoteVideoEnabled,
       ...options,
@@ -51,20 +52,30 @@ export default class Call {
     }
   }
 
-  hangup = () => {
+  isAboutToHangup = false
+  hangupWithUnhold = async () => {
+    console.error('Call.hangupWithUnhold')
+    this.isAboutToHangup = true
+    if (this.holding) {
+      if (!(await this.toggleHold())) {
+        console.error(
+          'hangupWithUnhold: failed to unhold, possible issue with pbx connection',
+        )
+      }
+      await waitTimeout()
+    }
+    console.error('sip.hangupSession(this.id)')
     sip.hangupSession(this.id)
     this.store.endCallKeepByCall(this)
   }
-  hangupWithUnhold = () =>
-    this.holding ? this.toggleHold().then(this.hangup) : this.hangup()
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
-  enableVideo = () => sip.enableVideo(this.id)
-  disableVideo = () => sip.disableVideo(this.id)
   toggleVideo = () =>
-    this.localVideoEnabled ? this.disableVideo() : this.enableVideo()
+    this.localVideoEnabled
+      ? sip.disableVideo(this.id)
+      : sip.enableVideo(this.id)
 
   @observable remoteVideoStreamObject: MediaStream | null = null
   voiceStreamObject: MediaStream | null = null
@@ -80,9 +91,11 @@ export default class Call {
 
   @observable recording = false
   @action toggleRecording = () => {
+    const fn = this.recording
+      ? pbx.stopRecordingTalker
+      : pbx.startRecordingTalker
     this.recording = !this.recording
-    return pbx
-      .startRecordingTalker(this.pbxTenant, this.pbxTalkerId)
+    return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleRecordingFailure)
       .catch(this.onToggleRecordingFailure)
   }
@@ -99,22 +112,31 @@ export default class Call {
     }
   }
 
+  toggleHoldWithCheck = () => {
+    if (this.isAboutToHangup) {
+      return
+    }
+    this.toggleHold()
+  }
+
   @observable holding = false
-  @action toggleHold = () => {
+  @action private toggleHold = () => {
+    console.error(`toggleHold holding=${this.holding}`)
+    const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
     if (this.callkeepUuid && !this.holding) {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)
     }
     IncomingCall.setOnHold(this.callkeepUuid, this.holding)
-    const fn = this.holding ? pbx.holdTalker : pbx.unholdTalker
     return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
-      return
+      console.error(`toggleHold success holding=${this.holding}`)
+      return true
     }
     this.holding = !this.holding
     if (this.callkeepUuid && !this.holding) {
@@ -127,7 +149,10 @@ export default class Call {
         ? intlDebug`Failed to unhold the call`
         : intlDebug`Failed to hold the call`
       RnAlert.error({ message, err })
+      // Already show error, considered it's handled
+      return true
     }
+    return false
   }
 
   @observable transferring = ''

@@ -121,7 +121,7 @@ class CallBar extends React.Component {
             <ButtonIcon
               bdcolor={g.borderBg}
               color={c.holding ? g.colors.primary : g.color}
-              onPress={() => c.toggleHold()}
+              onPress={c.toggleHoldWithCheck}
               path={c.holding ? mdiPlay : mdiPause}
             />
           </View>

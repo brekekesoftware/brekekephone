@@ -196,7 +196,7 @@ class PageCallManage extends React.Component<{
               color={c.localVideoEnabled ? 'white' : 'black'}
               name={intl`VIDEO`}
               noborder
-              onPress={c.localVideoEnabled ? c.disableVideo : c.enableVideo}
+              onPress={c.toggleVideo}
               path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
               size={40}
               textcolor='white'
@@ -255,7 +255,7 @@ class PageCallManage extends React.Component<{
               color={c.holding ? 'white' : 'black'}
               name={c.holding ? intl`UNHOLD` : intl`HOLD`}
               noborder
-              onPress={() => c.toggleHold()}
+              onPress={c.toggleHoldWithCheck}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
               textcolor='white'
