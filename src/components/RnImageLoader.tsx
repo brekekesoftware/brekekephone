@@ -1,18 +1,19 @@
-import { mdiImageBrokenVariant } from '@mdi/js'
+import { mdiClose, mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
-  Image,
-  Platform,
+  Modal,
   StyleSheet,
   View,
   ViewProps,
 } from 'react-native'
-import RnImage from 'react-native-fast-image'
-import ImageView from 'react-native-image-viewing'
+import FastImage from 'react-native-fast-image'
+import ImageViewer from 'react-native-image-zoom-viewer-fixed'
+import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
+import RnIcon from './RnIcon'
 import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
@@ -37,11 +38,20 @@ const css = StyleSheet.create({
     marginLeft: -20,
     marginTop: -20,
   },
+  btnClose: {
+    position: 'absolute',
+    top: getStatusBarHeight(true),
+    right: 15,
+    zIndex: 10,
+  },
+  modal: {
+    backgroundColor: 'blue',
+  },
 })
 const size = 150
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
   const [visible, setIsVisible] = useState(false)
-  const images = [{ uri: url }]
+  const images = [{ url: url || '' }]
   const onShowImage = useCallback(() => {
     images.length > 0 && setIsVisible(true)
   }, [images])
@@ -49,7 +59,9 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
   const isLoadSuccess = state === 'success' && url
-  const ImageShow = Platform.OS === 'android' ? Image : RnImage
+  const onSwipeDown = useCallback(() => {
+    setIsVisible(false)
+  }, [])
   return (
     <View style={css.image}>
       {isLoading && (
@@ -57,7 +69,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
       )}
       {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <ImageShow source={{ uri: url }} style={css.image} />
+          <FastImage source={{ uri: url }} style={css.image} />
         </RnTouchableOpacity>
       )}
       {isLoadFailed && (
@@ -70,14 +82,12 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
           <Path d={mdiImageBrokenVariant} fill={g.colors.greyTextChat} />
         </Svg>
       )}
-      <ImageView
-        images={images}
-        imageIndex={0}
-        visible={visible}
-        onRequestClose={() => setIsVisible(false)}
-        swipeToCloseEnabled={true}
-        doubleTapToZoomEnabled={true}
-      />
+      <Modal visible={visible} style={css.modal} animationType={'slide'}>
+        <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
+          <RnIcon path={mdiClose} color={'black'} size={30} />
+        </RnTouchableOpacity>
+        <ImageViewer imageUrls={images} renderIndicator={() => <View />} />
+      </Modal>
     </View>
   )
 }

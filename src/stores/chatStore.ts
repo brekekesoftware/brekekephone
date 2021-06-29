@@ -160,7 +160,7 @@ class ChatStore {
           url: url,
         })
       })
-      .catch(error => {
+      .catch(() => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: '',
         })
