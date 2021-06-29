@@ -41,7 +41,8 @@ const css = StyleSheet.create({
 })
 
 const ItemImageChat: FC<ChatFile> = observer(p => {
-  const displaySendTo = p.incoming ? '' : ` -> ${p.target?.user_id}`
+  const displaySendTo =
+    p.incoming || !p.target?.user_id ? '' : ` -> ${p.target?.user_id}`
   const isStopped = p.state === 'stopped'
   const isDisableCancel =
     isStopped || p.state === 'success' || p.state === 'failure'
