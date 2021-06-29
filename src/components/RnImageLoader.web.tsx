@@ -1,10 +1,11 @@
 import { mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback } from 'react'
 import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
+import Image from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
-import { RnImage, RnTouchableOpacity } from './Rn'
+import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
 const css = StyleSheet.create({
@@ -57,7 +58,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
       )}
       {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <RnImage source={{ uri: url }} style={css.image} />
+          <Image source={{ uri: url }} style={css.image} />
         </RnTouchableOpacity>
       )}
       {isLoadFailed && (

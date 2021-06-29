@@ -27,7 +27,7 @@ export const saveBlobImage = (id: string) => {
       fr.onload = async () => {
         const r = fr.result as string
         const b64 = r.replace(/^data:.*base64,/, '')
-        let p = `${RNFS.DocumentDirectoryPath}/${id}`
+        const p = `${RNFS.DocumentDirectoryPath}/${id}`
         try {
           resolve(r.replace('application/octet-stream', 'image/jpeg'))
           await RNFS.writeFile(p, b64, 'base64')

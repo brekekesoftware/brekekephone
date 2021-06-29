@@ -8,11 +8,12 @@ import {
   View,
   ViewProps,
 } from 'react-native'
+import RnImage from 'react-native-fast-image'
 import ImageView from 'react-native-image-viewing'
 import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
-import { RnImage, RnTouchableOpacity } from './Rn'
+import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
 const css = StyleSheet.create({
