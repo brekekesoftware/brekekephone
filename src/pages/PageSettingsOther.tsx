@@ -1,6 +1,7 @@
 import { mdiCheck, mdiTranslate } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
+import { Platform } from 'react-native'
 
 import uc from '../api/uc'
 import Field from '../components/Field'
@@ -67,7 +68,9 @@ class PageSettingsOther extends Component {
             onPress: () => {
               getAuthStore().signOut()
               // Try to end callkeep if it's stuck
-              endCallKeepAll()
+              if (Platform.OS !== 'web') {
+                endCallKeepAll()
+              }
             },
             danger: true,
           },
