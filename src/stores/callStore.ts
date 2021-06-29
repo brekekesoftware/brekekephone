@@ -30,13 +30,11 @@ export class CallStore {
     if (!pnId) {
       return
     }
-    const uuid =
-      Object.entries(callPnDataMap).filter(
-        ([uuid, n]) => n.id === pnId,
-      )[0]?.[0] ||
-      this.recentPn?.uuid ||
-      this.prevCallKeepUuid ||
-      ''
+    const n = Object.entries(callPnDataMap).find(([uuid, n]) => n.id === pnId)
+    if (n) {
+      // TODO save call history
+    }
+    const uuid = n?.[0] || this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
     endCallKeep(uuid, true)
   }
@@ -47,15 +45,15 @@ export class CallStore {
     o?: {
       from?: string
       includingAnswered?: boolean
-      includeCallKeepAlreadyRejected?: boolean
+      includingRejected?: boolean
     },
   ) =>
     this.calls.find(
       c =>
         c.incoming &&
-        (o?.includeCallKeepAlreadyRejected || !c.callkeepAlreadyRejected) &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
+        (o?.includingRejected || !c.callkeepAlreadyRejected) &&
         (!o?.from || c.partyNumber === o.from),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
@@ -110,7 +108,7 @@ export class CallStore {
     const c = this.getIncomingCallKeep(uuid, {
       from: getCallPnData(uuid)?.from,
       includingAnswered: true,
-      includeCallKeepAlreadyRejected: Platform.OS === 'android',
+      includingRejected: Platform.OS === 'android',
     })
     if (c) {
       c.callkeepAlreadyRejected = true
