@@ -238,7 +238,7 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('answerCall+end', (uuid: string) => {
       // TODO this logic is not fully correct:
       // Should use the currentCall BEFORE showCall
-      callStore.currentCall()?.hangup()
+      callStore.currentCall()?.hangupWithUnhold()
       callStore.onCallKeepAnswerCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {

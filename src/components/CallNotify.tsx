@@ -73,7 +73,7 @@ class CallNotify extends React.Component {
         <ButtonIcon
           bdcolor={g.colors.danger}
           color={g.colors.danger}
-          onPress={c.hangup}
+          onPress={c.hangupWithUnhold}
           path={mdiClose}
           size={20}
           style={css.Notify_Btn_reject}

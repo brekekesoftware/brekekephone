@@ -87,7 +87,7 @@ class CallBar extends React.Component {
                 <ButtonIcon
                   bdcolor={g.borderBg}
                   color={g.colors.danger}
-                  onPress={c.hangup}
+                  onPress={c.hangupWithUnhold}
                   path={mdiPhoneHangup}
                 />
                 {c.answered && (

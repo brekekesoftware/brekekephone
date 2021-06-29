@@ -283,7 +283,7 @@ class PageCallManage extends React.Component<{
         bgcolor={g.colors.danger}
         color='white'
         noborder
-        onPress={c.hangup}
+        onPress={c.hangupWithUnhold}
         path={mdiPhoneHangup}
         size={40}
         textcolor='white'

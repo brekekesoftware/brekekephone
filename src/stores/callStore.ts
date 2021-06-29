@@ -114,7 +114,7 @@ export class CallStore {
     })
     if (c) {
       c.callkeepAlreadyRejected = true
-      c.hangup()
+      c.hangupWithUnhold()
       this.recentPn = undefined
       console.error('SIP PN debug: reject by onCallKeepEndCall')
     } else if (this.recentPn?.uuid === uuid) {
@@ -191,7 +191,7 @@ export class CallStore {
       console.error('SIP PN debug: answer by recentPnAction')
     } else if (recentPnAction === 'rejected') {
       c.callkeepAlreadyRejected = true
-      c.hangup()
+      c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
     }
   }
@@ -390,7 +390,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
       if (n - k.at > 20000) {
         const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
         if (c && !c.answered && !c.callkeepAlreadyAnswered) {
-          c.hangup()
+          c.hangupWithUnhold()
         }
         if (!c) {
           endCallKeep(k.uuid)
