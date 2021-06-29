@@ -250,7 +250,7 @@ class PageChatDetail extends React.Component<{
 
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
-    let file = chatStore.getFileById(chat.file)
+    const file = chatStore.getFileById(chat.file)
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
     return {
