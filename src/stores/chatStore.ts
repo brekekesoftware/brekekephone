@@ -3,7 +3,8 @@ import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
 import { Conference } from '../api/brekekejs'
-import { Constants } from '../api/uc'
+import uc, { Constants } from '../api/uc'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobImage } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
@@ -47,7 +48,10 @@ export type ChatGroup = {
   members: string[]
   webchat?: Conference // check group is webchat
 }
+export const TIMEOUT_TRANSFER_IMAGE = 60000
 class ChatStore {
+  timeoutTransferImage: { [k: string]: number } = {}
+
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
   @computed get unreadCount() {
@@ -166,6 +170,21 @@ class ChatStore {
         })
       })
   }
+  startTimeout = (id: string) => {
+    if (!!!this.timeoutTransferImage[id]) {
+      this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(() => {
+        this.clearTimeout(id)
+        uc.rejectFile({ id }).catch(error => {})
+      }, TIMEOUT_TRANSFER_IMAGE)
+      console.log({ startTime: this.timeoutTransferImage[id] })
+    }
+  }
+  clearTimeout = (id: string) => {
+    if (this.timeoutTransferImage[id]) {
+      BackgroundTimer.clearTimeout(this.timeoutTransferImage[id])
+      delete this.timeoutTransferImage[id]
+    }
+  }
   upsertFile = (f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
     const f0 = this.filesMap[f.id]
     if (!f0) {
@@ -173,8 +192,14 @@ class ChatStore {
       if (f.incoming && f.fileType === 'image') {
         this.download(f as ChatFile)
       }
+      this.startTimeout(f.id)
     } else {
       this.filesMap[f.id] = Object.assign(f0, f)
+      const state =
+        f.state === 'stopped' || f.state === 'success' || f.state === 'failure'
+      if (state) {
+        this.clearTimeout(f.id)
+      }
     }
   }
   removeFile = (id: string) => {
@@ -212,6 +237,7 @@ class ChatStore {
     this.threadConfig = {}
     this.groups = []
     this.filesMap = {}
+    this.timeoutTransferImage = {}
   }
 }
 

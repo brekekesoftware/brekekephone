@@ -2,7 +2,9 @@ import { mdiClose, mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
+  Image,
   Modal,
+  Platform,
   StyleSheet,
   View,
   ViewProps,
@@ -51,7 +53,7 @@ const css = StyleSheet.create({
 const size = 150
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
   const [visible, setIsVisible] = useState(false)
-  const images = [{ url: url || '' }]
+  const images = url ? [{ url }] : []
   const onShowImage = useCallback(() => {
     images.length > 0 && setIsVisible(true)
   }, [images])
@@ -62,6 +64,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
   const onSwipeDown = useCallback(() => {
     setIsVisible(false)
   }, [])
+  const ImageShow = Platform.OS === 'android' ? Image : FastImage
   return (
     <View style={css.image}>
       {isLoading && (
@@ -69,7 +72,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
       )}
       {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: url }} style={css.image} />
+          <ImageShow source={{ uri: url }} style={css.image} />
         </RnTouchableOpacity>
       )}
       {isLoadFailed && (

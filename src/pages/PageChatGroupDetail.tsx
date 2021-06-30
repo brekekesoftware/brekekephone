@@ -368,7 +368,6 @@ class PageChatGroupDetail extends React.Component<{
   readFile = (file: { type: string; name: string; uri: string }) => {
     if (Platform.OS === 'web') {
       const reader = new FileReader()
-
       const fileType = file.type ? file.type.split('/')[0] : ''
       reader.onload = async event => {
         const url = event.target?.result
@@ -389,6 +388,7 @@ class PageChatGroupDetail extends React.Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
+    console.log({ groupId, file })
     uc.sendFiles(groupId, file as unknown as Blob)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure)
@@ -405,6 +405,8 @@ class PageChatGroupDetail extends React.Component<{
     chatStore.pushMessages(groupId, res.chat)
   }
   onSendFileFailure = (err: Error) => {
+    console.log({ err })
+
     RnAlert.error({
       message: intlDebug`Failed to send file`,
       err,
