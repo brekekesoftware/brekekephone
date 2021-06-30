@@ -5,6 +5,7 @@ import {
   mdiMicrophone,
   mdiMicrophoneOff,
   mdiPauseCircle,
+  mdiPhone,
   mdiPhoneHangup,
   mdiPlayCircle,
   mdiRecord,
@@ -24,6 +25,7 @@ import ButtonIcon from '../components/ButtonIcon'
 import FieldButton from '../components/FieldButton'
 import Layout from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
+import RnText from '../components/RnText'
 import g from '../components/variables'
 import VideoPlayer from '../components/VideoPlayer'
 import Call from '../stores/Call'
@@ -73,9 +75,21 @@ const css = StyleSheet.create({
 
   Hangup: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 40,
     left: 0,
     right: 0,
+  },
+  Hangup_incoming: {
+    marginLeft: 180,
+    bottom: 40,
+  },
+  Hangup_answer: {
+    marginRight: 180,
+    bottom: 40,
+  },
+  Hangup_incomingText: {
+    bottom: undefined,
+    top: 100,
   },
 })
 
@@ -277,19 +291,49 @@ class PageCallManage extends React.Component<{
       </Container>
     )
   }
-  renderHangupBtn = (c: Call) => (
-    <View style={css.Hangup}>
-      <ButtonIcon
-        bgcolor={g.colors.danger}
-        color='white'
-        noborder
-        onPress={c.hangupWithUnhold}
-        path={mdiPhoneHangup}
-        size={40}
-        textcolor='white'
-      />
-    </View>
-  )
+  renderHangupBtn = (c: Call) => {
+    const incoming = c.incoming && !c.answered
+    return (
+      <>
+        <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
+          <ButtonIcon
+            bgcolor={g.colors.danger}
+            color='white'
+            noborder
+            onPress={c.hangupWithUnhold}
+            path={mdiPhoneHangup}
+            size={40}
+            textcolor='white'
+          />
+        </View>
+        {incoming && (
+          <>
+            <View style={[css.Hangup, css.Hangup_incomingText]}>
+              <RnText title white center>
+                {c.title}
+              </RnText>
+              <RnText bold white center>
+                {c.remoteVideoEnabled
+                  ? intl`Incoming Video Call`
+                  : intl`Incoming Audio Call`}
+              </RnText>
+            </View>
+            <View style={[css.Hangup, css.Hangup_answer]}>
+              <ButtonIcon
+                bgcolor={g.colors.primary}
+                color='white'
+                noborder
+                onPress={() => c.answer(true)}
+                path={mdiPhone}
+                size={40}
+                textcolor='white'
+              />
+            </View>
+          </>
+        )}
+      </>
+    )
+  }
 
   render() {
     const c = callStore.currentCall()

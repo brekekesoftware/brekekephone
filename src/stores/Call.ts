@@ -35,7 +35,8 @@ export default class Call {
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
 
-  answer = (options?: object) => {
+  @action
+  answer = (ignoreNav?: boolean) => {
     this.answered = true
     this.store.currentCallId = this.id
     // Hold other calls
@@ -44,9 +45,10 @@ export default class Call {
       .forEach(c => c.toggleHoldWithCheck())
     sip.answerSession(this.id, {
       videoEnabled: this.remoteVideoEnabled,
-      ...options,
     })
-    Nav().goToPageCallManage()
+    if (!ignoreNav) {
+      Nav().goToPageCallManage()
+    }
     if (this.callkeepUuid && !this.callkeepAlreadyAnswered) {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
     }
