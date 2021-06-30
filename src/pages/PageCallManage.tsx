@@ -81,11 +81,9 @@ const css = StyleSheet.create({
   },
   Hangup_incoming: {
     marginLeft: 180,
-    bottom: 40,
   },
   Hangup_answer: {
     marginRight: 180,
-    bottom: 40,
   },
   Hangup_incomingText: {
     bottom: undefined,
