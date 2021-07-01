@@ -6,6 +6,7 @@ import { Platform } from 'react-native'
 
 import { Profile } from '../stores/profileStore'
 import {
+  Conference,
   UcChatClient,
   UcConference,
   UcConstants,
@@ -480,6 +481,9 @@ export class UC extends EventEmitter {
     }
   }
 
+  getChatGroupInfo = (conf_id: string) => {
+    return this.client.getConference(conf_id)
+  }
   answerWebchatConference = async (conf_id: string) => {
     await new Promise((resolve, reject) => {
       this.client.joinConference(

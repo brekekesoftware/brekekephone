@@ -17,8 +17,13 @@ import Layout from '../components/Layout'
 import RnText from '../components/RnText'
 import RnTouchableOpacity from '../components/RnTouchableOpacity'
 import g from '../components/variables'
+import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
-import chatStore, { ChatGroup, ChatMessage } from '../stores/chatStore'
+import chatStore, {
+  ChatFile,
+  ChatGroup,
+  ChatMessage,
+} from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -99,6 +104,7 @@ class PageChatGroupDetail extends React.Component<{
   render() {
     const id = this.props.groupId
     const gr = chatStore.getGroupById(id)
+    console.log({ gr })
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
     const chats = chatStore.messagesByThreadId[this.props.groupId]
@@ -330,7 +336,7 @@ class PageChatGroupDetail extends React.Component<{
           // update conf_status
           this.updateConfStatus(conf_id, res.closes)
         } else {
-          chatStore.removeGroup(this.props.groupId)
+          chatStore.removeGroup(conf_id)
         }
         Nav().backToPageChatRecents()
       })
@@ -393,15 +399,11 @@ class PageChatGroupDetail extends React.Component<{
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure)
   }
-  onSendFileSuccess = (res: {
-    file: {
-      id: string
-    }
-    chat: ChatMessage
-  }) => {
+  onSendFileSuccess = (res: { file: any; chat: ChatMessage }) => {
+    const file = res.file as ChatFile
     const groupId = this.props.groupId
-    Object.assign(res.file, this.state.blobFile)
-    chatStore.upsertFile(res.file)
+    Object.assign(file, this.state.blobFile)
+    chatStore.upsertFile(file)
     chatStore.pushMessages(groupId, res.chat)
   }
   onSendFileFailure = (err: Error) => {

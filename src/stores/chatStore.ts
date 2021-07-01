@@ -210,6 +210,7 @@ class ChatStore {
   @observable groups: ChatGroup[] = []
   upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
+
     const g0 = this.getGroupById(g.id)
     if (g0) {
       Object.assign(g0, g)
@@ -217,6 +218,7 @@ class ChatStore {
       this.groups.push(g as ChatGroup)
     }
     this.groups = [...this.groups]
+    console.log('upsertGroup', { group: this.groups })
   }
   removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]

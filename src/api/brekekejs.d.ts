@@ -476,6 +476,7 @@ export type UcChatClient = {
     resolve: (res: UcWebchatConferenceText) => void,
     reject: ErrorHandler,
   ): void
+  getConference(conf_id: string): Conference
 }
 
 export type UcJoinConferenceOption = {

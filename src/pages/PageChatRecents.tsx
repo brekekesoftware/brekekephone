@@ -4,8 +4,8 @@ import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
 import React from 'react'
 
-import { UcMessageLog } from '../api/brekekejs'
-import { Constants } from '../api/uc'
+import { Conference, UcMessageLog } from '../api/brekekejs'
+import uc, { Constants } from '../api/uc'
 import ListUsers from '../components/ChatListUsers'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
@@ -13,9 +13,10 @@ import { RnText } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
 import chatStore, { ChatGroup, ChatMessage } from '../stores/chatStore'
 import contactStore, { UcUser } from '../stores/contactStore'
-import intl from '../stores/intl'
+import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
+import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
@@ -26,6 +27,50 @@ class PageChatRecents extends React.Component {
     const chats = filterTextOnly(chatStore.messagesByThreadId[id] || [])
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
+  saveLastChatItem = (arr: any[]) => {
+    // Not show other message content type different than normal text chat
+    // BackgroundTimer.setTimeout(() => {
+    const arr2 = [...arr].filter(c => c.created || c.group)
+    while (arr2.length > 20) {
+      arr2.pop()
+    }
+    if (
+      stableStringify(arr2) ===
+      stableStringify(getAuthStore().currentData.recentChats)
+    ) {
+      return
+    }
+    getAuthStore().currentData.recentChats = arr2
+    profileStore.saveProfilesToLocalStorage()
+    // }, 300)
+  }
+  handleGroupSelect = (groupId: string) => {
+    const groupInfo: Conference = uc.getChatGroupInfo(groupId)
+    const groupStatus = groupInfo.conf_status
+    if (groupStatus === Constants.CONF_STATUS_INACTIVE) {
+      RnAlert.error({
+        message: intlDebug`You have rejected this group or this group has been deleted`,
+      })
+      const newList = getAuthStore().currentData.recentChats.filter(
+        c => c.id !== groupId,
+      )
+      getAuthStore().currentData.recentChats = [...newList]
+    } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
+      RnAlert.prompt({
+        title: '',
+        message: intl`Do you want to join this group?`,
+        confirmText: intl`Join`,
+        onConfirm: async () => {
+          await uc.joinChatGroup(groupId)
+          Nav().goToPageChatGroupDetail({ groupId })
+        },
+        onDismiss: () => {},
+      })
+    } else {
+      Nav().goToPageChatGroupDetail({ groupId })
+    }
+  }
+
   render() {
     const webchatInactive = chatStore.groups.filter(
       gr =>
@@ -33,6 +78,7 @@ class PageChatRecents extends React.Component {
     )
 
     const groupIds = chatStore.groups.filter(gr => gr.jointed).map(gr => gr.id)
+    // console.log({groupIds})
 
     const threadIds = chatStore.threadIdsOrderedByRecent
 
@@ -95,6 +141,8 @@ class PageChatRecents extends React.Component {
       }
     }
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
+    // console.log({arr, recentFromStorage})
+
     arr = filterTextOnly(arr)
     arr = uniqBy(arr, 'id')
     const arrMap = arr.reduce((m, c) => {
@@ -114,21 +162,9 @@ class PageChatRecents extends React.Component {
       // .filter(c => !!c.created && !c.group)
       .reverse()
 
-    // Not show other message content type different than normal text chat
-    BackgroundTimer.setTimeout(() => {
-      const arr2 = [...arr].filter(c => c.created || c.group)
-      while (arr2.length > 20) {
-        arr2.pop()
-      }
-      if (
-        stableStringify(arr2) ===
-        stableStringify(getAuthStore().currentData.recentChats)
-      ) {
-        return
-      }
-      getAuthStore().currentData.recentChats = arr2
-      profileStore.saveProfilesToLocalStorage()
-    }, 300)
+    // when anyItem changes page will be render again => don't need timeout
+    this.saveLastChatItem(arr)
+    console.log('render again')
 
     return (
       <Layout
@@ -152,9 +188,7 @@ class PageChatRecents extends React.Component {
         <ListUsers
           recents={arr}
           groupById={groupById}
-          onGroupSelect={(groupId: string) =>
-            Nav().goToPageChatGroupDetail({ groupId })
-          }
+          onGroupSelect={this.handleGroupSelect}
           userById={userById}
           onUserSelect={(id: string) => Nav().goToPageChatDetail({ buddy: id })}
         />

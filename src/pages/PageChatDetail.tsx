@@ -115,6 +115,7 @@ class PageChatDetail extends React.Component<{
   render() {
     const { buddy: id } = this.props
     const u = contactStore.getUcUserById(id)
+    console.log({ u })
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
 
@@ -126,7 +127,7 @@ class PageChatDetail extends React.Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
-        title={u?.name}
+        title={u?.name || u?.id}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
