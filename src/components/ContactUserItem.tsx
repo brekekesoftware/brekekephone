@@ -164,7 +164,7 @@ const UserItem: FC<
           </View>
         )}
         {icons?.map((v, i) => (
-          <RnTouchableOpacity key={i} onPress={() => iconFuncs?.[i]()}>
+          <RnTouchableOpacity key={i} onPress={e => iconFuncs?.[i]?.()}>
             <RnIcon path={v} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}

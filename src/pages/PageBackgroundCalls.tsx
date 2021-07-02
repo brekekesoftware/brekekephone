@@ -38,7 +38,9 @@ const PageBackgroundCalls = observer(() => {
         </RnTouchableOpacity>
       ))}
 
-      <Field hasMargin isGroup label={intl`BACKGROUND CALLS`} />
+      {!!bg.length && (
+        <Field hasMargin isGroup label={intl`BACKGROUND CALLS`} />
+      )}
       {bg.map(c => (
         <RnTouchableOpacity
           key={c.id}

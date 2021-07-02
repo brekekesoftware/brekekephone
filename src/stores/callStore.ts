@@ -30,13 +30,11 @@ export class CallStore {
     if (!pnId) {
       return
     }
-    const uuid =
-      Object.entries(callPnDataMap).filter(
-        ([uuid, n]) => n.id === pnId,
-      )[0]?.[0] ||
-      this.recentPn?.uuid ||
-      this.prevCallKeepUuid ||
-      ''
+    const n = Object.entries(callPnDataMap).find(([uuid, n]) => n.id === pnId)
+    if (n) {
+      // TODO save call history
+    }
+    const uuid = n?.[0] || this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
     endCallKeep(uuid, true)
   }
@@ -47,15 +45,15 @@ export class CallStore {
     o?: {
       from?: string
       includingAnswered?: boolean
-      includeCallKeepAlreadyRejected?: boolean
+      includingRejected?: boolean
     },
   ) =>
     this.calls.find(
       c =>
         c.incoming &&
-        (o?.includeCallKeepAlreadyRejected || !c.callkeepAlreadyRejected) &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
+        (o?.includingRejected || !c.callkeepAlreadyRejected) &&
         (!o?.from || c.partyNumber === o.from),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
@@ -110,11 +108,11 @@ export class CallStore {
     const c = this.getIncomingCallKeep(uuid, {
       from: getCallPnData(uuid)?.from,
       includingAnswered: true,
-      includeCallKeepAlreadyRejected: Platform.OS === 'android',
+      includingRejected: Platform.OS === 'android',
     })
     if (c) {
       c.callkeepAlreadyRejected = true
-      c.hangup()
+      c.hangupWithUnhold()
       this.recentPn = undefined
       console.error('SIP PN debug: reject by onCallKeepEndCall')
     } else if (this.recentPn?.uuid === uuid) {
@@ -191,7 +189,7 @@ export class CallStore {
       console.error('SIP PN debug: answer by recentPnAction')
     } else if (recentPnAction === 'rejected') {
       c.callkeepAlreadyRejected = true
-      c.hangup()
+      c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
     }
   }
@@ -223,7 +221,7 @@ export class CallStore {
 
   @action selectBackgroundCall = (c: Call) => {
     if (c.holding) {
-      c.toggleHold()
+      c.toggleHoldWithCheck()
     }
     this.currentCallId = c.id
     Nav().backToPageCallManage()
@@ -269,6 +267,7 @@ export class CallStore {
       if (curr) {
         if (uuid) {
           curr.callkeepUuid = uuid
+          this.prevCallKeepUuid = uuid
           RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
         }
         this.currentCallId = curr.id
@@ -328,9 +327,10 @@ export class CallStore {
           c.id !== this.currentCallId &&
           c.answered &&
           !c.transferring &&
-          !c.holding,
+          !c.holding &&
+          !c.isAboutToHangup,
       )
-      .forEach(c => c.toggleHold())
+      .forEach(c => c.toggleHoldWithCheck())
   }
   updateBackgroundCallsDebounce = debounce(this.updateBackgroundCalls, 300, {
     maxWait: 1000,
@@ -390,7 +390,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
       if (n - k.at > 20000) {
         const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
         if (c && !c.answered && !c.callkeepAlreadyAnswered) {
-          c.hangup()
+          c.hangupWithUnhold()
         }
         if (!c) {
           endCallKeep(k.uuid)

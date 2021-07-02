@@ -21,7 +21,7 @@ public class MainActivity extends ReactActivity {
   @Override
   public void onBackPressed() {
     // Do not exit on back pressed
-    moveTaskToBack(true);
+    IncomingCallModule.emit("onBackPressed", "");
   }
 
   @Override

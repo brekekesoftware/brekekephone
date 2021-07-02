@@ -1,4 +1,4 @@
-import { AppState, NativeEventEmitter, Platform } from 'react-native'
+import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import sip from '../api/sip'
@@ -11,9 +11,12 @@ import callStore, {
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
+import RnKeyboard from '../stores/RnKeyboard'
+import RnPicker from '../stores/RnPicker'
+import RnStacker from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
 import { parseNotificationData } from './PushNotification-parse'
-import { RnNativeModules } from './RnNativeModules'
+import { IncomingCall, RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
 
@@ -167,7 +170,7 @@ export const setupCallKeep = async () => {
     const uuid = e.callUUID.toUpperCase()
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
-      c.toggleHold()
+      c.toggleHoldWithCheck()
     }
   }
   const didPerformDTMFAction = (
@@ -193,7 +196,7 @@ export const setupCallKeep = async () => {
     if (Platform.OS === 'android') {
       callStore.calls
         .filter(c => c.answered && !c.holding)
-        .forEach(c => c.toggleHold())
+        .forEach(c => c.toggleHoldWithCheck())
     }
   }
 
@@ -238,7 +241,7 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('answerCall+end', (uuid: string) => {
       // TODO this logic is not fully correct:
       // Should use the currentCall BEFORE showCall
-      callStore.currentCall()?.hangup()
+      callStore.currentCall()?.hangupWithUnhold()
       callStore.onCallKeepAnswerCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
@@ -263,11 +266,34 @@ export const setupCallKeep = async () => {
       BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.currentCall()?.toggleHold()
+      callStore.currentCall()?.toggleHoldWithCheck()
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
       RNCallKeep.backToForeground()
     })
+    // Manually handle back press
+    eventEmitter.addListener('onBackPressed', onBackPressed)
   }
+}
+
+export const onBackPressed = () => {
+  if (RnKeyboard.isKeyboardShowing) {
+    Keyboard.dismiss()
+    return true
+  }
+  if (RnAlert.alerts.length) {
+    RnAlert.dismiss()
+    return true
+  }
+  if (RnPicker.currentRnPicker) {
+    RnPicker.dismiss()
+    return true
+  }
+  if (RnStacker.stacks.length > 1) {
+    RnStacker.stacks.pop()
+    return true
+  }
+  IncomingCall.backToBackground()
+  return true
 }

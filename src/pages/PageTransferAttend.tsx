@@ -136,7 +136,7 @@ class PageTransferAttend extends React.Component {
           </View>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={c.hangup}
+              onPress={c.hangupWithUnhold}
               style={[css.Btn, css.Btn__hangup]}
             >
               <RnIcon path={mdiPhoneHangup} />

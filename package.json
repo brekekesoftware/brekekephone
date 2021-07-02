@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.7.39",
+  "version": "2.7.41",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -25,7 +25,7 @@
     "@mdi/js": "5.9.55",
     "@react-native-async-storage/async-storage": "1.15.5",
     "@react-native-community/push-notification-ios": "1.8.0",
-    "brekekejs": "github:brekekesoftware/brekekejs#86d7442f88d05b60a16a205e9ccd323767bc81d8",
+    "brekekejs": "github:brekekesoftware/brekekejs#7c7f3c110ff85f938aebe1f1fe0c43d25b27904c",
     "buffer": "6.0.3",
     "circular-json": "0.5.9",
     "es6-shim": "0.35.6",
