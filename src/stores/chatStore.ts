@@ -174,9 +174,8 @@ class ChatStore {
     if (!!!this.timeoutTransferImage[id]) {
       this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(() => {
         this.clearTimeout(id)
-        uc.rejectFile({ id }).catch(error => {})
+        uc.rejectFile({ id })
       }, TIMEOUT_TRANSFER_IMAGE)
-      console.log({ startTime: this.timeoutTransferImage[id] })
     }
   }
   clearTimeout = (id: string) => {
@@ -210,7 +209,6 @@ class ChatStore {
   @observable groups: ChatGroup[] = []
   upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
-
     const g0 = this.getGroupById(g.id)
     if (g0) {
       Object.assign(g0, g)
@@ -218,7 +216,6 @@ class ChatStore {
       this.groups.push(g as ChatGroup)
     }
     this.groups = [...this.groups]
-    console.log('upsertGroup', { group: this.groups })
   }
   removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]

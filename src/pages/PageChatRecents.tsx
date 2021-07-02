@@ -17,7 +17,6 @@ import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
@@ -27,22 +26,29 @@ class PageChatRecents extends React.Component {
     const chats = filterTextOnly(chatStore.messagesByThreadId[id] || [])
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
-  saveLastChatItem = (arr: any[]) => {
+  saveLastChatItem = (
+    arr: {
+      id: string
+      name: string
+      text: string
+      type: number
+      group: boolean
+      unread: boolean
+      created: string
+    }[],
+  ) => {
     // Not show other message content type different than normal text chat
-    // BackgroundTimer.setTimeout(() => {
-    const arr2 = [...arr].filter(c => c.created || c.group)
+    const arr2 = [...arr].filter(c => c?.created || c?.group)
     while (arr2.length > 20) {
       arr2.pop()
     }
     if (
-      stableStringify(arr2) ===
+      stableStringify(arr2) !==
       stableStringify(getAuthStore().currentData.recentChats)
     ) {
-      return
+      getAuthStore().currentData.recentChats = arr2
+      profileStore.saveProfilesToLocalStorage()
     }
-    getAuthStore().currentData.recentChats = arr2
-    profileStore.saveProfilesToLocalStorage()
-    // }, 300)
   }
   handleGroupSelect = (groupId: string) => {
     const groupInfo: Conference = uc.getChatGroupInfo(groupId)
@@ -78,7 +84,6 @@ class PageChatRecents extends React.Component {
     )
 
     const groupIds = chatStore.groups.filter(gr => gr.jointed).map(gr => gr.id)
-    // console.log({groupIds})
 
     const threadIds = chatStore.threadIdsOrderedByRecent
 
@@ -141,7 +146,6 @@ class PageChatRecents extends React.Component {
       }
     }
     let arr = [...recentGroups.map(fn(true)), ...recentUsers.map(fn(false))]
-    // console.log({arr, recentFromStorage})
 
     arr = filterTextOnly(arr)
     arr = uniqBy(arr, 'id')
@@ -164,7 +168,6 @@ class PageChatRecents extends React.Component {
 
     // when anyItem changes page will be render again => don't need timeout
     this.saveLastChatItem(arr)
-    console.log('render again')
 
     return (
       <Layout

@@ -4,9 +4,9 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { ChatFile } from '../stores/chatStore'
 import { Profile } from '../stores/profileStore'
 import {
-  Conference,
   UcChatClient,
   UcConference,
   UcConstants,
@@ -706,7 +706,7 @@ export class UC extends EventEmitter {
         size: file_res.fileInfo.size,
         state: getFileStateFromCode(file_res.fileInfo.status),
         transferPercent: file_res.fileInfo.progress,
-      },
+      } as ChatFile,
 
       chat: {
         id: file_res.text_id,

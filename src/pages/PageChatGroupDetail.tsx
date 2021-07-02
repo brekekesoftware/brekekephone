@@ -17,7 +17,6 @@ import Layout from '../components/Layout'
 import RnText from '../components/RnText'
 import RnTouchableOpacity from '../components/RnTouchableOpacity'
 import g from '../components/variables'
-import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
 import chatStore, {
   ChatFile,
@@ -104,7 +103,6 @@ class PageChatGroupDetail extends React.Component<{
   render() {
     const id = this.props.groupId
     const gr = chatStore.getGroupById(id)
-    console.log({ gr })
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
     const chats = chatStore.messagesByThreadId[this.props.groupId]
@@ -394,21 +392,17 @@ class PageChatGroupDetail extends React.Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
-    console.log({ groupId, file })
     uc.sendFiles(groupId, file as unknown as Blob)
       .then(this.onSendFileSuccess)
       .catch(this.onSendFileFailure)
   }
-  onSendFileSuccess = (res: { file: any; chat: ChatMessage }) => {
-    const file = res.file as ChatFile
+  onSendFileSuccess = (res: { file: ChatFile; chat: ChatMessage }) => {
     const groupId = this.props.groupId
-    Object.assign(file, this.state.blobFile)
-    chatStore.upsertFile(file)
+    Object.assign(res.file, this.state.blobFile)
+    chatStore.upsertFile(res.file)
     chatStore.pushMessages(groupId, res.chat)
   }
   onSendFileFailure = (err: Error) => {
-    console.log({ err })
-
     RnAlert.error({
       message: intlDebug`Failed to send file`,
       err,

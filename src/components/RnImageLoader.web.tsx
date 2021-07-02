@@ -1,7 +1,7 @@
 import { mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback } from 'react'
 import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
-import Image from 'react-native-fast-image'
+import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
@@ -39,13 +39,12 @@ const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
   const onShowImage = useCallback(() => {
-    const win = window.open('')
-    win?.document.write(
-      '<iframe src="' +
-        url +
-        '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:70%; height:70%;" allowfullscreen></iframe>',
-    )
+    const image = new Image()
+    image.src = url || ''
+    const w = window.open('')
+    w?.document.write(image.outerHTML)
   }, [url])
+
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
@@ -58,7 +57,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
       )}
       {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <Image source={{ uri: url }} style={css.image} />
+          <FastImage source={{ uri: url }} style={css.image} />
         </RnTouchableOpacity>
       )}
       {isLoadFailed && (
