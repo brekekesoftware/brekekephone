@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   AppState,
   BackHandler,
-  Keyboard,
   Platform,
   StyleSheet,
   View,
@@ -29,13 +28,10 @@ import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
 import RnAlertRoot from '../stores/RnAlertRoot'
-import RnKeyboard from '../stores/RnKeyboard'
-import RnPicker from '../stores/RnPicker'
 import RnPickerRoot from '../stores/RnPickerRoot'
-import RnStacker from '../stores/RnStacker'
 import RootStacks from '../stores/RnStackerRoot'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { setupCallKeep } from '../utils/callkeep'
+import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 // @ts-ignore
 import PushNotification from '../utils/PushNotification'
 import registerOnUnhandledError from '../utils/registerOnUnhandledError'
@@ -104,26 +100,9 @@ if (Platform.OS === 'web') {
 ) {
   getAudioVideoPermission()
 }
+
 // Handle android hardware back button press
-BackHandler.addEventListener('hardwareBackPress', () => {
-  if (RnKeyboard.isKeyboardShowing) {
-    Keyboard.dismiss()
-    return true
-  }
-  if (RnAlert.alerts.length) {
-    RnAlert.dismiss()
-    return true
-  }
-  if (RnPicker.currentRnPicker) {
-    RnPicker.dismiss()
-    return true
-  }
-  if (RnStacker.stacks.length > 1) {
-    RnStacker.stacks.pop()
-    return true
-  }
-  return false
-})
+BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
 let alreadyInitApp = false
 PushNotification.register(() => {

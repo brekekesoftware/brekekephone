@@ -122,4 +122,12 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public void isLocked(Promise p) {
     p.resolve(isLocked());
   }
+
+  @ReactMethod
+  public void backToBackground() {
+    try {
+      main.moveTaskToBack(true);
+    } catch (Exception e) {
+    }
+  }
 }

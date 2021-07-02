@@ -8,6 +8,7 @@ const Polyfill = {
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
     isLocked: () => Promise.resolve(false),
+    backToBackground: () => undefined,
   },
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
@@ -23,6 +24,7 @@ const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
     isLocked(): Promise<boolean>
+    backToBackground(): void
   }
 }
 

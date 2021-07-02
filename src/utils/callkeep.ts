@@ -1,4 +1,4 @@
-import { AppState, NativeEventEmitter, Platform } from 'react-native'
+import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import sip from '../api/sip'
@@ -11,9 +11,12 @@ import callStore, {
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
+import RnKeyboard from '../stores/RnKeyboard'
+import RnPicker from '../stores/RnPicker'
+import RnStacker from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
 import { parseNotificationData } from './PushNotification-parse'
-import { RnNativeModules } from './RnNativeModules'
+import { IncomingCall, RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
 
@@ -269,5 +272,28 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('backToForeground', () => {
       RNCallKeep.backToForeground()
     })
+    // Manually handle back press
+    eventEmitter.addListener('onBackPressed', onBackPressed)
   }
+}
+
+export const onBackPressed = () => {
+  if (RnKeyboard.isKeyboardShowing) {
+    Keyboard.dismiss()
+    return true
+  }
+  if (RnAlert.alerts.length) {
+    RnAlert.dismiss()
+    return true
+  }
+  if (RnPicker.currentRnPicker) {
+    RnPicker.dismiss()
+    return true
+  }
+  if (RnStacker.stacks.length > 1) {
+    RnStacker.stacks.pop()
+    return true
+  }
+  IncomingCall.backToBackground()
+  return true
 }
