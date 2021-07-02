@@ -3723,11 +3723,11 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-"brekekejs@github:brekekesoftware/brekekejs#86d7442f88d05b60a16a205e9ccd323767bc81d8":
-  version "2104.29.0"
-  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/86d7442f88d05b60a16a205e9ccd323767bc81d8"
+"brekekejs@github:brekekesoftware/brekekejs#7c7f3c110ff85f938aebe1f1fe0c43d25b27904c":
+  version "2107.2.0"
+  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/7c7f3c110ff85f938aebe1f1fe0c43d25b27904c"
   dependencies:
-    url-parse "1.4.7"
+    url-parse "1.5.1"
 
 brorand@^1.0.1, brorand@^1.1.0:
   version "1.1.0"
@@ -13147,14 +13147,6 @@ url-loader@4.1.1:
     loader-utils "^2.0.0"
     mime-types "^2.1.27"
     schema-utils "^3.0.0"
-
-url-parse@1.4.7:
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.7.tgz#a8a83535e8c00a316e403a5db4ac1b9b853ae278"
-  integrity sha512-d3uaVyzDB9tQoSXFvuSUNFibTd9zxd2bkVrDRvF5TmvWWQwqE4lgYJ5m+x1DbecWkw+LK4RNl2CU1hHuOKPVlg==
-  dependencies:
-    querystringify "^2.1.1"
-    requires-port "^1.0.0"
 
 url-parse@1.5.1, url-parse@^1.4.3, url-parse@^1.5.1:
   version "1.5.1"
