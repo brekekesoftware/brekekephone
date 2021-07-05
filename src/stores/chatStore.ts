@@ -29,6 +29,7 @@ export type ChatFile = {
   fileType: string
   url?: string
   target?: ChatTarget
+  topic_id: string
 }
 export type ChatTarget = {
   tenant: string
@@ -158,7 +159,7 @@ class ChatStore {
   @observable private filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
-    saveBlobImage(f.id)
+    saveBlobImage(f.id, f.topic_id)
       .then(url => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: url,

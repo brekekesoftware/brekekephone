@@ -135,6 +135,7 @@ export class UC extends EventEmitter {
       state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
       fileType: fileType,
+      topic_id: ev.topic_id,
     }
 
     this.emit('file-received', file)
@@ -633,6 +634,7 @@ export class UC extends EventEmitter {
         size: res.fileInfo.size,
         state: getFileStateFromCode(res.fileInfo.status),
         transferPercent: res.fileInfo.progress,
+        topic_id: res.topic_id,
       },
 
       chat: {
@@ -706,6 +708,7 @@ export class UC extends EventEmitter {
         size: file_res.fileInfo.size,
         state: getFileStateFromCode(file_res.fileInfo.status),
         transferPercent: file_res.fileInfo.progress,
+        topic_id: file_res.topic_id,
       } as ChatFile,
 
       chat: {

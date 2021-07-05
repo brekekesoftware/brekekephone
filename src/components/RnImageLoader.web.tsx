@@ -1,5 +1,5 @@
 import { mdiImageBrokenVariant } from '@mdi/js'
-import React, { FC, useCallback } from 'react'
+import React, { FC, useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
@@ -38,11 +38,32 @@ const css = StyleSheet.create({
 const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
+  const [imageBase64, setImageBase64] = useState('')
   const onShowImage = useCallback(() => {
     const image = new Image()
     image.src = url || ''
     const w = window.open('')
     w?.document.write(image.outerHTML)
+  }, [url])
+  const readImage = async (url: string) => {
+    console.log('readImage', { url: `${url}` })
+    try {
+      const urlImage = url.split('/')
+      const cache = await caches.open(urlImage[0])
+      const request = new Request(urlImage[1], {
+        method: 'GET',
+        headers: { 'Content-Type': 'image/jpeg' },
+      })
+      const response = await cache.match(request)
+      // new Response()
+      console.log({ urlImage, response, request })
+    } catch (error) {
+      console.log({ error })
+    }
+  }
+  useEffect(() => {
+    console.log(url)
+    url && readImage(url)
   }, [url])
 
   const isLoading =

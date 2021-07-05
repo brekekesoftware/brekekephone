@@ -1,5 +1,5 @@
 import { mdiClose, mdiImageBrokenVariant } from '@mdi/js'
-import React, { FC, useCallback, useState } from 'react'
+import React, { FC, useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   Image,
@@ -10,6 +10,7 @@ import {
   ViewProps,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import RNFS from 'react-native-fs'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
@@ -51,20 +52,54 @@ const css = StyleSheet.create({
   },
 })
 const size = 150
-const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
+const RnImageLoader: FC<ViewProps & ChatFile> = ({
+  url,
+  state,
+  id,
+  name,
+  incoming,
+}) => {
+  console.log({ url })
   const [visible, setIsVisible] = useState(false)
-  const images = url ? [{ url }] : []
-  const onShowImage = useCallback(() => {
-    images.length > 0 && setIsVisible(true)
-  }, [images])
+  const [imageBase64, setImageBase64] = useState('')
+
+  const readImage = async (url: string) => {
+    try {
+      if (await RNFS.exists(url)) {
+        const dataFile = await RNFS.readFile(url, 'base64')
+        setImageBase64(`data:image/png;base64,${dataFile}`)
+      } else {
+        setImageBase64('')
+      }
+    } catch (error) {
+      console.log({ error })
+      setImageBase64('')
+    }
+  }
+  useEffect(() => {
+    // Image can read content:// but RNFS can't
+    // https://github.com/itinance/react-native-fs/issues/453
+    if (incoming) {
+      url && readImage(url)
+    } else {
+      url && setImageBase64(url)
+    }
+  }, [incoming, url])
+
+  const images = imageBase64 ? [{ url: imageBase64 }] : []
+
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
   const isLoadSuccess = state === 'success' && url
+
+  const onShowImage = useCallback(() => {
+    images.length > 0 && setIsVisible(true)
+  }, [images])
   const onSwipeDown = useCallback(() => {
     setIsVisible(false)
   }, [])
-  const ImageShow = Platform.OS === 'android' ? Image : FastImage
+
   return (
     <View style={css.image}>
       {isLoading && (
@@ -72,7 +107,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
       )}
       {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <ImageShow source={{ uri: url }} style={css.image} />
+          <FastImage source={{ uri: imageBase64 }} style={css.image} />
         </RnTouchableOpacity>
       )}
       {isLoadFailed && (
@@ -89,7 +124,9 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, id, name }) => {
         <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
           <RnIcon path={mdiClose} color={'black'} size={30} />
         </RnTouchableOpacity>
-        <ImageViewer imageUrls={images} renderIndicator={() => <View />} />
+        {isLoadSuccess && (
+          <ImageViewer imageUrls={images} renderIndicator={() => <View />} />
+        )}
       </Modal>
     </View>
   )
