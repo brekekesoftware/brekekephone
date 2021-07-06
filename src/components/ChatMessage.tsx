@@ -312,7 +312,7 @@ class Message extends React.Component<{
 
     return (
       <>
-        {!!text && (
+        {!!text && !!!file && (
           <TextContainer style={css.Message} onLongPress={this.onMessagePress}>
             <Hyperlink
               onPress={this.onLinkPress}

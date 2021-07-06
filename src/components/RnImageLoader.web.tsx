@@ -39,38 +39,40 @@ const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
   const [imageBase64, setImageBase64] = useState('')
+
   const onShowImage = useCallback(() => {
     const image = new Image()
-    image.src = url || ''
+    image.src = imageBase64 || ''
     const w = window.open('')
     w?.document.write(image.outerHTML)
-  }, [url])
+  }, [imageBase64])
+
   const readImage = async (url: string) => {
-    console.log('readImage', { url: `${url}` })
     try {
       const urlImage = url.split('/')
       const cache = await caches.open(urlImage[0])
       const request = new Request(urlImage[1], {
         method: 'GET',
-        headers: { 'Content-Type': 'image/jpeg' },
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
       })
       const response = await cache.match(request)
-      // new Response()
-      console.log({ urlImage, response, request })
+      const dataBase64 = await response?.text()
+      dataBase64 && setImageBase64(dataBase64)
     } catch (error) {
-      console.log({ error })
+      setImageBase64('')
     }
   }
   useEffect(() => {
-    console.log(url)
     url && readImage(url)
   }, [url])
 
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && url
-
+  const isLoadSuccess = state === 'success' && !!imageBase64
+  if (state === 'success' && !!!imageBase64) {
+    return null
+  }
   return (
     <View style={css.image}>
       {isLoading && (
@@ -78,7 +80,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
       )}
       {isLoadSuccess && (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: url }} style={css.image} />
+          <FastImage source={{ uri: imageBase64 }} style={css.image} />
         </RnTouchableOpacity>
       )}
       {isLoadFailed && (

@@ -119,6 +119,7 @@ class PageChatRecents extends React.Component {
 
     const fn = (group: boolean) => (c0: ChatWithThreadId) => {
       const c = c0 as unknown as ChatFromStorage
+
       const id = typeof c.group === 'boolean' ? c.id : c.threadId
       const x = (group ? groupById : userById)[id] as {
         name: string
@@ -135,6 +136,7 @@ class PageChatRecents extends React.Component {
         unread = true
       }
       const { text, isTextOnly } = formatChatContent(c)
+
       return {
         id,
         name,

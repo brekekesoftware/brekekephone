@@ -146,12 +146,14 @@ export class UC extends EventEmitter {
           creator: ev.fileInfo.target.user_id,
           group: ev.conf_id,
           file: file.id,
+          text: file.name,
           created: ev.sent_ltime,
         })
       : this.emit('buddy-chat-created', {
           id: ev.text_id,
           creator: ev.fileInfo.target.user_id,
           file: file.id,
+          text: file.name,
           created: ev.sent_ltime,
         })
   }
@@ -640,6 +642,7 @@ export class UC extends EventEmitter {
       chat: {
         id: res.text_id,
         file: res.fileInfo.file_id,
+        text: res.fileInfo.name,
         type: -1, // TODO
         creator: this.client.getProfile().user_id,
         created: res.ltime,
@@ -714,6 +717,7 @@ export class UC extends EventEmitter {
       chat: {
         id: file_res.text_id,
         file: file_res.fileInfo.file_id,
+        text: file_res.fileInfo.name,
         type: -1, // TODO
         creator: this.client.getProfile().user_id,
         created: file_res.ltime,

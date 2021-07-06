@@ -67,6 +67,7 @@ class PageChatDetail extends React.Component<{
       url: '',
       fileType: '',
     },
+    topic_id: '',
     emojiTurnOn: false,
   }
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
@@ -94,9 +95,10 @@ class PageChatDetail extends React.Component<{
     }
   }
   componentWillUnmount() {
-    // if (Platform.OS === 'web') {
-    //   caches.delete('CACHE_IMAGE_CHAT')
-    // }
+    if (Platform.OS === 'web') {
+      const { topic_id } = this.state
+      topic_id && caches.delete(topic_id)
+    }
   }
   renderChatInput = () => {
     return (
@@ -399,16 +401,6 @@ class PageChatDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    // if (Platform.OS === 'web') {
-    //   const reader = new FileReader()
-
-    //   const fileType = file.type ? file.type.split('/')[0] : ''
-    //   reader.onload = async event => {
-    //     const url = event.target?.result
-    //     this.setState({ blobFile: { url: url, fileType: fileType } })
-    //   }
-    //   reader.readAsDataURL(file as unknown as Blob)
-    // } else {
     const type = ['PNG', 'JPG', 'JPEG', 'GIF']
     const fileType = type.includes(
       file.name.split('.').pop()?.toUpperCase() || '',
@@ -416,7 +408,6 @@ class PageChatDetail extends React.Component<{
       ? 'image'
       : 'other'
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
-    // }
   }
   handleSaveImageFileWeb = async (
     data: Blob,
@@ -429,15 +420,14 @@ class PageChatDetail extends React.Component<{
       Object.assign(file, { url: url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(buddyId, chat)
-    } catch (error) {
-      console.log({ error })
-    }
+    } catch (error) {}
   }
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUcUserById(this.props.buddy)
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
+        this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)
         Object.assign(res.file, { target: { user_id: buddyId } })

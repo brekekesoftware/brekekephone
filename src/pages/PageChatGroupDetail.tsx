@@ -30,6 +30,7 @@ import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import pickFile from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
+import { saveBlobImageToCache } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
@@ -72,6 +73,7 @@ class PageChatGroupDetail extends React.Component<{
       url: '',
       fileType: '',
     },
+    topic_id: '',
   }
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
 
@@ -87,6 +89,12 @@ class PageChatGroupDetail extends React.Component<{
       chatStore.updateThreadConfig(groupId, false, {
         isUnread: false,
       })
+    }
+  }
+  componentWillUnmount() {
+    if (Platform.OS === 'web') {
+      const { topic_id } = this.state
+      topic_id && caches.delete(topic_id)
     }
   }
 
@@ -370,37 +378,49 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    if (Platform.OS === 'web') {
-      const reader = new FileReader()
-      const fileType = file.type ? file.type.split('/')[0] : ''
-      reader.onload = async event => {
-        const url = event.target?.result
-        this.setState({ blobFile: { url: url, fileType: fileType } })
-      }
-      reader.readAsDataURL(file as unknown as Blob)
-    } else {
-      const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-      const fileType = type.includes(
-        file.name.split('.').pop()?.toUpperCase() || '',
-      )
-        ? 'image'
-        : 'other'
-      this.setState({ blobFile: { url: file.uri, fileType: fileType } })
-    }
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
+    const fileType = type.includes(
+      file.name.split('.').pop()?.toUpperCase() || '',
+    )
+      ? 'image'
+      : 'other'
+    this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
 
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
     uc.sendFiles(groupId, file as unknown as Blob)
-      .then(this.onSendFileSuccess)
+      .then(res => this.onSendFileSuccess(res, file as unknown as Blob))
       .catch(this.onSendFileFailure)
   }
-  onSendFileSuccess = (res: { file: ChatFile; chat: ChatMessage }) => {
+  handleSaveImageFileWeb = async (
+    data: Blob,
+    file: ChatFile,
+    chat: ChatMessage,
+  ) => {
+    const { groupId } = this.props
+    try {
+      const url = await saveBlobImageToCache(data, file.id, file.topic_id)
+      Object.assign(file, { url: url })
+      chatStore.upsertFile(file)
+      chatStore.pushMessages(groupId, chat)
+    } catch (error) {}
+  }
+  onSendFileSuccess = (
+    res: { file: ChatFile; chat: ChatMessage },
+    file: Blob,
+  ) => {
     const groupId = this.props.groupId
-    Object.assign(res.file, this.state.blobFile)
-    chatStore.upsertFile(res.file)
-    chatStore.pushMessages(groupId, res.chat)
+    const { blobFile } = this.state
+    this.setState({ topic_id: res.file.topic_id })
+    Object.assign(res.file, blobFile)
+    if (Platform.OS === 'web') {
+      this.handleSaveImageFileWeb(file, res.file as ChatFile, res.chat)
+    } else {
+      chatStore.upsertFile(res.file)
+      chatStore.pushMessages(groupId, res.chat)
+    }
   }
   onSendFileFailure = (err: Error) => {
     RnAlert.error({

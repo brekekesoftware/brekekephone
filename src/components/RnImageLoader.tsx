@@ -2,9 +2,7 @@ import { mdiClose, mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
-  Image,
   Modal,
-  Platform,
   StyleSheet,
   View,
   ViewProps,
@@ -59,7 +57,6 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
   name,
   incoming,
 }) => {
-  console.log({ url })
   const [visible, setIsVisible] = useState(false)
   const [imageBase64, setImageBase64] = useState('')
 
@@ -72,7 +69,6 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
         setImageBase64('')
       }
     } catch (error) {
-      console.log({ error })
       setImageBase64('')
     }
   }

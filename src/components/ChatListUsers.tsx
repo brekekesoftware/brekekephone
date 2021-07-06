@@ -41,7 +41,7 @@ const ListUsers: FC<{
           name={name}
           {...(group ? p.groupById : p.userById)[id]}
           lastMessage={text}
-          group
+          group={group}
           isRecentChat
           lastMessageDate={formatDateTimeSemantic(created)}
         />
