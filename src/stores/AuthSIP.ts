@@ -5,15 +5,16 @@ import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { getAuthStore } from './authStore'
+import { getAuthStore, waitSip } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
 class AuthSIP {
   private clearObserve?: Lambda
 
-  auth() {
+  auth = () => {
     this.authWithCheck()
+    this.clearObserve?.()
     const s = getAuthStore()
     this.clearObserve = observe(s, 'sipShouldAuth', this.authWithCheckDebounced)
   }
@@ -39,6 +40,7 @@ class AuthSIP {
     })
     if (!pn?.sipAuth) {
       console.error('SIP PN debug: Invalid sip PN login logic')
+      this.dispose()
       return
     }
     const turnConfig: RTCIceServer | undefined = pn.turnServer
@@ -52,6 +54,13 @@ class AuthSIP {
     if (isNaN(dtmfSendMode)) {
       dtmfSendMode = pn.dtmfPal === 'false' || pn.dtmfPal === '0' ? 0 : 1
     }
+    // If after 10s and still not connected => reconnect
+    waitSip().then(isConnected => {
+      if (!isConnected) {
+        this.dispose()
+        this.auth()
+      }
+    })
     await sip.connect({
       hostname: p.pbxHostname,
       port: pn.sipWssPort || '',
@@ -76,14 +85,12 @@ class AuthSIP {
     //
     const pbxConfig = await pbx.getConfig()
     if (!pbxConfig) {
-      console.error('Invalid PBX config')
-      return
+      throw new Error('Empty response from pal getProductInfo')
     }
     //
     const sipWSSPort = pbxConfig['sip.wss.port']
     if (!sipWSSPort) {
-      console.error('Invalid SIP WSS port')
-      return
+      throw new Error('Empty sip.wss.port from pal getProductInfo')
     }
     //
     let p = s.currentProfile
@@ -98,8 +105,7 @@ class AuthSIP {
       s.userExtensionProperties
     const pbxUserConfig = s.userExtensionProperties
     if (!pbxUserConfig) {
-      console.error('Invalid PBX user config')
-      return
+      throw new Error('Empty response from pal getExtensionProperties')
     }
     //
     const language = pbxUserConfig.language
@@ -107,13 +113,13 @@ class AuthSIP {
     //
     const webPhone = (await updatePhoneIndex()) as { id: string }
     if (!webPhone) {
+      // Already signout and show error in above updatePhoneIndex
       return
     }
     //
     const sipAccessToken = await pbx.createSIPAccessToken(webPhone.id)
     if (!sipAccessToken) {
-      console.error('Invalid SIP access token')
-      return
+      throw new Error('Empty response from pal createAuthHeader')
     }
     //
     const dtmfSendMode = pbxConfig['webrtcclient.dtmfSendMode']

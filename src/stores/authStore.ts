@@ -28,14 +28,18 @@ export const reconnectAndWaitSip = async () => {
   await waitSip()
 }
 
-const wait = (fn: Function, name: 'pbxState' | 'sipState' | 'ucState') => {
+const wait = (
+  fn: Function,
+  name: 'pbxState' | 'sipState' | 'ucState',
+  time = 10000,
+) => {
   const at = Date.now()
   if (authStore[name] === 'success') {
     fn(true)
     return
   }
   const id = BackgroundTimer.setInterval(() => {
-    const enoughTimePassed = Date.now() - at > 10000
+    const enoughTimePassed = Date.now() - at > time
     const isConnected = authStore[name] === 'success'
     if (enoughTimePassed || isConnected) {
       BackgroundTimer.clearInterval(id)
@@ -44,6 +48,9 @@ const wait = (fn: Function, name: 'pbxState' | 'sipState' | 'ucState') => {
   }, 500)
 }
 
-export const waitPbx = () => new Promise(r => wait(r, 'pbxState'))
-export const waitSip = () => new Promise(r => wait(r, 'sipState'))
-export const waitUc = () => new Promise(r => wait(r, 'ucState'))
+export const waitPbx = (time?: number) =>
+  new Promise(r => wait(r, 'pbxState', time))
+export const waitSip = (time?: number) =>
+  new Promise(r => wait(r, 'sipState', time))
+export const waitUc = (time?: number) =>
+  new Promise(r => wait(r, 'ucState', time))

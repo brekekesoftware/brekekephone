@@ -8,18 +8,13 @@ import RnAlert from './RnAlert'
 
 class AuthPBX {
   private clearObserve?: Lambda
-  auth() {
-    this.authWithCheck()
-    if (!this.clearObserve) {
-      const s = getAuthStore()
-      this.clearObserve = observe(
-        s,
-        'pbxShouldAuth',
-        this.authWithCheckDebounced,
-      )
-    }
-  }
 
+  auth = () => {
+    this.authWithCheck()
+    this.clearObserve?.()
+    const s = getAuthStore()
+    this.clearObserve = observe(s, 'pbxShouldAuth', this.authWithCheckDebounced)
+  }
   @action dispose = () => {
     console.error('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()

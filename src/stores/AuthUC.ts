@@ -20,6 +20,7 @@ class AuthUC {
   auth() {
     this.authWithCheck()
     uc.on('connection-stopped', this.onConnectionStopped)
+    this.clearObserve?.()
     const s = getAuthStore()
     this.clearObserve = observe(s, 'ucShouldAuth', this.authWithCheckDebounced)
   }
