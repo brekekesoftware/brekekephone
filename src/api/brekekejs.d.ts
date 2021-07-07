@@ -476,6 +476,7 @@ export type UcChatClient = {
     resolve: (res: UcWebchatConferenceText) => void,
     reject: ErrorHandler,
   ): void
+  getConference(conf_id: string): Conference
 }
 
 export type UcJoinConferenceOption = {
@@ -595,6 +596,7 @@ export type UcSendFile = {
   text_id: string
   ltime: number
   fileInfo: UcFileInfo
+  topic_id: string
 }
 export type UcFileInfo = {
   file_id: string
@@ -725,6 +727,7 @@ export type UcEventMap = {
     text_id: string
     sent_ltime: string
     sent_tstime: number
+    topic_id: string
   }
   fileInfoChanged: UcEventMap['fileReceived']
   fileTerminated: UcEventMap['fileReceived']

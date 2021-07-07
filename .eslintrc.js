@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
+  extends: 'plugin:react-app/recommended',
   plugins: ['@typescript-eslint', 'import', 'simple-import-sort'],
   env: {
     browser: true,

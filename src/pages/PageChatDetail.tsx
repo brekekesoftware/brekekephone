@@ -19,14 +19,15 @@ import ChatInput from '../components/FooterChatInput'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import g from '../components/variables'
-import chatStore, { ChatMessage } from '../stores/chatStore'
+import chatStore, { ChatFile, ChatMessage } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import pickFile from '../utils/pickFile'
-import saveBlob from '../utils/saveBlob'
+import { saveBlob } from '../utils/saveBlob'
+import { saveBlobImageToCache } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
@@ -66,6 +67,7 @@ class PageChatDetail extends React.Component<{
       url: '',
       fileType: '',
     },
+    topic_id: '',
     emojiTurnOn: false,
   }
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
@@ -92,7 +94,12 @@ class PageChatDetail extends React.Component<{
       })
     }
   }
-
+  componentWillUnmount() {
+    if (Platform.OS === 'web') {
+      const { topic_id } = this.state
+      topic_id && caches.delete(topic_id)
+    }
+  }
   renderChatInput = () => {
     return (
       <ChatInput
@@ -113,6 +120,7 @@ class PageChatDetail extends React.Component<{
     const u = contactStore.getUcUserById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
+
     return (
       <Layout
         compact
@@ -121,7 +129,7 @@ class PageChatDetail extends React.Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
-        title={u?.name}
+        title={u?.name || u?.id}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
@@ -242,12 +250,12 @@ class PageChatDetail extends React.Component<{
     this.closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
   }
+
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
     const file = chatStore.getFileById(chat.file)
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
-
     return {
       id,
       creatorId: creator.id,
@@ -350,7 +358,7 @@ class PageChatDetail extends React.Component<{
       err,
     })
   }
-  acceptFile = (file: { id: string; name: string }) => {
+  acceptFile = (file: { id: string; name: string; fileType: string }) => {
     uc.acceptFile(file.id)
       .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
       .catch(this.onAcceptFileFailure)
@@ -393,35 +401,46 @@ class PageChatDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    if (Platform.OS === 'web') {
-      const reader = new FileReader()
-
-      const fileType = file.type ? file.type.split('/')[0] : ''
-      reader.onload = async event => {
-        const url = event.target?.result
-        this.setState({ blobFile: { url: url, fileType: fileType } })
-      }
-      reader.readAsDataURL(file as unknown as Blob)
-    } else {
-      const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-      const fileType = type.includes(
-        file.name.split('.').pop()?.toUpperCase() || '',
-      )
-        ? 'image'
-        : 'other'
-      this.setState({ blobFile: { url: file.uri, fileType: fileType } })
-    }
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
+    const fileType = type.includes(
+      file.name.split('.').pop()?.toUpperCase() || '',
+    )
+      ? 'image'
+      : 'other'
+    this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
-
+  handleSaveImageFileWeb = async (
+    data: Blob,
+    file: ChatFile,
+    chat: ChatMessage,
+  ) => {
+    const buddyId = this.props.buddy
+    try {
+      const url = await saveBlobImageToCache(data, file.id, file.topic_id)
+      Object.assign(file, { url: url })
+      chatStore.upsertFile(file)
+      chatStore.pushMessages(buddyId, chat)
+    } catch (error) {}
+  }
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUcUserById(this.props.buddy)
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
+        this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)
-        chatStore.upsertFile(res.file)
-        chatStore.pushMessages(buddyId, res.chat)
+        Object.assign(res.file, { target: { user_id: buddyId } })
+        if (Platform.OS === 'web') {
+          this.handleSaveImageFileWeb(
+            file as unknown as Blob,
+            res.file as ChatFile,
+            res.chat,
+          )
+        } else {
+          chatStore.upsertFile(res.file)
+          chatStore.pushMessages(buddyId, res.chat)
+        }
       })
       .catch((err: Error) => {
         RnAlert.error({

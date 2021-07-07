@@ -1,4 +1,9 @@
-import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
+import {
+  mdiAccountGroup,
+  mdiPhoneIncoming,
+  mdiPhoneMissed,
+  mdiPhoneOutgoing,
+} from '@mdi/js'
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -59,6 +64,16 @@ const css = StyleSheet.create({
     marginRight: 15,
     paddingTop: 7,
   },
+  IconGroup: {},
+  VGroup: {
+    overflow: 'hidden',
+    backgroundColor: g.borderBg,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginVertical: 5,
+    alignItems: 'center',
+  },
 })
 
 const UserItem: FC<
@@ -80,6 +95,7 @@ const UserItem: FC<
     selected: boolean
     statusText: string
     canChat: boolean
+    group: boolean
   }>
 > = p0 => {
   const {
@@ -100,20 +116,33 @@ const UserItem: FC<
     selected,
     statusText,
     canChat,
+    group,
     ...p
   } = p0
   const Container = canChat ? RnTouchableOpacity : View
+
   return (
     <Container
       style={css.Outer}
       onPress={() => Nav().goToPageChatDetail({ buddy: partyNumber })}
     >
       <View style={[css.Inner, selected && css.Inner_selected]}>
-        <Avatar
-          source={{ uri: avatar as string }}
-          {...p}
-          style={css.WithSpace}
-        />
+        {group ? (
+          <View style={css.VGroup}>
+            <RnIcon
+              path={mdiAccountGroup}
+              size={40}
+              color={g.colors.greyTextChat}
+              style={css.IconGroup}
+            />
+          </View>
+        ) : (
+          <Avatar
+            source={{ uri: avatar as string }}
+            {...p}
+            style={css.WithSpace}
+          />
+        )}
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
@@ -172,4 +201,5 @@ const UserItem: FC<
     </Container>
   )
 }
+
 export default UserItem

@@ -11023,6 +11023,24 @@ react-native-image-picker@2.3.4:
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-2.3.4.tgz#1c31dbe9872ade17e2ed6457b0c669d63c322590"
   integrity sha512-4UHu+zOyDT570r5mIbjH6h1iMrKIq/qfsKiAVUEZwncVegh0usJiEYNyJw4CEVwNeehmye/ia5sLDsa+kzIE4g==
 
+react-native-image-size@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/react-native-image-size/-/react-native-image-size-1.1.3.tgz#7d69c2cd4e1d1632947867e47643ed8cabb9de27"
+  integrity sha512-jJvN6CjXVAm69LAVZNV7m7r50Qk9vuPZwLyrbs/k31/3Xs8bZyVCdvfP44FuBisITn/yFsiOo6i8NPrFBPH20w==
+
+react-native-image-zoom-fixed@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-zoom-fixed/-/react-native-image-zoom-fixed-2.3.0.tgz#ca15d8608ac9824fb0f343538f7a71d256aa4ca3"
+  integrity sha512-boHiDZ+Nxwk0M738idRy7eT1+ME5LZuDmATrRjxWx7IpO5nIe7h9IKxtnwSUcwhrPK/Wk1sg++kckc2/X+JC4w==
+
+react-native-image-zoom-viewer-fixed@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-zoom-viewer-fixed/-/react-native-image-zoom-viewer-fixed-3.2.1.tgz#89b2a4e6db443c8cae147c1b6a60ae0178dab94c"
+  integrity sha512-TfecWmfjZDOjr5WrNfmZ896M3qOMSOAP8eLvLW94r3LdNpeTpUoXHQ2f0hu9p0eqKAo8V1krHRQiO6ZopDDRvQ==
+  dependencies:
+    react-native-image-size "^1.1.3"
+    react-native-image-zoom-fixed "^2.3.0"
+
 react-native-incall-manager@3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-3.3.0.tgz#69f4ada83b5a8db464b1cfae368dadbae4a949eb"

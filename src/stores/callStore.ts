@@ -426,7 +426,9 @@ const endCallKeep = (uuid: string, clearRecentPn?: boolean) => {
   IncomingCall.closeIncomingCallActivity(uuid)
 }
 export const endCallKeepAll = () => {
-  RNCallKeep.endAllCalls()
+  if (Platform.OS !== 'web') {
+    RNCallKeep.endAllCalls()
+  }
   IncomingCall.closeAllIncomingCallActivities()
 }
 

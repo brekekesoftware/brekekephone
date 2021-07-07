@@ -4,6 +4,7 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { ChatFile } from '../stores/chatStore'
 import { Profile } from '../stores/profileStore'
 import {
   UcChatClient,
@@ -119,6 +120,12 @@ export class UC extends EventEmitter {
     if (!ev || !ev.fileInfo) {
       return
     }
+    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
+    const fileType = type.includes(
+      ev.fileInfo.name.split('.').pop()?.toUpperCase() || '',
+    )
+      ? 'image'
+      : 'other'
 
     const file = {
       id: ev.fileInfo.file_id,
@@ -127,6 +134,8 @@ export class UC extends EventEmitter {
       incoming: true,
       state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
+      fileType: fileType,
+      topic_id: ev.topic_id,
     }
 
     this.emit('file-received', file)
@@ -137,12 +146,14 @@ export class UC extends EventEmitter {
           creator: ev.fileInfo.target.user_id,
           group: ev.conf_id,
           file: file.id,
+          text: file.name,
           created: ev.sent_ltime,
         })
       : this.emit('buddy-chat-created', {
           id: ev.text_id,
           creator: ev.fileInfo.target.user_id,
           file: file.id,
+          text: file.name,
           created: ev.sent_ltime,
         })
   }
@@ -473,6 +484,9 @@ export class UC extends EventEmitter {
     }
   }
 
+  getChatGroupInfo = (conf_id: string) => {
+    return this.client.getConference(conf_id)
+  }
   answerWebchatConference = async (conf_id: string) => {
     await new Promise((resolve, reject) => {
       this.client.joinConference(
@@ -622,11 +636,13 @@ export class UC extends EventEmitter {
         size: res.fileInfo.size,
         state: getFileStateFromCode(res.fileInfo.status),
         transferPercent: res.fileInfo.progress,
+        topic_id: res.topic_id,
       },
 
       chat: {
         id: res.text_id,
         file: res.fileInfo.file_id,
+        text: res.fileInfo.name,
         type: -1, // TODO
         creator: this.client.getProfile().user_id,
         created: res.ltime,
@@ -695,11 +711,13 @@ export class UC extends EventEmitter {
         size: file_res.fileInfo.size,
         state: getFileStateFromCode(file_res.fileInfo.status),
         transferPercent: file_res.fileInfo.progress,
-      },
+        topic_id: file_res.topic_id,
+      } as ChatFile,
 
       chat: {
         id: file_res.text_id,
         file: file_res.fileInfo.file_id,
+        text: file_res.fileInfo.name,
         type: -1, // TODO
         creator: this.client.getProfile().user_id,
         created: file_res.ltime,

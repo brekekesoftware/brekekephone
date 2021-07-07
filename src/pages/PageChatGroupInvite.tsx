@@ -33,6 +33,8 @@ const css = StyleSheet.create({
   },
   PageChatGroupInvite_BtnText: {
     alignItems: 'center',
+    color: 'white',
+    fontSize: g.fontSizeSubTitle,
   },
   PageChatGroupInvite_GroupName: {
     fontSize: g.fontSizeTitle,
