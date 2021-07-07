@@ -8,7 +8,6 @@ import {
   ViewProps,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
-import RNFS from 'react-native-fs'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
@@ -59,29 +58,9 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
 }) => {
   const [visible, setIsVisible] = useState(false)
   const [imageBase64, setImageBase64] = useState('')
-
-  const readImage = async (url: string) => {
-    try {
-      if (await RNFS.exists(url)) {
-        const dataFile = await RNFS.readFile(url, 'base64')
-        setImageBase64(`data:image/png;base64,${dataFile}`)
-      } else {
-        setImageBase64('')
-      }
-    } catch (error) {
-      setImageBase64('')
-    }
-  }
   useEffect(() => {
-    // Image can read content:// but RNFS can't
-    // https://github.com/itinance/react-native-fs/issues/453
-    if (incoming) {
-      url && readImage(url)
-    } else {
-      url && setImageBase64(url)
-    }
-  }, [incoming, url])
-
+    url && setImageBase64(url)
+  }, [url])
   const images = imageBase64 ? [{ url: imageBase64 }] : []
 
   const isLoading =
