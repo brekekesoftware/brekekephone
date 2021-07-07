@@ -6,7 +6,6 @@ import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import uc from '../api/uc'
-import Call from '../stores/Call'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
@@ -52,15 +51,13 @@ const css = StyleSheet.create({
 
 const Notify: FC<{
   id: string
-  call?: Call
   type: string
   name: string
   inviter: string
   reject: Function
   accept: Function
   loading: boolean
-}> = observer(p0 => {
-  const { call: c, ...p } = p0
+}> = observer(p => {
   return (
     <View style={css.Notify}>
       {!!p.type && (
