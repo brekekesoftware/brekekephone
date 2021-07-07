@@ -206,7 +206,7 @@ export class CallStore {
         duration: c.duration,
         created: moment().format('HH:mm - MMM D'),
       })
-      if (uc.client && c.duration && !c.incoming) {
+      if (getAuthStore().ucState === 'success' && c.duration && !c.incoming) {
         uc.sendCallResult(c.duration, c.partyNumber)
       }
     }
