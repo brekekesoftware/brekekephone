@@ -36,6 +36,8 @@ module.exports = {
     ],
     // Some other rules
     'prefer-const': 1,
+    'no-unused-vars': 0,
+    '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
   },
   settings: {
     react: {

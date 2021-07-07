@@ -24,11 +24,8 @@ import g from './variables'
 const css = StyleSheet.create({
   Message: {
     position: 'relative',
-    // marginBottom: 2,
-    // borderRadius: 2 * g.borderRadius,
     paddingBottom: 5,
     paddingHorizontal: 10,
-    // backgroundColor: g.hoverBg,
     overflow: 'hidden',
     ...Platform.select({
       web: {
@@ -39,12 +36,8 @@ const css = StyleSheet.create({
       },
     }),
   },
-  Message__createdByMe: {
-    // backgroundColor: g.colors.primaryFn(0.5),
-  },
   //
   File: {
-    // flexDirection: 'row',
     marginTop: 0,
   },
   Image: {
@@ -132,99 +125,71 @@ const File: FC<
     accept(): void
     createdByMe: boolean
   }>
-> = observer(p => {
-  // const imageFile = p as unknown as ChatFile
-  return (
-    <View style={[css.File, css.Message]}>
-      <View>
-        <View style={css.Message_File_Preview_Wrapper}>
-          <RnIcon path={mdiFile} size={50} />
-          <View style={css.Message_File_Preview_Info}>
-            <RnText numberOfLines={1}>{p.name}</RnText>
-            <RnText style={css.Message_File_Preview_Info_Size}>
-              {p.size} KB
+> = observer(p => (
+  <View style={[css.File, css.Message]}>
+    <View>
+      <View style={css.Message_File_Preview_Wrapper}>
+        <RnIcon path={mdiFile} size={50} />
+        <View style={css.Message_File_Preview_Info}>
+          <RnText numberOfLines={1}>{p.name}</RnText>
+          <RnText style={css.Message_File_Preview_Info_Size}>
+            {p.size} KB
+          </RnText>
+        </View>
+      </View>
+      <View style={css.Message_File_Button_Wrapper}>
+        {p.state === 'waiting' && p.fileType !== 'image' && (
+          <RnTouchableOpacity onPress={p.reject}>
+            <RnText
+              style={[css.Message_File_Button, css.Message_File_Cancel_Button]}
+            >
+              Cancel
             </RnText>
-          </View>
-        </View>
-        <View style={css.Message_File_Button_Wrapper}>
-          {p.state === 'waiting' && p.fileType !== 'image' && (
-            <RnTouchableOpacity onPress={p.reject}>
-              <RnText
-                style={[
-                  css.Message_File_Button,
-                  css.Message_File_Cancel_Button,
-                ]}
-              >
-                Cancel
-              </RnText>
-            </RnTouchableOpacity>
-          )}
-          {!!p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
-            <RnTouchableOpacity onPress={p.accept}>
-              <RnText
-                style={[
-                  css.Message_File_Button,
-                  css.Message_File_Accept_Button,
-                ]}
-              >
-                Accept
-              </RnText>
-            </RnTouchableOpacity>
-          )}
-        </View>
-
-        {/*//TODO: fix error UI component Progress*/}
-
-        {/*{p.state === `started` && (*/}
-        {/*  <TouchableOpacity onPress={p.reject} >*/}
-        {/*    <Progress*/}
-        {/*      bgColor={g.bg}*/}
-        {/*      borderWidth={1}*/}
-        {/*      color={g.colors.primary}*/}
-        {/*      percent={p.state === `percent`}*/}
-        {/*      radius={g.fontSizeTitle}*/}
-        {/*      shadowColor={g.bg}*/}
-        {/*    >*/}
-        {/*      <Icon color={g.colors.danger} path={mdiClose} />*/}
-
-        {/*    </Progress>*/}
-        {/*  </TouchableOpacity>*/}
-        {/*)}*/}
-
-        {p.state === 'success' && p.fileType !== 'image' && (
-          <RnText
-            style={[
-              css.Message_File_Preview_Status,
-              css.Message_File_Preview_Status__Success,
-            ]}
-          >
-            ({intl`Success`})
-          </RnText>
+          </RnTouchableOpacity>
         )}
-        {p.state === 'failure' && p.fileType !== 'image' && (
-          <RnText
-            style={[
-              css.Message_File_Preview_Status,
-              css.Message_File_Preview_Status__Failed,
-            ]}
-          >
-            ({intl`Failed`})
-          </RnText>
-        )}
-        {p.state === 'stopped' && p.fileType !== 'image' && (
-          <RnText
-            style={[
-              css.Message_File_Preview_Status,
-              css.Message_File_Preview_Status__Failed,
-            ]}
-          >
-            ({intl`Canceled`})
-          </RnText>
+        {!!p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
+          <RnTouchableOpacity onPress={p.accept}>
+            <RnText
+              style={[css.Message_File_Button, css.Message_File_Accept_Button]}
+            >
+              Accept
+            </RnText>
+          </RnTouchableOpacity>
         )}
       </View>
+      {p.state === 'success' && p.fileType !== 'image' && (
+        <RnText
+          style={[
+            css.Message_File_Preview_Status,
+            css.Message_File_Preview_Status__Success,
+          ]}
+        >
+          ({intl`Success`})
+        </RnText>
+      )}
+      {p.state === 'failure' && p.fileType !== 'image' && (
+        <RnText
+          style={[
+            css.Message_File_Preview_Status,
+            css.Message_File_Preview_Status__Failed,
+          ]}
+        >
+          ({intl`Failed`})
+        </RnText>
+      )}
+      {p.state === 'stopped' && p.fileType !== 'image' && (
+        <RnText
+          style={[
+            css.Message_File_Preview_Status,
+            css.Message_File_Preview_Status__Failed,
+          ]}
+        >
+          ({intl`Canceled`})
+        </RnText>
+      )}
     </View>
-  )
-})
+  </View>
+))
 
 @observer
 class Message extends React.Component<{

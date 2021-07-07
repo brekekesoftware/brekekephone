@@ -3723,9 +3723,9 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-"brekekejs@github:brekekesoftware/brekekejs#2f786bb32cf85af2e63e8603eee4b0da75629b2e":
-  version "2107.2.1"
-  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/2f786bb32cf85af2e63e8603eee4b0da75629b2e"
+"brekekejs@github:brekekesoftware/brekekejs#f45d14fdf590816f627f35c2d5f50d4ea16be084":
+  version "2107.7.0"
+  resolved "https://codeload.github.com/brekekesoftware/brekekejs/tar.gz/f45d14fdf590816f627f35c2d5f50d4ea16be084"
   dependencies:
     url-parse "1.5.1"
 

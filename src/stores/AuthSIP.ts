@@ -34,7 +34,10 @@ class AuthSIP {
       return
     }
     const pn = s.sipPn
-    if (!pn || !pn.sipAuth) {
+    runInAction(() => {
+      s.sipPn = {}
+    })
+    if (!pn?.sipAuth) {
       console.error('SIP PN debug: Invalid sip PN login logic')
       return
     }
@@ -57,9 +60,6 @@ class AuthSIP {
       pbxTurnEnabled: p.pbxTurnEnabled,
       dtmfSendMode,
       turnConfig,
-    })
-    runInAction(() => {
-      s.sipPn = {}
     })
   }
 
