@@ -271,7 +271,8 @@ class Message extends React.Component<{
   render() {
     const p = this.props
     const file = p.file as unknown as ChatFile
-    const isImage = file && file.fileType === 'image'
+    const isImage =
+      file && (file.fileType === 'image' || file.fileType === 'video')
     const TextContainer = Platform.OS === 'web' ? View : RnTouchableOpacity
     const { text, isTextOnly } = formatChatContent(p)
 

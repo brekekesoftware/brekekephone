@@ -2,7 +2,9 @@ import { mdiClose, mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
+  Image,
   Modal,
+  Platform,
   StyleSheet,
   View,
   ViewProps,
@@ -11,6 +13,7 @@ import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
+import Video from 'react-native-video'
 
 import { ChatFile } from '../stores/chatStore'
 import RnIcon from './RnIcon'
@@ -18,6 +21,13 @@ import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
 const css = StyleSheet.create({
+  video: {
+    width: 150,
+    height: 150,
+    borderRadius: 5,
+    overflow: 'hidden',
+    backgroundColor: g.borderBg,
+  },
   image: {
     width: 150,
     height: 150,
@@ -55,36 +65,61 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
   id,
   name,
   incoming,
+  fileType,
 }) => {
   const [visible, setIsVisible] = useState(false)
-  const [imageBase64, setImageBase64] = useState('')
-  useEffect(() => {
-    url && setImageBase64(url)
-  }, [url])
-  const images = imageBase64 ? [{ url: imageBase64 }] : []
+
+  const images = url ? [{ url: url }] : []
 
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && url
+  const isLoadSuccess = state === 'success' && !!url
 
   const onShowImage = useCallback(() => {
     images.length > 0 && setIsVisible(true)
   }, [images])
+
   const onSwipeDown = useCallback(() => {
     setIsVisible(false)
   }, [])
+  const convertUri = useCallback((url?: string) => {
+    if (!url) {
+      return ''
+    }
+    if (url.startsWith('content://')) {
+      return url
+    }
+    const nextUrl = url.startsWith('file://') ? url : `file://${url}`
+    console.log({ nextUrl })
+    return nextUrl
+  }, [])
+
+  console.log({ state, url, id, name, incoming, fileType, isLoadSuccess })
+  const renderView = () => {
+    if (fileType === 'image') {
+      return (
+        <RnTouchableOpacity onPress={onShowImage}>
+          <FastImage source={{ uri: convertUri(url) }} style={css.image} />
+        </RnTouchableOpacity>
+      )
+    } else {
+      return (
+        <Video
+          source={{ uri: convertUri(url) }}
+          paused={false}
+          style={css.video}
+        />
+      )
+    }
+  }
 
   return (
     <View style={css.image}>
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={css.loading} />
       )}
-      {isLoadSuccess && (
-        <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: imageBase64 }} style={css.image} />
-        </RnTouchableOpacity>
-      )}
+      {isLoadSuccess && renderView()}
       {isLoadFailed && (
         <Svg
           preserveAspectRatio='xMinYMin slice'

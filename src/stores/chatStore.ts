@@ -159,8 +159,9 @@ class ChatStore {
   @observable private filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
-    saveBlobImage(f.id, f.topic_id)
+    saveBlobImage(f.id, f.topic_id, f.fileType)
       .then(url => {
+        console.log({ url: url })
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: url,
         })
@@ -189,16 +190,18 @@ class ChatStore {
     const f0 = this.filesMap[f.id]
     if (!f0) {
       this.filesMap[f.id] = f as ChatFile
-      if (f.incoming && f.fileType === 'image') {
+      const fileTypeImageVideo =
+        f.fileType === 'image' || f.fileType === 'video'
+      if (f.incoming && fileTypeImageVideo) {
         this.download(f as ChatFile)
       }
-      this.startTimeout(f.id)
+      // this.startTimeout(f.id)
     } else {
       this.filesMap[f.id] = Object.assign(f0, f)
       const state =
         f.state === 'stopped' || f.state === 'success' || f.state === 'failure'
       if (state) {
-        this.clearTimeout(f.id)
+        // this.clearTimeout(f.id)
       }
     }
   }

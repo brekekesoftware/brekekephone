@@ -37,7 +37,7 @@ const css = StyleSheet.create({
 })
 const size = '100%'
 
-const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
+const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
   const [imageBase64, setImageBase64] = useState('')
 
   const onShowImage = useCallback(() => {
@@ -66,6 +66,21 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
     url && readImage(url)
   }, [url])
 
+  const renderView = () => {
+    if (fileType === 'image') {
+      return (
+        <RnTouchableOpacity onPress={onShowImage}>
+          <FastImage source={{ uri: imageBase64 }} style={css.image} />
+        </RnTouchableOpacity>
+      )
+    } else {
+      return (
+        <video src={imageBase64} width='200' height='150'>
+          Your browser does not support HTML5 video.
+        </video>
+      )
+    }
+  }
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'

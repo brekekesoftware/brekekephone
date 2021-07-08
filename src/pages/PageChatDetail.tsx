@@ -25,6 +25,7 @@ import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { formatFileType } from '../utils/formatFileType'
 import pickFile from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
 import { saveBlobImageToCache } from '../utils/saveBlob.web'
@@ -365,12 +366,7 @@ class PageChatDetail extends React.Component<{
   }
 
   onAcceptFileSuccess = (blob: Blob, file: { id: string; name: string }) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
+    const fileType = formatFileType(file.name)
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
@@ -401,12 +397,8 @@ class PageChatDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
+    const fileType = formatFileType(file.name)
+    console.log({ file })
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
   handleSaveImageFileWeb = async (
@@ -427,6 +419,8 @@ class PageChatDetail extends React.Component<{
     const u = contactStore.getUcUserById(this.props.buddy)
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
+        console.log({ res })
+
         this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)

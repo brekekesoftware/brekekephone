@@ -9,13 +9,15 @@ export const saveBlob = (blob: Blob, name: string) => {
   a.click()
   window.URL.revokeObjectURL(url)
 }
-export const saveBlobImage = (id: string, topic_id: string) => {
+export const saveBlobImage = (id: string, topic_id: string, type?: string) => {
   return new Promise(async (resolve, reject) => {
     try {
       const data: Blob = (await uc.acceptFile(id)) as Blob
       const fr = new FileReader()
       fr.onload = async () => {
         const r = fr.result as string
+        console.log({ r })
+
         const cache = await caches.open(topic_id)
         const imageResponse = new Response(r)
         const urlCacheFile = `${topic_id}/${id}`
@@ -39,8 +41,9 @@ export const saveBlobImageToCache = (
   return new Promise(async (resolve, reject) => {
     try {
       const fr = new FileReader()
-      fr.onload = async () => {
+      fr.onloadend = async () => {
         const r = fr.result as string
+        console.log({ r })
         const cache = await caches.open(`${topic_id}`)
         const imageResponse = new Response(r)
         const urlCacheFile = `${topic_id}/${id}`
