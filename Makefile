@@ -15,7 +15,7 @@ format-java:
 format-xml:
 	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" \
 	&& make -s ls \
-	| xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --loglevel=error --write
+	| xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --loglevel=error --write
 imagemin:
 	export EXT="png|jpg|gif|ico" \
 	&& make -s ls \
