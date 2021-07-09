@@ -37,23 +37,29 @@ export const saveBlobImageToCache = (
   data: Blob,
   id: string,
   topic_id: string,
+  type?: string,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const fr = new FileReader()
-      fr.onloadend = async () => {
-        const r = fr.result as string
-        console.log({ r })
-        const cache = await caches.open(`${topic_id}`)
-        const imageResponse = new Response(r)
-        const urlCacheFile = `${topic_id}/${id}`
-        cache.put(id, imageResponse)
-        resolve(urlCacheFile)
-      }
-      fr.onerror = err => {
-        console.error('saveBlob', err)
-      }
-      fr.readAsDataURL(data)
+      const cache = await caches.open(`${topic_id}`)
+      const imageResponse = new Response(data, {})
+      const urlCacheFile = `${topic_id}/${id}`
+      await cache.put(id, imageResponse)
+      resolve(urlCacheFile)
+      // const fr = new FileReader()
+      // fr.onloadend = async () => {
+      //   const r = fr.result as string
+      //   console.log({r})
+      //   const cache = await caches.open(`${topic_id}`)
+      //   const imageResponse = new Response(r)
+      //   const urlCacheFile = `${topic_id}/${id}`
+      //   cache.put(id, imageResponse)
+      //   resolve(urlCacheFile)
+      // }
+      // fr.onerror = err => {
+      //   console.error('saveBlob', err)
+      // }
+      // fr.readAsDataURL(data)
     } catch (error) {
       reject(error)
     }

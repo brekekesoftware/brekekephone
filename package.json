@@ -25,6 +25,7 @@
     "@mdi/js": "5.9.55",
     "@react-native-async-storage/async-storage": "1.15.5",
     "@react-native-community/push-notification-ios": "1.8.0",
+    "@types/react-native-video": "5.0.8",
     "brekekejs": "github:brekekesoftware/brekekejs#f45d14fdf590816f627f35c2d5f50d4ea16be084",
     "buffer": "6.0.3",
     "circular-json": "0.5.9",

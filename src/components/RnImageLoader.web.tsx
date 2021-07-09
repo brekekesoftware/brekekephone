@@ -13,7 +13,7 @@ const css = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 5,
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   loading: {
     position: 'absolute',
@@ -38,28 +38,45 @@ const css = StyleSheet.create({
 const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
-  const [imageBase64, setImageBase64] = useState('')
+  const [blobFile, setBlobFile] = useState<Blob | null>(null)
 
   const onShowImage = useCallback(() => {
     const image = new Image()
-    image.src = imageBase64 || ''
+    const objectURL = URL.createObjectURL(blobFile)
+    image.src = objectURL || ''
     const w = window.open('')
     w?.document.write(image.outerHTML)
-  }, [imageBase64])
+  }, [blobFile])
 
+  const Video = (props: any) => {
+    const attrs = {
+      src: props.source,
+      poster: props.poster,
+      controls: 'controls',
+    }
+    return React.createElement('video', attrs)
+  }
   const readImage = async (url: string) => {
     try {
       const urlImage = url.split('/')
       const cache = await caches.open(urlImage[0])
-      const request = new Request(urlImage[1], {
+      console.log({ urlImage })
+      const request = new Request('/' + urlImage[1], {
         method: 'GET',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        headers: { 'Content-Type': 'video/mp4' },
       })
-      const response = await cache.match(request)
-      const dataBase64 = await response?.text()
-      dataBase64 && setImageBase64(dataBase64)
+
+      console.log({ request: request.url, request1: await request.blob() })
+
+      // const response = await cache.match(request)
+      const response = await fetch('/' + urlImage[1])
+      console.log({ response: response?.clone() })
+      const data = await response?.blob()
+      console.log({ data })
+
+      // data && setBlobFile(data)
     } catch (error) {
-      setImageBase64('')
+      // setBlobFile()
     }
   }
   useEffect(() => {
@@ -70,22 +87,23 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
     if (fileType === 'image') {
       return (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: imageBase64 }} style={css.image} />
+          <FastImage
+            source={{ uri: URL.createObjectURL(blobFile) }}
+            style={css.image}
+          />
         </RnTouchableOpacity>
       )
     } else {
       return (
-        <video src={imageBase64} width='200' height='150'>
-          Your browser does not support HTML5 video.
-        </video>
+        <Video src={blobFile} poster={'https://www.fillmurray.com/480/300'} />
       )
     }
   }
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && !!imageBase64
-  if (state === 'success' && !!!imageBase64) {
+  const isLoadSuccess = state === 'success' && !!blobFile
+  if (state === 'success' && !!!blobFile) {
     return null
   }
   return (
@@ -93,11 +111,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={css.loading} />
       )}
-      {isLoadSuccess && (
-        <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: imageBase64 }} style={css.image} />
-        </RnTouchableOpacity>
-      )}
+      {isLoadSuccess && renderView()}
       {isLoadFailed && (
         <Svg
           preserveAspectRatio='xMinYMin slice'

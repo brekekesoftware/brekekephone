@@ -70,6 +70,7 @@ class PageChatDetail extends React.Component<{
     },
     topic_id: '',
     emojiTurnOn: false,
+    blobVideo: undefined,
   }
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
   edittingTextEmoji = ''
@@ -172,6 +173,7 @@ class PageChatDetail extends React.Component<{
             />
           </View>
         )}
+        {/* <video src={this.state.blobVideo}id='video' controls width='320' height='240'/> */}
       </Layout>
     )
   }
@@ -417,6 +419,13 @@ class PageChatDetail extends React.Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUcUserById(this.props.buddy)
+    console.log({ file })
+
+    // var data1 =  URL.createObjectURL(
+    //   file as unknown as Blob,
+    // )
+    // this.setState({blobVideo: data1})
+
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
         console.log({ res })
