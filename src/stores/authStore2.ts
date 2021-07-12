@@ -125,6 +125,8 @@ export class AuthStore {
   @computed get currentData() {
     return profileStore.getProfileData(this.currentProfile)
   }
+
+  lastSignInAt = 0
   signIn = (id: string) => {
     const p = this.getProfile(id)
     if (!p) {
@@ -138,7 +140,10 @@ export class AuthStore {
       })
       return true
     }
-    this.signedInId = p.id
+    if (p.id !== this.signedInId) {
+      this.signedInId = p.id
+      this.lastSignInAt = Date.now()
+    }
     return true
   }
 
@@ -159,6 +164,7 @@ export class AuthStore {
   }
   @action private resetState = () => {
     this.signedInId = ''
+    this.lastSignInAt = 0
     this.pbxState = 'stopped'
     this.pbxTotalFailure = 0
     console.error('SIP PN debug: set sipState stopped sign out')
@@ -171,23 +177,23 @@ export class AuthStore {
   }
 
   lastSipAuth = 0
-  @action reconnect = () => {
+  @action resetFailureState = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
     this.lastSipAuth = 0
   }
   @action reconnectPbx = () => {
-    this.reconnect()
+    this.resetFailureState()
     this.pbxState = 'stopped'
   }
   @action reconnectSip = () => {
     console.error('SIP PN debug: set sipState stopped reconnect')
-    this.reconnect()
+    this.resetFailureState()
     this.sipState = 'stopped'
   }
   @action reconnectWithUcLoginFromAnotherPlace = () => {
-    this.reconnect()
+    this.resetFailureState()
     this.ucLoginFromAnotherPlace = false
   }
 
@@ -271,7 +277,7 @@ export class AuthStore {
   signInByNotification = async (n: ParsedPn) => {
     console.error('SIP PN debug: signInByNotification')
     this.sipPn = n.sipPn
-    this.reconnect()
+    this.resetFailureState()
     await profileStore.profilesLoaded()
     // Find account for the notification target
     const p = this.findProfile({

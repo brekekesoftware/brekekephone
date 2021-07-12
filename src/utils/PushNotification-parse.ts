@@ -65,7 +65,7 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
       return map
     }, {})
 export const parseNotificationData = (raw: object) => {
-  let n: ParsedPn | null = null
+  let n: ParsedPn | undefined
   if (Platform.OS === 'android') {
     n = parseNotificationDataMultiple(
       raw,
@@ -94,7 +94,7 @@ export const parseNotificationData = (raw: object) => {
     )
   }
   if (!n) {
-    return null
+    return
   }
 
   // new logic to parse x_ keys
@@ -132,7 +132,7 @@ export const parseNotificationData = (raw: object) => {
     n.body = n.message || n.title || n.alert
   }
   if (!n.body) {
-    return null
+    return
   }
 
   const r1 = /from\s+(.+)\s+to\s+(\S+)/i
@@ -190,7 +190,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       pbxTenant: n.tenant,
     })
     if (getAuthStore().signedInId === p?.id) {
-      getAuthStore().reconnect()
+      getAuthStore().resetFailureState()
     }
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)

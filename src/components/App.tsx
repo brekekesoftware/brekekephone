@@ -54,7 +54,7 @@ if (Platform.OS === 'android') {
 
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
-    getAuthStore().reconnect()
+    getAuthStore().resetFailureState()
     PushNotification.resetBadgeNumber()
   }
 })
@@ -127,7 +127,7 @@ PushNotification.register(() => {
     chatStore.clearStore()
     contactStore.clearStore()
     if (s.signedInId) {
-      s.reconnect()
+      s.resetFailureState()
       authPBX.auth()
       authSIP.auth()
       authUC.auth()

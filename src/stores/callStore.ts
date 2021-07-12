@@ -91,6 +91,21 @@ export class CallStore {
     }
     this.prevCallKeepUuid = uuid
     setAutoEndCallKeepTimer(uuid)
+    // Auto reconnect if no activity after 2s
+    if (Date.now() - this.recentCallActivityAt > 2000) {
+      BackgroundTimer.setTimeout(() => {
+        if (Date.now() - this.recentCallActivityAt < 2000) {
+          return
+        }
+        const as = getAuthStore()
+        if (as.sipState === 'connecting' && as.lastSignInAt < 5000) {
+          return
+        }
+        if (!sip.phone.getSessionCount()) {
+          as.reconnectSip()
+        }
+      }, 2000)
+    }
   }
   onCallKeepAnswerCall = (uuid: string) => {
     const c = this.getIncomingCallKeep(uuid, {
