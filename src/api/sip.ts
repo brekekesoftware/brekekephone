@@ -27,8 +27,8 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
 }
 
 export class SIP extends EventEmitter {
-  phone: Sip = null!
-  init = async (o: SipLoginOption) => {
+  phone?: Sip
+  private init = async (o: SipLoginOption) => {
     const sourceId = await getFrontCameraSourceId()
     const phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
@@ -162,11 +162,13 @@ export class SIP extends EventEmitter {
     phone.addEventListener('rtcErrorOccurred', ev => {
       console.error('sip.phone.rtcErrorOccurred:', ev) // TODO
     })
+
+    return phone
   }
 
   connect = async (sipLoginOption: SipLoginOption) => {
     this.disconnect()
-    await this.init(sipLoginOption)
+    const phone = await this.init(sipLoginOption)
     //
     let platformOs: string = Platform.OS
     if (platformOs === 'ios') {
@@ -198,9 +200,9 @@ export class SIP extends EventEmitter {
     if (sipLoginOption.turnConfig) {
       callOptions.pcConfig.iceServers.push(sipLoginOption.turnConfig)
     }
-    this.phone.setDefaultCallOptions(callOptions)
+    phone.setDefaultCallOptions(callOptions)
     //
-    this.phone.startWebRTC({
+    phone.startWebRTC({
       url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
       tls: true,
       user: sipLoginOption.username,
@@ -212,41 +214,27 @@ export class SIP extends EventEmitter {
     console.error('SIP PN debug: added listener on _ua')
 
     // temporary cancel PN via SIP ua
-    const ua = (
-      this.phone as unknown as {
-        _ua: {
-          on: Function
-        }
-      }
-    )._ua
-    ua?.on(
-      'newNotify',
-      (e: {
-        request: {
-          data: string
-        }
-      }) => {
-        const rg = /(\w+)\W*INVITE\s*,.+,\s*Canceled/
-        const pnId = e?.request?.data?.match(rg)?.[1]
-        console.error(`SIP PN debug: newNotify fired on _ua, pnId=${pnId}`)
-        cancelRecentPn(pnId)
-      },
-    )
+    phone._ua?.on('newNotify', e => {
+      const rg = /(\w+)\W*INVITE\s*,.+,\s*Canceled/
+      const pnId = e?.request?.data?.match(rg)?.[1]
+      console.error(`SIP PN debug: newNotify fired on _ua, pnId=${pnId}`)
+      cancelRecentPn(pnId)
+    })
   }
 
   disconnect = () => {
     if (this.phone) {
       this.phone.stopWebRTC()
-      this.phone = null!
+      this.phone = undefined
     }
   }
 
   createSession = (number: string, opts: { videoEnabled?: boolean } = {}) => {
-    return this.phone.makeCall(number, null, opts.videoEnabled)
+    return this.phone?.makeCall(number, null, opts.videoEnabled)
   }
 
   hangupSession = (sessionId: string) => {
-    const session = this.phone.getSession(sessionId)
+    const session = this.phone?.getSession(sessionId)
     const rtcSession = session && session.rtcSession
     return rtcSession && rtcSession.terminate()
   }
@@ -254,7 +242,7 @@ export class SIP extends EventEmitter {
     sessionId: string,
     opts: { videoEnabled?: boolean } = {},
   ) => {
-    return this.phone.answer(sessionId, null, opts.videoEnabled)
+    return this.phone?.answer(sessionId, null, opts.videoEnabled)
   }
   sendDTMF = async (p: {
     signal: string
@@ -275,16 +263,16 @@ export class SIP extends EventEmitter {
       })
       return
     }
-    return this.phone.sendDTMF(p.signal, p.sessionId)
+    return this.phone?.sendDTMF(p.signal, p.sessionId)
   }
   enableVideo = (sessionId: string) => {
-    return this.phone.setWithVideo(sessionId, true)
+    return this.phone?.setWithVideo(sessionId, true)
   }
   disableVideo = (sessionId: string) => {
-    return this.phone.setWithVideo(sessionId, false)
+    return this.phone?.setWithVideo(sessionId, false)
   }
   setMuted = (muted: boolean, sessionId: string) => {
-    return this.phone.setMuted({ main: muted }, sessionId)
+    return this.phone?.setMuted({ main: muted }, sessionId)
   }
 }
 

@@ -4,7 +4,7 @@ import moment from 'moment'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
-import { v4 as newUuid } from 'react-native-uuid'
+import RnUuid from 'react-native-uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -93,18 +93,14 @@ export class CallStore {
     setAutoEndCallKeepTimer(uuid)
     // Auto reconnect if no activity after 2s
     if (Date.now() - this.recentCallActivityAt > 2000) {
-      BackgroundTimer.setTimeout(() => {
-        if (Date.now() - this.recentCallActivityAt < 2000) {
-          return
-        }
-        const as = getAuthStore()
-        if (as.sipState === 'connecting' && as.lastSignInAt < 5000) {
-          return
-        }
-        if (!sip.phone.getSessionCount()) {
-          as.reconnectSip()
-        }
-      }, 2000)
+      const as = getAuthStore()
+      if (as.sipState === 'connecting' && as.lastSipAuth < 5000) {
+        return
+      }
+      if (!sip.phone?.getSessionCount()) {
+        sip.disconnect()
+        as.reconnectSip()
+      }
     }
   }
   onCallKeepAnswerCall = (uuid: string) => {
@@ -215,8 +211,9 @@ export class CallStore {
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(c => c.id === id)
     if (c) {
-      getAuthStore().pushRecentCall({
-        id: newUuid(),
+      const as = getAuthStore()
+      as.pushRecentCall({
+        id: String(RnUuid.v4()),
         incoming: c.incoming,
         answered: c.answered,
         partyName: c.partyName,
@@ -224,7 +221,7 @@ export class CallStore {
         duration: c.duration,
         created: moment().format('HH:mm - MMM D'),
       })
-      if (getAuthStore().ucState === 'success' && c.duration && !c.incoming) {
+      if (as.ucState === 'success' && c.duration && !c.incoming) {
         uc.sendCallResult(c.duration, c.partyNumber)
       }
     }
@@ -268,7 +265,7 @@ export class CallStore {
     // Start call logic in RNCallKeep
     let uuid = ''
     if (Platform.OS === 'ios' && !Object.keys(callkeepMap).length) {
-      uuid = newUuid().toUpperCase()
+      uuid = String(RnUuid.v4()).toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       RNCallKeep.reportConnectingOutgoingCallWithUUID(uuid)
       setAutoEndCallKeepTimer(uuid)
@@ -422,8 +419,27 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
     callStore.updateBackgroundCallsDebounce()
   }, 500)
 }
-const endCallKeep = (uuid: string, clearRecentPn?: boolean) => {
+const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
   console.error('PN callkeep debug: endCallKeep ' + uuid)
+  if (!isEndedFromCallClass) {
+    const c = callStore.calls.find(c => c.callkeepUuid === uuid)
+    const pnData = getCallPnData(uuid)
+    if (c) {
+      c.hangupWithUnhold()
+    } else if (pnData) {
+      // Save call history
+      const as = getAuthStore()
+      as.pushRecentCall({
+        id: String(RnUuid.v4()),
+        incoming: true,
+        answered: false,
+        partyName: pnData.from,
+        partyNumber: pnData.from,
+        duration: 0,
+        created: moment().format('HH:mm - MMM D'),
+      })
+    }
+  }
   RNCallKeep.rejectCall(uuid)
   RNCallKeep.endCall(uuid)
   RNCallKeep.reportEndCallWithUUID(
@@ -436,7 +452,7 @@ const endCallKeep = (uuid: string, clearRecentPn?: boolean) => {
     callStore.prevCallKeepUuid = undefined
   }
   if (
-    clearRecentPn &&
+    isEndedFromCallClass &&
     (uuid === callStore.prevCallKeepUuid || uuid === callStore.recentPn?.uuid)
   ) {
     callStore.recentPn = undefined

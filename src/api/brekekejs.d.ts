@@ -253,6 +253,10 @@ export type Sip = {
 
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
+
+  _ua?: {
+    on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
+  }
 }
 
 export type SipConstructorOptions = {

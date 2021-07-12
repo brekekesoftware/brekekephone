@@ -5,10 +5,6 @@ declare module 'brekekejs/lib/ucclient' {
   export default m
 }
 
-declare module 'react-native-uuid' {
-  export const v4: () => string
-}
-
 declare module 'jssip' {
   const m: unknown
   export default m

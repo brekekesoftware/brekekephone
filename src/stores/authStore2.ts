@@ -126,7 +126,6 @@ export class AuthStore {
     return profileStore.getProfileData(this.currentProfile)
   }
 
-  lastSignInAt = 0
   signIn = (id: string) => {
     const p = this.getProfile(id)
     if (!p) {
@@ -140,10 +139,7 @@ export class AuthStore {
       })
       return true
     }
-    if (p.id !== this.signedInId) {
-      this.signedInId = p.id
-      this.lastSignInAt = Date.now()
-    }
+    this.signedInId = p.id
     return true
   }
 
@@ -164,16 +160,12 @@ export class AuthStore {
   }
   @action private resetState = () => {
     this.signedInId = ''
-    this.lastSignInAt = 0
     this.pbxState = 'stopped'
-    this.pbxTotalFailure = 0
     console.error('SIP PN debug: set sipState stopped sign out')
     this.sipState = 'stopped'
     sip.disconnect()
-    this.sipTotalFailure = 0
     this.ucState = 'stopped'
-    this.ucTotalFailure = 0
-    this.ucLoginFromAnotherPlace = false
+    this.resetFailureStateIncludeUcLoginFromAnotherPlace()
   }
 
   lastSipAuth = 0
@@ -192,7 +184,7 @@ export class AuthStore {
     this.resetFailureState()
     this.sipState = 'stopped'
   }
-  @action reconnectWithUcLoginFromAnotherPlace = () => {
+  @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
     this.ucLoginFromAnotherPlace = false
   }
