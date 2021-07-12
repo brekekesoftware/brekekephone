@@ -30,10 +30,8 @@ export class CallStore {
     if (!pnId) {
       return
     }
+    pnCanceledFromSipMap[pnId] = true
     const n = Object.entries(callPnDataMap).find(([uuid, n]) => n.id === pnId)
-    if (n) {
-      // TODO save call history
-    }
     const uuid = n?.[0] || this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
     endCallKeep(uuid, true)
@@ -58,8 +56,13 @@ export class CallStore {
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Find the current incoming call which is not callkeep
+    const pnData = getCallPnData(uuid)
+    if (isPnCanceledFromSip(pnData?.id)) {
+      this.onCallKeepEndCall(uuid)
+      return
+    }
     const c = this.getIncomingCallKeep(uuid, {
-      from: getCallPnData(uuid)?.from,
+      from: pnData?.from,
     })
     if (c) {
       // If the call is existing and not answered yet, we'll mark that call as displaying in callkeep
@@ -470,12 +473,18 @@ export const showIncomingCallUi = (e: TEvent) => {
 }
 
 // Move from pushNotification-parse.ts to avoid circular dependencies
-const callPnDataMap: { [k: string]: ParsedPn } = {}
-export const setCallPnData = (uuid: string, data: ParsedPn) => {
+const callPnDataMap: { [uuid: string]: ParsedPn } = {}
+export const setCallPnData = (uuid: string, data: ParsedPn): void => {
   callPnDataMap[uuid] = data
 }
-
-let lastCallPnData: ParsedPn | undefined = undefined
-export const setLastCallPnData = (data: ParsedPn) => [(lastCallPnData = data)]
-export const getCallPnData = (uuid: string) =>
+let lastCallPnData: ParsedPn | undefined
+export const setLastCallPnData = (data: ParsedPn): void => {
+  lastCallPnData = data
+}
+export const getCallPnData = (uuid: string): ParsedPn | undefined =>
   callPnDataMap[uuid] || lastCallPnData
+
+// Canceled pn from sip header event
+const pnCanceledFromSipMap: { [pnId: string]: true } = {}
+export const isPnCanceledFromSip = (pnId?: string): true | undefined =>
+  pnId ? pnCanceledFromSipMap[pnId] : undefined

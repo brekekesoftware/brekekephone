@@ -6,6 +6,7 @@ import { v4 as newUuid } from 'react-native-uuid'
 import { getAuthStore } from '../stores/authStore'
 import {
   hasCallKeepRunning,
+  isPnCanceledFromSip,
   setCallPnData,
   setLastCallPnData,
   showIncomingCallUi,
@@ -203,7 +204,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       : null
   }
   setLastCallPnData(n)
-  if (Platform.OS === 'android') {
+  if (Platform.OS === 'android' && !isPnCanceledFromSip(n.id)) {
     const uuid = newUuid().toUpperCase()
     setCallPnData(uuid, n)
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
