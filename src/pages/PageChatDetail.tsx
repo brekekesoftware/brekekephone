@@ -410,7 +410,12 @@ class PageChatDetail extends React.Component<{
   ) => {
     const buddyId = this.props.buddy
     try {
-      const url = await saveBlobImageToCache(data, file.id, file.topic_id)
+      const url = await saveBlobImageToCache(
+        data,
+        file.id,
+        file.topic_id,
+        file.fileType,
+      )
       Object.assign(file, { url: url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(buddyId, chat)
@@ -429,7 +434,6 @@ class PageChatDetail extends React.Component<{
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
         console.log({ res })
-
         this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)

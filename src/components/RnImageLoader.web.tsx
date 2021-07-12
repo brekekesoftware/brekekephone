@@ -38,7 +38,7 @@ const css = StyleSheet.create({
 const size = '100%'
 
 const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
-  const [blobFile, setBlobFile] = useState<Blob | null>(null)
+  const [blobFile, setBlobFile] = useState<string>('')
 
   const onShowImage = useCallback(() => {
     const image = new Image()
@@ -58,23 +58,85 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
   }
   const readImage = async (url: string) => {
     try {
-      const urlImage = url.split('/')
-      const cache = await caches.open(urlImage[0])
-      console.log({ urlImage })
-      const request = new Request('/' + urlImage[1], {
-        method: 'GET',
-        headers: { 'Content-Type': 'video/mp4' },
-      })
+      const openRequest = window.indexedDB.open('testDB', 3)
 
-      console.log({ request: request.url, request1: await request.blob() })
+      openRequest.onupgradeneeded = e => {
+        console.log('onupgradeneeded')
+        const thisdb = openRequest.result
+        if (!thisdb.objectStoreNames.contains('nam')) {
+          thisdb.createObjectStore('nam')
+        }
+      }
+
+      openRequest.onsuccess = e => {
+        console.log('onsuccess')
+        const db = openRequest.result
+        // db.createObjectStore('stash')
+        const transaction = db.transaction(['nam'], 'readwrite')
+        const store = transaction.objectStore('nam')
+        const request = store.get(url)
+        request.onsuccess = e => {
+          const imgFile = request.result as Blob
+          const fr = new FileReader()
+          fr.onloadend = async event => {
+            const r = event.target?.result as ArrayBuffer
+            console.log({ r: r.byteLength })
+            const videoBlob = new Blob([r], { type: 'video/mp4' })
+            const objectURL = URL.createObjectURL(videoBlob)
+            console.log({ response: videoBlob.size })
+            objectURL && setBlobFile(objectURL)
+          }
+          fr.onerror = err => {
+            console.error('saveBlob', err)
+          }
+          blobFile && fr.readAsArrayBuffer(imgFile)
+          // console.log("Got elephant!" + imgFile.size)
+
+          // // Get window.URL object
+          // const URL = window.URL || window.webkitURL
+
+          // // Create and revoke ObjectURL
+          // const  imgURL = URL.createObjectURL(new Blob([imgFile]))
+          // console.log({imgURL})
+
+          // imgURL && setBlobFile(imgURL)
+        }
+        request.onerror = e => {}
+      }
+
+      openRequest.onerror = e => {
+        console.log('onerror', { e })
+      }
+
+      // const urlImage = url.split('/')
+      // const cache = await caches.open(urlImage[0])
+      // console.log({ urlImage })
+      // const request = new Request(urlImage[1])
 
       // const response = await cache.match(request)
-      const response = await fetch('/' + urlImage[1])
-      console.log({ response: response?.clone() })
-      const data = await response?.blob()
-      console.log({ data })
+      // const blobFile = await response?.blob()
+      // const buf = await blobFile?.arrayBuffer()
 
-      // data && setBlobFile(data)
+      // const newBlob =  blobFile && new Blob( [ blobFile ])
+      // const URL = window.URL || window.webkitURL
+      // const objectURL = newBlob && URL.createObjectURL(newBlob)
+      // console.log({ response: newBlob?.size})
+      // objectURL && setBlobFile(objectURL)
+
+      // console.log({ response: blobFile?.size})
+      // const fr = new FileReader()
+      // fr.onloadend = async event => {
+      //   const r = event.target?.result as ArrayBuffer
+      //   console.log({ r: r.byteLength })
+      //   const videoBlob = new Blob([r], { type: 'video/mp4' })
+      //   const objectURL = URL.createObjectURL(videoBlob)
+      //   console.log({ response:videoBlob.size})
+      //   objectURL && setBlobFile(objectURL)
+      // }
+      // fr.onerror = err => {
+      //   console.error('saveBlob', err)
+      // }
+      // blobFile && fr.readAsArrayBuffer(blobFile)
     } catch (error) {
       // setBlobFile()
     }
@@ -87,16 +149,11 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
     if (fileType === 'image') {
       return (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage
-            source={{ uri: URL.createObjectURL(blobFile) }}
-            style={css.image}
-          />
+          <FastImage source={{ uri: blobFile }} style={css.image} />
         </RnTouchableOpacity>
       )
     } else {
-      return (
-        <Video src={blobFile} poster={'https://www.fillmurray.com/480/300'} />
-      )
+      return <Video src={blobFile} />
     }
   }
   const isLoading =
