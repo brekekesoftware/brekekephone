@@ -128,22 +128,29 @@ class ProfileStore {
     if (!p1) {
       this.profiles.push(p as Profile)
     } else {
-      const pn1 = p1.pushNotificationEnabled
-      const p0 = { ...p1 }
+      const p0 = { ...p1 } // Clone before assign
       Object.assign(p1, p)
-      const id0 = getAccountUniqueId(p0)
-      const id1 = getAccountUniqueId(p1)
-      if (id0 !== id1) {
+      if (getAccountUniqueId(p0) !== getAccountUniqueId(p1)) {
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {
           noUpsert: true,
         })
       } else if (
         typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== pn1
+        p.pushNotificationEnabled !== p0.pushNotificationEnabled
       ) {
         p1.pushNotificationEnabledSynced = false
-        SyncPnToken().sync(p1)
+        SyncPnToken().sync(p1, {
+          onError: err => {
+            RnAlert.error({
+              message: intlDebug`Failed to sync Push Notification settings for ${p1.pbxUsername}`,
+              err,
+            })
+            p1.pushNotificationEnabled = p0.pushNotificationEnabled
+            p1.pushNotificationEnabledSynced = p0.pushNotificationEnabledSynced
+            this.saveProfilesToLocalStorage()
+          },
+        })
       }
     }
     this.saveProfilesToLocalStorage()
