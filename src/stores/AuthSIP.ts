@@ -73,6 +73,7 @@ class AuthSIP {
   }
 
   @action private authWithoutCatch = async () => {
+    console.error('SIP PN debug: set sipState connecting')
     const s = getAuthStore()
     s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
