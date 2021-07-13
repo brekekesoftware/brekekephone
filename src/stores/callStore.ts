@@ -4,7 +4,7 @@ import moment from 'moment'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
-import RnUuid from 'react-native-uuid'
+import { v4 as newUuid } from 'uuid'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -213,7 +213,7 @@ export class CallStore {
     if (c) {
       const as = getAuthStore()
       as.pushRecentCall({
-        id: String(RnUuid.v4()),
+        id: newUuid(),
         incoming: c.incoming,
         answered: c.answered,
         partyName: c.partyName,
@@ -265,7 +265,7 @@ export class CallStore {
     // Start call logic in RNCallKeep
     let uuid = ''
     if (Platform.OS === 'ios' && !Object.keys(callkeepMap).length) {
-      uuid = String(RnUuid.v4()).toUpperCase()
+      uuid = newUuid().toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       RNCallKeep.reportConnectingOutgoingCallWithUUID(uuid)
       setAutoEndCallKeepTimer(uuid)
@@ -430,7 +430,7 @@ const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
       // Save call history
       const as = getAuthStore()
       as.pushRecentCall({
-        id: String(RnUuid.v4()),
+        id: newUuid(),
         incoming: true,
         answered: false,
         partyName: pnData.from,
