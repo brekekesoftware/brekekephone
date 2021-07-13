@@ -1,4 +1,4 @@
-import { mdiClose, mdiImageBrokenVariant } from '@mdi/js'
+import { mdiClose, mdiImageBrokenVariant, mdiPauseCircleOutline } from '@mdi/js'
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
@@ -63,6 +63,11 @@ const css = StyleSheet.create({
     right: 15,
     zIndex: 10,
   },
+  btnPause: {
+    position: 'absolute',
+    alignSelf: 'center',
+    zIndex: 100,
+  },
   modal: {
     backgroundColor: 'blue',
   },
@@ -105,6 +110,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
   }, [])
 
   console.log({ state, url, id, name, incoming, fileType, isLoadSuccess })
+
   const renderView = () => {
     if (fileType === 'image') {
       return (
@@ -117,11 +123,12 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
         <View style={css.vVideo}>
           <Video
             source={{ uri: convertUri(url) }}
-            paused={false}
-            controls={true}
             resizeMode='contain'
             style={css.video}
           />
+          <RnTouchableOpacity style={css.btnClose} onPress={onShowImage}>
+            <RnIcon path={mdiPauseCircleOutline} color={'white'} size={30} />
+          </RnTouchableOpacity>
         </View>
       )
     }
@@ -147,9 +154,18 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
         <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
           <RnIcon path={mdiClose} color={'black'} size={30} />
         </RnTouchableOpacity>
-        {isLoadSuccess && (
-          <ImageViewer imageUrls={images} renderIndicator={() => <View />} />
-        )}
+        {isLoadSuccess &&
+          (fileType === 'image' ? (
+            <ImageViewer imageUrls={images} renderIndicator={() => <View />} />
+          ) : (
+            <Video
+              source={{ uri: convertUri(url) }}
+              resizeMode='contain'
+              paused={false}
+              controls={true}
+              style={{ width: '100%', height: '100%' }}
+            />
+          ))}
       </Modal>
     </View>
   )
