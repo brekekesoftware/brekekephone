@@ -55,6 +55,7 @@ class AuthSIP {
       dtmfSendMode = pn.dtmfPal === 'false' || pn.dtmfPal === '0' ? 0 : 1
     }
     // If after 10s and still not connected => reconnect
+    // May be due to the PN auth token has been expired
     waitSip().then(isConnected => {
       if (!isConnected) {
         this.dispose()

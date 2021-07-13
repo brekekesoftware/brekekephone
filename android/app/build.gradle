@@ -32,11 +32,11 @@ android {
 
   defaultConfig {
     applicationId "com.brekeke.phonedev"
-    versionCode 208009
-    versionName "2.8.9"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
+    versionCode 208009
+    versionName "2.8.9"
   }
 
   splits {
