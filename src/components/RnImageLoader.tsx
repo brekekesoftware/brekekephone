@@ -24,7 +24,16 @@ const css = StyleSheet.create({
   video: {
     width: 150,
     height: 150,
+    alignSelf: 'center',
     borderRadius: 5,
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  vVideo: {
+    width: 150,
+    height: 150,
+    borderRadius: 5,
+    alignItems: 'center',
     overflow: 'hidden',
     backgroundColor: g.borderBg,
   },
@@ -105,17 +114,21 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
       )
     } else {
       return (
-        <Video
-          source={{ uri: convertUri(url) }}
-          paused={false}
-          style={css.video}
-        />
+        <View style={css.vVideo}>
+          <Video
+            source={{ uri: convertUri(url) }}
+            paused={false}
+            controls={true}
+            resizeMode='contain'
+            style={css.video}
+          />
+        </View>
       )
     }
   }
-
+  const cssView = fileType === 'image' ? css.image : css.vVideo
   return (
-    <View style={css.image}>
+    <View style={cssView}>
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={css.loading} />
       )}

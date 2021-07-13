@@ -28,7 +28,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { formatFileType } from '../utils/formatFileType'
 import pickFile from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
-import { saveBlobImageToCache } from '../utils/saveBlob.web'
+import { saveBlobFile } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
@@ -403,18 +403,18 @@ class PageChatDetail extends React.Component<{
     console.log({ file })
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
-  handleSaveImageFileWeb = async (
+  handleSaveBlobFileWeb = async (
     data: Blob,
     file: ChatFile,
     chat: ChatMessage,
   ) => {
     const buddyId = this.props.buddy
     try {
-      const url = await saveBlobImageToCache(
-        data,
+      const url = await saveBlobFile(
         file.id,
         file.topic_id,
         file.fileType,
+        data,
       )
       Object.assign(file, { url: url })
       chatStore.upsertFile(file)
@@ -439,7 +439,7 @@ class PageChatDetail extends React.Component<{
         Object.assign(res.file, this.state.blobFile)
         Object.assign(res.file, { target: { user_id: buddyId } })
         if (Platform.OS === 'web') {
-          this.handleSaveImageFileWeb(
+          this.handleSaveBlobFileWeb(
             file as unknown as Blob,
             res.file as ChatFile,
             res.chat,

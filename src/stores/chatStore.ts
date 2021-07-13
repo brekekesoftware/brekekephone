@@ -6,7 +6,7 @@ import { Conference } from '../api/brekekejs'
 import uc, { Constants } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
-import { saveBlobImage } from '../utils/saveBlob'
+import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'
 
@@ -159,7 +159,7 @@ class ChatStore {
   @observable private filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
-    saveBlobImage(f.id, f.topic_id, f.fileType)
+    saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
         console.log({ url: url })
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {

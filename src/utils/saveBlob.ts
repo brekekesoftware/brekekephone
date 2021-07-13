@@ -20,7 +20,12 @@ export const saveBlob = (blob: Blob, name: string) => {
   }
   fr.readAsDataURL(blob)
 }
-export const saveBlobImage = (id: string, topic_id: string, type?: string) => {
+export const saveBlobFile = (
+  id: string,
+  topic_id: string,
+  type?: string,
+  data?: Blob,
+) => {
   const fileType = type || 'image'
   return new Promise(async (resolve, reject) => {
     const fr = new FileReader()
