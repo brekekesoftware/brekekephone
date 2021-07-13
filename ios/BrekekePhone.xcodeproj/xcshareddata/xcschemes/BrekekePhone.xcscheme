@@ -12,7 +12,7 @@
         <BuildableReference
           BuildableIdentifier="primary"
           BlueprintIdentifier="13B07F861A680F5B00A75B9A"
-          BuildableName="Brekeke Phone Dev.app"
+          BuildableName="Brekeke Phone.app"
           BlueprintName="BrekekePhone"
           ReferencedContainer="container:BrekekePhone.xcodeproj"
         />
@@ -42,7 +42,7 @@
       <BuildableReference
         BuildableIdentifier="primary"
         BlueprintIdentifier="13B07F861A680F5B00A75B9A"
-        BuildableName="Brekeke Phone Dev.app"
+        BuildableName="Brekeke Phone.app"
         BlueprintName="BrekekePhone"
         ReferencedContainer="container:BrekekePhone.xcodeproj"
       />
@@ -59,7 +59,7 @@
       <BuildableReference
         BuildableIdentifier="primary"
         BlueprintIdentifier="13B07F861A680F5B00A75B9A"
-        BuildableName="Brekeke Phone Dev.app"
+        BuildableName="Brekeke Phone.app"
         BlueprintName="BrekekePhone"
         ReferencedContainer="container:BrekekePhone.xcodeproj"
       />
