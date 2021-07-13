@@ -9,7 +9,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Pbx, PbxGetProductInfoRes } from './brekekejs'
 
 export class PBX extends EventEmitter {
-  client = null as unknown as Pbx
+  client?: Pbx
   private connectTimeoutId = 0
 
   connect = async (p: Profile) => {
@@ -147,7 +147,7 @@ export class PBX extends EventEmitter {
   disconnect = () => {
     if (this.client) {
       this.client.close()
-      this.client = null as unknown as Pbx
+      this.client = undefined
       console.error('PBX PN debug: pbx.client set to null')
     }
     this.clearConnectTimeoutId()
@@ -484,6 +484,19 @@ export class PBX extends EventEmitter {
       tenant,
       tid: talker,
       number: atNumber,
+    })
+    return true
+  }
+
+  sendDTMF = async (signal: string, tenant: string, talker_id: string) => {
+    await waitPbx()
+    if (!this.client) {
+      return false
+    }
+    await this.client._pal('sendDTMF', {
+      signal,
+      tenant,
+      talker_id,
     })
     return true
   }

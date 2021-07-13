@@ -256,11 +256,7 @@ export class SIP extends EventEmitter {
     }
     const dtmfSendMode = c['webrtcclient.dtmfSendMode']
     if (dtmfSendMode && dtmfSendMode !== 'false' && dtmfSendMode !== '0') {
-      await pbx.client._pal('sendDTMF', {
-        signal: p.signal,
-        tenant: p.tenant,
-        talker_id: p.talkerId,
-      })
+      await pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
       return
     }
     return this.phone?.sendDTMF(p.signal, p.sessionId)

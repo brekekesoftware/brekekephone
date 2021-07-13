@@ -26,6 +26,7 @@ export const updatePhoneIndexWithoutCatch = async (
   const phoneIndex = parseInt(p.pbxPhoneIndex) || 4
   const extProps = await api.getUserForSelf(p.pbxTenant, p.pbxUsername)
   if (!extProps) {
+    console.error('updatePhoneIndex.setExtensionProperties: extProps undefined')
     return null
   }
   const phone = extProps.phones[phoneIndex - 1]
@@ -35,7 +36,10 @@ export const updatePhoneIndexWithoutCatch = async (
   const phoneIdCorrect = phone.id === expectedPhoneId
   //
   const setExtensionProperties = async () => {
-    if (!extProps) {
+    if (!api.client) {
+      console.error(
+        'updatePhoneIndex.setExtensionProperties: api.client undefined',
+      )
       return
     }
     await api.client._pal('setExtensionProperties', {

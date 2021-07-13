@@ -11,7 +11,7 @@ import { arrToMap } from '../utils/toMap'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
-let resolveFn: Function | null
+let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
@@ -85,20 +85,18 @@ class ProfileStore {
   })
   loadProfilesFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
-    let x: {
-      profiles: Profile[]
-      profileData: ProfileData[]
-    } | null = null
+    let x: TProfileDataInStorage | undefined
     if (arr && !Array.isArray(arr)) {
       try {
         x = JSON.parse(arr)
       } catch (err) {
-        x = null
+        x = undefined
       }
     }
     if (x) {
       let { profileData, profiles } = x
       if (Array.isArray(x)) {
+        // Lower version compatible
         profiles = x
         profileData = []
       }
@@ -107,11 +105,9 @@ class ProfileStore {
         this.profileData = uniqBy(profileData, 'id') as unknown as ProfileData[]
       })
     }
-    if (resolveFn) {
-      resolveFn()
-      resolveFn = null
-      this.profilesLoadedObservable = true
-    }
+    resolveFn?.()
+    resolveFn = undefined
+    this.profilesLoadedObservable = true
   }
   saveProfilesToLocalStorage = async () => {
     try {
@@ -163,7 +159,7 @@ class ProfileStore {
       })
     }
   }
-  getProfileData = (p: Profile | null | undefined) => {
+  getProfileData = (p?: Profile) => {
     if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
       return {
         id: '',
@@ -210,3 +206,8 @@ export const getAccountUniqueId = (p: Profile) =>
   })
 
 export default new ProfileStore()
+
+export type TProfileDataInStorage = {
+  profiles: Profile[]
+  profileData: ProfileData[]
+}

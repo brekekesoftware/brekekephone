@@ -581,17 +581,17 @@ export class UC extends EventEmitter {
   }
 
   sendFile = async (user_id: string, file: Blob) => {
-    let inputw: HTMLInputElement | null = null
+    let inputw: HTMLInputElement | undefined
     if (Platform.OS === 'web') {
       inputw = document.createElement('input')
       inputw.type = 'file'
       inputw.name = 'file'
       inputw.files = (() => {
-        let b: DataTransfer | null = null
+        let b: DataTransfer | undefined
         if (window.DataTransfer) {
           b = new DataTransfer()
         } else if (window.ClipboardEvent) {
-          b = new ClipboardEvent('').clipboardData
+          b = new ClipboardEvent('').clipboardData || undefined
         }
         if (!b) {
           console.error('Can not set input.files')
@@ -605,7 +605,7 @@ export class UC extends EventEmitter {
       form.appendChild(inputw)
     }
 
-    let inputrn: object | null = null
+    let inputrn: object | undefined
     if (Platform.OS !== 'web') {
       const fd = new FormData()
       fd.append('file', {
@@ -651,18 +651,18 @@ export class UC extends EventEmitter {
   }
 
   sendFiles = async (conf_id: string, file: Blob) => {
-    let inputw: HTMLInputElement | null = null
+    let inputw: HTMLInputElement | undefined
     if (Platform.OS === 'web') {
       inputw = document.createElement('input')
       inputw.type = 'file'
       inputw.name = 'file'
       inputw.files = (() => {
-        let b: DataTransfer | null = null
+        let b: DataTransfer | undefined
         if (window.DataTransfer) {
           b = new DataTransfer()
         } else if (window.ClipboardEvent) {
           const e = new ClipboardEvent('')
-          b = e.clipboardData
+          b = e.clipboardData || undefined
         }
         if (!b) {
           console.error('Can not set input.files')
@@ -675,7 +675,7 @@ export class UC extends EventEmitter {
       form.appendChild(inputw)
     }
 
-    let inputrn: object | null = null
+    let inputrn: object | undefined
     if (Platform.OS !== 'web') {
       const fd = new FormData()
 
