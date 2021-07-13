@@ -424,9 +424,7 @@ const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
   if (!isEndedFromCallClass) {
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     const pnData = getCallPnData(uuid)
-    if (c) {
-      c.hangupWithUnhold()
-    } else if (pnData) {
+    if (!c && pnData) {
       // Save call history
       const as = getAuthStore()
       as.pushRecentCall({
