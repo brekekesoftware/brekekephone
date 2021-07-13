@@ -63,19 +63,25 @@ const syncPnTokenWithoutCatch = async (
     } PN for account ${p.pbxUsername}`,
   )
 
+  const arr: Promise<unknown>[] = []
   if (t) {
-    await fn({
-      username: webPhone.id,
-      device_id: t,
-    })
+    arr.push(
+      fn({
+        username: webPhone.id,
+        device_id: t,
+      }),
+    )
   }
   if (tvoip) {
-    await fn({
-      username: webPhone.id,
-      device_id: tvoip,
-      voip: true,
-    })
+    arr.push(
+      fn({
+        username: webPhone.id,
+        device_id: tvoip,
+        voip: true,
+      }),
+    )
   }
+  await Promise.all(arr)
 
   console.error('PBX PN debug: disconnect by syncPnToken')
   pbx.disconnect()
