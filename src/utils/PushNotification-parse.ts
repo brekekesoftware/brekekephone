@@ -1,7 +1,7 @@
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import RnUuid from 'react-native-uuid'
+import { v4 as newUuid } from 'uuid'
 
 import { getAuthStore } from '../stores/authStore'
 import {
@@ -205,7 +205,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   setLastCallPnData(n)
   if (Platform.OS === 'android' && !isPnCanceledFromSip(n.id)) {
-    const uuid = String(RnUuid.v4()).toUpperCase()
+    const uuid = newUuid().toUpperCase()
     setCallPnData(uuid, n)
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
     if (hasCallKeepRunning()) {
