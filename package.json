@@ -10,7 +10,7 @@
     "shake": "adb shell input keyevent 82",
     "ios": "react-native run-ios",
     "bitcode": "[ -d node_modules/react-native-webrtc/ios/WebRTC.dSYM ] || bash node_modules/react-native-webrtc/tools/downloadBitcode.sh",
-    "clean": "yarn --check-files && rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/* && cd ios && pod install && cd .. npx jetify && cd android && ./gradlew clean",
+    "clean": "yarn --check-files && rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/* && cd ios && pod install && cd .. && npx jetify && cd android && ./gradlew clean",
     "build": "del-cli -f node_modules/.cache/babel* && craco build",
     "intl": "del-cli -f .babelPluginIntl.json && cross-env EXTRACT_INTL=1 yarn build",
     "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --loglevel=error --ignore-path=.gitignore --write .",
