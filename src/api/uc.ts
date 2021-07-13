@@ -6,6 +6,7 @@ import { Platform } from 'react-native'
 
 import { ChatFile } from '../stores/chatStore'
 import { Profile } from '../stores/profileStore'
+import { formatFileType } from '../utils/formatFileType'
 import {
   UcChatClient,
   UcConference,
@@ -120,13 +121,7 @@ export class UC extends EventEmitter {
     if (!ev || !ev.fileInfo) {
       return
     }
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      ev.fileInfo.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
-
+    const fileType = formatFileType(ev.fileInfo.name)
     const file = {
       id: ev.fileInfo.file_id,
       name: ev.fileInfo.name,
