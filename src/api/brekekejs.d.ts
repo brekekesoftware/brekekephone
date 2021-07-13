@@ -245,6 +245,7 @@ export type Sip = {
 
   setDefaultCallOptions(options: CallOptions): void
   getSession(sessionId: string): Session
+  getSessionCount(): number
   makeCall(number: string, options: null, videoEnabled?: boolean): void
   answer(sessionId: string, options: null, videoEnabled?: boolean): void
   setWithVideo(sessionId: string, withVideo?: boolean): void
@@ -252,6 +253,10 @@ export type Sip = {
 
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
+
+  _ua?: {
+    on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
+  }
 }
 
 export type SipConstructorOptions = {

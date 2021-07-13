@@ -10,6 +10,7 @@ import { observer } from 'mobx-react'
 import { ReactElementLike } from 'prop-types'
 import React, { FC, useRef } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   Platform,
   StyleSheet,
@@ -155,6 +156,18 @@ const css = StyleSheet.create({
   Field_ErrorLabel: {
     color: g.revColor,
   },
+  Loading: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'black',
+    opacity: 0.3,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 })
 
 const noop = () => {}
@@ -192,6 +205,7 @@ const Field: FC<
     secureTextEntry: boolean
     iconRender: Function
     error: string
+    loading: boolean
   }>
 > = observer(({ ...props }) => {
   if (props.isGroup) {
@@ -374,6 +388,11 @@ const Field: FC<
               style={css.Field_Icon}
             />
           ))}
+        {props.loading && (
+          <View style={css.Loading}>
+            <ActivityIndicator size='small' color='white' />
+          </View>
+        )}
       </Container>
       {props.error && (
         <RnTouchableOpacity

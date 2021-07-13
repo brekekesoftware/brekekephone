@@ -121,7 +121,8 @@ const ProfileCreateForm: FC<{
                     {
                       label: intl`Reconnect to server`,
                       onPress:
-                        getAuthStore().reconnectWithUcLoginFromAnotherPlace,
+                        getAuthStore()
+                          .resetFailureStateIncludeUcLoginFromAnotherPlace,
                     },
                   ]
                 : []),
