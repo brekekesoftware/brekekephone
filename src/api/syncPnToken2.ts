@@ -1,8 +1,6 @@
 import { Platform } from 'react-native'
 
-import { intlDebug } from '../stores/intl'
 import profileStore, { Profile } from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
 // @ts-ignore
 import PushNotification from '../utils/PushNotification'
 import { PBX } from './pbx'
@@ -63,19 +61,25 @@ const syncPnTokenWithoutCatch = async (
     } PN for account ${p.pbxUsername}`,
   )
 
+  const arr: Promise<unknown>[] = []
   if (t) {
-    await fn({
-      username: webPhone.id,
-      device_id: t,
-    })
+    arr.push(
+      fn({
+        username: webPhone.id,
+        device_id: t,
+      }),
+    )
   }
   if (tvoip) {
-    await fn({
-      username: webPhone.id,
-      device_id: tvoip,
-      voip: true,
-    })
+    arr.push(
+      fn({
+        username: webPhone.id,
+        device_id: tvoip,
+        voip: true,
+      }),
+    )
   }
+  await Promise.all(arr)
 
   console.error('PBX PN debug: disconnect by syncPnToken')
   pbx.disconnect()
@@ -91,34 +95,30 @@ const syncPnTokenWithoutCatch = async (
 }
 
 export interface SyncPnTokenOption {
-  silent?: boolean
   noUpsert?: boolean
+  onError?: (err: Error) => void
 }
 
 const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
-  const { silent = false } = o
   return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
     profileStore.pnSyncLoadingMap[p.id] = false
-    if (silent) {
-      console.error(
-        `Failed to sync Push Notification settings for ${p.pbxUsername}`,
-        err,
-      )
+    if (o.onError) {
+      o.onError(err)
       return
     }
-    RnAlert.error({
-      message: intlDebug`Failed to sync Push Notification settings for ${p.pbxUsername}`,
+    console.error(
+      `Failed to sync Push Notification settings for ${p.pbxUsername}`,
       err,
-    })
+    )
   })
 }
 
-const syncPnTokenForAllAccounts = (silent = false) => {
+const syncPnTokenForAllAccounts = () => {
   profileStore.profiles.forEach(p => {
     if (p.pushNotificationEnabledSynced) {
       return
     }
-    syncPnToken(p, { silent })
+    syncPnToken(p)
   })
 }
 

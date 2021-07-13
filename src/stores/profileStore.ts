@@ -3,7 +3,7 @@ import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable, runInAction } from 'mobx'
 import { Platform } from 'react-native'
-import { v4 as newUuid } from 'react-native-uuid'
+import RnUuid from 'react-native-uuid'
 
 import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
@@ -11,7 +11,7 @@ import { arrToMap } from '../utils/toMap'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
-let resolveFn: Function | null
+let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
@@ -69,7 +69,7 @@ class ProfileStore {
   @observable profilesLoadedObservable = false
   profilesLoaded = () => profilesLoaded
   genEmptyProfile = (): Profile => ({
-    id: newUuid(),
+    id: String(RnUuid.v4()),
     pbxTenant: '',
     pbxUsername: '',
     pbxHostname: '',
@@ -85,20 +85,18 @@ class ProfileStore {
   })
   loadProfilesFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
-    let x: {
-      profiles: Profile[]
-      profileData: ProfileData[]
-    } | null = null
+    let x: TProfileDataInStorage | undefined
     if (arr && !Array.isArray(arr)) {
       try {
         x = JSON.parse(arr)
       } catch (err) {
-        x = null
+        x = undefined
       }
     }
     if (x) {
       let { profileData, profiles } = x
       if (Array.isArray(x)) {
+        // Lower version compatible
         profiles = x
         profileData = []
       }
@@ -107,11 +105,9 @@ class ProfileStore {
         this.profileData = uniqBy(profileData, 'id') as unknown as ProfileData[]
       })
     }
-    if (resolveFn) {
-      resolveFn()
-      resolveFn = null
-      this.profilesLoadedObservable = true
-    }
+    resolveFn?.()
+    resolveFn = undefined
+    this.profilesLoadedObservable = true
   }
   saveProfilesToLocalStorage = async () => {
     try {
@@ -132,22 +128,29 @@ class ProfileStore {
     if (!p1) {
       this.profiles.push(p as Profile)
     } else {
-      const pn1 = p1.pushNotificationEnabled
-      const p0 = { ...p1 }
+      const p0 = { ...p1 } // Clone before assign
       Object.assign(p1, p)
-      const id0 = getAccountUniqueId(p0)
-      const id1 = getAccountUniqueId(p1)
-      if (id0 !== id1) {
+      if (getAccountUniqueId(p0) !== getAccountUniqueId(p1)) {
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {
           noUpsert: true,
         })
       } else if (
         typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== pn1
+        p.pushNotificationEnabled !== p0.pushNotificationEnabled
       ) {
         p1.pushNotificationEnabledSynced = false
-        SyncPnToken().sync(p1)
+        SyncPnToken().sync(p1, {
+          onError: err => {
+            RnAlert.error({
+              message: intlDebug`Failed to sync Push Notification settings for ${p1.pbxUsername}`,
+              err,
+            })
+            p1.pushNotificationEnabled = p0.pushNotificationEnabled
+            p1.pushNotificationEnabledSynced = p0.pushNotificationEnabledSynced
+            this.saveProfilesToLocalStorage()
+          },
+        })
       }
     }
     this.saveProfilesToLocalStorage()
@@ -163,7 +166,7 @@ class ProfileStore {
       })
     }
   }
-  getProfileData = (p: Profile | null | undefined) => {
+  getProfileData = (p?: Profile) => {
     if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
       return {
         id: '',
@@ -210,3 +213,8 @@ export const getAccountUniqueId = (p: Profile) =>
   })
 
 export default new ProfileStore()
+
+export type TProfileDataInStorage = {
+  profiles: Profile[]
+  profileData: ProfileData[]
+}

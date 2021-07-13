@@ -8,7 +8,7 @@ import {
 } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { FC } from 'react'
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { endCallKeepAll } from '../stores/callStore'
@@ -44,18 +44,6 @@ const css = StyleSheet.create({
     bottom: 15,
     left: 15,
     right: 15,
-  },
-  Loading: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'black',
-    opacity: 0.3,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 })
 
@@ -106,6 +94,7 @@ const ProfileSignInItem: FC<{
           }
           type='Switch'
           value={p.pushNotificationEnabled}
+          loading={isLoading}
         />
       )}
       <Field
@@ -149,11 +138,6 @@ const ProfileSignInItem: FC<{
           onNextText={intl`SIGN IN`}
         />
       </View>
-      {isLoading && (
-        <View style={css.Loading}>
-          <ActivityIndicator size='small' color='white' />
-        </View>
-      )}
     </View>
   )
 })

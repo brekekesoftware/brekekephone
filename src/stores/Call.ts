@@ -56,7 +56,11 @@ export default class Call {
 
   isAboutToHangup = false
   hangupWithUnhold = async () => {
+    if (this.isAboutToHangup) {
+      return
+    }
     this.isAboutToHangup = true
+    this.store.endCallKeepByCall(this)
     if (this.holding) {
       if (!(await this.toggleHold())) {
         console.error(
@@ -66,7 +70,6 @@ export default class Call {
       await waitTimeout()
     }
     sip.hangupSession(this.id)
-    this.store.endCallKeepByCall(this)
   }
 
   @observable videoSessionId = ''
