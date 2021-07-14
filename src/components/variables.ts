@@ -44,6 +44,7 @@ const v = {
   subColor: fn.darken(0.75, 'white'),
   borderBg: fn.darken(0.15, 'white'),
   layerBg: fn.transparentize(0.2, 'black'),
+  layerBgVideo: '#00000080',
   //
   boxShadow: {
     shadowColor: 'black',

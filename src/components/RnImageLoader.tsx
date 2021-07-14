@@ -1,7 +1,14 @@
-import { mdiClose, mdiImageBrokenVariant, mdiPauseCircleOutline } from '@mdi/js'
+import {
+  mdiClose,
+  mdiCloseCircleOutline,
+  mdiImageBrokenVariant,
+  mdiPauseCircleOutline,
+  mdiPlayCircleOutline,
+} from '@mdi/js'
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
+  Dimensions,
   Image,
   Modal,
   Platform,
@@ -28,6 +35,18 @@ const css = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     overflow: 'hidden',
+  },
+  vlayerVideo: {
+    width: 150,
+    height: 150,
+    borderRadius: 5,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    alignItems: 'center',
+    overflow: 'hidden',
+    zIndex: 100,
+    backgroundColor: g.layerBgVideo,
   },
   vVideo: {
     width: 150,
@@ -62,6 +81,9 @@ const css = StyleSheet.create({
     top: getStatusBarHeight(true),
     right: 15,
     zIndex: 10,
+    elevation: 2,
+    borderRadius: 15,
+    backgroundColor: 'white',
   },
   btnPause: {
     position: 'absolute',
@@ -110,13 +132,24 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
   }, [])
 
   console.log({ state, url, id, name, incoming, fileType, isLoadSuccess })
-
-  const renderView = () => {
-    if (fileType === 'image') {
+  const renderVideo = () => {
+    if (Platform.OS === 'android') {
       return (
-        <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: convertUri(url) }} style={css.image} />
-        </RnTouchableOpacity>
+        <View style={css.vVideo}>
+          <Video
+            source={{ uri: convertUri(url) }}
+            resizeMode='contain'
+            muted
+            paused={true}
+            style={css.video}
+            pictureInPicture
+          />
+          <View style={css.vlayerVideo}>
+            <RnTouchableOpacity onPress={onShowImage}>
+              <RnIcon path={mdiPlayCircleOutline} color={'white'} size={40} />
+            </RnTouchableOpacity>
+          </View>
+        </View>
       )
     } else {
       return (
@@ -124,14 +157,22 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
+            paused={true}
             style={css.video}
+            controls={true}
           />
-          <RnTouchableOpacity style={css.btnClose} onPress={onShowImage}>
-            <RnIcon path={mdiPauseCircleOutline} color={'white'} size={30} />
-          </RnTouchableOpacity>
         </View>
       )
     }
+  }
+  const renderView = () => {
+    return fileType === 'image' ? (
+      <RnTouchableOpacity onPress={onShowImage}>
+        <FastImage source={{ uri: convertUri(url) }} style={css.image} />
+      </RnTouchableOpacity>
+    ) : (
+      renderVideo()
+    )
   }
   const cssView = fileType === 'image' ? css.image : css.vVideo
   return (
@@ -152,7 +193,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
       )}
       <Modal visible={visible} style={css.modal} animationType={'slide'}>
         <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
-          <RnIcon path={mdiClose} color={'black'} size={30} />
+          <RnIcon path={mdiCloseCircleOutline} color={'black'} size={30} />
         </RnTouchableOpacity>
         {isLoadSuccess &&
           (fileType === 'image' ? (
@@ -160,10 +201,16 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
           ) : (
             <Video
               source={{ uri: convertUri(url) }}
-              resizeMode='contain'
-              paused={false}
               controls={true}
-              style={{ width: '100%', height: '100%' }}
+              paused={false}
+              resizeMode='contain'
+              // style={{ width: Dimensions.get('screen').width, height: Dimensions.get('screen').height }}
+              style={{
+                aspectRatio:
+                  Dimensions.get('screen').width /
+                  Dimensions.get('screen').height,
+                width: '100%',
+              }}
             />
           ))}
       </Modal>

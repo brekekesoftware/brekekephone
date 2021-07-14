@@ -84,7 +84,6 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
           <video
             controls
             src={objectURL}
-            autoPlay
             playsInline
             width='320'
             height='240'
