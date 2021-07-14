@@ -28,6 +28,10 @@ import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
 const css = StyleSheet.create({
+  vVideoModal: {
+    width: Dimensions.get('screen').width,
+    height: Dimensions.get('window').height,
+  },
   video: {
     width: 150,
     height: 150,
@@ -204,13 +208,7 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
               controls={true}
               paused={false}
               resizeMode='contain'
-              // style={{ width: Dimensions.get('screen').width, height: Dimensions.get('screen').height }}
-              style={{
-                aspectRatio:
-                  Dimensions.get('screen').width /
-                  Dimensions.get('screen').height,
-                width: '100%',
-              }}
+              style={css.vVideoModal}
             />
           ))}
       </Modal>
