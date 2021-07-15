@@ -16,8 +16,6 @@ export const saveBlobImage = (id: string, topic_id: string, type?: string) => {
       const fr = new FileReader()
       fr.onload = async () => {
         const r = fr.result as string
-        console.log({ r })
-
         const cache = await caches.open(topic_id)
         const imageResponse = new Response(r)
         const urlCacheFile = `${topic_id}/${id}`
@@ -45,7 +43,6 @@ export const saveBlobFile = (
       const fr = new FileReader()
       fr.onloadend = async event => {
         const r = event.target?.result as ArrayBuffer
-        console.log({ r: r.byteLength })
         const cache = await caches.open(`${topic_id}`)
         const videoBlob = new Blob([r], {
           type: type === 'video' ? 'video/mp4' : 'image/jpg',

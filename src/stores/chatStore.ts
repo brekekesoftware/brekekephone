@@ -50,6 +50,8 @@ export type ChatGroup = {
   webchat?: Conference // check group is webchat
 }
 export const TIMEOUT_TRANSFER_IMAGE = 60000
+export const TIMEOUT_TRANSFER_VIDEO = 180000
+
 class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
@@ -161,7 +163,6 @@ class ChatStore {
   download = (f: ChatFile) => {
     saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
-        console.log({ url: url })
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: url,
         })
@@ -172,12 +173,15 @@ class ChatStore {
         })
       })
   }
-  startTimeout = (id: string) => {
+  startTimeout = (id: string, fileType?: string) => {
     if (!!!this.timeoutTransferImage[id]) {
-      this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(() => {
-        this.clearTimeout(id)
-        uc.rejectFile({ id })
-      }, TIMEOUT_TRANSFER_IMAGE)
+      this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(
+        () => {
+          this.clearTimeout(id)
+          uc.rejectFile({ id })
+        },
+        fileType === 'video' ? TIMEOUT_TRANSFER_VIDEO : TIMEOUT_TRANSFER_IMAGE,
+      )
     }
   }
   clearTimeout = (id: string) => {
@@ -195,7 +199,7 @@ class ChatStore {
       if (f.incoming && fileTypeImageVideo) {
         this.download(f as ChatFile)
       }
-      // this.startTimeout(f.id)
+      this.startTimeout(f.id, f.fileType)
     } else {
       this.filesMap[f.id] = Object.assign(f0, f)
       const state =

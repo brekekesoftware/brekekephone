@@ -28,6 +28,7 @@ import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { formatFileType } from '../utils/formatFileType'
 import pickFile from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
 import { saveBlobFile } from '../utils/saveBlob.web'
@@ -378,12 +379,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
+    const fileType = formatFileType(file.name)
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
 

@@ -17,7 +17,7 @@ import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import RnPicker from '../stores/RnPicker'
 import { formatChatContent } from '../utils/formatChatContent'
-import ItemImageChat from './ItemImageChat'
+import ItemImageVideoChat from './ItemImageVideoChat'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
@@ -289,7 +289,7 @@ class Message extends React.Component<{
             </Hyperlink>
           </TextContainer>
         )}
-        {!!file && isImage && <ItemImageChat {...file} />}
+        {!!file && isImage && <ItemImageVideoChat {...file} />}
         {!!file && !isImage && (
           <File
             {...p.file}

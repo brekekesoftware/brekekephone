@@ -8,26 +8,38 @@ import { ChatFile } from '../stores/chatStore'
 import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
+const size = 200
 const css = StyleSheet.create({
   image: {
-    width: 150,
-    height: 150,
+    width: size,
+    height: size,
     borderRadius: 5,
     overflow: 'hidden',
   },
   video: {
-    width: 320,
-    height: 240,
+    width: size,
+    height: size,
     borderRadius: 5,
     backgroundColor: g.borderBg,
+    overflow: 'hidden',
   },
   loading: {
     position: 'absolute',
     top: 0,
     left: 0,
     backgroundColor: g.layerBg,
-    width: 150,
-    height: 150,
+    width: size,
+    height: size,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  loadingVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: g.layerBg,
+    width: size,
+    height: size,
     borderRadius: 5,
     overflow: 'hidden',
   },
@@ -38,12 +50,15 @@ const css = StyleSheet.create({
     aspectRatio: 1,
     alignItems: 'center',
     width: '100%',
-    height: 150,
+    height: size,
   },
 })
-const size = '100%'
 
-const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
+const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
+  url,
+  state,
+  fileType,
+}) => {
   const [objectURL, setObjectUrl] = useState<string>('')
 
   const onShowImage = useCallback(() => {
@@ -61,7 +76,6 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
       const response = await cache.match(request)
       const blobFile = await response?.blob()
       const objectURL = URL.createObjectURL(blobFile)
-      // console.log({ response: newBlob?.size})
       objectURL && setObjectUrl(objectURL)
     } catch (error) {
       setObjectUrl('')
@@ -85,8 +99,8 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
             controls
             src={objectURL}
             playsInline
-            width='320'
-            height='240'
+            width={size}
+            height={size}
           />
         </View>
       )
@@ -99,11 +113,12 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
   if (state === 'success' && !!!objectURL) {
     return null
   }
-  const cssView = fileType === 'image' ? css.image : {}
+  const cssView = fileType === 'image' ? css.image : css.video
+  const cssLoading = fileType === 'image' ? css.loading : css.loadingVideo
   return (
     <View style={[cssView]}>
       {isLoading && (
-        <ActivityIndicator size='small' color='white' style={css.loading} />
+        <ActivityIndicator size='small' color='white' style={cssLoading} />
       )}
       {isLoadSuccess && renderView()}
       {isLoadFailed && (
@@ -120,4 +135,4 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state, fileType }) => {
   )
 }
 
-export default RnImageLoader
+export default RnImageVideoLoader

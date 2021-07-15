@@ -400,7 +400,6 @@ class PageChatDetail extends React.Component<{
 
   readFile = (file: { type: string; name: string; uri: string }) => {
     const fileType = formatFileType(file.name)
-    console.log({ file })
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
   handleSaveBlobFileWeb = async (
@@ -424,16 +423,8 @@ class PageChatDetail extends React.Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUcUserById(this.props.buddy)
-    console.log({ file })
-
-    // var data1 =  URL.createObjectURL(
-    //   file as unknown as Blob,
-    // )
-    // this.setState({blobVideo: data1})
-
     uc.sendFile(u?.id, file as unknown as Blob)
       .then(res => {
-        console.log({ res })
         this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
         Object.assign(res.file, this.state.blobFile)

@@ -8,7 +8,7 @@ import { ChatFile } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import { formatBytes } from '../utils/formatBytes'
-import { RnIcon, RnImageLoader, RnText } from './Rn'
+import { RnIcon, RnImageVideoLoader, RnText } from './Rn'
 import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
@@ -40,7 +40,7 @@ const css = StyleSheet.create({
   },
 })
 
-const ItemImageChat: FC<ChatFile> = observer(p => {
+const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
     p.incoming || !p.target?.user_id ? '' : ` -> ${p.target?.user_id}`
   const isStopped = p.state === 'stopped'
@@ -75,10 +75,10 @@ const ItemImageChat: FC<ChatFile> = observer(p => {
             </RnTouchableOpacity>
           )}
         </View>
-        {<RnImageLoader {...p} />}
+        {<RnImageVideoLoader {...p} />}
       </View>
     </View>
   )
 })
 
-export default ItemImageChat
+export default ItemImageVideoChat

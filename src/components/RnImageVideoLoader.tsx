@@ -1,15 +1,12 @@
 import {
-  mdiClose,
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
-  mdiPauseCircleOutline,
   mdiPlayCircleOutline,
 } from '@mdi/js'
-import React, { FC, useCallback, useEffect, useState } from 'react'
+import React, { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
-  Image,
   Modal,
   Platform,
   StyleSheet,
@@ -99,7 +96,7 @@ const css = StyleSheet.create({
   },
 })
 const size = 150
-const RnImageLoader: FC<ViewProps & ChatFile> = ({
+const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
   state,
   id,
@@ -110,7 +107,6 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
   const [visible, setIsVisible] = useState(false)
 
   const images = url ? [{ url: url }] : []
-
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
@@ -131,11 +127,9 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
       return url
     }
     const nextUrl = url.startsWith('file://') ? url : `file://${url}`
-    console.log({ nextUrl })
     return nextUrl
   }, [])
 
-  console.log({ state, url, id, name, incoming, fileType, isLoadSuccess })
   const renderVideo = () => {
     if (Platform.OS === 'android') {
       return (
@@ -216,4 +210,4 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({
   )
 }
 
-export default RnImageLoader
+export default RnImageVideoLoader
