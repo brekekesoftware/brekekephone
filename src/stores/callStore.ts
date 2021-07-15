@@ -94,7 +94,7 @@ export class CallStore {
     // Auto reconnect if no activity after 2s
     if (Date.now() - this.recentCallActivityAt > 2000) {
       const as = getAuthStore()
-      if (as.sipState === 'connecting' && as.lastSipAuth < 5000) {
+      if (as.sipState === 'connecting' && Date.now() - as.lastSipAuth < 5000) {
         return
       }
       if (!sip.phone?.getSessionCount()) {
@@ -424,9 +424,7 @@ const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
   if (!isEndedFromCallClass) {
     const c = callStore.calls.find(c => c.callkeepUuid === uuid)
     const pnData = getCallPnData(uuid)
-    if (c) {
-      c.hangupWithUnhold()
-    } else if (pnData) {
+    if (!c && pnData) {
       // Save call history
       const as = getAuthStore()
       as.pushRecentCall({
