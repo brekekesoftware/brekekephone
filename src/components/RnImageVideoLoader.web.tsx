@@ -20,8 +20,8 @@ const css = StyleSheet.create({
     width: size,
     height: size,
     borderRadius: 5,
-    backgroundColor: g.borderBg,
     overflow: 'hidden',
+    backgroundColor: g.layerBgVideo,
   },
   loading: {
     position: 'absolute',
@@ -113,10 +113,9 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   if (state === 'success' && !!!objectURL) {
     return null
   }
-  const cssView = fileType === 'image' ? css.image : css.video
   const cssLoading = fileType === 'image' ? css.loading : css.loadingVideo
   return (
-    <View style={[cssView]}>
+    <View style={[css.image]}>
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={cssLoading} />
       )}

@@ -172,9 +172,8 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       renderVideo()
     )
   }
-  const cssView = fileType === 'image' ? css.image : css.vVideo
   return (
-    <View style={cssView}>
+    <View style={css.image}>
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={css.loading} />
       )}

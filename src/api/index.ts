@@ -4,7 +4,7 @@ import { authPBX } from '../stores/AuthPBX'
 import { getAuthStore, waitPbx, waitSip } from '../stores/authStore'
 import Call from '../stores/Call'
 import callStore from '../stores/callStore'
-import chatStore from '../stores/chatStore'
+import chatStore, { FileEvent } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
@@ -219,7 +219,7 @@ class Api {
     state: string
     transferPercent: number
   }) => {
-    chatStore.upsertFile(file)
+    chatStore.upsertFile(file, FileEvent.onFileProgress)
   }
   onFileFinished = (file: {
     id: string

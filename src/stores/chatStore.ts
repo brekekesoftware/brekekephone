@@ -49,8 +49,13 @@ export type ChatGroup = {
   members: string[]
   webchat?: Conference // check group is webchat
 }
-export const TIMEOUT_TRANSFER_IMAGE = 60000
-export const TIMEOUT_TRANSFER_VIDEO = 180000
+export const FileEvent = {
+  onFileReceived: 'onFileReceived',
+  onFileProgress: 'onFileProgress',
+  onFileFinished: 'onFileFinished',
+}
+export const TIMEOUT_TRANSFER_IMAGE = 30000
+export const TIMEOUT_TRANSFER_VIDEO = 600000
 
 class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
@@ -190,7 +195,17 @@ class ChatStore {
       delete this.timeoutTransferImage[id]
     }
   }
-  upsertFile = (f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
+  updateTimeout = (id: string) => {
+    if (!!this.timeoutTransferImage[id]) {
+      this.clearTimeout(id)
+      this.startTimeout(id)
+    }
+  }
+
+  upsertFile = (
+    f: Partial<ChatFile> & Pick<ChatFile, 'id'>,
+    fromEvent?: string,
+  ) => {
     const f0 = this.filesMap[f.id]
     if (!f0) {
       this.filesMap[f.id] = f as ChatFile
@@ -201,11 +216,15 @@ class ChatStore {
       }
       this.startTimeout(f.id, f.fileType)
     } else {
-      this.filesMap[f.id] = Object.assign(f0, f)
       const state =
         f.state === 'stopped' || f.state === 'success' || f.state === 'failure'
-      if (state) {
-        this.clearTimeout(f.id)
+      this.filesMap[f.id] = Object.assign(f0, f)
+      if (fromEvent && fromEvent === FileEvent.onFileProgress) {
+        this.updateTimeout(f.id)
+      } else {
+        if (state) {
+          this.clearTimeout(f.id)
+        }
       }
     }
   }
