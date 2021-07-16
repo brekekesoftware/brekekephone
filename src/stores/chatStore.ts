@@ -205,7 +205,7 @@ class ChatStore {
       const state =
         f.state === 'stopped' || f.state === 'success' || f.state === 'failure'
       if (state) {
-        // this.clearTimeout(f.id)
+        this.clearTimeout(f.id)
       }
     }
   }
