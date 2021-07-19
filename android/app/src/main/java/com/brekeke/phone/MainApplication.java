@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phone;
 
 import android.app.Application;
 import android.content.Context;
@@ -51,7 +51,7 @@ public class MainApplication extends Application implements ReactApplication {
       Context context, ReactInstanceManager reactInstanceManager) {
     if (BuildConfig.DEBUG) {
       try {
-        Class.forName("com.brekeke.phonedev.ReactNativeFlipper")
+        Class.forName("com.brekeke.phone.ReactNativeFlipper")
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);
       } catch (ClassNotFoundException e) {
