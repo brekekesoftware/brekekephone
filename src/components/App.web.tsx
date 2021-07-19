@@ -97,7 +97,7 @@ export const App = () => {
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phonedev;end`
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phone;end`
     child = (
       <>
         <RnImage
