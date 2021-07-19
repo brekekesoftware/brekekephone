@@ -30,9 +30,10 @@ export class CallStore {
     if (!pnId) {
       return
     }
-    pnCanceledFromSipMap[pnId] = true
-    const n = Object.entries(callPnDataMap).find(([uuid, n]) => n.id === pnId)
-    const uuid = n?.[0] || this.recentPn?.uuid || this.prevCallKeepUuid || ''
+    pnCanceledMap[pnId] = true
+    const n = Object.values(callPnDataMap).find(n => n.id === pnId)
+    const uuid =
+      n?.callkeepUuid || this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
     endCallKeep(uuid, true)
   }
@@ -57,8 +58,8 @@ export class CallStore {
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
     // Find the current incoming call which is not callkeep
     const pnData = getCallPnData(uuid)
-    if (isPnCanceledFromSip(pnData?.id)) {
-      this.onCallKeepEndCall(uuid)
+    if (isPnCanceled(pnData?.id)) {
+      endCallKeep(uuid)
       return
     }
     const c = this.getIncomingCallKeep(uuid, {
@@ -137,19 +138,6 @@ export class CallStore {
     endCallKeep(uuid)
   }
 
-  endCallKeepByCall = (
-    // To keep reference on the Call type, use Pick
-    c?: Pick<Call, 'callkeepUuid'> &
-      Partial<Pick<Call, 'callkeepAlreadyRejected'>>,
-  ) => {
-    if (c?.callkeepUuid) {
-      const uuid = c.callkeepUuid
-      c.callkeepUuid = ''
-      c.callkeepAlreadyRejected = true
-      endCallKeep(uuid, true)
-    }
-  }
-
   @observable calls: Call[] = []
   @observable currentCallId: string = ''
   currentCall = () => {
@@ -175,7 +163,7 @@ export class CallStore {
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
     IncomingCall.setBackgroundCalls(this.calls.length)
-
+    console.error(`PN ID debug: upsertCall pnId=${c.pnId}`)
     // Get and check callkeep
     let recentPnUuid = ''
     let recentPnAction = ''
@@ -210,28 +198,26 @@ export class CallStore {
   @action removeCall = (id: string) => {
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(c => c.id === id)
-    if (c) {
-      const as = getAuthStore()
-      as.pushRecentCall({
-        id: newUuid(),
-        incoming: c.incoming,
-        answered: c.answered,
-        partyName: c.partyName,
-        partyNumber: c.partyNumber,
-        duration: c.duration,
-        created: moment().format('HH:mm - MMM D'),
-      })
-      if (as.ucState === 'success' && c.duration && !c.incoming) {
-        uc.sendCallResult(c.duration, c.partyNumber)
-      }
+    if (!c) {
+      return
     }
-    this.calls = this.calls.filter(c => c.id !== id)
-    this.endCallKeepByCall(c)
+    addCallHistory(c)
+    pnCanceledMap[c.pnId] = true
+    this.calls = this.calls.filter(c0 => c0 !== c)
+    IncomingCall.setBackgroundCalls(this.calls.length)
+    if (c.callkeepUuid) {
+      const uuid = c.callkeepUuid
+      c.callkeepUuid = ''
+      c.callkeepAlreadyRejected = true
+      endCallKeep(uuid, true)
+    }
+    if (getAuthStore().ucState === 'success' && c.duration && !c.incoming) {
+      uc.sendCallResult(c.duration, c.partyNumber)
+    }
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
     }
-    IncomingCall.setBackgroundCalls(this.calls.length)
   }
 
   @action selectBackgroundCall = (c: Call) => {
@@ -421,22 +407,12 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
 }
 const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
   console.error('PN callkeep debug: endCallKeep ' + uuid)
-  if (!isEndedFromCallClass) {
-    const c = callStore.calls.find(c => c.callkeepUuid === uuid)
-    const pnData = getCallPnData(uuid)
-    if (!c && pnData) {
-      // Save call history
-      const as = getAuthStore()
-      as.pushRecentCall({
-        id: newUuid(),
-        incoming: true,
-        answered: false,
-        partyName: pnData.from,
-        partyNumber: pnData.from,
-        duration: 0,
-        created: moment().format('HH:mm - MMM D'),
-      })
-    }
+  const pnData = getCallPnData(uuid)
+  if (
+    pnData &&
+    !callStore.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id)
+  ) {
+    addCallHistory(pnData)
   }
   RNCallKeep.rejectCall(uuid)
   RNCallKeep.endCall(uuid)
@@ -504,16 +480,49 @@ export const showIncomingCallUi = (e: TEvent) => {
 // Move from pushNotification-parse.ts to avoid circular dependencies
 const callPnDataMap: { [uuid: string]: ParsedPn } = {}
 export const setCallPnData = (uuid: string, data: ParsedPn): void => {
+  console.error(`PN ID debug: setCallPnData pnId=${data.id}`)
+  data.callkeepUuid = uuid
   callPnDataMap[uuid] = data
 }
-let lastCallPnData: ParsedPn | undefined
-export const setLastCallPnData = (data: ParsedPn): void => {
-  lastCallPnData = data
-}
-export const getCallPnData = (uuid: string): ParsedPn | undefined =>
-  callPnDataMap[uuid] || lastCallPnData
+const getCallPnData = (uuid: string): ParsedPn | undefined =>
+  callPnDataMap[uuid]
 
 // Canceled pn from sip header event
-const pnCanceledFromSipMap: { [pnId: string]: true } = {}
-export const isPnCanceledFromSip = (pnId?: string): true | undefined =>
-  pnId ? pnCanceledFromSipMap[pnId] : undefined
+const pnCanceledMap: { [pnId: string]: true } = {}
+export const isPnCanceled = (pnId?: string): true | undefined =>
+  pnId ? pnCanceledMap[pnId] : undefined
+
+// Save call history
+const alreadyAddHistoryMap: { [pnId: string]: true } = {}
+const addCallHistory = (c: Call | ParsedPn) => {
+  const pnId =
+    c instanceof Call || 'partyName' in c || 'partyNumber' in c ? c.pnId : c.id
+  if (alreadyAddHistoryMap[pnId]) {
+    return
+  }
+  alreadyAddHistoryMap[pnId] = true
+  const as = getAuthStore()
+  const id = newUuid()
+  const created = moment().format('HH:mm - MMM D')
+  if (c instanceof Call || 'partyName' in c || 'partyNumber' in c) {
+    as.pushRecentCall({
+      id,
+      created,
+      incoming: c.incoming,
+      answered: c.answered,
+      partyName: c.partyName,
+      partyNumber: c.partyNumber,
+      duration: c.duration,
+    })
+  } else {
+    as.pushRecentCall({
+      id,
+      created,
+      incoming: true,
+      answered: false,
+      partyName: c.from,
+      partyNumber: c.from,
+      duration: 0,
+    })
+  }
+}

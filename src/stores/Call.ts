@@ -60,13 +60,14 @@ export default class Call {
       return
     }
     this.isAboutToHangup = true
-    this.store.endCallKeepByCall(this)
     if (this.holding) {
-      if (!(await this.toggleHold())) {
-        console.error(
-          'hangupWithUnhold: failed to unhold, possible issue with pbx connection',
-        )
-      }
+      await this.toggleHold().then(
+        success =>
+          !success &&
+          console.error(
+            'hangupWithUnhold: failed to unhold, possible issue with pbx connection',
+          ),
+      )
       await waitTimeout()
     }
     sip.hangupSession(this.id)

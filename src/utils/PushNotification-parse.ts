@@ -6,9 +6,8 @@ import { v4 as newUuid } from 'uuid'
 import { getAuthStore } from '../stores/authStore'
 import {
   hasCallKeepRunning,
-  isPnCanceledFromSip,
+  isPnCanceled,
   setCallPnData,
-  setLastCallPnData,
   showIncomingCallUi,
 } from '../stores/callStore'
 import waitTimeout from './waitTimeout'
@@ -203,8 +202,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       ? n
       : null
   }
-  setLastCallPnData(n)
-  if (Platform.OS === 'android' && !isPnCanceledFromSip(n.id)) {
+  if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
     const uuid = newUuid().toUpperCase()
     setCallPnData(uuid, n)
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
@@ -234,6 +232,7 @@ export type ParsedPn = {
   is_local_notification: boolean
   isCall: boolean
   sipPn: SipPn
+  callkeepUuid: string
 }
 export type SipPn = {
   phoneId: string

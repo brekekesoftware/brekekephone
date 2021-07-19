@@ -94,21 +94,6 @@ export class AuthStore {
   findProfile = (p: Partial<Profile>) => {
     return profileStore.profiles.find(p0 => compareProfile(p0, p))
   }
-  pushRecentCall = (call: {
-    id: string
-    incoming: boolean
-    answered: boolean
-    partyName: string
-    partyNumber: string
-    duration: number
-    created: string
-  }) => {
-    this.currentData.recentCalls = [call, ...this.currentData.recentCalls]
-    if (this.currentData.recentCalls.length > 20) {
-      this.currentData.recentCalls.pop()
-    }
-    profileStore.saveProfilesToLocalStorage()
-  }
   @computed private get profilesMap() {
     return arrToMap(profileStore.profiles, 'id', (p: Profile) => p) as {
       [k: string]: Profile
@@ -187,6 +172,22 @@ export class AuthStore {
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
     this.ucLoginFromAnotherPlace = false
+  }
+
+  pushRecentCall = (call: {
+    id: string
+    incoming: boolean
+    answered: boolean
+    partyName: string
+    partyNumber: string
+    duration: number
+    created: string
+  }) => {
+    this.currentData.recentCalls = [call, ...this.currentData.recentCalls]
+    if (this.currentData.recentCalls.length > 20) {
+      this.currentData.recentCalls.pop()
+    }
+    profileStore.saveProfilesToLocalStorage()
   }
 
   handleUrlParams = async () => {
