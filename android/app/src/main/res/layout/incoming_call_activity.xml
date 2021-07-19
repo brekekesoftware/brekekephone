@@ -6,7 +6,7 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
-  tools:context="com.brekeke.phonedev.IncomingCallActivity"
+  tools:context="com.brekeke.phone.IncomingCallActivity"
 >
   <!-- view_webrtc_video -->
   <RelativeLayout
