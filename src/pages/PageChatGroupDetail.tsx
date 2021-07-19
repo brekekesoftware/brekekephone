@@ -28,9 +28,10 @@ import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { formatFileType } from '../utils/formatFileType'
 import pickFile from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
-import { saveBlobImageToCache } from '../utils/saveBlob.web'
+import { saveBlobFile } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
@@ -378,12 +379,7 @@ class PageChatGroupDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
+    const fileType = formatFileType(file.name)
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
 
@@ -394,14 +390,19 @@ class PageChatGroupDetail extends React.Component<{
       .then(res => this.onSendFileSuccess(res, file as unknown as Blob))
       .catch(this.onSendFileFailure)
   }
-  handleSaveImageFileWeb = async (
+  handleSaveBlobFileWeb = async (
     data: Blob,
     file: ChatFile,
     chat: ChatMessage,
   ) => {
     const { groupId } = this.props
     try {
-      const url = await saveBlobImageToCache(data, file.id, file.topic_id)
+      const url = await saveBlobFile(
+        file.id,
+        file.topic_id,
+        file.fileType,
+        data,
+      )
       Object.assign(file, { url: url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(groupId, chat)
@@ -416,7 +417,7 @@ class PageChatGroupDetail extends React.Component<{
     this.setState({ topic_id: res.file.topic_id })
     Object.assign(res.file, blobFile)
     if (Platform.OS === 'web') {
-      this.handleSaveImageFileWeb(file, res.file as ChatFile, res.chat)
+      this.handleSaveBlobFileWeb(file, res.file as ChatFile, res.chat)
     } else {
       chatStore.upsertFile(res.file)
       chatStore.pushMessages(groupId, res.chat)

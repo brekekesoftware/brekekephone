@@ -6,7 +6,7 @@ import { Conference } from '../api/brekekejs'
 import uc, { Constants } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
-import { saveBlobImage } from '../utils/saveBlob'
+import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore } from './authStore'
 
@@ -49,7 +49,14 @@ export type ChatGroup = {
   members: string[]
   webchat?: Conference // check group is webchat
 }
-export const TIMEOUT_TRANSFER_IMAGE = 60000
+export const FileEvent = {
+  onFileReceived: 'onFileReceived',
+  onFileProgress: 'onFileProgress',
+  onFileFinished: 'onFileFinished',
+}
+export const TIMEOUT_TRANSFER_IMAGE = 30000
+export const TIMEOUT_TRANSFER_VIDEO = 600000
+
 class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
@@ -159,7 +166,7 @@ class ChatStore {
   @observable private filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
-    saveBlobImage(f.id, f.topic_id)
+    saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: url,
@@ -171,12 +178,15 @@ class ChatStore {
         })
       })
   }
-  startTimeout = (id: string) => {
+  startTimeout = (id: string, fileType?: string) => {
     if (!!!this.timeoutTransferImage[id]) {
-      this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(() => {
-        this.clearTimeout(id)
-        uc.rejectFile({ id })
-      }, TIMEOUT_TRANSFER_IMAGE)
+      this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(
+        () => {
+          this.clearTimeout(id)
+          uc.rejectFile({ id })
+        },
+        fileType === 'video' ? TIMEOUT_TRANSFER_VIDEO : TIMEOUT_TRANSFER_IMAGE,
+      )
     }
   }
   clearTimeout = (id: string) => {
@@ -185,20 +195,36 @@ class ChatStore {
       delete this.timeoutTransferImage[id]
     }
   }
-  upsertFile = (f: Partial<ChatFile> & Pick<ChatFile, 'id'>) => {
+  updateTimeout = (id: string) => {
+    if (!!this.timeoutTransferImage[id]) {
+      this.clearTimeout(id)
+      this.startTimeout(id)
+    }
+  }
+
+  upsertFile = (
+    f: Partial<ChatFile> & Pick<ChatFile, 'id'>,
+    fromEvent?: string,
+  ) => {
     const f0 = this.filesMap[f.id]
     if (!f0) {
       this.filesMap[f.id] = f as ChatFile
-      if (f.incoming && f.fileType === 'image') {
+      const fileTypeImageVideo =
+        f.fileType === 'image' || f.fileType === 'video'
+      if (f.incoming && fileTypeImageVideo) {
         this.download(f as ChatFile)
       }
-      this.startTimeout(f.id)
+      this.startTimeout(f.id, f.fileType)
     } else {
-      this.filesMap[f.id] = Object.assign(f0, f)
       const state =
         f.state === 'stopped' || f.state === 'success' || f.state === 'failure'
-      if (state) {
-        this.clearTimeout(f.id)
+      this.filesMap[f.id] = Object.assign(f0, f)
+      if (fromEvent && fromEvent === FileEvent.onFileProgress) {
+        this.updateTimeout(f.id)
+      } else {
+        if (state) {
+          this.clearTimeout(f.id)
+        }
       }
     }
   }

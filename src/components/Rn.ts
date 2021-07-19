@@ -2,7 +2,7 @@ import AsyncStorage0 from '@react-native-async-storage/async-storage'
 import Image0 from 'react-native-fast-image'
 
 import Icon0 from './RnIcon'
-import ImageLoader0 from './RnImageLoader'
+import ImageLoader0 from './RnImageVideoLoader'
 import StatusBar0 from './RnStatusBar'
 import Switch0 from './RnSwitch'
 import Text0 from './RnText'
@@ -23,7 +23,7 @@ export {
   AsyncStorage as RnAsyncStorage,
   Icon as RnIcon,
   Image as RnImage,
-  ImageLoader as RnImageLoader,
+  ImageLoader as RnImageVideoLoader,
   StatusBar as RnStatusBar,
   Switch as RnSwitch,
   Text as RnText,

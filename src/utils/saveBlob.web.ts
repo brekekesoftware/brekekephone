@@ -9,7 +9,7 @@ export const saveBlob = (blob: Blob, name: string) => {
   a.click()
   window.URL.revokeObjectURL(url)
 }
-export const saveBlobImage = (id: string, topic_id: string) => {
+export const saveBlobImage = (id: string, topic_id: string, type?: string) => {
   return new Promise(async (resolve, reject) => {
     try {
       const data: Blob = (await uc.acceptFile(id)) as Blob
@@ -31,26 +31,31 @@ export const saveBlobImage = (id: string, topic_id: string) => {
     }
   })
 }
-export const saveBlobImageToCache = (
-  data: Blob,
+export const saveBlobFile = (
   id: string,
   topic_id: string,
+  type?: string,
+  data?: Blob,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const dataBlob = data ? data : ((await uc.acceptFile(id)) as Blob)
       const fr = new FileReader()
-      fr.onload = async () => {
-        const r = fr.result as string
+      fr.onloadend = async event => {
+        const r = event.target?.result as ArrayBuffer
         const cache = await caches.open(`${topic_id}`)
-        const imageResponse = new Response(r)
+        const videoBlob = new Blob([r], {
+          type: type === 'video' ? 'video/mp4' : 'image/jpg',
+        })
+        const response = new Response(videoBlob)
         const urlCacheFile = `${topic_id}/${id}`
-        cache.put(id, imageResponse)
+        await cache.put(id, response)
         resolve(urlCacheFile)
       }
       fr.onerror = err => {
         console.error('saveBlob', err)
       }
-      fr.readAsDataURL(data)
+      fr.readAsArrayBuffer(dataBlob)
     } catch (error) {
       reject(error)
     }

@@ -25,9 +25,10 @@ import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { formatFileType } from '../utils/formatFileType'
 import pickFile from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
-import { saveBlobImageToCache } from '../utils/saveBlob.web'
+import { saveBlobFile } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
@@ -69,6 +70,7 @@ class PageChatDetail extends React.Component<{
     },
     topic_id: '',
     emojiTurnOn: false,
+    blobVideo: undefined,
   }
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
   edittingTextEmoji = ''
@@ -171,6 +173,7 @@ class PageChatDetail extends React.Component<{
             />
           </View>
         )}
+        {/* <video src={this.state.blobVideo}id='video' controls width='320' height='240'/> */}
       </Layout>
     )
   }
@@ -365,12 +368,7 @@ class PageChatDetail extends React.Component<{
   }
 
   onAcceptFileSuccess = (blob: Blob, file: { id: string; name: string }) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
+    const fileType = formatFileType(file.name)
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
@@ -401,22 +399,22 @@ class PageChatDetail extends React.Component<{
   }
 
   readFile = (file: { type: string; name: string; uri: string }) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
+    const fileType = formatFileType(file.name)
     this.setState({ blobFile: { url: file.uri, fileType: fileType } })
   }
-  handleSaveImageFileWeb = async (
+  handleSaveBlobFileWeb = async (
     data: Blob,
     file: ChatFile,
     chat: ChatMessage,
   ) => {
     const buddyId = this.props.buddy
     try {
-      const url = await saveBlobImageToCache(data, file.id, file.topic_id)
+      const url = await saveBlobFile(
+        file.id,
+        file.topic_id,
+        file.fileType,
+        data,
+      )
       Object.assign(file, { url: url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(buddyId, chat)
@@ -432,7 +430,7 @@ class PageChatDetail extends React.Component<{
         Object.assign(res.file, this.state.blobFile)
         Object.assign(res.file, { target: { user_id: buddyId } })
         if (Platform.OS === 'web') {
-          this.handleSaveImageFileWeb(
+          this.handleSaveBlobFileWeb(
             file as unknown as Blob,
             res.file as ChatFile,
             res.chat,

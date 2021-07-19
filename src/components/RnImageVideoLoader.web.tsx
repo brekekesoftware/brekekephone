@@ -8,20 +8,38 @@ import { ChatFile } from '../stores/chatStore'
 import RnTouchableOpacity from './RnTouchableOpacity'
 import g from './variables'
 
+const size = 200
 const css = StyleSheet.create({
   image: {
-    width: 150,
-    height: 150,
+    width: size,
+    height: size,
     borderRadius: 5,
     overflow: 'hidden',
+  },
+  video: {
+    width: size,
+    height: size,
+    borderRadius: 5,
+    overflow: 'hidden',
+    backgroundColor: g.layerBgVideo,
   },
   loading: {
     position: 'absolute',
     top: 0,
     left: 0,
     backgroundColor: g.layerBg,
-    width: 150,
-    height: 150,
+    width: size,
+    height: size,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  loadingVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: g.layerBg,
+    width: size,
+    height: size,
     borderRadius: 5,
     overflow: 'hidden',
   },
@@ -32,57 +50,76 @@ const css = StyleSheet.create({
     aspectRatio: 1,
     alignItems: 'center',
     width: '100%',
-    height: 150,
+    height: size,
   },
 })
-const size = '100%'
 
-const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
-  const [imageBase64, setImageBase64] = useState('')
+const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
+  url,
+  state,
+  fileType,
+}) => {
+  const [objectURL, setObjectUrl] = useState<string>('')
 
   const onShowImage = useCallback(() => {
     const image = new Image()
-    image.src = imageBase64 || ''
+    image.src = objectURL || ''
     const w = window.open('')
     w?.document.write(image.outerHTML)
-  }, [imageBase64])
+  }, [objectURL])
 
   const readImage = async (url: string) => {
     try {
       const urlImage = url.split('/')
       const cache = await caches.open(urlImage[0])
-      const request = new Request(urlImage[1], {
-        method: 'GET',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      })
+      const request = new Request(urlImage[1])
       const response = await cache.match(request)
-      const dataBase64 = await response?.text()
-      dataBase64 && setImageBase64(dataBase64)
+      const blobFile = await response?.blob()
+      const objectURL = URL.createObjectURL(blobFile)
+      objectURL && setObjectUrl(objectURL)
     } catch (error) {
-      setImageBase64('')
+      setObjectUrl('')
     }
   }
   useEffect(() => {
     url && readImage(url)
   }, [url])
 
+  const renderView = () => {
+    if (fileType === 'image') {
+      return (
+        <RnTouchableOpacity onPress={onShowImage}>
+          <FastImage source={{ uri: objectURL }} style={css.image} />
+        </RnTouchableOpacity>
+      )
+    } else {
+      return (
+        <View style={css.video}>
+          <video
+            controls
+            src={objectURL}
+            playsInline
+            width={size}
+            height={size}
+          />
+        </View>
+      )
+    }
+  }
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && !!imageBase64
-  if (state === 'success' && !!!imageBase64) {
+  const isLoadSuccess = state === 'success' && !!objectURL
+  if (state === 'success' && !!!objectURL) {
     return null
   }
+  const cssLoading = fileType === 'image' ? css.loading : css.loadingVideo
   return (
-    <View style={css.image}>
+    <View style={[css.image]}>
       {isLoading && (
-        <ActivityIndicator size='small' color='white' style={css.loading} />
+        <ActivityIndicator size='small' color='white' style={cssLoading} />
       )}
-      {isLoadSuccess && (
-        <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: imageBase64 }} style={css.image} />
-        </RnTouchableOpacity>
-      )}
+      {isLoadSuccess && renderView()}
       {isLoadFailed && (
         <Svg
           preserveAspectRatio='xMinYMin slice'
@@ -97,4 +134,4 @@ const RnImageLoader: FC<ViewProps & ChatFile> = ({ url, state }) => {
   )
 }
 
-export default RnImageLoader
+export default RnImageVideoLoader
