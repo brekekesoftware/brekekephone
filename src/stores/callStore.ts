@@ -158,12 +158,14 @@ export class CallStore {
       Object.assign(cExisting, cPartial)
       return
     }
+    if (cPartial.incoming) {
+      console.error(`PN ID debug: upsertCall pnId=${cPartial.pnId}`)
+    }
     // Construct a new call
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
     IncomingCall.setBackgroundCalls(this.calls.length)
-    console.error(`PN ID debug: upsertCall pnId=${c.pnId}`)
     // Get and check callkeep
     let recentPnUuid = ''
     let recentPnAction = ''
