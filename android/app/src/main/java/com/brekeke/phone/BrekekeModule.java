@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phone;
 
 import android.app.Activity;
 import android.app.KeyguardManager;

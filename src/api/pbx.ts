@@ -562,7 +562,7 @@ export class PBX extends EventEmitter {
     await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      application_id: 'com.brekeke.phone' + (voip ? '.voip' : ''),
       user_agent: 'react-native',
       username: username + (voip ? '@voip' : ''),
       device_id,
@@ -614,7 +614,7 @@ export class PBX extends EventEmitter {
     await this.client.call_pal('pnmanage', {
       command: 'remove',
       service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      application_id: 'com.brekeke.phone' + (voip ? '.voip' : ''),
       user_agent: 'react-native',
       username: username + (voip ? '@voip' : ''),
       device_id,

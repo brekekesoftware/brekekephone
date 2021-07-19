@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phone;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
