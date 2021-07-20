@@ -180,7 +180,7 @@ const UserItem: FC<
                 style={css.CallIcon}
               />
               <RnText normal small style={css.CallCreatedAt}>
-                {intl`at`} {created}
+                {intl`at ${created}`}
               </RnText>
             </View>
           )}

@@ -10,29 +10,21 @@ type CompileFn = (data: unknown) => string
 const compileFn = (locale: string, k: string): CompileFn => {
   const arr = labels[locale as 'en']
   const i = enLabelsMapIndex[k as keyof typeof enLabelsMapIndex]
-  //
   let fn = arr[i] as unknown as CompileFn
   if (!fn || typeof fn !== 'function') {
-    fn = Handlebars.compile(k)
+    fn = Handlebars.compile(fn)
   }
   if (i !== undefined) {
     arr[i] = fn as unknown as string
   }
-  //
   return fn
 }
 
-const intl0 = (k: string, data: unknown) => {
-  return compileFn(intlStore.locale, k)(data)
-}
-const intlDebug0 = (k: string, data: unknown) => {
-  return {
-    label: intl0(k, data),
-    en: compileFn('en', k)(data),
-  }
-}
-
-intlStore.initLocale()
+const intl0 = (k: string, data: unknown) => compileFn(intlStore.locale, k)(data)
+const intlDebug0 = (k: string, data: unknown) => ({
+  label: intl0(k, data),
+  en: compileFn('en', k)(data),
+})
 
 export interface IntlDebug {
   label: string

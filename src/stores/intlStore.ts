@@ -1,4 +1,4 @@
-import { computed, observable, runInAction } from 'mobx'
+import { action, computed, observable, runInAction } from 'mobx'
 
 import en from '../assets/intl-en.json'
 import ja from '../assets/intl-ja.json'
@@ -21,7 +21,7 @@ export const enLabelsMapIndex = arrToMap(
 
 export const localeOptions = [
   { key: 'en', label: 'English' },
-  // { key: 'ja', label: '日本語' },
+  { key: 'ja', label: '日本語' },
   // { key: 'vi', label: 'Tiếng Việt' },
 ]
 
@@ -33,13 +33,6 @@ export class IntlStore {
     return localeOptions.find(o => o.key === this.locale)?.label
   }
 
-  initLocale = async () => {
-    await this.getLocaleFromLocalStorage()
-    runInAction(() => {
-      this.localeReady = true
-      this.localeLoading = false
-    })
-  }
   private getLocaleFromLocalStorage = async () => {
     let locale = await RnAsyncStorage.getItem('locale')
     if (!locale || !labels[locale as 'en']) {
@@ -74,5 +67,11 @@ export class IntlStore {
       onSelect: this.setLocale,
     })
   }
+  loadingPromise = this.getLocaleFromLocalStorage().then(
+    action(() => {
+      this.localeReady = true
+      this.localeLoading = false
+    }),
+  )
 }
 export default new IntlStore()

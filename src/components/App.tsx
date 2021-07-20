@@ -24,6 +24,7 @@ import callStore from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
+import intlStore from '../stores/intlStore'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
@@ -84,13 +85,15 @@ const getAudioVideoPermission = () => {
 }
 
 if (Platform.OS === 'web') {
-  RnAlert.prompt({
-    title: intl`Action Required`,
-    message: intl`Web Phone needs your action to work well on browser. Press OK to continue`,
-    confirmText: 'OK',
-    dismissText: false,
-    onConfirm: getAudioVideoPermission,
-    onDismiss: getAudioVideoPermission,
+  intlStore.loadingPromise.then(() => {
+    RnAlert.prompt({
+      title: intl`Action Required`,
+      message: intl`Web Phone needs your action to work well on browser. Press OK to continue`,
+      confirmText: 'OK',
+      dismissText: false,
+      onConfirm: getAudioVideoPermission,
+      onDismiss: getAudioVideoPermission,
+    })
   })
 } else if (
   AppState.currentState === 'active' &&
