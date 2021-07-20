@@ -98,7 +98,11 @@ export class CallStore {
       if (as.sipState === 'connecting' && Date.now() - as.lastSipAuth < 5000) {
         return
       }
-      if (!sip.phone?.getSessionCount()) {
+      const c = sip.phone?.getSessionCount()
+      if (!c) {
+        console.error(
+          `SIP PN debug: call sip.disconnect in new notification: phone.getSessionCount()=${c}`,
+        )
         sip.disconnect()
         as.reconnectSip()
       }

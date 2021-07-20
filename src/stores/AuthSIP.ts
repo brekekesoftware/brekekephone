@@ -58,6 +58,9 @@ class AuthSIP {
     // May be due to the PN auth token has been expired
     waitSip().then(isConnected => {
       if (!isConnected) {
+        console.error(
+          'SIP PN debug: sip reconnect in authPnWithoutCatch: 10s has passed after received PN but still not connected',
+        )
         this.dispose()
         this.auth()
       }

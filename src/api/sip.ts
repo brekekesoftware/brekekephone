@@ -60,9 +60,13 @@ export class SIP extends EventEmitter {
         this.emit('connection-started')
         return
       }
-      if (ev.phoneStatus === 'stopping' || ev.phoneStatus === 'stopped') {
+      const s = ev.phoneStatus
+      if (s === 'stopping' || s === 'stopped') {
         phone.removeEventListener('phoneStatusChanged', h)
         this.emit('connection-stopped', ev)
+        console.error(
+          `SIP PN debug: call sip.disconnect because of event phoneStatusChanged: phoneStatus=${s}`,
+        )
         this.disconnect()
       }
     }
@@ -167,6 +171,7 @@ export class SIP extends EventEmitter {
   }
 
   connect = async (sipLoginOption: SipLoginOption) => {
+    console.error('SIP PN debug: call sip.disconnect in sip.connect')
     this.disconnect()
     const phone = await this.init(sipLoginOption)
     //
@@ -224,8 +229,11 @@ export class SIP extends EventEmitter {
 
   disconnect = () => {
     if (this.phone) {
+      console.error('SIP PN debug: sip.disconnect: call phone.stopWebRTC')
       this.phone.stopWebRTC()
       this.phone = undefined
+    } else {
+      console.error('SIP PN debug: sip.disconnect: already disconnected')
     }
   }
 
