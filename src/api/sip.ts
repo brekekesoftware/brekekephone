@@ -6,6 +6,7 @@ import { Platform } from 'react-native'
 
 import appPackageJson from '../../package.json'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
+import chatStore from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
 import getFrontCameraSourceId from './getFrontCameraSourceId'
 import pbx from './pbx'
@@ -90,16 +91,26 @@ export class SIP extends EventEmitter {
     // incomingMessage: null
     // remoteUserOptionsTable: {}
     // analyser: null
+    const getUcGroupName = (partyNumber: string) => {
+      const groupId = partyNumber.replace('uc', '')
+      const groupInfo = chatStore.getGroupById(groupId)
+      return groupInfo?.name || ''
+    }
     phone.addEventListener('sessionCreated', ev => {
       if (!ev) {
         return
       }
+      const partyNumber = ev.rtcSession.remote_identity.uri.user
+      const partyName =
+        ev.rtcSession.remote_identity.display_name ||
+        (partyNumber.startsWith('uc') ? getUcGroupName(partyNumber) : '')
+
       this.emit('session-started', {
         id: ev.sessionId,
         pnId: ev.incomingMessage?.getHeader('X-PN-ID'),
         incoming: ev.rtcSession.direction === 'incoming',
-        partyNumber: ev.rtcSession.remote_identity.uri.user,
-        partyName: ev.rtcSession.remote_identity.display_name,
+        partyNumber,
+        partyName,
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
       })
