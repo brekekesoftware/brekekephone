@@ -9,6 +9,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import uc, { Constants } from '../api/uc'
+import chatStore from '../stores/chatStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnAlert from '../stores/RnAlert'
@@ -156,6 +157,20 @@ const UserItem: FC<
       iconFuncs?.[i]?.()
     }
   }
+
+  const getGroupNameFromPartyNumber = (partyNumber: string | undefined) => {
+    if (!partyNumber) {
+      return
+    }
+    if (partyNumber?.startsWith('uc')) {
+      const groupId = partyNumber.replace('uc', '')
+      const groupInfo = chatStore.getGroupById(groupId)
+      return groupInfo?.name || partyNumber
+    } else {
+      return partyNumber
+    }
+  }
+
   return (
     <Container style={css.Outer} onPress={onPressItem}>
       <View style={[css.Inner, selected && css.Inner_selected]}>
@@ -178,7 +193,7 @@ const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
-              {name || partyNumber || id}
+              {name || getGroupNameFromPartyNumber(partyNumber) || id}
             </RnText>
             {!!statusText && (
               <RnText normal singleLine small style={css.Status}>
