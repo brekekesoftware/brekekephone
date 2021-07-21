@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { action, Lambda, observe, runInAction } from 'mobx'
+import { action, Lambda, observe } from 'mobx'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
@@ -22,6 +22,7 @@ class AuthSIP {
     console.error('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
     const s = getAuthStore()
+    s.sipPn = {}
     s.sipState = 'stopped'
     s.lastSipAuth = 0
     sip.disconnect()
@@ -35,9 +36,6 @@ class AuthSIP {
       return
     }
     const pn = s.sipPn
-    runInAction(() => {
-      s.sipPn = {}
-    })
     if (!pn?.sipAuth) {
       console.error('SIP PN debug: Invalid sip PN login logic')
       this.dispose()

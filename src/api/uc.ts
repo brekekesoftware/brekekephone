@@ -608,7 +608,7 @@ export class UC extends EventEmitter {
         type: 'multipart/form-data',
       })
       inputrn = {
-        form: 'This is not a form element, see app/apis/uc.js for detail',
+        form: 'This is not a form element, see src/api/uc.ts for detail',
         files: [file],
         __rnFormData: fd,
       }
@@ -680,7 +680,7 @@ export class UC extends EventEmitter {
       })
 
       inputrn = {
-        form: 'This is not a form element, see app/apis/uc.js for detail',
+        form: 'This is not a form element, see src/api/uc.ts for detail',
         files: [file],
         __rnFormData: fd,
       }

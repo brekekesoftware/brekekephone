@@ -171,6 +171,9 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
 
   if (Platform.OS === 'android') {
     if (n.id && androidAlreadyProccessedPn[n.id]) {
+      console.error(
+        `SIP PN debug: PushNotification-parse: already processed pnId=${n.id}`,
+      )
       return null
     }
     androidAlreadyProccessedPn[n.id] = true
@@ -194,9 +197,11 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
     }
+    console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
   }
   if (!n.isCall) {
+    console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
     return AppState.currentState !== 'active' ||
       getAuthStore().currentProfile?.pbxUsername !== n.to
       ? n
@@ -205,11 +210,12 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
     const uuid = newUuid().toUpperCase()
     setCallPnData(uuid, n)
-    RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
     if (hasCallKeepRunning()) {
       showIncomingCallUi({ callUUID: uuid })
     }
+    RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
+  console.error('SIP PN debug: call signInByNotification')
   getAuthStore().signInByNotification(n)
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)

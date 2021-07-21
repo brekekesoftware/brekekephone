@@ -52,7 +52,7 @@ class DebugStore {
   // Use a queue to write logs to file in batch
   logQueue: string[] = []
 
-  // The function to be called in src/utils/captureConsoleOutput.js
+  // The function to be called in src/utils/captureConsoleOutput.ts
   captureConsoleOutput = (lv: string, msg: string) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
@@ -84,9 +84,9 @@ class DebugStore {
     // If the size of log1 passes the limit
     //    we will copy it to log2 and clear the log1
     if (this.logSizes[0] > maximumBytes) {
+      this.logSizes[1] = this.logSizes[0]
       await RNFS.unlink(log2).catch((e: Error) => void e)
       await RNFS.moveFile(log1, log2)
-      this.logSizes[1] = this.logSizes[0]
     }
   }
   writeFileBatch = debounce(this.writeFile, 300, { maxWait: 1000 })
@@ -287,7 +287,7 @@ class DebugStore {
 }
 
 if (Platform.OS !== 'web') {
-  // Assign to window to use in src/captureConsoleOutput.js
+  // Assign to window to use in src/utils/captureConsoleOutput.ts
   debugStore = window.debugStore = new DebugStore()
 
   // TODO call init together with other store

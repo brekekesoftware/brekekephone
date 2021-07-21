@@ -63,7 +63,7 @@ src/assets/logo.png
     - You can also update other colors their as you want
 
 - For the push notification and build:
-  - Update google application id `22177122297` in `src/api/pbx.js`
+  - Update google application id `22177122297` in `src/api/pbx.ts`
   - You may need to update the app version / build code here:
     - `android/app/build.gradle` search for `versionCode` and `versionName`
     - `ios/BrekekePhone/Info.plist` search for `CFBundleShortVersionString`

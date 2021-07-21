@@ -2,12 +2,12 @@ import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 
-import pbx from '../api/pbx'
 import sip from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { arrToMap } from '../utils/toMap'
+import { authSIP } from './AuthSIP'
 import { compareProfile, setAuthStore } from './authStore'
 import callStore from './callStore'
 import { intlDebug } from './intl'
@@ -31,7 +31,7 @@ export class AuthStore {
   @computed get pbxShouldAuth() {
     return (
       this.signedInId &&
-      !this.sipPn.sipAuth &&
+      // !this.sipPn.sipAuth &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' &&
           !this.pbxTotalFailure &&
@@ -168,6 +168,8 @@ export class AuthStore {
     console.error('SIP PN debug: set sipState stopped reconnect')
     this.resetFailureState()
     this.sipState = 'stopped'
+    // Mobx observe not call automatically?
+    authSIP.auth()
   }
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
@@ -267,8 +269,10 @@ export class AuthStore {
     },
   )
 
-  signInByNotification = async (n: ParsedPn) => {
-    console.error('SIP PN debug: signInByNotification')
+  @action signInByNotification = async (n: ParsedPn) => {
+    console.error(
+      `SIP PN debug: signInByNotification pnId=${n.id} token=${n.sipPn.sipAuth}`,
+    )
     this.sipPn = n.sipPn
     this.resetFailureState()
     await profileStore.profilesLoaded()
@@ -279,6 +283,7 @@ export class AuthStore {
       pbxTenant: n.tenant,
     })
     if (!p?.id) {
+      console.error('SIP PN debug: can not find account from notification')
       return false
     }
     // Use isSignInByNotification to disable UC auto sign in for a while
@@ -288,30 +293,6 @@ export class AuthStore {
     }
     if (this.signedInId !== p.id) {
       return this.signIn(p.id)
-    }
-    // PN of current signed in account
-    // If PN came and still no sip call it is likely disconnected
-    // Set states to failure to reconnect them
-    if (
-      n.isCall &&
-      !callStore.calls.length &&
-      Date.now() - callStore.recentCallActivityAt > 30000
-    ) {
-      const s = sip.phone?.getPhoneStatus()
-      if (s && s !== 'starting' && s !== 'started') {
-        console.error(`PN debug: SIP reconnect: getPhoneStatus()=${s}`)
-        this.reconnectSip()
-      }
-      if (this.sipPn.sipAuth) {
-        return
-      }
-      await pbx.client?._pal('getProductInfo').catch((err: Error) => {
-        if (authStore.pbxState === 'connecting') {
-          return
-        }
-        console.error(`PN debug: PBX reconnect: getProductInfo() error=${err}`)
-        this.reconnectPbx()
-      })
     }
     return false
   }

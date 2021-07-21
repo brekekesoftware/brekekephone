@@ -50,7 +50,7 @@ const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
       Platform.OS === 'web' || process.env.NODE_ENV !== 'production'
         ? (...args: Error[]) => f(formatErrors(...args))
         : (...args: Error[]) =>
-            // debugStore was added globally in src/stores/debugStore.js
+            // debugStore was added globally in src/stores/debugStore.ts
             //    so it can be used here
             window.debugStore?.captureConsoleOutput(k, formatErrors(...args))
     return m
