@@ -91,19 +91,22 @@ export class SIP extends EventEmitter {
     // incomingMessage: null
     // remoteUserOptionsTable: {}
     // analyser: null
-    const getUcGroupName = (partyNumber: string) => {
-      const groupId = partyNumber.replace('uc', '')
-      const groupInfo = chatStore.getGroupById(groupId)
-      return groupInfo?.name || ''
-    }
     phone.addEventListener('sessionCreated', ev => {
       if (!ev) {
         return
       }
       const partyNumber = ev.rtcSession.remote_identity.uri.user
-      const partyName =
-        ev.rtcSession.remote_identity.display_name ||
-        (partyNumber.startsWith('uc') ? getUcGroupName(partyNumber) : '')
+      let partyName = ev.rtcSession.remote_identity.display_name
+      if (
+        (!partyName || partyName.startsWith('uc')) &&
+        partyNumber.startsWith('uc')
+      ) {
+        partyName =
+          chatStore.getGroupById(partyNumber.replace('uc', ''))?.name ||
+          partyName ||
+          partyNumber
+      }
+      partyName = partyName || partyNumber
 
       this.emit('session-started', {
         id: ev.sessionId,
