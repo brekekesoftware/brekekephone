@@ -207,6 +207,10 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       ? n
       : null
   }
+  console.error('SIP PN debug: call signInByNotification')
+  getAuthStore().signInByNotification(n)
+  // Manually show incoming call in android
+  // TODO: show in native java code
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
     const uuid = newUuid().toUpperCase()
     setCallPnData(uuid, n)
@@ -215,8 +219,6 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     }
     RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
-  console.error('SIP PN debug: call signInByNotification')
-  getAuthStore().signInByNotification(n)
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
   return null
