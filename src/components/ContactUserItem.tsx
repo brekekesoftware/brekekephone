@@ -7,8 +7,11 @@ import {
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import intl from '../stores/intl'
+import { Conference } from '../api/brekekejs'
+import uc, { Constants } from '../api/uc'
+import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
+import RnAlert from '../stores/RnAlert'
 import Avatar from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
@@ -96,6 +99,7 @@ const UserItem: FC<
     statusText: string
     canChat: boolean
     group: boolean
+    partyName: string
   }>
 > = p0 => {
   const {
@@ -117,15 +121,46 @@ const UserItem: FC<
     statusText,
     canChat,
     group,
+    partyName,
     ...p
   } = p0
   const Container = canChat ? RnTouchableOpacity : View
 
+  const isGroupAvailable = (groupId: string) => {
+    const groupInfo: Conference = uc.getChatGroupInfo(groupId)
+    const groupStatus = groupInfo.conf_status
+    if (
+      groupStatus === Constants.CONF_STATUS_INACTIVE ||
+      groupStatus === Constants.CONF_STATUS_INVITED
+    ) {
+      RnAlert.error({
+        message: intlDebug`You have rejected this group or this group has been deleted`,
+      })
+      return false
+    } else {
+      return true
+    }
+  }
+  const onPressItem = () => {
+    if (partyNumber?.startsWith('uc')) {
+      const groupId = partyNumber.replace('uc', '')
+      isGroupAvailable(partyNumber.replace('uc', '')) &&
+        Nav().goToPageChatGroupDetail({ groupId })
+    } else {
+      Nav().goToPageChatDetail({ buddy: partyNumber })
+    }
+  }
+
+  const onPressIcons = (v: string, i: number) => {
+    if (partyNumber?.startsWith('uc')) {
+      isGroupAvailable(partyNumber.replace('uc', '')) && iconFuncs?.[i]?.()
+    } else {
+      iconFuncs?.[i]?.()
+    }
+  }
+
   return (
-    <Container
-      style={css.Outer}
-      onPress={() => Nav().goToPageChatDetail({ buddy: partyNumber })}
-    >
+    <Container style={css.Outer} onPress={onPressItem}>
       <View style={[css.Inner, selected && css.Inner_selected]}>
         {group ? (
           <View style={css.VGroup}>
@@ -146,7 +181,7 @@ const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
-              {name || partyNumber || id}
+              {name || partyName || partyNumber || id}
             </RnText>
             {!!statusText && (
               <RnText normal singleLine small style={css.Status}>
@@ -193,7 +228,7 @@ const UserItem: FC<
           </View>
         )}
         {icons?.map((v, i) => (
-          <RnTouchableOpacity key={i} onPress={e => iconFuncs?.[i]?.()}>
+          <RnTouchableOpacity key={i} onPress={e => onPressIcons(v, i)}>
             <RnIcon path={v} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
