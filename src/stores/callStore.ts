@@ -481,6 +481,7 @@ export const showIncomingCallUi = (e: TEvent) => {
     AppState.currentState === 'active' || isForegroundLocked,
   )
   callStore.onCallKeepDidDisplayIncomingCall(uuid)
+  console.error('SIP PN debug: successfully display incoming call UI')
 }
 
 // Move from pushNotification-parse.ts to avoid circular dependencies
