@@ -8,6 +8,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import sip from '../api/sip'
 import Avatar from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import g from '../components/variables'
@@ -136,7 +137,7 @@ class PageTransferAttend extends React.Component {
           </View>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={c.hangupWithUnhold}
+              onPress={() => sip.hangupSession(c.id)}
               style={[css.Btn, css.Btn__hangup]}
             >
               <RnIcon path={mdiPhoneHangup} />
