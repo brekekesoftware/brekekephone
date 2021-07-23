@@ -14,6 +14,7 @@ import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { IncomingCall } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
+import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import Call from './Call'
 import Nav from './Nav'
@@ -93,19 +94,20 @@ export class CallStore {
     }
     this.prevCallKeepUuid = uuid
     setAutoEndCallKeepTimer(uuid)
-    // Auto reconnect if no activity after 2s
-    if (Date.now() - this.recentCallActivityAt > 2000) {
+    // Auto reconnect if no activity
+    const now = Date.now()
+    if (now - this.recentCallActivityAt > 3000) {
       const as = getAuthStore()
-      if (as.sipState === 'connecting' && Date.now() - as.lastSipAuth < 5000) {
+      if (as.sipState === 'connecting' && now - as.lastSipAuth < 10000) {
         return
       }
-      const c = sip.phone?.getSessionCount()
-      if (!c) {
+      const count = sip.phone?.getSessionCount()
+      if (!count) {
         console.error(
-          `SIP PN debug: call sip.disconnect in new notification: phone.getSessionCount()=${c}`,
+          `SIP PN debug: call sip.disconnect in new notification: phone.getSessionCount()=${count}`,
         )
-        sip.disconnect()
-        as.reconnectSip()
+        authSIP.dispose()
+        authSIP.auth()
       }
     }
   }
@@ -332,6 +334,9 @@ export class CallStore {
 
   private updateBackgroundCalls = () => {
     // Auto hold background calls
+    if (!this.currentCallId) {
+      return
+    }
     this.calls
       .filter(
         c =>

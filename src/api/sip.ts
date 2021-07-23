@@ -63,7 +63,7 @@ export class SIP extends EventEmitter {
       }
       const s = ev.phoneStatus
       if (s === 'stopping' || s === 'stopped') {
-        phone.removeEventListener('phoneStatusChanged', h)
+        phone._removeEventListenerPhoneStatusChange?.()
         this.emit('connection-stopped', ev)
         console.error(
           `SIP PN debug: call sip.disconnect because of event phoneStatusChanged: phoneStatus=${s}`,
@@ -72,6 +72,10 @@ export class SIP extends EventEmitter {
       }
     }
     phone.addEventListener('phoneStatusChanged', h)
+    phone._removeEventListenerPhoneStatusChange = () => {
+      phone._removeEventListenerPhoneStatusChange = undefined
+      phone.removeEventListener('phoneStatusChanged', h)
+    }
 
     // sessionId: "1"
     // sessionStatus: "dialing"
@@ -186,6 +190,7 @@ export class SIP extends EventEmitter {
 
   connect = async (sipLoginOption: SipLoginOption) => {
     console.error('SIP PN debug: call sip.disconnect in sip.connect')
+    this.phone?._removeEventListenerPhoneStatusChange?.()
     this.disconnect()
     const phone = await this.init(sipLoginOption)
     //

@@ -55,7 +55,7 @@ class PageSettingsOther extends Component {
       <Layout
         description={intl`Other settings for PBX/UC`}
         dropdown={[
-          ...(getAuthStore().isConnFailure
+          ...(getAuthStore().isConnFailure()
             ? [
                 {
                   label: intl`Reconnect to server`,

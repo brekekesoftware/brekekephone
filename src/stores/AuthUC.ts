@@ -1,6 +1,6 @@
 import UCClient0 from 'brekekejs/lib/ucclient'
 import { debounce } from 'lodash'
-import { action, Lambda, observe } from 'mobx'
+import { action, autorun, Lambda } from 'mobx'
 
 import { UcErrors } from '../api/brekekejs'
 import pbx from '../api/pbx'
@@ -22,7 +22,10 @@ class AuthUC {
     uc.on('connection-stopped', this.onConnectionStopped)
     this.clearObserve?.()
     const s = getAuthStore()
-    this.clearObserve = observe(s, 'ucShouldAuth', this.authWithCheckDebounced)
+    this.clearObserve = autorun(() => {
+      void s.ucShouldAuth()
+      this.authWithCheckDebounced()
+    })
   }
   @action dispose = () => {
     uc.off('connection-stopped', this.onConnectionStopped)
@@ -55,7 +58,7 @@ class AuthUC {
   }
   private authWithCheck = () => {
     const s = getAuthStore()
-    if (!s.ucShouldAuth) {
+    if (!s.ucShouldAuth()) {
       return
     }
     this.authWithoutCatch().catch(

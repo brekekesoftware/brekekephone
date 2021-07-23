@@ -257,6 +257,7 @@ export type Sip = {
   _ua?: {
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
   }
+  _removeEventListenerPhoneStatusChange?: Function
 }
 
 export type SipConstructorOptions = {

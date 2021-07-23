@@ -116,7 +116,7 @@ const ProfileCreateForm: FC<{
       dropdown={
         props.footerLogout
           ? [
-              ...(getAuthStore().isConnFailure
+              ...(getAuthStore().isConnFailure()
                 ? [
                     {
                       label: intl`Reconnect to server`,

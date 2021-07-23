@@ -16,32 +16,15 @@ import formatDuration from '../utils/formatDuration'
 const PageCallBackgrounds = observer(() => {
   const c = callStore.currentCall()
   const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
-
-  const getLastMessage = (c: Call, isCurrentCall?: boolean) => {
-    if (!!!isCurrentCall) {
-      return !c.answered
-        ? c.incoming
-          ? intl`Incoming call`
-          : intl`Dialing...`
-        : c.transferring
-        ? intl`Transferring`
-        : intl`On hold`
-    } else {
-      return !c.answered ? intl`Dialing...` : formatDuration(c.duration)
-    }
-  }
-
   const renderItemCall = (c: Call, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
       ...(!c.answered && c.incoming ? [mdiPhone] : []),
     ]
-
     const iconColors = [
       g.colors.danger,
       ...(!c.answered && c.incoming ? [g.colors.primary] : []),
     ]
-
     const iconFuncs = [
       c.hangupWithUnhold,
       ...(!c.answered && c.incoming
@@ -53,15 +36,24 @@ const PageCallBackgrounds = observer(() => {
           ]
         : []),
     ]
-
     return (
       <UserItem
         icons={icons}
         iconColors={iconColors}
         iconFuncs={iconFuncs}
         key={c.id}
-        lastMessage={getLastMessage(c, isCurrentCall)}
-        selected={!!isCurrentCall}
+        lastMessage={
+          !c.answered
+            ? c.incoming
+              ? intl`Incoming call`
+              : intl`Dialing...`
+            : c.transferring
+            ? intl`Transferring`
+            : c.holding
+            ? intl`On hold`
+            : formatDuration(c.duration)
+        }
+        selected={isCurrentCall}
         {...c}
       />
     )
@@ -78,7 +70,6 @@ const PageCallBackgrounds = observer(() => {
           {renderItemCall(c, true)}
         </RnTouchableOpacity>
       ))}
-
       {!!bg.length && (
         <Field hasMargin isGroup label={intl`BACKGROUND CALLS`} />
       )}

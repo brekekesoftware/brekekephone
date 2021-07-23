@@ -1,10 +1,9 @@
 import { debounce } from 'lodash'
-import { action, Lambda, observe } from 'mobx'
+import { action, autorun, Lambda } from 'mobx'
 
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore, waitSip } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
@@ -16,7 +15,10 @@ class AuthSIP {
     this.authWithCheck()
     this.clearObserve?.()
     const s = getAuthStore()
-    this.clearObserve = observe(s, 'sipShouldAuth', this.authWithCheckDebounced)
+    this.clearObserve = autorun(() => {
+      void s.sipShouldAuth()
+      this.authWithCheckDebounced()
+    })
   }
   @action dispose = () => {
     console.error('SIP PN debug: set sipState stopped dispose')
@@ -52,17 +54,6 @@ class AuthSIP {
     if (isNaN(dtmfSendMode)) {
       dtmfSendMode = pn.dtmfPal === 'false' || pn.dtmfPal === '0' ? 0 : 1
     }
-    // If after 10s and still not connected => reconnect
-    // May be due to the PN auth token has been expired
-    waitSip().then(isConnected => {
-      if (!isConnected) {
-        console.error(
-          'SIP PN debug: sip reconnect in authPnWithoutCatch: 10s has passed after received PN but still not connected',
-        )
-        this.dispose()
-        this.auth()
-      }
-    })
     await sip.connect({
       hostname: p.pbxHostname,
       port: pn.sipWssPort || '',
@@ -74,11 +65,34 @@ class AuthSIP {
     })
   }
 
+  private waitSipAt = 0
+  private waitSipAndReconnect = () => {
+    this.waitSipAt = Date.now()
+    const at = this.waitSipAt
+    // If after 10s and still not connected => reconnect
+    // May be due to the auth token has an issue or been expired
+    waitSip().then(isConnected => {
+      if (at !== this.waitSipAt) {
+        // A new waitSip has bene called
+        return
+      }
+      if (!isConnected) {
+        console.error(
+          'SIP PN debug: sip reconnect in authWithoutCatch: 10s has passed after but still not connected',
+        )
+        this.dispose()
+        this.auth()
+      }
+    })
+  }
+
   @action private authWithoutCatch = async () => {
     console.error('SIP PN debug: set sipState connecting')
     const s = getAuthStore()
     s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
+    this.waitSipAndReconnect()
+    //
     if (s.sipPn.sipAuth) {
       console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
       this.authPnWithoutCatch()
@@ -154,11 +168,11 @@ class AuthSIP {
   }
   private authWithCheck = () => {
     const s = getAuthStore()
-    if (Date.now() - s.lastSipAuth < 2000) {
-      BackgroundTimer.setTimeout(this.authWithCheckDebounced, 10000)
+    if (Date.now() - s.lastSipAuth < 10000) {
+      this.authWithCheckDebounced()
       return
     }
-    if (!s.sipShouldAuth) {
+    if (!s.sipShouldAuth()) {
       return
     }
     this.authWithoutCatch().catch(
