@@ -12,7 +12,7 @@ import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import formatDuration from '../utils/formatDuration'
 
-const PageBackgroundCalls = observer(() => {
+const PageCallBackgrounds = observer(() => {
   const c = callStore.currentCall()
   const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
   return (
@@ -88,4 +88,4 @@ const PageBackgroundCalls = observer(() => {
   )
 })
 
-export default PageBackgroundCalls
+export default PageCallBackgrounds

@@ -12,7 +12,7 @@ import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 
 @observer
-class PageTransferChooseUser extends React.Component {
+class PageCallTransferChooseUser extends React.Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -95,4 +95,4 @@ class PageTransferChooseUser extends React.Component {
   }
 }
 
-export default PageTransferChooseUser
+export default PageCallTransferChooseUser

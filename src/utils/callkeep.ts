@@ -242,7 +242,10 @@ export const setupCallKeep = async () => {
       callStore.onCallKeepAnswerCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => Nav().goToPageTransferChooseUser(), 300)
+      BackgroundTimer.setTimeout(
+        () => Nav().goToPageCallTransferChooseUser(),
+        300,
+      )
     })
     eventEmitter.addListener('park', (uuid: string) => {
       BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 300)

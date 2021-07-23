@@ -216,18 +216,7 @@ export class CallStore {
     }
   }
 
-  removeCall = (id: string) => {
-    this.removeCallWithoutIncallManager(id)
-    if (
-      Platform.OS === 'android' &&
-      this.incallManagerStarted &&
-      !this.calls.length
-    ) {
-      this.incallManagerStarted = false
-      IncallManager.stop()
-    }
-  }
-  @action private removeCallWithoutIncallManager = (id: string) => {
+  @action removeCall = (id: string) => {
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(c => c.id === id)
     if (!c) {
@@ -249,6 +238,15 @@ export class CallStore {
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
+    }
+    this.updateCurrentCallDebounce()
+    if (
+      Platform.OS === 'android' &&
+      this.incallManagerStarted &&
+      !this.calls.length
+    ) {
+      this.incallManagerStarted = false
+      IncallManager.stop()
     }
   }
 
@@ -344,11 +342,11 @@ export class CallStore {
     if (currentCallId !== this.currentCallId) {
       this.currentCallId = currentCallId
     }
-    if (
-      !this.currentCallId &&
-      RnStacker.stacks.some(s => s.name === 'PageCallManage')
-    ) {
-      RnStacker.stacks = [RnStacker.stacks[0]]
+    if (!this.currentCallId) {
+      const [s0, ...stacks] = RnStacker.stacks
+      if (stacks.some(s => s.name.startsWith('PageCall'))) {
+        RnStacker.stacks = [s0]
+      }
     }
     BackgroundTimer.setTimeout(this.updateBackgroundCallsDebounce, 17)
   }

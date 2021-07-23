@@ -17,7 +17,7 @@ import RnAlert from '../stores/RnAlert'
 import RnKeyboard from '../stores/RnKeyboard'
 
 @observer
-class PageTransferDial extends React.Component {
+class PageCallTransferDial extends React.Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -113,4 +113,4 @@ class PageTransferDial extends React.Component {
   }
 }
 
-export default PageTransferDial
+export default PageCallTransferDial

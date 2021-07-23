@@ -73,7 +73,7 @@ const css = StyleSheet.create({
 })
 
 @observer
-class PageTransferAttend extends React.Component {
+class PageCallTransferAttend extends React.Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -163,4 +163,4 @@ class PageTransferAttend extends React.Component {
   }
 }
 
-export default PageTransferAttend
+export default PageCallTransferAttend

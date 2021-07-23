@@ -32,7 +32,7 @@ import Call from '../stores/Call'
 import callStore from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import PageTransferAttend from './PageTransferAttend'
+import PageCallTransferAttend from './PageCallTransferAttend'
 
 const css = StyleSheet.create({
   Video: {
@@ -143,7 +143,7 @@ class PageCallManage extends React.Component<{
       transparent={!c?.transferring}
     >
       {!c ? null : c.transferring ? (
-        <PageTransferAttend />
+        <PageCallTransferAttend />
       ) : (
         <>
           {isVideoEnabled && this.renderVideo(c)}
@@ -188,7 +188,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              onPress={Nav().goToPageTransferChooseUser}
+              onPress={Nav().goToPageCallTransferChooseUser}
               path={mdiCallSplit}
               size={40}
               textcolor='white'
@@ -277,7 +277,7 @@ class PageCallManage extends React.Component<{
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={Nav().goToPageBackgroundCalls}
+            onCreateBtnPress={Nav().goToPageCallBackgrounds}
             value={
               n > 1
                 ? intl`${n} other calls are in background`

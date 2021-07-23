@@ -115,8 +115,8 @@ class Control extends React.Component<{
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
       s.name === 'PageCallManage' ||
-      s.name === 'PageTransferDial' ||
-      s.name === 'PageTransferAttend'
+      s.name === 'PageCallTransferDial' ||
+      s.name === 'PageCallTransferAttend'
     ) {
       return null
     }

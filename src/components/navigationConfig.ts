@@ -181,12 +181,12 @@ export const getTabs = (tab: string) => {
         {
           key: 'list_user',
           label: intl`USER`,
-          navFnKey: 'goToPageTransferChooseUser',
+          navFnKey: 'goToPageCallTransferChooseUser',
         },
         {
           key: 'external_number',
           label: intl`KEYPAD`,
-          navFnKey: 'goToPageTransferDial',
+          navFnKey: 'goToPageCallTransferDial',
         },
       ],
       defaultSubMenuKey: 'list_user',

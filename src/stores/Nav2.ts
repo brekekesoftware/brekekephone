@@ -1,10 +1,12 @@
 import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
-import PageBackgroundCalls from '../pages/PageBackgroundCalls'
+import PageCallBackgrounds from '../pages/PageCallBackgrounds'
 import PageCallKeypad from '../pages/PageCallKeypad'
 import PageCallManage from '../pages/PageCallManage'
 import PageCallParks from '../pages/PageCallParks'
 import PageCallParks2 from '../pages/PageCallParks2'
 import PageCallRecents from '../pages/PageCallRecents'
+import PageCallTransferChooseUser from '../pages/PageCallTransferChooseUser'
+import PageCallTransferDial from '../pages/PageCallTransferDial'
 import PageChatDetail from '../pages/PageChatDetail'
 import PageChatGroupCreate from '../pages/PageChatGroupCreate'
 import PageChatGroupDetail from '../pages/PageChatGroupDetail'
@@ -21,8 +23,6 @@ import PageProfileUpdate from '../pages/PageProfileUpdate'
 import PageSettingsDebug from '../pages/PageSettingsDebug'
 import PageSettingsOther from '../pages/PageSettingsOther'
 import PageSettingsProfile from '../pages/PageSettingsProfile'
-import PageTransferChooseUser from '../pages/PageTransferChooseUser'
-import PageTransferDial from '../pages/PageTransferDial'
 import PageWebChat from '../pages/PageWebChat'
 import { getAuthStore } from './authStore'
 import { setNav } from './Nav'
@@ -31,8 +31,8 @@ import RnStacker from './RnStacker'
 const go = RnStacker.createGoTo
 const back = RnStacker.createBackTo
 export class Nav {
-  goToPageTransferChooseUser = go({ PageTransferChooseUser }, true)
-  backToPageTransferChooseUser = back({ PageTransferChooseUser }, true)
+  goToPageCallTransferChooseUser = go({ PageCallTransferChooseUser }, true)
+  backToPageCallTransferChooseUser = back({ PageCallTransferChooseUser }, true)
   goToPageProfileSignIn = go({ PageProfileSignIn }, true)
   backToPageProfileSignIn = back({ PageProfileSignIn }, true)
   goToPageChatRecents = go({ PageChatRecents }, true)
@@ -62,10 +62,10 @@ export class Nav {
   backToPagePhonebookUpdate = back({ PagePhonebookUpdate })
   goToPageCallManage = go({ PageCallManage })
   backToPageCallManage = back({ PageCallManage })
-  goToPageBackgroundCalls = go({ PageBackgroundCalls })
-  backToPageBackgroundCalls = back({ PageBackgroundCalls })
-  goToPageTransferDial = go({ PageTransferDial }, true)
-  backToPageTransferDial = back({ PageTransferDial }, true)
+  goToPageCallBackgrounds = go({ PageCallBackgrounds })
+  backToPageCallBackgrounds = back({ PageCallBackgrounds })
+  goToPageCallTransferDial = go({ PageCallTransferDial }, true)
+  backToPageCallTransferDial = back({ PageCallTransferDial }, true)
   goToPageDtmfKeypad = go({ PageDtmfKeypad })
   backToPageDtmfKeypad = back({ PageDtmfKeypad })
   goToPageChatDetail = go({ PageChatDetail })
