@@ -267,6 +267,18 @@
           android:background="@drawable/btn_reject"
           android:drawableLeft="@drawable/ic_reject"
         />
+        <TextView
+          android:visibility="gone"
+          android:gravity="center"
+          android:id="@+id/txt_call_on_hold"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="20dp"
+          android:text="CALL IS ON HOLD"
+          android:textColor="@color/white"
+          android:textSize="28sp"
+          android:textStyle="bold"
+        />
       </RelativeLayout>
     </LinearLayout>
   </RelativeLayout>
