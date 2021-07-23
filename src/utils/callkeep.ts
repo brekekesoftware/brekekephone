@@ -263,7 +263,11 @@ export const setupCallKeep = async () => {
       callStore.currentCall()?.toggleRecording()
     })
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => Nav().goToPageDtmfKeypad(), 300)
+      BackgroundTimer.setTimeout(() => {
+        Nav().goToPageCallDtmfKeypad({
+          partyName: callStore.calls.find(c => c.callkeepUuid === uuid)?.title,
+        })
+      }, 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.currentCall()?.toggleHoldWithCheck()

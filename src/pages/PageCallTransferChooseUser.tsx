@@ -6,6 +6,7 @@ import React from 'react'
 import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
+import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
 import callStore from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
@@ -95,4 +96,5 @@ class PageCallTransferChooseUser extends React.Component {
   }
 }
 
+setPageCallTransferChooseUser(PageCallTransferChooseUser)
 export default PageCallTransferChooseUser

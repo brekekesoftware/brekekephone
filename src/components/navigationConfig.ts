@@ -12,7 +12,7 @@ import profileStore from '../stores/profileStore'
 import RnAlert from '../stores/RnAlert'
 import { arrToMap } from '../utils/toMap'
 
-interface Menu {
+export type Menu = {
   key: string
   icon: string
   subMenus: SubMenu[]
@@ -21,7 +21,7 @@ interface Menu {
   subMenusMap: { [k: string]: SubMenu }
   navFn(): void
 }
-interface SubMenu {
+export type SubMenu = {
   key: string
   label: string
   navFnKey: keyof ReturnType<typeof Nav>
@@ -172,49 +172,6 @@ export const normalizeSavedNavigation = () => {
   })
 }
 
-export const getTabs = (tab: string) => {
-  const arr = [
-    {
-      key: 'call_transfer',
-      icon: null,
-      subMenus: [
-        {
-          key: 'list_user',
-          label: intl`USER`,
-          navFnKey: 'goToPageCallTransferChooseUser',
-        },
-        {
-          key: 'external_number',
-          label: intl`KEYPAD`,
-          navFnKey: 'goToPageCallTransferDial',
-        },
-      ],
-      defaultSubMenuKey: 'list_user',
-    },
-  ] as unknown as Menu[]
-
-  arr.forEach((m, i) => {
-    m.subMenusMap = arrToMap(
-      m.subMenus,
-      (s: SubMenu) => s.key,
-      (s: SubMenu) => s,
-    ) as Menu['subMenusMap']
-    m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
-    m.subMenus.forEach(s => {
-      s.navFn = () => {
-        Nav()[s.navFnKey]()
-      }
-    })
-  })
-  const m = arr.find(m => m.key === tab)
-  if (!m) {
-    RnAlert.error({
-      unexpectedErr: new Error(`Can not find sub menus for ${tab}`),
-    })
-    return []
-  }
-  return m.subMenus as SubMenu[]
-}
 export const getSubMenus = (menu: string) => {
   const arr = menus()
   const m = arr.find(m => m.key === menu)

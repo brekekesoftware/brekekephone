@@ -1,5 +1,6 @@
 import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
 import PageCallBackgrounds from '../pages/PageCallBackgrounds'
+import PageCallDtmfKeypad from '../pages/PageCallDtmfKeypad'
 import PageCallKeypad from '../pages/PageCallKeypad'
 import PageCallManage from '../pages/PageCallManage'
 import PageCallParks from '../pages/PageCallParks'
@@ -14,7 +15,6 @@ import PageChatGroupInvite from '../pages/PageChatGroupInvite'
 import PageChatRecents from '../pages/PageChatRecents'
 import PageContactPhonebook from '../pages/PageContactPhonebook'
 import PageContactUsers from '../pages/PageContactUsers'
-import PageDtmfKeypad from '../pages/PageDtmfKeypad'
 import PagePhonebookCreate from '../pages/PagePhonebookCreate'
 import PagePhonebookUpdate from '../pages/PagePhonebookUpdate'
 import PageProfileCreate from '../pages/PageProfileCreate'
@@ -31,27 +31,32 @@ import RnStacker from './RnStacker'
 const go = RnStacker.createGoTo
 const back = RnStacker.createBackTo
 export class Nav {
-  goToPageCallTransferChooseUser = go({ PageCallTransferChooseUser }, true)
-  backToPageCallTransferChooseUser = back({ PageCallTransferChooseUser }, true)
+  // root account/login
   goToPageProfileSignIn = go({ PageProfileSignIn }, true)
   backToPageProfileSignIn = back({ PageProfileSignIn }, true)
-  goToPageChatRecents = go({ PageChatRecents }, true)
-  backToPageChatRecents = back({ PageChatRecents }, true)
+  // root user/chat
   goToPageContactPhonebook = go({ PageContactPhonebook }, true)
   backToPageContactPhonebook = back({ PageContactPhonebook }, true)
   goToPageContactUsers = go({ PageContactUsers }, true)
   backToPageContactUsers = back({ PageContactUsers }, true)
+  goToPageChatRecents = go({ PageChatRecents }, true)
+  backToPageChatRecents = back({ PageChatRecents }, true)
+  goToPageWebChat = go({ PageWebChat }, true)
+  backToPageWebChat = back({ PageWebChat }, true)
+  // root call
   goToPageCallKeypad = go({ PageCallKeypad }, true)
   backToPageCallKeypad = back({ PageCallKeypad }, true)
   goToPageCallRecents = go({ PageCallRecents }, true)
   backToPageCallRecents = back({ PageCallRecents }, true)
-  goToPageSettingsOther = go({ PageSettingsOther }, true)
-  backToPageSettingsOther = back({ PageSettingsOther }, true)
   goToPageCallParks = go({ PageCallParks }, true)
   backToPageCallParks = back({ PageCallParks }, true)
+  // root settings
+  goToPageSettingsOther = go({ PageSettingsOther }, true)
+  backToPageSettingsOther = back({ PageSettingsOther }, true)
   goToPageSettingsProfile = go({ PageSettingsProfile }, true)
   backToPageSettingsProfile = back({ PageSettingsProfile }, true)
 
+  // account
   goToPageProfileCreate = go({ PageProfileCreate })
   backToPageProfileCreate = back({ PageProfileCreate })
   goToPageProfileUpdate = go({ PageProfileUpdate })
@@ -60,14 +65,20 @@ export class Nav {
   backToPagePhonebookCreate = back({ PagePhonebookCreate })
   goToPagePhonebookUpdate = go({ PagePhonebookUpdate })
   backToPagePhonebookUpdate = back({ PagePhonebookUpdate })
+  // call
   goToPageCallManage = go({ PageCallManage })
   backToPageCallManage = back({ PageCallManage })
   goToPageCallBackgrounds = go({ PageCallBackgrounds })
   backToPageCallBackgrounds = back({ PageCallBackgrounds })
-  goToPageCallTransferDial = go({ PageCallTransferDial }, true)
-  backToPageCallTransferDial = back({ PageCallTransferDial }, true)
-  goToPageDtmfKeypad = go({ PageDtmfKeypad })
-  backToPageDtmfKeypad = back({ PageDtmfKeypad })
+  goToPageCallTransferChooseUser = go({ PageCallTransferChooseUser })
+  backToPageCallTransferChooseUser = back({ PageCallTransferChooseUser })
+  goToPageCallTransferDial = go({ PageCallTransferDial })
+  backToPageCallTransferDial = back({ PageCallTransferDial })
+  goToPageCallParks2 = go({ PageCallParks2 })
+  backToPageCallParks2 = back({ PageCallParks2 })
+  goToPageCallDtmfKeypad = go({ PageCallDtmfKeypad })
+  backToPageCallDtmfKeypad = back({ PageCallDtmfKeypad })
+  // chat
   goToPageChatDetail = go({ PageChatDetail })
   backToPageChatDetail = back({ PageChatDetail })
   goToPageChatGroupCreate = go({ PageChatGroupCreate })
@@ -76,11 +87,9 @@ export class Nav {
   backToPageChatGroupInvite = back({ PageChatGroupInvite })
   goToPageChatGroupDetail = go({ PageChatGroupDetail })
   backToPageChatGroupDetail = back({ PageChatGroupDetail })
+  // settings
   goToPageSettingsDebug = go({ PageSettingsDebug })
   backToPageSettingsDebug = back({ PageSettingsDebug })
-  goToPageCallParks2 = go({ PageCallParks2 })
-  backToPageCallParks2 = back({ PageCallParks2 })
-  goToPageWebChat = go({ PageWebChat }, true)
 
   goToPageIndex = () => {
     if (!getAuthStore().currentProfile) {

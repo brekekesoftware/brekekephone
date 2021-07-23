@@ -146,7 +146,7 @@ export class CallStore {
   @observable calls: Call[] = []
   @observable currentCallId: string = ''
   currentCall = () => {
-    BackgroundTimer.setTimeout(this.updateCurrentCallDebounce, 17)
+    this.updateCurrentCallDebounce()
     return this.calls.find(c => c.id === this.currentCallId)
   }
 
@@ -330,6 +330,26 @@ export class CallStore {
     })
   }
 
+  private updateBackgroundCalls = () => {
+    // Auto hold background calls
+    this.calls
+      .filter(
+        c =>
+          c.id !== this.currentCallId &&
+          c.answered &&
+          !c.transferring &&
+          !c.holding &&
+          !c.isAboutToHangup,
+      )
+      .forEach(c => c.toggleHoldWithCheck())
+  }
+  private updateBackgroundCallsDebounce = debounce(
+    this.updateBackgroundCalls,
+    300,
+    {
+      maxWait: 1000,
+    },
+  )
   @action private updateCurrentCall = () => {
     let curr: Call | undefined
     if (this.calls.length) {
@@ -348,25 +368,9 @@ export class CallStore {
         RnStacker.stacks = [s0]
       }
     }
-    BackgroundTimer.setTimeout(this.updateBackgroundCallsDebounce, 17)
+    this.updateBackgroundCallsDebounce()
   }
   updateCurrentCallDebounce = debounce(this.updateCurrentCall, 300, {
-    maxWait: 1000,
-  })
-  private updateBackgroundCalls = () => {
-    // Auto hold background calls
-    this.calls
-      .filter(
-        c =>
-          c.id !== this.currentCallId &&
-          c.answered &&
-          !c.transferring &&
-          !c.holding &&
-          !c.isAboutToHangup,
-      )
-      .forEach(c => c.toggleHoldWithCheck())
-  }
-  updateBackgroundCallsDebounce = debounce(this.updateBackgroundCalls, 300, {
     maxWait: 1000,
   })
 
@@ -435,7 +439,6 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
       clearAutoEndCallKeepTimer()
     }
     callStore.updateCurrentCallDebounce()
-    callStore.updateBackgroundCallsDebounce()
   }, 500)
 }
 const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {

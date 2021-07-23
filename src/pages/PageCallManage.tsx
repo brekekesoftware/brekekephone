@@ -257,7 +257,11 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`DTMF`}
               noborder
-              onPress={Nav().goToPageDtmfKeypad}
+              onPress={() =>
+                Nav().goToPageCallDtmfKeypad({
+                  partyName: c.title,
+                })
+              }
               path={mdiDialpad}
               size={40}
               textcolor='white'

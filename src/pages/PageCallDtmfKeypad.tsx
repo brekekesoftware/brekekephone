@@ -19,7 +19,7 @@ import RnAlert from '../stores/RnAlert'
 import RnKeyboard from '../stores/RnKeyboard'
 
 @observer
-class PageDtmfKeypad extends React.Component<{
+class PageCallDtmfKeypad extends React.Component<{
   callId: string
   partyName: string
 }> {
@@ -58,9 +58,9 @@ class PageDtmfKeypad extends React.Component<{
   render() {
     return (
       <Layout
+        title={this.props.partyName}
         description={intl`Keypad dial manually`}
         onBack={Nav().backToPageCallManage}
-        title={this.props.partyName}
       >
         <ShowNumber
           refInput={this.txtRef}
@@ -111,4 +111,4 @@ class PageDtmfKeypad extends React.Component<{
   }
 }
 
-export default PageDtmfKeypad
+export default PageCallDtmfKeypad

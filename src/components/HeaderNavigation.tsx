@@ -4,7 +4,8 @@ import { StyleSheet, View, ViewStyle } from 'react-native'
 
 import chatStore from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
-import { getSubMenus, getTabs } from './navigationConfig'
+import { getSubMenus } from './navigationConfig'
+import { getTabs } from './navigationConfig2'
 import { RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
