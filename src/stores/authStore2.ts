@@ -6,7 +6,6 @@ import sip from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
-import { arrToMap } from '../utils/toMap'
 import { authSIP } from './AuthSIP'
 import { compareProfile, setAuthStore } from './authStore'
 import callStore from './callStore'
@@ -28,36 +27,38 @@ export class AuthStore {
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
   @observable ucLoginFromAnotherPlace = false
-  @computed get pbxShouldAuth() {
+
+  pbxShouldAuth = () => {
     return (
       this.signedInId &&
-      // !this.sipPn.sipAuth &&
+      !this.sipPn.sipAuth &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' &&
           !this.pbxTotalFailure &&
           RnAppState.currentState === 'active'))
     )
   }
-  @computed get pbxConnectingOrFailure() {
+  pbxConnectingOrFailure = () => {
     return ['connecting', 'failure'].some(s => s === this.pbxState)
   }
-  @computed get sipShouldAuth() {
+
+  sipShouldAuth = () => {
     return (
-      (this.signedInId &&
-        this.sipPn.sipAuth &&
-        this.sipState !== 'connecting' &&
-        this.sipState !== 'success') ||
-      (this.pbxState === 'success' &&
-        (this.sipState === 'stopped' ||
-          (this.sipState === 'failure' &&
-            !this.sipTotalFailure &&
-            RnAppState.currentState === 'active')))
+      this.sipState !== 'connecting' &&
+      this.sipState !== 'success' &&
+      ((this.signedInId && this.sipPn.sipAuth) ||
+        (this.pbxState === 'success' &&
+          (this.sipState === 'stopped' ||
+            (this.sipState === 'failure' &&
+              !this.sipTotalFailure &&
+              RnAppState.currentState === 'active'))))
     )
   }
-  @computed get sipConnectingOrFailure() {
+  sipConnectingOrFailure = () => {
     return ['connecting', 'failure'].some(s => s === this.sipState)
   }
-  @computed get ucShouldAuth() {
+
+  ucShouldAuth = () => {
     return (
       this.currentProfile?.ucEnabled &&
       !this.ucLoginFromAnotherPlace &&
@@ -69,21 +70,14 @@ export class AuthStore {
           RnAppState.currentState === 'active'))
     )
   }
-  @computed get ucConnectingOrFailure() {
+  ucConnectingOrFailure = () => {
     return (
       this.currentProfile?.ucEnabled &&
       ['connecting', 'failure'].some(s => s === this.ucState)
     )
   }
-  @computed get shouldShowConnStatus() {
-    return (
-      !!this.signedInId &&
-      (this.pbxConnectingOrFailure ||
-        this.sipConnectingOrFailure ||
-        this.ucConnectingOrFailure)
-    )
-  }
-  @computed get isConnFailure() {
+
+  isConnFailure = () => {
     return [
       this.pbxState,
       this.sipState,
@@ -94,25 +88,17 @@ export class AuthStore {
   findProfile = (p: Partial<Profile>) => {
     return profileStore.profiles.find(p0 => compareProfile(p0, p))
   }
-  @computed private get profilesMap() {
-    return arrToMap(profileStore.profiles, 'id', (p: Profile) => p) as {
-      [k: string]: Profile
-    }
-  }
-  getProfile = (id: string) => {
-    return this.profilesMap[id]
-  }
 
   @observable signedInId = ''
   @computed get currentProfile() {
-    return this.getProfile(this.signedInId)
+    return profileStore.profiles.find(p => p.id === this.signedInId) as Profile
   }
   @computed get currentData() {
     return profileStore.getProfileData(this.currentProfile)
   }
 
   signIn = (id: string) => {
-    const p = this.getProfile(id)
+    const p = profileStore.profiles.find(p => p.id === id)
     if (!p) {
       return false
     }

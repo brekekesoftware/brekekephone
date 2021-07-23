@@ -54,7 +54,7 @@ AppState.addEventListener('change', () => {
   }
 })
 registerOnUnhandledError(unexpectedErr => {
-  // Must wrap in window.setTimeout to make sure
+  // Must wrap in setTimeout to make sure
   //    there's no state change when rendering
   BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
   return false
@@ -173,45 +173,37 @@ const App = observer(() => {
   const {
     isConnFailure,
     pbxConnectingOrFailure,
-    shouldShowConnStatus,
     sipConnectingOrFailure,
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
-    pbxTotalFailure,
-    sipTotalFailure,
-    ucTotalFailure,
     signedInId,
   } = s
   let service = ''
-  let isRetrying = false
-  if (pbxConnectingOrFailure) {
+  if (pbxConnectingOrFailure()) {
     service = intl`PBX`
-    isRetrying = pbxTotalFailure > 0
-  } else if (sipConnectingOrFailure) {
+  } else if (sipConnectingOrFailure()) {
     service = intl`SIP`
-    isRetrying = sipTotalFailure > 0
-  } else if (ucConnectingOrFailure) {
+  } else if (ucConnectingOrFailure()) {
     service = intl`UC`
-    isRetrying = ucTotalFailure > 0
   }
+  const failure = isConnFailure()
   let connMessage =
     service &&
-    (isConnFailure
+    (failure
       ? intl`${service} connection failed`
       : intl`Connecting to ${service}...`)
-  void isRetrying
-  if (isConnFailure && ucConnectingOrFailure && ucLoginFromAnotherPlace) {
+  if (failure && ucLoginFromAnotherPlace) {
     connMessage = intl`UC signed in from another location`
   }
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <RnStatusBar />
-      {shouldShowConnStatus && !!signedInId && (
+      {!!signedInId && !!connMessage && (
         <AnimatedSize
           style={[
             css.App_ConnectionStatus,
-            isConnFailure && css.App_ConnectionStatus__failure,
+            failure && css.App_ConnectionStatus__failure,
           ]}
         >
           <View style={css.App_ConnectionStatusInner}>

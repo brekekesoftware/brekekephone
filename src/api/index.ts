@@ -1,7 +1,7 @@
 import { action } from 'mobx'
 
 import { authPBX } from '../stores/AuthPBX'
-import { getAuthStore, waitPbx, waitSip } from '../stores/authStore'
+import { getAuthStore, waitSip } from '../stores/authStore'
 import Call from '../stores/Call'
 import callStore from '../stores/callStore'
 import chatStore, { FileEvent } from '../stores/chatStore'
@@ -43,15 +43,13 @@ class Api {
     uc.on('file-finished', this.onFileFinished)
   }
 
-  onPBXConnectionStarted = async () => {
-    await waitSip()
+  @action onPBXConnectionStarted = async () => {
+    console.error('PBX PN debug: set pbxState succsess')
     const s = getAuthStore()
+    s.pbxState = 'success'
+    await waitSip()
     const p = s.currentProfile
     try {
-      await waitPbx()
-      if (s.pbxState !== 'success') {
-        return
-      }
       const ids = await pbx.getUsers(p.pbxTenant)
       if (!ids) {
         return
@@ -104,18 +102,19 @@ class Api {
   @action onSIPConnectionStarted = () => {
     console.error('SIP PN debug: set sipState succsess')
     const s = getAuthStore()
-    s.sipState = 'success'
     s.sipPn = {}
+    s.sipState = 'success'
     authPBX.auth()
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
+    const s = getAuthStore()
     if (!e?.reason && !e?.response) {
       console.error('SIP PN debug: set sipState stopped')
       getAuthStore().sipState = 'stopped'
     } else {
       console.error('SIP PN debug: set sipState failure stopped')
-      getAuthStore().sipState = 'failure'
-      getAuthStore().sipTotalFailure += 1
+      s.sipState = 'failure'
+      s.sipTotalFailure += 1
     }
   }
   onSIPConnectionTimeout = () => {
