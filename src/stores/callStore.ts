@@ -17,6 +17,7 @@ import { arrToMap } from '../utils/toMap'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import Call from './Call'
 import Nav from './Nav'
+import RnStacker from './RnStacker'
 
 export class CallStore {
   @observable recentPn?: {
@@ -331,7 +332,7 @@ export class CallStore {
     })
   }
 
-  private updateCurrentCall = () => {
+  @action private updateCurrentCall = () => {
     let curr: Call | undefined
     if (this.calls.length) {
       curr =
@@ -341,10 +342,13 @@ export class CallStore {
     }
     const currentCallId = curr?.id || ''
     if (currentCallId !== this.currentCallId) {
-      BackgroundTimer.setTimeout(
-        action(() => (this.currentCallId = currentCallId)),
-        17,
-      )
+      this.currentCallId = currentCallId
+    }
+    if (
+      !this.currentCallId &&
+      RnStacker.stacks.some(s => s.name === 'PageCallManage')
+    ) {
+      RnStacker.stacks = [RnStacker.stacks[0]]
     }
     BackgroundTimer.setTimeout(this.updateBackgroundCallsDebounce, 17)
   }
