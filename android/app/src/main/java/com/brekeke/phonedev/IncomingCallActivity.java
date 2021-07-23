@@ -37,7 +37,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnDtmf,
       btnHold,
       btnEndcall;
-  public TextView txtCallerName, txtCallStatus, txtCallStatus3Btn, txtHoldBtn, txtMuteBtn, txtCallOnHold;
+  public TextView txtCallerName,
+      txtCallStatus,
+      txtCallStatus3Btn,
+      txtHoldBtn,
+      txtMuteBtn,
+      txtCallOnHold;
   public String uuid, callerName;
   public boolean isVideoCall;
 
@@ -322,10 +327,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             try {
               btnHold.setSelected(holding);
               txtHoldBtn.setText(holding ? "UNHOLD" : "HOLD");
-              if(holding){
+              if (holding) {
                 btnEndcall.setVisibility(View.GONE);
                 txtCallOnHold.setVisibility(View.VISIBLE);
-              }else{
+              } else {
                 btnEndcall.setVisibility(View.VISIBLE);
                 txtCallOnHold.setVisibility(View.GONE);
               }
