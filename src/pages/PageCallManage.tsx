@@ -294,15 +294,21 @@ class PageCallManage extends React.Component<{
     return (
       <>
         <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
-          <ButtonIcon
-            bgcolor={g.colors.danger}
-            color='white'
-            noborder
-            onPress={c.hangupWithUnhold}
-            path={mdiPhoneHangup}
-            size={40}
-            textcolor='white'
-          />
+          {!c.holding ? (
+            <ButtonIcon
+              bgcolor={g.colors.danger}
+              color='white'
+              noborder
+              onPress={c.hangupWithUnhold}
+              path={mdiPhoneHangup}
+              size={40}
+              textcolor='white'
+            />
+          ) : (
+            <RnText title white center>
+              {intl`CALL IS ON HOLD`}
+            </RnText>
+          )}
         </View>
         {incoming && (
           <>

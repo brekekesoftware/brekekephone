@@ -12,7 +12,7 @@ const compileFn = (locale: string, k: string): CompileFn => {
   const i = enLabelsMapIndex[k as keyof typeof enLabelsMapIndex]
   let fn = arr[i] as unknown as CompileFn
   if (!fn || typeof fn !== 'function') {
-    fn = Handlebars.compile(fn)
+    fn = Handlebars.compile(fn || k)
   }
   if (i !== undefined) {
     arr[i] = fn as unknown as string

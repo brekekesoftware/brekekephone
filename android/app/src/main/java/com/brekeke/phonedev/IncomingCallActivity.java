@@ -37,7 +37,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnDtmf,
       btnHold,
       btnEndcall;
-  public TextView txtCallerName, txtCallStatus, txtCallStatus3Btn, txtHoldBtn, txtMuteBtn;
+  public TextView txtCallerName, txtCallStatus, txtCallStatus3Btn, txtHoldBtn, txtMuteBtn, txtCallOnHold;
   public String uuid, callerName;
   public boolean isVideoCall;
 
@@ -116,6 +116,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallStatus3Btn = (TextView) findViewById(R.id.txt_call_status_3btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtMuteBtn = (TextView) findViewById(R.id.txt_mute_btn);
+    txtCallOnHold = (TextView) findViewById(R.id.txt_call_on_hold);
 
     txtCallerName.setText(callerName);
     String status = "Incoming " + (isVideoCall ? "Video" : "Audio") + " Call";
@@ -321,6 +322,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             try {
               btnHold.setSelected(holding);
               txtHoldBtn.setText(holding ? "UNHOLD" : "HOLD");
+              if(holding){
+                btnEndcall.setVisibility(View.GONE);
+                txtCallOnHold.setVisibility(View.VISIBLE);
+              }else{
+                btnEndcall.setVisibility(View.VISIBLE);
+                txtCallOnHold.setVisibility(View.GONE);
+              }
             } catch (Exception e) {
             }
           }
