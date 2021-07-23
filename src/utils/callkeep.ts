@@ -267,7 +267,8 @@ export const setupCallKeep = async () => {
     })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
-      RNCallKeep.backToForeground()
+      console.error('SIP PN debug: backToForeground')
+      BackgroundTimer.setTimeout(() => RNCallKeep.backToForeground(), 300)
     })
     // Manually handle back press
     eventEmitter.addListener('onBackPressed', onBackPressed)

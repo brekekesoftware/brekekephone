@@ -149,7 +149,7 @@ export class CallStore {
     return this.calls.find(c => c.id === this.currentCallId)
   }
 
-  incallManagerStarted = false
+  private incallManagerStarted = false
   upsertCall: CallStore['upsertCallWithoutIncallManager'] = c => {
     this.upsertCallWithoutIncallManager(c)
     if (
@@ -159,6 +159,7 @@ export class CallStore {
     ) {
       this.incallManagerStarted = true
       IncallManager.start()
+      IncallManager.setForceSpeakerphoneOn(false)
     }
   }
   @action private upsertCallWithoutIncallManager = (
