@@ -9,7 +9,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import IncallManager from 'react-native-incall-manager'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -47,11 +46,6 @@ import g from './variables'
 
 // API was a component but had been rewritten to a listener
 void api
-
-// ref: https://github.com/react-native-webrtc/react-native-incall-manager/issues/160#issuecomment-844259595
-if (Platform.OS === 'android') {
-  IncallManager.start()
-}
 
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {

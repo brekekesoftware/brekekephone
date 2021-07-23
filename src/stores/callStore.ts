@@ -149,7 +149,19 @@ export class CallStore {
     return this.calls.find(c => c.id === this.currentCallId)
   }
 
-  @action upsertCall = (
+  incallManagerStarted = false
+  upsertCall: CallStore['upsertCallWithoutIncallManager'] = c => {
+    this.upsertCallWithoutIncallManager(c)
+    if (
+      Platform.OS === 'android' &&
+      !this.incallManagerStarted &&
+      this.calls.find(c => c.answered || !c.incoming)
+    ) {
+      this.incallManagerStarted = true
+      IncallManager.start()
+    }
+  }
+  @action private upsertCallWithoutIncallManager = (
     cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
   ) => {
     const now = Date.now()
@@ -201,7 +213,19 @@ export class CallStore {
       console.error('SIP PN debug: reject by recentPnAction')
     }
   }
-  @action removeCall = (id: string) => {
+
+  removeCall = (id: string) => {
+    this.removeCallWithoutIncallManager(id)
+    if (
+      Platform.OS === 'android' &&
+      this.incallManagerStarted &&
+      !this.calls.length
+    ) {
+      this.incallManagerStarted = false
+      IncallManager.stop()
+    }
+  }
+  @action private removeCallWithoutIncallManager = (id: string) => {
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(c => c.id === id)
     if (!c) {
