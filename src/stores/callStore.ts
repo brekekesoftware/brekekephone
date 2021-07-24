@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import { action, observable } from 'mobx'
+import { action, observable, runInAction } from 'mobx'
 import moment from 'moment'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
@@ -33,7 +33,7 @@ export class CallStore {
       return
     }
     pnCanceledMap[pnId] = true
-    const n = Object.values(callPnDataMap).find(n => n.id === pnId)
+    const n = getCallPnDataById(pnId)
     const uuid =
       n?.callkeepUuid || this.recentPn?.uuid || this.prevCallKeepUuid || ''
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
@@ -282,7 +282,7 @@ export class CallStore {
     Nav().goToPageCallManage()
     // Start call logic in RNCallKeep
     let uuid = ''
-    if (Platform.OS === 'ios' && !Object.keys(callkeepMap).length) {
+    if (Platform.OS === 'ios' && !hasCallKeepRunning()) {
       uuid = newUuid().toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       RNCallKeep.reportConnectingOutgoingCallWithUUID(uuid)
@@ -396,6 +396,8 @@ export class CallStore {
   dispose = () => {
     this.clearStartCallIntervalTimer()
   }
+
+  @observable callPnDataMap: { [uuid: string]: ParsedPn } = {}
 }
 
 const callStore = new CallStore()
@@ -461,7 +463,9 @@ const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
     uuid,
     CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
   )
-  delete callPnDataMap[uuid]
+  runInAction(() => {
+    delete callStore.callPnDataMap[uuid]
+  })
   delete callkeepMap[uuid]
   if (uuid === callStore.prevCallKeepUuid) {
     callStore.prevCallKeepUuid = undefined
@@ -520,14 +524,17 @@ export const showIncomingCallUi = (e: TEvent) => {
 }
 
 // Move from pushNotification-parse.ts to avoid circular dependencies
-const callPnDataMap: { [uuid: string]: ParsedPn } = {}
 export const setCallPnData = (uuid: string, data: ParsedPn): void => {
   console.error(`PN ID debug: setCallPnData pnId=${data.id}`)
   data.callkeepUuid = uuid
-  callPnDataMap[uuid] = data
+  runInAction(() => {
+    callStore.callPnDataMap[uuid] = data
+  })
 }
 const getCallPnData = (uuid: string): ParsedPn | undefined =>
-  callPnDataMap[uuid]
+  callStore.callPnDataMap[uuid]
+export const getCallPnDataById = (pnId: string) =>
+  Object.values(callStore.callPnDataMap).find(n => n.id === pnId)
 
 // Canceled pn from sip header event
 const pnCanceledMap: { [pnId: string]: true } = {}
@@ -539,10 +546,12 @@ const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 const addCallHistory = (c: Call | ParsedPn) => {
   const pnId =
     c instanceof Call || 'partyName' in c || 'partyNumber' in c ? c.pnId : c.id
-  if (alreadyAddHistoryMap[pnId]) {
-    return
+  if (pnId) {
+    if (alreadyAddHistoryMap[pnId]) {
+      return
+    }
+    alreadyAddHistoryMap[pnId] = true
   }
-  alreadyAddHistoryMap[pnId] = true
   const as = getAuthStore()
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')

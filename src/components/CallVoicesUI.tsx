@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
 import callStore from '../stores/callStore'
+import { DidMountTimer } from './CallNotify'
 
 class IncomingItem extends React.Component {
   componentDidMount() {
@@ -45,7 +46,11 @@ const CallVoicesUI: FC<{
   resolveCall: Function
 }> = p => (
   <>
-    {p.incomingCallIds.filter(i => i).length ? <IncomingItem /> : null}
+    {p.incomingCallIds.filter(i => i).length ? (
+      <DidMountTimer>
+        <IncomingItem />
+      </DidMountTimer>
+    ) : null}
     {p.outgoingCallIds.filter(i => i).length ? <OutgoingItem /> : null}
   </>
 )

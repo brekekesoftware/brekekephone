@@ -1,10 +1,13 @@
 import { mdiCheck, mdiClose } from '@mdi/js'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
-import callStore from '../stores/callStore'
+import { getAuthStore } from '../stores/authStore'
+import callStore, { getCallPnDataById } from '../stores/callStore'
 import intl from '../stores/intl'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import ButtonIcon from './ButtonIcon'
 import { RnText } from './Rn'
 import g from './variables'
@@ -31,39 +34,68 @@ const css = StyleSheet.create({
 })
 
 @observer
+export class DidMountTimer extends React.Component {
+  private didMountTimer = 0
+  @observable didMount =
+    Platform.OS === 'web' ||
+    !getAuthStore().currentProfile?.pushNotificationEnabled
+  componentDidMount() {
+    this.didMountTimer = BackgroundTimer.setTimeout(
+      action(() => {
+        this.didMountTimer = 0
+        this.didMount = true
+      }),
+      1000,
+    )
+  }
+  componentWillUnmount() {
+    if (this.didMountTimer) {
+      BackgroundTimer.clearTimeout(this.didMountTimer)
+    }
+  }
+  render() {
+    return this.didMount ? this.props.children : null
+  }
+}
+
+@observer
 class CallNotify extends React.Component {
   render() {
-    const c = callStore.calls.find(c => c.incoming && !c.answered)
+    const c = callStore.calls.find(
+      c => c.incoming && !c.answered && !getCallPnDataById(c.pnId),
+    )
     if (!c) {
       return null
     }
     return (
-      <View style={css.Notify}>
-        <View style={css.Notify_Info}>
-          <RnText bold>{c.partyName || c.partyNumber}</RnText>
-          <RnText>
-            {c.remoteVideoEnabled
-              ? intl`Incoming video call`
-              : intl`Incoming audio call`}
-          </RnText>
+      <DidMountTimer>
+        <View style={css.Notify}>
+          <View style={css.Notify_Info}>
+            <RnText bold>{c.partyName || c.partyNumber}</RnText>
+            <RnText>
+              {c.remoteVideoEnabled
+                ? intl`Incoming video call`
+                : intl`Incoming audio call`}
+            </RnText>
+          </View>
+          <ButtonIcon
+            bdcolor={g.colors.danger}
+            color={g.colors.danger}
+            onPress={c.hangupWithUnhold}
+            path={mdiClose}
+            size={20}
+            style={css.Notify_Btn_reject}
+          />
+          <ButtonIcon
+            bdcolor={g.colors.primary}
+            color={g.colors.primary}
+            onPress={() => c.answer()}
+            path={mdiCheck}
+            size={20}
+            style={css.Notify_Btn_accept}
+          />
         </View>
-        <ButtonIcon
-          bdcolor={g.colors.danger}
-          color={g.colors.danger}
-          onPress={c.hangupWithUnhold}
-          path={mdiClose}
-          size={20}
-          style={css.Notify_Btn_reject}
-        />
-        <ButtonIcon
-          bdcolor={g.colors.primary}
-          color={g.colors.primary}
-          onPress={() => c.answer()}
-          path={mdiCheck}
-          size={20}
-          style={css.Notify_Btn_accept}
-        />
-      </View>
+      </DidMountTimer>
     )
   }
 }

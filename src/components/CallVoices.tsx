@@ -2,10 +2,11 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import Call from '../stores/Call'
-import callStore from '../stores/callStore'
+import callStore, { getCallPnDataById } from '../stores/callStore'
 import CallVoicesUI from './CallVoicesUI'
 
-const isIncoming = (c: Call) => !c.answered && c.incoming
+const isIncoming = (c: Call) =>
+  !c.answered && c.incoming && !getCallPnDataById(c.pnId)
 const isOutgoing = (c: Call) => !c.answered && !c.incoming
 const isAnswered = (c: Call) => c.answered
 

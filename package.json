@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.8.18",
+  "version": "2.8.19",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -54,7 +54,7 @@
     "react-native-document-picker": "4.3.0",
     "react-native-emoji-selector": "0.2.0",
     "react-native-exception-handler": "2.10.10",
-    "react-native-fast-image": "8.3.6",
+    "react-native-fast-image": "8.3.7",
     "react-native-fcm": "github:brekekesoftware/react-native-fcm#afbddd1782afe9a6cf81c34f903e026b712d5579",
     "react-native-fs": "2.18.0",
     "react-native-get-random-values": "1.7.0",
