@@ -1,3 +1,5 @@
+import { decode } from 'html-entities'
+
 import { getAuthStore } from '../stores/authStore'
 import { ChatTarget } from '../stores/chatStore'
 import intl from '../stores/intl'
@@ -44,7 +46,7 @@ export const formatChatContent = (c: {
   isTextOnly = isTextOnly || type === 1 || !originalText.startsWith('{')
 
   return {
-    text,
+    text: decode(text),
     isTextOnly,
   }
 }

@@ -126,18 +126,36 @@ static void InitializeFlipper(UIApplication *application) {
   //        completionHandler:completion];
   [RNVoipPushNotificationManager
       didReceiveIncomingPushWithPayload:payload
-                                forType:(NSString *)type];
+                                forType:(NSString *)type
+                           callkeepUuid:uuid];
+  // RNCallKeep
+  NSString *from = [payload.dictionaryPayload valueForKey:@"x_from"];
+  if (!from) {
+    from = [payload.dictionaryPayload valueForKey:@"from"];
+  }
+  if (!from) {
+    NSDictionary *aps = [payload.dictionaryPayload objectForKey:@"aps"];
+    if (aps) {
+      from = [aps valueForKey:@"x_from"];
+      if (!from) {
+        from = [aps valueForKey:@"from"];
+      }
+    }
+  }
+  if (!from) {
+    from = @"Loading...";
+  }
   [RNCallKeep reportNewIncomingCall:uuid
                              handle:@"Brekeke Phone"
                          handleType:@"generic"
                            hasVideo:false
-                localizedCallerName:@"Loading..."
+                localizedCallerName:from
                     supportsHolding:YES
                        supportsDTMF:YES
                    supportsGrouping:NO
                  supportsUngrouping:NO
                         fromPushKit:YES
-                            payload:payload
+                            payload:payload.dictionaryPayload
               withCompletionHandler:completion];
   // --- don't need to call this if we do on the js side
   // --- already add completion in above reportNewIncomingCall

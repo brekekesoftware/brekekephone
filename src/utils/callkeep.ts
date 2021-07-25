@@ -3,6 +3,7 @@ import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import sip from '../api/sip'
 import callStore, {
+  getCallPnData,
   hasCallKeepRunning,
   setCallPnData,
   showIncomingCallUi,
@@ -135,10 +136,15 @@ export const setupCallKeep = async () => {
       return
     }
     // Try set the caller name from last known PN
-    const n = parseNotificationData(e.payload)
+    let n = parseNotificationData(e.payload)
     if (n) {
       setCallPnData(uuid, n)
+    } else {
+      n = getCallPnData(uuid)
     }
+    console.error(
+      `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
+    )
     if (
       n?.from &&
       (e.localizedCallerName === 'Loading...' || e.handle === 'Loading...')

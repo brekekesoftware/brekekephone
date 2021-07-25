@@ -32,7 +32,7 @@ export class CallStore {
     if (!pnId) {
       return
     }
-    pnCanceledMap[pnId] = true
+    cancelPn(pnId)
     const n = getCallPnDataById(pnId)
     const uuid =
       n?.callkeepUuid || this.recentPn?.uuid || this.prevCallKeepUuid || ''
@@ -58,12 +58,16 @@ export class CallStore {
         (!o?.from || c.partyNumber === o.from),
     )
   onCallKeepDidDisplayIncomingCall = (uuid: string) => {
-    // Find the current incoming call which is not callkeep
     const pnData = getCallPnData(uuid)
-    if (isPnCanceled(pnData?.id)) {
+    const canceled = isPnCanceled(pnData?.id)
+    console.error(
+      `SIP PN debug: onCallKeepDidDisplayIncomingCall pnId=${pnData?.id} canceled=${canceled}`,
+    )
+    if (canceled) {
       endCallKeep(uuid)
       return
     }
+    // Find the current incoming call which is not callkeep
     const c = this.getIncomingCallKeep(uuid, {
       from: pnData?.from,
     })
@@ -224,8 +228,8 @@ export class CallStore {
     if (!c) {
       return
     }
+    cancelPn(c.pnId)
     addCallHistory(c)
-    pnCanceledMap[c.pnId] = true
     this.calls = this.calls.filter(c0 => c0 !== c)
     IncomingCall.setBackgroundCalls(this.calls.length)
     if (c.callkeepUuid) {
@@ -285,7 +289,8 @@ export class CallStore {
     if (Platform.OS === 'ios' && !hasCallKeepRunning()) {
       uuid = newUuid().toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
-      RNCallKeep.reportConnectingOutgoingCallWithUUID(uuid)
+      RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
+      RNCallKeep.setOnHold(uuid, false)
       setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s
@@ -301,7 +306,6 @@ export class CallStore {
         if (uuid) {
           curr.callkeepUuid = uuid
           this.prevCallKeepUuid = uuid
-          RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
         }
         this.currentCallId = curr.id
         this.clearStartCallIntervalTimer()
@@ -449,6 +453,9 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
   }, 500)
 }
 const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
+  if (!uuid) {
+    return
+  }
   console.error('PN callkeep debug: endCallKeep ' + uuid)
   const pnData = getCallPnData(uuid)
   if (
@@ -524,22 +531,31 @@ export const showIncomingCallUi = (e: TEvent) => {
 }
 
 // Move from pushNotification-parse.ts to avoid circular dependencies
-export const setCallPnData = (uuid: string, data: ParsedPn): void => {
-  console.error(`PN ID debug: setCallPnData pnId=${data.id}`)
-  data.callkeepUuid = uuid
+export const setCallPnData = (uuid: string, n: ParsedPn): void => {
+  console.error(`PN ID debug: setCallPnData pnId=${n.id}`)
+  if (n.callkeepUuid) {
+    console.error(`PN ID debug: found n.callkeepUuid=${n.callkeepUuid}`)
+  }
+  if (n.callkeepUuid && n.callkeepUuid !== uuid) {
+    console.error(`PN ID debug: n.callkeepUuid different with uuid=${uuid}`)
+  }
+  n.callkeepUuid = uuid
   runInAction(() => {
-    callStore.callPnDataMap[uuid] = data
+    callStore.callPnDataMap[uuid] = n
   })
 }
-const getCallPnData = (uuid: string): ParsedPn | undefined =>
+export const getCallPnData = (uuid: string): ParsedPn | undefined =>
   callStore.callPnDataMap[uuid]
 export const getCallPnDataById = (pnId: string) =>
   Object.values(callStore.callPnDataMap).find(n => n.id === pnId)
 
 // Canceled pn from sip header event
 const pnCanceledMap: { [pnId: string]: true } = {}
-export const isPnCanceled = (pnId?: string): true | undefined =>
-  pnId ? pnCanceledMap[pnId] : undefined
+const cancelPn = (pnId: string) => {
+  console.error(`SIP PN debug: got event cancel for pnId=${pnId}`)
+  pnCanceledMap[pnId] = true
+}
+export const isPnCanceled = (pnId?: string) => !!(pnId && pnCanceledMap[pnId])
 
 // Save call history
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}

@@ -34,6 +34,7 @@ const keysInCustomNotification = [
   'webphone.turn.credential',
   // Others
   'pn-id',
+  'callkeepUuid',
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
@@ -44,7 +45,8 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
   fields
     .filter(f => !!f)
     .map(f => {
-      if (typeof f === 'string') {
+      // @ts-ignore
+      if (typeof f === 'string' && f.charAt(0) === '{') {
         try {
           return JSON.parse(f)
         } catch (err) {}
@@ -209,6 +211,10 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   console.error('SIP PN debug: call signInByNotification')
   getAuthStore().signInByNotification(n)
+  // Custom fork of react-native-voip-push-notification to get callkeepUuid
+  if (n.callkeepUuid) {
+    setCallPnData(n.callkeepUuid, n)
+  }
   // Manually show incoming call in android
   // TODO: show in native java code
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {

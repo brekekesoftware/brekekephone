@@ -8,6 +8,7 @@ import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '../components/Rn'
 import { currentVersion } from '../components/variables'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import intl, { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 
@@ -30,6 +31,7 @@ const [log, log1, log2] = ['log', 'log1', 'log2'].map(n =>
 const maximumBytes = 100000 // 100KB
 
 class DebugStore {
+  loading = true
   // By default only error logs will be captured
   // If this flag is turned on, all logs will be captured
   // This flag will be saved to storage and we will read it again
@@ -64,13 +66,20 @@ class DebugStore {
     this.logQueue.push(msg)
     this.writeFileBatch()
   }
-  writeFile = () =>
-    this.writeFileWithoutCatch().catch((err: Error) => {
+  writeFile = async () => {
+    if (this.loading) {
+      BackgroundTimer.setTimeout(this.writeFileBatch, 300)
+      return
+    }
+    this.loading = true
+    await this.writeFileWithoutCatch().catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to write debug log to file`,
         err,
       })
     })
+    this.loading = false
+  }
   writeFileWithoutCatch = async () => {
     if (!this.logQueue.length) {
       return
@@ -226,7 +235,8 @@ class DebugStore {
     }
   }
 
-  init = () => {
+  init = async () => {
+    this.loading = true
     // Read size of log files using stat for the initial state
     const promises = [log1, log2].map((l, i) =>
       RNFS.exists(l)
@@ -282,7 +292,8 @@ class DebugStore {
         }),
     )
     //
-    return Promise.all(promises)
+    await Promise.all(promises)
+    this.loading = false
   }
 }
 
