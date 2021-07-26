@@ -228,7 +228,9 @@ export class CallStore {
     if (!c) {
       return
     }
-    cancelPn(c.pnId)
+    if (c.pnId) {
+      cancelPn(c.pnId)
+    }
     addCallHistory(c)
     this.calls = this.calls.filter(c0 => c0 !== c)
     IncomingCall.setBackgroundCalls(this.calls.length)

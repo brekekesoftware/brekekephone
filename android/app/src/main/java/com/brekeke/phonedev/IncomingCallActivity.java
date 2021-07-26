@@ -58,7 +58,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       b = savedInstanceState;
     }
     if (b == null) {
-      IncomingCallModule.mgr.remove(uuid);
+      int i = 0;
+      for (IncomingCallActivity a : IncomingCallModule.mgr.activities) {
+        if (a == this) {
+          IncomingCallModule.mgr.activities.remove(i);
+          break;
+        }
+        i++;
+      }
+      this.forceFinish();
       return;
     }
 

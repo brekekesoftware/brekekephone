@@ -126,7 +126,7 @@ yarn android --deviceId=DEVICE_ID
 
 ##### Build app for distribution
 
-- Download bitcode for react-native-webrtc: `yarn ios:bitcode`
+- Download bitcode for react-native-webrtc: `yarn bitcode`
 - Request for distribution certificate and install it correctly on local machine if haven't
 - Archive and distribute for Ad-hoc / Team distribution to manually upload to our server so the others can download and test
 - We can also choose to validate for App Store to see if it has any issue, then distribute it to App Store for a new release
