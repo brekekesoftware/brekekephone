@@ -35,8 +35,8 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
-    versionCode 208021
-    versionName "2.8.21"
+    versionCode 208023
+    versionName "2.8.23"
   }
 
   splits {

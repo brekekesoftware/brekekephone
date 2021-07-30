@@ -248,8 +248,16 @@ export class SIP extends EventEmitter {
 
   disconnect = () => {
     if (this.phone) {
-      console.error('SIP PN debug: sip.disconnect: call phone.stopWebRTC')
-      this.phone.stopWebRTC()
+      // console.error('SIP PN debug: sip.disconnect: call phone.stopWebRTC')
+      // this.phone.stopWebRTC()
+      console.error(
+        `SIP PN debug: sip.disconnect: call phone._ua._transport.socket.disconnect ${
+          // @ts-ignore
+          typeof this.phone._ua?._transport?.socket?.disconnect
+        }`,
+      )
+      // @ts-ignore
+      this.phone._ua?._transport?.socket?.disconnect?.()
       this.phone = undefined
     } else {
       console.error('SIP PN debug: sip.disconnect: already disconnected')

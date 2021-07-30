@@ -522,9 +522,14 @@ export const showIncomingCallUi = (e: TEvent) => {
     return
   }
   alreadyShowIncomingCallUi[uuid] = true
+  const pnData = getCallPnData(uuid)
+  if (!pnData || isPnCanceled(pnData.id)) {
+    endCallKeep(uuid)
+    return
+  }
   IncomingCall.showCall(
     uuid,
-    getCallPnData(uuid)?.from || 'Loading...',
+    pnData.from,
     !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
     AppState.currentState === 'active' || isForegroundLocked,
   )
