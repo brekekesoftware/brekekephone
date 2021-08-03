@@ -111,7 +111,7 @@ export class CallStore {
           `SIP PN debug: call sip.disconnect in new notification: phone.getSessionCount()=${count}`,
         )
         authSIP.dispose()
-        authSIP.auth()
+        authSIP.authWithCheck()
       }
     }
   }

@@ -2,6 +2,8 @@ import CircularJSON from 'circular-json'
 import { Platform } from 'react-native'
 import { format } from 'util'
 
+import { sipErrorEmitter } from '../stores/sipErrorEmitter'
+
 const formatErrors = (...errs: Error[]) => {
   // Normalize and fix circular json
   let msgs = errs.map(e =>
@@ -29,9 +31,9 @@ const formatErrors = (...errs: Error[]) => {
     tpl = tpl.replace(/%c/g, '')
     msgs = msgs.filter((m0, i) => !m[i])
   }
-  // More cleanup from the debug lib
   let msg = format(tpl, ...msgs)
-  const i = /\W(@|at)(\W|http)/.exec(msg)?.index || -1
+  // More cleanup from the debug lib
+  const i = /( : \w+@index)|(\W\w*@http)/.exec(msg)?.index || -1
   if (i >= 0) {
     msg = msg.substr(0, i + 1)
   }
@@ -39,6 +41,9 @@ const formatErrors = (...errs: Error[]) => {
     .replace(/^.+\[(trial|debug|log|info|warn|error)\]\s*/, '')
     .replace(/\s+/g, ' ')
     .trim()
+  if (msg.indexOf('JsSIP:Transport reconnection attempt') >= 0) {
+    sipErrorEmitter.emit('error', null)
+  }
   return msg
 }
 

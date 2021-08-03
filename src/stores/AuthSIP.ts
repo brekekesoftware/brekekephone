@@ -4,11 +4,20 @@ import { action, autorun, Lambda } from 'mobx'
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
-import { getAuthStore, waitSip } from './authStore'
+import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
+import { sipErrorEmitter } from './sipErrorEmitter'
 
 class AuthSIP {
+  constructor() {
+    sipErrorEmitter.on('error', () => {
+      console.error('SIP PN debug: got error from sipErrorEmitter')
+      this.dispose()
+      this.authWithCheck()
+    })
+  }
+
   private clearObserve?: Lambda
 
   auth = () => {
@@ -65,33 +74,11 @@ class AuthSIP {
     })
   }
 
-  private waitSipAt = 0
-  private waitSipAndReconnect = () => {
-    this.waitSipAt = Date.now()
-    const at = this.waitSipAt
-    // If after 10s and still not connected => reconnect
-    // May be due to the auth token has an issue or been expired
-    waitSip().then(isConnected => {
-      if (at !== this.waitSipAt) {
-        // A new waitSip has bene called
-        return
-      }
-      if (!isConnected) {
-        console.error(
-          'SIP PN debug: sip reconnect in authWithoutCatch: 10s has passed after but still not connected',
-        )
-        this.dispose()
-        this.auth()
-      }
-    })
-  }
-
   @action private authWithoutCatch = async () => {
     console.error('SIP PN debug: set sipState connecting')
     const s = getAuthStore()
     s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
-    this.waitSipAndReconnect()
     //
     if (s.sipPn.sipAuth) {
       console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
@@ -166,7 +153,7 @@ class AuthSIP {
       turnConfig,
     })
   }
-  private authWithCheck = () => {
+  authWithCheck = () => {
     const s = getAuthStore()
     if (Date.now() - s.lastSipAuth < 10000) {
       this.authWithCheckDebounced()

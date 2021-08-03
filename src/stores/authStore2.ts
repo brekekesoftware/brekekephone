@@ -31,7 +31,7 @@ export class AuthStore {
   pbxShouldAuth = () => {
     return (
       this.signedInId &&
-      !this.sipPn.sipAuth &&
+      // !this.sipPn.sipAuth &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' &&
           !this.pbxTotalFailure &&
@@ -155,7 +155,7 @@ export class AuthStore {
     this.resetFailureState()
     this.sipState = 'stopped'
     // Mobx observe not call automatically?
-    authSIP.auth()
+    authSIP.authWithCheck()
   }
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
