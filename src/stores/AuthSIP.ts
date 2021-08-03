@@ -10,14 +10,6 @@ import RnAlert from './RnAlert'
 import { sipErrorEmitter } from './sipErrorEmitter'
 
 class AuthSIP {
-  constructor() {
-    sipErrorEmitter.on('error', () => {
-      console.error('SIP PN debug: got error from sipErrorEmitter')
-      this.dispose()
-      this.authWithCheck()
-    })
-  }
-
   private clearObserve?: Lambda
 
   auth = () => {
@@ -79,6 +71,12 @@ class AuthSIP {
     const s = getAuthStore()
     s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
+    sipErrorEmitter.removeAllListeners()
+    sipErrorEmitter.on('error', () => {
+      console.error('SIP PN debug: got error from sipErrorEmitter')
+      this.dispose()
+      this.authWithCheck()
+    })
     //
     if (s.sipPn.sipAuth) {
       console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')

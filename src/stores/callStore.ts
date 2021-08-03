@@ -366,7 +366,7 @@ export class CallStore {
     if (this.calls.length) {
       curr =
         this.calls.find(c => c.id === this.currentCallId) ||
-        this.calls.find(c => c.answered && !c.holding) ||
+        this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
         this.calls[0]
     }
     const currentCallId = curr?.id || ''

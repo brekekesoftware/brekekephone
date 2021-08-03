@@ -127,11 +127,13 @@ export default class Call {
   @action private toggleHold = () => {
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
-    if (this.callkeepUuid && !this.holding) {
-      // Hack to fix no voice after unhold: only setOnHold in unhold case
-      RNCallKeep.setOnHold(this.callkeepUuid, false)
+    if (!this.isAboutToHangup) {
+      if (this.callkeepUuid && !this.holding) {
+        // Hack to fix no voice after unhold: only setOnHold in unhold case
+        RNCallKeep.setOnHold(this.callkeepUuid, false)
+      }
+      IncomingCall.setOnHold(this.callkeepUuid, this.holding)
     }
-    IncomingCall.setOnHold(this.callkeepUuid, this.holding)
     return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)

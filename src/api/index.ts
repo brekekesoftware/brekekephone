@@ -8,6 +8,7 @@ import chatStore, { FileEvent } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
+import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { Conference } from './brekekejs'
 import pbx from './pbx'
 import sip from './sip'
@@ -101,6 +102,7 @@ class Api {
 
   @action onSIPConnectionStarted = () => {
     console.error('SIP PN debug: set sipState succsess')
+    sipErrorEmitter.removeAllListeners()
     const s = getAuthStore()
     s.sipPn = {}
     s.sipState = 'success'

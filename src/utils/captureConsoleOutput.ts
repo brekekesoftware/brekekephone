@@ -33,9 +33,9 @@ const formatErrors = (...errs: Error[]) => {
   }
   let msg = format(tpl, ...msgs)
   // More cleanup from the debug lib
-  const i = /( : \w+@index)|(\W\w*@http)/.exec(msg)?.index || -1
+  const i = /(\s+@\s+)|( : \w+@index)|(\W\w*@http)/.exec(msg)?.index || -1
   if (i >= 0) {
-    msg = msg.substr(0, i + 1)
+    msg = msg.substr(0, i)
   }
   msg = msg
     .replace(/^.+\[(trial|debug|log|info|warn|error)\]\s*/, '')
