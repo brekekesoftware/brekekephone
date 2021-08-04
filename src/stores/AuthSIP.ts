@@ -151,14 +151,17 @@ class AuthSIP {
   }
   authWithCheck = () => {
     const s = getAuthStore()
+    const sipShouldAuth = s.sipShouldAuth()
     console.error(
-      `SIP PN debug: sipState=${
-        s.sipState
-      } signedInId=${!!s.signedInId} sipAuth=${!!s.sipPn.sipAuth} pbxState=${
-        s.pbxState
-      } sipTotalFailure=${s.sipTotalFailure}`,
+      `SIP PN debug: authWithCheck ${sipShouldAuth} ${JSON.stringify({
+        sipState: s.sipState,
+        signedInId: !!s.signedInId,
+        sipAuth: !!s.sipPn.sipAuth,
+        pbxState: s.pbxState,
+        sipTotalFailure: s.sipTotalFailure,
+      })}`,
     )
-    if (!s.sipShouldAuth()) {
+    if (!sipShouldAuth) {
       return
     }
     this.authWithoutCatch().catch(

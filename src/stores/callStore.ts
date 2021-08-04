@@ -110,7 +110,8 @@ export class CallStore {
         console.error(
           `SIP PN debug: call sip.disconnect in new notification: phone.getSessionCount()=${count}`,
         )
-        authSIP.dispose()
+        as.sipState = 'stopped'
+        sip.disconnect()
         authSIP.authWithCheck()
       }
     }
