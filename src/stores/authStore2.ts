@@ -139,12 +139,10 @@ export class AuthStore {
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()
   }
 
-  lastSipAuth = 0
   @action resetFailureState = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
-    this.lastSipAuth = 0
   }
   @action reconnectPbx = () => {
     this.resetFailureState()

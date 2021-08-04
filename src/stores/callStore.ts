@@ -102,7 +102,7 @@ export class CallStore {
     const now = Date.now()
     if (now - this.recentCallActivityAt > 3000) {
       const as = getAuthStore()
-      if (as.sipState === 'connecting' && now - as.lastSipAuth < 10000) {
+      if (as.sipState === 'connecting') {
         return
       }
       const count = sip.phone?.getSessionCount()

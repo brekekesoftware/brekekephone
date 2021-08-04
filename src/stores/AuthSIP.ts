@@ -27,7 +27,6 @@ class AuthSIP {
     const s = getAuthStore()
     s.sipPn = {}
     s.sipState = 'stopped'
-    s.lastSipAuth = 0
     sip.disconnect()
   }
 
@@ -69,7 +68,6 @@ class AuthSIP {
   @action private authWithoutCatch = async () => {
     console.error('SIP PN debug: set sipState connecting')
     const s = getAuthStore()
-    s.lastSipAuth = Date.now()
     s.sipState = 'connecting'
     sipErrorEmitter.removeAllListeners()
     sipErrorEmitter.on('error', () => {
@@ -153,10 +151,13 @@ class AuthSIP {
   }
   authWithCheck = () => {
     const s = getAuthStore()
-    if (Date.now() - s.lastSipAuth < 10000) {
-      this.authWithCheckDebounced()
-      return
-    }
+    console.error(
+      `SIP PN debug: sipState=${
+        s.sipState
+      } signedInId=${!!s.signedInId} sipAuth=${!!s.sipPn.sipAuth} pbxState=${
+        s.pbxState
+      } sipTotalFailure=${s.sipTotalFailure}`,
+    )
     if (!s.sipShouldAuth()) {
       return
     }
