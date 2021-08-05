@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -19,7 +21,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   public static Activity main;
   public static ReactApplicationContext ctx;
+  public static WakeLock wl;
+  public static KeyguardManager km;
   public static boolean firstShowCallAppActive = false;
+  public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
 
   public static void tryExitClearTask() {
     if (!mgr.activities.isEmpty()) {
@@ -42,18 +47,16 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     }
   }
 
-  public static KeyguardManager km;
-
   public static boolean isLocked() {
     return km.isKeyguardLocked() || km.isDeviceLocked();
   }
-
-  public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
 
   IncomingCallModule(ReactApplicationContext c) {
     super(c);
     ctx = c;
     km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
+    PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
+    wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
   }
 
   @Override
@@ -69,6 +72,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void showCall(String uuid, String callerName, boolean isVideoCall, boolean isAppActive) {
+    if (mgr.activitiesSize == 0 && !wl.isHeld()) {
+      wl.acquire();
+    }
     mgr.activitiesSize++;
     Intent i;
     IncomingCallActivity prev = mgr.last();

@@ -7977,10 +7977,9 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
-jssip@3.2.15:
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/jssip/-/jssip-3.2.15.tgz#b88489b4a963fb9f2cd3fde0120738ebeb64bcc3"
-  integrity sha512-kpKekINV3AObe6UFSTYiM5PfL5xKWTstUnG3S65vy6/GRlKhWk6XdivaH0X22RyAFPQuxskfpy99V/4MLhEdWg==
+"jssip@github:brekekesoftware/jssip#06459b5f0965e8b264b6715a251dff3d98ddc04e":
+  version "3.2.15-brekeke-000"
+  resolved "https://codeload.github.com/brekekesoftware/jssip/tar.gz/06459b5f0965e8b264b6715a251dff3d98ddc04e"
   dependencies:
     debug "^4.1.0"
     events "^3.0.0"

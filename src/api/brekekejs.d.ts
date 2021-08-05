@@ -256,6 +256,7 @@ export type Sip = {
 
   _ua?: {
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
+    _transport?: { socket?: { disconnect: Function } }
   }
   _removeEventListenerPhoneStatusChange?: Function
 }
