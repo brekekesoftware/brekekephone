@@ -334,7 +334,7 @@
         android:indeterminate="true"
         android:indeterminateTint="@color/white"
         android:visibility="gone"
-        />
+      />
     </RelativeLayout>
     <LinearLayout
       android:layout_width="wrap_content"
