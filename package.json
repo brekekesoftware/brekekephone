@@ -56,7 +56,7 @@
     "react-native-emoji-selector": "0.2.0",
     "react-native-exception-handler": "2.10.10",
     "react-native-fast-image": "8.3.7",
-    "react-native-fcm": "github:brekekesoftware/react-native-fcm#4e01be0db0d165db6ea889eecf9a3c7e137fa0b9",
+    "react-native-fcm": "github:brekekesoftware/react-native-fcm#95df0dc0502595d596b3d41c92b9a7b055c92b77",
     "react-native-fs": "2.18.0",
     "react-native-get-random-values": "1.7.0",
     "react-native-hyperlink": "0.0.19",
