@@ -151,7 +151,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
       uiSetStartConnecting();
-//      onAnswerButLocked();
     } else {
       IncomingCallModule.mgr.removeAllAndBackToForeground();
     }
