@@ -9,6 +9,7 @@ const Polyfill = {
     setBackgroundCalls: () => undefined,
     isLocked: () => Promise.resolve(false),
     backToBackground: () => undefined,
+    onConnectingCallSuccess: () => undefined,
   },
 }
 const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
@@ -25,6 +26,7 @@ const M = (Platform.OS === 'android' ? NativeModules : Polyfill) as {
     setBackgroundCalls(n: number): void
     isLocked(): Promise<boolean>
     backToBackground(): void
+    onConnectingCallSuccess(uuid: string): void
   }
 }
 

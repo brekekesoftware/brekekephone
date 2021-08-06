@@ -123,6 +123,7 @@ export class CallStore {
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
+      IncomingCall.onConnectingCallSuccess(uuid)
       this.recentPn = undefined
       console.error('SIP PN debug: answer by onCallKeepAnswerCall')
     } else if (this.recentPn?.uuid === uuid) {
