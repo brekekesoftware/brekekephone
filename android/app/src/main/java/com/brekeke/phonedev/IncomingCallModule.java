@@ -57,7 +57,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     ctx = c;
     km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
     PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-    wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
+    wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
   }
 
   @Override

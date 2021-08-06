@@ -1,4 +1,5 @@
 import CircularJSON from 'circular-json'
+import moment from 'moment'
 import { Platform } from 'react-native'
 import { format } from 'util'
 
@@ -46,18 +47,22 @@ const formatErrors = (...errs: Error[]) => {
   }
   return msg
 }
+const formatErrorsWithTimestamp = (...errs: Error[]) =>
+  moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + formatErrors(...errs)
 
 const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
   (m, k) => {
     const f0 = console[k as keyof Console] as Function
     const f = f0.bind(console) as Function
     m[k] =
-      Platform.OS === 'web' || process.env.NODE_ENV !== 'production'
-        ? (...args: Error[]) => f(formatErrors(...args))
-        : (...args: Error[]) =>
+      Platform.OS === 'web' || process.env.NODE_ENV === 'production'
+        ? (...args: Error[]) =>
             // debugStore was added globally in src/stores/debugStore.ts
             //    so it can be used here
             window.debugStore?.captureConsoleOutput(k, formatErrors(...args))
+        : (...args: Error[]) =>
+            // add timestamp on dev (prod already added in debugStore)
+            f(formatErrorsWithTimestamp(...args))
     return m
   },
   {} as { [k: string]: Function },

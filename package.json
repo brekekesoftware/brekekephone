@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.8.28",
+  "version": "2.8.30",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -56,12 +56,12 @@
     "react-native-emoji-selector": "0.2.0",
     "react-native-exception-handler": "2.10.10",
     "react-native-fast-image": "8.3.7",
-    "react-native-fcm": "github:brekekesoftware/react-native-fcm#afbddd1782afe9a6cf81c34f903e026b712d5579",
+    "react-native-fcm": "github:brekekesoftware/react-native-fcm#4e01be0db0d165db6ea889eecf9a3c7e137fa0b9",
     "react-native-fs": "2.18.0",
     "react-native-get-random-values": "1.7.0",
     "react-native-hyperlink": "0.0.19",
     "react-native-image-picker": "2.3.4",
-    "react-native-image-zoom-viewer-fixed": "3.2.3",
+    "react-native-image-zoom-viewer-fixed": "3.2.5",
     "react-native-incall-manager": "3.3.0",
     "react-native-iphone-x-helper": "1.3.1",
     "react-native-keyboard-spacer": "0.4.1",
@@ -80,7 +80,7 @@
     "validatorjs": "3.22.1"
   },
   "devDependencies": {
-    "@babel/core": "7.14.8",
+    "@babel/core": "7.15.0",
     "@babel/plugin-proposal-decorators": "7.14.5",
     "@babel/plugin-proposal-optional-chaining": "7.14.5",
     "@craco/craco": "6.2.0",
@@ -88,7 +88,7 @@
     "@types/circular-json": "0.4.0",
     "@types/handlebars": "4.1.0",
     "@types/json-stable-stringify": "1.0.33",
-    "@types/lodash": "4.14.171",
+    "@types/lodash": "4.14.172",
     "@types/md5": "2.3.1",
     "@types/qs": "6.9.7",
     "@types/react": "17.0.15",
