@@ -1,4 +1,5 @@
 import { action, computed, observable } from 'mobx'
+import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import pbx from '../api/pbx'
@@ -46,6 +47,9 @@ export default class Call {
     sip.answerSession(this.id, {
       videoEnabled: this.remoteVideoEnabled,
     })
+    if (Platform.OS === 'android') {
+      IncomingCall.onConnectingCallSuccess(this.callkeepUuid)
+    }
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
