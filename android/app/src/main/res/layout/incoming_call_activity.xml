@@ -276,7 +276,7 @@
           android:layout_marginTop="20dp"
           android:text="CALL IS ON HOLD"
           android:textColor="@color/white"
-          android:textSize="28sp"
+          android:textSize="20dp"
           android:textStyle="bold"
         />
       </RelativeLayout>
@@ -309,7 +309,7 @@
     android:layout_height="match_parent"
     android:layout_alignParentBottom="true"
     android:gravity="bottom"
-    android:visibility="gone"
+    android:visibility="visible"
   >
     <RelativeLayout
       android:layout_width="wrap_content"
@@ -326,6 +326,15 @@
         android:textSize="20dp"
         android:textStyle="normal"
       />
+      <ProgressBar
+        android:id="@+id/loading_indicator"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/white"
+        android:visibility="gone"
+      />
     </RelativeLayout>
     <LinearLayout
       android:layout_width="wrap_content"
@@ -333,8 +342,10 @@
       android:layout_centerInParent="true"
     >
       <RelativeLayout
+        android:id="@+id/view_btn_incoming_call"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="visible"
       >
         <Button
           android:id="@+id/btn_close"
