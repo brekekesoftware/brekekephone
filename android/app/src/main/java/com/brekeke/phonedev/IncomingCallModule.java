@@ -11,8 +11,16 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import java.util.Map;
 
 public class IncomingCallModule extends ReactContextBaseJavaModule {
+  public static void onFcmKilled(FirebaseMessagingService fcm, Map<String, String> data) {
+    String uuid = data.get("callkeepUuid");
+    String callerName = data.get("x_from").toString();
+    showCallStatic(fcm, uuid, callerName, false, false);
+  }
+
   public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
@@ -54,9 +62,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   IncomingCallModule(ReactApplicationContext c) {
     super(c);
     ctx = c;
-    km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
-    PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-    wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
+    if (km == null) {
+      km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
+    }
+    if (wl == null) {
+      PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
+      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
+    }
   }
 
   @Override
@@ -72,6 +84,15 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void showCall(String uuid, String callerName, boolean isVideoCall, boolean isAppActive) {
+    showCallStatic(null, uuid, callerName, isVideoCall, isAppActive);
+  }
+
+  public static void showCallStatic(
+      FirebaseMessagingService fcm,
+      String uuid,
+      String callerName,
+      boolean isVideoCall,
+      boolean isAppActive) {
     if (mgr.activitiesSize == 0 && !wl.isHeld()) {
       wl.acquire();
     }
@@ -79,7 +100,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     Intent i;
     IncomingCallActivity prev = mgr.last();
     if (prev == null) {
-      i = new Intent(ctx, IncomingCallActivity.class);
+      i = new Intent(fcm == null ? ctx : fcm, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       firstShowCallAppActive = isAppActive;
     } else {
@@ -89,11 +110,12 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     i.putExtra("uuid", uuid);
     i.putExtra("callerName", callerName);
     i.putExtra("isVideoCall", isVideoCall);
-
-    if (prev == null) {
-      ctx.startActivity(i);
-    } else {
+    if (prev != null) {
       prev.startActivity(i);
+    } else if (fcm != null) {
+      fcm.startActivity(i);
+    } else {
+      ctx.startActivity(i);
     }
   }
 

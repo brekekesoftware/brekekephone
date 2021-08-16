@@ -216,8 +216,8 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     setCallPnData(n.callkeepUuid, n)
   }
   // Manually show incoming call in android
-  // TODO: show in native java code
-  if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
+  // If n.callkeepUuid exists, then the call is showed in android code already
+  if (Platform.OS === 'android' && !isPnCanceled(n.id) && !n.callkeepUuid) {
     const uuid = newUuid().toUpperCase()
     setCallPnData(uuid, n)
     if (hasCallKeepRunning()) {

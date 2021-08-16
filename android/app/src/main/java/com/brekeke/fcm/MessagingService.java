@@ -1,5 +1,6 @@
 package com.brekeke.fcm;
 
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,12 +10,14 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.brekeke.phonedev.IncomingCallModule;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
+import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,6 +31,21 @@ public class MessagingService extends FirebaseMessagingService {
     PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
     final WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::FcmWakeLock");
     wl.acquire();
+
+    if (IncomingCallModule.wl == null) {
+      IncomingCallModule.wl = wl;
+    }
+    if (IncomingCallModule.km == null) {
+      IncomingCallModule.km = ((KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE));
+    }
+
+    final Map<String, String> data = remoteMessage.getData();
+    boolean isCall = data.get("x_pn-id") != null;
+    if (isCall && IncomingCallModule.main == null) {
+      String uuid = UUID.randomUUID().toString().toUpperCase();
+      data.put("callkeepUuid", uuid);
+      IncomingCallModule.onFcmKilled(this, data);
+    }
 
     Log.d(TAG, "Remote message received");
     Intent i = new Intent("com.brekeke.fcm.ReceiveNotification");
