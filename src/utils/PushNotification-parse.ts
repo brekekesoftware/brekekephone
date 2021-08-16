@@ -4,12 +4,13 @@ import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
 
 import { getAuthStore } from '../stores/authStore'
-import {
+import callStore, {
   hasCallKeepRunning,
   isPnCanceled,
   setCallPnData,
   showIncomingCallUi,
 } from '../stores/callStore'
+import { IncomingCall } from './RnNativeModules'
 import waitTimeout from './waitTimeout'
 
 const keysInCustomNotification = [
@@ -216,14 +217,24 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     setCallPnData(n.callkeepUuid, n)
   }
   // Manually show incoming call in android
-  // If n.callkeepUuid exists, then the call is showed in android code already
-  if (Platform.OS === 'android' && !isPnCanceled(n.id) && !n.callkeepUuid) {
-    const uuid = newUuid().toUpperCase()
-    setCallPnData(uuid, n)
-    if (hasCallKeepRunning()) {
-      showIncomingCallUi({ callUUID: uuid })
+  if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
+    // If n.callkeepUuid exists, then the call is showed in android code already
+    if (n.callkeepUuid) {
+      callStore.onCallKeepDidDisplayIncomingCall(n.callkeepUuid)
+      const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
+      if (action === 'answerCall') {
+        callStore.onCallKeepAnswerCall(n.callkeepUuid)
+      } else if (action === 'rejectCall') {
+        callStore.onCallKeepEndCall(n.callkeepUuid)
+      }
+    } else {
+      const uuid = newUuid().toUpperCase()
+      setCallPnData(uuid, n)
+      if (hasCallKeepRunning()) {
+        showIncomingCallUi({ callUUID: uuid })
+      }
+      RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
     }
-    RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
   }
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)

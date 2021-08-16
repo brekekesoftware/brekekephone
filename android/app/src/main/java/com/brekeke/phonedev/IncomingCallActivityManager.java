@@ -108,9 +108,6 @@ public class IncomingCallActivityManager {
     if (activitiesSize > 1) {
       return;
     }
-    if (IncomingCallModule.wl.isHeld()) {
-      IncomingCallModule.wl.release();
-    }
     try {
       if (last().answered) {
         removeAllAndBackToForeground();

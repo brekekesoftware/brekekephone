@@ -147,6 +147,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   // vIncoming
 
   public void onBtnAnswerClick(View v) {
+    IncomingCallModule.userActions.put(uuid, "answerCall");
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
       uiSetStartConnecting();
@@ -156,6 +157,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnRejectClick(View v) {
+    IncomingCallModule.userActions.put(uuid, "rejectCall");
     IncomingCallModule.emit("rejectCall", uuid);
     answered = false;
     IncomingCallModule.mgr.remove(uuid);

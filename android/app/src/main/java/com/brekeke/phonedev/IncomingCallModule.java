@@ -12,9 +12,18 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.google.firebase.messaging.FirebaseMessagingService;
+import java.util.HashMap;
 import java.util.Map;
 
 public class IncomingCallModule extends ReactContextBaseJavaModule {
+  // [callkeepUuid] -> answerCall/rejectCall
+  public static Map<String, String> userActions = new HashMap<String, String>();
+
+  @ReactMethod
+  public void getPendingUserAction(String uuid, Promise p) {
+    p.resolve(userActions.get(uuid));
+  }
+
   public static void onFcmKilled(FirebaseMessagingService fcm, Map<String, String> data) {
     String uuid = data.get("callkeepUuid");
     String callerName = data.get("x_from").toString();
@@ -24,12 +33,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
-    eventEmitter.emit(name, data);
+    try {
+      eventEmitter.emit(name, data);
+    } catch (Exception ex) {
+    }
   }
 
   public static Activity main;
   public static ReactApplicationContext ctx;
-  public static WakeLock wl;
   public static KeyguardManager km;
   public static boolean firstShowCallAppActive = false;
   public static IncomingCallActivityManager mgr = new IncomingCallActivityManager();
@@ -65,10 +76,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (km == null) {
       km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
     }
-    if (wl == null) {
-      PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
-    }
   }
 
   @Override
@@ -93,9 +100,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       String callerName,
       boolean isVideoCall,
       boolean isAppActive) {
-    if (mgr.activitiesSize == 0 && !wl.isHeld()) {
-      wl.acquire();
-    }
     mgr.activitiesSize++;
     Intent i;
     IncomingCallActivity prev = mgr.last();

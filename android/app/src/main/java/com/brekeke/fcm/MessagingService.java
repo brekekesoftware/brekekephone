@@ -32,9 +32,6 @@ public class MessagingService extends FirebaseMessagingService {
     final WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::FcmWakeLock");
     wl.acquire();
 
-    if (IncomingCallModule.wl == null) {
-      IncomingCallModule.wl = wl;
-    }
     if (IncomingCallModule.km == null) {
       IncomingCallModule.km = ((KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE));
     }

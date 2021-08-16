@@ -33,6 +33,7 @@ export type TNativeModules = {
     isLocked(): Promise<boolean>
     backToBackground(): void
     onConnectingCallSuccess(uuid: string): void
+    getPendingUserAction(uuid: string): Promise<string>
   }
   RNFIRMessaging: NativeModule & {
     getInitialNotification: () => Promise<string | null>
