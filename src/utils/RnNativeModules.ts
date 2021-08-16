@@ -11,6 +11,7 @@ const Polyfill = {
     setBackgroundCalls: () => undefined,
     isLocked: () => Promise.resolve(false),
     backToBackground: () => undefined,
+    onConnectingCallSuccess: () => undefined,
   },
 }
 const M = (
@@ -31,6 +32,7 @@ export type TNativeModules = {
     setBackgroundCalls(n: number): void
     isLocked(): Promise<boolean>
     backToBackground(): void
+    onConnectingCallSuccess(uuid: string): void
   }
   RNFIRMessaging: NativeModule & {
     getInitialNotification: () => Promise<string | null>

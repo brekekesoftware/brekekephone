@@ -142,6 +142,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void onConnectingCallSuccess(String uuid) {
+    try {
+      mgr.at(uuid).onAnswerButLocked();
+    } catch (Exception e) {
+    }
+  }
+
+  @ReactMethod
   public void setBackgroundCalls(int n) {
     mgr.setBackgroundCalls(n);
   }
