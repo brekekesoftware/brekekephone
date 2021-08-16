@@ -2,6 +2,7 @@ package com.brekeke.phonedev;
 
 import android.app.Application;
 import android.content.Context;
+import com.brekeke.fcm.FIRMessagingPackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -23,6 +24,7 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         protected List<ReactPackage> getPackages() {
           List<ReactPackage> packages = new PackageList(this).getPackages();
+          packages.add(new FIRMessagingPackage());
           packages.add(new IncomingCallReactPackage());
           return packages;
         }
