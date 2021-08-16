@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -162,7 +161,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     IncomingCallModule.mgr.remove(uuid);
   }
 
-  public void uiSetStartConnecting(){
+  public void uiSetStartConnecting() {
     txtCallStatus.setText("Connecting...");
     loadingIndicator.setVisibility(View.VISIBLE);
     vBtnIncoming.setVisibility(View.GONE);
@@ -328,19 +327,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onAnswerButLocked() {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        answered = true;
-        if (!IncomingCallModule.isLocked()) {
-          IncomingCallModule.mgr.remove(uuid);
-          return;
-        }
-        vIncoming.setVisibility(View.GONE);
-        vIncomingManage.setVisibility(View.VISIBLE);
-        forceStopRingtone();
-      }
-    });
+    runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            answered = true;
+            if (!IncomingCallModule.isLocked()) {
+              IncomingCallModule.mgr.remove(uuid);
+              return;
+            }
+            vIncoming.setVisibility(View.GONE);
+            vIncomingManage.setVisibility(View.VISIBLE);
+            forceStopRingtone();
+          }
+        });
   }
 
   public void uiSetBtnHold(boolean holding) {

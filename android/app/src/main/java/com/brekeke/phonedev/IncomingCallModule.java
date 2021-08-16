@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -127,6 +126,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     } catch (Exception e) {
     }
   }
+
   @ReactMethod
   public void setBackgroundCalls(int n) {
     mgr.setBackgroundCalls(n);
