@@ -181,6 +181,16 @@ export class CallStore {
         cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
+      if (
+        cExisting.incoming &&
+        cExisting.callkeepUuid &&
+        typeof cExisting.localVideoEnabled === 'boolean'
+      ) {
+        IncomingCall.setIsVideoCall(
+          cExisting.callkeepUuid,
+          !!cExisting.localVideoEnabled,
+        )
+      }
       return
     }
     if (cPartial.incoming) {
@@ -517,7 +527,9 @@ if (Platform.OS === 'android') {
   })
 }
 
-export const showIncomingCallUi = (e: TEvent) => {
+export const showIncomingCallUi = (
+  e: TEvent & { alreadyShowCall?: boolean },
+) => {
   const uuid = e.callUUID.toUpperCase()
   if (alreadyShowIncomingCallUi[uuid]) {
     return
@@ -528,12 +540,13 @@ export const showIncomingCallUi = (e: TEvent) => {
     endCallKeep(uuid)
     return
   }
-  IncomingCall.showCall(
-    uuid,
-    pnData.from,
-    !!callStore.calls.find(c => c.incoming && c.remoteVideoEnabled),
-    AppState.currentState === 'active' || isForegroundLocked,
-  )
+  if (!e.alreadyShowCall) {
+    IncomingCall.showCall(
+      uuid,
+      pnData.from,
+      AppState.currentState === 'active' || isForegroundLocked,
+    )
+  }
   callStore.onCallKeepDidDisplayIncomingCall(uuid)
   console.error('SIP PN debug: successfully display incoming call UI')
 }

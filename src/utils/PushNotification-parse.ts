@@ -150,12 +150,7 @@ export const parseNotificationData = (raw: object) => {
     n.to = matches?.[2] || ''
   }
 
-  const r2 = /call from/i
-  n.isCall =
-    r2.test(n.body) ||
-    r1.test(n.title) ||
-    r1.test(n.message) ||
-    r1.test(n.alert)
+  n.isCall = !!n.id || !!n.sipPn.sipAuth
 
   return n
 }
@@ -220,13 +215,15 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
     // If n.callkeepUuid exists, then the call is showed in android code already
     if (n.callkeepUuid) {
-      callStore.onCallKeepDidDisplayIncomingCall(n.callkeepUuid)
+      showIncomingCallUi({ callUUID: n.callkeepUuid, alreadyShowCall: true })
       const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
       if (action === 'answerCall') {
         callStore.onCallKeepAnswerCall(n.callkeepUuid)
       } else if (action === 'rejectCall') {
         callStore.onCallKeepEndCall(n.callkeepUuid)
       }
+      // Need to invoke callkeep to handle voice correctly
+      RNCallKeep.displayIncomingCall(n.callkeepUuid, 'Brekeke Phone', n.to)
     } else {
       const uuid = newUuid().toUpperCase()
       setCallPnData(uuid, n)

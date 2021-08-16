@@ -9,8 +9,78 @@
   android:paddingBottom="20dp"
   tools:context="com.brekeke.phonedev.IncomingCallActivity"
 >
+  <TextView
+    android:gravity="center"
+    android:id="@+id/txt_caller_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="Caller Name"
+    android:textColor="@color/white"
+    android:textSize="36sp"
+    android:textStyle="bold"
+  />
+  <TextView
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:text="Brekeke Phone"
+    android:textColor="@color/white"
+    android:textSize="20dp"
+    android:textStyle="normal"
+  />
+
+  <!-- view_incoming_call -->
   <RelativeLayout
-    android:id="@+id/view_incoming_call_manage"
+    android:id="@+id/view_incoming_call"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentBottom="true"
+    android:gravity="bottom"
+    android:visibility="visible"
+  >
+    <TextView
+      android:id="@+id/txt_incoming_call"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="20dp"
+      android:gravity="center"
+      android:text="Incoming Call"
+      android:textColor="@color/white"
+      android:textSize="20dp"
+      android:textStyle="normal"
+    />
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerInParent="true"
+    >
+      <Button
+        android:id="@+id/btn_answer"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@drawable/btn_answer"
+        android:drawableLeft="@drawable/ic_answer"
+        android:paddingLeft="13dp"
+        android:paddingTop="39dp"
+      />
+      <Button
+        android:id="@+id/btn_reject"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_marginLeft="200dp"
+        android:background="@drawable/btn_reject"
+        android:drawableLeft="@drawable/ic_reject"
+        android:paddingLeft="13dp"
+        android:paddingTop="39dp"
+      />
+    </LinearLayout>
+  </RelativeLayout>
+
+  <!-- view_call_manage -->
+  <RelativeLayout
+    android:id="@+id/view_call_manage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
@@ -32,12 +102,41 @@
       android:paddingHorizontal="20dp"
       android:paddingTop="15dp"
     />
+    <RelativeLayout
+      android:id="@+id/view_call_manage_loading"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:layout_centerVertical="true"
+      android:orientation="vertical"
+    >
+      <TextView
+        android:id="@+id/txt_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="Connecting..."
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="normal"
+      />
+      <ProgressBar
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/white"
+      />
+    </RelativeLayout>
     <LinearLayout
+      android:id="@+id/view_call_manage_controls"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
       android:layout_centerVertical="true"
       android:orientation="vertical"
+      android:visibility="gone"
     >
       <LinearLayout
         android:layout_width="wrap_content"
@@ -61,6 +160,7 @@
             android:paddingTop="39dp"
           />
           <TextView
+            android:id="@+id/txt_transfer_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TRANSFER"
@@ -87,6 +187,7 @@
             android:paddingTop="39dp"
           />
           <TextView
+            android:id="@+id/txt_park_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="PARK"
@@ -110,6 +211,7 @@
             android:background="@drawable/btn_video"
           />
           <TextView
+            android:id="@+id/txt_video_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="VIDEO"
@@ -133,6 +235,7 @@
             android:background="@drawable/btn_speaker"
           />
           <TextView
+            android:id="@+id/txt_speaker_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SPEAKER"
@@ -186,6 +289,7 @@
             android:background="@drawable/btn_record"
           />
           <TextView
+            android:id="@+id/txt_record_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="RECORD"
@@ -212,6 +316,7 @@
             android:paddingTop="39dp"
           />
           <TextView
+            android:id="@+id/txt_dtmf_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="DTMF"
@@ -247,240 +352,34 @@
         </LinearLayout>
       </LinearLayout>
     </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
       android:layout_marginBottom="0dp"
       android:layout_centerInParent="true"
     >
-      <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-      >
-        <Button
-          android:id="@+id/btn_end_call"
-          android:layout_width="65dp"
-          android:layout_height="65dp"
-          android:paddingLeft="13dp"
-          android:paddingTop="39dp"
-          android:background="@drawable/btn_reject"
-          android:drawableLeft="@drawable/ic_reject"
-        />
-        <TextView
-          android:visibility="gone"
-          android:gravity="center"
-          android:id="@+id/txt_call_on_hold"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="20dp"
-          android:text="CALL IS ON HOLD"
-          android:textColor="@color/white"
-          android:textSize="20dp"
-          android:textStyle="bold"
-        />
-      </RelativeLayout>
-    </LinearLayout>
-  </RelativeLayout>
-  <TextView
-    android:gravity="center"
-    android:id="@+id/txt_caller_name"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:text="Caller Name"
-    android:textColor="@color/white"
-    android:textSize="36sp"
-    android:textStyle="bold"
-  />
-  <TextView
-    android:gravity="center"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="6dp"
-    android:text="Brekeke Phone"
-    android:textColor="@color/white"
-    android:textSize="20dp"
-    android:textStyle="normal"
-  />
-  <RelativeLayout
-    android:id="@+id/view_incoming_call"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_alignParentBottom="true"
-    android:gravity="bottom"
-    android:visibility="visible"
-  >
-    <RelativeLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-    >
-      <TextView
-        android:id="@+id/txt_call_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:text="Incoming Call"
-        android:textColor="@color/white"
-        android:textSize="20dp"
-        android:textStyle="normal"
+      <Button
+        android:id="@+id/btn_end_call"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:paddingLeft="13dp"
+        android:paddingTop="39dp"
+        android:background="@drawable/btn_reject"
+        android:drawableLeft="@drawable/ic_reject"
       />
-      <ProgressBar
-        android:id="@+id/loading_indicator"
-        android:layout_marginTop="40dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/white"
+      <TextView
         android:visibility="gone"
-      />
-    </RelativeLayout>
-    <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_centerInParent="true"
-    >
-      <RelativeLayout
-        android:id="@+id/view_btn_incoming_call"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-      >
-        <Button
-          android:id="@+id/btn_close"
-          android:layout_width="65dp"
-          android:layout_height="65dp"
-          android:layout_centerHorizontal="true"
-          android:background="@drawable/btn_close"
-          android:drawableLeft="@drawable/ic_close"
-          android:paddingLeft="13dp"
-          android:paddingTop="39dp"
-          android:visibility="invisible"
-        />
-        <Button
-          android:id="@+id/btn_answer"
-          android:layout_width="65dp"
-          android:layout_height="65dp"
-          android:background="@drawable/btn_answer"
-          android:drawableLeft="@drawable/ic_answer"
-          android:paddingLeft="13dp"
-          android:paddingTop="39dp"
-        />
-        <Button
-          android:id="@+id/btn_reject"
-          android:layout_width="65dp"
-          android:layout_height="65dp"
-          android:layout_marginLeft="200dp"
-          android:background="@drawable/btn_reject"
-          android:drawableLeft="@drawable/ic_reject"
-          android:paddingLeft="13dp"
-          android:paddingTop="39dp"
-        />
-      </RelativeLayout>
-    </LinearLayout>
-  </RelativeLayout>
-  <RelativeLayout
-    android:id="@+id/view_incoming_call_3btn"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_alignParentBottom="true"
-    android:gravity="bottom"
-    android:visibility="gone"
-  >
-    <RelativeLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-    >
-      <TextView
-        android:id="@+id/txt_call_status_3btn"
+        android:gravity="center"
+        android:id="@+id/txt_call_on_hold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:text="Incoming Call"
+        android:layout_marginTop="20dp"
+        android:text="CALL IS ON HOLD"
         android:textColor="@color/white"
         android:textSize="20dp"
-        android:textStyle="normal"
+        android:textStyle="bold"
       />
     </RelativeLayout>
-    <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_centerInParent="true"
-      android:layout_marginBottom="20dp"
-    >
-      <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_margin="5dp"
-      >
-        <Button
-          android:id="@+id/btn_answer_end"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_centerHorizontal="true"
-          android:background="@android:color/transparent"
-          android:drawableLeft="@drawable/btn_answer_end"
-        />
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text='END &amp; ACCEPT'
-          android:textColor="@color/white"
-          android:paddingTop="5dp"
-          android:textSize="14dp"
-          android:textStyle="bold"
-        />
-      </LinearLayout>
-      <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="15dp"
-        android:layout_margin="5dp"
-        android:paddingHorizontal="10dp"
-        android:layout_marginHorizontal="10dp"
-      >
-        <Button
-          android:id="@+id/btn_decline"
-          android:layout_width="90dp"
-          android:layout_height="90dp"
-          android:background="@drawable/btn_reject"
-          android:drawableLeft="@drawable/ic_reject"
-          android:paddingLeft="25dp"
-          android:paddingTop="42dp"
-        />
-      </LinearLayout>
-      <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:layout_marginLeft="200dp"
-      >
-        <Button
-          android:id="@+id/btn_answer_hold"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_centerHorizontal="true"
-          android:background="@android:color/transparent"
-          android:drawableRight="@drawable/btn_answer_hold"
-        />
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text='HOLD &amp; ACCEPT'
-          android:textColor="@color/white"
-          android:paddingTop="5dp"
-          android:textSize="14dp"
-          android:textStyle="bold"
-        />
-      </LinearLayout>
-    </LinearLayout>
   </RelativeLayout>
 </RelativeLayout>

@@ -19,6 +19,7 @@ const onToken = (t: string) => {
 const onNotification = async (n0: NotificationDetails, initApp: Function) => {
   try {
     initApp()
+    FCM.getInitialNotification() // flush initial notification
     const n = await parse(n0)
     if (!n) {
       return

@@ -1,8 +1,8 @@
 import { NativeEventEmitter, Platform } from 'react-native'
 
-import { RnNativeModules } from './RnNativeModules'
+import { RNFIRMessaging } from './RnNativeModules'
 
-const EventEmitter = new NativeEventEmitter(RnNativeModules.RNFIRMessaging)
+const EventEmitter = new NativeEventEmitter(RNFIRMessaging)
 
 export const FCMEvent = {
   RefreshToken: 'FCMTokenRefreshed',
@@ -48,8 +48,6 @@ export const NotificationActionType = {
   Default: 'UNNotificationActionTypeDefault',
   TextInput: 'UNNotificationActionTypeTextInput',
 }
-
-const RNFIRMessaging = RnNativeModules.RNFIRMessaging
 
 export const FCM = {
   getInitialNotification: () => {
