@@ -35,8 +35,8 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
-    versionCode 208030
-    versionName "2.8.30"
+    versionCode 208032
+    versionName "2.8.32"
   }
 
   splits {
@@ -73,6 +73,12 @@ dependencies {
   implementation fileTree(dir: "libs", include: ["*.jar"])
   implementation "com.facebook.react:react-native:+"
   implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+  // react-native-fcm
+  implementation "com.google.firebase:firebase-core:$firebaseCoreVersion"
+  implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
+  implementation "me.leolin:ShortcutBadger:1.1.17@aar"
+  implementation "com.android.support:support-core-utils:28.0.0"
 
   debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
     exclude group:"com.facebook.fbjni"

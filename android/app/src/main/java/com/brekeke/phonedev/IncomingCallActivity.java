@@ -14,20 +14,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public MediaPlayer mp;
 
-  public RelativeLayout vIncoming, vIncoming3Btn, vIncomingManage, vBtnIncoming;
+  public View vIncomingCall, vCallManage, vCallManageLoading, vCallManageControls;
   public Button btnAnswer,
       btnReject,
-      btnAnswerEnd,
-      btnAnswerHold,
-      btnDecline,
       btnUnlock,
       btnTransfer,
       btnPark,
@@ -39,38 +34,33 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnHold,
       btnEndcall;
   public TextView txtCallerName,
-      txtCallStatus,
-      txtCallStatus3Btn,
-      txtHoldBtn,
+      txtIncomingCall,
+      txtConnecting,
+      txtTransferBtn,
+      txtParkBtn,
+      txtVideoBtn,
+      txtSpeakerBtn,
       txtMuteBtn,
-      txtCallOnHold;
+      txtRecordBtn,
+      txtDtmfBtn,
+      txtHoldBtn,
+      txtCallIsOnHold;
   public String uuid, callerName;
-  public ProgressBar loadingIndicator;
-  public boolean isVideoCall;
-
-  public boolean closed = false, paused = false, answered = false;
+  public boolean destroyed = false, paused = false, answered = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IncomingCallModule.mgr.activities.add(this);
-    startRingtone();
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
     }
     if (b == null) {
-      int i = 0;
-      for (IncomingCallActivity a : IncomingCallModule.mgr.activities) {
-        if (a == this) {
-          IncomingCallModule.mgr.activities.remove(i);
-          break;
-        }
-        i++;
-      }
       this.forceFinish();
       return;
     }
+    startRingtone();
+    IncomingCallModule.activities.add(this);
 
     setContentView(R.layout.incoming_call_activity);
     getWindow()
@@ -82,22 +72,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
-    isVideoCall = b.getBoolean("isVideoCall");
-    vIncoming = (RelativeLayout) findViewById(R.id.view_incoming_call);
-    vIncoming3Btn = (RelativeLayout) findViewById(R.id.view_incoming_call_3btn);
-    vIncomingManage = (RelativeLayout) findViewById(R.id.view_incoming_call_manage);
-    vBtnIncoming = (RelativeLayout) findViewById(R.id.view_btn_incoming_call);
 
-    vIncoming.setVisibility(View.VISIBLE);
-    // vIncoming3Btn.setVisibility(View.VISIBLE);
+    vIncomingCall = findViewById(R.id.view_incoming_call);
+    vCallManage = findViewById(R.id.view_call_manage);
+    vCallManageLoading = findViewById(R.id.view_call_manage_loading);
+    vCallManageControls = findViewById(R.id.view_call_manage_controls);
+
+    vIncomingCall.setVisibility(View.VISIBLE);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
-    btnDecline = (Button) findViewById(R.id.btn_decline);
-    loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
-
-    btnAnswerEnd = (Button) findViewById(R.id.btn_answer_end);
-    btnAnswerHold = (Button) findViewById(R.id.btn_answer_hold);
 
     btnUnlock = (Button) findViewById(R.id.btn_unlock);
     btnTransfer = (Button) findViewById(R.id.btn_transfer);
@@ -113,10 +97,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
 
-    btnAnswerEnd.setOnClickListener(this);
-    btnAnswerHold.setOnClickListener(this);
-    btnDecline.setOnClickListener(this);
-
     btnUnlock.setOnClickListener(this);
     btnTransfer.setOnClickListener(this);
     btnPark.setOnClickListener(this);
@@ -129,58 +109,76 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndcall.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
-    txtCallStatus = (TextView) findViewById(R.id.txt_call_status);
-    txtCallStatus3Btn = (TextView) findViewById(R.id.txt_call_status_3btn);
-    txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
+    txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
+    txtConnecting = (TextView) findViewById(R.id.txt_connecting);
+    txtTransferBtn = (TextView) findViewById(R.id.txt_transfer_btn);
+    txtParkBtn = (TextView) findViewById(R.id.txt_park_btn);
+    txtVideoBtn = (TextView) findViewById(R.id.txt_video_btn);
+    txtSpeakerBtn = (TextView) findViewById(R.id.txt_speaker_btn);
     txtMuteBtn = (TextView) findViewById(R.id.txt_mute_btn);
-    txtCallOnHold = (TextView) findViewById(R.id.txt_call_on_hold);
+    txtRecordBtn = (TextView) findViewById(R.id.txt_record_btn);
+    txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
+    txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
+    txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
 
     txtCallerName.setText(callerName);
-    String status = "Incoming " + (isVideoCall ? "Video" : "Audio") + " Call";
-    txtCallStatus.setText(status);
-    txtCallStatus3Btn.setText(status);
-
-    btnVideo.setSelected(isVideoCall);
-    uiSetBackgroundCalls(IncomingCallModule.mgr.callsSize);
+    updateLabels();
   }
 
-  // vIncoming
+  public void updateLabels() {
+    updateBtnUnlockLabel();
+    txtIncomingCall.setText(L.incomingCall());
+    txtConnecting.setText(L.connecting());
+    txtTransferBtn.setText(L.transfer());
+    txtParkBtn.setText(L.park());
+    txtVideoBtn.setText(L.video());
+    txtSpeakerBtn.setText(L.speaker());
+    updateMuteBtnLabel();
+    txtRecordBtn.setText(L.record());
+    txtDtmfBtn.setText(L.dtmf());
+    updateBtnHoldLabel();
+    txtCallIsOnHold.setText(L.callIsOnHold());
+  }
+
+  public void updateBtnUnlockLabel() {
+    int n =
+        IncomingCallModule.callsSize > IncomingCallModule.activitiesSize
+            ? IncomingCallModule.callsSize
+            : IncomingCallModule.activitiesSize;
+    btnUnlock.setText(n <= 1 ? L.unlock() : L.nCallsInBackground(n - 1));
+  }
+
+  public void updateMuteBtnLabel() {
+    txtMuteBtn.setText(btnMute.isSelected() ? L.unmute() : L.mute());
+  }
+
+  public void updateBtnHoldLabel() {
+    txtHoldBtn.setText(btnHold.isSelected() ? L.unhold() : L.hold());
+  }
+
+  // vIncomingCall
 
   public void onBtnAnswerClick(View v) {
+    IncomingCallModule.userActions.put(uuid, "answerCall");
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
-      uiSetStartConnecting();
+      answered = true;
+      forceStopRingtone();
+      vIncomingCall.setVisibility(View.GONE);
+      vCallManage.setVisibility(View.VISIBLE);
     } else {
-      IncomingCallModule.mgr.removeAllAndBackToForeground();
+      IncomingCallModule.removeAllAndBackToForeground();
     }
   }
 
   public void onBtnRejectClick(View v) {
+    IncomingCallModule.userActions.put(uuid, "rejectCall");
     IncomingCallModule.emit("rejectCall", uuid);
     answered = false;
-    IncomingCallModule.mgr.remove(uuid);
+    IncomingCallModule.remove(uuid);
   }
 
-  public void uiSetStartConnecting() {
-    txtCallStatus.setText("Connecting...");
-    loadingIndicator.setVisibility(View.VISIBLE);
-    vBtnIncoming.setVisibility(View.GONE);
-  }
-
-  // vIncoming3Btn
-
-  public void onBtnAnswerHoldClick(View v) {
-    // Should auto hold the previous one in js after answer
-    IncomingCallModule.emit("answerCall", uuid);
-    onAnswerButLocked();
-  }
-
-  public void onBtnAnswerEndClick(View v) {
-    IncomingCallModule.emit("answerCall+end", uuid);
-    onAnswerButLocked();
-  }
-
-  // vIncomingManage
+  // vCallManage
 
   public void onBtnUnlockClick(View v) {
     // Already invoked in onKeyguardDismissSucceeded
@@ -199,31 +197,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnSpeakerClick(View v) {
-    if (v.isSelected()) {
-      btnSpeaker.setSelected(false);
-    } else {
-      btnSpeaker.setSelected(true);
-    }
+    btnSpeaker.setSelected(!v.isSelected());
     IncomingCallModule.emit("speaker", uuid);
   }
 
   public void onBtnMuteClick(View v) {
-    if (v.isSelected()) {
-      btnMute.setSelected(false);
-      txtMuteBtn.setText("MUTE");
-    } else {
-      btnMute.setSelected(true);
-      txtMuteBtn.setText("UNMUTE");
-    }
+    btnMute.setSelected(!v.isSelected());
+    updateMuteBtnLabel();
     IncomingCallModule.emit("mute", uuid);
   }
 
   public void onBtnRecordClick(View v) {
-    if (v.isSelected()) {
-      btnRecord.setSelected(false);
-    } else {
-      btnRecord.setSelected(true);
-    }
+    btnRecord.setSelected(!v.isSelected());
     IncomingCallModule.emit("record", uuid);
   }
 
@@ -258,39 +243,29 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_park:
         onBtnParkClick(v);
         break;
-      case R.id.btn_video:
-        onBtnVideoClick(v);
-        break;
       case R.id.btn_dtmf:
         onBtnDtmfClick(v);
+        break;
+      case R.id.btn_video:
+        onBtnVideoClick(v);
         break;
       default:
         break;
     }
-    IncomingCallModule.mgr.removeAllAndBackToForeground();
+    IncomingCallModule.removeAllAndBackToForeground();
   }
 
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
-        // vIncoming
+        // vIncomingCall
       case R.id.btn_answer:
         onBtnAnswerClick(v);
         break;
       case R.id.btn_reject:
         onBtnRejectClick(v);
         break;
-        // vIncoming3Btn
-      case R.id.btn_answer_hold:
-        onBtnAnswerHoldClick(v);
-        break;
-      case R.id.btn_answer_end:
-        onBtnAnswerEndClick(v);
-        break;
-      case R.id.btn_decline:
-        onBtnRejectClick(v);
-        break;
-        // vIncomingManage
+        // vCallManage
       case R.id.btn_unlock:
         onRequestUnlock(v);
         break;
@@ -301,7 +276,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onRequestUnlock(v);
         break;
       case R.id.btn_video:
-        onRequestUnlock(v);
+        // Allow user to disable while lock
+        //    but to enable then need to unlock
+        if (btnVideo.isSelected()) {
+          onBtnVideoClick(v);
+        } else {
+          onRequestUnlock(v);
+        }
         break;
       case R.id.btn_speaker:
         onBtnSpeakerClick(v);
@@ -326,70 +307,24 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void onAnswerButLocked() {
-    runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            answered = true;
-            if (!IncomingCallModule.isLocked()) {
-              IncomingCallModule.mgr.remove(uuid);
-              return;
-            }
-            vIncoming.setVisibility(View.GONE);
-            vIncomingManage.setVisibility(View.VISIBLE);
-            forceStopRingtone();
-          }
-        });
+  public void onConnectingCallSuccess() {
+    vCallManageLoading.setVisibility(View.GONE);
+    vCallManageControls.setVisibility(View.VISIBLE);
   }
 
-  public void uiSetBtnHold(boolean holding) {
-    runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              btnHold.setSelected(holding);
-              txtHoldBtn.setText(holding ? "UNHOLD" : "HOLD");
-              if (holding) {
-                btnEndcall.setVisibility(View.GONE);
-                txtCallOnHold.setVisibility(View.VISIBLE);
-              } else {
-                btnEndcall.setVisibility(View.VISIBLE);
-                txtCallOnHold.setVisibility(View.GONE);
-              }
-            } catch (Exception e) {
-            }
-          }
-        });
+  public void setBtnVideoSelected(boolean isVideoCall) {
+    btnVideo.setSelected(isVideoCall);
   }
 
-  public void uiSetBackgroundCalls(int n) {
-    runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              int n2 =
-                  n > IncomingCallModule.mgr.activitiesSize
-                      ? n
-                      : IncomingCallModule.mgr.activitiesSize;
-              btnUnlock.setText(
-                  n2 <= 1
-                      ? "UNLOCK"
-                      : ""
-                          + (n2 - 1)
-                          + " OTHER CALL"
-                          + (n2 > 2 ? "S ARE" : " IS")
-                          + " IN BACKGROUND");
-            } catch (Exception e) {
-            }
-          }
-        });
+  public void setBtnHoldSelected(boolean holding) {
+    btnHold.setSelected(holding);
+    updateBtnHoldLabel();
+    btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
+    txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
 
   public void forceFinish() {
-    closed = true;
+    destroyed = true;
     try {
       finish();
     } catch (Exception e) {
@@ -400,7 +335,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onPause() {
     forceStopRingtone();
     paused = true;
-    IncomingCallModule.mgr.onActivityPauseOrDestroy();
+    IncomingCallModule.onActivityPauseOrDestroy(false);
     super.onPause();
   }
 
@@ -416,9 +351,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     forceStopRingtone();
-    closed = true;
-    IncomingCallModule.mgr.onActivityPauseOrDestroy();
-    IncomingCallModule.mgr.activitiesSize--;
+    destroyed = true;
+    IncomingCallModule.onActivityPauseOrDestroy(true);
     super.onDestroy();
   }
 

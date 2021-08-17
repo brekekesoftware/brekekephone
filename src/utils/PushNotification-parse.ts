@@ -1,15 +1,14 @@
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import { v4 as newUuid } from 'uuid'
 
 import { getAuthStore } from '../stores/authStore'
-import {
-  hasCallKeepRunning,
+import callStore, {
   isPnCanceled,
   setCallPnData,
   showIncomingCallUi,
 } from '../stores/callStore'
+import { IncomingCall } from './RnNativeModules'
 import waitTimeout from './waitTimeout'
 
 const keysInCustomNotification = [
@@ -35,6 +34,7 @@ const keysInCustomNotification = [
   // Others
   'pn-id',
   'callkeepUuid',
+  'callkeepAt',
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
@@ -149,12 +149,7 @@ export const parseNotificationData = (raw: object) => {
     n.to = matches?.[2] || ''
   }
 
-  const r2 = /call from/i
-  n.isCall =
-    r2.test(n.body) ||
-    r1.test(n.title) ||
-    r1.test(n.message) ||
-    r1.test(n.alert)
+  n.isCall = !!n.id || !!n.sipPn.sipAuth
 
   return n
 }
@@ -179,6 +174,12 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       return null
     }
     androidAlreadyProccessedPn[n.id] = true
+  }
+
+  if (n.callkeepAt) {
+    console.error(
+      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
+    )
   }
 
   if (
@@ -212,18 +213,28 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   console.error('SIP PN debug: call signInByNotification')
   getAuthStore().signInByNotification(n)
   // Custom fork of react-native-voip-push-notification to get callkeepUuid
-  if (n.callkeepUuid) {
-    setCallPnData(n.callkeepUuid, n)
+  // Also we forked fcm to insert callkeepUuid there as well
+  if (!n.callkeepUuid) {
+    // Should not happen
+    console.error('SIP PN debug: android got PN without callkeepUuid')
   }
-  // Manually show incoming call in android
-  // TODO: show in native java code
+  setCallPnData(n.callkeepUuid, n)
+  callStore.calls
+    .filter(c => c.pnId === n.id && !c.callkeepUuid)
+    .forEach(c => {
+      c.callkeepUuid = n.callkeepUuid
+    })
+  // Continue handling incoming call in android
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
-    const uuid = newUuid().toUpperCase()
-    setCallPnData(uuid, n)
-    if (hasCallKeepRunning()) {
-      showIncomingCallUi({ callUUID: uuid })
+    showIncomingCallUi({ callUUID: n.callkeepUuid })
+    const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
+    if (action === 'answerCall') {
+      callStore.onCallKeepAnswerCall(n.callkeepUuid)
+    } else if (action === 'rejectCall') {
+      callStore.onCallKeepEndCall(n.callkeepUuid)
     }
-    RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
+    // Need to invoke callkeep to handle voice correctly
+    RNCallKeep.displayIncomingCall(n.callkeepUuid, 'Brekeke Phone', n.to)
   }
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
@@ -247,6 +258,7 @@ export type ParsedPn = {
   isCall: boolean
   sipPn: SipPn
   callkeepUuid: string
+  callkeepAt: string
 }
 export type SipPn = {
   phoneId: string

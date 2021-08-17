@@ -350,9 +350,9 @@ PODS:
     - React
   - RNCallKeep (4.2.0-brekeke-002):
     - React
-  - RNCAsyncStorage (1.15.5):
+  - RNCAsyncStorage (1.15.6):
     - React-Core
-  - RNCPushNotificationIOS (1.8.0):
+  - RNCPushNotificationIOS (1.9.0):
     - React-Core
   - RNFastImage (8.3.7):
     - React-Core
@@ -608,8 +608,8 @@ SPEC CHECKSUMS:
   ReactNativeExceptionHandler: b11ff67c78802b2f62eed0e10e75cb1ef7947c60
   ReactNativeIncallManager: a840ef75640518065742a893e6c6ff98ee820039
   RNCallKeep: 98394ba93bbd09fecc03777b27fd699250b70eb4
-  RNCAsyncStorage: 56a3355a10b5d660c48c6e37325ac85ebfd09885
-  RNCPushNotificationIOS: 61a7c72bd1ebad3568025957d001e0f0e7b32191
+  RNCAsyncStorage: b7c6564ce662366dd44d0189456183ef7eda2d4d
+  RNCPushNotificationIOS: 5bffde624d1fd15bfc8b2fd202b012a517a6dc9b
   RNFastImage: a7384db75df352500261e8e8f1ac2026def26102
   RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
   RNShare: 4df87d1791f50a2c7b1d89432fb9bbb7c02a9c9a

@@ -1,10 +1,10 @@
 import './callkeep'
 
 import { AppRegistry } from 'react-native'
-import FCM, { FCMEvent, Notification as PN } from 'react-native-fcm'
 
 import { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
+import { FCM, FCMEvent, NotificationDetails } from '../utils/fcm'
 import parse from './PushNotification-parse'
 
 const { Notification, RefreshToken } = FCMEvent
@@ -16,9 +16,13 @@ const onToken = (t: string) => {
   }
 }
 
-const onNotification = async (n0: PN, initApp: Function) => {
+const onNotification = async (n0: NotificationDetails, initApp: Function) => {
   try {
     initApp()
+    // flush initial notification
+    FCM.getInitialNotifications().then(ns =>
+      ns.forEach(n => onNotification(n, initApp)),
+    )
     const n = await parse(n0)
     if (!n) {
       return
@@ -53,7 +57,6 @@ const PushNotification = {
     try {
       initApp()
       await FCM.requestPermissions()
-      FCM.enableDirectChannel()
       await FCM.createNotificationChannel({
         id: 'default',
         name: 'Brekeke Phone',
@@ -61,10 +64,13 @@ const PushNotification = {
         priority: 'high',
       })
       FCM.on(RefreshToken, onToken)
-      FCM.on(Notification, n => onNotification(n, initApp))
+      FCM.on(Notification, (n: NotificationDetails) =>
+        onNotification(n, initApp),
+      )
       await FCM.getFCMToken().then(onToken)
-      const n = await FCM.getInitialNotification()
-      onNotification(n, initApp)
+      await FCM.getInitialNotifications().then(ns =>
+        ns.forEach(n => onNotification(n, initApp)),
+      )
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,
