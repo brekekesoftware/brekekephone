@@ -21,11 +21,6 @@ import Nav from './Nav'
 import RnStacker from './RnStacker'
 
 export class CallStore {
-  @observable recentPn?: {
-    uuid: string
-    at: number
-    action?: 'answered' | 'rejected'
-  }
   recentCallActivityAt = 0
 
   cancelRecentPn = (pnId?: string) => {
@@ -33,11 +28,9 @@ export class CallStore {
       return
     }
     cancelPn(pnId)
-    const n = getCallPnDataById(pnId)
-    const uuid =
-      n?.callkeepUuid || this.recentPn?.uuid || this.prevCallKeepUuid || ''
+    const uuid = getCallPnDataById(pnId)?.callkeepUuid
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
-    endCallKeep(uuid, true)
+    endCallKeep(uuid)
   }
 
   prevCallKeepUuid?: string
@@ -78,13 +71,6 @@ export class CallStore {
       RNCallKeep.updateDisplay(uuid, c.partyName, 'Brekeke Phone', {
         hasVideo: c.remoteVideoEnabled,
       })
-      this.recentPn = undefined
-    } else {
-      // Otherwise save the data for later process
-      this.recentPn = {
-        uuid,
-        at: Date.now(),
-      }
     }
     // ios allow only 1 callkeep
     if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
@@ -117,21 +103,18 @@ export class CallStore {
     }
   }
   onCallKeepAnswerCall = (uuid: string) => {
+    callkeepActionMap[uuid] = 'answered'
     const c = this.getIncomingCallKeep(uuid, {
       from: getCallPnData(uuid)?.from,
     })
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
-      this.recentPn = undefined
       console.error('SIP PN debug: answer by onCallKeepAnswerCall')
-    } else if (this.recentPn?.uuid === uuid) {
-      this.recentPn.action = 'answered'
-    } else {
-      this.recentPn = undefined
     }
   }
   onCallKeepEndCall = (uuid: string) => {
+    callkeepActionMap[uuid] = 'rejected'
     const c = this.getIncomingCallKeep(uuid, {
       from: getCallPnData(uuid)?.from,
       includingAnswered: true,
@@ -140,12 +123,7 @@ export class CallStore {
     if (c) {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
-      this.recentPn = undefined
       console.error('SIP PN debug: reject by onCallKeepEndCall')
-    } else if (this.recentPn?.uuid === uuid) {
-      this.recentPn.action = 'rejected'
-    } else {
-      this.recentPn = undefined
     }
     endCallKeep(uuid)
   }
@@ -207,31 +185,18 @@ export class CallStore {
     this.calls = [c, ...this.calls]
     IncomingCall.setBackgroundCalls(this.calls.length)
     // Get and check callkeep
-    let recentPnUuid = ''
-    let recentPnAction = ''
-    if (this.recentPn && now - this.recentPn.at < 20000) {
-      recentPnUuid = this.recentPn.uuid
-      recentPnAction = this.recentPn.action || ''
+    if (!c.callkeepUuid) {
+      c.callkeepUuid = getCallPnDataById(c.pnId)?.callkeepUuid || ''
     }
-    if (Platform.OS === 'web' || !recentPnUuid || !c.incoming || c.answered) {
+    const callkeepAction = callkeepActionMap[c.callkeepUuid]
+    if (Platform.OS === 'web' || !callkeepAction || !c.incoming || c.answered) {
       return
     }
-    this.recentPn = undefined
-    // Assign callkeep to the call and handle logic
-    if (recentPnUuid) {
-      c.callkeepUuid = recentPnUuid
-    }
-    if (!recentPnAction) {
-      RNCallKeep.updateDisplay(recentPnUuid, c.partyName, 'Brekeke Phone', {
-        hasVideo: c.remoteVideoEnabled,
-      })
-      return
-    }
-    if (recentPnAction === 'answered') {
+    if (callkeepAction === 'answered') {
       c.callkeepAlreadyAnswered = true
       c.answer()
       console.error('SIP PN debug: answer by recentPnAction')
-    } else if (recentPnAction === 'rejected') {
+    } else if (callkeepAction === 'rejected') {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
@@ -254,7 +219,7 @@ export class CallStore {
       const uuid = c.callkeepUuid
       c.callkeepUuid = ''
       c.callkeepAlreadyRejected = true
-      endCallKeep(uuid, true)
+      endCallKeep(uuid)
     }
     if (getAuthStore().ucState === 'success' && c.duration && !c.incoming) {
       uc.sendCallResult(c.duration, c.partyNumber)
@@ -419,7 +384,9 @@ export class CallStore {
     this.clearStartCallIntervalTimer()
   }
 
-  @observable callPnDataMap: { [uuid: string]: ParsedPn } = {}
+  @observable callPnDataMap: {
+    [uuid: string]: ParsedPn
+  } = {}
 }
 
 const callStore = new CallStore()
@@ -431,6 +398,9 @@ const callkeepMap: {
     uuid: string
     at: number
   }
+} = {}
+const callkeepActionMap: {
+  [uuid: string]: 'answered' | 'rejected'
 } = {}
 let autoEndCallKeepTimerId = 0
 const clearAutoEndCallKeepTimer = () => {
@@ -470,7 +440,7 @@ const setAutoEndCallKeepTimer = (uuid?: string) => {
     callStore.updateCurrentCallDebounce()
   }, 500)
 }
-const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
+const endCallKeep = (uuid?: string) => {
   if (!uuid) {
     return
   }
@@ -490,16 +460,10 @@ const endCallKeep = (uuid: string, isEndedFromCallClass?: boolean) => {
   )
   runInAction(() => {
     delete callStore.callPnDataMap[uuid]
+    delete callkeepMap[uuid]
   })
-  delete callkeepMap[uuid]
   if (uuid === callStore.prevCallKeepUuid) {
     callStore.prevCallKeepUuid = undefined
-  }
-  if (
-    isEndedFromCallClass &&
-    (uuid === callStore.prevCallKeepUuid || uuid === callStore.recentPn?.uuid)
-  ) {
-    callStore.recentPn = undefined
   }
   IncomingCall.closeIncomingCallActivity(uuid)
 }

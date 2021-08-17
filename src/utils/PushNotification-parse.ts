@@ -213,26 +213,28 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   console.error('SIP PN debug: call signInByNotification')
   getAuthStore().signInByNotification(n)
   // Custom fork of react-native-voip-push-notification to get callkeepUuid
-  if (n.callkeepUuid) {
-    setCallPnData(n.callkeepUuid, n)
+  // Also we forked fcm to insert callkeepUuid there as well
+  if (!n.callkeepUuid) {
+    // Should not happen
+    console.error('SIP PN debug: android got PN without callkeepUuid')
   }
-  // Manually show incoming call in android
+  setCallPnData(n.callkeepUuid, n)
+  callStore.calls
+    .filter(c => c.pnId === n.id && !c.callkeepUuid)
+    .forEach(c => {
+      c.callkeepUuid = n.callkeepUuid
+    })
+  // Continue handling incoming call in android
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
-    // If n.callkeepUuid exists, then the call is showed in android code already
-    if (n.callkeepUuid) {
-      showIncomingCallUi({ callUUID: n.callkeepUuid })
-      const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
-      if (action === 'answerCall') {
-        callStore.onCallKeepAnswerCall(n.callkeepUuid)
-      } else if (action === 'rejectCall') {
-        callStore.onCallKeepEndCall(n.callkeepUuid)
-      }
-      // Need to invoke callkeep to handle voice correctly
-      RNCallKeep.displayIncomingCall(n.callkeepUuid, 'Brekeke Phone', n.to)
-    } else {
-      // Should not happen
-      console.error('SIP PN debug: android got PN without callkeepUuid')
+    showIncomingCallUi({ callUUID: n.callkeepUuid })
+    const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
+    if (action === 'answerCall') {
+      callStore.onCallKeepAnswerCall(n.callkeepUuid)
+    } else if (action === 'rejectCall') {
+      callStore.onCallKeepEndCall(n.callkeepUuid)
     }
+    // Need to invoke callkeep to handle voice correctly
+    RNCallKeep.displayIncomingCall(n.callkeepUuid, 'Brekeke Phone', n.to)
   }
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
