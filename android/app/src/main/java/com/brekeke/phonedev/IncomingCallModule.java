@@ -15,6 +15,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
@@ -40,7 +41,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     }
     if (wl == null) {
       PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCallWakeLock");
+      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCall");
     }
   }
 
@@ -58,8 +59,19 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   // [callkeepUuid] -> answerCall/rejectCall
   public static Map<String, String> userActions = new HashMap<String, String>();
 
-  public static void onFcmKilled(FirebaseMessagingService fcm, Map<String, String> data) {
-    String uuid = data.get("callkeepUuid");
+  public static void onFcmMessageReceived(FirebaseMessagingService fcm, Map<String, String> data) {
+    if (data.get("x_pn-id") == null) {
+      return;
+    }
+    if (wl == null) {
+      PowerManager pm = (PowerManager) fcm.getSystemService(Context.POWER_SERVICE);
+      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCall");
+    }
+    if (km == null) {
+      km = ((KeyguardManager) fcm.getSystemService(Context.KEYGUARD_SERVICE));
+    }
+    String uuid = UUID.randomUUID().toString().toUpperCase();
+    data.put("callkeepUuid", uuid);
     String callerName = data.get("x_from").toString();
     showCallStatic(fcm, uuid, callerName, false);
   }
