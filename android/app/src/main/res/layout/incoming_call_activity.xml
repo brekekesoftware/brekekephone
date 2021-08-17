@@ -110,8 +110,15 @@
       android:layout_centerVertical="true"
       android:orientation="vertical"
     >
+      <ProgressBar
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/white"
+      />
       <TextView
-        android:id="@+id/txt_loading"
+        android:id="@+id/txt_connecting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -120,13 +127,6 @@
         android:textColor="@color/white"
         android:textSize="20dp"
         android:textStyle="normal"
-      />
-      <ProgressBar
-        android:layout_marginTop="40dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/white"
       />
     </RelativeLayout>
     <LinearLayout
@@ -371,7 +371,7 @@
       <TextView
         android:visibility="gone"
         android:gravity="center"
-        android:id="@+id/txt_call_on_hold"
+        android:id="@+id/txt_call_is_on_hold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

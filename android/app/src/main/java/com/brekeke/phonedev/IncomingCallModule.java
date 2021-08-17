@@ -10,8 +10,11 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
+import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +66,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (data.get("x_pn-id") == null) {
       return;
     }
+    // Init variables if not
     if (wl == null) {
       PowerManager pm = (PowerManager) fcm.getSystemService(Context.POWER_SERVICE);
       wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCall");
@@ -70,6 +74,24 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (km == null) {
       km = ((KeyguardManager) fcm.getSystemService(Context.KEYGUARD_SERVICE));
     }
+    // Read locale from async storage if not
+    if (L.l == null) {
+      try {
+        L.l =
+            AsyncLocalStorageUtil.getItemImpl(
+                ReactDatabaseSupplier.getInstance(fcm.getApplicationContext())
+                    .getReadableDatabase(),
+                "locale");
+      } catch (Exception ex) {
+      }
+    }
+    if (L.l == null) {
+      L.l = "en";
+    }
+    if (!L.l.equals("en") && !L.l.equals("ja")) {
+      L.l = "en";
+    }
+    // Show call
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
     String callerName = data.get("x_from").toString();
@@ -221,15 +243,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       }
     } catch (Exception e) {
     }
-    uiSetBackgroundCalls(callsSize);
+    updateBtnUnlockLabels();
   }
 
-  public static void uiSetBackgroundCalls(int n) {
-    callsSize = n;
+  public static void updateBtnUnlockLabels() {
     try {
       for (IncomingCallActivity a : activities) {
         try {
-          a.uiSetBackgroundCalls(n);
+          a.updateBtnUnlockLabel();
         } catch (Exception e) {
         }
       }
@@ -242,16 +263,42 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   //
 
   @ReactMethod
+  public void setLocale(String locale) {
+    L.l = locale;
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.updateLabels();
+                } catch (Exception e) {
+                }
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
   public void getPendingUserAction(String uuid, Promise p) {
     p.resolve(userActions.get(uuid));
   }
 
   @ReactMethod
   public void onConnectingCallSuccess(String uuid) {
-    try {
-      at(uuid).onConnectingCallSuccess();
-    } catch (Exception e) {
-    }
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).onConnectingCallSuccess();
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 
   @ReactMethod
@@ -271,22 +318,35 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setIsVideoCall(String uuid, boolean isVideoCall) {
     try {
-      at(uuid).uiSetBtnVideo(isVideoCall);
+      at(uuid).setBtnVideoSelected(isVideoCall);
     } catch (Exception e) {
     }
   }
 
   @ReactMethod
   public void setOnHold(String uuid, boolean holding) {
-    try {
-      at(uuid).uiSetBtnHold(holding);
-    } catch (Exception e) {
-    }
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setBtnHoldSelected(holding);
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 
   @ReactMethod
   public void setBackgroundCalls(int n) {
-    uiSetBackgroundCalls(n);
+    callsSize = n;
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            updateBtnUnlockLabels();
+          }
+        });
   }
 
   @ReactMethod

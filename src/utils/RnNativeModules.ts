@@ -1,9 +1,15 @@
-import { NativeModule, NativeModules, Platform } from 'react-native'
+import {
+  NativeModule,
+  NativeModules,
+  Platform,
+  ViewPagerAndroidProps,
+} from 'react-native'
 
 import { NotificationDetails } from './fcm'
 
 const Polyfill = {
   IncomingCall: {
+    setLocale: () => undefined,
     closeIncomingCallActivity: () => undefined,
     closeAllIncomingCallActivities: () => undefined,
     setIsVideoCall: () => undefined,
@@ -20,8 +26,9 @@ const M = (
 
 export type TNativeModules = {
   IncomingCall: NativeModule & {
+    setLocale(locale: string): void
     closeIncomingCallActivity(uuid: string): void
-    closeAllIncomingCallActivities(): void
+    closeAllIncomingCallActivities(): ViewPagerAndroidProps
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
