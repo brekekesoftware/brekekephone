@@ -1,6 +1,7 @@
 #### 2.8.32
 
 - Improve PN's wakeup time
+- PN screen (device locked) if user pressed answer but call is still not connected, then show a message `Connecting...` with loading icon
 - Add multi lingual locale for PN screen
 - New logic of jssip fork to disable web socket send after calling \_ua.\_transport.socket.disconnect() then also call stopWebRTC() - not sure if this change actually improves the connection, please test
 - Fix sometimes PN not received in js code, because of the fcm lib
