@@ -34,6 +34,7 @@ const keysInCustomNotification = [
   // Others
   'pn-id',
   'callkeepUuid',
+  'callkeepAt',
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
@@ -165,6 +166,12 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
 
+  if (n.callkeepAt) {
+    console.error(
+      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
+    )
+  }
+
   if (Platform.OS === 'android') {
     if (n.id && androidAlreadyProccessedPn[n.id]) {
       console.error(
@@ -249,6 +256,7 @@ export type ParsedPn = {
   isCall: boolean
   sipPn: SipPn
   callkeepUuid: string
+  callkeepAt: string
 }
 export type SipPn = {
   phoneId: string

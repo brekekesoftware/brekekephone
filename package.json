@@ -36,7 +36,7 @@
     "helper-moment": "0.2.0",
     "html-entities": "2.3.2",
     "json-stable-stringify": "1.0.1",
-    "jssip": "github:brekekesoftware/jssip#06459b5f0965e8b264b6715a251dff3d98ddc04e",
+    "jssip": "github:brekekesoftware/jssip#c0bf62f63f72b7756134bf3753136f5f6465428b",
     "lodash": "4.17.21",
     "md5": "2.3.0",
     "mobx": "5.15.7",
