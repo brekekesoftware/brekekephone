@@ -10,6 +10,7 @@ import { NotificationDetails } from './fcm'
 const Polyfill = {
   IncomingCall: {
     setLocale: () => undefined,
+    setIsAppActive: () => undefined,
     closeIncomingCallActivity: () => undefined,
     closeAllIncomingCallActivities: () => undefined,
     setIsVideoCall: () => undefined,
@@ -27,6 +28,7 @@ const M = (
 export type TNativeModules = {
   IncomingCall: NativeModule & {
     setLocale(locale: string): void
+    setIsAppActive(b1: boolean, b2: boolean): void
     closeIncomingCallActivity(uuid: string): void
     closeAllIncomingCallActivities(): ViewPagerAndroidProps
     setIsVideoCall(uuid: string, isVideoCall: boolean): void

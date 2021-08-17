@@ -199,6 +199,11 @@ export class CallStore {
     // Construct a new call
     const c = new Call(this)
     Object.assign(c, cPartial)
+    if (isPnCanceled(c.pnId)) {
+      c.hangupWithUnhold()
+      console.error(`SIP PN debug: reject by isPnCanceled pnId=${c.pnId}`)
+      return
+    }
     this.calls = [c, ...this.calls]
     IncomingCall.setBackgroundCalls(this.calls.length)
     // Get and check callkeep
@@ -510,19 +515,18 @@ export const endCallKeepAll = () => {
 export const hasCallKeepRunning = () => !!Object.keys(callkeepMap).length
 const alreadyShowIncomingCallUi: { [k: string]: boolean } = {}
 
-let isForegroundLocked = false
 if (Platform.OS === 'android') {
+  IncomingCall.setIsAppActive(AppState.currentState === 'active', false)
   // If it is locked right after blur, we assume it was put in background because of lock
   AppState.addEventListener('change', () => {
+    IncomingCall.setIsAppActive(AppState.currentState === 'active', false)
     if (AppState.currentState === 'active') {
-      isForegroundLocked = false
-      return
-    }
-    if (isForegroundLocked) {
       return
     }
     BackgroundTimer.setTimeout(async () => {
-      isForegroundLocked = await IncomingCall.isLocked()
+      if (await IncomingCall.isLocked()) {
+        IncomingCall.setIsAppActive(false, true)
+      }
     }, 300)
   })
 }

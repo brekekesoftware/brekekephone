@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.json.JSONObject;
 
 public class FIRMessagingModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, ActivityEventListener {
@@ -63,20 +62,8 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void getInitialNotification(Promise promise) {
-    if (MessagingService.initialNotification == null) {
-      promise.resolve(null);
-      return;
-    }
-    try {
-      JSONObject o = new JSONObject(MessagingService.initialNotification);
-      promise.resolve(ReactNativeJson.convertJsonToMap(o));
-      MessagingService.alreadyGetInitialNotification = true;
-      MessagingService.initialNotification = null;
-    } catch (Exception err) {
-      Log.e(TAG, "getInitialNotification: " + err.getMessage());
-      err.printStackTrace();
-    }
-    promise.resolve(null);
+    // Fork: fix bug initial notification on killed (legacy)
+    MessagingService.getInitialNotification(promise);
   }
 
   @ReactMethod

@@ -34,6 +34,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static ReactApplicationContext ctx;
   public static WakeLock wl;
   public static KeyguardManager km;
+
+  public static boolean isAppActive = false;
+  public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
 
   IncomingCallModule(ReactApplicationContext c) {
@@ -91,15 +94,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (!L.l.equals("en") && !L.l.equals("ja")) {
       L.l = "en";
     }
-    // Show call
+    // Generate new uuid and store it to the PN bundle
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
-    String callerName = data.get("x_from").toString();
-    showCall(fcm, uuid, callerName, false);
-  }
-
-  public static void showCall(
-      FirebaseMessagingService fcm, String uuid, String callerName, boolean isAppActive) {
+    // Show call
     if (activitiesSize == 0 && !wl.isHeld()) {
       wl.acquire();
     }
@@ -107,21 +105,19 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     Intent i;
     IncomingCallActivity prev = last();
     if (prev == null) {
-      i = new Intent(fcm == null ? ctx : fcm, IncomingCallActivity.class);
+      i = new Intent(fcm, IncomingCallActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      firstShowCallAppActive = isAppActive;
+      firstShowCallAppActive = isAppActive || isAppActiveLocked;
     } else {
       prev.forceStopRingtone();
       i = new Intent(prev, IncomingCallActivity.class);
     }
     i.putExtra("uuid", uuid);
-    i.putExtra("callerName", callerName);
+    i.putExtra("callerName", data.get("x_from").toString());
     if (prev != null) {
       prev.startActivity(i);
-    } else if (fcm != null) {
-      fcm.startActivity(i);
     } else {
-      ctx.startActivity(i);
+      fcm.startActivity(i);
     }
   }
 
@@ -280,6 +276,12 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
             }
           }
         });
+  }
+
+  @ReactMethod
+  public void setIsAppActive(boolean b1, boolean b2) {
+    isAppActive = b1;
+    isAppActiveLocked = b2;
   }
 
   @ReactMethod

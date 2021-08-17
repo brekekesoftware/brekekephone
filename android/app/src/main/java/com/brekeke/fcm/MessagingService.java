@@ -12,6 +12,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.brekeke.phonedev.IncomingCallModule;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -20,29 +21,41 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MessagingService extends FirebaseMessagingService {
+  private static String TAG = "MessagingService";
+
+  // Fork: fix bug initial notification on killed (legacy)
   public static Boolean alreadyGetInitialNotification = false;
   public static String initialNotification = null;
-  private static final String TAG = "MessagingService";
+
+  public static void getInitialNotification(Promise promise) {
+    if (initialNotification == null) {
+      promise.resolve(null);
+      return;
+    }
+    try {
+      JSONObject o = new JSONObject(initialNotification);
+      promise.resolve(ReactNativeJson.convertJsonToMap(o));
+      alreadyGetInitialNotification = true;
+      initialNotification = null;
+    } catch (Exception err) {
+      Log.e(TAG, "getInitialNotification: " + err.getMessage());
+      err.printStackTrace();
+      promise.resolve(null);
+    }
+  }
 
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
+    // Fork: wake lock and show incoming call
     PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
     WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::Fcm");
     wl.acquire();
     IncomingCallModule.onFcmMessageReceived(this, remoteMessage.getData());
 
-    Log.d(TAG, "Remote message received");
-    Intent i = new Intent("com.brekeke.fcm.ReceiveNotification");
-    i.putExtra("data", remoteMessage);
-    handleBadge(remoteMessage);
-    buildLocalNotification(remoteMessage);
-
-    final Intent message = i;
-
-    if (MessagingService.initialNotification == null
-        && !MessagingService.alreadyGetInitialNotification) {
+    // Fork: fix bug initial notification on killed (legacy)
+    if (initialNotification == null && !alreadyGetInitialNotification) {
       try {
-        MessagingService.initialNotification =
+        initialNotification =
             ReactNativeJson.convertMapToJson(FIRMessagingModule.parseParams(remoteMessage))
                 .toString();
       } catch (Exception err) {
@@ -50,6 +63,12 @@ public class MessagingService extends FirebaseMessagingService {
         err.printStackTrace();
       }
     }
+
+    Log.d(TAG, "Remote message received");
+    Intent message = new Intent("com.brekeke.fcm.ReceiveNotification");
+    message.putExtra("data", remoteMessage);
+    handleBadge(remoteMessage);
+    buildLocalNotification(remoteMessage);
 
     // We need to run this on the main thread, as the React code assumes that is true.
     // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
