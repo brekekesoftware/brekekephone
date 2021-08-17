@@ -1,3 +1,11 @@
+#### 2.8.32
+
+- Improve PN's wakeup time
+- Add multi lingual locale for PN screen
+- New logic of jssip fork to disable web socket send after calling \_ua.\_transport.socket.disconnect() then also call stopWebRTC() - not sure if this change actually improves the connection, please test
+- Fix sometimes PN not received in js code, because of the fcm lib
+- Some other small improvements and dependencies update
+
 #### 2.8.30
 
 - Android show timestamp as soon as PN received. For debug purpose, first step of speeding up wake time for PN screen. This is on dev version only and will be migrated/removed when we completely done with speeding up
