@@ -254,6 +254,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_dtmf:
         onBtnDtmfClick(v);
         break;
+      case R.id.btn_video:
+        onBtnVideoClick(v);
+        break;
       default:
         break;
     }
@@ -281,7 +284,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onRequestUnlock(v);
         break;
       case R.id.btn_video:
-        onBtnVideoClick(v);
+        // Allow user to disable while lock
+        //    but to enable then need to unlock
+        if (btnVideo.isSelected()) {
+          onBtnVideoClick(v);
+        } else {
+          onRequestUnlock(v);
+        }
         break;
       case R.id.btn_speaker:
         onBtnSpeakerClick(v);
