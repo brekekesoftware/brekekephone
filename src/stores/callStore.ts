@@ -527,9 +527,7 @@ if (Platform.OS === 'android') {
   })
 }
 
-export const showIncomingCallUi = (
-  e: TEvent & { alreadyShowCall?: boolean },
-) => {
+export const showIncomingCallUi = (e: TEvent) => {
   const uuid = e.callUUID.toUpperCase()
   if (alreadyShowIncomingCallUi[uuid]) {
     return
@@ -539,13 +537,6 @@ export const showIncomingCallUi = (
   if (!pnData || isPnCanceled(pnData.id)) {
     endCallKeep(uuid)
     return
-  }
-  if (!e.alreadyShowCall) {
-    IncomingCall.showCall(
-      uuid,
-      pnData.from,
-      AppState.currentState === 'active' || isForegroundLocked,
-    )
   }
   callStore.onCallKeepDidDisplayIncomingCall(uuid)
   console.error('SIP PN debug: successfully display incoming call UI')

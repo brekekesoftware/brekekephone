@@ -1,11 +1,9 @@
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import { v4 as newUuid } from 'uuid'
 
 import { getAuthStore } from '../stores/authStore'
 import callStore, {
-  hasCallKeepRunning,
   isPnCanceled,
   setCallPnData,
   showIncomingCallUi,
@@ -215,7 +213,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
     // If n.callkeepUuid exists, then the call is showed in android code already
     if (n.callkeepUuid) {
-      showIncomingCallUi({ callUUID: n.callkeepUuid, alreadyShowCall: true })
+      showIncomingCallUi({ callUUID: n.callkeepUuid })
       const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
       if (action === 'answerCall') {
         callStore.onCallKeepAnswerCall(n.callkeepUuid)
@@ -225,12 +223,8 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       // Need to invoke callkeep to handle voice correctly
       RNCallKeep.displayIncomingCall(n.callkeepUuid, 'Brekeke Phone', n.to)
     } else {
-      const uuid = newUuid().toUpperCase()
-      setCallPnData(uuid, n)
-      if (hasCallKeepRunning()) {
-        showIncomingCallUi({ callUUID: uuid })
-      }
-      RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', n.to)
+      // Should not happen
+      console.error('SIP PN debug: android got PN without callkeepUuid')
     }
   }
   // Let pbx/sip connect by this awaiting time

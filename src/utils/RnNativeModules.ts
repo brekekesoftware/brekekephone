@@ -6,7 +6,6 @@ const Polyfill = {
   IncomingCall: {
     closeIncomingCallActivity: () => undefined,
     closeAllIncomingCallActivities: () => undefined,
-    showCall: () => undefined,
     setIsVideoCall: () => undefined,
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
@@ -23,7 +22,6 @@ export type TNativeModules = {
   IncomingCall: NativeModule & {
     closeIncomingCallActivity(uuid: string): void
     closeAllIncomingCallActivities(): void
-    showCall(uuid: string, callerName: string, isAppActive: boolean): void
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
@@ -33,7 +31,7 @@ export type TNativeModules = {
     getPendingUserAction(uuid: string): Promise<string>
   }
   RNFIRMessaging: NativeModule & {
-    getInitialNotification(): Promise<string | null>
+    getInitialNotification(): Promise<NotificationDetails | null>
     getFCMToken(): Promise<string>
     getEntityFCMToken(): Promise<string>
     deleteEntityFCMToken(): Promise<void>

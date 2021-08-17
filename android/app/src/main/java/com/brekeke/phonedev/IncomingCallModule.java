@@ -73,10 +73,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
     String callerName = data.get("x_from").toString();
-    showCallStatic(fcm, uuid, callerName, false);
+    showCall(fcm, uuid, callerName, false);
   }
 
-  public static void showCallStatic(
+  public static void showCall(
       FirebaseMessagingService fcm, String uuid, String callerName, boolean isAppActive) {
     if (activitiesSize == 0 && !wl.isHeld()) {
       wl.acquire();
@@ -240,11 +240,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   //
   // React methods
   //
-
-  @ReactMethod
-  public void showCall(String uuid, String callerName, boolean isAppActive) {
-    showCallStatic(null, uuid, callerName, isAppActive);
-  }
 
   @ReactMethod
   public void getPendingUserAction(String uuid, Promise p) {

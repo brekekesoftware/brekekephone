@@ -67,14 +67,7 @@ const PushNotification = {
       const t = await FCM.getFCMToken()
       onToken(t)
       const n = await FCM.getInitialNotification()
-      if (n) {
-        try {
-          onNotification(JSON.parse(n), initApp)
-        } catch (err) {
-          // type-coverage:ignore-next-line
-          onNotification(n as any, initApp)
-        }
-      }
+      n && onNotification(n, initApp)
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,
