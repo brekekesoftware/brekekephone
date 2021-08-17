@@ -158,7 +158,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   // Manually manage activities size:
   // Try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
   public static int activitiesSize = 0;
-  // Calls size from js
+  // Calls size from js, this may be different with activitiesSize in some cases: out going call...
   public static int callsSize = 0;
 
   public static void remove(String uuid) {
@@ -172,7 +172,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     }
     a.forceFinish();
     if (!a.answered) {
-      IncomingCallModule.tryExitClearTask();
+      tryExitClearTask();
     }
   }
 
@@ -190,13 +190,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     } catch (Exception e) {
     }
     if (!atLeastOneAnswerPressed) {
-      IncomingCallModule.tryExitClearTask();
+      tryExitClearTask();
     }
   }
 
   public static void removeAllAndBackToForeground() {
     removeAll();
-    IncomingCallModule.emit("backToForeground", "");
+    emit("backToForeground", "");
   }
 
   public static IncomingCallActivity at(String uuid) {
@@ -231,12 +231,16 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   // - call is answered and
   // - on pause (click home when locked) or destroy (click answer when forground)
   // TODO handle case multiple calls
-  public static void onActivityPauseOrDestroy() {
-    if (activitiesSize > 1) {
+  public static void onActivityPauseOrDestroy(boolean destroyed) {
+    if (destroyed) {
+      activitiesSize--;
+      updateBtnUnlockLabels();
+    }
+    if (activitiesSize > 0) {
       return;
     }
-    if (IncomingCallModule.wl.isHeld()) {
-      IncomingCallModule.wl.release();
+    if (wl.isHeld()) {
+      wl.release();
     }
     try {
       if (last().answered) {
@@ -244,7 +248,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       }
     } catch (Exception e) {
     }
-    updateBtnUnlockLabels();
   }
 
   public static void updateBtnUnlockLabels() {
@@ -324,10 +327,16 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setIsVideoCall(String uuid, boolean isVideoCall) {
-    try {
-      at(uuid).setBtnVideoSelected(isVideoCall);
-    } catch (Exception e) {
-    }
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setBtnVideoSelected(isVideoCall);
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 
   @ReactMethod

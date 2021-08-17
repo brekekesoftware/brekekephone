@@ -1,12 +1,9 @@
 package com.brekeke.fcm;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.brekeke.phonedev.IncomingCallModule;
@@ -16,51 +13,54 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import java.util.ArrayList;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MessagingService extends FirebaseMessagingService {
   private static String TAG = "MessagingService";
 
-  // Fork: fix bug initial notification on killed (legacy)
-  public static Boolean alreadyGetInitialNotification = false;
-  public static String initialNotification = null;
+  // Fork: fix bug initial notifications on killed (legacy)
+  private static Boolean alreadyGetInitialNotifications = false;
+  private static ArrayList<String> initialNotifications = null;
 
-  public static void getInitialNotification(Promise promise) {
-    if (initialNotification == null) {
+  public static void getInitialNotifications(Promise promise) {
+    alreadyGetInitialNotifications = true;
+    if (initialNotifications == null) {
       promise.resolve(null);
       return;
     }
     try {
-      JSONObject o = new JSONObject(initialNotification);
-      promise.resolve(ReactNativeJson.convertJsonToMap(o));
-      alreadyGetInitialNotification = true;
-      initialNotification = null;
-    } catch (Exception err) {
-      Log.e(TAG, "getInitialNotification: " + err.getMessage());
-      err.printStackTrace();
+      String[] arr = new String[initialNotifications.size()];
+      arr = initialNotifications.toArray(arr);
+      initialNotifications = null;
+      promise.resolve(new JSONArray(arr).toString());
+    } catch (Exception ex) {
       promise.resolve(null);
+      Log.d(TAG, "getInitialNotifications" + ex.getMessage());
+      ex.printStackTrace();
     }
   }
 
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     // Fork: wake lock and show incoming call
-    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-    WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::Fcm");
-    wl.acquire();
     IncomingCallModule.onFcmMessageReceived(this, remoteMessage.getData());
 
-    // Fork: fix bug initial notification on killed (legacy)
-    if (initialNotification == null && !alreadyGetInitialNotification) {
+    // Fork: fix bug initial notifications on killed (legacy)
+    if (!alreadyGetInitialNotifications) {
+      if (initialNotifications == null) {
+        initialNotifications = new ArrayList<String>();
+      }
       try {
-        initialNotification =
+        initialNotifications.add(
             ReactNativeJson.convertMapToJson(FIRMessagingModule.parseParams(remoteMessage))
-                .toString();
-      } catch (Exception err) {
-        Log.d(TAG, "initialNotification: " + err.getMessage());
-        err.printStackTrace();
+                .toString());
+      } catch (Exception ex) {
+        Log.d(TAG, "initialNotifications.add: " + ex.getMessage());
+        ex.printStackTrace();
       }
     }
 
@@ -86,14 +86,12 @@ public class MessagingService extends FirebaseMessagingService {
             // If it's constructed, send a notification
             if (context != null) {
               LocalBroadcastManager.getInstance(context).sendBroadcast(message);
-              wl.release();
             } else {
               // Otherwise wait for construction, then send the notification
               mReactInstanceManager.addReactInstanceEventListener(
                   new ReactInstanceManager.ReactInstanceEventListener() {
                     public void onReactContextInitialized(ReactContext context) {
                       LocalBroadcastManager.getInstance(context).sendBroadcast(message);
-                      wl.release();
                     }
                   });
               if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {

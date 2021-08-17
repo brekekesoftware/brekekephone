@@ -19,7 +19,10 @@ const onToken = (t: string) => {
 const onNotification = async (n0: NotificationDetails, initApp: Function) => {
   try {
     initApp()
-    FCM.getInitialNotification() // flush initial notification
+    // flush initial notification
+    FCM.getInitialNotifications().then(ns =>
+      ns.forEach(n => onNotification(n, initApp)),
+    )
     const n = await parse(n0)
     if (!n) {
       return
@@ -64,10 +67,10 @@ const PushNotification = {
       FCM.on(Notification, (n: NotificationDetails) =>
         onNotification(n, initApp),
       )
-      const t = await FCM.getFCMToken()
-      onToken(t)
-      const n = await FCM.getInitialNotification()
-      n && onNotification(n, initApp)
+      await FCM.getFCMToken().then(onToken)
+      await FCM.getInitialNotifications().then(ns =>
+        ns.forEach(n => onNotification(n, initApp)),
+      )
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,

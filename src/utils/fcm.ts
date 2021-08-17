@@ -50,8 +50,19 @@ export const NotificationActionType = {
 }
 
 export const FCM = {
-  getInitialNotification: () => {
-    return RNFIRMessaging.getInitialNotification()
+  getInitialNotifications: async () => {
+    const n = await RNFIRMessaging.getInitialNotifications()
+    if (!n) {
+      return []
+    }
+    try {
+      return (JSON.parse(n) as string[]).map(
+        s => JSON.parse(s) as NotificationDetails,
+      )
+    } catch (err) {
+      console.error(`getInitialNotifications error: n=${n}`)
+      return []
+    }
   },
   getFCMToken: () => {
     return RNFIRMessaging.getFCMToken()

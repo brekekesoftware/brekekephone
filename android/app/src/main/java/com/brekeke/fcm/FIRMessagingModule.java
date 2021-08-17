@@ -61,9 +61,9 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void getInitialNotification(Promise promise) {
-    // Fork: fix bug initial notification on killed (legacy)
-    MessagingService.getInitialNotification(promise);
+  public void getInitialNotifications(Promise promise) {
+    // Fork: fix bug initial notifications on killed (legacy)
+    MessagingService.getInitialNotifications(promise);
   }
 
   @ReactMethod

@@ -166,12 +166,6 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
 
-  if (n.callkeepAt) {
-    console.error(
-      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
-    )
-  }
-
   if (Platform.OS === 'android') {
     if (n.id && androidAlreadyProccessedPn[n.id]) {
       console.error(
@@ -180,6 +174,12 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       return null
     }
     androidAlreadyProccessedPn[n.id] = true
+  }
+
+  if (n.callkeepAt) {
+    console.error(
+      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
+    )
   }
 
   if (

@@ -40,7 +40,7 @@ export type TNativeModules = {
     getPendingUserAction(uuid: string): Promise<string>
   }
   RNFIRMessaging: NativeModule & {
-    getInitialNotification(): Promise<NotificationDetails | null>
+    getInitialNotifications(): Promise<string | null>
     getFCMToken(): Promise<string>
     getEntityFCMToken(): Promise<string>
     deleteEntityFCMToken(): Promise<void>

@@ -46,29 +46,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtHoldBtn,
       txtCallIsOnHold;
   public String uuid, callerName;
-  public boolean closed = false, paused = false, answered = false;
+  public boolean destroyed = false, paused = false, answered = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IncomingCallModule.activities.add(this);
-    startRingtone();
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
     }
     if (b == null) {
-      int i = 0;
-      for (IncomingCallActivity a : IncomingCallModule.activities) {
-        if (a == this) {
-          IncomingCallModule.activities.remove(i);
-          break;
-        }
-        i++;
-      }
       this.forceFinish();
       return;
     }
+    startRingtone();
+    IncomingCallModule.activities.add(this);
 
     setContentView(R.layout.incoming_call_activity);
     getWindow()
@@ -153,7 +145,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         IncomingCallModule.callsSize > IncomingCallModule.activitiesSize
             ? IncomingCallModule.callsSize
             : IncomingCallModule.activitiesSize;
-    btnUnlock.setText(n <= 1 ? L.unlock() : L.nCallsInBackground(n));
+    btnUnlock.setText(n <= 1 ? L.unlock() : L.nCallsInBackground(n - 1));
   }
 
   public void updateMuteBtnLabel() {
@@ -332,7 +324,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void forceFinish() {
-    closed = true;
+    destroyed = true;
     try {
       finish();
     } catch (Exception e) {
@@ -343,7 +335,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onPause() {
     forceStopRingtone();
     paused = true;
-    IncomingCallModule.onActivityPauseOrDestroy();
+    IncomingCallModule.onActivityPauseOrDestroy(false);
     super.onPause();
   }
 
@@ -359,9 +351,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     forceStopRingtone();
-    closed = true;
-    IncomingCallModule.onActivityPauseOrDestroy();
-    IncomingCallModule.activitiesSize--;
+    destroyed = true;
+    IncomingCallModule.onActivityPauseOrDestroy(true);
     super.onDestroy();
   }
 
