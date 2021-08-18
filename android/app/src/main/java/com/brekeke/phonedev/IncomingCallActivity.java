@@ -59,16 +59,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       this.forceFinish();
       return;
     }
-    startRingtone();
-    IncomingCallModule.activities.add(this);
 
-    setContentView(R.layout.incoming_call_activity);
     getWindow()
         .addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
+    setContentView(R.layout.incoming_call_activity);
+    IncomingCallModule.activities.add(this);
+    startRingtone();
 
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");

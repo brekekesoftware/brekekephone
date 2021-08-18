@@ -1,6 +1,5 @@
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
-import RNCallKeep from 'react-native-callkeep'
 
 import { getAuthStore } from '../stores/authStore'
 import callStore, {
@@ -233,8 +232,7 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     } else if (action === 'rejectCall') {
       callStore.onCallKeepEndCall(n.callkeepUuid)
     }
-    // Need to invoke callkeep to handle voice correctly
-    RNCallKeep.displayIncomingCall(n.callkeepUuid, 'Brekeke Phone', n.to)
+    // Already invoke callkeep in java code
   }
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)

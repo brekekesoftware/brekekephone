@@ -15,6 +15,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
+import io.wazo.callkeep.RNCallKeepModule;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,6 +73,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (data.get("x_pn-id") == null) {
       return;
     }
+    //
     // Init variables if not
     if (wl == null) {
       PowerManager pm = (PowerManager) fcm.getSystemService(Context.POWER_SERVICE);
@@ -80,6 +82,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (km == null) {
       km = ((KeyguardManager) fcm.getSystemService(Context.KEYGUARD_SERVICE));
     }
+    //
     // Read locale from async storage if not
     if (L.l == null) {
       try {
@@ -97,33 +100,45 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (!L.l.equals("en") && !L.l.equals("ja")) {
       L.l = "en";
     }
+    //
     // Generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
-    String uuid = UUID.randomUUID().toString().toUpperCase();
+    final String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
+    final String callerName = data.get("x_from").toString();
+    //
     // Show call
     if (activitiesSize == 0 && !wl.isHeld()) {
       wl.acquire();
     }
-    activitiesSize++;
-    Intent i;
-    IncomingCallActivity prev = last();
-    if (prev == null) {
-      i = new Intent(fcm, IncomingCallActivity.class);
-      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      firstShowCallAppActive = isAppActive || isAppActiveLocked;
-    } else {
-      prev.forceStopRingtone();
-      i = new Intent(prev, IncomingCallActivity.class);
-    }
-    i.putExtra("uuid", uuid);
-    i.putExtra("callerName", data.get("x_from").toString());
-    if (prev != null) {
-      prev.startActivity(i);
-    } else {
-      fcm.startActivity(i);
-    }
+    RNCallKeepModule.registerPhoneAccount(fcm.getApplicationContext());
+    RNCallKeepModule.fcmCallbacks.put(
+        uuid,
+        new Runnable() {
+          @Override
+          public void run() {
+            activitiesSize++;
+            Intent i;
+            IncomingCallActivity prev = last();
+            if (prev == null) {
+              i = new Intent(fcm, IncomingCallActivity.class);
+              i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+              firstShowCallAppActive = isAppActive || isAppActiveLocked;
+            } else {
+              prev.forceStopRingtone();
+              i = new Intent(prev, IncomingCallActivity.class);
+            }
+            i.putExtra("uuid", uuid);
+            i.putExtra("callerName", callerName);
+            if (prev != null) {
+              prev.startActivity(i);
+            } else {
+              fcm.startActivity(i);
+            }
+          }
+        });
+    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
   }
 
   public static void tryExitClearTask() {
