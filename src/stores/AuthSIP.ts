@@ -27,7 +27,7 @@ class AuthSIP {
     const s = getAuthStore()
     s.sipPn = {}
     s.sipState = 'stopped'
-    sip.disconnect()
+    sip.stopWebRTC()
   }
 
   private authPnWithoutCatch = async () => {
@@ -169,7 +169,7 @@ class AuthSIP {
         console.error('SIP PN debug: set sipState failure catch')
         s.sipState = 'failure'
         s.sipTotalFailure += 1
-        sip.disconnect()
+        sip.stopWebRTC()
         RnAlert.error({
           message: intlDebug`Failed to connect to SIP`,
           err,

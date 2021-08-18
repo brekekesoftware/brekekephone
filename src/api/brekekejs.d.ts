@@ -242,6 +242,7 @@ export type Sip = {
 
   startWebRTC(configuration: SipConfiguration): void
   stopWebRTC(): void
+  destroyWebRTC(): void
 
   setDefaultCallOptions(options: CallOptions): void
   getSession(sessionId: string): Session
@@ -256,7 +257,7 @@ export type Sip = {
 
   _ua?: {
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
-    _transport?: { socket?: { disconnect: Function } }
+    _transport?: { socket?: object }
   }
   _removeEventListenerPhoneStatusChange?: Function
 }

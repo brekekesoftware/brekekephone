@@ -65,10 +65,9 @@ export class SIP extends EventEmitter {
       if (s === 'stopping' || s === 'stopped') {
         phone._removeEventListenerPhoneStatusChange?.()
         this.emit('connection-stopped', ev)
-        console.error(
-          `SIP PN debug: call sip.disconnect because of event phoneStatusChanged: phoneStatus=${s}`,
-        )
-        this.disconnect()
+        console.error(`SIP PN debug: phoneStatusChanged: phoneStatus=${s}`)
+        this.phone?._removeEventListenerPhoneStatusChange?.()
+        this.phone = undefined
       }
     }
     phone.addEventListener('phoneStatusChanged', h)
@@ -191,7 +190,7 @@ export class SIP extends EventEmitter {
   connect = async (sipLoginOption: SipLoginOption) => {
     console.error('SIP PN debug: call sip.disconnect in sip.connect')
     this.phone?._removeEventListenerPhoneStatusChange?.()
-    this.disconnect()
+    this.stopWebRTC()
     const phone = await this.init(sipLoginOption)
     //
     let platformOs: string = Platform.OS
@@ -246,22 +245,28 @@ export class SIP extends EventEmitter {
     })
   }
 
-  disconnect = () => {
+  private hackJssipFork = () => {
+    const socket = sip.phone?._ua?._transport?.socket
+    socket && Object.assign(socket, { __brekekephone_stopped: true })
+  }
+  stopWebRTC = () => {
+    this.hackJssipFork()
     if (this.phone) {
-      const socket = this.phone._ua?._transport?.socket
-      console.error(
-        `SIP PN debug: sip.disconnect: call phone._ua._transport.socket.disconnect ${typeof socket?.disconnect}`,
-      )
-      if (socket) {
-        // hack on forked jssip
-        Object.assign(socket, { __brekekephone_stopped: true })
-        socket.disconnect()
-      }
-      console.error('SIP PN debug: then also call phone.stopWebRTC')
+      console.error('SIP PN debug: sip.stopWebRTC: call phone.stopWebRTC')
       this.phone.stopWebRTC()
       this.phone = undefined
     } else {
-      console.error('SIP PN debug: sip.disconnect: already disconnected')
+      console.error('SIP PN debug: sip.stopWebRTC: already disconnected')
+    }
+  }
+  destroyWebRTC = () => {
+    this.hackJssipFork()
+    if (this.phone) {
+      console.error('SIP PN debug: sip.destroyWebRTC: call phone.destroyWebRTC')
+      this.phone.destroyWebRTC()
+      this.phone = undefined
+    } else {
+      console.error('SIP PN debug: sip.destroyWebRTC: already disconnected')
     }
   }
 

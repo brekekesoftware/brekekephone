@@ -123,7 +123,7 @@ class Api {
     console.error('SIP PN debug: set sipState failure timeout')
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
-    sip.disconnect()
+    sip.stopWebRTC()
   }
   onSIPSessionStarted = (call: Call) => {
     const number = call.partyNumber

@@ -16,6 +16,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
+import io.wazo.callkeep.VoiceConnectionService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +67,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     return "IncomingCall";
   }
 
-  // [callkeepUuid] -> answerCall/rejectCall
+  // [callkeepUuid] -> display/answerCall/rejectCall
   public static Map<String, String> userActions = new HashMap<String, String>();
 
   public static void onFcmMessageReceived(FirebaseMessagingService fcm, Map<String, String> data) {
@@ -113,11 +114,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       wl.acquire();
     }
     RNCallKeepModule.registerPhoneAccount(fcm.getApplicationContext());
-    RNCallKeepModule.fcmCallbacks.put(
-        uuid,
+    Runnable r =
         new Runnable() {
           @Override
           public void run() {
+            if (userActions.get(uuid) != null) {
+              return;
+            }
+            userActions.put(uuid, "display");
             activitiesSize++;
             Intent i;
             IncomingCallActivity prev = last();
@@ -137,8 +141,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
               fcm.startActivity(i);
             }
           }
-        });
+        };
+    RNCallKeepModule.fcmCallbacks.put(uuid, r);
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+    // Try to run it as it does not display multiple calls via on onShowIncomingCallUi
+    if (VoiceConnectionService.currentConnections.size() > 0) {
+      r.run();
+    }
   }
 
   public static void tryExitClearTask() {

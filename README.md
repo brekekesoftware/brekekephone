@@ -1,5 +1,8 @@
 ### Quick access
 
+- Minimum required OS version: Android 8.1 | iOS 11
+- Recommended OS version: Android 10 and above | iOS 13 and above
+
 - [Custom branding build](./.doc/custom-branding.md)
 - [Network proxy setup](./.doc/network-proxy-setup.md)
 

@@ -94,10 +94,10 @@ export class CallStore {
       const count = sip.phone?.getSessionCount()
       if (!count) {
         console.error(
-          `SIP PN debug: call sip.disconnect in new notification: phone.getSessionCount()=${count}`,
+          `SIP PN debug: new notification: phone.getSessionCount()=${count} | call destroyWebRTC()`,
         )
         as.sipState = 'stopped'
-        sip.disconnect()
+        sip.destroyWebRTC()
         authSIP.authWithCheck()
       }
     }
