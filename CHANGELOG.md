@@ -1,3 +1,9 @@
+#### 2.8.34
+
+- Update webrtcclient.js use destroyWebRTC() when reconnect on new notification
+- Android improve PN's wakeup time | call callkeep directly in java code
+- Android fix bug can not display multiple calls
+
 #### 2.8.32
 
 - Android improve PN's wakeup time
