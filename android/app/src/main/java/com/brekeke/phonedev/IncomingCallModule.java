@@ -246,10 +246,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   // - call is answered and
   // - on pause (click home when locked) or destroy (click answer when forground)
   // TODO handle case multiple calls
-  public static void onActivityPauseOrDestroy(boolean destroyed) {
+  public static void onActivityPauseOrDestroy(String uuid, boolean destroyed) {
     if (destroyed) {
       activitiesSize--;
       updateBtnUnlockLabels();
+      try {
+        RNCallKeepModule.fcmCallbacks.remove(uuid);
+      } catch (Exception e) {
+      }
     }
     if (activitiesSize > 0) {
       return;
