@@ -130,7 +130,7 @@ export type PbxPal = {
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
-  'webrtcclient.dtmfSendMode': number | string
+  'webrtcclient.dtmfSendMode': string
   'webphone.dtmf.pal': string
   'webphone.turn.server': string
   'webphone.turn.username': string

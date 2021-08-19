@@ -188,7 +188,7 @@ export class SIP extends EventEmitter {
   }
 
   connect = async (sipLoginOption: SipLoginOption) => {
-    console.error('SIP PN debug: call sip.disconnect in sip.connect')
+    console.error('SIP PN debug: call sip.stopWebRTC in sip.connect')
     this.phone?._removeEventListenerPhoneStatusChange?.()
     this.stopWebRTC()
     const phone = await this.init(sipLoginOption)

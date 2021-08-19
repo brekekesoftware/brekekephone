@@ -134,6 +134,7 @@ export class AuthStore {
     this.pbxState = 'stopped'
     console.error('SIP PN debug: set sipState stopped sign out')
     this.sipState = 'stopped'
+    this.sipPn = {}
     sip.stopWebRTC()
     this.ucState = 'stopped'
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()

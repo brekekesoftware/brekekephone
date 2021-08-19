@@ -1,13 +1,19 @@
+import CiruclarJSON from 'circular-json'
 import { debounce } from 'lodash'
 import { action, autorun, Lambda } from 'mobx'
 
+import { PbxGetProductInfoRes } from '../api/brekekejs'
 import pbx from '../api/pbx'
 import sip from '../api/sip'
 import updatePhoneIndex from '../api/updatePhoneIndex'
+import { SipPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import RnAlert from './RnAlert'
 import { sipErrorEmitter } from './sipErrorEmitter'
+
+const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>
+  pbx.getConfig().then(c => c && c[k])
 
 class AuthSIP {
   private clearObserve?: Lambda
@@ -30,16 +36,16 @@ class AuthSIP {
     sip.stopWebRTC()
   }
 
-  private authPnWithoutCatch = async () => {
-    const s = getAuthStore()
-    const p = s.currentProfile
+  private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
+    const p = getAuthStore().currentProfile
     if (!p) {
       console.error('SIP PN debug: Already signed out after long await')
       return
     }
-    const pn = s.sipPn
-    if (!pn?.sipAuth) {
-      console.error('SIP PN debug: Invalid sip PN login logic')
+    if (!pn.sipAuth || !pn.sipWssPort || !pn.phoneId) {
+      console.error(
+        `SIP PN debug: Invalid sip PN data: ${CiruclarJSON.stringify(pn)}`,
+      )
       this.dispose()
       return
     }
@@ -56,9 +62,9 @@ class AuthSIP {
     }
     await sip.connect({
       hostname: p.pbxHostname,
-      port: pn.sipWssPort || '',
-      username: pn.phoneId || '',
-      accessToken: pn.sipAuth || '',
+      port: pn.sipWssPort,
+      username: pn.phoneId,
+      accessToken: pn.sipAuth,
       pbxTurnEnabled: p.pbxTurnEnabled,
       dtmfSendMode,
       turnConfig,
@@ -76,78 +82,29 @@ class AuthSIP {
       this.authWithCheck()
     })
     //
-    if (s.sipPn.sipAuth) {
+    const pn = s.sipPn
+    if (pn.sipAuth) {
       console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
-      this.authPnWithoutCatch()
+      this.authPnWithoutCatch(pn)
       return
     }
     console.error('SIP PN debug: AuthSIP.authWithoutCatch')
     //
-    const pbxConfig = await pbx.getConfig()
-    if (!pbxConfig) {
-      throw new Error('Empty response from pal getProductInfo')
-    }
-    //
-    const sipWSSPort = pbxConfig['sip.wss.port']
-    if (!sipWSSPort) {
-      throw new Error('Empty sip.wss.port from pal getProductInfo')
-    }
-    //
-    let p = s.currentProfile
-    if (!p) {
-      console.error('SIP PN debug: Already signed out after long await')
+    pn.sipWssPort = pn.sipWssPort || (await getPbxConfig('sip.wss.port'))
+    pn.dtmfPal = pn.dtmfPal || (await getPbxConfig('webrtcclient.dtmfSendMode'))
+    pn.turnServer =
+      pn.turnServer || (await getPbxConfig('webphone.turn.server'))
+    pn.turnUsername =
+      pn.turnUsername || (await getPbxConfig('webphone.turn.username'))
+    pn.turnCredential =
+      pn.turnCredential || (await getPbxConfig('webphone.turn.credential'))
+    pn.phoneId = pn.phoneId || (await updatePhoneIndex().then(p => p?.id))
+    if (!pn.phoneId) {
+      // Already logged out and show error above?
       return
     }
-    //
-    s.userExtensionProperties =
-      s.userExtensionProperties ||
-      (await pbx.getUserForSelf(p.pbxTenant, p.pbxUsername)) ||
-      s.userExtensionProperties
-    const pbxUserConfig = s.userExtensionProperties
-    if (!pbxUserConfig) {
-      throw new Error('Empty response from pal getExtensionProperties')
-    }
-    //
-    const language = pbxUserConfig.language
-    void language
-    //
-    const webPhone = (await updatePhoneIndex()) as { id: string }
-    if (!webPhone) {
-      // Already signout and show error in above updatePhoneIndex
-      return
-    }
-    //
-    const sipAccessToken = await pbx.createSIPAccessToken(webPhone.id)
-    if (!sipAccessToken) {
-      throw new Error('Empty response from pal createAuthHeader')
-    }
-    //
-    const dtmfSendMode = pbxConfig['webrtcclient.dtmfSendMode']
-    const turnServer = pbxConfig['webphone.turn.server']
-    const turnUser = pbxConfig['webphone.turn.username']
-    const turnCred = pbxConfig['webphone.turn.credential']
-    const turnConfig: RTCIceServer | undefined = turnServer
-      ? {
-          urls: turnServer.split(',').map(s => s.trim()),
-          username: turnUser,
-          credential: turnCred,
-        }
-      : undefined
-    //
-    p = s.currentProfile
-    if (!p) {
-      console.error('SIP PN debug: Already signed out after long await')
-      return
-    }
-    await sip.connect({
-      hostname: p.pbxHostname,
-      port: sipWSSPort,
-      username: webPhone.id,
-      accessToken: sipAccessToken,
-      pbxTurnEnabled: p.pbxTurnEnabled,
-      dtmfSendMode: Number(dtmfSendMode),
-      turnConfig,
-    })
+    pn.sipAuth = await pbx.createSIPAccessToken(pn.phoneId)
+    await this.authPnWithoutCatch(pn)
   }
   authWithCheck = () => {
     const s = getAuthStore()
