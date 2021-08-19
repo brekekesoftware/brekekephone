@@ -14,13 +14,18 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import com.oney.WebRTCModule.WebRTCView;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public MediaPlayer mp;
 
-  public View vIncomingCall, vCallManage, vCallManageLoading, vCallManageControls;
+  public RelativeLayout vWebrtc, vIncomingCall, vCallManage, vCallManageLoading;
+  public LinearLayout vCallManageControls;
+  public WebRTCView vWebrtcVideo;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -74,12 +79,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
 
-    vIncomingCall = findViewById(R.id.view_incoming_call);
-    vCallManage = findViewById(R.id.view_call_manage);
-    vCallManageLoading = findViewById(R.id.view_call_manage_loading);
-    vCallManageControls = findViewById(R.id.view_call_manage_controls);
-
-    vIncomingCall.setVisibility(View.VISIBLE);
+    vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
+    vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
+    vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
+    vCallManageLoading = (RelativeLayout) findViewById(R.id.view_call_manage_loading);
+    vCallManageControls = (LinearLayout) findViewById(R.id.view_call_manage_controls);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -155,6 +159,32 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void updateBtnHoldLabel() {
     txtHoldBtn.setText(btnHold.isSelected() ? L.unhold() : L.hold());
+  }
+
+  // vWebrtc
+
+  public void initWebrtcVideo() {
+    if (vWebrtcVideo != null) {
+      return;
+    }
+    vWebrtcVideo = new WebRTCView(IncomingCallModule.ctx);
+    vWebrtcVideo.setLayoutParams(
+        new RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+    vWebrtcVideo.setObjectFit("cover");
+    vWebrtc.addView(vWebrtcVideo);
+    vWebrtc.setVisibility(View.VISIBLE);
+  }
+
+  public void setStreamURL(String streamURL) {
+    if (streamURL == null || streamURL.equals("")) {
+      vWebrtc.setVisibility(View.GONE);
+      vWebrtc.removeView(vWebrtcVideo);
+      vWebrtcVideo = null;
+    } else {
+      initWebrtcVideo();
+      vWebrtcVideo.setStreamURL(streamURL);
+    }
   }
 
   // vIncomingCall
@@ -277,13 +307,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onRequestUnlock(v);
         break;
       case R.id.btn_video:
-        // Allow user to disable while lock
-        //    but to enable then need to unlock
-        if (btnVideo.isSelected()) {
-          onBtnVideoClick(v);
-        } else {
-          onRequestUnlock(v);
-        }
+        onBtnVideoClick(v);
         break;
       case R.id.btn_speaker:
         onBtnSpeakerClick(v);

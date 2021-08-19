@@ -14,14 +14,17 @@ const css = StyleSheet.create({
 export default observer((p: { sourceObject: MediaStream }) =>
   p.sourceObject ? (
     <video
-      autoPlay
-      height='100%'
       ref={video => {
         if (video) {
           video.srcObject = p.sourceObject
         }
       }}
-      width='100%'
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+      }}
+      autoPlay
     />
   ) : (
     <ActivityIndicator style={css.loading} />

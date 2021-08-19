@@ -19,7 +19,11 @@ declare global {
 
 export default observer((p: { sourceObject?: MediaStream | null }) =>
   p.sourceObject ? (
-    <RTCView streamURL={p.sourceObject.toURL()} style={css.video} />
+    <RTCView
+      streamURL={p.sourceObject.toURL()}
+      style={css.video}
+      objectFit='cover'
+    />
   ) : (
     <ActivityIndicator style={css.video} />
   ),

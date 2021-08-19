@@ -12,7 +12,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -70,7 +69,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   // [callkeepUuid] -> display/answerCall/rejectCall
   public static Map<String, String> userActions = new HashMap<String, String>();
 
-  public static void onFcmMessageReceived(FirebaseMessagingService fcm, Map<String, String> data) {
+  public static void onFcmMessageReceived(Context fcm, Map<String, String> data) {
     if (data.get("x_pn-id") == null) {
       return;
     }
@@ -79,6 +78,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (wl == null) {
       PowerManager pm = (PowerManager) fcm.getSystemService(Context.POWER_SERVICE);
       wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCall");
+    }
+    if (!wl.isHeld()) {
+      wl.acquire();
     }
     if (km == null) {
       km = ((KeyguardManager) fcm.getSystemService(Context.KEYGUARD_SERVICE));
@@ -105,14 +107,11 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     // Generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
-    final String uuid = UUID.randomUUID().toString().toUpperCase();
+    String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
-    final String callerName = data.get("x_from").toString();
+    String callerName = data.get("x_from").toString();
     //
     // Show call
-    if (activitiesSize == 0 && !wl.isHeld()) {
-      wl.acquire();
-    }
     RNCallKeepModule.registerPhoneAccount(fcm.getApplicationContext());
     Runnable r =
         new Runnable() {
@@ -362,6 +361,20 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
           public void run() {
             try {
               at(uuid).setBtnVideoSelected(isVideoCall);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setStreamURL(String uuid, String streamURL) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setStreamURL(streamURL);
             } catch (Exception e) {
             }
           }

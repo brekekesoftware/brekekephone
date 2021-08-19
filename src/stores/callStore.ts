@@ -159,6 +159,14 @@ export class CallStore {
         cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
+      if (cExisting.incoming && cExisting.callkeepUuid) {
+        IncomingCall.setStreamURL(
+          cExisting.callkeepUuid,
+          cExisting.remoteVideoStreamObject
+            ? cExisting.remoteVideoStreamObject.toURL()
+            : '',
+        )
+      }
       if (
         cExisting.incoming &&
         cExisting.callkeepUuid &&
