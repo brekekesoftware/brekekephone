@@ -142,12 +142,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
             }
           }
         };
-    RNCallKeepModule.fcmCallbacks.put(uuid, r);
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
     // Try to run it as it does not display multiple calls via on onShowIncomingCallUi
-    if (VoiceConnectionService.currentConnections.size() > 0) {
+    if (VoiceConnectionService.currentConnections.size() > 0
+        || RNCallKeepModule.fcmCallbacks.size() > 1) {
       r.run();
     }
+    RNCallKeepModule.fcmCallbacks.put(uuid, r);
+    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
   }
 
   public static void tryExitClearTask() {
