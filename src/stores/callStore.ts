@@ -282,7 +282,7 @@ export class CallStore {
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
       RNCallKeep.setOnHold(uuid, false)
-      setAutoEndCallKeepTimer(uuid, true)
+      setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s
     // Auto update currentCallId
@@ -405,7 +405,6 @@ const callkeepMap: {
   [uuid: string]: {
     uuid: string
     at: number
-    isOutgoing?: boolean
   }
 } = {}
 const callkeepActionMap: {
@@ -419,7 +418,7 @@ const clearAutoEndCallKeepTimer = () => {
   BackgroundTimer.clearInterval(autoEndCallKeepTimerId)
   autoEndCallKeepTimerId = 0
 }
-const setAutoEndCallKeepTimer = (uuid?: string, isOutgoing?: boolean) => {
+const setAutoEndCallKeepTimer = (uuid?: string) => {
   if (Platform.OS === 'web') {
     return
   }
@@ -427,7 +426,6 @@ const setAutoEndCallKeepTimer = (uuid?: string, isOutgoing?: boolean) => {
     callkeepMap[uuid] = {
       uuid,
       at: Date.now(),
-      isOutgoing,
     }
   }
 
@@ -435,7 +433,7 @@ const setAutoEndCallKeepTimer = (uuid?: string, isOutgoing?: boolean) => {
   autoEndCallKeepTimerId = BackgroundTimer.setInterval(() => {
     const n = Date.now()
     Object.values(callkeepMap).forEach(k => {
-      if (!k.isOutgoing && n - k.at > 20000) {
+      if (n - k.at > 20000) {
         const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
         if (!c) {
           endCallKeep(k.uuid)
