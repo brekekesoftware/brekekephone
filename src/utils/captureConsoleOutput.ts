@@ -32,19 +32,15 @@ const formatErrors = (...errs: Error[]) => {
     tpl = tpl.replace(/%c/g, '')
     msgs = msgs.filter((m0, i) => !m[i])
   }
+  // Apply format and remove whitespaces
   let msg = format(tpl, ...msgs)
-  // More cleanup from the debug lib
-  const i = /(\s+@\s+)|( : \w+@index)|(\W\w*@http)/.exec(msg)?.index || -1
-  if (i >= 0) {
-    msg = msg.substr(0, i)
-  }
-  if (Platform.OS === 'web') {
-    msg = msg.replace(/ : Error at \w+\.log \(http.+/, '')
-  }
-  msg = msg
-    .replace(/^.+\[(trial|debug|log|info|warn|error)\]\s*/, '')
     .replace(/\s+/g, ' ')
     .trim()
+  // Remove stack trace and cleanup output from lib `debug` in jssip
+  msg = msg.replace(/((\s+@\s+)|( : \w+@index)|(\W\w*@http)).+/, '')
+  msg = msg.replace(/ : Error at \w+\.log \(http.+/, '')
+  msg = msg.replace(/^.+\[(trial|debug|log|info|warn|error)\]\s*/, '')
+  // SIP error emitter
   if (msg.indexOf('JsSIP:Transport reconnection attempt') >= 0) {
     sipErrorEmitter.emit('error', null)
   }
