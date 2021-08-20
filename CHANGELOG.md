@@ -7,9 +7,9 @@
 
 #### 2.8.37
 
-- Update callkeep timer to not endcall until pbx timeout
+- Update timer to not end the call until pbx timeout
 - Fix ios auto end outgoing call after 20s
-- Android support video call when device locked
+- Android support incoming video call when device locked
 - Change video object fit to cover
 
 #### 2.8.34
