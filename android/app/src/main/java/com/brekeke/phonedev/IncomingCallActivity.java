@@ -85,6 +85,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManageLoading = (RelativeLayout) findViewById(R.id.view_call_manage_loading);
     vCallManageControls = (LinearLayout) findViewById(R.id.view_call_manage_controls);
 
+    vCallManage.setOnClickListener(this);
+
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
 
@@ -178,13 +180,44 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void setStreamURL(String streamURL) {
     if (streamURL == null || streamURL.equals("")) {
+      if (vWebrtcVideo == null) {
+        return;
+      }
       vWebrtc.setVisibility(View.GONE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
+      showCallManageControls();
     } else {
       initWebrtcVideo();
       vWebrtcVideo.setStreamURL(streamURL);
+      if (!hasManuallyToggledCallManageControls) {
+        hideCallManageControls();
+      }
     }
+  }
+
+  // Show/hide call manage controls in video call
+  public boolean hasManuallyToggledCallManageControls = false;
+  public boolean isCallManageControlsHidden = false;
+
+  public void toggleCallManageControls() {
+    if (isCallManageControlsHidden) {
+      showCallManageControls();
+    } else {
+      hideCallManageControls();
+    }
+  }
+
+  public void showCallManageControls() {
+    isCallManageControlsHidden = false;
+    vCallManageControls.setVisibility(View.VISIBLE);
+    btnUnlock.setVisibility(View.VISIBLE);
+  }
+
+  public void hideCallManageControls() {
+    isCallManageControlsHidden = true;
+    vCallManageControls.setVisibility(View.GONE);
+    btnUnlock.setVisibility(View.GONE);
   }
 
   // vIncomingCall
@@ -210,6 +243,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // vCallManage
+  public void onViewCallManageClick(View v) {
+    if (vWebrtcVideo == null) {
+      return;
+    }
+    hasManuallyToggledCallManageControls = true;
+    toggleCallManageControls();
+  }
 
   public void onBtnUnlockClick(View v) {
     // Already invoked in onKeyguardDismissSucceeded
@@ -297,6 +337,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onBtnRejectClick(v);
         break;
         // vCallManage
+      case R.id.view_call_manage:
+        onViewCallManageClick(v);
+        break;
       case R.id.btn_unlock:
         onRequestUnlock(v);
         break;

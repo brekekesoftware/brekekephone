@@ -1,3 +1,8 @@
+#### 2.8.36
+
+- Android support video call when device locked
+- Change video object fit to cover
+
 #### 2.8.34
 
 - Update webrtcclient.js use destroyWebRTC() when reconnect on new notification

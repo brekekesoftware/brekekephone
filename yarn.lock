@@ -2188,10 +2188,19 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@17.0.18":
+"@types/react@*":
   version "17.0.18"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.18.tgz#4109cbbd901be9582e5e39e3d77acd7b66bb7fbe"
   integrity sha512-YTLgu7oS5zvSqq49X5Iue5oAbVGhgPc5Au29SJC4VeE17V6gASoOxVkUDy9pXFMRFxCWCD9fLeweNFizo3UzOg==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@17.0.19":
+  version "17.0.19"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.19.tgz#8f2a85e8180a43b57966b237d26a29481dacc991"
+  integrity sha512-sX1HisdB1/ZESixMTGnMxH9TDe8Sk709734fEQZzCV/4lSu9kJCPbo2PbTRoZM+53Pp0P10hYVyReUueGwUi4A==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -5301,7 +5310,7 @@ eslint-config-react-app@^6.0.0:
   dependencies:
     confusing-browser-globals "^1.0.10"
 
-eslint-import-resolver-node@^0.3.5:
+eslint-import-resolver-node@^0.3.5, eslint-import-resolver-node@^0.3.6:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.6.tgz#4048b958395da89668252001dbd9eca6b83bacbd"
   integrity sha512-0En0w03NRVMn9Uiyn8YRPDKvWjxCWkslUEhGNTdGx15RvPJYQ+lbOlqrlNI2vEAs4pDYK4f/HN2TbDmk5TP0iw==
@@ -5332,7 +5341,28 @@ eslint-plugin-flowtype@^5.2.0:
     lodash "^4.17.15"
     string-natural-compare "^3.0.1"
 
-eslint-plugin-import@2.24.0, eslint-plugin-import@2.x, eslint-plugin-import@^2.22.1:
+eslint-plugin-import@2.24.1:
+  version "2.24.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.24.1.tgz#64aba8b567a1ba9921d5465586e86c491b8e2135"
+  integrity sha512-KSFWhNxPH8OGJwpRJJs+Z7I0a13E2iFQZJIvSnCu6KUs4qmgAm3xN9GYBCSoiGWmwA7gERZPXqYQjcoCROnYhQ==
+  dependencies:
+    array-includes "^3.1.3"
+    array.prototype.flat "^1.2.4"
+    debug "^2.6.9"
+    doctrine "^2.1.0"
+    eslint-import-resolver-node "^0.3.6"
+    eslint-module-utils "^2.6.2"
+    find-up "^2.0.0"
+    has "^1.0.3"
+    is-core-module "^2.6.0"
+    minimatch "^3.0.4"
+    object.values "^1.1.4"
+    pkg-up "^2.0.0"
+    read-pkg-up "^3.0.0"
+    resolve "^1.20.0"
+    tsconfig-paths "^3.10.1"
+
+eslint-plugin-import@2.x, eslint-plugin-import@^2.22.1:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.24.0.tgz#697ffd263e24da5e84e03b282f5fb62251777177"
   integrity sha512-Kc6xqT9hiYi2cgybOc0I2vC9OgAYga5o/rAFinam/yF/t5uBqxQbauNPMC6fgb640T/89P0gFoO27FOilJ/Cqg==
@@ -5873,10 +5903,10 @@ filesize@6.1.0:
   resolved "https://registry.yarnpkg.com/filesize/-/filesize-6.1.0.tgz#e81bdaa780e2451d714d71c0d7a4f3238d37ad00"
   integrity sha512-LpCHtPQ3sFx67z+uh2HnSyWSLLu5Jxo21795uRDuar/EOuYWXib5EmPaGIBuSnRqH2IODiKA2k5re/K9OnN/Yg==
 
-filesize@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/filesize/-/filesize-7.0.0.tgz#9d4b3ce384ec7731a9e68c64ee29fb4934ad657d"
-  integrity sha512-Wsstw+O1lZ9gVmOI1thyeQvODsaoId2qw14lCqIzUhoHKXX7T2hVpB7BR6SvgodMBgWccrx/y2eyV8L7tDmY6A==
+filesize@8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/filesize/-/filesize-8.0.0.tgz#532db71cb8a04df7d403da054a28de1b648534e0"
+  integrity sha512-sb690gQx3y/5KZIztgWAKM/r4Hf1V3R8mkAE0OhasMw2FDYduFTYCji8YN9BVpsGoMxrHPFvia1BMxwfLHX+fQ==
 
 fill-range@^4.0.0:
   version "4.0.0"
@@ -6955,6 +6985,13 @@ is-core-module@^2.0.0, is-core-module@^2.2.0, is-core-module@^2.4.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.5.0.tgz#f754843617c70bfd29b7bd87327400cda5c18491"
   integrity sha512-TXCMSDsEHMEEZ6eCA8rwRDbLu55MRGmrctljsBX/2v1d9/GzqHOxW5c5oPSgrUt2vBFXebu9rGqckXGPWOlYpg==
+  dependencies:
+    has "^1.0.3"
+
+is-core-module@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.6.0.tgz#d7553b2526fe59b92ba3e40c8df757ec8a709e19"
+  integrity sha512-wShG8vs60jKfPWpF2KZRaAtvt3a20OAn7+IJ6hLPECpSABLcKtFKTTI4ZtH5QcBruBHlq+WsdHWyz0BCZW7svQ==
   dependencies:
     has "^1.0.3"
 
@@ -12751,7 +12788,7 @@ ts-pnp@1.2.0, ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-tsconfig-paths@^3.9.0:
+tsconfig-paths@^3.10.1, tsconfig-paths@^3.9.0:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.10.1.tgz#79ae67a68c15289fdf5c51cb74f397522d795ed7"
   integrity sha512-rETidPDgCpltxF7MjBZlAFPUHv5aHH2MymyPvh+vEyWAED4Eb/WeMbsnD/JDr4OKPOA1TssDHgIcpTN5Kh0p6Q==
