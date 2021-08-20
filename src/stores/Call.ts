@@ -80,10 +80,14 @@ export default class Call {
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
-  toggleVideo = () =>
+  toggleVideo = () => {
+    if (this.holding) {
+      return
+    }
     this.localVideoEnabled
       ? sip.disableVideo(this.id)
       : sip.enableVideo(this.id)
+  }
 
   @observable remoteVideoStreamObject: MediaStream | null = null
   voiceStreamObject: MediaStream | null = null

@@ -14,7 +14,7 @@ const Polyfill = {
     closeIncomingCallActivity: () => undefined,
     closeAllIncomingCallActivities: () => undefined,
     setIsVideoCall: () => undefined,
-    setStreamURL: () => undefined,
+    setRemoteVideoStreamURL: () => undefined,
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
     isLocked: () => Promise.resolve(false),
@@ -33,7 +33,7 @@ export type TNativeModules = {
     closeIncomingCallActivity(uuid: string): void
     closeAllIncomingCallActivities(): ViewPagerAndroidProps
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
-    setStreamURL(uuid: string, streamURL: string): void
+    setRemoteVideoStreamURL(uuid: string, url: string): void
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
     isLocked(): Promise<boolean>

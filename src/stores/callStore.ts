@@ -160,7 +160,7 @@ export class CallStore {
       }
       Object.assign(cExisting, cPartial)
       if (cExisting.incoming && cExisting.callkeepUuid) {
-        IncomingCall.setStreamURL(
+        IncomingCall.setRemoteVideoStreamURL(
           cExisting.callkeepUuid,
           cExisting.remoteVideoStreamObject
             ? cExisting.remoteVideoStreamObject.toURL()

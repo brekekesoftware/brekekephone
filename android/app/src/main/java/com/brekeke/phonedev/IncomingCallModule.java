@@ -368,13 +368,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setStreamURL(String uuid, String streamURL) {
+  public void setRemoteVideoStreamURL(String uuid, String url) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).setStreamURL(streamURL);
+              at(uuid).setRemoteVideoStreamURL(url);
             } catch (Exception e) {
             }
           }

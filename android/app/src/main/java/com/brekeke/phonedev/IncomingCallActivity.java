@@ -178,8 +178,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
-  public void setStreamURL(String streamURL) {
-    if (streamURL == null || streamURL.equals("")) {
+  public void setRemoteVideoStreamURL(String url) {
+    if (url == null || url.equals("")) {
       if (vWebrtcVideo == null) {
         return;
       }
@@ -189,7 +189,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       showCallManageControls();
     } else {
       initWebrtcVideo();
-      vWebrtcVideo.setStreamURL(streamURL);
+      vWebrtcVideo.setStreamURL(url);
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
       }
