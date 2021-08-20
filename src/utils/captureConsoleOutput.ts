@@ -38,6 +38,9 @@ const formatErrors = (...errs: Error[]) => {
   if (i >= 0) {
     msg = msg.substr(0, i)
   }
+  if (Platform.OS === 'web') {
+    msg = msg.replace(/ : Error at \w+\.log \(http.+/, '')
+  }
   msg = msg
     .replace(/^.+\[(trial|debug|log|info|warn|error)\]\s*/, '')
     .replace(/\s+/g, ' ')
