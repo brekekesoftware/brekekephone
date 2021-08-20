@@ -437,9 +437,6 @@ const setAutoEndCallKeepTimer = (uuid?: string, isOutgoing?: boolean) => {
     Object.values(callkeepMap).forEach(k => {
       if (!k.isOutgoing && n - k.at > 20000) {
         const c = callStore.calls.find(c => c.callkeepUuid === k.uuid)
-        if (c && !c.answered && !c.callkeepAlreadyAnswered) {
-          c.hangupWithUnhold()
-        }
         if (!c) {
           endCallKeep(k.uuid)
         }
