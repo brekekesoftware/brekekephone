@@ -46,12 +46,16 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   IncomingCallModule(ReactApplicationContext c) {
     super(c);
     ctx = c;
-    if (km == null) {
-      km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
-    }
+    initStaticServices(c);
+  }
+
+  public static void initStaticServices(Context c) {
     if (wl == null) {
       PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCall");
+      wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCall");
+    }
+    if (km == null) {
+      km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
     }
   }
 
@@ -74,16 +78,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       return;
     }
     //
-    // Init variables if not
-    if (wl == null) {
-      PowerManager pm = (PowerManager) fcm.getSystemService(Context.POWER_SERVICE);
-      wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BrekekePhone::IncomingCall");
-    }
+    // Init services if not
+    initStaticServices(fcm);
     if (!wl.isHeld()) {
       wl.acquire();
-    }
-    if (km == null) {
-      km = ((KeyguardManager) fcm.getSystemService(Context.KEYGUARD_SERVICE));
     }
     //
     // Read locale from async storage if not
@@ -143,7 +141,8 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
         };
     // Try to run it as it does not display multiple calls via on onShowIncomingCallUi
     if (VoiceConnectionService.currentConnections.size() > 0
-        || RNCallKeepModule.fcmCallbacks.size() > 1) {
+        || RNCallKeepModule.fcmCallbacks.size() > 0
+        || activitiesSize > 0) {
       r.run();
     }
     RNCallKeepModule.fcmCallbacks.put(uuid, r);

@@ -1,3 +1,10 @@
+#### 2.8.40
+
+- Fix dtmf not call pbx pal
+- Fix empty talker_id in dtmf
+- Remove call button in page dtmf keypad
+- Rename pbx config `webphone.dtmf.pal -> webphone.dtmf.send.pal`
+
 #### 2.8.37
 
 - Update callkeep timer to not endcall until pbx timeout

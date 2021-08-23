@@ -112,20 +112,14 @@ export type PbxPal = {
   ): void
 
   pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler): void
-
   hold(p: PbxHoldParam, resolve: () => void, reject: ErrorHandler): void
   unhold: PbxPal['hold']
-
   startRecording: PbxPal['hold']
   stopRecording: PbxPal['hold']
-
   transfer(p: PbxTransferParam, resolve: () => void, reject: ErrorHandler): void
-
   conference: PbxPal['hold']
   cancelTransfer: PbxPal['hold']
-
   park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler): void
-
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
