@@ -231,6 +231,9 @@ export type PbxSendDtmfParam = {
 export type Sip = {
   new (o: SipConstructorOptions): Sip
 
+  _options: SipConstructorOptions
+  dtmfSendMode: number
+
   addEventListener<K extends keyof SipEventMap>(
     type: K,
     listener: (e: SipEventMap[K]) => void,
@@ -265,7 +268,8 @@ export type Sip = {
 export type SipConstructorOptions = {
   logLevel: string
   multiSession: number
-  dtmfSendMode: number
+  dtmfPal: boolean
+  dtmfSendMode?: number
   ctiAutoAnswer: number
   eventTalk: number
   defaultOptions: {

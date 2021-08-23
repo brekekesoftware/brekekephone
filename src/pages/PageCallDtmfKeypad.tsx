@@ -13,9 +13,8 @@ import ShowNumber from '../components/CallShowNumbers'
 import Layout from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
 import callStore from '../stores/callStore'
-import intl, { intlDebug } from '../stores/intl'
+import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
 import RnKeyboard from '../stores/RnKeyboard'
 
 @observer
@@ -39,20 +38,6 @@ class PageCallDtmfKeypad extends React.Component<{
       tenant: c?.pbxTenant || getAuthStore().currentProfile.pbxTenant,
       talkerId: c?.pbxTalkerId || c?.partyNumber || c?.partyName || '',
     })
-  }
-
-  callVoice = () => {
-    this.txt = this.txt.trim()
-    if (!this.txt) {
-      RnAlert.error({
-        message: intlDebug`No target`,
-      })
-      return
-    }
-    sip.createSession(this.txt, {
-      videoEnabled: false,
-    })
-    Nav().goToPageCallManage()
   }
 
   render() {
@@ -83,7 +68,6 @@ class PageCallDtmfKeypad extends React.Component<{
         />
         {!RnKeyboard.isKeyboardShowing && (
           <KeyPad
-            callVoice={this.callVoice}
             onPressNumber={v => {
               this.sendKey(v)
               const { end, start } = this.txtSelection

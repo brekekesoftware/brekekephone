@@ -264,8 +264,10 @@ export const setupCallKeep = async () => {
     })
     eventEmitter.addListener('dtmf', (uuid: string) => {
       BackgroundTimer.setTimeout(() => {
+        const c = callStore.calls.find(c => c.callkeepUuid === uuid)
         Nav().goToPageCallDtmfKeypad({
-          partyName: callStore.calls.find(c => c.callkeepUuid === uuid)?.title,
+          callId: c?.id,
+          partyName: c?.title,
         })
       }, 300)
     })

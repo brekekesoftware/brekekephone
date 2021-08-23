@@ -259,6 +259,7 @@ class PageCallManage extends React.Component<{
               noborder
               onPress={() =>
                 Nav().goToPageCallDtmfKeypad({
+                  callId: c.id,
                   partyName: c.title,
                 })
               }

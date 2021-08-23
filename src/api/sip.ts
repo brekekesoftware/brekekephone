@@ -44,7 +44,7 @@ export class SIP extends EventEmitter {
           },
         },
       },
-      dtmfSendMode: isNaN(o.dtmfSendMode) ? 1 : o.dtmfSendMode,
+      dtmfPal: o.dtmfPal,
       ctiAutoAnswer: 1,
       eventTalk: 1,
       configuration: {
@@ -291,16 +291,16 @@ export class SIP extends EventEmitter {
     tenant: string
     talkerId: string
   }) => {
+    if (!this.phone) {
+      return
+    }
     const c = await pbx.getConfig()
-    if (!c) {
-      return
-    }
-    const dtmfSendMode = c['webrtcclient.dtmfSendMode']
-    if (dtmfSendMode && dtmfSendMode !== 'false' && dtmfSendMode !== '0') {
-      await pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
-      return
-    }
-    return this.phone?.sendDTMF(p.signal, p.sessionId)
+    const dtmfSendMode = Number(c?.['webrtcclient.dtmfSendMode']) || 0
+    this.phone._options.dtmfSendMode = dtmfSendMode
+    this.phone.dtmfSendMode = dtmfSendMode
+    return !this.phone._options.dtmfPal
+      ? this.phone.sendDTMF(p.signal, p.sessionId)
+      : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
   enableVideo = (sessionId: string) => {
     return this.phone?.setWithVideo(sessionId, true)
@@ -322,6 +322,6 @@ export interface SipLoginOption {
   pbxTurnEnabled: boolean
   username: string
   accessToken: string
-  dtmfSendMode: number
+  dtmfPal: boolean
   turnConfig?: RTCIceServer
 }

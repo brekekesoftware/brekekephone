@@ -57,7 +57,7 @@ const keys = [
 const KeyPad = (p: {
   onPressNumber(k: string): void
   showKeyboard(): void
-  callVoice(): void
+  callVoice?(): void
   callVoiceForward?(): void
 }) => (
   <>
@@ -90,15 +90,19 @@ const KeyPad = (p: {
             <RnIcon path={mdiPhoneForward} />
           </RnTouchableOpacity>
         )}
-        <RnTouchableOpacity
-          onPress={p.callVoice}
-          style={[
-            css.KeyPad_NumberBtn,
-            !p.callVoiceForward ? css.KeyPad_Btn__call : css.KeyPad_Btn__call_2,
-          ]}
-        >
-          <RnIcon path={mdiPhone} />
-        </RnTouchableOpacity>
+        {p.callVoice && (
+          <RnTouchableOpacity
+            onPress={p.callVoice}
+            style={[
+              css.KeyPad_NumberBtn,
+              !p.callVoiceForward
+                ? css.KeyPad_Btn__call
+                : css.KeyPad_Btn__call_2,
+            ]}
+          >
+            <RnIcon path={mdiPhone} />
+          </RnTouchableOpacity>
+        )}
       </View>
       <RnTouchableOpacity
         onPress={() => p.onPressNumber('')}
