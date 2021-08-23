@@ -142,7 +142,10 @@ const UserItem: FC<
     }
   }
   const onPressItem = () => {
-    if (partyNumber?.startsWith('uc')) {
+    if (!partyNumber) {
+      return
+    }
+    if (partyNumber.startsWith('uc')) {
       const groupId = partyNumber.replace('uc', '')
       isGroupAvailable(partyNumber.replace('uc', '')) &&
         Nav().goToPageChatGroupDetail({ groupId })

@@ -62,7 +62,8 @@ class AuthSIP {
       username: pn.phoneId,
       accessToken: pn.sipAuth,
       pbxTurnEnabled: p.pbxTurnEnabled,
-      dtmfPal: pn.dtmfPal === 'false' || pn.dtmfPal === '0' ? false : true,
+      dtmfSendPal:
+        pn.dtmfSendPal === 'true' || pn.dtmfSendPal === '1' ? true : false,
       turnConfig,
     })
   }
@@ -87,7 +88,8 @@ class AuthSIP {
     console.error('SIP PN debug: AuthSIP.authWithoutCatch')
     //
     pn.sipWssPort = pn.sipWssPort || (await getPbxConfig('sip.wss.port'))
-    pn.dtmfPal = pn.dtmfPal || (await getPbxConfig('webphone.dtmf.pal'))
+    pn.dtmfSendPal =
+      pn.dtmfSendPal || (await getPbxConfig('webphone.dtmf.send.pal'))
     pn.turnServer =
       pn.turnServer || (await getPbxConfig('webphone.turn.server'))
     pn.turnUsername =

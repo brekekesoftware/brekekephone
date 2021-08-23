@@ -131,7 +131,7 @@ export type PbxPal = {
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
   'webrtcclient.dtmfSendMode': string
-  'webphone.dtmf.pal': string
+  'webphone.dtmf.send.pal': string
   'webphone.turn.server': string
   'webphone.turn.username': string
   'webphone.turn.credential': string
@@ -268,7 +268,7 @@ export type Sip = {
 export type SipConstructorOptions = {
   logLevel: string
   multiSession: number
-  dtmfPal: boolean
+  dtmfSendPal: boolean
   dtmfSendMode?: number
   ctiAutoAnswer: number
   eventTalk: number

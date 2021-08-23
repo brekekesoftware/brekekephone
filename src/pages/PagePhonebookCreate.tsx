@@ -10,12 +10,12 @@ import RnAlert from '../stores/RnAlert'
 
 @observer
 class PagePhonebookCreate extends React.Component<{
-  book: string
+  book?: string
 }> {
   render() {
     return (
       <ContactsCreateForm
-        book={this.props.book || ''}
+        book={this.props.book}
         onBack={Nav().backToPageContactPhonebook}
         onSave={(p: Phonebook2) => {
           this.save(p)

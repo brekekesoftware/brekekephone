@@ -51,84 +51,79 @@ const css = StyleSheet.create({
   },
 })
 
-@observer
-class CallBar extends React.Component {
-  render() {
-    const bVisible =
-      RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
-    const c = callStore.currentCall()
-    if (!bVisible || !c || (c.incoming && !c.answered)) {
-      return null
-    }
-    return (
-      <View style={css.CallBar}>
-        <RnTouchableOpacity
-          onPress={() => Nav().goToPageCallManage({ isFromCallBar: true })}
-          style={css.CallBar_Outer}
-        >
-          <View style={css.CallBar_Icon}>
-            <RnIcon
-              color={c.incoming ? g.colors.primary : g.colors.warning}
-              path={
-                c.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline
-              }
-            />
-          </View>
-          <View style={css.CallBar_Info}>
-            <RnText style={css.Notify_Info_PartyName}>{c.title}</RnText>
-            <RnText>
-              {c.answered ? formatDuration(c.duration) : intl`Dialing...`}
-            </RnText>
-          </View>
+const CallBar = observer(() => {
+  const bVisible =
+    RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
+  const c = callStore.currentCall()
+  if (!bVisible || !c || (c.incoming && !c.answered)) {
+    return null
+  }
+  return (
+    <View style={css.CallBar}>
+      <RnTouchableOpacity
+        onPress={() => Nav().goToPageCallManage({ isFromCallBar: true })}
+        style={css.CallBar_Outer}
+      >
+        <View style={css.CallBar_Icon}>
+          <RnIcon
+            color={c.incoming ? g.colors.primary : g.colors.warning}
+            path={c.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline}
+          />
+        </View>
+        <View style={css.CallBar_Info}>
+          <RnText style={css.Notify_Info_PartyName}>{c.title}</RnText>
+          <RnText>
+            {c.answered ? formatDuration(c.duration) : intl`Dialing...`}
+          </RnText>
+        </View>
 
-          <View style={css.CallBar_BtnCall}>
-            {!c.holding && (
-              <>
-                <ButtonIcon
-                  bdcolor={g.borderBg}
-                  color={g.colors.danger}
-                  onPress={c.hangupWithUnhold}
-                  path={mdiPhoneHangup}
-                />
-                {c.answered && (
-                  <>
+        <View style={css.CallBar_BtnCall}>
+          {!c.holding && (
+            <>
+              <ButtonIcon
+                bdcolor={g.borderBg}
+                color={g.colors.danger}
+                onPress={c.hangupWithUnhold}
+                path={mdiPhoneHangup}
+              />
+              {c.answered && (
+                <>
+                  <ButtonIcon
+                    bdcolor={g.borderBg}
+                    color={c.muted ? g.colors.primary : g.color}
+                    onPress={() => c.toggleMuted()}
+                    path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+                  />
+                  {Platform.OS !== 'web' && (
                     <ButtonIcon
                       bdcolor={g.borderBg}
-                      color={c.muted ? g.colors.primary : g.color}
-                      onPress={() => c.toggleMuted()}
-                      path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+                      color={
+                        callStore.isLoudSpeakerEnabled
+                          ? g.colors.primary
+                          : g.color
+                      }
+                      onPress={callStore.toggleLoudSpeaker}
+                      path={
+                        callStore.isLoudSpeakerEnabled
+                          ? mdiVolumeHigh
+                          : mdiVolumeMedium
+                      }
                     />
-                    {Platform.OS !== 'web' && (
-                      <ButtonIcon
-                        bdcolor={g.borderBg}
-                        color={
-                          callStore.isLoudSpeakerEnabled
-                            ? g.colors.primary
-                            : g.color
-                        }
-                        onPress={callStore.toggleLoudSpeaker}
-                        path={
-                          callStore.isLoudSpeakerEnabled
-                            ? mdiVolumeHigh
-                            : mdiVolumeMedium
-                        }
-                      />
-                    )}
-                  </>
-                )}
-              </>
-            )}
-            <ButtonIcon
-              bdcolor={g.borderBg}
-              color={c.holding ? g.colors.primary : g.color}
-              onPress={c.toggleHoldWithCheck}
-              path={c.holding ? mdiPlay : mdiPause}
-            />
-          </View>
-        </RnTouchableOpacity>
-      </View>
-    )
-  }
-}
+                  )}
+                </>
+              )}
+            </>
+          )}
+          <ButtonIcon
+            bdcolor={g.borderBg}
+            color={c.holding ? g.colors.primary : g.color}
+            onPress={c.toggleHoldWithCheck}
+            path={c.holding ? mdiPlay : mdiPause}
+          />
+        </View>
+      </RnTouchableOpacity>
+    </View>
+  )
+})
 
 export default CallBar

@@ -114,6 +114,7 @@ const genMenus = () => {
           m.defaultSubMenu.navFn()
           return
         }
+        // @ts-ignore
         Nav()[s.navFnKey]()
         saveNavigation(i, s.key)
       }

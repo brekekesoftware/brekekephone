@@ -66,7 +66,10 @@ const PageCallBackgrounds = observer(() => {
     >
       <Field isGroup label={intl`CURRENT CALL`} />
       {(c ? [c] : []).map(c => (
-        <RnTouchableOpacity key={c.id} onPress={Nav().backToPageCallManage}>
+        <RnTouchableOpacity
+          key={c.id}
+          onPress={() => Nav().backToPageCallManage()}
+        >
           {renderItemCall(c, true)}
         </RnTouchableOpacity>
       ))}

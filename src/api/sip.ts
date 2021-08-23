@@ -44,7 +44,7 @@ export class SIP extends EventEmitter {
           },
         },
       },
-      dtmfPal: o.dtmfPal,
+      dtmfSendPal: o.dtmfSendPal,
       ctiAutoAnswer: 1,
       eventTalk: 1,
       configuration: {
@@ -298,7 +298,7 @@ export class SIP extends EventEmitter {
     const dtmfSendMode = Number(c?.['webrtcclient.dtmfSendMode']) || 0
     this.phone._options.dtmfSendMode = dtmfSendMode
     this.phone.dtmfSendMode = dtmfSendMode
-    return !this.phone._options.dtmfPal
+    return !this.phone._options.dtmfSendPal
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
@@ -322,6 +322,6 @@ export interface SipLoginOption {
   pbxTurnEnabled: boolean
   username: string
   accessToken: string
-  dtmfPal: boolean
+  dtmfSendPal: boolean
   turnConfig?: RTCIceServer
 }

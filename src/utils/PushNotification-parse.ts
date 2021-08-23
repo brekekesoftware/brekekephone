@@ -26,7 +26,7 @@ const keysInCustomNotification = [
   'phone.id',
   'auth',
   'sip.wss.port',
-  'webphone.dtmf.pal',
+  'webphone.dtmf.send.pal',
   'webphone.turn.server',
   'webphone.turn.username',
   'webphone.turn.credential',
@@ -114,7 +114,7 @@ export const parseNotificationData = (raw: object) => {
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
   const sipWssPort: string = get(n, 'sip.wss.port')
-  const dtmfPal: string = get(n, 'webphone.dtmf.pal')
+  const dtmfSendPal: string = get(n, 'webphone.dtmf.send.pal')
   const turnServer: string = get(n, 'webphone.turn.server')
   const turnUsername: string = get(n, 'webphone.turn.username')
   const turnCredential: string = get(n, 'webphone.turn.credential')
@@ -122,7 +122,7 @@ export const parseNotificationData = (raw: object) => {
     phoneId,
     sipAuth,
     sipWssPort,
-    dtmfPal,
+    dtmfSendPal,
     turnServer,
     turnUsername,
     turnCredential,
@@ -262,7 +262,7 @@ export type SipPn = {
   phoneId: string
   sipAuth: string
   sipWssPort: string
-  dtmfPal: string
+  dtmfSendPal: string
   turnServer: string
   turnUsername: string
   turnCredential: string

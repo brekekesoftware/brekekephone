@@ -93,7 +93,7 @@ const css = StyleSheet.create({
 
 @observer
 class PageCallManage extends React.Component<{
-  isFromCallBar: boolean
+  isFromCallBar?: boolean
 }> {
   @observable showButtonsInVideoCall = true
   alreadySetShowButtonsInVideoCall = false
@@ -257,12 +257,7 @@ class PageCallManage extends React.Component<{
               color='black'
               name={intl`DTMF`}
               noborder
-              onPress={() =>
-                Nav().goToPageCallDtmfKeypad({
-                  callId: c.id,
-                  partyName: c.title,
-                })
-              }
+              onPress={Nav().goToPageCallDtmfKeypad}
               path={mdiDialpad}
               size={40}
               textcolor='white'

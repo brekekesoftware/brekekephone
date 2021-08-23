@@ -1,3 +1,5 @@
+import { ComponentProps } from 'react'
+
 import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
 import PageCallBackgrounds from '../pages/PageCallBackgrounds'
 import PageCallDtmfKeypad from '../pages/PageCallDtmfKeypad'
@@ -28,68 +30,167 @@ import { getAuthStore } from './authStore'
 import { setNav } from './Nav'
 import RnStacker from './RnStacker'
 
-const go = RnStacker.createGoTo
-const back = RnStacker.createBackTo
 export class Nav {
   // root account/login
-  goToPageProfileSignIn = go({ PageProfileSignIn }, true)
-  backToPageProfileSignIn = back({ PageProfileSignIn }, true)
+  goToPageProfileSignIn = RnStacker.createGoTo<
+    ComponentProps<typeof PageProfileSignIn>
+  >({ PageProfileSignIn }, true)
+  backToPageProfileSignIn = RnStacker.createBackTo<
+    ComponentProps<typeof PageProfileSignIn>
+  >({ PageProfileSignIn }, true)
   // root user/chat
-  goToPageContactPhonebook = go({ PageContactPhonebook }, true)
-  backToPageContactPhonebook = back({ PageContactPhonebook }, true)
-  goToPageContactUsers = go({ PageContactUsers }, true)
-  backToPageContactUsers = back({ PageContactUsers }, true)
-  goToPageChatRecents = go({ PageChatRecents }, true)
-  backToPageChatRecents = back({ PageChatRecents }, true)
-  goToPageWebChat = go({ PageWebChat }, true)
-  backToPageWebChat = back({ PageWebChat }, true)
+  goToPageContactPhonebook = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactPhonebook>
+  >({ PageContactPhonebook }, true)
+  backToPageContactPhonebook = RnStacker.createBackTo<
+    ComponentProps<typeof PageContactPhonebook>
+  >({ PageContactPhonebook }, true)
+  goToPageContactUsers = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactUsers>
+  >({ PageContactUsers }, true)
+  backToPageContactUsers = RnStacker.createBackTo<
+    ComponentProps<typeof PageContactUsers>
+  >({ PageContactUsers }, true)
+  goToPageChatRecents = RnStacker.createGoTo<
+    ComponentProps<typeof PageChatRecents>
+  >({ PageChatRecents }, true)
+  backToPageChatRecents = RnStacker.createBackTo<
+    ComponentProps<typeof PageChatRecents>
+  >({ PageChatRecents }, true)
+  goToPageWebChat = RnStacker.createGoTo<ComponentProps<typeof PageWebChat>>(
+    { PageWebChat },
+    true,
+  )
+  backToPageWebChat = RnStacker.createBackTo<
+    ComponentProps<typeof PageWebChat>
+  >({ PageWebChat }, true)
   // root call
-  goToPageCallKeypad = go({ PageCallKeypad }, true)
-  backToPageCallKeypad = back({ PageCallKeypad }, true)
-  goToPageCallRecents = go({ PageCallRecents }, true)
-  backToPageCallRecents = back({ PageCallRecents }, true)
-  goToPageCallParks = go({ PageCallParks }, true)
-  backToPageCallParks = back({ PageCallParks }, true)
+  goToPageCallKeypad = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallKeypad>
+  >({ PageCallKeypad }, true)
+  backToPageCallKeypad = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallKeypad>
+  >({ PageCallKeypad }, true)
+  goToPageCallRecents = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallRecents>
+  >({ PageCallRecents }, true)
+  backToPageCallRecents = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallRecents>
+  >({ PageCallRecents }, true)
+  goToPageCallParks = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallParks>
+  >({ PageCallParks }, true)
+  backToPageCallParks = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallParks>
+  >({ PageCallParks }, true)
   // root settings
-  goToPageSettingsOther = go({ PageSettingsOther }, true)
-  backToPageSettingsOther = back({ PageSettingsOther }, true)
-  goToPageSettingsProfile = go({ PageSettingsProfile }, true)
-  backToPageSettingsProfile = back({ PageSettingsProfile }, true)
+  goToPageSettingsOther = RnStacker.createGoTo<
+    ComponentProps<typeof PageSettingsOther>
+  >({ PageSettingsOther }, true)
+  backToPageSettingsOther = RnStacker.createBackTo<
+    ComponentProps<typeof PageSettingsOther>
+  >({ PageSettingsOther }, true)
+  goToPageSettingsProfile = RnStacker.createGoTo<
+    ComponentProps<typeof PageSettingsProfile>
+  >({ PageSettingsProfile }, true)
+  backToPageSettingsProfile = RnStacker.createBackTo<
+    ComponentProps<typeof PageSettingsProfile>
+  >({ PageSettingsProfile }, true)
 
   // account
-  goToPageProfileCreate = go({ PageProfileCreate })
-  backToPageProfileCreate = back({ PageProfileCreate })
-  goToPageProfileUpdate = go({ PageProfileUpdate })
-  backToPageProfileUpdate = back({ PageProfileUpdate })
-  goToPagePhonebookCreate = go({ PagePhonebookCreate })
-  backToPagePhonebookCreate = back({ PagePhonebookCreate })
-  goToPagePhonebookUpdate = go({ PagePhonebookUpdate })
-  backToPagePhonebookUpdate = back({ PagePhonebookUpdate })
+  goToPageProfileCreate = RnStacker.createGoTo<
+    ComponentProps<typeof PageProfileCreate>
+  >({ PageProfileCreate })
+  backToPageProfileCreate = RnStacker.createBackTo<
+    ComponentProps<typeof PageProfileCreate>
+  >({ PageProfileCreate })
+  goToPageProfileUpdate = RnStacker.createGoTo<
+    ComponentProps<typeof PageProfileUpdate>
+  >({ PageProfileUpdate })
+  backToPageProfileUpdate = RnStacker.createBackTo<
+    ComponentProps<typeof PageProfileUpdate>
+  >({ PageProfileUpdate })
+  goToPagePhonebookCreate = RnStacker.createGoTo<
+    ComponentProps<typeof PagePhonebookCreate>
+  >({ PagePhonebookCreate })
+  backToPagePhonebookCreate = RnStacker.createBackTo<
+    ComponentProps<typeof PagePhonebookCreate>
+  >({ PagePhonebookCreate })
+  goToPagePhonebookUpdate = RnStacker.createGoTo<
+    ComponentProps<typeof PagePhonebookUpdate>
+  >({ PagePhonebookUpdate })
+  backToPagePhonebookUpdate = RnStacker.createBackTo<
+    ComponentProps<typeof PagePhonebookUpdate>
+  >({ PagePhonebookUpdate })
   // call
-  goToPageCallManage = go({ PageCallManage })
-  backToPageCallManage = back({ PageCallManage })
-  goToPageCallBackgrounds = go({ PageCallBackgrounds })
-  backToPageCallBackgrounds = back({ PageCallBackgrounds })
-  goToPageCallTransferChooseUser = go({ PageCallTransferChooseUser })
-  backToPageCallTransferChooseUser = back({ PageCallTransferChooseUser })
-  goToPageCallTransferDial = go({ PageCallTransferDial })
-  backToPageCallTransferDial = back({ PageCallTransferDial })
-  goToPageCallParks2 = go({ PageCallParks2 })
-  backToPageCallParks2 = back({ PageCallParks2 })
-  goToPageCallDtmfKeypad = go({ PageCallDtmfKeypad })
-  backToPageCallDtmfKeypad = back({ PageCallDtmfKeypad })
+  goToPageCallManage = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallManage>
+  >({ PageCallManage })
+  backToPageCallManage = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallManage>
+  >({ PageCallManage })
+  goToPageCallBackgrounds = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallBackgrounds>
+  >({ PageCallBackgrounds })
+  backToPageCallBackgrounds = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallBackgrounds>
+  >({ PageCallBackgrounds })
+  goToPageCallTransferChooseUser = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallTransferChooseUser>
+  >({ PageCallTransferChooseUser })
+  backToPageCallTransferChooseUser = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallTransferChooseUser>
+  >({ PageCallTransferChooseUser })
+  goToPageCallTransferDial = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallTransferDial>
+  >({ PageCallTransferDial })
+  backToPageCallTransferDial = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallTransferDial>
+  >({ PageCallTransferDial })
+  goToPageCallParks2 = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallParks2>
+  >({ PageCallParks2 })
+  backToPageCallParks2 = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallParks2>
+  >({ PageCallParks2 })
+  goToPageCallDtmfKeypad = RnStacker.createGoTo<
+    ComponentProps<typeof PageCallDtmfKeypad>
+  >({ PageCallDtmfKeypad })
+  backToPageCallDtmfKeypad = RnStacker.createBackTo<
+    ComponentProps<typeof PageCallDtmfKeypad>
+  >({ PageCallDtmfKeypad })
   // chat
-  goToPageChatDetail = go({ PageChatDetail })
-  backToPageChatDetail = back({ PageChatDetail })
-  goToPageChatGroupCreate = go({ PageChatGroupCreate })
-  backToPageChatGroupCreate = back({ PageChatGroupCreate })
-  goToPageChatGroupInvite = go({ PageChatGroupInvite })
-  backToPageChatGroupInvite = back({ PageChatGroupInvite })
-  goToPageChatGroupDetail = go({ PageChatGroupDetail })
-  backToPageChatGroupDetail = back({ PageChatGroupDetail })
+  goToPageChatDetail = RnStacker.createGoTo<
+    ComponentProps<typeof PageChatDetail>
+  >({ PageChatDetail })
+  backToPageChatDetail = RnStacker.createBackTo<
+    ComponentProps<typeof PageChatDetail>
+  >({ PageChatDetail })
+  goToPageChatGroupCreate = RnStacker.createGoTo<
+    ComponentProps<typeof PageChatGroupCreate>
+  >({ PageChatGroupCreate })
+  backToPageChatGroupCreate = RnStacker.createBackTo<
+    ComponentProps<typeof PageChatGroupCreate>
+  >({ PageChatGroupCreate })
+  goToPageChatGroupInvite = RnStacker.createGoTo<
+    ComponentProps<typeof PageChatGroupInvite>
+  >({ PageChatGroupInvite })
+  backToPageChatGroupInvite = RnStacker.createBackTo<
+    ComponentProps<typeof PageChatGroupInvite>
+  >({ PageChatGroupInvite })
+  goToPageChatGroupDetail = RnStacker.createGoTo<
+    ComponentProps<typeof PageChatGroupDetail>
+  >({ PageChatGroupDetail })
+  backToPageChatGroupDetail = RnStacker.createBackTo<
+    ComponentProps<typeof PageChatGroupDetail>
+  >({ PageChatGroupDetail })
   // settings
-  goToPageSettingsDebug = go({ PageSettingsDebug })
-  backToPageSettingsDebug = back({ PageSettingsDebug })
+  goToPageSettingsDebug = RnStacker.createGoTo<
+    ComponentProps<typeof PageSettingsDebug>
+  >({ PageSettingsDebug })
+  backToPageSettingsDebug = RnStacker.createBackTo<
+    ComponentProps<typeof PageSettingsDebug>
+  >({ PageSettingsDebug })
 
   goToPageIndex = () => {
     if (!getAuthStore().currentProfile) {

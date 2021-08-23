@@ -35,7 +35,7 @@ const ContactsCreateForm: FC<{
   const m = () => ({
     observable: {
       phonebook: {
-        book: props.book,
+        book: props.book || '',
         ...genEmptyPhonebook(),
         ...cloneDeep(props.updatingPhonebook),
       },

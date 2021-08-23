@@ -18,10 +18,19 @@ import Nav from '../stores/Nav'
 import RnKeyboard from '../stores/RnKeyboard'
 
 @observer
-class PageCallDtmfKeypad extends React.Component<{
-  callId: string
-  partyName: string
-}> {
+class PageCallDtmfKeypad extends React.Component {
+  prevId?: string
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+  componentDidUpdate() {
+    const c = callStore.currentCall()
+    if (this.prevId && this.prevId !== c?.id) {
+      Nav().backToPageCallManage()
+    }
+    this.prevId = c?.id
+  }
+
   @observable txt = ''
   txtRef = React.createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
@@ -31,19 +40,23 @@ class PageCallDtmfKeypad extends React.Component<{
   }
 
   sendKey = (key: string) => {
-    const c = callStore.calls.find(c => c.id === this.props.callId)
+    const c = callStore.currentCall()
+    if (!c) {
+      return
+    }
     sip.sendDTMF({
       signal: key,
-      sessionId: this.props.callId,
-      tenant: c?.pbxTenant || getAuthStore().currentProfile.pbxTenant,
-      talkerId: c?.pbxTalkerId || c?.partyNumber || c?.partyName || '',
+      sessionId: c.id,
+      tenant: c.pbxTenant || getAuthStore().currentProfile.pbxTenant,
+      talkerId: c.pbxTalkerId || c.partyNumber || c.partyName,
     })
   }
 
   render() {
+    const c = callStore.currentCall()
     return (
       <Layout
-        title={this.props.partyName}
+        title={c?.title}
         description={intl`Keypad dial manually`}
         onBack={Nav().backToPageCallManage}
       >

@@ -242,13 +242,10 @@ export const setupCallKeep = async () => {
       callStore.onCallKeepEndCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(
-        () => Nav().goToPageCallTransferChooseUser(),
-        300,
-      )
+      BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 300)
     })
     eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => Nav().goToPageCallParks2(), 300)
+      BackgroundTimer.setTimeout(Nav().goToPageCallParks2, 300)
     })
     eventEmitter.addListener('video', (uuid: string) => {
       callStore.currentCall()?.toggleVideo()
@@ -263,13 +260,7 @@ export const setupCallKeep = async () => {
       callStore.currentCall()?.toggleRecording()
     })
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(() => {
-        const c = callStore.calls.find(c => c.callkeepUuid === uuid)
-        Nav().goToPageCallDtmfKeypad({
-          callId: c?.id,
-          partyName: c?.title,
-        })
-      }, 300)
+      BackgroundTimer.setTimeout(Nav().goToPageCallDtmfKeypad, 300)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.currentCall()?.toggleHoldWithCheck()
@@ -277,7 +268,7 @@ export const setupCallKeep = async () => {
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
       console.error('SIP PN debug: backToForeground')
-      BackgroundTimer.setTimeout(() => RNCallKeep.backToForeground(), 300)
+      BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 300)
     })
     // Manually handle back press
     eventEmitter.addListener('onBackPressed', onBackPressed)
