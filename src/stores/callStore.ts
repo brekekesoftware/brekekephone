@@ -85,6 +85,10 @@ export class CallStore {
     this.prevCallKeepUuid = uuid
     setAutoEndCallKeepTimer(uuid)
     // Auto reconnect if no activity
+    // This logic is about the case connection has dropped silently
+    // So even if sipState is `success` but the connection has dropped
+    // We just drop the connection no matter if it is alive or not
+    // Then construct a new connection to receive the call as quickly as possible
     const now = Date.now()
     if (now - this.recentCallActivityAt > 3000) {
       const as = getAuthStore()
