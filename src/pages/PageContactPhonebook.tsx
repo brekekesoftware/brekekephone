@@ -16,7 +16,7 @@ import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import contactStore, { Phonebook2 } from '../stores/contactStore'
 import intl, { intlDebug } from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -47,7 +47,7 @@ class PageContactPhonebook extends React.Component {
     const contact = contactStore.getPhonebookById(id)
     if (contact?.loaded) {
       Nav().goToPagePhonebookUpdate({
-        contact: contact,
+        contact,
       })
     } else {
       this.loadContactDetail(id, (ct: Phonebook2) => {
@@ -93,8 +93,8 @@ class PageContactPhonebook extends React.Component {
     }
   }
 
-  onIcon0 = (u: Phonebook2) => {
-    if (!u) {
+  onIcon0 = (u0: Phonebook2) => {
+    if (!u0) {
       return
     }
     const onIcon0 = (u: Phonebook2) => {
@@ -144,12 +144,12 @@ class PageContactPhonebook extends React.Component {
         onSelect: (e: string) => this.callRequest(e, u),
       })
     }
-    if (u.loaded) {
-      onIcon0(u)
+    if (u0.loaded) {
+      onIcon0(u0)
       return
     }
-    this.loadContactDetail(u.id, () => {
-      onIcon0(u)
+    this.loadContactDetail(u0.id, () => {
+      onIcon0(u0)
     })
   }
 

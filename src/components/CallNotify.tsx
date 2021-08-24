@@ -5,7 +5,7 @@ import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
-import callStore, { getCallPnDataById } from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import ButtonIcon from './ButtonIcon'
@@ -61,8 +61,9 @@ export class DidMountTimer extends React.Component {
 @observer
 class CallNotify extends React.Component {
   render() {
+    // Do not display our callbar if already show callkeep
     const c = callStore.calls.find(
-      c => c.incoming && !c.answered && !getCallPnDataById(c.pnId),
+      _ => _.incoming && !_.answered && !callStore.callkeepMap[_.callkeepUuid],
     )
     if (!c) {
       return null

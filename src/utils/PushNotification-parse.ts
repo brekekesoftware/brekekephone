@@ -2,11 +2,7 @@ import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
-import callStore, {
-  isPnCanceled,
-  setCallPnData,
-  showIncomingCallUi,
-} from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import { IncomingCall } from './RnNativeModules'
 import waitTimeout from './waitTimeout'
 
@@ -217,15 +213,17 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     // Should not happen
     console.error('SIP PN debug: android got PN without callkeepUuid')
   }
-  setCallPnData(n.callkeepUuid, n)
   callStore.calls
     .filter(c => c.pnId === n.id && !c.callkeepUuid)
     .forEach(c => {
-      c.callkeepUuid = n.callkeepUuid
+      Object.assign(c, { callkeepUuid: n.callkeepUuid })
     })
   // Continue handling incoming call in android
-  if (Platform.OS === 'android' && !isPnCanceled(n.id)) {
-    showIncomingCallUi({ callUUID: n.callkeepUuid })
+  if (callStore.isCallRejected({ callkeepUuid: n.callkeepUuid, pnId: n.id })) {
+    return
+  }
+  if (Platform.OS === 'android') {
+    callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
     if (action === 'answerCall') {
       callStore.onCallKeepAnswerCall(n.callkeepUuid)

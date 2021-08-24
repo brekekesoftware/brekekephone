@@ -7,7 +7,7 @@ import UserItem from '../components/ContactUserItem'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -19,7 +19,7 @@ class PageCallTransferChooseUser extends React.Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -65,7 +65,7 @@ class PageCallTransferChooseUser extends React.Component {
     groups.forEach(gr => {
       gr.users = orderBy(gr.users, 'name')
     })
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     return (
       <Layout
         description={intl`Select target to start transfer`}

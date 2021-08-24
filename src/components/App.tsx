@@ -19,7 +19,7 @@ import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
 import authStore from '../stores/authStore2'
 import { authUC } from '../stores/AuthUC'
-import callStore, { hasCallKeepRunning } from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import chatStore from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
@@ -92,7 +92,7 @@ if (Platform.OS === 'web') {
 } else if (
   AppState.currentState === 'active' &&
   !callStore.calls.length &&
-  !hasCallKeepRunning() &&
+  !Object.keys(callStore.callkeepMap).length &&
   !authStore.sipPn.sipAuth
 ) {
   getAudioVideoPermission()

@@ -10,7 +10,7 @@ import {
 import KeyPad from '../components/CallKeyPad'
 import ShowNumber from '../components/CallShowNumbers'
 import Layout from '../components/Layout'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import RnAlert from '../stores/RnAlert'
 import RnKeyboard from '../stores/RnKeyboard'

@@ -12,7 +12,7 @@ import KeyPad from '../components/CallKeyPad'
 import ShowNumber from '../components/CallShowNumbers'
 import Layout from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnKeyboard from '../stores/RnKeyboard'
@@ -24,7 +24,7 @@ class PageCallDtmfKeypad extends React.Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -40,7 +40,7 @@ class PageCallDtmfKeypad extends React.Component {
   }
 
   sendKey = (key: string) => {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     if (!c) {
       return
     }
@@ -53,7 +53,7 @@ class PageCallDtmfKeypad extends React.Component {
   }
 
   render() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     return (
       <Layout
         title={c?.title}

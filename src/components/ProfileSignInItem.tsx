@@ -11,7 +11,7 @@ import React, { FC } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
-import { endCallKeepAll } from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import profileStore from '../stores/profileStore'
@@ -132,7 +132,7 @@ const ProfileSignInItem: FC<{
             getAuthStore().signIn(p.id)
             // Try to end callkeep if it's stuck
             if (Platform.OS !== 'web') {
-              endCallKeepAll()
+              callStore.endCallKeepAll()
             }
           }}
           onNextText={intl`SIGN IN`}

@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import { DidMountTimer } from './CallNotify'
 
 class IncomingItem extends React.Component {

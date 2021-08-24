@@ -7,7 +7,7 @@ import uc from '../api/uc'
 import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
-import { endCallKeepAll } from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl, { intlDebug } from '../stores/intl'
 import intlStore from '../stores/intlStore'
 import RnAlert from '../stores/RnAlert'
@@ -71,7 +71,7 @@ class PageSettingsOther extends Component {
               getAuthStore().signOut()
               // Try to end callkeep if it's stuck
               if (Platform.OS !== 'web') {
-                endCallKeepAll()
+                callStore.endCallKeepAll()
               }
             },
             danger: true,

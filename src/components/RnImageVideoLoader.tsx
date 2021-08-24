@@ -106,7 +106,7 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
 }) => {
   const [visible, setIsVisible] = useState(false)
 
-  const images = url ? [{ url: url }] : []
+  const images = url ? [{ url }] : []
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
@@ -119,14 +119,14 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const onSwipeDown = useCallback(() => {
     setIsVisible(false)
   }, [])
-  const convertUri = useCallback((url?: string) => {
-    if (!url) {
+  const convertUri = useCallback((_?: string) => {
+    if (!_) {
       return ''
     }
-    if (url.startsWith('content://')) {
-      return url
+    if (_.startsWith('content://')) {
+      return _
     }
-    const nextUrl = url.startsWith('file://') ? url : `file://${url}`
+    const nextUrl = _.startsWith('file://') ? _ : `file://${_}`
     return nextUrl
   }, [])
 

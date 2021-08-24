@@ -47,7 +47,7 @@ export const updatePhoneIndexWithoutCatch = async (
       extension: pbxUsername,
       properties: {
         // See ./pbx getExtensionProperties for the detail of parameters
-        pnumber: extProps.phones.map((p: { id: string }) => p.id).join(','),
+        pnumber: extProps.phones.map(({ id }) => id).join(','),
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })

@@ -62,7 +62,7 @@ export const getTabs = (tab: string) => {
       })
     })
   })
-  const m = arr.find(m => m.key === tab)
+  const m = arr.find(_ => _.key === tab)
   if (!m) {
     RnAlert.error({
       unexpectedErr: new Error(`Can not find sub menus for ${tab}`),

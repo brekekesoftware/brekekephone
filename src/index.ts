@@ -9,7 +9,7 @@ import { configure, onReactionError } from 'mobx'
 import { AppRegistry, Platform } from 'react-native'
 
 import App from './components/App'
-import callStore from './stores/callStore'
+import { callStore } from './stores/callStore'
 import { setCallStore } from './stores/cancelRecentPn'
 
 configure({

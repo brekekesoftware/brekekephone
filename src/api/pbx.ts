@@ -201,7 +201,7 @@ export class PBX extends EventEmitter {
     }
 
     const res = await this.client._pal('getExtensionProperties', {
-      tenant: tenant,
+      tenant,
       extension: userIds,
       property_names: ['name'],
     })
@@ -229,7 +229,7 @@ export class PBX extends EventEmitter {
     }
 
     const res = await this.client._pal('getExtensionProperties', {
-      tenant: tenant,
+      tenant,
       extension: userId,
 
       property_names: [

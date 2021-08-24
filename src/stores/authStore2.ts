@@ -8,7 +8,7 @@ import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { authSIP } from './AuthSIP'
 import { compareProfile, setAuthStore } from './authStore'
-import callStore from './callStore'
+import { callStore } from './callStore'
 import { intlDebug } from './intl'
 import Nav from './Nav'
 import profileStore, { Profile } from './profileStore'
@@ -98,7 +98,7 @@ export class AuthStore {
   }
 
   signIn = (id: string) => {
-    const p = profileStore.profiles.find(p => p.id === id)
+    const p = profileStore.profiles.find(_ => _.id === id)
     if (!p) {
       return false
     }

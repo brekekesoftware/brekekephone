@@ -103,7 +103,7 @@ class ChatGroupInvite extends React.Component {
     const { id, inviter, name } = chatStore.getGroupById(group) || {}
     const inviterName = contactStore.getUcUserById(inviter)?.name
     return {
-      id: id,
+      id,
       name,
       inviter: inviterName || inviter,
     }

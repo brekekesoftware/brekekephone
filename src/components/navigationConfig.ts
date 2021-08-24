@@ -175,7 +175,7 @@ export const normalizeSavedNavigation = () => {
 
 export const getSubMenus = (menu: string) => {
   const arr = menus()
-  const m = arr.find(m => m.key === menu)
+  const m = arr.find(_ => _.key === menu)
   if (!m) {
     RnAlert.error({
       unexpectedErr: new Error(`Can not find sub menus for ${menu}`),

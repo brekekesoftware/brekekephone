@@ -29,7 +29,7 @@ import RnText from '../components/RnText'
 import g from '../components/variables'
 import VideoPlayer from '../components/VideoPlayer'
 import Call from '../stores/Call'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import PageCallTransferAttend from './PageCallTransferAttend'
@@ -115,7 +115,7 @@ class PageCallManage extends React.Component<{
     if (
       !this.props.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      callStore.currentCall()?.remoteVideoEnabled
+      callStore.getCurrentCall()?.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
@@ -167,7 +167,7 @@ class PageCallManage extends React.Component<{
   )
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
     const n = callStore.calls.filter(
-      c => c.id !== callStore.currentCallId,
+      _ => _.id !== callStore.currentCallId,
     ).length
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
       return null
@@ -340,7 +340,7 @@ class PageCallManage extends React.Component<{
   }
 
   render() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     void callStore.calls.length // trigger componentDidUpdate
     const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
     const Container = isVideoEnabled ? React.Fragment : BrekekeGradient

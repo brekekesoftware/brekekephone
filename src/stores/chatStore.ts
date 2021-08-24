@@ -169,7 +169,7 @@ class ChatStore {
     saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
-          url: url,
+          url,
         })
       })
       .catch(() => {

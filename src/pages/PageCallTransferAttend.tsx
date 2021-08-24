@@ -12,7 +12,7 @@ import sip from '../api/sip'
 import Avatar from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import g from '../components/variables'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
@@ -79,7 +79,7 @@ class PageCallTransferAttend extends React.Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -95,7 +95,7 @@ class PageCallTransferAttend extends React.Component {
   }
 
   render() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     if (!c) {
       return null
     }

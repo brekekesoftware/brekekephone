@@ -54,7 +54,7 @@ const useForm = () => {
       if (validator.fails()) {
         $.set(
           'errorMap',
-          mapToMap(rules, undefined, (k: string) => validator.errors.first(k)),
+          mapToMap(rules, undefined, (_: string) => validator.errors.first(_)),
         )
         // TODO show toast
       } else {
@@ -103,7 +103,7 @@ const useForm = () => {
                           ? (v: string) => $parent.set(k + '.' + f.name, v)
                           : noop
                         : (...args: unknown[]) => f.onValueChange(...args),
-                    ].filter(f => f),
+                    ].filter(_ => _),
                   )}
                   // Error
                   value={

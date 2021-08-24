@@ -323,10 +323,10 @@ class PageChatDetail extends React.Component<{
         this.setState({ loadingMore: false })
       })
       .then(() => {
-        const { buddy: id } = this.props
-        const totalChatLoaded = chatStore.messagesByThreadId[id]?.length || 0
+        const { buddy } = this.props
+        const totalChatLoaded = chatStore.messagesByThreadId[buddy]?.length || 0
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-          chatStore.updateThreadConfig(id, false, {
+          chatStore.updateThreadConfig(buddy, false, {
             allMessagesLoaded: true,
           })
         }
@@ -373,8 +373,8 @@ class PageChatDetail extends React.Component<{
     reader.onload = async event => {
       const url = event.target?.result
       Object.assign(chatStore.getFileById(file.id), {
-        url: url,
-        fileType: fileType,
+        url,
+        fileType,
       })
     }
 
@@ -400,7 +400,7 @@ class PageChatDetail extends React.Component<{
 
   readFile = (file: { type: string; name: string; uri: string }) => {
     const fileType = formatFileType(file.name)
-    this.setState({ blobFile: { url: file.uri, fileType: fileType } })
+    this.setState({ blobFile: { url: file.uri, fileType } })
   }
   handleSaveBlobFileWeb = async (
     data: Blob,
@@ -415,7 +415,7 @@ class PageChatDetail extends React.Component<{
         file.fileType,
         data,
       )
-      Object.assign(file, { url: url })
+      Object.assign(file, { url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(buddyId, chat)
     } catch (error) {}

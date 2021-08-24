@@ -1,3 +1,4 @@
+import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import {
@@ -10,7 +11,7 @@ import {
   View,
 } from 'react-native'
 
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import Nav from '../stores/Nav'
 import RnStacker from '../stores/RnStacker'
 import g from './variables'
@@ -91,9 +92,14 @@ class Mini extends React.Component<Props> {
     })
   }
 
-  onDrop = (e: GestureResponderEvent, gesture: PanResponderGestureState) => {
-    callStore.videoPositionL += gesture.dx
-    callStore.videoPositionT += gesture.dy
+  @action onDrop = (
+    e: GestureResponderEvent,
+    gesture: PanResponderGestureState,
+  ) => {
+    Object.assign(callStore, {
+      videoPositionL: callStore.videoPositionL + gesture.dx,
+      videoPositionT: callStore.videoPositionT + gesture.dy,
+    })
     const n = Date.now()
     if (
       gesture.dx <= 10 &&

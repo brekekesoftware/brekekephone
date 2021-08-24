@@ -6,7 +6,7 @@ import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 
@@ -19,7 +19,7 @@ class PageCallParks extends React.Component<{
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.currentCall()
+    const c = callStore.getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -40,7 +40,7 @@ class PageCallParks extends React.Component<{
   park = () => {
     const p = this.state.selectedPark
     return this.props.callParks2
-      ? callStore.currentCall()?.park(p)
+      ? callStore.getCurrentCall()?.park(p)
       : callStore.startCall(p || '')
   }
 
@@ -48,7 +48,7 @@ class PageCallParks extends React.Component<{
     const ps = getAuthStore().currentProfile.parks
     const p = this.state.selectedPark
     const p2 = this.props.callParks2
-    void callStore.currentCall() // trigger componentDidUpdate
+    void callStore.getCurrentCall() // trigger componentDidUpdate
 
     return (
       <Layout

@@ -176,7 +176,7 @@ class ProfileStore {
       }
     }
     const id = getAccountUniqueId(p)
-    const d = this.profileData.find(d => d.id === id) || {
+    const d = this.profileData.find(_ => _.id === id) || {
       id,
       accessToken: '',
       recentCalls: [],

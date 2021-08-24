@@ -3,7 +3,7 @@ import { action } from 'mobx'
 import { authPBX } from '../stores/AuthPBX'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import Call from '../stores/Call'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import chatStore, { FileEvent } from '../stores/chatStore'
 import contactStore from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
@@ -97,7 +97,7 @@ class Api {
     contactStore.setTalkerStatus(ev.user, ev.talker, '')
   }
   onVoiceMailUpdated = (ev: { new: number }) => {
-    callStore.newVoicemailCount = ev?.new || 0
+    callStore.setNewVoicemailCount(ev?.new || 0)
   }
 
   @action onSIPConnectionStarted = () => {
@@ -133,13 +133,13 @@ class Api {
     if (!call.partyName) {
       call.partyName = contactStore.getPbxUserById(number)?.name
     }
-    callStore.upsertCall(call)
+    callStore.onCallUpsert(call)
   }
   onSIPSessionUpdated = (call: Call) => {
-    callStore.upsertCall(call)
+    callStore.onCallUpsert(call)
   }
   onSIPSessionStopped = (id: string) => {
-    callStore.removeCall(id)
+    callStore.onCallRemove(id)
   }
 
   onUCConnectionStopped = () => {

@@ -8,7 +8,7 @@ import Field from '../components/Field'
 import Layout from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
 import { AuthStore } from '../stores/authStore2'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import contactStore from '../stores/contactStore'
 import intl from '../stores/intl'
 
@@ -24,7 +24,7 @@ class PageCallRecents extends React.Component {
   getAvatar = (id: string) => {
     const ucUser = contactStore.getUcUserById(id) || {}
     return {
-      id: id,
+      id,
       avatar: ucUser.avatar,
     }
   }

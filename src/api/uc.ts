@@ -129,7 +129,7 @@ export class UC extends EventEmitter {
       incoming: true,
       state: getFileStateFromCode(ev.fileInfo.status),
       transferPercent: ev.fileInfo.progress,
-      fileType: fileType,
+      fileType,
       topic_id: ev.topic_id,
     }
 
@@ -206,7 +206,7 @@ export class UC extends EventEmitter {
       if (isWebchat) {
         this.emit('chat-group-updated', {
           id: ev.conference.conf_id,
-          name: name,
+          name,
           jointed: false,
           webchat: isWebchat ? ev.conference : null,
         })
@@ -220,7 +220,7 @@ export class UC extends EventEmitter {
 
     this.emit('chat-group-updated', {
       id: ev.conference.conf_id,
-      name: name,
+      name,
       jointed: ev.conference.conf_status === 2,
       members: (ev.conference.user || [])
         .filter(user => user.conf_status === 2)

@@ -1,7 +1,6 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  extends: 'plugin:react-app/recommended',
   plugins: ['@typescript-eslint', 'import', 'simple-import-sort'],
   env: {
     browser: true,
@@ -12,6 +11,7 @@ module.exports = {
     curly: [1, 'all'],
     semi: [1, 'never'],
     quotes: [1, 'single', { avoidEscape: true }],
+    'one-var': [1, 'never'],
     'sort-imports': 0,
     'import/order': 0,
     'simple-import-sort/imports': 1,
@@ -36,8 +36,12 @@ module.exports = {
     ],
     // Some other rules
     'prefer-const': 1,
+    'import/no-default-export': 1,
+    'object-shorthand': [1, 'always'],
     'no-unused-vars': 0,
     '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
+    'no-shadow': 0,
+    '@typescript-eslint/no-shadow': 1,
   },
   settings: {
     react: {

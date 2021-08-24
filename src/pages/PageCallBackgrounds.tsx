@@ -8,15 +8,15 @@ import Layout from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import g from '../components/variables'
 import Call from '../stores/Call'
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import formatDuration from '../utils/formatDuration'
 
 const PageCallBackgrounds = observer(() => {
-  const c = callStore.currentCall()
   const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
-  const renderItemCall = (c: Call, isCurrentCall?: boolean) => {
+  const currentCall = callStore.getCurrentCall()
+  const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
       ...(!c.answered && c.incoming ? [mdiPhone] : []),
@@ -31,7 +31,7 @@ const PageCallBackgrounds = observer(() => {
         ? [
             () => {
               c.answer()
-              callStore.selectBackgroundCall(c)
+              callStore.onSelectBackgroundCall(c)
             },
           ]
         : []),
@@ -65,7 +65,7 @@ const PageCallBackgrounds = observer(() => {
       title={intl`Background calls`}
     >
       <Field isGroup label={intl`CURRENT CALL`} />
-      {(c ? [c] : []).map(c => (
+      {(currentCall ? [currentCall] : []).map(c => (
         <RnTouchableOpacity
           key={c.id}
           onPress={() => Nav().backToPageCallManage()}
@@ -82,7 +82,7 @@ const PageCallBackgrounds = observer(() => {
           onPress={
             !c.answered && c.incoming
               ? undefined
-              : () => callStore.selectBackgroundCall(c)
+              : () => callStore.onSelectBackgroundCall(c)
           }
         >
           {renderItemCall(c)}

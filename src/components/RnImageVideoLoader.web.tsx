@@ -68,15 +68,14 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     w?.document.write(image.outerHTML)
   }, [objectURL])
 
-  const readImage = async (url: string) => {
+  const readImage = async (_: string) => {
     try {
-      const urlImage = url.split('/')
+      const urlImage = _.split('/')
       const cache = await caches.open(urlImage[0])
       const request = new Request(urlImage[1])
       const response = await cache.match(request)
       const blobFile = await response?.blob()
-      const objectURL = URL.createObjectURL(blobFile)
-      objectURL && setObjectUrl(objectURL)
+      blobFile && setObjectUrl(URL.createObjectURL(blobFile))
     } catch (error) {
       setObjectUrl('')
     }

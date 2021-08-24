@@ -16,8 +16,8 @@ import ChatInput from '../components/FooterChatInput'
 import Layout from '../components/Layout'
 import RnText from '../components/RnText'
 import RnTouchableOpacity from '../components/RnTouchableOpacity'
-import g from '../components/variables'
-import callStore from '../stores/callStore'
+import v from '../components/variables'
+import { callStore } from '../stores/callStore'
 import chatStore, {
   ChatFile,
   ChatGroup,
@@ -38,14 +38,14 @@ const css = StyleSheet.create({
   LoadMore: {
     alignSelf: 'center',
     paddingBottom: 15,
-    fontSize: g.fontSizeSmall,
+    fontSize: v.fontSizeSmall,
     paddingHorizontal: 10,
   },
   LoadMore__btn: {
-    color: g.colors.primary,
+    color: v.colors.primary,
   },
   LoadMore__finished: {
-    color: g.colors.warning,
+    color: v.colors.warning,
   },
 })
 @observer
@@ -380,7 +380,7 @@ class PageChatGroupDetail extends React.Component<{
 
   readFile = (file: { type: string; name: string; uri: string }) => {
     const fileType = formatFileType(file.name)
-    this.setState({ blobFile: { url: file.uri, fileType: fileType } })
+    this.setState({ blobFile: { url: file.uri, fileType } })
   }
 
   sendFile = (file: { type: string; name: string; uri: string }) => {
@@ -403,7 +403,7 @@ class PageChatGroupDetail extends React.Component<{
         file.fileType,
         data,
       )
-      Object.assign(file, { url: url })
+      Object.assign(file, { url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(groupId, chat)
     } catch (error) {}
@@ -452,8 +452,8 @@ class PageChatGroupDetail extends React.Component<{
     reader.onload = async event => {
       const url = event.target?.result
       Object.assign(chatStore.getFileById(file.id), {
-        url: url,
-        fileType: fileType,
+        url,
+        fileType,
       })
     }
 

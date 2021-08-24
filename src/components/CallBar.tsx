@@ -13,7 +13,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
-import callStore from '../stores/callStore'
+import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnStacker from '../stores/RnStacker'
@@ -54,7 +54,7 @@ const css = StyleSheet.create({
 const CallBar = observer(() => {
   const bVisible =
     RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
-  const c = callStore.currentCall()
+  const c = callStore.getCurrentCall()
   if (!bVisible || !c || (c.incoming && !c.answered)) {
     return null
   }

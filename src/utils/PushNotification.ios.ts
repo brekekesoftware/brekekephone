@@ -58,7 +58,7 @@ const onNotification = async (
       title: n.body,
       body: n.isCall ? 'Answer' : 'View',
       sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
-      badge: badge,
+      badge,
     })
     PushNotificationIOS.setApplicationIconBadgeNumber(badge)
   })
