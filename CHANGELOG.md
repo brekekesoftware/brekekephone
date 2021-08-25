@@ -1,9 +1,16 @@
+#### 2.8.41
+
+- Add `"webphone": "true"` to pal `getProductInfo`
+- Upgrade react-native `0.64.2 -> 0.65.1`
+- Fix 317: call rejected but still display after reconnect
+
 #### 2.8.40
 
 - Fix dtmf not call pbx pal
 - Fix empty talker_id in dtmf
 - Remove call button in page dtmf keypad
 - Rename pbx config `webphone.dtmf.pal -> webphone.dtmf.send.pal`
+- Android use partial wake lock
 
 #### 2.8.37
 

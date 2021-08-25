@@ -69,7 +69,7 @@ export type PbxEvent = {
 
 export type PbxPal = {
   getProductInfo(
-    p: undefined,
+    p: PbxGetProductInfoParam,
     resolve: (i: PbxGetProductInfoRes) => void,
     reject: ErrorHandler,
   ): void
@@ -130,6 +130,9 @@ export type PbxGetProductInfoRes = {
   'webphone.turn.username': string
   'webphone.turn.credential': string
   'webphone.uc.host': string
+}
+export type PbxGetProductInfoParam = {
+  webphone: string
 }
 export type PbxCreateAuthHeaderParam = {
   username: string

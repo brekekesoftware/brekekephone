@@ -166,7 +166,9 @@ export class PBX extends EventEmitter {
       if (!this.client) {
         return
       }
-      this.pbxConfig = await this.client._pal('getProductInfo')
+      this.pbxConfig = await this.client._pal('getProductInfo', {
+        webphone: 'true',
+      })
     }
     return this.pbxConfig
   }
