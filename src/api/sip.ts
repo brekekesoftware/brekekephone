@@ -4,7 +4,7 @@ import 'brekekejs/lib/webrtcclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
-import appPackageJson from '../../package.json'
+import { currentVersion } from '../components/variables'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
@@ -203,7 +203,7 @@ export class SIP extends EventEmitter {
     }
     //
     const jssipVersion = '3.2.15'
-    const appVersion = appPackageJson.version
+    const appVersion = currentVersion
     const lUseragent =
       'Brekeke Phone for ' +
       platformOs +
