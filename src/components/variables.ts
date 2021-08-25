@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 
 import json from '../../package.json'
 
-const v = {
+export const v = {
   fn,
   //
   fontSize: 14,
@@ -81,6 +81,5 @@ const v = {
         : fn.darken(-lv, v.colors.danger),
   },
 }
-export default v
 
 export const currentVersion = json.version

@@ -3,13 +3,13 @@ import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
-import RnKeyboard from '../stores/RnKeyboard'
+import { RnKeyboard } from '../stores/RnKeyboard'
 import { toLowerCaseFirstChar } from '../utils/string'
 import { arrToMap } from '../utils/toMap'
-import Actions from './FooterActions'
-import Navigation from './FooterNavigation'
-import ToggleKeyboard from './FooterToggleKeyboard'
-import g from './variables'
+import { FooterActions } from './FooterActions'
+import { Navigation } from './FooterNavigation'
+import { ToggleKeyboard } from './FooterToggleKeyboard'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Footer: {
@@ -20,8 +20,8 @@ const css = StyleSheet.create({
   Footer__noKeyboard: {
     left: 0,
     paddingBottom: getBottomSpace(),
-    backgroundColor: g.bg,
-    ...g.boxShadow,
+    backgroundColor: v.bg,
+    ...v.boxShadow,
   },
   //
   // Fix bug margin auto can not be used
@@ -39,11 +39,11 @@ const css = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     minWidth: 260,
-    maxWidth: g.maxModalWidth,
+    maxWidth: v.maxModalWidth,
   },
 })
 
-const Footer: FC<{
+export const Footer: FC<{
   menu: string
   isTab?: boolean
 }> = observer(props => {
@@ -80,7 +80,7 @@ const Footer: FC<{
         <View style={css.ActionsOuter}>
           <View style={css.ActionsSpacing} />
           <View style={css.ActionsInner}>
-            <Actions {...fabProps} />
+            <FooterActions {...fabProps} />
           </View>
           <View style={css.ActionsSpacing} />
         </View>
@@ -91,5 +91,3 @@ const Footer: FC<{
     </View>
   )
 })
-
-export default Footer

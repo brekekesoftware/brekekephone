@@ -1,18 +1,18 @@
 import flow from 'lodash/flow'
 import get from 'lodash/get'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 
-import Field from '../components/Field'
+import { Field } from '../components/Field'
 import { CreatedStore } from './createStore'
 import { arrToMap, mapToMap } from './toMap'
-import useStore from './useStore'
+import { useStore } from './useStore'
 
 const noop = () => {}
 
-const useForm = () => {
+export const useForm = () => {
   const f0 = (
     $: CreatedStore & {
       dirtyMap: { [k: string]: boolean }
@@ -72,7 +72,7 @@ const useForm = () => {
     render: observer((props: object) => {
       $.props = Object.assign($.props, props)
       const { $: $parent, fields, k } = $.props
-      const RnForm = Platform.OS === 'web' ? 'form' : React.Fragment
+      const RnForm = Platform.OS === 'web' ? 'form' : Fragment
       const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
       return (
         <RnForm {...(formProps as object)}>
@@ -122,8 +122,6 @@ const useForm = () => {
   const $ = useStore(f0) as unknown as FormContext
   return [$.render, $.submit, $.onFieldChange]
 }
-
-export default useForm
 
 export type FormContext = {
   render: Function

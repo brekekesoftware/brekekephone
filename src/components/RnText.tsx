@@ -2,7 +2,7 @@ import pickBy from 'lodash/pickBy'
 import React, { FC, forwardRef } from 'react'
 import { Animated, StyleSheet, Text, TextProps } from 'react-native'
 
-import v from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   RnText: {
@@ -110,7 +110,5 @@ export type TRnTextProps = TextProps &
   }>
 export type TRnText = FC<TRnTextProps>
 
-const RnText = wrap(Text) as TRnText
+export const RnText = wrap(Text) as TRnText
 export const AnimatedText = wrap(Animated.Text) as TRnText
-
-export default RnText

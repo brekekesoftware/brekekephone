@@ -4,24 +4,24 @@ import { Animated, StyleSheet } from 'react-native'
 import { useAnimation } from '../utils/animation'
 import { RnText } from './Rn'
 import { AnimatedText } from './RnText'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Container: {
     padding: 15,
   },
   Title: {
-    fontSize: g.fontSizeTitle,
-    lineHeight: g.lineHeightTitle,
+    fontSize: v.fontSizeTitle,
+    lineHeight: v.lineHeightTitle,
     fontWeight: 'bold',
     color: 'black',
   },
   Description: {
-    color: g.subColor,
+    color: v.subColor,
   },
 })
 
-const Title: FC<{
+export const Title: FC<{
   compact: boolean
   description?: string
   title: string
@@ -31,8 +31,8 @@ const Title: FC<{
     paddingVertical: [15, 10],
   })
   const cssTitleA = useAnimation(compact, {
-    fontSize: [g.fontSizeTitle, g.fontSizeSubTitle],
-    lineHeight: [g.lineHeightTitle, 20],
+    fontSize: [v.fontSizeTitle, v.fontSizeSubTitle],
+    lineHeight: [v.lineHeightTitle, 20],
   })
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
@@ -43,5 +43,3 @@ const Title: FC<{
     </Animated.View>
   )
 }
-
-export default Title

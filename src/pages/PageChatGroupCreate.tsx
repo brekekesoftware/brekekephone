@@ -1,21 +1,21 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 
-import uc from '../api/uc'
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { uc } from '../api/uc'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
-import chatStore from '../stores/chatStore'
-import contactStore, { UcUser } from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
+import { chatStore } from '../stores/chatStore'
+import { contactStore, UcUser } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/toMap'
 
 @observer
-class PageChatGroupCreate extends React.Component {
+export class PageChatGroupCreate extends Component {
   @computed get buddyIds() {
     return contactStore.ucUsers.map(u => u.id)
   }
@@ -102,4 +102,3 @@ class PageChatGroupCreate extends React.Component {
     })
   }
 }
-export default PageChatGroupCreate

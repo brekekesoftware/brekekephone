@@ -1,3 +1,4 @@
+/* eslint-disable import/no-default-export */
 /// <reference types="react-scripts" />
 
 declare module 'brekekejs/lib/ucclient' {

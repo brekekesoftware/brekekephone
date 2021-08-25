@@ -3,13 +3,13 @@ import { debounce } from 'lodash'
 import { action, autorun, Lambda } from 'mobx'
 
 import { PbxGetProductInfoRes } from '../api/brekekejs'
-import pbx from '../api/pbx'
-import sip from '../api/sip'
-import updatePhoneIndex from '../api/updatePhoneIndex'
+import { pbx } from '../api/pbx'
+import { sip } from '../api/sip'
+import { updatePhoneIndex } from '../api/updatePhoneIndex'
 import { SipPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
-import RnAlert from './RnAlert'
+import { RnAlert } from './RnAlert'
 import { sipErrorEmitter } from './sipErrorEmitter'
 
 const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>

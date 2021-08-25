@@ -1,10 +1,10 @@
 import { getAuthStore } from '../stores/authStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
-import pbx from './pbx'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
+import { pbx } from './pbx'
 
-const updatePhoneIndex = () =>
+export const updatePhoneIndex = () =>
   updatePhoneIndexWithoutCatch().catch((err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to update phone index`,
@@ -93,5 +93,3 @@ export const updatePhoneIndexWithoutCatch = async (
   }
   return phone
 }
-
-export default updatePhoneIndex

@@ -5,7 +5,7 @@ const uint8ArrayToUrlBase64 = (arr: ArrayBuffer) =>
     )
     .replace(/[+/]/g, '-')
 
-const PushNotification = {
+export const PushNotification = {
   register: (initApp: Function) => {
     initApp()
     if (!window.Notification || window.Notification.permission === 'granted') {
@@ -30,5 +30,3 @@ const PushNotification = {
     // Polyfill
   },
 }
-
-export default PushNotification

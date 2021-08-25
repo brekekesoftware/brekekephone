@@ -2,26 +2,26 @@ import stableStringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 
 import { Conference, UcMessageLog } from '../api/brekekejs'
-import uc, { Constants } from '../api/uc'
-import ListUsers from '../components/ChatListUsers'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { Constants, uc } from '../api/uc'
+import { ListUsers } from '../components/ChatListUsers'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import chatStore, { ChatGroup, ChatMessage } from '../stores/chatStore'
-import contactStore, { UcUser } from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
+import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
+import { contactStore, UcUser } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { profileStore } from '../stores/profileStore'
+import { RnAlert } from '../stores/RnAlert'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
 
 @observer
-class PageChatRecents extends React.Component {
+export class PageChatRecents extends Component {
   getLastChat = (id: string) => {
     const chats = filterTextOnly(chatStore.messagesByThreadId[id] || [])
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
@@ -201,5 +201,3 @@ class PageChatRecents extends React.Component {
     )
   }
 }
-
-export default PageChatRecents

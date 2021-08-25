@@ -4,7 +4,7 @@ import 'brekekejs/lib/pal'
 import EventEmitter from 'eventemitter3'
 
 import { waitPbx } from '../stores/authStore'
-import profileStore, { Profile } from '../stores/profileStore'
+import { Profile, profileStore } from '../stores/profileStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Pbx, PbxGetProductInfoRes } from './brekekejs'
 
@@ -630,4 +630,4 @@ export class PBX extends EventEmitter {
   }
 }
 
-export default new PBX()
+export const pbx = new PBX()

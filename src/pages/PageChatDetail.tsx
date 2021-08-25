@@ -1,6 +1,6 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -12,21 +12,21 @@ import {
 } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
-import uc from '../api/uc'
+import { uc } from '../api/uc'
 import { numberOfChatsPerLoad } from '../components/chatConfig'
-import MessageList from '../components/ChatMessageList'
-import ChatInput from '../components/FooterChatInput'
-import Layout from '../components/Layout'
+import { MessageList } from '../components/ChatMessageList'
+import { ChatInput } from '../components/FooterChatInput'
+import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import g from '../components/variables'
-import chatStore, { ChatFile, ChatMessage } from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
+import { v } from '../components/variables'
+import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { formatFileType } from '../utils/formatFileType'
-import pickFile from '../utils/pickFile'
+import { pickFile } from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
 import { saveBlobFile } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
@@ -35,19 +35,19 @@ const css = StyleSheet.create({
   LoadMore: {
     alignSelf: 'center',
     paddingBottom: 15,
-    fontSize: g.fontSizeSmall,
+    fontSize: v.fontSizeSmall,
     paddingHorizontal: 10,
   },
   LoadMore__btn: {
-    color: g.colors.primary,
+    color: v.colors.primary,
   },
   LoadMore__finished: {
-    color: g.colors.warning,
+    color: v.colors.warning,
   },
 })
 
 @observer
-class PageChatDetail extends React.Component<{
+export class PageChatDetail extends Component<{
   buddy: string
 }> {
   @computed get chatIds() {
@@ -448,5 +448,3 @@ class PageChatDetail extends React.Component<{
       })
   }
 }
-
-export default PageChatDetail

@@ -1,36 +1,36 @@
 import { ComponentProps } from 'react'
 
 import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
-import PageCallBackgrounds from '../pages/PageCallBackgrounds'
-import PageCallDtmfKeypad from '../pages/PageCallDtmfKeypad'
-import PageCallKeypad from '../pages/PageCallKeypad'
-import PageCallManage from '../pages/PageCallManage'
-import PageCallParks from '../pages/PageCallParks'
-import PageCallParks2 from '../pages/PageCallParks2'
-import PageCallRecents from '../pages/PageCallRecents'
-import PageCallTransferChooseUser from '../pages/PageCallTransferChooseUser'
-import PageCallTransferDial from '../pages/PageCallTransferDial'
-import PageChatDetail from '../pages/PageChatDetail'
-import PageChatGroupCreate from '../pages/PageChatGroupCreate'
-import PageChatGroupDetail from '../pages/PageChatGroupDetail'
-import PageChatGroupInvite from '../pages/PageChatGroupInvite'
-import PageChatRecents from '../pages/PageChatRecents'
-import PageContactPhonebook from '../pages/PageContactPhonebook'
-import PageContactUsers from '../pages/PageContactUsers'
-import PagePhonebookCreate from '../pages/PagePhonebookCreate'
-import PagePhonebookUpdate from '../pages/PagePhonebookUpdate'
-import PageProfileCreate from '../pages/PageProfileCreate'
-import PageProfileSignIn from '../pages/PageProfileSignIn'
-import PageProfileUpdate from '../pages/PageProfileUpdate'
-import PageSettingsDebug from '../pages/PageSettingsDebug'
-import PageSettingsOther from '../pages/PageSettingsOther'
-import PageSettingsProfile from '../pages/PageSettingsProfile'
-import PageWebChat from '../pages/PageWebChat'
+import { PageCallBackgrounds } from '../pages/PageCallBackgrounds'
+import { PageCallDtmfKeypad } from '../pages/PageCallDtmfKeypad'
+import { PageCallKeypad } from '../pages/PageCallKeypad'
+import { PageCallManage } from '../pages/PageCallManage'
+import { PageCallParks } from '../pages/PageCallParks'
+import { PageCallParks2 } from '../pages/PageCallParks2'
+import { PageCallRecents } from '../pages/PageCallRecents'
+import { PageCallTransferChooseUser } from '../pages/PageCallTransferChooseUser'
+import { PageCallTransferDial } from '../pages/PageCallTransferDial'
+import { PageChatDetail } from '../pages/PageChatDetail'
+import { PageChatGroupCreate } from '../pages/PageChatGroupCreate'
+import { PageChatGroupDetail } from '../pages/PageChatGroupDetail'
+import { PageChatGroupInvite } from '../pages/PageChatGroupInvite'
+import { PageChatRecents } from '../pages/PageChatRecents'
+import { PageContactPhonebook } from '../pages/PageContactPhonebook'
+import { PageContactUsers } from '../pages/PageContactUsers'
+import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
+import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
+import { PageProfileCreate } from '../pages/PageProfileCreate'
+import { PageProfileSignIn } from '../pages/PageProfileSignIn'
+import { PageProfileUpdate } from '../pages/PageProfileUpdate'
+import { PageSettingsDebug } from '../pages/PageSettingsDebug'
+import { PageSettingsOther } from '../pages/PageSettingsOther'
+import { PageSettingsProfile } from '../pages/PageSettingsProfile'
+import { PageWebChat } from '../pages/PageWebChat'
 import { getAuthStore } from './authStore'
 import { setNav } from './Nav'
-import RnStacker from './RnStacker'
+import { RnStacker } from './RnStacker'
 
-export class Nav {
+export class Nav2 {
   // root account/login
   goToPageProfileSignIn = RnStacker.createGoTo<
     ComponentProps<typeof PageProfileSignIn>
@@ -206,4 +206,4 @@ export class Nav {
   }
 }
 
-setNav(new Nav())
+setNav(new Nav2())

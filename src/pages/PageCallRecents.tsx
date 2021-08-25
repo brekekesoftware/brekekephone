@@ -1,19 +1,19 @@
 import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import React from 'react'
+import React, { Component } from 'react'
 
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
 import { AuthStore } from '../stores/authStore2'
 import { callStore } from '../stores/callStore'
-import contactStore from '../stores/contactStore'
-import intl from '../stores/intl'
+import { contactStore } from '../stores/contactStore'
+import { intl } from '../stores/intl'
 
 @observer
-class PageCallRecents extends React.Component {
+export class PageCallRecents extends Component {
   isMatchUser = (call: AuthStore['currentData']['recentCalls'][0]) => {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id
@@ -87,5 +87,3 @@ class PageCallRecents extends React.Component {
     )
   }
 }
-
-export default PageCallRecents

@@ -3,17 +3,17 @@ import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Platform } from 'react-native'
 
-import uc from '../api/uc'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { uc } from '../api/uc'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import intl, { intlDebug } from '../stores/intl'
-import intlStore from '../stores/intlStore'
-import RnAlert from '../stores/RnAlert'
+import { intl, intlDebug } from '../stores/intl'
+import { intlStore } from '../stores/intlStore'
+import { RnAlert } from '../stores/RnAlert'
 
 @observer
-class PageSettingsOther extends Component {
+export class PageSettingsOther extends Component {
   state = {
     status: '',
     statusText: '',
@@ -119,5 +119,3 @@ class PageSettingsOther extends Component {
     )
   }
 }
-
-export default PageSettingsOther

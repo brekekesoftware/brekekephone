@@ -6,7 +6,7 @@ import PushNotificationIOS, {
 import { AppState } from 'react-native'
 import Voip from 'react-native-voip-push-notification'
 
-import parse from './PushNotification-parse'
+import { parse } from './PushNotification-parse'
 
 let voipApnsToken = ''
 const onVoipToken = (t: string) => {
@@ -64,7 +64,7 @@ const onNotification = async (
   })
 }
 
-const PushNotification = {
+export const PushNotification = {
   register: async (initApp: Function) => {
     initApp()
     //
@@ -113,5 +113,3 @@ const PushNotification = {
     PushNotificationIOS.setApplicationIconBadgeNumber(0)
   },
 }
-
-export default PushNotification

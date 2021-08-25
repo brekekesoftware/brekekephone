@@ -6,8 +6,8 @@ import vi from '../assets/intl-vi.json'
 import { RnAsyncStorage } from '../components/Rn'
 import { IncomingCall } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
-import waitTimeout from '../utils/waitTimeout'
-import RnPicker from './RnPicker'
+import { waitTimeout } from '../utils/waitTimeout'
+import { RnPicker } from './RnPicker'
 
 export const labels = {
   en,
@@ -77,4 +77,4 @@ export class IntlStore {
     }),
   )
 }
-export default new IntlStore() as Immutable<IntlStore>
+export const intlStore = new IntlStore() as Immutable<IntlStore>

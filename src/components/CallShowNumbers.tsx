@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native'
 
-import intl from '../stores/intl'
+import { intl } from '../stores/intl'
 import { RnTextInput } from './Rn'
 
 const css = StyleSheet.create({
@@ -30,7 +30,7 @@ const css = StyleSheet.create({
   },
 })
 
-const ShowNumber: FC<{
+export const ShowNumber: FC<{
   setTarget(v: string): void
   selectionChange?(
     e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
@@ -55,5 +55,3 @@ const ShowNumber: FC<{
     />
   </View>
 )
-
-export default ShowNumber

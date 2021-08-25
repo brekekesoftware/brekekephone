@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 
 import { callStore } from '../stores/callStore'
-import CallVideosUI from './CallVideosUI'
+import { CallVideosUI } from './CallVideosUI'
 
 @observer
-class CallVideos extends React.Component {
+export class CallVideos extends Component {
   render() {
     const c = callStore.getCurrentCall()
     return (
@@ -25,5 +25,3 @@ class CallVideos extends React.Component {
     sourceObject: callStore.getCurrentCall()?.remoteVideoStreamObject,
   })
 }
-
-export default CallVideos

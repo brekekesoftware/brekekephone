@@ -731,4 +731,4 @@ export class UC extends EventEmitter {
   }
 }
 
-export default new UC()
+export const uc = new UC()

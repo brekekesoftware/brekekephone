@@ -1,24 +1,24 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import KeyPad from '../components/CallKeyPad'
-import ShowNumber from '../components/CallShowNumbers'
-import Layout from '../components/Layout'
+import { KeyPad } from '../components/CallKeyPad'
+import { ShowNumber } from '../components/CallShowNumbers'
+import { Layout } from '../components/Layout'
 import { callStore } from '../stores/callStore'
-import intl, { intlDebug } from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
-import RnKeyboard from '../stores/RnKeyboard'
+import { intl, intlDebug } from '../stores/intl'
+import { RnAlert } from '../stores/RnAlert'
+import { RnKeyboard } from '../stores/RnKeyboard'
 
 @observer
-class PageCallKeypad extends React.Component {
+export class PageCallKeypad extends Component {
   @observable txt = ''
-  txtRef = React.createRef<TextInput>()
+  txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
@@ -88,5 +88,3 @@ class PageCallKeypad extends React.Component {
     )
   }
 }
-
-export default PageCallKeypad

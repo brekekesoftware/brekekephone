@@ -4,10 +4,10 @@ import React from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
-import g from '../components/variables'
+import { v } from '../components/variables'
 import { useAnimationOnDidMount } from '../utils/animation'
-import intl from './intl'
-import RnPicker, { RnPickerOption } from './RnPicker'
+import { intl } from './intl'
+import { RnPicker, RnPickerOption } from './RnPicker'
 
 const css = StyleSheet.create({
   RnPicker: {
@@ -16,45 +16,45 @@ const css = StyleSheet.create({
     justifyContent: 'center',
   },
   RnPicker_Backdrop: {
-    backgroundColor: g.layerBg,
+    backgroundColor: v.layerBg,
   },
   RnPicker_Inner: {
     position: 'absolute',
     bottom: 15,
     width: '90%',
-    maxWidth: g.maxModalWidth,
+    maxWidth: v.maxModalWidth,
     maxHeight: '100%',
   },
   RnPicker_Options: {
-    borderRadius: g.borderRadius,
-    backgroundColor: g.bg,
+    borderRadius: v.borderRadius,
+    backgroundColor: v.bg,
     overflow: 'hidden',
   },
   RnPicker_Option: {
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderColor: g.hoverBg,
+    borderColor: v.hoverBg,
   },
   RnPicker_Option__last: {
     borderBottomWidth: 0,
   },
   RnPicker_Option__selected: {
-    backgroundColor: g.hoverBg,
+    backgroundColor: v.hoverBg,
   },
   RnPicker_Option__cancel: {
     marginTop: 15,
     borderBottomWidth: 0,
-    borderRadius: g.borderRadius,
-    backgroundColor: g.bg,
+    borderRadius: v.borderRadius,
+    backgroundColor: v.bg,
   },
   RnPicker_Text__selected: {
     fontWeight: 'bold',
-    color: g.colors.primary,
+    color: v.colors.primary,
   },
   RnPicker_Text__cancel: {
     fontWeight: 'bold',
-    color: g.colors.danger,
+    color: v.colors.danger,
   },
   RnPicker_Icon: {
     position: 'absolute',
@@ -101,7 +101,7 @@ const RnPickerR = (p: RnPickerOption) => {
                   {o.label}
                 </RnText>
                 <RnIcon
-                  color={isSelected ? g.colors.primary : undefined}
+                  color={isSelected ? v.colors.primary : undefined}
                   path={
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
@@ -120,7 +120,7 @@ const RnPickerR = (p: RnPickerOption) => {
             {p.cancelLabel || intl`Cancel`}
           </RnText>
           <RnIcon
-            color={g.colors.danger}
+            color={v.colors.danger}
             path={mdiClose}
             style={css.RnPicker_Icon}
           />
@@ -130,8 +130,6 @@ const RnPickerR = (p: RnPickerOption) => {
   )
 }
 
-const RootRnPicker = observer(
+export const RnPickerRoot = observer(
   () => RnPicker.currentRnPicker && <RnPickerR {...RnPicker.currentRnPicker} />,
 )
-
-export default RootRnPicker

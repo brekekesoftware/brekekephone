@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
 
-export class RnAppState {
+class RnAppStateStore {
   @observable currentState = AppState.currentState
   constructor() {
     AppState.addEventListener(
@@ -13,4 +13,4 @@ export class RnAppState {
   }
 }
 
-export default new RnAppState()
+export const RnAppState = new RnAppStateStore()

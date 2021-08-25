@@ -3,31 +3,31 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { Keyboard, Platform, StyleSheet } from 'react-native'
 
-import RnKeyboard from '../stores/RnKeyboard'
-import AnimatedSize from './AnimatedSize'
+import { RnKeyboard } from '../stores/RnKeyboard'
+import { AnimatedSize } from './AnimatedSize'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   ToggleKeyboard: {
     flexDirection: 'row',
     marginRight: 8,
     marginBottom: 4,
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
     paddingVertical: 8,
-    width: g.iconSize + 24,
-    backgroundColor: g.hoverBg,
-    ...g.boxShadow,
+    width: v.iconSize + 24,
+    backgroundColor: v.hoverBg,
+    ...v.boxShadow,
   },
   Text: {
     /* Fix button size does not equal with the Actions */
     width: 0,
-    lineHeight: g.iconSize,
+    lineHeight: v.iconSize,
     overflow: 'hidden',
   },
 })
 
-const ToggleKeyboard: FC<{
+export const ToggleKeyboard: FC<{
   onShowKeyboard(): void
 }> = observer(({ onShowKeyboard }) => {
   if (
@@ -57,5 +57,3 @@ const ToggleKeyboard: FC<{
     </AnimatedSize>
   )
 })
-
-export default ToggleKeyboard

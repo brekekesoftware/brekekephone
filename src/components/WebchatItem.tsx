@@ -1,16 +1,16 @@
 import { mdiClose } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import React, { FC, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
-import uc, { Constants } from '../api/uc'
-import chatStore from '../stores/chatStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
+import { Constants, uc } from '../api/uc'
+import { chatStore } from '../stores/chatStore'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Row: {
@@ -18,7 +18,7 @@ const css = StyleSheet.create({
     paddingHorizontal: 5,
     alignItems: 'center',
     borderBottomWidth: 0.5,
-    borderBottomColor: g.borderBg,
+    borderBottomColor: v.borderBg,
   },
   Column: {
     // flex:1,
@@ -28,7 +28,7 @@ const css = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     minWidth: 80,
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
     borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
@@ -48,13 +48,13 @@ const css = StyleSheet.create({
     padding: 10,
   },
   bgUnread: {
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
   },
 })
 
-const WebchatItem: FC<{
+export const WebchatItem: FC<{
   data: Conference
-}> = ({ data }) => {
+}> = observer(({ data }) => {
   // const data = p.webchat
   // CONF_STATUS_INACTIVE: 0 => disable all , show close
   // CONF_STATUS_INVITED: 1 => enabled join
@@ -68,21 +68,21 @@ const WebchatItem: FC<{
   const isDisplayShow = data.conf_status === Constants.CONF_STATUS_JOINED
   const textDisplay = messages.slice(Math.max(messages.length - 5, 0))
 
-  const answerPress = React.useCallback(() => {
+  const answerPress = useCallback(() => {
     uc.answerWebchatConference(data.conf_id)
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
-  const showPress = React.useCallback(() => {
+  const showPress = useCallback(() => {
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
-  const joinPress = React.useCallback(() => {
+  const joinPress = useCallback(() => {
     uc.joinWebchatConference(data.conf_id)
     Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
-  const closePress = React.useCallback(() => {
+  const closePress = useCallback(() => {
     chatStore.removeWebchatItem(data.conf_id)
   }, [data.conf_id])
 
@@ -101,7 +101,7 @@ const WebchatItem: FC<{
             onPress={showPress}
             style={[
               css.BtnText,
-              { backgroundColor: isDisplayShow ? g.layerBg : g.borderBg },
+              { backgroundColor: isDisplayShow ? v.layerBg : v.borderBg },
             ]}
           >
             <RnText normal white bold>
@@ -114,7 +114,7 @@ const WebchatItem: FC<{
           onPress={joinPress}
           style={[
             css.BtnText,
-            { backgroundColor: isEnabledJoin ? g.layerBg : g.borderBg },
+            { backgroundColor: isEnabledJoin ? v.layerBg : v.borderBg },
           ]}
         >
           <RnText normal white bold>
@@ -152,5 +152,4 @@ const WebchatItem: FC<{
       )}
     </View>
   )
-}
-export default observer(WebchatItem)
+})

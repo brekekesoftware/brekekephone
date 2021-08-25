@@ -2,16 +2,16 @@ import { action, computed, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
-import pbx from '../api/pbx'
-import sip from '../api/sip'
+import { pbx } from '../api/pbx'
+import { sip } from '../api/sip'
 import { IncomingCall } from '../utils/RnNativeModules'
-import waitTimeout from '../utils/waitTimeout'
+import { waitTimeout } from '../utils/waitTimeout'
 import { CallStore } from './callStore'
 import { intlDebug } from './intl'
-import Nav from './Nav'
-import RnAlert from './RnAlert'
+import { Nav } from './Nav'
+import { RnAlert } from './RnAlert'
 
-export default class Call {
+export class Call {
   constructor(private store: CallStore) {}
 
   @observable id = ''

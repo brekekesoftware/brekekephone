@@ -14,19 +14,19 @@ import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { callStore } from '../stores/callStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnStacker from '../stores/RnStacker'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnStacker } from '../stores/RnStacker'
 import { Duration } from '../stores/timerStore'
-import ButtonIcon from './ButtonIcon'
+import { ButtonIcon } from './ButtonIcon'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   CallBar: {
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
-    backgroundColor: g.hoverBg,
+    borderColor: v.borderBg,
+    backgroundColor: v.hoverBg,
   },
   CallBar_Outer: {
     flexDirection: 'row',
@@ -51,7 +51,7 @@ const css = StyleSheet.create({
   },
 })
 
-const CallBar = observer(() => {
+export const CallBar = observer(() => {
   const bVisible =
     RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
   const c = callStore.getCurrentCall()
@@ -66,7 +66,7 @@ const CallBar = observer(() => {
       >
         <View style={css.CallBar_Icon}>
           <RnIcon
-            color={c.incoming ? g.colors.primary : g.colors.warning}
+            color={c.incoming ? v.colors.primary : v.colors.warning}
             path={c.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline}
           />
         </View>
@@ -85,26 +85,26 @@ const CallBar = observer(() => {
           {!c.holding && (
             <>
               <ButtonIcon
-                bdcolor={g.borderBg}
-                color={g.colors.danger}
+                bdcolor={v.borderBg}
+                color={v.colors.danger}
                 onPress={c.hangupWithUnhold}
                 path={mdiPhoneHangup}
               />
               {c.answered && (
                 <>
                   <ButtonIcon
-                    bdcolor={g.borderBg}
-                    color={c.muted ? g.colors.primary : g.color}
+                    bdcolor={v.borderBg}
+                    color={c.muted ? v.colors.primary : v.color}
                     onPress={() => c.toggleMuted()}
                     path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
                   />
                   {Platform.OS !== 'web' && (
                     <ButtonIcon
-                      bdcolor={g.borderBg}
+                      bdcolor={v.borderBg}
                       color={
                         callStore.isLoudSpeakerEnabled
-                          ? g.colors.primary
-                          : g.color
+                          ? v.colors.primary
+                          : v.color
                       }
                       onPress={callStore.toggleLoudSpeaker}
                       path={
@@ -119,8 +119,8 @@ const CallBar = observer(() => {
             </>
           )}
           <ButtonIcon
-            bdcolor={g.borderBg}
-            color={c.holding ? g.colors.primary : g.color}
+            bdcolor={v.borderBg}
+            color={c.holding ? v.colors.primary : v.color}
             onPress={c.toggleHoldWithCheck}
             path={c.holding ? mdiPlay : mdiPause}
           />
@@ -129,5 +129,3 @@ const CallBar = observer(() => {
     </View>
   )
 })
-
-export default CallBar

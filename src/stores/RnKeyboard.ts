@@ -41,8 +41,7 @@ class RnKeyboardStore {
   }
 }
 
-const RnKeyboard = new RnKeyboardStore()
-export default RnKeyboard
+export const RnKeyboard = new RnKeyboardStore()
 
 // ios
 Keyboard.addListener(

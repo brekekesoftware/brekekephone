@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 
-import Call from '../stores/Call'
+import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
-import CallVoicesUI from './CallVoicesUI'
+import { CallVoicesUI } from './CallVoicesUI'
 
 @observer
-class CallVoices extends React.Component {
+export class CallVoices extends Component {
   render() {
     const map = callStore.calls.reduce((m, c) => {
       // @ts-ignore
@@ -33,5 +33,3 @@ class CallVoices extends React.Component {
     )
   }
 }
-
-export default CallVoices

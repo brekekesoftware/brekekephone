@@ -2,7 +2,7 @@ const os = 1000
 const om = 60 * os
 const oh = 60 * om
 
-export default (ms: number) => {
+export const formatDuration = (ms: number) => {
   const h = Math.floor(ms / oh)
   ms %= oh
   let m: number | string = Math.floor(ms / om)

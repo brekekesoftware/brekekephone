@@ -41,7 +41,7 @@ yarn cache clean && yarn --check-files && yarn rn --reset-cache
 - Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off. Example of real config:
 
 ```js
-export default {
+export const turnConfig = {
   pcConfig: {
     iceServers: [
       {

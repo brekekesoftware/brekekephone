@@ -1,6 +1,6 @@
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import React, { Component, FC } from 'react'
 import {
   GestureResponderEvent,
   PanResponder,
@@ -12,10 +12,10 @@ import {
 } from 'react-native'
 
 import { callStore } from '../stores/callStore'
-import Nav from '../stores/Nav'
-import RnStacker from '../stores/RnStacker'
-import g from './variables'
-import VideoPlayer from './VideoPlayer'
+import { Nav } from '../stores/Nav'
+import { RnStacker } from '../stores/RnStacker'
+import { v } from './variables'
+import { VideoPlayer } from './VideoPlayer'
 
 const css = StyleSheet.create({
   Mini: {
@@ -32,12 +32,12 @@ const css = StyleSheet.create({
         height: 150,
       },
       web: {
-        borderRadius: g.borderRadius,
+        borderRadius: v.borderRadius,
       },
     }),
     overflow: 'hidden',
-    ...g.boxShadow,
-    ...g.backdropZindex,
+    ...v.boxShadow,
+    ...v.backdropZindex,
   },
 })
 type Props = {
@@ -46,7 +46,7 @@ type Props = {
 }
 
 @observer
-class Mini extends React.Component<Props> {
+class Mini extends Component<Props> {
   panResponder: PanResponderInstance
   view?: View
   private lastTap?: number
@@ -114,7 +114,7 @@ class Mini extends React.Component<Props> {
 }
 
 @observer
-class Control extends React.Component<{
+class Control extends Component<{
   sourceObject: MediaStream
 }> {
   render() {
@@ -130,7 +130,7 @@ class Control extends React.Component<{
   }
 }
 
-const CallVideos: FC<{
+export const CallVideosUI: FC<{
   callIds: string[]
   resolveCall: Function
 }> = p => (
@@ -140,4 +140,3 @@ const CallVideos: FC<{
     ))}
   </>
 )
-export default CallVideos

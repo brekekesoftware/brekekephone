@@ -1,10 +1,10 @@
 import { debounce } from 'lodash'
 import { action, autorun, Lambda } from 'mobx'
 
-import pbx from '../api/pbx'
+import { pbx } from '../api/pbx'
 import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
-import RnAlert from './RnAlert'
+import { RnAlert } from './RnAlert'
 
 class AuthPBX {
   private clearObserve?: Lambda

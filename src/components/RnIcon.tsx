@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { StyleSheet, View, ViewProps } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
-import v from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Icon: {
@@ -12,7 +12,7 @@ const css = StyleSheet.create({
   },
 })
 
-const Icon: FC<
+export const RnIcon: FC<
   ViewProps & {
     color?: string
     path: string
@@ -31,5 +31,3 @@ const Icon: FC<
     </Svg>
   </View>
 )
-
-export default Icon

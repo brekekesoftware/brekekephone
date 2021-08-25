@@ -7,7 +7,7 @@ import { FastImageProps } from 'react-native-fast-image'
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
 import { getAuthStore } from '../stores/authStore'
 import { RnIcon, RnImage } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Avatar: {
@@ -30,13 +30,13 @@ const css = StyleSheet.create({
 })
 
 const statusMapColor = {
-  online: g.colors.primary,
-  idle: g.colors.warning,
-  busy: g.colors.danger,
-  offline: g.subColor,
+  online: v.colors.primary,
+  idle: v.colors.warning,
+  busy: v.colors.danger,
+  offline: v.subColor,
 }
 
-const Avatar = observer(
+export const Avatar = observer(
   (p: {
     source?: string | { uri: string }
     status?: string
@@ -68,5 +68,3 @@ const Avatar = observer(
     )
   },
 )
-
-export default Avatar

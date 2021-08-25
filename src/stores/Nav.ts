@@ -1,8 +1,8 @@
-import { Nav } from './Nav2'
+import { Nav2 } from './Nav2'
 
 // Fix ciruclar dependencies
-let nav: Nav
-export const setNav = (n: Nav) => {
+let nav: Nav2
+export const setNav = (n: Nav2) => {
   nav = n
 }
-export default () => nav
+export const Nav = () => nav

@@ -5,19 +5,19 @@ import {
   mdiPhoneOff,
 } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import sip from '../api/sip'
-import Avatar from '../components/Avatar'
+import { sip } from '../api/sip'
+import { Avatar } from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
-import g from '../components/variables'
+import { v } from '../components/variables'
 import { callStore } from '../stores/callStore'
-import contactStore from '../stores/contactStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
+import { contactStore } from '../stores/contactStore'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 
-const css = StyleSheet.create({
+export const css = StyleSheet.create({
   Outer: {
     alignItems: 'center',
     backgroundColor: 'white',
@@ -59,13 +59,13 @@ const css = StyleSheet.create({
     height: 50,
   },
   Btn__stop: {
-    backgroundColor: g.colors.warning,
+    backgroundColor: v.colors.warning,
   },
   Btn__hangup: {
-    backgroundColor: g.colors.danger,
+    backgroundColor: v.colors.danger,
   },
   Btn__conference: {
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
   },
   Space: {
     height: 10,
@@ -73,7 +73,7 @@ const css = StyleSheet.create({
 })
 
 @observer
-class PageCallTransferAttend extends React.Component {
+export class PageCallTransferAttend extends Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -162,5 +162,3 @@ class PageCallTransferAttend extends React.Component {
     )
   }
 }
-
-export default PageCallTransferAttend

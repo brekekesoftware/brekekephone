@@ -2,9 +2,9 @@ import { mdiDotsVertical } from '@mdi/js'
 import React, { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
-import AnimatedSize from './AnimatedSize'
+import { AnimatedSize } from './AnimatedSize'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Backdrop: {
@@ -13,8 +13,8 @@ const css = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: g.fn.transparentize(0.8, 'black'),
-    ...g.backdropZindex,
+    backgroundColor: v.fn.transparentize(0.8, 'black'),
+    ...v.backdropZindex,
   },
   //
   Dropdown: {
@@ -22,22 +22,22 @@ const css = StyleSheet.create({
     top: 60,
     right: 15,
     width: 250,
-    ...g.boxShadow,
-    ...g.backdropZindex,
+    ...v.boxShadow,
+    ...v.backdropZindex,
   },
   Dropdown__compact: {
     top: 35,
   },
   Inner: {
-    borderRadius: g.borderRadius,
-    backgroundColor: g.bg,
+    borderRadius: v.borderRadius,
+    backgroundColor: v.bg,
   },
   //
   Item: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
   },
   Item__last: {
     borderBottomWidth: 0,
@@ -59,7 +59,7 @@ export type HeaderDropdownItem = Partial<{
   primary: boolean
   warning: boolean
 }>
-const Dropdown: FC<{
+export const Dropdown: FC<{
   close(): void
   compact: boolean
   dropdown: HeaderDropdownItem[]
@@ -98,5 +98,3 @@ export const DropdownBtn: FC<{ onPress(): void }> = ({ onPress }) => (
     <RnIcon path={mdiDotsVertical} />
   </RnTouchableOpacity>
 )
-
-export default Dropdown

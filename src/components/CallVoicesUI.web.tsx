@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, createRef } from 'react'
 
 import ringback from '../assets/incallmanager_ringback.mp3'
 import ringtone from '../assets/incallmanager_ringtone.mp3'
-import Call from '../stores/Call'
+import { Call } from '../stores/Call'
 
-class AnsweredItem extends React.Component<{
+class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
-  audioRef = React.createRef<HTMLAudioElement>()
+  audioRef = createRef<HTMLAudioElement>()
   componentDidMount() {
     if (!this.audioRef.current) {
       return
@@ -29,7 +29,7 @@ class AnsweredItem extends React.Component<{
   }
 }
 
-const CallVoicesUI = observer(
+export const CallVoicesUI = observer(
   (p: {
     incomingCallIds: string[]
     outgoingCallIds: string[]
@@ -55,5 +55,3 @@ const CallVoicesUI = observer(
     </>
   ),
 )
-
-export default CallVoicesUI

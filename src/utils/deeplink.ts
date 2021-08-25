@@ -1,7 +1,7 @@
 import { Linking } from 'react-native'
 
 import { compareProfile, getAuthStore } from '../stores/authStore'
-import parse, { UrlParams } from './deeplink-parse'
+import { parse, UrlParams } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
 let urlParams: UrlParams | null = null

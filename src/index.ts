@@ -8,7 +8,7 @@ import './api/syncPnToken2' // Fix circular dependencies
 import { configure, onReactionError } from 'mobx'
 import { AppRegistry, Platform } from 'react-native'
 
-import App from './components/App'
+import { App } from './components/App'
 import { callStore } from './stores/callStore'
 import { setCallStore } from './stores/cancelRecentPn'
 

@@ -20,7 +20,7 @@ const css = StyleSheet.create({
   },
 })
 
-const BackBtn: FC<{
+export const BackBtn: FC<{
   compact: boolean
   onPress(): void
 }> = p => {
@@ -37,5 +37,3 @@ const BackBtn: FC<{
     </RnTouchableOpacity>
   )
 }
-
-export default BackBtn

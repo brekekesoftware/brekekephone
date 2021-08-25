@@ -2,9 +2,9 @@ import { mdiKeyboardBackspace } from '@mdi/js'
 import React, { FC } from 'react'
 import { Platform, StyleSheet, TouchableOpacityProps, View } from 'react-native'
 
-import Field from './Field'
+import { Field } from './Field'
 import { RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   FieldButton: {
@@ -13,7 +13,7 @@ const css = StyleSheet.create({
     paddingHorizontal: 10,
     width: 305,
     backgroundColor: 'white',
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
     overflow: 'hidden',
   },
   Inner: {
@@ -45,7 +45,7 @@ const css = StyleSheet.create({
   },
 })
 
-const FieldButton: FC<
+export const FieldButton: FC<
   Partial<{
     style: TouchableOpacityProps['style']
     onCreateBtnPress(): void
@@ -71,5 +71,3 @@ const FieldButton: FC<
     </RnTouchableOpacity>
   )
 }
-
-export default FieldButton

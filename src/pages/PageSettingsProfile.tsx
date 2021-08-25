@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react'
 import React from 'react'
 
-import ProfileCreateForm from '../components/ProfileCreateForm'
+import { ProfileCreateForm } from '../components/ProfileCreateForm'
 import { getAuthStore } from '../stores/authStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
-import profileStore, { Profile } from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { Profile, profileStore } from '../stores/profileStore'
+import { RnAlert } from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 
-const PageSettingsProfile = observer(() => (
+export const PageSettingsProfile = observer(() => (
   <ProfileCreateForm
     footerLogout
     onBack={Nav().backToPageContactUsers}
@@ -32,5 +32,3 @@ const PageSettingsProfile = observer(() => (
     updatingProfile={getAuthStore().currentProfile}
   />
 ))
-
-export default PageSettingsProfile

@@ -2,7 +2,7 @@ import get from 'lodash/get'
 import qs from 'qs'
 import Url from 'url-parse'
 
-const parse = (location: string | Url | null) => {
+export const parse = (location: string | Url | null) => {
   if (!location) {
     return null
   }
@@ -48,5 +48,3 @@ export interface UrlParams {
   phone_idx: string
   _wn: string
 }
-
-export default parse

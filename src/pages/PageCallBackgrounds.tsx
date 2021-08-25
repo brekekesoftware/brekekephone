@@ -2,18 +2,18 @@ import { mdiPhone, mdiPhoneHangup } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React from 'react'
 
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
-import g from '../components/variables'
-import Call from '../stores/Call'
+import { v } from '../components/variables'
+import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
 
-const PageCallBackgrounds = observer(() => {
+export const PageCallBackgrounds = observer(() => {
   const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
   const currentCall = callStore.getCurrentCall()
   const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
@@ -22,8 +22,8 @@ const PageCallBackgrounds = observer(() => {
       ...(!c.answered && c.incoming ? [mdiPhone] : []),
     ]
     const iconColors = [
-      g.colors.danger,
-      ...(!c.answered && c.incoming ? [g.colors.primary] : []),
+      v.colors.danger,
+      ...(!c.answered && c.incoming ? [v.colors.primary] : []),
     ]
     const iconFuncs = [
       c.hangupWithUnhold,
@@ -95,5 +95,3 @@ const PageCallBackgrounds = observer(() => {
     </Layout>
   )
 })
-
-export default PageCallBackgrounds

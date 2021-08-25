@@ -5,15 +5,15 @@ import React, { FC } from 'react'
 import { Platform, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
-import intl from '../stores/intl'
-import profileStore, { Profile } from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
-import useForm from '../utils/useForm'
-import useStore from '../utils/useStore'
-import Layout from './Layout'
+import { intl } from '../stores/intl'
+import { Profile, profileStore } from '../stores/profileStore'
+import { RnAlert } from '../stores/RnAlert'
+import { useForm } from '../utils/useForm'
+import { useStore } from '../utils/useStore'
+import { Layout } from './Layout'
 import { RnText } from './Rn'
 
-const ProfileCreateForm: FC<{
+export const ProfileCreateForm: FC<{
   updatingProfile?: Profile
   onBack: Function
   onSave: Function
@@ -258,5 +258,3 @@ const ProfileCreateForm: FC<{
     </Layout>
   )
 })
-
-export default ProfileCreateForm

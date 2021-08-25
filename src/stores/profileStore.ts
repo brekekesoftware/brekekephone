@@ -9,7 +9,7 @@ import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
 import { arrToMap } from '../utils/toMap'
 import { intlDebug } from './intl'
-import RnAlert from './RnAlert'
+import { RnAlert } from './RnAlert'
 
 let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
@@ -212,7 +212,7 @@ export const getAccountUniqueId = (p: Profile) =>
     p: p.pbxPort,
   })
 
-export default new ProfileStore()
+export const profileStore = new ProfileStore()
 
 export type TProfileDataInStorage = {
   profiles: Profile[]

@@ -3,7 +3,7 @@ import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
 
 import { Conference } from '../api/brekekejs'
-import uc, { Constants } from '../api/uc'
+import { Constants, uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
@@ -267,4 +267,4 @@ class ChatStore {
   }
 }
 
-export default new ChatStore()
+export const chatStore = new ChatStore()

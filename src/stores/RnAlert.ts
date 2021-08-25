@@ -23,7 +23,7 @@ export type ErrorRnAlert2 = Omit<ErrorRnAlert, 'message'> & {
   message?: string
 }
 
-export type RnAlert =
+export type TRnAlert =
   | {
       prompt: PromptRnAlert
     }
@@ -35,7 +35,7 @@ export class RnAlertStore {
   // Need to put `alerts` out of the observable
   //  because ReactElement can not stay in the mobx state
   @observable alertsCount = 0
-  alerts: RnAlert[] = []
+  alerts: TRnAlert[] = []
 
   @action prompt = (prompt: PromptRnAlert) => {
     this.alerts.push({ prompt })
@@ -63,4 +63,4 @@ export class RnAlertStore {
   }
 }
 
-export default new RnAlertStore()
+export const RnAlert = new RnAlertStore()

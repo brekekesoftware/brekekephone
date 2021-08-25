@@ -1,11 +1,11 @@
-import React, { FC } from 'react'
+import React, { Component, FC } from 'react'
 import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
 import { callStore } from '../stores/callStore'
 import { DidMountTimer } from './CallNotify'
 
-class IncomingItem extends React.Component {
+class IncomingItem extends Component {
   componentDidMount() {
     IncallManager.startRingtone('_BUNDLE_')
     // TODO stop ringtone if user press hardware button
@@ -23,7 +23,7 @@ class IncomingItem extends React.Component {
   }
 }
 
-class OutgoingItem extends React.Component {
+class OutgoingItem extends Component {
   componentDidMount() {
     IncallManager.startRingback('_BUNDLE_')
   }
@@ -39,7 +39,7 @@ class OutgoingItem extends React.Component {
   }
 }
 
-const CallVoicesUI: FC<{
+export const CallVoicesUI: FC<{
   incomingCallIds: string[]
   outgoingCallIds: string[]
   answeredCallIds: string[]
@@ -54,5 +54,3 @@ const CallVoicesUI: FC<{
     {p.outgoingCallIds.filter(i => i).length ? <OutgoingItem /> : null}
   </>
 )
-
-export default CallVoicesUI

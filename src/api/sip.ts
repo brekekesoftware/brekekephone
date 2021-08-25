@@ -6,11 +6,11 @@ import { Platform } from 'react-native'
 
 import appPackageJson from '../../package.json'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
-import chatStore from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
-import getFrontCameraSourceId from './getFrontCameraSourceId'
-import pbx from './pbx'
-import turnConfig from './turnConfig'
+import { getFrontCameraSourceId } from './getFrontCameraSourceId'
+import { pbx } from './pbx'
+import { turnConfig } from './turnConfig'
 
 const sipCreateMediaConstraints = (sourceId?: string) => {
   return {
@@ -313,8 +313,7 @@ export class SIP extends EventEmitter {
   }
 }
 
-const sip = new SIP()
-export default sip
+export const sip = new SIP()
 
 export interface SipLoginOption {
   hostname: string

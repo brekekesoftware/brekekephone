@@ -17,22 +17,22 @@ import {
 } from '@mdi/js'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, Fragment } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
-import BrekekeGradient from '../components/BrekekeGradient'
-import ButtonIcon from '../components/ButtonIcon'
-import FieldButton from '../components/FieldButton'
-import Layout from '../components/Layout'
+import { BrekekeGradient } from '../components/BrekekeGradient'
+import { ButtonIcon } from '../components/ButtonIcon'
+import { FieldButton } from '../components/FieldButton'
+import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
-import RnText from '../components/RnText'
-import g from '../components/variables'
-import VideoPlayer from '../components/VideoPlayer'
-import Call from '../stores/Call'
+import { RnText } from '../components/RnText'
+import { v } from '../components/variables'
+import { VideoPlayer } from '../components/VideoPlayer'
+import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
-import PageCallTransferAttend from './PageCallTransferAttend'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const css = StyleSheet.create({
   Video: {
@@ -57,7 +57,7 @@ const css = StyleSheet.create({
     paddingBottom: 124, // Hangup button 64 + 2*30
   },
   Btns__isVideoEnabled: {
-    backgroundColor: g.layerBg,
+    backgroundColor: v.layerBg,
   },
   Btns_Hidden: {
     opacity: 0,
@@ -92,7 +92,7 @@ const css = StyleSheet.create({
 })
 
 @observer
-class PageCallManage extends React.Component<{
+export class PageCallManage extends Component<{
   isFromCallBar?: boolean
 }> {
   @observable showButtonsInVideoCall = true
@@ -173,7 +173,7 @@ class PageCallManage extends React.Component<{
       return null
     }
     const Container = isVideoEnabled ? RnTouchableOpacity : View
-    const activeColor = isVideoEnabled ? g.colors.primary : g.colors.warning
+    const activeColor = isVideoEnabled ? v.colors.primary : v.colors.warning
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
@@ -300,7 +300,7 @@ class PageCallManage extends React.Component<{
             </RnText>
           ) : (
             <ButtonIcon
-              bgcolor={g.colors.danger}
+              bgcolor={v.colors.danger}
               color='white'
               noborder
               onPress={c.hangupWithUnhold}
@@ -324,7 +324,7 @@ class PageCallManage extends React.Component<{
             </View>
             <View style={[css.Hangup, css.Hangup_answer]}>
               <ButtonIcon
-                bgcolor={g.colors.primary}
+                bgcolor={v.colors.primary}
                 color='white'
                 noborder
                 onPress={() => c.answer(true)}
@@ -343,9 +343,7 @@ class PageCallManage extends React.Component<{
     const c = callStore.getCurrentCall()
     void callStore.calls.length // trigger componentDidUpdate
     const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
-    const Container = isVideoEnabled ? React.Fragment : BrekekeGradient
+    const Container = isVideoEnabled ? Fragment : BrekekeGradient
     return <Container>{this.renderCall(c, isVideoEnabled)}</Container>
   }
 }
-
-export default PageCallManage

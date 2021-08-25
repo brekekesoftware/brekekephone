@@ -22,4 +22,4 @@ export class RnPickerStore {
   }
 }
 
-export default new RnPickerStore()
+export const RnPicker = new RnPickerStore()

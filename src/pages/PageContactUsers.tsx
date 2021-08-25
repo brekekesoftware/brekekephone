@@ -2,24 +2,24 @@ import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
 import orderBy from 'lodash/orderBy'
 import uniq from 'lodash/uniq'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, Fragment } from 'react'
 
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import chatStore, { ChatMessage } from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
-import DelayFlag from '../utils/DelayFlag'
+import { ChatMessage, chatStore } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { profileStore } from '../stores/profileStore'
+import { DelayFlag } from '../utils/DelayFlag'
 import { filterTextOnly } from '../utils/formatChatContent'
 
 @observer
-class PageContactUsers extends React.Component {
+export class PageContactUsers extends Component {
   displayOfflineUsers = new DelayFlag()
 
   componentDidMount() {
@@ -158,7 +158,7 @@ class PageContactUsers extends React.Component {
           />
         )}
         {groups.map(gr => (
-          <React.Fragment key={gr.key}>
+          <Fragment key={gr.key}>
             <Field isGroup label={gr.key} />
             {gr.users.map((u, i) => (
               <RnTouchableOpacity
@@ -180,11 +180,9 @@ class PageContactUsers extends React.Component {
                 />
               </RnTouchableOpacity>
             ))}
-          </React.Fragment>
+          </Fragment>
         ))}
       </Layout>
     )
   }
 }
-
-export default PageContactUsers

@@ -2,31 +2,31 @@ import { mdiCheck, mdiClose } from '@mdi/js'
 import sortBy from 'lodash/sortBy'
 import { action, computed, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import React, { Component, FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import uc from '../api/uc'
-import chatStore from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
-import RnStacker from '../stores/RnStacker'
+import { uc } from '../api/uc'
+import { chatStore } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
+import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
-import ButtonIcon from './ButtonIcon'
+import { ButtonIcon } from './ButtonIcon'
 import { formatDateTimeSemantic } from './chatConfig'
-import UserItem from './ContactUserItem'
+import { UserItem } from './ContactUserItem'
 import { RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Notify: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
-    backgroundColor: g.hoverBg,
+    borderColor: v.borderBg,
+    backgroundColor: v.hoverBg,
   },
   Notify_Info: {
     flex: 1,
@@ -34,10 +34,10 @@ const css = StyleSheet.create({
     paddingVertical: 5,
   },
   Notify_Btn_reject: {
-    borderColor: g.colors.danger,
+    borderColor: v.colors.danger,
   },
   Notify_Btn_accept: {
-    borderColor: g.colors.primary,
+    borderColor: v.colors.primary,
   },
 
   NotifyUnread: {
@@ -45,7 +45,7 @@ const css = StyleSheet.create({
   },
   NotifyUnreadBtn: {
     flex: 1,
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
   },
 })
 
@@ -67,16 +67,16 @@ const Notify: FC<{
             <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
           </View>
           <ButtonIcon
-            bdcolor={g.colors.danger}
-            color={g.colors.danger}
+            bdcolor={v.colors.danger}
+            color={v.colors.danger}
             onPress={() => p.reject(p.id)}
             path={mdiClose}
             size={20}
             style={css.Notify_Btn_reject}
           />
           <ButtonIcon
-            bdcolor={g.colors.primary}
-            color={g.colors.primary}
+            bdcolor={v.colors.primary}
+            color={v.colors.primary}
             onPress={() => p.accept(p.id)}
             path={mdiCheck}
             size={20}
@@ -90,7 +90,7 @@ const Notify: FC<{
 })
 
 @observer
-class ChatGroupInvite extends React.Component {
+export class ChatGroupInvite extends Component {
   @observable loading = false
   @computed get groupIds() {
     // update logic if from webchat don't show notify
@@ -154,7 +154,7 @@ class ChatGroupInvite extends React.Component {
 }
 
 @observer
-class UnreadChatNoti extends React.Component {
+export class UnreadChatNoti extends Component {
   @observable unreadChat: null | {
     id: string
     isGroup: boolean
@@ -181,13 +181,13 @@ class UnreadChatNoti extends React.Component {
     }
     let unreadChats = Object.entries(chatStore.threadConfig)
       .filter(
-        ([k, v]) =>
-          v.isUnread && filterTextOnly(chatStore.messagesByThreadId[k])?.length,
+        ([k, c]) =>
+          c.isUnread && filterTextOnly(chatStore.messagesByThreadId[k])?.length,
       )
-      .map(([k, v]) => {
+      .map(([k, c]) => {
         const arr = filterTextOnly(chatStore.messagesByThreadId[k])
         return {
-          ...v,
+          ...c,
           lastMessage: arr[arr.length - 1],
         }
       })
@@ -263,13 +263,13 @@ class UnreadChatNoti extends React.Component {
   }
 
   render() {
-    Object.values(chatStore.threadConfig).forEach(v => {
-      Object.values(v).forEach(v2 => {
+    Object.values(chatStore.threadConfig).forEach(c => {
+      Object.values(c).forEach(v2 => {
         void v2
       })
     })
-    Object.values(chatStore.messagesByThreadId).forEach(v => {
-      v.forEach(v2 => {
+    Object.values(chatStore.messagesByThreadId).forEach(c => {
+      c.forEach(v2 => {
         void v2.id
       })
     })
@@ -302,6 +302,3 @@ class UnreadChatNoti extends React.Component {
     )
   }
 }
-
-export { UnreadChatNoti }
-export default ChatGroupInvite

@@ -4,7 +4,7 @@ import RNFS from 'react-native-fs'
 import ImagePicker from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
-import RnPicker from '../stores/RnPicker'
+import { RnPicker } from '../stores/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
 
 const actionSheetHandlers = [
@@ -63,7 +63,7 @@ const actionSheetHandlers = [
     }),
 ]
 
-const pickFile = (cb: Function) =>
+export const pickFile = (cb: Function) =>
   RnPicker.open({
     options: pickFileNativeOptions(),
     onSelect: (i: number) => pickFileOnSelect(i, cb),
@@ -135,5 +135,3 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
 
   cb({ uri: file.uri, name, size })
 }
-
-export default pickFile

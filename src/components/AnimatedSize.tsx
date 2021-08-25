@@ -18,7 +18,7 @@ const css = StyleSheet.create({
 
 // The style and innerStyle prop should only be used for positioning and theming
 // We should not use them for sizing like height/border/padding... -> use the children instead
-const AnimatedSize: FC<
+export const AnimatedSize: FC<
   ViewProps & {
     animateWidth?: boolean
     innerStyle?: ViewProps['style']
@@ -65,5 +65,3 @@ const Animation = (p: {
     </Animated.View>
   )
 }
-
-export default AnimatedSize

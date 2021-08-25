@@ -5,8 +5,8 @@ import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
 
 import { ChatFile } from '../stores/chatStore'
-import RnTouchableOpacity from './RnTouchableOpacity'
-import g from './variables'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
+import { v } from './variables'
 
 const size = 200
 const css = StyleSheet.create({
@@ -21,13 +21,13 @@ const css = StyleSheet.create({
     height: size,
     borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: g.layerBgVideo,
+    backgroundColor: v.layerBgVideo,
   },
   loading: {
     position: 'absolute',
     top: 0,
     left: 0,
-    backgroundColor: g.layerBg,
+    backgroundColor: v.layerBg,
     width: size,
     height: size,
     borderRadius: 5,
@@ -37,7 +37,7 @@ const css = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    backgroundColor: g.layerBg,
+    backgroundColor: v.layerBg,
     width: size,
     height: size,
     borderRadius: 5,
@@ -54,7 +54,7 @@ const css = StyleSheet.create({
   },
 })
 
-const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
+export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
   state,
   fileType,
@@ -126,11 +126,9 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           viewBox='3 3  18 18'
           width={size}
         >
-          <Path d={mdiImageBrokenVariant} fill={g.colors.greyTextChat} />
+          <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
         </Svg>
       )}
     </View>
   )
 }
-
-export default RnImageVideoLoader

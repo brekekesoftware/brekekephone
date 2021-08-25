@@ -9,10 +9,10 @@ import {
 } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
-import RnKeyboard from '../stores/RnKeyboard'
+import { RnKeyboard } from '../stores/RnKeyboard'
 import { toLowerCaseFirstChar } from '../utils/string'
-import Footer from './Footer'
-import Header from './Header'
+import { Footer } from './Footer'
+import { Header } from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
 
 const css = StyleSheet.create({
@@ -32,7 +32,7 @@ const css = StyleSheet.create({
   },
 })
 
-const Layout: FC<
+export const Layout: FC<
   Partial<{
     compact: boolean
     containerOnContentSizeChange: Function
@@ -126,5 +126,3 @@ const Layout: FC<
     </>
   )
 })
-
-export default Layout

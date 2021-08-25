@@ -3,13 +3,13 @@ import { debounce } from 'lodash'
 import { action, autorun, Lambda } from 'mobx'
 
 import { UcErrors } from '../api/brekekejs'
-import pbx from '../api/pbx'
-import uc from '../api/uc'
+import { pbx } from '../api/pbx'
+import { uc } from '../api/uc'
 import { getAuthStore } from './authStore'
-import chatStore, { ChatMessage } from './chatStore'
-import contactStore from './contactStore'
+import { ChatMessage, chatStore } from './chatStore'
+import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
-import RnAlert from './RnAlert'
+import { RnAlert } from './RnAlert'
 
 const UCClient = UCClient0 as {
   Errors: UcErrors

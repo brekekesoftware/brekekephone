@@ -3,7 +3,7 @@ import { ReactComponentLike } from 'prop-types'
 import { SyntheticEvent } from 'react'
 
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import RnKeyboard from './RnKeyboard'
+import { RnKeyboard } from './RnKeyboard'
 
 export type StackerFn<T> = keyof T extends never
   ? () => void
@@ -87,4 +87,4 @@ export class RnStackerStore {
     }
 }
 
-export default new RnStackerStore()
+export const RnStacker = new RnStackerStore()

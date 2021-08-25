@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars/dist/handlebars'
 import HandlebarsMoment from 'helper-moment'
 
-import intlStore, { enLabelsMapIndex, labels } from './intlStore'
+import { enLabelsMapIndex, intlStore, labels } from './intlStore'
 
 Handlebars.registerHelper('moment', HandlebarsMoment)
 
@@ -35,8 +35,7 @@ export const intlDebug = intlDebug0 as unknown as (
   ...substitutions: any[]
 ) => IntlDebug
 
-const intl = intl0 as unknown as (
+export const intl = intl0 as unknown as (
   template: TemplateStringsArray,
   ...substitutions: any[]
 ) => string
-export default intl

@@ -2,15 +2,15 @@ import { mdiCached, mdiKeyboardBackspace } from '@mdi/js'
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import intl from '../stores/intl'
+import { intl } from '../stores/intl'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Actions: {
     flex: 1,
     flexDirection: 'row',
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
     overflow: 'hidden',
   },
   //
@@ -20,14 +20,14 @@ const css = StyleSheet.create({
     paddingVertical: 8,
   },
   Btn__back: {
-    backgroundColor: g.colors.dangerFn(0.5),
+    backgroundColor: v.colors.dangerFn(0.5),
   },
   Btn__more: {
-    backgroundColor: g.hoverBg,
+    backgroundColor: v.hoverBg,
   },
   Btn__next: {
     width: '50%',
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
   },
   Btn__15: {
     width: '15%',
@@ -44,13 +44,13 @@ const css = StyleSheet.create({
   //
   Text: {
     flex: 1,
-    color: g.revColor,
-    lineHeight: g.iconSize,
+    color: v.revColor,
+    lineHeight: v.iconSize,
     textAlign: 'center',
   },
 })
 
-const Actions: FC<
+export const FooterActions: FC<
   Partial<{
     onBack(): void
     onBackIcon: string
@@ -79,7 +79,7 @@ const Actions: FC<
           style={[css.Btn, css.Btn__back, !onMore && css.Btn__33]}
         >
           <RnIcon
-            color={g.colors.danger}
+            color={v.colors.danger}
             path={onBackIcon || mdiKeyboardBackspace}
           />
         </RnTouchableOpacity>
@@ -111,4 +111,3 @@ const Actions: FC<
     </View>
   )
 }
-export default Actions

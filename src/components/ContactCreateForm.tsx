@@ -4,11 +4,11 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 
 import { Phonebook2 } from '../stores/contactStore'
-import intl from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
-import useForm from '../utils/useForm'
-import useStore from '../utils/useStore'
-import Layout from './Layout'
+import { intl } from '../stores/intl'
+import { RnAlert } from '../stores/RnAlert'
+import { useForm } from '../utils/useForm'
+import { useStore } from '../utils/useStore'
+import { Layout } from './Layout'
 
 const genEmptyPhonebook = () => {
   return {
@@ -25,7 +25,7 @@ const genEmptyPhonebook = () => {
   }
 }
 
-const ContactsCreateForm: FC<{
+export const ContactsCreateForm: FC<{
   updatingPhonebook?: Phonebook2
   book?: string
   onBack: Function
@@ -154,5 +154,3 @@ const ContactsCreateForm: FC<{
     </Layout>
   )
 })
-
-export default ContactsCreateForm

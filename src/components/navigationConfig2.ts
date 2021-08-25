@@ -1,9 +1,9 @@
 import { action } from 'mobx'
 import { ReactComponentLike } from 'prop-types'
 
-import intl from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
-import RnStacker from '../stores/RnStacker'
+import { intl } from '../stores/intl'
+import { RnAlert } from '../stores/RnAlert'
+import { RnStacker } from '../stores/RnStacker'
 import { arrToMap } from '../utils/toMap'
 import { Menu, SubMenu } from './navigationConfig'
 

@@ -5,12 +5,12 @@ import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { ChatMessage } from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import Avatar from './Avatar'
+import { contactStore } from '../stores/contactStore'
+import { Avatar } from './Avatar'
 import { groupByTimestamp } from './chatConfig'
-import Message from './ChatMessage'
+import { Message } from './ChatMessage'
 import { RnText } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   DateGroup: {
@@ -27,11 +27,11 @@ const css = StyleSheet.create({
   //
   Border: {
     position: 'absolute',
-    top: g.lineHeight / 2,
+    top: v.lineHeight / 2,
     left: 2,
     right: 2,
     height: 1,
-    backgroundColor: g.hoverBg,
+    backgroundColor: v.hoverBg,
   },
   //
   TimeGroup: {
@@ -45,8 +45,8 @@ const css = StyleSheet.create({
   },
   Time: {
     paddingHorizontal: 4,
-    color: g.subColor,
-    fontSize: g.fontSizeSmall,
+    color: v.subColor,
+    fontSize: v.fontSizeSmall,
   },
   //
   Creator: {
@@ -59,7 +59,7 @@ const css = StyleSheet.create({
   },
 })
 
-const MessageList: FC<{
+export const MessageList: FC<{
   acceptFile: Function
   list: ChatMessage[]
   loadMore: Function
@@ -127,5 +127,3 @@ const MessageList: FC<{
     </>
   )
 })
-
-export default MessageList

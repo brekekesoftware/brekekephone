@@ -20,16 +20,16 @@ import {
   ViewProps,
 } from 'react-native'
 
-import intl from '../stores/intl'
-import RnPicker from '../stores/RnPicker'
-import useStore from '../utils/useStore'
+import { intl } from '../stores/intl'
+import { RnPicker } from '../stores/RnPicker'
+import { useStore } from '../utils/useStore'
 import { RnIcon, RnSwitch, RnText, RnTextInput, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Field: {
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
     alignItems: 'stretch',
     marginHorizontal: 15,
     ...Platform.select({
@@ -39,15 +39,15 @@ const css = StyleSheet.create({
     }),
   },
   Field__focusing: {
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
   },
   Field__disabled: {
-    backgroundColor: g.hoverBg,
+    backgroundColor: v.hoverBg,
   },
   Field__group: {
     marginHorizontal: 0,
     marginTop: 15,
-    backgroundColor: g.borderBg,
+    backgroundColor: v.borderBg,
     padding: 15,
   },
   Field__groupMargin: {
@@ -76,8 +76,8 @@ const css = StyleSheet.create({
     }),
   },
   Field_LabelText: {
-    color: g.subColor,
-    fontWeight: g.fontWeight,
+    color: v.subColor,
+    fontWeight: v.fontWeight,
   },
   Field_LabelTextGroup: {
     ...Platform.select({
@@ -97,7 +97,7 @@ const css = StyleSheet.create({
       android: {
         paddingTop: 0,
         paddingBottom: 0,
-        lineHeight: g.lineHeight,
+        lineHeight: v.lineHeight,
         // Should not set height and overflow here
         //    it will cause scroll issue with the input
         // height: g.lineHeight,
@@ -122,13 +122,13 @@ const css = StyleSheet.create({
     right: 5,
     width: 40,
     height: 30,
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
   },
   Field_Btn__create: {
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
   },
   Field_Btn__remove: {
-    backgroundColor: g.colors.dangerFn(0.5),
+    backgroundColor: v.colors.dangerFn(0.5),
   },
   Field_Icon: {
     position: 'absolute',
@@ -145,8 +145,8 @@ const css = StyleSheet.create({
     marginHorizontal: 15,
     paddingVertical: 2,
     paddingHorizontal: 10,
-    backgroundColor: g.colors.danger,
-    borderRadius: g.borderRadius,
+    backgroundColor: v.colors.danger,
+    borderRadius: v.borderRadius,
   },
   Field_ErrorIcon: {
     position: 'absolute',
@@ -154,7 +154,7 @@ const css = StyleSheet.create({
     left: 2,
   },
   Field_ErrorLabel: {
-    color: g.revColor,
+    color: v.revColor,
   },
   Loading: {
     position: 'absolute',
@@ -172,7 +172,7 @@ const css = StyleSheet.create({
 
 const noop = () => {}
 
-const Field: FC<
+export const Field: FC<
   Partial<{
     isGroup: boolean
     hasMargin: boolean
@@ -243,7 +243,7 @@ const Field: FC<
           style={[css.Field_Btn, css.Field_Btn__create, props.createBtnStyle]}
         >
           <RnIcon
-            color={g.colors.primary}
+            color={v.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
             style={props.createBtnIconStyle}
@@ -260,7 +260,7 @@ const Field: FC<
           style={[css.Field_Btn, css.Field_Btn__remove, props.removeBtnStyle]}
         >
           <RnIcon
-            color={g.colors.danger}
+            color={v.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
             style={props.removeBtnIconStyle}
@@ -274,9 +274,9 @@ const Field: FC<
       Object.assign(props, {
         valueRender:
           props.valueRender ||
-          ((v: boolean) => (v ? intl`Enabled` : intl`Disabled`)),
-        iconRender: (v: boolean) => (
-          <RnSwitch enabled={v} style={css.Field_Switch} />
+          ((e: boolean) => (e ? intl`Enabled` : intl`Disabled`)),
+        iconRender: (e: boolean) => (
+          <RnSwitch enabled={e} style={css.Field_Switch} />
         ),
         onTouchPress: () => {
           props.onValueChange?.(!props.value)
@@ -285,8 +285,8 @@ const Field: FC<
       })
     } else if (props.type === 'RnPicker') {
       Object.assign(props, {
-        valueRender: (v: string) =>
-          props.options?.find(o => o.key === v)?.label || v,
+        valueRender: (k: string) =>
+          props.options?.find(o => o.key === k)?.label || k,
         onTouchPress: () => {
           RnPicker.open({
             options: props.options || [],
@@ -320,7 +320,7 @@ const Field: FC<
               () => $.set('isFocusing', false),
               props.onBlur || noop,
             ])}
-            onChangeText={v => props.onValueChange?.(v)}
+            onChangeText={txt => props.onValueChange?.(txt)}
             onFocus={flow([
               () => $.set('isFocusing', true),
               props.onFocus || noop,
@@ -401,7 +401,7 @@ const Field: FC<
         >
           <View style={css.Field_ErrorInner}>
             <RnIcon
-              color={g.colors.danger}
+              color={v.colors.danger}
               path={mdiCardsDiamond}
               style={css.Field_ErrorIcon}
             />
@@ -414,5 +414,3 @@ const Field: FC<
     </>
   )
 })
-
-export default Field

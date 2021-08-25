@@ -1,8 +1,8 @@
 import { Platform } from 'react-native'
 
-import profileStore, { Profile } from '../stores/profileStore'
+import { Profile, profileStore } from '../stores/profileStore'
 // @ts-ignore
-import PushNotification from '../utils/PushNotification'
+import { PushNotification } from '../utils/PushNotification'
 import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndexWithoutCatch } from './updatePhoneIndex'

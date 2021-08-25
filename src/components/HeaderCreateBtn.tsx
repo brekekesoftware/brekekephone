@@ -3,7 +3,7 @@ import React, { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { RnIcon, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   CreateBtn: {
@@ -13,14 +13,14 @@ const css = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
   },
   CreateBtn__white: {
-    backgroundColor: g.bg,
+    backgroundColor: v.bg,
   },
 })
 
-const CreateBtn: FC<{
+export const CreateBtn: FC<{
   white: boolean
   onPress(): void
 }> = p => {
@@ -34,4 +34,3 @@ const CreateBtn: FC<{
     </RnTouchableOpacity>
   )
 }
-export default CreateBtn

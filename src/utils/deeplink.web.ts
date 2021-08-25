@@ -1,6 +1,6 @@
 import Url from 'url-parse'
 
-import parse from './deeplink-parse'
+import { parse } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
 const params = parse(window.location as unknown as Url)

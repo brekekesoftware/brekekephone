@@ -1,24 +1,24 @@
 import { mdiCheck, mdiClose } from '@mdi/js'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import intl from '../stores/intl'
+import { intl } from '../stores/intl'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import ButtonIcon from './ButtonIcon'
+import { ButtonIcon } from './ButtonIcon'
 import { RnText } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Notify: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
-    backgroundColor: g.hoverBg,
+    borderColor: v.borderBg,
+    backgroundColor: v.hoverBg,
   },
   Notify_Info: {
     flex: 1,
@@ -26,15 +26,15 @@ const css = StyleSheet.create({
     paddingVertical: 5,
   },
   Notify_Btn_reject: {
-    borderColor: g.colors.danger,
+    borderColor: v.colors.danger,
   },
   Notify_Btn_accept: {
-    borderColor: g.colors.primary,
+    borderColor: v.colors.primary,
   },
 })
 
 @observer
-export class DidMountTimer extends React.Component {
+export class DidMountTimer extends Component {
   private didMountTimer = 0
   @observable didMount =
     Platform.OS === 'web' ||
@@ -59,7 +59,7 @@ export class DidMountTimer extends React.Component {
 }
 
 @observer
-class CallNotify extends React.Component {
+export class CallNotify extends Component {
   render() {
     // Do not display our callbar if already show callkeep
     const c = callStore.calls.find(
@@ -80,16 +80,16 @@ class CallNotify extends React.Component {
             </RnText>
           </View>
           <ButtonIcon
-            bdcolor={g.colors.danger}
-            color={g.colors.danger}
+            bdcolor={v.colors.danger}
+            color={v.colors.danger}
             onPress={c.hangupWithUnhold}
             path={mdiClose}
             size={20}
             style={css.Notify_Btn_reject}
           />
           <ButtonIcon
-            bdcolor={g.colors.primary}
-            color={g.colors.primary}
+            bdcolor={v.colors.primary}
+            color={v.colors.primary}
             onPress={() => c.answer()}
             path={mdiCheck}
             size={20}
@@ -100,5 +100,3 @@ class CallNotify extends React.Component {
     )
   }
 }
-
-export default CallNotify

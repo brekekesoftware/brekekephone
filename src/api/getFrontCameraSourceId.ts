@@ -1,5 +1,5 @@
 import { intlDebug } from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
+import { RnAlert } from '../stores/RnAlert'
 
 declare global {
   interface MediaDeviceInfo {
@@ -7,7 +7,7 @@ declare global {
     facing: string
   }
 }
-const getFrontCameraSourceId = async () => {
+export const getFrontCameraSourceId = async () => {
   const mediaDevices = window.navigator.mediaDevices
   if (!mediaDevices) {
     RnAlert.error({
@@ -29,5 +29,3 @@ const getFrontCameraSourceId = async () => {
       return undefined
     })
 }
-
-export default getFrontCameraSourceId

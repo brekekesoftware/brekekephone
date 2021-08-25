@@ -19,7 +19,7 @@ const css = StyleSheet.create({
   },
 })
 
-const ButtonIcon: FC<{
+export const ButtonIcon: FC<{
   color: string
   path: string
   size?: number
@@ -62,5 +62,3 @@ const ButtonIcon: FC<{
     </View>
   )
 }
-
-export default ButtonIcon

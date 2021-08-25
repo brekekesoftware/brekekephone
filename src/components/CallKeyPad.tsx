@@ -3,14 +3,14 @@ import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   KeyPad_Number: {
     flexDirection: 'row',
   },
   KeyPad_NumberTxt: {
-    fontSize: g.fontSizeTitle,
+    fontSize: v.fontSizeTitle,
     fontWeight: '600',
     textAlign: 'center',
     paddingVertical: 20,
@@ -23,13 +23,13 @@ const css = StyleSheet.create({
     justifyContent: 'space-between',
   },
   KeyPad_Btn__call: {
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
     width: 64,
     borderRadius: 40,
     paddingVertical: 20,
   },
   KeyPad_Btn__call_2: {
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
     width: 50,
     height: 50,
     justifyContent: 'center',
@@ -39,7 +39,7 @@ const css = StyleSheet.create({
   KeyPad_view: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
     alignItems: 'center',
     justifyContent: 'space-between',
     height: 50,
@@ -54,7 +54,7 @@ const keys = [
   ['*', '0', '#'],
 ]
 
-const KeyPad = (p: {
+export const KeyPad = (p: {
   onPressNumber(k: string): void
   showKeyboard(): void
   callVoice?(): void
@@ -113,5 +113,3 @@ const KeyPad = (p: {
     </View>
   </>
 )
-
-export default KeyPad

@@ -1,24 +1,24 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import KeyPad from '../components/CallKeyPad'
-import ShowNumber from '../components/CallShowNumbers'
-import Layout from '../components/Layout'
+import { KeyPad } from '../components/CallKeyPad'
+import { ShowNumber } from '../components/CallShowNumbers'
+import { Layout } from '../components/Layout'
 import { setPageCallTransferDial } from '../components/navigationConfig2'
 import { callStore } from '../stores/callStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
-import RnKeyboard from '../stores/RnKeyboard'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
+import { RnKeyboard } from '../stores/RnKeyboard'
 
 @observer
-class PageCallTransferDial extends React.Component {
+export class PageCallTransferDial extends Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -31,7 +31,7 @@ class PageCallTransferDial extends React.Component {
   }
 
   @observable txt = ''
-  txtRef = React.createRef<TextInput>()
+  txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
@@ -115,4 +115,3 @@ class PageCallTransferDial extends React.Component {
 }
 
 setPageCallTransferDial(PageCallTransferDial)
-export default PageCallTransferDial

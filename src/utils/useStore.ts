@@ -1,8 +1,8 @@
 import { useRef } from 'react'
 
-import createStore, { CreatedStore } from './createStore'
+import { CreatedStore, createStore } from './createStore'
 
-const useStore = (mixin?: Function) => {
+export const useStore = (mixin?: Function) => {
   const r = useRef<CreatedStore>()
   if (!r.current) {
     if (mixin && typeof mixin !== 'function') {
@@ -13,5 +13,3 @@ const useStore = (mixin?: Function) => {
   }
   return r.current
 }
-
-export default useStore

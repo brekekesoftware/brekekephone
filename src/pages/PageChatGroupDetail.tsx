@@ -1,6 +1,6 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -9,27 +9,28 @@ import {
   StyleSheet,
 } from 'react-native'
 
-import uc, { Constants } from '../api/uc'
+import { Constants, uc } from '../api/uc'
 import { numberOfChatsPerLoad } from '../components/chatConfig'
-import MessageList from '../components/ChatMessageList'
-import ChatInput from '../components/FooterChatInput'
-import Layout from '../components/Layout'
-import RnText from '../components/RnText'
-import RnTouchableOpacity from '../components/RnTouchableOpacity'
-import v from '../components/variables'
+import { MessageList } from '../components/ChatMessageList'
+import { ChatInput } from '../components/FooterChatInput'
+import { Layout } from '../components/Layout'
+import { RnText } from '../components/RnText'
+import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { v } from '../components/variables'
 import { callStore } from '../stores/callStore'
-import chatStore, {
+import {
   ChatFile,
   ChatGroup,
   ChatMessage,
+  chatStore,
 } from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
+import { contactStore } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { formatFileType } from '../utils/formatFileType'
-import pickFile from '../utils/pickFile'
+import { pickFile } from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
 import { saveBlobFile } from '../utils/saveBlob.web'
 import { arrToMap } from '../utils/toMap'
@@ -48,8 +49,9 @@ const css = StyleSheet.create({
     color: v.colors.warning,
   },
 })
+
 @observer
-class PageChatGroupDetail extends React.Component<{
+export class PageChatGroupDetail extends Component<{
   groupId: string
 }> {
   @computed get chatIds() {
@@ -478,5 +480,3 @@ class PageChatGroupDetail extends React.Component<{
     })
   }
 }
-
-export default PageChatGroupDetail

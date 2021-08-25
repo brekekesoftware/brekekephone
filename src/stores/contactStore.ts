@@ -1,10 +1,10 @@
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable } from 'mobx'
 
-import pbx from '../api/pbx'
+import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
 import { intlDebug } from './intl'
-import RnAlert from './RnAlert'
+import { RnAlert } from './RnAlert'
 
 export type PbxUser = {
   id: string
@@ -174,4 +174,4 @@ class ContactStore {
   }
 }
 
-export default new ContactStore()
+export const contactStore = new ContactStore()

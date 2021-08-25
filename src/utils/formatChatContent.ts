@@ -2,8 +2,8 @@ import { decode } from 'html-entities'
 
 import { getAuthStore } from '../stores/authStore'
 import { ChatTarget } from '../stores/chatStore'
-import intl from '../stores/intl'
-import formatDuration from './formatDuration'
+import { intl } from '../stores/intl'
+import { formatDuration } from './formatDuration'
 
 export const formatChatContent = (c: {
   text?: string

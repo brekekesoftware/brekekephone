@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { StyleSheet, View, ViewProps } from 'react-native'
 
-import v from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   RnSwitch: {
@@ -30,7 +30,7 @@ const css = StyleSheet.create({
   },
 })
 
-const RnSwitch: FC<
+export const RnSwitch: FC<
   ViewProps & {
     enabled: boolean
   }
@@ -39,5 +39,3 @@ const RnSwitch: FC<
     <View style={[css.Circle, enabled && css.Circle__enabled]} />
   </View>
 )
-
-export default RnSwitch

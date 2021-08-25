@@ -3,14 +3,14 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 
-import uc from '../api/uc'
+import { uc } from '../api/uc'
 import { ChatFile } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
+import { RnAlert } from '../stores/RnAlert'
 import { formatBytes } from '../utils/formatBytes'
 import { RnIcon, RnImageVideoLoader, RnText } from './Rn'
-import RnTouchableOpacity from './RnTouchableOpacity'
-import g from './variables'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   vMessage: {
@@ -26,11 +26,11 @@ const css = StyleSheet.create({
     }),
   },
   textFileInfo: {
-    color: g.colors.greyTextChat,
+    color: v.colors.greyTextChat,
     fontSize: 13,
   },
   textFileInfoLineThrough: {
-    color: g.colors.greyTextChat,
+    color: v.colors.greyTextChat,
     fontSize: 13,
     textDecorationLine: 'line-through',
   },
@@ -40,7 +40,7 @@ const css = StyleSheet.create({
   },
 })
 
-const ItemImageVideoChat: FC<ChatFile> = observer(p => {
+export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
     p.incoming || !p.target?.user_id ? '' : ` -> ${p.target?.user_id}`
   const isStopped = p.state === 'stopped'
@@ -80,5 +80,3 @@ const ItemImageVideoChat: FC<ChatFile> = observer(p => {
     </View>
   )
 })
-
-export default ItemImageVideoChat

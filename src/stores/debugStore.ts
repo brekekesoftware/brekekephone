@@ -9,8 +9,8 @@ import Share from 'react-native-share'
 import { RnAsyncStorage } from '../components/Rn'
 import { currentVersion } from '../components/variables'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import intl, { intlDebug } from './intl'
-import RnAlert from './RnAlert'
+import { intl, intlDebug } from './intl'
+import { RnAlert } from './RnAlert'
 
 declare global {
   interface Window {
@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-let debugStore = null as unknown as DebugStore
+let store = null as unknown as DebugStore
 // The location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
 // The `log` will be used for combining the two above files in ios
@@ -299,10 +299,10 @@ class DebugStore {
 
 if (Platform.OS !== 'web') {
   // Assign to window to use in src/utils/captureConsoleOutput.ts
-  debugStore = window.debugStore = new DebugStore()
+  store = window.debugStore = new DebugStore()
 
   // TODO call init together with other store
   // Need to determine the order of init functions and call them using await
-  debugStore.init()
+  store.init()
 }
-export default debugStore
+export const debugStore = store

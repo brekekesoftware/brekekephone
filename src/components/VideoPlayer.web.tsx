@@ -11,7 +11,7 @@ const css = StyleSheet.create({
   },
 })
 
-export default observer((p: { sourceObject: MediaStream }) =>
+export const VideoPlayer = observer((p: { sourceObject: MediaStream }) =>
   p.sourceObject ? (
     <video
       ref={video => {

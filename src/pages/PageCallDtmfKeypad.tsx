@@ -1,24 +1,24 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import sip from '../api/sip'
-import KeyPad from '../components/CallKeyPad'
-import ShowNumber from '../components/CallShowNumbers'
-import Layout from '../components/Layout'
+import { sip } from '../api/sip'
+import { KeyPad } from '../components/CallKeyPad'
+import { ShowNumber } from '../components/CallShowNumbers'
+import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnKeyboard from '../stores/RnKeyboard'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnKeyboard } from '../stores/RnKeyboard'
 
 @observer
-class PageCallDtmfKeypad extends React.Component {
+export class PageCallDtmfKeypad extends Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -32,7 +32,7 @@ class PageCallDtmfKeypad extends React.Component {
   }
 
   @observable txt = ''
-  txtRef = React.createRef<TextInput>()
+  txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
@@ -107,5 +107,3 @@ class PageCallDtmfKeypad extends React.Component {
     )
   }
 }
-
-export default PageCallDtmfKeypad

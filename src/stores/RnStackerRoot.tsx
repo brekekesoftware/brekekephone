@@ -3,13 +3,13 @@ import { ReactComponentLike } from 'prop-types'
 import React, { FC } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import g from '../components/variables'
+import { v } from '../components/variables'
 import { useAnimationOnDidMount } from '../utils/animation'
-import RnStacker from './RnStacker'
+import { RnStacker } from './RnStacker'
 
 const css = StyleSheet.create({
   Stack: {
-    backgroundColor: g.bg,
+    backgroundColor: v.bg,
   },
   Stack__hidden: {
     opacity: 0,
@@ -39,7 +39,7 @@ const Stack: FC<{
   )
 }
 
-const RnStackerRoot = observer(() => (
+export const RnStackerRoot = observer(() => (
   <>
     {RnStacker.stacks.map((s, i) => (
       <Stack
@@ -53,5 +53,3 @@ const RnStackerRoot = observer(() => (
     ))}
   </>
 ))
-
-export default RnStackerRoot

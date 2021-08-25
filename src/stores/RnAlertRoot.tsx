@@ -4,10 +4,10 @@ import React, { ReactElement } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import g from '../components/variables'
+import { v } from '../components/variables'
 import { useAnimationOnDidMount } from '../utils/animation'
-import intl from './intl'
-import RnAlert, { ErrorRnAlert2, PromptRnAlert } from './RnAlert'
+import { intl } from './intl'
+import { ErrorRnAlert2, PromptRnAlert, RnAlert } from './RnAlert'
 
 const css = StyleSheet.create({
   RootRnAlert: {
@@ -16,15 +16,15 @@ const css = StyleSheet.create({
     flexDirection: 'row',
   },
   RootRnAlert_Backdrop: {
-    backgroundColor: g.layerBg,
+    backgroundColor: v.layerBg,
   },
   RootRnAlert_Modal: {
     width: '90%',
-    maxWidth: g.maxModalWidth,
-    borderRadius: g.borderRadius,
+    maxWidth: v.maxModalWidth,
+    borderRadius: v.borderRadius,
     padding: 15,
-    backgroundColor: g.bg,
-    ...g.boxShadow,
+    backgroundColor: v.bg,
+    ...v.boxShadow,
   },
   RootRnAlert_Message: {
     marginTop: 15,
@@ -33,8 +33,8 @@ const css = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   RootRnAlert_ErrTxt: {
-    color: g.colors.danger,
-    fontWeight: g.fontWeight,
+    color: v.colors.danger,
+    fontWeight: v.fontWeight,
   },
   RootRnAlert_ErrTxt__title: {
     fontWeight: 'bold',
@@ -47,19 +47,19 @@ const css = StyleSheet.create({
     marginTop: 15,
   },
   RootRnAlert_Btn: {
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
     width: 100,
   },
   RootRnAlert_Btn__cancel: {
-    backgroundColor: g.revBg,
+    backgroundColor: v.revBg,
     marginRight: 10,
   },
   RootRnAlert_BtnTxt: {
     textAlign: 'center',
-    color: g.revColor,
+    color: v.revColor,
   },
 })
 
@@ -172,11 +172,9 @@ const RnAlertR = ({
   )
 }
 
-const RootRnAlert = observer(() => {
+export const RnAlertRoot = observer(() => {
   if (!RnAlert.alertsCount || !RnAlert.alerts[0]) {
     return null
   }
   return <RnAlertR {...RnAlert.alerts[0]} />
 })
-
-export default RootRnAlert

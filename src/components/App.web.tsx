@@ -9,13 +9,13 @@ import Url from 'url-parse'
 
 import brand from '../assets/brand.png'
 import logo from '../assets/logo.png'
-import intl from '../stores/intl'
-import parse from '../utils/deeplink-parse'
+import { intl } from '../stores/intl'
+import { parse } from '../utils/deeplink-parse'
 // @ts-ignore
-import App from './App.tsx'
-import BrekekeGradient from './BrekekeGradient'
+import { App as RnApp } from './App.tsx'
+import { BrekekeGradient } from './BrekekeGradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
-import v from './variables'
+import { v } from './variables'
 
 const globalCss = `* {
   outline: none !important;
@@ -87,11 +87,11 @@ const css = StyleSheet.create({
   },
 })
 
-const AppSelection = () => {
+export const App = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
   let child: ReactElement | null = null
   if (isBrowser) {
-    child = <App />
+    child = <RnApp />
   } else {
     const params = parse(window.location as unknown as Url)
     const q = qs.stringify(params)
@@ -137,5 +137,3 @@ const AppSelection = () => {
   const Container = isBrowser ? View : BrekekeGradient
   return <Container style={css.WebApp}>{child}</Container>
 }
-
-export default AppSelection

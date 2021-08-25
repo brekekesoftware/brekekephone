@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 
 import { RnIcon, RnTextInput, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   ChatInput: {
@@ -20,21 +20,21 @@ const css = StyleSheet.create({
     paddingVertical: 8,
   },
   Btn__file: {
-    backgroundColor: g.hoverBg,
+    backgroundColor: v.hoverBg,
     borderRightWidth: 1,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
     borderTopWidth: 1,
     borderBottomWidth: 1,
   },
   Btn__emoji: {
-    backgroundColor: g.hoverBg,
+    backgroundColor: v.hoverBg,
     borderRightWidth: 1,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
     borderTopWidth: 1,
     borderBottomWidth: 1,
   },
   Btn__send: {
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
     paddingLeft: 8,
   },
   Input: {
@@ -44,11 +44,11 @@ const css = StyleSheet.create({
     paddingHorizontal: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
   },
 })
 
-const ChatInput: FC<{
+export const ChatInput: FC<{
   onEmojiTurnOn?(): void
   onSelectionChange?(
     event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
@@ -97,4 +97,3 @@ const ChatInput: FC<{
     </View>
   )
 }
-export default ChatInput

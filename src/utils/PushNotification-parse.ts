@@ -4,7 +4,7 @@ import { AppState, Platform } from 'react-native'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { IncomingCall } from './RnNativeModules'
-import waitTimeout from './waitTimeout'
+import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
   'title',
@@ -152,7 +152,7 @@ export const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
-const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
+export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return null
   }
@@ -236,7 +236,6 @@ const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   await waitTimeout(10000)
   return null
 }
-export default parse
 
 export type ParsedPn = {
   id: string

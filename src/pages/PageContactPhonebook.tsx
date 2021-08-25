@@ -7,22 +7,22 @@ import {
 } from '@mdi/js'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import pbx from '../api/pbx'
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { pbx } from '../api/pbx'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import contactStore, { Phonebook2 } from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
-import RnPicker from '../stores/RnPicker'
+import { contactStore, Phonebook2 } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { profileStore } from '../stores/profileStore'
+import { RnAlert } from '../stores/RnAlert'
+import { RnPicker } from '../stores/RnPicker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const css = StyleSheet.create({
@@ -32,7 +32,7 @@ const css = StyleSheet.create({
 })
 
 @observer
-class PageContactPhonebook extends React.Component {
+export class PageContactPhonebook extends Component {
   componentDidMount() {
     const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
@@ -210,7 +210,7 @@ class PageContactPhonebook extends React.Component {
         />
         <View>
           {groups.map(gr => (
-            <React.Fragment key={gr.key}>
+            <Fragment key={gr.key}>
               <Field isGroup label={gr.key} />
               {gr.phonebooks.map((u, i) => (
                 <UserItem
@@ -220,7 +220,7 @@ class PageContactPhonebook extends React.Component {
                   name={u.name}
                 />
               ))}
-            </React.Fragment>
+            </Fragment>
           ))}
         </View>
         {contactStore.loading ? (
@@ -246,5 +246,3 @@ class PageContactPhonebook extends React.Component {
     )
   }
 }
-
-export default PageContactPhonebook

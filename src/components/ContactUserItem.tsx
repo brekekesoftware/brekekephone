@@ -8,25 +8,25 @@ import React, { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
-import uc, { Constants } from '../api/uc'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
-import Avatar from './Avatar'
+import { Constants, uc } from '../api/uc'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
+import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Outer: {
     borderBottomWidth: 1,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
   },
   Inner: {
     flexDirection: 'row',
     paddingLeft: 10,
   },
   Inner_selected: {
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
   },
   //
   WithSpace: {
@@ -45,7 +45,7 @@ const css = StyleSheet.create({
   Status: {
     top: 2,
     left: 3,
-    color: g.subColor,
+    color: v.subColor,
   },
   //
   Detail: {
@@ -56,7 +56,7 @@ const css = StyleSheet.create({
   },
   CallCreatedAt: {
     left: 3,
-    color: g.subColor,
+    color: v.subColor,
   },
   //
   ButtonIcon: {
@@ -70,7 +70,7 @@ const css = StyleSheet.create({
   IconGroup: {},
   VGroup: {
     overflow: 'hidden',
-    backgroundColor: g.borderBg,
+    backgroundColor: v.borderBg,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -79,7 +79,7 @@ const css = StyleSheet.create({
   },
 })
 
-const UserItem: FC<
+export const UserItem: FC<
   Partial<{
     answered: boolean
     avatar: string
@@ -154,7 +154,7 @@ const UserItem: FC<
     }
   }
 
-  const onPressIcons = (v: string, i: number) => {
+  const onPressIcons = (i: number) => {
     if (partyNumber?.startsWith('uc')) {
       isGroupAvailable(partyNumber.replace('uc', '')) && iconFuncs?.[i]?.()
     } else {
@@ -170,7 +170,7 @@ const UserItem: FC<
             <RnIcon
               path={mdiAccountGroup}
               size={40}
-              color={g.colors.greyTextChat}
+              color={v.colors.greyTextChat}
               style={css.IconGroup}
             />
           </View>
@@ -202,10 +202,10 @@ const UserItem: FC<
               <RnIcon
                 color={
                   incoming && !answered
-                    ? g.colors.danger
+                    ? v.colors.danger
                     : incoming && answered
-                    ? g.colors.primary
-                    : g.colors.warning
+                    ? v.colors.primary
+                    : v.colors.warning
                 }
                 path={
                   incoming && !answered
@@ -230,14 +230,12 @@ const UserItem: FC<
             </RnText>
           </View>
         )}
-        {icons?.map((v, i) => (
-          <RnTouchableOpacity key={i} onPress={e => onPressIcons(v, i)}>
-            <RnIcon path={v} color={iconColors?.[i]} style={css.ButtonIcon} />
+        {icons?.map((_, i) => (
+          <RnTouchableOpacity key={i} onPress={e => onPressIcons(i)}>
+            <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
       </View>
     </Container>
   )
 }
-
-export default UserItem

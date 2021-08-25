@@ -1,7 +1,7 @@
 import { mdiDotsHorizontal } from '@mdi/js'
 
-import intl, { intlDebug } from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
+import { intl, intlDebug } from '../stores/intl'
+import { RnAlert } from '../stores/RnAlert'
 
 // Need to declare native intl here
 // So it will get bundled when build intl via web
@@ -34,7 +34,7 @@ export const onPickFileNativeError = (err: Error) => {
   })
 }
 
-const pickFile = (cb: Function) => {
+export const pickFile = (cb: Function) => {
   const input = document.createElement('input')
   input.type = 'file'
   input.onchange = function () {
@@ -42,5 +42,3 @@ const pickFile = (cb: Function) => {
   }
   input.click()
 }
-
-export default pickFile

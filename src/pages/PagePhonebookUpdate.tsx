@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 
-import pbx from '../api/pbx'
-import ContactsCreateForm from '../components/ContactCreateForm'
-import contactStore, { Phonebook2 } from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
+import { pbx } from '../api/pbx'
+import { ContactsCreateForm } from '../components/ContactCreateForm'
+import { contactStore, Phonebook2 } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
 
 @observer
-class PagePhonebookUpdate extends React.Component<{
+export class PagePhonebookUpdate extends Component<{
   contact: Phonebook2
 }> {
   render() {
@@ -43,5 +43,3 @@ class PagePhonebookUpdate extends React.Component<{
     })
   }
 }
-
-export default PagePhonebookUpdate

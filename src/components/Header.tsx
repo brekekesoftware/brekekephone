@@ -1,12 +1,12 @@
 import React, { FC, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import BackBtn from './HeaderBackBtn'
-import CreateBtn from './HeaderCreateBtn'
-import Dropdown, { DropdownBtn, HeaderDropdownItem } from './HeaderDropdown'
-import Navigation from './HeaderNavigation'
-import Title from './HeaderTitle'
-import g from './variables'
+import { BackBtn } from './HeaderBackBtn'
+import { CreateBtn } from './HeaderCreateBtn'
+import { Dropdown, DropdownBtn, HeaderDropdownItem } from './HeaderDropdown'
+import { Navigation } from './HeaderNavigation'
+import { Title } from './HeaderTitle'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Header: {
@@ -16,10 +16,10 @@ const css = StyleSheet.create({
     right: 0,
   },
   Outer: {
-    backgroundColor: g.bg,
+    backgroundColor: v.bg,
   },
   Outer__compact: {
-    ...g.boxShadow,
+    ...v.boxShadow,
   },
   Outer__transparent: {
     backgroundColor: 'transparent',
@@ -29,7 +29,7 @@ const css = StyleSheet.create({
   },
 })
 
-const Header: FC<
+export const Header: FC<
   Partial<{
     compact: boolean
     description: string
@@ -101,5 +101,3 @@ const Header: FC<
     </>
   )
 }
-
-export default Header

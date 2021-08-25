@@ -2,18 +2,18 @@ import { action } from 'mobx'
 
 import { authPBX } from '../stores/AuthPBX'
 import { getAuthStore, waitSip } from '../stores/authStore'
-import Call from '../stores/Call'
+import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
-import chatStore, { FileEvent } from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
+import { chatStore, FileEvent } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
 import { intlDebug } from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
+import { RnAlert } from '../stores/RnAlert'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { Conference } from './brekekejs'
-import pbx from './pbx'
-import sip from './sip'
+import { pbx } from './pbx'
+import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
-import uc from './uc'
+import { uc } from './uc'
 
 class Api {
   constructor() {
@@ -229,7 +229,7 @@ class Api {
   }
 }
 
-export default new Api()
+new Api()
 
 interface UserTalkerEvent {
   user: string

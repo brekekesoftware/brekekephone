@@ -1,25 +1,25 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import uc from '../api/uc'
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { uc } from '../api/uc'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import g from '../components/variables'
-import chatStore from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import intl, { intlDebug } from '../stores/intl'
-import Nav from '../stores/Nav'
-import RnAlert from '../stores/RnAlert'
+import { v } from '../components/variables'
+import { chatStore } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
+import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { RnAlert } from '../stores/RnAlert'
 
 const css = StyleSheet.create({
   PageChatGroupInvite: {},
   PageChatGroupInvite_TextInput: {
     padding: 10,
-    ...g.boxShadow,
+    ...v.boxShadow,
   },
   PageChatGroupInvite_Outer: {
     paddingTop: 5,
@@ -28,26 +28,26 @@ const css = StyleSheet.create({
   PageChatGroupInvite_BtnSave: {
     marginTop: 15,
     padding: 10,
-    borderRadius: g.borderRadius,
-    backgroundColor: g.colors.primary,
+    borderRadius: v.borderRadius,
+    backgroundColor: v.colors.primary,
   },
   PageChatGroupInvite_BtnText: {
     alignItems: 'center',
     color: 'white',
-    fontSize: g.fontSizeSubTitle,
+    fontSize: v.fontSizeSubTitle,
   },
   PageChatGroupInvite_GroupName: {
-    fontSize: g.fontSizeTitle,
+    fontSize: v.fontSizeTitle,
     padding: 5,
   },
   PageChatGroupInvite_Text: {
     paddingTop: 15,
-    fontSize: g.fontSizeTitle,
+    fontSize: v.fontSizeTitle,
   },
 })
 
 @observer
-class PageChatGroupInvite extends React.Component<{
+export class PageChatGroupInvite extends Component<{
   groupId: string
 }> {
   @computed get buddyIds() {
@@ -125,5 +125,3 @@ class PageChatGroupInvite extends React.Component<{
     Nav().backToPageChatGroupDetail({ groupId: this.props.groupId })
   }
 }
-
-export default PageChatGroupInvite

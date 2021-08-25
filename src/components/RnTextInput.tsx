@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 import { Platform, StyleSheet, TextInput, TextInputProps } from 'react-native'
 
-import v from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   RnTextInput: {
@@ -17,7 +17,7 @@ export type RnTextInputProps = TextInputProps & {
   disabled?: boolean
 }
 
-const RnTextInput = forwardRef(
+export const RnTextInput = forwardRef(
   ({ keyboardType, style, ...props }: RnTextInputProps, ref) => (
     <TextInput
       autoCapitalize='none'
@@ -32,5 +32,3 @@ const RnTextInput = forwardRef(
     />
   ),
 )
-
-export default RnTextInput

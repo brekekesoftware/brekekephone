@@ -20,9 +20,9 @@ import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
 
 import { ChatFile } from '../stores/chatStore'
-import RnIcon from './RnIcon'
-import RnTouchableOpacity from './RnTouchableOpacity'
-import g from './variables'
+import { RnIcon } from './RnIcon'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   vVideoModal: {
@@ -47,7 +47,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
     zIndex: 100,
-    backgroundColor: g.layerBgVideo,
+    backgroundColor: v.layerBgVideo,
   },
   vVideo: {
     width: 150,
@@ -55,7 +55,7 @@ const css = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     overflow: 'hidden',
-    backgroundColor: g.borderBg,
+    backgroundColor: v.borderBg,
   },
   image: {
     width: 150,
@@ -95,8 +95,9 @@ const css = StyleSheet.create({
     backgroundColor: 'blue',
   },
 })
+
 const size = 150
-const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
+export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
   state,
   id,
@@ -185,7 +186,7 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           viewBox='3 3  18 18'
           width={size}
         >
-          <Path d={mdiImageBrokenVariant} fill={g.colors.greyTextChat} />
+          <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
         </Svg>
       )}
       <Modal visible={visible} style={css.modal} animationType={'slide'}>
@@ -208,5 +209,3 @@ const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     </View>
   )
 }
-
-export default RnImageVideoLoader

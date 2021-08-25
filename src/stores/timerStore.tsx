@@ -5,7 +5,7 @@ import React from 'react'
 import { RnText } from '../components/Rn'
 import { TRnTextProps } from '../components/RnText'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import formatDuration from '../utils/formatDuration'
+import { formatDuration } from '../utils/formatDuration'
 
 class TimerStore {
   @observable now = Date.now()

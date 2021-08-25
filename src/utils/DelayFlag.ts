@@ -2,7 +2,7 @@ import { action, observable } from 'mobx'
 
 import { BackgroundTimer } from './BackgroundTimer'
 
-export default class DelayFlag {
+export class DelayFlag {
   @observable enabled = false
   timeoutId = 0
 

@@ -2,7 +2,7 @@ import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 
-import sip from '../api/sip'
+import { sip } from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
@@ -10,10 +10,10 @@ import { authSIP } from './AuthSIP'
 import { compareProfile, setAuthStore } from './authStore'
 import { callStore } from './callStore'
 import { intlDebug } from './intl'
-import Nav from './Nav'
-import profileStore, { Profile } from './profileStore'
-import RnAlert from './RnAlert'
-import RnAppState from './RnAppState'
+import { Nav } from './Nav'
+import { Profile, profileStore } from './profileStore'
+import { RnAlert } from './RnAlert'
+import { RnAppState } from './RnAppState'
 
 export type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
 
@@ -293,8 +293,6 @@ export class AuthStore {
   } = null
 }
 
-const authStore = new AuthStore()
+export const authStore = new AuthStore()
 
 setAuthStore(authStore)
-
-export default authStore

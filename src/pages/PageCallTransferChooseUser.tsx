@@ -1,19 +1,19 @@
 import { mdiPhone, mdiPhoneForward } from '@mdi/js'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { Component, Fragment } from 'react'
 
-import UserItem from '../components/ContactUserItem'
-import Field from '../components/Field'
-import Layout from '../components/Layout'
+import { UserItem } from '../components/ContactUserItem'
+import { Field } from '../components/Field'
+import { Layout } from '../components/Layout'
 import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
 import { callStore } from '../stores/callStore'
-import contactStore from '../stores/contactStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
+import { contactStore } from '../stores/contactStore'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 
 @observer
-class PageCallTransferChooseUser extends React.Component {
+export class PageCallTransferChooseUser extends Component {
   prevId?: string
   componentDidMount() {
     this.componentDidUpdate()
@@ -76,7 +76,7 @@ class PageCallTransferChooseUser extends React.Component {
         title={intl`Transfer`}
       >
         {groups.map(gr => (
-          <React.Fragment key={gr.key}>
+          <Fragment key={gr.key}>
             <Field isGroup label={gr.key} />
             {gr.users.map((u, i) => (
               <UserItem
@@ -89,7 +89,7 @@ class PageCallTransferChooseUser extends React.Component {
                 {...u}
               />
             ))}
-          </React.Fragment>
+          </Fragment>
         ))}
       </Layout>
     )
@@ -97,4 +97,3 @@ class PageCallTransferChooseUser extends React.Component {
 }
 
 setPageCallTransferChooseUser(PageCallTransferChooseUser)
-export default PageCallTransferChooseUser

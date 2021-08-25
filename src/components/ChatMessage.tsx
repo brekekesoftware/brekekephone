@@ -1,6 +1,6 @@
 import { mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import React, { Component, FC } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -13,13 +13,13 @@ import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import { ChatFile } from '../stores/chatStore'
-import intl, { intlDebug } from '../stores/intl'
-import RnAlert from '../stores/RnAlert'
-import RnPicker from '../stores/RnPicker'
+import { intl, intlDebug } from '../stores/intl'
+import { RnAlert } from '../stores/RnAlert'
+import { RnPicker } from '../stores/RnPicker'
 import { formatChatContent } from '../utils/formatChatContent'
-import ItemImageVideoChat from './ItemImageVideoChat'
+import { ItemImageVideoChat } from './ItemImageVideoChat'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Message: {
@@ -46,8 +46,8 @@ const css = StyleSheet.create({
   },
 
   Message__call: {
-    fontSize: g.fontSizeSmall,
-    color: g.colors.warning,
+    fontSize: v.fontSizeSmall,
+    color: v.colors.warning,
   },
 
   Message_File_Button_Wrapper: {
@@ -62,14 +62,14 @@ const css = StyleSheet.create({
     borderRadius: 4,
   },
   Message_File_Cancel_Button: {
-    color: g.colors.danger,
+    color: v.colors.danger,
     borderWidth: 1,
-    borderColor: g.colors.danger,
+    borderColor: v.colors.danger,
   },
   Message_File_Accept_Button: {
-    backgroundColor: g.colors.primary,
+    backgroundColor: v.colors.primary,
     borderWidth: 1,
-    borderColor: g.colors.primary,
+    borderColor: v.colors.primary,
     marginLeft: 4,
     color: '#fff',
   },
@@ -93,17 +93,17 @@ const css = StyleSheet.create({
     fontSize: 13,
   },
   Message_File_Preview_Status: {
-    fontWeight: g.fontWeight,
+    fontWeight: v.fontWeight,
   },
   Message_File_Preview_Status__Success: {
-    color: g.colors.primary,
+    color: v.colors.primary,
   },
   Message_File_Preview_Status__Failed: {
-    color: g.colors.danger,
+    color: v.colors.danger,
   },
 
   Link: {
-    color: g.colors.primary,
+    color: v.colors.primary,
     padding: 0,
     ...Platform.select({
       web: {
@@ -192,7 +192,7 @@ const File: FC<
 ))
 
 @observer
-class Message extends React.Component<{
+export class Message extends Component<{
   text: string
   type?: number
   creatorId: string
@@ -302,5 +302,3 @@ class Message extends React.Component<{
     )
   }
 }
-
-export default Message

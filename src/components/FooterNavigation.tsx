@@ -2,11 +2,11 @@ import { observer } from 'mobx-react'
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import authStore from '../stores/authStore2'
-import chatStore from '../stores/chatStore'
+import { authStore } from '../stores/authStore2'
+import { chatStore } from '../stores/chatStore'
 import { menus } from './navigationConfig'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 export const css = StyleSheet.create({
   Navigation: {
@@ -24,7 +24,7 @@ export const css = StyleSheet.create({
   },
   BtnBg__active: {
     borderRadius: 22,
-    backgroundColor: g.colors.primaryFn(0.5),
+    backgroundColor: v.colors.primaryFn(0.5),
   },
   UnreadOuter: {
     position: 'absolute',
@@ -38,20 +38,20 @@ export const css = StyleSheet.create({
     left: 15,
     width: 20,
     height: 15,
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
     paddingTop: 3,
-    backgroundColor: g.colors.danger,
+    backgroundColor: v.colors.danger,
     overflow: 'hidden',
   },
   UnreadText: {
-    fontSize: g.fontSizeSmall - 2,
-    lineHeight: g.fontSizeSmall - 2,
+    fontSize: v.fontSizeSmall - 2,
+    lineHeight: v.fontSizeSmall - 2,
   },
 })
 
-const Navigation: FC<{
+export const Navigation: FC<{
   menu: string
-}> = ({ menu }) => (
+}> = observer(({ menu }) => (
   <View style={css.Navigation}>
     {menus().map(m => {
       const active = m.key === menu
@@ -85,6 +85,4 @@ const Navigation: FC<{
       )
     })}
   </View>
-)
-
-export default observer(Navigation)
+))

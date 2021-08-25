@@ -2,7 +2,7 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 import { extendObservable } from 'mobx'
 
-const createStore = (mixin: Function, ...args: unknown[]) => {
+export const createStore = (mixin: Function, ...args: unknown[]) => {
   const $ = {
     set: (k: string, v: unknown) => {
       set($, k, typeof v === 'function' ? v(get($, k)) : v)
@@ -65,7 +65,5 @@ const createStore = (mixin: Function, ...args: unknown[]) => {
   $.extends(mixin, ...args)
   return $
 }
-
-export default createStore
 
 export type CreatedStore = ReturnType<typeof createStore>

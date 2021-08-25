@@ -2,32 +2,32 @@ import { observer } from 'mobx-react'
 import React, { FC, useCallback } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 
-import chatStore from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
 import { getSubMenus } from './navigationConfig'
 import { getTabs } from './navigationConfig2'
 import { RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Navigation: {
     flexDirection: 'row',
     alignSelf: 'stretch',
 
-    backgroundColor: g.bg,
+    backgroundColor: v.bg,
   },
   Btn: {
     flex: 1,
     paddingVertical: 8,
     alignItems: 'center',
     borderBottomWidth: 3,
-    borderColor: g.borderBg,
+    borderColor: v.borderBg,
   },
   Btn__active: {
-    borderColor: g.colors.primary,
+    borderColor: v.colors.primary,
   },
   Text__active: {
-    color: g.colors.primary,
+    color: v.colors.primary,
   },
   Unread: {
     top: -5,
@@ -39,7 +39,7 @@ const css = StyleSheet.create({
   },
 })
 
-const Navigation: FC<{
+export const Navigation: FC<{
   menu: string
   subMenu: string
   isTab?: boolean
@@ -90,4 +90,3 @@ const Navigation: FC<{
     </View>
   )
 })
-export default Navigation

@@ -1,3 +1,6 @@
+// API was a component but had been rewritten to a listener
+import '../api'
+
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
@@ -12,40 +15,36 @@ import {
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
-import api from '../api'
 import { SyncPnToken } from '../api/syncPnToken'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
-import authStore from '../stores/authStore2'
+import { authStore } from '../stores/authStore2'
 import { authUC } from '../stores/AuthUC'
 import { callStore } from '../stores/callStore'
-import chatStore from '../stores/chatStore'
-import contactStore from '../stores/contactStore'
-import intl from '../stores/intl'
-import intlStore from '../stores/intlStore'
-import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
-import RnAlertRoot from '../stores/RnAlertRoot'
-import RnPickerRoot from '../stores/RnPickerRoot'
-import RootStacks from '../stores/RnStackerRoot'
+import { chatStore } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
+import { intl } from '../stores/intl'
+import { intlStore } from '../stores/intlStore'
+import { Nav } from '../stores/Nav'
+import { profileStore } from '../stores/profileStore'
+import { RnAlert } from '../stores/RnAlert'
+import { RnAlertRoot } from '../stores/RnAlertRoot'
+import { RnPickerRoot } from '../stores/RnPickerRoot'
+import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 // @ts-ignore
-import PushNotification from '../utils/PushNotification'
-import registerOnUnhandledError from '../utils/registerOnUnhandledError'
-import AnimatedSize from './AnimatedSize'
-import CallBar from './CallBar'
-import CallNotify from './CallNotify'
-import CallVideos from './CallVideos'
-import CallVoices from './CallVoices'
-import ChatGroupInvite, { UnreadChatNoti } from './ChatGroupInvite'
+import { PushNotification } from '../utils/PushNotification'
+import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
+import { AnimatedSize } from './AnimatedSize'
+import { CallBar } from './CallBar'
+import { CallNotify } from './CallNotify'
+import { CallVideos } from './CallVideos'
+import { CallVoices } from './CallVoices'
+import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
 import { RnStatusBar, RnText } from './Rn'
-import g from './variables'
-
-// API was a component but had been rewritten to a listener
-void api
+import { v } from './variables'
 
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
@@ -138,16 +137,16 @@ PushNotification.register(() => {
 
 const css = StyleSheet.create({
   App: {
-    backgroundColor: g.bg,
+    backgroundColor: v.bg,
   },
   App_Inner: {
     flex: 1,
   },
   App_ConnectionStatus: {
-    backgroundColor: g.colors.warning,
+    backgroundColor: v.colors.warning,
   },
   App_ConnectionStatus__failure: {
-    backgroundColor: g.colors.danger,
+    backgroundColor: v.colors.danger,
   },
   App_ConnectionStatusInner: {
     paddingHorizontal: 5,
@@ -162,7 +161,7 @@ const css = StyleSheet.create({
   },
 })
 
-const App = observer(() => {
+export const App = observer(() => {
   useEffect(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
@@ -222,7 +221,7 @@ const App = observer(() => {
       <UnreadChatNoti />
 
       <View style={css.App_Inner}>
-        <RootStacks />
+        <RnStackerRoot />
         <RnPickerRoot />
         <RnAlertRoot />
       </View>
@@ -236,5 +235,3 @@ const App = observer(() => {
     </View>
   )
 })
-
-export default App

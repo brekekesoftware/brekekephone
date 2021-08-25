@@ -3,7 +3,7 @@ import { v4 as newUuid } from 'uuid'
 
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
-import Call from './Call'
+import { Call } from './Call'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = (c: Call | ParsedPn) => {

@@ -12,21 +12,21 @@ import { Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import intl from '../stores/intl'
-import Nav from '../stores/Nav'
-import profileStore from '../stores/profileStore'
-import RnAlert from '../stores/RnAlert'
-import Field from './Field'
-import FooterActions from './FooterActions'
+import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
+import { profileStore } from '../stores/profileStore'
+import { RnAlert } from '../stores/RnAlert'
+import { Field } from './Field'
+import { FooterActions } from './FooterActions'
 import { RnText, RnTouchableOpacity } from './Rn'
-import g from './variables'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   ProfileSignInItem: {
-    backgroundColor: g.bg,
+    backgroundColor: v.bg,
     marginBottom: 15,
     marginLeft: 15,
-    borderRadius: g.borderRadius,
+    borderRadius: v.borderRadius,
     width: 280,
   },
   ProfileSignInItem__last: {
@@ -47,7 +47,7 @@ const css = StyleSheet.create({
   },
 })
 
-const ProfileSignInItem: FC<{
+export const ProfileSignInItem: FC<{
   empty?: boolean
   id?: string
   last?: boolean
@@ -89,8 +89,8 @@ const ProfileSignInItem: FC<{
       {!isWeb && (
         <Field
           label={intl`PUSH NOTIFICATION`}
-          onValueChange={(v: boolean) =>
-            profileStore.upsertProfile({ id: p.id, pushNotificationEnabled: v })
+          onValueChange={(e: boolean) =>
+            profileStore.upsertProfile({ id: p.id, pushNotificationEnabled: e })
           }
           type='Switch'
           value={p.pushNotificationEnabled}
@@ -99,8 +99,8 @@ const ProfileSignInItem: FC<{
       )}
       <Field
         label={intl`UC`}
-        onValueChange={(v: boolean) =>
-          profileStore.upsertProfile({ id: p.id, ucEnabled: v })
+        onValueChange={(e: boolean) =>
+          profileStore.upsertProfile({ id: p.id, ucEnabled: e })
         }
         type='Switch'
         value={p.ucEnabled}
@@ -141,5 +141,3 @@ const ProfileSignInItem: FC<{
     </View>
   )
 })
-
-export default ProfileSignInItem
