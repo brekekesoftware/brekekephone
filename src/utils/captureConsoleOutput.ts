@@ -44,10 +44,12 @@ const formatErrors = (...errs: Error[]) => {
   if (msg.indexOf('JsSIP:Transport reconnection attempt') >= 0) {
     sipErrorEmitter.emit('error', null)
   }
+  // RN 0.65 warning
+  if (msg.indexOf('`new NativeEventEmitter()` was called') >= 0) {
+    return
+  }
   return msg
 }
-const formatErrorsWithTimestamp = (...errs: Error[]) =>
-  moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + formatErrors(...errs)
 
 const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
   (m, k) => {
@@ -55,13 +57,17 @@ const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
     const f = f0.bind(console) as Function
     m[k] =
       Platform.OS === 'web' || process.env.NODE_ENV !== 'production'
-        ? (...args: Error[]) =>
+        ? (...args: Error[]) => {
+            const msg = formatErrors(...args)
             // add timestamp on dev (prod already added in debugStore)
-            f(formatErrorsWithTimestamp(...args))
-        : (...args: Error[]) =>
+            msg && f(moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + msg)
+          }
+        : (...args: Error[]) => {
             // debugStore was added globally in src/stores/debugStore.ts
             //    so it can be used here
-            window.debugStore?.captureConsoleOutput(k, formatErrors(...args))
+            const msg = formatErrors(...args)
+            msg && window.debugStore?.captureConsoleOutput(k, msg)
+          }
     return m
   },
   {} as { [k: string]: Function },

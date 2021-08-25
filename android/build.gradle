@@ -1,26 +1,26 @@
 buildscript {
   ext {
-    buildToolsVersion = "29.0.2"
+    buildToolsVersion = "30.0.2"
     minSdkVersion = 27
-    compileSdkVersion = 29
-    targetSdkVersion = 29
+    compileSdkVersion = 30
+    targetSdkVersion = 30
     ndkVersion = "20.1.5948944"
   }
   repositories {
+    mavenCentral()
     google()
     jcenter()
   }
   dependencies {
-    classpath("com.android.tools.build:gradle:4.1.0")
+    classpath("com.android.tools.build:gradle:4.2.1")
     classpath("com.google.gms:google-services:4.0.2")
   }
 }
 
 allprojects {
   repositories {
+    mavenCentral()
     mavenLocal()
-    google()
-    jcenter()
     maven {
       url("$rootDir/../node_modules/react-native/android")
     }
@@ -30,5 +30,7 @@ allprojects {
     maven {
       url("https://www.jitpack.io")
     }
+    google()
+    jcenter()
   }
 }
