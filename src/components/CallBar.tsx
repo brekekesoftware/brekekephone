@@ -17,7 +17,7 @@ import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
 import RnStacker from '../stores/RnStacker'
-import formatDuration from '../utils/formatDuration'
+import { Duration } from '../stores/timerStore'
 import ButtonIcon from './ButtonIcon'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
@@ -73,7 +73,11 @@ const CallBar = observer(() => {
         <View style={css.CallBar_Info}>
           <RnText style={css.Notify_Info_PartyName}>{c.title}</RnText>
           <RnText>
-            {c.answered ? formatDuration(c.duration) : intl`Dialing...`}
+            {c.answered ? (
+              <Duration>{c.answeredAt}</Duration>
+            ) : (
+              intl`Dialing...`
+            )}
           </RnText>
         </View>
 

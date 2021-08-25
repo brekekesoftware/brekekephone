@@ -4,7 +4,7 @@ import {
   mdiPhoneMissed,
   mdiPhoneOutgoing,
 } from '@mdi/js'
-import React, { FC } from 'react'
+import React, { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
@@ -91,7 +91,7 @@ const UserItem: FC<
     incoming: boolean
     isRecentCall: boolean
     isRecentChat: boolean
-    lastMessage: string
+    lastMessage: ReactNode
     lastMessageDate: string
     name: string
     partyNumber: string

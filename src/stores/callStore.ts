@@ -212,8 +212,8 @@ export class CallStore {
     // Set number of total calls in our custom java incoming call module
     IncomingCall.setBackgroundCalls(this.calls.length)
     // When if this is a outgoing call, try to insert a call history to uc chat
-    if (getAuthStore().ucState === 'success' && c.duration && !c.incoming) {
-      uc.sendCallResult(c.duration, c.partyNumber)
+    if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
+      uc.sendCallResult(c.getDuration(), c.partyNumber)
     }
     // Turn off loud speaker if there's no call left
     if (Platform.OS !== 'web' && !this.calls.length) {

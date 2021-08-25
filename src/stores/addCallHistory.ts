@@ -26,7 +26,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       answered: c.answered,
       partyName: c.partyName,
       partyNumber: c.partyNumber,
-      duration: c.duration,
+      duration: c.getDuration(),
     })
   } else {
     as.pushRecentCall({

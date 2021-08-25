@@ -11,7 +11,7 @@ import Call from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import formatDuration from '../utils/formatDuration'
+import { Duration } from '../stores/timerStore'
 
 const PageCallBackgrounds = observer(() => {
   const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
@@ -43,15 +43,19 @@ const PageCallBackgrounds = observer(() => {
         iconFuncs={iconFuncs}
         key={c.id}
         lastMessage={
-          !c.answered
-            ? c.incoming
-              ? intl`Incoming call`
-              : intl`Dialing...`
-            : c.transferring
-            ? intl`Transferring`
-            : c.holding
-            ? intl`On hold`
-            : formatDuration(c.duration)
+          !c.answered ? (
+            c.incoming ? (
+              intl`Incoming call`
+            ) : (
+              intl`Dialing...`
+            )
+          ) : c.transferring ? (
+            intl`Transferring`
+          ) : c.holding ? (
+            intl`On hold`
+          ) : (
+            <Duration>{c.answeredAt}</Duration>
+          )
         }
         selected={isCurrentCall}
         {...c}

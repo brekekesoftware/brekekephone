@@ -8,8 +8,7 @@ import uc, { Constants } from '../api/uc'
 import chatStore from '../stores/chatStore'
 import intl from '../stores/intl'
 import Nav from '../stores/Nav'
-import timerStore from '../stores/timerStore'
-import formatDuration from '../utils/formatDuration'
+import { Duration } from '../stores/timerStore'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import g from './variables'
 
@@ -128,9 +127,9 @@ const WebchatItem: FC<{
           {data.assigned.user_id || ''}
         </RnText>
       ) : (
-        <RnText normal singleLine small style={css.Text}>
-          {formatDuration(timerStore.now - data.created_tstamp)}
-        </RnText>
+        <Duration normal singleLine small style={css.Text}>
+          {data.created_tstamp}
+        </Duration>
       )}
 
       <RnText normal singleLine small style={css.Text}>

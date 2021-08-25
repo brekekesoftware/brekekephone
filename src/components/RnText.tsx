@@ -91,26 +91,26 @@ const wrap = (Component: Function) =>
     ),
   )
 
-export type RnTextT = FC<
-  TextProps & {
-    singleLine?: boolean
-    title?: boolean
-    subTitle?: boolean
-    small?: boolean
-    black?: boolean
-    white?: boolean
-    primary?: boolean
-    warning?: boolean
-    danger?: boolean
-    normal?: boolean
-    bold?: boolean
-    center?: boolean
-    right?: boolean
-    padding?: boolean
-  }
->
+export type TRnTextProps = TextProps &
+  Partial<{
+    singleLine: boolean
+    title: boolean
+    subTitle: boolean
+    small: boolean
+    black: boolean
+    white: boolean
+    primary: boolean
+    warning: boolean
+    danger: boolean
+    normal: boolean
+    bold: boolean
+    center: boolean
+    right: boolean
+    padding: boolean
+  }>
+export type TRnText = FC<TRnTextProps>
 
-const RnText = wrap(Text) as RnTextT
-export const AnimatedText = wrap(Animated.Text) as RnTextT
+const RnText = wrap(Text) as TRnText
+export const AnimatedText = wrap(Animated.Text) as TRnText
 
 export default RnText
