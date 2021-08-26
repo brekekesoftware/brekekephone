@@ -31,7 +31,7 @@ export class CallStore {
       includingRejected?: boolean
     },
   ) => {
-    const pnId = this.callkeepMap[uuid]?.incomingPnData?.id
+    const pnId = this.getPnIdFromUuid(uuid)
     return this.calls.find(
       c =>
         c.incoming &&
@@ -43,26 +43,23 @@ export class CallStore {
     )
   }
   onCallKeepDidDisplayIncomingCall = (uuid: string, pnData: ParsedPn) => {
+    this.setAutoEndCallKeepTimer(uuid, pnData)
+    // Check if call is rejected already
     const rejected = this.isCallRejected({
       callkeepUuid: uuid,
       pnId: pnData.id,
     })
+    // Find the current incoming call which is not callkeep
+    const c = this.getIncomingCallkeep(uuid)
+    if (c) {
+      c.callkeepUuid = uuid
+    }
     console.error(
-      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${pnData.id} rejected=${rejected}`,
+      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${pnData.id} sessionId=${c?.id} rejected=${rejected}`,
     )
     if (rejected) {
       this.endCallKeep(uuid)
       return
-    }
-    // Find the current incoming call which is not callkeep
-    const c = this.getIncomingCallkeep(uuid)
-    if (c) {
-      // If the call is existing and not answered yet, we'll mark that call as displaying in callkeep
-      // We assume that the app is being used in foreground (not quite exactly but assume)
-      c.callkeepUuid = uuid
-      RNCallKeep.updateDisplay(uuid, c.partyName, 'Brekeke Phone', {
-        hasVideo: c.remoteVideoEnabled,
-      })
     }
     // ios allow only 1 callkeep
     if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
@@ -75,7 +72,6 @@ export class CallStore {
       this.endCallKeep(this.prevCallKeepUuid)
     }
     this.prevCallKeepUuid = uuid
-    this.setAutoEndCallKeepTimer(uuid, pnData)
     // Auto reconnect if no activity
     // This logic is about the case connection has dropped silently
     // So even if sipState is `success` but the connection has dropped
@@ -386,6 +382,9 @@ export class CallStore {
     if (Platform.OS === 'web') {
       return
     }
+    if (incomingPnData) {
+      incomingPnData.callkeepUuid = uuid
+    }
     this.callkeepMap[uuid] = {
       uuid,
       at: Date.now(),
@@ -421,15 +420,15 @@ export class CallStore {
     ) {
       addCallHistory(pnData)
     }
+    runInAction(() => {
+      delete this.callkeepMap[uuid]
+    })
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
     RNCallKeep.reportEndCallWithUUID(
       uuid,
       CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
     )
-    runInAction(() => {
-      delete this.callkeepMap[uuid]
-    })
     if (uuid === this.prevCallKeepUuid) {
       this.prevCallKeepUuid = undefined
     }

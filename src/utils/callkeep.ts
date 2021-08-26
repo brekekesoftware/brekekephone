@@ -10,7 +10,7 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
-import { ParsedPn, parseNotificationData } from './PushNotification-parse'
+import { parseNotificationData } from './PushNotification-parse'
 import { IncomingCall, RnNativeModules } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
@@ -130,19 +130,16 @@ export const setupCallKeep = async () => {
     if (Platform.OS === 'android') {
       return
     }
-    // Try set the caller name from last known PN
-    const n = parseNotificationData(e.payload) as ParsedPn
+    const n = parseNotificationData(e.payload)
     console.error(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
-    if (
-      n?.from &&
-      (e.localizedCallerName === 'Loading...' || e.handle === 'Loading...')
-    ) {
-      RNCallKeep.updateDisplay(uuid, n.from, 'Brekeke Phone')
+    if (n) {
+      callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
+    } else {
+      console.error('SIP PN debug: call RNCallKeep.endCall: pnData not found')
+      RNCallKeep.endCall(uuid)
     }
-    // Call event handler in callStore
-    callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
   }
   const didPerformSetMutedCallAction = (
     e: TEvent & {

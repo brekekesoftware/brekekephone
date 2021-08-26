@@ -211,7 +211,9 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   // Also we forked fcm to insert callkeepUuid there as well
   if (!n.callkeepUuid) {
     // Should not happen
-    console.error('SIP PN debug: android got PN without callkeepUuid')
+    console.error(
+      `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
+    )
   }
   callStore.calls
     .filter(c => c.pnId === n.id && !c.callkeepUuid)
@@ -219,9 +221,6 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       Object.assign(c, { callkeepUuid: n.callkeepUuid })
     })
   // Continue handling incoming call in android
-  if (callStore.isCallRejected({ callkeepUuid: n.callkeepUuid, pnId: n.id })) {
-    return
-  }
   if (Platform.OS === 'android') {
     callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
