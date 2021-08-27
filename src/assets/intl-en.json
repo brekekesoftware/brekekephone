@@ -13,6 +13,7 @@
   "Brekeke Phone is up-to-date, checked {{$0}}",
   "Brekeke Phone needs to your permission to display calls",
   "Busy",
+  "CALL IS ON HOLD",
   "CALL PARK",
   "CANCEL",
   "CAPTURE ALL DEBUG LOG",
