@@ -8,11 +8,16 @@ import { currentVersion } from '../components/variables'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
-import { getFrontCameraSourceId } from './getFrontCameraSourceId'
+import { getCameraSourceId } from './getCameraSourceId'
 import { pbx } from './pbx'
 import { turnConfig } from './turnConfig'
 
-const sipCreateMediaConstraints = (sourceId?: string) => {
+const sipCreateMediaConstraints = (
+  sourceId?: string,
+  isFrontCamera?: boolean,
+) => {
+  console.log({ sourceId, isFrontCamera })
+
   return {
     audio: false,
     video: {
@@ -21,7 +26,12 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
         minHeight: 0,
         minFrameRate: 0,
       },
-      facingMode: Platform.OS === 'web' ? undefined : 'user',
+      facingMode:
+        Platform.OS === 'web'
+          ? undefined
+          : isFrontCamera
+          ? 'user'
+          : 'environment',
       optional: sourceId ? [{ sourceId }] : [],
     },
   } as unknown as MediaStreamConstraints
@@ -29,18 +39,28 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
 
 export class SIP extends EventEmitter {
   phone?: Sip
+  currentFrontCamera: boolean = true
+  sourceIdFrontCamera?: string = '1'
+  sourceIdBackCamera?: string = '0'
   private init = async (o: SipLoginOption) => {
-    const sourceId = await getFrontCameraSourceId()
+    this.sourceIdFrontCamera = await getCameraSourceId(true)
+    this.sourceIdBackCamera = await getCameraSourceId(false)
     const phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
       multiSession: 1,
       defaultOptions: {
         videoOptions: {
           call: {
-            mediaConstraints: sipCreateMediaConstraints(sourceId),
+            mediaConstraints: sipCreateMediaConstraints(
+              this.sourceIdFrontCamera,
+              true,
+            ),
           },
           answer: {
-            mediaConstraints: sipCreateMediaConstraints(sourceId),
+            mediaConstraints: sipCreateMediaConstraints(
+              this.sourceIdFrontCamera,
+              true,
+            ),
           },
         },
       },
@@ -310,6 +330,35 @@ export class SIP extends EventEmitter {
   }
   setMuted = (muted: boolean, sessionId: string) => {
     return this.phone?.setMuted({ main: muted }, sessionId)
+  }
+  switchCamera = (sessionId: string) => {
+    // alert(this.currentFrontCamera)
+    if (!this.phone) {
+      return
+    }
+    this.currentFrontCamera = !this.currentFrontCamera
+    const videoOptions = {
+      call: {
+        mediaConstraints: sipCreateMediaConstraints(
+          this.currentFrontCamera
+            ? this.sourceIdFrontCamera
+            : this.sourceIdBackCamera,
+          this.currentFrontCamera,
+        ),
+      },
+      answer: {
+        mediaConstraints: sipCreateMediaConstraints(
+          this.currentFrontCamera
+            ? this.sourceIdFrontCamera
+            : this.sourceIdBackCamera,
+          this.currentFrontCamera,
+        ),
+      },
+    }
+    console.log({ videoOptions })
+    // this.phone._options.defaultOptions.videoOptions = videoOptions
+    this.phone?.setWithVideo(sessionId, false, videoOptions)
+    this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
 }
 

@@ -7,7 +7,7 @@ declare global {
     facing: string
   }
 }
-export const getFrontCameraSourceId = async () => {
+export const getCameraSourceId = async (isFront: boolean) => {
   const mediaDevices = window.navigator.mediaDevices
   if (!mediaDevices) {
     RnAlert.error({
@@ -19,8 +19,18 @@ export const getFrontCameraSourceId = async () => {
   }
   return mediaDevices
     .enumerateDevices()
-    .then(a => a.find(i => /video/i.test(i.kind) && /front/i.test(i.facing)))
-    .then(i => i?.id || undefined)
+    .then(a => {
+      console.log({ a })
+      return a.find(i =>
+        /videoinput/i.test(i.kind) && isFront
+          ? /front/i.test(i.facing)
+          : /environment/i.test(i.facing),
+      )
+    })
+    .then(i => {
+      console.log({ i })
+      return i?.deviceId || undefined
+    })
     .catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to get front camera information`,

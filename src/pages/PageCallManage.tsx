@@ -1,6 +1,7 @@
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
+  mdiCameraSwitchOutline,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -47,7 +48,13 @@ const css = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-
+  BtnSwitchCamera: {
+    position: 'absolute',
+    top: 100, // Header compact height
+    left: 0,
+    right: 40,
+    zIndex: 100,
+  },
   Btns: {
     position: 'absolute',
     top: 40, // Header compact height
@@ -146,12 +153,57 @@ export class PageCallManage extends Component<{
         <PageCallTransferAttend />
       ) : (
         <>
+          {isVideoEnabled && this.renderBtnSwitchCamera(c)}
           {isVideoEnabled && this.renderVideo(c)}
           {this.renderBtns(c, isVideoEnabled)}
           {this.renderHangupBtn(c)}
         </>
       )}
     </Layout>
+  )
+  onPressSwitchCamera = async (c: Call) => {
+    c.toggleSwitchCamera()
+    // if(Platform.OS !== 'web'){
+    //   alert('Press Switch Camera')
+    // const cb = (s: MediaStream) => {
+    //   if(!c.localVideoStreamObject){
+    //     c.localVideoStreamObject = s
+    //   }else {
+    //     c.localVideoStreamObject.getVideoTracks().forEach(t => {if (t.kind === 'video') {t._switchCamera()}})
+    //   }
+    //   // s.getVideoTracks().forEach(t => {t._switchCamera()})
+    // }
+    // const er = (err: MediaStreamError) => {
+
+    // }
+    // const p = window.navigator.getUserMedia(
+    //   {
+    //     audio: true,
+    //     video: true,
+    //   },
+    //   cb,
+    //   er,
+    // ) as unknown as Promise<MediaStream>
+    // if (p?.then) {
+    //   p.then(cb).catch(er)
+    // }
+    // }
+    // c.remoteVideoStreamObject?.getVideoTracks().forEach(track => { if (track.kind === 'video') {track._switchCamera()} })
+  }
+  renderBtnSwitchCamera = (c: Call) => (
+    <>
+      <ButtonIcon
+        bgcolor='red'
+        color='black'
+        name={intl`SWITCH CAM`}
+        noborder
+        style={css.BtnSwitchCamera}
+        onPress={() => this.onPressSwitchCamera(c)}
+        path={mdiCameraSwitchOutline}
+        size={40}
+        textcolor='white'
+      />
+    </>
   )
   renderVideo = (c: Call) => (
     <>
@@ -342,7 +394,8 @@ export class PageCallManage extends Component<{
   render() {
     const c = callStore.getCurrentCall()
     void callStore.calls.length // trigger componentDidUpdate
-    const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
+    const isVideoEnabled =
+      c?.answered && (c?.remoteVideoEnabled || c?.localVideoEnabled)
     const Container = isVideoEnabled ? Fragment : BrekekeGradient
     return <Container>{this.renderCall(c, isVideoEnabled)}</Container>
   }

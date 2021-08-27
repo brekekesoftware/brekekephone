@@ -77,6 +77,10 @@ export class Call {
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
+
+  toggleSwitchCamera = () => {
+    sip.switchCamera(this.id)
+  }
   toggleVideo = () => {
     if (this.holding) {
       return
@@ -87,6 +91,8 @@ export class Call {
   }
 
   @observable remoteVideoStreamObject: MediaStream | null = null
+  @observable localVideoStreamObject: MediaStream | null = null
+
   voiceStreamObject: MediaStream | null = null
 
   @observable muted = false
