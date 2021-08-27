@@ -61,7 +61,7 @@ class Api {
         return
       }
       contactStore.pbxUsers = users
-    } catch (err: unknown) {
+    } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,
         err: err as Error,

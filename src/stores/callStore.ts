@@ -11,22 +11,25 @@ import { uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
-import { IncomingCall } from '../utils/RnNativeModules'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
 import { Nav } from './Nav'
+import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
+import { timerStore } from './timerStore'
 
 export class CallStore {
   private recentCallActivityAt = 0
 
   private prevCallKeepUuid?: string
-  private getIncomingCallkeep = (
+  private getCallkeep = (
     uuid: string,
     o?: {
+      includingOutgoing?: boolean
       includingAnswered?: boolean
       includingRejected?: boolean
     },
@@ -34,15 +37,18 @@ export class CallStore {
     const pnId = this.getPnIdFromUuid(uuid)
     return this.calls.find(
       c =>
-        c.incoming &&
-        !c.isAboutToHangup &&
+        (!pnId || c.pnId === pnId) &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
+        (o?.includingOutgoing || c.incoming) &&
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
         (o?.includingRejected || !c.callkeepAlreadyRejected) &&
-        (!pnId || c.pnId === pnId),
+        !c.isAboutToHangup,
     )
   }
-  onCallKeepDidDisplayIncomingCall = (uuid: string, pnData: ParsedPn) => {
+  @action onCallKeepDidDisplayIncomingCall = (
+    uuid: string,
+    pnData: ParsedPn,
+  ) => {
     this.setAutoEndCallKeepTimer(uuid, pnData)
     // Check if call is rejected already
     const rejected = this.isCallRejected({
@@ -50,7 +56,7 @@ export class CallStore {
       pnId: pnData.id,
     })
     // Find the current incoming call which is not callkeep
-    const c = this.getIncomingCallkeep(uuid)
+    const c = this.getCallkeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
     }
@@ -62,15 +68,15 @@ export class CallStore {
       return
     }
     // ios allow only 1 callkeep
-    if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
+    /*if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
       const prevCall = this.calls.find(
         _ => _.callkeepUuid === this.prevCallKeepUuid,
       )
       if (prevCall) {
         prevCall.callkeepAlreadyRejected = true
       }
-      this.endCallKeep(this.prevCallKeepUuid)
-    }
+      this.endCallKeep(this.prevCallKeepUuid, false)
+    }*/
     this.prevCallKeepUuid = uuid
     // Auto reconnect if no activity
     // This logic is about the case connection has dropped silently
@@ -94,20 +100,21 @@ export class CallStore {
       }
     }
   }
-  onCallKeepAnswerCall = (uuid: string) => {
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'answered')
-    const c = this.getIncomingCallkeep(uuid)
+  @action onCallKeepAnswerCall = (uuid: string) => {
+    this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
+    const c = this.getCallkeep(uuid)
     console.error(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
     }
   }
-  onCallKeepEndCall = (uuid: string) => {
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejected')
-    const c = this.getIncomingCallkeep(uuid, {
+  @action onCallKeepEndCall = (uuid: string) => {
+    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
+    const c = this.getCallkeep(uuid, {
       includingAnswered: true,
       includingRejected: Platform.OS === 'android',
+      includingOutgoing: Platform.OS === 'ios',
     })
     console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
@@ -144,12 +151,23 @@ export class CallStore {
     this.recentCallActivityAt = now
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
+      if (
+        cPartial.videoSessionId &&
+        cExisting.videoSessionId &&
+        cPartial.videoSessionId !== cExisting.videoSessionId &&
+        !cPartial.remoteVideoEnabled
+      ) {
+        delete cPartial.videoSessionId
+        delete cPartial.remoteVideoEnabled
+        delete cPartial.remoteVideoStreamObject
+      }
       if (!cExisting.answered && cPartial.answered) {
+        cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
       if (cExisting.incoming && cExisting.callkeepUuid) {
-        IncomingCall.setRemoteVideoStreamURL(
+        BrekekeUtils.setRemoteVideoStreamURL(
           cExisting.callkeepUuid,
           cExisting.remoteVideoStreamObject
             ? cExisting.remoteVideoStreamObject.toURL()
@@ -161,7 +179,7 @@ export class CallStore {
         cExisting.callkeepUuid &&
         typeof cExisting.localVideoEnabled === 'boolean'
       ) {
-        IncomingCall.setIsVideoCall(
+        BrekekeUtils.setIsVideoCall(
           cExisting.callkeepUuid,
           !!cExisting.localVideoEnabled,
         )
@@ -172,7 +190,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
-    IncomingCall.setBackgroundCalls(this.calls.length)
+    BrekekeUtils.setJsCallsSize(this.calls.length)
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
@@ -182,11 +200,11 @@ export class CallStore {
     console.error(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
     )
-    if (callkeepAction === 'answered') {
+    if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
       c.answer()
       console.error('SIP PN debug: answer by recentPnAction')
-    } else if (callkeepAction === 'rejected') {
+    } else if (callkeepAction === 'rejectCall') {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
@@ -206,7 +224,7 @@ export class CallStore {
     addCallHistory(c)
     this.calls = this.calls.filter(c0 => c0 !== c)
     // Set number of total calls in our custom java incoming call module
-    IncomingCall.setBackgroundCalls(this.calls.length)
+    BrekekeUtils.setJsCallsSize(this.calls.length)
     // When if this is a outgoing call, try to insert a call history to uc chat
     if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
       uc.sendCallResult(c.getDuration(), c.partyNumber)
@@ -250,7 +268,8 @@ export class CallStore {
     const sipCreateSession = () => sip.createSession(number, options)
     try {
       // Try to call pbx first to see if there's any error with the network
-      await pbx.getConfig()
+      // TODO
+      void pbx
       sipCreateSession()
     } catch (err) {
       reconnectCalled = true
@@ -259,50 +278,58 @@ export class CallStore {
     Nav().goToPageCallManage()
     // Start call logic in RNCallKeep
     // Adding this will help the outgoing call automatically hold on GSM call
-    // Only for ios, android will be done in callkeep didDeactivateAudioSession
     let uuid = ''
-    if (Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length) {
+    if (
+      /*Platform.OS === 'android' ||
+      // ios allow only 1 callkeep
+      Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length*/
+      Platform.OS !== 'web'
+    ) {
       uuid = newUuid().toUpperCase()
-      RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
-      RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
-      RNCallKeep.setOnHold(uuid, false)
+      Platform.OS === 'ios' &&
+        RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       this.setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s: auto update currentCallId
     // The call will be emitted from sip, we'll use interval here to set it
-    this.currentCallId = ''
+    runInAction(() => {
+      this.currentCallId = ''
+    })
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
     // Also if after 3s there's no call in store, reconnect
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
-    this.startCallIntervalId = BackgroundTimer.setInterval(() => {
-      const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
-      if (curr) {
-        if (uuid) {
-          curr.callkeepUuid = uuid
-          this.prevCallKeepUuid = uuid
+    this.startCallIntervalId = BackgroundTimer.setInterval(
+      action(() => {
+        const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
+        if (curr) {
+          if (uuid) {
+            curr.callkeepUuid = uuid
+            this.prevCallKeepUuid = uuid
+          }
+          this.currentCallId = curr.id
+          this.clearStartCallIntervalTimer()
+          return
         }
-        this.currentCallId = curr.id
-        this.clearStartCallIntervalTimer()
-        return
-      }
-      const diff = Date.now() - this.startCallIntervalAt
-      // Add a guard of 10s to clear the interval
-      if (diff > 10000) {
-        if (uuid) {
-          this.endCallKeep(uuid)
+        const diff = Date.now() - this.startCallIntervalAt
+        // Add a guard of 10s to clear the interval
+        if (diff > 10000) {
+          if (uuid) {
+            this.endCallKeep(uuid)
+          }
+          this.clearStartCallIntervalTimer()
+          return
         }
-        this.clearStartCallIntervalTimer()
-        return
-      }
-      // And if after 3s there's no call in store, reconnect
-      // It's likely a connection issue occurred
-      if (!curr && !reconnectCalled && diff > 3000) {
-        reconnectCalled = true
-        reconnectAndWaitSip().then(sipCreateSession)
-        this.clearStartCallIntervalTimer()
-      }
-    }, 500)
+        // And if after 3s there's no call in store, reconnect
+        // It's likely a connection issue occurred
+        if (!curr && !reconnectCalled && diff > 3000) {
+          reconnectCalled = true
+          reconnectAndWaitSip().then(sipCreateSession)
+          this.clearStartCallIntervalTimer()
+        }
+      }),
+      500,
+    )
   }
   startVideoCall = (number: string) =>
     this.startCall(number, { videoEnabled: true })
@@ -358,6 +385,7 @@ export class CallStore {
       uuid: string
       at: number
       incomingPnData?: ParsedPn
+      hasAction?: boolean
     }
   } = {}
   getUuidFromPnId = (pnId: string) =>
@@ -375,7 +403,7 @@ export class CallStore {
     BackgroundTimer.clearInterval(this.autoEndCallKeepTimerId)
     this.autoEndCallKeepTimerId = 0
   }
-  private setAutoEndCallKeepTimer = (
+  @action private setAutoEndCallKeepTimer = (
     uuid: string,
     incomingPnData?: ParsedPn,
   ) => {
@@ -407,12 +435,14 @@ export class CallStore {
       this.updateCurrentCallDebounce()
     }, 500)
   }
-  private endCallKeep = (uuid: string) => {
+  @action private endCallKeep = (uuid: string, setAction = true) => {
     if (!uuid) {
       return
     }
     console.error('PN callkeep debug: endCallKeep ' + uuid)
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejected')
+    if (setAction) {
+      this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
+    }
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
@@ -420,9 +450,7 @@ export class CallStore {
     ) {
       addCallHistory(pnData)
     }
-    runInAction(() => {
-      delete this.callkeepMap[uuid]
-    })
+    delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
     RNCallKeep.reportEndCallWithUUID(
@@ -432,13 +460,23 @@ export class CallStore {
     if (uuid === this.prevCallKeepUuid) {
       this.prevCallKeepUuid = undefined
     }
-    IncomingCall.closeIncomingCallActivity(uuid)
+    BrekekeUtils.closeIncomingCall(uuid)
   }
-  endCallKeepAll = () => {
+  endCallKeepAllCalls = () => {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
-    IncomingCall.closeAllIncomingCallActivities()
+    BrekekeUtils.closeAllIncomingCalls()
+    this.onCallKeepAction()
+  }
+  @action onCallKeepAction = () => {
+    this.calls
+      .map(_ => this.callkeepMap[_.callkeepUuid])
+      .forEach(_ => {
+        if (_ && !_.hasAction) {
+          _.hasAction = true
+        }
+      })
   }
 
   // Move from callkeep.ts to avoid circular dependencies
@@ -447,10 +485,14 @@ export class CallStore {
   showIncomingCallUi = (e: TEvent & { pnData: ParsedPn }) => {
     const uuid = e.callUUID.toUpperCase()
     if (this.alreadyShowIncomingCallUi[uuid]) {
+      console.error('SIP PN debug: showIncomingCallUi: already show this uuid')
       return
     }
     this.alreadyShowIncomingCallUi[uuid] = true
     if (this.isCallRejected({ callkeepUuid: uuid, pnId: e.pnData.id })) {
+      console.error(
+        'SIP PN debug: showIncomingCallUi: call already rejected on js side',
+      )
       this.endCallKeep(uuid)
       return
     }
@@ -474,12 +516,51 @@ export class CallStore {
     if (c.pnId) {
       this.callkeepActionMap[c.pnId] = a
     }
+    this.onCallKeepAction()
   }
   private getCallkeepAction = (c: TCallkeepIds) =>
     (c.callkeepUuid && this.callkeepActionMap[c.callkeepUuid]) ||
     (c.pnId && this.callkeepActionMap[c.pnId])
   isCallRejected = (c?: TCallkeepIds) =>
-    c && this.getCallkeepAction(c) === 'rejected'
+    c && this.getCallkeepAction(c) === 'rejectCall'
+
+  getCallInNotify = () => {
+    // Do not display our callbar if already show callkeep
+    return this.calls.find(_ => {
+      const k = this.callkeepMap[_.callkeepUuid]
+      return (
+        _.incoming &&
+        !_.answered &&
+        (!k ||
+          k.hasAction ||
+          // Trigger timerStore.now observer at last
+          timerStore.now - _.createdAt > 1000)
+      )
+    })
+  }
+  shouldRingInNotify = (uuid?: string) => {
+    if (Platform.OS === 'web' || !uuid) {
+      return true
+    }
+    // Do not ring on background
+    if (RnAppState.currentState !== 'active') {
+      return false
+    }
+    // Do not ring if has an ongoing answered call
+    if (this.calls.some(_ => _.answered)) {
+      return false
+    }
+    // ios: Do not ring if has a callkeep with no action yet
+    if (
+      Platform.OS === 'ios' &&
+      Object.keys(this.callkeepMap).some(
+        _ => _ !== uuid && !this.callkeepActionMap[_],
+      )
+    ) {
+      return false
+    }
+    return true
+  }
 
   // To be used in sip.phone._ua.on('newNotify')
   onSipUaCancel = (pnId?: string) => {
@@ -488,23 +569,23 @@ export class CallStore {
     }
     const uuid = this.getUuidFromPnId(pnId)
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
-    this.setCallkeepAction({ pnId }, 'rejected')
+    this.setCallkeepAction({ pnId }, 'rejectCall')
     uuid && this.endCallKeep(uuid)
   }
 
   // Additional static logic
   constructor() {
     if (Platform.OS === 'android') {
-      IncomingCall.setIsAppActive(AppState.currentState === 'active', false)
+      BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
       // If it is locked right after blur, we assume it was put in background because of lock
       AppState.addEventListener('change', () => {
-        IncomingCall.setIsAppActive(AppState.currentState === 'active', false)
+        BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
         if (AppState.currentState === 'active') {
           return
         }
         BackgroundTimer.setTimeout(async () => {
-          if (await IncomingCall.isLocked()) {
-            IncomingCall.setIsAppActive(false, true)
+          if (await BrekekeUtils.isLocked()) {
+            BrekekeUtils.setIsAppActive(false, true)
           }
         }, 300)
       })
@@ -531,5 +612,5 @@ export class CallStore {
 
 export const callStore = new CallStore() as Immutable<CallStore>
 
-type TCallkeepAction = 'answered' | 'rejected'
+export type TCallkeepAction = 'answerCall' | 'rejectCall'
 type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>

@@ -4,18 +4,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { pbx } from './pbx'
 
-export const updatePhoneIndex = () =>
-  updatePhoneIndexWithoutCatch().catch((err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to update phone index`,
-      err,
-    })
-    getAuthStore().signOut()
-    Nav().goToPageProfileSignIn()
-    return null
-  })
-
-export const updatePhoneIndexWithoutCatch = async (
+export const updatePhoneIndex = async (
   p = getAuthStore().currentProfile,
   api = pbx,
 ): Promise<null | {

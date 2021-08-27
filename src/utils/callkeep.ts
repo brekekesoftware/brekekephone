@@ -11,7 +11,7 @@ import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
 import { parseNotificationData } from './PushNotification-parse'
-import { IncomingCall, RnNativeModules } from './RnNativeModules'
+import { BrekekeUtils } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
 
@@ -36,6 +36,7 @@ const setupCallKeepWithCheck = async () => {
   await RNCallKeep.setup({
     ios: {
       appName: 'Brekeke Phone',
+      // Already put this on our fork to display our logo before js load
       imageName: 'callkit.png',
       // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
       // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
@@ -48,18 +49,17 @@ const setupCallKeepWithCheck = async () => {
       okButton: intl`OK`,
       imageName: 'phone_account_icon',
       additionalPermissions: [],
-      // Android self-managed connection service forked version
+      foregroundService: {
+        channelId: 'com.brekeke.phone',
+        channelName: intl`Foreground service for Brekeke Phone`,
+        notificationTitle: intl`Brekeke Phone is running on background`,
+        notificationIcon: 'ic_launcher',
+      },
       selfManaged: true,
     },
   })
     .then(() => {
       if (Platform.OS === 'android') {
-        RNCallKeep.setForegroundServiceSettings({
-          channelId: 'com.brekeke.phone',
-          channelName: 'Foreground service for Brekeke Phone',
-          notificationTitle: 'Brekeke Phone is running on background',
-          notificationIcon: 'ic_launcher',
-        })
         RNCallKeep.registerPhoneAccount()
         RNCallKeep.registerAndroidEvents()
         RNCallKeep.setAvailable(true)
@@ -99,21 +99,19 @@ export const setupCallKeep = async () => {
     })
   }
   const answerCall = (e: TEvent) => {
-    // Use the custom native incoming call module for android
-    if (Platform.OS === 'android') {
-      return
-    }
     const uuid = e.callUUID.toUpperCase()
-    callStore.onCallKeepAnswerCall(uuid)
+    Platform.OS === 'android'
+      ? // Handle action from CallKeep Notification on android
+        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+      : callStore.onCallKeepAnswerCall(uuid)
   }
   const endCall = (e: TEvent) => {
     BackgroundTimer.setTimeout(setupCallKeepWithCheck, 0)
-    // Use the custom native incoming call module for android
-    if (Platform.OS === 'android') {
-      return
-    }
     const uuid = e.callUUID.toUpperCase()
-    callStore.onCallKeepEndCall(uuid)
+    Platform.OS === 'android'
+      ? // Handle action from CallKeep Notification on android
+        BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
+      : callStore.onCallKeepEndCall(uuid)
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
@@ -180,14 +178,15 @@ export const setupCallKeep = async () => {
     }
   }
   const didActivateAudioSession = () => {
-    // TODO
+    // Only in ios
+    console.error('CallKeep debug: didActivateAudioSession')
   }
   const didDeactivateAudioSession = () => {
-    if (Platform.OS === 'android') {
-      callStore.calls
-        .filter(c => c.answered && !c.holding)
-        .forEach(c => c.toggleHoldWithCheck())
-    }
+    // Only in ios
+    console.error('CallKeep debug: didDeactivateAudioSession')
+    callStore.calls
+      .filter(c => c.answered && !c.holding)
+      .forEach(c => c.toggleHoldWithCheck())
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#--didloadwithevents
@@ -219,7 +218,7 @@ export const setupCallKeep = async () => {
   // Android self-managed connection service forked version
   if (Platform.OS === 'android') {
     // Events from our custom IncomingCall module
-    const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
+    const eventEmitter = new NativeEventEmitter(BrekekeUtils)
     eventEmitter.addListener('answerCall', (uuid: string) => {
       callStore.onCallKeepAnswerCall(uuid.toUpperCase())
       RNCallKeep.setOnHold(uuid, false)
@@ -251,13 +250,20 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.getCurrentCall()?.toggleHoldWithCheck()
     })
+    eventEmitter.addListener('switchCamera', (uuid: string) => {
+      callStore.getCurrentCall()?.toggleSwitchCamera()
+    })
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
       console.error('SIP PN debug: backToForeground')
-      BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 300)
+      BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
+      BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
     })
-    // Manually handle back press
+    // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
+    eventEmitter.addListener('debug', (m: string) =>
+      console.error(`Android debug: ${m}`),
+    )
   }
 }
 
@@ -278,6 +284,6 @@ export const onBackPressed = () => {
     RnStacker.stacks.pop()
     return true
   }
-  IncomingCall.backToBackground()
+  BrekekeUtils.backToBackground()
   return true
 }

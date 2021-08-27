@@ -8,16 +8,14 @@ import { currentVersion } from '../components/variables'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
-import { getCameraSourceId } from './getCameraSourceId'
+import { getCameraSourceIds } from './getCameraSourceId'
 import { pbx } from './pbx'
-import { turnConfig } from './turnConfig'
-
+// import { turnConfig } from './turnConfig'
+const turnConfig = {}
 const sipCreateMediaConstraints = (
   sourceId?: string,
   isFrontCamera?: boolean,
 ) => {
-  console.log({ sourceId, isFrontCamera })
-
   return {
     audio: false,
     video: {
@@ -26,25 +24,28 @@ const sipCreateMediaConstraints = (
         minHeight: 0,
         minFrameRate: 0,
       },
-      facingMode:
-        Platform.OS === 'web'
-          ? undefined
-          : isFrontCamera
-          ? 'user'
-          : 'environment',
+      facingMode: isFrontCamera ? 'user' : 'environment',
       optional: sourceId ? [{ sourceId }] : [],
     },
   } as unknown as MediaStreamConstraints
 }
 
+type DeviceInputWeb = {
+  deviceId: string
+  kind: string
+  label: string
+  groupId: string
+  facing: string
+}
+
 export class SIP extends EventEmitter {
   phone?: Sip
-  currentFrontCamera: boolean = true
-  sourceIdFrontCamera?: string = '1'
-  sourceIdBackCamera?: string = '0'
+  currentCamera: string | undefined = '1'
+
+  cameraIds?: DeviceInputWeb[] = []
   private init = async (o: SipLoginOption) => {
-    this.sourceIdFrontCamera = await getCameraSourceId(true)
-    this.sourceIdBackCamera = await getCameraSourceId(false)
+    this.cameraIds = await getCameraSourceIds()
+    this.currentCamera = this.cameraIds?.[0]?.deviceId || '1'
     const phone = new window.Brekeke.WebrtcClient.Phone({
       logLevel: 'all',
       multiSession: 1,
@@ -52,13 +53,13 @@ export class SIP extends EventEmitter {
         videoOptions: {
           call: {
             mediaConstraints: sipCreateMediaConstraints(
-              this.sourceIdFrontCamera,
+              this.currentCamera,
               true,
             ),
           },
           answer: {
             mediaConstraints: sipCreateMediaConstraints(
-              this.sourceIdFrontCamera,
+              this.currentCamera,
               true,
             ),
           },
@@ -253,15 +254,12 @@ export class SIP extends EventEmitter {
       useVideoClient: true,
       userAgent: lUseragent,
     })
-
+    //
     console.error('SIP PN debug: added listener on _ua')
-
-    // temporary cancel PN via SIP ua
     phone._ua?.on('newNotify', e => {
-      const rg = /(\w+)\W*INVITE\s*,.+,\s*Canceled/
-      const pnId = e?.request?.data?.match(rg)?.[1]
-      console.error(`SIP PN debug: newNotify fired on _ua, pnId=${pnId}`)
-      cancelRecentPn(pnId)
+      const pnIds = parseCanceledPnIds(e?.request?.data)
+      console.error(`SIP PN debug: newNotify fired on _ua pnIds=${pnIds}`)
+      pnIds?.forEach(cancelRecentPn)
     })
   }
 
@@ -331,31 +329,44 @@ export class SIP extends EventEmitter {
   setMuted = (muted: boolean, sessionId: string) => {
     return this.phone?.setMuted({ main: muted }, sessionId)
   }
-  switchCamera = (sessionId: string) => {
+  switchCamera = async (sessionId: string) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
       return
     }
-    this.currentFrontCamera = !this.currentFrontCamera
+    // get camera info again for web mobile
+    if (this.cameraIds === undefined || this.cameraIds.length === 0) {
+      this.cameraIds = await getCameraSourceIds()
+    }
+    // if don't have camera or just have one
+    if (
+      this.cameraIds === undefined ||
+      this.cameraIds.length === 1 ||
+      this.cameraIds.length === 0
+    ) {
+      return
+    }
+
+    let isFrontCamera = false
+    const cameras = this.cameraIds.map(s => s.deviceId)
+    isFrontCamera = this.currentCamera === cameras[0]
+    this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
+
     const videoOptions = {
       call: {
         mediaConstraints: sipCreateMediaConstraints(
-          this.currentFrontCamera
-            ? this.sourceIdFrontCamera
-            : this.sourceIdBackCamera,
-          this.currentFrontCamera,
+          this.currentCamera,
+          isFrontCamera,
         ),
       },
       answer: {
         mediaConstraints: sipCreateMediaConstraints(
-          this.currentFrontCamera
-            ? this.sourceIdFrontCamera
-            : this.sourceIdBackCamera,
-          this.currentFrontCamera,
+          this.currentCamera,
+          isFrontCamera,
         ),
       },
     }
-    console.log({ videoOptions })
+    // console.log({ videoOptions })
     // this.phone._options.defaultOptions.videoOptions = videoOptions
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
@@ -372,4 +383,27 @@ export interface SipLoginOption {
   accessToken: string
   dtmfSendPal: boolean
   turnConfig?: RTCIceServer
+}
+
+export const parseCanceledPnIds = (data?: string) => {
+  if (!data || !/Canceled/i.test(data)) {
+    return
+  }
+  const m = data.match(/Content-Length:\s*(\d+)\s*/i)
+  if (!m) {
+    return
+  }
+  const i = m.index
+  const l = parseInt(m[1])
+  if (typeof i !== 'number' || isNaN(l)) {
+    return
+  }
+  const msg = data.substr(i + m[0].length)
+  console.error(`parseCanceledPnIds: msg.length=${msg.length} l=${l}`)
+  return msg
+    .split(/\n/g)
+    .map(s => s.trim())
+    .filter(s => /Canceled$/i.test(s))
+    .map(s => s.match(/(\w+)\W*INVITE/)?.[1])
+    .filter(s => s)
 }

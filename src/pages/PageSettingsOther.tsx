@@ -71,7 +71,7 @@ export class PageSettingsOther extends Component {
               getAuthStore().signOut()
               // Try to end callkeep if it's stuck
               if (Platform.OS !== 'web') {
-                callStore.endCallKeepAll()
+                callStore.endCallKeepAllCalls()
               }
             },
             danger: true,

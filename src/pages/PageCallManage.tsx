@@ -1,7 +1,8 @@
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
-  mdiCameraSwitchOutline,
+  mdiCameraFrontVariant,
+  mdiCameraRearVariant,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -23,6 +24,7 @@ import { Platform, StyleSheet, View } from 'react-native'
 
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
+import { IncomingItemWithTimer } from '../components/CallNotify'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
@@ -50,9 +52,8 @@ const css = StyleSheet.create({
   },
   BtnSwitchCamera: {
     position: 'absolute',
-    top: 100, // Header compact height
-    left: 0,
-    right: 40,
+    top: 10, // Header compact height
+    right: 10,
     zIndex: 100,
   },
   Btns: {
@@ -62,9 +63,6 @@ const css = StyleSheet.create({
     right: 0,
     bottom: 0,
     paddingBottom: 124, // Hangup button 64 + 2*30
-  },
-  Btns__isVideoEnabled: {
-    backgroundColor: v.layerBg,
   },
   Btns_Hidden: {
     opacity: 0,
@@ -96,6 +94,12 @@ const css = StyleSheet.create({
     bottom: undefined,
     top: 100,
   },
+  cameraStyle: {
+    position: 'absolute',
+    top: 50,
+    right: 10,
+    zIndex: 100,
+  },
 })
 
 @observer
@@ -113,6 +117,9 @@ export class PageCallManage extends Component<{
     if (!callStore.calls.length) {
       Nav().goToPageCallRecents()
     }
+  }
+  componentWillUnmount() {
+    callStore.onCallKeepAction()
   }
 
   @action toggleButtons = () => {
@@ -153,7 +160,6 @@ export class PageCallManage extends Component<{
         <PageCallTransferAttend />
       ) : (
         <>
-          {isVideoEnabled && this.renderBtnSwitchCamera(c)}
           {isVideoEnabled && this.renderVideo(c)}
           {this.renderBtns(c, isVideoEnabled)}
           {this.renderHangupBtn(c)}
@@ -161,52 +167,19 @@ export class PageCallManage extends Component<{
       )}
     </Layout>
   )
-  onPressSwitchCamera = async (c: Call) => {
-    c.toggleSwitchCamera()
-    // if(Platform.OS !== 'web'){
-    //   alert('Press Switch Camera')
-    // const cb = (s: MediaStream) => {
-    //   if(!c.localVideoStreamObject){
-    //     c.localVideoStreamObject = s
-    //   }else {
-    //     c.localVideoStreamObject.getVideoTracks().forEach(t => {if (t.kind === 'video') {t._switchCamera()}})
-    //   }
-    //   // s.getVideoTracks().forEach(t => {t._switchCamera()})
-    // }
-    // const er = (err: MediaStreamError) => {
 
-    // }
-    // const p = window.navigator.getUserMedia(
-    //   {
-    //     audio: true,
-    //     video: true,
-    //   },
-    //   cb,
-    //   er,
-    // ) as unknown as Promise<MediaStream>
-    // if (p?.then) {
-    //   p.then(cb).catch(er)
-    // }
-    // }
-    // c.remoteVideoStreamObject?.getVideoTracks().forEach(track => { if (track.kind === 'video') {track._switchCamera()} })
-  }
-  renderBtnSwitchCamera = (c: Call) => (
-    <>
-      <ButtonIcon
-        bgcolor='red'
-        color='black'
-        name={intl`SWITCH CAM`}
-        noborder
-        style={css.BtnSwitchCamera}
-        onPress={() => this.onPressSwitchCamera(c)}
-        path={mdiCameraSwitchOutline}
-        size={40}
-        textcolor='white'
-      />
-    </>
-  )
   renderVideo = (c: Call) => (
     <>
+      <View style={css.cameraStyle}>
+        <ButtonIcon
+          // bgcolor={v.colors.primary}
+          color={'white'}
+          noborder
+          onPress={c.toggleSwitchCamera}
+          path={c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant}
+          size={40}
+        />
+      </View>
       <View style={css.Video_Space} />
       <View style={css.Video}>
         <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
@@ -229,7 +202,7 @@ export class PageCallManage extends Component<{
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
-        style={[css.Btns, isVideoEnabled && css.Btns__isVideoEnabled]}
+        style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
         {/* TODO add Connecting... */}
@@ -364,14 +337,13 @@ export class PageCallManage extends Component<{
         </View>
         {incoming && (
           <>
+            <IncomingItemWithTimer />
             <View style={[css.Hangup, css.Hangup_incomingText]}>
               <RnText title white center>
                 {c.title}
               </RnText>
               <RnText bold white center>
-                {c.remoteVideoEnabled
-                  ? intl`Incoming Video Call`
-                  : intl`Incoming Audio Call`}
+                {intl`Incoming Call`}
               </RnText>
             </View>
             <View style={[css.Hangup, css.Hangup_answer]}>
@@ -394,9 +366,7 @@ export class PageCallManage extends Component<{
   render() {
     const c = callStore.getCurrentCall()
     void callStore.calls.length // trigger componentDidUpdate
-    const isVideoEnabled =
-      c?.answered && (c?.remoteVideoEnabled || c?.localVideoEnabled)
-    const Container = isVideoEnabled ? Fragment : BrekekeGradient
-    return <Container>{this.renderCall(c, isVideoEnabled)}</Container>
+    const Container = c?.localVideoEnabled ? Fragment : BrekekeGradient
+    return <Container>{this.renderCall(c, c?.localVideoEnabled)}</Container>
   }
 }

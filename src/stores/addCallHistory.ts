@@ -1,6 +1,7 @@
 import moment from 'moment'
 import { v4 as newUuid } from 'uuid'
 
+import { getPartyName } from '../stores/contactStore'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
@@ -24,7 +25,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       created,
       incoming: c.incoming,
       answered: c.answered,
-      partyName: c.partyName,
+      partyName: c.title,
       partyNumber: c.partyNumber,
       duration: c.getDuration(),
     })
@@ -34,7 +35,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       created,
       incoming: true,
       answered: false,
-      partyName: c.from,
+      partyName: getPartyName(c.from) || c.displayName,
       partyNumber: c.from,
       duration: 0,
     })

@@ -4,7 +4,7 @@ import en from '../assets/intl-en.json'
 import ja from '../assets/intl-ja.json'
 import vi from '../assets/intl-vi.json'
 import { RnAsyncStorage } from '../components/Rn'
-import { IncomingCall } from '../utils/RnNativeModules'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'
 import { RnPicker } from './RnPicker'
@@ -42,7 +42,7 @@ export class IntlStore {
     }
     runInAction(() => {
       this.locale = locale || 'en'
-      IncomingCall.setLocale(this.locale)
+      BrekekeUtils.setLocale(this.locale)
     })
   }
   private setLocale = async (locale: string) => {
@@ -60,7 +60,7 @@ export class IntlStore {
     runInAction(() => {
       this.localeLoading = false
       this.locale = locale
-      IncomingCall.setLocale(this.locale)
+      BrekekeUtils.setLocale(this.locale)
     })
   }
   selectLocale = () => {

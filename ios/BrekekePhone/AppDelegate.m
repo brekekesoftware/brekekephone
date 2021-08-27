@@ -129,27 +129,28 @@ static void InitializeFlipper(UIApplication *application) {
                                 forType:(NSString *)type
                            callkeepUuid:uuid];
   // RNCallKeep
-  NSString *from = [payload.dictionaryPayload valueForKey:@"x_from"];
-  if (!from) {
-    from = [payload.dictionaryPayload valueForKey:@"from"];
-  }
-  if (!from) {
-    NSDictionary *aps = [payload.dictionaryPayload objectForKey:@"aps"];
-    if (aps) {
-      from = [aps valueForKey:@"x_from"];
-      if (!from) {
-        from = [aps valueForKey:@"from"];
+  NSString *callerName =
+      [payload.dictionaryPayload valueForKey:@"x_displayname"];
+  if (!callerName) {
+    callerName = [payload.dictionaryPayload valueForKey:@"x_from"];
+    if (!callerName) {
+      NSDictionary *aps = [payload.dictionaryPayload objectForKey:@"aps"];
+      if (aps) {
+        callerName = [aps valueForKey:@"x_displayname"];
+        if (!callerName) {
+          callerName = [aps valueForKey:@"x_from"];
+        }
       }
     }
   }
-  if (!from) {
-    from = @"Loading...";
+  if (!callerName) {
+    callerName = @"Loading...";
   }
   [RNCallKeep reportNewIncomingCall:uuid
                              handle:@"Brekeke Phone"
                          handleType:@"generic"
                            hasVideo:false
-                localizedCallerName:from
+                localizedCallerName:callerName
                     supportsHolding:YES
                        supportsDTMF:YES
                    supportsGrouping:NO

@@ -408,7 +408,9 @@ export class PageChatGroupDetail extends Component<{
       Object.assign(file, { url })
       chatStore.upsertFile(file)
       chatStore.pushMessages(groupId, chat)
-    } catch (error) {}
+    } catch (err) {
+      console.error(`PageChatGroupDetail.handleSaveBlobFileWeb err: ${err}`)
+    }
   }
   onSendFileSuccess = (
     res: { file: ChatFile; chat: ChatMessage },

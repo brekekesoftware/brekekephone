@@ -1,35 +1,23 @@
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React from 'react'
 
-import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
-import { CallVoicesUI } from './CallVoicesUI'
+import { AnsweredItem, OutgoingItem } from './CallVoicesUI'
 
-@observer
-export class CallVoices extends Component {
-  render() {
-    const map = callStore.calls.reduce((m, c) => {
-      // @ts-ignore
-      m[c.id] = c
-      return m
-    }, {} as { [k: string]: Call })
-    return (
-      <CallVoicesUI
-        answeredCallIds={callStore.calls.filter(c => c.answered).map(c => c.id)}
-        incomingCallIds={callStore.calls
-          .filter(
-            c =>
-              !c.answered &&
-              c.incoming &&
-              // Do not ring if already show callkeep
-              !callStore.callkeepMap[c.callkeepUuid],
-          )
-          .map(c => c.id)}
-        outgoingCallIds={callStore.calls
-          .filter(c => !c.answered && !c.incoming)
-          .map(c => c.id)}
-        resolveCall={(id: string) => map[id]}
-      />
-    )
-  }
-}
+export const CallVoices = observer(() => {
+  // Try trigger observer?
+  void Object.keys(callStore.callkeepMap)
+  void callStore.calls.map(_ => _.callkeepUuid)
+  return (
+    <>
+      {!!callStore.calls.filter(c => !c.incoming && !c.answered).length && (
+        <OutgoingItem />
+      )}
+      {callStore.calls
+        .filter(c => c.answered)
+        .map(c => (
+          <AnsweredItem key={c.id} voiceStreamObject={c.voiceStreamObject} />
+        ))}
+    </>
+  )
+})

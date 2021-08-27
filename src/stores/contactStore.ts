@@ -3,6 +3,7 @@ import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
+import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -48,6 +49,9 @@ class ContactStore {
   numberOfContactsPerPage = 100
 
   loadContacts = async () => {
+    if (getAuthStore().pbxState !== 'success' || this.loading) {
+      return
+    }
     this.loading = true
     await pbx
       .getContacts({
@@ -160,6 +164,18 @@ class ContactStore {
       [k: string]: Phonebook2
     }
   }
+
+  getPhoneBookByPhoneNumber = (phoneNumber?: string) => {
+    if (!phoneNumber) {
+      return
+    }
+    return this.phoneBooks.filter(
+      p =>
+        p.cellNumber === phoneNumber ||
+        p.homeNumber === phoneNumber ||
+        p.workNumber === phoneNumber,
+    )?.[0]
+  }
   getPhonebookById = (id: string) => {
     return this.phoneBooksMap[id]
   }
@@ -175,3 +191,7 @@ class ContactStore {
 }
 
 export const contactStore = new ContactStore()
+
+export const getPartyName = (partyNumber?: string) =>
+  (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
+  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.name

@@ -15,16 +15,21 @@ export const formatChatContent = (c: {
   let text = c.text || ''
   const originalText = text
   if (type !== 1) {
-    let o: {
-      name?: string
-      talklen?: number
-      file_id?: string
-      additionals?: []
-      target?: ChatTarget
-    } = {}
+    let o:
+      | undefined
+      | {
+          name?: string
+          talklen?: number
+          file_id?: string
+          additionals?: []
+          target?: ChatTarget
+        }
     try {
       o = JSON.parse(text)
     } catch (err) {}
+    if (!o) {
+      o = {}
+    }
     if (typeof o.talklen === 'number' || typeof o.talklen === 'string') {
       text = !c.creatorId
         ? intl`Call duration: ${formatDuration(o.talklen)}`

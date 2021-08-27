@@ -23,5 +23,7 @@ window.MediaStreamTrack = window.MediaStreamTrack || MediaStreamTrack
 window.navigator = window.navigator || {}
 // @ts-ignore
 window.navigator.mediaDevices = window.navigator.mediaDevices || mediaDevices
+// @ts-ignore
 window.navigator.getUserMedia =
+  // @ts-ignore
   window.navigator.getUserMedia || mediaDevices.getUserMedia

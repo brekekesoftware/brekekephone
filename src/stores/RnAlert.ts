@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx'
 import { ReactElement } from 'react'
+import { AppState } from 'react-native'
 
 import { IntlDebug } from './intl'
 
@@ -49,13 +50,15 @@ export class RnAlertStore {
     if (err) {
       console.error(...(en ? [en, err] : [err]))
     }
-    this.alerts.push({
-      error: {
-        ...a,
-        message: a.message?.label,
-      },
-    })
-    this.alertsCount = this.alerts.length
+    if (AppState.currentState === 'active') {
+      this.alerts.push({
+        error: {
+          ...a,
+          message: a.message?.label,
+        },
+      })
+      this.alertsCount = this.alerts.length
+    }
   }
   @action dismiss = () => {
     this.alerts.shift()

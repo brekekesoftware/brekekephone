@@ -11,11 +11,11 @@ export const saveBlob = (blob: Blob, name: string) => {
     try {
       await RNFS.writeFile(p, b64, 'base64')
     } catch (err) {
-      console.error('saveBlob', err)
+      console.error(`saveBlob RNFS.writeFile err: ${err}`)
     }
   }
   fr.onerror = err => {
-    console.error('saveBlob', err)
+    console.error(`saveBlob onerror err: ${err}`)
   }
   fr.readAsDataURL(blob)
 }
@@ -35,17 +35,18 @@ export const saveBlobFile = (id: string, topic_id: string, type?: string) => {
           await RNFS.writeFile(p, b64, 'base64')
           resolve(p)
         } catch (err) {
-          console.error('saveBlob', err)
+          console.error(`saveBlobFile RNFS.writeFile err: ${err}`)
           reject(err)
         }
       }
       fr.onerror = err => {
-        console.error('saveBlob', err)
+        console.error(`saveBlobFile onerror err: ${err}`)
         reject(err)
       }
       fr.readAsDataURL(data)
-    } catch (error) {
-      reject(error)
+    } catch (err) {
+      console.error(`saveBlobFile catch err: ${err}`)
+      reject(err)
     }
   })
 }

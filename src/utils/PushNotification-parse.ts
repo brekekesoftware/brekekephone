@@ -3,7 +3,7 @@ import { AppState, Platform } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import { IncomingCall } from './RnNativeModules'
+import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
@@ -12,6 +12,7 @@ const keysInCustomNotification = [
   'body',
   'message',
   'from',
+  'displayname',
   'to',
   'tenant',
   'pbxHostname',
@@ -143,6 +144,7 @@ export const parseNotificationData = (raw: object) => {
   if (!n.to) {
     n.to = matches?.[2] || ''
   }
+  n.displayName = get(n, 'displayname') || n.from
 
   n.isCall = !!n.id || !!n.sipPn.sipAuth
 
@@ -223,7 +225,10 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   // Continue handling incoming call in android
   if (Platform.OS === 'android') {
     callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
-    const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
+    const action = await BrekekeUtils.getIncomingCallPendingUserAction(
+      n.callkeepUuid,
+    )
+    console.error(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       callStore.onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {
@@ -243,6 +248,7 @@ export type ParsedPn = {
   alert: string
   message: string
   from: string
+  displayName: string
   to: string
   tenant: string
   pbxHostname: string

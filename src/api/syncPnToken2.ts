@@ -5,7 +5,7 @@ import { Profile, profileStore } from '../stores/profileStore'
 import { PushNotification } from '../utils/PushNotification'
 import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
-import { updatePhoneIndexWithoutCatch } from './updatePhoneIndex'
+import { updatePhoneIndex } from './updatePhoneIndex'
 
 const syncPnTokenWithoutCatch = async (
   p: Profile,
@@ -25,7 +25,7 @@ const syncPnTokenWithoutCatch = async (
   const pbx = new PBX()
   await pbx.connect(p)
 
-  const webPhone = await updatePhoneIndexWithoutCatch(p, pbx)
+  const webPhone = await updatePhoneIndex(p, pbx)
   if (!webPhone) {
     console.error('PN sync debug: can not find webphone')
     return

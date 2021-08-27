@@ -17,7 +17,7 @@ class TimerStore {
   }
 }
 
-const timerStore = new TimerStore()
+export const timerStore = new TimerStore()
 
 type TDurationProps = Omit<TRnTextProps, 'children'> & {
   children: number

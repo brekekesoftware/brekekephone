@@ -57,7 +57,7 @@
       android:value="default"
     />
     <service
-      android:name="com.brekeke.fcm.MessagingService"
+      android:name="BrekekeMessagingService"
       android:enabled="true"
       android:exported="true"
     >
@@ -66,16 +66,16 @@
       </intent-filter>
     </service>
     <service
-      android:name="com.brekeke.fcm.InstanceIdService"
+      android:name="com.evollu.react.fcm.InstanceIdService"
       android:exported="false"
     >
       <intent-filter>
         <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
       </intent-filter>
     </service>
-    <receiver android:name="com.brekeke.fcm.FIRLocalMessagingPublisher" />
+    <receiver android:name="com.evollu.react.fcm.FIRLocalMessagingPublisher" />
     <receiver
-      android:name="com.brekeke.fcm.FIRSystemBootEventReceiver"
+      android:name="com.evollu.react.fcm.FIRSystemBootEventReceiver"
       android:enabled="true"
       android:exported="true"
     >
@@ -91,7 +91,7 @@
       android:name="io.wazo.callkeep.VoiceConnectionService"
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-      android:foregroundServiceType="phoneCall"
+      android:foregroundServiceType="camera|microphone"
     >
       <intent-filter>
         <action android:name="android.telecom.ConnectionService" />

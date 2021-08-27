@@ -4,11 +4,13 @@ import {
   mdiPhoneMissed,
   mdiPhoneOutgoing,
 } from '@mdi/js'
+import { observer } from 'mobx-react'
 import React, { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
+import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -101,7 +103,7 @@ export const UserItem: FC<
     group: boolean
     partyName: string
   }>
-> = p0 => {
+> = observer(p0 => {
   const {
     answered,
     avatar,
@@ -184,7 +186,11 @@ export const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
-              {name || partyName || partyNumber || id}
+              {getPartyName(partyNumber) ||
+                partyName ||
+                name ||
+                partyNumber ||
+                id}
             </RnText>
             {!!statusText && (
               <RnText normal singleLine small style={css.Status}>
@@ -238,4 +244,4 @@ export const UserItem: FC<
       </View>
     </Container>
   )
-}
+})

@@ -65,10 +65,7 @@ class AuthUC {
       action((err: Error) => {
         s.ucState = 'failure'
         s.ucTotalFailure += 1
-        RnAlert.error({
-          message: intlDebug`Failed to connect to UC`,
-          err,
-        })
+        console.error('Failed to connect to uc', err)
       }),
     )
   }
