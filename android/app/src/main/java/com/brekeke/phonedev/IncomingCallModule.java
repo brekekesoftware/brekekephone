@@ -115,7 +115,11 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            if (userActions.get(uuid) != null) {
+            String a = userActions.get(uuid);
+            if (a != null) {
+              if (a.equals("rejected")) {
+                RNCallKeepModule.staticEndCall(uuid);
+              }
               return;
             }
             userActions.put(uuid, "display");
@@ -341,6 +345,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void closeIncomingCallActivity(String uuid) {
     try {
+      userActions.put(uuid, "rejected");
       at(uuid).answered = false;
       remove(uuid);
     } catch (Exception e) {

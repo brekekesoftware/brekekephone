@@ -401,8 +401,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   @Override
   protected void onPause() {
-    forceStopRingtone();
     paused = true;
+    forceStopRingtone();
     IncomingCallModule.onActivityPauseOrDestroy(uuid, false);
     super.onPause();
   }
@@ -418,8 +418,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   @Override
   protected void onDestroy() {
-    forceStopRingtone();
     destroyed = true;
+    forceStopRingtone();
     IncomingCallModule.onActivityPauseOrDestroy(uuid, true);
     super.onDestroy();
   }
@@ -437,6 +437,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
     } else {
       vib.vibrate(pattern, 0);
+    }
+    if (mode == AudioManager.RINGER_MODE_VIBRATE) {
+      return;
     }
     am.setMode(AudioManager.MODE_RINGTONE);
     mp =
@@ -456,9 +459,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void forceStopRingtone() {
     try {
-      Context ctx = getApplicationContext();
-      Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
-      vib.cancel();
+      IncomingCallActivity l = IncomingCallModule.last();
+      if (l == null || l == this || l.answered || l.paused || l.destroyed) {
+        Context ctx = getApplicationContext();
+        Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
+        vib.cancel();
+      }
     } catch (Exception e) {
     }
     try {
