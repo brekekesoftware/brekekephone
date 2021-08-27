@@ -7,6 +7,7 @@ import { sip } from '../api/sip'
 import { IncomingCall } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { CallStore } from './callStore'
+import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
@@ -78,7 +79,11 @@ export class Call {
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
   toggleVideo = () => {
-    if (this.holding) {
+    const pbxUser = contactStore.getPbxUserById(
+      this.partyNumber || this.partyName,
+    )
+    const callerStatus = pbxUser?.talkers?.[0].status
+    if (this.holding || callerStatus === 'holding') {
       return
     }
     this.localVideoEnabled
