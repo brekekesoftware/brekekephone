@@ -2,14 +2,7 @@ package com.brekeke.phonedev;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,10 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.oney.WebRTCModule.WebRTCView;
+import io.wazo.callkeep.RNCallKeepModule;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  public MediaPlayer mp;
-
   public RelativeLayout vWebrtc, vIncomingCall, vCallManage, vCallManageLoading;
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
@@ -61,9 +53,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       b = savedInstanceState;
     }
     if (b == null) {
-      this.forceFinish();
+      forceFinish();
       return;
     }
+
+    uuid = b.getString("uuid");
+    callerName = b.getString("callerName");
+    if ("rejectCall".equals(IncomingCallModule.userActions.get(uuid))) {
+      forceFinish();
+      RNCallKeepModule.staticEndCall(uuid);
+      return;
+    }
+    // Just to make sure we'll use interval here
+    IncomingCallModule.intervalCheckRejectCall(uuid);
 
     getWindow()
         .addFlags(
@@ -74,10 +76,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     setContentView(R.layout.incoming_call_activity);
     IncomingCallModule.activities.add(this);
-    startRingtone();
-
-    uuid = b.getString("uuid");
-    callerName = b.getString("callerName");
+    IncomingCallModule.startRingtone();
 
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
@@ -179,7 +178,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRemoteVideoStreamURL(String url) {
-    if (url == null || url.equals("")) {
+    if (url == null || "".equals(url)) {
       if (vWebrtcVideo == null) {
         return;
       }
@@ -223,11 +222,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   // vIncomingCall
 
   public void onBtnAnswerClick(View v) {
-    IncomingCallModule.userActions.put(uuid, "answerCall");
+    IncomingCallModule.putUserActionAnswerCall(uuid);
     IncomingCallModule.emit("answerCall", uuid);
     if (IncomingCallModule.isLocked()) {
       answered = true;
-      forceStopRingtone();
+      IncomingCallModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
       vCallManage.setVisibility(View.VISIBLE);
     } else {
@@ -236,7 +235,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnRejectClick(View v) {
-    IncomingCallModule.userActions.put(uuid, "rejectCall");
+    IncomingCallModule.putUserActionRejectCall(uuid);
     IncomingCallModule.emit("rejectCall", uuid);
     answered = false;
     IncomingCallModule.remove(uuid);
@@ -402,15 +401,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onPause() {
     paused = true;
-    forceStopRingtone();
     IncomingCallModule.onActivityPauseOrDestroy(uuid, false);
     super.onPause();
   }
 
   @Override
   protected void onResume() {
-    if (!answered && mp == null) {
-      startRingtone();
+    if (!answered) {
+      IncomingCallModule.startRingtone();
     }
     paused = false;
     super.onResume();
@@ -419,66 +417,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     destroyed = true;
-    forceStopRingtone();
     IncomingCallModule.onActivityPauseOrDestroy(uuid, true);
     super.onDestroy();
   }
 
-  public void startRingtone() {
-    Context ctx = getApplicationContext();
-    AudioManager am = ((AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE));
-    int mode = am.getRingerMode();
-    if (mode == AudioManager.RINGER_MODE_SILENT) {
-      return;
-    }
-    Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
-    long[] pattern = {0, 1000, 1000};
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
-    } else {
-      vib.vibrate(pattern, 0);
-    }
-    if (mode == AudioManager.RINGER_MODE_VIBRATE) {
-      return;
-    }
-    am.setMode(AudioManager.MODE_RINGTONE);
-    mp =
-        MediaPlayer.create(
-            ctx,
-            R.raw.incallmanager_ringtone,
-            new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                .setLegacyStreamType(AudioManager.STREAM_RING)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                .build(),
-            am.generateAudioSessionId());
-    mp.setVolume(1.0f, 1.0f);
-    mp.setLooping(true);
-    mp.start();
-  }
-
-  public void forceStopRingtone() {
-    try {
-      IncomingCallActivity l = IncomingCallModule.last();
-      if (l == null || l == this || l.answered || l.paused || l.destroyed) {
-        Context ctx = getApplicationContext();
-        Vibrator vib = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
-        vib.cancel();
-      }
-    } catch (Exception e) {
-    }
-    try {
-      mp.stop();
-      mp.release();
-      mp = null;
-    } catch (Exception e) {
-      mp = null;
-    }
-  }
-
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
-    forceStopRingtone();
+    IncomingCallModule.stopRingtone();
     return super.onKeyDown(k, e);
   }
 

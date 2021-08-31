@@ -4,8 +4,15 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -49,16 +56,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     initStaticServices(c);
   }
 
-  public static void initStaticServices(Context c) {
-    if (wl == null) {
-      PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-      wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCall");
-    }
-    if (km == null) {
-      km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
-    }
-  }
-
   @Override
   public void initialize() {
     super.initialize();
@@ -72,14 +69,61 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   // [callkeepUuid] -> display/answerCall/rejectCall
   public static Map<String, String> userActions = new HashMap<String, String>();
+  public static Context fcm;
 
-  public static void onFcmMessageReceived(Context fcm, Map<String, String> data) {
+  public static void initStaticServices(Context c) {
+    if (wl == null) {
+      PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
+      wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCall");
+    }
+    if (km == null) {
+      km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
+    }
+    if (ctx == null) {
+      fcm = c;
+    }
+  }
+
+  public static void putUserActionRejectCall(String uuid) {
+    try {
+      userActions.put(uuid, "rejectCall");
+    } catch (Exception e) {
+    }
+  }
+
+  public static void putUserActionAnswerCall(String uuid) {
+    try {
+      userActions.put(uuid, "answerCall");
+    } catch (Exception e) {
+    }
+  }
+
+  public static void intervalCheckRejectCall(String uuid) {
+    Handler h = new Handler();
+    h.postDelayed(
+        new Runnable() {
+          @Override
+          public void run() {
+            if ("rejectCall".equals(userActions.get(uuid)) && at(uuid) != null) {
+              remove(uuid);
+            } else if (elapsed < 5000) {
+              elapsed += 1000;
+              h.postDelayed(this, 1000);
+            }
+          }
+          // Check in 5000 ms
+          private int elapsed = 0;
+        },
+        1000);
+  }
+
+  public static void onFcmMessageReceived(Context c, Map<String, String> data) {
     if (data.get("x_pn-id") == null) {
       return;
     }
     //
     // Init services if not
-    initStaticServices(fcm);
+    initStaticServices(c);
     if (!wl.isHeld()) {
       wl.acquire();
     }
@@ -89,8 +133,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       try {
         L.l =
             AsyncLocalStorageUtil.getItemImpl(
-                ReactDatabaseSupplier.getInstance(fcm.getApplicationContext())
-                    .getReadableDatabase(),
+                ReactDatabaseSupplier.getInstance(c.getApplicationContext()).getReadableDatabase(),
                 "locale");
       } catch (Exception ex) {
       }
@@ -98,7 +141,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (L.l == null) {
       L.l = "en";
     }
-    if (!L.l.equals("en") && !L.l.equals("ja")) {
+    if (!"en".equals(L.l) && !"ja".equals(L.l)) {
       L.l = "en";
     }
     //
@@ -110,14 +153,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     String callerName = data.get("x_from").toString();
     //
     // Show call
-    RNCallKeepModule.registerPhoneAccount(fcm.getApplicationContext());
+    RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
     Runnable r =
         new Runnable() {
           @Override
           public void run() {
             String a = userActions.get(uuid);
             if (a != null) {
-              if (a.equals("rejected")) {
+              if ("rejectCall".equals(a)) {
                 RNCallKeepModule.staticEndCall(uuid);
               }
               return;
@@ -127,11 +170,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
             Intent i;
             IncomingCallActivity prev = last();
             if (prev == null) {
-              i = new Intent(fcm, IncomingCallActivity.class);
+              i = new Intent(c, IncomingCallActivity.class);
               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             } else {
-              prev.forceStopRingtone();
               i = new Intent(prev, IncomingCallActivity.class);
             }
             i.putExtra("uuid", uuid);
@@ -139,7 +181,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
             if (prev != null) {
               prev.startActivity(i);
             } else {
-              fcm.startActivity(i);
+              c.startActivity(i);
             }
           }
         };
@@ -189,6 +231,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static int callsSize = 0;
 
   public static void remove(String uuid) {
+    putUserActionRejectCall(uuid);
     IncomingCallActivity a = at(uuid);
     if (a == null) {
       return;
@@ -210,6 +253,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     boolean atLeastOneAnswerPressed = false;
     try {
       for (IncomingCallActivity a : activities) {
+        putUserActionRejectCall(a.uuid);
         atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
         a.forceFinish();
       }
@@ -227,12 +271,16 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   public static IncomingCallActivity at(String uuid) {
-    for (IncomingCallActivity a : activities) {
-      if (a.uuid.equals(uuid)) {
-        return a;
+    try {
+      for (IncomingCallActivity a : activities) {
+        if (a.uuid.equals(uuid)) {
+          return a;
+        }
       }
+      return null;
+    } catch (Exception e) {
+      return null;
     }
-    return null;
   }
 
   public static IncomingCallActivity last() {
@@ -266,6 +314,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
         RNCallKeepModule.fcmCallbacks.remove(uuid);
       } catch (Exception e) {
       }
+      IncomingCallActivity l = last();
+      if (l == null || l.answered) {
+        stopRingtone();
+      }
     }
     if (activitiesSize > 0) {
       return;
@@ -290,6 +342,63 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
         }
       }
     } catch (Exception e) {
+    }
+  }
+
+  //
+  // Move start/stop ringtone here
+  //
+  public static MediaPlayer mp;
+
+  public static void startRingtone() {
+    if (mp != null) {
+      return;
+    }
+    Context c = ctx != null ? ctx : fcm;
+    AudioManager am = ((AudioManager) c.getSystemService(Context.AUDIO_SERVICE));
+    int mode = am.getRingerMode();
+    if (mode == AudioManager.RINGER_MODE_SILENT) {
+      return;
+    }
+    Vibrator vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+    long[] pattern = {0, 1000, 1000};
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
+    } else {
+      vib.vibrate(pattern, 0);
+    }
+    if (mode == AudioManager.RINGER_MODE_VIBRATE) {
+      return;
+    }
+    am.setMode(AudioManager.MODE_RINGTONE);
+    mp =
+        MediaPlayer.create(
+            c,
+            R.raw.incallmanager_ringtone,
+            new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setLegacyStreamType(AudioManager.STREAM_RING)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .build(),
+            am.generateAudioSessionId());
+    mp.setVolume(1.0f, 1.0f);
+    mp.setLooping(true);
+    mp.start();
+  }
+
+  public static void stopRingtone() {
+    try {
+      Context c = ctx != null ? ctx : fcm;
+      Vibrator vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+      vib.cancel();
+    } catch (Exception e) {
+    }
+    try {
+      mp.stop();
+      mp.release();
+      mp = null;
+    } catch (Exception e) {
+      mp = null;
     }
   }
 
@@ -345,11 +454,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void closeIncomingCallActivity(String uuid) {
     try {
-      userActions.put(uuid, "rejected");
       at(uuid).answered = false;
-      remove(uuid);
     } catch (Exception e) {
     }
+    remove(uuid);
   }
 
   @ReactMethod
