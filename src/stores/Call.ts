@@ -134,6 +134,8 @@ export class Call {
   }
 
   @observable holding = false
+  private prevHoling = false
+
   @action private toggleHold = () => {
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
@@ -196,6 +198,7 @@ export class Call {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // when user cancel transfer and resume call, server will auto unhold. So, update holding = false
+    this.prevHoling = this.holding
     this.holding = false
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
@@ -203,6 +206,7 @@ export class Call {
   }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
+    this.holding = this.prevHoling
     RnAlert.error({
       message: intlDebug`Failed to stop the transfer`,
       err,
