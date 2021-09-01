@@ -238,10 +238,15 @@ export class SIP extends EventEmitter {
 
     // temporary cancel PN via SIP ua
     phone._ua?.on('newNotify', e => {
-      const rg = /(\w+)\W*INVITE\s*,.+,\s*Canceled/
-      const pnId = e?.request?.data?.match(rg)?.[1]
-      console.error(`SIP PN debug: newNotify fired on _ua, pnId=${pnId}`)
-      cancelRecentPn(pnId)
+      const pnIds = e?.request?.data
+        ?.match(/\w+\W*INVITE\s*,.+,\s*Canceled/)?.[0]
+        ?.split(/,\s*Canceled/)
+        .map(s => s.trim())
+        .filter(s => s)
+        .map(s => s.match(/(\w+)\W*INVITE/)?.[1])
+        .filter(s => s)
+      console.error(`SIP PN debug: newNotify fired on _ua pnIds=${pnIds}`)
+      pnIds?.forEach(cancelRecentPn)
     })
   }
 

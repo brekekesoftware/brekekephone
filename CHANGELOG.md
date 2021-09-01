@@ -1,3 +1,12 @@
+#### 2.8.45
+
+- Android: fix bug can not stop ringing
+- Android: fix bug related to vibration
+- Fix 316: disallow toggle video if currently on hold
+- Fix 309: revert hold state when user resume call from transfer
+- Android fix 256: app should show RN view in case: answer -> press button home -> unlock -> manually open app
+- Update multi-lingual labels
+
 #### 2.8.41
 
 - Add `"webphone": "true"` to pal `getProductInfo`
