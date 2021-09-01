@@ -197,7 +197,7 @@ export class Call {
   @action stopTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
-    // user cancel transfer and resume call => auto unhold
+    // User cancel transfer and resume call -> unhold automatically from server side
     this.prevHoling = this.holding
     this.holding = false
     return pbx
