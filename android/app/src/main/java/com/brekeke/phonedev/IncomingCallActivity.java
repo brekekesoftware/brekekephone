@@ -409,6 +409,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onResume() {
     if (!answered) {
       IncomingCallModule.startRingtone();
+    } else if (!IncomingCallModule.isLocked()) {
+      // User press home button, unlock the screen, then open app
+      IncomingCallModule.removeAllAndBackToForeground();
     }
     paused = false;
     super.onResume();
