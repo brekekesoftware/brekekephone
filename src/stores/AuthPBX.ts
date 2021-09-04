@@ -3,8 +3,6 @@ import { action, autorun, Lambda } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { getAuthStore } from './authStore'
-import { intlDebug } from './intl'
-import { RnAlert } from './RnAlert'
 
 class AuthPBX {
   private clearObserve?: Lambda
@@ -39,10 +37,7 @@ class AuthPBX {
       action((err: Error) => {
         s.pbxState = 'failure'
         s.pbxTotalFailure += 1
-        RnAlert.error({
-          message: intlDebug`Failed to connect to pbx`,
-          err,
-        })
+        console.error('Failed to connect to pbx', err)
       }),
     )
   }

@@ -104,12 +104,14 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            if ("rejectCall".equals(userActions.get(uuid)) && at(uuid) != null) {
+            if ("rejectCall".equals(userActions.get(uuid))) {
               remove(uuid);
-            } else if (elapsed < 5000) {
-              elapsed += 1000;
-              h.postDelayed(this, 1000);
             }
+            if (elapsed >= 5000) {
+              return;
+            }
+            elapsed += 1000;
+            h.postDelayed(this, 1000);
           }
           // Check in 5000 ms
           private int elapsed = 0;
@@ -231,7 +233,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static int callsSize = 0;
 
   public static void remove(String uuid) {
-    putUserActionRejectCall(uuid);
     IncomingCallActivity a = at(uuid);
     if (a == null) {
       return;
@@ -240,10 +241,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       activities.remove(index(uuid));
     } catch (Exception e) {
     }
-    a.forceFinish();
-    if (!a.answered) {
+    if (activitiesSize == 1 && !a.answered) {
       tryExitClearTask();
     }
+    a.forceFinish();
   }
 
   public static void removeAll() {
@@ -253,7 +254,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     boolean atLeastOneAnswerPressed = false;
     try {
       for (IncomingCallActivity a : activities) {
-        putUserActionRejectCall(a.uuid);
         atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
         a.forceFinish();
       }

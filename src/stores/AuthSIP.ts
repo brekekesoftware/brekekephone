@@ -8,8 +8,6 @@ import { sip } from '../api/sip'
 import { updatePhoneIndex } from '../api/updatePhoneIndex'
 import { SipPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
-import { intlDebug } from './intl'
-import { RnAlert } from './RnAlert'
 import { sipErrorEmitter } from './sipErrorEmitter'
 
 const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>
@@ -125,10 +123,7 @@ class AuthSIP {
         s.sipState = 'failure'
         s.sipTotalFailure += 1
         sip.stopWebRTC()
-        RnAlert.error({
-          message: intlDebug`Failed to connect to SIP`,
-          err,
-        })
+        console.error('Failed to connect to sip', err)
       }),
     )
   }

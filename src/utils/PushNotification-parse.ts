@@ -224,6 +224,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (Platform.OS === 'android') {
     callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
+    console.error(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       callStore.onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {

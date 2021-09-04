@@ -95,7 +95,7 @@ export class CallStore {
     }
   }
   onCallKeepAnswerCall = (uuid: string) => {
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'answered')
+    this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
     const c = this.getIncomingCallkeep(uuid)
     console.error(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
@@ -104,7 +104,7 @@ export class CallStore {
     }
   }
   onCallKeepEndCall = (uuid: string) => {
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejected')
+    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getIncomingCallkeep(uuid, {
       includingAnswered: true,
       includingRejected: Platform.OS === 'android',
@@ -182,11 +182,11 @@ export class CallStore {
     console.error(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
     )
-    if (callkeepAction === 'answered') {
+    if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
       c.answer()
       console.error('SIP PN debug: answer by recentPnAction')
-    } else if (callkeepAction === 'rejected') {
+    } else if (callkeepAction === 'rejectCall') {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
@@ -412,7 +412,7 @@ export class CallStore {
       return
     }
     console.error('PN callkeep debug: endCallKeep ' + uuid)
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejected')
+    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
@@ -479,7 +479,7 @@ export class CallStore {
     (c.callkeepUuid && this.callkeepActionMap[c.callkeepUuid]) ||
     (c.pnId && this.callkeepActionMap[c.pnId])
   isCallRejected = (c?: TCallkeepIds) =>
-    c && this.getCallkeepAction(c) === 'rejected'
+    c && this.getCallkeepAction(c) === 'rejectCall'
 
   // To be used in sip.phone._ua.on('newNotify')
   onSipUaCancel = (pnId?: string) => {
@@ -488,7 +488,7 @@ export class CallStore {
     }
     const uuid = this.getUuidFromPnId(pnId)
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
-    this.setCallkeepAction({ pnId }, 'rejected')
+    this.setCallkeepAction({ pnId }, 'rejectCall')
     uuid && this.endCallKeep(uuid)
   }
 
@@ -531,5 +531,5 @@ export class CallStore {
 
 export const callStore = new CallStore() as Immutable<CallStore>
 
-type TCallkeepAction = 'answered' | 'rejected'
+type TCallkeepAction = 'answerCall' | 'rejectCall'
 type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>
