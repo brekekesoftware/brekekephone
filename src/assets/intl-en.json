@@ -102,7 +102,6 @@
   "Failed to sync Push Notification settings for {{$0}}",
   "Failed to transfer the call",
   "Failed to unhold the call",
-  "Failed to update phone index",
   "Failed to write debug log to file",
   "GROUP NAME",
   "Group chat invited by {{$0}}",

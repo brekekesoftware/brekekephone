@@ -96,8 +96,7 @@ class AuthSIP {
       pn.turnCredential || (await getPbxConfig('webphone.turn.credential'))
     pn.phoneId = pn.phoneId || (await updatePhoneIndex().then(p => p?.id))
     if (!pn.phoneId) {
-      // Already logged out and show error above?
-      return
+      throw new Error('Failed to get phoneId from updatePhoneIndex')
     }
     pn.sipAuth = await pbx.createSIPAccessToken(pn.phoneId)
     await this.authPnWithoutCatch(pn)
