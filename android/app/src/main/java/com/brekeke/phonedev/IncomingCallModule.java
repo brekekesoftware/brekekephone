@@ -45,7 +45,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static ReactApplicationContext ctx;
   public static WakeLock wl;
   public static KeyguardManager km;
-
+  public static Vibrator vib;
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
@@ -367,7 +367,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     if (mode == AudioManager.RINGER_MODE_SILENT) {
       return;
     }
-    Vibrator vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+    if (vib == null) {
+      vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+    }
     long[] pattern = {0, 1000, 1000};
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
@@ -396,7 +398,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static void stopRingtone() {
     try {
       Context c = ctx != null ? ctx : fcm;
-      Vibrator vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
       vib.cancel();
     } catch (Exception e) {
     }
