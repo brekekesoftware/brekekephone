@@ -447,10 +447,14 @@ export class CallStore {
   showIncomingCallUi = (e: TEvent & { pnData: ParsedPn }) => {
     const uuid = e.callUUID.toUpperCase()
     if (this.alreadyShowIncomingCallUi[uuid]) {
+      console.error('SIP PN debug: showIncomingCallUi: already show this uuid')
       return
     }
     this.alreadyShowIncomingCallUi[uuid] = true
     if (this.isCallRejected({ callkeepUuid: uuid, pnId: e.pnData.id })) {
+      console.error(
+        'SIP PN debug: showIncomingCallUi: call already rejected on js side',
+      )
       this.endCallKeep(uuid)
       return
     }

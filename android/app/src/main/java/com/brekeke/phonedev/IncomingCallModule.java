@@ -98,6 +98,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     }
   }
 
+  // Interval for the case js set rejectCall even before activity start/starting
+  public static Map<String, String> destroyedUuids = new HashMap<String, String>();
+
   public static void intervalCheckRejectCall(String uuid) {
     Handler h = new Handler();
     h.postDelayed(
@@ -107,13 +110,13 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
             if ("rejectCall".equals(userActions.get(uuid))) {
               remove(uuid);
             }
-            if (elapsed >= 5000) {
+            if (destroyedUuids.containsKey(uuid) || elapsed >= 60000) {
               return;
             }
             elapsed += 1000;
             h.postDelayed(this, 1000);
           }
-          // Check in 5000 ms
+          // Check in 60s
           private int elapsed = 0;
         },
         1000);
@@ -311,6 +314,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       activitiesSize--;
       updateBtnUnlockLabels();
       try {
+        destroyedUuids.put(uuid, "destroyed");
+      } catch (Exception e) {
+      }
+      try {
         RNCallKeepModule.fcmCallbacks.remove(uuid);
       } catch (Exception e) {
       }
@@ -457,6 +464,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       at(uuid).answered = false;
     } catch (Exception e) {
     }
+    putUserActionRejectCall(uuid);
     remove(uuid);
   }
 
