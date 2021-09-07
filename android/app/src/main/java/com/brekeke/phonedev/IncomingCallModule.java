@@ -397,7 +397,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   public static void stopRingtone() {
     try {
-      Context c = ctx != null ? ctx : fcm;
       vib.cancel();
     } catch (Exception e) {
     }
