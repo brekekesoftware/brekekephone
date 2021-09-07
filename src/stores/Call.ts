@@ -136,7 +136,10 @@ export class Call {
   @observable holding = false
   private prevHoling = false
 
-  @action private toggleHold = () => {
+  @action private toggleHold = (isHolding?: boolean) => {
+    if (isHolding) {
+      this.holding = !isHolding
+    }
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
     if (!this.isAboutToHangup) {
@@ -182,12 +185,18 @@ export class Call {
   @action transferAttended = (number: string) => {
     this.transferring = number
     Nav().backToPageCallManage()
+    if (!this.holding) {
+      this.toggleHold(true)
+    }
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
+    if (this.holding) {
+      this.toggleHold(false)
+    }
     RnAlert.error({
       message: intlDebug`Failed to transfer the call`,
       err,
