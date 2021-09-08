@@ -6,6 +6,7 @@
 - Fix 328: end call in Parks would go back out of CallManage view
 - Fix ios 322: do not show/ring regular call bar if PN already show
 - Do not show error message if failed to connect
+- If connection failed, press on the red error message on the top will trigger reconnect
 
 #### 2.8.45
 
