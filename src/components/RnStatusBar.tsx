@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
+import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -14,9 +15,13 @@ const css = StyleSheet.create({
       },
     }),
   },
-  RnStatusBar__transparent: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
+  RnStatusBar__warning: {
+    backgroundColor: v.colors.warning,
+    borderColor: v.colors.warning,
+  },
+  RnStatusBar__danger: {
+    backgroundColor: v.colors.danger,
+    borderColor: v.colors.danger,
   },
   Border: {
     position: 'absolute',
@@ -29,15 +34,27 @@ const css = StyleSheet.create({
   },
 })
 
-export const RnStatusBar: FC<{ transparent?: boolean }> = props =>
+export type TRnStatusBarProps = {
+  danger?: boolean
+  warning?: boolean
+  onPress?(): void
+}
+export const RnStatusBar: FC<TRnStatusBarProps> = p =>
   Platform.OS === 'web' ? null : (
-    <View
+    <RnTouchableOpacity
       style={[
         css.RnStatusBar,
-        props.transparent && css.RnStatusBar__transparent,
+        p.warning && css.RnStatusBar__warning,
+        p.danger && css.RnStatusBar__danger,
       ]}
+      onPress={p.onPress}
     >
-      <StatusBar backgroundColor={v.hoverBg} barStyle='dark-content' />
+      <StatusBar
+        backgroundColor={
+          p.danger ? v.colors.danger : p.warning ? v.colors.warning : v.hoverBg
+        }
+        barStyle='dark-content'
+      />
       <View style={css.Border} />
-    </View>
+    </RnTouchableOpacity>
   )

@@ -251,6 +251,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   public static void removeAll() {
+    stopRingtone();
     if (activities.size() <= 0) {
       return;
     }
