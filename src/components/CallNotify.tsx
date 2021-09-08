@@ -58,45 +58,45 @@ export class DidMountTimer extends Component {
   }
 }
 
-@observer
-export class CallNotify extends Component {
-  render() {
-    // Do not display our callbar if already show callkeep
-    const c = callStore.calls.find(
-      _ => _.incoming && !_.answered && !callStore.callkeepMap[_.callkeepUuid],
-    )
-    if (!c) {
-      return null
-    }
-    return (
-      <DidMountTimer>
-        <View style={css.Notify}>
-          <View style={css.Notify_Info}>
-            <RnText bold>{c.partyName || c.partyNumber}</RnText>
-            <RnText>
-              {c.remoteVideoEnabled
-                ? intl`Incoming video call`
-                : intl`Incoming audio call`}
-            </RnText>
-          </View>
-          <ButtonIcon
-            bdcolor={v.colors.danger}
-            color={v.colors.danger}
-            onPress={c.hangupWithUnhold}
-            path={mdiClose}
-            size={20}
-            style={css.Notify_Btn_reject}
-          />
-          <ButtonIcon
-            bdcolor={v.colors.primary}
-            color={v.colors.primary}
-            onPress={() => c.answer()}
-            path={mdiCheck}
-            size={20}
-            style={css.Notify_Btn_accept}
-          />
-        </View>
-      </DidMountTimer>
-    )
+export const CallNotify = observer(() => {
+  // Try trigger observer?
+  void Object.keys(callStore.callkeepMap)
+  void callStore.calls.map(_ => _.callkeepUuid)
+  // Do not display our callbar if already show callkeep
+  const c = callStore.calls.find(
+    _ => _.incoming && !_.answered && !callStore.callkeepMap[_.callkeepUuid],
+  )
+  if (!c) {
+    return null
   }
-}
+  return (
+    <DidMountTimer>
+      <View style={css.Notify}>
+        <View style={css.Notify_Info}>
+          <RnText bold>{c.partyName || c.partyNumber}</RnText>
+          <RnText>
+            {c.remoteVideoEnabled
+              ? intl`Incoming video call`
+              : intl`Incoming audio call`}
+          </RnText>
+        </View>
+        <ButtonIcon
+          bdcolor={v.colors.danger}
+          color={v.colors.danger}
+          onPress={c.hangupWithUnhold}
+          path={mdiClose}
+          size={20}
+          style={css.Notify_Btn_reject}
+        />
+        <ButtonIcon
+          bdcolor={v.colors.primary}
+          color={v.colors.primary}
+          onPress={() => c.answer()}
+          path={mdiCheck}
+          size={20}
+          style={css.Notify_Btn_accept}
+        />
+      </View>
+    </DidMountTimer>
+  )
+})
