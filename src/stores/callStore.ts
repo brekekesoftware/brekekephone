@@ -366,6 +366,7 @@ export class CallStore {
       uuid: string
       at: number
       incomingPnData?: ParsedPn
+      backFromPageCallManage?: boolean
     }
   } = {}
   getUuidFromPnId = (pnId: string) =>
@@ -438,13 +439,20 @@ export class CallStore {
     if (uuid === this.prevCallKeepUuid) {
       this.prevCallKeepUuid = undefined
     }
-    IncomingCall.closeIncomingCallActivity(uuid)
+    IncomingCall.closeIncomingCall(uuid)
   }
   endCallKeepAll = () => {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
-    IncomingCall.closeAllIncomingCallActivities()
+    IncomingCall.closeAllIncomingCalls()
+  }
+  @action onPageCallManageUnmount = () => {
+    this.calls
+      .filter(_ => this.callkeepMap[_.callkeepUuid])
+      .forEach(_ => {
+        this.callkeepMap[_.callkeepUuid].backFromPageCallManage = true
+      })
   }
 
   // Move from callkeep.ts to avoid circular dependencies

@@ -1,11 +1,16 @@
-import { observer } from 'mobx-react'
 import React, { Component, createRef } from 'react'
 
 import ringback from '../assets/incallmanager_ringback.mp3'
 import ringtone from '../assets/incallmanager_ringtone.mp3'
-import { Call } from '../stores/Call'
 
-class AnsweredItem extends Component<{
+export const IncomingItem = () => (
+  <audio autoPlay loop src={ringtone} muted={false} />
+)
+export const OutgoingItem = () => (
+  <audio autoPlay loop src={ringback} muted={false} />
+)
+
+export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   audioRef = createRef<HTMLAudioElement>()
@@ -28,30 +33,3 @@ class AnsweredItem extends Component<{
     return <audio autoPlay ref={this.audioRef} muted={false} />
   }
 }
-
-export const CallVoicesUI = observer(
-  (p: {
-    incomingCallIds: string[]
-    outgoingCallIds: string[]
-    answeredCallIds: string[]
-    resolveCall: (id: string) => Call
-  }) => (
-    <>
-      {!!p.incomingCallIds.length && (
-        <audio autoPlay loop src={ringtone} muted={false} />
-      )}
-      {!!p.outgoingCallIds.length && (
-        <audio autoPlay loop src={ringback} muted={false} />
-      )}
-      {p.answeredCallIds.map(id => {
-        const c = p.resolveCall(id)
-        return (
-          <AnsweredItem
-            key={c.voiceStreamObject?.id || c.id}
-            voiceStreamObject={c.voiceStreamObject}
-          />
-        )
-      })}
-    </>
-  ),
-)
