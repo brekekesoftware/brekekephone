@@ -11,13 +11,14 @@ const Polyfill = {
   IncomingCall: {
     setLocale: () => undefined,
     setIsAppActive: () => undefined,
-    closeIncomingCallActivity: () => undefined,
-    closeAllIncomingCallActivities: () => undefined,
+    closeIncomingCall: () => undefined,
+    closeAllIncomingCalls: () => undefined,
     setIsVideoCall: () => undefined,
     setRemoteVideoStreamURL: () => undefined,
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
     isLocked: () => Promise.resolve(false),
+    isSilent: () => Promise.resolve(false),
     backToBackground: () => undefined,
     onConnectingCallSuccess: () => undefined,
   },
@@ -30,13 +31,14 @@ export type TNativeModules = {
   IncomingCall: NativeModule & {
     setLocale(locale: string): void
     setIsAppActive(b1: boolean, b2: boolean): void
-    closeIncomingCallActivity(uuid: string): void
-    closeAllIncomingCallActivities(): ViewPagerAndroidProps
+    closeIncomingCall(uuid: string): void
+    closeAllIncomingCalls(): ViewPagerAndroidProps
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setRemoteVideoStreamURL(uuid: string, url: string): void
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
     isLocked(): Promise<boolean>
+    isSilent(): Promise<boolean>
     backToBackground(): void
     onConnectingCallSuccess(uuid: string): void
     getPendingUserAction(uuid: string): Promise<string>

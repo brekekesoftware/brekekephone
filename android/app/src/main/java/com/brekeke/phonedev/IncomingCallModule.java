@@ -45,7 +45,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static ReactApplicationContext ctx;
   public static WakeLock wl;
   public static KeyguardManager km;
+  public static AudioManager am;
   public static Vibrator vib;
+
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
@@ -77,7 +79,10 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCall");
     }
     if (km == null) {
-      km = ((KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE));
+      km = (KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE);
+    }
+    if (am == null) {
+      am = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
     }
     if (ctx == null) {
       fcm = c;
@@ -225,6 +230,11 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
     return km.isKeyguardLocked() || km.isDeviceLocked();
   }
 
+  public static boolean isSilent() {
+    int mode = am.getRingerMode();
+    return mode == AudioManager.RINGER_MODE_SILENT || mode == AudioManager.RINGER_MODE_VIBRATE;
+  }
+
   //
   // IncomingCallActivityManager
   //
@@ -251,6 +261,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   public static void removeAll() {
+    stopRingtone();
     if (activities.size() <= 0) {
       return;
     }
@@ -362,7 +373,6 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
       return;
     }
     Context c = ctx != null ? ctx : fcm;
-    AudioManager am = ((AudioManager) c.getSystemService(Context.AUDIO_SERVICE));
     int mode = am.getRingerMode();
     if (mode == AudioManager.RINGER_MODE_SILENT) {
       return;
@@ -398,7 +408,9 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static void stopRingtone() {
     try {
       vib.cancel();
+      vib = null;
     } catch (Exception e) {
+      vib = null;
     }
     try {
       mp.stop();
@@ -459,7 +471,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void closeIncomingCallActivity(String uuid) {
+  public void closeIncomingCall(String uuid) {
     try {
       at(uuid).answered = false;
     } catch (Exception e) {
@@ -469,7 +481,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void closeAllIncomingCallActivities() {
+  public void closeAllIncomingCalls() {
     removeAll();
   }
 
@@ -530,6 +542,11 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void isLocked(Promise p) {
     p.resolve(isLocked());
+  }
+
+  @ReactMethod
+  public void isSilent(Promise p) {
+    p.resolve(isSilent());
   }
 
   @ReactMethod

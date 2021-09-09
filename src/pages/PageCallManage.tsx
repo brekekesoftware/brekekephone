@@ -22,6 +22,7 @@ import { Platform, StyleSheet, View } from 'react-native'
 
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
+import { IncomingItemWithTimer } from '../components/CallNotify'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
@@ -106,6 +107,9 @@ export class PageCallManage extends Component<{
     if (!callStore.calls.length) {
       Nav().goToPageCallRecents()
     }
+  }
+  componentWillUnmount() {
+    callStore.onPageCallManageUnmount()
   }
 
   @action toggleButtons = () => {
@@ -312,6 +316,7 @@ export class PageCallManage extends Component<{
         </View>
         {incoming && (
           <>
+            <IncomingItemWithTimer />
             <View style={[css.Hangup, css.Hangup_incomingText]}>
               <RnText title white center>
                 {c.title}

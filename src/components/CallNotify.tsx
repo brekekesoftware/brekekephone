@@ -1,14 +1,16 @@
 import { mdiCheck, mdiClose } from '@mdi/js'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
+import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ButtonIcon } from './ButtonIcon'
+import { IncomingItem } from './CallVoicesUI'
 import { RnText } from './Rn'
 import { v } from './variables'
 
@@ -36,9 +38,7 @@ const css = StyleSheet.create({
 @observer
 export class DidMountTimer extends Component {
   private didMountTimer = 0
-  @observable didMount =
-    Platform.OS === 'web' ||
-    !getAuthStore().currentProfile?.pushNotificationEnabled
+  @observable didMount = false
   componentDidMount() {
     this.didMountTimer = BackgroundTimer.setTimeout(
       action(() => {
@@ -58,45 +58,62 @@ export class DidMountTimer extends Component {
   }
 }
 
-@observer
-export class CallNotify extends Component {
-  render() {
-    // Do not display our callbar if already show callkeep
-    const c = callStore.calls.find(
-      _ => _.incoming && !_.answered && !callStore.callkeepMap[_.callkeepUuid],
-    )
-    if (!c) {
-      return null
-    }
-    return (
-      <DidMountTimer>
-        <View style={css.Notify}>
-          <View style={css.Notify_Info}>
-            <RnText bold>{c.partyName || c.partyNumber}</RnText>
-            <RnText>
-              {c.remoteVideoEnabled
-                ? intl`Incoming video call`
-                : intl`Incoming audio call`}
-            </RnText>
-          </View>
-          <ButtonIcon
-            bdcolor={v.colors.danger}
-            color={v.colors.danger}
-            onPress={c.hangupWithUnhold}
-            path={mdiClose}
-            size={20}
-            style={css.Notify_Btn_reject}
-          />
-          <ButtonIcon
-            bdcolor={v.colors.primary}
-            color={v.colors.primary}
-            onPress={() => c.answer()}
-            path={mdiCheck}
-            size={20}
-            style={css.Notify_Btn_accept}
-          />
-        </View>
-      </DidMountTimer>
-    )
+export const CallNotify = observer(() => {
+  // Try trigger observer?
+  void Object.keys(callStore.callkeepMap)
+  void callStore.calls.map(_ => _.callkeepUuid)
+  // Do not display our callbar if already show callkeep
+  const c = callStore.calls.find(_ => {
+    const k = callStore.callkeepMap[_.callkeepUuid]
+    return _.incoming && !_.answered && (!k || k.backFromPageCallManage)
+  })
+  // Do not show notify if in page call manage
+  const s = RnStacker.stacks[RnStacker.stacks.length - 1]
+  if (s?.name === 'PageCallManage' || !c) {
+    return null
   }
-}
+  const k = callStore.callkeepMap[c.callkeepUuid]
+  const Wrapper =
+    k?.backFromPageCallManage ||
+    Platform.OS === 'web' ||
+    !getAuthStore().currentProfile?.pushNotificationEnabled
+      ? Fragment
+      : DidMountTimer
+  return (
+    <Wrapper>
+      <IncomingItem />
+      <View style={css.Notify}>
+        <View style={css.Notify_Info}>
+          <RnText bold>{c.partyName || c.partyNumber}</RnText>
+          <RnText>
+            {c.remoteVideoEnabled
+              ? intl`Incoming video call`
+              : intl`Incoming audio call`}
+          </RnText>
+        </View>
+        <ButtonIcon
+          bdcolor={v.colors.danger}
+          color={v.colors.danger}
+          onPress={c.hangupWithUnhold}
+          path={mdiClose}
+          size={20}
+          style={css.Notify_Btn_reject}
+        />
+        <ButtonIcon
+          bdcolor={v.colors.primary}
+          color={v.colors.primary}
+          onPress={() => c.answer()}
+          path={mdiCheck}
+          size={20}
+          style={css.Notify_Btn_accept}
+        />
+      </View>
+    </Wrapper>
+  )
+})
+
+export const IncomingItemWithTimer = () => (
+  <DidMountTimer>
+    <IncomingItem />
+  </DidMountTimer>
+)

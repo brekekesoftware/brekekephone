@@ -19,6 +19,9 @@ export class PageCallParks extends Component<{
     this.componentDidUpdate()
   }
   componentDidUpdate() {
+    if (!this.props.callParks2) {
+      return
+    }
     const c = callStore.getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()

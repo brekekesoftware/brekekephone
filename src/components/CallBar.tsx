@@ -52,10 +52,12 @@ const css = StyleSheet.create({
 })
 
 export const CallBar = observer(() => {
-  const bVisible =
-    RnStacker.stacks.filter(t => t.name === 'PageCallManage').length === 0
   const c = callStore.getCurrentCall()
-  if (!bVisible || !c || (c.incoming && !c.answered)) {
+  if (
+    RnStacker.stacks.some(t => t.name === 'PageCallManage') ||
+    !c ||
+    (c.incoming && !c.answered)
+  ) {
     return null
   }
   return (

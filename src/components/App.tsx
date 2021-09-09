@@ -37,6 +37,7 @@ import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
+import { IncomingCall } from '../utils/RnNativeModules'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -44,12 +45,14 @@ import { CallVideos } from './CallVideos'
 import { CallVoices } from './CallVoices'
 import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
 import { RnStatusBar, RnText } from './Rn'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
     PushNotification.resetBadgeNumber()
+    IncomingCall.closeAllIncomingCalls()
   }
 })
 registerOnUnhandledError(unexpectedErr => {
@@ -150,7 +153,15 @@ const css = StyleSheet.create({
   },
   App_ConnectionStatusInner: {
     paddingHorizontal: 5,
-    paddingVertical: 2,
+    paddingTop: 4,
+    paddingBottom: 5,
+  },
+  App_ConnectionStatusIncreaseTouchSize: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 30,
   },
 
   LoadingFullscreen: {
@@ -205,11 +216,14 @@ export const App = observer(() => {
             failure && css.App_ConnectionStatus__failure,
           ]}
         >
-          <View style={css.App_ConnectionStatusInner}>
+          <RnTouchableOpacity
+            style={css.App_ConnectionStatusInner}
+            onPress={failure ? s.resetFailureState : undefined}
+          >
             <RnText small white>
               {connMessage}
             </RnText>
-          </View>
+          </RnTouchableOpacity>
         </AnimatedSize>
       )}
 
@@ -224,6 +238,12 @@ export const App = observer(() => {
         <RnStackerRoot />
         <RnPickerRoot />
         <RnAlertRoot />
+        {failure && (
+          <RnTouchableOpacity
+            style={css.App_ConnectionStatusIncreaseTouchSize}
+            onPress={s.resetFailureState}
+          />
+        )}
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
 

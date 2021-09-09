@@ -1,10 +1,20 @@
+#### 2.8.49
+
+- Fix android bug caller got busy tone if callee press answer quickly
+- Fix android bug vibrator still vibrates for a while after PN closed
+- Fix android 327: ringtone not stop answer multi calls forground mode
+- Fix 328: end call in Parks would go back out of CallManage view
+- Fix ios 322: do not show/ring regular call bar if PN already show
+- Do not show error message if failed to connect
+- If connection failed, press on the red error message on the top will trigger reconnect
+
 #### 2.8.45
 
-- Android: fix bug can not stop ringing
-- Android: fix bug related to vibration
+- Fix android bug incoming call not stop
+- Fix android bug related to vibration
 - Fix 316: disallow toggle video if currently on hold
 - Fix 309: revert hold state when user resume call from transfer
-- Android fix 256: app should show RN view in case: answer -> press button home -> unlock -> manually open app
+- Fix android 256: app should show RN view in case: answer -> press button home -> unlock -> manually open app
 - Update multi-lingual labels
 
 #### 2.8.41
@@ -32,7 +42,7 @@
 
 - Update webrtcclient.js use destroyWebRTC() when reconnect on new notification
 - Android improve PN's wakeup time | call callkeep directly in java code
-- Android fix bug can not display multiple calls
+- Fix android bug can not display multiple calls
 
 #### 2.8.32
 
@@ -40,16 +50,16 @@
 - Android PN screen (device locked) if user pressed answer but call is still not connected, then show a message `Connecting...` with loading icon
 - Android PN screen add multi lingual locale
 - SIP add some logic to jssip fork to disable web socket send after calling \_ua.\_transport.socket.disconnect() then also call stopWebRTC() - not sure if this change actually improves the connection, please test
-- Android fix sometimes PN not received in js code, because of the fcm lib
+- Fix android sometimes PN not received in js code, because of the fcm lib
 - Some other small improvements and dependencies update
 
 #### 2.8.30
 
 - Android show timestamp as soon as PN received. For debug purpose, first step of speeding up wake time for PN screen. This is on dev version only and will be migrated/removed when we completely done with speeding up
 - Fix call can not be connected (PN token get flushed mistakenly)
-- Android fix call can not be connected or dropped after connected for a while (by adding wake lock)
+- Fix android call can not be connected or dropped after connected for a while (by adding wake lock)
 - Fix current call become on hold after end a background call
-- Android fix bug PN screen never disappear in a case of multiple incoming calls
+- Fix android bug PN screen never disappear in a case of multiple incoming calls
 - SIP use `phone._ua._transport.socket.disconnect()` instead of `phone.stopWebRTC()`
 - Android attempt to fix bug crash on open after reinstall the app
 

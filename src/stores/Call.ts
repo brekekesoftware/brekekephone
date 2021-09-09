@@ -82,7 +82,7 @@ export class Call {
     const pbxUser = contactStore.getPbxUserById(
       this.partyNumber || this.partyName,
     )
-    const callerStatus = pbxUser?.talkers?.[0].status
+    const callerStatus = pbxUser?.talkers?.[0]?.status
     if (this.holding || callerStatus === 'holding') {
       return
     }

@@ -42,7 +42,10 @@ export class CallStore {
         (!pnId || c.pnId === pnId),
     )
   }
-  onCallKeepDidDisplayIncomingCall = (uuid: string, pnData: ParsedPn) => {
+  @action onCallKeepDidDisplayIncomingCall = (
+    uuid: string,
+    pnData: ParsedPn,
+  ) => {
     this.setAutoEndCallKeepTimer(uuid, pnData)
     // Check if call is rejected already
     const rejected = this.isCallRejected({
@@ -94,7 +97,7 @@ export class CallStore {
       }
     }
   }
-  onCallKeepAnswerCall = (uuid: string) => {
+  @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
     const c = this.getIncomingCallkeep(uuid)
     console.error(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
@@ -103,7 +106,7 @@ export class CallStore {
       c.answer()
     }
   }
-  onCallKeepEndCall = (uuid: string) => {
+  @action onCallKeepEndCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getIncomingCallkeep(uuid, {
       includingAnswered: true,
@@ -270,39 +273,44 @@ export class CallStore {
     }
     // Check for each 0.5s: auto update currentCallId
     // The call will be emitted from sip, we'll use interval here to set it
-    this.currentCallId = ''
+    runInAction(() => {
+      this.currentCallId = ''
+    })
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
     // Also if after 3s there's no call in store, reconnect
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
-    this.startCallIntervalId = BackgroundTimer.setInterval(() => {
-      const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
-      if (curr) {
-        if (uuid) {
-          curr.callkeepUuid = uuid
-          this.prevCallKeepUuid = uuid
+    this.startCallIntervalId = BackgroundTimer.setInterval(
+      action(() => {
+        const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
+        if (curr) {
+          if (uuid) {
+            curr.callkeepUuid = uuid
+            this.prevCallKeepUuid = uuid
+          }
+          this.currentCallId = curr.id
+          this.clearStartCallIntervalTimer()
+          return
         }
-        this.currentCallId = curr.id
-        this.clearStartCallIntervalTimer()
-        return
-      }
-      const diff = Date.now() - this.startCallIntervalAt
-      // Add a guard of 10s to clear the interval
-      if (diff > 10000) {
-        if (uuid) {
-          this.endCallKeep(uuid)
+        const diff = Date.now() - this.startCallIntervalAt
+        // Add a guard of 10s to clear the interval
+        if (diff > 10000) {
+          if (uuid) {
+            this.endCallKeep(uuid)
+          }
+          this.clearStartCallIntervalTimer()
+          return
         }
-        this.clearStartCallIntervalTimer()
-        return
-      }
-      // And if after 3s there's no call in store, reconnect
-      // It's likely a connection issue occurred
-      if (!curr && !reconnectCalled && diff > 3000) {
-        reconnectCalled = true
-        reconnectAndWaitSip().then(sipCreateSession)
-        this.clearStartCallIntervalTimer()
-      }
-    }, 500)
+        // And if after 3s there's no call in store, reconnect
+        // It's likely a connection issue occurred
+        if (!curr && !reconnectCalled && diff > 3000) {
+          reconnectCalled = true
+          reconnectAndWaitSip().then(sipCreateSession)
+          this.clearStartCallIntervalTimer()
+        }
+      }),
+      500,
+    )
   }
   startVideoCall = (number: string) =>
     this.startCall(number, { videoEnabled: true })
@@ -358,6 +366,7 @@ export class CallStore {
       uuid: string
       at: number
       incomingPnData?: ParsedPn
+      backFromPageCallManage?: boolean
     }
   } = {}
   getUuidFromPnId = (pnId: string) =>
@@ -375,7 +384,7 @@ export class CallStore {
     BackgroundTimer.clearInterval(this.autoEndCallKeepTimerId)
     this.autoEndCallKeepTimerId = 0
   }
-  private setAutoEndCallKeepTimer = (
+  @action private setAutoEndCallKeepTimer = (
     uuid: string,
     incomingPnData?: ParsedPn,
   ) => {
@@ -407,7 +416,7 @@ export class CallStore {
       this.updateCurrentCallDebounce()
     }, 500)
   }
-  private endCallKeep = (uuid: string) => {
+  @action private endCallKeep = (uuid: string) => {
     if (!uuid) {
       return
     }
@@ -420,9 +429,7 @@ export class CallStore {
     ) {
       addCallHistory(pnData)
     }
-    runInAction(() => {
-      delete this.callkeepMap[uuid]
-    })
+    delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
     RNCallKeep.reportEndCallWithUUID(
@@ -432,13 +439,20 @@ export class CallStore {
     if (uuid === this.prevCallKeepUuid) {
       this.prevCallKeepUuid = undefined
     }
-    IncomingCall.closeIncomingCallActivity(uuid)
+    IncomingCall.closeIncomingCall(uuid)
   }
   endCallKeepAll = () => {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
-    IncomingCall.closeAllIncomingCallActivities()
+    IncomingCall.closeAllIncomingCalls()
+  }
+  @action onPageCallManageUnmount = () => {
+    this.calls
+      .filter(_ => this.callkeepMap[_.callkeepUuid])
+      .forEach(_ => {
+        this.callkeepMap[_.callkeepUuid].backFromPageCallManage = true
+      })
   }
 
   // Move from callkeep.ts to avoid circular dependencies
