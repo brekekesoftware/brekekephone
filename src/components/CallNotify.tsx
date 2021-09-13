@@ -85,11 +85,7 @@ export const CallNotify = observer(() => {
       <View style={css.Notify}>
         <View style={css.Notify_Info}>
           <RnText bold>{c.partyName || c.partyNumber}</RnText>
-          <RnText>
-            {c.remoteVideoEnabled
-              ? intl`Incoming video call`
-              : intl`Incoming audio call`}
-          </RnText>
+          <RnText>{intl`Incoming call`}</RnText>
         </View>
         <ButtonIcon
           bdcolor={v.colors.danger}
