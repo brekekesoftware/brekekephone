@@ -184,6 +184,8 @@ export class Call {
     this.prevHoling = this.holding
     this.holding = true
     Nav().backToPageCallManage()
+    this.prevHoling = this.holding
+    this.holding = true
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
