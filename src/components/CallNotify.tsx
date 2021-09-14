@@ -85,7 +85,7 @@ export const CallNotify = observer(() => {
       <View style={css.Notify}>
         <View style={css.Notify_Info}>
           <RnText bold>{c.partyName || c.partyNumber}</RnText>
-          <RnText>{intl`Incoming call`}</RnText>
+          <RnText>{intl`Incoming Call`}</RnText>
         </View>
         <ButtonIcon
           bdcolor={v.colors.danger}

@@ -322,7 +322,7 @@ export class PageCallManage extends Component<{
                 {c.title}
               </RnText>
               <RnText bold white center>
-                {intl`Incoming call`}
+                {intl`Incoming Call`}
               </RnText>
             </View>
             <View style={[css.Hangup, css.Hangup_answer]}>
