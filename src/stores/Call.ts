@@ -181,6 +181,8 @@ export class Call {
   }
   @action transferAttended = (number: string) => {
     this.transferring = number
+    this.prevHoling = this.holding
+    this.holding = true
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
@@ -188,6 +190,7 @@ export class Call {
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
+    this.holding = this.prevHoling
     RnAlert.error({
       message: intlDebug`Failed to transfer the call`,
       err,
@@ -216,12 +219,15 @@ export class Call {
   @action conferenceTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
+    this.prevHoling = this.holding
+    this.holding = false
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
+    this.holding = this.prevHoling
     RnAlert.error({
       message: intlDebug`Failed to make conference for the transfer`,
       err,
