@@ -45,7 +45,7 @@ export const PageCallBackgrounds = observer(() => {
         lastMessage={
           !c.answered ? (
             c.incoming ? (
-              intl`Incoming call`
+              intl`Incoming Call`
             ) : (
               intl`Dialing...`
             )

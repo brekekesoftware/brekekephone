@@ -322,9 +322,7 @@ export class PageCallManage extends Component<{
                 {c.title}
               </RnText>
               <RnText bold white center>
-                {c.remoteVideoEnabled
-                  ? intl`Incoming Video Call`
-                  : intl`Incoming Audio Call`}
+                {intl`Incoming Call`}
               </RnText>
             </View>
             <View style={[css.Hangup, css.Hangup_answer]}>
