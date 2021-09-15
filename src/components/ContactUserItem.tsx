@@ -184,7 +184,7 @@ export const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
-              {name || partyName || partyNumber || id}
+              {name || partyName}
             </RnText>
             {!!statusText && (
               <RnText normal singleLine small style={css.Status}>
