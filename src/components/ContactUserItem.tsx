@@ -9,6 +9,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
+import { contactStore } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -161,6 +162,10 @@ export const UserItem: FC<
       iconFuncs?.[i]?.()
     }
   }
+  const template = name || partyName || partyNumber || id
+  // check phone exists inside contacts to display origin name
+  const displayName =
+    contactStore.getPhoneBookByPhoneNumber(template)?.name || template
 
   return (
     <Container style={css.Outer} onPress={onPressItem}>
@@ -184,7 +189,7 @@ export const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
-              {name || partyName}
+              {displayName}
             </RnText>
             {!!statusText && (
               <RnText normal singleLine small style={css.Status}>
