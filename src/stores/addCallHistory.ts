@@ -4,6 +4,7 @@ import { v4 as newUuid } from 'uuid'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
+import { contactStore } from './contactStore'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = (c: Call | ParsedPn) => {
@@ -24,7 +25,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       created,
       incoming: c.incoming,
       answered: c.answered,
-      partyName: c.partyName,
+      partyName: c.partyName || getPartyName(c.partyNumber) || c.partyNumber,
       partyNumber: c.partyNumber,
       duration: c.getDuration(),
     })
@@ -34,9 +35,13 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       created,
       incoming: true,
       answered: false,
-      partyName: c.from,
+      partyName: getPartyName(c.from) || c.from,
       partyNumber: c.from,
       duration: 0,
     })
   }
 }
+
+export const getPartyName = (partyNumber?: string) =>
+  (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
+  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.name

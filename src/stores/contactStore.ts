@@ -164,6 +164,18 @@ class ContactStore {
       [k: string]: Phonebook2
     }
   }
+
+  getPhoneBookByPhoneNumber = (phoneNumber?: string) => {
+    if (!phoneNumber) {
+      return
+    }
+    return this.phoneBooks.filter(
+      p =>
+        p.cellNumber === phoneNumber ||
+        p.homeNumber === phoneNumber ||
+        p.workNumber === phoneNumber,
+    )?.[0]
+  }
   getPhonebookById = (id: string) => {
     return this.phoneBooksMap[id]
   }
