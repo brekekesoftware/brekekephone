@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
-import { contactStore } from '../stores/contactStore'
+import { getPartyName } from '../stores/addCallHistory'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -162,10 +162,10 @@ export const UserItem: FC<
       iconFuncs?.[i]?.()
     }
   }
-  const template = name || partyName || partyNumber || id
-  // check phone exists inside contacts to display origin name
-  const displayName =
-    contactStore.getPhoneBookByPhoneNumber(template)?.name || template
+
+  // Check phone exists inside contacts to display origin name
+  const partyName2 = getPartyName(partyNumber)
+  const displayName = partyName2 || partyName || name || partyNumber || id
 
   return (
     <Container style={css.Outer} onPress={onPressItem}>
