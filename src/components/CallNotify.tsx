@@ -81,7 +81,7 @@ export const CallNotify = observer(() => {
       : DidMountTimer
   return (
     <Wrapper>
-      <IncomingItem />
+      {!callStore.calls.some(_ => _.answered) && <IncomingItem />}
       <View style={css.Notify}>
         <View style={css.Notify_Info}>
           <RnText bold>{c.partyName || c.partyNumber}</RnText>
