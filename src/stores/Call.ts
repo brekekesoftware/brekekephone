@@ -6,6 +6,7 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
+import { getPartyName } from './addCallHistory'
 import { CallStore } from './callStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -22,7 +23,13 @@ export class Call {
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
   @computed get title() {
-    return this.partyName || this.partyNumber || this.pbxTalkerId || this.id
+    return (
+      getPartyName(this.partyNumber) ||
+      this.partyName ||
+      this.partyNumber ||
+      this.pbxTalkerId ||
+      this.id
+    )
   }
 
   @observable incoming = false

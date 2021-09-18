@@ -25,7 +25,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       created,
       incoming: c.incoming,
       answered: c.answered,
-      partyName: c.partyName || getPartyName(c.partyNumber) || c.partyNumber,
+      partyName: c.title,
       partyNumber: c.partyNumber,
       duration: c.getDuration(),
     })

@@ -4,6 +4,7 @@ import {
   mdiPhoneMissed,
   mdiPhoneOutgoing,
 } from '@mdi/js'
+import { observer } from 'mobx-react'
 import React, { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -102,7 +103,7 @@ export const UserItem: FC<
     group: boolean
     partyName: string
   }>
-> = p0 => {
+> = observer(p0 => {
   const {
     answered,
     avatar,
@@ -163,10 +164,6 @@ export const UserItem: FC<
     }
   }
 
-  // Check phone exists inside contacts to display origin name
-  const partyName2 = getPartyName(partyNumber)
-  const displayName = partyName2 || partyName || name || partyNumber || id
-
   return (
     <Container style={css.Outer} onPress={onPressItem}>
       <View style={[css.Inner, selected && css.Inner_selected]}>
@@ -189,7 +186,11 @@ export const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText black bold singleLine>
-              {displayName}
+              {getPartyName(partyNumber) ||
+                partyName ||
+                name ||
+                partyNumber ||
+                id}
             </RnText>
             {!!statusText && (
               <RnText normal singleLine small style={css.Status}>
@@ -243,4 +244,4 @@ export const UserItem: FC<
       </View>
     </Container>
   )
-}
+})
