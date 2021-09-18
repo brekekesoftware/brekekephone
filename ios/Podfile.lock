@@ -363,7 +363,7 @@ PODS:
     - React-perflogger (= 0.65.1)
   - ReactNativeExceptionHandler (2.10.10):
     - React-Core
-  - ReactNativeIncallManager (3.3.0):
+  - ReactNativeIncallManager (3.3.0-brekeke-002):
     - React
   - RNCallKeep (4.2.0-brekeke-005):
     - React
@@ -631,7 +631,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 85187f19dd9c47a7c102f9994f9d14e4dc2110de
   ReactCommon: eafed38eec7b591c31751bfa7494801618460459
   ReactNativeExceptionHandler: b11ff67c78802b2f62eed0e10e75cb1ef7947c60
-  ReactNativeIncallManager: a840ef75640518065742a893e6c6ff98ee820039
+  ReactNativeIncallManager: b88d8fea6f88f26b926ee755d2c396ebb76da438
   RNCallKeep: 22f7bb37b0529a87dd83910ac4e8b3204fa3b824
   RNCAsyncStorage: e8b8d6320a0dd90eb610fb0d0b1ef90596697c69
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
