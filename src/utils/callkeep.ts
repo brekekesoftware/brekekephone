@@ -11,7 +11,7 @@ import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
 import { parseNotificationData } from './PushNotification-parse'
-import { IncomingCall, RnNativeModules } from './RnNativeModules'
+import { BrekekeUtils } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
 
@@ -36,6 +36,7 @@ const setupCallKeepWithCheck = async () => {
   await RNCallKeep.setup({
     ios: {
       appName: 'Brekeke Phone',
+      // Already put this on our fork to display our logo before js load
       imageName: 'callkit.png',
       // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
       // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
@@ -219,7 +220,7 @@ export const setupCallKeep = async () => {
   // Android self-managed connection service forked version
   if (Platform.OS === 'android') {
     // Events from our custom IncomingCall module
-    const eventEmitter = new NativeEventEmitter(RnNativeModules.IncomingCall)
+    const eventEmitter = new NativeEventEmitter(BrekekeUtils)
     eventEmitter.addListener('answerCall', (uuid: string) => {
       callStore.onCallKeepAnswerCall(uuid.toUpperCase())
       RNCallKeep.setOnHold(uuid, false)
@@ -255,7 +256,7 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('backToForeground', () => {
       console.error('SIP PN debug: backToForeground')
       BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
-      BackgroundTimer.setTimeout(IncomingCall.closeAllIncomingCalls, 300)
+      BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
     })
     // Manually handle back press
     eventEmitter.addListener('onBackPressed', onBackPressed)
@@ -279,6 +280,6 @@ export const onBackPressed = () => {
     RnStacker.stacks.pop()
     return true
   }
-  IncomingCall.backToBackground()
+  BrekekeUtils.backToBackground()
   return true
 }

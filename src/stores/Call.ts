@@ -4,8 +4,9 @@ import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
-import { IncomingCall } from '../utils/RnNativeModules'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
+import { getPartyName } from './addCallHistory'
 import { CallStore } from './callStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -22,7 +23,13 @@ export class Call {
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
   @computed get title() {
-    return this.partyName || this.partyNumber || this.pbxTalkerId || this.id
+    return (
+      getPartyName(this.partyNumber) ||
+      this.partyName ||
+      this.partyNumber ||
+      this.pbxTalkerId ||
+      this.id
+    )
   }
 
   @observable incoming = false
@@ -46,7 +53,7 @@ export class Call {
       videoEnabled: this.remoteVideoEnabled,
     })
     if (Platform.OS === 'android') {
-      IncomingCall.onConnectingCallSuccess(this.callkeepUuid)
+      BrekekeUtils.setConnectingCallSuccess(this.callkeepUuid)
     }
     if (!ignoreNav) {
       Nav().goToPageCallManage()
@@ -144,7 +151,7 @@ export class Call {
         // Hack to fix no voice after unhold: only setOnHold in unhold case
         RNCallKeep.setOnHold(this.callkeepUuid, false)
       }
-      IncomingCall.setOnHold(this.callkeepUuid, this.holding)
+      BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     }
     return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
@@ -159,7 +166,7 @@ export class Call {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)
     }
-    IncomingCall.setOnHold(this.callkeepUuid, this.holding)
+    BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     if (typeof err !== 'boolean') {
       const message = this.holding
         ? intlDebug`Failed to unhold the call`

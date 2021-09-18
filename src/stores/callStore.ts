@@ -11,7 +11,7 @@ import { uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
-import { IncomingCall } from '../utils/RnNativeModules'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
@@ -152,7 +152,7 @@ export class CallStore {
       }
       Object.assign(cExisting, cPartial)
       if (cExisting.incoming && cExisting.callkeepUuid) {
-        IncomingCall.setRemoteVideoStreamURL(
+        BrekekeUtils.setRemoteVideoStreamURL(
           cExisting.callkeepUuid,
           cExisting.remoteVideoStreamObject
             ? cExisting.remoteVideoStreamObject.toURL()
@@ -164,7 +164,7 @@ export class CallStore {
         cExisting.callkeepUuid &&
         typeof cExisting.localVideoEnabled === 'boolean'
       ) {
-        IncomingCall.setIsVideoCall(
+        BrekekeUtils.setIsVideoCall(
           cExisting.callkeepUuid,
           !!cExisting.localVideoEnabled,
         )
@@ -175,7 +175,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
-    IncomingCall.setBackgroundCalls(this.calls.length)
+    BrekekeUtils.setBackgroundCalls(this.calls.length)
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
@@ -209,7 +209,7 @@ export class CallStore {
     addCallHistory(c)
     this.calls = this.calls.filter(c0 => c0 !== c)
     // Set number of total calls in our custom java incoming call module
-    IncomingCall.setBackgroundCalls(this.calls.length)
+    BrekekeUtils.setBackgroundCalls(this.calls.length)
     // When if this is a outgoing call, try to insert a call history to uc chat
     if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
       uc.sendCallResult(c.getDuration(), c.partyNumber)
@@ -439,13 +439,13 @@ export class CallStore {
     if (uuid === this.prevCallKeepUuid) {
       this.prevCallKeepUuid = undefined
     }
-    IncomingCall.closeIncomingCall(uuid)
+    BrekekeUtils.closeIncomingCall(uuid)
   }
   endCallKeepAll = () => {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
-    IncomingCall.closeAllIncomingCalls()
+    BrekekeUtils.closeAllIncomingCalls()
   }
   @action onPageCallManageUnmount = () => {
     this.calls
@@ -513,16 +513,16 @@ export class CallStore {
   // Additional static logic
   constructor() {
     if (Platform.OS === 'android') {
-      IncomingCall.setIsAppActive(AppState.currentState === 'active', false)
+      BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
       // If it is locked right after blur, we assume it was put in background because of lock
       AppState.addEventListener('change', () => {
-        IncomingCall.setIsAppActive(AppState.currentState === 'active', false)
+        BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
         if (AppState.currentState === 'active') {
           return
         }
         BackgroundTimer.setTimeout(async () => {
-          if (await IncomingCall.isLocked()) {
-            IncomingCall.setIsAppActive(false, true)
+          if (await BrekekeUtils.isLocked()) {
+            BrekekeUtils.setIsAppActive(false, true)
           }
         }, 300)
       })

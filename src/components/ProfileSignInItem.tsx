@@ -1,6 +1,6 @@
 import {
   mdiAccountCircleOutline,
-  mdiApplication,
+  mdiApplicationOutline,
   mdiClose,
   mdiDotsHorizontal,
   mdiServerNetwork,
@@ -82,7 +82,11 @@ export const ProfileSignInItem: FC<{
           label={intl`USERNAME`}
           value={p.pbxUsername}
         />
-        <Field icon={mdiApplication} label={intl`TENANT`} value={p.pbxTenant} />
+        <Field
+          icon={mdiApplicationOutline}
+          label={intl`TENANT`}
+          value={p.pbxTenant}
+        />
         <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
         <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
       </RnTouchableOpacity>

@@ -8,20 +8,20 @@ import io.wazo.callkeep.RNCallKeepModule;
 public class MainActivity extends ReactActivity {
   @Override
   protected void onStart() {
-    IncomingCallModule.main = this;
+    BrekekeModule.main = this;
     super.onStart();
   }
 
   // @Override
   // protected void onDestroy() {
-  //   IncomingCallModule.main = null;
+  //   BrekekeModule.main = null;
   //   super.onDestroy();
   // }
 
   @Override
   public void onBackPressed() {
     // Do not exit on back pressed
-    IncomingCallModule.emit("onBackPressed", "");
+    BrekekeModule.emit("onBackPressed", "");
   }
 
   @Override
