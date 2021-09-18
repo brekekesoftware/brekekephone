@@ -367,14 +367,14 @@ PODS:
     - React
   - RNCallKeep (4.2.0-brekeke-005):
     - React
-  - RNCAsyncStorage (1.15.7):
+  - RNCAsyncStorage (1.15.8):
     - React-Core
-  - RNCPushNotificationIOS (1.10.0):
+  - RNCPushNotificationIOS (1.10.1):
     - React-Core
-  - RNFastImage (8.3.7):
+  - RNFastImage (8.5.8):
     - React-Core
-    - SDWebImage (~> 5.8)
-    - SDWebImageWebPCoder (~> 0.6.1)
+    - SDWebImage (~> 5.11.1)
+    - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.18.0):
     - React
   - RNShare (5.3.0):
@@ -386,9 +386,9 @@ PODS:
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
-  - SDWebImageWebPCoder (0.6.1):
+  - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.7)
+    - SDWebImage/Core (~> 5.10)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -633,15 +633,15 @@ SPEC CHECKSUMS:
   ReactNativeExceptionHandler: b11ff67c78802b2f62eed0e10e75cb1ef7947c60
   ReactNativeIncallManager: a840ef75640518065742a893e6c6ff98ee820039
   RNCallKeep: 22f7bb37b0529a87dd83910ac4e8b3204fa3b824
-  RNCAsyncStorage: 7102fe8985f889579a3ae148d957bbb3f308122b
-  RNCPushNotificationIOS: 5ee247e594d0b5df3cd7be74b51035a0d91807eb
-  RNFastImage: a7384db75df352500261e8e8f1ac2026def26102
+  RNCAsyncStorage: e8b8d6320a0dd90eb610fb0d0b1ef90596697c69
+  RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
+  RNFastImage: adef7f9c9a7aeca0141807ee5a8be8a3eb240dd8
   RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
   RNShare: 4df87d1791f50a2c7b1d89432fb9bbb7c02a9c9a
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   RNVoipPushNotification: 24911045f8e84c8f3b25a481262e7d50e2fa5b9c
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
-  SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
+  SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Yoga: aa0cb45287ebe1004c02a13f279c55a95f1572f4
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
