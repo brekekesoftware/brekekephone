@@ -1,34 +1,23 @@
-package com.brekeke.fcm;
+package com.brekeke.phonedev;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class FIRMessagingPackage implements ReactPackage {
-
-  public FIRMessagingPackage() {}
-
+class BrekekeReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-
-    modules.add(new FIRMessagingModule(reactContext));
+    modules.add(new BrekekeModule(reactContext));
     return modules;
-  }
-
-  // support rn < 0.47
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Arrays.<ViewManager>asList();
+    return Collections.emptyList();
   }
 }

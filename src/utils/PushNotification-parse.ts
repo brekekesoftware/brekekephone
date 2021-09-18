@@ -3,7 +3,7 @@ import { AppState, Platform } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
-import { IncomingCall } from './RnNativeModules'
+import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
@@ -223,7 +223,9 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   // Continue handling incoming call in android
   if (Platform.OS === 'android') {
     callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
-    const action = await IncomingCall.getPendingUserAction(n.callkeepUuid)
+    const action = await BrekekeUtils.getIncomingCallPendingUserAction(
+      n.callkeepUuid,
+    )
     console.error(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       callStore.onCallKeepAnswerCall(n.callkeepUuid)

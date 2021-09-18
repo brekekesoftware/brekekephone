@@ -37,7 +37,7 @@ import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
-import { IncomingCall } from '../utils/RnNativeModules'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -52,7 +52,7 @@ AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
     PushNotification.resetBadgeNumber()
-    IncomingCall.closeAllIncomingCalls()
+    BrekekeUtils.closeAllIncomingCalls()
   }
 })
 registerOnUnhandledError(unexpectedErr => {

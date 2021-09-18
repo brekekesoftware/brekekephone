@@ -3,12 +3,12 @@ import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
 import { callStore } from '../stores/callStore'
-import { IncomingCall } from '../utils/RnNativeModules'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 
 export class IncomingItem extends Component {
   ringtonePlaying = false
   async componentDidMount() {
-    if (Platform.OS === 'android' && (await IncomingCall.isSilent())) {
+    if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
       return
     }
     IncallManager.startRingtone('_BUNDLE_')

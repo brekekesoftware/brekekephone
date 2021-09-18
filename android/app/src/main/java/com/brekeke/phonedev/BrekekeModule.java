@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-public class IncomingCallModule extends ReactContextBaseJavaModule {
+public class BrekekeModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
@@ -52,7 +52,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
 
-  IncomingCallModule(ReactApplicationContext c) {
+  BrekekeModule(ReactApplicationContext c) {
     super(c);
     ctx = c;
     initStaticServices(c);
@@ -66,7 +66,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "IncomingCall";
+    return "BrekekeUtils";
   }
 
   // [callkeepUuid] -> display/answerCall/rejectCall
@@ -76,7 +76,7 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   public static void initStaticServices(Context c) {
     if (wl == null) {
       PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-      wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::IncomingCall");
+      wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::BrekekeUtils");
     }
     if (km == null) {
       km = (KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE);
@@ -426,48 +426,31 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   //
 
   @ReactMethod
-  public void setLocale(String locale) {
-    L.l = locale;
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (IncomingCallActivity a : activities) {
-                try {
-                  a.updateLabels();
-                } catch (Exception e) {
-                }
-              }
-            } catch (Exception e) {
-            }
-          }
-        });
+  public void getInitialNotifications(Promise promise) {
+    FcmService.getInitialNotifications(promise);
   }
 
   @ReactMethod
-  public void setIsAppActive(boolean b1, boolean b2) {
-    isAppActive = b1;
-    isAppActiveLocked = b2;
+  public void isLocked(Promise p) {
+    p.resolve(isLocked());
   }
 
   @ReactMethod
-  public void getPendingUserAction(String uuid, Promise p) {
+  public void isSilent(Promise p) {
+    p.resolve(isSilent());
+  }
+
+  @ReactMethod
+  public void backToBackground() {
+    try {
+      main.moveTaskToBack(true);
+    } catch (Exception e) {
+    }
+  }
+
+  @ReactMethod
+  public void getIncomingCallPendingUserAction(String uuid, Promise p) {
     p.resolve(userActions.get(uuid));
-  }
-
-  @ReactMethod
-  public void onConnectingCallSuccess(String uuid) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).onConnectingCallSuccess();
-            } catch (Exception e) {
-            }
-          }
-        });
   }
 
   @ReactMethod
@@ -483,6 +466,26 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void closeAllIncomingCalls() {
     removeAll();
+  }
+
+  @ReactMethod
+  public void setIsAppActive(boolean b1, boolean b2) {
+    isAppActive = b1;
+    isAppActiveLocked = b2;
+  }
+
+  @ReactMethod
+  public void setConnectingCallSuccess(String uuid) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).onConnectingCallSuccess();
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 
   @ReactMethod
@@ -540,20 +543,22 @@ public class IncomingCallModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void isLocked(Promise p) {
-    p.resolve(isLocked());
-  }
-
-  @ReactMethod
-  public void isSilent(Promise p) {
-    p.resolve(isSilent());
-  }
-
-  @ReactMethod
-  public void backToBackground() {
-    try {
-      main.moveTaskToBack(true);
-    } catch (Exception e) {
-    }
+  public void setLocale(String locale) {
+    L.l = locale;
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.updateLabels();
+                } catch (Exception e) {
+                }
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 }

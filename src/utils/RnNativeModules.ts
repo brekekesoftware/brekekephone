@@ -1,26 +1,21 @@
-import {
-  NativeModule,
-  NativeModules,
-  Platform,
-  ViewPagerAndroidProps,
-} from 'react-native'
-
-import { NotificationDetails } from './fcm'
+import { NativeModule, NativeModules, Platform } from 'react-native'
 
 const Polyfill = {
-  IncomingCall: {
-    setLocale: () => undefined,
-    setIsAppActive: () => undefined,
+  BrekekeUtils: {
+    getInitialNotifications: () => undefined,
+    isLocked: () => Promise.resolve(false),
+    isSilent: () => Promise.resolve(false),
+    backToBackground: () => undefined,
+    getIncomingCallPendingUserAction: () => Promise.resolve(''),
     closeIncomingCall: () => undefined,
     closeAllIncomingCalls: () => undefined,
+    setIsAppActive: () => undefined,
+    setConnectingCallSuccess: () => undefined,
     setIsVideoCall: () => undefined,
     setRemoteVideoStreamURL: () => undefined,
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
-    isLocked: () => Promise.resolve(false),
-    isSilent: () => Promise.resolve(false),
-    backToBackground: () => undefined,
-    onConnectingCallSuccess: () => undefined,
+    setLocale: () => undefined,
   },
 }
 const M = (
@@ -28,42 +23,23 @@ const M = (
 ) as TNativeModules
 
 export type TNativeModules = {
-  IncomingCall: NativeModule & {
-    setLocale(locale: string): void
-    setIsAppActive(b1: boolean, b2: boolean): void
+  BrekekeUtils: NativeModule & {
+    getInitialNotifications(): Promise<string | null>
+    isLocked(): Promise<boolean>
+    isSilent(): Promise<boolean>
+    backToBackground(): void
+    getIncomingCallPendingUserAction(uuid: string): Promise<string>
     closeIncomingCall(uuid: string): void
-    closeAllIncomingCalls(): ViewPagerAndroidProps
+    closeAllIncomingCalls(): void
+    setIsAppActive(b1: boolean, b2: boolean): void
+    setConnectingCallSuccess(uuid: string): void
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setRemoteVideoStreamURL(uuid: string, url: string): void
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
-    isLocked(): Promise<boolean>
-    isSilent(): Promise<boolean>
-    backToBackground(): void
-    onConnectingCallSuccess(uuid: string): void
-    getPendingUserAction(uuid: string): Promise<string>
-  }
-  RNFIRMessaging: NativeModule & {
-    getInitialNotifications(): Promise<string | null>
-    getFCMToken(): Promise<string>
-    getEntityFCMToken(): Promise<string>
-    deleteEntityFCMToken(): Promise<void>
-    deleteInstanceId(): Promise<void>
-    requestPermissions(): Promise<void>
-    subscribeToTopic(topic: string): void
-    unsubscribeFromTopic(topic: string): void
-    presentLocalNotification(notification: NotificationDetails): void
-    removeAllDeliveredNotifications(): void
-    removeDeliveredNotification(id: string): void
-    cancelAllLocalNotifications(): void
-    cancelLocalNotification(id: string): string
-    setBadgeNumber(badge: number): void
-    getBadgeNumber(): Promise<number>
-    createNotificationChannel(config: object): Promise<void>
-    deleteNotificationChannel(channel: object): Promise<void>
+    setLocale(locale: string): void
   }
 }
 
 export const RnNativeModules = M
-export const IncomingCall = M.IncomingCall
-export const RNFIRMessaging = M.RNFIRMessaging
+export const BrekekeUtils = M.BrekekeUtils

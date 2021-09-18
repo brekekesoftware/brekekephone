@@ -10831,6 +10831,10 @@ react-native-fast-image@8.3.7:
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.3.7.tgz#c4877de17903101f6d94b6736a4f7e5d7b019224"
   integrity sha512-J++Ad04PTUe4YgjyGv63gfgV8Fz1gZKAgQHpblf8Z87D9dxfc8UfXHTPv9VLGdTJU4IzdTnQqzoFgDtWdsvBsQ==
 
+"react-native-fcm@github:brekekesoftware/react-native-fcm#c43f02e31dcf80afc9d7d4dbc049bef4bc14f364":
+  version "16.2.4-brekeke-002"
+  resolved "https://codeload.github.com/brekekesoftware/react-native-fcm/tar.gz/c43f02e31dcf80afc9d7d4dbc049bef4bc14f364"
+
 react-native-fs@2.18.0:
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.18.0.tgz#987b99cc90518ef26663a8d60e62104694b41c21"
