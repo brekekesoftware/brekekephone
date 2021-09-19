@@ -18,7 +18,9 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
 import { Nav } from './Nav'
+import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
+import { timerStore } from './timerStore'
 
 export class CallStore {
   private recentCallActivityAt = 0
@@ -366,7 +368,7 @@ export class CallStore {
       uuid: string
       at: number
       incomingPnData?: ParsedPn
-      backFromPageCallManage?: boolean
+      hasAction?: boolean
     }
   } = {}
   getUuidFromPnId = (pnId: string) =>
@@ -441,17 +443,20 @@ export class CallStore {
     }
     BrekekeUtils.closeIncomingCall(uuid)
   }
-  endCallKeepAll = () => {
+  endCallKeepAllCalls = () => {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
     BrekekeUtils.closeAllIncomingCalls()
+    this.onCallKeepAction()
   }
-  @action onPageCallManageUnmount = () => {
+  @action onCallKeepAction = () => {
     this.calls
-      .filter(_ => this.callkeepMap[_.callkeepUuid])
+      .map(_ => this.callkeepMap[_.callkeepUuid])
       .forEach(_ => {
-        this.callkeepMap[_.callkeepUuid].backFromPageCallManage = true
+        if (_ && !_.hasAction) {
+          _.hasAction = true
+        }
       })
   }
 
@@ -492,12 +497,49 @@ export class CallStore {
     if (c.pnId) {
       this.callkeepActionMap[c.pnId] = a
     }
+    this.onCallKeepAction()
   }
   private getCallkeepAction = (c: TCallkeepIds) =>
     (c.callkeepUuid && this.callkeepActionMap[c.callkeepUuid]) ||
     (c.pnId && this.callkeepActionMap[c.pnId])
   isCallRejected = (c?: TCallkeepIds) =>
     c && this.getCallkeepAction(c) === 'rejectCall'
+
+  getCallInNotify = () => {
+    // Do not display our callbar if already show callkeep
+    return this.calls.find(_ => {
+      const k = this.callkeepMap[_.callkeepUuid]
+      return (
+        _.incoming &&
+        !_.answered &&
+        (!k ||
+          k.hasAction ||
+          // Trigger timerStore.now observer at last
+          timerStore.now - _.createdAt > 1000)
+      )
+    })
+  }
+  shouldRingInNotify = (uuid?: string) => {
+    if (Platform.OS === 'web' || !uuid) {
+      return true
+    }
+    // Do not ring on background
+    if (RnAppState.currentState !== 'active') {
+      return false
+    }
+    // Do not ring if has an ongoing answered call
+    if (this.calls.some(_ => _.answered)) {
+      return false
+    }
+    // ios: Do not ring if has a callkeep with no action yet
+    if (
+      Platform.OS === 'ios' &&
+      Object.values(this.callkeepMap).some(_ => !this.callkeepActionMap[_.uuid])
+    ) {
+      return false
+    }
+    return true
+  }
 
   // To be used in sip.phone._ua.on('newNotify')
   onSipUaCancel = (pnId?: string) => {

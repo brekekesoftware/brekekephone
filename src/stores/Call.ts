@@ -31,6 +31,7 @@ export class Call {
       this.id
     )
   }
+  createdAt = Date.now()
 
   @observable incoming = false
   @observable answered = false

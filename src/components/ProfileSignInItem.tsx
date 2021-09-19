@@ -136,7 +136,7 @@ export const ProfileSignInItem: FC<{
             getAuthStore().signIn(p.id)
             // Try to end callkeep if it's stuck
             if (Platform.OS !== 'web') {
-              callStore.endCallKeepAll()
+              callStore.endCallKeepAllCalls()
             }
           }}
           onNextText={intl`SIGN IN`}

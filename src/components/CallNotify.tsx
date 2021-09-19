@@ -62,11 +62,7 @@ export const CallNotify = observer(() => {
   // Try trigger observer?
   void Object.keys(callStore.callkeepMap)
   void callStore.calls.map(_ => _.callkeepUuid)
-  // Do not display our callbar if already show callkeep
-  const c = callStore.calls.find(_ => {
-    const k = callStore.callkeepMap[_.callkeepUuid]
-    return _.incoming && !_.answered && (!k || k.backFromPageCallManage)
-  })
+  const c = callStore.getCallInNotify()
   // Do not show notify if in page call manage
   const s = RnStacker.stacks[RnStacker.stacks.length - 1]
   if (s?.name === 'PageCallManage' || !c) {
@@ -74,14 +70,14 @@ export const CallNotify = observer(() => {
   }
   const k = callStore.callkeepMap[c.callkeepUuid]
   const Wrapper =
-    k?.backFromPageCallManage ||
+    k?.hasAction ||
     Platform.OS === 'web' ||
     !getAuthStore().currentProfile?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
   return (
     <Wrapper>
-      {!callStore.calls.some(_ => _.answered) && <IncomingItem />}
+      {callStore.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
       <View style={css.Notify}>
         <View style={css.Notify_Info}>
           <RnText bold>{c.partyName || c.partyNumber}</RnText>

@@ -53,6 +53,7 @@ AppState.addEventListener('change', () => {
     getAuthStore().resetFailureState()
     PushNotification.resetBadgeNumber()
     BrekekeUtils.closeAllIncomingCalls()
+    callStore.onCallKeepAction()
   }
 })
 registerOnUnhandledError(unexpectedErr => {

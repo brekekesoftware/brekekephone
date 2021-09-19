@@ -109,7 +109,7 @@ export class PageCallManage extends Component<{
     }
   }
   componentWillUnmount() {
-    callStore.onPageCallManageUnmount()
+    callStore.onCallKeepAction()
   }
 
   @action toggleButtons = () => {
