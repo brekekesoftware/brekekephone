@@ -74,7 +74,7 @@ export class CallStore {
       if (prevCall) {
         prevCall.callkeepAlreadyRejected = true
       }
-      this.endCallKeep(this.prevCallKeepUuid)
+      this.endCallKeep(this.prevCallKeepUuid, false)
     }
     this.prevCallKeepUuid = uuid
     // Auto reconnect if no activity
@@ -418,12 +418,14 @@ export class CallStore {
       this.updateCurrentCallDebounce()
     }, 500)
   }
-  @action private endCallKeep = (uuid: string) => {
+  @action private endCallKeep = (uuid: string, setAction = true) => {
     if (!uuid) {
       return
     }
     console.error('PN callkeep debug: endCallKeep ' + uuid)
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
+    if (setAction) {
+      this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
+    }
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
@@ -534,7 +536,9 @@ export class CallStore {
     // ios: Do not ring if has a callkeep with no action yet
     if (
       Platform.OS === 'ios' &&
-      Object.values(this.callkeepMap).some(_ => !this.callkeepActionMap[_.uuid])
+      Object.keys(this.callkeepMap).some(
+        _ => _ !== uuid && !this.callkeepActionMap[_],
+      )
     ) {
       return false
     }
