@@ -26,17 +26,18 @@ export class CallStore {
   private recentCallActivityAt = 0
 
   private prevCallKeepUuid?: string
-  private getIncomingCallkeep = (
+  private getCallkeep = (
     uuid: string,
     o?: {
       includingAnswered?: boolean
       includingRejected?: boolean
+      haveOutgoingCall?: boolean
     },
   ) => {
     const pnId = this.getPnIdFromUuid(uuid)
     return this.calls.find(
       c =>
-        c.incoming &&
+        (o?.haveOutgoingCall || c.incoming) &&
         !c.isAboutToHangup &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
@@ -55,7 +56,7 @@ export class CallStore {
       pnId: pnData.id,
     })
     // Find the current incoming call which is not callkeep
-    const c = this.getIncomingCallkeep(uuid)
+    const c = this.getCallkeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
     }
@@ -101,7 +102,7 @@ export class CallStore {
   }
   @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
-    const c = this.getIncomingCallkeep(uuid)
+    const c = this.getCallkeep(uuid)
     console.error(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
@@ -110,9 +111,10 @@ export class CallStore {
   }
   @action onCallKeepEndCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
-    const c = this.getIncomingCallkeep(uuid, {
+    const c = this.getCallkeep(uuid, {
       includingAnswered: true,
       includingRejected: Platform.OS === 'android',
+      haveOutgoingCall: Platform.OS === 'ios',
     })
     console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
