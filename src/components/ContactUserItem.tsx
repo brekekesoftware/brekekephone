@@ -10,7 +10,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
-import { getPartyName } from '../stores/addCallHistory'
+import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'

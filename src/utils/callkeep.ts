@@ -258,8 +258,11 @@ export const setupCallKeep = async () => {
       BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
       BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
     })
-    // Manually handle back press
+    // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
+    eventEmitter.addListener('debug', (m: string) =>
+      console.error(`Android debug: ${m}`),
+    )
   }
 }
 

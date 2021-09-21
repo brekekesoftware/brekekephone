@@ -12,6 +12,7 @@ const keysInCustomNotification = [
   'body',
   'message',
   'from',
+  'displayname',
   'to',
   'tenant',
   'pbxHostname',
@@ -143,6 +144,7 @@ export const parseNotificationData = (raw: object) => {
   if (!n.to) {
     n.to = matches?.[2] || ''
   }
+  n.displayName = get(n, 'displayname') || n.from
 
   n.isCall = !!n.id || !!n.sipPn.sipAuth
 
@@ -246,6 +248,7 @@ export type ParsedPn = {
   alert: string
   message: string
   from: string
+  displayName: string
   to: string
   tenant: string
   pbxHostname: string

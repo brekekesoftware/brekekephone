@@ -191,3 +191,7 @@ class ContactStore {
 }
 
 export const contactStore = new ContactStore()
+
+export const getPartyName = (partyNumber?: string) =>
+  (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
+  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.name
