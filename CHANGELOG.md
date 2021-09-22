@@ -1,3 +1,21 @@
+#### 2.8.52
+
+- Fix ios 340: when having outgoing BrekekePhone call and GSM call come, press answer+end should end BrekekePhone call
+- Handle x_displayname in PN data, display well Japanese name
+- Fix ios 336: forground do not reject 1st call when receiving 2nd call
+- Fix 335: forground update logic displaying/ringing for call notify
+- Fix 334: forground do not ring in app if there's an ongoing answered call
+- Fix bug ringback not play, increase ringback volume
+- Fix ios: when app killed and device locked, incoming call doesnt show Brekeke logo
+- Improve call history: get display name from phone number (via phonebook) or extension (via pbx users)
+- Fix bug: update hold status when transfer attended/conference
+- Sync hold status when transfer attended/conference
+- Remove labels in app: "Incoming audio/video call" -> "Incoming call"
+- Fix 332: show call notify after exit page call manage, add logic to respect silent mode
+- Fix android 327: vibration/ringtone not stop after press answer foreground
+- Fix android: sometimes app crashes on first open after reinstall
+- Fix 330: error when toggle video while connected to voicemail
+
 #### 2.8.49
 
 - Fix android bug caller got busy tone if callee press answer quickly
