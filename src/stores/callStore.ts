@@ -29,20 +29,20 @@ export class CallStore {
   private getCallkeep = (
     uuid: string,
     o?: {
+      includingOutgoing?: boolean
       includingAnswered?: boolean
       includingRejected?: boolean
-      haveOutgoingCall?: boolean
     },
   ) => {
     const pnId = this.getPnIdFromUuid(uuid)
     return this.calls.find(
       c =>
-        (o?.haveOutgoingCall || c.incoming) &&
-        !c.isAboutToHangup &&
+        (!pnId || c.pnId === pnId) &&
         (!c.callkeepUuid || c.callkeepUuid === uuid) &&
+        (o?.includingOutgoing || c.incoming) &&
         (o?.includingAnswered || (!c.answered && !c.callkeepAlreadyAnswered)) &&
         (o?.includingRejected || !c.callkeepAlreadyRejected) &&
-        (!pnId || c.pnId === pnId),
+        !c.isAboutToHangup,
     )
   }
   @action onCallKeepDidDisplayIncomingCall = (
@@ -114,7 +114,7 @@ export class CallStore {
     const c = this.getCallkeep(uuid, {
       includingAnswered: true,
       includingRejected: Platform.OS === 'android',
-      haveOutgoingCall: Platform.OS === 'ios',
+      includingOutgoing: Platform.OS === 'ios',
     })
     console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
