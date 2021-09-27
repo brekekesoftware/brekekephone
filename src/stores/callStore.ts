@@ -68,7 +68,7 @@ export class CallStore {
       return
     }
     // ios allow only 1 callkeep
-    if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
+    /*if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
       const prevCall = this.calls.find(
         _ => _.callkeepUuid === this.prevCallKeepUuid,
       )
@@ -76,7 +76,7 @@ export class CallStore {
         prevCall.callkeepAlreadyRejected = true
       }
       this.endCallKeep(this.prevCallKeepUuid, false)
-    }
+    }*/
     this.prevCallKeepUuid = uuid
     // Auto reconnect if no activity
     // This logic is about the case connection has dropped silently
@@ -269,9 +269,10 @@ export class CallStore {
     // Adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
     if (
-      Platform.OS === 'android' ||
-      // ios logic only 1 callkeep call
-      (Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length)
+      /*Platform.OS === 'android' ||
+      // ios allow only 1 callkeep
+      Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length*/
+      Platform.OS !== 'web'
     ) {
       uuid = newUuid().toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
