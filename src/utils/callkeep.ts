@@ -181,14 +181,12 @@ export const setupCallKeep = async () => {
     }
   }
   const didActivateAudioSession = () => {
-    // TODO
+    // Only in ios
+    // TODO: may be toggle hold
   }
   const didDeactivateAudioSession = () => {
-    if (Platform.OS === 'android') {
-      callStore.calls
-        .filter(c => c.answered && !c.holding)
-        .forEach(c => c.toggleHoldWithCheck())
-    }
+    // Only in ios
+    // TODO: may be toggle hold
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#--didloadwithevents

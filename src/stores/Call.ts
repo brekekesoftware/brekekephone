@@ -59,9 +59,19 @@ export class Call {
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
-    if (this.callkeepUuid && !this.callkeepAlreadyAnswered) {
-      RNCallKeep.answerIncomingCall(this.callkeepUuid)
+    this.answerCallKeep()
+  }
+  answerCallKeep = () => {
+    if (!this.callkeepUuid) {
+      return
     }
+    if (this.incoming) {
+      RNCallKeep.answerIncomingCall(this.callkeepUuid)
+    } else {
+      RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
+    }
+    RNCallKeep.setOnHold(this.callkeepUuid, false)
+    this.callkeepAlreadyAnswered = true
   }
 
   isAboutToHangup = false

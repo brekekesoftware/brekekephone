@@ -152,6 +152,7 @@ export class CallStore {
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
       if (!cExisting.answered && cPartial.answered) {
+        cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
@@ -266,13 +267,14 @@ export class CallStore {
     Nav().goToPageCallManage()
     // Start call logic in RNCallKeep
     // Adding this will help the outgoing call automatically hold on GSM call
-    // Only for ios, android will be done in callkeep didDeactivateAudioSession
     let uuid = ''
-    if (Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length) {
+    if (
+      Platform.OS === 'android' ||
+      // ios logic only 1 callkeep call
+      (Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length)
+    ) {
       uuid = newUuid().toUpperCase()
       RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
-      RNCallKeep.reportConnectedOutgoingCallWithUUID(uuid)
-      RNCallKeep.setOnHold(uuid, false)
       this.setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s: auto update currentCallId
