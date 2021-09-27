@@ -70,6 +70,7 @@ export class Call {
     } else {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
     }
+    RNCallKeep.setCurrentCallActive(this.callkeepUuid)
     RNCallKeep.setOnHold(this.callkeepUuid, false)
     this.callkeepAlreadyAnswered = true
   }
