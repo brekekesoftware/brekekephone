@@ -1,12 +1,14 @@
 import { action, computed, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
+import { getAuthStore } from './authStore'
 import { CallStore } from './callStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -61,18 +63,35 @@ export class Call {
     }
     this.answerCallKeep()
   }
-  answerCallKeep = () => {
-    if (!this.callkeepUuid) {
+  answerCallKeep = async () => {
+    const updateCallKeep = () => {
+      RNCallKeep.setCurrentCallActive(this.callkeepUuid)
+      RNCallKeep.setOnHold(this.callkeepUuid, false)
+      this.callkeepAlreadyAnswered = true
+    }
+    const updateIncoming = () => {
+      RNCallKeep.answerIncomingCall(this.callkeepUuid)
+      updateCallKeep()
+    }
+    const updateOutgoing = () => {
+      RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
+      updateCallKeep()
+    }
+    // If it has callkeepUuid, which means: outgoing call / incoming PN call
+    if (this.callkeepUuid) {
+      this.incoming ? updateIncoming() : updateOutgoing()
       return
     }
-    if (this.incoming) {
-      RNCallKeep.answerIncomingCall(this.callkeepUuid)
-    } else {
-      RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
+    // If it doesnt have callkeepUuid, which means: incoming call without PN
+    // We'll treat them all as outgoing call in CallKeep
+    // We dont want to display incoming call here again
+    const p = getAuthStore().currentProfile
+    if (p && !p.pushNotificationEnabled) {
+      this.callkeepUuid = newUuid()
+      RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
+      await waitTimeout()
+      updateOutgoing()
     }
-    RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-    RNCallKeep.setOnHold(this.callkeepUuid, false)
-    this.callkeepAlreadyAnswered = true
   }
 
   isAboutToHangup = false
