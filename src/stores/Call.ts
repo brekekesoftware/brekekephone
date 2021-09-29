@@ -85,13 +85,13 @@ export class Call {
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
     // We dont want to display incoming call here again
-    const p = getAuthStore().currentProfile
-    if (p && !p.pushNotificationEnabled) {
-      this.callkeepUuid = newUuid()
-      RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
-      await waitTimeout()
-      updateOutgoing()
+    if (getAuthStore().currentProfile?.pushNotificationEnabled) {
+      return
     }
+    this.callkeepUuid = newUuid().toUpperCase()
+    RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
+    await waitTimeout()
+    updateOutgoing()
   }
 
   isAboutToHangup = false
