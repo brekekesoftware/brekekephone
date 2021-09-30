@@ -1,37 +1,42 @@
+#### 2.8.55
+
+- Fix bug conflict with regular phone call: hold/unhold, no voice. There're still 2 remaining no voice issues on ios:
+  - ios PN disabled, app opening foreground - receive call+answer gsm first, then incoming brekeke call -> failed: no voice connected
+  - ios receive call+answer gsm first, then outgoing brekeke call (PN setting not relevant in this case of outgoing call) -> failed: no voice connected
+
 #### 2.8.52
 
-- Fix ios 340: when having outgoing BrekekePhone call and GSM call come, press answer+end should end BrekekePhone call
-- Handle x_displayname in PN data, display well Japanese name
-- Fix ios 336: forground do not reject 1st call when receiving 2nd call
-- Fix 335: forground update logic displaying/ringing for call notify
-- Fix 334: forground do not ring in app if there's an ongoing answered call
+- Fix ios 340: when having outgoing BrekekePhone call and regular phone call come, press answer+end should end BrekekePhone call
+- Handle x_displayname in PN data, now it should display well Japanese characters in PN screen
+- Fix ios 336: forground should not reject 1st call when receiving 2nd call
+- Fix 335: forground should display call notify in some edge cases
+- Fix 334: forground should not ring in app if there's an ongoing answered call
 - Fix bug ringback not play, increase ringback volume
 - Fix ios: when app killed and device locked, incoming call doesnt show Brekeke logo
-- Improve call history: get display name from phone number (via phonebook) or extension (via pbx users)
-- Fix bug: update hold status when transfer attended/conference
-- Sync hold status when transfer attended/conference
+- Improve call history: should display correct name from phone number (via phonebook) or extension (via pbx users)
+- Fix bug: hold status should be updated when transfer attended/conference
 - Remove labels in app: "Incoming audio/video call" -> "Incoming call"
-- Fix 332: show call notify after exit page call manage, add logic to respect silent mode
-- Fix android 327: vibration/ringtone not stop after press answer foreground
+- Fix 332: call notify should display after exit page call manage, add logic to respect silent mode
+- Fix android 327: vibration/ringtone should stop after press answer foreground
 - Fix android: sometimes app crashes on first open after reinstall
 - Fix 330: error when toggle video while connected to voicemail
 
 #### 2.8.49
 
-- Fix android bug caller got busy tone if callee press answer quickly
-- Fix android bug vibrator still vibrates for a while after PN closed
-- Fix android 327: ringtone not stop answer multi calls forground mode
-- Fix 328: end call in Parks would go back out of CallManage view
-- Fix ios 322: do not show/ring regular call bar if PN already show
-- Do not show error message if failed to connect
-- If connection failed, press on the red error message on the top will trigger reconnect
+- Fix android bug: caller got busy tone if callee press answer quickly
+- Fix android bug: should not vibrate after PN closed
+- Fix android 327: ringtone should stop after answer multi calls forground mode
+- Fix 328: end call in Parks should go back out of CallManage view
+- Fix ios 322: should not show/ring regular call bar if PN already show
+- Should not show error message if failed to connect
+- If connection failed, press on the red error message on the top should trigger reconnect
 
 #### 2.8.45
 
 - Fix android bug incoming call not stop
 - Fix android bug related to vibration
 - Fix 316: disallow toggle video if currently on hold
-- Fix 309: revert hold state when user resume call from transfer
+- Fix 309: update hold status when user resume call from transfer
 - Fix android 256: app should show RN view in case: answer -> press button home -> unlock -> manually open app
 - Update multi-lingual labels
 
@@ -39,11 +44,11 @@
 
 - Add `"webphone": "true"` to pal `getProductInfo`
 - Upgrade react-native `0.64.2 -> 0.65.1`
-- Fix 317: call rejected but still display after reconnect
+- Fix 317: call should not be displayed after being rejected then reconnect
 
 #### 2.8.40
 
-- Fix dtmf not call pbx pal
+- Fix dtmf should call pbx pal
 - Fix empty talker_id in dtmf
 - Remove call button in page dtmf keypad
 - Rename pbx config `webphone.dtmf.pal -> webphone.dtmf.send.pal`
@@ -74,10 +79,10 @@
 #### 2.8.30
 
 - Android show timestamp as soon as PN received. For debug purpose, first step of speeding up wake time for PN screen. This is on dev version only and will be migrated/removed when we completely done with speeding up
-- Fix call can not be connected (PN token get flushed mistakenly)
-- Fix android call can not be connected or dropped after connected for a while (by adding wake lock)
-- Fix current call become on hold after end a background call
-- Fix android bug PN screen never disappear in a case of multiple incoming calls
+- Fix call should be connected via SIP PN token (PN token get flushed mistakenly)
+- Fix android call should be able to connect or drop after connected for a while (by adding wake lock)
+- Fix current call should not become on hold after end a background call
+- Fix android bug PN screen should disappear in a case of multiple incoming calls
 - SIP use `phone._ua._transport.socket.disconnect()` instead of `phone.stopWebRTC()`
 - Android attempt to fix bug crash on open after reinstall the app
 
