@@ -112,7 +112,6 @@ PushNotification.register(() => {
   const s = getAuthStore()
   alreadyInitApp = true
 
-  setupCallKeep()
   profileStore.loadProfilesFromLocalStorage().then(() => {
     if (AppState.currentState === 'active') {
       SyncPnToken().syncForAllAccounts()
@@ -206,7 +205,9 @@ export const App = observer(() => {
   if (failure && ucLoginFromAnotherPlace) {
     connMessage = intl`UC signed in from another location`
   }
-
+  setTimeout(() => {
+    setupCallKeep()
+  }, 500)
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
       <RnStatusBar />
