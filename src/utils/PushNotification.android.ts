@@ -43,7 +43,7 @@ const onNotification = async (n0: Notification, initApp: Function) => {
       is_local_notification: 'local_notification',
     })
   } catch (err) {
-    console.error(err)
+    console.error(`PushNotification.android.ts onNotification err: ${err}`)
   }
 }
 
@@ -72,7 +72,7 @@ export const PushNotification = {
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,
-        err,
+        err: err as Error,
       })
     }
   },
@@ -96,7 +96,7 @@ const getInitialNotifications = async () => {
   try {
     return (JSON.parse(n) as string[]).map(s => JSON.parse(s) as Notification)
   } catch (err) {
-    console.error(`getInitialNotifications error: n=${n}`)
+    console.error(`getInitialNotifications n=${n} err: ${err}`)
     return []
   }
 }

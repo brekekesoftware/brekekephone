@@ -258,7 +258,8 @@ export class CallStore {
     const sipCreateSession = () => sip.createSession(number, options)
     try {
       // Try to call pbx first to see if there's any error with the network
-      await pbx.getConfig()
+      // TODO
+      void pbx
       sipCreateSession()
     } catch (err) {
       reconnectCalled = true

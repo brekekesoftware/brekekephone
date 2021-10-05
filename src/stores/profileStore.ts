@@ -119,7 +119,7 @@ class ProfileStore {
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to save accounts to local storage`,
-        err,
+        err: err as Error,
       })
     }
   }

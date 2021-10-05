@@ -12,7 +12,9 @@ Rn0.ViewPropTypes = Rn0.ViewPropTypes || {}
 Rn0.Text.propTypes = Rn0.Text.propTypes || { style: PropTypes.any }
 
 // window.navigator.getUserMedia is not a function
+// @ts-ignore
 window.navigator.getUserMedia =
+  // @ts-ignore
   window.navigator.getUserMedia ||
   window.navigator.mediaDevices.getUserMedia ||
   // @ts-ignore

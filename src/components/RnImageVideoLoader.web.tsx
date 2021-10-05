@@ -76,8 +76,9 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       const response = await cache.match(request)
       const blobFile = await response?.blob()
       blobFile && setObjectUrl(URL.createObjectURL(blobFile))
-    } catch (error) {
+    } catch (err) {
       setObjectUrl('')
+      console.error(`ImageVideoLoader.readImage err: ${err}`)
     }
   }
   useEffect(() => {

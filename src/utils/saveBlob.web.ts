@@ -23,11 +23,12 @@ export const saveBlobImage = (id: string, topic_id: string, type?: string) => {
         resolve(urlCacheFile)
       }
       fr.onerror = err => {
-        console.error('saveBlob', err)
+        console.error(`saveBlob.web onerror err: ${err}`)
       }
       fr.readAsDataURL(data)
-    } catch (error) {
-      reject(error)
+    } catch (err) {
+      console.error(`saveBlob.web catch err: ${err}`)
+      reject(err)
     }
   })
 }
@@ -53,11 +54,12 @@ export const saveBlobFile = (
         resolve(urlCacheFile)
       }
       fr.onerror = err => {
-        console.error('saveBlob', err)
+        console.error(`saveBlobFile.web onerror err: ${err}`)
       }
       fr.readAsArrayBuffer(dataBlob)
-    } catch (error) {
-      reject(error)
+    } catch (err) {
+      console.error(`saveBlobFile.web catch err: ${err}`)
+      reject(err)
     }
   })
 }

@@ -89,8 +89,8 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
   try {
     file = (await fn()) as File
   } catch (err) {
-    if (!DocumentRnPicker.isCancel(err)) {
-      onPickFileNativeError(err)
+    if (!DocumentRnPicker.isCancel(err as object)) {
+      onPickFileNativeError(err as Error)
     }
   }
   if (!file?.uri) {
@@ -106,7 +106,9 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       const stat = await RNFS.stat(file.uri)
       name = getName(stat.originalFilepath || stat.path) || name
       size = stat.size
-    } catch (err) {}
+    } catch (err) {
+      console.error(`pickFile RNFS.stat err: ${err}`)
+    }
   }
 
   let ext = name?.split('.').pop()?.replace(/\?.+$/, '')
