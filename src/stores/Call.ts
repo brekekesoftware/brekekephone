@@ -82,7 +82,7 @@ export class Call {
     // If it has callkeepUuid, which means: outgoing call / incoming PN call
     if (this.callkeepUuid) {
       if (!this.incoming) {
-        // anndroid: startCall to add voice connection in callkeep
+        // android: startCall to add voice connection in callkeep
         if (Platform.OS === 'android') {
           RNCallKeep.startCall(
             this.callkeepUuid,
