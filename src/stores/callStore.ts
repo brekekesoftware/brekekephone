@@ -152,7 +152,7 @@ export class CallStore {
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
       if (!cExisting.answered && cPartial.answered) {
-        cExisting.answerCallKeep()
+        Platform.OS !== 'web' && cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
@@ -276,7 +276,8 @@ export class CallStore {
       Platform.OS !== 'web'
     ) {
       uuid = newUuid().toUpperCase()
-      RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
+      Platform.OS === 'ios' &&
+        RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       this.setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s: auto update currentCallId

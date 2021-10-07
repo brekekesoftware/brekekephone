@@ -48,6 +48,7 @@ export class Call {
   answer = (ignoreNav?: boolean) => {
     this.answered = true
     this.store.currentCallId = this.id
+
     // Hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
@@ -61,7 +62,7 @@ export class Call {
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
-    this.answerCallKeep()
+    Platform.OS !== 'web' && this.answerCallKeep()
   }
   answerCallKeep = async () => {
     const updateCallKeep = () => {
@@ -77,10 +78,23 @@ export class Call {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
       updateCallKeep()
     }
+
     // If it has callkeepUuid, which means: outgoing call / incoming PN call
     if (this.callkeepUuid) {
-      this.incoming ? updateIncoming() : updateOutgoing()
-      return
+      if (!this.incoming) {
+        // anndroid: startCall to add voice connection in callkeep
+        if (Platform.OS === 'android') {
+          RNCallKeep.startCall(
+            this.callkeepUuid,
+            this.partyNumber,
+            'Brekeke Phone',
+          )
+          await waitTimeout()
+        }
+        updateOutgoing()
+      } else {
+        updateIncoming()
+      }
     }
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
@@ -88,6 +102,7 @@ export class Call {
     if (getAuthStore().currentProfile?.pushNotificationEnabled) {
       return
     }
+
     this.callkeepUuid = newUuid().toUpperCase()
     RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
     await waitTimeout()
