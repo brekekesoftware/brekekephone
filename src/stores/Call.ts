@@ -64,10 +64,17 @@ export class Call {
     this.answerCallKeep()
   }
   answerCallKeep = async () => {
+    if (Platform.OS === 'web') {
+      return
+    }
     const updateCallKeep = () => {
       RNCallKeep.setCurrentCallActive(this.callkeepUuid)
       RNCallKeep.setOnHold(this.callkeepUuid, false)
       this.callkeepAlreadyAnswered = true
+    }
+    const startCallCallKeep = async () => {
+      RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
+      await waitTimeout()
     }
     const updateIncoming = () => {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
@@ -79,7 +86,16 @@ export class Call {
     }
     // If it has callkeepUuid, which means: outgoing call / incoming PN call
     if (this.callkeepUuid) {
-      this.incoming ? updateIncoming() : updateOutgoing()
+      if (this.incoming) {
+        updateIncoming()
+        return
+      }
+      if (Platform.OS === 'android') {
+        // Hack: fix the mix voice issue with gsm call: startCall to add voice connection
+        // ios still remains the same (still has bug?)
+        await startCallCallKeep()
+      }
+      updateOutgoing()
       return
     }
     // If it doesnt have callkeepUuid, which means: incoming call without PN
@@ -89,8 +105,7 @@ export class Call {
       return
     }
     this.callkeepUuid = newUuid().toUpperCase()
-    RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
-    await waitTimeout()
+    await startCallCallKeep()
     updateOutgoing()
   }
 
