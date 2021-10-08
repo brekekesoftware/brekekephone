@@ -16,6 +16,7 @@ const Polyfill = {
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
     setLocale: () => undefined,
+    updateCall: () => undefined,
   },
 }
 const M = (
@@ -38,6 +39,7 @@ export type TNativeModules = {
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
     setLocale(locale: string): void
+    updateCall(uuid: string, isAnswer: boolean): void
   }
 }
 

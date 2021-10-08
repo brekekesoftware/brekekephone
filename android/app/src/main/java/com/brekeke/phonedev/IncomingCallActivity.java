@@ -146,6 +146,22 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallIsOnHold.setText(L.callIsOnHold());
   }
 
+  public void updateCall(boolean isAnswer) {
+    runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (!answered) {
+              if (isAnswer) {
+                btnAnswer.performClick();
+              } else { // reject
+                btnReject.performClick();
+              }
+            }
+          }
+        });
+  }
+
   public void updateBtnUnlockLabel() {
     int n =
         BrekekeModule.callsSize > BrekekeModule.activitiesSize
