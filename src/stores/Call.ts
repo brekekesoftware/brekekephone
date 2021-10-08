@@ -86,16 +86,17 @@ export class Call {
     }
     // If it has callkeepUuid, which means: outgoing call / incoming PN call
     if (this.callkeepUuid) {
-      if (!this.incoming) {
-        if (Platform.OS === 'android') {
-          // startCall to add voice connection in callkeep which fix the mix voice issue
-          // ios still remain the same (still has bug?)
-          await startCallCallKeep()
-        }
-        updateOutgoing()
-      } else {
+      if (this.incoming) {
         updateIncoming()
+        return
       }
+      if (Platform.OS === 'android') {
+        // startCall to add voice connection in callkeep which fix the mix voice issue
+        // ios still remain the same (still has bug?)
+        await startCallCallKeep()
+      }
+      updateOutgoing()
+      return
     }
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
