@@ -48,7 +48,6 @@ export class Call {
   answer = (ignoreNav?: boolean) => {
     this.answered = true
     this.store.currentCallId = this.id
-
     // Hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
@@ -62,13 +61,20 @@ export class Call {
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
-    Platform.OS !== 'web' && this.answerCallKeep()
+    this.answerCallKeep()
   }
   answerCallKeep = async () => {
+    if (Platform.OS === 'web') {
+      return
+    }
     const updateCallKeep = () => {
       RNCallKeep.setCurrentCallActive(this.callkeepUuid)
       RNCallKeep.setOnHold(this.callkeepUuid, false)
       this.callkeepAlreadyAnswered = true
+    }
+    const startCallCallKeep = async () => {
+      RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
+      await waitTimeout()
     }
     const updateIncoming = () => {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
@@ -78,18 +84,13 @@ export class Call {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
       updateCallKeep()
     }
-
     // If it has callkeepUuid, which means: outgoing call / incoming PN call
     if (this.callkeepUuid) {
       if (!this.incoming) {
-        // android: startCall to add voice connection in callkeep
         if (Platform.OS === 'android') {
-          RNCallKeep.startCall(
-            this.callkeepUuid,
-            this.partyNumber,
-            'Brekeke Phone',
-          )
-          await waitTimeout()
+          // startCall to add voice connection in callkeep which fix the mix voice issue
+          // ios still remain the same (still has bug?)
+          await startCallCallKeep()
         }
         updateOutgoing()
       } else {
@@ -102,10 +103,8 @@ export class Call {
     if (getAuthStore().currentProfile?.pushNotificationEnabled) {
       return
     }
-
     this.callkeepUuid = newUuid().toUpperCase()
-    RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
-    await waitTimeout()
+    await startCallCallKeep()
     updateOutgoing()
   }
 

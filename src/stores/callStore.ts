@@ -152,7 +152,7 @@ export class CallStore {
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
       if (!cExisting.answered && cPartial.answered) {
-        Platform.OS !== 'web' && cExisting.answerCallKeep()
+        cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
       Object.assign(cExisting, cPartial)
