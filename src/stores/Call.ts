@@ -91,8 +91,8 @@ export class Call {
         return
       }
       if (Platform.OS === 'android') {
-        // startCall to add voice connection in callkeep which fix the mix voice issue
-        // ios still remain the same (still has bug?)
+        // Hack: fix the mix voice issue with gsm call: startCall to add voice connection
+        // ios still remains the same (still has bug?)
         await startCallCallKeep()
       }
       updateOutgoing()
