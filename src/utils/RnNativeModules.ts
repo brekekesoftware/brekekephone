@@ -12,12 +12,12 @@ const Polyfill = {
     closeIncomingCall: () => undefined,
     closeAllIncomingCalls: () => undefined,
     setIsAppActive: () => undefined,
-    setConnectingCallSuccess: () => undefined,
     setIsVideoCall: () => undefined,
     setRemoteVideoStreamURL: () => undefined,
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
     setLocale: () => undefined,
+    onCallConnected: () => undefined,
     onCallKeepAction: () => undefined,
   },
 }
@@ -35,12 +35,12 @@ export type TNativeModules = {
     closeIncomingCall(uuid: string): void
     closeAllIncomingCalls(): void
     setIsAppActive(b1: boolean, b2: boolean): void
-    setConnectingCallSuccess(uuid: string): void
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setRemoteVideoStreamURL(uuid: string, url: string): void
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
     setLocale(locale: string): void
+    onCallConnected(uuid: string): void
     onCallKeepAction(uuid: string, action: TCallkeepAction): void
   }
 }

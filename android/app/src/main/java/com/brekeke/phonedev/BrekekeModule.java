@@ -482,13 +482,13 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setConnectingCallSuccess(String uuid) {
+  public void onCallConnected(String uuid) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).onConnectingCallSuccess();
+              at(uuid).onCallConnected();
             } catch (Exception e) {
             }
           }

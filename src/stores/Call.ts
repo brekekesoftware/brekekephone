@@ -56,7 +56,7 @@ export class Call {
       videoEnabled: this.remoteVideoEnabled,
     })
     if (Platform.OS === 'android') {
-      BrekekeUtils.setConnectingCallSuccess(this.callkeepUuid)
+      BrekekeUtils.onCallConnected(this.callkeepUuid)
     }
     if (!ignoreNav) {
       Nav().goToPageCallManage()

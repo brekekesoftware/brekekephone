@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@mdi/js": "6.2.95",
-    "@react-native-async-storage/async-storage": "1.15.8",
+    "@react-native-async-storage/async-storage": "1.15.9",
     "@react-native-community/push-notification-ios": "1.10.1",
     "brekekejs": "github:brekekesoftware/brekekejs#878610152680d53a9cd618330cb3aa54893546c2",
     "buffer": "6.0.3",
@@ -80,8 +80,8 @@
     "validatorjs": "3.22.1"
   },
   "devDependencies": {
-    "@babel/core": "7.15.5",
-    "@babel/plugin-proposal-decorators": "7.15.4",
+    "@babel/core": "7.15.8",
+    "@babel/plugin-proposal-decorators": "7.15.8",
     "@babel/plugin-proposal-optional-chaining": "7.14.5",
     "@craco/craco": "6.3.0",
     "@prettier/plugin-xml": "1.1.0",
@@ -112,7 +112,7 @@
     "eslint-plugin-simple-import-sort": "7.0.0",
     "fs-extra": "10.0.0",
     "husky": "7.0.2",
-    "lint-staged": "11.2.0",
+    "lint-staged": "11.2.2",
     "metro-react-native-babel-preset": "0.66.2",
     "prettier": "2.4.1",
     "react-scripts": "4.0.3",

@@ -374,7 +374,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void onConnectingCallSuccess() {
+  public void onCallConnected() {
     vCallManageLoading.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.VISIBLE);
   }
