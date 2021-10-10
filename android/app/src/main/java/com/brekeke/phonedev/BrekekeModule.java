@@ -13,7 +13,6 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -511,11 +510,21 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void updateCall(String uuid, boolean isAnswer) {
-    try {
-      at(uuid).updateCall(isAnswer);
-    } catch (Exception e) {
-    }
+  public void onCallKeepAction(String uuid, String action) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              if ("answerCall".equals(action)) {
+                at(uuid).onBtnAnswerClick(null);
+              } else if ("rejectCall".equals(action)) {
+                at(uuid).onBtnRejectClick(null);
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 
   @ReactMethod
