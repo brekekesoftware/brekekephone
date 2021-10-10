@@ -510,6 +510,24 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void onCallKeepAction(String uuid, String action) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              if ("answerCall".equals(action)) {
+                at(uuid).onBtnAnswerClick(null);
+              } else if ("rejectCall".equals(action)) {
+                at(uuid).onBtnRejectClick(null);
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
   public void setRemoteVideoStreamURL(String uuid, String url) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {

@@ -100,21 +100,19 @@ export const setupCallKeep = async () => {
     })
   }
   const answerCall = (e: TEvent) => {
-    // Use the custom native incoming call module for android
-    if (Platform.OS === 'android') {
-      return
-    }
     const uuid = e.callUUID.toUpperCase()
-    callStore.onCallKeepAnswerCall(uuid)
+    Platform.OS === 'android'
+      ? // Handle action from CallKeep Notification on android
+        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+      : callStore.onCallKeepAnswerCall(uuid)
   }
   const endCall = (e: TEvent) => {
     BackgroundTimer.setTimeout(setupCallKeepWithCheck, 0)
-    // Use the custom native incoming call module for android
-    if (Platform.OS === 'android') {
-      return
-    }
     const uuid = e.callUUID.toUpperCase()
-    callStore.onCallKeepEndCall(uuid)
+    Platform.OS === 'android'
+      ? // Handle action from CallKeep Notification on android
+        BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
+      : callStore.onCallKeepEndCall(uuid)
   }
   const didDisplayIncomingCall = (
     e: TEvent & {

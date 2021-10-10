@@ -1,5 +1,7 @@
 import { NativeModule, NativeModules, Platform } from 'react-native'
 
+import { TCallkeepAction } from '../stores/callStore'
+
 const Polyfill = {
   BrekekeUtils: {
     getInitialNotifications: () => undefined,
@@ -16,6 +18,7 @@ const Polyfill = {
     setOnHold: () => undefined,
     setBackgroundCalls: () => undefined,
     setLocale: () => undefined,
+    onCallKeepAction: () => undefined,
   },
 }
 const M = (
@@ -38,6 +41,7 @@ export type TNativeModules = {
     setOnHold(uuid: string, holding: boolean): void
     setBackgroundCalls(n: number): void
     setLocale(locale: string): void
+    onCallKeepAction(uuid: string, action: TCallkeepAction): void
   }
 }
 

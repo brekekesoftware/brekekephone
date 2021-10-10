@@ -602,5 +602,5 @@ export class CallStore {
 
 export const callStore = new CallStore() as Immutable<CallStore>
 
-type TCallkeepAction = 'answerCall' | 'rejectCall'
+export type TCallkeepAction = 'answerCall' | 'rejectCall'
 type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>
