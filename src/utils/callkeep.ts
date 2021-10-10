@@ -101,22 +101,18 @@ export const setupCallKeep = async () => {
   }
   const answerCall = (e: TEvent) => {
     const uuid = e.callUUID.toUpperCase()
-    if (Platform.OS === 'android') {
-      // Handle action from CallKeep Notification on android
-      BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-    } else {
-      callStore.onCallKeepAnswerCall(uuid)
-    }
+    Platform.OS === 'android'
+      ? // Handle action from CallKeep Notification on android
+        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+      : callStore.onCallKeepAnswerCall(uuid)
   }
   const endCall = (e: TEvent) => {
     BackgroundTimer.setTimeout(setupCallKeepWithCheck, 0)
     const uuid = e.callUUID.toUpperCase()
-    if (Platform.OS === 'android') {
-      // Handle action from CallKeep Notification on android
-      BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
-    } else {
-      callStore.onCallKeepEndCall(uuid)
-    }
+    Platform.OS === 'android'
+      ? // Handle action from CallKeep Notification on android
+        BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
+      : callStore.onCallKeepEndCall(uuid)
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
