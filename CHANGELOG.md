@@ -1,8 +1,15 @@
+#### 2.8.57
+
+- Fix android 347: receiving an incoming GSM call while brekeke phone is dialling out, and pickup the GSM call first: voice should work correctly
+- Fix android 348: answer from notification list
+- Fix android 349: should not show message "Failed to hold/unhold the call"
+- Fix the 2 remaining issues on ios from 2.8.55:
+  - ios PN disabled, app opening foreground - receive call+answer gsm first, then incoming brekeke call
+  - ios receive call+answer gsm first, then outgoing brekeke call (PN setting not relevant in this case of outgoing call)
+
 #### 2.8.55
 
-- Fix bug conflict with regular phone call: hold/unhold, no voice. There're still 2 remaining no voice issues on ios:
-  - ios PN disabled, app opening foreground - receive call+answer gsm first, then incoming brekeke call -> failed: no voice connected
-  - ios receive call+answer gsm first, then outgoing brekeke call (PN setting not relevant in this case of outgoing call) -> failed: no voice connected
+- Fix bug conflict with regular phone call
 
 #### 2.8.52
 
