@@ -148,8 +148,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void updateBtnUnlockLabel() {
     int n =
-        BrekekeModule.callsSize > BrekekeModule.activitiesSize
-            ? BrekekeModule.callsSize
+        BrekekeModule.jsCallsSize > BrekekeModule.activitiesSize
+            ? BrekekeModule.jsCallsSize
             : BrekekeModule.activitiesSize;
     btnUnlock.setText(n <= 1 ? L.unlock() : L.nCallsInBackground(n - 1));
   }

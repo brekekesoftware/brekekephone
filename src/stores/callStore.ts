@@ -180,7 +180,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
-    BrekekeUtils.setBackgroundCalls(this.calls.length)
+    BrekekeUtils.setJsCallsSize(this.calls.length)
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
@@ -214,7 +214,7 @@ export class CallStore {
     addCallHistory(c)
     this.calls = this.calls.filter(c0 => c0 !== c)
     // Set number of total calls in our custom java incoming call module
-    BrekekeUtils.setBackgroundCalls(this.calls.length)
+    BrekekeUtils.setJsCallsSize(this.calls.length)
     // When if this is a outgoing call, try to insert a call history to uc chat
     if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
       uc.sendCallResult(c.getDuration(), c.partyNumber)

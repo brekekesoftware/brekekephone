@@ -41,9 +41,24 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     }
   }
 
+  public static WakeLock wl;
+
+  public static void acquireWakeLock() {
+    if (!wl.isHeld()) {
+      emit("debug", "calling wl.acquire()");
+      wl.acquire();
+    }
+  }
+
+  public static void releaseWakeLock() {
+    if (wl.isHeld()) {
+      emit("debug", "calling wl.release()");
+      wl.release();
+    }
+  }
+
   public static Activity main;
   public static ReactApplicationContext ctx;
-  public static WakeLock wl;
   public static KeyguardManager km;
   public static AudioManager am;
   public static Vibrator vib;
@@ -134,9 +149,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     //
     // Init services if not
     initStaticServices(c);
-    if (!wl.isHeld()) {
-      wl.acquire();
-    }
+    acquireWakeLock();
     //
     // Read locale from async storage if not
     if (L.l == null) {
@@ -250,7 +263,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   // Try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
   public static int activitiesSize = 0;
   // Calls size from js, this may be different with activitiesSize in some cases: out going call...
-  public static int callsSize = 0;
+  public static int jsCallsSize = 0;
 
   public static void remove(String uuid) {
     IncomingCallActivity a = at(uuid);
@@ -347,8 +360,8 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     if (activitiesSize > 0) {
       return;
     }
-    if (wl.isHeld()) {
-      wl.release();
+    if (jsCallsSize == 0) {
+      releaseWakeLock();
     }
     try {
       if (last().answered) {
@@ -556,8 +569,13 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setBackgroundCalls(int n) {
-    callsSize = n;
+  public void setJsCallsSize(int n) {
+    if (n > 0) {
+      acquireWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    jsCallsSize = n;
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

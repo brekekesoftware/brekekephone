@@ -15,7 +15,7 @@ const Polyfill = {
     setIsVideoCall: () => undefined,
     setRemoteVideoStreamURL: () => undefined,
     setOnHold: () => undefined,
-    setBackgroundCalls: () => undefined,
+    setJsCallsSize: () => undefined,
     setLocale: () => undefined,
     onCallConnected: () => undefined,
     onCallKeepAction: () => undefined,
@@ -38,7 +38,7 @@ export type TNativeModules = {
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setRemoteVideoStreamURL(uuid: string, url: string): void
     setOnHold(uuid: string, holding: boolean): void
-    setBackgroundCalls(n: number): void
+    setJsCallsSize(n: number): void
     setLocale(locale: string): void
     onCallConnected(uuid: string): void
     onCallKeepAction(uuid: string, action: TCallkeepAction): void
