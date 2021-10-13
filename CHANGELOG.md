@@ -1,3 +1,7 @@
+#### 2.8.58
+
+- Fix android 348: answer from notification list should have audio working correctly on android 11
+
 #### 2.8.57
 
 - Fix android 347: receiving an incoming GSM call while brekeke phone is dialling out, and pickup the GSM call first: voice should work correctly
