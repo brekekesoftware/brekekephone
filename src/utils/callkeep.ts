@@ -49,18 +49,17 @@ const setupCallKeepWithCheck = async () => {
       okButton: intl`OK`,
       imageName: 'phone_account_icon',
       additionalPermissions: [],
-      // Android self-managed connection service forked version
+      foregroundService: {
+        channelId: 'com.brekeke.phone',
+        channelName: intl`Foreground service for Brekeke Phone`,
+        notificationTitle: intl`Brekeke Phone is running on background`,
+        notificationIcon: 'ic_launcher',
+      },
       selfManaged: true,
     },
   })
     .then(() => {
       if (Platform.OS === 'android') {
-        RNCallKeep.setForegroundServiceSettings({
-          channelId: 'com.brekeke.phone',
-          channelName: 'Foreground service for Brekeke Phone',
-          notificationTitle: 'Brekeke Phone is running on background',
-          notificationIcon: 'ic_launcher',
-        })
         RNCallKeep.registerPhoneAccount()
         RNCallKeep.registerAndroidEvents()
         RNCallKeep.setAvailable(true)
