@@ -215,10 +215,9 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
             }
           }
         };
+
     // Try to run it as it does not display multiple calls via on onShowIncomingCallUi
-    if (VoiceConnectionService.currentConnections.size() > 0
-        || RNCallKeepModule.fcmCallbacks.size() > 0
-        || activitiesSize > 0) {
+    if (VoiceConnectionService.currentConnections.size() > 0) {
       r.run();
     }
     RNCallKeepModule.fcmCallbacks.put(uuid, r);
