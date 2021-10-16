@@ -184,7 +184,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     //
     // Show call
     RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
-    Runnable r =
+    Runnable onShowIncomingCallUi =
         new Runnable() {
           @Override
           public void run() {
@@ -215,14 +215,42 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
             }
           }
         };
-    // Try to run it as it does not display multiple calls via on onShowIncomingCallUi
+    Runnable onReject =
+        new Runnable() {
+          @Override
+          public void run() {
+            onPassiveReject(uuid);
+          }
+        };
+    // Try to run onShowIncomingCallUi if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
-        || RNCallKeepModule.fcmCallbacks.size() > 0
+        || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
         || activitiesSize > 0) {
-      r.run();
+      onShowIncomingCallUi.run();
     }
-    RNCallKeepModule.fcmCallbacks.put(uuid, r);
+    RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
+    RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+  }
+
+  // When an incoming GSM call is ringing, if another incoming Brekeke Phone call comes
+  //    the Brekeke Phone call it will be automatically rejected by the system
+  // We will fire the event manually here
+  // There may be duplicated events in some cases, need to test more
+  public static void onPassiveReject(String uuid) {
+    emit("rejectCall", uuid);
+    staticCloseIncomingCall(uuid);
+  }
+
+  public static void removeCallKeepCallbacks(String uuid) {
+    try {
+      RNCallKeepModule.onShowIncomingCallUiCallbacks.remove(uuid);
+    } catch (Exception e) {
+    }
+    try {
+      RNCallKeepModule.onRejectCallbacks.remove(uuid);
+    } catch (Exception e) {
+    }
   }
 
   public static void tryExitClearTask() {
@@ -266,6 +294,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   public static int jsCallsSize = 0;
 
   public static void remove(String uuid) {
+    removeCallKeepCallbacks(uuid);
     IncomingCallActivity a = at(uuid);
     if (a == null) {
       return;
@@ -290,6 +319,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       for (IncomingCallActivity a : activities) {
         atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
         a.forceFinish();
+        removeCallKeepCallbacks(a.uuid);
       }
       activities.clear();
     } catch (Exception e) {
@@ -302,6 +332,15 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   public static void removeAllAndBackToForeground() {
     removeAll();
     emit("backToForeground", "");
+  }
+
+  public static void staticCloseIncomingCall(String uuid) {
+    try {
+      at(uuid).answered = false;
+    } catch (Exception e) {
+    }
+    putUserActionRejectCall(uuid);
+    remove(uuid);
   }
 
   public static IncomingCallActivity at(String uuid) {
@@ -346,10 +385,6 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       updateBtnUnlockLabels();
       try {
         destroyedUuids.put(uuid, "destroyed");
-      } catch (Exception e) {
-      }
-      try {
-        RNCallKeepModule.fcmCallbacks.remove(uuid);
       } catch (Exception e) {
       }
       IncomingCallActivity l = last();
@@ -447,7 +482,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
-    FcmService.getInitialNotifications(promise);
+    BrekekeMessagingService.getInitialNotifications(promise);
   }
 
   @ReactMethod
@@ -475,12 +510,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void closeIncomingCall(String uuid) {
-    try {
-      at(uuid).answered = false;
-    } catch (Exception e) {
-    }
-    putUserActionRejectCall(uuid);
-    remove(uuid);
+    staticCloseIncomingCall(uuid);
   }
 
   @ReactMethod

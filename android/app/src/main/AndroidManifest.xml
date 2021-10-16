@@ -57,7 +57,7 @@
       android:value="default"
     />
     <service
-      android:name="com.brekeke.phonedev.FcmService"
+      android:name="BrekekeMessagingService"
       android:enabled="true"
       android:exported="true"
     >

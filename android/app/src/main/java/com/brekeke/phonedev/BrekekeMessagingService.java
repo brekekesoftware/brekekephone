@@ -9,7 +9,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.ArrayList;
 import org.json.JSONArray;
 
-public class FcmService extends MessagingService {
+public class BrekekeMessagingService extends MessagingService {
   private static String TAG = "BrekekeMessagingService";
   private static Boolean alreadyGetInitialNotifications = false;
   private static ArrayList<String> initialNotifications = null;
