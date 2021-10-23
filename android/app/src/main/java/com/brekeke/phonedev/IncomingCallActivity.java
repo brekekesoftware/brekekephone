@@ -2,6 +2,7 @@ package com.brekeke.phonedev;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -396,6 +397,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       finish();
     } catch (Exception e) {
     }
+  }
+
+  public void reorderToFront() {
+    Intent i = new Intent(this, IncomingCallActivity.class);
+    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    startActivity(i);
   }
 
   @Override

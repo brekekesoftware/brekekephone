@@ -560,7 +560,11 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
           public void run() {
             try {
               if ("answerCall".equals(action)) {
-                at(uuid).onBtnAnswerClick(null);
+                IncomingCallActivity a = at(uuid);
+                a.onBtnAnswerClick(null);
+                if (isLocked()) {
+                  a.reorderToFront();
+                }
               } else if ("rejectCall".equals(action)) {
                 at(uuid).onBtnRejectClick(null);
               }
