@@ -151,6 +151,16 @@ export class CallStore {
     this.recentCallActivityAt = now
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
+      if (
+        cPartial.videoSessionId &&
+        cExisting.videoSessionId &&
+        cPartial.videoSessionId !== cExisting.videoSessionId &&
+        !cPartial.remoteVideoEnabled
+      ) {
+        delete cPartial.videoSessionId
+        delete cPartial.remoteVideoEnabled
+        delete cPartial.remoteVideoStreamObject
+      }
       if (!cExisting.answered && cPartial.answered) {
         cExisting.answerCallKeep()
         cPartial.answeredAt = now

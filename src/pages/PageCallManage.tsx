@@ -57,9 +57,6 @@ const css = StyleSheet.create({
     bottom: 0,
     paddingBottom: 124, // Hangup button 64 + 2*30
   },
-  Btns__isVideoEnabled: {
-    backgroundColor: v.layerBg,
-  },
   Btns_Hidden: {
     opacity: 0,
   },
@@ -181,7 +178,7 @@ export class PageCallManage extends Component<{
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
-        style={[css.Btns, isVideoEnabled && css.Btns__isVideoEnabled]}
+        style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
         {/* TODO add Connecting... */}
@@ -345,8 +342,7 @@ export class PageCallManage extends Component<{
   render() {
     const c = callStore.getCurrentCall()
     void callStore.calls.length // trigger componentDidUpdate
-    const isVideoEnabled = c?.remoteVideoEnabled && c?.localVideoEnabled
-    const Container = isVideoEnabled ? Fragment : BrekekeGradient
-    return <Container>{this.renderCall(c, isVideoEnabled)}</Container>
+    const Container = c?.localVideoEnabled ? Fragment : BrekekeGradient
+    return <Container>{this.renderCall(c, c?.localVideoEnabled)}</Container>
   }
 }
