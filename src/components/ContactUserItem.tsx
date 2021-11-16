@@ -102,6 +102,7 @@ export const UserItem: FC<
     canChat: boolean
     group: boolean
     partyName: string
+    isVoicemail?: boolean
   }>
 > = observer(p0 => {
   const {
@@ -124,6 +125,7 @@ export const UserItem: FC<
     canChat,
     group,
     partyName,
+    isVoicemail,
     ...p
   } = p0
   const Container = canChat ? RnTouchableOpacity : View
@@ -203,7 +205,7 @@ export const UserItem: FC<
               {lastMessage}
             </RnText>
           )}
-          {isRecentCall && !lastMessage && (
+          {((isRecentCall && !lastMessage) || isVoicemail) && (
             <View style={css.Detail}>
               <RnIcon
                 color={
@@ -224,7 +226,7 @@ export const UserItem: FC<
                 style={css.CallIcon}
               />
               <RnText normal small style={css.CallCreatedAt}>
-                {intl`at ${created}`}
+                {isVoicemail ? intl`Call the voice mail` : intl`at ${created}`}
               </RnText>
             </View>
           )}

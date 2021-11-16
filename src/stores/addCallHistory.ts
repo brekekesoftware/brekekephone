@@ -8,8 +8,13 @@ import { Call } from './Call'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = (c: Call | ParsedPn) => {
-  const pnId =
-    c instanceof Call || 'partyName' in c || 'partyNumber' in c ? c.pnId : c.id
+  const isTypeCall = c instanceof Call || 'partyName' in c || 'partyNumber' in c
+  if (isTypeCall && c.partyName === 'Voicemails') {
+    return
+  }
+
+  const pnId = isTypeCall ? c.pnId : c.id
+
   if (pnId) {
     if (alreadyAddHistoryMap[pnId]) {
       return
@@ -19,7 +24,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
   const as = getAuthStore()
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
-  if (c instanceof Call || 'partyName' in c || 'partyNumber' in c) {
+  if (isTypeCall) {
     as.pushRecentCall({
       id,
       created,
