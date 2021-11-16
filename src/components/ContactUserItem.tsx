@@ -167,7 +167,7 @@ export const UserItem: FC<
   }
 
   return (
-    <Container style={[css.Outer]} onPress={onPressItem}>
+    <Container style={css.Outer} onPress={onPressItem}>
       <View style={[css.Inner, selected && css.Inner_selected]}>
         {group ? (
           <View style={css.VGroup}>

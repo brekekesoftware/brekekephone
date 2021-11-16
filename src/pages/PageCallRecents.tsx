@@ -45,6 +45,7 @@ export class PageCallRecents extends Component {
       created: (c.created + '').replace(` - ${today}`, ''),
     }))
   }
+
   render() {
     const calls = this.getMatchedCalls()
     return (
