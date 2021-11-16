@@ -3,7 +3,7 @@ import Url from 'url-parse'
 import { parse } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
-const params = parse(window.location as unknown as Url)
+const params = parse(window.location as unknown as Url<any>)
 
 const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
