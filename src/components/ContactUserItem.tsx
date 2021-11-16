@@ -226,9 +226,7 @@ export const UserItem: FC<
                 style={css.CallIcon}
               />
               <RnText normal small style={css.CallCreatedAt}>
-                {isVoicemail
-                  ? intl`Press to call voicemail`
-                  : intl`at ${created}`}
+                {isVoicemail ? intl`Call the voice mail` : intl`at ${created}`}
               </RnText>
             </View>
           )}
