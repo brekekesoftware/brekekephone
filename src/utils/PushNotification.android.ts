@@ -30,6 +30,7 @@ const onNotification = async (n0: Notification, initApp: Function) => {
     FCM.presentLocalNotification({
       body: 'Click to view',
       title: n.body,
+      badge: 0,
       number: 0,
       priority: 'high',
       show_in_foreground: true,

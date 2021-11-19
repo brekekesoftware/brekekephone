@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -13,6 +16,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -62,6 +66,8 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   public static KeyguardManager km;
   public static AudioManager am;
   public static Vibrator vib;
+  private Boolean isTorchOn = false;
+  private Camera camera;
 
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
@@ -479,7 +485,40 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   //
   // React methods
   //
+  @ReactMethod
+  public void switchState(Boolean newState, Promise p) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      CameraManager cameraManager =
+       (CameraManager) this.ctx.getSystemService(Context.CAMERA_SERVICE);
 
+      try {
+        String cameraId = cameraManager.getCameraIdList()[0];
+        cameraManager.setTorchMode(cameraId, newState);
+        p.resolve(true);
+      } catch (Exception e) {
+        String errorMessage = e.getMessage();
+        p.reject("Error: " + errorMessage);
+      }
+    } else {
+      Camera.Parameters params;
+      if (newState && !isTorchOn) {
+        camera = Camera.open();
+        params = camera.getParameters();
+        params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        camera.setParameters(params);
+        camera.startPreview();
+        isTorchOn = true;
+      } else if (isTorchOn) {
+        params = camera.getParameters();
+        params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+
+        camera.setParameters(params);
+        camera.stopPreview();
+        camera.release();
+        isTorchOn = false;
+      }
+    }
+  }
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);

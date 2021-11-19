@@ -42,6 +42,7 @@ export type TNativeModules = {
     setLocale(locale: string): void
     onCallConnected(uuid: string): void
     onCallKeepAction(uuid: string, action: TCallkeepAction): void
+    switchState(newState: boolean): Promise<boolean | string>
   }
 }
 

@@ -1,4 +1,9 @@
+import PushNotificationIOS, {
+  PushNotification as PN,
+} from '@react-native-community/push-notification-ios'
 import moment from 'moment'
+import { AppState, Platform } from 'react-native'
+import FCM from 'react-native-fcm'
 import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
@@ -43,6 +48,31 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       partyName: getPartyName(c.from) || c.displayName,
       partyNumber: c.from,
       duration: 0,
+    })
+  }
+  console.log('addCallHistory')
+  if (AppState.currentState !== 'active' && (!isTypeCall || !c.answered)) {
+    console.log('addCallHistory::active')
+    // Platform.OS === 'android' &&
+    //             FCM.presentLocalNotification({
+    //               body: 'dsad',
+    //               title: 'dasd',
+    //               badge:10,
+    //               number: 12,
+    //               priority: 'high',
+    //               show_in_foreground: true,
+    //               local_notification: true,
+    //               wake_screen: true,
+    //               ongoing: false,
+    //               lights: true,
+    //               channel: 'default',
+    //               icon: 'ic_launcher',
+    //               my_custom_data: 'local_notification',
+    //               is_local_notification: 'local_notification',
+    //               content_available: 1
+    //             })
+    PushNotificationIOS.getApplicationIconBadgeNumber((numBadges: number) => {
+      PushNotificationIOS.setApplicationIconBadgeNumber(numBadges + 1)
     })
   }
 }

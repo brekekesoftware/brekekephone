@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-
+#import "BrekekeModule.h"
 #import <PushKit/PushKit.h>
 #import <RNCPushNotificationIOS.h>
 #import <React/RCTBridge.h>

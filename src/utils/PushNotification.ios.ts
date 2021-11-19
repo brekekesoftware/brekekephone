@@ -49,7 +49,7 @@ const onNotification = async (
   }
   //
   PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
-    badge = 1 + (Number(badge) || 0)
+    // badge = 1 + (Number(badge) || 0)
     if (AppState.currentState === 'active') {
       badge = 0
     }
@@ -60,7 +60,7 @@ const onNotification = async (
       sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
       badge,
     })
-    PushNotificationIOS.setApplicationIconBadgeNumber(badge)
+    // PushNotificationIOS.setApplicationIconBadgeNumber(badge)
   })
 }
 
