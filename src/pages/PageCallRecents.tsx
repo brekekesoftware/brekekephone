@@ -1,15 +1,9 @@
 import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
-import PushNotificationIOS, {
-  PushNotification as PN,
-} from '@react-native-community/push-notification-ios'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import React, { Component } from 'react'
-import { Button, Platform, View } from 'react-native'
-// import Torch from 'react-native-torch'
-import { NativeModules } from 'react-native'
-import FCM from 'react-native-fcm'
 
+// import Torch from 'react-native-torch'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -18,9 +12,6 @@ import { AuthStore } from '../stores/authStore2'
 import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-
-const { BrekekeModule } = NativeModules
 
 @observer
 export class PageCallRecents extends Component {
@@ -58,10 +49,6 @@ export class PageCallRecents extends Component {
 
   render() {
     const calls = this.getMatchedCalls()
-    const switchState =
-      Platform.OS === 'android'
-        ? BrekekeUtils.switchState
-        : BrekekeModule.switchState
     return (
       <Layout
         description={intl`Recent voicemails and calls`}
@@ -69,26 +56,6 @@ export class PageCallRecents extends Component {
         subMenu='recents'
         title={intl`Recents`}
       >
-        <View
-          style={{
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: 200,
-          }}
-        >
-          <Button
-            title='on'
-            onPress={() => {
-              switchState(true)
-            }}
-          />
-          <Button
-            title='off'
-            onPress={() => {
-              switchState(false)
-            }}
-          />
-        </View>
         <Field
           icon={mdiMagnify}
           label={intl`SEARCH NAME, PHONE NUMBER ...`}
@@ -102,31 +69,7 @@ export class PageCallRecents extends Component {
           label={intl`VOICEMAILS (${callStore.newVoicemailCount})`}
         />
         <UserItem
-          iconFuncs={[
-            () => {
-              Platform.OS === 'android' &&
-                FCM.presentLocalNotification({
-                  body: '',
-                  title: '',
-                  badge: 10,
-                  number: 12,
-                  priority: 'high',
-                  show_in_foreground: false,
-                  local_notification: true,
-                  wake_screen: true,
-                  ongoing: false,
-                  lights: true,
-                  channel: 'default',
-                  icon: 'ic_launcher',
-                  my_custom_data: 'local_notification',
-                  is_local_notification: 'local_notification',
-                  content_available: true,
-                })
-              Platform.OS === 'ios' &&
-                PushNotificationIOS.setApplicationIconBadgeNumber(10)
-              // callStore.startCall('8')
-            },
-          ]}
+          iconFuncs={[() => callStore.startCall('8')]}
           icons={[mdiPhone]}
           name={'Voicemails'}
           isVoicemail

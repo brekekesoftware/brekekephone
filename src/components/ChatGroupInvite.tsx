@@ -13,6 +13,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { startFlashLight } from '../utils/flashLight'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { ButtonIcon } from './ButtonIcon'
 import { formatDateTimeSemantic } from './chatConfig'
@@ -226,7 +227,7 @@ export class UnreadChatNoti extends Component {
       if (name === 'PageChatGroupDetail' && c.isGroup && groupId === c.id) {
         return false
       }
-
+      startFlashLight(500)
       return true
     })
     //
@@ -277,6 +278,7 @@ export class UnreadChatNoti extends Component {
     if (!this.unreadChat) {
       return null
     }
+
     const {
       id,
       lastMessage: { text, created },
