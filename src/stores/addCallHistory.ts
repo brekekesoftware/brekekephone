@@ -47,27 +47,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       duration: 0,
     })
   }
-  console.log('addCallHistory')
   if (AppState.currentState !== 'active' && (!isTypeCall || !c.answered)) {
-    console.log('addCallHistory::active')
-    // Platform.OS === 'android' &&
-    //             FCM.presentLocalNotification({
-    //               body: 'dsad',
-    //               title: 'dasd',
-    //               badge:10,
-    //               number: 12,
-    //               priority: 'high',
-    //               show_in_foreground: true,
-    //               local_notification: true,
-    //               wake_screen: true,
-    //               ongoing: false,
-    //               lights: true,
-    //               channel: 'default',
-    //               icon: 'ic_launcher',
-    //               my_custom_data: 'local_notification',
-    //               is_local_notification: 'local_notification',
-    //               content_available: 1
-    //             })
     PushNotificationIOS.getApplicationIconBadgeNumber((numBadges: number) => {
       PushNotificationIOS.setApplicationIconBadgeNumber(numBadges + 1)
     })

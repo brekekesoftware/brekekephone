@@ -4,7 +4,7 @@ import { BackgroundTimer } from './BackgroundTimer'
 import { BrekekeUtils } from './RnNativeModules'
 
 const { BrekekeModule } = NativeModules
-export const startFlashLight = (duration: number = 1000) => {
+export const openFlashLight = (isOn: Boolean = true) => {
   if (Platform.OS === 'web') {
     return
   }
@@ -12,8 +12,6 @@ export const startFlashLight = (duration: number = 1000) => {
     Platform.OS === 'android'
       ? BrekekeUtils.switchState
       : BrekekeModule.switchState
-  switchState(true)
-  BackgroundTimer.setTimeout(() => {
-    switchState(false)
-  }, duration)
+
+  switchState(isOn)
 }

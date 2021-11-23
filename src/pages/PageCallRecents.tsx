@@ -2,6 +2,7 @@ import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import React, { Component } from 'react'
+import { Platform } from 'react-native'
 
 // import Torch from 'react-native-torch'
 import { UserItem } from '../components/ContactUserItem'
@@ -12,6 +13,8 @@ import { AuthStore } from '../stores/authStore2'
 import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
+import { openFlashLight } from '../utils/flashLight'
+import { PushNotification } from '../utils/PushNotification.ios'
 
 @observer
 export class PageCallRecents extends Component {
@@ -21,7 +24,10 @@ export class PageCallRecents extends Component {
     }
     return ''
   }
-
+  componentDidMount = () => {
+    Platform.OS === 'ios' && PushNotification.resetBadgeNumber()
+    openFlashLight(false)
+  }
   getAvatar = (id: string) => {
     const ucUser = contactStore.getUcUserById(id) || {}
     return {

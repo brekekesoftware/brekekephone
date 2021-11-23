@@ -10,7 +10,7 @@ import { sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
-import { startFlashLight } from '../utils/flashLight'
+import { openFlashLight } from '../utils/flashLight'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
@@ -197,7 +197,7 @@ export class CallStore {
       return
     }
     if (c.incoming) {
-      startFlashLight()
+      openFlashLight(true)
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
     const callkeepAction = this.getCallkeepAction(c)
