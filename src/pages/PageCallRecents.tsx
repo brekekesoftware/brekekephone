@@ -24,7 +24,7 @@ export class PageCallRecents extends Component {
     }
     return ''
   }
-  componentDidMount = () => {
+  componentDidUpdate = () => {
     Platform.OS === 'ios' && PushNotification.resetBadgeNumber()
     openFlashLight(false)
   }

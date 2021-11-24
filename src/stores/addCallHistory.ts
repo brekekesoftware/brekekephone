@@ -1,6 +1,6 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import moment from 'moment'
-import { AppState } from 'react-native'
+import { AppState, Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
@@ -50,8 +50,9 @@ export const addCallHistory = (c: Call | ParsedPn) => {
   }
   if (AppState.currentState !== 'active' && (!isTypeCall || !c.answered)) {
     openFlashLight(true)
-    PushNotificationIOS.getApplicationIconBadgeNumber((numBadges: number) => {
-      PushNotificationIOS.setApplicationIconBadgeNumber(numBadges + 1)
-    })
+    Platform.OS === 'ios' &&
+      PushNotificationIOS.getApplicationIconBadgeNumber((numBadges: number) => {
+        PushNotificationIOS.setApplicationIconBadgeNumber(numBadges + 1)
+      })
   }
 }

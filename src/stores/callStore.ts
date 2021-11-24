@@ -195,7 +195,6 @@ export class CallStore {
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
     }
-
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
     const callkeepAction = this.getCallkeepAction(c)
     console.error(
