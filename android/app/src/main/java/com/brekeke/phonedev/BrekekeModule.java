@@ -5,7 +5,6 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
-import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -16,7 +15,6 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -489,7 +487,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   public void switchState(Boolean newState, Promise p) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       CameraManager cameraManager =
-       (CameraManager) this.ctx.getSystemService(Context.CAMERA_SERVICE);
+          (CameraManager) this.ctx.getSystemService(Context.CAMERA_SERVICE);
 
       try {
         String cameraId = cameraManager.getCameraIdList()[0];
@@ -519,6 +517,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       }
     }
   }
+
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);
