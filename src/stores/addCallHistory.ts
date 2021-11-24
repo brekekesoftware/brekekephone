@@ -4,6 +4,7 @@ import { AppState } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
+import { openFlashLight } from '../utils/flashLight'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
@@ -48,6 +49,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
     })
   }
   if (AppState.currentState !== 'active' && (!isTypeCall || !c.answered)) {
+    openFlashLight(true)
     PushNotificationIOS.getApplicationIconBadgeNumber((numBadges: number) => {
       PushNotificationIOS.setApplicationIconBadgeNumber(numBadges + 1)
     })

@@ -51,7 +51,7 @@ import { v } from './variables'
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
-    PushNotification.resetBadgeNumber()
+    // PushNotification.resetBadgeNumber()
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
   }

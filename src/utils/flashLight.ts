@@ -1,6 +1,5 @@
 import { NativeModules, Platform } from 'react-native'
 
-import { BackgroundTimer } from './BackgroundTimer'
 import { BrekekeUtils } from './RnNativeModules'
 
 const { BrekekeModule } = NativeModules

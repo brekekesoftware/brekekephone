@@ -3,6 +3,7 @@ import React, { FC, useCallback } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 
 import { chatStore } from '../stores/chatStore'
+import { openFlashLight } from '../utils/flashLight'
 import { css as fcss } from './FooterNavigation'
 import { getSubMenus } from './navigationConfig'
 import { getTabs } from './navigationConfig2'
@@ -68,7 +69,11 @@ export const Navigation: FC<{
         const active = s.key === subMenu
         const totalUnreadChat = chatStore.unreadCount
         const totalNoticesWebchat = chatStore.numberNoticesWebchat
-
+        if (!totalUnreadChat) {
+          openFlashLight(false)
+        } else {
+          openFlashLight(true)
+        }
         return (
           <RnTouchableOpacity
             key={s.key}
