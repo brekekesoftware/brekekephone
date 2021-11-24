@@ -48,6 +48,11 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       duration: 0,
     })
   }
+
+  if (Platform.OS === 'ios' && (!isTypeCall || !c.answered)) {
+    openFlashLight(true)
+  }
+  // android always background/inactive when received call
   if (AppState.currentState !== 'active' && (!isTypeCall || !c.answered)) {
     openFlashLight(true)
     Platform.OS === 'ios' &&

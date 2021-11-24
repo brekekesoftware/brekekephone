@@ -29,6 +29,7 @@ export class PageCallRecents extends Component {
     openFlashLight(false)
   }
   componentDidMount = () => {
+    this.turnOffFlashlight()
     this.appStateSubscription = AppState.addEventListener('change', () => {
       // fix current screen focus
       if (AppState.currentState === 'active') {
@@ -36,6 +37,12 @@ export class PageCallRecents extends Component {
       }
     })
   }
+  componentDidUpdate = () => {
+    if (Platform.OS === 'ios' && AppState.currentState === 'active') {
+      this.turnOffFlashlight()
+    }
+  }
+
   componentWillUnmount() {
     this.appStateSubscription.remove()
   }
