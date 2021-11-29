@@ -200,8 +200,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
     }
-
-    if (raw['id'] === 'misscall') {
+    const id = raw['id'] as string
+    if (id && id.startsWith('misscall')) {
       Nav().goToPageCallRecents()
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')

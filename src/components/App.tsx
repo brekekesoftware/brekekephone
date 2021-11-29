@@ -12,6 +12,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
+import FCM from 'react-native-fcm'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -48,12 +49,20 @@ import { RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
+let firsTimeClickNotification = false
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
-    PushNotification.resetBadgeNumber()
+    // PushNotification.resetBadgeNumber()
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
+    FCM.getInitialNotification().then(notif => {
+      const id = notif['id'] as string
+      if (id && id.startsWith('misscall') && !firsTimeClickNotification) {
+        firsTimeClickNotification = true
+        Nav().goToPageCallRecents()
+      }
+    })
   }
 })
 registerOnUnhandledError(unexpectedErr => {
@@ -107,7 +116,9 @@ if (Platform.OS === 'web') {
 BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
 let alreadyInitApp = false
+
 PushNotification.register(() => {
+  console.error('PushNotification::register::alreadyInitApp', alreadyInitApp)
   if (alreadyInitApp) {
     return
   }
@@ -182,6 +193,11 @@ export const App = observer(() => {
     }
   }, [])
 
+  // console.error('PushNotification::observer::alreadyInitApp', alreadyInitApp)
+
+  // if (!alreadyInitApp) {
+  //   console.error('PushNotification::register::alreadyInitApp', alreadyInitApp);
+  // }
   const s = getAuthStore()
   const {
     isConnFailure,

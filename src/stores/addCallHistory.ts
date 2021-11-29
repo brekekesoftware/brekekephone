@@ -79,12 +79,13 @@ const presentNotification = (callInfo: {
       priority: 'high',
       show_in_foreground: true,
       local_notification: true,
-      wake_screen: true,
+      wake_screen: false,
       ongoing: false,
       lights: true,
       channel: 'default',
       icon: 'ic_launcher',
-      id: 'misscall',
+      id: `misscall-${Date.now()}`,
+      pre_app_state: AppState.currentState,
       my_custom_data: 'local_notification',
       is_local_notification: 'local_notification',
     })
@@ -92,7 +93,7 @@ const presentNotification = (callInfo: {
     PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
       badge = 1 + (Number(badge) || 0)
       PushNotificationIOS.addNotificationRequest({
-        id: 'misscall',
+        id: `misscall-${Date.now()}`,
         body: intl`Miss call`,
         title: callInfo.partyNumber,
         sound: undefined,
