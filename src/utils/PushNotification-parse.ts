@@ -3,6 +3,7 @@ import { AppState, Platform } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
+import { Nav } from '../stores/Nav'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -155,6 +156,8 @@ const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
+  console.error('notificationparse', raw)
+
   if (!raw) {
     return null
   }
@@ -196,6 +199,10 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     }
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
+    }
+
+    if (raw['id'] === 'misscall') {
+      Nav().goToPageCallRecents()
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
