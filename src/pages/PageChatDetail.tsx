@@ -230,7 +230,10 @@ export class PageChatDetail extends Component<{
 
   private justMounted = true
   private closeToBottom = true
-  onContentSizeChange = () => {
+  private currentScrollPosition = 0
+  private isLoadingMore = false
+
+  onContentSizeChange = (newWidth?: number, newHeight?: number) => {
     if (!this.view) {
       return
     }
@@ -242,7 +245,17 @@ export class PageChatDetail extends Component<{
         this.justMounted = false
       }
     }
+    // handle load more: scroll to last position before loading more.
+    if (newHeight && this.isLoadingMore) {
+      this.isLoadingMore = false
+      this.view?.scrollTo({
+        y: newHeight - this.currentScrollPosition,
+        animated: false,
+      })
+      // this.currentScrollPosition = newHeight
+    }
   }
+
   onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
     const layoutSize = ev.nativeEvent.layoutMeasurement
     const layoutHeight = layoutSize.height
@@ -252,6 +265,7 @@ export class PageChatDetail extends Component<{
     const paddingToBottom = 20
     this.closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
+    this.currentScrollPosition = contentHeight
   }
 
   resolveChat = (id: string) => {
@@ -300,6 +314,7 @@ export class PageChatDetail extends Component<{
   }
 
   loadMore = () => {
+    this.isLoadingMore = true
     this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
