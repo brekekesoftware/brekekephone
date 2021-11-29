@@ -1,8 +1,3 @@
-import {
-  mdiCloseCircleOutline,
-  mdiImageBrokenVariant,
-  mdiPlayCircleOutline,
-} from '@mdi/js'
 import React, { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
@@ -19,6 +14,11 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
 
+import {
+  mdiCloseCircleOutline,
+  mdiImageBrokenVariant,
+  mdiPlayCircleOutline,
+} from '../assets/icons'
 import { ChatFile } from '../stores/chatStore'
 import { RnIcon } from './RnIcon'
 import { RnTouchableOpacity } from './RnTouchableOpacity'

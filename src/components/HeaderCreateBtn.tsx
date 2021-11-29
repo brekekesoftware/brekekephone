@@ -1,7 +1,7 @@
-import { mdiPlus } from '@mdi/js'
 import React, { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
+import { mdiPlus } from '../assets/icons'
 import { RnIcon, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 

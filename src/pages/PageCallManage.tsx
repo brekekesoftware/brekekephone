@@ -1,3 +1,8 @@
+import { action, observable } from 'mobx'
+import { observer } from 'mobx-react'
+import React, { Component, Fragment } from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
+
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -14,12 +19,7 @@ import {
   mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '@mdi/js'
-import { action, observable } from 'mobx'
-import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
-
+} from '../assets/icons'
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
 import { IncomingItemWithTimer } from '../components/CallNotify'

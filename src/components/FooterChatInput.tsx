@@ -1,4 +1,3 @@
-import { mdiEmoticon, mdiPaperclip, mdiSend } from '@mdi/js'
 import React, { FC } from 'react'
 import {
   NativeSyntheticEvent,
@@ -7,6 +6,7 @@ import {
   View,
 } from 'react-native'
 
+import { mdiEmoticon, mdiPaperclip, mdiSend } from '../assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 

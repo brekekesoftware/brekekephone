@@ -1,9 +1,9 @@
-import { mdiImageBrokenVariant } from '@mdi/js'
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
 
+import { mdiImageBrokenVariant } from '../assets/icons'
 import { ChatFile } from '../stores/chatStore'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'

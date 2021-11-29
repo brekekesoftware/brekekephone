@@ -1,8 +1,8 @@
-import { mdiPhone, mdiPhoneForward } from '@mdi/js'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
 
+import { mdiPhone, mdiPhoneForward } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'

@@ -1,4 +1,3 @@
-import { mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { Component, FC } from 'react'
 import {
@@ -12,6 +11,7 @@ import {
 import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
+import { mdiDotsHorizontal, mdiFile } from '../assets/icons'
 import { ChatFile } from '../stores/chatStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'

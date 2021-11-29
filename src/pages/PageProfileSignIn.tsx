@@ -1,9 +1,13 @@
-import { mdiDotsHorizontal, mdiLadybug, mdiUnfoldMoreHorizontal } from '@mdi/js'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 import { FlatList, Platform, StyleSheet, View } from 'react-native'
 
+import {
+  mdiDotsHorizontal,
+  mdiLadybug,
+  mdiUnfoldMoreHorizontal,
+} from '../assets/icons'
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { Layout } from '../components/Layout'
 import { ProfileSignInItem } from '../components/ProfileSignInItem'

@@ -1,3 +1,7 @@
+import { observer } from 'mobx-react'
+import React, { FC } from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
+
 import {
   mdiAccountCircleOutline,
   mdiApplicationOutline,
@@ -5,11 +9,7 @@ import {
   mdiDotsHorizontal,
   mdiServerNetwork,
   mdiWeb,
-} from '@mdi/js'
-import { observer } from 'mobx-react'
-import React, { FC } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
-
+} from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'

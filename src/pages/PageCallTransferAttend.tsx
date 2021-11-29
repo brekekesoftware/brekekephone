@@ -1,14 +1,14 @@
-import {
-  mdiArrowRight,
-  mdiPhoneForward,
-  mdiPhoneHangup,
-  mdiPhoneOff,
-} from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { sip } from '../api/sip'
+import {
+  mdiArrowRight,
+  mdiPhoneForward,
+  mdiPhoneHangup,
+  mdiPhoneOff,
+} from '../assets/icons'
 import { Avatar } from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'

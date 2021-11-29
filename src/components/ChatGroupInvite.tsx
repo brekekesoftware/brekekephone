@@ -1,4 +1,3 @@
-import { mdiCheck, mdiClose } from '@mdi/js'
 import sortBy from 'lodash/sortBy'
 import { action, computed, observable } from 'mobx'
 import { observer } from 'mobx-react'
@@ -6,6 +5,7 @@ import React, { Component, FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
+import { mdiCheck, mdiClose } from '../assets/icons'
 import { chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'

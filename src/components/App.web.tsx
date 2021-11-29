@@ -1,6 +1,5 @@
 // Main entry for the create-react-app web bundle
 
-import { mdiAndroid, mdiApple, mdiWeb } from '@mdi/js'
 import qs from 'qs'
 import React, { ReactElement, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
@@ -8,6 +7,7 @@ import { StyleSheet, View } from 'react-native'
 import Url from 'url-parse'
 
 import brand from '../assets/brand.png'
+import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
 import { intl } from '../stores/intl'
 import { parse } from '../utils/deeplink-parse'

@@ -1,9 +1,9 @@
-import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
 import orderBy from 'lodash/orderBy'
 import uniq from 'lodash/uniq'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
 
+import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
