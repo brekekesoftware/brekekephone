@@ -56,13 +56,14 @@ AppState.addEventListener('change', () => {
     // PushNotification.resetBadgeNumber()
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
-    FCM.getInitialNotification().then(notif => {
-      const id = notif['id'] as string
-      if (id && id.startsWith('misscall') && !firsTimeClickNotification) {
-        firsTimeClickNotification = true
-        Nav().goToPageCallRecents()
-      }
-    })
+    Platform.OS === 'android' &&
+      FCM.getInitialNotification().then(notif => {
+        const id = notif['id'] as string
+        if (id && id.startsWith('misscall') && !firsTimeClickNotification) {
+          firsTimeClickNotification = true
+          Nav().goToPageCallRecents()
+        }
+      })
   }
 })
 registerOnUnhandledError(unexpectedErr => {

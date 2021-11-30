@@ -2,6 +2,7 @@ import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import React, { Component } from 'react'
+import { AppState, Platform } from 'react-native'
 
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
@@ -11,16 +12,31 @@ import { AuthStore } from '../stores/authStore2'
 import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
+import { PushNotification } from '../utils/PushNotification.ios'
 
 @observer
 export class PageCallRecents extends Component {
+  appStateSubscription: any
+
   isMatchUser = (call: AuthStore['currentData']['recentCalls'][0]) => {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id
     }
     return ''
   }
-
+  componentDidMount = () => {
+    this.appStateSubscription =
+      Platform.OS === 'ios' &&
+      AppState.addEventListener('change', () => {
+        // fix current screen focus
+        if (AppState.currentState === 'active') {
+          PushNotification.resetBadgeNumber()
+        }
+      })
+  }
+  componentWillUnmount = () => {
+    this.appStateSubscription && this.appStateSubscription.remove()
+  }
   getAvatar = (id: string) => {
     const ucUser = contactStore.getUcUserById(id) || {}
     return {

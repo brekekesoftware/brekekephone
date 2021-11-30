@@ -156,12 +156,11 @@ const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
-  console.error('notificationparse', raw)
-
   if (!raw) {
     return null
   }
   const n = parseNotificationData(raw)
+
   if (!n) {
     return null
   }
@@ -182,12 +181,14 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     )
   }
 
+  const id = raw['id'] as string
   if (
     isLocal ||
     raw['my_custom_data'] ||
     raw['is_local_notification'] ||
     n.my_custom_data ||
-    n.is_local_notification
+    n.is_local_notification ||
+    (id && id.startsWith('misscall'))
   ) {
     const p = getAuthStore().findProfile({
       ...n,
@@ -200,7 +201,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
     }
-    const id = raw['id'] as string
+
     if (id && id.startsWith('misscall')) {
       Nav().goToPageCallRecents()
     }

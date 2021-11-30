@@ -51,6 +51,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
       }
   as.pushRecentCall(callInfo)
   // present notification and badge ios
+  // presentNotification(callInfo)
   if (
     AppState.currentState !== 'active' &&
     (!isTypeCall || !c.isAboutToHangup)
@@ -98,6 +99,17 @@ const presentNotification = (callInfo: {
         title: callInfo.partyNumber,
         sound: undefined,
         badge,
+        userInfo: {
+          id: `misscall-${Date.now()}`,
+          aps: {
+            body: intl`Miss call`,
+            title: callInfo.partyNumber,
+            my_custom_data: 'local_notification',
+            pre_app_state: AppState.currentState,
+            local_notification: true,
+            is_local_notification: 'local_notification',
+          },
+        },
       })
       PushNotificationIOS.setApplicationIconBadgeNumber(badge)
     })
