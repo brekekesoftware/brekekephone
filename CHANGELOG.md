@@ -1,3 +1,10 @@
+#### 2.8.59
+
+- Show notification for missed call, badge number will be updated
+- Click on the notification will go to page list recent calls and reset the badge number
+- Quick button to call voice mail
+- Remove @mdi/js package to reduce bundle size
+
 #### 2.8.58
 
 - Fix android 348: answer from notification list should have audio working correctly on android 11

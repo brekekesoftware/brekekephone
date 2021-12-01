@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.8.58",
+  "version": "2.8.59",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -22,7 +22,7 @@
     "postinstall": "husky install"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "1.15.11",
+    "@react-native-async-storage/async-storage": "1.15.14",
     "@react-native-community/push-notification-ios": "1.10.1",
     "brekekejs": "github:brekekesoftware/brekekejs#878610152680d53a9cd618330cb3aa54893546c2",
     "buffer": "6.0.3",
@@ -80,9 +80,9 @@
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
-    "@babel/plugin-proposal-decorators": "7.16.0",
+    "@babel/plugin-proposal-decorators": "7.16.4",
     "@babel/plugin-proposal-optional-chaining": "7.16.0",
-    "@craco/craco": "6.4.0",
+    "@craco/craco": "6.4.2",
     "@prettier/plugin-xml": "1.1.0",
     "@types/circular-json": "0.4.0",
     "@types/handlebars": "4.1.0",
@@ -90,19 +90,19 @@
     "@types/lodash": "4.14.177",
     "@types/md5": "2.3.1",
     "@types/qs": "6.9.7",
-    "@types/react": "17.0.35",
+    "@types/react": "17.0.37",
     "@types/react-dom": "17.0.11",
-    "@types/react-native": "0.66.4",
+    "@types/react-native": "0.66.6",
     "@types/react-native-background-timer": "2.0.0",
     "@types/react-native-incall-manager": "3.2.1",
     "@types/react-native-keyboard-spacer": "0.4.2",
     "@types/react-native-share": "3.3.3",
-    "@types/react-native-video": "5.0.10",
+    "@types/react-native-video": "5.0.11",
     "@types/react-native-webrtc": "1.75.4",
     "@types/url-parse": "1.4.5",
-    "@types/uuid": "8.3.1",
+    "@types/uuid": "8.3.3",
     "@types/validatorjs": "3.15.0",
-    "@typescript-eslint/parser": "5.4.0",
+    "@typescript-eslint/parser": "5.5.0",
     "circular-dependency-plugin": "5.2.2",
     "cross-env": "7.0.3",
     "del-cli": "4.0.1",
@@ -111,12 +111,12 @@
     "eslint-plugin-simple-import-sort": "7.0.0",
     "fs-extra": "10.0.0",
     "husky": "7.0.4",
-    "lint-staged": "12.0.2",
+    "lint-staged": "12.1.2",
     "metro-react-native-babel-preset": "0.66.2",
-    "prettier": "2.4.1",
+    "prettier": "2.5.0",
     "react-scripts": "4.0.3",
     "type-coverage": "2.19.0",
-    "typescript": "4.4.4"
+    "typescript": "4.5.2"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
