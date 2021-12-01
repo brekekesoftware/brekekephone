@@ -42,6 +42,8 @@ export type Phonebook2 = {
 
 class ContactStore {
   @observable usersSearchTerm = ''
+  @observable phonebookSearchTerm = ''
+  @observable chatSearchTerm = ''
   @observable callSearchRecents = ''
   @observable loading = true
   @observable hasLoadmore = false

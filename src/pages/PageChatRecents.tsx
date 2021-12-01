@@ -6,6 +6,7 @@ import React, { Component } from 'react'
 
 import { Conference, UcMessageLog } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
+import { mdiMagnify } from '../assets/icons'
 import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -75,6 +76,22 @@ export class PageChatRecents extends Component {
     } else {
       Nav().goToPageChatGroupDetail({ groupId })
     }
+  }
+
+  isMatchChat = (item: {
+    id: string
+    name: string
+    text: string
+    type: number
+    group: boolean
+    unread: boolean
+    created: string
+  }) => {
+    if (!item.name) {
+      return false
+    }
+    const txt = contactStore.chatSearchTerm.toLowerCase()
+    return item.name.toLocaleLowerCase().includes(txt)
   }
 
   render() {
@@ -168,6 +185,9 @@ export class PageChatRecents extends Component {
       // .filter(c => !!c.created && !c.group)
       .reverse()
 
+    // filter by search text
+    arr = arr.filter(this.isMatchChat)
+
     // when anyItem changes page will be render again => don't need timeout
     this.saveLastChatItem(arr)
 
@@ -184,6 +204,14 @@ export class PageChatRecents extends Component {
         subMenu='chat'
         title={intl`Chat`}
       >
+        <Field
+          icon={mdiMagnify}
+          label={intl`SEARCH FOR CHAT`}
+          onValueChange={(v: string) => {
+            contactStore.chatSearchTerm = v
+          }}
+          value={contactStore.chatSearchTerm}
+        />
         <Field isGroup label={intl`RECENT CHAT THREADS`} />
         {!arr.length && (
           <RnText center normal small warning style={{ marginTop: 5 }}>
