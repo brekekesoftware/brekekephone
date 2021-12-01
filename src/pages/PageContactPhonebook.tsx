@@ -9,6 +9,7 @@ import {
   mdiCellphone,
   mdiHome,
   mdiInformation,
+  mdiMagnify,
   mdiPhone,
 } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
@@ -153,11 +154,20 @@ export class PageContactPhonebook extends Component {
     })
   }
 
+  isMatchPhoneBook = (phonebook: Phonebook2) => {
+    if (!phonebook.name) {
+      return false
+    }
+    const txt = contactStore.phonebookSearchTerm.toLowerCase()
+    return phonebook.name.toLowerCase().includes(txt)
+  }
+
   render() {
     let phonebooks = contactStore.phoneBooks
     if (!getAuthStore().currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true)
     }
+    phonebooks = phonebooks.filter(this.isMatchPhoneBook)
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
@@ -197,6 +207,14 @@ export class PageContactPhonebook extends Component {
         subMenu='phonebook'
         title={intl`Phonebook`}
       >
+        <Field
+          icon={mdiMagnify}
+          label={intl`SEARCH FOR PHONEBOOK`}
+          onValueChange={(v: string) => {
+            contactStore.phonebookSearchTerm = v
+          }}
+          value={contactStore.phonebookSearchTerm}
+        />
         <Field
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
