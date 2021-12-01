@@ -12,6 +12,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
+import FCM from 'react-native-fcm'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -48,12 +49,21 @@ import { RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
+let alreadyHandleMissedCall = ''
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
-    PushNotification.resetBadgeNumber()
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
+    Platform.OS === 'android' &&
+      FCM.getInitialNotification().then(n => {
+        const id = n['id'] as string
+        const isMissedCall = id?.startsWith?.('missedcall')
+        if (isMissedCall && alreadyHandleMissedCall !== id) {
+          alreadyHandleMissedCall = id
+          Nav().goToPageCallRecents()
+        }
+      })
   }
 })
 registerOnUnhandledError(unexpectedErr => {
@@ -111,8 +121,8 @@ PushNotification.register(() => {
   if (alreadyInitApp) {
     return
   }
-  const s = getAuthStore()
   alreadyInitApp = true
+  const s = getAuthStore()
 
   setupCallKeep()
   profileStore.loadProfilesFromLocalStorage().then(() => {
