@@ -1,9 +1,9 @@
-import { mdiCheck, mdiClose } from '@mdi/js'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
+import { mdiCheck, mdiClose } from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'

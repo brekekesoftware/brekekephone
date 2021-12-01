@@ -1,7 +1,12 @@
-import { mdiBackspace, mdiKeyboard, mdiPhone, mdiPhoneForward } from '@mdi/js'
 import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
+import {
+  mdiBackspace,
+  mdiKeyboard,
+  mdiPhone,
+  mdiPhoneForward,
+} from '../assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 

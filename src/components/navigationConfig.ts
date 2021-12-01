@@ -2,8 +2,7 @@ import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
-} from '@mdi/js'
-
+} from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'

@@ -1,9 +1,3 @@
-import {
-  mdiCardsDiamond,
-  mdiClose,
-  mdiPlus,
-  mdiUnfoldMoreHorizontal,
-} from '@mdi/js'
 import flow from 'lodash/flow'
 import omit from 'lodash/omit'
 import { observer } from 'mobx-react'
@@ -20,6 +14,12 @@ import {
   ViewProps,
 } from 'react-native'
 
+import {
+  mdiCardsDiamond,
+  mdiClose,
+  mdiPlus,
+  mdiUnfoldMoreHorizontal,
+} from '../assets/icons'
 import { intl } from '../stores/intl'
 import { RnPicker } from '../stores/RnPicker'
 import { useStore } from '../utils/useStore'

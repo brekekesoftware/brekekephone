@@ -1,7 +1,7 @@
-import { mdiKeyboardBackspace } from '@mdi/js'
 import React, { FC } from 'react'
 import { Platform, StyleSheet, TouchableOpacityProps, View } from 'react-native'
 
+import { mdiKeyboardBackspace } from '../assets/icons'
 import { Field } from './Field'
 import { RnTouchableOpacity } from './Rn'
 import { v } from './variables'

@@ -1,10 +1,10 @@
-import { mdiClose } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { FC, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
+import { mdiClose } from '../assets/icons'
 import { chatStore } from '../stores/chatStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'

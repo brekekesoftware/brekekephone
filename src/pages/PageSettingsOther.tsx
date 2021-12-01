@@ -1,9 +1,9 @@
-import { mdiCheck, mdiTranslate } from '@mdi/js'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Platform } from 'react-native'
 
 import { uc } from '../api/uc'
+import { mdiCheck, mdiTranslate } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'

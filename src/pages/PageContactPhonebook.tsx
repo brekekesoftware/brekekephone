@@ -1,16 +1,16 @@
-import {
-  mdiBriefcase,
-  mdiCellphone,
-  mdiHome,
-  mdiInformation,
-  mdiPhone,
-} from '@mdi/js'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { pbx } from '../api/pbx'
+import {
+  mdiBriefcase,
+  mdiCellphone,
+  mdiHome,
+  mdiInformation,
+  mdiPhone,
+} from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'

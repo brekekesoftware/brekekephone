@@ -1,10 +1,10 @@
-import { mdiKeyboardBackspace } from '@mdi/js'
 import filesize from 'filesize'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 
+import { mdiKeyboardBackspace } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
