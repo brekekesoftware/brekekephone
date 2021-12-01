@@ -160,7 +160,6 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
   const n = parseNotificationData(raw)
-
   if (!n) {
     return null
   }
@@ -182,13 +181,14 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
 
   const id = raw['id'] as string
+  const isMissedCall = id?.startsWith?.('missedcall')
   if (
     isLocal ||
     raw['my_custom_data'] ||
     raw['is_local_notification'] ||
     n.my_custom_data ||
     n.is_local_notification ||
-    (id && id.startsWith('misscall'))
+    isMissedCall
   ) {
     const p = getAuthStore().findProfile({
       ...n,
@@ -201,8 +201,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
     }
-
-    if (id && id.startsWith('misscall')) {
+    if (isMissedCall) {
       Nav().goToPageCallRecents()
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')

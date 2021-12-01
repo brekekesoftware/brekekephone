@@ -49,18 +49,18 @@ import { RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
-let firsTimeClickNotification = false
+let alreadyHandleMissedCall = ''
 AppState.addEventListener('change', () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
-    // PushNotification.resetBadgeNumber()
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
     Platform.OS === 'android' &&
-      FCM.getInitialNotification().then(notif => {
-        const id = notif['id'] as string
-        if (id && id.startsWith('misscall') && !firsTimeClickNotification) {
-          firsTimeClickNotification = true
+      FCM.getInitialNotification().then(n => {
+        const id = n['id'] as string
+        const isMissedCall = id?.startsWith?.('missedcall')
+        if (isMissedCall && alreadyHandleMissedCall !== id) {
+          alreadyHandleMissedCall = id
           Nav().goToPageCallRecents()
         }
       })
@@ -117,14 +117,12 @@ if (Platform.OS === 'web') {
 BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
 let alreadyInitApp = false
-
 PushNotification.register(() => {
-  console.error('PushNotification::register::alreadyInitApp', alreadyInitApp)
   if (alreadyInitApp) {
     return
   }
-  const s = getAuthStore()
   alreadyInitApp = true
+  const s = getAuthStore()
 
   setupCallKeep()
   profileStore.loadProfilesFromLocalStorage().then(() => {
@@ -194,11 +192,6 @@ export const App = observer(() => {
     }
   }, [])
 
-  // console.error('PushNotification::observer::alreadyInitApp', alreadyInitApp)
-
-  // if (!alreadyInitApp) {
-  //   console.error('PushNotification::register::alreadyInitApp', alreadyInitApp);
-  // }
   const s = getAuthStore()
   const {
     isConnFailure,
