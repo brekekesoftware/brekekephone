@@ -71,7 +71,7 @@
     "react-native-svg": "12.2.0",
     "react-native-svg-web": "1.0.9",
     "react-native-video": "5.2.0",
-    "react-native-voip-push-notification": "github:brekekesoftware/react-native-voip-push-notification#3b606047afa9bfe6e69345709a47e630c4f15637",
+    "react-native-voip-push-notification": "github:brekekesoftware/react-native-voip-push-notification#4c8be182d2515a25f3f12c7f12e01c1b2f9cb70c",
     "react-native-web": "0.17.5",
     "react-native-web-linear-gradient": "1.1.2",
     "react-native-webrtc": "github:brekekesoftware/react-native-webrtc#6cac2cfa0aad8e35f0b78e5d1ac8f161431e4b71",
