@@ -3,7 +3,6 @@ import './callkeep'
 import PushNotificationIOS, {
   PushNotification as PN,
 } from '@react-native-community/push-notification-ios'
-import { AppState } from 'react-native'
 import Voip from 'react-native-voip-push-notification'
 
 import { parse } from './PushNotification-parse'
@@ -47,21 +46,6 @@ const onNotification = async (
   if (!n) {
     return
   }
-  //
-  PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
-    badge = 1 + (Number(badge) || 0)
-    if (AppState.currentState === 'active') {
-      badge = 0
-    }
-    PushNotificationIOS.addNotificationRequest({
-      id: 'call',
-      title: n.body,
-      body: n.isCall ? 'Answer' : 'View',
-      sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
-      badge,
-    })
-    PushNotificationIOS.setApplicationIconBadgeNumber(badge)
-  })
 }
 
 export const PushNotification = {
