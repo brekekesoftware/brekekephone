@@ -45,7 +45,7 @@ class ContactStore {
   @observable phonebookSearchTerm = ''
   @observable chatSearchTerm = ''
   @observable callSearchRecents = ''
-  @observable loading = true
+  @observable loading = false
   @observable hasLoadmore = false
   @observable offset = 0
   numberOfContactsPerPage = 20
@@ -191,7 +191,7 @@ class ContactStore {
     this.phoneBooks = []
     this.ucUsers = []
     this.pbxUsers = []
-    this.loading = true
+    this.loading = false
     this.hasLoadmore = false
     this.alreadyLoadContactsFirstTime = false
   }
