@@ -155,14 +155,6 @@ export class PageContactPhonebook extends Component {
     })
   }
 
-  // isMatchPhoneBook = (phonebook: Phonebook2) => {
-  //   if (!phonebook.name) {
-  //     return false
-  //   }
-  //   const txt = contactStore.phonebookSearchTerm.toLowerCase()
-  //   return phonebook.name.toLowerCase().includes(txt)
-  // }
-
   updateSearchText = (v: string) => {
     contactStore.phonebookSearchTerm = v
     this.updateListPhoneBook()
@@ -178,11 +170,10 @@ export class PageContactPhonebook extends Component {
     if (!getAuthStore().currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true)
     }
-    // phonebooks = phonebooks.filter(this.isMatchPhoneBook)
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
-      let c0 = u.name.charAt(0).toUpperCase()
+      let c0 = u?.name?.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
         c0 = '#'
       }
