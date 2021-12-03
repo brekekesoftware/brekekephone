@@ -1,3 +1,4 @@
+import { debounce } from 'lodash'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
@@ -154,20 +155,30 @@ export class PageContactPhonebook extends Component {
     })
   }
 
-  isMatchPhoneBook = (phonebook: Phonebook2) => {
-    if (!phonebook.name) {
-      return false
-    }
-    const txt = contactStore.phonebookSearchTerm.toLowerCase()
-    return phonebook.name.toLowerCase().includes(txt)
+  // isMatchPhoneBook = (phonebook: Phonebook2) => {
+  //   if (!phonebook.name) {
+  //     return false
+  //   }
+  //   const txt = contactStore.phonebookSearchTerm.toLowerCase()
+  //   return phonebook.name.toLowerCase().includes(txt)
+  // }
+
+  updateSearchText = (v: string) => {
+    contactStore.phonebookSearchTerm = v
+    this.updateListPhoneBook()
   }
+
+  updateListPhoneBook = debounce(() => {
+    contactStore.offset = 0
+    contactStore.loadContacts()
+  }, 500)
 
   render() {
     let phonebooks = contactStore.phoneBooks
     if (!getAuthStore().currentProfile.displaySharedContacts) {
       phonebooks = phonebooks.filter(i => i.shared !== true)
     }
-    phonebooks = phonebooks.filter(this.isMatchPhoneBook)
+    // phonebooks = phonebooks.filter(this.isMatchPhoneBook)
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
@@ -210,9 +221,7 @@ export class PageContactPhonebook extends Component {
         <Field
           icon={mdiMagnify}
           label={intl`SEARCH FOR PHONEBOOK`}
-          onValueChange={(v: string) => {
-            contactStore.phonebookSearchTerm = v
-          }}
+          onValueChange={this.updateSearchText}
           value={contactStore.phonebookSearchTerm}
         />
         <Field

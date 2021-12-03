@@ -48,7 +48,7 @@ class ContactStore {
   @observable loading = true
   @observable hasLoadmore = false
   @observable offset = 0
-  numberOfContactsPerPage = 100
+  numberOfContactsPerPage = 20
 
   loadContacts = async () => {
     if (getAuthStore().pbxState !== 'success' || this.loading) {
@@ -57,6 +57,7 @@ class ContactStore {
     this.loading = true
     await pbx
       .getContacts({
+        search_text: this.phonebookSearchTerm,
         shared: true,
         offset: this.offset,
         limit: this.numberOfContactsPerPage,
@@ -159,7 +160,11 @@ class ContactStore {
     if (!Array.isArray(p)) {
       p = [p]
     }
-    this.phoneBooks = uniqBy([...this.phoneBooks, ...p], 'id')
+    if (this.offset > 0) {
+      this.phoneBooks = uniqBy([...this.phoneBooks, ...p], 'id')
+    } else {
+      this.phoneBooks = uniqBy([...p], 'id')
+    }
   }
   @computed private get phoneBooksMap() {
     return arrToMap(this.phoneBooks, 'id', (u: Phonebook2) => u) as {
