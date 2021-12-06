@@ -195,7 +195,10 @@ export class AuthStore {
       pbxHostname: host,
       pbxPort: port,
     })
-    const pbxPhoneIndex = `${parseInt(phone_idx) || 4}`
+    let phoneIdx = parseInt(phone_idx)
+    if (!phoneIdx || phoneIdx <= 0 || phoneIdx > 4) {
+      phoneIdx = 4
+    }
     //
     if (p) {
       if (!p.pbxHostname) {
@@ -204,7 +207,7 @@ export class AuthStore {
       if (!p.pbxPort) {
         p.pbxPort = port
       }
-      p.pbxPhoneIndex = pbxPhoneIndex
+      p.pbxPhoneIndex = `${phoneIdx}`
       const d = profileStore.getProfileData(p)
       if (_wn) {
         d.accessToken = _wn
@@ -225,7 +228,7 @@ export class AuthStore {
       pbxUsername: user,
       pbxHostname: host,
       pbxPort: port,
-      pbxPhoneIndex,
+      pbxPhoneIndex: `${phoneIdx}`,
     }
     const d = profileStore.getProfileData(newP)
     //
