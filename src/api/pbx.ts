@@ -278,10 +278,12 @@ export class PBX extends EventEmitter {
   }
 
   getContacts = async ({
+    search_text,
     shared,
     offset,
     limit,
   }: {
+    search_text: string
     shared: boolean
     offset: number
     limit: number
@@ -292,6 +294,7 @@ export class PBX extends EventEmitter {
     }
 
     const res = await this.client._pal('getContactList', {
+      search_text,
       shared: shared === true ? 'true' : 'false',
       offset,
       limit,

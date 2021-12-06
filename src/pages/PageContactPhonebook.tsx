@@ -1,3 +1,4 @@
+import { debounce } from 'lodash'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
@@ -9,6 +10,7 @@ import {
   mdiCellphone,
   mdiHome,
   mdiInformation,
+  mdiMagnify,
   mdiPhone,
 } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
@@ -153,6 +155,16 @@ export class PageContactPhonebook extends Component {
     })
   }
 
+  updateSearchText = (v: string) => {
+    contactStore.phonebookSearchTerm = v
+    this.updateListPhoneBook()
+  }
+
+  updateListPhoneBook = debounce(() => {
+    contactStore.offset = 0
+    contactStore.loadContacts()
+  }, 500)
+
   render() {
     let phonebooks = contactStore.phoneBooks
     if (!getAuthStore().currentProfile.displaySharedContacts) {
@@ -161,7 +173,7 @@ export class PageContactPhonebook extends Component {
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
-      let c0 = u.name.charAt(0).toUpperCase()
+      let c0 = u?.name?.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
         c0 = '#'
       }
@@ -197,6 +209,12 @@ export class PageContactPhonebook extends Component {
         subMenu='phonebook'
         title={intl`Phonebook`}
       >
+        <Field
+          icon={mdiMagnify}
+          label={intl`SEARCH FOR PHONEBOOK`}
+          onValueChange={this.updateSearchText}
+          value={contactStore.phonebookSearchTerm}
+        />
         <Field
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
