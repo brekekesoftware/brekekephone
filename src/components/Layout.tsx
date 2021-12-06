@@ -79,8 +79,9 @@ export const Layout: FC<
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: 'always',
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
+        if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
           setHeaderOverflow(!headerOverflow)
+        }
         props.containerOnScroll?.(e)
       },
       scrollEventThrottle: 170,
