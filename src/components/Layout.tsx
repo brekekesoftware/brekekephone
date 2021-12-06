@@ -79,6 +79,7 @@ export const Layout: FC<
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: 'always',
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        // eslint-disable-next-line no-mixed-operators
         if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
           setHeaderOverflow(!headerOverflow)
         }
