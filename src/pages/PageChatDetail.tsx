@@ -245,7 +245,7 @@ export class PageChatDetail extends Component<{
         this.justMounted = false
       }
     }
-    // scroll to last position before loading more.
+    // scroll to last position after load more
     if (newHeight && this.isLoadingMore) {
       this.isLoadingMore = false
       this.view?.scrollTo({
