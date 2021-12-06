@@ -78,10 +78,13 @@ export const Layout: FC<
     Object.assign(containerProps, {
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: 'always',
-      onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) =>
+      onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         // eslint-disable-next-line no-mixed-operators
-        e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
-        setHeaderOverflow(!headerOverflow),
+        if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
+          setHeaderOverflow(!headerOverflow)
+        }
+        props.containerOnScroll?.(e)
+      },
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
     })
