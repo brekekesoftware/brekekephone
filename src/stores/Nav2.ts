@@ -192,9 +192,16 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
+  customPageIndex?: Function
   goToPageIndex = () => {
     if (!getAuthStore().currentProfile) {
+      this.customPageIndex = undefined
       this.goToPageProfileSignIn()
+      return
+    }
+    if (this.customPageIndex) {
+      this.customPageIndex()
+      this.customPageIndex = undefined
       return
     }
     const arr = menus()

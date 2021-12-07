@@ -198,11 +198,16 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     if (getAuthStore().signedInId === p?.id) {
       getAuthStore().resetFailureState()
     }
+    const nav = Nav()
+    if (isMissedCall) {
+      nav.customPageIndex = nav.goToPageCallRecents
+    }
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
     }
     if (isMissedCall) {
-      Nav().goToPageCallRecents()
+      // nav after signin in App.tsx mobx observe?
+      waitTimeout(1000).then(nav.goToPageCallRecents)
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
