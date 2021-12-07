@@ -1,3 +1,10 @@
+#### 2.8.60
+
+- Reject call should not show notification
+- Click notification in killed state should work correctly navigate to page recent calls
+- Open deeplink url should work in background, if there's no on going sip session then login to that account
+- Deeplink param phone_idx outside of 1-4 should be converted to 4
+
 #### 2.8.59
 
 - Show notification for missed call, badge number will be updated
