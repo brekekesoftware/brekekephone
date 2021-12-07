@@ -178,6 +178,14 @@ export class AuthStore {
   }
 
   handleUrlParams = async () => {
+    if (
+      callStore.calls.length ||
+      Object.keys(callStore.callkeepMap).length ||
+      sip.phone?.getSessionCount()
+    ) {
+      return
+    }
+    //
     await profileStore.profilesLoaded()
     const urlParams = await getUrlParams()
     if (!urlParams) {

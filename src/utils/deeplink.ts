@@ -6,16 +6,16 @@ import { parse, UrlParams } from './deeplink-parse'
 let alreadyHandleFirstOpen = false
 let urlParams: UrlParams | null = null
 
-const getUrlParams = () => {
+export const getUrlParams = () => {
   if (alreadyHandleFirstOpen) {
     return Promise.resolve(urlParams)
   }
   alreadyHandleFirstOpen = true
+  Linking.addEventListener('url', e => {
+    urlParams = parse(e.url)
+    getAuthStore().handleUrlParams()
+  })
   return Linking.getInitialURL().then(parse)
-}
-
-const setUrlParams = (p: UrlParams) => {
-  urlParams = p
 }
 
 Linking.addEventListener('url', e => {
@@ -35,5 +35,3 @@ Linking.addEventListener('url', e => {
   }
   getAuthStore().handleUrlParams()
 })
-
-export { getUrlParams, setUrlParams }
