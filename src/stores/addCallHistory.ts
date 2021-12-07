@@ -16,7 +16,6 @@ export const addCallHistory = (c: Call | ParsedPn) => {
   if (isTypeCall && c.partyName === 'Voicemails') {
     return
   }
-
   const pnId = isTypeCall ? c.pnId : c.id
   if (pnId) {
     if (alreadyAddHistoryMap[pnId]) {
@@ -24,7 +23,6 @@ export const addCallHistory = (c: Call | ParsedPn) => {
     }
     alreadyAddHistoryMap[pnId] = true
   }
-
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const info = isTypeCall
@@ -36,6 +34,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
         partyName: c.title,
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
+        isAboutToHangup: c.isAboutToHangup,
       }
     : {
         id,
@@ -45,8 +44,10 @@ export const addCallHistory = (c: Call | ParsedPn) => {
         partyName: getPartyName(c.from) || c.displayName,
         partyNumber: c.from,
         duration: 0,
+        // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
+        // -> B got cancel event from sip
+        isAboutToHangup: false,
       }
-
   getAuthStore().pushRecentCall(info)
   presentNotification(info)
 }
@@ -59,11 +60,17 @@ const presentNotification = (info: {
   partyNumber: string
   duration: number
   created: string
+  isAboutToHangup: boolean
 }) => {
   if (Platform.OS === 'web') {
     return
   }
-  if (AppState.currentState === 'active' || info.answered || !info.incoming) {
+  if (
+    AppState.currentState === 'active' ||
+    info.answered ||
+    !info.incoming ||
+    info.isAboutToHangup
+  ) {
     return
   }
   const body = intl`Missed call from ${info.partyName}`
