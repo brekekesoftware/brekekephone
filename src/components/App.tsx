@@ -51,21 +51,21 @@ import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 let alreadyHandleMissedCall = ''
-AppState.addEventListener('change', () => {
+AppState.addEventListener('change', async () => {
   if (AppState.currentState === 'active') {
     getAuthStore().resetFailureState()
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
-    Platform.OS === 'android' &&
-      FCM.getInitialNotification().then(async n => {
-        const id = n['id'] as string
-        const isMissedCall = id?.startsWith?.('missedcall')
-        if (isMissedCall && alreadyHandleMissedCall !== id) {
-          alreadyHandleMissedCall = id
-          await waitTimeout(1000)
-          Nav().goToPageCallRecents()
-        }
-      })
+    if (Platform.OS === 'android') {
+      const n = await FCM.getInitialNotification()
+      const id = n['id'] as string
+      const isMissedCall = id?.startsWith?.('missedcall')
+      if (isMissedCall && alreadyHandleMissedCall !== id) {
+        alreadyHandleMissedCall = id
+        await waitTimeout(1000)
+        Nav().goToPageCallRecents()
+      }
+    }
   }
 })
 registerOnUnhandledError(unexpectedErr => {
