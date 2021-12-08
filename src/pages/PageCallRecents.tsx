@@ -65,7 +65,7 @@ export class PageCallRecents extends Component {
     const calls = this.getMatchedCalls()
     return (
       <Layout
-        description={intl`Recent voicemails and calls`}
+        description={intl`Voicemail and recent calls`}
         menu='call'
         subMenu='recents'
         title={intl`Recents`}
@@ -80,12 +80,12 @@ export class PageCallRecents extends Component {
         />
         <Field
           isGroup
-          label={intl`VOICEMAILS (${callStore.newVoicemailCount})`}
+          label={intl`VOICEMAIL (${callStore.newVoicemailCount})`}
         />
         <UserItem
           iconFuncs={[() => callStore.startCall('8')]}
           icons={[mdiPhone]}
-          name={'Voicemails'}
+          name={intl`Voicemail`}
           isVoicemail
         />
         <Field isGroup label={intl`RECENT CALLS (${calls.length})`} />

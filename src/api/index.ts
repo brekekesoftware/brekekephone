@@ -6,7 +6,7 @@ import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
-import { intlDebug } from '../stores/intl'
+import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { Conference } from './brekekejs'
@@ -128,7 +128,7 @@ class Api {
   onSIPSessionStarted = (call: Call) => {
     const number = call.partyNumber
     if (number === '8') {
-      call.partyName = 'Voicemails'
+      call.partyName = intl`Voicemail`
     }
     if (!call.partyName) {
       call.partyName = contactStore.getPbxUserById(number)?.name

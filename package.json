@@ -11,8 +11,8 @@
     "ios": "react-native run-ios",
     "bitcode": "[ -d node_modules/react-native-webrtc/ios/WebRTC.dSYM ] || bash node_modules/react-native-webrtc/tools/downloadBitcode.sh",
     "clean": "yarn --check-files && rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && cd ios && pod install --repo-update && cd .. && npx jetify && cd android && ./gradlew clean",
-    "build": "del-cli -f node_modules/.cache/babel* && craco build",
-    "intl": "del-cli -f .babelPluginIntl.json && cross-env EXTRACT_INTL=1 yarn build",
+    "build": "rm -rf node_modules/.cache/babel* && craco build",
+    "intl": "rm -rf node_modules/.cache/babel* .intlNewEn.json && cross-env EXTRACT_INTL=1 babel src -x .js,.ts,.tsx -d build && rm -rf build && node .intlBuild",
     "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --loglevel=error --ignore-path=.gitignore --write .",
     "test": "yarn test:eslint && yarn test:prettier && yarn test:typescript && yarn test:type-coverage",
     "test:eslint": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 .",
@@ -79,6 +79,7 @@
     "validatorjs": "3.22.1"
   },
   "devDependencies": {
+    "@babel/cli": "7.16.0",
     "@babel/core": "7.16.0",
     "@babel/plugin-proposal-decorators": "7.16.4",
     "@babel/plugin-proposal-optional-chaining": "7.16.0",
@@ -105,7 +106,6 @@
     "@typescript-eslint/parser": "5.5.0",
     "circular-dependency-plugin": "5.2.2",
     "cross-env": "7.0.3",
-    "del-cli": "4.0.1",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-react-app": "6.2.2",
     "eslint-plugin-simple-import-sort": "7.0.0",

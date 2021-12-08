@@ -211,7 +211,7 @@ export class PageContactPhonebook extends Component {
       >
         <Field
           icon={mdiMagnify}
-          label={intl`SEARCH FOR PHONEBOOK`}
+          label={intl`SEARCH CONTACTS`}
           onValueChange={this.updateSearchText}
           value={contactStore.phonebookSearchTerm}
         />

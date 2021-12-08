@@ -1,11 +1,11 @@
 // For react-native code
 
-const babelPluginIntl = require('./.babelPluginIntl')
+const intlBabelPlugin = require('./.intlBabelPlugin')
 
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
   plugins: [
-    babelPluginIntl,
+    intlBabelPlugin,
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     '@babel/plugin-proposal-optional-chaining',
   ],

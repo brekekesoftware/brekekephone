@@ -13,7 +13,7 @@ import { intl } from './intl'
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = (c: Call | ParsedPn) => {
   const isTypeCall = c instanceof Call || 'partyName' in c || 'partyNumber' in c
-  if (isTypeCall && c.partyName === 'Voicemails') {
+  if (isTypeCall && (c.partyNumber === '8' || /^Voicemail/.test(c.partyName))) {
     return
   }
   const pnId = isTypeCall ? c.pnId : c.id

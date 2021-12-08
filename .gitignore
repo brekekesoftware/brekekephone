@@ -77,4 +77,4 @@ google-services.json
 turnConfig.*
 
 # Intl output
-.babelPluginIntl.json
+.intlNewEn.json

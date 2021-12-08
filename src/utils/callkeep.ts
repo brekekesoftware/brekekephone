@@ -51,7 +51,7 @@ const setupCallKeepWithCheck = async () => {
       additionalPermissions: [],
       foregroundService: {
         channelId: 'com.brekeke.phone',
-        channelName: intl`Foreground service for Brekeke Phone`,
+        channelName: intl`Background service for Brekeke Phone`,
         notificationTitle: intl`Brekeke Phone is running on background`,
         notificationIcon: 'ic_launcher',
       },
