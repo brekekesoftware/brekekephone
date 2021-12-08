@@ -1,5 +1,7 @@
 #### 2.8.60
 
+- Fix chat load more scroll issue
+- Fix phonebook loading issue, implement search phonebook, 20 items per load
 - Reject call should not show notification
 - Click notification in killed state should work correctly navigate to page recent calls
 - Open deeplink url should work in background, if there's no on going sip session then login to that account
