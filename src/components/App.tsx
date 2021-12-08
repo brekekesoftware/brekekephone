@@ -39,6 +39,7 @@ import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -56,11 +57,12 @@ AppState.addEventListener('change', () => {
     BrekekeUtils.closeAllIncomingCalls()
     callStore.onCallKeepAction()
     Platform.OS === 'android' &&
-      FCM.getInitialNotification().then(n => {
+      FCM.getInitialNotification().then(async n => {
         const id = n['id'] as string
         const isMissedCall = id?.startsWith?.('missedcall')
         if (isMissedCall && alreadyHandleMissedCall !== id) {
           alreadyHandleMissedCall = id
+          await waitTimeout(1000)
           Nav().goToPageCallRecents()
         }
       })
