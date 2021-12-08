@@ -6,8 +6,8 @@ const uint8ArrayToUrlBase64 = (arr: ArrayBuffer) =>
     .replace(/[+/]/g, '-')
 
 export const PushNotification = {
-  register: (initApp: Function) => {
-    initApp()
+  register: async (initApp: Function) => {
+    await initApp()
     if (!window.Notification || window.Notification.permission === 'granted') {
       return
     }

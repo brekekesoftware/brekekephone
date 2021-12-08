@@ -70,11 +70,18 @@ export class IntlStore {
       onSelect: this.setLocale,
     })
   }
-  loadingPromise = this.getLocaleFromLocalStorage().then(
-    action(() => {
-      this.localeReady = true
-      this.localeLoading = false
-    }),
-  )
+
+  private loadingPromise?: Promise<unknown>
+  wait = () => {
+    if (!this.loadingPromise) {
+      this.loadingPromise = this.getLocaleFromLocalStorage().then(
+        action(() => {
+          this.localeReady = true
+          this.localeLoading = false
+        }),
+      )
+    }
+    return this.loadingPromise
+  }
 }
 export const intlStore = new IntlStore() as Immutable<IntlStore>

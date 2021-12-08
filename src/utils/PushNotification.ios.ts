@@ -41,7 +41,7 @@ const onNotification = async (
     withCallkeepUuid = withDictionaryPayload.dictionaryPayload
     withCallkeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
-  initApp()
+  await initApp()
   const n = await parse(withCallkeepUuid, isLocal)
   if (!n) {
     return

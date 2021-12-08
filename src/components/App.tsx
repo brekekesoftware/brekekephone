@@ -12,7 +12,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import FCM from 'react-native-fcm'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -39,7 +38,6 @@ import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -50,53 +48,50 @@ import { RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
-let alreadyHandleMissedCall = ''
-AppState.addEventListener('change', async () => {
-  if (AppState.currentState === 'active') {
-    getAuthStore().resetFailureState()
-    BrekekeUtils.closeAllIncomingCalls()
-    callStore.onCallKeepAction()
-    if (Platform.OS === 'android') {
-      const n = await FCM.getInitialNotification()
-      const id = n['id'] as string
-      const isMissedCall = id?.startsWith?.('missedcall')
-      if (isMissedCall && alreadyHandleMissedCall !== id) {
-        alreadyHandleMissedCall = id
-        await waitTimeout(1000)
-        Nav().goToPageCallRecents()
-      }
+let alreadyInitApp = false
+PushNotification.register(async () => {
+  if (alreadyInitApp) {
+    return
+  }
+  alreadyInitApp = true
+
+  await intlStore.wait()
+  const s = getAuthStore()
+
+  AppState.addEventListener('change', async () => {
+    if (AppState.currentState === 'active') {
+      getAuthStore().resetFailureState()
+      BrekekeUtils.closeAllIncomingCalls()
+      callStore.onCallKeepAction()
+    }
+  })
+  registerOnUnhandledError(unexpectedErr => {
+    // Must wrap in setTimeout to make sure
+    //    there's no state change when rendering
+    BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
+    return false
+  })
+  // Handle android hardware back button press
+  BackHandler.addEventListener('hardwareBackPress', onBackPressed)
+
+  const getAudioVideoPermission = () => {
+    const cb = (stream: MediaStream) =>
+      stream.getTracks().forEach(t => t.stop())
+    // @ts-ignore
+    const eb = (err: MediaStreamError) => {
+      /* TODO */
+    }
+    // @ts-ignore
+    const p = window.navigator.getUserMedia(
+      { audio: true, video: true },
+      cb,
+      eb,
+    ) as unknown as Promise<MediaStream>
+    if (p?.then) {
+      p.then(cb).catch(eb)
     }
   }
-})
-registerOnUnhandledError(unexpectedErr => {
-  // Must wrap in setTimeout to make sure
-  //    there's no state change when rendering
-  BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
-  return false
-})
-
-const getAudioVideoPermission = () => {
-  const cb = (s: MediaStream) => s.getTracks().forEach(t => t.stop())
-  // @ts-ignore
-  const er = (err: MediaStreamError) => {
-    /* TODO */
-  }
-  // @ts-ignore
-  const p = window.navigator.getUserMedia(
-    {
-      audio: true,
-      video: true,
-    },
-    cb,
-    er,
-  ) as unknown as Promise<MediaStream>
-  if (p?.then) {
-    p.then(cb).catch(er)
-  }
-}
-
-if (Platform.OS === 'web') {
-  intlStore.loadingPromise.then(() => {
+  if (Platform.OS === 'web') {
     RnAlert.prompt({
       title: intl`Action Required`,
       message: intl`Web Phone needs your action to work well on browser. Press OK to continue`,
@@ -105,26 +100,14 @@ if (Platform.OS === 'web') {
       onConfirm: getAudioVideoPermission,
       onDismiss: getAudioVideoPermission,
     })
-  })
-} else if (
-  AppState.currentState === 'active' &&
-  !callStore.calls.length &&
-  !Object.keys(callStore.callkeepMap).length &&
-  !authStore.sipPn.sipAuth
-) {
-  getAudioVideoPermission()
-}
-
-// Handle android hardware back button press
-BackHandler.addEventListener('hardwareBackPress', onBackPressed)
-
-let alreadyInitApp = false
-PushNotification.register(() => {
-  if (alreadyInitApp) {
-    return
+  } else if (
+    AppState.currentState === 'active' &&
+    !callStore.calls.length &&
+    !Object.keys(callStore.callkeepMap).length &&
+    !authStore.sipPn.sipAuth
+  ) {
+    getAudioVideoPermission()
   }
-  alreadyInitApp = true
-  const s = getAuthStore()
 
   setupCallKeep()
   profileStore.loadProfilesFromLocalStorage().then(() => {
@@ -178,7 +161,6 @@ const css = StyleSheet.create({
     right: 0,
     height: 30,
   },
-
   LoadingFullscreen: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#74bf53', // Old color from design, not g.colors.primary

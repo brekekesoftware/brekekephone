@@ -17,7 +17,7 @@ const onToken = (t: string) => {
 
 const onNotification = async (n0: Notification, initApp: Function) => {
   try {
-    initApp()
+    await initApp()
     // flush initial notification
     getInitialNotifications().then(ns =>
       ns.forEach(n => onNotification(n, initApp)),

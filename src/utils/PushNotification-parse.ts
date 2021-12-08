@@ -207,7 +207,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     }
     if (isMissedCall) {
       // nav after signin in App.tsx mobx observe?
-      waitTimeout(1000).then(nav.goToPageCallRecents)
+      waitTimeout().then(nav.goToPageCallRecents)
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
