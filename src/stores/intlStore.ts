@@ -1,8 +1,9 @@
 import { action, computed, observable, runInAction } from 'mobx'
+import { NativeModules, Platform } from 'react-native'
 
 import en from '../assets/intl-en.json'
 import ja from '../assets/intl-ja.json'
-import vi from '../assets/intl-vi.json'
+// import vi from '../assets/intl-vi.json'
 import { RnAsyncStorage } from '../components/Rn'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
@@ -12,7 +13,7 @@ import { RnPicker } from './RnPicker'
 export const labels = {
   en,
   ja,
-  vi,
+  // vi,
 } as { [k: string]: string[] }
 export const enLabelsMapIndex = arrToMap(
   en,
@@ -34,14 +35,23 @@ export class IntlStore {
     return localeOptions.find(o => o.key === this.locale)?.label
   }
 
-  private getLocaleFromLocalStorage = async () => {
-    let locale = await RnAsyncStorage.getItem('locale')
-    if (!locale || !labels[locale as 'en']) {
-      locale = 'en'
-      await RnAsyncStorage.setItem('locale', locale)
+  private getLocale = async () => {
+    let locale = await RnAsyncStorage.getItem('locale').then(l => l || '')
+    if (!locale || !labels[locale]) {
+      locale =
+        Platform.OS === 'ios'
+          ? NativeModules?.SettingsManager?.settings?.AppleLocale ||
+            NativeModules?.SettingsManager?.settings?.AppleLanguages?.[0]
+          : NativeModules?.I18nManager?.localeIdentifier
+      locale = locale?.substr(0, 2)
+      console.error(`Intl debug: system locale=${locale}`)
     }
+    if (!locale || !labels[locale]) {
+      locale = 'en'
+    }
+    await RnAsyncStorage.setItem('locale', locale)
     runInAction(() => {
-      this.locale = locale || 'en'
+      this.locale = locale
       BrekekeUtils.setLocale(this.locale)
     })
   }
@@ -74,7 +84,7 @@ export class IntlStore {
   private loadingPromise?: Promise<unknown>
   wait = () => {
     if (!this.loadingPromise) {
-      this.loadingPromise = this.getLocaleFromLocalStorage().then(
+      this.loadingPromise = this.getLocale().then(
         action(() => {
           this.localeReady = true
           this.localeLoading = false
