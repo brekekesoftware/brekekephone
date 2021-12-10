@@ -69,6 +69,8 @@ export const PushNotification = {
       await getInitialNotifications().then(ns =>
         ns.forEach(n => onNotification(n, initApp)),
       )
+      // killed state local PN interaction?
+      await FCM.getInitialNotification().then(n => onNotification(n, initApp))
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,
