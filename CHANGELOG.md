@@ -1,3 +1,11 @@
+#### 2.8.61
+
+- Try fix click notification in killed state should navigate to page recent calls
+- Add bluetooth android permission and test bluetooth earphone (still has some issues)
+- Add missing locale labels
+- If there's no locale selected, system locale will be selected by default
+- Update missed call notification as Akira requested: title={{name || number}} body="Missed call"
+
 #### 2.8.60
 
 - Fix chat load more scroll issue
