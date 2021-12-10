@@ -159,10 +159,27 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return null
   }
+
+  const id = raw['id'] as string
+  if (id?.startsWith?.('missedcall')) {
+    const nav = Nav()
+    nav.customPageIndex = nav.goToPageCallRecents
+    // nav after signin in App.tsx mobx observe?
+    waitTimeout().then(nav.goToPageCallRecents)
+  }
+
   const n = parseNotificationData(raw)
   if (!n) {
     return null
   }
+
+  isLocal = Boolean(
+    isLocal ||
+      raw.my_custom_data ||
+      raw.is_local_notification ||
+      n.my_custom_data ||
+      n.is_local_notification,
+  )
 
   if (Platform.OS === 'android') {
     if (n.id && androidAlreadyProccessedPn[n.id]) {
@@ -179,17 +196,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
     )
   }
-
-  const id = raw['id'] as string
-  const isMissedCall = id?.startsWith?.('missedcall')
-  if (
-    isLocal ||
-    raw['my_custom_data'] ||
-    raw['is_local_notification'] ||
-    n.my_custom_data ||
-    n.is_local_notification ||
-    isMissedCall
-  ) {
+  if (isLocal) {
     const p = getAuthStore().findProfile({
       ...n,
       pbxUsername: n.to,
@@ -198,16 +205,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     if (getAuthStore().signedInId === p?.id) {
       getAuthStore().resetFailureState()
     }
-    const nav = Nav()
-    if (isMissedCall) {
-      nav.customPageIndex = nav.goToPageCallRecents
-    }
     if (p?.id && !getAuthStore().signedInId) {
       getAuthStore().signIn(p.id)
-    }
-    if (isMissedCall) {
-      // nav after signin in App.tsx mobx observe?
-      waitTimeout().then(nav.goToPageCallRecents)
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
