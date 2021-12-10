@@ -48,7 +48,7 @@ export class PageCallDtmfKeypad extends Component {
       signal: key,
       sessionId: c.id,
       tenant: c.pbxTenant || getAuthStore().currentProfile.pbxTenant,
-      talkerId: c.pbxTalkerId || c.partyNumber || c.partyName,
+      talkerId: c.pbxTalkerId || c.partyNumber,
     })
   }
 
@@ -56,7 +56,7 @@ export class PageCallDtmfKeypad extends Component {
     const c = callStore.getCurrentCall()
     return (
       <Layout
-        title={c?.title}
+        title={c?.computedName}
         description={intl`Keypad dial manually`}
         onBack={Nav().backToPageCallManage}
       >

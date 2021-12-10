@@ -21,10 +21,11 @@ export class Call {
   @observable id = ''
   @observable pnId = ''
   @observable partyNumber = ''
+  /** @deprecated use computedName instead */
   @observable partyName = ''
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
-  @computed get title() {
+  @computed get computedName() {
     return (
       getPartyName(this.partyNumber) ||
       this.partyName ||
@@ -132,9 +133,7 @@ export class Call {
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
   toggleVideo = () => {
-    const pbxUser = contactStore.getPbxUserById(
-      this.partyNumber || this.partyName,
-    )
+    const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
     if (this.holding || callerStatus === 'holding') {
       return

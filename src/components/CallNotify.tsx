@@ -80,7 +80,7 @@ export const CallNotify = observer(() => {
       {callStore.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
       <View style={css.Notify}>
         <View style={css.Notify_Info}>
-          <RnText bold>{c.partyName || c.partyNumber}</RnText>
+          <RnText bold>{c.computedName}</RnText>
           <RnText>{intl`Incoming Call`}</RnText>
         </View>
         <ButtonIcon

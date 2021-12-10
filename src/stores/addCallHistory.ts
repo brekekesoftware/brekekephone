@@ -12,8 +12,8 @@ import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = (c: Call | ParsedPn) => {
-  const isTypeCall = c instanceof Call || 'partyName' in c || 'partyNumber' in c
-  if (isTypeCall && (c.partyNumber === '8' || /^Voicemail/.test(c.partyName))) {
+  const isTypeCall = c instanceof Call || 'partyNumber' in c
+  if (isTypeCall && c.partyNumber === '8') {
     return
   }
   const pnId = isTypeCall ? c.pnId : c.id
@@ -31,7 +31,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
         created,
         incoming: c.incoming,
         answered: c.answered,
-        partyName: c.title,
+        partyName: c.computedName,
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
@@ -41,7 +41,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
         created,
         incoming: true,
         answered: false,
-        partyName: getPartyName(c.from) || c.displayName,
+        partyName: getPartyName(c.from) || c.displayName || c.from,
         partyNumber: c.from,
         duration: 0,
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
@@ -52,7 +52,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
   presentNotification(info)
 }
 
-const presentNotification = (info: {
+const presentNotification = (c: {
   id: string
   incoming: boolean
   answered: boolean
@@ -67,17 +67,18 @@ const presentNotification = (info: {
   }
   if (
     AppState.currentState === 'active' ||
-    info.answered ||
-    !info.incoming ||
-    info.isAboutToHangup
+    c.answered ||
+    !c.incoming ||
+    c.isAboutToHangup
   ) {
     return
   }
-  const body = intl`Missed call from ${info.partyName}`
+  const title = intl`Missed call`
+  const body = c.partyName || c.partyNumber
   if (Platform.OS === 'android') {
     FCM.presentLocalNotification({
+      title,
       body,
-      title: info.partyNumber,
       number: 0,
       priority: 'high',
       show_in_foreground: true,
@@ -97,15 +98,15 @@ const presentNotification = (info: {
       badge = 1 + (Number(badge) || 0)
       PushNotificationIOS.addNotificationRequest({
         id: `missedcall-${Date.now()}`,
+        title,
         body,
-        title: info.partyNumber,
         sound: undefined,
         badge,
         userInfo: {
           id: `missedcall-${Date.now()}`,
           aps: {
+            title,
             body,
-            title: info.partyNumber,
             my_custom_data: 'local_notification',
             pre_app_state: AppState.currentState,
             local_notification: true,

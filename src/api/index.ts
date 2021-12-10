@@ -5,7 +5,7 @@ import { getAuthStore, waitSip } from '../stores/authStore'
 import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
+import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
@@ -125,15 +125,14 @@ class Api {
     getAuthStore().sipTotalFailure += 1
     sip.stopWebRTC()
   }
-  onSIPSessionStarted = (call: Call) => {
-    const number = call.partyNumber
-    if (number === '8') {
-      call.partyName = intl`Voicemail`
+  onSIPSessionStarted = (c: Call) => {
+    if (c.partyNumber === '8') {
+      c.partyName = intl`Voicemail`
     }
-    if (!call.partyName) {
-      call.partyName = contactStore.getPbxUserById(number)?.name
+    if (!c.partyName) {
+      c.partyName = getPartyName(c.partyNumber) || c.partyNumber
     }
-    callStore.onCallUpsert(call)
+    callStore.onCallUpsert(c)
   }
   onSIPSessionUpdated = (call: Call) => {
     callStore.onCallUpsert(call)

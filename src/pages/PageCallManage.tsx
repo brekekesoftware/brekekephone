@@ -140,7 +140,7 @@ export class PageCallManage extends Component<{
       }
       noScroll
       onBack={Nav().goToPageCallRecents}
-      title={c?.title || intl`Connecting...`}
+      title={c?.computedName || intl`Connecting...`}
       transparent={!c?.transferring}
     >
       {!c ? null : c.transferring ? (
@@ -316,7 +316,7 @@ export class PageCallManage extends Component<{
             <IncomingItemWithTimer />
             <View style={[css.Hangup, css.Hangup_incomingText]}>
               <RnText title white center>
-                {c.title}
+                {c.computedName}
               </RnText>
               <RnText bold white center>
                 {intl`Incoming Call`}
