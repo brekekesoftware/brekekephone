@@ -278,7 +278,7 @@ export class PageCallManage extends Component<{
             />
           </View>
         </View>
-        {n >= 0 && (
+        {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageCallBackgrounds}
