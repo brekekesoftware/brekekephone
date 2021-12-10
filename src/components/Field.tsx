@@ -185,6 +185,7 @@ export const Field: FC<
     removeBtnStyle: TouchableOpacityProps['style']
     removeBtnIcon: string
     removeBtnIconStyle: ViewProps['style']
+    textInputStyle?: TextInputProps['style']
     onRemoveBtnPress(): void
     type: 'Switch' | 'RnPicker'
     valueRender: Function
@@ -368,7 +369,7 @@ export const Field: FC<
             <RnTextInput
               disabled
               secureTextEntry={!!(props.secureTextEntry && props.value)}
-              style={css.Field_TextInput}
+              style={[css.Field_TextInput, props.textInputStyle]}
               value={
                 (props.valueRender && props.valueRender(props.value)) ||
                 props.value ||
