@@ -1,7 +1,7 @@
 #### 2.8.61
 
-- Try fix click notification in killed state should navigate to page recent calls
-- Add bluetooth android permission and test bluetooth earphone (still has some issues)
+- Android: Try fix click notification in killed state should navigate to page recent calls
+- Android: Add bluetooth permission and test bluetooth earphone (still has some issues)
 - Add missing locale labels
 - If there's no locale selected, system locale will be selected by default
 - Update missed call notification as Akira requested: title={{name || number}} body="Missed call"
@@ -11,7 +11,7 @@
 - Fix chat load more scroll issue
 - Fix phonebook loading issue, implement search phonebook, 20 items per load
 - Reject call should not show notification
-- Click notification in killed state should work correctly navigate to page recent calls
+- Android: Try fix click notification in killed state should navigate to page recent calls
 - Open deeplink url should work in background, if there's no on going sip session then login to that account
 - Deeplink param phone_idx outside of 1-4 should be converted to 4
 
