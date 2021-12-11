@@ -1,6 +1,7 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
+import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -22,6 +23,17 @@ public class MainActivity extends ReactActivity {
   public void onBackPressed() {
     // Do not exit on back pressed
     BrekekeModule.emit("onBackPressed", "");
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Bundle extras = getIntent().getExtras();
+    if (extras != null
+        && extras.get("id") != null
+        && extras.get("id").toString().startsWith("missedcall")) {
+      BrekekeModule.emit("onGoToPageRecentCall", "");
+    }
   }
 
   @Override

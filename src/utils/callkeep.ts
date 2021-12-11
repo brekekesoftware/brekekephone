@@ -258,6 +258,9 @@ export const setupCallKeep = async () => {
     })
     // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
+    eventEmitter.addListener('onGoToPageRecentCall', () => {
+      Nav().goToPageCallRecents()
+    })
     eventEmitter.addListener('debug', (m: string) =>
       console.error(`Android debug: ${m}`),
     )

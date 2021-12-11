@@ -77,6 +77,7 @@ const presentNotification = (c: {
   const body = c.partyName || c.partyNumber
   if (Platform.OS === 'android') {
     FCM.presentLocalNotification({
+      click_action: 'MissedCallNotification',
       title,
       body,
       number: 0,
