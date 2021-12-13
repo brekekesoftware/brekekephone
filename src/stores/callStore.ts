@@ -26,6 +26,10 @@ export class CallStore {
   private recentCallActivityAt = 0
 
   private prevCallKeepUuid?: string
+
+  private callKeepCalleeRejectCallMap: {
+    [uuidOrPnId: string]: TCallkeepAction
+  } = {}
   private getCallkeep = (
     uuid: string,
     o?: {
@@ -109,7 +113,10 @@ export class CallStore {
       c.answer()
     }
   }
-  @action onCallKeepEndCall = (uuid: string) => {
+  @action onCallKeepEndCall = (uuid: string, userRejectCall = false) => {
+    if (userRejectCall) {
+      this.callKeepCalleeRejectCallMap[uuid] = 'calleeRejectCall'
+    }
     this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getCallkeep(uuid, {
       includingAnswered: true,
@@ -449,8 +456,11 @@ export class CallStore {
       pnData &&
       !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id)
     ) {
-      addCallHistory(pnData)
+      const isCalleeRejectCall =
+        this.callKeepCalleeRejectCallMap[uuid] === 'calleeRejectCall'
+      addCallHistory(pnData, isCalleeRejectCall)
     }
+    delete this.callKeepCalleeRejectCallMap[uuid]
     delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
@@ -613,5 +623,5 @@ export class CallStore {
 
 export const callStore = new CallStore() as Immutable<CallStore>
 
-export type TCallkeepAction = 'answerCall' | 'rejectCall'
+export type TCallkeepAction = 'answerCall' | 'rejectCall' | 'calleeRejectCall'
 type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>

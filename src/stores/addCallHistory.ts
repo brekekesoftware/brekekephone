@@ -11,18 +11,24 @@ import { Call } from './Call'
 import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
-export const addCallHistory = (c: Call | ParsedPn) => {
+export const addCallHistory = (
+  c: Call | ParsedPn,
+  isCalleeRejectCall?: boolean,
+) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
+
   if (isTypeCall && c.partyNumber === '8') {
     return
   }
   const pnId = isTypeCall ? c.pnId : c.id
+
   if (pnId) {
     if (alreadyAddHistoryMap[pnId]) {
       return
     }
     alreadyAddHistoryMap[pnId] = true
   }
+
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const info = isTypeCall
@@ -49,7 +55,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
         isAboutToHangup: false,
       }
   getAuthStore().pushRecentCall(info)
-  presentNotification(info)
+  !isCalleeRejectCall && presentNotification(info)
 }
 
 const presentNotification = (c: {

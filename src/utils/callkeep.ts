@@ -111,7 +111,7 @@ export const setupCallKeep = async () => {
     Platform.OS === 'android'
       ? // Handle action from CallKeep Notification on android
         BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
-      : callStore.onCallKeepEndCall(uuid)
+      : callStore.onCallKeepEndCall(uuid, true)
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
@@ -224,7 +224,7 @@ export const setupCallKeep = async () => {
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      callStore.onCallKeepEndCall(uuid.toUpperCase())
+      callStore.onCallKeepEndCall(uuid.toUpperCase(), true)
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
       BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 300)
