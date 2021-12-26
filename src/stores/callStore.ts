@@ -162,6 +162,7 @@ export class CallStore {
         delete cPartial.remoteVideoStreamObject
       }
       if (!cExisting.answered && cPartial.answered) {
+        this.currentCallId = cExisting.id
         cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
