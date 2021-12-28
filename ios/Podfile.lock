@@ -287,7 +287,7 @@ PODS:
     - React-Core
   - react-native-document-picker (4.3.0):
     - React-Core
-  - react-native-get-random-values (1.7.1):
+  - react-native-get-random-values (1.7.2):
     - React-Core
   - react-native-image-picker (2.3.4):
     - React-Core
@@ -623,7 +623,7 @@ SPEC CHECKSUMS:
   React-logger: e522e76fa3e9ec3e7d7115b49485cc065cf4ae06
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-document-picker: 20f652c2402d3ddc81f396d8167c3bd978add4a2
-  react-native-get-random-values: 2c4ff6b44cb71291dabe9a8ae87d3877dcf387da
+  react-native-get-random-values: 30b3f74ca34e30e2e480de48e4add2706a40ac8f
   react-native-image-picker: c6d75c4ab2cf46f9289f341242b219cb3c1180d3
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
