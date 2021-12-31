@@ -29,7 +29,7 @@ export class PBX extends EventEmitter {
       login_user: p.pbxUsername,
       login_password: p.pbxPassword,
       _wn: d.accessToken,
-      park: p.parks,
+      park: p.parks.map(i => i.number) as string[],
       voicemail: 'self',
       user: '*',
       status: true,

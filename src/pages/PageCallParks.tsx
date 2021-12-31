@@ -70,11 +70,11 @@ export class PageCallParks extends Component<{
           </>
         )}
         {ps.map((u, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.selectPark(u)}>
+          <RnTouchableOpacity key={i} onPress={() => this.selectPark(u.number)}>
             <UserItem
               key={i}
-              name={intl`Park ${i + 1}: ${u}`}
-              selected={p === u}
+              name={intl`Park ${i + 1}: ${u.number} - ${u.name}`}
+              selected={p === u.number}
             />
           </RnTouchableOpacity>
         ))}

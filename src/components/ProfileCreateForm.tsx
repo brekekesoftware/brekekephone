@@ -6,7 +6,7 @@ import { Platform, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
-import { Profile, profileStore } from '../stores/profileStore'
+import { Park, Profile, profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -27,7 +27,7 @@ export const ProfileCreateForm: FC<{
         ...profileStore.genEmptyProfile(),
         ...cloneDeep(props.updatingProfile),
       },
-      addingPark: '',
+      addingPark: { name: '', number: '' },
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -46,10 +46,9 @@ export const ProfileCreateForm: FC<{
     //
     onAddingParkSubmit: () => {
       $.set('profile', (p: Profile) => {
-        $.addingPark = $.addingPark.trim()
-        if ($.addingPark) {
+        if ($.addingPark.name && $.addingPark.number) {
           p.parks.push($.addingPark)
-          $.addingPark = ''
+          $.addingPark = { name: '', number: '' }
         }
         return p
       })
@@ -60,7 +59,8 @@ export const ProfileCreateForm: FC<{
         message: (
           <>
             <RnText small>
-              Park {i + 1}: {$.profile.parks[i]}
+              Park {i + 1}:{' '}
+              {$.profile.parks[i].number + ' - ' + $.profile.parks[i].name}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
@@ -234,7 +234,8 @@ export const ProfileCreateForm: FC<{
           ...$.profile.parks.map((p, i) => ({
             disabled: true,
             name: `parks[${i}]`,
-            value: p,
+            type: 'PARK',
+            value: `${p.number} - ${p.name}`,
             label: intl`PARK ${i + 1}`,
             onRemoveBtnPress: props.footerLogout
               ? null
@@ -246,8 +247,9 @@ export const ProfileCreateForm: FC<{
                 {
                   name: 'parks[new]',
                   label: intl`NEW PARK`,
+                  type: 'PARK',
                   value: $.addingPark,
-                  onValueChange: (v: string) => $.set('addingPark', v),
+                  onValueChange: (v: Park) => $.set('addingPark', v),
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),
