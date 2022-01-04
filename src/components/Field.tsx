@@ -259,6 +259,7 @@ export const Field: FC<
   const $0 = useStore(() => ({
     observable: {
       isFocusing: false,
+      isParkNameFocusing: false,
       park: {
         number: '',
         name: '',
@@ -267,11 +268,16 @@ export const Field: FC<
   }))
   const $ = $0 as typeof $0 & {
     isFocusing: boolean
+    isParkNameFocusing: boolean
     park: Park
   }
   const inputRef = useRef<HTMLInputElement>()
+  const inputRefName = useRef<HTMLInputElement>()
   if (!inputRef.current && $.isFocusing) {
     $.set('isFocusing', false)
+  }
+  if (!inputRefName.current && $.isParkNameFocusing) {
+    $.set('isParkNameFocusing', false)
   }
   if (props.onCreateBtnPress) {
     Object.assign(props, {
@@ -315,12 +321,12 @@ export const Field: FC<
       props?.onValueChange && props?.onValueChange(newPark)
     }
     const onChangeNumber = (text: string) => {
-      const newPark = { ...$.park, number: text }
+      const newPark = { ...$.park, number: text.trim() }
       $.set('park', newPark)
       props?.onValueChange && props?.onValueChange(newPark)
     }
     return (
-      <View style={css.Field_ViewRow}>
+      <View style={[css.Field_ViewRow]}>
         <RnTextInput
           ref={inputRef}
           {...omit(props, [
@@ -337,24 +343,19 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`number`}
-          onBlur={flow([
-            () => $.set('isFocusing', false),
-            props.onBlur || noop,
-          ])}
+          placeholderTextColor={'grey'}
+          keyboardType={'numeric'}
+          onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
           onChangeText={txt => onChangeNumber(txt)}
-          onFocus={flow([
-            () => $.set('isFocusing', true),
-            props.onFocus || noop,
-          ])}
-          onSubmitEditing={flow([
-            props.onCreateBtnPress || noop,
-            props.onSubmitEditing || noop,
-          ])}
+          onFocus={() => {
+            Platform.OS !== 'web' && $.set('isParkNameFocusing', false)
+            $.set('isFocusing', true)
+          }}
           style={[css.Field_Park_TextInput, props.style]}
           value={value.number as string}
         />
         <RnTextInput
-          // ref={inputRefName}
+          ref={inputRefName}
           {...omit(props, [
             'type',
             'label',
@@ -369,19 +370,15 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`name`}
-          onBlur={flow([
-            () => $.set('isFocusing', false),
-            props.onBlur || noop,
-          ])}
+          placeholderTextColor={'grey'}
+          onBlur={() =>
+            Platform.OS === 'web' && $.set('isParkNameFocusing', false)
+          }
           onChangeText={txt => onChangeName(txt)}
-          onFocus={flow([
-            () => $.set('isFocusing', true),
-            props.onFocus || noop,
-          ])}
-          // onSubmitEditing={flow([
-          //   props.onCreateBtnPress || noop,
-          //   props.onSubmitEditing || noop,
-          // ])}
+          onFocus={() => {
+            Platform.OS !== 'web' && $.set('isFocusing', false)
+            $.set('isParkNameFocusing', true)
+          }}
           style={[css.Field_Park_TextInput, props.style]}
           value={value.name as string}
         />
@@ -419,7 +416,9 @@ export const Field: FC<
     } else if (props.type === 'PARK') {
       Object.assign(props, {
         inputElement: renderPark(),
-        onTouchPress: () => inputRef.current?.focus(),
+        onTouchPress: () => {
+          !$.isFocusing && !$.isParkNameFocusing && inputRef.current?.focus()
+        },
       })
     } else {
       Object.assign(props, {
@@ -481,7 +480,7 @@ export const Field: FC<
         onPress={props.onTouchPress}
         style={[
           css.Field,
-          $.isFocusing && css.Field__focusing,
+          ($.isFocusing || $.isParkNameFocusing) && css.Field__focusing,
           props.disabled && css.Field__disabled,
           props.transparent && css.Field__transparent,
         ]}
@@ -489,7 +488,11 @@ export const Field: FC<
         {/* Fix form auto fill style on web */}
         {Platform.OS !== 'web' && label}
         {
-          <View pointerEvents={($.isFocusing ? null : 'none') as any}>
+          <View
+            pointerEvents={
+              ($.isFocusing || $.isParkNameFocusing ? null : 'none') as any
+            }
+          >
             {props.inputElement || (
               <RnTextInput
                 disabled
