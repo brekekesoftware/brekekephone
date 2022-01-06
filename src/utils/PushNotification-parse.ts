@@ -213,6 +213,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   if (!n.isCall) {
     console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
+    // for case: kill app, click notification, app does't auto login
+    Platform.OS === 'android' && getAuthStore().signInByNotification(n)
     return AppState.currentState !== 'active' ||
       getAuthStore().currentProfile?.pbxUsername !== n.to
       ? n
