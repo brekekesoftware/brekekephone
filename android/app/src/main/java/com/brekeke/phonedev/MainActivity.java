@@ -1,6 +1,7 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
+import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -10,6 +11,17 @@ public class MainActivity extends ReactActivity {
   protected void onStart() {
     BrekekeModule.main = this;
     super.onStart();
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Bundle extras = getIntent().getExtras();
+    if (extras != null
+        && extras.get("title") != null
+        && extras.get("title").toString().startsWith("Message from")) {
+      BrekekeModule.emit("onGoToPageChatRecents", "");
+    }
   }
 
   // @Override

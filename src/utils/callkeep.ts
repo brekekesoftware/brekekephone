@@ -250,6 +250,11 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.getCurrentCall()?.toggleHoldWithCheck()
     })
+
+    eventEmitter.addListener('onGoToPageChatRecents', () => {
+      Nav().goToPageChatRecents()
+    })
+
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
       console.error('SIP PN debug: backToForeground')

@@ -168,6 +168,13 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     waitTimeout().then(nav.goToPageCallRecents)
   }
 
+  const title = raw['title'] as string
+  if (title?.startsWith?.('Message from')) {
+    const nav = Nav()
+    nav.customPageIndex = nav.goToPageChatRecents
+    waitTimeout().then(nav.goToPageChatRecents)
+  }
+
   const n = parseNotificationData(raw)
   if (!n) {
     return null
@@ -214,7 +221,13 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!n.isCall) {
     console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
     // for case: kill app, click notification, app does't auto login
-    Platform.OS === 'android' && getAuthStore().signInByNotification(n)
+    const isUserMode =
+      AppState.currentState !== 'active' &&
+      !getAuthStore().currentProfile?.pbxUsername
+    Platform.OS === 'android' &&
+      isUserMode &&
+      getAuthStore().signInByNotification(n)
+
     return AppState.currentState !== 'active' ||
       getAuthStore().currentProfile?.pbxUsername !== n.to
       ? n
