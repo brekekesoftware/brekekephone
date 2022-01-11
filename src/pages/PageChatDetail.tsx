@@ -44,6 +44,15 @@ const css = StyleSheet.create({
   LoadMore__finished: {
     color: v.colors.warning,
   },
+  showBubbleMessage: {
+    position: 'absolute',
+    top: 140,
+    left: 100,
+    zIndex: 100,
+    height: 40,
+    width: 40,
+    backgroundColor: 'red',
+  },
 })
 
 @observer
@@ -122,7 +131,7 @@ export class PageChatDetail extends Component<{
     const u = contactStore.getUcUserById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
-
+    const messages = this.state.emojiTurnOn ? 'Hello' : ''
     return (
       <Layout
         compact
@@ -131,6 +140,7 @@ export class PageChatDetail extends Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
+        showBubbleMessage={messages}
         title={u?.name || u?.id}
       >
         {loadingRecent ? (
@@ -355,6 +365,9 @@ export class PageChatDetail extends Component<{
     const txt = this.state.editingText.trim()
     if (!txt || this.submitting) {
       return
+    }
+    if (this.state.emojiTurnOn) {
+      this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
     }
     this.submitting = true
     //

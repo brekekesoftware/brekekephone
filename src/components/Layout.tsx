@@ -10,10 +10,13 @@ import {
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { RnKeyboard } from '../stores/RnKeyboard'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toLowerCaseFirstChar } from '../utils/string'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
+import { RnText } from './RnText'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   Layout: {
@@ -29,6 +32,27 @@ const css = StyleSheet.create({
   },
   FooterSpaceInsideScroller: {
     height: 15,
+  },
+  showBubbleMessage: {
+    position: 'absolute',
+    top: 140,
+    left: 100,
+    zIndex: 100,
+    // height: 40,
+    // width: 40,
+    backgroundColor: 'red',
+  },
+  LoadMore: {
+    alignSelf: 'center',
+    paddingBottom: 15,
+    fontSize: v.fontSizeSmall,
+    paddingHorizontal: 10,
+  },
+  LoadMore__btn: {
+    color: v.colors.primary,
+  },
+  LoadMore__finished: {
+    color: v.colors.warning,
   },
 })
 
@@ -52,6 +76,7 @@ export const Layout: FC<
     title: string
     transparent: boolean
     isTab?: boolean
+    showBubbleMessage?: string
   }>
 > = observer(props => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -115,6 +140,18 @@ export const Layout: FC<
       footerSpace += 56
     }
   }
+  const renderBubbleMessage = () => {
+    BackgroundTimer.setTimeout(() => {
+      return
+    }, 3000)
+    return (
+      <View style={css.showBubbleMessage}>
+        <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
+          {props?.showBubbleMessage}
+        </RnText>
+      </View>
+    )
+  }
   return (
     <>
       <Container {...containerProps}>
@@ -122,7 +159,7 @@ export const Layout: FC<
         {props.children}
         <View style={css.FooterSpaceInsideScroller} />
       </Container>
-
+      {props?.showBubbleMessage ? renderBubbleMessage() : null}
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />
