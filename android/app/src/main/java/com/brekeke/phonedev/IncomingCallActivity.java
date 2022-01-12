@@ -3,22 +3,33 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public RelativeLayout vWebrtc, vIncomingCall, vCallManage, vCallManageLoading;
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
+  public ImageView avatar;
+  public CardView cardAvatar;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -43,7 +54,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName;
+  public String uuid, callerName, avatarUrl;
   public boolean destroyed = false, paused = false, answered = false;
 
   @Override
@@ -60,6 +71,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
+    avatarUrl = b.getString("avatar");
     if ("rejectCall".equals(BrekekeModule.userActions.get(uuid))) {
       forceFinish();
       RNCallKeepModule.staticEndCall(uuid);
@@ -78,6 +90,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     setContentView(R.layout.incoming_call_activity);
     BrekekeModule.activities.add(this);
     BrekekeModule.startRingtone();
+
+    avatar = (ImageView) findViewById(R.id.avatar);
+    cardAvatar = (CardView) findViewById(R.id.card_avatar);
+    avatar.setImageBitmap(
+        getBitmapFromURL(
+            "https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png"));
 
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
@@ -130,6 +148,23 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     txtCallerName.setText(callerName);
     updateLabels();
+  }
+
+  public Bitmap getBitmapFromURL(String src) {
+    try {
+      URL url = new URL(src);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setDoInput(true);
+      connection.connect();
+      InputStream input = connection.getInputStream();
+      Bitmap myBitmap = BitmapFactory.decodeStream(input);
+      Log.d("Image", "getBitmapFromURL: returned");
+      return myBitmap;
+    } catch (IOException e) {
+      Log.d("Image", "getBitmapFromURL: " + e.getMessage());
+      e.printStackTrace();
+      return null;
+    }
   }
 
   public void updateLabels() {
@@ -229,6 +264,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
+      cardAvatar.setVisibility(View.GONE);
       vCallManage.setVisibility(View.VISIBLE);
     } else {
       BrekekeModule.removeAllAndBackToForeground();

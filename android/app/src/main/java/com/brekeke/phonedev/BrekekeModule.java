@@ -13,6 +13,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -174,6 +175,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
     String displayName = data.get("x_displayname");
+    String avatar = data.get("x_image");
     if (displayName == null || "".equals(displayName)) {
       displayName = data.get("x_from");
     }
@@ -181,7 +183,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       displayName = "Loading...";
     }
     String callerName = displayName; // final
-    //
+    Log.d("onFcmMessageReceived", "onFcmMessageReceived: " + data.toString());
     // Show call
     RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
     Runnable onShowIncomingCallUi =
@@ -208,6 +210,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
             }
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
+            i.putExtra("avatar", avatar);
             if (prev != null) {
               prev.startActivity(i);
             } else {
