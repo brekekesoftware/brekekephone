@@ -10,13 +10,14 @@ import {
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { RnKeyboard } from '../stores/RnKeyboard'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toLowerCaseFirstChar } from '../utils/string'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
-import { RnText } from './RnText'
+import { Toast } from './Toast'
 import { v } from './variables'
+
+const DEFAULT_TOAST_MESSAGE = 'new message'
 
 const css = StyleSheet.create({
   Layout: {
@@ -32,15 +33,6 @@ const css = StyleSheet.create({
   },
   FooterSpaceInsideScroller: {
     height: 15,
-  },
-  showBubbleMessage: {
-    position: 'absolute',
-    top: 140,
-    left: 100,
-    zIndex: 100,
-    // height: 40,
-    // width: 40,
-    backgroundColor: 'red',
   },
   LoadMore: {
     alignSelf: 'center',
@@ -76,7 +68,8 @@ export const Layout: FC<
     title: string
     transparent: boolean
     isTab?: boolean
-    showBubbleMessage?: string
+    isShowToastMessage?: boolean
+    incomingMessage: string
   }>
 > = observer(props => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -140,18 +133,7 @@ export const Layout: FC<
       footerSpace += 56
     }
   }
-  const renderBubbleMessage = () => {
-    BackgroundTimer.setTimeout(() => {
-      return
-    }, 3000)
-    return (
-      <View style={css.showBubbleMessage}>
-        <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
-          {props?.showBubbleMessage}
-        </RnText>
-      </View>
-    )
-  }
+
   return (
     <>
       <Container {...containerProps}>
@@ -159,7 +141,11 @@ export const Layout: FC<
         {props.children}
         <View style={css.FooterSpaceInsideScroller} />
       </Container>
-      {props?.showBubbleMessage ? renderBubbleMessage() : null}
+      <Toast
+        isVisible={props.isShowToastMessage}
+        title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
+        containerStyles={{ marginTop: headerSpace }}
+      />
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />

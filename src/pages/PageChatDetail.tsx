@@ -44,15 +44,6 @@ const css = StyleSheet.create({
   LoadMore__finished: {
     color: v.colors.warning,
   },
-  showBubbleMessage: {
-    position: 'absolute',
-    top: 140,
-    left: 100,
-    zIndex: 100,
-    height: 40,
-    width: 40,
-    backgroundColor: 'red',
-  },
 })
 
 @observer
@@ -115,7 +106,9 @@ export class PageChatDetail extends Component<{
     return (
       <ChatInput
         onEmojiTurnOn={() =>
-          this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
+          this.setState({ emojiTurnOn: !this.state.emojiTurnOn }, () => {
+            this.view?.scrollToEnd()
+          })
         }
         onSelectionChange={this.onSelectionChange}
         onTextChange={this.setEditingText}
@@ -129,9 +122,14 @@ export class PageChatDetail extends Component<{
   render() {
     const { buddy: id } = this.props
     const u = contactStore.getUcUserById(id)
-    const { allMessagesLoaded } = chatStore.getThreadConfig(id)
-    const { loadingMore, loadingRecent } = this.state
-    const messages = this.state.emojiTurnOn ? 'Hello' : ''
+    const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
+    const { loadingMore, loadingRecent, emojiTurnOn } = this.state
+    const listMessage = chatStore.messagesByThreadId[this.props.buddy]
+    const incomingMessage = listMessage
+      ? listMessage[listMessage.length - 1]?.text
+      : undefined
+    const isShowToastMessage = emojiTurnOn && isUnread
+
     return (
       <Layout
         compact
@@ -140,8 +138,9 @@ export class PageChatDetail extends Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
-        showBubbleMessage={messages}
         title={u?.name || u?.id}
+        isShowToastMessage={isShowToastMessage}
+        incomingMessage={incomingMessage}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
@@ -165,12 +164,12 @@ export class PageChatDetail extends Component<{
         )}
         <MessageList
           acceptFile={this.acceptFile}
-          list={chatStore.messagesByThreadId[this.props.buddy]}
+          list={listMessage}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
           resolveChat={this.resolveChat}
         />
-        {this.state.emojiTurnOn && (
+        {emojiTurnOn && (
           <View>
             <EmojiSelector
               category={Categories.emotion}
@@ -244,7 +243,7 @@ export class PageChatDetail extends Component<{
   private isLoadingMore = false
 
   onContentSizeChange = (newWidth?: number, newHeight?: number) => {
-    if (!this.view) {
+    if (!this.view || this.state.emojiTurnOn) {
       return
     }
     if (this.closeToBottom) {
