@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public RelativeLayout vWebrtc, vIncomingCall, vCallManage, vCallManageLoading;
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
-  public ImageView avatar;
+  public ImageView imgAvatar;
   public CardView cardAvatar;
   public Button btnAnswer,
       btnReject,
@@ -60,6 +61,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    //    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+    //    if (SDK_INT > 8)
+    //    {
+    //      StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+    //       .permitAll().build();
+    //      StrictMode.setThreadPolicy(policy);
+    //    }
+
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
@@ -91,12 +100,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeModule.activities.add(this);
     BrekekeModule.startRingtone();
 
-    avatar = (ImageView) findViewById(R.id.avatar);
-    cardAvatar = (CardView) findViewById(R.id.card_avatar);
-    avatar.setImageBitmap(
-        getBitmapFromURL(
-            "https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png"));
-
+    imgAvatar = (ImageView) findViewById(R.id.avatar);
+    //    cardAvatar = (CardView) findViewById(R.id.card_avatar);
+    //    Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(imgAvatar);
+    Glide.with(this).load("http://goo.gl/gEgYUd").into(imgAvatar);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
@@ -264,7 +271,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
-      cardAvatar.setVisibility(View.GONE);
+      //      cardAvatar.setVisibility(View.GONE);
       vCallManage.setVisibility(View.VISIBLE);
     } else {
       BrekekeModule.removeAllAndBackToForeground();
