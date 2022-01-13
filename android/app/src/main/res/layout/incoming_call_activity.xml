@@ -15,18 +15,23 @@
     android:visibility="gone"
     android:background="@color/black"
   />
-
+<RelativeLayout
+  android:id="@+id/header_incoming"
+  android:layout_width="match_parent"
+  android:orientation="vertical"
+  android:visibility="visible"
+  android:layout_height="wrap_content">
   <TextView
     android:id="@+id/txt_caller_name"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="145dp"
+    android:layout_marginTop="160dp"
     android:gravity="center"
     android:text="Caller Name"
     android:textColor="@color/white"
     android:textSize="36dp"
     android:textStyle="bold"
-  />
+    />
   <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -36,24 +41,55 @@
     android:textColor="@color/white"
     android:textSize="20dp"
     android:textStyle="normal"
-  />
-<!--  <androidx.cardview.widget.CardView-->
-<!--    android:id="@+id/card_avatar"-->
-<!--    android:layout_width="80dp"-->
-<!--    android:layout_height="80dp"-->
-<!--    android:layout_marginTop="65dp"-->
-<!--    android:layout_centerHorizontal="true"-->
-<!--    android:elevation="0dp"-->
-<!--    app:cardCornerRadius="40dp">-->
-    <ImageView
-    android:id="@+id/avatar"
-    android:layout_width="80dp"
-    android:layout_height="80dp" android:layout_marginTop="65dp"
-    android:layout_centerHorizontal="true"
-    android:gravity="center"
-    android:background="@mipmap/default_avatar"
     />
-<!--  </androidx.cardview.widget.CardView>-->
+  <androidx.cardview.widget.CardView
+    android:id="@+id/card_avatar"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_marginTop="65dp"
+    android:layout_centerHorizontal="true"
+    android:elevation="0dp"
+    app:cardCornerRadius="50dp">
+    <ImageView
+      android:id="@+id/avatar"
+      android:layout_width="100dp"
+      android:layout_height="100dp"
+      android:layout_centerHorizontal="true"
+      android:gravity="center"
+      android:background="@mipmap/default_avatar"
+      />
+  </androidx.cardview.widget.CardView>
+</RelativeLayout>
+  <RelativeLayout
+    android:id="@+id/header_manage_call"
+    android:visibility="gone"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    <TextView
+      android:id="@+id/txt_header_caller_name"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:gravity="center"
+      android:text="Caller Name"
+      android:textColor="@color/white"
+      android:textSize="36dp"
+      android:textStyle="bold"
+      />
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="50dp"
+      android:gravity="center"
+      android:text="Brekeke Phone"
+      android:textColor="@color/white"
+      android:textSize="20dp"
+      android:textStyle="normal"
+      />
+
+  </RelativeLayout>
+
   <!-- view_incoming_call -->
   <RelativeLayout
     android:id="@+id/view_incoming_call"

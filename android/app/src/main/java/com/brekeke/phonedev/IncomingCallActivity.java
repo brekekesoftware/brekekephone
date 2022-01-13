@@ -3,10 +3,7 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,21 +13,20 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  public RelativeLayout vWebrtc, vIncomingCall, vCallManage, vCallManageLoading;
+  public RelativeLayout vWebrtc,
+      vIncomingCall,
+      vCallManage,
+      vCallManageLoading,
+      vHeaderIncomingCall,
+      vHeaderManageCall;
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
   public ImageView imgAvatar;
-  public CardView cardAvatar;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -44,6 +40,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnHold,
       btnEndcall;
   public TextView txtCallerName,
+      txtHeaderCallerName,
       txtIncomingCall,
       txtConnecting,
       txtTransferBtn,
@@ -61,14 +58,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    //    int SDK_INT = android.os.Build.VERSION.SDK_INT;
-    //    if (SDK_INT > 8)
-    //    {
-    //      StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-    //       .permitAll().build();
-    //      StrictMode.setThreadPolicy(policy);
-    //    }
-
     Bundle b = getIntent().getExtras();
     if (b == null) {
       b = savedInstanceState;
@@ -81,6 +70,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     avatarUrl = b.getString("avatar");
+
     if ("rejectCall".equals(BrekekeModule.userActions.get(uuid))) {
       forceFinish();
       RNCallKeepModule.staticEndCall(uuid);
@@ -100,10 +90,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeModule.activities.add(this);
     BrekekeModule.startRingtone();
 
-    imgAvatar = (ImageView) findViewById(R.id.avatar);
-    //    cardAvatar = (CardView) findViewById(R.id.card_avatar);
-    //    Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(imgAvatar);
-    Glide.with(this).load("http://goo.gl/gEgYUd").into(imgAvatar);
+    vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
+    vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
@@ -111,6 +99,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManageControls = (LinearLayout) findViewById(R.id.view_call_manage_controls);
 
     vCallManage.setOnClickListener(this);
+
+    imgAvatar = (ImageView) findViewById(R.id.avatar);
+    Glide.with(this).load(avatarUrl).centerCrop().into(imgAvatar);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -152,26 +143,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
-
+    txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
     txtCallerName.setText(callerName);
+    txtHeaderCallerName.setText(callerName);
     updateLabels();
-  }
-
-  public Bitmap getBitmapFromURL(String src) {
-    try {
-      URL url = new URL(src);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setDoInput(true);
-      connection.connect();
-      InputStream input = connection.getInputStream();
-      Bitmap myBitmap = BitmapFactory.decodeStream(input);
-      Log.d("Image", "getBitmapFromURL: returned");
-      return myBitmap;
-    } catch (IOException e) {
-      Log.d("Image", "getBitmapFromURL: " + e.getMessage());
-      e.printStackTrace();
-      return null;
-    }
   }
 
   public void updateLabels() {
@@ -271,7 +246,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
-      //      cardAvatar.setVisibility(View.GONE);
+      vHeaderIncomingCall.setVisibility(View.GONE);
+      vHeaderManageCall.setVisibility(View.VISIBLE);
       vCallManage.setVisibility(View.VISIBLE);
     } else {
       BrekekeModule.removeAllAndBackToForeground();
