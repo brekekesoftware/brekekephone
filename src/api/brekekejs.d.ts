@@ -163,7 +163,7 @@ export type PbxExtensionProperties = {
 export type PbxGetContactListParam = {
   phonebook?: string
   search_text?: string
-  shared: string
+  shared: boolean
   offset: number
   limit: number
 }
