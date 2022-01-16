@@ -79,14 +79,14 @@ export const CallNotify = observer(() => {
   return (
     <Wrapper>
       {callStore.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
-      <View style={css.Notify}>
-        <RnTouchableOpacity
-          onPress={() => Nav().goToPageCallManage()}
-          style={css.Notify_Info}
-        >
+      <RnTouchableOpacity
+        style={css.Notify}
+        onPress={() => Nav().goToPageCallManage()}
+      >
+        <View style={css.Notify_Info}>
           <RnText bold>{c.computedName}</RnText>
           <RnText>{intl`Incoming Call`}</RnText>
-        </RnTouchableOpacity>
+        </View>
         <ButtonIcon
           bdcolor={v.colors.danger}
           color={v.colors.danger}
@@ -103,7 +103,7 @@ export const CallNotify = observer(() => {
           size={20}
           style={css.Notify_Btn_accept}
         />
-      </View>
+      </RnTouchableOpacity>
     </Wrapper>
   )
 })
