@@ -21,12 +21,15 @@ import {
   mdiUnfoldMoreHorizontal,
 } from '../assets/icons'
 import { intl } from '../stores/intl'
-import { Park } from '../stores/profileStore'
 import { RnPicker } from '../stores/RnPicker'
 import { useStore } from '../utils/useStore'
 import { RnIcon, RnSwitch, RnText, RnTextInput, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
+export type Park = {
+  number: string
+  name?: string
+}
 const css = StyleSheet.create({
   Field: {
     borderBottomWidth: 1,

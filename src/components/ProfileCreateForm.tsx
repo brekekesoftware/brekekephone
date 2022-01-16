@@ -6,7 +6,7 @@ import { Platform, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
-import { Park, Profile, profileStore } from '../stores/profileStore'
+import { Profile, profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -47,7 +47,13 @@ export const ProfileCreateForm: FC<{
     onAddingParkSubmit: () => {
       $.set('profile', (p: Profile) => {
         if ($.addingPark.name && $.addingPark.number) {
-          p.parks.push($.addingPark)
+          // Lower version compare Park
+          const comparePark = p.parks.length - p?.parkNames?.length || 0
+          if (comparePark) {
+            p['parkNames'] = Array(comparePark).fill('')
+          }
+          p.parks.push($.addingPark.number)
+          p.parkNames.push($.addingPark.name)
           $.addingPark = { name: '', number: '' }
         }
         return p
@@ -60,7 +66,7 @@ export const ProfileCreateForm: FC<{
           <>
             <RnText small>
               Park {i + 1}:{' '}
-              {$.profile.parks[i].number + ' - ' + $.profile.parks[i].name}
+              {$.profile.parks[i] + ' - ' + $.profile?.parkNames?.[i]}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
@@ -231,16 +237,19 @@ export const ProfileCreateForm: FC<{
             label: intl`PARKS (${$.profile.parks.length})`,
             hasMargin: true,
           },
-          ...$.profile.parks.map((p, i) => ({
-            disabled: true,
-            name: `parks[${i}]`,
-            type: 'PARK',
-            value: `${p.number} - ${p.name}`,
-            label: intl`PARK ${i + 1}`,
-            onRemoveBtnPress: props.footerLogout
-              ? null
-              : () => $.onAddingParkRemove(i),
-          })),
+          ...$.profile.parks.map((p, i) => {
+            const parkName = $.profile?.parkNames?.[i]
+            return {
+              disabled: true,
+              name: `parks[${i}]`,
+              type: 'PARK',
+              value: `${p} ${parkName ? '- ' + parkName : ''}`,
+              label: intl`PARK ${i + 1}`,
+              onRemoveBtnPress: props.footerLogout
+                ? null
+                : () => $.onAddingParkRemove(i),
+            }
+          }),
           ...(props.footerLogout
             ? []
             : [
@@ -249,7 +258,8 @@ export const ProfileCreateForm: FC<{
                   label: intl`NEW PARK`,
                   type: 'PARK',
                   value: $.addingPark,
-                  onValueChange: (v: Park) => $.set('addingPark', v),
+                  onValueChange: (v: { number: string; name?: string }) =>
+                    $.set('addingPark', v),
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),

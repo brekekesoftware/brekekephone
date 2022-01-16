@@ -69,15 +69,20 @@ export class PageCallParks extends Component<{
             <RnText padding>{intl`This account has no park number`}</RnText>
           </>
         )}
-        {ps.map((u, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.selectPark(u.number)}>
-            <UserItem
-              key={i}
-              name={intl`Park ${i + 1}: ${u.number} - ${u.name}`}
-              selected={p === u.number}
-            />
-          </RnTouchableOpacity>
-        ))}
+        {ps.map((u, i) => {
+          const parkName = getAuthStore().currentProfile?.parkNames?.[i]
+          return (
+            <RnTouchableOpacity key={i} onPress={() => this.selectPark(u)}>
+              <UserItem
+                key={i}
+                name={intl`Park ${i + 1}: ${u} ${
+                  parkName ? '- ' + parkName : ''
+                }`}
+                selected={p === u}
+              />
+            </RnTouchableOpacity>
+          )
+        })}
       </Layout>
     )
   }

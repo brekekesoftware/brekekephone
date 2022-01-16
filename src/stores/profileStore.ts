@@ -15,10 +15,7 @@ let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
-export type Park = {
-  number: string
-  name?: string
-}
+
 export type Profile = {
   id: string
   pbxHostname: string
@@ -30,7 +27,8 @@ export type Profile = {
   pbxTurnEnabled: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
-  parks: Park[]
+  parks: string[]
+  parkNames: string[]
   ucEnabled: boolean
   displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
@@ -81,7 +79,8 @@ class ProfileStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
-    parks: [] as any as Park[],
+    parks: [] as any as string[],
+    parkNames: [] as string[],
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],
