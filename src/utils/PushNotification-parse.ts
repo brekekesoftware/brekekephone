@@ -155,6 +155,19 @@ export const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
+export const signInByLocalNotification = (n: ParsedPn) => {
+  const p = getAuthStore().findProfile({
+    ...n,
+    pbxUsername: n.to,
+    pbxTenant: n.tenant,
+  })
+  if (getAuthStore().signedInId === p?.id) {
+    getAuthStore().resetFailureState()
+  }
+  if (p?.id && !getAuthStore().signedInId) {
+    getAuthStore().signIn(p.id)
+  }
+}
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return null
@@ -168,14 +181,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     waitTimeout().then(nav.goToPageCallRecents)
   }
 
-  const title = raw['title'] as string
-  if (title?.startsWith?.('Message from')) {
-    const nav = Nav()
-    nav.customPageIndex = nav.goToPageChatRecents
-    waitTimeout().then(nav.goToPageChatRecents)
-  }
-
   const n = parseNotificationData(raw)
+
   if (!n) {
     return null
   }
@@ -204,30 +211,19 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     )
   }
   if (isLocal) {
-    const p = getAuthStore().findProfile({
-      ...n,
-      pbxUsername: n.to,
-      pbxTenant: n.tenant,
-    })
-    if (getAuthStore().signedInId === p?.id) {
-      getAuthStore().resetFailureState()
-    }
-    if (p?.id && !getAuthStore().signedInId) {
-      getAuthStore().signIn(p.id)
+    signInByLocalNotification(n)
+
+    //default PN chat message with id don't contain 'missedcall'
+    if (!id?.startsWith?.('missedcall')) {
+      const nav = Nav()
+      nav.customPageIndex = nav.goToPageChatRecents
+      waitTimeout().then(nav.goToPageChatRecents)
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
   }
   if (!n.isCall) {
     console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
-    // for case: kill app, click notification, app does't auto login
-    const isUserMode =
-      AppState.currentState !== 'active' &&
-      !getAuthStore().currentProfile?.pbxUsername
-    Platform.OS === 'android' &&
-      isUserMode &&
-      getAuthStore().signInByNotification(n)
-
     return AppState.currentState !== 'active' ||
       getAuthStore().currentProfile?.pbxUsername !== n.to
       ? n

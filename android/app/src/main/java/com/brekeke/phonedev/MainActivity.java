@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends ReactActivity {
   @Override
@@ -17,10 +19,17 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Bundle extras = getIntent().getExtras();
-    if (extras != null
-        && extras.get("title") != null
-        && extras.get("title").toString().startsWith("Message from")) {
-      BrekekeModule.emit("onGoToPageChatRecents", "");
+    if (extras != null) {
+      JSONObject data = new JSONObject();
+      for (String key : extras.keySet()) {
+        String value = extras.get(key) != null ? extras.get(key).toString() : "NULL";
+        try {
+          data.put(key, value);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+      BrekekeModule.emit("onNotificationPress", data.toString());
     }
   }
 

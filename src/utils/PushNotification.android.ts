@@ -26,8 +26,10 @@ const onNotification = async (n0: Notification, initApp: Function) => {
     if (!n) {
       return
     }
+
     //
     FCM.presentLocalNotification({
+      ...n,
       body: 'Click to view',
       title: n.body,
       number: 0,
