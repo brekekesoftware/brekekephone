@@ -18,6 +18,7 @@ const css = StyleSheet.create({
     marginTop: 15,
     paddingHorizontal: 10,
     minWidth: 305,
+    maxWidth: 360,
     backgroundColor: 'white',
     borderRadius: v.borderRadius,
     overflow: 'hidden',
