@@ -10,7 +10,10 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
-import { parseNotificationData } from './PushNotification-parse'
+import {
+  parseNotificationData,
+  signInByLocalNotification,
+} from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
@@ -250,6 +253,24 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.getCurrentCall()?.toggleHoldWithCheck()
     })
+
+    eventEmitter.addListener('onNotificationPress', (data: string) => {
+      if (!data) {
+        return
+      }
+      const raw: { id?: string } = JSON.parse(data)
+      const n = parseNotificationData(raw)
+      if (!n) {
+        return
+      }
+      signInByLocalNotification(n)
+      if (raw.id?.startsWith('missedcall')) {
+        Nav().goToPageCallRecents()
+      } else {
+        Nav().goToPageChatRecents()
+      }
+    })
+
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
       console.error('SIP PN debug: backToForeground')

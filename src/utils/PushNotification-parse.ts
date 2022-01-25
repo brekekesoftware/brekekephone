@@ -155,15 +155,28 @@ export const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
+export const signInByLocalNotification = (n: ParsedPn) => {
+  const p = getAuthStore().findProfile({
+    ...n,
+    pbxUsername: n.to,
+    pbxTenant: n.tenant,
+  })
+  if (getAuthStore().signedInId === p?.id) {
+    getAuthStore().resetFailureState()
+  }
+  if (p?.id && !getAuthStore().signedInId) {
+    getAuthStore().signIn(p.id)
+  }
+}
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return null
   }
 
   const id = raw['id'] as string
-  if (id?.startsWith?.('missedcall')) {
-    Nav().customPageIndex = Nav().goToPageCallRecents
+  if (id?.startsWith('missedcall')) {
     // Nav after signin in App.tsx mobx observe?
+    Nav().customPageIndex = Nav().goToPageCallRecents
     waitTimeout().then(Nav().goToPageCallRecents)
   }
 
@@ -196,16 +209,11 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     )
   }
   if (isLocal) {
-    const p = getAuthStore().findProfile({
-      ...n,
-      pbxUsername: n.to,
-      pbxTenant: n.tenant,
-    })
-    if (getAuthStore().signedInId === p?.id) {
-      getAuthStore().resetFailureState()
-    }
-    if (p?.id && !getAuthStore().signedInId) {
-      getAuthStore().signIn(p.id)
+    signInByLocalNotification(n)
+    if (!id?.startsWith('missedcall')) {
+      const nav = Nav()
+      nav.customPageIndex = nav.goToPageChatRecents
+      waitTimeout().then(nav.goToPageChatRecents)
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
