@@ -27,7 +27,7 @@ export const ProfileCreateForm: FC<{
         ...profileStore.genEmptyProfile(),
         ...cloneDeep(props.updatingProfile),
       },
-      addingPark: '',
+      addingPark: { name: '', number: '' },
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -46,10 +46,15 @@ export const ProfileCreateForm: FC<{
     //
     onAddingParkSubmit: () => {
       $.set('profile', (p: Profile) => {
-        $.addingPark = $.addingPark.trim()
-        if ($.addingPark) {
-          p.parks.push($.addingPark)
-          $.addingPark = ''
+        if ($.addingPark.name && $.addingPark.number) {
+          // Lower version compare Park
+          const comparePark = p.parks.length - p?.parkNames?.length || 0
+          if (comparePark) {
+            p['parkNames'] = Array(comparePark).fill('')
+          }
+          p.parks.push($.addingPark.number)
+          p.parkNames.push($.addingPark.name)
+          $.addingPark = { name: '', number: '' }
         }
         return p
       })
@@ -60,7 +65,8 @@ export const ProfileCreateForm: FC<{
         message: (
           <>
             <RnText small>
-              Park {i + 1}: {$.profile.parks[i]}
+              Park {i + 1}:{' '}
+              {$.profile.parks[i] + ' - ' + $.profile?.parkNames?.[i]}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
@@ -231,23 +237,29 @@ export const ProfileCreateForm: FC<{
             label: intl`PARKS (${$.profile.parks.length})`,
             hasMargin: true,
           },
-          ...$.profile.parks.map((p, i) => ({
-            disabled: true,
-            name: `parks[${i}]`,
-            value: p,
-            label: intl`PARK ${i + 1}`,
-            onRemoveBtnPress: props.footerLogout
-              ? null
-              : () => $.onAddingParkRemove(i),
-          })),
+          ...$.profile.parks.map((p, i) => {
+            const parkName = $.profile?.parkNames?.[i]
+            return {
+              disabled: true,
+              name: `parks[${i}]`,
+              type: 'PARK',
+              value: `${p} ${parkName ? '- ' + parkName : ''}`,
+              label: intl`PARK ${i + 1}`,
+              onRemoveBtnPress: props.footerLogout
+                ? null
+                : () => $.onAddingParkRemove(i),
+            }
+          }),
           ...(props.footerLogout
             ? []
             : [
                 {
                   name: 'parks[new]',
                   label: intl`NEW PARK`,
+                  type: 'PARK',
                   value: $.addingPark,
-                  onValueChange: (v: string) => $.set('addingPark', v),
+                  onValueChange: (v: { number: string; name?: string }) =>
+                    $.set('addingPark', v),
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),
