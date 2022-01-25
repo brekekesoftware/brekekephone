@@ -38,6 +38,8 @@ export type Phonebook2 = {
   shared: boolean
   loaded?: boolean
   hidden: boolean
+  phonebook?: string
+  user?: string
 }
 
 class ContactStore {
@@ -55,10 +57,11 @@ class ContactStore {
       return
     }
     this.loading = true
+
     await pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,
-        shared: true,
+        shared: getAuthStore().currentProfile?.displaySharedContacts || false,
         offset: this.offset,
         limit: this.numberOfContactsPerPage,
       })
@@ -66,6 +69,7 @@ class ContactStore {
         if (!arr) {
           return
         }
+
         this.setPhonebook(arr as Phonebook2[])
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
       })
@@ -91,7 +95,10 @@ class ContactStore {
     this.offset += this.numberOfContactsPerPage
     this.loadContacts()
   }
-
+  @action refreshContacts = () => {
+    this.offset = 0
+    this.loadContacts()
+  }
   @observable pbxUsers: PbxUser[] = []
   setTalkerStatus = (userId: string, talkerId: string, status: string) => {
     const u = this.getPbxUserById(userId)

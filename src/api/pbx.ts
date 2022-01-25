@@ -294,8 +294,9 @@ export class PBX extends EventEmitter {
     }
 
     const res = await this.client._pal('getContactList', {
+      phonebook: '',
       search_text,
-      shared: shared === true ? 'true' : 'false',
+      shared,
       offset,
       limit,
     })
@@ -303,6 +304,8 @@ export class PBX extends EventEmitter {
     return res.map(contact => ({
       id: contact.aid,
       name: contact.display_name,
+      phonebook: contact.phonebook,
+      user: contact.user,
     }))
   }
 

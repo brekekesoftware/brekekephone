@@ -166,10 +166,7 @@ export class PageContactPhonebook extends Component {
   }, 500)
 
   render() {
-    let phonebooks = contactStore.phoneBooks
-    if (!getAuthStore().currentProfile.displaySharedContacts) {
-      phonebooks = phonebooks.filter(i => i.shared !== true)
-    }
+    const phonebooks = contactStore.phoneBooks
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
@@ -222,6 +219,7 @@ export class PageContactPhonebook extends Component {
               id: getAuthStore().signedInId,
               displaySharedContacts: v,
             })
+            contactStore.refreshContacts()
           }}
           type='Switch'
           value={getAuthStore().currentProfile.displaySharedContacts}
