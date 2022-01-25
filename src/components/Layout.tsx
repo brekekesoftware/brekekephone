@@ -59,7 +59,6 @@ export const Layout: FC<
   props = { ...props } // Clone so it can be mutated
 
   const Container = props.noScroll ? View : ScrollView
-  const containerOnScroll = props.containerOnScroll
   const containerProps = Object.entries(props).reduce((m, [k, v]) => {
     type K = keyof typeof props
     if (k.startsWith('container')) {
@@ -80,12 +79,10 @@ export const Layout: FC<
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: 'always',
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        // eslint-disable-next-line no-mixed-operators
         e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
           setHeaderOverflow(!headerOverflow)
-        // allow onScroll function from Layout
-        if (containerOnScroll) {
-          containerOnScroll(e)
-        }
+        props.containerOnScroll?.(e)
       },
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
