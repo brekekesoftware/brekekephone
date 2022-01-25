@@ -14,6 +14,10 @@ import { toLowerCaseFirstChar } from '../utils/string'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
+import { Toast } from './Toast'
+import { v } from './variables'
+
+const DEFAULT_TOAST_MESSAGE = 'new message'
 
 const css = StyleSheet.create({
   Layout: {
@@ -29,6 +33,18 @@ const css = StyleSheet.create({
   },
   FooterSpaceInsideScroller: {
     height: 15,
+  },
+  LoadMore: {
+    alignSelf: 'center',
+    paddingBottom: 15,
+    fontSize: v.fontSizeSmall,
+    paddingHorizontal: 10,
+  },
+  LoadMore__btn: {
+    color: v.colors.primary,
+  },
+  LoadMore__finished: {
+    color: v.colors.warning,
   },
 })
 
@@ -52,6 +68,8 @@ export const Layout: FC<
     title: string
     transparent: boolean
     isTab?: boolean
+    isShowToastMessage?: boolean
+    incomingMessage: string
   }>
 > = observer(props => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -114,6 +132,7 @@ export const Layout: FC<
       footerSpace += 56
     }
   }
+
   return (
     <>
       <Container {...containerProps}>
@@ -121,7 +140,11 @@ export const Layout: FC<
         {props.children}
         <View style={css.FooterSpaceInsideScroller} />
       </Container>
-
+      <Toast
+        isVisible={props.isShowToastMessage}
+        title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
+        containerStyles={{ marginTop: headerSpace }}
+      />
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />
