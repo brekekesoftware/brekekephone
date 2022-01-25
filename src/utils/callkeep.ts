@@ -258,8 +258,8 @@ export const setupCallKeep = async () => {
       if (!data) {
         return
       }
-      const pnObject = JSON.parse(data)
-      if (pnObject['id'].startsWith('missedcall')) {
+      const pnObject: { id?: string } = JSON.parse(data)
+      if (pnObject.id?.startsWith('missedcall')) {
         Nav().goToPageCallRecents()
       } else {
         const pnParser = parseNotificationData(pnObject)

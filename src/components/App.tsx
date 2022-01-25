@@ -19,7 +19,6 @@ import { SyncPnToken } from '../api/syncPnToken'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
-import { authStore } from '../stores/authStore2'
 import { authUC } from '../stores/AuthUC'
 import { callStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
@@ -104,7 +103,7 @@ PushNotification.register(async () => {
     AppState.currentState === 'active' &&
     !callStore.calls.length &&
     !Object.keys(callStore.callkeepMap).length &&
-    !authStore.sipPn.sipAuth
+    !s.sipPn.sipAuth
   ) {
     getAudioVideoPermission()
   }

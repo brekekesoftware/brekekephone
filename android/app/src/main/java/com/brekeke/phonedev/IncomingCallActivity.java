@@ -8,17 +8,25 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  public RelativeLayout vWebrtc, vIncomingCall, vCallManage, vCallManageLoading;
+  public RelativeLayout vWebrtc,
+      vIncomingCall,
+      vCallManage,
+      vCallManageLoading,
+      vHeaderIncomingCall,
+      vHeaderManageCall;
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
+  public ImageView imgAvatar;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -32,6 +40,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnHold,
       btnEndcall;
   public TextView txtCallerName,
+      txtHeaderCallerName,
       txtIncomingCall,
       txtConnecting,
       txtTransferBtn,
@@ -43,7 +52,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName;
+  public String uuid, callerName, avatar;
   public boolean destroyed = false, paused = false, answered = false;
 
   @Override
@@ -60,6 +69,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
+    avatar = b.getString("avatar");
+
     if ("rejectCall".equals(BrekekeModule.userActions.get(uuid))) {
       forceFinish();
       RNCallKeepModule.staticEndCall(uuid);
@@ -79,6 +90,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeModule.activities.add(this);
     BrekekeModule.startRingtone();
 
+    vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
+    vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
@@ -86,6 +99,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManageControls = (LinearLayout) findViewById(R.id.view_call_manage_controls);
 
     vCallManage.setOnClickListener(this);
+
+    imgAvatar = (ImageView) findViewById(R.id.avatar);
+    Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -116,6 +132,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndcall.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
+    txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
     txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
     txtConnecting = (TextView) findViewById(R.id.txt_connecting);
     txtTransferBtn = (TextView) findViewById(R.id.txt_transfer_btn);
@@ -129,6 +146,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
 
     txtCallerName.setText(callerName);
+    txtHeaderCallerName.setText(callerName);
     updateLabels();
   }
 
@@ -229,6 +247,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
+      vHeaderIncomingCall.setVisibility(View.GONE);
+      vHeaderManageCall.setVisibility(View.VISIBLE);
       vCallManage.setVisibility(View.VISIBLE);
     } else {
       BrekekeModule.removeAllAndBackToForeground();

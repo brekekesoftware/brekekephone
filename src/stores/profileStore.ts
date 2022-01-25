@@ -28,6 +28,7 @@ export type Profile = {
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
   parks: string[]
+  parkNames: string[]
   ucEnabled: boolean
   displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
@@ -78,7 +79,8 @@ class ProfileStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
-    parks: [] as any as string[],
+    parks: [] as string[],
+    parkNames: [] as string[],
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],

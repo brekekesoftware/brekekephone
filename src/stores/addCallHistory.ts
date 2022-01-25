@@ -14,6 +14,7 @@ const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = (c: Call | ParsedPn) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
   if (isTypeCall && c.partyNumber === '8') {
+    // voice mail
     return
   }
   const pnId = isTypeCall ? c.pnId : c.id
