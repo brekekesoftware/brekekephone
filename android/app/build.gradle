@@ -69,13 +69,14 @@ dependencies {
   implementation fileTree(dir: "libs", include: ["*.jar"])
   implementation "com.facebook.react:react-native:+"
   implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-  implementation 'com.github.bumptech.glide:glide:4.11.0'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
   // react-native-fcm
   implementation "com.google.firebase:firebase-core:$firebaseCoreVersion"
   implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
   implementation "me.leolin:ShortcutBadger:1.1.17@aar"
   implementation "com.android.support:support-core-utils:28.0.0"
+  // custom lib to display avatar in PN screen
+  implementation 'com.github.bumptech.glide:glide:4.11.0'
+  annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
   implementation 'androidx.cardview:cardview:1.0.0'
 
   debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
