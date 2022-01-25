@@ -292,15 +292,14 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    const params = {
+
+    const res = await this.client._pal('getContactList', {
       phonebook: '',
       search_text,
       shared,
       offset,
       limit,
-    }
-
-    const res = await this.client._pal('getContactList', params)
+    })
 
     return res.map(contact => ({
       id: contact.aid,
