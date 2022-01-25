@@ -26,7 +26,6 @@ const onNotification = async (n0: Notification, initApp: Function) => {
     if (!n) {
       return
     }
-
     //
     FCM.presentLocalNotification({
       ...n,

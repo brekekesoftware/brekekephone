@@ -22,9 +22,8 @@ public class MainActivity extends ReactActivity {
     if (extras != null) {
       JSONObject data = new JSONObject();
       for (String key : extras.keySet()) {
-        String value = extras.get(key) != null ? extras.get(key).toString() : "NULL";
         try {
-          data.put(key, value);
+          data.put(key, extras.get(key));
         } catch (JSONException e) {
           e.printStackTrace();
         }

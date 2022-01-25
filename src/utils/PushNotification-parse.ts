@@ -182,7 +182,6 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
 
   const n = parseNotificationData(raw)
-
   if (!n) {
     return null
   }
@@ -212,8 +211,6 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   if (isLocal) {
     signInByLocalNotification(n)
-
-    //default PN chat message with id don't contain 'missedcall'
     if (!id?.startsWith?.('missedcall')) {
       const nav = Nav()
       nav.customPageIndex = nav.goToPageChatRecents
