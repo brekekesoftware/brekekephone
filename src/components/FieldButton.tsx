@@ -22,11 +22,6 @@ const css = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: v.borderRadius,
     overflow: 'hidden',
-    ...Platform.select({
-      web: {
-        width: 350,
-      },
-    }),
   },
   Inner: {
     ...Platform.select({
