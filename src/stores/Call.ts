@@ -133,7 +133,6 @@ export class Call {
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
   toggleVideo = () => {
-    // const a = a.c;
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
     if (this.holding || callerStatus === 'holding') {

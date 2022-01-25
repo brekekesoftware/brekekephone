@@ -48,41 +48,42 @@ export class PageCallParks extends Component<{
   }
 
   render() {
-    const ps = getAuthStore().currentProfile.parks
-    const p = this.state.selectedPark
-    const p2 = this.props.callParks2
+    const cp = getAuthStore().currentProfile
+    const parks = cp.parks.map((p, i) => ({
+      park: p,
+      name: cp.parkNames?.[i] || '',
+    }))
+    const sp = this.state.selectedPark
+    const cp2 = this.props.callParks2
     void callStore.getCurrentCall() // trigger componentDidUpdate
 
     return (
       <Layout
         description={intl`Your park numbers`}
-        fabOnNext={p ? this.park : undefined}
-        fabOnNextText={p2 ? intl`START PARKING` : intl`CALL PARK`}
-        menu={p2 ? undefined : 'call'}
-        onBack={p2 ? Nav().backToPageCallManage : undefined}
-        subMenu={p2 ? undefined : 'parks'}
+        fabOnNext={sp ? this.park : undefined}
+        fabOnNextText={cp2 ? intl`START PARKING` : intl`CALL PARK`}
+        menu={cp2 ? undefined : 'call'}
+        onBack={cp2 ? Nav().backToPageCallManage : undefined}
+        subMenu={cp2 ? undefined : 'parks'}
         title={intl`Park`}
       >
-        {!ps.length && (
+        {!parks.length && (
           <>
             <Field isGroup label={intl`PARK (0)`} />
             <RnText padding>{intl`This account has no park number`}</RnText>
           </>
         )}
-        {ps.map((u, i) => {
-          const parkName = getAuthStore().currentProfile?.parkNames?.[i]
-          return (
-            <RnTouchableOpacity key={i} onPress={() => this.selectPark(u)}>
-              <UserItem
-                key={i}
-                name={intl`Park ${i + 1}: ${u} ${
-                  parkName ? '- ' + parkName : ''
-                }`}
-                selected={p === u}
-              />
-            </RnTouchableOpacity>
-          )
-        })}
+        {parks.map((p, i) => (
+          <RnTouchableOpacity key={i} onPress={() => this.selectPark(p.park)}>
+            <UserItem
+              key={i}
+              name={
+                intl`Park` + ` ${i + 1}: ${p.park}${p.name && ' - '}${p.name}`
+              }
+              selected={p.park === sp}
+            />
+          </RnTouchableOpacity>
+        ))}
       </Layout>
     )
   }

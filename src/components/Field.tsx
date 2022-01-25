@@ -345,7 +345,7 @@ export const Field: FC<
             'removeBtnIcon',
             'error',
           ])}
-          placeholder={intl`number`}
+          placeholder={intl`park number`}
           placeholderTextColor={'grey'}
           keyboardType={'numeric'}
           onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
@@ -372,7 +372,7 @@ export const Field: FC<
             'removeBtnIcon',
             'error',
           ])}
-          placeholder={intl`name`}
+          placeholder={intl`label`}
           placeholderTextColor={'grey'}
           onBlur={() =>
             Platform.OS === 'web' && $.set('isParkNameFocusing', false)

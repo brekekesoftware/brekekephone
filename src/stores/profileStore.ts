@@ -79,7 +79,7 @@ class ProfileStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
-    parks: [] as any as string[],
+    parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
     navIndex: -1,
