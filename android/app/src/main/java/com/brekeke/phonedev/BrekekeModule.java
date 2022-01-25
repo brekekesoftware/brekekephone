@@ -174,13 +174,14 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
     String displayName = data.get("x_displayname");
+    String avatar = data.get("x_image");
     if (displayName == null || "".equals(displayName)) {
       displayName = data.get("x_from");
     }
     if (displayName == null || "".equals(displayName)) {
       displayName = "Loading...";
     }
-    String callerName = displayName; // final
+    String callerName = displayName;
     //
     // Show call
     RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
@@ -208,6 +209,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
             }
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
+            i.putExtra("avatar", avatar);
             if (prev != null) {
               prev.startActivity(i);
             } else {

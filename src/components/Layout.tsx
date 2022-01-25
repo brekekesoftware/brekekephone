@@ -80,9 +80,8 @@ export const Layout: FC<
       keyboardShouldPersistTaps: 'always',
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         // eslint-disable-next-line no-mixed-operators
-        if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
+        e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
           setHeaderOverflow(!headerOverflow)
-        }
         props.containerOnScroll?.(e)
       },
       scrollEventThrottle: 170,
