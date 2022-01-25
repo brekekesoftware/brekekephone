@@ -162,10 +162,9 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
 
   const id = raw['id'] as string
   if (id?.startsWith?.('missedcall')) {
-    const nav = Nav()
-    nav.customPageIndex = nav.goToPageCallRecents
-    // nav after signin in App.tsx mobx observe?
-    waitTimeout().then(nav.goToPageCallRecents)
+    Nav().customPageIndex = Nav().goToPageCallRecents
+    // Nav after signin in App.tsx mobx observe?
+    waitTimeout().then(Nav().goToPageCallRecents)
   }
 
   const n = parseNotificationData(raw)

@@ -195,7 +195,7 @@ export class PageChatRecents extends Component {
           groupById={groupById}
           onGroupSelect={this.handleGroupSelect}
           userById={userById}
-          onUserSelect={(id: string) => Nav().goToPageChatDetail({ buddy: id })}
+          onUserSelect={id => Nav().goToPageChatDetail({ buddy: id })}
         />
       </Layout>
     )
