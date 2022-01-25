@@ -161,13 +161,17 @@ export type PbxExtensionProperties = {
   pnumber: string
 }
 export type PbxGetContactListParam = {
-  shared: string
+  phonebook?: string
+  search_text?: string
+  shared: boolean
   offset: number
   limit: number
 }
 export type PbxGetContactListItem = {
   aid: string
   display_name: string
+  phonebook: string
+  user?: string
 }
 export type PbxGetContactParam = {
   aid: string

@@ -7,8 +7,7 @@ import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
-import { getAuthStore } from '../stores/authStore'
-import { AuthStore } from '../stores/authStore2'
+import { getAuthStore, RecentCall } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -30,7 +29,7 @@ export class PageCallRecents extends Component {
     this.appStateSubscription?.remove()
   }
 
-  isMatchUser = (call: AuthStore['currentData']['recentCalls'][0]) => {
+  isMatchUser = (call: RecentCall) => {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id
     }

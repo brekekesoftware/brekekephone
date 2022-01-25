@@ -15,7 +15,7 @@ import { Profile, profileStore } from './profileStore'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 
-export type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
+type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
 
 export class AuthStore {
   @observable sipPn: Partial<SipPn> = {}
@@ -304,6 +304,6 @@ export class AuthStore {
   } = null
 }
 
-export const authStore = new AuthStore()
+const authStore = new AuthStore()
 
 setAuthStore(authStore)
