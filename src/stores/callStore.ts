@@ -25,7 +25,6 @@ import { timerStore } from './timerStore'
 export class CallStore {
   private recentCallActivityAt = 0
 
-  private prevCallKeepUuid?: string
   private getCallkeep = (
     uuid: string,
     o?: {
@@ -67,17 +66,6 @@ export class CallStore {
       this.endCallKeep(uuid)
       return
     }
-    // ios allow only 1 callkeep
-    /*if (Platform.OS === 'ios' && this.prevCallKeepUuid) {
-      const prevCall = this.calls.find(
-        _ => _.callkeepUuid === this.prevCallKeepUuid,
-      )
-      if (prevCall) {
-        prevCall.callkeepAlreadyRejected = true
-      }
-      this.endCallKeep(this.prevCallKeepUuid, false)
-    }*/
-    this.prevCallKeepUuid = uuid
     // Auto reconnect if no activity
     // This logic is about the case connection has dropped silently
     // So even if sipState is `success` but the connection has dropped
@@ -162,6 +150,7 @@ export class CallStore {
         delete cPartial.remoteVideoStreamObject
       }
       if (!cExisting.answered && cPartial.answered) {
+        this.currentCallId = cExisting.id
         cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
@@ -305,7 +294,6 @@ export class CallStore {
         if (curr) {
           if (uuid) {
             curr.callkeepUuid = uuid
-            this.prevCallKeepUuid = uuid
           }
           this.currentCallId = curr.id
           this.clearStartCallIntervalTimer()
@@ -457,9 +445,6 @@ export class CallStore {
       uuid,
       CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
     )
-    if (uuid === this.prevCallKeepUuid) {
-      this.prevCallKeepUuid = undefined
-    }
     BrekekeUtils.closeIncomingCall(uuid)
   }
   endCallKeepAllCalls = () => {
@@ -471,11 +456,10 @@ export class CallStore {
   }
   @action onCallKeepAction = () => {
     this.calls
-      .map(_ => this.callkeepMap[_.callkeepUuid])
-      .forEach(_ => {
-        if (_ && !_.hasAction) {
-          _.hasAction = true
-        }
+      .map(c => this.callkeepMap[c.callkeepUuid])
+      .filter(c => c)
+      .forEach(c => {
+        c.hasAction = true
       })
   }
 

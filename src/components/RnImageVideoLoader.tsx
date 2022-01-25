@@ -107,7 +107,18 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
 }) => {
   const [visible, setIsVisible] = useState(false)
 
-  const images = url ? [{ url }] : []
+  const convertUri = useCallback((_?: string) => {
+    if (!_) {
+      return ''
+    }
+    if (_.startsWith('content://')) {
+      return _
+    }
+    const nextUrl = _.startsWith('file://') ? _ : `file://${_}`
+    return nextUrl
+  }, [])
+
+  const images = url ? [{ url: convertUri(url) }] : []
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
@@ -119,16 +130,6 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
 
   const onSwipeDown = useCallback(() => {
     setIsVisible(false)
-  }, [])
-  const convertUri = useCallback((_?: string) => {
-    if (!_) {
-      return ''
-    }
-    if (_.startsWith('content://')) {
-      return _
-    }
-    const nextUrl = _.startsWith('file://') ? _ : `file://${_}`
-    return nextUrl
   }, [])
 
   const renderVideo = () => {
@@ -173,6 +174,9 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       renderVideo()
     )
   }
+  const onRequestClose = () => {
+    setIsVisible(false)
+  }
   return (
     <View style={css.image}>
       {isLoading && (
@@ -189,7 +193,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
         </Svg>
       )}
-      <Modal visible={visible} style={css.modal} animationType={'slide'}>
+      <Modal
+        visible={visible}
+        style={css.modal}
+        animationType={'slide'}
+        onRequestClose={onRequestClose}
+      >
         <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
           <RnIcon path={mdiCloseCircleOutline} color={'black'} size={30} />
         </RnTouchableOpacity>

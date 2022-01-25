@@ -1,3 +1,11 @@
+#### 2.8.62
+
+- Incoming call and outgoing call should be hold correctly in the order of answer
+- Test and verify gsm conflict with LTE:
+  - If VoLTE is enabled: all issues are resolved
+  - If VoLTE is not enabled: BrekekePhone calls alway disconnect when having gsm call
+- Test and verify some other bugs
+
 #### 2.8.61
 
 - Android: Try fix click notification in killed state should navigate to page recent calls

@@ -7,7 +7,10 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  TextInputSelectionChangeEventData,
+  View,
 } from 'react-native'
+import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
 import { Constants, uc } from '../api/uc'
 import { numberOfChatsPerLoad } from '../components/chatConfig'
@@ -77,9 +80,11 @@ export class PageChatGroupDetail extends Component<{
       fileType: '',
     },
     topic_id: '',
+    emojiTurnOn: false,
   }
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
-
+  edittingTextEmoji = ''
+  editingTextReplace = false
   componentDidMount() {
     this.loadRecent()
     chatStore.updateThreadConfig(this.props.groupId, true, {
@@ -104,6 +109,10 @@ export class PageChatGroupDetail extends Component<{
   renderChatInput = () => {
     return (
       <ChatInput
+        onEmojiTurnOn={() =>
+          this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
+        }
+        onSelectionChange={this.onSelectionChange}
         onTextChange={this.setEditingText}
         onTextSubmit={this.submitEditingText}
         openFileRnPicker={() => pickFile(this.sendFile)}
@@ -122,6 +131,7 @@ export class PageChatGroupDetail extends Component<{
         compact
         containerOnContentSizeChange={this.onContentSizeChange}
         containerOnScroll={this.onScroll}
+        fabRender={this.renderChatInput}
         containerRef={this.setViewRef}
         dropdown={[
           {
@@ -142,7 +152,6 @@ export class PageChatGroupDetail extends Component<{
             danger: true,
           },
         ]}
-        fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
         title={gr?.name}
       >
@@ -174,10 +183,66 @@ export class PageChatGroupDetail extends Component<{
           rejectFile={this.rejectFile}
           resolveChat={this.resolveChat}
         />
+        {this.state.emojiTurnOn && (
+          <View>
+            <EmojiSelector
+              category={Categories.emotion}
+              columns={10}
+              onEmojiSelected={emoji => this.emojiSelectFunc(emoji)}
+              showHistory={true}
+              showSearchBar={true}
+              showSectionTitles={true}
+              showTabs={true}
+            />
+          </View>
+        )}
       </Layout>
     )
   }
-
+  onSelectionChange = (
+    event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+  ) => {
+    const selection = event.nativeEvent.selection
+    this.editingTextReplace = false
+    if (selection.start !== selection.end) {
+      this.edittingTextEmoji = this.state.editingText.substring(
+        selection.start,
+        selection.end,
+      )
+      this.editingTextReplace = true
+    } else {
+      this.edittingTextEmoji = this.state.editingText.substring(
+        0,
+        selection.start,
+      )
+    }
+  }
+  emojiSelectFunc = (emoji: string) => {
+    const newText = this.edittingTextEmoji.concat(emoji)
+    if (this.state.editingText === '') {
+      this.setState({ editingText: emoji })
+      this.edittingTextEmoji = emoji
+    } else {
+      if (!this.editingTextReplace) {
+        this.setState({
+          editingText: this.state.editingText.replace(
+            this.edittingTextEmoji,
+            newText,
+          ),
+        })
+        this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji)
+      } else {
+        this.setState({
+          editingText: this.state.editingText.replace(
+            this.edittingTextEmoji,
+            emoji,
+          ),
+        })
+        this.editingTextReplace = false
+        this.edittingTextEmoji = emoji
+      }
+    }
+  }
   view?: ScrollView
   setViewRef = (ref: ScrollView) => {
     this.view = ref
@@ -185,7 +250,9 @@ export class PageChatGroupDetail extends Component<{
 
   private justMounted = true
   private closeToBottom = true
-  onContentSizeChange = () => {
+  private currentScrollPosition = 0
+  private isLoadingMore = false
+  onContentSizeChange = (newWidth?: number, newHeight?: number) => {
     if (this.closeToBottom) {
       this.view?.scrollToEnd({
         animated: !this.justMounted,
@@ -193,6 +260,14 @@ export class PageChatGroupDetail extends Component<{
       if (this.justMounted) {
         this.justMounted = false
       }
+    }
+    // scroll to last position after load more
+    if (newHeight && this.isLoadingMore) {
+      this.isLoadingMore = false
+      this.view?.scrollTo({
+        y: newHeight - this.currentScrollPosition,
+        animated: false,
+      })
     }
   }
   onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -204,6 +279,7 @@ export class PageChatGroupDetail extends Component<{
     const paddingToBottom = 20
     this.closeToBottom =
       layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
+    this.currentScrollPosition = contentHeight
   }
 
   me = uc.me()
@@ -256,6 +332,7 @@ export class PageChatGroupDetail extends Component<{
   }
 
   loadMore = () => {
+    this.isLoadingMore = true
     this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
@@ -305,6 +382,9 @@ export class PageChatGroupDetail extends Component<{
     const txt = this.state.editingText.trim()
     if (!txt) {
       return
+    }
+    if (this.state.emojiTurnOn) {
+      this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
     }
     this.submitting = true
     uc.sendGroupChatText(this.props.groupId, txt)

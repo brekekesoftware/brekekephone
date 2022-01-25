@@ -27,6 +27,19 @@ export const localeOptions = [
   // { key: 'vi', label: 'Tiếng Việt' },
 ]
 
+// typings
+const TypedNativeModules = NativeModules as {
+  SettingsManager?: {
+    settings?: {
+      AppleLocale?: string
+      AppleLanguages?: string[]
+    }
+  }
+  I18nManager?: {
+    localeIdentifier?: string
+  }
+}
+
 export class IntlStore {
   @observable locale = 'en'
   @observable localeReady = false
@@ -39,10 +52,10 @@ export class IntlStore {
     let locale = await RnAsyncStorage.getItem('locale').then(l => l || '')
     if (!locale || !labels[locale]) {
       locale =
-        Platform.OS === 'ios'
-          ? NativeModules?.SettingsManager?.settings?.AppleLocale ||
-            NativeModules?.SettingsManager?.settings?.AppleLanguages?.[0]
-          : NativeModules?.I18nManager?.localeIdentifier
+        (Platform.OS === 'ios'
+          ? TypedNativeModules?.SettingsManager?.settings?.AppleLocale ||
+            TypedNativeModules?.SettingsManager?.settings?.AppleLanguages?.[0]
+          : TypedNativeModules?.I18nManager?.localeIdentifier) || ''
       locale = locale?.substr(0, 2)
       console.error(`Intl debug: system locale=${locale}`)
     }

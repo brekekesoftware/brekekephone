@@ -8,6 +8,8 @@ export const setAuthStore = (s: AuthStore) => {
 }
 export const getAuthStore = () => authStore
 
+export type RecentCall = AuthStore['currentData']['recentCalls'][0]
+
 const compareField = (p1: object, p2: object, field: string) => {
   const v1 = p1[field as keyof typeof p1]
   const v2 = p2[field as keyof typeof p2]

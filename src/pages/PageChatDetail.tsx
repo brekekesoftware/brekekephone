@@ -106,7 +106,9 @@ export class PageChatDetail extends Component<{
     return (
       <ChatInput
         onEmojiTurnOn={() =>
-          this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
+          this.setState({ emojiTurnOn: !this.state.emojiTurnOn }, () => {
+            this.view?.scrollToEnd()
+          })
         }
         onSelectionChange={this.onSelectionChange}
         onTextChange={this.setEditingText}
@@ -120,8 +122,13 @@ export class PageChatDetail extends Component<{
   render() {
     const { buddy: id } = this.props
     const u = contactStore.getUcUserById(id)
-    const { allMessagesLoaded } = chatStore.getThreadConfig(id)
-    const { loadingMore, loadingRecent } = this.state
+    const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
+    const { loadingMore, loadingRecent, emojiTurnOn } = this.state
+    const listMessage = chatStore.messagesByThreadId[this.props.buddy]
+    const incomingMessage = listMessage
+      ? listMessage[listMessage.length - 1]?.text
+      : undefined
+    const isShowToastMessage = emojiTurnOn && isUnread
 
     return (
       <Layout
@@ -132,6 +139,8 @@ export class PageChatDetail extends Component<{
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
         title={u?.name || u?.id}
+        isShowToastMessage={isShowToastMessage}
+        incomingMessage={incomingMessage}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
@@ -155,12 +164,12 @@ export class PageChatDetail extends Component<{
         )}
         <MessageList
           acceptFile={this.acceptFile}
-          list={chatStore.messagesByThreadId[this.props.buddy]}
+          list={listMessage}
           loadMore={this.loadMore}
           rejectFile={this.rejectFile}
           resolveChat={this.resolveChat}
         />
-        {this.state.emojiTurnOn && (
+        {emojiTurnOn && (
           <View>
             <EmojiSelector
               category={Categories.emotion}
@@ -234,7 +243,7 @@ export class PageChatDetail extends Component<{
   private isLoadingMore = false
 
   onContentSizeChange = (newWidth?: number, newHeight?: number) => {
-    if (!this.view) {
+    if (!this.view || this.state.emojiTurnOn) {
       return
     }
     if (this.closeToBottom) {
@@ -355,6 +364,9 @@ export class PageChatDetail extends Component<{
     const txt = this.state.editingText.trim()
     if (!txt || this.submitting) {
       return
+    }
+    if (this.state.emojiTurnOn) {
+      this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
     }
     this.submitting = true
     //
