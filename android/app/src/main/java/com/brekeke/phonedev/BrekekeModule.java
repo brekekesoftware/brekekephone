@@ -181,7 +181,8 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     if (displayName == null || "".equals(displayName)) {
       displayName = "Loading...";
     }
-    String callerName = displayName; // final
+    String callerName = displayName;
+    //
     // Show call
     RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
     Runnable onShowIncomingCallUi =

@@ -52,7 +52,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName, avatarUrl;
+  public String uuid, callerName, avatar;
   public boolean destroyed = false, paused = false, answered = false;
 
   @Override
@@ -69,7 +69,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
-    avatarUrl = b.getString("avatar");
+    avatar = b.getString("avatar");
 
     if ("rejectCall".equals(BrekekeModule.userActions.get(uuid))) {
       forceFinish();
@@ -101,7 +101,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManage.setOnClickListener(this);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
-    Glide.with(this).load(avatarUrl).centerCrop().into(imgAvatar);
+    Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
 
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
@@ -132,6 +132,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndcall.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
+    txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
     txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
     txtConnecting = (TextView) findViewById(R.id.txt_connecting);
     txtTransferBtn = (TextView) findViewById(R.id.txt_transfer_btn);
@@ -143,7 +144,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
-    txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
+
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     updateLabels();
