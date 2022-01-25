@@ -1,5 +1,11 @@
 import React, { FC } from 'react'
-import { Platform, StyleSheet, TouchableOpacityProps, View } from 'react-native'
+import {
+  Platform,
+  StyleSheet,
+  TextInputProps,
+  TouchableOpacityProps,
+  View,
+} from 'react-native'
 
 import { mdiKeyboardBackspace } from '../assets/icons'
 import { Field } from './Field'
@@ -11,7 +17,8 @@ const css = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 15,
     paddingHorizontal: 10,
-    width: 305,
+    minWidth: 305,
+    maxWidth: 360,
     backgroundColor: 'white',
     borderRadius: v.borderRadius,
     overflow: 'hidden',
@@ -51,6 +58,7 @@ export const FieldButton: FC<
     onCreateBtnPress(): void
     label: string
     value: string
+    textInputStyle?: TextInputProps['style']
   }>
 > = p0 => {
   const { style, ...p } = p0

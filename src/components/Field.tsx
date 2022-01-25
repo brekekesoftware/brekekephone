@@ -224,6 +224,7 @@ export const Field: FC<
     type: 'Switch' | 'RnPicker' | 'PARK'
     valueRender: Function
     value: string | boolean | Park
+    textInputStyle?: TextInputProps['style']
     options: {
       key: string
       label: string
@@ -500,7 +501,7 @@ export const Field: FC<
               <RnTextInput
                 disabled
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
-                style={css.Field_TextInput}
+                style={[css.Field_TextInput, props.textInputStyle]}
                 value={
                   (props.valueRender && props.valueRender(props.value)) ||
                   props.value ||
