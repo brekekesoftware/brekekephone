@@ -260,8 +260,5 @@
   "{{$0}} other call is in background",
   "{{$0}} other calls are in background",
   "{{$0}} total",
-  "{{$0}}/{{$1}} online",
-  "Edit the user list",
-  "Add all user to the list",
-  "Edit grouping and user order"
+  "{{$0}}/{{$1}} online"
 ]

@@ -8,6 +8,10 @@ const css = StyleSheet.create({
   SelectionItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 5,
+  },
+  SelectionItem_Disabled: {
+    opacity: 0.5,
   },
   SelectionItem_Title: {
     marginLeft: 12,
@@ -19,10 +23,18 @@ export const SelectionItem: FC<
     isSelected: boolean
     onPress(): void
     title: string
+    disabled?: boolean
   }
-> = ({ isSelected, title, onPress, style, ...p }) => (
-  <View {...p} style={[css.SelectionItem, style]}>
-    <RnCheckBox isSelected={isSelected} onPress={onPress} />
+> = ({ isSelected, title, onPress, disabled, style, ...p }) => (
+  <View
+    {...p}
+    style={[css.SelectionItem, disabled && css.SelectionItem_Disabled, style]}
+  >
+    <RnCheckBox
+      isSelected={isSelected}
+      onPress={onPress}
+      disabled={disabled || false}
+    />
     <RnText style={css.SelectionItem_Title}>{title}</RnText>
   </View>
 )

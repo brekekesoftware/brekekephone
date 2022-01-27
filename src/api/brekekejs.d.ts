@@ -388,10 +388,22 @@ export type UcChatClient = {
     reject: ErrorHandler,
   ): void
   signOut(): void
+  getAllUsers(): {
+    user: {
+      user_id: string
+      user_name: string
+    }
+  }
   getProfile(): {
     user_id: string
     name: string
     profile_image_url: string
+  }
+  getConfigProperties(): {
+    buddy_mode: number //	バディモード (バディモード定数)
+    chat_mode: number //		チャットモード (未使用)
+    webnotif_timeout: number // 	web notification表示のタイムアウトまでの時間 (ミリ秒)
+    webchat_enabled: string //ウェブチャット有効無効 ("true": 有効)
   }
   getStatus(): {
     status: number // 0 | 1 | 2 | 3

@@ -22,13 +22,15 @@ export const RnCheckBox: FC<
   ViewProps & {
     isSelected: boolean
     onPress(): void
+    disabled: boolean
   }
-> = ({ isSelected, onPress, style, ...p }) => {
+> = ({ isSelected, onPress, disabled, style, ...p }) => {
   return (
     <RnTouchableOpacity
       {...p}
       onPress={onPress}
       style={[css.CheckBoxBtn, isSelected && css.CheckBox__selected, style]}
+      disabled={disabled}
     >
       {isSelected && <RnIcon path={mdiCheck} color={'white'} />}
     </RnTouchableOpacity>

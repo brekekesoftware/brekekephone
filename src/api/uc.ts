@@ -298,6 +298,13 @@ export class UC extends EventEmitter {
     }))
   }
 
+  getProfile = () => {
+    return this.client.getProfile()
+  }
+
+  getConfigProperties = () => {
+    return this.client.getConfigProperties()
+  }
   getUnreadChats = async () => {
     const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
       this.client.receiveUnreadText(resolve, reject)

@@ -3,6 +3,7 @@ import uniq from 'lodash/uniq'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
 
+import { uc } from '../api/uc'
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
@@ -24,6 +25,9 @@ export class PageContactUsers extends Component {
 
   componentDidMount() {
     this.componentDidUpdate()
+    const userList = uc.client.getBuddylist().user
+    const getConfig = uc.client.getConfigProperties()
+    console.error('getUsers', { userList, getConfig })
   }
   componentDidUpdate() {
     if (
