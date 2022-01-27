@@ -132,6 +132,12 @@ export class PageContactUsers extends Component {
           }
           return desc
         })()}
+        dropdown={[
+          {
+            label: intl`Edit the user list`,
+            onPress: Nav().goToPageEditUserList,
+          },
+        ]}
         menu='contact'
         subMenu='users'
         title={intl`Users`}

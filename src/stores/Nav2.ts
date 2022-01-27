@@ -17,6 +17,7 @@ import { PageChatGroupInvite } from '../pages/PageChatGroupInvite'
 import { PageChatRecents } from '../pages/PageChatRecents'
 import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
+import { PageEditUserList } from '../pages/PageEditUserList'
 import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
 import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
 import { PageProfileCreate } from '../pages/PageProfileCreate'
@@ -191,6 +192,13 @@ export class Nav2 {
   backToPageSettingsDebug = RnStacker.createBackTo<
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
+
+  //Users
+  goToPageEditUserList = RnStacker.createGoTo<
+    ComponentProps<typeof PageEditUserList>
+  >({
+    PageEditUserList,
+  })
 
   customPageIndex?: Function
   goToPageIndex = () => {
