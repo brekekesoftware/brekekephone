@@ -1,11 +1,12 @@
 import React, { FC } from 'react'
 import { StyleSheet, View, ViewProps } from 'react-native'
 
+import { DropdownPosition } from '../stores/RnDropdownSectionList'
 import { DropdownItem, DropdownItemProps } from './DropdownItem'
 
 type DropdownProps = {
   items?: DropdownItemProps[]
-  position: { top?: number; left?: number; right?: number; bottom?: number }
+  position: DropdownPosition
 }
 
 const css = StyleSheet.create({
