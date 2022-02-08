@@ -100,7 +100,6 @@ export type Group = {
 
 class UserStore {
   @observable dataGroupUser: SectionListData<UserGroup>[] = []
-  @observable dataListUser: UserGroup[] = []
   isUserGroup(object: any): object is UserGroup {
     return 'user_id' in object && 'group' in object
   }
@@ -136,6 +135,7 @@ class UserStore {
     this.dataGroupUser = uniqBy(sectionData, 'title')
   }
 
+  @observable dataListUser: UserGroup[] = []
   @action transformDataListUser = (dataGroupUser: (UserGroup | Group)[]) => {
     const data: UserGroup[] = []
     dataGroupUser.forEach(itm => {

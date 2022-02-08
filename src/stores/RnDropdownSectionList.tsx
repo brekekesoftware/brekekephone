@@ -11,7 +11,6 @@ export type DropdownPosition = {
 }
 
 export class RnDropdownSectionListStore {
-  @observable groupIndex: number[] = []
   @observable hiddenGroupIndex: number[] = []
   @observable listDropdownYPosition: DropdownPosition[] = []
   @observable dropdownOpenedIndex: number = -1
