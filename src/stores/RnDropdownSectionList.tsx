@@ -44,6 +44,7 @@ export class RnDropdownSectionListStore {
 
   @action setDropdown = (index: number) => {
     this.dropdownOpenedIndex = index === this.dropdownOpenedIndex ? -1 : index
+    this.hiddenGroupIndex = this.hiddenGroupIndex.filter(idx => idx !== index)
   }
 
   @action closeDropdown = () => {

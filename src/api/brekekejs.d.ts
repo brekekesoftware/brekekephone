@@ -389,22 +389,42 @@ export type UcChatClient = {
   ): void
   signOut(): void
   getAllUsers(): {
-    user: {
-      user_id: string
-      user_name: string
-    }
+    user: [
+      {
+        disabledBuddy?: boolean
+        user_group: string
+        user_id: string
+        user_name: string
+      },
+    ]
   }
   getProfile(): {
     user_id: string
     name: string
     profile_image_url: string
+    tenant: string
   }
   getConfigProperties(): {
     buddy_mode: number //	バディモード (バディモード定数)
     chat_mode: number //		チャットモード (未使用)
     webnotif_timeout: number // 	web notification表示のタイムアウトまでの時間 (ミリ秒)
     webchat_enabled: string //ウェブチャット有効無効 ("true": 有効)
+    optional_config: {
+      buddy_max: number
+    }
   }
+
+  saveProperties(
+    profile?: null,
+    settings?: null,
+    buddylist: {
+      screened: boolean
+      user: (UcBuddy | UcBuddyGroup)[]
+    },
+    resolve: () => void,
+    reject: ErrorHandler,
+  )
+
   getStatus(): {
     status: number // 0 | 1 | 2 | 3
     display: string
@@ -415,8 +435,10 @@ export type UcChatClient = {
     resolve: () => void,
     reject: ErrorHandler,
   )
+
   getBuddylist(): {
-    user: UcUser[]
+    user: (UcBuddy | UcBuddyGroup)[]
+    screened: boolean
   }
 
   receiveUnreadText(
@@ -559,12 +581,18 @@ export type UcWebchat = {
   baseTime: number
   isTalking: boolean
 }
-export type UcUser = {
+export type UcBuddy = {
   user_id: string
   name: string
   profile_image_url: string
-  status: number
-  display: string
+  group: string
+  tenant: string
+  block_settings: object
+}
+export type UcBuddyGroup = {
+  id: string
+  name: string
+  group: string
 }
 export type UcReceieveUnreadText = {
   messages: UcMessage[]

@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native'
 import { Layout } from '../components/Layout'
 import { RnIcon } from '../components/RnIcon'
 import { SelectionItem } from '../components/SelectionItem'
-import { intl } from '../stores/intl'
+import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
 import { mdiMoreHoriz, mdiMenuDown, mdiMenuLeft } from '../assets/icons'
@@ -13,12 +13,16 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Dropdown } from '../components/Dropdown'
 import { DropdownItemProps } from '../components/DropdownItem'
 
-import { UserGroup, userStore } from '../stores/userStore'
+import { userStore } from '../stores/userStore'
 import {
   DropdownPosition,
   RnDropdownSectionList,
 } from '../stores/RnDropdownSectionList'
 import { observer } from 'mobx-react'
+import { UcBuddy } from '../api/brekekejs'
+import { uc } from '../api/uc'
+import { RnAlert } from '../stores/RnAlert'
+import { v } from '../components/variables'
 
 const css = StyleSheet.create({
   headerSectionList: {
@@ -35,7 +39,7 @@ const css = StyleSheet.create({
     flexDirection: 'row',
   },
   itemWrapper: {
-    borderBottomColor: '#333',
+    borderBottomColor: v.borderBg,
     borderBottomWidth: 1,
     paddingHorizontal: 10,
     paddingVertical: 20,
@@ -55,10 +59,6 @@ const css = StyleSheet.create({
 export class PageEditUserList extends Component {
   private sectionHeaderRefs: View[] = []
   private reCalculatedLayoutDropdownTimeoutId = 0
-
-  componentDidMount() {
-    userStore.loadGroupUser()
-  }
 
   componentDidUpdate() {
     if (RnDropdownSectionList.isShouldUpdateDropdownPosition) {
@@ -103,7 +103,7 @@ export class PageEditUserList extends Component {
 
   renderHeaderSection = (
     title: string,
-    data: readonly UserGroup[],
+    data: readonly UcBuddy[],
     index: number,
   ) => {
     const selectedItemCount = userStore.isSelectedAddAllUser
@@ -128,13 +128,11 @@ export class PageEditUserList extends Component {
           style={css.headerTitle}
         >{`${title} ${selectedItemCount}/${data.length}`}</Text>
         <View style={css.rightSection}>
-          {!isHidden && (
-            <TouchableOpacity
-              onPress={() => RnDropdownSectionList.setDropdown(index)}
-            >
-              <RnIcon path={mdiMoreHoriz} />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            onPress={() => RnDropdownSectionList.setDropdown(index)}
+          >
+            <RnIcon path={mdiMoreHoriz} />
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => RnDropdownSectionList.toggleSection(index)}
           >
@@ -145,7 +143,7 @@ export class PageEditUserList extends Component {
     )
   }
 
-  renderItemUser = (item: UserGroup, index: number) => {
+  renderItemUser = (item: UcBuddy, index: number) => {
     const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
       idx => idx === index,
     )
@@ -157,7 +155,7 @@ export class PageEditUserList extends Component {
             userStore.selectedUserIds.some(itm => itm === item.user_id)
           }
           onPress={() => userStore.selectUserId(item.user_id)}
-          title={item.name}
+          title={item.name || item.user_id}
           disabled={userStore.isSelectedAddAllUser}
         />
       </View>
@@ -166,7 +164,7 @@ export class PageEditUserList extends Component {
     )
   }
 
-  renderItemListUser = (item: UserGroup) => {
+  renderItemListUser = (item: UcBuddy) => {
     return (
       <View style={css.itemWrapper}>
         <SelectionItem
@@ -175,7 +173,7 @@ export class PageEditUserList extends Component {
             userStore.selectedUserIds.some(itm => itm === item.user_id)
           }
           onPress={() => userStore.selectUserId(item.user_id)}
-          title={item.name}
+          title={item.name || item.user_id}
           disabled={userStore.isSelectedAddAllUser}
         />
       </View>
@@ -227,11 +225,15 @@ export class PageEditUserList extends Component {
 
   render() {
     const {
-      dataGroupUser,
-      dataListUser,
+      buddyMax,
+      dataGroupAllUser,
+      dataListAllUser,
       isSelectedAddAllUser,
       selectedUserIds,
+      isDisableAddAllUserToTheList,
+      isDisableGroupEditGrouping,
       isSelectEditGroupingAndUserOrder,
+      isCapacityInvalid,
     } = userStore
     const { listDropdownYPosition, dropdownOpenedIndex } = RnDropdownSectionList
 
@@ -248,23 +250,34 @@ export class PageEditUserList extends Component {
             isSelected={isSelectedAddAllUser}
             onPress={this.onSelectAddAllUserToList}
             title={intl`Add all user to the list`}
+            disabled={isDisableAddAllUserToTheList}
           />
           <SelectionItem
             isSelected={isSelectEditGroupingAndUserOrder}
             onPress={this.onSelectEditGroupingAndUserOrderOption}
-            title={intl`Edit grouping and user order`}
+            title={
+              isDisableGroupEditGrouping
+                ? intl`Display with grouping`
+                : intl`Edit grouping and user order`
+            }
           />
           <View style={css.listTitleSection}>
             <Text>{intl`User list`}</Text>
-            <Text>{`${intl`Capacity`}   ${
-              isSelectedAddAllUser
-                ? dataListUser.length
-                : selectedUserIds.length
-            }/${dataListUser.length}`}</Text>
+            <Text>
+              {`${intl`Capacity`}`}
+              <Text style={isCapacityInvalid && { color: 'red' }}>
+                {`    ${
+                  isSelectedAddAllUser
+                    ? dataListAllUser.length
+                    : selectedUserIds.length
+                }`}
+              </Text>
+              {` / ${buddyMax}`}
+            </Text>
           </View>
         </View>
         {isSelectEditGroupingAndUserOrder
-          ? dataGroupUser.map((item, index) => (
+          ? dataGroupAllUser.map((item, index) => (
               <Fragment>
                 {this.renderHeaderSection(item.title, item.data, index)}
                 {item.data.map(itemUser =>
@@ -272,7 +285,7 @@ export class PageEditUserList extends Component {
                 )}
               </Fragment>
             ))
-          : dataListUser.map(user => this.renderItemListUser(user))}
+          : dataListAllUser.map(user => this.renderItemListUser(user))}
         {dropdownOpenedIndex >= 0 && (
           <Dropdown
             position={listDropdownYPosition[dropdownOpenedIndex]}
@@ -283,7 +296,36 @@ export class PageEditUserList extends Component {
     )
   }
 
-  save = () => {}
-  onSaveSuccess = () => {}
-  onSaveFailure = () => {}
+  save = () => {
+    const {
+      isCapacityInvalid,
+      isSelectedAddAllUser,
+      listGroup,
+      dataListAllUser,
+      selectedUserIds,
+    } = userStore
+
+    if (!isCapacityInvalid) {
+      uc.saveProperties(!isSelectedAddAllUser, [
+        ...listGroup,
+        ...dataListAllUser.filter(
+          user =>
+            selectedUserIds.some(id => id === user.user_id) ||
+            isSelectedAddAllUser,
+        ),
+      ])
+        .then(this.onSaveSuccess)
+        .catch(this.onSaveFailure)
+    }
+  }
+  onSaveSuccess = () => {
+    userStore.clearStore()
+    Nav().backToPageContactUsers()
+  }
+  onSaveFailure = (err: Error) => {
+    RnAlert.error({
+      message: intlDebug`Failed to save user list`,
+      err,
+    })
+  }
 }

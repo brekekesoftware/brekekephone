@@ -16,6 +16,7 @@ import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { profileStore } from '../stores/profileStore'
+import { userStore } from '../stores/userStore'
 import { DelayFlag } from '../utils/DelayFlag'
 import { filterTextOnly } from '../utils/formatChatContent'
 
@@ -25,9 +26,9 @@ export class PageContactUsers extends Component {
 
   componentDidMount() {
     this.componentDidUpdate()
-    const userList = uc.client.getBuddylist().user
-    const getConfig = uc.client.getConfigProperties()
-    console.error('getUsers', { userList, getConfig })
+    // const userList = uc.client.getBuddylist().user
+    // const getConfig = uc.client.getConfigProperties()
+    // console.error('getUsers', { userList, getConfig })
   }
   componentDidUpdate() {
     if (

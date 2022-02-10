@@ -5,9 +5,13 @@ import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
 import { ChatFile } from '../stores/chatStore'
+import { UcUser } from '../stores/contactStore'
 import { Profile } from '../stores/profileStore'
+import { isUcBuddy } from '../stores/userStore'
 import { formatFileType } from '../utils/formatFileType'
 import {
+  UcBuddy,
+  UcBuddyGroup,
   UcChatClient,
   UcConference,
   UcConstants,
@@ -265,6 +269,18 @@ export class UC extends EventEmitter {
     }
   }
 
+  saveProperties = (screened: boolean, user: (UcBuddyGroup | UcBuddy)[]) => {
+    return new Promise((resolve, reject) =>
+      this.client.saveProperties(
+        null,
+        null,
+        { screened, user },
+        () => resolve(undefined),
+        reject,
+      ),
+    )
+  }
+
   setStatus = (status: string, statusText: string) => {
     let num_status = '0'
     if (status === 'online') {
@@ -289,13 +305,20 @@ export class UC extends EventEmitter {
       return []
     }
 
-    return buddyList.user.map(user => ({
-      id: user.user_id,
-      name: user.name,
-      avatar: user.profile_image_url,
-      status: getUserStatusFromCode(user.status),
-      statusText: user.display,
-    }))
+    const buddyListFiltered: UcUser[] = []
+
+    buddyList.user.forEach(user => {
+      if (isUcBuddy(user)) {
+        buddyListFiltered.push({
+          id: user.user_id,
+          name: user.name,
+          avatar: user.profile_image_url,
+          status: codeMapUserStatus['0'], // 'offline'
+          statusText: '',
+        })
+      }
+    })
+    return buddyListFiltered
   }
 
   getProfile = () => {

@@ -1,123 +1,70 @@
-import { uniq, uniqBy } from 'lodash'
+import { uniq } from 'lodash'
 import { action, observable } from 'mobx'
 import { SectionListData } from 'react-native'
 
-const mockData = [
-  {
-    id: 'group1',
-    name: 'group1',
-    group: '',
-  },
-  {
-    id: 'group2',
-    name: 'group2',
-    group: '',
-  },
-  {
-    id: 'group3',
-    name: 'group3',
-    group: '',
-  },
-  {
-    id: 'group4',
-    name: 'group4',
-    group: '',
-  },
-  {
-    user_id: '1001',
-    tenant: 'tenant1',
-    name: 'n1001',
-    group: 'group1',
-  },
-  {
-    user_id: '1002',
-    tenant: 'tenant1',
-    name: 'n1002',
-    group: 'group1',
-  },
-  {
-    user_id: '2001',
-    tenant: 'tenant1',
-    name: 'n2001',
-    group: 'group2',
-  },
-  {
-    user_id: '2002',
-    tenant: 'tenant1',
-    name: 'n2002',
-    group: 'group2',
-  },
-  {
-    user_id: '9998',
-    tenant: 'tenant1',
-    name: 'n9998',
-    group: '',
-  },
-  {
-    user_id: '9999',
-    tenant: 'tenant1',
-    name: 'n9999',
-    group: '',
-  },
-  {
-    user_id: '99991',
-    tenant: 'tenant11',
-    name: 'n99991',
-    group: 'group3',
-  },
-  {
-    user_id: '99992',
-    tenant: 'tenant12',
-    name: 'n99992',
-    group: 'group3',
-  },
-  {
-    user_id: '99993',
-    tenant: 'tenant11',
-    name: 'n99993',
-    group: 'group4',
-  },
-  {
-    user_id: '99994',
-    tenant: 'tenant12',
-    name: 'n99994',
-    group: 'group4',
-  },
-]
+import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { uc } from '../api/uc'
 
-export type UserGroup = {
-  user_id: string
-  tenant: string
-  name: string
-  group: string
-}
-
-export type Group = {
-  id: string
-  name: string
-  group: string
+export const isUcBuddy = (object: any): object is UcBuddy => {
+  return 'user_id' in object && 'group' in object
 }
 
 class UserStore {
-  @observable dataGroupUser: SectionListData<UserGroup>[] = []
-  isUserGroup(object: any): object is UserGroup {
-    return 'user_id' in object && 'group' in object
-  }
+  @observable dataGroupUser: SectionListData<UcBuddy>[] = []
+  @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
+  @observable dataListAllUser: UcBuddy[] = []
+  @observable buddyMax: number = 0
+  @observable isDisableGroupEditGrouping: boolean = false
+  @observable isDisableAddAllUserToTheList: boolean = false
+  @observable selectedUserIds: string[] = []
+  @observable isCapacityInvalid: boolean = false
+  listGroup: UcBuddyGroup[] = []
 
   @action loadGroupUser = async () => {
-    this.transformDataListUser(mockData as (UserGroup | Group)[])
-    this.transformDataGroupUser(mockData as (UserGroup | Group)[])
+    const userList = uc.client.getBuddylist()
+    const configProperties = uc.client.getConfigProperties()
+    const profile = uc.client.getProfile()
+    const allUsers: UcBuddy[] = uc.client
+      .getAllUsers()
+      .user.filter(u => !u.disabledBuddy && u.user_id !== profile.user_id)
+      .map(
+        user =>
+          ({
+            user_id: user.user_id,
+            name: user.user_name,
+            group: configProperties.buddy_mode === 1 ? user.user_group : '',
+            tenant: profile.tenant,
+          } as UcBuddy),
+      )
+    this.isSelectedAddAllUser = !userList.screened
+    this.isDisableGroupEditGrouping = configProperties.buddy_mode === 1
+    this.isDisableAddAllUserToTheList =
+      configProperties.optional_config.buddy_max < allUsers.length
+    this.buddyMax = configProperties.optional_config.buddy_max
+
+    this.filterDataUserGroup(
+      userList.user,
+      allUsers,
+      configProperties.buddy_mode === 1,
+    )
   }
 
-  @action transformDataGroupUser = (dataGroupUser: (UserGroup | Group)[]) => {
-    const sectionData: SectionListData<UserGroup>[] = []
-    const sectionDataOther: SectionListData<UserGroup> = {
+  @action filterDataUserGroup = (
+    dataGroupUser: (UcBuddy | UcBuddyGroup)[],
+    listAllUser: UcBuddy[],
+    isDisableEditGroup: boolean,
+  ) => {
+    const sectionData: SectionListData<UcBuddy>[] = []
+    const sectionDataOther: SectionListData<UcBuddy> = {
       title: 'Other',
       data: [],
     }
+    const listDataUser: UcBuddy[] = []
+    const selectedUserIds: string[] = []
+
     if (dataGroupUser.length > 0) {
       dataGroupUser.forEach(itm => {
-        if (this.isUserGroup(itm)) {
+        if (isUcBuddy(itm)) {
           const indx = sectionData.findIndex(
             sectionItm => sectionItm.title === itm.group,
           )
@@ -126,24 +73,27 @@ class UserStore {
           } else {
             sectionDataOther.data = [...sectionDataOther.data, itm]
           }
-        } else {
+          listDataUser.push(itm)
+          selectedUserIds.push(itm.user_id)
+        } else if (!this.listGroup.some(g => g.id === itm.id)) {
           sectionData.push({ title: itm.id, data: [] })
+          this.listGroup.push(itm)
         }
       })
     }
-    sectionData.push(sectionDataOther)
-    this.dataGroupUser = uniqBy(sectionData, 'title')
-  }
-
-  @observable dataListUser: UserGroup[] = []
-  @action transformDataListUser = (dataGroupUser: (UserGroup | Group)[]) => {
-    const data: UserGroup[] = []
-    dataGroupUser.forEach(itm => {
-      if (this.isUserGroup(itm)) {
-        data.push(itm)
-      }
-    })
-    this.dataListUser = uniqBy(data, 'user_id')
+    const listUserNotSelected = listAllUser.filter(
+      itm => !listDataUser.some(u => u.user_id === itm.user_id),
+    )
+    this.dataGroupUser = [...sectionData, sectionDataOther]
+    if (!isDisableEditGroup) {
+      sectionDataOther.data = [...sectionDataOther.data, ...listUserNotSelected]
+      sectionData.push(sectionDataOther)
+    } else if (sectionData.length > 0) {
+      sectionData[0].data = [...sectionData[0].data, ...listUserNotSelected]
+    }
+    this.dataGroupAllUser = sectionData
+    this.dataListAllUser = [...listDataUser, ...listUserNotSelected]
+    this.selectedUserIds = selectedUserIds
   }
 
   @observable isSelectedAddAllUser: boolean = false
@@ -157,7 +107,6 @@ class UserStore {
       !this.isSelectEditGroupingAndUserOrder
   }
 
-  @observable selectedUserIds: string[] = []
   @action selectUserId = (userId: string) => {
     const cloneUserIds = [...userStore.selectedUserIds]
     const indexSelectedUser = cloneUserIds.indexOf(userId)
@@ -166,23 +115,31 @@ class UserStore {
     } else {
       cloneUserIds.push(userId)
     }
+    this.isCapacityInvalid = cloneUserIds.length > this.buddyMax
     this.selectedUserIds = cloneUserIds
   }
 
   @action selectedAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = uniq([
       ...this.selectedUserIds,
-      ...this.dataGroupUser[groupIndex].data.map(itm => itm.user_id),
+      ...this.dataGroupAllUser[groupIndex].data.map(itm => itm.user_id),
     ])
   }
 
   @action deSelectedAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = this.selectedUserIds.filter(
       id =>
-        !userStore.dataGroupUser[groupIndex].data
+        !userStore.dataGroupAllUser[groupIndex].data
           .map(itm => itm.user_id)
           .some(userId => userId === id),
     )
+  }
+
+  @action clearStore = () => {
+    this.listGroup = []
+    this.dataGroupAllUser = []
+    this.dataListAllUser = []
+    this.selectedUserIds = []
   }
 }
 
