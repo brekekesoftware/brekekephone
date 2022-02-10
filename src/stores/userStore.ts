@@ -10,7 +10,7 @@ export const isUcBuddy = (object: any): object is UcBuddy => {
 }
 
 class UserStore {
-  @observable dataGroupUser: SectionListData<UcBuddy>[] = []
+  @observable dataGroupUserIds: SectionListData<string>[] = []
   @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax: number = 0
@@ -18,6 +18,7 @@ class UserStore {
   @observable isDisableAddAllUserToTheList: boolean = false
   @observable selectedUserIds: string[] = []
   @observable isCapacityInvalid: boolean = false
+  @observable byIds: any = {} // dictionary by id
   listGroup: UcBuddyGroup[] = []
 
   @action loadGroupUser = async () => {
@@ -36,6 +37,8 @@ class UserStore {
             tenant: profile.tenant,
           } as UcBuddy),
       )
+
+    console.log('allUsers', allUsers)
     this.isSelectedAddAllUser = !userList.screened
     this.isDisableGroupEditGrouping = configProperties.buddy_mode === 1
     this.isDisableAddAllUserToTheList =
@@ -59,8 +62,14 @@ class UserStore {
       title: 'Other',
       data: [],
     }
+    const sectionDataIds: SectionListData<string>[] = []
+    const sectionDataOtherIds: SectionListData<string> = {
+      title: 'Other',
+      data: [],
+    }
     const listDataUser: UcBuddy[] = []
     const selectedUserIds: string[] = []
+    let byIds = {}
 
     if (dataGroupUser.length > 0) {
       dataGroupUser.forEach(itm => {
@@ -70,13 +79,23 @@ class UserStore {
           )
           if (indx !== -1) {
             sectionData[indx].data = [...sectionData[indx].data, itm]
+            sectionDataIds[indx].data = [
+              ...sectionDataIds[indx].data,
+              itm.user_id,
+            ]
           } else {
             sectionDataOther.data = [...sectionDataOther.data, itm]
+            sectionDataOtherIds.data = [
+              ...sectionDataOtherIds.data,
+              itm.user_id,
+            ]
           }
           listDataUser.push(itm)
           selectedUserIds.push(itm.user_id)
+          byIds = { ...byIds, ...{ [itm.user_id]: itm } }
         } else if (!this.listGroup.some(g => g.id === itm.id)) {
           sectionData.push({ title: itm.id, data: [] })
+          sectionDataIds.push({ title: itm.id, data: [] })
           this.listGroup.push(itm)
         }
       })
@@ -84,7 +103,8 @@ class UserStore {
     const listUserNotSelected = listAllUser.filter(
       itm => !listDataUser.some(u => u.user_id === itm.user_id),
     )
-    this.dataGroupUser = [...sectionData, sectionDataOther]
+    this.byIds = byIds
+    this.dataGroupUserIds = [...sectionDataIds, sectionDataOtherIds]
     if (!isDisableEditGroup) {
       sectionDataOther.data = [...sectionDataOther.data, ...listUserNotSelected]
       sectionData.push(sectionDataOther)
@@ -99,6 +119,10 @@ class UserStore {
   @observable isSelectedAddAllUser: boolean = false
   @action toggleIsSelectedAddAllUser = () => {
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
+  }
+
+  @action getBuddyByIds = (idBuddy: string): UcBuddy => {
+    return this.byIds[idBuddy]
   }
 
   @observable isSelectEditGroupingAndUserOrder: boolean = false
@@ -126,6 +150,13 @@ class UserStore {
     ])
   }
 
+  @action removeGroup = (groupIndex: number) => {
+    console.log('remove group', groupIndex, this.dataGroupAllUser)
+    this.dataGroupAllUser.splice(groupIndex, 1)
+    this.listGroup.splice(groupIndex, 1)
+    this.dataGroupUserIds.splice(groupIndex, 1)
+  }
+
   @action deSelectedAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = this.selectedUserIds.filter(
       id =>
@@ -133,6 +164,12 @@ class UserStore {
           .map(itm => itm.user_id)
           .some(userId => userId === id),
     )
+  }
+
+  @action updateStatusBuddy = (buddy_id: string, status: string) => {
+    if (this.byIds[buddy_id]) {
+      this.byIds[buddy_id].status = status
+    }
   }
 
   @action clearStore = () => {

@@ -588,6 +588,7 @@ export type UcBuddy = {
   group: string
   tenant: string
   block_settings: object
+  status?: string
 }
 export type UcBuddyGroup = {
   id: string

@@ -35,6 +35,7 @@ export const Dropdown: FC<ViewProps & DropdownProps> = ({
           key={`DropdownItem - ${index}`}
           title={item.title}
           onPress={item.onPress}
+          disabled={item.disabled}
         />
       ))}
     </View>

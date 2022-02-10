@@ -103,6 +103,7 @@ export const UserItem: FC<
     group: boolean
     partyName: string
     isVoicemail?: boolean
+    status?: string
   }>
 > = observer(p0 => {
   const {
@@ -181,6 +182,7 @@ export const UserItem: FC<
         ) : (
           <Avatar
             source={{ uri: avatar as string }}
+            status={p0.status}
             {...p}
             style={css.WithSpace}
           />
