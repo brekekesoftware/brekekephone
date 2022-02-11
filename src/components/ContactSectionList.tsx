@@ -126,7 +126,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       data: readonly UcBuddy[],
       index: number,
     ) => {
-      const onlineUserCount = 0
       const selectedItemCount = userStore.isSelectedAddAllUser
         ? data.length
         : data.filter(item =>
@@ -146,7 +145,9 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           }}
         >
           <RnText style={css.headerTitle}>{`${title} ${
-            p.isEditMode ? selectedItemCount : onlineUserCount
+            p.isEditMode
+              ? selectedItemCount
+              : data.filter(itm => itm.status === 'online').length
           }/${data.length}`}</RnText>
           <View style={css.rightSection}>
             {p.isEditMode && (
@@ -176,7 +177,10 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         idx => idx === index,
       )
       return !isHidden ? (
-        <View style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}>
+        <View
+          key={`ItemUser-${item.user_id}-${index}`}
+          style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}
+        >
           {p.isEditMode ? (
             <SelectionItem
               isSelected={
@@ -189,7 +193,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             />
           ) : (
             <RnTouchableOpacity
-              key={`${item.user_id} ${index}`}
               onPress={
                 getAuthStore().currentProfile.ucEnabled
                   ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
@@ -221,7 +224,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     return (
       <Fragment>
         {p.sectionListData.map((item, index) => (
-          <Fragment>
+          <Fragment key={`ContactSectionListDataItem-${index}`}>
             {renderHeaderSection(item.title, item.data, index)}
             {item.data.map(itemUser => renderItemUser(itemUser, index))}
           </Fragment>

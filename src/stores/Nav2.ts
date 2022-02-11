@@ -15,6 +15,7 @@ import { PageChatGroupCreate } from '../pages/PageChatGroupCreate'
 import { PageChatGroupDetail } from '../pages/PageChatGroupDetail'
 import { PageChatGroupInvite } from '../pages/PageChatGroupInvite'
 import { PageChatRecents } from '../pages/PageChatRecents'
+import { PageContactGroupCreate } from '../pages/PageContactGroupCreate'
 import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
 import { PageEditUserList } from '../pages/PageEditUserList'
@@ -193,13 +194,21 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
-  //Users
+  //Contact Group Edit
   goToPageEditUserList = RnStacker.createGoTo<
     ComponentProps<typeof PageEditUserList>
   >({
     PageEditUserList,
   })
+  backToPageEditUserList = RnStacker.createBackTo<
+    ComponentProps<typeof PageEditUserList>
+  >({ PageEditUserList }, true)
 
+  goToPageContactGroupCreate = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactGroupCreate>
+  >({
+    PageContactGroupCreate,
+  })
   customPageIndex?: Function
   goToPageIndex = () => {
     if (!getAuthStore().currentProfile) {

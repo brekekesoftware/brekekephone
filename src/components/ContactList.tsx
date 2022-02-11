@@ -1,11 +1,6 @@
-import React, { FC, Fragment, useEffect, useRef } from 'react'
-import {
-  DefaultSectionT,
-  SectionListData,
-  StyleSheet,
-  View,
-  ViewProps,
-} from 'react-native'
+import { observer } from 'mobx-react'
+import React, { FC } from 'react'
+import { StyleSheet, View, ViewProps } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'
 import { userStore } from '../stores/userStore'
@@ -25,12 +20,10 @@ type ContactListProps = {
   data: UcBuddy[]
 }
 
-export const ContactList: FC<ViewProps & ContactListProps> = ({
-  data = [],
-}: ContactListProps) => {
+export const ContactList: FC<ViewProps & ContactListProps> = observer(p => {
   const renderItemListUser = (item: UcBuddy) => {
     return (
-      <View style={css.container}>
+      <View style={css.container} key={`ContactListUser-${item.user_id}`}>
         <SelectionItem
           isSelected={
             userStore.isSelectedAddAllUser ||
@@ -43,5 +36,5 @@ export const ContactList: FC<ViewProps & ContactListProps> = ({
       </View>
     )
   }
-  return <View>{data.map(user => renderItemListUser(user))}</View>
-}
+  return <View>{p.data.map(user => renderItemListUser(user))}</View>
+})

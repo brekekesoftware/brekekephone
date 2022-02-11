@@ -592,8 +592,8 @@ export type UcBuddy = {
 }
 export type UcBuddyGroup = {
   id: string
-  name: string
-  group: string
+  name?: string
+  group?: string
 }
 export type UcReceieveUnreadText = {
   messages: UcMessage[]

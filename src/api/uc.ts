@@ -7,7 +7,6 @@ import { Platform } from 'react-native'
 import { ChatFile } from '../stores/chatStore'
 import { UcUser } from '../stores/contactStore'
 import { Profile } from '../stores/profileStore'
-import { isUcBuddy } from '../stores/userStore'
 import { formatFileType } from '../utils/formatFileType'
 import {
   UcBuddy,
@@ -32,6 +31,10 @@ const { ChatClient, Logger, Constants } = UCClient0 as {
 }
 
 export { ChatClient, Constants, Logger }
+
+export const isUcBuddy = (object: any): object is UcBuddy => {
+  return 'user_id' in object && 'group' in object
+}
 
 const codeMapUserStatus = {
   0: 'offline',

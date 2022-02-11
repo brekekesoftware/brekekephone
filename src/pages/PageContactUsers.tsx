@@ -43,44 +43,49 @@ export class PageContactUsers extends Component {
 
   render() {
     const { ucEnabled } = getAuthStore().currentProfile
-    const { byIds, dataGroupUserIds, dataListAllUser } = userStore
+    const { byIds, dataGroupUserIds } = userStore
     const allUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     const onlineUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+    let totalOnlineContact = 0
+    let totalContact = 0
 
     dataGroupUserIds.forEach(s => {
+      const dataAllUsers = s.data.map(id => byIds[id])
+      totalContact += dataAllUsers.length
+      const dataAllUsersFiltered = dataAllUsers.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
       allUsers.push({
         title: s.title,
-        data: s.data
-          .map(id => byIds[id])
-          .filter(
-            u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-          ),
+        data: dataAllUsersFiltered,
       })
+
+      const dataOnlineUser = s.data
+        .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
+        .filter(u => u)
+      totalOnlineContact += dataOnlineUser.length
+      const dataOnlineUserFiltered = dataOnlineUser.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
       onlineUsers.push({
         title: s.title,
-        data: s.data
-          .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
-          .filter(u => u)
-          .filter(
-            u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-          ),
+        data: dataOnlineUserFiltered,
       })
     })
 
     const displayUsers =
       !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
 
-    console.log('render page')
     return (
       <Layout
         description={(() => {
-          let desc = intl`PBX users, ${dataListAllUser.length} total`
-          if (dataListAllUser.length && ucEnabled) {
+          let desc = intl`PBX users, ${totalContact} total`
+          if (totalContact && ucEnabled) {
             desc = desc.replace('PBX', 'PBX/UC')
             desc = desc.replace(
-              intl`${dataListAllUser.length} total`,
-              intl`${onlineUsers.length}/${dataListAllUser.length} online`,
+              intl`${totalContact} total`,
+              intl`${totalOnlineContact}/${totalContact} online`,
             )
           }
           return desc

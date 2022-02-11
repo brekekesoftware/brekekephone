@@ -1,6 +1,6 @@
 // eslint-disable-next-line simple-import-sort/imports
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 
 import { Layout } from '../components/Layout'
 import { SelectionItem } from '../components/SelectionItem'
@@ -19,6 +19,7 @@ import { ContactList } from '../components/ContactList'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { RnIcon } from '../components/RnIcon'
 import { mdiFolderPlus } from '../assets/icons'
+import { RnText } from '../components/RnText'
 
 const css = StyleSheet.create({
   listHeaderSection: {
@@ -31,10 +32,15 @@ const css = StyleSheet.create({
     marginVertical: 10,
   },
   rowGroupTitle: { flexDirection: 'row', justifyContent: 'space-between' },
+  rowCapacity: { flexDirection: 'row' },
+  errorText: { color: 'red' },
 })
 
 @observer
 export class PageEditUserList extends Component {
+  componentDidMount() {
+    userStore.loadGroupUser()
+  }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
     console.log('')
     return [
@@ -86,6 +92,12 @@ export class PageEditUserList extends Component {
     RnDropdownSectionList.closeDropdown()
   }
 
+  onGoBack = () => {
+    userStore.clearStore()
+    userStore.loadGroupUser()
+    Nav().backToPageContactUsers()
+  }
+
   render() {
     const {
       buddyMax,
@@ -97,14 +109,16 @@ export class PageEditUserList extends Component {
       isSelectEditGroupingAndUserOrder,
       isCapacityInvalid,
       dataGroupAllUser,
+      listUserNotSelected,
     } = userStore
     const { dropdownOpenedIndex } = RnDropdownSectionList
+
     return (
       <Layout
-        fabOnBack={Nav().backToPageContactUsers}
+        fabOnBack={this.onGoBack}
         fabOnNext={this.save}
         fabOnNextText={intl`SAVE`}
-        onBack={Nav().backToPageContactUsers}
+        onBack={this.onGoBack}
         title={intl`Edit the user list`}
       >
         <View style={css.listHeaderSection}>
@@ -124,23 +138,25 @@ export class PageEditUserList extends Component {
                   : intl`Edit grouping and user order`
               }
             />
-            <RnTouchableOpacity>
-              <RnIcon path={mdiFolderPlus} />
-            </RnTouchableOpacity>
+            {!isSelectedAddAllUser &&
+              isSelectEditGroupingAndUserOrder &&
+              listUserNotSelected.length > 0 && (
+                <RnTouchableOpacity onPress={Nav().goToPageContactGroupCreate}>
+                  <RnIcon path={mdiFolderPlus} />
+                </RnTouchableOpacity>
+              )}
           </View>
           <View style={css.listTitleSection}>
-            <Text>{intl`User list`}</Text>
-            <Text>
-              {`${intl`Capacity`}`}
-              <Text style={isCapacityInvalid && { color: 'red' }}>
-                {`    ${
-                  isSelectedAddAllUser
-                    ? dataListAllUser.length
-                    : selectedUserIds.length
-                }`}
-              </Text>
-              {` / ${buddyMax}`}
-            </Text>
+            <RnText>{intl`User list`}</RnText>
+            <View style={css.rowCapacity}>
+              <RnText>{`${intl`Capacity`}`}</RnText>
+              <RnText style={isCapacityInvalid && css.errorText}>{`    ${
+                isSelectedAddAllUser
+                  ? dataListAllUser.length
+                  : selectedUserIds.length
+              }`}</RnText>
+              <RnText>{` / ${buddyMax}`}</RnText>
+            </View>
           </View>
         </View>
         {isSelectEditGroupingAndUserOrder ? (
@@ -179,9 +195,7 @@ export class PageEditUserList extends Component {
     }
   }
   onSaveSuccess = () => {
-    userStore.clearStore()
-    userStore.loadGroupUser()
-    Nav().backToPageContactUsers()
+    this.onGoBack()
   }
   onSaveFailure = (err: Error) => {
     RnAlert.error({

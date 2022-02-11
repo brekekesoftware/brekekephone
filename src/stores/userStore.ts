@@ -1,13 +1,9 @@
 import { uniq } from 'lodash'
-import { action, observable } from 'mobx'
-import { SectionListData } from 'react-native'
+import { action, computed, observable } from 'mobx'
+import { DefaultSectionT, SectionListData } from 'react-native'
 
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
-import { uc } from '../api/uc'
-
-export const isUcBuddy = (object: any): object is UcBuddy => {
-  return 'user_id' in object && 'group' in object
-}
+import { isUcBuddy, uc } from '../api/uc'
 
 class UserStore {
   @observable dataGroupUserIds: SectionListData<string>[] = []
@@ -18,8 +14,14 @@ class UserStore {
   @observable isDisableAddAllUserToTheList: boolean = false
   @observable selectedUserIds: string[] = []
   @observable isCapacityInvalid: boolean = false
-  @observable byIds: any = {} // dictionary by id
+  @observable byIds: any = {} // dictionary object by id
   listGroup: UcBuddyGroup[] = []
+  private listStatus?: [
+    {
+      id: string
+      status: string
+    },
+  ]
 
   @action loadGroupUser = async () => {
     const userList = uc.client.getBuddylist()
@@ -27,7 +29,7 @@ class UserStore {
     const profile = uc.client.getProfile()
     const allUsers: UcBuddy[] = uc.client
       .getAllUsers()
-      .user.filter(u => !u.disabledBuddy && u.user_id !== profile.user_id)
+      .user?.filter(u => !u.disabledBuddy && u.user_id !== profile.user_id)
       .map(
         user =>
           ({
@@ -38,12 +40,12 @@ class UserStore {
           } as UcBuddy),
       )
 
-    console.log('allUsers', allUsers)
     this.isSelectedAddAllUser = !userList.screened
     this.isDisableGroupEditGrouping = configProperties.buddy_mode === 1
     this.isDisableAddAllUserToTheList =
-      configProperties.optional_config.buddy_max < allUsers.length
-    this.buddyMax = configProperties.optional_config.buddy_max
+      configProperties.optional_config?.buddy_max < allUsers.length
+    this.buddyMax = configProperties.optional_config?.buddy_max
+    this.listGroup = []
 
     this.filterDataUserGroup(
       userList.user,
@@ -69,7 +71,7 @@ class UserStore {
     }
     const listDataUser: UcBuddy[] = []
     const selectedUserIds: string[] = []
-    let byIds = {}
+    let byIds: any = {} // dictionary object by id
 
     if (dataGroupUser.length > 0) {
       dataGroupUser.forEach(itm => {
@@ -103,6 +105,13 @@ class UserStore {
     const listUserNotSelected = listAllUser.filter(
       itm => !listDataUser.some(u => u.user_id === itm.user_id),
     )
+    if (this.listStatus && this.listStatus.length > 0) {
+      this.listStatus.forEach(itm => {
+        if (byIds[itm.id]) {
+          byIds[itm.id].status = itm.status
+        }
+      })
+    }
     this.byIds = byIds
     this.dataGroupUserIds = [...sectionDataIds, sectionDataOtherIds]
     if (!isDisableEditGroup) {
@@ -121,10 +130,6 @@ class UserStore {
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
   }
 
-  @action getBuddyByIds = (idBuddy: string): UcBuddy => {
-    return this.byIds[idBuddy]
-  }
-
   @observable isSelectEditGroupingAndUserOrder: boolean = false
   @action toggleIsSelectEditGroupingAndUserOrder = () => {
     this.isSelectEditGroupingAndUserOrder =
@@ -132,15 +137,13 @@ class UserStore {
   }
 
   @action selectUserId = (userId: string) => {
-    const cloneUserIds = [...userStore.selectedUserIds]
-    const indexSelectedUser = cloneUserIds.indexOf(userId)
+    const indexSelectedUser = this.selectedUserIds.indexOf(userId)
     if (indexSelectedUser > -1) {
-      cloneUserIds.splice(indexSelectedUser, 1)
+      this.selectedUserIds.splice(indexSelectedUser, 1)
     } else {
-      cloneUserIds.push(userId)
+      this.selectedUserIds.push(userId)
     }
-    this.isCapacityInvalid = cloneUserIds.length > this.buddyMax
-    this.selectedUserIds = cloneUserIds
+    this.isCapacityInvalid = this.selectedUserIds.length > this.buddyMax
   }
 
   @action selectedAllUserIdsByGroup = (groupIndex: number) => {
@@ -151,7 +154,6 @@ class UserStore {
   }
 
   @action removeGroup = (groupIndex: number) => {
-    console.log('remove group', groupIndex, this.dataGroupAllUser)
     this.dataGroupAllUser.splice(groupIndex, 1)
     this.listGroup.splice(groupIndex, 1)
     this.dataGroupUserIds.splice(groupIndex, 1)
@@ -160,7 +162,7 @@ class UserStore {
   @action deSelectedAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = this.selectedUserIds.filter(
       id =>
-        !userStore.dataGroupAllUser[groupIndex].data
+        !this.dataGroupAllUser[groupIndex].data
           .map(itm => itm.user_id)
           .some(userId => userId === id),
     )
@@ -170,8 +172,47 @@ class UserStore {
     if (this.byIds[buddy_id]) {
       this.byIds[buddy_id].status = status
     }
+    if (!this.listStatus) {
+      this.listStatus = [{ id: buddy_id, status }]
+    } else {
+      this.listStatus.push({ id: buddy_id, status })
+    }
   }
 
+  @action addGroup = (groupName: string, selectedIds: string[]) => {
+    this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
+    this.listGroup.push({ id: groupName, name: groupName })
+    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
+    const cloneDataListAllUser = [...this.dataListAllUser]
+
+    this.dataGroupAllUser.forEach((group, index) => {
+      cloneDataGroupAllUser[index].data = group.data.filter(
+        u => !selectedIds.some(id => u.user_id === id),
+      )
+    })
+
+    this.dataListAllUser.forEach((item, index) => {
+      if (selectedIds.some(id => id === item.user_id)) {
+        cloneDataListAllUser[index].group = groupName
+      }
+    })
+
+    const newGroupContact: SectionListData<UcBuddy, DefaultSectionT> = {
+      data: cloneDataListAllUser.filter(itm =>
+        selectedIds.some(id => id === itm.user_id),
+      ),
+      title: groupName,
+    }
+
+    cloneDataGroupAllUser.unshift(newGroupContact)
+    this.dataGroupAllUser = cloneDataGroupAllUser
+  }
+
+  @computed get listUserNotSelected() {
+    return this.dataListAllUser.filter(
+      itm => !this.selectedUserIds.some(id => itm.user_id === id),
+    )
+  }
   @action clearStore = () => {
     this.listGroup = []
     this.dataGroupAllUser = []
