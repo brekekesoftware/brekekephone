@@ -37,7 +37,7 @@ const css = StyleSheet.create({
 })
 
 @observer
-export class PageEditUserList extends Component {
+export class PageContactEdit extends Component {
   componentDidMount() {
     userStore.loadGroupUser()
   }
@@ -61,35 +61,44 @@ export class PageEditUserList extends Component {
   onAddRemoveUser = (ddIndex: number) => {
     console.warn('onAddRemoveUser', ddIndex)
     RnDropdownSectionList.closeDropdown()
+    Nav().goToPageContactGroupEdit({
+      groupName: userStore.dataGroupAllUser[ddIndex].title,
+      listItem: userStore.dataGroupAllUser[ddIndex].data.map(itm => itm),
+    })
   }
 
   onCheckAll = (groupIndex: number) => {
-    userStore.selectedAllUserIdsByGroup(groupIndex)
     RnDropdownSectionList.closeDropdown()
+    userStore.selectedAllUserIdsByGroup(groupIndex)
   }
 
   onUncheckAll = (groupIndex: number) => {
-    userStore.deSelectedAllUserIdsByGroup(groupIndex)
     RnDropdownSectionList.closeDropdown()
+    userStore.deSelectedAllUserIdsByGroup(groupIndex)
   }
 
   onRemoveGroup = (ddIndex: number) => {
+    RnDropdownSectionList.closeDropdown()
     console.warn('onRemoveGroup', ddIndex)
     userStore.removeGroup(ddIndex)
-    RnDropdownSectionList.closeDropdown()
   }
 
   onSelectEditGroupingAndUserOrderOption = () => {
+    RnDropdownSectionList.closeDropdown()
     if (!userStore.isSelectEditGroupingAndUserOrder) {
       RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     }
     userStore.toggleIsSelectEditGroupingAndUserOrder()
+  }
+
+  onAddGroup = () => {
     RnDropdownSectionList.closeDropdown()
+    Nav().goToPageContactGroupCreate()
   }
 
   onSelectAddAllUserToList = () => {
-    userStore.toggleIsSelectedAddAllUser()
     RnDropdownSectionList.closeDropdown()
+    userStore.toggleIsSelectedAddAllUser()
   }
 
   onGoBack = () => {
@@ -141,7 +150,7 @@ export class PageEditUserList extends Component {
             {!isSelectedAddAllUser &&
               isSelectEditGroupingAndUserOrder &&
               listUserNotSelected.length > 0 && (
-                <RnTouchableOpacity onPress={Nav().goToPageContactGroupCreate}>
+                <RnTouchableOpacity onPress={this.onAddGroup}>
                   <RnIcon path={mdiFolderPlus} />
                 </RnTouchableOpacity>
               )}

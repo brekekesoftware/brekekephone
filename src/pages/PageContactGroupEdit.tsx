@@ -1,3 +1,4 @@
+import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -7,9 +8,8 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { SelectionItem } from '../components/SelectionItem'
 import { v } from '../components/variables'
-import { intl, intlDebug } from '../stores/intl'
+import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
 import { userStore } from '../stores/userStore'
 
 const css = StyleSheet.create({
@@ -22,34 +22,41 @@ const css = StyleSheet.create({
 })
 
 @observer
-export class PageContactGroupCreate extends Component {
+export class PageContactGroupEdit extends Component<{
+  groupName: string
+  listItem: UcBuddy[]
+}> {
   state: {
-    name: string
     data: UcBuddy[]
     selectedIds: string[]
   } = {
-    name: '',
     data: userStore.listUserNotSelected,
-    selectedIds: [],
+    selectedIds: userStore.selectedUserIds.filter(id =>
+      this.props.listItem.some(u => u.user_id === id),
+    ),
   }
 
   render() {
+    const displayUsers = uniqBy(
+      [...this.props.listItem, ...this.state.data],
+      'user_id',
+    )
+
     return (
       <Layout
         fabOnBack={Nav().goToPageContactEdit}
         fabOnNext={this.create}
         fabOnNextText={intl`CREATE`}
         onBack={Nav().backToPageContactEdit}
-        title={intl`New Group`}
+        title={intl`Add/Remove Contact`}
       >
         <Field
           label={intl`GROUP NAME`}
-          onValueChange={this.setName}
-          value={this.state.name}
+          value={this.props.groupName}
+          disabled={true}
         />
-        <Field isGroup label={intl`Members`} />
-        {/* <ContactList data={userStore.listUserNotSelected} /> */}
-        {this.state.data.map((item, index) => (
+        <Field isGroup label={intl`Members`} disabled={true} />
+        {displayUsers.map((item, index) => (
           <View
             style={css.container}
             key={`ContactListUser-${item.user_id}-${index}`}
@@ -78,22 +85,17 @@ export class PageContactGroupCreate extends Component {
     this.setState({ selectedIds: cloneSelectedIds })
   }
 
-  setName = (name: string) => {
+  setName = (name: string) =>
     this.setState({
       name,
     })
-  }
 
   create = () => {
-    const { name, selectedIds } = this.state
+    const { selectedIds } = this.state
+    const { listItem } = this.props
 
-    if (!name.trim()) {
-      RnAlert.error({
-        message: intlDebug`Group name is required`,
-      })
-      return
-    }
-    userStore.addGroup(name, selectedIds)
+    userStore.editGroup(this.props.groupName, listItem, selectedIds)
+
     Nav().backToPageContactEdit()
   }
 }

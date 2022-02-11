@@ -77,6 +77,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         p.isEditMode &&
         RnDropdownSectionList.isShouldUpdateDropdownPosition
       ) {
+        // recalculate position header dropdown
         RnDropdownSectionList.setIsShouldUpdateDropdownPosition(false)
         calculateSectionHeaderPosition()
       }
@@ -224,7 +225,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     return (
       <Fragment>
         {p.sectionListData.map((item, index) => (
-          <Fragment key={`ContactSectionListDataItem-${index}`}>
+          <Fragment key={`ContactSectionListDataItem-${item.title}-${index}`}>
             {renderHeaderSection(item.title, item.data, index)}
             {item.data.map(itemUser => renderItemUser(itemUser, index))}
           </Fragment>

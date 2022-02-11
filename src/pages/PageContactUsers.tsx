@@ -93,7 +93,7 @@ export class PageContactUsers extends Component {
         dropdown={[
           {
             label: intl`Edit the user list`,
-            onPress: Nav().goToPageEditUserList,
+            onPress: Nav().goToPageContactEdit,
           },
         ]}
         menu='contact'

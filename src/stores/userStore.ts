@@ -1,4 +1,4 @@
-import { uniq } from 'lodash'
+import { uniq, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
@@ -23,7 +23,7 @@ class UserStore {
     },
   ]
 
-  @action loadGroupUser = async () => {
+  @action loadGroupUser = () => {
     const userList = uc.client.getBuddylist()
     const configProperties = uc.client.getConfigProperties()
     const profile = uc.client.getProfile()
@@ -206,6 +206,49 @@ class UserStore {
 
     cloneDataGroupAllUser.unshift(newGroupContact)
     this.dataGroupAllUser = cloneDataGroupAllUser
+  }
+
+  @action editGroup = (
+    groupName: string,
+    originalListItem: UcBuddy[],
+    selectedIds: string[],
+  ) => {
+    this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
+    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
+    const cloneDataListAllUser = [...this.dataListAllUser]
+
+    const listItemUnSelected = originalListItem.filter(
+      itm => !selectedIds.some(id => id === itm.user_id),
+    )
+
+    this.dataListAllUser.forEach((item, index) => {
+      if (selectedIds.some(id => id === item.user_id)) {
+        cloneDataListAllUser[index].group = groupName
+      }
+    })
+
+    this.dataGroupAllUser.forEach((group, index) => {
+      if (group.title === groupName) {
+        cloneDataGroupAllUser[index].data = uniqBy(
+          [
+            ...originalListItem,
+            ...cloneDataListAllUser.filter(u =>
+              selectedIds.some(id => u.user_id === id),
+            ),
+          ],
+          'user_id',
+        )
+      } else {
+        cloneDataGroupAllUser[index].data = group.data.filter(
+          u => !selectedIds.some(id => u.user_id === id),
+        )
+      }
+    })
+
+    this.dataGroupAllUser = cloneDataGroupAllUser
+    this.selectedUserIds = this.selectedUserIds.filter(
+      id => !listItemUnSelected.some(item => item.user_id === id),
+    )
   }
 
   @computed get listUserNotSelected() {

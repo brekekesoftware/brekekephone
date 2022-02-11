@@ -15,10 +15,11 @@ import { PageChatGroupCreate } from '../pages/PageChatGroupCreate'
 import { PageChatGroupDetail } from '../pages/PageChatGroupDetail'
 import { PageChatGroupInvite } from '../pages/PageChatGroupInvite'
 import { PageChatRecents } from '../pages/PageChatRecents'
+import { PageContactEdit } from '../pages/PageContactEdit'
 import { PageContactGroupCreate } from '../pages/PageContactGroupCreate'
+import { PageContactGroupEdit } from '../pages/PageContactGroupEdit'
 import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
-import { PageEditUserList } from '../pages/PageEditUserList'
 import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
 import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
 import { PageProfileCreate } from '../pages/PageProfileCreate'
@@ -194,20 +195,25 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
-  //Contact Group Edit
-  goToPageEditUserList = RnStacker.createGoTo<
-    ComponentProps<typeof PageEditUserList>
+  //Contact Group
+  goToPageContactEdit = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactEdit>
   >({
-    PageEditUserList,
+    PageContactEdit,
   })
-  backToPageEditUserList = RnStacker.createBackTo<
-    ComponentProps<typeof PageEditUserList>
-  >({ PageEditUserList }, true)
+  backToPageContactEdit = RnStacker.createBackTo<
+    ComponentProps<typeof PageContactEdit>
+  >({ PageContactEdit }, true)
 
   goToPageContactGroupCreate = RnStacker.createGoTo<
     ComponentProps<typeof PageContactGroupCreate>
   >({
     PageContactGroupCreate,
+  })
+  goToPageContactGroupEdit = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactGroupEdit>
+  >({
+    PageContactGroupEdit,
   })
   customPageIndex?: Function
   goToPageIndex = () => {
