@@ -10,8 +10,7 @@ import { chatStore } from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
 import { getFrontCameraSourceId } from './getFrontCameraSourceId'
 import { pbx } from './pbx'
-// import { turnConfig } from './turnConfig'
-const turnConfig = {}
+import { turnConfig } from './turnConfig'
 
 const sipCreateMediaConstraints = (sourceId?: string) => {
   return {
