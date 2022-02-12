@@ -97,7 +97,13 @@ export class PageContactGroupCreate extends Component {
         message: intlDebug`Group name is required`,
       })
       return
+    } else if (userStore.groups.some(group => group.name === name.trim())) {
+      RnAlert.error({
+        message: intlDebug`Group name is existed`,
+      })
+      return
     }
+
     userStore.addGroup(name, selectedUsers)
     RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()

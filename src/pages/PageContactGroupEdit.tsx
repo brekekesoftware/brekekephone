@@ -9,6 +9,7 @@ import { SelectionItem } from '../components/SelectionItem'
 import { v } from '../components/variables'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
 import { userStore } from '../stores/userStore'
 
 const css = StyleSheet.create({
@@ -94,7 +95,7 @@ export class PageContactGroupEdit extends Component<{
     )
 
     userStore.editGroup(this.props.groupName, selectedUsers, listItemRemoved)
-
+    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()
   }
 }
