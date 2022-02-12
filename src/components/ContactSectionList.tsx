@@ -48,16 +48,9 @@ const css = StyleSheet.create({
     backgroundColor: v.borderBg,
     paddingHorizontal: 15,
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 10,
   },
-  headerTitle: {
-    ...Platform.select({
-      android: {
-        top: -6,
-        paddingBottom: 2,
-      },
-    }),
-  },
+  headerTitle: {},
   rightSection: {
     flexDirection: 'row',
   },

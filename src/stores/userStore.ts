@@ -43,16 +43,18 @@ class UserStore {
 
     this.isSelectedAddAllUser = !userList.screened
     this.isDisableAddAllUserToTheList =
-      configProperties.optional_config?.buddy_max < allUsers.length
+      configProperties.optional_config?.buddy_max < allUsers?.length
     this.buddyMax = configProperties.optional_config?.buddy_max
     this.buddyMode = configProperties.buddy_mode
     this.groups = []
 
-    this.filterDataUserGroup(
-      userList.user,
-      allUsers,
-      configProperties.buddy_mode === 1,
-    )
+    if (allUsers?.length > 0) {
+      this.filterDataUserGroup(
+        userList.user,
+        allUsers,
+        configProperties.buddy_mode === 1,
+      )
+    }
   }
 
   @action filterDataUserGroup = (

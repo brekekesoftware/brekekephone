@@ -10,6 +10,7 @@ import { v } from '../components/variables'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
 import { userStore } from '../stores/userStore'
 
 const css = StyleSheet.create({
@@ -98,6 +99,7 @@ export class PageContactGroupCreate extends Component {
       return
     }
     userStore.addGroup(name, selectedUsers)
+    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()
   }
 }
