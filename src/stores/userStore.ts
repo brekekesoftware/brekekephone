@@ -4,17 +4,18 @@ import { DefaultSectionT, SectionListData } from 'react-native'
 
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { isUcBuddy, uc } from '../api/uc'
+import { intl } from './intl'
 
 class UserStore {
   @observable dataGroupUserIds: SectionListData<string>[] = []
   @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax: number = 0
-  @observable isDisableGroupEditGrouping: boolean = false
   @observable isDisableAddAllUserToTheList: boolean = false
   @observable selectedUserIds: string[] = []
   @observable isCapacityInvalid: boolean = false
   @observable byIds: any = {} // dictionary object by id
+  @observable buddyMode: number = 0
   listGroup: UcBuddyGroup[] = []
   private listStatus?: [
     {
@@ -41,10 +42,10 @@ class UserStore {
       )
 
     this.isSelectedAddAllUser = !userList.screened
-    this.isDisableGroupEditGrouping = configProperties.buddy_mode === 1
     this.isDisableAddAllUserToTheList =
       configProperties.optional_config?.buddy_max < allUsers.length
     this.buddyMax = configProperties.optional_config?.buddy_max
+    this.buddyMode = configProperties.buddy_mode
     this.listGroup = []
 
     this.filterDataUserGroup(
@@ -61,12 +62,12 @@ class UserStore {
   ) => {
     const sectionData: SectionListData<UcBuddy>[] = []
     const sectionDataOther: SectionListData<UcBuddy> = {
-      title: 'Other',
+      title: `(${intl`No Group`})`,
       data: [],
     }
     const sectionDataIds: SectionListData<string>[] = []
     const sectionDataOtherIds: SectionListData<string> = {
-      title: 'Other',
+      title: `(${intl`No Group`})`,
       data: [],
     }
     const listDataUser: UcBuddy[] = []
@@ -113,13 +114,15 @@ class UserStore {
       })
     }
     this.byIds = byIds
-    this.dataGroupUserIds = [...sectionDataIds, sectionDataOtherIds]
     if (!isDisableEditGroup) {
       sectionDataOther.data = [...sectionDataOther.data, ...listUserNotSelected]
+      this.dataGroupUserIds = [...sectionDataIds, sectionDataOtherIds]
       sectionData.push(sectionDataOther)
     } else if (sectionData.length > 0) {
       sectionData[0].data = [...sectionData[0].data, ...listUserNotSelected]
+      this.dataGroupUserIds = [...sectionDataIds]
     }
+
     this.dataGroupAllUser = sectionData
     this.dataListAllUser = [...listDataUser, ...listUserNotSelected]
     this.selectedUserIds = selectedUserIds
@@ -154,9 +157,26 @@ class UserStore {
   }
 
   @action removeGroup = (groupIndex: number) => {
-    this.dataGroupAllUser.splice(groupIndex, 1)
+    const dataRemove = [...this.dataGroupAllUser[groupIndex]?.data]
+    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
+    cloneDataGroupAllUser.splice(groupIndex, 1)
+
+    if (dataRemove.length > 0) {
+      dataRemove.forEach(itm => {
+        cloneDataGroupAllUser[cloneDataGroupAllUser.length - 1].data = [
+          ...cloneDataGroupAllUser[cloneDataGroupAllUser.length - 1].data,
+          itm,
+        ]
+      })
+    }
+
+    console.log('this.selectedUserIds', this.selectedUserIds, dataRemove)
     this.listGroup.splice(groupIndex, 1)
     this.dataGroupUserIds.splice(groupIndex, 1)
+    this.dataGroupAllUser = cloneDataGroupAllUser
+    this.selectedUserIds = this.selectedUserIds.filter(
+      i => !dataRemove.some(u => u.user_id === i),
+    )
   }
 
   @action deSelectedAllUserIdsByGroup = (groupIndex: number) => {
@@ -180,25 +200,16 @@ class UserStore {
   }
 
   @action addGroup = (groupName: string, selectedIds: string[]) => {
-    this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
-    this.listGroup.push({ id: groupName, name: groupName })
     const cloneDataGroupAllUser = [...this.dataGroupAllUser]
-    const cloneDataListAllUser = [...this.dataListAllUser]
 
     this.dataGroupAllUser.forEach((group, index) => {
       cloneDataGroupAllUser[index].data = group.data.filter(
-        u => !selectedIds.some(id => u.user_id === id),
+        item => !selectedIds.some(id => id === item.user_id),
       )
     })
 
-    this.dataListAllUser.forEach((item, index) => {
-      if (selectedIds.some(id => id === item.user_id)) {
-        cloneDataListAllUser[index].group = groupName
-      }
-    })
-
     const newGroupContact: SectionListData<UcBuddy, DefaultSectionT> = {
-      data: cloneDataListAllUser.filter(itm =>
+      data: this.dataListAllUser.filter(itm =>
         selectedIds.some(id => id === itm.user_id),
       ),
       title: groupName,
@@ -206,56 +217,59 @@ class UserStore {
 
     cloneDataGroupAllUser.unshift(newGroupContact)
     this.dataGroupAllUser = cloneDataGroupAllUser
+    this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
   }
 
-  @action editGroup = (
-    groupName: string,
-    originalListItem: UcBuddy[],
-    selectedIds: string[],
-  ) => {
-    this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
+  @action editGroup = (groupName: string, selectedIds: string[]) => {
+    // this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
     const cloneDataGroupAllUser = [...this.dataGroupAllUser]
-    const cloneDataListAllUser = [...this.dataListAllUser]
-
-    const listItemUnSelected = originalListItem.filter(
-      itm => !selectedIds.some(id => id === itm.user_id),
-    )
-
-    this.dataListAllUser.forEach((item, index) => {
-      if (selectedIds.some(id => id === item.user_id)) {
-        cloneDataListAllUser[index].group = groupName
-      }
-    })
 
     this.dataGroupAllUser.forEach((group, index) => {
       if (group.title === groupName) {
-        cloneDataGroupAllUser[index].data = uniqBy(
-          [
-            ...originalListItem,
-            ...cloneDataListAllUser.filter(u =>
-              selectedIds.some(id => u.user_id === id),
-            ),
-          ],
-          'user_id',
+        cloneDataGroupAllUser[index].data = this.dataListAllUser.filter(u =>
+          selectedIds.some(id => u.user_id === id),
         )
       } else {
         cloneDataGroupAllUser[index].data = group.data.filter(
-          u => !selectedIds.some(id => u.user_id === id),
+          item => !selectedIds.some(id => id === item.user_id),
         )
       }
     })
 
+    // const cloneDataListAllUser = [...this.dataListAllUser]
+
+    // const listItemUnSelected = originalListItem.filter(
+    //   itm => !selectedIds.some(id => id === itm.user_id),
+    // )
+
+    // this.dataListAllUser.forEach((item, index) => {
+    //   if (selectedIds.some(id => id === item.user_id)) {
+    //     cloneDataListAllUser[index].group = groupName
+    //   }
+    // })
+
+    // this.dataGroupAllUser.forEach((group, index) => {
+    //   if (group.title === groupName) {
+    //     cloneDataGroupAllUser[index].data = uniqBy(
+    //       [
+    //         ...cloneDataListAllUser.filter(u =>
+    //           selectedIds.some(id => u.user_id === id),
+    //         ),
+    //         ...originalListItem,
+    //       ],
+    //       'user_id',
+    //     )
+    //   } else {
+    //     cloneDataGroupAllUser[index].data = group.data.filter(
+    //       u => !selectedIds.some(id => u.user_id === id),
+    //     )
+    //   }
+    // })
+
     this.dataGroupAllUser = cloneDataGroupAllUser
-    this.selectedUserIds = this.selectedUserIds.filter(
-      id => !listItemUnSelected.some(item => item.user_id === id),
-    )
+    this.selectedUserIds = uniq([...this.selectedUserIds, ...selectedIds])
   }
 
-  @computed get listUserNotSelected() {
-    return this.dataListAllUser.filter(
-      itm => !this.selectedUserIds.some(id => itm.user_id === id),
-    )
-  }
   @action clearStore = () => {
     this.listGroup = []
     this.dataGroupAllUser = []

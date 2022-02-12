@@ -4,6 +4,7 @@ import {
   DefaultSectionT,
   SectionListData,
   StyleSheet,
+  TouchableWithoutFeedback,
   View,
   ViewProps,
 } from 'react-native'
@@ -137,34 +138,36 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       )
 
       return (
-        <View
-          style={css.headerSectionList}
-          ref={c => {
-            if (c && p.isEditMode) {
-              sectionHeaderRefs.current[index] = c
-            }
-          }}
-        >
-          <RnText style={css.headerTitle}>{`${title} ${
-            p.isEditMode
-              ? selectedItemCount
-              : data.filter(itm => itm.status === 'online').length
-          }/${data.length}`}</RnText>
-          <View style={css.rightSection}>
-            {p.isEditMode && (
+        <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
+          <View
+            style={css.headerSectionList}
+            ref={c => {
+              if (c && p.isEditMode) {
+                sectionHeaderRefs.current[index] = c
+              }
+            }}
+          >
+            <RnText style={css.headerTitle}>{`${title} ${
+              p.isEditMode
+                ? selectedItemCount
+                : data.filter(itm => itm.status === 'online').length
+            }/${data.length}`}</RnText>
+            <View style={css.rightSection}>
+              {p.isEditMode && (
+                <RnTouchableOpacity
+                  onPress={() => RnDropdownSectionList.setDropdown(index)}
+                >
+                  <RnIcon path={mdiMoreHoriz} />
+                </RnTouchableOpacity>
+              )}
               <RnTouchableOpacity
-                onPress={() => RnDropdownSectionList.setDropdown(index)}
+                onPress={() => RnDropdownSectionList.toggleSection(index)}
               >
-                <RnIcon path={mdiMoreHoriz} />
+                <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
               </RnTouchableOpacity>
-            )}
-            <RnTouchableOpacity
-              onPress={() => RnDropdownSectionList.toggleSection(index)}
-            >
-              <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
-            </RnTouchableOpacity>
+            </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       )
     }
 
@@ -178,43 +181,45 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         idx => idx === index,
       )
       return !isHidden ? (
-        <View
-          key={`ItemUser-${item.user_id}-${index}`}
-          style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}
-        >
-          {p.isEditMode ? (
-            <SelectionItem
-              isSelected={
-                userStore.isSelectedAddAllUser ||
-                userStore.selectedUserIds.some(itm => itm === item.user_id)
-              }
-              onPress={() => userStore.selectUserId(item.user_id)}
-              title={item.name || item.user_id}
-              disabled={userStore.isSelectedAddAllUser}
-            />
-          ) : (
-            <RnTouchableOpacity
-              onPress={
-                getAuthStore().currentProfile.ucEnabled
-                  ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
-                  : undefined
-              }
-            >
-              <UserItem
-                iconFuncs={[
-                  () => callStore.startVideoCall(item.user_id),
-                  () => callStore.startCall(item.user_id),
-                ]}
-                icons={[mdiVideo, mdiPhone]}
-                lastMessage={getLastMessageChat(item.user_id)?.text}
-                id={item.user_id}
-                name={item.name}
-                avatar={item.profile_image_url}
-                status={item.status}
+        <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
+          <View
+            key={`ItemUser-${item.user_id}-${index}`}
+            style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}
+          >
+            {p.isEditMode ? (
+              <SelectionItem
+                isSelected={
+                  userStore.isSelectedAddAllUser ||
+                  userStore.selectedUserIds.some(itm => itm === item.user_id)
+                }
+                onPress={() => userStore.selectUserId(item.user_id)}
+                title={item.name || item.user_id}
+                disabled={userStore.isSelectedAddAllUser}
               />
-            </RnTouchableOpacity>
-          )}
-        </View>
+            ) : (
+              <RnTouchableOpacity
+                onPress={
+                  getAuthStore().currentProfile.ucEnabled
+                    ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
+                    : undefined
+                }
+              >
+                <UserItem
+                  iconFuncs={[
+                    () => callStore.startVideoCall(item.user_id),
+                    () => callStore.startCall(item.user_id),
+                  ]}
+                  icons={[mdiVideo, mdiPhone]}
+                  lastMessage={getLastMessageChat(item.user_id)?.text}
+                  id={item.user_id}
+                  name={item.name}
+                  avatar={item.profile_image_url}
+                  status={item.status}
+                />
+              </RnTouchableOpacity>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
       ) : (
         <View />
       )

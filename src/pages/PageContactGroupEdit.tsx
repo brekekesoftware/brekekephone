@@ -30,10 +30,8 @@ export class PageContactGroupEdit extends Component<{
     data: UcBuddy[]
     selectedIds: string[]
   } = {
-    data: userStore.listUserNotSelected,
-    selectedIds: userStore.selectedUserIds.filter(id =>
-      this.props.listItem.some(u => u.user_id === id),
-    ),
+    data: userStore.dataListAllUser,
+    selectedIds: this.props.listItem.map(u => u.user_id),
   }
 
   render() {
@@ -46,7 +44,7 @@ export class PageContactGroupEdit extends Component<{
       <Layout
         fabOnBack={Nav().goToPageContactEdit}
         fabOnNext={this.create}
-        fabOnNextText={intl`CREATE`}
+        fabOnNextText={intl`SAVE`}
         onBack={Nav().backToPageContactEdit}
         title={intl`Add/Remove Contact`}
       >
@@ -92,9 +90,8 @@ export class PageContactGroupEdit extends Component<{
 
   create = () => {
     const { selectedIds } = this.state
-    const { listItem } = this.props
 
-    userStore.editGroup(this.props.groupName, listItem, selectedIds)
+    userStore.editGroup(this.props.groupName, selectedIds)
 
     Nav().backToPageContactEdit()
   }

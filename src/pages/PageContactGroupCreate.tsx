@@ -29,7 +29,7 @@ export class PageContactGroupCreate extends Component {
     selectedIds: string[]
   } = {
     name: '',
-    data: userStore.listUserNotSelected,
+    data: userStore.dataListAllUser,
     selectedIds: [],
   }
 

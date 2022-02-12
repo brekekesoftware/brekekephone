@@ -1,6 +1,6 @@
 // eslint-disable-next-line simple-import-sort/imports
 import React, { Component } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 
 import { Layout } from '../components/Layout'
 import { SelectionItem } from '../components/SelectionItem'
@@ -32,7 +32,7 @@ const css = StyleSheet.create({
     marginVertical: 10,
   },
   rowGroupTitle: { flexDirection: 'row', justifyContent: 'space-between' },
-  rowCapacity: { flexDirection: 'row' },
+  rowCapacity: { flexDirection: 'row', alignItems: 'center' },
   errorText: { color: 'red' },
 })
 
@@ -42,24 +42,35 @@ export class PageContactEdit extends Component {
     userStore.loadGroupUser()
   }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
-    console.log('')
     return [
       {
         title: intl`Add/Remove user`,
         onPress: () => this.onAddRemoveUser(ddIndex),
+        disabled: userStore.dataGroupAllUser.length - 1 === ddIndex,
       },
-      { title: intl`Check all`, onPress: () => this.onCheckAll(ddIndex) },
-      { title: intl`Uncheck all`, onPress: () => this.onUncheckAll(ddIndex) },
+      {
+        title: intl`Check all`,
+        onPress: () => this.onCheckAll(ddIndex),
+        disabled:
+          userStore.isSelectedAddAllUser ||
+          userStore.dataGroupAllUser[ddIndex]?.data?.length === 0,
+      },
+      {
+        title: intl`Uncheck all`,
+        onPress: () => this.onUncheckAll(ddIndex),
+        disabled:
+          userStore.isSelectedAddAllUser ||
+          userStore.dataGroupAllUser[ddIndex]?.data?.length === 0,
+      },
       {
         title: intl`Remove group`,
         onPress: () => this.onRemoveGroup(ddIndex),
-        disabled: userStore.dataGroupAllUser[ddIndex]?.data?.length > 0,
+        disabled: userStore.dataGroupAllUser.length - 1 === ddIndex,
       },
     ]
   }
 
   onAddRemoveUser = (ddIndex: number) => {
-    console.warn('onAddRemoveUser', ddIndex)
     RnDropdownSectionList.closeDropdown()
     Nav().goToPageContactGroupEdit({
       groupName: userStore.dataGroupAllUser[ddIndex].title,
@@ -79,7 +90,6 @@ export class PageContactEdit extends Component {
 
   onRemoveGroup = (ddIndex: number) => {
     RnDropdownSectionList.closeDropdown()
-    console.warn('onRemoveGroup', ddIndex)
     userStore.removeGroup(ddIndex)
   }
 
@@ -114,14 +124,12 @@ export class PageContactEdit extends Component {
       isSelectedAddAllUser,
       selectedUserIds,
       isDisableAddAllUserToTheList,
-      isDisableGroupEditGrouping,
       isSelectEditGroupingAndUserOrder,
       isCapacityInvalid,
       dataGroupAllUser,
-      listUserNotSelected,
+      buddyMode,
     } = userStore
     const { dropdownOpenedIndex } = RnDropdownSectionList
-
     return (
       <Layout
         fabOnBack={this.onGoBack}
@@ -130,44 +138,44 @@ export class PageContactEdit extends Component {
         onBack={this.onGoBack}
         title={intl`Edit the user list`}
       >
-        <View style={css.listHeaderSection}>
-          <SelectionItem
-            isSelected={isSelectedAddAllUser}
-            onPress={this.onSelectAddAllUserToList}
-            title={intl`Add all user to the list`}
-            disabled={isDisableAddAllUserToTheList}
-          />
-          <View style={css.rowGroupTitle}>
+        <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
+          <View style={css.listHeaderSection}>
             <SelectionItem
-              isSelected={isSelectEditGroupingAndUserOrder}
-              onPress={this.onSelectEditGroupingAndUserOrderOption}
-              title={
-                isDisableGroupEditGrouping
-                  ? intl`Display with grouping`
-                  : intl`Edit grouping and user order`
-              }
+              isSelected={isSelectedAddAllUser}
+              onPress={this.onSelectAddAllUserToList}
+              title={intl`Add all user to the list`}
+              disabled={isDisableAddAllUserToTheList}
             />
-            {!isSelectedAddAllUser &&
-              isSelectEditGroupingAndUserOrder &&
-              listUserNotSelected.length > 0 && (
+            <View style={css.rowGroupTitle}>
+              <SelectionItem
+                isSelected={isSelectEditGroupingAndUserOrder}
+                onPress={this.onSelectEditGroupingAndUserOrderOption}
+                title={
+                  buddyMode === 2
+                    ? intl`Edit grouping and user order`
+                    : intl`Display with grouping`
+                }
+              />
+              {isSelectEditGroupingAndUserOrder && buddyMode === 2 && (
                 <RnTouchableOpacity onPress={this.onAddGroup}>
                   <RnIcon path={mdiFolderPlus} />
                 </RnTouchableOpacity>
               )}
-          </View>
-          <View style={css.listTitleSection}>
-            <RnText>{intl`User list`}</RnText>
-            <View style={css.rowCapacity}>
-              <RnText>{`${intl`Capacity`}`}</RnText>
-              <RnText style={isCapacityInvalid && css.errorText}>{`    ${
-                isSelectedAddAllUser
-                  ? dataListAllUser.length
-                  : selectedUserIds.length
-              }`}</RnText>
-              <RnText>{` / ${buddyMax}`}</RnText>
+            </View>
+            <View style={css.listTitleSection}>
+              <RnText>{intl`User list`}</RnText>
+              <View style={css.rowCapacity}>
+                <RnText>{`${intl`Capacity`}`}</RnText>
+                <RnText style={isCapacityInvalid && css.errorText}>{`    ${
+                  isSelectedAddAllUser
+                    ? dataListAllUser.length
+                    : selectedUserIds.length
+                }`}</RnText>
+                <RnText>{` / ${buddyMax}`}</RnText>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
         {isSelectEditGroupingAndUserOrder ? (
           <ContactSectionList
             sectionListData={dataGroupAllUser}
