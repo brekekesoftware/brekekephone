@@ -67,6 +67,12 @@ const css = StyleSheet.create({
   editGroupIcon: {
     marginRight: 10,
   },
+  containerDropdown: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
 })
 
 type ContactSectionListProps = {
@@ -152,32 +158,31 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             }
           }}
         >
-          <TouchableWithoutFeedback
-            onPress={RnDropdownSectionList.closeDropdown}
-          >
-            <Fragment>
-              <RnText small style={css.headerTitle}>{`${title} ${
-                p.isEditMode
-                  ? selectedItemCount
-                  : data.filter(itm => itm.status === 'online').length
-              }/${data.length}`}</RnText>
-              <View style={css.rightSection}>
-                {p.isEditMode && (
-                  <RnTouchableOpacity
-                    style={css.editGroupIcon}
-                    onPress={() => RnDropdownSectionList.setDropdown(index)}
-                  >
-                    <RnIcon path={mdiMoreHoriz} />
-                  </RnTouchableOpacity>
-                )}
+          <Fragment>
+            <RnText small style={css.headerTitle}>{`${title} ${
+              p.isEditMode
+                ? selectedItemCount
+                : data.filter(itm => itm.status === 'online').length
+            }/${data.length}`}</RnText>
+            <View style={css.rightSection}>
+              {p.isEditMode && (
                 <RnTouchableOpacity
-                  onPress={() => RnDropdownSectionList.toggleSection(index)}
+                  style={css.editGroupIcon}
+                  onPress={() => {
+                    calculateSectionHeaderPosition()
+                    RnDropdownSectionList.setDropdown(index)
+                  }}
                 >
-                  <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
+                  <RnIcon path={mdiMoreHoriz} />
                 </RnTouchableOpacity>
-              </View>
-            </Fragment>
-          </TouchableWithoutFeedback>
+              )}
+              <RnTouchableOpacity
+                onPress={() => RnDropdownSectionList.toggleSection(index)}
+              >
+                <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
+              </RnTouchableOpacity>
+            </View>
+          </Fragment>
         </View>
       )
     }
@@ -196,44 +201,38 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           key={`ItemUser-${item.user_id}-${index}`}
           style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}
         >
-          <TouchableWithoutFeedback
-            onPress={RnDropdownSectionList.closeDropdown}
-          >
-            <Fragment>
-              {p.isEditMode ? (
-                <SelectionItem
-                  isSelected={
-                    userStore.isSelectedAddAllUser ||
-                    userStore.selectedUserIds.some(itm => itm === item.user_id)
-                  }
-                  onPress={() => userStore.selectUserId(item.user_id)}
-                  title={item.name || item.user_id}
-                  disabled={userStore.isSelectedAddAllUser}
-                />
-              ) : (
-                <RnTouchableOpacity
-                  onPress={
-                    getAuthStore().currentProfile.ucEnabled
-                      ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
-                      : undefined
-                  }
-                >
-                  <UserItem
-                    iconFuncs={[
-                      () => callStore.startVideoCall(item.user_id),
-                      () => callStore.startCall(item.user_id),
-                    ]}
-                    icons={[mdiVideo, mdiPhone]}
-                    lastMessage={getLastMessageChat(item.user_id)?.text}
-                    id={item.user_id}
-                    name={item.name}
-                    avatar={item.profile_image_url}
-                    status={item.status}
-                  />
-                </RnTouchableOpacity>
-              )}
-            </Fragment>
-          </TouchableWithoutFeedback>
+          {p.isEditMode ? (
+            <SelectionItem
+              isSelected={
+                userStore.isSelectedAddAllUser ||
+                userStore.selectedUserIds.some(itm => itm === item.user_id)
+              }
+              onPress={() => userStore.selectUserId(item.user_id)}
+              title={item.name || item.user_id}
+              disabled={userStore.isSelectedAddAllUser}
+            />
+          ) : (
+            <RnTouchableOpacity
+              onPress={
+                getAuthStore().currentProfile.ucEnabled
+                  ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
+                  : undefined
+              }
+            >
+              <UserItem
+                iconFuncs={[
+                  () => callStore.startVideoCall(item.user_id),
+                  () => callStore.startCall(item.user_id),
+                ]}
+                icons={[mdiVideo, mdiPhone]}
+                lastMessage={getLastMessageChat(item.user_id)?.text}
+                id={item.user_id}
+                name={item.name}
+                avatar={item.profile_image_url}
+                status={item.status}
+              />
+            </RnTouchableOpacity>
+          )}
         </View>
       ) : null
     }
@@ -249,10 +248,16 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           </Fragment>
         ))}
         {dropdownOpenedIndex >= 0 && (
-          <Dropdown
-            position={listDropdownYPosition[dropdownOpenedIndex]}
-            items={p.ddItems}
-          />
+          <TouchableWithoutFeedback
+            onPress={() => RnDropdownSectionList.closeDropdown()}
+          >
+            <View style={css.containerDropdown}>
+              <Dropdown
+                position={listDropdownYPosition[dropdownOpenedIndex]}
+                items={p.ddItems}
+              />
+            </View>
+          </TouchableWithoutFeedback>
         )}
       </Fragment>
     )

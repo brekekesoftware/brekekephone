@@ -140,11 +140,16 @@ export const Layout: FC<
         {props.children}
         <View style={css.FooterSpaceInsideScroller} />
       </Container>
-      <Toast
-        isVisible={props.isShowToastMessage}
-        title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
-        containerStyles={{ marginTop: headerSpace }}
-      />
+      {props.isShowToastMessage && (
+        <Toast
+          isVisible={props.isShowToastMessage}
+          title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
+          containerStyles={{
+            marginTop: headerSpace,
+            backgroundColor: 'yellow',
+          }}
+        />
+      )}
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />
