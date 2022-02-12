@@ -1,4 +1,3 @@
-import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -27,19 +26,12 @@ export class PageContactGroupEdit extends Component<{
   listItem: UcBuddy[]
 }> {
   state: {
-    data: UcBuddy[]
-    selectedIds: string[]
+    selectedUsers: UcBuddy[]
   } = {
-    data: userStore.dataListAllUser,
-    selectedIds: this.props.listItem.map(u => u.user_id),
+    selectedUsers: this.props.listItem,
   }
 
   render() {
-    const displayUsers = uniqBy(
-      [...this.props.listItem, ...this.state.data],
-      'user_id',
-    )
-
     return (
       <Layout
         fabOnBack={Nav().goToPageContactEdit}
@@ -54,16 +46,16 @@ export class PageContactGroupEdit extends Component<{
           disabled={true}
         />
         <Field isGroup label={intl`Members`} disabled={true} />
-        {displayUsers.map((item, index) => (
+        {userStore.dataListAllUser.map((item, index) => (
           <View
             style={css.container}
             key={`ContactListUser-${item.user_id}-${index}`}
           >
             <SelectionItem
-              isSelected={this.state.selectedIds.some(
-                id => id === item.user_id,
+              isSelected={this.state.selectedUsers.some(
+                u => u.user_id === item.user_id,
               )}
-              onPress={() => this.selectItem(item.user_id)}
+              onPress={() => this.selectItem(item)}
               title={item.name || item.user_id}
             />
           </View>
@@ -72,15 +64,21 @@ export class PageContactGroupEdit extends Component<{
     )
   }
 
-  selectItem = (id: string) => {
-    const cloneSelectedIds = [...this.state.selectedIds]
-    const i = cloneSelectedIds.indexOf(id)
-    if (i < 0) {
-      cloneSelectedIds.push(id)
+  selectItem = (item: UcBuddy) => {
+    const { selectedUsers } = this.state
+    const cloneSelected = [...selectedUsers]
+    if (selectedUsers.some(u => u.user_id === item.user_id)) {
+      const index = selectedUsers.indexOf(item)
+      cloneSelected.splice(index, 1)
+      this.setState({
+        selectedUsers: cloneSelected,
+      })
     } else {
-      cloneSelectedIds.splice(i, 1)
+      cloneSelected.push(item)
+      this.setState({
+        selectedUsers: cloneSelected,
+      })
     }
-    this.setState({ selectedIds: cloneSelectedIds })
   }
 
   setName = (name: string) =>
@@ -89,9 +87,13 @@ export class PageContactGroupEdit extends Component<{
     })
 
   create = () => {
-    const { selectedIds } = this.state
+    const { selectedUsers } = this.state
 
-    userStore.editGroup(this.props.groupName, selectedIds)
+    const listItemRemoved = this.props.listItem.filter(
+      itm => !selectedUsers.some(u => u.user_id === itm.user_id),
+    )
+
+    userStore.editGroup(this.props.groupName, selectedUsers, listItemRemoved)
 
     Nav().backToPageContactEdit()
   }

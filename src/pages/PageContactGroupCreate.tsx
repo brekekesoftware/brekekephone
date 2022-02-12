@@ -25,12 +25,10 @@ const css = StyleSheet.create({
 export class PageContactGroupCreate extends Component {
   state: {
     name: string
-    data: UcBuddy[]
-    selectedIds: string[]
+    selectedUsers: UcBuddy[]
   } = {
     name: '',
-    data: userStore.dataListAllUser,
-    selectedIds: [],
+    selectedUsers: [],
   }
 
   render() {
@@ -49,16 +47,16 @@ export class PageContactGroupCreate extends Component {
         />
         <Field isGroup label={intl`Members`} />
         {/* <ContactList data={userStore.listUserNotSelected} /> */}
-        {this.state.data.map((item, index) => (
+        {userStore.dataListAllUser.map((item, index) => (
           <View
             style={css.container}
             key={`ContactListUser-${item.user_id}-${index}`}
           >
             <SelectionItem
-              isSelected={this.state.selectedIds.some(
-                id => id === item.user_id,
+              isSelected={this.state.selectedUsers.some(
+                selectedUser => selectedUser.user_id === item.user_id,
               )}
-              onPress={() => this.selectItem(item.user_id)}
+              onPress={() => this.selectItem(item)}
               title={item.name || item.user_id}
             />
           </View>
@@ -67,15 +65,21 @@ export class PageContactGroupCreate extends Component {
     )
   }
 
-  selectItem = (id: string) => {
-    const cloneSelectedIds = [...this.state.selectedIds]
-    const i = cloneSelectedIds.indexOf(id)
-    if (i < 0) {
-      cloneSelectedIds.push(id)
+  selectItem = (item: UcBuddy) => {
+    const { selectedUsers } = this.state
+    const cloneSelected = [...selectedUsers]
+    if (selectedUsers.some(u => u.user_id === item.user_id)) {
+      const index = selectedUsers.indexOf(item)
+      cloneSelected.splice(index, 1)
+      this.setState({
+        selectedUsers: cloneSelected,
+      })
     } else {
-      cloneSelectedIds.splice(i, 1)
+      cloneSelected.push(item)
+      this.setState({
+        selectedUsers: cloneSelected,
+      })
     }
-    this.setState({ selectedIds: cloneSelectedIds })
   }
 
   setName = (name: string) => {
@@ -85,7 +89,7 @@ export class PageContactGroupCreate extends Component {
   }
 
   create = () => {
-    const { name, selectedIds } = this.state
+    const { name, selectedUsers } = this.state
 
     if (!name.trim()) {
       RnAlert.error({
@@ -93,7 +97,7 @@ export class PageContactGroupCreate extends Component {
       })
       return
     }
-    userStore.addGroup(name, selectedIds)
+    userStore.addGroup(name, selectedUsers)
     Nav().backToPageContactEdit()
   }
 }

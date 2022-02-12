@@ -193,14 +193,14 @@ export class PageContactEdit extends Component {
     const {
       isCapacityInvalid,
       isSelectedAddAllUser,
-      listGroup,
+      groups,
       dataListAllUser,
       selectedUserIds,
     } = userStore
 
     if (!isCapacityInvalid) {
       uc.saveProperties(!isSelectedAddAllUser, [
-        ...listGroup,
+        ...groups,
         ...dataListAllUser.filter(
           user =>
             selectedUserIds.some(id => id === user.user_id) ||
