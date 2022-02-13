@@ -97,6 +97,11 @@ export class PageContactEdit extends Component {
 
   onRemoveGroup = (ddIndex: number) => {
     RnDropdownSectionList.closeDropdown()
+    RnDropdownSectionList.removeSection(
+      ddIndex,
+      userStore.dataGroupAllUser[ddIndex]?.data?.length,
+    )
+
     userStore.removeGroup(ddIndex)
   }
 
@@ -120,6 +125,7 @@ export class PageContactEdit extends Component {
   }
 
   onGoBack = () => {
+    RnDropdownSectionList.closeDropdown()
     userStore.clearStore()
     userStore.loadGroupUser()
     Nav().backToPageContactUsers()

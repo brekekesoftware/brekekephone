@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react'
-import React, { FC, Fragment, useEffect, useRef, useState } from 'react'
+import React, { FC, Fragment, useEffect, useRef } from 'react'
 import {
   DefaultSectionT,
-  Platform,
   SectionListData,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -84,7 +83,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
   observer(p => {
     const sectionHeaderRefs = useRef<View[]>([])
     const reCalculatedLayoutDropdownTimeoutId = useRef<number>(0)
-    const [ddPositions, setDDPositions] = useState<DropdownPosition[]>([])
 
     useEffect(() => {
       RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
@@ -124,19 +122,14 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           sectionHeaderRefs.current.forEach((ref: View, index) => {
             if (ref) {
               ref.measure((fx, fy, w, h, px, py) => {
-                console.log('position', fx, fy, w, h, px, py)
-                if (Platform.OS === 'web') {
-                  listDropdownYPosition.push({ top: fy + h, right: 20 })
-                } else {
-                  listDropdownYPosition.push({ top: py + h, right: 20 })
-                }
+                listDropdownYPosition.push({ top: py + h, right: 20 })
 
                 // after get all section list dropdown position
                 if (index === sectionHeaderRefs.current.length - 1) {
                   RnDropdownSectionList.setDropdownPosition(
                     listDropdownYPosition,
                   )
-                  setDDPositions(listDropdownYPosition)
+                  RnDropdownSectionList.setHeaderHeight(h)
                 }
               })
             }
@@ -144,47 +137,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         },
         300,
       )
-    }
-
-    const reCalculateSectionHeaderPosition = (sectionIndex: number) => {
-      const itemHeight = 72
-      const willCollapse = !RnDropdownSectionList.hiddenGroupIndex.some(
-        itm => itm === sectionIndex,
-      )
-      console.log('reCalculateSectionHeaderPosition')
-      const listIndexNeedToUpdate: number[] = []
-
-      RnDropdownSectionList.listDropdownYPosition.forEach((_, index) => {
-        if (index > sectionIndex) {
-          listIndexNeedToUpdate.push(index)
-        }
-      })
-
-      const lengthOfItemOfSection = p.sectionListData[sectionIndex].data.length
-      const clonePositionDD = [...ddPositions]
-
-      if (willCollapse) {
-        listIndexNeedToUpdate.forEach(index => {
-          clonePositionDD[index] = {
-            top:
-              (clonePositionDD[index].top || 0) -
-              itemHeight * lengthOfItemOfSection,
-            right: clonePositionDD[index].right || 0,
-          }
-        })
-      } else {
-        listIndexNeedToUpdate.forEach(index => {
-          clonePositionDD[index] = {
-            top:
-              (clonePositionDD[index].top || 0) +
-              itemHeight * lengthOfItemOfSection,
-            right: clonePositionDD[index].right || 0,
-          }
-        })
-      }
-
-      setDDPositions(clonePositionDD)
-      RnDropdownSectionList.toggleSection(sectionIndex)
     }
 
     const renderHeaderSection = (
@@ -226,7 +178,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                         idx => idx === index,
                       )
                     ) {
-                      reCalculateSectionHeaderPosition(index)
+                      RnDropdownSectionList.toggleSection(index, data.length)
                     }
                     RnDropdownSectionList.setDropdown(index)
                   }}
@@ -236,7 +188,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
               )}
               <RnTouchableOpacity
                 onPress={() => {
-                  reCalculateSectionHeaderPosition(index)
+                  RnDropdownSectionList.toggleSection(index, data.length)
                 }}
               >
                 <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
@@ -260,6 +212,9 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         <View
           key={`ItemUser-${item.user_id}-${index}`}
           style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}
+          onLayout={e => {
+            RnDropdownSectionList.setItemHeight(e.nativeEvent.layout.height)
+          }}
         >
           {p.isEditMode ? (
             <SelectionItem
@@ -297,10 +252,8 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       ) : null
     }
 
-    const { dropdownOpenedIndex } = RnDropdownSectionList
+    const { dropdownOpenedIndex, listDropdownYPosition } = RnDropdownSectionList
 
-    // console.log('listDropdownYPosition', listDropdownYPosition)
-    console.log('ddPositions', ddPositions)
     return (
       <Fragment>
         {p.sectionListData.map((item, index) => (
@@ -315,7 +268,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           >
             <View style={css.containerDropdown}>
               <Dropdown
-                position={ddPositions[dropdownOpenedIndex]}
+                position={listDropdownYPosition[dropdownOpenedIndex]}
                 items={p.ddItems}
               />
             </View>

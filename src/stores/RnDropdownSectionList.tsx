@@ -15,22 +15,66 @@ export class RnDropdownSectionListStore {
   @observable listDropdownYPosition: DropdownPosition[] = []
   @observable dropdownOpenedIndex: number = -1
   @observable isShouldUpdateDropdownPosition: boolean = false
+  itemHeight: number = 0
+  headerHeight: number = 0
 
   @action setHiddenGroupIndex = (groupsIndex: number[]) => {
     this.hiddenGroupIndex = groupsIndex
   }
 
-  @action toggleSection = (index: number) => {
+  @action setHeaderHeight = (height: number) => {
+    this.headerHeight = height
+  }
+
+  @action setItemHeight = (height: number) => {
+    this.itemHeight = height
+  }
+
+  @action removeSection = (sectionIndex: number, itemSize: number) => {
+    const clonePositionDD = [...this.listDropdownYPosition]
+    this.listDropdownYPosition.forEach((_, index) => {
+      if (index > sectionIndex) {
+        clonePositionDD[index] = {
+          top:
+            (clonePositionDD[index].top || 0) -
+            this.itemHeight * itemSize -
+            this.headerHeight,
+          right: clonePositionDD[index].right || 0,
+        }
+      }
+    })
+
+    clonePositionDD.splice(sectionIndex, 1)
+    this.listDropdownYPosition = clonePositionDD
+    this.dropdownOpenedIndex = -1
+  }
+
+  @action toggleSection = (sectionIndex: number, itemSize: number) => {
     const cloneHiddenGroupIndex = [...this.hiddenGroupIndex]
-    const indexSectionInHiddenGroup = cloneHiddenGroupIndex.indexOf(index)
+    const indexSectionInHiddenGroup =
+      cloneHiddenGroupIndex.indexOf(sectionIndex)
     if (indexSectionInHiddenGroup > -1) {
       cloneHiddenGroupIndex.splice(indexSectionInHiddenGroup, 1)
     } else {
-      cloneHiddenGroupIndex.push(index)
+      cloneHiddenGroupIndex.push(sectionIndex)
     }
+    const isCollapse = !this.hiddenGroupIndex.some(itm => itm === sectionIndex)
+    const clonePositionDD = [...this.listDropdownYPosition]
+
+    this.listDropdownYPosition.forEach((_, index) => {
+      if (index > sectionIndex) {
+        clonePositionDD[index] = {
+          top:
+            (clonePositionDD[index].top || 0) +
+            (isCollapse ? -this.itemHeight : this.itemHeight) * itemSize,
+          right: clonePositionDD[index].right || 0,
+        }
+      }
+    })
 
     this.dropdownOpenedIndex = -1
     this.hiddenGroupIndex = uniq(cloneHiddenGroupIndex)
+    this.listDropdownYPosition = clonePositionDD
   }
 
   @action setDropdownPosition = (position: DropdownPosition[]) => {
