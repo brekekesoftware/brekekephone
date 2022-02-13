@@ -105,7 +105,7 @@ export class PageContactGroupCreate extends Component {
     }
 
     userStore.addGroup(name, selectedUsers)
-    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+    RnDropdownSectionList.addSection()
     Nav().backToPageContactEdit()
   }
 }

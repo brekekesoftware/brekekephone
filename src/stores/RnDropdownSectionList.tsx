@@ -12,7 +12,7 @@ export type DropdownPosition = {
 
 export class RnDropdownSectionListStore {
   @observable hiddenGroupIndex: number[] = []
-  @observable listDropdownYPosition: DropdownPosition[] = []
+  @observable listDropdownPosition: DropdownPosition[] = []
   @observable dropdownOpenedIndex: number = -1
   @observable isShouldUpdateDropdownPosition: boolean = false
   itemHeight: number = 0
@@ -31,8 +31,8 @@ export class RnDropdownSectionListStore {
   }
 
   @action removeSection = (sectionIndex: number, itemSize: number) => {
-    const clonePositionDD = [...this.listDropdownYPosition]
-    this.listDropdownYPosition.forEach((_, index) => {
+    const clonePositionDD = [...this.listDropdownPosition]
+    this.listDropdownPosition.forEach((_, index) => {
       if (index > sectionIndex) {
         clonePositionDD[index] = {
           top:
@@ -45,7 +45,7 @@ export class RnDropdownSectionListStore {
     })
 
     clonePositionDD.splice(sectionIndex, 1)
-    this.listDropdownYPosition = clonePositionDD
+    this.listDropdownPosition = clonePositionDD
     this.dropdownOpenedIndex = -1
   }
 
@@ -59,9 +59,9 @@ export class RnDropdownSectionListStore {
       cloneHiddenGroupIndex.push(sectionIndex)
     }
     const isCollapse = !this.hiddenGroupIndex.some(itm => itm === sectionIndex)
-    const clonePositionDD = [...this.listDropdownYPosition]
+    const clonePositionDD = [...this.listDropdownPosition]
 
-    this.listDropdownYPosition.forEach((_, index) => {
+    this.listDropdownPosition.forEach((_, index) => {
       if (index > sectionIndex) {
         clonePositionDD[index] = {
           top:
@@ -74,11 +74,11 @@ export class RnDropdownSectionListStore {
 
     this.dropdownOpenedIndex = -1
     this.hiddenGroupIndex = uniq(cloneHiddenGroupIndex)
-    this.listDropdownYPosition = clonePositionDD
+    this.listDropdownPosition = clonePositionDD
   }
 
   @action setDropdownPosition = (position: DropdownPosition[]) => {
-    this.listDropdownYPosition = position
+    this.listDropdownPosition = position
   }
 
   @action setDropdownOpenedIndex = (index: number) => {
@@ -92,6 +92,11 @@ export class RnDropdownSectionListStore {
 
   @action closeDropdown = () => {
     this.dropdownOpenedIndex = -1
+  }
+
+  @action addSection = () => {
+    this.hiddenGroupIndex = this.hiddenGroupIndex.map(idx => idx + 1)
+    this.isShouldUpdateDropdownPosition = true
   }
 
   @action setIsShouldUpdateDropdownPosition = (isShould: boolean) => {

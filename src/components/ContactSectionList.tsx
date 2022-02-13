@@ -118,16 +118,16 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         () => {
           // Must wrap in setTimeout to make sure
           // the header view has completed render
-          const listDropdownYPosition: DropdownPosition[] = []
+          const listDropdownPosition: DropdownPosition[] = []
           sectionHeaderRefs.current.forEach((ref: View, index) => {
             if (ref) {
               ref.measure((fx, fy, w, h, px, py) => {
-                listDropdownYPosition.push({ top: py + h, right: 20 })
+                listDropdownPosition.push({ top: py + h, right: 20 })
 
                 // after get all section list dropdown position
                 if (index === sectionHeaderRefs.current.length - 1) {
                   RnDropdownSectionList.setDropdownPosition(
-                    listDropdownYPosition,
+                    listDropdownPosition,
                   )
                   RnDropdownSectionList.setHeaderHeight(h)
                 }
@@ -252,7 +252,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       ) : null
     }
 
-    const { dropdownOpenedIndex, listDropdownYPosition } = RnDropdownSectionList
+    const { dropdownOpenedIndex, listDropdownPosition } = RnDropdownSectionList
 
     return (
       <Fragment>
@@ -268,7 +268,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           >
             <View style={css.containerDropdown}>
               <Dropdown
-                position={listDropdownYPosition[dropdownOpenedIndex]}
+                position={listDropdownPosition[dropdownOpenedIndex]}
                 items={p.ddItems}
               />
             </View>
