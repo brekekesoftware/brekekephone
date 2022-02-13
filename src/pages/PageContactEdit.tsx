@@ -1,6 +1,11 @@
 // eslint-disable-next-line simple-import-sort/imports
 import React, { Component } from 'react'
-import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  ScrollView,
+} from 'react-native'
 
 import { Layout } from '../components/Layout'
 import { SelectionItem } from '../components/SelectionItem'
@@ -20,6 +25,7 @@ import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { RnIcon } from '../components/RnIcon'
 import { mdiFolderPlus } from '../assets/icons'
 import { RnText } from '../components/RnText'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   listHeaderSection: {
@@ -76,6 +82,7 @@ export class PageContactEdit extends Component {
       groupName: userStore.dataGroupAllUser[ddIndex].title,
       listItem: userStore.dataGroupAllUser[ddIndex].data.map(itm => itm),
     })
+    this.scrollToTopListContact()
   }
 
   onCheckAll = (groupIndex: number) => {
@@ -104,6 +111,7 @@ export class PageContactEdit extends Component {
   onAddGroup = () => {
     RnDropdownSectionList.closeDropdown()
     Nav().goToPageContactGroupCreate()
+    this.scrollToTopListContact()
   }
 
   onSelectAddAllUserToList = () => {
@@ -115,6 +123,17 @@ export class PageContactEdit extends Component {
     userStore.clearStore()
     userStore.loadGroupUser()
     Nav().backToPageContactUsers()
+  }
+
+  view?: ScrollView
+  setViewRef = (ref: ScrollView) => {
+    this.view = ref
+  }
+
+  scrollToTopListContact = () => {
+    BackgroundTimer.setTimeout(() => {
+      this.view?.scrollTo({ y: 0, animated: true })
+    }, 1000)
   }
 
   render() {
@@ -137,6 +156,7 @@ export class PageContactEdit extends Component {
         fabOnNextText={intl`SAVE`}
         onBack={this.onGoBack}
         title={intl`Edit the user list`}
+        containerRef={this.setViewRef}
       >
         <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
           <View style={css.listHeaderSection}>

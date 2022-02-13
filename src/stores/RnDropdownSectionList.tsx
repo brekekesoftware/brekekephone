@@ -29,7 +29,6 @@ export class RnDropdownSectionListStore {
       cloneHiddenGroupIndex.push(index)
     }
 
-    this.isShouldUpdateDropdownPosition = true
     this.dropdownOpenedIndex = -1
     this.hiddenGroupIndex = uniq(cloneHiddenGroupIndex)
   }
