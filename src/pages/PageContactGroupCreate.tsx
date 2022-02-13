@@ -47,7 +47,6 @@ export class PageContactGroupCreate extends Component {
           value={this.state.name}
         />
         <Field isGroup label={intl`Members`} />
-        {/* <ContactList data={userStore.listUserNotSelected} /> */}
         {userStore.dataListAllUser.map((item, index) => (
           <View
             style={css.container}
@@ -57,7 +56,7 @@ export class PageContactGroupCreate extends Component {
               isSelected={this.state.selectedUsers.some(
                 selectedUser => selectedUser.user_id === item.user_id,
               )}
-              onPress={() => this.selectItem(item)}
+              onPress={() => this.selectUser(item)}
               title={item.name || item.user_id}
             />
           </View>
@@ -66,28 +65,19 @@ export class PageContactGroupCreate extends Component {
     )
   }
 
-  selectItem = (item: UcBuddy) => {
+  selectUser = (item: UcBuddy) => {
     const { selectedUsers } = this.state
-    const cloneSelected = [...selectedUsers]
-    if (selectedUsers.some(u => u.user_id === item.user_id)) {
-      const index = selectedUsers.indexOf(item)
-      cloneSelected.splice(index, 1)
-      this.setState({
-        selectedUsers: cloneSelected,
-      })
-    } else {
-      cloneSelected.push(item)
-      this.setState({
-        selectedUsers: cloneSelected,
-      })
-    }
+    this.setState({
+      selectedUsers: selectedUsers.some(u => u.user_id === item.user_id)
+        ? selectedUsers.filter(u => u.user_id !== item.user_id)
+        : [...selectedUsers, item],
+    })
   }
 
-  setName = (name: string) => {
+  setName = (name: string) =>
     this.setState({
       name,
     })
-  }
 
   create = () => {
     const { name, selectedUsers } = this.state
@@ -105,7 +95,7 @@ export class PageContactGroupCreate extends Component {
     }
 
     userStore.addGroup(name, selectedUsers)
-    RnDropdownSectionList.addSection()
+    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()
   }
 }

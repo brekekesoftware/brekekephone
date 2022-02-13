@@ -56,7 +56,7 @@ export class PageContactGroupEdit extends Component<{
               isSelected={this.state.selectedUsers.some(
                 u => u.user_id === item.user_id,
               )}
-              onPress={() => this.selectItem(item)}
+              onPress={() => this.selectUser(item)}
               title={item.name || item.user_id}
             />
           </View>
@@ -65,21 +65,13 @@ export class PageContactGroupEdit extends Component<{
     )
   }
 
-  selectItem = (item: UcBuddy) => {
+  selectUser = (item: UcBuddy) => {
     const { selectedUsers } = this.state
-    const cloneSelected = [...selectedUsers]
-    if (selectedUsers.some(u => u.user_id === item.user_id)) {
-      const index = selectedUsers.indexOf(item)
-      cloneSelected.splice(index, 1)
-      this.setState({
-        selectedUsers: cloneSelected,
-      })
-    } else {
-      cloneSelected.push(item)
-      this.setState({
-        selectedUsers: cloneSelected,
-      })
-    }
+    this.setState({
+      selectedUsers: selectedUsers.some(u => u.user_id === item.user_id)
+        ? selectedUsers.filter(u => u.user_id !== item.user_id)
+        : [...selectedUsers, item],
+    })
   }
 
   setName = (name: string) =>

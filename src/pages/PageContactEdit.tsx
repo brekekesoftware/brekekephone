@@ -114,14 +114,8 @@ export class PageContactEdit extends Component {
   }
 
   onAddGroup = () => {
-    RnDropdownSectionList.closeDropdown()
     Nav().goToPageContactGroupCreate()
     this.scrollToTopListContact()
-  }
-
-  onSelectAddAllUserToList = () => {
-    RnDropdownSectionList.closeDropdown()
-    userStore.toggleIsSelectedAddAllUser()
   }
 
   onGoBack = () => {
@@ -136,11 +130,10 @@ export class PageContactEdit extends Component {
     this.view = ref
   }
 
-  scrollToTopListContact = () => {
+  scrollToTopListContact = () =>
     BackgroundTimer.setTimeout(() => {
       this.view?.scrollTo({ y: 0, animated: true })
     }, 1000)
-  }
 
   render() {
     const {
@@ -168,7 +161,7 @@ export class PageContactEdit extends Component {
           <View style={css.listHeaderSection}>
             <SelectionItem
               isSelected={isSelectedAddAllUser}
-              onPress={this.onSelectAddAllUserToList}
+              onPress={userStore.toggleIsSelectedAddAllUser}
               title={intl`Add all user to the list`}
               disabled={isDisableAddAllUserToTheList}
             />

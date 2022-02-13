@@ -44,38 +44,37 @@ export class PageContactUsers extends Component {
   render() {
     const { ucEnabled } = getAuthStore().currentProfile
     const { byIds, dataGroupUserIds } = userStore
-    const allUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
-    const onlineUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
+    const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+    const isShowOfflineUser = this.displayOfflineUsers.enabled || !ucEnabled
     let totalOnlineContact = 0
     let totalContact = 0
 
     dataGroupUserIds.forEach(s => {
-      const dataAllUsers = s.data.map(id => byIds[id])
-      totalContact += dataAllUsers.length
-      const dataAllUsersFiltered = dataAllUsers.filter(
-        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-      )
-      allUsers.push({
-        title: s.title,
-        data: dataAllUsersFiltered,
-      })
-
-      const dataOnlineUser = s.data
-        .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
-        .filter(u => u)
-      totalOnlineContact += dataOnlineUser.length
-      const dataOnlineUserFiltered = dataOnlineUser.filter(
-        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-      )
-      onlineUsers.push({
-        title: s.title,
-        data: dataOnlineUserFiltered,
-      })
+      if (isShowOfflineUser) {
+        const dataAllUsers = s.data.map(id => byIds[id])
+        totalContact += dataAllUsers.length
+        const dataAllUsersFiltered = dataAllUsers.filter(
+          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+        )
+        displayUsers.push({
+          title: s.title,
+          data: dataAllUsersFiltered,
+        })
+      } else {
+        const dataOnlineUser = s.data
+          .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
+          .filter(u => u)
+        totalOnlineContact += dataOnlineUser.length
+        const dataOnlineUserFiltered = dataOnlineUser.filter(
+          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+        )
+        displayUsers.push({
+          title: s.title,
+          data: dataOnlineUserFiltered,
+        })
+      }
     })
-
-    const displayUsers =
-      !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
 
     return (
       <Layout
