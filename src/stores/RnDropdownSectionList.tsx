@@ -46,6 +46,7 @@ export class RnDropdownSectionListStore {
 
     clonePositionDD.splice(sectionIndex, 1)
     this.listDropdownPosition = clonePositionDD
+    this.hiddenGroupIndex = this.hiddenGroupIndex.map(idx => idx - 1)
     this.dropdownOpenedIndex = -1
   }
 
