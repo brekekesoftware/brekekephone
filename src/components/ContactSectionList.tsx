@@ -35,7 +35,6 @@ import { DropdownItemProps } from './DropdownItem'
 import { RnIcon } from './RnIcon'
 import { RnText } from './RnText'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { SelectionItem } from './SelectionItem'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -46,23 +45,14 @@ const css = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: v.borderBg,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
     alignItems: 'center',
     paddingVertical: 10,
+    marginTop: 15,
   },
-  headerTitle: {},
-  rightSection: {
+  leftSection: {
     flexDirection: 'row',
-  },
-  itemEditWrapper: {
-    borderBottomColor: v.borderBg,
-    borderBottomWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-  },
-  itemWrapper: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    alignItems: 'center',
   },
   editGroupIcon: {
     marginRight: 10,
@@ -123,8 +113,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           sectionHeaderRefs.current.forEach((ref: View, index) => {
             if (ref) {
               ref.measure((fx, fy, w, h, px, py) => {
-                console.log('py', py)
-                console.log('fx', fx)
                 listDropdownPosition.push({
                   top: Platform.OS === 'ios' ? py : py + h,
                   right: 20,
@@ -160,21 +148,30 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       )
 
       return (
-        <View
-          style={css.headerSectionList}
-          ref={c => {
-            if (c && p.isEditMode) {
-              sectionHeaderRefs.current[index] = c
-            }
-          }}
+        <RnTouchableOpacity
+          onPress={() =>
+            RnDropdownSectionList.toggleSection(index, data.length)
+          }
         >
-          <Fragment>
-            <RnText small style={css.headerTitle}>{`${title} ${
-              p.isEditMode
-                ? selectedItemCount
-                : data.filter(itm => itm.status === 'online').length
-            }/${data.length}`}</RnText>
-            <View style={css.rightSection}>
+          <View
+            style={css.headerSectionList}
+            ref={c => {
+              if (c && p.isEditMode) {
+                sectionHeaderRefs.current[index] = c
+              }
+            }}
+          >
+            <Fragment>
+              <View style={css.leftSection}>
+                <View>
+                  <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
+                </View>
+                <RnText small>{`${title} ${
+                  p.isEditMode
+                    ? selectedItemCount
+                    : data.filter(itm => itm.status === 'online').length
+                }/${data.length}`}</RnText>
+              </View>
               {p.isEditMode && (
                 <RnTouchableOpacity
                   style={css.editGroupIcon}
@@ -192,16 +189,9 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                   <RnIcon path={mdiMoreHoriz} />
                 </RnTouchableOpacity>
               )}
-              <RnTouchableOpacity
-                onPress={() => {
-                  RnDropdownSectionList.toggleSection(index, data.length)
-                }}
-              >
-                <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
-              </RnTouchableOpacity>
-            </View>
-          </Fragment>
-        </View>
+            </Fragment>
+          </View>
+        </RnTouchableOpacity>
       )
     }
 
@@ -217,21 +207,28 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       return !isHidden ? (
         <View
           key={`ItemUser-${item.user_id}-${index}`}
-          style={p.isEditMode ? css.itemEditWrapper : css.itemWrapper}
           onLayout={e => {
             RnDropdownSectionList.setItemHeight(e.nativeEvent.layout.height)
           }}
         >
           {p.isEditMode ? (
-            <SelectionItem
-              isSelected={
-                userStore.isSelectedAddAllUser ||
-                userStore.selectedUserIds.some(itm => itm === item.user_id)
-              }
+            <RnTouchableOpacity
               onPress={() => userStore.selectUserId(item.user_id)}
-              title={item.name || item.user_id}
               disabled={userStore.isSelectedAddAllUser}
-            />
+            >
+              <UserItem
+                id={item.user_id}
+                name={item.name || item.user_id}
+                avatar={item.profile_image_url}
+                disabled={userStore.isSelectedAddAllUser}
+                isSelected={
+                  userStore.isSelectedAddAllUser ||
+                  userStore.selectedUserIds.some(itm => itm === item.user_id)
+                }
+                onSelect={() => userStore.selectUserId(item.user_id)}
+                isSelection
+              />
+            </RnTouchableOpacity>
           ) : (
             <RnTouchableOpacity
               onPress={

@@ -16,6 +16,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
+import { RnCheckBox } from './RnCheckbox'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -79,6 +80,14 @@ const css = StyleSheet.create({
     marginVertical: 5,
     alignItems: 'center',
   },
+  CheckboxContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 15,
+  },
+  disableContainer: {
+    opacity: 0.5,
+  },
 })
 
 export const UserItem: FC<
@@ -104,6 +113,10 @@ export const UserItem: FC<
     partyName: string
     isVoicemail?: boolean
     status?: string
+    disabled?: boolean
+    isSelection?: boolean
+    isSelected?: boolean
+    onSelect?: () => void
   }>
 > = observer(p0 => {
   const {
@@ -127,6 +140,10 @@ export const UserItem: FC<
     group,
     partyName,
     isVoicemail,
+    disabled,
+    isSelection,
+    isSelected,
+    onSelect,
     ...p
   } = p0
   const Container = canChat ? RnTouchableOpacity : View
@@ -168,7 +185,10 @@ export const UserItem: FC<
   }
 
   return (
-    <Container style={css.Outer} onPress={onPressItem}>
+    <Container
+      style={[css.Outer, disabled && css.disableContainer]}
+      onPress={onPressItem}
+    >
       <View style={[css.Inner, selected && css.Inner_selected]}>
         {group ? (
           <View style={css.VGroup}>
@@ -245,6 +265,15 @@ export const UserItem: FC<
             <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
+        {!!isSelection && (
+          <View style={css.CheckboxContainer}>
+            <RnCheckBox
+              isSelected={!!isSelected}
+              onPress={() => (onSelect ? onSelect() : true)}
+              disabled={disabled || false}
+            />
+          </View>
+        )}
       </View>
     </Container>
   )

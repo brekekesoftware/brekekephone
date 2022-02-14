@@ -1,26 +1,17 @@
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'
+import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
-import { SelectionItem } from '../components/SelectionItem'
-import { v } from '../components/variables'
+import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
 import { userStore } from '../stores/userStore'
-
-const css = StyleSheet.create({
-  container: {
-    borderBottomColor: v.borderBg,
-    borderBottomWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-  },
-})
 
 @observer
 export class PageContactGroupCreate extends Component {
@@ -48,17 +39,19 @@ export class PageContactGroupCreate extends Component {
         />
         <Field isGroup label={intl`Members`} />
         {userStore.dataListAllUser.map((item, index) => (
-          <View
-            style={css.container}
-            key={`ContactListUser-${item.user_id}-${index}`}
-          >
-            <SelectionItem
-              isSelected={this.state.selectedUsers.some(
-                selectedUser => selectedUser.user_id === item.user_id,
-              )}
-              onPress={() => this.selectUser(item)}
-              title={item.name || item.user_id}
-            />
+          <View key={`ContactListUser-${item.user_id}-${index}`}>
+            <RnTouchableOpacity onPress={() => this.selectUser(item)}>
+              <UserItem
+                id={item.user_id}
+                name={item.name || item.user_id}
+                avatar={item.profile_image_url}
+                isSelected={this.state.selectedUsers.some(
+                  selectedUser => selectedUser.user_id === item.user_id,
+                )}
+                onSelect={() => this.selectUser(item)}
+                isSelection
+              />
+            </RnTouchableOpacity>
           </View>
         ))}
       </Layout>

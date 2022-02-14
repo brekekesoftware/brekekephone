@@ -33,12 +33,15 @@ const css = StyleSheet.create({
   },
   listTitleSection: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     marginVertical: 10,
   },
   rowGroupTitle: { flexDirection: 'row', justifyContent: 'space-between' },
-  rowCapacity: { flexDirection: 'row', alignItems: 'center' },
+  rowCapacity: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   errorText: { color: 'red' },
 })
 
@@ -182,7 +185,6 @@ export class PageContactEdit extends Component {
               )}
             </View>
             <View style={css.listTitleSection}>
-              <RnText>{intl`User list`}</RnText>
               <View style={css.rowCapacity}>
                 <RnText>{`${intl`Capacity`}`}</RnText>
                 <RnText style={isCapacityInvalid && css.errorText}>{`    ${

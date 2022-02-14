@@ -3,6 +3,7 @@ import { StyleSheet, View, ViewProps } from 'react-native'
 
 import { RnCheckBox } from './RnCheckbox'
 import { RnText } from './RnText'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
 
 const css = StyleSheet.create({
   SelectionItem: {
@@ -26,9 +27,10 @@ export const SelectionItem: FC<
     disabled?: boolean
   }
 > = ({ isSelected, title, onPress, disabled, style, ...p }) => (
-  <View
+  <RnTouchableOpacity
     {...p}
     style={[css.SelectionItem, disabled && css.SelectionItem_Disabled, style]}
+    onPress={onPress}
   >
     <RnCheckBox
       isSelected={isSelected}
@@ -36,5 +38,5 @@ export const SelectionItem: FC<
       disabled={disabled || false}
     />
     <RnText style={css.SelectionItem_Title}>{title}</RnText>
-  </View>
+  </RnTouchableOpacity>
 )
