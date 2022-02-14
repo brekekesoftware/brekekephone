@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import React, { FC, Fragment, useEffect, useRef } from 'react'
 import {
   DefaultSectionT,
+  Platform,
   SectionListData,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -122,7 +123,12 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           sectionHeaderRefs.current.forEach((ref: View, index) => {
             if (ref) {
               ref.measure((fx, fy, w, h, px, py) => {
-                listDropdownPosition.push({ top: py + h, right: 20 })
+                console.log('py', py)
+                console.log('fx', fx)
+                listDropdownPosition.push({
+                  top: Platform.OS === 'ios' ? py : py + h,
+                  right: 20,
+                })
 
                 // after get all section list dropdown position
                 if (index === sectionHeaderRefs.current.length - 1) {
