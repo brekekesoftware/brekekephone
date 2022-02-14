@@ -13,7 +13,7 @@ import {
 import { UcBuddy } from '../api/brekekejs'
 import {
   mdiMenuDown,
-  mdiMenuLeft,
+  mdiMenuRight,
   mdiMoreHoriz,
   mdiPhone,
   mdiVideo,
@@ -47,7 +47,7 @@ const css = StyleSheet.create({
     backgroundColor: v.borderBg,
     paddingHorizontal: 5,
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     marginTop: 15,
   },
   leftSection: {
@@ -63,6 +63,7 @@ const css = StyleSheet.create({
     height: '100%',
     backgroundColor: 'transparent',
   },
+  disableMarginTop: { marginTop: 0 },
 })
 
 type ContactSectionListProps = {
@@ -146,6 +147,9 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
         idx => idx === index,
       )
+      const isDisableMarginTop =
+        p.sectionListData[index - 1]?.data?.length === 0 ||
+        RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
 
       return (
         <RnTouchableOpacity
@@ -154,7 +158,10 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           }
         >
           <View
-            style={css.headerSectionList}
+            style={[
+              css.headerSectionList,
+              isDisableMarginTop && css.disableMarginTop,
+            ]}
             ref={c => {
               if (c && p.isEditMode) {
                 sectionHeaderRefs.current[index] = c
@@ -164,7 +171,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             <Fragment>
               <View style={css.leftSection}>
                 <View>
-                  <RnIcon path={isHidden ? mdiMenuLeft : mdiMenuDown} />
+                  <RnIcon path={isHidden ? mdiMenuRight : mdiMenuDown} />
                 </View>
                 <RnText small>{`${title} ${
                   p.isEditMode
