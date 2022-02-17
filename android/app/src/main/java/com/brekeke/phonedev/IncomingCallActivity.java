@@ -109,8 +109,53 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     cardAvatar = (View) findViewById(R.id.card_avatar);
     imgAvatar = (ImageView) findViewById(R.id.avatar);
-    txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
+    btnAnswer = (Button) findViewById(R.id.btn_answer);
+    btnReject = (Button) findViewById(R.id.btn_reject);
+    btnUnlock = (Button) findViewById(R.id.btn_unlock);
+    btnTransfer = (Button) findViewById(R.id.btn_transfer);
+    btnPark = (Button) findViewById(R.id.btn_park);
+    btnVideo = (Button) findViewById(R.id.btn_video);
+    btnSpeaker = (Button) findViewById(R.id.btn_speaker);
+    btnMute = (Button) findViewById(R.id.btn_mute);
+    btnRecord = (Button) findViewById(R.id.btn_record);
+    btnDtmf = (Button) findViewById(R.id.btn_dtmf);
+    btnHold = (Button) findViewById(R.id.btn_hold);
+    btnEndcall = (Button) findViewById(R.id.btn_end_call);
 
+    btnAnswer.setOnClickListener(this);
+    btnReject.setOnClickListener(this);
+    btnUnlock.setOnClickListener(this);
+    btnTransfer.setOnClickListener(this);
+    btnPark.setOnClickListener(this);
+    btnVideo.setOnClickListener(this);
+    btnSpeaker.setOnClickListener(this);
+    btnMute.setOnClickListener(this);
+    btnRecord.setOnClickListener(this);
+    btnDtmf.setOnClickListener(this);
+    btnHold.setOnClickListener(this);
+    btnEndcall.setOnClickListener(this);
+
+    txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
+    txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
+    txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
+    txtConnecting = (TextView) findViewById(R.id.txt_connecting);
+    txtTransferBtn = (TextView) findViewById(R.id.txt_transfer_btn);
+    txtParkBtn = (TextView) findViewById(R.id.txt_park_btn);
+    txtVideoBtn = (TextView) findViewById(R.id.txt_video_btn);
+    txtSpeakerBtn = (TextView) findViewById(R.id.txt_speaker_btn);
+    txtMuteBtn = (TextView) findViewById(R.id.txt_mute_btn);
+    txtRecordBtn = (TextView) findViewById(R.id.txt_record_btn);
+    txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
+    txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
+    txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
+
+    txtCallerName.setText(callerName);
+    txtHeaderCallerName.setText(callerName);
+    updateLabels();
+    updateHeader();
+  }
+
+  public void updateHeader() {
     boolean isViewLargeAvatar = imageSize != null && imageSize.equalsIgnoreCase("large");
 
     if(isViewLargeAvatar) {
@@ -136,7 +181,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
 
     boolean isHaveAvatar = avatar != null && !avatar.isEmpty();
-
     if(isHaveAvatar) {
       imgAvatar.setBackgroundColor(Color.parseColor("#ffffff"));
       Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
@@ -144,52 +188,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       int id = getResources().getIdentifier("default_avatar", "mipmap", getPackageName());
       Glide.with(this).load(id).centerCrop().into(imgAvatar);
     }
-
-
-    btnAnswer = (Button) findViewById(R.id.btn_answer);
-    btnReject = (Button) findViewById(R.id.btn_reject);
-
-    btnUnlock = (Button) findViewById(R.id.btn_unlock);
-    btnTransfer = (Button) findViewById(R.id.btn_transfer);
-    btnPark = (Button) findViewById(R.id.btn_park);
-    btnVideo = (Button) findViewById(R.id.btn_video);
-    btnSpeaker = (Button) findViewById(R.id.btn_speaker);
-    btnMute = (Button) findViewById(R.id.btn_mute);
-    btnRecord = (Button) findViewById(R.id.btn_record);
-    btnDtmf = (Button) findViewById(R.id.btn_dtmf);
-    btnHold = (Button) findViewById(R.id.btn_hold);
-    btnEndcall = (Button) findViewById(R.id.btn_end_call);
-
-    btnAnswer.setOnClickListener(this);
-    btnReject.setOnClickListener(this);
-
-    btnUnlock.setOnClickListener(this);
-    btnTransfer.setOnClickListener(this);
-    btnPark.setOnClickListener(this);
-    btnVideo.setOnClickListener(this);
-    btnSpeaker.setOnClickListener(this);
-    btnMute.setOnClickListener(this);
-    btnRecord.setOnClickListener(this);
-    btnDtmf.setOnClickListener(this);
-    btnHold.setOnClickListener(this);
-    btnEndcall.setOnClickListener(this);
-
-    txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
-    txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
-    txtConnecting = (TextView) findViewById(R.id.txt_connecting);
-    txtTransferBtn = (TextView) findViewById(R.id.txt_transfer_btn);
-    txtParkBtn = (TextView) findViewById(R.id.txt_park_btn);
-    txtVideoBtn = (TextView) findViewById(R.id.txt_video_btn);
-    txtSpeakerBtn = (TextView) findViewById(R.id.txt_speaker_btn);
-    txtMuteBtn = (TextView) findViewById(R.id.txt_mute_btn);
-    txtRecordBtn = (TextView) findViewById(R.id.txt_record_btn);
-    txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
-    txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
-    txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
-
-    txtCallerName.setText(callerName);
-    txtHeaderCallerName.setText(callerName);
-    updateLabels();
   }
 
   public void updateLabels() {
