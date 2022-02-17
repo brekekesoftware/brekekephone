@@ -3,6 +3,7 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -136,6 +138,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     boolean isHaveAvatar = avatar != null && !avatar.isEmpty();
 
     if(isHaveAvatar) {
+      imgAvatar.setBackgroundColor(Color.parseColor("#ffffff"));
       Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
     } else {
       int id = getResources().getIdentifier("default_avatar", "mipmap", getPackageName());

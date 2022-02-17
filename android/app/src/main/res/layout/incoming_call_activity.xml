@@ -59,7 +59,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:background="@mipmap/default_avatar"
             android:gravity="center" />
       </androidx.cardview.widget.CardView>
 
