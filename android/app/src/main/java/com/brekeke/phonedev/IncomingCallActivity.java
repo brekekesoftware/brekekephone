@@ -11,13 +11,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
-
 import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -158,7 +156,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void updateHeader() {
     boolean isViewLargeAvatar = imageSize != null && imageSize.equalsIgnoreCase("large");
 
-    if(isViewLargeAvatar) {
+    if (isViewLargeAvatar) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
       int height = displayMetrics.heightPixels;
@@ -172,16 +170,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       cardAvatar.setBackground(shape);
 
       // TextIncomingCall margin
-      RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-              RelativeLayout.LayoutParams.MATCH_PARENT,
-              RelativeLayout.LayoutParams.WRAP_CONTENT
-      );
+      RelativeLayout.LayoutParams params =
+          new RelativeLayout.LayoutParams(
+              RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
       params.setMargins(0, (int) (height / 1.4), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
 
     boolean isHaveAvatar = avatar != null && !avatar.isEmpty();
-    if(isHaveAvatar) {
+    if (isHaveAvatar) {
       imgAvatar.setBackgroundColor(Color.parseColor("#ffffff"));
       Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
     } else {
