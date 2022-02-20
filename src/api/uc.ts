@@ -32,8 +32,8 @@ const { ChatClient, Logger, Constants } = UCClient0 as {
 
 export { ChatClient, Constants, Logger }
 
-export const isUcBuddy = (object: any): object is UcBuddy => {
-  return 'user_id' in object && 'group' in object
+export const isUcBuddy = (u: object): u is UcBuddy => {
+  return 'user_id' in u && 'group' in u
 }
 
 const codeMapUserStatus = {

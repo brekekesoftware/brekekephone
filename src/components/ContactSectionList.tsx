@@ -93,7 +93,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     }, [p.isEditMode, RnDropdownSectionList.isShouldUpdateDropdownPosition])
 
     const clearConnectTimeoutId = () => {
-      if (reCalculatedLayoutDropdownTimeoutId) {
+      if (reCalculatedLayoutDropdownTimeoutId.current) {
         BackgroundTimer.clearTimeout(
           reCalculatedLayoutDropdownTimeoutId.current,
         )
@@ -102,14 +102,14 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     }
 
     const calculateSectionHeaderPosition = () => {
-      if (reCalculatedLayoutDropdownTimeoutId) {
+      if (reCalculatedLayoutDropdownTimeoutId.current) {
         clearConnectTimeoutId()
       }
 
+      // Must wrap in setTimeout to make sure the header view has completed render
       reCalculatedLayoutDropdownTimeoutId.current = BackgroundTimer.setTimeout(
         () => {
-          // Must wrap in setTimeout to make sure
-          // the header view has completed render
+          reCalculatedLayoutDropdownTimeoutId.current = 0
           const listDropdownPosition: DropdownPosition[] = []
           sectionHeaderRefs.current.forEach((ref: View, index) => {
             if (ref) {
@@ -118,8 +118,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                   top: Platform.OS === 'ios' ? py : py + h,
                   right: 20,
                 })
-
-                // after get all section list dropdown position
+                // After get all section list dropdown position
                 if (index === sectionHeaderRefs.current.length - 1) {
                   RnDropdownSectionList.setDropdownPosition(
                     listDropdownPosition,
@@ -141,11 +140,11 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     ) => {
       const selectedItemCount = userStore.isSelectedAddAllUser
         ? data.length
-        : data.filter(item =>
-            userStore.selectedUserIds.some(itm => itm === item.user_id),
+        : data.filter(i =>
+            userStore.selectedUserIds.some(id => id === i.user_id),
           ).length
       const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
-        idx => idx === index,
+        i => i === index,
       )
       const isDisableMarginTop =
         p.sectionListData[index - 1]?.data?.length === 0 ||
@@ -185,7 +184,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                   onPress={() => {
                     if (
                       RnDropdownSectionList.hiddenGroupIndex.some(
-                        idx => idx === index,
+                        i => i === index,
                       )
                     ) {
                       RnDropdownSectionList.toggleSection(index, data.length)

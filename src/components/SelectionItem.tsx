@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { StyleSheet, View, ViewProps } from 'react-native'
+import { StyleSheet, ViewProps } from 'react-native'
 
 import { RnCheckBox } from './RnCheckbox'
 import { RnText } from './RnText'
