@@ -3,7 +3,6 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -172,14 +171,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       params.setMargins(0, (int) (height / 1.4), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
-    boolean isHaveAvatar = avatar != null && !avatar.isEmpty();
-    if (isHaveAvatar) {
-      imgAvatar.setBackgroundColor(Color.parseColor("#ffffff"));
-      Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
-    } else {
-      int id = getResources().getIdentifier("default_avatar", "mipmap", getPackageName());
-      Glide.with(this).load(id).centerCrop().into(imgAvatar);
-    }
+    Glide.with(this)
+        .load(
+            avatar != null && !avatar.isEmpty()
+                ? avatar
+                : getResources().getIdentifier("default_avatar", "mipmap", getPackageName()))
+        .centerCrop()
+        .into(imgAvatar);
   }
 
   public void updateLabels() {
