@@ -371,7 +371,7 @@ PODS:
     - React
   - RNCallKeep (4.2.0-brekeke-008):
     - React
-  - RNCAsyncStorage (1.15.17):
+  - RNCAsyncStorage (1.16.1):
     - React-Core
   - RNCPushNotificationIOS (1.10.1):
     - React-Core
@@ -379,8 +379,8 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFS (2.18.0):
-    - React
+  - RNFS (2.19.0):
+    - React-Core
   - RNShare (5.3.0):
     - React-Core
   - RNSVG (12.2.0):
@@ -643,10 +643,10 @@ SPEC CHECKSUMS:
   ReactNativeExceptionHandler: b11ff67c78802b2f62eed0e10e75cb1ef7947c60
   ReactNativeIncallManager: b88d8fea6f88f26b926ee755d2c396ebb76da438
   RNCallKeep: dcfec8954db693b384b24ebae7f6d06042711f03
-  RNCAsyncStorage: 6bd5a7ba3dde1c3facba418aa273f449bdc5437a
+  RNCAsyncStorage: b49b4e38a1548d03b74b30e558a1d18465b94be7
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
-  RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
+  RNFS: fc610f78fdf8bfc89a9e5cc2f898519f4dba1002
   RNShare: 4df87d1791f50a2c7b1d89432fb9bbb7c02a9c9a
   RNSVG: 4ecc2e8f38b6ebe7889909570c26f3abe8059767
   RNVoipPushNotification: 1d35daef2173a4be409d9c10ed09fe6880aef86f

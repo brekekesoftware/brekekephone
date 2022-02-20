@@ -10,6 +10,7 @@ import { ChatMessage, chatStore } from './chatStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
+import { userStore } from './userStore'
 
 const UCClient = UCClient0 as {
   Errors: UcErrors
@@ -80,6 +81,7 @@ class AuthUC {
   @action private loadUsers = () => {
     const users = uc.getUsers()
     contactStore.ucUsers = users
+    userStore.loadGroupUser()
   }
   private loadUnreadChats = () =>
     uc
