@@ -56,7 +56,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName, avatar, imageSize;
+  public String uuid, callerName, avatar, avatarSize;
   public boolean destroyed = false, paused = false, answered = false;
 
   @Override
@@ -74,7 +74,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     avatar = b.getString("avatar");
-    imageSize = b.getString("imageSize");
+    avatarSize = b.getString("avatarSize");
 
     if ("rejectCall".equals(BrekekeModule.userActions.get(uuid))) {
       forceFinish();
@@ -154,21 +154,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void updateHeader() {
-    boolean isViewLargeAvatar = imageSize != null && imageSize.equalsIgnoreCase("large");
-
-    if (isViewLargeAvatar) {
+    if ("large".equalsIgnoreCase(avatarSize)) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
       int height = displayMetrics.heightPixels;
       int width = displayMetrics.widthPixels;
-
       // CardAvatar Layout
       cardAvatar.getLayoutParams().height = (int) (height / 2.2);
       cardAvatar.getLayoutParams().width = width - 60;
       GradientDrawable shape = new GradientDrawable();
       shape.setCornerRadius(0);
       cardAvatar.setBackground(shape);
-
       // TextIncomingCall margin
       RelativeLayout.LayoutParams params =
           new RelativeLayout.LayoutParams(
@@ -176,7 +172,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       params.setMargins(0, (int) (height / 1.4), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
-
     boolean isHaveAvatar = avatar != null && !avatar.isEmpty();
     if (isHaveAvatar) {
       imgAvatar.setBackgroundColor(Color.parseColor("#ffffff"));

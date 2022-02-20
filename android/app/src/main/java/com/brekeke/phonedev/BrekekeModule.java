@@ -175,7 +175,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     data.put("callkeepUuid", uuid);
     String displayName = data.get("x_displayname");
     String avatar = data.get("x_image");
-    String imageSize = data.get("x_image_size");
+    String avatarSize = data.get("x_image_size");
     if (displayName == null || "".equals(displayName)) {
       displayName = data.get("x_from");
     }
@@ -211,7 +211,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
-            i.putExtra("imageSize", imageSize);
+            i.putExtra("avatarSize", avatarSize);
             if (prev != null) {
               prev.startActivity(i);
             } else {
