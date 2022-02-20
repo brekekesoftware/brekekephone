@@ -3,7 +3,10 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,6 +30,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
   public ImageView imgAvatar;
+  public View cardAvatar;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -52,7 +56,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName, avatar;
+  public String uuid, callerName, avatar, avatarSize;
   public boolean destroyed = false, paused = false, answered = false;
 
   @Override
@@ -70,6 +74,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     avatar = b.getString("avatar");
+    avatarSize = b.getString("avatarSize");
 
     if ("rejectCall".equals(BrekekeModule.userActions.get(uuid))) {
       forceFinish();
@@ -100,12 +105,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     vCallManage.setOnClickListener(this);
 
+    cardAvatar = (View) findViewById(R.id.card_avatar);
     imgAvatar = (ImageView) findViewById(R.id.avatar);
-    Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
-
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
-
     btnUnlock = (Button) findViewById(R.id.btn_unlock);
     btnTransfer = (Button) findViewById(R.id.btn_transfer);
     btnPark = (Button) findViewById(R.id.btn_park);
@@ -119,7 +122,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
-
     btnUnlock.setOnClickListener(this);
     btnTransfer.setOnClickListener(this);
     btnPark.setOnClickListener(this);
@@ -148,6 +150,36 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     updateLabels();
+    updateHeader();
+  }
+
+  public void updateHeader() {
+    if ("large".equalsIgnoreCase(avatarSize)) {
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+      int height = displayMetrics.heightPixels;
+      int width = displayMetrics.widthPixels;
+      // CardAvatar Layout
+      cardAvatar.getLayoutParams().height = (int) (height / 2.2);
+      cardAvatar.getLayoutParams().width = width - 60;
+      GradientDrawable shape = new GradientDrawable();
+      shape.setCornerRadius(0);
+      cardAvatar.setBackground(shape);
+      // TextIncomingCall margin
+      RelativeLayout.LayoutParams params =
+          new RelativeLayout.LayoutParams(
+              RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+      params.setMargins(0, (int) (height / 1.4), 0, 0);
+      txtIncomingCall.setLayoutParams(params);
+    }
+    boolean isHaveAvatar = avatar != null && !avatar.isEmpty();
+    if (isHaveAvatar) {
+      imgAvatar.setBackgroundColor(Color.parseColor("#ffffff"));
+      Glide.with(this).load(avatar).centerCrop().into(imgAvatar);
+    } else {
+      int id = getResources().getIdentifier("default_avatar", "mipmap", getPackageName());
+      Glide.with(this).load(id).centerCrop().into(imgAvatar);
+    }
   }
 
   public void updateLabels() {
