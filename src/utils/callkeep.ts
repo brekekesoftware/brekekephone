@@ -111,7 +111,7 @@ export const setupCallKeep = async () => {
     Platform.OS === 'android'
       ? // Handle action from CallKeep Notification on android
         BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
-      : callStore.onCallKeepEndCall(uuid)
+      : callStore.onCallKeepEndCall(uuid, true)
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
