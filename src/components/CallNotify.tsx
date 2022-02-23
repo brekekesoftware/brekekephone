@@ -7,11 +7,12 @@ import { mdiCheck, mdiClose } from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ButtonIcon } from './ButtonIcon'
 import { IncomingItem } from './CallVoicesUI'
-import { RnText } from './Rn'
+import { RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -78,7 +79,10 @@ export const CallNotify = observer(() => {
   return (
     <Wrapper>
       {callStore.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
-      <View style={css.Notify}>
+      <RnTouchableOpacity
+        style={css.Notify}
+        onPress={() => Nav().goToPageCallManage()}
+      >
         <View style={css.Notify_Info}>
           <RnText bold>{c.computedName}</RnText>
           <RnText>{intl`Incoming Call`}</RnText>
@@ -99,7 +103,7 @@ export const CallNotify = observer(() => {
           size={20}
           style={css.Notify_Btn_accept}
         />
-      </View>
+      </RnTouchableOpacity>
     </Wrapper>
   )
 })

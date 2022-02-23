@@ -26,6 +26,10 @@ import { useStore } from '../utils/useStore'
 import { RnIcon, RnSwitch, RnText, RnTextInput, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
+export type Park = {
+  number: string
+  name?: string
+}
 const css = StyleSheet.create({
   Field: {
     borderBottomWidth: 1,
@@ -83,6 +87,37 @@ const css = StyleSheet.create({
     ...Platform.select({
       android: {
         top: -6,
+      },
+    }),
+  },
+  Field_ViewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 40,
+  },
+  Field_Park_TextInput: {
+    flex: 1,
+    paddingBottom: 3,
+    paddingLeft: 7,
+    paddingRight: 10,
+    // fontWeight: 'bold',
+    overflow: 'hidden',
+    ...Platform.select({
+      android: {
+        paddingTop: 0,
+        paddingBottom: 0,
+        lineHeight: v.lineHeight,
+        // Should not set height and overflow here
+        //    it will cause scroll issue with the input
+        // height: g.lineHeight,
+      },
+      web: {
+        // Fix form auto fill style on web
+        paddingTop: 28,
+        width: '100%',
+      },
+      default: {
+        paddingTop: 1,
       },
     }),
   },
@@ -186,9 +221,10 @@ export const Field: FC<
     removeBtnIcon: string
     removeBtnIconStyle: ViewProps['style']
     onRemoveBtnPress(): void
-    type: 'Switch' | 'RnPicker'
+    type: 'Switch' | 'RnPicker' | 'PARK'
     valueRender: Function
-    value: string | boolean
+    value: string | boolean | Park
+    textInputStyle?: TextInputProps['style']
     options: {
       key: string
       label: string
@@ -206,6 +242,7 @@ export const Field: FC<
     iconRender: Function
     error: string
     loading: boolean
+    horizontalInput: string[]
   }>
 > = observer(({ ...props }) => {
   if (props.isGroup) {
@@ -226,14 +263,25 @@ export const Field: FC<
   const $0 = useStore(() => ({
     observable: {
       isFocusing: false,
+      isParkNameFocusing: false,
+      park: {
+        number: '',
+        name: '',
+      },
     },
   }))
   const $ = $0 as typeof $0 & {
     isFocusing: boolean
+    isParkNameFocusing: boolean
+    park: Park
   }
   const inputRef = useRef<HTMLInputElement>()
+  const inputRefName = useRef<HTMLInputElement>()
   if (!inputRef.current && $.isFocusing) {
     $.set('isFocusing', false)
+  }
+  if (!inputRefName.current && $.isParkNameFocusing) {
+    $.set('isParkNameFocusing', false)
   }
   if (props.onCreateBtnPress) {
     Object.assign(props, {
@@ -269,6 +317,78 @@ export const Field: FC<
       ),
     })
   }
+  const renderPark = () => {
+    const value = props.value as Park
+    const onChangeName = (text: string) => {
+      const newPark = { ...$.park, name: text }
+      $.set('park', newPark)
+      props?.onValueChange && props?.onValueChange(newPark)
+    }
+    const onChangeNumber = (text: string) => {
+      const newPark = { ...$.park, number: text.trim() }
+      $.set('park', newPark)
+      props?.onValueChange && props?.onValueChange(newPark)
+    }
+    return (
+      <View style={[css.Field_ViewRow]}>
+        <RnTextInput
+          ref={inputRef}
+          {...omit(props, [
+            'type',
+            'label',
+            'valueRender',
+            'icon',
+            'iconRender',
+            'onValueChange',
+            'onCreateBtnPress',
+            'createBtnIcon',
+            'onRemoveBtnPress',
+            'removeBtnIcon',
+            'error',
+          ])}
+          placeholder={intl`park number`}
+          placeholderTextColor={'grey'}
+          keyboardType={'numeric'}
+          onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
+          onChangeText={txt => onChangeNumber(txt)}
+          onFocus={() => {
+            Platform.OS !== 'web' && $.set('isParkNameFocusing', false)
+            $.set('isFocusing', true)
+          }}
+          style={[css.Field_Park_TextInput, props.style]}
+          value={value.number as string}
+        />
+        <RnTextInput
+          ref={inputRefName}
+          {...omit(props, [
+            'type',
+            'label',
+            'valueRender',
+            'icon',
+            'iconRender',
+            'onValueChange',
+            'onCreateBtnPress',
+            'createBtnIcon',
+            'onRemoveBtnPress',
+            'removeBtnIcon',
+            'error',
+          ])}
+          placeholder={intl`label`}
+          placeholderTextColor={'grey'}
+          onBlur={() =>
+            Platform.OS === 'web' && $.set('isParkNameFocusing', false)
+          }
+          onChangeText={txt => onChangeName(txt)}
+          onFocus={() => {
+            Platform.OS !== 'web' && $.set('isFocusing', false)
+            $.set('isParkNameFocusing', true)
+          }}
+          style={[css.Field_Park_TextInput, props.style]}
+          value={value.name as string}
+        />
+      </View>
+    )
+  }
   if (props.onValueChange) {
     if (props.type === 'Switch') {
       Object.assign(props, {
@@ -296,6 +416,13 @@ export const Field: FC<
           Keyboard.dismiss()
         },
         icon: props.icon || mdiUnfoldMoreHorizontal,
+      })
+    } else if (props.type === 'PARK') {
+      Object.assign(props, {
+        inputElement: renderPark(),
+        onTouchPress: () => {
+          !$.isFocusing && !$.isParkNameFocusing && inputRef.current?.focus()
+        },
       })
     } else {
       Object.assign(props, {
@@ -349,6 +476,7 @@ export const Field: FC<
       </RnText>
     </View>
   )
+
   return (
     <>
       <Container
@@ -356,28 +484,34 @@ export const Field: FC<
         onPress={props.onTouchPress}
         style={[
           css.Field,
-          $.isFocusing && css.Field__focusing,
+          ($.isFocusing || $.isParkNameFocusing) && css.Field__focusing,
           props.disabled && css.Field__disabled,
           props.transparent && css.Field__transparent,
         ]}
       >
         {/* Fix form auto fill style on web */}
         {Platform.OS !== 'web' && label}
-        <View pointerEvents={($.isFocusing ? null : 'none') as any}>
-          {props.inputElement || (
-            <RnTextInput
-              disabled
-              secureTextEntry={!!(props.secureTextEntry && props.value)}
-              style={css.Field_TextInput}
-              value={
-                (props.valueRender && props.valueRender(props.value)) ||
-                props.value ||
-                '\u200a'
-              }
-            />
-          )}
-          {!$.isFocusing && <View style={StyleSheet.absoluteFill} />}
-        </View>
+        {
+          <View
+            pointerEvents={
+              ($.isFocusing || $.isParkNameFocusing ? null : 'none') as any
+            }
+          >
+            {props.inputElement || (
+              <RnTextInput
+                disabled
+                secureTextEntry={!!(props.secureTextEntry && props.value)}
+                style={[css.Field_TextInput, props.textInputStyle]}
+                value={
+                  (props.valueRender && props.valueRender(props.value)) ||
+                  props.value ||
+                  '\u200a'
+                }
+              />
+            )}
+            {!$.isFocusing && <View style={StyleSheet.absoluteFill} />}
+          </View>
+        }
         {/* Fix form auto fill style on web */}
         {Platform.OS === 'web' && label}
         {(props.iconRender && props.iconRender(props.value)) ||

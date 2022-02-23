@@ -25,7 +25,7 @@ export const ListUsers: FC<{
     created: string
   }[]
   onGroupSelect: Function
-  onUserSelect: Function
+  onUserSelect: (id: string) => void
   groupById: { [k: string]: object }
   userById: { [k: string]: object }
 }> = observer(p => (

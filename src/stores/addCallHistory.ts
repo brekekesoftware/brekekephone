@@ -18,6 +18,7 @@ export const addCallHistory = async (
   const isTypeCall = c instanceof Call || 'partyNumber' in c
 
   if (isTypeCall && c.partyNumber === '8') {
+    // voice mail
     return
   }
 

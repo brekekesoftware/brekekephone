@@ -1,3 +1,18 @@
+#### 2.9.0
+
+- Update webrtcclient to 2.0.30.333
+- Update ucclient to 1.2.9.6u2294
+- Add feature UC Buddy group select
+- Allow to add label/name for each park
+- Enhance performance for emoji selector in chat
+- Click on the top call bar notify should be able to go back to page call manage, to see other background calls if any
+- Fix bug shared contacts not load correctly
+- Fix search phonebook/contact params call to api
+- Fix bug press on chat notification, app should log in automatically
+- Android: Add feature displaying avatar in Push Notification, white background, also handle large image case
+- Android: Fix bug press on the notification should navigate, on killed state
+- Android: Fix bug open image in chat sometimes get black screen and can not go back
+
 #### 2.8.62
 
 - Incoming call and outgoing call should be hold correctly in the order of answer

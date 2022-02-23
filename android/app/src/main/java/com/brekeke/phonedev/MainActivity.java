@@ -1,15 +1,35 @@
 package com.brekeke.phonedev;
 
 import android.content.Intent;
+import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends ReactActivity {
   @Override
   protected void onStart() {
     BrekekeModule.main = this;
     super.onStart();
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Bundle extras = getIntent().getExtras();
+    if (extras != null) {
+      JSONObject data = new JSONObject();
+      for (String key : extras.keySet()) {
+        try {
+          data.put(key, extras.get(key));
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+      BrekekeModule.emit("onNotificationPress", data.toString());
+    }
   }
 
   // @Override

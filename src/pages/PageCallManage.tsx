@@ -87,6 +87,9 @@ const css = StyleSheet.create({
     bottom: undefined,
     top: 100,
   },
+  labelStyle: {
+    paddingRight: 50,
+  },
 })
 
 @observer
@@ -279,6 +282,7 @@ export class PageCallManage extends Component<{
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageCallBackgrounds}
+            textInputStyle={css.labelStyle}
             value={
               n > 1
                 ? intl`${n} other calls are in background`
