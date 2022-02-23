@@ -113,8 +113,13 @@ export class CallStore {
       c.answer()
     }
   }
-  @action onCallKeepEndCall = (uuid: string) => {
-    this.callKeepCalleeRejectCallMap[uuid] = true
+  @action onCallKeepEndCall = (
+    uuid: string,
+    isCalleeClickReject: boolean = false,
+  ) => {
+    if (isCalleeClickReject) {
+      this.callKeepCalleeRejectCallMap[uuid] = true
+    }
     this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getCallkeep(uuid, {
       includingAnswered: true,
@@ -124,6 +129,7 @@ export class CallStore {
     console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
       c.callkeepAlreadyRejected = true
+      c.calleeClickReject = isCalleeClickReject
       c.hangupWithUnhold()
     }
     this.endCallKeep(uuid)
@@ -450,6 +456,7 @@ export class CallStore {
       this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
     const pnData = this.callkeepMap[uuid]?.incomingPnData
+
     if (
       pnData &&
       !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id)

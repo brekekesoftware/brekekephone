@@ -224,7 +224,12 @@ export const setupCallKeep = async () => {
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      callStore.onCallKeepEndCall(uuid.toUpperCase())
+      let callUUID = uuid
+      const isCalleeClickReject = uuid.startsWith('CalleeClickReject')
+      if (isCalleeClickReject) {
+        callUUID = uuid.replace('CalleeClickReject-', '')
+      }
+      callStore.onCallKeepEndCall(callUUID.toUpperCase(), isCalleeClickReject)
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
       BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 300)

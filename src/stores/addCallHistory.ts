@@ -41,6 +41,7 @@ export const addCallHistory = (
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
+        calleeClickReject: c.calleeClickReject,
       }
     : {
         id,
@@ -53,6 +54,7 @@ export const addCallHistory = (
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
         // -> B got cancel event from sip
         isAboutToHangup: false,
+        calleeClickReject: false,
       }
   getAuthStore().pushRecentCall(info)
   !isCalleeRejectCall && presentNotification(info)
@@ -67,6 +69,7 @@ const presentNotification = (c: {
   duration: number
   created: string
   isAboutToHangup: boolean
+  calleeClickReject: boolean
 }) => {
   if (Platform.OS === 'web') {
     return
@@ -75,7 +78,7 @@ const presentNotification = (c: {
     AppState.currentState === 'active' ||
     c.answered ||
     !c.incoming ||
-    c.isAboutToHangup
+    (c.isAboutToHangup && !c.calleeClickReject)
   ) {
     return
   }
