@@ -80,7 +80,7 @@ export const Layout: FC<
   const containerProps = Object.entries(props).reduce((m, [k, vk]) => {
     type K = keyof typeof props
     if (k.startsWith('container')) {
-      delete props[k as K]
+      // delete props[k as K]
       k = k.replace('container', '')
       k = toLowerCaseFirstChar(k)
       m[k] = vk as typeof props[K]
