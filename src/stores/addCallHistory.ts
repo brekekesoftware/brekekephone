@@ -11,7 +11,7 @@ import { Call } from './Call'
 import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
-export const addCallHistory = (
+export const addCallHistory = async (
   c: Call | ParsedPn,
   isCalleeRejectCall?: boolean,
 ) => {
@@ -19,6 +19,10 @@ export const addCallHistory = (
 
   if (isTypeCall && c.partyNumber === '8') {
     return
+  }
+
+  if (!isTypeCall && !getAuthStore().currentProfile) {
+    await getAuthStore().signInByNotification(c)
   }
   const pnId = isTypeCall ? c.pnId : c.id
 
@@ -56,6 +60,7 @@ export const addCallHistory = (
         isAboutToHangup: false,
         calleeClickReject: false,
       }
+
   getAuthStore().pushRecentCall(info)
   !isCalleeRejectCall && presentNotification(info)
 }
