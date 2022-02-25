@@ -379,7 +379,8 @@ export class PageChatGroupDetail extends Component<{
     if (this.submitting) {
       return
     }
-    const txt = this.state.editingText.trim()
+    const htmlTagRegex = /(<([^>]+)>|\/html)/gi
+    const txt = this.state.editingText.trim().replace(htmlTagRegex, '')
     if (!txt) {
       return
     }
