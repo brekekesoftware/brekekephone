@@ -45,9 +45,6 @@ export class Call {
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
 
-  // save action reject call by callee click
-  calleeClickReject = false
-
   @action
   answer = (ignoreNav?: boolean) => {
     this.answered = true

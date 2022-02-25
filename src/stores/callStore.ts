@@ -106,6 +106,7 @@ export class CallStore {
     if (isCalleeClickReject) {
       this.callKeepCalleeRejectCallMap[uuid] = true
     }
+
     this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getCallkeep(uuid, {
       includingAnswered: true,
@@ -115,7 +116,6 @@ export class CallStore {
     console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
       c.callkeepAlreadyRejected = true
-      c.calleeClickReject = isCalleeClickReject
       c.hangupWithUnhold()
     }
     this.endCallKeep(uuid)
@@ -217,9 +217,10 @@ export class CallStore {
     }
     this.onSipUaCancel(c.pnId)
     c.callkeepUuid && this.endCallKeep(c.callkeepUuid)
+    addCallHistory(c, this.callKeepCalleeRejectCallMap[c.callkeepUuid])
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
-    addCallHistory(c)
+    delete this.callKeepCalleeRejectCallMap[c.callkeepUuid]
     this.calls = this.calls.filter(c0 => c0 !== c)
     // Set number of total calls in our custom java incoming call module
     BrekekeUtils.setJsCallsSize(this.calls.length)
@@ -448,7 +449,7 @@ export class CallStore {
     ) {
       addCallHistory(pnData, this.callKeepCalleeRejectCallMap[uuid])
     }
-    delete this.callKeepCalleeRejectCallMap[uuid]
+
     delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
     RNCallKeep.endCall(uuid)
