@@ -82,7 +82,6 @@ export const PushNotification = {
     )
     //
     PushNotificationIOS.requestPermissions()
-    Voip.requestPermissions()
     //
     const n0 = await PushNotificationIOS.getInitialNotification()
     onNotification(n0, initApp, true)

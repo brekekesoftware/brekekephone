@@ -37,6 +37,7 @@ import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { triggerAudioPerrmission } from '../utils/triggerAudioPerrmission'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -89,6 +90,7 @@ PushNotification.register(async () => {
     if (p?.then) {
       p.then(cb).catch(eb)
     }
+    triggerAudioPerrmission()
   }
   if (Platform.OS === 'web') {
     RnAlert.prompt({
