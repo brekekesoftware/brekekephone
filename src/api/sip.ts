@@ -341,6 +341,9 @@ export const parseCanceledPnIds = (data?: string) => {
     .split(/\n/g)
     .map(s => s.trim())
     .filter(s => /Canceled$/i.test(s))
-    .map(s => s.match(/(\w+)\W*INVITE/)?.[1])
-    .filter(s => s)
+    .map(s => ({
+      pnId: s.match(/(\w+)\W*INVITE/)?.[1],
+      completedElseWhere: s.toLowerCase().includes('call completed elsewhere'),
+    }))
+    .filter(s => s.pnId)
 }
