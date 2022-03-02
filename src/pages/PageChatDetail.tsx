@@ -361,8 +361,7 @@ export class PageChatDetail extends Component<{
   }
   submitting = false
   submitEditingText = () => {
-    const htmlTagRegex = /(<([^>]+)>|\/html)/gi
-    const txt = this.state.editingText.trim().replace(htmlTagRegex, '')
+    const txt = this.state.editingText.trim()
     if (!txt || this.submitting) {
       return
     }
