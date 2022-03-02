@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
+import IncallManager from 'react-native-incall-manager'
 
 class RnAppStateStore {
   @observable currentState = AppState.currentState
@@ -8,6 +9,9 @@ class RnAppStateStore {
       'change',
       action(() => {
         this.currentState = AppState.currentState
+        if (this.currentState !== 'active') {
+          IncallManager.stopRingtone()
+        }
       }),
     )
   }
