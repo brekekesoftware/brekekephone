@@ -71,10 +71,10 @@ export const Layout: FC<
     isShowToastMessage?: boolean
     incomingMessage: string
   }>
-> = observer(props => {
+> = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
 
-  props = { ...props } // Clone so it can be mutated
+  const props = { ...originalProps } // Clone so it can be mutated
 
   const Container = props.noScroll ? View : ScrollView
   const containerProps = Object.entries(props).reduce((m, [k, vk]) => {
@@ -98,9 +98,10 @@ export const Layout: FC<
       keyboardShouldPersistTaps: 'always',
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         // eslint-disable-next-line no-mixed-operators
-        e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
+        if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
           setHeaderOverflow(!headerOverflow)
-        props.containerOnScroll?.(e)
+        }
+        originalProps.containerOnScroll?.(e)
       },
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
