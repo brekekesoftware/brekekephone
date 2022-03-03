@@ -14,6 +14,7 @@ import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { trimHtml } from '../utils/trimHtml'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { RnCheckBox } from './RnCheckbox'
@@ -224,7 +225,9 @@ export const UserItem: FC<
           </View>
           {!isRecentCall && !!lastMessage && (
             <RnText normal singleLine small>
-              {lastMessage}
+              {typeof lastMessage === 'string'
+                ? trimHtml(lastMessage)
+                : lastMessage}
             </RnText>
           )}
           {((isRecentCall && !lastMessage) || isVoicemail) && (
