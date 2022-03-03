@@ -11,16 +11,15 @@ export class IncomingItem extends Component {
     if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
       return
     }
+    console.log('IncomingItem -> start rington')
     IncallManager.startRingtone('_BUNDLE_')
     this.ringtonePlaying = true
     // TODO stop ringtone if user press hardware button
     // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
-    if (this.ringtonePlaying) {
-      IncallManager.stopRingtone()
-      this.ringtonePlaying = false
-    }
+    IncallManager.stopRingtone()
+    this.ringtonePlaying = false
     if (Platform.OS === 'android') {
       // Bug speaker auto turn on after call stopRingtone/stopRingback
       IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
