@@ -174,39 +174,35 @@ export class PageContactUsers extends Component {
     let totalOnlineContact = 0
 
     dataGroupUserIds.forEach(s => {
-      if (isShowOfflineUser) {
-        const dataAllUsers = s.data.map(id => byIds[id])
-        totalContact += dataAllUsers.length
-        const dataAllUsersFiltered = dataAllUsers.filter(
-          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-        )
-        displayUsers.push({
-          title: s.title,
-          data: dataAllUsersFiltered,
-        })
-      } else {
-        const dataOnlineUser = s.data
-          .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
-          .filter(u => u)
-        totalOnlineContact += dataOnlineUser.length
+      const dataAllUsers = s.data.map(id => byIds[id])
+      totalContact += dataAllUsers.length
 
-        const dataOnlineUserFiltered = dataOnlineUser.filter(
-          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-        )
-        displayUsers.push({
-          title: s.title,
-          data: dataOnlineUserFiltered,
-        })
-      }
+      const dataAllUsersFiltered = dataAllUsers.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
+
+      const dataOnlineUser = s.data
+        .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
+        .filter(u => u)
+      totalOnlineContact += dataOnlineUser.length
+
+      const dataOnlineUserFiltered = dataOnlineUser.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
+
+      displayUsers.push({
+        title: s.title,
+        data: isShowOfflineUser ? dataAllUsersFiltered : dataOnlineUserFiltered,
+      })
     })
 
     return (
       <Layout
         description={(() => {
-          let desc = intl`UC users, ${totalContact} total`
+          let desc = intl`UC users, ${totalOnlineContact} total`
           if (isShowOfflineUser) {
             desc = desc.replace(
-              intl`${totalContact} total`,
+              intl`${totalOnlineContact} total`,
               intl`${totalOnlineContact}/${totalContact} online`,
             )
           }
