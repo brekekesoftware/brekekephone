@@ -15,6 +15,7 @@ const keysInCustomNotification = [
   'body',
   'message',
   'from',
+  'image',
   'displayname',
   'to',
   'tenant',
@@ -56,14 +57,24 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
       if (!f || typeof f !== 'object') {
         return map
       }
+
       keysInCustomNotification.forEach(k => {
         const v = f[k]
         if (!(k in map) && v) {
           map[k] = v
         }
+        if (
+          k === 'x_image' &&
+          f[k] &&
+          typeof f[k] === 'string' &&
+          `${f[k]}`.length > 0
+        ) {
+          callStore.updateCallAvatar(`${f[k]}`)
+        }
       })
       return map
     }, {})
+
 export const parseNotificationData = (raw: object) => {
   let n: ParsedPn | undefined
   if (Platform.OS === 'android') {

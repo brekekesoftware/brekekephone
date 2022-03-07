@@ -23,6 +23,7 @@ import { Nav } from './Nav'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
+import { userStore } from './userStore'
 
 export class CallStore {
   private recentCallActivityAt = 0
@@ -116,9 +117,48 @@ export class CallStore {
 
   @observable calls: Call[] = []
   @observable currentCallId: string = ''
+  @observable partyImageUrl = ''
   getCurrentCall = () => {
     this.updateCurrentCallDebounce()
-    return this.calls.find(c => c.id === this.currentCallId)
+    const call = this.calls.find(c => c.id === this.currentCallId)
+    if (call && this.partyImageUrl.length === 0) {
+      this.partyImageUrl = this.getPartyImageUrl(
+        call.pbxTenant,
+        call.computedName,
+        call.partyNumber,
+      )
+    }
+
+    return call
+  }
+
+  @action updateCallAvatar = (url: string) => {
+    this.partyImageUrl = url
+  }
+
+  private getPartyImageUrl = (
+    tenant: string,
+    name: string,
+    partyNumber: string,
+  ): string => {
+    const { ucEnabled, pbxHostname, pbxPort } = getAuthStore().currentProfile
+    let url = ''
+
+    if (ucEnabled) {
+      url = userStore.getBuddyById(partyNumber).profile_image_url
+    }
+
+    if (url.length === 0) {
+      let ucHost = `${pbxHostname}:${pbxPort}`
+      if (ucHost.indexOf(':') < 0) {
+        ucHost += ':443'
+      }
+      const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
+      const baseUrl = `${ucScheme}://${ucHost}`
+      url = `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
+    }
+
+    return url
   }
 
   private incallManagerStarted = false

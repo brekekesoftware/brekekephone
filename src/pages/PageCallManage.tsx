@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, Fragment } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import React, { Component, Fragment } from 'react'
+import { Image, Platform, StyleSheet, View } from 'react-native'
 
 import {
   mdiAlphaPCircle,
@@ -90,6 +90,20 @@ const css = StyleSheet.create({
   labelStyle: {
     paddingRight: 50,
   },
+
+  Image_wrapper: {
+    height: 150,
+    marginTop: 10,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+
+  Image: { width: 150, height: 150 },
+
+  Hangup_avoidAvatar: {
+    top: '35%',
+  },
 })
 
 @observer
@@ -151,6 +165,9 @@ export class PageCallManage extends Component<{
       ) : (
         <>
           {isVideoEnabled && this.renderVideo(c)}
+          {!isVideoEnabled &&
+            callStore.partyImageUrl.length > 0 &&
+            this.renderAvatar(callStore.partyImageUrl)}
           {this.renderBtns(c, isVideoEnabled)}
           {this.renderHangupBtn(c)}
         </>
@@ -169,6 +186,12 @@ export class PageCallManage extends Component<{
       />
     </>
   )
+  renderAvatar = (imageUrl: string) => (
+    <View style={css.Image_wrapper}>
+      <Image source={{ uri: imageUrl }} style={css.Image} />
+    </View>
+  )
+
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
     const n = callStore.calls.filter(
       _ => _.id !== callStore.currentCallId,
@@ -318,7 +341,13 @@ export class PageCallManage extends Component<{
         {incoming && (
           <>
             <IncomingItemWithTimer />
-            <View style={[css.Hangup, css.Hangup_incomingText]}>
+            <View
+              style={[
+                css.Hangup,
+                css.Hangup_incomingText,
+                callStore.partyImageUrl.length > 0 && css.Hangup_avoidAvatar,
+              ]}
+            >
               <RnText title white center>
                 {c.computedName}
               </RnText>

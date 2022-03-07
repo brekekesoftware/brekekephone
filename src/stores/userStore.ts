@@ -119,6 +119,10 @@ class UserStore {
     )
   }
 
+  @action getBuddyById = (buddy_id: string) => {
+    return this.byIds[buddy_id]
+  }
+
   @action filterDataUserGroup = (
     dataGroupUser: (UcBuddy | UcBuddyGroup)[],
     listAllUser: UcBuddy[],
