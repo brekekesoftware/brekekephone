@@ -1,5 +1,6 @@
 import { Platform } from 'react-native'
 
+import { getAuthStore } from '../stores/authStore'
 import { Profile, profileStore } from '../stores/profileStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
@@ -24,6 +25,11 @@ const syncPnTokenWithoutCatch = async (
 
   const pbx = new PBX()
   await pbx.connect(p)
+  if (!p.pushNotificationEnabledSynced) {
+    pbx.on('connection-started', () => {
+      getAuthStore().pbxState = 'success'
+    })
+  }
 
   const webPhone = await updatePhoneIndex(p, pbx)
   if (!webPhone) {
@@ -83,6 +89,10 @@ const syncPnTokenWithoutCatch = async (
 
   console.error('PBX PN debug: disconnect by syncPnToken')
   pbx.disconnect()
+
+  if (!p.pushNotificationEnabledSynced) {
+    getAuthStore().pbxState = 'stopped'
+  }
 
   if (!noUpsert) {
     profileStore.upsertProfile({
