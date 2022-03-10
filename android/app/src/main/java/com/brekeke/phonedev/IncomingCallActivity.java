@@ -3,6 +3,7 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -15,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+
 import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -29,7 +33,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public LinearLayout vCallManageControls;
   public WebRTCView vWebrtcVideo;
   public ImageView imgAvatar;
+  public ImageView imgAvatarTalking;
   public View cardAvatar;
+  public View cardAvatarTalking;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -55,8 +61,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName, avatar, avatarSize;
-  public boolean destroyed = false, paused = false, answered = false;
+  public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
+  public boolean destroyed = false, paused = false, answered = false, isLarge = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,6 +112,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     cardAvatar = (View) findViewById(R.id.card_avatar);
     imgAvatar = (ImageView) findViewById(R.id.avatar);
+    cardAvatarTalking = (View) findViewById(R.id.card_avatar_talking);
+    imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
     btnUnlock = (Button) findViewById(R.id.btn_unlock);
@@ -164,6 +172,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       GradientDrawable shape = new GradientDrawable();
       shape.setCornerRadius(0);
       cardAvatar.setBackground(shape);
+      cardAvatar.setBackgroundColor(Color.WHITE);
       // TextIncomingCall margin
       RelativeLayout.LayoutParams params =
           new RelativeLayout.LayoutParams(
@@ -270,10 +279,43 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vIncomingCall
 
+
+  private void updateLayoutManagerCall() {
+    GradientDrawable shape = new GradientDrawable();
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    int height = displayMetrics.heightPixels;
+    boolean isLargeDevice = height > 1200;
+    int flexValue = height/6;
+    cardAvatarTalking.setBackgroundColor(Color.WHITE);
+    cardAvatarTalking.getLayoutParams().height = flexValue;
+    cardAvatarTalking.getLayoutParams().width = flexValue;
+    shape.setCornerRadius(flexValue/2);
+    constraintSet.clone(constraintLayout);
+    constraintSet.connect(R.id.btn_unlock,ConstraintSet.TOP,R.id.card_avatar_talking,ConstraintSet.BOTTOM,12);
+    constraintSet.connect(R.id.view_call_manage_controls,ConstraintSet.BOTTOM,R.id.view_button_end,ConstraintSet.TOP,isLargeDevice ? flexValue/2 : 30);
+    constraintSet.connect(R.id.card_avatar_talking,ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP, (int) (flexValue/1.1));
+    constraintSet.connect(R.id.view_button_end,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,isLargeDevice ? flexValue/2 : 30);
+    cardAvatarTalking.setBackground(shape);
+    constraintSet.applyTo(constraintLayout);
+  }
+
   public void onBtnAnswerClick(View v) {
     BrekekeModule.putUserActionAnswerCall(uuid);
     BrekekeModule.emit("answerCall", uuid);
     if (BrekekeModule.isLocked()) {
+      if(talkingAvatar != null && !talkingAvatar.isEmpty()) {
+        if(!isLarge) {
+          updateLayoutManagerCall();
+        }
+        Glide.with(this)
+                .load(talkingAvatar)
+                .centerCrop()
+                .into(imgAvatarTalking);
+      }
+
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
@@ -439,6 +481,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+  }
+
+
+  public void setImageTalkingUrl(String url, Boolean isLarge) {
+    this.talkingAvatar = url;
+    this.isLarge = isLarge;
   }
 
   public void forceFinish() {

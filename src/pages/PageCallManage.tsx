@@ -51,11 +51,10 @@ const css = StyleSheet.create({
 
   Btns: {
     position: 'absolute',
-    top: 40, // Header compact height
+    height: '75%', // Header compact height
     left: 0,
     right: 0,
     bottom: 0,
-    paddingBottom: 124, // Hangup button 64 + 2*30
   },
   Btns_Hidden: {
     opacity: 0,
@@ -70,7 +69,6 @@ const css = StyleSheet.create({
   Btns_VerticalMargin: {
     flex: 1,
   },
-
   Hangup: {
     position: 'absolute',
     bottom: 40,
@@ -87,22 +85,44 @@ const css = StyleSheet.create({
     bottom: undefined,
     top: 100,
   },
+  Hangup_incomingText_avoidLargeImg: {
+    bottom: undefined,
+    top: 200,
+  },
   labelStyle: {
     paddingRight: 50,
   },
 
   Image_wrapper: {
-    height: 150,
-    marginTop: 10,
+    marginHorizontal: 15,
+    flexDirection: 'column',
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    height: '30%',
   },
 
-  Image: { width: 150, height: 150 },
+  Image: {
+    borderWidth: 1,
+    borderColor: 'transparent',
+    backgroundColor: 'white',
+    marginBottom: 18,
+  },
+
+  ImageSize: {
+    height: 130,
+    width: 130,
+    borderRadius: 75,
+  },
+
+  ImageLargeSize: {
+    height: '100%',
+    width: '85%',
+  },
 
   Hangup_avoidAvatar: {
     top: '35%',
+  },
+  Hangup_avoidAvatar_Large: {
+    top: '60%',
   },
 })
 
@@ -165,15 +185,14 @@ export class PageCallManage extends Component<{
       ) : (
         <>
           {isVideoEnabled && this.renderVideo(c)}
-          {!isVideoEnabled &&
-            callStore.partyImageUrl.length > 0 &&
-            this.renderAvatar(callStore.partyImageUrl)}
+          {this.renderAvatar(c, isVideoEnabled)}
           {this.renderBtns(c, isVideoEnabled)}
           {this.renderHangupBtn(c)}
         </>
       )}
     </Layout>
   )
+
   renderVideo = (c: Call) => (
     <>
       <View style={css.Video_Space} />
@@ -186,11 +205,30 @@ export class PageCallManage extends Component<{
       />
     </>
   )
-  renderAvatar = (imageUrl: string) => (
-    <View style={css.Image_wrapper}>
-      <Image source={{ uri: imageUrl }} style={css.Image} />
-    </View>
-  )
+
+  renderAvatar = (c: Call, isVideoEnabled?: boolean) => {
+    if (isVideoEnabled) {
+      return
+    }
+    const incoming = c.incoming && !c.answered
+    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+    return (
+      <View style={css.Image_wrapper}>
+        <Image
+          source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
+          style={[css.Image, isLarge ? css.ImageLargeSize : css.ImageSize]}
+          resizeMode='stretch'
+        />
+        <View>
+          {!incoming && (
+            <RnText title white center numberOfLines={2}>
+              {`${c.computedName}`}
+            </RnText>
+          )}
+        </View>
+      </View>
+    )
+  }
 
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
     const n = callStore.calls.filter(
@@ -317,8 +355,12 @@ export class PageCallManage extends Component<{
       </Container>
     )
   }
+
   renderHangupBtn = (c: Call) => {
     const incoming = c.incoming && !c.answered
+    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+
+    console.log('renderHangupBtn -> isLarge', isLarge)
     return (
       <>
         <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
@@ -345,11 +387,15 @@ export class PageCallManage extends Component<{
               style={[
                 css.Hangup,
                 css.Hangup_incomingText,
-                callStore.partyImageUrl.length > 0 && css.Hangup_avoidAvatar,
+                c.partyImageUrl.length > 0
+                  ? isLarge
+                    ? css.Hangup_avoidAvatar_Large
+                    : css.Hangup_avoidAvatar
+                  : null,
               ]}
             >
-              <RnText title white center>
-                {c.computedName}
+              <RnText title white center numberOfLines={2}>
+                {`${c.computedName}`}
               </RnText>
               <RnText bold white center>
                 {intl`Incoming Call`}

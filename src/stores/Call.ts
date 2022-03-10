@@ -21,6 +21,9 @@ export class Call {
   @observable id = ''
   @observable pnId = ''
   @observable partyNumber = ''
+  @observable partyImageUrl = ''
+  @observable partyImageSize = ''
+  @observable talkingImageUrl = ''
   /** @deprecated use computedName instead */
   @observable partyName = ''
   @observable pbxTalkerId = ''
@@ -39,6 +42,7 @@ export class Call {
   @observable incoming = false
   @observable answered = false
   @observable answeredAt = 0
+
   getDuration = () => this.answeredAt && Date.now() - this.answeredAt
 
   callkeepUuid = ''

@@ -117,36 +117,37 @@ export class CallStore {
 
   @observable calls: Call[] = []
   @observable currentCallId: string = ''
-  @observable partyImageUrl = ''
+
   getCurrentCall = () => {
     this.updateCurrentCallDebounce()
     const call = this.calls.find(c => c.id === this.currentCallId)
-    if (call && this.partyImageUrl.length === 0) {
-      this.partyImageUrl = this.getPartyImageUrl(
-        call.pbxTenant,
-        call.computedName,
-        call.partyNumber,
-      )
+    if (call && (!call.partyImageUrl || call.partyImageUrl?.length === 0)) {
+      const { ucEnabled } = getAuthStore().currentProfile
+
+      call.partyImageUrl = ucEnabled
+        ? userStore.getBuddyById(call.partyNumber)?.profile_image_url
+        : this.getOriginalUserImageUrl(call.pbxTenant, call.computedName)
+      call.partyImageSize = !ucEnabled ? 'large' : ''
     }
 
     return call
   }
 
-  @action updateCallAvatar = (url: string) => {
-    this.partyImageUrl = url
+  @action updateCallAvatar = (url: string, size?: string) => {
+    this.updateCurrentCallDebounce()
+    const call = this.calls.find(c => c.id === this.currentCallId)
+    if (call) {
+      call.partyImageUrl = url
+      call.partyImageSize = size || 'small'
+    }
   }
 
-  private getPartyImageUrl = (
-    tenant: string,
-    name: string,
-    partyNumber: string,
-  ): string => {
-    const { ucEnabled, pbxHostname, pbxPort } = getAuthStore().currentProfile
-    let url = ''
-
-    if (ucEnabled) {
-      url = userStore.getBuddyById(partyNumber).profile_image_url
+  private getOriginalUserImageUrl = (tenant: string, name: string): string => {
+    if (!tenant || !name) {
+      return ''
     }
+    const { pbxHostname, pbxPort } = getAuthStore().currentProfile
+    let url = ''
 
     if (url.length === 0) {
       let ucHost = `${pbxHostname}:${pbxPort}`
@@ -204,6 +205,15 @@ export class CallStore {
           cExisting.remoteVideoStreamObject
             ? cExisting.remoteVideoStreamObject.toURL()
             : '',
+        )
+      }
+      console.log('upsertCall', cExisting)
+      if (cExisting.talkingImageUrl && cExisting.talkingImageUrl.length > 0) {
+        console.log('talkingImageUrl -> ', cExisting.talkingImageUrl)
+        BrekekeUtils.setTalkingAvatar(
+          cExisting.callkeepUuid,
+          cExisting.talkingImageUrl,
+          cExisting.partyImageSize === 'large',
         )
       }
       if (
