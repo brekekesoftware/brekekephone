@@ -130,6 +130,7 @@ export type PbxGetProductInfoRes = {
   'webphone.turn.username': string
   'webphone.turn.credential': string
   'webphone.uc.host': string
+  'webphone.allUsers': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
@@ -582,6 +583,7 @@ export type UcWebchat = {
   isTalking: boolean
 }
 export type UcBuddy = {
+  disabledBuddy?: boolean
   user_id: string
   name: string
   profile_image_url: string

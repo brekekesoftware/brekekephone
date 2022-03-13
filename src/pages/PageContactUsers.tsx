@@ -4,13 +4,14 @@ import React, { Component, Fragment } from 'react'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'
+import { pbx } from '../api/pbx'
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { getAuthStore } from '../stores/authStore'
+import { getAuthStore, waitPbx } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
@@ -166,35 +167,13 @@ export class PageContactUsers extends Component {
   }
 
   renderListUcUser = () => {
-    const { byIds, dataGroupUserIds } = userStore
-    const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
     const isShowOfflineUser = this.displayOfflineUsers.enabled
-    let totalContact = 0
-    let totalOnlineContact = 0
-
-    dataGroupUserIds.forEach(s => {
-      const dataAllUsers = s.data.map(id => byIds[id])
-      totalContact += dataAllUsers.length
-
-      const dataAllUsersFiltered = dataAllUsers.filter(
-        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-      )
-
-      const dataOnlineUser = s.data
-        .map(id => (byIds[id].status === 'online' ? byIds[id] : null))
-        .filter(u => u)
-      totalOnlineContact += dataOnlineUser.length
-
-      const dataOnlineUserFiltered = dataOnlineUser.filter(
-        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-      )
-
-      displayUsers.push({
-        title: s.title,
-        data: isShowOfflineUser ? dataAllUsersFiltered : dataOnlineUserFiltered,
-      })
-    })
+    const {
+      displayUsers,
+      totalContact = 0,
+      totalOnlineContact = 0,
+    } = userStore.filterUser(searchTxt, isShowOfflineUser)
 
     return (
       <Layout
@@ -245,7 +224,9 @@ export class PageContactUsers extends Component {
 
   render() {
     const { ucEnabled } = getAuthStore().currentProfile
-
-    return ucEnabled ? this.renderListUcUser() : this.renderListUser()
+    const pbxBuddyEnable = pbx.getKeyWPallUsers()
+    return ucEnabled || !pbxBuddyEnable
+      ? this.renderListUcUser()
+      : this.renderListUser()
   }
 }

@@ -31,6 +31,7 @@ import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
+import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { onBackPressed, setupCallKeep } from '../utils/callkeep'
 // @ts-ignore
@@ -124,6 +125,7 @@ PushNotification.register(async () => {
     Nav().goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
+    userStore.clearStore()
     if (s.signedInId) {
       s.resetFailureState()
       authPBX.auth()

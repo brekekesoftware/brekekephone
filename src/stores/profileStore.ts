@@ -5,6 +5,7 @@ import { action, computed, observable, runInAction } from 'mobx'
 import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 
+import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
 import { arrToMap } from '../utils/toMap'
@@ -55,6 +56,10 @@ export type ProfileData = {
     unread: boolean
     created: string
   }[]
+  pbxBuddyList?: {
+    screened: boolean
+    users: (UcBuddy | UcBuddyGroup)[]
+  }
 }
 
 class ProfileStore {
@@ -175,6 +180,7 @@ class ProfileStore {
         accessToken: '',
         recentCalls: [],
         recentChats: [],
+        pbxBuddyList: undefined,
       }
     }
     const id = getAccountUniqueId(p)
@@ -183,6 +189,7 @@ class ProfileStore {
       accessToken: '',
       recentCalls: [],
       recentChats: [],
+      pbxBuddyList: undefined,
     }
     this.updateProfileDataDebounced(d)
     return d

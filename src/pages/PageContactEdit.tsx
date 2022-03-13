@@ -26,6 +26,7 @@ import { RnIcon } from '../components/RnIcon'
 import { mdiFolderPlus } from '../assets/icons'
 import { RnText } from '../components/RnText'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { getAuthStore } from '../stores/authStore'
 
 const css = StyleSheet.create({
   listHeaderSection: {
@@ -48,7 +49,7 @@ const css = StyleSheet.create({
 @observer
 export class PageContactEdit extends Component {
   componentDidMount() {
-    userStore.loadGroupUser()
+    // userStore.loadGroupUser()
   }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
     return [
@@ -89,13 +90,19 @@ export class PageContactEdit extends Component {
   }
 
   onCheckAll = (groupIndex: number) => {
+    // web get issue Click event through dropdown
+    setTimeout(() => {
+      userStore.selectedAllUserIdsByGroup(groupIndex)
+    }, 300)
     RnDropdownSectionList.closeDropdown()
-    userStore.selectedAllUserIdsByGroup(groupIndex)
   }
 
   onUncheckAll = (groupIndex: number) => {
+    // web get issue Click event through dropdown
+    setTimeout(() => {
+      userStore.deSelectedAllUserIdsByGroup(groupIndex)
+    }, 300)
     RnDropdownSectionList.closeDropdown()
-    userStore.deSelectedAllUserIdsByGroup(groupIndex)
   }
 
   onRemoveGroup = (ddIndex: number) => {
@@ -123,8 +130,11 @@ export class PageContactEdit extends Component {
 
   onGoBack = () => {
     RnDropdownSectionList.closeDropdown()
-    userStore.clearStore()
-    userStore.loadGroupUser()
+    userStore.updateList()
+    // if(userStore.type === 'UcBuddy'){
+    //   userStore.clearStore()
+    //   userStore.loadGroupUser()
+    // }
     Nav().backToPageContactUsers()
   }
 
@@ -210,26 +220,37 @@ export class PageContactEdit extends Component {
     )
   }
 
-  save = () => {
-    const {
-      isCapacityInvalid,
-      isSelectedAddAllUser,
-      groups,
-      dataListAllUser,
-      selectedUserIds,
-    } = userStore
-
-    if (!isCapacityInvalid) {
-      uc.saveProperties(!isSelectedAddAllUser, [
+  saveUC = () => {
+    const { isSelectedAddAllUser, groups, dataListAllUser, selectedUserIds } =
+      userStore
+    uc.saveProperties(!isSelectedAddAllUser, [
+      ...groups,
+      ...dataListAllUser.filter(user =>
+        selectedUserIds.some(id => id === user.user_id),
+      ),
+    ])
+      .then(this.onSaveSuccess)
+      .catch(this.onSaveFailure)
+  }
+  savePbx = () => {
+    const { isSelectedAddAllUser, groups, dataListAllUser, selectedUserIds } =
+      userStore
+    const data = {
+      screened: !isSelectedAddAllUser,
+      users: [
         ...groups,
-        ...dataListAllUser.filter(
-          user =>
-            selectedUserIds.some(id => id === user.user_id) ||
-            isSelectedAddAllUser,
+        ...dataListAllUser.filter(user =>
+          selectedUserIds.some(id => id === user.user_id),
         ),
-      ])
-        .then(this.onSaveSuccess)
-        .catch(this.onSaveFailure)
+      ],
+    }
+    getAuthStore().savePbxBuddyList(data)
+    this.onGoBack()
+  }
+  save = () => {
+    const { isCapacityInvalid, type } = userStore
+    if (!isCapacityInvalid) {
+      type === 'UcBuddy' ? this.saveUC() : this.savePbx()
     }
   }
   onSaveSuccess = () => {

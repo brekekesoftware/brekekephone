@@ -2,6 +2,7 @@ import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 
+import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { sip } from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
@@ -174,6 +175,14 @@ export class AuthStore {
     if (this.currentData.recentCalls.length > 20) {
       this.currentData.recentCalls.pop()
     }
+    profileStore.saveProfilesToLocalStorage()
+  }
+
+  savePbxBuddyList = (pbxBuddyList: {
+    screened: boolean
+    users: (UcBuddy | UcBuddyGroup)[]
+  }) => {
+    this.currentData.pbxBuddyList = pbxBuddyList
     profileStore.saveProfilesToLocalStorage()
   }
 

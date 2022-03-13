@@ -173,6 +173,13 @@ export class PBX extends EventEmitter {
     return this.pbxConfig
   }
 
+  getKeyWPallUsers = () => {
+    if (!this.pbxConfig) {
+      return false
+    }
+    return Boolean(this.pbxConfig?.['webphone.allUsers'])
+  }
+
   createSIPAccessToken = async (sipUsername: string) => {
     await waitPbx()
     if (!this.client) {
