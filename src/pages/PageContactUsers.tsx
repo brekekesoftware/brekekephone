@@ -222,7 +222,8 @@ export class PageContactUsers extends Component {
 
   render() {
     const { ucEnabled } = getAuthStore().currentProfile
-    const isEnablePbxBuddy = pbx.pbxConfig?.['webphone.allusers'] === 'false'
+    const isEnablePbxBuddy =
+      pbx.getPbxConfig()?.['webphone.allusers'] === 'false'
     return ucEnabled || isEnablePbxBuddy
       ? this.renderListUcUser()
       : this.renderListUser()

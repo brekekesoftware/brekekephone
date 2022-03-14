@@ -159,7 +159,10 @@ export class PBX extends EventEmitter {
     }
   }
 
-  public pbxConfig?: PbxGetProductInfoRes
+  private pbxConfig?: PbxGetProductInfoRes
+  getPbxConfig = () => {
+    return this.pbxConfig
+  }
   getConfig = async () => {
     if (!this.pbxConfig) {
       await waitPbx()
