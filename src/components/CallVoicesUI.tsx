@@ -11,7 +11,6 @@ export class IncomingItem extends Component {
     if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
       return
     }
-    console.log('IncomingItem -> start rington')
     IncallManager.startRingtone('_BUNDLE_')
     this.ringtonePlaying = true
     // TODO stop ringtone if user press hardware button
