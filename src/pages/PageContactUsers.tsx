@@ -221,9 +221,11 @@ export class PageContactUsers extends Component {
   }
 
   render() {
-    // const { ucEnabled } = getAuthStore().currentProfile
-    // const pbxBuddyEnable = pbx.getKeyWPallUsers()
-    // return ucEnabled ? this.renderListUcUser() : this.renderListUser()
-    return this.renderListUcUser()
+    const { ucEnabled } = getAuthStore().currentProfile
+    const isEnablePbxBuddy = pbx.pbxConfig?.['webphone.allusers'] === 'false'
+    return ucEnabled || isEnablePbxBuddy
+      ? this.renderListUcUser()
+      : this.renderListUser()
+    // return this.renderListUcUser()
   }
 }
