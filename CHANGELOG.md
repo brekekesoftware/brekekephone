@@ -5,6 +5,8 @@
 - Trim html on UC message render
 - Fix: android 10 rare case ringtone can not stop reported by Akira
 - Fix: PN switch enable take long time
+- Fix: bug chat scroll to end on new message
+- Web: Try trigger audio permission on OK press so it can play ringtone even window minimized
 
 #### 2.9.0
 
