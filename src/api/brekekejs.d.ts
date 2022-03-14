@@ -131,6 +131,7 @@ export type PbxGetProductInfoRes = {
   'webphone.turn.credential': string
   'webphone.uc.host': string
   'webphone.allusers': string
+  'webphone.users.max': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string

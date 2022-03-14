@@ -2,7 +2,6 @@ import { orderBy, uniq } from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
 
-import { pbx } from '../api/pbx'
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
 import { UserItem } from '../components/ContactUserItem'
@@ -91,7 +90,7 @@ export class PageContactUsers extends Component {
     return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
   }
 
-  renderListUser = () => {
+  renderPbxUsers = () => {
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     type User = typeof allUsers[0]
     const displayUsers = allUsers
@@ -164,7 +163,7 @@ export class PageContactUsers extends Component {
     )
   }
 
-  renderListUcUser = () => {
+  renderBuddyList = () => {
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
     const isShowOfflineUser = this.displayOfflineUsers.enabled
     const {
@@ -223,10 +222,9 @@ export class PageContactUsers extends Component {
   render() {
     const { ucEnabled } = getAuthStore().currentProfile
     const isEnablePbxBuddy =
-      pbx.getPbxConfig()?.['webphone.allusers'] === 'false'
+      userStore.pbxConfig?.['webphone.allusers'] === 'false'
     return ucEnabled || isEnablePbxBuddy
-      ? this.renderListUcUser()
-      : this.renderListUser()
-    // return this.renderListUcUser()
+      ? this.renderBuddyList()
+      : this.renderPbxUsers()
   }
 }

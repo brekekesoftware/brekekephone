@@ -48,9 +48,6 @@ const css = StyleSheet.create({
 
 @observer
 export class PageContactEdit extends Component {
-  componentDidMount() {
-    // userStore.loadGroupUser()
-  }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
     return [
       {
@@ -60,14 +57,20 @@ export class PageContactEdit extends Component {
       },
       {
         title: intl`Check all`,
-        onPress: () => this.onCheckAll(ddIndex),
+        onPress: (e?: MouseEvent) => {
+          e?.stopPropagation?.()
+          this.onCheckAll(ddIndex)
+        },
         disabled:
           userStore.isSelectedAddAllUser ||
           userStore.dataGroupAllUser[ddIndex]?.data?.length === 0,
       },
       {
         title: intl`Uncheck all`,
-        onPress: () => this.onUncheckAll(ddIndex),
+        onPress: (e?: MouseEvent) => {
+          e?.stopPropagation?.()
+          this.onUncheckAll(ddIndex)
+        },
         disabled:
           userStore.isSelectedAddAllUser ||
           userStore.dataGroupAllUser[ddIndex]?.data?.length === 0,
@@ -90,19 +93,13 @@ export class PageContactEdit extends Component {
   }
 
   onCheckAll = (groupIndex: number) => {
-    // web get issue Click event through dropdown
-    setTimeout(() => {
-      userStore.selectedAllUserIdsByGroup(groupIndex)
-    }, 300)
     RnDropdownSectionList.closeDropdown()
+    userStore.selectAllUserIdsByGroup(groupIndex)
   }
 
   onUncheckAll = (groupIndex: number) => {
-    // web get issue Click event through dropdown
-    setTimeout(() => {
-      userStore.deSelectedAllUserIdsByGroup(groupIndex)
-    }, 300)
     RnDropdownSectionList.closeDropdown()
+    userStore.unselectAllUserIdsByGroup(groupIndex)
   }
 
   onRemoveGroup = (ddIndex: number) => {
@@ -111,7 +108,6 @@ export class PageContactEdit extends Component {
       ddIndex,
       userStore.dataGroupAllUser[ddIndex]?.data?.length,
     )
-
     userStore.removeGroup(ddIndex)
   }
 
@@ -131,10 +127,6 @@ export class PageContactEdit extends Component {
   onGoBack = () => {
     RnDropdownSectionList.closeDropdown()
     userStore.updateList()
-    // if(userStore.type === 'UcBuddy'){
-    //   userStore.clearStore()
-    //   userStore.loadGroupUser()
-    // }
     Nav().backToPageContactUsers()
   }
 
@@ -232,7 +224,7 @@ export class PageContactEdit extends Component {
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)
   }
-  savePbx = () => {
+  savePBX = () => {
     const { isSelectedAddAllUser, groups, dataListAllUser, selectedUserIds } =
       userStore
     const data = {
@@ -250,7 +242,7 @@ export class PageContactEdit extends Component {
   save = () => {
     const { isCapacityInvalid, type } = userStore
     if (!isCapacityInvalid) {
-      type === 'UcBuddy' ? this.saveUC() : this.savePbx()
+      type === 'UcBuddy' ? this.saveUC() : this.savePBX()
     }
   }
   onSaveSuccess = () => {

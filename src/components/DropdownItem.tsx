@@ -27,7 +27,7 @@ export const DropdownItem: FC<DropdownItemProps> = ({
 }: DropdownItemProps) => {
   return (
     <RnTouchableOpacity
-      onPressIn={onPress}
+      onPress={onPress}
       style={css.container}
       disabled={disabled}
     >

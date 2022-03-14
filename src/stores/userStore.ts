@@ -2,22 +2,24 @@ import { uniq } from 'lodash'
 import { action, observable } from 'mobx'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
-import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { PbxGetProductInfoRes, UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { isUcBuddy, uc } from '../api/uc'
 import { getAuthStore } from './authStore'
 import { intl } from './intl'
+
+const defaultBuddyMax = 500
 
 type BuddyType = 'PbxBuddy' | 'UcBuddy'
 class UserStore {
   @observable dataGroupUserIds: SectionListData<string>[] = []
   @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
   @observable dataListAllUser: UcBuddy[] = []
-  @observable buddyMax: number = 0
-  @observable isDisableAddAllUserToTheList: boolean = false
+  @observable buddyMax = defaultBuddyMax
+  @observable isDisableAddAllUserToTheList = false
   @observable selectedUserIds: string[] = []
-  @observable isCapacityInvalid: boolean = false
+  @observable isCapacityInvalid = false
   @observable byIds: any = {} // dictionary object by id
-  @observable buddyMode: number = 0
+  @observable buddyMode = 0
 
   type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
@@ -38,7 +40,8 @@ class UserStore {
 
     this.isSelectedAddAllUser = buddyList?.screened || true // !userList.screened
     this.isDisableAddAllUserToTheList = 200 < allUsers?.length // limit set default 200
-    this.buddyMax = 200 // buddy_max
+    this.buddyMax =
+      Number(userStore.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
     this.groups = []
 
@@ -66,7 +69,8 @@ class UserStore {
     this.isSelectedAddAllUser = !userList.screened
     this.isDisableAddAllUserToTheList =
       configProperties.optional_config?.buddy_max < allUsers?.length
-    this.buddyMax = configProperties.optional_config?.buddy_max
+    this.buddyMax =
+      configProperties.optional_config?.buddy_max || defaultBuddyMax
     this.buddyMode = configProperties.buddy_mode
     this.groups = []
     if (allUsers?.length > 0) {
@@ -205,7 +209,7 @@ class UserStore {
     this.isCapacityInvalid = this.selectedUserIds.length > this.buddyMax
   }
 
-  @action selectedAllUserIdsByGroup = (groupIndex: number) => {
+  @action selectAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = uniq([
       ...this.selectedUserIds,
       ...this.dataGroupAllUser[groupIndex].data.map(itm => itm.user_id),
@@ -234,7 +238,7 @@ class UserStore {
     )
   }
 
-  @action deSelectedAllUserIdsByGroup = (groupIndex: number) => {
+  @action unselectAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = this.selectedUserIds.filter(
       id =>
         !this.dataGroupAllUser[groupIndex].data
@@ -349,6 +353,8 @@ class UserStore {
       ...selectedUsers.map(u => u.user_id),
     ])
   }
+
+  @observable pbxConfig?: PbxGetProductInfoRes
 
   @action clearStore = () => {
     this.groups = []
