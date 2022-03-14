@@ -121,13 +121,28 @@ export class CallStore {
   getCurrentCall = () => {
     this.updateCurrentCallDebounce()
     const call = this.calls.find(c => c.id === this.currentCallId)
-    if (call && (!call.partyImageUrl || call.partyImageUrl?.length === 0)) {
-      const { ucEnabled } = getAuthStore().currentProfile
+    console.log('getCurrentCall -> call', call)
+    if (call) {
+      if (
+        !call.answered &&
+        (!call.partyImageUrl || call.partyImageUrl?.length === 0)
+      ) {
+        const { ucEnabled } = getAuthStore().currentProfile
 
-      call.partyImageUrl = ucEnabled
-        ? userStore.getBuddyById(call.partyNumber)?.profile_image_url
-        : this.getOriginalUserImageUrl(call.pbxTenant, call.computedName)
-      call.partyImageSize = !ucEnabled ? 'large' : ''
+        call.partyImageUrl = ucEnabled
+          ? userStore.getBuddyById(call.partyNumber)?.profile_image_url
+          : this.getOriginalUserImageUrl(call.pbxTenant, call.computedName)
+        call.partyImageSize = !ucEnabled ? 'large' : ''
+      }
+      if (
+        call.answered &&
+        (!call.talkingImageUrl || call.talkingImageUrl.length === 0)
+      ) {
+        call.talkingImageUrl = this.getOriginalUserImageUrl(
+          call.pbxTenant,
+          call.computedName,
+        )
+      }
     }
 
     return call
