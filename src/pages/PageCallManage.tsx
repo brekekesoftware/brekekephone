@@ -100,13 +100,6 @@ const css = StyleSheet.create({
     height: '30%',
   },
 
-  Image: {
-    borderWidth: 1,
-    borderColor: 'transparent',
-    backgroundColor: 'white',
-    marginBottom: 18,
-  },
-
   ImageSize: {
     height: 130,
     width: 130,
@@ -116,6 +109,7 @@ const css = StyleSheet.create({
   ImageLargeSize: {
     height: '100%',
     width: '85%',
+    backgroundColor: 'white',
   },
 
   Hangup_avoidAvatar: {
@@ -212,12 +206,13 @@ export class PageCallManage extends Component<{
     }
     const incoming = c.incoming && !c.answered
     const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+
     return (
       <View style={css.Image_wrapper}>
         <Image
           source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
-          style={[css.Image, isLarge ? css.ImageLargeSize : css.ImageSize]}
-          resizeMode='contain'
+          style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
+          resizeMode={isLarge ? 'contain' : 'cover'}
         />
         <View>
           {!incoming && (
