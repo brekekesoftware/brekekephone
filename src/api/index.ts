@@ -10,7 +10,7 @@ import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
-import { Conference } from './brekekejs'
+import { Conference, UcBuddy } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -61,7 +61,23 @@ class Api {
       if (!users) {
         return
       }
+      const pbxUser: UcBuddy[] = ids.map(u => {
+        return {
+          disabledBuddy: false,
+          user_id: u,
+          name: u,
+          profile_image_url: '',
+          group: '',
+          tenant: p.pbxTenant,
+          block_settings: {},
+          status: false,
+        } as unknown as UcBuddy
+      })
       contactStore.pbxUsers = users
+
+      const pbxConfig = await pbx.getConfig()
+      const isEnablePbxBuddy = pbxConfig?.['webphone.allusers'] === 'false'
+      !p.ucEnabled && isEnablePbxBuddy && userStore.loadGroupPbxUser(pbxUser)
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,

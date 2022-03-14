@@ -5,8 +5,9 @@ import EventEmitter from 'eventemitter3'
 
 import { waitPbx } from '../stores/authStore'
 import { Profile, profileStore } from '../stores/profileStore'
+import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { Pbx, PbxGetProductInfoRes } from './brekekejs'
+import { Pbx } from './brekekejs'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -23,7 +24,7 @@ export class PBX extends EventEmitter {
       return
     }
 
-    this.pbxConfig = undefined
+    userStore.pbxConfig = undefined
 
     const d = profileStore.getProfileData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
@@ -162,20 +163,19 @@ export class PBX extends EventEmitter {
     }
   }
 
-  private pbxConfig?: PbxGetProductInfoRes
   getConfig = async () => {
-    if (!this.pbxConfig) {
+    if (!userStore.pbxConfig) {
       if (this.needToWait) {
         await waitPbx()
       }
       if (!this.client) {
         return
       }
-      this.pbxConfig = await this.client._pal('getProductInfo', {
+      userStore.pbxConfig = await this.client._pal('getProductInfo', {
         webphone: 'true',
       })
     }
-    return this.pbxConfig
+    return userStore.pbxConfig
   }
 
   createSIPAccessToken = async (sipUsername: string) => {

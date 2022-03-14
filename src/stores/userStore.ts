@@ -2,20 +2,26 @@ import { uniq } from 'lodash'
 import { action, observable } from 'mobx'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
-import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { PbxGetProductInfoRes, UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { isUcBuddy, uc } from '../api/uc'
+import { getAuthStore } from './authStore'
 import { intl } from './intl'
 
+const defaultBuddyMax = 500
+
+type BuddyType = 'PbxBuddy' | 'UcBuddy'
 class UserStore {
   @observable dataGroupUserIds: SectionListData<string>[] = []
   @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
   @observable dataListAllUser: UcBuddy[] = []
-  @observable buddyMax: number = 0
-  @observable isDisableAddAllUserToTheList: boolean = false
+  @observable buddyMax = defaultBuddyMax
+  @observable isDisableAddAllUserToTheList = false
   @observable selectedUserIds: string[] = []
-  @observable isCapacityInvalid: boolean = false
+  @observable isCapacityInvalid = false
   @observable byIds: any = {} // dictionary object by id
-  @observable buddyMode: number = 0
+  @observable buddyMode = 0
+
+  type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
   private userStatus?: [
     {
@@ -24,6 +30,25 @@ class UserStore {
     },
   ]
 
+  @action loadGroupPbxUser = (pbxUsers: UcBuddy[]) => {
+    this.type = 'PbxBuddy'
+    // get user from pbx
+    const allUsers: UcBuddy[] = pbxUsers
+    // get from local
+    const buddyList = getAuthStore().currentData?.pbxBuddyList
+    const users = buddyList?.users || allUsers
+
+    this.isSelectedAddAllUser = buddyList?.screened || true // !userList.screened
+    this.isDisableAddAllUserToTheList = 200 < allUsers?.length // limit set default 200
+    this.buddyMax =
+      Number(userStore.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
+    this.buddyMode = 2 // buddy_mode
+    this.groups = []
+
+    if (allUsers?.length > 0) {
+      this.filterDataUserGroup(users, allUsers, this.buddyMode === 1)
+    }
+  }
   @action loadGroupUser = () => {
     const userList = uc.client.getBuddylist()
     const configProperties = uc.client.getConfigProperties()
@@ -44,10 +69,10 @@ class UserStore {
     this.isSelectedAddAllUser = !userList.screened
     this.isDisableAddAllUserToTheList =
       configProperties.optional_config?.buddy_max < allUsers?.length
-    this.buddyMax = configProperties.optional_config?.buddy_max
+    this.buddyMax =
+      configProperties.optional_config?.buddy_max || defaultBuddyMax
     this.buddyMode = configProperties.buddy_mode
     this.groups = []
-
     if (allUsers?.length > 0) {
       this.filterDataUserGroup(
         userList.user,
@@ -130,6 +155,39 @@ class UserStore {
     this.selectedUserIds = selectedUserIds
   }
 
+  filterUser = (searchTxt: string, isOnline: boolean) => {
+    const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
+    let totalContact = 0
+    let totalOnlineContact = 0
+    this.dataGroupAllUser.forEach(s => {
+      // list all user
+      const dataAllUsers = s.data?.filter(u => this.byIds[u.user_id]) || []
+      totalContact += dataAllUsers.length
+
+      const dataAllUsersFiltered =
+        dataAllUsers?.filter(
+          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+        ) || []
+      // list online user
+      const dataOnlineUser = s.data
+        .map(i =>
+          this.byIds[i.user_id]?.status === 'online'
+            ? this.byIds[i.user_id]
+            : null,
+        )
+        .filter(u => u)
+      totalOnlineContact += dataOnlineUser.length
+      const dataOnlineUserFiltered = dataOnlineUser.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
+
+      displayUsers.push({
+        title: s.title,
+        data: isOnline ? dataAllUsersFiltered : dataOnlineUserFiltered,
+      })
+    })
+    return { displayUsers, totalContact, totalOnlineContact }
+  }
   @observable isSelectedAddAllUser: boolean = false
   @action toggleIsSelectedAddAllUser = () => {
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
@@ -151,7 +209,7 @@ class UserStore {
     this.isCapacityInvalid = this.selectedUserIds.length > this.buddyMax
   }
 
-  @action selectedAllUserIdsByGroup = (groupIndex: number) => {
+  @action selectAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = uniq([
       ...this.selectedUserIds,
       ...this.dataGroupAllUser[groupIndex].data.map(itm => itm.user_id),
@@ -180,7 +238,7 @@ class UserStore {
     )
   }
 
-  @action deSelectedAllUserIdsByGroup = (groupIndex: number) => {
+  @action unselectAllUserIdsByGroup = (groupIndex: number) => {
     this.selectedUserIds = this.selectedUserIds.filter(
       id =>
         !this.dataGroupAllUser[groupIndex].data
@@ -241,7 +299,15 @@ class UserStore {
     ])
     this.groups.push({ id: groupName, name: groupName })
   }
-
+  @action updateList = () => {
+    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
+    this.dataGroupAllUser.forEach((group, index) => {
+      cloneDataGroupAllUser[index].data = group.data.filter(item =>
+        this.selectedUserIds.some(id => item.user_id === id),
+      )
+    })
+    this.dataGroupAllUser = cloneDataGroupAllUser
+  }
   @action editGroup = (
     groupName: string,
     selectedUsers: UcBuddy[],
@@ -287,6 +353,8 @@ class UserStore {
       ...selectedUsers.map(u => u.user_id),
     ])
   }
+
+  @observable pbxConfig?: PbxGetProductInfoRes
 
   @action clearStore = () => {
     this.groups = []
