@@ -1,3 +1,11 @@
+#### 2.9.2
+
+- Implement PBX buddy list
+- Handle canceled PN call completed elsewhere: do not add history
+- Trim html on UC message render
+- Fix: android 10 rare case ringtone can not stop reported by Akira
+- Fix: PN switch enable take long time
+
 #### 2.9.0
 
 - Update webrtcclient to 2.0.30.333
