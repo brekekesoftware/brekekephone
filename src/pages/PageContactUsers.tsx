@@ -221,8 +221,9 @@ export class PageContactUsers extends Component {
   }
 
   render() {
-    const { ucEnabled } = getAuthStore().currentProfile
-    const pbxBuddyEnable = pbx.getKeyWPallUsers()
-    return ucEnabled ? this.renderListUcUser() : this.renderListUser()
+    // const { ucEnabled } = getAuthStore().currentProfile
+    // const pbxBuddyEnable = pbx.getKeyWPallUsers()
+    // return ucEnabled ? this.renderListUcUser() : this.renderListUser()
+    return this.renderListUcUser()
   }
 }
