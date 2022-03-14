@@ -1,9 +1,7 @@
 import { orderBy, uniq } from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
-import { DefaultSectionT, SectionListData } from 'react-native'
 
-import { UcBuddy } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
@@ -11,7 +9,7 @@ import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { getAuthStore, waitPbx } from '../stores/authStore'
+import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
@@ -225,8 +223,6 @@ export class PageContactUsers extends Component {
   render() {
     const { ucEnabled } = getAuthStore().currentProfile
     const pbxBuddyEnable = pbx.getKeyWPallUsers()
-    return ucEnabled || !pbxBuddyEnable
-      ? this.renderListUcUser()
-      : this.renderListUser()
+    return ucEnabled ? this.renderListUcUser() : this.renderListUser()
   }
 }
