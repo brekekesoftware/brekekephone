@@ -17,6 +17,7 @@ import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { formatChatContent } from '../utils/formatChatContent'
+import { trimHtml } from '../utils/trimHtml'
 import { ItemImageVideoChat } from './ItemImageVideoChat'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
@@ -278,14 +279,16 @@ export class Message extends Component<{
 
     return (
       <>
-        {!!text && !!!file && (
+        {!!text && !file && (
           <TextContainer style={css.Message} onLongPress={this.onMessagePress}>
             <Hyperlink
               onPress={this.onLinkPress}
               linkStyle={css.Link}
               onLongPress={this.onLinkLongPress}
             >
-              <RnText style={!isTextOnly && css.Message__call}>{text}</RnText>
+              <RnText style={!isTextOnly && css.Message__call}>
+                {trimHtml(text)}
+              </RnText>
             </Hyperlink>
           </TextContainer>
         )}
