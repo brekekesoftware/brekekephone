@@ -17,10 +17,8 @@ export class IncomingItem extends Component {
     // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
-    if (this.ringtonePlaying) {
-      IncallManager.stopRingtone()
-      this.ringtonePlaying = false
-    }
+    IncallManager.stopRingtone()
+    this.ringtonePlaying = false
     if (Platform.OS === 'android') {
       // Bug speaker auto turn on after call stopRingtone/stopRingback
       IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)

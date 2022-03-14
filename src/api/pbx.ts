@@ -13,6 +13,9 @@ export class PBX extends EventEmitter {
   client?: Pbx
   private connectTimeoutId = 0
 
+  // wait auth state to success
+  needToWait = true
+
   connect = async (p: Profile) => {
     console.error('PBX PN debug: call pbx.connect')
     if (this.client) {
@@ -162,7 +165,9 @@ export class PBX extends EventEmitter {
 
   getConfig = async () => {
     if (!userStore.pbxConfig) {
-      await waitPbx()
+      if (this.needToWait) {
+        await waitPbx()
+      }
       if (!this.client) {
         return
       }
@@ -174,7 +179,9 @@ export class PBX extends EventEmitter {
   }
 
   createSIPAccessToken = async (sipUsername: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -184,7 +191,9 @@ export class PBX extends EventEmitter {
   }
 
   getUsers = async (tenant: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -197,7 +206,9 @@ export class PBX extends EventEmitter {
   }
 
   getOtherUsers = async (tenant: string, userIds: string | string[]) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -225,7 +236,9 @@ export class PBX extends EventEmitter {
   }
 
   getUserForSelf = async (tenant: string, userId: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -288,7 +301,9 @@ export class PBX extends EventEmitter {
     offset: number
     limit: number
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -310,7 +325,9 @@ export class PBX extends EventEmitter {
   }
 
   getContact = async (id: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -352,7 +369,9 @@ export class PBX extends EventEmitter {
     company: string
     hidden: boolean
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
@@ -377,7 +396,9 @@ export class PBX extends EventEmitter {
   }
 
   holdTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -389,7 +410,9 @@ export class PBX extends EventEmitter {
   }
 
   unholdTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -401,7 +424,9 @@ export class PBX extends EventEmitter {
   }
 
   startRecordingTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -413,7 +438,9 @@ export class PBX extends EventEmitter {
   }
 
   stopRecordingTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -429,7 +456,9 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -447,7 +476,9 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -460,7 +491,9 @@ export class PBX extends EventEmitter {
   }
 
   joinTalkerTransfer = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -472,7 +505,9 @@ export class PBX extends EventEmitter {
   }
 
   stopTalkerTransfer = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -484,7 +519,9 @@ export class PBX extends EventEmitter {
   }
 
   parkTalker = async (tenant: string, talker: string, atNumber: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -497,7 +534,9 @@ export class PBX extends EventEmitter {
   }
 
   sendDTMF = async (signal: string, tenant: string, talker_id: string) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -518,7 +557,9 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -542,7 +583,9 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -566,7 +609,9 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -590,7 +635,9 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
@@ -616,7 +663,9 @@ export class PBX extends EventEmitter {
     username: string
     key: string
   }) => {
-    await waitPbx()
+    if (this.needToWait) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }

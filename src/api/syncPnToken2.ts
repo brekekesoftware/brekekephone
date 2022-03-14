@@ -23,6 +23,7 @@ const syncPnTokenWithoutCatch = async (
   profileStore.pnSyncLoadingMap[p.id] = true
 
   const pbx = new PBX()
+  pbx.needToWait = false
   await pbx.connect(p)
 
   const webPhone = await updatePhoneIndex(p, pbx)

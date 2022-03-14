@@ -17,6 +17,7 @@ import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
+import { CancelRecentPn } from './cancelRecentPn'
 import { Nav } from './Nav'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
@@ -206,7 +207,7 @@ export class CallStore {
     if (!c) {
       return
     }
-    this.onSipUaCancel(c.pnId)
+    this.onSipUaCancel({ pnId: c.pnId })
     c.callkeepUuid && this.endCallKeep(c.callkeepUuid)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
@@ -423,7 +424,16 @@ export class CallStore {
       this.updateCurrentCallDebounce()
     }, 500)
   }
-  @action private endCallKeep = (uuid: string, setAction = true) => {
+  @action private endCallKeep = (
+    uuid: string,
+    {
+      setAction = true,
+      completedElseWhere,
+    }: {
+      setAction?: boolean
+      completedElseWhere?: boolean
+    } = {},
+  ) => {
     if (!uuid) {
       return
     }
@@ -434,7 +444,8 @@ export class CallStore {
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
-      !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id)
+      !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id) &&
+      !completedElseWhere
     ) {
       addCallHistory(pnData)
     }
@@ -547,14 +558,17 @@ export class CallStore {
   }
 
   // To be used in sip.phone._ua.on('newNotify')
-  onSipUaCancel = (pnId?: string) => {
-    if (!pnId) {
+  onSipUaCancel = (n: CancelRecentPn) => {
+    if (!n.pnId) {
       return
     }
-    const uuid = this.getUuidFromPnId(pnId)
+    const uuid = this.getUuidFromPnId(n.pnId)
     console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
-    this.setCallkeepAction({ pnId }, 'rejectCall')
-    uuid && this.endCallKeep(uuid)
+    this.setCallkeepAction({ pnId: n.pnId }, 'rejectCall')
+    uuid &&
+      this.endCallKeep(uuid, {
+        completedElseWhere: n.completedElseWhere,
+      })
   }
 
   // Additional static logic

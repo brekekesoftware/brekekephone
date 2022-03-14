@@ -110,7 +110,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
   const isLoadSuccess = state === 'success' && !!objectURL
-  if (state === 'success' && !!!objectURL) {
+  if (state === 'success' && !objectURL) {
     return null
   }
   const cssLoading = fileType === 'image' ? css.loading : css.loadingVideo

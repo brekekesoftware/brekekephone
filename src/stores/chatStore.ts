@@ -179,7 +179,7 @@ class ChatStore {
       })
   }
   startTimeout = (id: string, fileType?: string) => {
-    if (!!!this.timeoutTransferImage[id]) {
+    if (!this.timeoutTransferImage[id]) {
       this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(
         () => {
           this.clearTimeout(id)

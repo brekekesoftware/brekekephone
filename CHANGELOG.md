@@ -149,7 +149,7 @@
 - Auto accept/display image/video on UC chat. Certain kinds of file extensions are supported differently on each platform browser/ios/android. Generally jpg image and mp4 video
 - Reconnect SIP if PN token is expired or timeout of 10s
 - Try to cancel/not displaying the PN if caller canceled the call: add more logic and fix bugs
-- Insert call history for cancelled PN calls
+- Insert call history for canceled PN calls
 - Improve PN settings (enabled/disabled) loading (remove the loading icon covers the whole login screen, only show it on the switcher). Only show error if user proactively changes the setting
 - Add group chat icon to make it different with user icon
 - Add call history on group chat call, fix incorrect group name in call history
