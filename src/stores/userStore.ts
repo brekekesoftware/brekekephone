@@ -7,7 +7,7 @@ import { isUcBuddy, uc } from '../api/uc'
 import { getAuthStore } from './authStore'
 import { intl } from './intl'
 
-const defaultBuddyMax = 500
+const defaultBuddyMax = 100
 
 type BuddyType = 'PbxBuddy' | 'UcBuddy'
 class UserStore {
@@ -32,17 +32,17 @@ class UserStore {
 
   @action loadPbxBuddyList = (pbxUsers: UcBuddy[]) => {
     this.type = 'PbxBuddy'
+    const s = getAuthStore()
     // get user from pbx
     const allUsers: UcBuddy[] = pbxUsers
     // get from local
-    const buddyList = getAuthStore().currentData?.pbxBuddyList
+    const buddyList = s.currentData?.pbxBuddyList
     const users = buddyList?.users || allUsers
-
-    this.isSelectedAddAllUser = buddyList?.screened || true // !userList.screened
-    this.isDisableAddAllUserToTheList = 200 < allUsers?.length // limit set default 200
+    this.isSelectedAddAllUser = buddyList?.screened || true
+    this.isDisableAddAllUserToTheList =
+      s.pbxConfigBuddyList || defaultBuddyMax < allUsers?.length
     this.buddyMax =
-      Number(getAuthStore().pbxConfig?.['webphone.users.max']) ||
-      defaultBuddyMax // buddy_max
+      Number(s.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
     this.groups = []
 
