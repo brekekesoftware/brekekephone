@@ -116,6 +116,7 @@ export class PageContactUsers extends Component {
     groups.forEach(gr => {
       gr.users = orderBy(gr.users, 'name')
     })
+    const s = getAuthStore()
 
     return (
       <Layout
@@ -125,6 +126,22 @@ export class PageContactUsers extends Component {
         menu='contact'
         subMenu='users'
         title={intl`Users`}
+        dropdown={
+          !s.pbxConfigBuddyList
+            ? [
+                {
+                  label: intl`Enable buddy list`,
+                  onPress: () => {
+                    profileStore.upsertProfile({
+                      id: s.currentProfile.id,
+                      pbxAllUsers: false,
+                    })
+                    // TODO reload pbx buddy list from local storage
+                  },
+                },
+              ]
+            : []
+        }
       >
         <Field
           icon={mdiMagnify}
@@ -171,6 +188,7 @@ export class PageContactUsers extends Component {
       totalContact = 0,
       totalOnlineContact = 0,
     } = userStore.filterUser(searchTxt, isShowOfflineUser)
+    const s = getAuthStore()
 
     return (
       <Layout
@@ -186,9 +204,22 @@ export class PageContactUsers extends Component {
         })()}
         dropdown={[
           {
-            label: intl`Edit the user list`,
+            label: intl`Edit buddy list`,
             onPress: Nav().goToPageContactEdit,
           },
+          ...(!s.pbxConfigBuddyList
+            ? [
+                {
+                  label: intl`Disable buddy list`,
+                  onPress: () => {
+                    profileStore.upsertProfile({
+                      id: s.currentProfile.id,
+                      pbxAllUsers: true,
+                    })
+                  },
+                },
+              ]
+            : []),
         ]}
         menu='contact'
         subMenu='users'
@@ -220,10 +251,11 @@ export class PageContactUsers extends Component {
   }
 
   render() {
-    const { ucEnabled } = getAuthStore().currentProfile
-    const isEnablePbxBuddy =
-      userStore.pbxConfig?.['webphone.allusers'] === 'false'
-    return ucEnabled || isEnablePbxBuddy
+    const {
+      currentProfile: { ucEnabled },
+      pbxBuddyList,
+    } = getAuthStore()
+    return ucEnabled || pbxBuddyList
       ? this.renderBuddyList()
       : this.renderPbxUsers()
   }

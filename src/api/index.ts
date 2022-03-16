@@ -75,9 +75,10 @@ class Api {
       })
       contactStore.pbxUsers = users
 
-      const pbxConfig = await pbx.getConfig()
-      const isEnablePbxBuddy = pbxConfig?.['webphone.allusers'] === 'false'
-      !p.ucEnabled && isEnablePbxBuddy && userStore.loadGroupPbxUser(pbxUser)
+      await pbx.getConfig()
+      if (!p.ucEnabled && s.pbxBuddyList) {
+        userStore.loadPbxBuddyList(pbxUser)
+      }
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,

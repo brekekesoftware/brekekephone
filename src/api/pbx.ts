@@ -3,9 +3,8 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
-import { waitPbx } from '../stores/authStore'
+import { getAuthStore, waitPbx } from '../stores/authStore'
 import { Profile, profileStore } from '../stores/profileStore'
-import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Pbx } from './brekekejs'
 
@@ -24,7 +23,7 @@ export class PBX extends EventEmitter {
       return
     }
 
-    userStore.pbxConfig = undefined
+    getAuthStore().pbxConfig = undefined
 
     const d = profileStore.getProfileData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
@@ -164,18 +163,19 @@ export class PBX extends EventEmitter {
   }
 
   getConfig = async () => {
-    if (!userStore.pbxConfig) {
+    const s = getAuthStore()
+    if (!s.pbxConfig) {
       if (this.needToWait) {
         await waitPbx()
       }
       if (!this.client) {
         return
       }
-      userStore.pbxConfig = await this.client._pal('getProductInfo', {
+      s.pbxConfig = await this.client._pal('getProductInfo', {
         webphone: 'true',
       })
     }
-    return userStore.pbxConfig
+    return s.pbxConfig
   }
 
   createSIPAccessToken = async (sipUsername: string) => {

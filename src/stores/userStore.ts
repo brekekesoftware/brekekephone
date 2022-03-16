@@ -2,7 +2,7 @@ import { uniq } from 'lodash'
 import { action, observable } from 'mobx'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
-import { PbxGetProductInfoRes, UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { isUcBuddy, uc } from '../api/uc'
 import { getAuthStore } from './authStore'
 import { intl } from './intl'
@@ -30,7 +30,7 @@ class UserStore {
     },
   ]
 
-  @action loadGroupPbxUser = (pbxUsers: UcBuddy[]) => {
+  @action loadPbxBuddyList = (pbxUsers: UcBuddy[]) => {
     this.type = 'PbxBuddy'
     // get user from pbx
     const allUsers: UcBuddy[] = pbxUsers
@@ -41,7 +41,8 @@ class UserStore {
     this.isSelectedAddAllUser = buddyList?.screened || true // !userList.screened
     this.isDisableAddAllUserToTheList = 200 < allUsers?.length // limit set default 200
     this.buddyMax =
-      Number(userStore.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
+      Number(getAuthStore().pbxConfig?.['webphone.users.max']) ||
+      defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
     this.groups = []
 
@@ -353,8 +354,6 @@ class UserStore {
       ...selectedUsers.map(u => u.user_id),
     ])
   }
-
-  @observable pbxConfig?: PbxGetProductInfoRes
 
   @action clearStore = () => {
     this.groups = []

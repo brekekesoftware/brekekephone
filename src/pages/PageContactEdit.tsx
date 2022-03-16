@@ -159,7 +159,7 @@ export class PageContactEdit extends Component {
         fabOnNext={this.save}
         fabOnNextText={intl`SAVE`}
         onBack={this.onGoBack}
-        title={intl`Edit the user list`}
+        title={intl`Edit buddy list`}
         containerRef={this.setViewRef}
       >
         <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
