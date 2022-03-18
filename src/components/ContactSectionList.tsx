@@ -56,7 +56,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
   },
   editGroupIcon: {
-    marginRight: 10,
+    paddingHorizontal: 10,
   },
   containerDropdown: {
     position: 'absolute',
@@ -130,140 +130,13 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             }
           })
         },
-        1000,
+        1500,
       )
     }
 
     // TODO move to a new component with observer
-    const renderHeaderSection = (
-      title: string,
-      data: readonly UcBuddy[],
-      // index: number,
-    ) => {
-      const index = p.sectionListData.findIndex(item => item.title === title)
-      const selectedItemCount = userStore.isSelectedAddAllUser
-        ? data.length
-        : data.filter(i => userStore.selectedUserIds[i.user_id]).length
-      const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
-        i => i === index,
-      )
-      const isDisableMarginTop =
-        p.sectionListData[index - 1]?.data?.length === 0 ||
-        RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
-
-      return (
-        <RnTouchableOpacity
-          onPress={() =>
-            RnDropdownSectionList.toggleSection(index, data.length)
-          }
-        >
-          <View
-            style={[
-              css.headerSectionList,
-              isDisableMarginTop && css.disableMarginTop,
-            ]}
-            ref={c => {
-              if (c && p.isEditMode) {
-                sectionHeaderRefs.current[index] = c
-              }
-            }}
-          >
-            <Fragment>
-              <View style={css.leftSection}>
-                <View>
-                  <RnIcon path={isHidden ? mdiMenuRight : mdiMenuDown} />
-                </View>
-                <RnText small>{`${title} ${
-                  p.isEditMode
-                    ? selectedItemCount
-                    : data.filter(itm => itm.status === 'online').length
-                }/${data.length}`}</RnText>
-              </View>
-              {p.isEditMode && (
-                <RnTouchableOpacity
-                  style={css.editGroupIcon}
-                  onPress={() => {
-                    if (
-                      RnDropdownSectionList.hiddenGroupIndex.some(
-                        i => i === index,
-                      )
-                    ) {
-                      RnDropdownSectionList.toggleSection(index, data.length)
-                    }
-                    RnDropdownSectionList.setDropdown(index)
-                  }}
-                >
-                  <RnIcon path={mdiMoreHoriz} />
-                </RnTouchableOpacity>
-              )}
-            </Fragment>
-          </View>
-        </RnTouchableOpacity>
-      )
-    }
-
-    const getLastMessageChat = (id: string) => {
-      const chats = filterTextOnly(chatStore.messagesByThreadId[id])
-      return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
-    }
 
     // TODO move to a new component with observer
-    const renderItemUser = (item: UcBuddy, title: string) => {
-      const index = p.sectionListData.findIndex(i => i.title === title)
-
-      const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
-        idx => idx === index,
-      )
-      return !isHidden ? (
-        <View
-          key={`ItemUser-${item.user_id}-${index}`}
-          onLayout={e => {
-            RnDropdownSectionList.setItemHeight(e.nativeEvent.layout.height)
-          }}
-        >
-          {p.isEditMode ? (
-            <RnTouchableOpacity
-              onPress={() => userStore.selectUserId(item.user_id)}
-              disabled={userStore.isSelectedAddAllUser}
-            >
-              <UserItem
-                id={item.user_id}
-                name={item.name || item.user_id}
-                avatar={item.profile_image_url}
-                disabled={userStore.isSelectedAddAllUser}
-                isSelected={
-                  userStore.isSelectedAddAllUser ||
-                  userStore.selectedUserIds[item.user_id]
-                }
-                onSelect={() => userStore.selectUserId(item.user_id)}
-                isSelection
-              />
-            </RnTouchableOpacity>
-          ) : (
-            <RnTouchableOpacity
-              onPress={
-                getAuthStore().currentProfile.ucEnabled
-                  ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
-                  : undefined
-              }
-            >
-              <UserItem
-                iconFuncs={[
-                  () => callStore.startVideoCall(item.user_id),
-                  () => callStore.startCall(item.user_id),
-                ]}
-                icons={[mdiVideo, mdiPhone]}
-                lastMessage={getLastMessageChat(item.user_id)?.text}
-                id={item.user_id}
-                name={item.name}
-                avatar={item.profile_image_url}
-                status={item.status}
-              />
-            </RnTouchableOpacity>
-          )}
-        </View>
-      ) : null
-    }
 
     const { dropdownOpenedIndex, listDropdownPosition } = RnDropdownSectionList
 
@@ -280,10 +153,23 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             item: UcBuddy
             index: number
             section: SectionListData<UcBuddy, DefaultSectionT>
-          }) => renderItemUser(item, section.title)}
-          renderSectionHeader={({ section: { title, data } }) =>
-            renderHeaderSection(title, data)
-          }
+          }) => (
+            <RenderItemUser
+              sectionListData={p.sectionListData}
+              item={item}
+              title={section.title}
+              isEditMode={p?.isEditMode}
+            />
+          )}
+          renderSectionHeader={({ section: { title, data } }) => (
+            <RenderHeaderSection
+              sectionHeaderRefs={sectionHeaderRefs}
+              sectionListData={p.sectionListData}
+              isEditMode={p.isEditMode}
+              title={title}
+              data={data}
+            />
+          )}
         />
         {dropdownOpenedIndex >= 0 && (
           <TouchableWithoutFeedback
@@ -300,3 +186,146 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       </Fragment>
     )
   })
+const getLastMessageChat = (id: string) => {
+  const chats = filterTextOnly(chatStore.messagesByThreadId[id])
+  return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+}
+type ItemUser = {
+  sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
+  item: UcBuddy
+  title: string
+  isEditMode?: boolean
+}
+const RenderItemUser = observer(
+  ({ sectionListData, item, title, isEditMode }: ItemUser) => {
+    const index = sectionListData.findIndex(i => i.title === title)
+    const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
+      idx => idx === index,
+    )
+    return !isHidden ? (
+      <View
+        key={`ItemUser-${item.user_id}-${index}`}
+        onLayout={e => {
+          RnDropdownSectionList.setItemHeight(e.nativeEvent.layout.height)
+        }}
+      >
+        {isEditMode ? (
+          <RnTouchableOpacity
+            onPress={() => userStore.selectUserId(item.user_id)}
+            disabled={userStore.isSelectedAddAllUser}
+          >
+            <UserItem
+              id={item.user_id}
+              name={item.name || item.user_id}
+              avatar={item.profile_image_url}
+              disabled={userStore.isSelectedAddAllUser}
+              isSelected={
+                userStore.isSelectedAddAllUser ||
+                userStore.selectedUserIds[item.user_id]
+              }
+              onSelect={() => userStore.selectUserId(item.user_id)}
+              isSelection
+            />
+          </RnTouchableOpacity>
+        ) : (
+          <RnTouchableOpacity
+            onPress={
+              getAuthStore().currentProfile.ucEnabled
+                ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
+                : undefined
+            }
+          >
+            <UserItem
+              iconFuncs={[
+                () => callStore.startVideoCall(item.user_id),
+                () => callStore.startCall(item.user_id),
+              ]}
+              icons={[mdiVideo, mdiPhone]}
+              lastMessage={getLastMessageChat(item.user_id)?.text}
+              id={item.user_id}
+              name={item.name}
+              avatar={item.profile_image_url}
+              status={item.status}
+            />
+          </RnTouchableOpacity>
+        )}
+      </View>
+    ) : null
+  },
+)
+type SectionHeader = {
+  sectionHeaderRefs: React.MutableRefObject<View[]>
+  sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
+  isEditMode?: boolean
+  title: string
+  data: readonly UcBuddy[]
+}
+
+const RenderHeaderSection = observer(
+  ({
+    sectionHeaderRefs,
+    sectionListData,
+    isEditMode,
+    title,
+    data,
+  }: SectionHeader) => {
+    const index = sectionListData.findIndex(i => i.title === title)
+    const selectedItemCount = userStore.isSelectedAddAllUser
+      ? data.length
+      : data.filter(i => userStore.selectedUserIds[i.user_id]).length
+    const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
+      i => i === index,
+    )
+    const isDisableMarginTop =
+      sectionListData[index - 1]?.data?.length === 0 ||
+      RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
+
+    return (
+      <RnTouchableOpacity
+        onPress={() => RnDropdownSectionList.toggleSection(index, data.length)}
+      >
+        <View
+          style={[
+            css.headerSectionList,
+            isDisableMarginTop && css.disableMarginTop,
+          ]}
+          ref={c => {
+            if (c && isEditMode) {
+              sectionHeaderRefs.current[index] = c
+            }
+          }}
+        >
+          <Fragment>
+            <View style={css.leftSection}>
+              <View>
+                <RnIcon path={isHidden ? mdiMenuRight : mdiMenuDown} />
+              </View>
+              <RnText small>{`${title} ${
+                isEditMode
+                  ? selectedItemCount
+                  : data.filter(itm => itm.status === 'online').length
+              }/${data.length}`}</RnText>
+            </View>
+            {isEditMode && (
+              <RnTouchableOpacity
+                style={css.editGroupIcon}
+                onPress={() => {
+                  if (
+                    RnDropdownSectionList.hiddenGroupIndex.some(
+                      i => i === index,
+                    )
+                  ) {
+                    RnDropdownSectionList.toggleSection(index, data.length)
+                  }
+                  RnDropdownSectionList.setDropdown(index)
+                }}
+              >
+                <RnIcon path={mdiMoreHoriz} />
+              </RnTouchableOpacity>
+            )}
+          </Fragment>
+        </View>
+      </RnTouchableOpacity>
+    )
+  },
+)

@@ -94,11 +94,6 @@ export class PageContactUsers extends Component {
     }
   }
 
-  getLastMessageChat = (id: string) => {
-    const chats = filterTextOnly(chatStore.messagesByThreadId[id])
-    return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
-  }
-
   renderPbxUsers = () => {
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     type User = typeof allUsers[0]
@@ -121,16 +116,11 @@ export class PageContactUsers extends Component {
       title: k,
       data: map[k],
     }))
-    // const sectionDataOther: SectionListData<UcBuddy> = {
-    //   title: `(${intl`No Group`})`,
-    //   data: [],
-    // }
+
     groups = orderBy(groups, 'title')
     groups.forEach(gr => {
       gr.data = orderBy(gr.data, 'name')
     })
-    console.log({ groups })
-
     const s = getAuthStore()
 
     return (
@@ -173,25 +163,7 @@ export class PageContactUsers extends Component {
           sections={groups}
           keyExtractor={(item, index) => item.id}
           renderItem={({ item, index }: { item: User; index: number }) => (
-            // TODO move to a new component with observer
-            <RnTouchableOpacity
-              key={index}
-              onPress={
-                getAuthStore().currentProfile.ucEnabled
-                  ? () => Nav().goToPageChatDetail({ buddy: item.id })
-                  : undefined
-              }
-            >
-              <UserItem
-                iconFuncs={[
-                  () => callStore.startVideoCall(item.id),
-                  () => callStore.startCall(item.id),
-                ]}
-                icons={[mdiVideo, mdiPhone]}
-                lastMessage={this.getLastMessageChat(item.id)?.text}
-                {...item}
-              />
-            </RnTouchableOpacity>
+            <RenderItemUser item={item} index={index} />
           )}
           renderSectionHeader={({ section: { title } }) => (
             // TODO move to a new component with observer
@@ -278,3 +250,33 @@ export class PageContactUsers extends Component {
     return buddyListMode ? this.renderBuddyList() : this.renderPbxUsers()
   }
 }
+
+const getLastMessageChat = (id: string) => {
+  const chats = filterTextOnly(chatStore.messagesByThreadId[id])
+  return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+}
+type ItemUser = {
+  item: any
+  index: number
+}
+const RenderItemUser = ({ item, index }: ItemUser) => (
+  // TODO move to a new component with observer
+  <RnTouchableOpacity
+    key={index}
+    onPress={
+      getAuthStore().currentProfile.ucEnabled
+        ? () => Nav().goToPageChatDetail({ buddy: item.id })
+        : undefined
+    }
+  >
+    <UserItem
+      iconFuncs={[
+        () => callStore.startVideoCall(item.id),
+        () => callStore.startCall(item.id),
+      ]}
+      icons={[mdiVideo, mdiPhone]}
+      lastMessage={getLastMessageChat(item.id)?.text}
+      {...item}
+    />
+  </RnTouchableOpacity>
+)
