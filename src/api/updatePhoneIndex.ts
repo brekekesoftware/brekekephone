@@ -13,7 +13,10 @@ export const updatePhoneIndex = async (
 }> => {
   //
   const phoneIndex = parseInt(p.pbxPhoneIndex) || 4
-  const extProps = await api.getUserForSelf(p.pbxTenant, p.pbxUsername)
+  const extProps = await api.getPbxPropertiesForCurrentUser(
+    p.pbxTenant,
+    p.pbxUsername,
+  )
   if (!extProps) {
     console.error('updatePhoneIndex.setExtensionProperties: extProps undefined')
     return null

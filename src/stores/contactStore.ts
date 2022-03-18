@@ -3,7 +3,7 @@ import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
-import { getAuthStore, waitPbx, waitSip, waitUc } from './authStore'
+import { getAuthStore } from './authStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -102,9 +102,6 @@ class ContactStore {
   @observable pbxUsers: PbxUser[] = []
 
   getPbxUsers = async () => {
-    await waitPbx()
-    await waitUc()
-    await waitSip()
     try {
       const p = getAuthStore().currentProfile
       const res = await pbx.getUsers(p.pbxTenant)

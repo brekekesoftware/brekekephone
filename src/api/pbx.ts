@@ -206,7 +206,7 @@ export class PBX extends EventEmitter {
     })
   }
 
-  getUserForSelf = async (tenant: string, userId: string) => {
+  getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
     if (this.needToWait) {
       await waitPbx()
     }

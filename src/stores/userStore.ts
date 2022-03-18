@@ -48,8 +48,8 @@ class UserStore {
       allUsers = ids.map(u => {
         return {
           disabledBuddy: false,
-          user_id: u,
-          name: u,
+          user_id: u[0],
+          name: u[1],
           profile_image_url: '',
           group: '',
           tenant: p.pbxTenant,
