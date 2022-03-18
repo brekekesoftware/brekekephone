@@ -115,9 +115,9 @@ class ContactStore {
       if (!ids) {
         return
       }
-      // console.log('getPbxUser::ids::', ids);
-      const userIds = ids.filter(id => id !== p.pbxUsername)
-      const users = userIds.map(id => {
+      console.log('getPbxUser::ids::', ids)
+      // const userIds = ids.filter(id => id !== p.pbxUsername)
+      const users = ids.map(id => {
         return { id, name: id }
       })
       // const users = await pbx.getOtherUsers(p.pbxTenant, userIds)

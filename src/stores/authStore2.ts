@@ -99,7 +99,7 @@ export class AuthStore {
 
   @computed get haveConfigWebPhoneAllUsers() {
     // const isAllUsers = this.pbxConfig?.['webphone.allusers'] === 'false'
-    const isAllUsers = false
+    const isAllUsers = true
     return isAllUsers
   }
   @computed get buddyListMode() {
