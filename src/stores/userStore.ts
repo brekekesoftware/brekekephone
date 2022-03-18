@@ -12,7 +12,6 @@ const defaultBuddyMax = 100
 
 type BuddyType = 'PbxBuddy' | 'UcBuddy'
 class UserStore {
-  @observable dataGroupUserIds: SectionListData<string>[] = []
   @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax = defaultBuddyMax
@@ -62,7 +61,6 @@ class UserStore {
     // get from local
     const buddyList = s.currentData?.pbxBuddyList
     const users = buddyList?.users || []
-    console.log({ users })
 
     this.isSelectedAddAllUser = false
     this.isDisableAddAllUserToTheList =
@@ -94,12 +92,9 @@ class UserStore {
             } as UcBuddy),
         )
     }
-    console.log('loadUcBuddyList', userList)
 
     this.isSelectedAddAllUser = !userList.screened
-    console.log('loadUcBuddyList', {
-      isSelectedAddAllUser: this.isSelectedAddAllUser,
-    })
+
     this.isDisableAddAllUserToTheList =
       getAuthStore().haveConfigWebPhoneAllUsers ||
       configProperties.optional_config?.buddy_max < allUsers?.length
@@ -129,7 +124,6 @@ class UserStore {
       title: `(${intl`No Group`})`,
       data: [],
     }
-    console.log({ dataGroupUser })
 
     const listDataUser: UcBuddy[] = []
     const selectedUserIds: { [userId: string]: boolean } = {}
@@ -177,17 +171,14 @@ class UserStore {
     this.byIds = byIds
     if (!isDisableEditGroup) {
       sectionDataOther.data = [...sectionDataOther.data, ...listUserNotSelected]
-      this.dataGroupUserIds = [...sectionDataIds, sectionDataOtherIds]
       sectionData.push(sectionDataOther)
     } else if (sectionData.length > 0) {
       sectionData[0].data = [...sectionData[0].data, ...listUserNotSelected]
-      this.dataGroupUserIds = [...sectionDataIds]
     }
 
     this.dataGroupAllUser = sectionData
     this.dataListAllUser = [...listDataUser, ...listUserNotSelected]
     this.selectedUserIds = selectedUserIds
-    console.log('update data', this.dataGroupAllUser[0])
     this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
     this.dataDisplayGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
   }
@@ -196,10 +187,8 @@ class UserStore {
     const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     let totalContact = 0
     let totalOnlineContact = 0
-    console.log('filterUser', { saveSelectedUserIds: this.saveSelectedUserIds })
 
     this.dataDisplayGroupAllUser.forEach(s => {
-      // console.log('filterUser',{dataDisplayGroupAllUser:  s})
       // list all user
       const dataAllUsers =
         s.data?.filter(u => this.saveSelectedUserIds[u.user_id]) || []
@@ -221,10 +210,6 @@ class UserStore {
       const dataOnlineUserFiltered = dataOnlineUser.filter(
         u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
       )
-      console.log({
-        title: s.title,
-        dataAllUsersFiltered: dataAllUsersFiltered.length,
-      })
       const isNoGroup = s.title === `(${intl`No Group`})`
       if (isNoGroup && dataAllUsersFiltered.length === 0) {
         return
@@ -277,7 +262,6 @@ class UserStore {
       delete this.selectedUserIds[u.user_id]
     })
     this.groups.splice(groupIndex, 1)
-    this.dataGroupUserIds.splice(groupIndex, 1)
     this.dataGroupAllUser.splice(groupIndex, 1)
   }
 
@@ -339,16 +323,13 @@ class UserStore {
     this.groups.push({ id: groupName, name: groupName })
   }
   resetCache = () => {
-    console.log('resetCache')
     this.dataGroupAllUser = []
     this.groups = []
     this.selectedUserIds = {}
-    this.dataGroupUserIds = []
     this.dataListAllUser = []
     this.byIds = {}
   }
   @action updateDisplayGroupList = () => {
-    console.log('updateDisplayGroupList')
     this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
     this.dataDisplayGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
     // reset dataGroupAllUser
@@ -362,7 +343,6 @@ class UserStore {
     const cloneDataListAllUser = _.cloneDeep(this.dataListAllUser)
     const cloneDataGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
 
-    console.log({ dataDisplay: this.dataDisplayGroupAllUser[0] })
     this.dataListAllUser.forEach((user, index) => {
       if (
         selectedUsers.some(
@@ -400,7 +380,6 @@ class UserStore {
     selectedUsers.forEach(u => {
       this.selectedUserIds[u.user_id] = true
     })
-    console.log({ dataDisplay: this.dataDisplayGroupAllUser[0] })
   }
 
   @action clearStore = () => {
