@@ -146,8 +146,8 @@ class Api {
     status: string
     statusText: string
   }) => {
-    // contactStore.updateUcUser(ev)
-    // userStore.updateStatusBuddy(ev.id, ev.status)
+    contactStore.updateUcUser(ev)
+    userStore.updateStatusBuddy(ev.id, ev.status)
   }
   onBuddyChatCreated = (chat: {
     id: string
