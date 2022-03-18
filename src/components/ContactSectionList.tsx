@@ -134,6 +134,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       )
     }
 
+    // TODO move to a new component with observer
     const renderHeaderSection = (
       title: string,
       data: readonly UcBuddy[],
@@ -142,9 +143,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       const index = p.sectionListData.findIndex(item => item.title === title)
       const selectedItemCount = userStore.isSelectedAddAllUser
         ? data.length
-        : data.filter(i =>
-            userStore.selectedUserIds.some(id => id === i.user_id),
-          ).length
+        : data.filter(i => userStore.selectedUserIds[i.user_id]).length
       const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
         i => i === index,
       )
@@ -208,6 +207,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
     }
 
+    // TODO move to a new component with observer
     const renderItemUser = (item: UcBuddy, title: string) => {
       const index = p.sectionListData.findIndex(i => i.title === title)
 
@@ -233,7 +233,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                 disabled={userStore.isSelectedAddAllUser}
                 isSelected={
                   userStore.isSelectedAddAllUser ||
-                  userStore.selectedUserIds.some(itm => itm === item.user_id)
+                  userStore.selectedUserIds[item.user_id]
                 }
                 onSelect={() => userStore.selectUserId(item.user_id)}
                 isSelection

@@ -201,7 +201,7 @@ export class PageContactEdit extends Component {
                 <RnText style={isCapacityInvalid && css.errorText}>{`    ${
                   isSelectedAddAllUser
                     ? dataListAllUser.length
-                    : selectedUserIds.length
+                    : Object.keys(selectedUserIds).length
                 }`}</RnText>
                 <RnText>{` / ${buddyMax}`}</RnText>
               </View>
@@ -226,9 +226,7 @@ export class PageContactEdit extends Component {
       userStore
     const data = [
       ...groups,
-      ...dataListAllUser.filter(user =>
-        selectedUserIds.some(id => id === user.user_id),
-      ),
+      ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
     ]
     console.log({ data })
 
@@ -243,9 +241,7 @@ export class PageContactEdit extends Component {
       screened: !isSelectedAddAllUser,
       users: [
         ...groups,
-        ...dataListAllUser.filter(user =>
-          selectedUserIds.some(id => id === user.user_id),
-        ),
+        ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
       ],
     }
     getAuthStore().savePbxBuddyList(data)

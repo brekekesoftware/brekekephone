@@ -173,6 +173,7 @@ export class PageContactUsers extends Component {
           sections={groups}
           keyExtractor={(item, index) => item.id}
           renderItem={({ item, index }: { item: User; index: number }) => (
+            // TODO move to a new component with observer
             <RnTouchableOpacity
               key={index}
               onPress={
@@ -193,6 +194,7 @@ export class PageContactUsers extends Component {
             </RnTouchableOpacity>
           )}
           renderSectionHeader={({ section: { title } }) => (
+            // TODO move to a new component with observer
             <Field isGroup label={title} />
           )}
         />

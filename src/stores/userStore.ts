@@ -1,4 +1,4 @@
-import _, { uniq } from 'lodash'
+import _ from 'lodash'
 import { action, observable } from 'mobx'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
@@ -17,8 +17,8 @@ class UserStore {
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax = defaultBuddyMax
   @observable isDisableAddAllUserToTheList = false
-  @observable selectedUserIds: string[] = []
-  @observable saveSelectedUserIds: string[] = []
+  @observable selectedUserIds: { [userId: string]: boolean } = {}
+  @observable saveSelectedUserIds: { [userId: string]: boolean } = {}
   @observable isCapacityInvalid = false
   @observable byIds: any = {} // dictionary object by id
   @observable buddyMode = 0
@@ -132,7 +132,7 @@ class UserStore {
     console.log({ dataGroupUser })
 
     const listDataUser: UcBuddy[] = []
-    const selectedUserIds: string[] = []
+    const selectedUserIds: { [userId: string]: boolean } = {}
     let byIds: any = {} // dictionary object by id
 
     if (dataGroupUser.length > 0) {
@@ -155,7 +155,7 @@ class UserStore {
             ]
           }
           listDataUser.push(user)
-          selectedUserIds.push(user.user_id)
+          selectedUserIds[user.user_id] = true
           byIds = { ...byIds, ...{ [user.user_id]: user } }
         } else if (!this.groups.some(g => g.id === user.id)) {
           sectionData.push({ title: user.id, data: [] })
@@ -202,9 +202,7 @@ class UserStore {
       // console.log('filterUser',{dataDisplayGroupAllUser:  s})
       // list all user
       const dataAllUsers =
-        s.data?.filter(u =>
-          this.saveSelectedUserIds.some(id => id === u.user_id),
-        ) || []
+        s.data?.filter(u => this.saveSelectedUserIds[u.user_id]) || []
       totalContact += dataAllUsers.length
 
       const dataAllUsersFiltered =
@@ -242,13 +240,12 @@ class UserStore {
   @action toggleIsSelectedAddAllUser = () => {
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
     if (!this.isSelectedAddAllUser) {
-      this.selectedUserIds = []
+      this.selectedUserIds = {}
     } else {
-      this.dataGroupAllUser.forEach((group, index) => {
-        this.selectedUserIds = uniq([
-          ...this.selectedUserIds,
-          ...this.dataGroupAllUser[index].data.map(itm => itm.user_id),
-        ])
+      this.dataGroupAllUser.forEach(g => {
+        g.data.forEach(u => {
+          this.selectedUserIds[u.user_id] = true
+        })
       })
     }
   }
@@ -260,51 +257,34 @@ class UserStore {
   }
 
   @action selectUserId = (userId: string) => {
-    const indexSelectedUser = this.selectedUserIds.indexOf(userId)
-    if (indexSelectedUser > -1) {
-      this.selectedUserIds.splice(indexSelectedUser, 1)
+    if (this.selectedUserIds[userId]) {
+      delete this.selectedUserIds[userId]
     } else {
-      this.selectedUserIds.push(userId)
+      this.selectedUserIds[userId] = true
     }
-    this.isCapacityInvalid = this.selectedUserIds.length > this.buddyMax
+    this.isCapacityInvalid =
+      Object.keys(this.selectedUserIds).length > this.buddyMax
   }
 
   @action selectAllUserIdsByGroup = (groupIndex: number) => {
-    this.selectedUserIds = uniq([
-      ...this.selectedUserIds,
-      ...this.dataGroupAllUser[groupIndex].data.map(itm => itm.user_id),
-    ])
+    this.dataGroupAllUser[groupIndex]?.data.forEach(u => {
+      this.selectedUserIds[u.user_id] = true
+    })
   }
 
   @action removeGroup = (groupIndex: number) => {
-    const removedUsers = _.cloneDeep(this.dataGroupAllUser[groupIndex]?.data)
-    const cloneDataGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
-    cloneDataGroupAllUser.splice(groupIndex, 1)
-
-    if (removedUsers.length > 0) {
-      removedUsers.forEach(itm => {
-        cloneDataGroupAllUser[cloneDataGroupAllUser.length - 1].data = [
-          ...cloneDataGroupAllUser[cloneDataGroupAllUser.length - 1].data,
-          itm,
-        ]
-      })
-    }
-
+    this.dataGroupAllUser[groupIndex].data.forEach(u => {
+      delete this.selectedUserIds[u.user_id]
+    })
     this.groups.splice(groupIndex, 1)
     this.dataGroupUserIds.splice(groupIndex, 1)
-    this.dataGroupAllUser = cloneDataGroupAllUser
-    this.selectedUserIds = this.selectedUserIds.filter(
-      i => !removedUsers.some(user => user.user_id === i),
-    )
+    this.dataGroupAllUser.splice(groupIndex, 1)
   }
 
   @action unselectAllUserIdsByGroup = (groupIndex: number) => {
-    this.selectedUserIds = this.selectedUserIds.filter(
-      id =>
-        !this.dataGroupAllUser[groupIndex].data
-          .map(itm => itm.user_id)
-          .some(userId => userId === id),
-    )
+    this.dataGroupAllUser[groupIndex].data.forEach(u => {
+      delete this.selectedUserIds[u.user_id]
+    })
   }
 
   @action updateStatusBuddy = (buddy_id: string, status: string) => {
@@ -353,17 +333,16 @@ class UserStore {
     cloneDataGroupAllUser.unshift(newGroupContact)
     this.dataGroupAllUser = cloneDataGroupAllUser
     this.dataListAllUser = cloneDataListAllUser
-    this.selectedUserIds = uniq([
-      ...this.selectedUserIds,
-      ...selectedUsers.map(selectedUser => selectedUser.user_id),
-    ])
+    selectedUsers.forEach(u => {
+      this.selectedUserIds[u.user_id] = true
+    })
     this.groups.push({ id: groupName, name: groupName })
   }
   resetCache = () => {
     console.log('resetCache')
     this.dataGroupAllUser = []
     this.groups = []
-    this.selectedUserIds = []
+    this.selectedUserIds = {}
     this.dataGroupUserIds = []
     this.dataListAllUser = []
     this.byIds = {}
@@ -415,12 +394,12 @@ class UserStore {
 
     this.dataGroupAllUser = cloneDataGroupAllUser
     this.dataListAllUser = cloneDataListAllUser
-    this.selectedUserIds = uniq([
-      ...this.selectedUserIds.filter(
-        id => !removedUsers.some(u => u.user_id === id),
-      ),
-      ...selectedUsers.map(u => u.user_id),
-    ])
+    removedUsers.forEach(u => {
+      delete this.selectedUserIds[u.user_id]
+    })
+    selectedUsers.forEach(u => {
+      this.selectedUserIds[u.user_id] = true
+    })
     console.log({ dataDisplay: this.dataDisplayGroupAllUser[0] })
   }
 
@@ -428,7 +407,7 @@ class UserStore {
     this.groups = []
     this.dataGroupAllUser = []
     this.dataListAllUser = []
-    this.selectedUserIds = []
+    this.selectedUserIds = {}
   }
 }
 
