@@ -32,7 +32,7 @@ export class RnDropdownSectionListStore {
 
   @action removeSection = (sectionIndex: number, itemSize: number) => {
     const clonePositionDD = [...this.listDropdownPosition]
-    this.listDropdownPosition.forEach((_, index) => {
+    this.listDropdownPosition.forEach((pos, index) => {
       if (index > sectionIndex) {
         clonePositionDD[index] = {
           top:

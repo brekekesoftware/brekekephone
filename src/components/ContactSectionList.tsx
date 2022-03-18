@@ -5,7 +5,6 @@ import {
   Platform,
   SectionList,
   SectionListData,
-  SectionListRenderItem,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -270,12 +269,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
 
     return (
       <Fragment>
-        {/* {p.sectionListData.map((item, index) => (
-          <Fragment key={`ContactSectionListDataItem-${item.title}-${index}`}>
-            {renderHeaderSection(item.title, item.data, index)}
-            {item.data.map(itemUser => renderItemUser(itemUser, index))}
-          </Fragment>
-        ))} */}
         <SectionList
           sections={p.sectionListData}
           keyExtractor={(item, index) => item.user_id}

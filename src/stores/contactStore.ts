@@ -101,32 +101,17 @@ class ContactStore {
   }
   @observable pbxUsers: PbxUser[] = []
 
-  getPbxUser = async () => {
-    console.log('getPbxUser::')
+  getPbxUsers = async () => {
     await waitPbx()
-    console.log('getPbxUser::waitPbx')
     await waitUc()
-    console.log('getPbxUser::waitUc')
     await waitSip()
-    console.log('getPbxUser::waitSip')
     try {
       const p = getAuthStore().currentProfile
-      const ids = await pbx.getUsers(p.pbxTenant)
-      if (!ids) {
+      const res = await pbx.getUsers(p.pbxTenant)
+      if (!res) {
         return
       }
-      console.log('getPbxUser::ids::', ids)
-      // const userIds = ids.filter(id => id !== p.pbxUsername)
-      const users = ids.map(id => {
-        return { id, name: id }
-      })
-      // const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
-      // console.log('getPbxUser::pbxUsers::', users);
-      // if (!users) {
-      //   return
-      // }
-
-      this.pbxUsers = users
+      this.pbxUsers = res.map(id => ({ id: id[0], name: id[1] }))
     } catch (error) {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,

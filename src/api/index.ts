@@ -6,11 +6,10 @@ import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
-import { Conference, UcBuddy } from './brekekejs'
+import { Conference } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -46,37 +45,16 @@ class Api {
   }
 
   @action onPBXConnectionStarted = async () => {
-    console.error('PBX PN debug: set pbxState succsess')
+    console.error('PBX PN debug: set pbxState success')
     const s = getAuthStore()
     s.pbxState = 'success'
-    console.log('onPBXConnectionStarted')
     await waitSip()
-    const p = s.currentProfile
-    try {
-      await pbx.getConfig()
-      // const ids = await pbx.getUsers(p.pbxTenant)
-      // if (!ids) {
-      //   return
-      // }
-      // const userIds = ids.filter(id => id !== p.pbxUsername)
-      // const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
-      // if (!users) {
-      //   return
-      // }
-      // contactStore.pbxUsers = users
-    } catch (err) {
-      console.log('onPBXConnectionStarted', { err })
-
-      RnAlert.error({
-        message: intlDebug`Failed to load PBX users`,
-        err: err as Error,
-      })
-    }
+    await pbx.getConfig()
     if (s.isSignInByNotification) {
       return
     }
     SyncPnToken()
-      .sync(p)
+      .sync(s.currentProfile)
       .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {
@@ -106,7 +84,7 @@ class Api {
   }
 
   @action onSIPConnectionStarted = () => {
-    console.error('SIP PN debug: set sipState succsess')
+    console.error('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     const s = getAuthStore()
     s.sipPn.sipAuth = ''

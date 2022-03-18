@@ -81,12 +81,12 @@ export type PbxPal = {
 
   getExtensions(
     p: PbxGetExtensionsParam,
-    resolve: (extensions: string[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
-  getExtensionProperties<T extends string | string[]>(
+  getExtensionProperties(
     p: PbxGetExtensionPropertiesParam,
-    resolve: (properties: T[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
   setExtensionProperties(
@@ -144,10 +144,11 @@ export type PbxGetExtensionsParam = {
   pattern: '..*'
   type: 'user'
   limit: number
+  property_names: string[]
 }
 export type PbxGetExtensionPropertiesParam = {
   tenant: string
-  extension: T
+  extension: string[]
   property_names: string[]
 }
 export type PbxSetExtensionPropertiesParam = {

@@ -98,22 +98,12 @@ export class AuthStore {
   @observable pbxConfig?: PbxGetProductInfoRes
 
   @computed get haveConfigWebPhoneAllUsers() {
-    // const isAllUsers = this.pbxConfig?.['webphone.allusers'] === 'false'
-    const isAllUsers = true
-    return isAllUsers
+    // return false
+    return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
   @computed get buddyListMode() {
     return this.haveConfigWebPhoneAllUsers || this.currentProfile?.buddyMode
   }
-  // @computed get pbxConfigBuddyList() {
-  //   // return true;
-  //   // const isAllUser = this.pbxConfig?.['webphone.allusers'] === 'false'
-  //   const isAllUser = false
-  //   return (isAllUser)
-  // }
-  // @computed get pbxBuddyList() {
-  //   return this.pbxConfigBuddyList || !this.currentProfile?.buddyMode
-  // }
 
   @computed get currentData() {
     return profileStore.getProfileData(this.currentProfile)

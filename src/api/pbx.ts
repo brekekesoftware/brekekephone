@@ -202,37 +202,8 @@ export class PBX extends EventEmitter {
       pattern: '..*',
       limit: -1,
       type: 'user',
-    })
-  }
-
-  getOtherUsers = async (tenant: string, userIds: string | string[]) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return
-    }
-
-    const res = await this.client._pal('getExtensionProperties', {
-      tenant,
-      extension: userIds,
       property_names: ['name'],
     })
-
-    const users = new Array(res.length)
-
-    for (let i = 0; i < res.length; i++) {
-      const srcUser = res[i]
-
-      const dstUser = {
-        id: userIds[i],
-        name: srcUser[0],
-      }
-
-      users[i] = dstUser
-    }
-
-    return users
   }
 
   getUserForSelf = async (tenant: string, userId: string) => {
@@ -243,10 +214,9 @@ export class PBX extends EventEmitter {
       return
     }
 
-    const res = await this.client._pal('getExtensionProperties', {
+    const [res] = await this.client._pal('getExtensionProperties', {
       tenant,
-      extension: userId,
-
+      extension: [userId],
       property_names: [
         'name',
         'p1_ptype',
@@ -263,19 +233,19 @@ export class PBX extends EventEmitter {
     const phones = [
       {
         id: pnumber[0],
-        type: res[1] as string,
+        type: res[1],
       },
       {
         id: pnumber[1],
-        type: res[2] as string,
+        type: res[2],
       },
       {
         id: pnumber[2],
-        type: res[3] as string,
+        type: res[3],
       },
       {
         id: pnumber[3],
-        type: res[4] as string,
+        type: res[4],
       },
     ]
 
@@ -284,9 +254,9 @@ export class PBX extends EventEmitter {
 
     return {
       id: userId,
-      name: userName as string,
+      name: userName,
       phones,
-      language: lang as string,
+      language: lang,
     }
   }
 

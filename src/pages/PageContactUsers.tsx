@@ -1,6 +1,6 @@
 import { orderBy, uniq } from 'lodash'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { SectionList } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
@@ -31,7 +31,7 @@ export class PageContactUsers extends Component {
       const { ucEnabled } = s.currentProfile
       ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
     } else {
-      contactStore.getPbxUser()
+      contactStore.getPbxUsers()
       this.componentDidUpdate()
     }
   }
@@ -236,7 +236,7 @@ export class PageContactUsers extends Component {
                       id: s.currentProfile.id,
                       buddyMode: false,
                     })
-                    contactStore.getPbxUser()
+                    contactStore.getPbxUsers()
                   },
                 },
               ]
