@@ -8,7 +8,6 @@ import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
-import { userStore } from '../stores/userStore'
 import { Conference } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
@@ -138,8 +137,8 @@ class Api {
     status: string
     statusText: string
   }) => {
-    contactStore.updateUcUser(ev)
-    userStore.updateStatusBuddy(ev.id, ev.status)
+    // contactStore.updateUcUser(ev)
+    // userStore.updateStatusBuddy(ev.id, ev.status)
   }
   onBuddyChatCreated = (chat: {
     id: string

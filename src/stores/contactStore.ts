@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable } from 'mobx'
 
@@ -108,7 +109,9 @@ class ContactStore {
       if (!res) {
         return
       }
-      this.pbxUsers = res.map(id => ({ id: id[0], name: id[1] }))
+      this.pbxUsers = res
+        .filter(u => u[0] !== p.pbxUsername)
+        .map(id => ({ id: id[0], name: id[1] }))
     } catch (error) {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,
@@ -152,6 +155,9 @@ class ContactStore {
   updateUcUser = (u: UcUser) => {
     const u0 = this.getUcUserById(u.id)
     if (!u0) {
+      return
+    }
+    if (_.isEqual(u0, u)) {
       return
     }
     Object.assign(u0, u)

@@ -1,3 +1,4 @@
+import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { FC, Fragment, useEffect, useRef } from 'react'
 import {
@@ -134,28 +135,28 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       )
     }
 
-    // TODO move to a new component with observer
-
-    // TODO move to a new component with observer
-
     const { dropdownOpenedIndex, listDropdownPosition } = RnDropdownSectionList
+
+    const sectionListData: SectionListData<UcBuddy, DefaultSectionT>[] = toJS(
+      p.sectionListData,
+    ) //p.sectionListData
 
     return (
       <Fragment>
         <SectionList
-          sections={p.sectionListData}
-          keyExtractor={(item, index) => item.user_id}
+          sections={sectionListData}
+          keyExtractor={item => item.user_id}
           renderItem={({
             item,
             index,
             section,
           }: {
             item: UcBuddy
-            index: number
+            index: Number
             section: SectionListData<UcBuddy, DefaultSectionT>
           }) => (
             <RenderItemUser
-              sectionListData={p.sectionListData}
+              sectionListData={sectionListData}
               item={item}
               title={section.title}
               isEditMode={p?.isEditMode}
@@ -164,7 +165,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           renderSectionHeader={({ section: { title, data } }) => (
             <RenderHeaderSection
               sectionHeaderRefs={sectionHeaderRefs}
-              sectionListData={p.sectionListData}
+              sectionListData={sectionListData}
               isEditMode={p.isEditMode}
               title={title}
               data={data}

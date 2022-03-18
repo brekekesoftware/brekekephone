@@ -43,8 +43,9 @@ export class RnDropdownSectionListStore {
         }
       }
     })
-
-    clonePositionDD.splice(sectionIndex, 1)
+    if (clonePositionDD.length >= 1) {
+      clonePositionDD.splice(sectionIndex, 1)
+    }
     this.listDropdownPosition = clonePositionDD
     this.hiddenGroupIndex = this.hiddenGroupIndex.map(idx => idx - 1)
     this.dropdownOpenedIndex = -1
@@ -55,7 +56,9 @@ export class RnDropdownSectionListStore {
     const indexSectionInHiddenGroup =
       cloneHiddenGroupIndex.indexOf(sectionIndex)
     if (indexSectionInHiddenGroup > -1) {
-      cloneHiddenGroupIndex.splice(indexSectionInHiddenGroup, 1)
+      if (cloneHiddenGroupIndex.length >= 1) {
+        cloneHiddenGroupIndex.splice(indexSectionInHiddenGroup, 1)
+      }
     } else {
       cloneHiddenGroupIndex.push(sectionIndex)
     }

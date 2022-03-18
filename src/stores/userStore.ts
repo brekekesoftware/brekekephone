@@ -261,8 +261,12 @@ class UserStore {
     this.dataGroupAllUser[groupIndex].data.forEach(u => {
       delete this.selectedUserIds[u.user_id]
     })
-    this.groups.splice(groupIndex, 1)
-    this.dataGroupAllUser.splice(groupIndex, 1)
+    if (this.groups.length >= 1) {
+      this.groups.splice(groupIndex, 1)
+    }
+    if (this.dataGroupAllUser.length >= 1) {
+      this.dataGroupAllUser.splice(groupIndex, 1)
+    }
   }
 
   @action unselectAllUserIdsByGroup = (groupIndex: number) => {
