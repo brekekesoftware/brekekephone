@@ -25,15 +25,7 @@ export class PageContactUsers extends Component {
   displayOfflineUsers = new DelayFlag()
 
   componentDidMount() {
-    // contactStore.getPbxUser()
-    const s = getAuthStore()
-    if (s.buddyListMode) {
-      const { ucEnabled } = s.currentProfile
-      ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
-    } else {
-      contactStore.getPbxUsers()
-      this.componentDidUpdate()
-    }
+    this.componentDidUpdate()
   }
 
   getMatchUserIds() {

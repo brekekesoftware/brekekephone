@@ -8,6 +8,7 @@ import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
+import { userStore } from '../stores/userStore'
 import { Conference } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
@@ -49,6 +50,14 @@ class Api {
     s.pbxState = 'success'
     await waitSip()
     await pbx.getConfig()
+    // load list local  when pbx start
+    if (s.buddyListMode) {
+      const { ucEnabled } = s.currentProfile
+      ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+    } else {
+      contactStore.getPbxUsers()
+    }
+
     if (s.isSignInByNotification) {
       return
     }
