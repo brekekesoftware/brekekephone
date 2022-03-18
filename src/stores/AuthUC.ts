@@ -79,13 +79,13 @@ class AuthUC {
     s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
   }
   @action private loadUsers = () => {
-    const { ucEnabled } = getAuthStore().currentProfile
-    if (ucEnabled) {
-      userStore.loadGroupUser()
-    } else {
-      const users = uc.getUsers()
-      contactStore.ucUsers = users
-    }
+    // const { ucEnabled } = getAuthStore().currentProfile
+    // if (ucEnabled) {
+    //   userStore.loadUcBuddyList()
+    // } else {
+    const users = uc.getUsers()
+    contactStore.ucUsers = users
+    // }
   }
   private loadUnreadChats = () =>
     uc

@@ -49,37 +49,24 @@ class Api {
     console.error('PBX PN debug: set pbxState succsess')
     const s = getAuthStore()
     s.pbxState = 'success'
+    console.log('onPBXConnectionStarted')
     await waitSip()
     const p = s.currentProfile
     try {
-      const ids = await pbx.getUsers(p.pbxTenant)
-      if (!ids) {
-        return
-      }
-      const userIds = ids.filter(id => id !== p.pbxUsername)
-      const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
-      if (!users) {
-        return
-      }
-      const pbxUser: UcBuddy[] = ids.map(u => {
-        return {
-          disabledBuddy: false,
-          user_id: u,
-          name: u,
-          profile_image_url: '',
-          group: '',
-          tenant: p.pbxTenant,
-          block_settings: {},
-          status: false,
-        } as unknown as UcBuddy
-      })
-      contactStore.pbxUsers = users
-
       await pbx.getConfig()
-      if (!p.ucEnabled && s.pbxBuddyList) {
-        userStore.loadPbxBuddyList(pbxUser)
-      }
+      // const ids = await pbx.getUsers(p.pbxTenant)
+      // if (!ids) {
+      //   return
+      // }
+      // const userIds = ids.filter(id => id !== p.pbxUsername)
+      // const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
+      // if (!users) {
+      //   return
+      // }
+      // contactStore.pbxUsers = users
     } catch (err) {
+      console.log('onPBXConnectionStarted', { err })
+
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,
         err: err as Error,

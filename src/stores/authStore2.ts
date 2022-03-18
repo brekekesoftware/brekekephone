@@ -96,15 +96,24 @@ export class AuthStore {
   }
 
   @observable pbxConfig?: PbxGetProductInfoRes
-  @computed get pbxConfigBuddyList() {
-    return (
-      !this.currentProfile?.ucEnabled &&
-      this.pbxConfig?.['webphone.allusers'] === 'false'
-    )
+
+  @computed get haveConfigWebPhoneAllUsers() {
+    // const isAllUsers = this.pbxConfig?.['webphone.allusers'] === 'false'
+    const isAllUsers = false
+    return isAllUsers
   }
-  @computed get pbxBuddyList() {
-    return this.pbxConfigBuddyList || !this.currentProfile?.pbxAllUsers
+  @computed get buddyListMode() {
+    return this.haveConfigWebPhoneAllUsers || this.currentProfile?.buddyMode
   }
+  // @computed get pbxConfigBuddyList() {
+  //   // return true;
+  //   // const isAllUser = this.pbxConfig?.['webphone.allusers'] === 'false'
+  //   const isAllUser = false
+  //   return (isAllUser)
+  // }
+  // @computed get pbxBuddyList() {
+  //   return this.pbxConfigBuddyList || !this.currentProfile?.buddyMode
+  // }
 
   @computed get currentData() {
     return profileStore.getProfileData(this.currentProfile)
@@ -194,6 +203,8 @@ export class AuthStore {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
+    console.log('savePbxBuddyList')
+
     this.currentData.pbxBuddyList = pbxBuddyList
     profileStore.saveProfilesToLocalStorage()
   }

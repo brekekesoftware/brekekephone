@@ -26,16 +26,16 @@ export const SelectionItem: FC<
     title: string
     disabled?: boolean
   }
-> = ({ isSelected, title, onPress, disabled, style, ...p }) => (
+> = ({ isSelected, title, onPress, disabled = false, style, ...p }) => (
   <RnTouchableOpacity
     {...p}
     style={[css.SelectionItem, disabled && css.SelectionItem_Disabled, style]}
-    onPress={onPress}
+    onPress={() => !disabled && onPress()}
   >
     <RnCheckBox
       isSelected={isSelected}
-      onPress={onPress}
-      disabled={disabled || false}
+      onPress={() => !disabled && onPress()}
+      disabled={disabled}
     />
     <RnText style={css.SelectionItem_Title}>{title}</RnText>
   </RnTouchableOpacity>

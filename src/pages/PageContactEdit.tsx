@@ -48,6 +48,14 @@ const css = StyleSheet.create({
 
 @observer
 export class PageContactEdit extends Component {
+  componentDidMount = () => {
+    const { ucEnabled } = getAuthStore().currentProfile
+    if (ucEnabled) {
+      userStore.loadUcBuddyList(true)
+    } else {
+      userStore.loadPbxBuddyList(true)
+    }
+  }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
     return [
       {
@@ -112,6 +120,8 @@ export class PageContactEdit extends Component {
   }
 
   onSelectEditGroupingAndUserOrderOption = () => {
+    console.log('onSelectEditGroupingAndUserOrderOption')
+
     RnDropdownSectionList.closeDropdown()
     if (!userStore.isSelectEditGroupingAndUserOrder) {
       RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
@@ -126,7 +136,6 @@ export class PageContactEdit extends Component {
 
   onGoBack = () => {
     RnDropdownSectionList.closeDropdown()
-    userStore.updateList()
     Nav().backToPageContactUsers()
   }
 
@@ -215,12 +224,15 @@ export class PageContactEdit extends Component {
   saveUC = () => {
     const { isSelectedAddAllUser, groups, dataListAllUser, selectedUserIds } =
       userStore
-    uc.saveProperties(!isSelectedAddAllUser, [
+    const data = [
       ...groups,
       ...dataListAllUser.filter(user =>
         selectedUserIds.some(id => id === user.user_id),
       ),
-    ])
+    ]
+    console.log({ data })
+
+    uc.saveProperties(!isSelectedAddAllUser, data)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)
   }
@@ -237,6 +249,7 @@ export class PageContactEdit extends Component {
       ],
     }
     getAuthStore().savePbxBuddyList(data)
+    userStore.updateDisplayGroupList()
     this.onGoBack()
   }
   save = () => {
@@ -246,6 +259,7 @@ export class PageContactEdit extends Component {
     }
   }
   onSaveSuccess = () => {
+    userStore.updateDisplayGroupList()
     this.onGoBack()
   }
   onSaveFailure = (err: Error) => {

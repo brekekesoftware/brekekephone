@@ -3,7 +3,9 @@ import React, { FC, Fragment, useEffect, useRef } from 'react'
 import {
   DefaultSectionT,
   Platform,
+  SectionList,
   SectionListData,
+  SectionListRenderItem,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -129,15 +131,16 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             }
           })
         },
-        300,
+        1000,
       )
     }
 
     const renderHeaderSection = (
       title: string,
       data: readonly UcBuddy[],
-      index: number,
+      // index: number,
     ) => {
+      const index = p.sectionListData.findIndex(item => item.title === title)
       const selectedItemCount = userStore.isSelectedAddAllUser
         ? data.length
         : data.filter(i =>
@@ -206,7 +209,9 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
     }
 
-    const renderItemUser = (item: UcBuddy, index: number) => {
+    const renderItemUser = (item: UcBuddy, title: string) => {
+      const index = p.sectionListData.findIndex(i => i.title === title)
+
       const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
         idx => idx === index,
       )
@@ -265,12 +270,28 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
 
     return (
       <Fragment>
-        {p.sectionListData.map((item, index) => (
+        {/* {p.sectionListData.map((item, index) => (
           <Fragment key={`ContactSectionListDataItem-${item.title}-${index}`}>
             {renderHeaderSection(item.title, item.data, index)}
             {item.data.map(itemUser => renderItemUser(itemUser, index))}
           </Fragment>
-        ))}
+        ))} */}
+        <SectionList
+          sections={p.sectionListData}
+          keyExtractor={(item, index) => item.user_id}
+          renderItem={({
+            item,
+            index,
+            section,
+          }: {
+            item: UcBuddy
+            index: number
+            section: SectionListData<UcBuddy, DefaultSectionT>
+          }) => renderItemUser(item, section.title)}
+          renderSectionHeader={({ section: { title, data } }) =>
+            renderHeaderSection(title, data)
+          }
+        />
         {dropdownOpenedIndex >= 0 && (
           <TouchableWithoutFeedback
             onPress={() => RnDropdownSectionList.closeDropdown()}

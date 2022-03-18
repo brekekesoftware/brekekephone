@@ -3,7 +3,7 @@ import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
-import { getAuthStore } from './authStore'
+import { getAuthStore, waitPbx, waitSip, waitUc } from './authStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -100,6 +100,40 @@ class ContactStore {
     this.loadContacts()
   }
   @observable pbxUsers: PbxUser[] = []
+
+  getPbxUser = async () => {
+    console.log('getPbxUser::')
+    await waitPbx()
+    console.log('getPbxUser::waitPbx')
+    await waitUc()
+    console.log('getPbxUser::waitUc')
+    await waitSip()
+    console.log('getPbxUser::waitSip')
+    try {
+      const p = getAuthStore().currentProfile
+      const ids = await pbx.getUsers(p.pbxTenant)
+      if (!ids) {
+        return
+      }
+      // console.log('getPbxUser::ids::', ids);
+      const userIds = ids.filter(id => id !== p.pbxUsername)
+      const users = userIds.map(id => {
+        return { id, name: id }
+      })
+      // const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
+      // console.log('getPbxUser::pbxUsers::', users);
+      // if (!users) {
+      //   return
+      // }
+
+      this.pbxUsers = users
+    } catch (error) {
+      RnAlert.error({
+        message: intlDebug`Failed to load PBX users`,
+        err: error as Error,
+      })
+    }
+  }
   setTalkerStatus = (userId: string, talkerId: string, status: string) => {
     const u = this.getPbxUserById(userId)
     if (!u) {

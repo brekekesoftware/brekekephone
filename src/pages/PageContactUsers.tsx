@@ -1,6 +1,7 @@
 import { orderBy, uniq } from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
+import { SectionList } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
@@ -24,7 +25,15 @@ export class PageContactUsers extends Component {
   displayOfflineUsers = new DelayFlag()
 
   componentDidMount() {
-    this.componentDidUpdate()
+    // contactStore.getPbxUser()
+    const s = getAuthStore()
+    if (s.buddyListMode) {
+      const { ucEnabled } = s.currentProfile
+      ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+    } else {
+      contactStore.getPbxUser()
+      this.componentDidUpdate()
+    }
   }
 
   getMatchUserIds() {
@@ -109,13 +118,19 @@ export class PageContactUsers extends Component {
     })
 
     let groups = Object.keys(map).map(k => ({
-      key: k,
-      users: map[k],
+      title: k,
+      data: map[k],
     }))
-    groups = orderBy(groups, 'key')
+    // const sectionDataOther: SectionListData<UcBuddy> = {
+    //   title: `(${intl`No Group`})`,
+    //   data: [],
+    // }
+    groups = orderBy(groups, 'title')
     groups.forEach(gr => {
-      gr.users = orderBy(gr.users, 'name')
+      gr.data = orderBy(gr.data, 'name')
     })
+    console.log({ groups })
+
     const s = getAuthStore()
 
     return (
@@ -127,16 +142,19 @@ export class PageContactUsers extends Component {
         subMenu='users'
         title={intl`Users`}
         dropdown={
-          !s.pbxConfigBuddyList
+          !s.haveConfigWebPhoneAllUsers
             ? [
                 {
                   label: intl`Enable buddy list`,
                   onPress: () => {
                     profileStore.upsertProfile({
                       id: s.currentProfile.id,
-                      pbxAllUsers: false,
+                      buddyMode: true,
                     })
-                    // TODO reload pbx buddy list from local storage
+                    const { ucEnabled } = s.currentProfile
+                    ucEnabled
+                      ? userStore.loadUcBuddyList()
+                      : userStore.loadPbxBuddyList()
                   },
                 },
               ]
@@ -151,31 +169,33 @@ export class PageContactUsers extends Component {
           }}
           value={contactStore.usersSearchTerm}
         />
-        {groups.map(gr => (
-          <Fragment key={gr.key}>
-            <Field isGroup label={gr.key} />
-            {gr.users.map((u, i) => (
-              <RnTouchableOpacity
-                key={i}
-                onPress={
-                  getAuthStore().currentProfile.ucEnabled
-                    ? () => Nav().goToPageChatDetail({ buddy: u.id })
-                    : undefined
-                }
-              >
-                <UserItem
-                  iconFuncs={[
-                    () => callStore.startVideoCall(u.id),
-                    () => callStore.startCall(u.id),
-                  ]}
-                  icons={[mdiVideo, mdiPhone]}
-                  lastMessage={this.getLastMessageChat(u.id)?.text}
-                  {...u}
-                />
-              </RnTouchableOpacity>
-            ))}
-          </Fragment>
-        ))}
+        <SectionList
+          sections={groups}
+          keyExtractor={(item, index) => item.id}
+          renderItem={({ item, index }: { item: User; index: number }) => (
+            <RnTouchableOpacity
+              key={index}
+              onPress={
+                getAuthStore().currentProfile.ucEnabled
+                  ? () => Nav().goToPageChatDetail({ buddy: item.id })
+                  : undefined
+              }
+            >
+              <UserItem
+                iconFuncs={[
+                  () => callStore.startVideoCall(item.id),
+                  () => callStore.startCall(item.id),
+                ]}
+                icons={[mdiVideo, mdiPhone]}
+                lastMessage={this.getLastMessageChat(item.id)?.text}
+                {...item}
+              />
+            </RnTouchableOpacity>
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <Field isGroup label={title} />
+          )}
+        />
       </Layout>
     )
   }
@@ -207,15 +227,16 @@ export class PageContactUsers extends Component {
             label: intl`Edit buddy list`,
             onPress: Nav().goToPageContactEdit,
           },
-          ...(!s.pbxConfigBuddyList
+          ...(!s.haveConfigWebPhoneAllUsers
             ? [
                 {
                   label: intl`Disable buddy list`,
                   onPress: () => {
                     profileStore.upsertProfile({
                       id: s.currentProfile.id,
-                      pbxAllUsers: true,
+                      buddyMode: false,
                     })
+                    contactStore.getPbxUser()
                   },
                 },
               ]
@@ -251,12 +272,7 @@ export class PageContactUsers extends Component {
   }
 
   render() {
-    const {
-      currentProfile: { ucEnabled },
-      pbxBuddyList,
-    } = getAuthStore()
-    return ucEnabled || pbxBuddyList
-      ? this.renderBuddyList()
-      : this.renderPbxUsers()
+    const { buddyListMode } = getAuthStore()
+    return buddyListMode ? this.renderBuddyList() : this.renderPbxUsers()
   }
 }
