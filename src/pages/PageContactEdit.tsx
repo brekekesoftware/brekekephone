@@ -120,8 +120,6 @@ export class PageContactEdit extends Component {
   }
 
   onSelectEditGroupingAndUserOrderOption = () => {
-    console.log('onSelectEditGroupingAndUserOrderOption')
-
     RnDropdownSectionList.closeDropdown()
     if (!userStore.isSelectEditGroupingAndUserOrder) {
       RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
@@ -228,8 +226,6 @@ export class PageContactEdit extends Component {
       ...groups,
       ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
     ]
-    console.log({ data })
-
     uc.saveProperties(!isSelectedAddAllUser, data)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)

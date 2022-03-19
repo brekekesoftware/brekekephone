@@ -104,8 +104,7 @@ export class AuthStore {
   @observable pbxConfig?: PbxGetProductInfoRes
 
   @computed get isBigMode() {
-    return false
-    // return this.pbxConfig?.['webphone.allusers'] === 'false'
+    return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
 
   @computed get currentData() {

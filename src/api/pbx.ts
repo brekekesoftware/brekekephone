@@ -22,8 +22,8 @@ export class PBX extends EventEmitter {
       // TODO
       return
     }
-
-    getAuthStore().pbxConfig = undefined
+    // got issue: any function get pbxConfig on this time. will get undefined
+    // getAuthStore().pbxConfig = undefined
 
     const d = profileStore.getProfileData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`

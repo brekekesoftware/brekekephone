@@ -5,7 +5,7 @@ import { DefaultSectionT, SectionListData } from 'react-native'
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { isUcBuddy, uc } from '../api/uc'
-import { getAuthStore, waitPbx, waitUc } from './authStore'
+import { getAuthStore, waitPbx } from './authStore'
 import { intl } from './intl'
 
 const defaultBuddyMax = 100
@@ -21,17 +21,10 @@ class UserStore {
   @observable saveSelectedUserIds: { [userId: string]: boolean } = {}
   @observable userOnline: { [userId: string]: string } = {}
   @observable isCapacityInvalid = false
-  @observable byIds: any = {} // dictionary object by id
   @observable buddyMode = 0
   @observable dataDisplayGroupAllUser: SectionListData<UcBuddy>[] = []
   type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
-  private userStatus?: [
-    {
-      id: string
-      status: string
-    },
-  ]
 
   @action loadPbxBuddyList = async (isAllUser: boolean = false) => {
     await waitPbx()
@@ -63,7 +56,6 @@ class UserStore {
     // get from local
     const buddyList = s.currentData?.pbxBuddyList
     const users = buddyList?.users || []
-    console.log('pbxUser', users)
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     }
@@ -75,9 +67,9 @@ class UserStore {
     this.filterDataUserGroup(users, allUsers, this.buddyMode === 1)
   }
   @action loadUcBuddyList = async (isAllUser: boolean = false) => {
-    await waitUc()
-    this.resetCache()
+    await waitPbx()
     const s = getAuthStore()
+    this.resetCache()
     const userList = uc.client.getBuddylist()
     const configProperties = uc.client.getConfigProperties()
     const profile = uc.client.getProfile()
@@ -96,6 +88,7 @@ class UserStore {
             } as UcBuddy),
         )
     }
+
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     }
@@ -165,14 +158,7 @@ class UserStore {
     const listUserNotSelected = listAllUser.filter(
       itm => !listDataUser.some(u => u.user_id === itm.user_id),
     )
-    if (this.userStatus && this.userStatus.length > 0) {
-      this.userStatus.forEach(status => {
-        if (byIds[status.id]) {
-          byIds[status.id].status = status.status
-        }
-      })
-    }
-    this.byIds = byIds
+
     if (!isDisableEditGroup) {
       sectionDataOther.data = [...sectionDataOther.data, ...listUserNotSelected]
       sectionData.push(sectionDataOther)
@@ -188,7 +174,6 @@ class UserStore {
   }
 
   filterUser = (searchTxt: string, isOnline: boolean) => {
-    console.log('filterUser')
     const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     let totalContact = 0
     let totalOnlineContact = 0

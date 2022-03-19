@@ -86,15 +86,12 @@ export class PageContactUsers extends Component {
     }
   }
   getDescription = (isUserSelectionMode: boolean) => {
-    console.log('getDescription', { isUserSelectionMode })
     if (!isUserSelectionMode) {
       const allUsers = this.getMatchUserIds().map(this.resolveUser)
       const onlineUsers = allUsers.filter(
         i => i.status && i.status !== 'offline',
       )
       const { ucEnabled } = getAuthStore().currentProfile
-      // const displayUsers =
-      //   !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
       let desc = intl`PBX users, ${allUsers.length} total`
       if (allUsers.length && ucEnabled) {
         desc = desc.replace('PBX', 'PBX/UC')
@@ -106,19 +103,19 @@ export class PageContactUsers extends Component {
       return desc
     } else {
       const searchTxt = contactStore.usersSearchTerm.toLowerCase()
-      const isShowOfflineUser =
-        !getAuthStore().currentProfile?.ucEnabled ||
-        this.displayOfflineUsers.enabled
+      const { ucEnabled } = getAuthStore().currentProfile
+      const isShowOfflineUser = !ucEnabled || this.displayOfflineUsers.enabled
       const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
         searchTxt,
         isShowOfflineUser,
       )
-      let desc = getAuthStore().currentProfile?.ucEnabled
-        ? intl`UC users, ${totalOnlineContact} total`
-        : intl`PBX users, ${totalOnlineContact} total`
-      if (isShowOfflineUser) {
+      let desc = ucEnabled
+        ? intl`UC users, ${totalContact} total`
+        : intl`PBX users, ${totalContact} total`
+
+      if (ucEnabled) {
         desc = desc.replace(
-          intl`${totalOnlineContact} total`,
+          intl`${totalContact} total`,
           intl`${totalOnlineContact}/${totalContact} online`,
         )
       }
