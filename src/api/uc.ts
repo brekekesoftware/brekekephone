@@ -4,6 +4,7 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { getAuthStore } from '../stores/authStore'
 import { ChatFile } from '../stores/chatStore'
 import { UcUser } from '../stores/contactStore'
 import { Profile } from '../stores/profileStore'
@@ -329,7 +330,11 @@ export class UC extends EventEmitter {
   }
 
   getConfigProperties = () => {
-    return this.client.getConfigProperties()
+    const s = getAuthStore()
+    if (!s.ucConfig) {
+      s.ucConfig = this.client.getConfigProperties()
+    }
+    return s.ucConfig
   }
   getUnreadChats = async () => {
     const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {

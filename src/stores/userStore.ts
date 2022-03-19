@@ -64,7 +64,7 @@ class UserStore {
 
     this.isSelectedAddAllUser = false
     this.isDisableAddAllUserToTheList =
-      s.haveConfigWebPhoneAllUsers || defaultBuddyMax < allUsers?.length
+      s.isBigMode || defaultBuddyMax < allUsers?.length
     this.buddyMax =
       Number(s.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
@@ -96,7 +96,7 @@ class UserStore {
     this.isSelectedAddAllUser = !userList.screened
 
     this.isDisableAddAllUserToTheList =
-      getAuthStore().haveConfigWebPhoneAllUsers ||
+      getAuthStore().isBigMode ||
       configProperties.optional_config?.buddy_max < allUsers?.length
     this.buddyMax =
       configProperties.optional_config?.buddy_max || defaultBuddyMax

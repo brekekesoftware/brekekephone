@@ -2,7 +2,12 @@ import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 
-import { PbxGetProductInfoRes, UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import {
+  PbxGetProductInfoRes,
+  UcBuddy,
+  UcBuddyGroup,
+  UcConfig,
+} from '../api/brekekejs'
 import { sip } from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
@@ -95,14 +100,16 @@ export class AuthStore {
     return profileStore.profiles.find(p => p.id === this.signedInId) as Profile
   }
 
+  @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
 
-  @computed get haveConfigWebPhoneAllUsers() {
-    // return false
+  @computed get isBigMode() {
+    // this.currentProfile?.ucEnabled
+    //   ? this.ucConfig?.optional_config.buddy_max < this.ucConfig.
     return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
   @computed get buddyListMode() {
-    return this.haveConfigWebPhoneAllUsers || this.currentProfile?.buddyMode
+    return this.isBigMode || this.currentProfile?.buddyMode
   }
 
   @computed get currentData() {

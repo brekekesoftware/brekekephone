@@ -118,13 +118,15 @@ export class PageContactUsers extends Component {
     return (
       <Layout
         description={(() => {
-          return intl`PBX users, ${allUsers.length} total`
+          return s.currentProfile?.ucEnabled
+            ? intl`UC users, ${allUsers.length} total`
+            : intl`PBX users, ${allUsers.length} total`
         })()}
         menu='contact'
         subMenu='users'
         title={intl`Users`}
         dropdown={
-          !s.haveConfigWebPhoneAllUsers
+          !s.isBigMode
             ? [
                 {
                   label: intl`Enable buddy list`,
@@ -167,19 +169,22 @@ export class PageContactUsers extends Component {
   }
 
   renderBuddyList = () => {
+    const s = getAuthStore()
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
-    const isShowOfflineUser = this.displayOfflineUsers.enabled
+    const isShowOfflineUser =
+      !s.currentProfile?.ucEnabled || this.displayOfflineUsers.enabled
     const {
       displayUsers,
       totalContact = 0,
       totalOnlineContact = 0,
     } = userStore.filterUser(searchTxt, isShowOfflineUser)
-    const s = getAuthStore()
 
     return (
       <Layout
         description={(() => {
-          let desc = intl`UC users, ${totalOnlineContact} total`
+          let desc = s.currentProfile?.ucEnabled
+            ? intl`UC users, ${totalOnlineContact} total`
+            : intl`PBX users, ${totalOnlineContact} total`
           if (isShowOfflineUser) {
             desc = desc.replace(
               intl`${totalOnlineContact} total`,
@@ -193,7 +198,7 @@ export class PageContactUsers extends Component {
             label: intl`Edit buddy list`,
             onPress: Nav().goToPageContactEdit,
           },
-          ...(!s.haveConfigWebPhoneAllUsers
+          ...(!s.isBigMode
             ? [
                 {
                   label: intl`Disable buddy list`,
@@ -220,18 +225,19 @@ export class PageContactUsers extends Component {
           }}
           value={contactStore.usersSearchTerm}
         />
-
-        <Field
-          label={intl`SHOW OFFLINE USERS`}
-          onValueChange={(v: boolean) => {
-            profileStore.upsertProfile({
-              id: getAuthStore().signedInId,
-              displayOfflineUsers: v,
-            })
-          }}
-          type='Switch'
-          value={getAuthStore().currentProfile.displayOfflineUsers}
-        />
+        {s.currentProfile?.ucEnabled && (
+          <Field
+            label={intl`SHOW OFFLINE USERS`}
+            onValueChange={(v: boolean) => {
+              profileStore.upsertProfile({
+                id: getAuthStore().signedInId,
+                displayOfflineUsers: v,
+              })
+            }}
+            type='Switch'
+            value={getAuthStore().currentProfile.displayOfflineUsers}
+          />
+        )}
         <ContactSectionList sectionListData={displayUsers} />
       </Layout>
     )

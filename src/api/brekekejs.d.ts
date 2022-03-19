@@ -407,15 +407,7 @@ export type UcChatClient = {
     profile_image_url: string
     tenant: string
   }
-  getConfigProperties(): {
-    buddy_mode: number
-    chat_mode: number
-    webnotif_timeout: number
-    webchat_enabled: string
-    optional_config: {
-      buddy_max: number
-    }
-  }
+  getConfigProperties(): UcConfig
 
   saveProperties(
     profile?: null,
@@ -793,6 +785,15 @@ export type UcEventMap = {
     conference: Conference
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
+}
+export type UcConfig = {
+  buddy_mode: number
+  chat_mode: number
+  webnotif_timeout: number
+  webchat_enabled: string
+  optional_config: {
+    buddy_max: number
+  }
 }
 
 export type UcConstants = {
