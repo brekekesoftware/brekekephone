@@ -80,6 +80,14 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
 
     useEffect(() => {
       RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+      return () => {
+        sectionHeaderRefs.current = []
+        if (reCalculatedLayoutDropdownTimeoutId.current) {
+          BackgroundTimer.clearTimeout(
+            reCalculatedLayoutDropdownTimeoutId.current,
+          )
+        }
+      }
     }, [])
 
     useEffect(() => {
@@ -107,7 +115,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       if (reCalculatedLayoutDropdownTimeoutId.current) {
         clearConnectTimeoutId()
       }
-
       // Must wrap in setTimeout to make sure the header view has completed render
       reCalculatedLayoutDropdownTimeoutId.current = BackgroundTimer.setTimeout(
         () => {
@@ -280,7 +287,16 @@ const RenderHeaderSection = observer(
     const isDisableMarginTop =
       sectionListData[index - 1]?.data?.length === 0 ||
       RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
-
+    const { ucEnabled } = getAuthStore().currentProfile
+    const txtOnOff = `${
+      isEditMode
+        ? selectedItemCount
+        : data.filter(itm => itm.status === 'online').length
+    }/${data.length}` // name 0/3
+    const txtNumberUser = ` (${data.length})` // nam (3)
+    const titleHeader = `${title} ${
+      ucEnabled || isEditMode ? txtOnOff : txtNumberUser
+    }`
     return (
       <RnTouchableOpacity
         onPress={() => RnDropdownSectionList.toggleSection(index, data.length)}
@@ -301,11 +317,7 @@ const RenderHeaderSection = observer(
               <View>
                 <RnIcon path={isHidden ? mdiMenuRight : mdiMenuDown} />
               </View>
-              <RnText small>{`${title} ${
-                isEditMode
-                  ? selectedItemCount
-                  : data.filter(itm => itm.status === 'online').length
-              }/${data.length}`}</RnText>
+              <RnText small>{titleHeader}</RnText>
             </View>
             {isEditMode && (
               <RnTouchableOpacity

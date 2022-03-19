@@ -85,11 +85,63 @@ export class PageContactUsers extends Component {
       )
     }
   }
+  getDescription = (isUserSelectionMode: boolean) => {
+    console.log('getDescription', { isUserSelectionMode })
+    if (!isUserSelectionMode) {
+      const allUsers = this.getMatchUserIds().map(this.resolveUser)
+      const onlineUsers = allUsers.filter(
+        i => i.status && i.status !== 'offline',
+      )
+      const { ucEnabled } = getAuthStore().currentProfile
+      // const displayUsers =
+      //   !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
+      let desc = intl`PBX users, ${allUsers.length} total`
+      if (allUsers.length && ucEnabled) {
+        desc = desc.replace('PBX', 'PBX/UC')
+        desc = desc.replace(
+          intl`${allUsers.length} total`,
+          intl`${onlineUsers.length}/${allUsers.length} online`,
+        )
+      }
+      return desc
+    } else {
+      const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+      const isShowOfflineUser =
+        !getAuthStore().currentProfile?.ucEnabled ||
+        this.displayOfflineUsers.enabled
+      const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
+        searchTxt,
+        isShowOfflineUser,
+      )
+      let desc = getAuthStore().currentProfile?.ucEnabled
+        ? intl`UC users, ${totalOnlineContact} total`
+        : intl`PBX users, ${totalOnlineContact} total`
+      if (isShowOfflineUser) {
+        desc = desc.replace(
+          intl`${totalOnlineContact} total`,
+          intl`${totalOnlineContact}/${totalContact} online`,
+        )
+      }
+      return desc
+    }
+  }
+  renderUserSelectionMode = () => {
+    const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+    const isShowOfflineUser =
+      !getAuthStore().currentProfile?.ucEnabled ||
+      this.displayOfflineUsers.enabled
+    const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
 
-  renderPbxUsers = () => {
+    return <ContactSectionList sectionListData={displayUsers} />
+  }
+  renderAllUserMode = () => {
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
+    const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
     type User = typeof allUsers[0]
-    const displayUsers = allUsers
+
+    const { ucEnabled } = getAuthStore().currentProfile
+    const displayUsers =
+      !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
 
     const map = {} as { [k: string]: User[] }
     displayUsers.forEach(u => {
@@ -108,110 +160,37 @@ export class PageContactUsers extends Component {
       title: k,
       data: map[k],
     }))
-
     groups = orderBy(groups, 'title')
     groups.forEach(gr => {
       gr.data = orderBy(gr.data, 'name')
     })
-    const s = getAuthStore()
-
     return (
-      <Layout
-        description={(() => {
-          return s.currentProfile?.ucEnabled
-            ? intl`UC users, ${allUsers.length} total`
-            : intl`PBX users, ${allUsers.length} total`
-        })()}
-        menu='contact'
-        subMenu='users'
-        title={intl`Users`}
-        dropdown={
-          !s.isBigMode
-            ? [
-                {
-                  label: intl`Enable buddy list`,
-                  onPress: () => {
-                    profileStore.upsertProfile({
-                      id: s.currentProfile.id,
-                      buddyMode: true,
-                    })
-                    const { ucEnabled } = s.currentProfile
-                    ucEnabled
-                      ? userStore.loadUcBuddyList()
-                      : userStore.loadPbxBuddyList()
-                  },
-                },
-              ]
-            : []
-        }
-      >
-        <Field
-          icon={mdiMagnify}
-          label={intl`SEARCH FOR USERS`}
-          onValueChange={(v: string) => {
-            contactStore.usersSearchTerm = v
-          }}
-          value={contactStore.usersSearchTerm}
-        />
-        <SectionList
-          sections={groups}
-          keyExtractor={(item, index) => item.id}
-          renderItem={({ item, index }: { item: User; index: number }) => (
-            <RenderItemUser item={item} index={index} />
-          )}
-          renderSectionHeader={({ section: { title } }) => (
-            // TODO move to a new component with observer
-            <Field isGroup label={title} />
-          )}
-        />
-      </Layout>
+      <SectionList
+        sections={groups}
+        keyExtractor={(item, index) => item.id}
+        renderItem={({ item, index }: { item: any; index: number }) => (
+          <RenderItemUser item={item} index={index} />
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          // TODO move to a new component with observer
+          <Field isGroup label={title} />
+        )}
+      />
     )
   }
 
-  renderBuddyList = () => {
-    const s = getAuthStore()
-    const searchTxt = contactStore.usersSearchTerm.toLowerCase()
-    const isShowOfflineUser =
-      !s.currentProfile?.ucEnabled || this.displayOfflineUsers.enabled
-    const {
-      displayUsers,
-      totalContact = 0,
-      totalOnlineContact = 0,
-    } = userStore.filterUser(searchTxt, isShowOfflineUser)
-
+  render() {
+    const isUserSelectionMode =
+      getAuthStore().isBigMode || !userStore.isSelectedAddAllUser
+    const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
-        description={(() => {
-          let desc = s.currentProfile?.ucEnabled
-            ? intl`UC users, ${totalOnlineContact} total`
-            : intl`PBX users, ${totalOnlineContact} total`
-          if (isShowOfflineUser) {
-            desc = desc.replace(
-              intl`${totalOnlineContact} total`,
-              intl`${totalOnlineContact}/${totalContact} online`,
-            )
-          }
-          return desc
-        })()}
+        description={description}
         dropdown={[
           {
             label: intl`Edit buddy list`,
             onPress: Nav().goToPageContactEdit,
           },
-          ...(!s.isBigMode
-            ? [
-                {
-                  label: intl`Disable buddy list`,
-                  onPress: () => {
-                    profileStore.upsertProfile({
-                      id: s.currentProfile.id,
-                      buddyMode: false,
-                    })
-                    contactStore.getPbxUsers()
-                  },
-                },
-              ]
-            : []),
         ]}
         menu='contact'
         subMenu='users'
@@ -225,7 +204,7 @@ export class PageContactUsers extends Component {
           }}
           value={contactStore.usersSearchTerm}
         />
-        {s.currentProfile?.ucEnabled && (
+        {getAuthStore().currentProfile?.ucEnabled && (
           <Field
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={(v: boolean) => {
@@ -238,14 +217,11 @@ export class PageContactUsers extends Component {
             value={getAuthStore().currentProfile.displayOfflineUsers}
           />
         )}
-        <ContactSectionList sectionListData={displayUsers} />
+        {isUserSelectionMode
+          ? this.renderUserSelectionMode()
+          : this.renderAllUserMode()}
       </Layout>
     )
-  }
-
-  render() {
-    const { buddyListMode } = getAuthStore()
-    return buddyListMode ? this.renderBuddyList() : this.renderPbxUsers()
   }
 }
 
@@ -257,7 +233,7 @@ type ItemUser = {
   item: any
   index: number
 }
-const RenderItemUser = ({ item, index }: ItemUser) => (
+const RenderItemUser = observer(({ item, index }: ItemUser) => (
   // TODO move to a new component with observer
   <RnTouchableOpacity
     key={index}
@@ -277,4 +253,4 @@ const RenderItemUser = ({ item, index }: ItemUser) => (
       {...item}
     />
   </RnTouchableOpacity>
-)
+))

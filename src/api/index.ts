@@ -51,7 +51,7 @@ class Api {
     await waitSip()
     await pbx.getConfig()
     // load list local  when pbx start
-    if (s.buddyListMode) {
+    if (s.isBigMode) {
       const { ucEnabled } = s.currentProfile
       ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
     } else {

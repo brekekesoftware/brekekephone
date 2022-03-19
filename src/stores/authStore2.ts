@@ -104,12 +104,8 @@ export class AuthStore {
   @observable pbxConfig?: PbxGetProductInfoRes
 
   @computed get isBigMode() {
-    // this.currentProfile?.ucEnabled
-    //   ? this.ucConfig?.optional_config.buddy_max < this.ucConfig.
-    return this.pbxConfig?.['webphone.allusers'] === 'false'
-  }
-  @computed get buddyListMode() {
-    return this.isBigMode || this.currentProfile?.buddyMode
+    return false
+    // return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
 
   @computed get currentData() {
