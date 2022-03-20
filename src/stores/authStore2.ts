@@ -152,6 +152,8 @@ export class AuthStore {
     sip.stopWebRTC()
     this.ucState = 'stopped'
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()
+    this.pbxConfig = undefined
+    this.ucConfig = undefined
   }
 
   @action resetFailureState = () => {
