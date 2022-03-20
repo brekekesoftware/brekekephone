@@ -6,7 +6,9 @@ import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { isUcBuddy, uc } from '../api/uc'
 import { getAuthStore, waitPbx } from './authStore'
+import { contactStore } from './contactStore'
 import { intl } from './intl'
+import { profileStore } from './profileStore'
 
 const defaultBuddyMax = 100
 
@@ -58,6 +60,8 @@ class UserStore {
     const users = buddyList?.users || []
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
+    } else {
+      this.isSelectedAddAllUser = !!s.currentProfile.buddyMode
     }
     this.isDisableAddAllUserToTheList = s.isBigMode
     this.buddyMax =
@@ -91,6 +95,8 @@ class UserStore {
 
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
+    } else {
+      this.isSelectedAddAllUser = !!s.currentProfile.buddyMode
     }
     this.isDisableAddAllUserToTheList =
       s.isBigMode ||
@@ -209,7 +215,15 @@ class UserStore {
   }
 
   @action toggleIsSelectedAddAllUser = () => {
+    if (!this.isSelectedAddAllUser && !contactStore.pbxUsers.length) {
+      contactStore.getPbxUsers()
+    }
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
+    const s = getAuthStore()
+    profileStore.upsertProfile({
+      id: s.currentProfile.id,
+      buddyMode: this.isSelectedAddAllUser,
+    })
   }
 
   @observable isSelectEditGroupingAndUserOrder: boolean = false

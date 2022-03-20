@@ -195,8 +195,6 @@ export class AuthStore {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
-    console.log('savePbxBuddyList')
-
     this.currentData.pbxBuddyList = pbxBuddyList
     profileStore.saveProfilesToLocalStorage()
   }

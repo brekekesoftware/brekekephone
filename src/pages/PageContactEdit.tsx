@@ -27,6 +27,7 @@ import { mdiFolderPlus } from '../assets/icons'
 import { RnText } from '../components/RnText'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore } from '../stores/authStore'
+import { profileStore } from '../stores/profileStore'
 
 const css = StyleSheet.create({
   listHeaderSection: {
@@ -251,6 +252,7 @@ export class PageContactEdit extends Component {
     }
   }
   onSaveSuccess = () => {
+    profileStore.saveProfilesToLocalStorage()
     userStore.updateDisplayGroupList()
     this.onGoBack()
   }

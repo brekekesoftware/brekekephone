@@ -92,9 +92,8 @@ export class PageContactUsers extends Component {
         i => i.status && i.status !== 'offline',
       )
       const { ucEnabled } = getAuthStore().currentProfile
-      let desc = intl`PBX users, ${allUsers.length} total`
+      let desc = intl`Users, ${allUsers.length} total`
       if (allUsers.length && ucEnabled) {
-        desc = desc.replace('PBX', 'PBX/UC')
         desc = desc.replace(
           intl`${allUsers.length} total`,
           intl`${onlineUsers.length}/${allUsers.length} online`,
@@ -109,10 +108,7 @@ export class PageContactUsers extends Component {
         searchTxt,
         isShowOfflineUser,
       )
-      let desc = ucEnabled
-        ? intl`UC users, ${totalContact} total`
-        : intl`PBX users, ${totalContact} total`
-
+      let desc = `Users, ${totalContact} total`
       if (ucEnabled) {
         desc = desc.replace(
           intl`${totalContact} total`,
@@ -177,8 +173,8 @@ export class PageContactUsers extends Component {
   }
 
   render() {
-    const isUserSelectionMode =
-      getAuthStore().isBigMode || !userStore.isSelectedAddAllUser
+    const s = getAuthStore()
+    const isUserSelectionMode = s.isBigMode || !s.currentProfile?.buddyMode
     const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
