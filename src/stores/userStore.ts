@@ -187,13 +187,17 @@ class UserStore {
     this.dataDisplayGroupAllUser.forEach(s => {
       // list all user
       const dataAllUsers =
-        s.data?.filter(u => this.saveSelectedUserIds[u.user_id]) || []
+        s.data
+          ?.filter(u => this.saveSelectedUserIds[u.user_id])
+          .map(u => ({ ...u, status: this.userOnline[u.user_id] })) || []
+
       totalContact += dataAllUsers.length
 
       const dataAllUsersFiltered =
         dataAllUsers?.filter(
           u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
         ) || []
+
       // list online user
       const dataOnlineUser = s.data
         .filter(u => this.userOnline[u.user_id])
