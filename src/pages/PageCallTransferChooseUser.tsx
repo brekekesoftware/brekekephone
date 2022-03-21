@@ -16,6 +16,9 @@ import { Nav } from '../stores/Nav'
 export class PageCallTransferChooseUser extends Component {
   prevId?: string
   componentDidMount() {
+    if (!contactStore.pbxUsers.length) {
+      contactStore.getPbxUsers()
+    }
     this.componentDidUpdate()
   }
   componentDidUpdate() {
