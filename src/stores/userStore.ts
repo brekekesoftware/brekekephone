@@ -74,6 +74,7 @@ class UserStore {
     await waitPbx()
     const s = getAuthStore()
     this.resetCache()
+    this.type = 'UcBuddy'
     const userList = uc.client.getBuddylist()
     const configProperties = uc.client.getConfigProperties()
     const profile = uc.client.getProfile()
@@ -386,6 +387,8 @@ class UserStore {
     this.dataGroupAllUser = []
     this.dataListAllUser = []
     this.selectedUserIds = {}
+    this.saveSelectedUserIds = {}
+    this.dataDisplayGroupAllUser = []
   }
 }
 
