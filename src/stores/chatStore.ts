@@ -8,7 +8,9 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
+import { ringOrVibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
+import { RnStacker } from './RnStacker'
 
 export type ChatMessage = {
   id: string
@@ -136,6 +138,23 @@ class ChatStore {
     if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
     }
+
+    // check screen to open ringOrVibration
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+      groupId?: string
+      buddy?: string
+      name?: string
+    }
+    if (isGroup) {
+      if (!(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)) {
+        ringOrVibration()
+      }
+    } else {
+      if (!(s?.name === 'PageChatDetail' && s?.buddy === threadId)) {
+        ringOrVibration()
+      }
+    }
+
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })

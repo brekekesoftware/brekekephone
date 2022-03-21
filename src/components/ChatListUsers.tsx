@@ -38,7 +38,7 @@ export const ListUsers: FC<{
       >
         <UserItem
           key={id}
-          name={name}
+          name={name || id}
           {...(group ? p.groupById : p.userById)[id]}
           lastMessage={text}
           group={group}
