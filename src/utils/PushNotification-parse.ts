@@ -174,8 +174,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return null
   }
 
-  const id = raw['id'] as string | undefined
-  if (id?.startsWith('missedcall')) {
+  const rawId = raw['id'] as string | undefined
+  if (rawId?.startsWith('missedcall')) {
     // Nav after signin in App.tsx mobx observe?
     Nav().customPageIndex = Nav().goToPageCallRecents
     waitTimeout().then(Nav().goToPageCallRecents)
@@ -220,7 +220,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   if (isLocal) {
     signInByLocalNotification(n)
-    if (!id?.startsWith('missedcall')) {
+    if (!rawId?.startsWith('missedcall')) {
       const nav = Nav()
       nav.customPageIndex = nav.goToPageChatRecents
       waitTimeout().then(nav.goToPageChatRecents)
