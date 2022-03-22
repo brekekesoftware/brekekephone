@@ -19,15 +19,14 @@ export class PageContactGroupEdit extends Component<{
   groupName: string
   listItem: UcBuddy[]
 }> {
-  @observable selectedUsers: { [k: string]: boolean } = {}
-
+  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
   state = {
     didMount: false,
   }
   componentDidMount() {
     this.props.listItem.forEach(u => {
       if (userStore.selectedUserIds[u.user_id]) {
-        this.selectedUsers[u.user_id] = true
+        this.selectedUserItems[u.user_id] = u
       }
     })
     setTimeout(() => this.setState({ didMount: true }), 300)
@@ -57,7 +56,7 @@ export class PageContactGroupEdit extends Component<{
               <RenderItem
                 item={item}
                 index={index}
-                selectedUsers={this.selectedUsers}
+                selectedUsers={this.selectedUserItems}
               />
             )}
             keyExtractor={item => item.user_id}
@@ -68,17 +67,22 @@ export class PageContactGroupEdit extends Component<{
   }
 
   selectUser = (item: UcBuddy) => {
-    this.selectedUsers[item.user_id] = !this.selectedUsers[item.user_id]
+    if (this.selectedUserItems[item.user_id]) {
+      delete this.selectedUserItems[item.user_id]
+    } else {
+      this.selectedUserItems[item.user_id] = item
+    }
   }
 
   create = () => {
     const listItemRemoved = this.props.listItem.filter(
-      itm => !this.selectedUsers[itm.user_id],
+      itm => !this.selectedUserItems[itm.user_id],
     )
-    const selectedUsers = userStore.dataListAllUser.filter(
-      itm => this.selectedUsers[itm.user_id],
+    userStore.editGroup(
+      this.props.groupName,
+      listItemRemoved,
+      this.selectedUserItems,
     )
-    userStore.editGroup(this.props.groupName, selectedUsers, listItemRemoved)
     RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()
   }
@@ -92,10 +96,14 @@ const RenderItem = observer(
   }: {
     item: UcBuddy
     index: number
-    selectedUsers: { [k: string]: boolean }
+    selectedUsers: { [k: string]: UcBuddy }
   }) => {
     const selectUser = (i: UcBuddy) => {
-      selectedUsers[i.user_id] = !selectedUsers[i.user_id]
+      if (selectedUsers[item.user_id]) {
+        delete selectedUsers[item.user_id]
+      } else {
+        selectedUsers[item.user_id] = item
+      }
     }
     return (
       <View key={`PageContactGroupEdit-${item.user_id}-${index}`}>
@@ -107,7 +115,7 @@ const RenderItem = observer(
             id={item.user_id}
             name={item.name || item.user_id}
             avatar={item.profile_image_url}
-            isSelected={selectedUsers[item.user_id]}
+            isSelected={!!selectedUsers[item.user_id]}
             onSelect={() => selectUser(item)}
             isSelection
           />

@@ -17,7 +17,7 @@ import { css } from './PageContactEdit'
 
 @observer
 export class PageContactGroupCreate extends Component {
-  @observable selectedUsers: { [k: string]: boolean } = {}
+  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
 
   state = {
     name: '',
@@ -51,7 +51,7 @@ export class PageContactGroupCreate extends Component {
               <RenderItem
                 item={item}
                 index={index}
-                selectedUsers={this.selectedUsers}
+                selectedUsers={this.selectedUserItems}
               />
             )}
             keyExtractor={item => item.user_id}
@@ -80,10 +80,10 @@ export class PageContactGroupCreate extends Component {
       })
       return
     }
-    const selectedUsers = userStore.dataListAllUser.filter(
-      u => this.selectedUsers[u.user_id],
-    )
-    userStore.addGroup(name, selectedUsers)
+    // const selectedUsers = userStore.dataListAllUser.filter(
+    //   u => this.selectedUsers[u.user_id],
+    // )
+    userStore.addGroup(name, this.selectedUserItems)
     RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()
   }
@@ -97,10 +97,14 @@ const RenderItem = observer(
   }: {
     item: UcBuddy
     index: number
-    selectedUsers: { [k: string]: boolean }
+    selectedUsers: { [k: string]: UcBuddy }
   }) => {
     const selectUser = (i: UcBuddy) => {
-      selectedUsers[i.user_id] = !selectedUsers[i.user_id]
+      if (selectedUsers[i.user_id]) {
+        delete selectedUsers[item.user_id]
+      } else {
+        selectedUsers[i.user_id] = i
+      }
     }
     return (
       <View key={`PageContactGroupCreate-${item.user_id}-${index}`}>
@@ -109,7 +113,7 @@ const RenderItem = observer(
             id={item.user_id}
             name={item.name || item.user_id}
             avatar={item.profile_image_url}
-            isSelected={selectedUsers[item.user_id]}
+            isSelected={!!selectedUsers[item.user_id]}
             onSelect={() => selectUser(item)}
             isSelection
           />
