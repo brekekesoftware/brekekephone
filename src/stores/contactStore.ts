@@ -105,6 +105,9 @@ class ContactStore {
   getPbxUsers = async () => {
     try {
       const p = getAuthStore().currentProfile
+      if (!p) {
+        return
+      }
       const res = await pbx.getUsers(p.pbxTenant)
       if (!res) {
         return

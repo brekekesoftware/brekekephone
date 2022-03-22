@@ -50,10 +50,13 @@ class Api {
     s.pbxState = 'success'
     await waitSip()
     await pbx.getConfig()
-    const { ucEnabled } = s.currentProfile
+    const cp = s.currentProfile
+    if (!cp) {
+      return
+    }
     // load list local  when pbx start
-    if (s.isBigMode || !s.currentProfile?.buddyMode) {
-      ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+    if (s.isBigMode || !cp.buddyMode) {
+      cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
     } else {
       contactStore.getPbxUsers()
     }
@@ -62,7 +65,7 @@ class Api {
       return
     }
     SyncPnToken()
-      .sync(s.currentProfile)
+      .sync(cp)
       .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {

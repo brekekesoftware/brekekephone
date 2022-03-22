@@ -238,7 +238,7 @@ const RenderItemUser = observer(
         ) : (
           <RnTouchableOpacity
             onPress={
-              getAuthStore().currentProfile.ucEnabled
+              getAuthStore().currentProfile?.ucEnabled
                 ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
                 : undefined
             }
@@ -287,7 +287,6 @@ const RenderHeaderSection = observer(
     const isDisableMarginTop =
       sectionListData[index - 1]?.data?.length === 0 ||
       RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
-    const { ucEnabled } = getAuthStore().currentProfile
     const txtOnOff = `${
       isEditMode
         ? selectedItemCount
@@ -295,7 +294,9 @@ const RenderHeaderSection = observer(
     }/${data.length}` // name 0/3
     const txtNumberUser = ` (${data.length})` // nam (3)
     const titleHeader = `${title} ${
-      ucEnabled || isEditMode ? txtOnOff : txtNumberUser
+      getAuthStore().currentProfile?.ucEnabled || isEditMode
+        ? txtOnOff
+        : txtNumberUser
     }`
     return (
       <RnTouchableOpacity

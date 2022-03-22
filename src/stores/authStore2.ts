@@ -97,7 +97,7 @@ export class AuthStore {
 
   @observable signedInId = ''
   @computed get currentProfile() {
-    return profileStore.profiles.find(p => p.id === this.signedInId) as Profile
+    return profileStore.profiles.find(p => p.id === this.signedInId)
   }
 
   @observable ucConfig?: UcConfig

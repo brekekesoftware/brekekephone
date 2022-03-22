@@ -217,7 +217,8 @@ export class Nav2 {
   })
   customPageIndex?: Function
   goToPageIndex = () => {
-    if (!getAuthStore().currentProfile) {
+    const p = getAuthStore().currentProfile
+    if (!p) {
       this.customPageIndex = undefined
       this.goToPageProfileSignIn()
       return
@@ -229,7 +230,6 @@ export class Nav2 {
     }
     const arr = menus()
     normalizeSavedNavigation()
-    const p = getAuthStore().currentProfile
     const i = p.navIndex
     const k = p.navSubMenus?.[i]
     arr[i].subMenusMap[k].navFn()

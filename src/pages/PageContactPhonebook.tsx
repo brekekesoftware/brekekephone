@@ -222,7 +222,7 @@ export class PageContactPhonebook extends Component {
             contactStore.refreshContacts()
           }}
           type='Switch'
-          value={getAuthStore().currentProfile.displaySharedContacts}
+          value={getAuthStore().currentProfile?.displaySharedContacts}
         />
         <View>
           {groups.map(gr => (

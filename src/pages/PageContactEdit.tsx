@@ -50,8 +50,7 @@ const css = StyleSheet.create({
 @observer
 export class PageContactEdit extends Component {
   componentDidMount = () => {
-    const { ucEnabled } = getAuthStore().currentProfile
-    if (ucEnabled) {
+    if (getAuthStore().currentProfile?.ucEnabled) {
       userStore.loadUcBuddyList(true)
     } else {
       userStore.loadPbxBuddyList(true)

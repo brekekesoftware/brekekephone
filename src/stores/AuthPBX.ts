@@ -27,7 +27,7 @@ class AuthPBX {
 
   @action private authWithCheck = () => {
     const s = getAuthStore()
-    if (!s.pbxShouldAuth()) {
+    if (!s.pbxShouldAuth() || !s.currentProfile) {
       return
     }
     console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')

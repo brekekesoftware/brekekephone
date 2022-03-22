@@ -11,6 +11,9 @@ export const updatePhoneIndex = async (
   id: string
   type: string
 }> => {
+  if (!p) {
+    return null
+  }
   //
   const phoneIndex = parseInt(p.pbxPhoneIndex) || 4
   const extProps = await api.getPbxPropertiesForCurrentUser(

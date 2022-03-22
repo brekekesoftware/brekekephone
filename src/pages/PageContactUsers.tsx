@@ -76,24 +76,23 @@ export class PageContactUsers extends Component {
   }
 
   componentDidUpdate() {
-    if (
-      this.displayOfflineUsers.enabled !==
-      getAuthStore().currentProfile.displayOfflineUsers
-    ) {
-      this.displayOfflineUsers.setEnabled(
-        getAuthStore().currentProfile.displayOfflineUsers,
-      )
+    const cp = getAuthStore().currentProfile
+    if (this.displayOfflineUsers.enabled !== cp?.displayOfflineUsers) {
+      this.displayOfflineUsers.setEnabled(cp?.displayOfflineUsers)
     }
   }
   getDescription = (isUserSelectionMode: boolean) => {
+    const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return ''
+    }
     if (!isUserSelectionMode) {
       const allUsers = this.getMatchUserIds().map(this.resolveUser)
       const onlineUsers = allUsers.filter(
         i => i.status && i.status !== 'offline',
       )
-      const { ucEnabled } = getAuthStore().currentProfile
       let desc = intl`Users, ${allUsers.length} total`
-      if (allUsers.length && ucEnabled) {
+      if (allUsers.length && cp.ucEnabled) {
         desc = desc.replace(
           intl`${allUsers.length} total`,
           intl`${onlineUsers.length}/${allUsers.length} online`,
@@ -102,14 +101,14 @@ export class PageContactUsers extends Component {
       return desc
     } else {
       const searchTxt = contactStore.usersSearchTerm.toLowerCase()
-      const { ucEnabled } = getAuthStore().currentProfile
-      const isShowOfflineUser = !ucEnabled || this.displayOfflineUsers.enabled
+      const isShowOfflineUser =
+        !cp.ucEnabled || this.displayOfflineUsers.enabled
       const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
         searchTxt,
         isShowOfflineUser,
       )
       let desc = `Users, ${totalContact} total`
-      if (ucEnabled) {
+      if (cp.ucEnabled) {
         desc = desc.replace(
           intl`${totalContact} total`,
           intl`${totalOnlineContact}/${totalContact} online`,
@@ -124,18 +123,18 @@ export class PageContactUsers extends Component {
       !getAuthStore().currentProfile?.ucEnabled ||
       this.displayOfflineUsers.enabled
     const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
-
     return <ContactSectionList sectionListData={displayUsers} />
   }
   renderAllUserMode = () => {
+    const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return null
+    }
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
     type User = typeof allUsers[0]
-
-    const { ucEnabled } = getAuthStore().currentProfile
     const displayUsers =
-      !this.displayOfflineUsers.enabled && ucEnabled ? onlineUsers : allUsers
-
+      !this.displayOfflineUsers.enabled && cp.ucEnabled ? onlineUsers : allUsers
     const map = {} as { [k: string]: User[] }
     displayUsers.forEach(u => {
       u.name = u.name || u.id || ''
@@ -148,7 +147,6 @@ export class PageContactUsers extends Component {
       }
       map[c0].push(u)
     })
-
     let groups = Object.keys(map).map(k => ({
       title: k,
       data: map[k],
@@ -174,7 +172,11 @@ export class PageContactUsers extends Component {
 
   render() {
     const s = getAuthStore()
-    const isUserSelectionMode = s.isBigMode || !s.currentProfile?.buddyMode
+    const cp = s.currentProfile
+    if (!cp) {
+      return null
+    }
+    const isUserSelectionMode = s.isBigMode || !cp.buddyMode
     const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
@@ -207,7 +209,7 @@ export class PageContactUsers extends Component {
               })
             }}
             type='Switch'
-            value={getAuthStore().currentProfile.displayOfflineUsers}
+            value={cp.displayOfflineUsers}
           />
         )}
         {isUserSelectionMode
@@ -231,7 +233,7 @@ const RenderItemUser = observer(({ item, index }: ItemUser) => (
   <RnTouchableOpacity
     key={index}
     onPress={
-      getAuthStore().currentProfile.ucEnabled
+      getAuthStore().currentProfile?.ucEnabled
         ? () => Nav().goToPageChatDetail({ buddy: item.id })
         : undefined
     }

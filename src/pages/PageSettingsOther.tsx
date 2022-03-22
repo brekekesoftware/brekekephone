@@ -51,6 +51,7 @@ export class PageSettingsOther extends Component {
       })
   }
   render() {
+    const cp = getAuthStore().currentProfile
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
@@ -89,11 +90,11 @@ export class PageSettingsOther extends Component {
           value={intlStore.locale}
           valueRender={() => intlStore.localeName}
         />
-        {getAuthStore().currentProfile.ucEnabled && (
+        {cp?.ucEnabled && (
           <>
             <Field isGroup label={intl`UC`} />
             <Field
-              disabled={!getAuthStore().currentProfile.ucEnabled}
+              disabled={!cp.ucEnabled}
               label={intl`STATUS`}
               onValueChange={this.submitStatus}
               options={[
@@ -106,7 +107,7 @@ export class PageSettingsOther extends Component {
             />
             <Field
               createBtnIcon={mdiCheck}
-              disabled={!getAuthStore().currentProfile.ucEnabled}
+              disabled={!cp.ucEnabled}
               label={intl`STATUS NOTE`}
               onCreateBtnPress={this.submitStatusText}
               onSubmitEditing={this.submitStatusText}

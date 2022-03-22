@@ -49,6 +49,9 @@ export class PageCallParks extends Component<{
 
   render() {
     const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return null
+    }
     const parks = cp.parks.map((p, i) => ({
       park: p,
       name: cp.parkNames?.[i] || '',

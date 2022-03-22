@@ -33,11 +33,14 @@ class UserStore {
     this.resetCache()
     this.type = 'PbxBuddy'
     const s = getAuthStore()
-    const p = s.currentProfile
+    const cp = s.currentProfile
+    if (!cp) {
+      return
+    }
     let allUsers: UcBuddy[] = []
     // get all user from pbx
     if (isAllUser) {
-      const ids = await pbx.getUsers(p.pbxTenant)
+      const ids = await pbx.getUsers(cp.pbxTenant)
       if (!ids) {
         return
       }
@@ -48,7 +51,7 @@ class UserStore {
           name: u[1],
           profile_image_url: '',
           group: '',
-          tenant: p.pbxTenant,
+          tenant: cp.pbxTenant,
           block_settings: {},
           status: false,
         } as unknown as UcBuddy
@@ -61,7 +64,7 @@ class UserStore {
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentProfile.buddyMode
+      this.isSelectedAddAllUser = !!s.currentProfile?.buddyMode
     }
     this.isDisableAddAllUserToTheList = s.isBigMode
     this.buddyMax =
@@ -97,7 +100,7 @@ class UserStore {
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentProfile.buddyMode
+      this.isSelectedAddAllUser = !!s.currentProfile?.buddyMode
     }
     this.isDisableAddAllUserToTheList =
       s.isBigMode ||
@@ -226,7 +229,7 @@ class UserStore {
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
     const s = getAuthStore()
     profileStore.upsertProfile({
-      id: s.currentProfile.id,
+      id: s.currentProfile?.id,
       buddyMode: this.isSelectedAddAllUser,
     })
   }
