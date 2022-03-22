@@ -1,6 +1,7 @@
+import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'
 import { UserItem } from '../components/ContactUserItem'
@@ -12,15 +13,18 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
 import { userStore } from '../stores/userStore'
+import { css } from './PageContactEdit'
 
 @observer
 export class PageContactGroupCreate extends Component {
-  state: {
-    name: string
-    selectedUsers: UcBuddy[]
-  } = {
+  @observable selectedUsers: { [k: string]: boolean } = {}
+
+  state = {
     name: '',
-    selectedUsers: [],
+    didMount: false,
+  }
+  componentDidMount() {
+    setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
   render() {
@@ -38,33 +42,30 @@ export class PageContactGroupCreate extends Component {
           value={this.state.name}
         />
         <Field isGroup label={intl`Members`} />
-        {userStore.dataListAllUser.map((item, index) => (
-          <View key={`ContactListUser-${item.user_id}-${index}`}>
-            <RnTouchableOpacity onPress={() => this.selectUser(item)}>
-              <UserItem
-                id={item.user_id}
-                name={item.name || item.user_id}
-                avatar={item.profile_image_url}
-                isSelected={this.state.selectedUsers.some(
-                  selectedUser => selectedUser.user_id === item.user_id,
-                )}
-                onSelect={() => this.selectUser(item)}
-                isSelection
-              />
-            </RnTouchableOpacity>
-          </View>
-        ))}
+        {!this.state.didMount ? (
+          <ActivityIndicator style={css.loadingIcon} size='large' />
+        ) : (
+          userStore.dataListAllUser.map((item, index) => (
+            <View key={`ContactListUser-${item.user_id}-${index}`}>
+              <RnTouchableOpacity onPress={() => this.selectUser(item)}>
+                <UserItem
+                  id={item.user_id}
+                  name={item.name || item.user_id}
+                  avatar={item.profile_image_url}
+                  isSelected={this.selectedUsers[item.user_id]}
+                  onSelect={() => this.selectUser(item)}
+                  isSelection
+                />
+              </RnTouchableOpacity>
+            </View>
+          ))
+        )}
       </Layout>
     )
   }
 
   selectUser = (item: UcBuddy) => {
-    const { selectedUsers } = this.state
-    this.setState({
-      selectedUsers: selectedUsers.some(u => u.user_id === item.user_id)
-        ? selectedUsers.filter(u => u.user_id !== item.user_id)
-        : [...selectedUsers, item],
-    })
+    this.selectedUsers[item.user_id] = !this.selectedUsers[item.user_id]
   }
 
   setName = (name: string) =>
@@ -73,7 +74,7 @@ export class PageContactGroupCreate extends Component {
     })
 
   create = () => {
-    const { name, selectedUsers } = this.state
+    const { name } = this.state
 
     if (!name.trim()) {
       RnAlert.error({
@@ -86,7 +87,9 @@ export class PageContactGroupCreate extends Component {
       })
       return
     }
-
+    const selectedUsers = userStore.dataListAllUser.filter(
+      u => this.selectedUsers[u.user_id],
+    )
     userStore.addGroup(name, selectedUsers)
     RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
     Nav().backToPageContactEdit()
