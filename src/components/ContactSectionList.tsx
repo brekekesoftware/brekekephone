@@ -138,7 +138,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             }
           })
         },
-        1500,
+        500,
       )
     }
 

@@ -1,7 +1,7 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator, FlatList, View } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'
 import { UserItem } from '../components/ContactUserItem'
@@ -45,27 +45,20 @@ export class PageContactGroupCreate extends Component {
         {!this.state.didMount ? (
           <ActivityIndicator style={css.loadingIcon} size='large' />
         ) : (
-          userStore.dataListAllUser.map((item, index) => (
-            <View key={`ContactListUser-${item.user_id}-${index}`}>
-              <RnTouchableOpacity onPress={() => this.selectUser(item)}>
-                <UserItem
-                  id={item.user_id}
-                  name={item.name || item.user_id}
-                  avatar={item.profile_image_url}
-                  isSelected={this.selectedUsers[item.user_id]}
-                  onSelect={() => this.selectUser(item)}
-                  isSelection
-                />
-              </RnTouchableOpacity>
-            </View>
-          ))
+          <FlatList
+            data={userStore.dataListAllUser}
+            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+              <RenderItem
+                item={item}
+                index={index}
+                selectedUsers={this.selectedUsers}
+              />
+            )}
+            keyExtractor={item => item.user_id}
+          />
         )}
       </Layout>
     )
-  }
-
-  selectUser = (item: UcBuddy) => {
-    this.selectedUsers[item.user_id] = !this.selectedUsers[item.user_id]
   }
 
   setName = (name: string) =>
@@ -95,3 +88,33 @@ export class PageContactGroupCreate extends Component {
     Nav().backToPageContactEdit()
   }
 }
+
+const RenderItem = observer(
+  ({
+    item,
+    index,
+    selectedUsers,
+  }: {
+    item: UcBuddy
+    index: number
+    selectedUsers: { [k: string]: boolean }
+  }) => {
+    const selectUser = (i: UcBuddy) => {
+      selectedUsers[i.user_id] = !selectedUsers[i.user_id]
+    }
+    return (
+      <View key={`PageContactGroupCreate-${item.user_id}-${index}`}>
+        <RnTouchableOpacity onPress={() => selectUser(item)}>
+          <UserItem
+            id={item.user_id}
+            name={item.name || item.user_id}
+            avatar={item.profile_image_url}
+            isSelected={selectedUsers[item.user_id]}
+            onSelect={() => selectUser(item)}
+            isSelection
+          />
+        </RnTouchableOpacity>
+      </View>
+    )
+  },
+)
