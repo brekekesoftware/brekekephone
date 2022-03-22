@@ -150,8 +150,28 @@ class ContactStore {
       [k: string]: PbxUser
     }
   }
+
+  @observable private extraPbxUsersMap: { [k: string]: PbxUser } = {}
+  private extraPbxUsersLoadingMap: { [k: string]: boolean } = {}
   getPbxUserById = (id: string) => {
-    return this.pbxUsersMap[id]
+    const u = this.pbxUsersMap[id] || this.extraPbxUsersMap[id]
+    if (!u && !this.extraPbxUsersLoadingMap[id]) {
+      this.extraPbxUsersLoadingMap[id] = true
+      pbx
+        .getExtraUser(id)
+        .then(
+          action(extraU => {
+            if (!extraU) {
+              return
+            }
+            this.extraPbxUsersMap[id] = extraU
+          }),
+        )
+        .finally(() => {
+          this.extraPbxUsersLoadingMap[id] = false
+        })
+    }
+    return u
   }
 
   @observable ucUsers: UcUser[] = []

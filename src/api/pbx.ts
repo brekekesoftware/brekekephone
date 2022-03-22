@@ -4,6 +4,7 @@ import 'brekekejs/lib/pal'
 import EventEmitter from 'eventemitter3'
 
 import { getAuthStore, waitPbx } from '../stores/authStore'
+import { PbxUser } from '../stores/contactStore'
 import { Profile, profileStore } from '../stores/profileStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Pbx } from './brekekejs'
@@ -204,6 +205,24 @@ export class PBX extends EventEmitter {
       type: 'user',
       property_names: ['name'],
     })
+  }
+  getExtraUser = async (id: string): Promise<PbxUser | undefined> => {
+    if (this.needToWait) {
+      await waitPbx()
+    }
+    const cp = getAuthStore().currentProfile
+    if (!this.client || !cp) {
+      return
+    }
+    const [res] = await this.client._pal('getExtensionProperties', {
+      tenant: cp.pbxTenant,
+      extension: [id],
+      property_names: ['name'],
+    })
+    return {
+      id,
+      name: res[0],
+    }
   }
 
   getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
