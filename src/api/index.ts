@@ -55,11 +55,11 @@ class Api {
       return
     }
     // load list local  when pbx start
-    // set default buddyMode = true
-    if (cp.buddyMode === undefined) {
-      cp.buddyMode = true
+    // set default pbxLocalAllUsers = true
+    if (cp.pbxLocalAllUsers === undefined) {
+      cp.pbxLocalAllUsers = true
     }
-    if (s.isBigMode || !cp.buddyMode) {
+    if (s.isBigMode || !cp.pbxLocalAllUsers) {
       cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
     } else {
       contactStore.getPbxUsers()

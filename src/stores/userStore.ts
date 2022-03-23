@@ -67,7 +67,7 @@ class UserStore {
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentProfile?.buddyMode
+      this.isSelectedAddAllUser = !!s.currentProfile?.pbxLocalAllUsers
     }
     this.isDisableAddAllUserToTheList = s.isBigMode
     this.buddyMax =
@@ -103,7 +103,7 @@ class UserStore {
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentProfile?.buddyMode
+      this.isSelectedAddAllUser = !!s.currentProfile?.pbxLocalAllUsers
     }
     this.isDisableAddAllUserToTheList =
       s.isBigMode ||
@@ -230,7 +230,7 @@ class UserStore {
     const s = getAuthStore()
     profileStore.upsertProfile({
       id: s.currentProfile?.id,
-      buddyMode: this.isSelectedAddAllUser,
+      pbxLocalAllUsers: this.isSelectedAddAllUser,
     })
   }
 

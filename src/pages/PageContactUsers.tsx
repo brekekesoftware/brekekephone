@@ -176,7 +176,7 @@ export class PageContactUsers extends Component {
     if (!cp) {
       return null
     }
-    const isUserSelectionMode = s.isBigMode || !cp.buddyMode
+    const isUserSelectionMode = s.isBigMode || !cp.pbxLocalAllUsers
     const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
