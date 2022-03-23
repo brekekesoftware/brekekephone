@@ -55,6 +55,10 @@ class Api {
       return
     }
     // load list local  when pbx start
+    // set default buddyMode = true
+    if (cp.buddyMode === undefined) {
+      cp.buddyMode = true
+    }
     if (s.isBigMode || !cp.buddyMode) {
       cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
     } else {
