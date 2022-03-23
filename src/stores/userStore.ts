@@ -197,10 +197,9 @@ class UserStore {
 
       totalContact += dataAllUsers.length
 
-      const dataAllUsersFiltered =
-        dataAllUsers?.filter(
-          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-        ) || []
+      const dataAllUsersFiltered = dataAllUsers.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
 
       // list online user
       const dataOnlineUser = s.data
