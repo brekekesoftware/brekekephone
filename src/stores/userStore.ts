@@ -60,7 +60,8 @@ class UserStore {
 
     // get from local
     const buddyList = s.currentData?.pbxBuddyList
-    const users = buddyList?.users || []
+    const users = _.cloneDeep(buddyList?.users || [])
+
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
@@ -134,7 +135,6 @@ class UserStore {
 
     const listDataUser: UcBuddy[] = []
     const selectedUserIds: { [userId: string]: boolean } = {}
-    let byIds: any = {} // dictionary object by id
 
     if (dataGroupUser.length > 0) {
       dataGroupUser.forEach(user => {
@@ -157,7 +157,6 @@ class UserStore {
           }
           listDataUser.push(user)
           selectedUserIds[user.user_id] = true
-          byIds = { ...byIds, ...{ [user.user_id]: user } }
         } else if (!this.groups.some(g => g.id === user.id)) {
           sectionData.push({ title: user.id, data: [] })
           sectionDataIds.push({ title: user.id, data: [] })
@@ -284,43 +283,33 @@ class UserStore {
     }
   }
 
-  @action addGroup = (groupName: string, selectedUsers: UcBuddy[]) => {
-    const cloneDataListAllUser = _.cloneDeep(this.dataListAllUser)
-    const cloneDataGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
-
+  @action addGroup = (
+    groupName: string,
+    selectedUsers: { [k: string]: UcBuddy },
+  ) => {
     this.dataListAllUser.forEach((user, index) => {
-      if (
-        selectedUsers.some(
-          selectedUser => selectedUser.user_id === user.user_id,
-        )
-      ) {
-        cloneDataListAllUser[index].group = groupName
+      if (selectedUsers[user.user_id]) {
+        this.dataListAllUser[index].group = groupName
       }
     })
 
     this.dataGroupAllUser.forEach((group, index) => {
-      cloneDataGroupAllUser[index].data = group.data.filter(
-        item =>
-          !selectedUsers.some(
-            selectedUser => selectedUser.user_id === item.user_id,
-          ),
+      this.dataGroupAllUser[index].data = group.data.filter(
+        item => !selectedUsers[item.user_id],
       )
     })
 
     const newGroupContact: SectionListData<UcBuddy, DefaultSectionT> = {
-      data: cloneDataListAllUser.filter(itm =>
-        selectedUsers.some(
-          selectedUser => selectedUser.user_id === itm.user_id,
-        ),
-      ),
+      data: Object.keys(selectedUsers).map(key => {
+        return selectedUsers[key]
+      }),
       title: groupName,
     }
 
-    cloneDataGroupAllUser.unshift(newGroupContact)
-    this.dataGroupAllUser = cloneDataGroupAllUser
-    this.dataListAllUser = cloneDataListAllUser
-    selectedUsers.forEach(u => {
-      this.selectedUserIds[u.user_id] = true
+    this.dataGroupAllUser.unshift(newGroupContact)
+
+    Object.keys(selectedUsers).forEach(u => {
+      this.selectedUserIds[u] = true
     })
     this.groups.push({ id: groupName, name: groupName })
   }
@@ -329,7 +318,6 @@ class UserStore {
     this.groups = []
     this.selectedUserIds = {}
     this.dataListAllUser = []
-    // this.byIds = {}
   }
   @action updateDisplayGroupList = () => {
     this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
@@ -339,48 +327,41 @@ class UserStore {
   }
   @action editGroup = (
     groupName: string,
-    selectedUsers: UcBuddy[],
     removedUsers: UcBuddy[],
+    selectedUserItems: { [k: string]: UcBuddy },
   ) => {
-    const cloneDataListAllUser = _.cloneDeep(this.dataListAllUser)
-    const cloneDataGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
-
     this.dataListAllUser.forEach((user, index) => {
-      if (
-        selectedUsers.some(
-          selectedUser => selectedUser.user_id === user.user_id,
-        )
-      ) {
-        cloneDataListAllUser[index].group = groupName
+      if (selectedUserItems[user.user_id]) {
+        this.dataListAllUser[index].group = groupName
       }
     })
 
     this.dataGroupAllUser.forEach((group, index) => {
       if (group.title === groupName) {
-        cloneDataGroupAllUser[index].data = selectedUsers
+        this.dataGroupAllUser[index].data = Object.keys(selectedUserItems).map(
+          key => {
+            return selectedUserItems[key]
+          },
+        )
       } else {
-        cloneDataGroupAllUser[index].data = group.data.filter(
-          item =>
-            !selectedUsers.some(
-              selectedUser => selectedUser.user_id === item.user_id,
-            ),
+        this.dataGroupAllUser[index].data = group.data.filter(
+          item => !selectedUserItems[item.user_id],
         )
       }
       if (index === this.dataGroupAllUser.length - 1) {
-        cloneDataGroupAllUser[index].data = [
-          ...cloneDataGroupAllUser[index].data,
+        this.dataGroupAllUser[index].data = [
+          ...this.dataGroupAllUser[index].data,
           ...removedUsers,
         ]
       }
     })
 
-    this.dataGroupAllUser = cloneDataGroupAllUser
-    this.dataListAllUser = cloneDataListAllUser
+    Object.keys(selectedUserItems).forEach(u => {
+      this.selectedUserIds[u] = true
+    })
+    // this.selectedUserIds = _.merge(this.selectedUserIds, selectedUsersId)
     removedUsers.forEach(u => {
       delete this.selectedUserIds[u.user_id]
-    })
-    selectedUsers.forEach(u => {
-      this.selectedUserIds[u.user_id] = true
     })
   }
 
