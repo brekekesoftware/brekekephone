@@ -44,18 +44,20 @@ class UserStore {
       if (!ids) {
         return
       }
-      allUsers = ids.map(u => {
-        return {
-          disabledBuddy: false,
-          user_id: u[0],
-          name: u[1],
-          profile_image_url: '',
-          group: '',
-          tenant: cp.pbxTenant,
-          block_settings: {},
-          status: false,
-        } as unknown as UcBuddy
-      })
+      allUsers = ids
+        .filter(u => u[0] !== cp.pbxUsername)
+        .map(u => {
+          return {
+            disabledBuddy: false,
+            user_id: u[0],
+            name: u[1],
+            profile_image_url: '',
+            group: '',
+            tenant: cp.pbxTenant,
+            block_settings: {},
+            status: false,
+          } as unknown as UcBuddy
+        })
     }
 
     // get from local
