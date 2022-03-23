@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { debounce } from 'lodash'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable } from 'mobx'
 
@@ -150,29 +150,37 @@ class ContactStore {
       [k: string]: PbxUser
     }
   }
-
   @observable private extraPbxUsersMap: { [k: string]: PbxUser } = {}
-  private extraPbxUsersLoadingMap: { [k: string]: boolean } = {}
   getPbxUserById = (id: string) => {
     const u = this.pbxUsersMap[id] || this.extraPbxUsersMap[id]
     if (!u && !this.extraPbxUsersLoadingMap[id]) {
       this.extraPbxUsersLoadingMap[id] = true
-      pbx
-        .getExtraUser(id)
-        .then(
-          action(extraU => {
-            if (!extraU) {
-              return
-            }
-            this.extraPbxUsersMap[id] = extraU
-          }),
-        )
-        .finally(() => {
-          this.extraPbxUsersLoadingMap[id] = false
-        })
+      this.extraPbxUsersBatch.push(id)
+      this.getExtraPbxUsersBatch()
     }
     return u
   }
+
+  private extraPbxUsersLoadingMap: { [k: string]: boolean } = {}
+  private extraPbxUsersBatch: string[] = []
+  private getExtraPbxUsersBatch = debounce(() => {
+    const ids = this.extraPbxUsersBatch
+    this.extraPbxUsersBatch = []
+    pbx
+      .getExtraUsers(ids)
+      .then(
+        action(arr =>
+          arr?.forEach(u => {
+            this.extraPbxUsersMap[u.id] = u
+          }),
+        ),
+      )
+      .finally(() =>
+        ids.forEach(id => {
+          delete this.extraPbxUsersLoadingMap[id]
+        }),
+      )
+  }, 17)
 
   @observable ucUsers: UcUser[] = []
   updateUcUser = (u: UcUser) => {

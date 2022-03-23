@@ -206,7 +206,7 @@ export class PBX extends EventEmitter {
       property_names: ['name'],
     })
   }
-  getExtraUser = async (id: string): Promise<PbxUser | undefined> => {
+  getExtraUsers = async (ids: string[]): Promise<PbxUser[] | undefined> => {
     if (this.needToWait) {
       await waitPbx()
     }
@@ -214,15 +214,12 @@ export class PBX extends EventEmitter {
     if (!this.client || !cp) {
       return
     }
-    const [res] = await this.client._pal('getExtensionProperties', {
+    const res = await this.client._pal('getExtensionProperties', {
       tenant: cp.pbxTenant,
-      extension: [id],
+      extension: ids,
       property_names: ['name'],
     })
-    return {
-      id,
-      name: res[0],
-    }
+    return res.map((r, i) => ({ id: ids[i], name: r[0] }))
   }
 
   getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
