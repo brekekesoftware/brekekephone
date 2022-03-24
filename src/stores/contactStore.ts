@@ -173,12 +173,12 @@ class ContactStore {
           arr?.forEach(u => {
             this.extraPbxUsersMap[u.id] = u
           })
-          ids.forEach(id => {
-            delete this.extraPbxUsersLoadingMap[id]
-          })
         }),
-      ) // remove finally, because es5 not support that function and refs: https://github.com/facebook/fbjs/pull/293
-      .catch(() =>
+      )
+      .catch(() => {
+        // mimic finally
+      })
+      .then(() =>
         ids.forEach(id => {
           delete this.extraPbxUsersLoadingMap[id]
         }),
