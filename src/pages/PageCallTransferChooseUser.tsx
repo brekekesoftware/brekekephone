@@ -11,6 +11,7 @@ import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { userStore } from '../stores/userStore'
 
 @observer
 export class PageCallTransferChooseUser extends Component {
@@ -36,6 +37,7 @@ export class PageCallTransferChooseUser extends Component {
       name: match.name,
       avatar: ucUser.avatar,
       number: id,
+      status: ucUser.status,
       calling: !!match.talkers?.filter(t => t.status === 'calling').length,
       ringing: !!match.talkers?.filter(t => t.status === 'ringing').length,
       talking: !!match.talkers?.filter(t => t.status === 'talking').length,
@@ -44,7 +46,10 @@ export class PageCallTransferChooseUser extends Component {
   }
 
   render() {
-    const users = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
+    const users = contactStore.pbxUsers
+      .map(u => u.id)
+      .filter(id => userStore.saveSelectedUserIds[id])
+      .map(this.resolveMatch)
     type User = typeof users[0]
 
     const map = {} as { [k: string]: User[] }
