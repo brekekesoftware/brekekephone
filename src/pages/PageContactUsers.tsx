@@ -107,7 +107,7 @@ export class PageContactUsers extends Component {
         searchTxt,
         isShowOfflineUser,
       )
-      let desc = `Users, ${totalContact} total`
+      let desc = intl`Users, ${totalContact} total`
       if (cp.ucEnabled) {
         desc = desc.replace(
           intl`${totalContact} total`,
