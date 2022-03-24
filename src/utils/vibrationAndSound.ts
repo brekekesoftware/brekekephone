@@ -1,4 +1,4 @@
-import { Platform, Vibration } from 'react-native'
+import { Vibration } from 'react-native'
 
 import ding from '../assets/ding.mp3'
 
@@ -16,10 +16,14 @@ export const vibration = () => {
   Vibration.vibrate(1000)
 }
 
-export const ringOrVibration = () => {
-  if (Platform.OS === 'web') {
-    playDing()
-  } else {
-    vibration()
-  }
-}
+// export const ringOrVibration = () => {
+//   if (Platform.OS === 'web') {
+//     playDing()
+//   } else {
+//     if(chatStore.isPauseTingTing){
+//       chatStore.isPauseTingTing = false
+//       vibration()
+//     }
+
+//   }
+// }

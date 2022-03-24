@@ -45,7 +45,7 @@ import { CallNotify } from './CallNotify'
 import { CallVideos } from './CallVideos'
 import { CallVoices } from './CallVoices'
 import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
-import { RnStatusBar, RnText } from './Rn'
+import { AudioPlayer, RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
@@ -208,6 +208,7 @@ export const App = observer(() => {
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
+      <AudioPlayer />
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize
