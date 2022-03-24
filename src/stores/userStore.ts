@@ -276,9 +276,6 @@ class UserStore {
 
   @action updateStatusBuddy = (buddy_id: string, status: string) => {
     if (status !== 'offline') {
-      if (this.userOnline[buddy_id]) {
-        return
-      }
       this.userOnline[buddy_id] = status
     } else {
       delete this.userOnline[buddy_id]
