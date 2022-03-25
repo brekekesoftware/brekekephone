@@ -219,7 +219,11 @@ export class PBX extends EventEmitter {
       extension: ids,
       property_names: ['name'],
     })
-    return res.map((r, i) => ({ id: ids[i], name: r[0] }))
+    // server return "No permission." if id not exist on Pbx.
+    return res.map((r, i) => ({
+      id: ids[i],
+      name: (r as unknown as string) === 'No permission.' ? '' : r[0],
+    }))
   }
 
   getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
