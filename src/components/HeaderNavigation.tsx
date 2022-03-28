@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC, useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 
 import { chatStore } from '../stores/chatStore'

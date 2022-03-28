@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 import { ActivityIndicator, StyleSheet } from 'react-native'
 
 const css = StyleSheet.create({

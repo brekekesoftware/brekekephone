@@ -1,6 +1,6 @@
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { FC, Fragment, useEffect, useRef } from 'react'
+import { FC, Fragment, MutableRefObject, useEffect, useRef } from 'react'
 import {
   DefaultSectionT,
   Platform,
@@ -262,7 +262,7 @@ const RenderItemUser = observer(
   },
 )
 type SectionHeader = {
-  sectionHeaderRefs: React.MutableRefObject<View[]>
+  sectionHeaderRefs: MutableRefObject<View[]>
   sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
   isEditMode?: boolean
   title: string

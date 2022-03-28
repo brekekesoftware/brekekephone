@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Platform, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'

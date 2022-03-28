@@ -1,5 +1,5 @@
 // eslint-disable-next-line simple-import-sort/imports
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
   View,
   StyleSheet,

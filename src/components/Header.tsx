@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { BackBtn } from './HeaderBackBtn'

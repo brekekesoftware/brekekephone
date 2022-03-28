@@ -1,7 +1,7 @@
 import filesize from 'filesize'
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 
 import { mdiKeyboardBackspace } from '../assets/icons'

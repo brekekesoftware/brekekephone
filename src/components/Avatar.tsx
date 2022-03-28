@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 import { Platform, StyleSheet, View, ViewProps } from 'react-native'
 import { FastImageProps } from 'react-native-fast-image'
 

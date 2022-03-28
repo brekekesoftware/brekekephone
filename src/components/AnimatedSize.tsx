@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useState } from 'react'
+import { FC, PropsWithChildren, useState } from 'react'
 import { Animated, StyleSheet, View, ViewProps } from 'react-native'
 
 import { useAnimationOnDidMount } from '../utils/animation'

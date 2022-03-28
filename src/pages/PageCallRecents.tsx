@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { AppState, NativeEventSubscription, Platform } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'

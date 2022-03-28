@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'

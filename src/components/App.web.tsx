@@ -1,7 +1,7 @@
 // Main entry for the create-react-app web bundle
 
 import qs from 'qs'
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import Url from 'url-parse'

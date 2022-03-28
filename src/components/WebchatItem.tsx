@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC, useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'

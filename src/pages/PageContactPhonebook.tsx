@@ -1,7 +1,7 @@
 import { debounce } from 'lodash'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { pbx } from '../api/pbx'

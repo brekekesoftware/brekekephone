@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'

@@ -3,7 +3,7 @@ import '../api'
 
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,

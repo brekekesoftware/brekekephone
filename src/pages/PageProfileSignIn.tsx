@@ -1,6 +1,5 @@
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
 import { FlatList, Platform, StyleSheet, View } from 'react-native'
 
 import {

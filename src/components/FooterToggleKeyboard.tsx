@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Keyboard, Platform, StyleSheet } from 'react-native'
 
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '../assets/icons'

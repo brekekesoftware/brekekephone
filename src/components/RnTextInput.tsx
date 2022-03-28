@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { Platform, StyleSheet, TextInput, TextInputProps } from 'react-native'
 
 import { v } from './variables'

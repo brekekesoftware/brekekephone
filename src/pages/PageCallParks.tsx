@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { ProfileCreateForm } from '../components/ProfileCreateForm'
 import { intl } from '../stores/intl'

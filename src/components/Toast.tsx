@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Animated, StyleSheet, View } from 'react-native'
 
 import { RnText } from './Rn'
@@ -47,7 +47,7 @@ export const Toast: FC<ToastProps> = ({
       ? `${title.substring(0, MAX_LENGTH_TEXT)}...`
       : title
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isVisible) {
       fadeAnim.setValue(1)
       Animated.timing(fadeAnim, {

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { FlatList, View } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'

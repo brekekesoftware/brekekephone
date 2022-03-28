@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { ChatGroup } from '../stores/chatStore'
 import { WebchatItem } from './WebchatItem'

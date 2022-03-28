@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Platform, StyleSheet, View, ViewProps } from 'react-native'
 
 import { DropdownPosition } from '../stores/RnDropdownSectionList'

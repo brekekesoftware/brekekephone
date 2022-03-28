@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy'
 import { action, computed, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, FC } from 'react'
+import { Component, FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
