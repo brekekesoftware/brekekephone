@@ -13,6 +13,7 @@ import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
+import { getPartyName } from './contactStore'
 import { RnStacker } from './RnStacker'
 
 export type ChatMessage = {
@@ -135,6 +136,10 @@ class ChatStore {
   }
 
   pushChatNotification = (title: string, body: string) => {
+    if (Platform.OS === 'web') {
+      return
+    }
+
     if (Platform.OS === 'android') {
       FCM.presentLocalNotification({
         title,
@@ -202,18 +207,24 @@ class ChatStore {
       buddy?: string
       name?: string
     }
+    // handle notification and ringring notice
+    let name = ''
     if (isGroup) {
       if (!(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)) {
         this.playTingTing()
       }
+      name = chatStore.getGroupById(threadId)?.name
     } else {
       if (!(s?.name === 'PageChatDetail' && s?.buddy === threadId)) {
         this.playTingTing()
       }
+      name = getPartyName(threadId) || ''
     }
     if (m.length === 1 && AppState.currentState !== 'active') {
-      this.pushChatNotification(m[0].creator, m[0]?.text || '')
+      this.pushChatNotification(name, m[0]?.text || '')
     }
+    //=============
+
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })
