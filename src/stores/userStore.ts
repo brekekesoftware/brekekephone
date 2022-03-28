@@ -5,7 +5,7 @@ import { DefaultSectionT, SectionListData } from 'react-native'
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { isUcBuddy, uc } from '../api/uc'
-import { getAuthStore, waitPbx } from './authStore'
+import { getAuthStore, waitPbx, waitUc } from './authStore'
 import { contactStore } from './contactStore'
 import { intl } from './intl'
 import { profileStore } from './profileStore'
@@ -77,7 +77,7 @@ class UserStore {
     this.filterDataUserGroup(users, allUsers, this.buddyMode === 1)
   }
   @action loadUcBuddyList = async (isAllUser: boolean = false) => {
-    await waitPbx()
+    await waitUc()
     const s = getAuthStore()
     this.resetCache()
     this.type = 'UcBuddy'

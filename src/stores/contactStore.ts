@@ -4,7 +4,7 @@ import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
-import { getAuthStore } from './authStore'
+import { getAuthStore, waitPbx } from './authStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -54,11 +54,11 @@ class ContactStore {
   numberOfContactsPerPage = 20
 
   loadContacts = async () => {
+    await waitPbx()
     if (getAuthStore().pbxState !== 'success' || this.loading) {
       return
     }
     this.loading = true
-
     await pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,

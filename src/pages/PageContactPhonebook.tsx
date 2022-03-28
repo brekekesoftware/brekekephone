@@ -99,6 +99,7 @@ export class PageContactPhonebook extends Component {
     if (!u0) {
       return
     }
+
     const onIcon0 = (u: Phonebook2) => {
       if (!u) {
         return
@@ -112,21 +113,21 @@ export class PageContactPhonebook extends Component {
         value: string
         icon: string
       }[] = []
-      if (u.workNumber !== '') {
+      if (u.workNumber) {
         numbers.push({
           key: 'workNumber',
           value: u.workNumber,
           icon: mdiBriefcase,
         })
       }
-      if (u.cellNumber !== '') {
+      if (u.cellNumber) {
         numbers.push({
           key: 'cellNumber',
           value: u.cellNumber,
           icon: mdiCellphone,
         })
       }
-      if (u.homeNumber !== '') {
+      if (u.homeNumber) {
         numbers.push({
           key: 'homeNumber',
           value: u.homeNumber,
