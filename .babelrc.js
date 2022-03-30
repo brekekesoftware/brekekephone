@@ -1,5 +1,3 @@
-// For react-native code
-
 const intlBabelPlugin = require('./.intlBabelPlugin')
 
 module.exports = {
