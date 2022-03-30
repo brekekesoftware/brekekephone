@@ -1,12 +1,15 @@
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
-import { Component, Fragment } from 'react'
+import { Component } from 'react'
+import { SectionList } from 'react-native'
 
 import { mdiPhone, mdiPhoneForward } from '../assets/icons'
+import { ContactSectionList } from '../components/ContactSectionList'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
+import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -44,12 +47,16 @@ export class PageCallTransferChooseUser extends Component {
       holding: !!match.talkers?.filter(t => t.status === 'holding').length,
     }
   }
-
-  render() {
-    const users = contactStore.pbxUsers
-      .map(u => u.id)
-      .filter(id => userStore.saveSelectedUserIds[id])
-      .map(this.resolveMatch)
+  renderUserSelectionMode = () => {
+    const { displayUsers } = userStore.filterUser('', true)
+    return <ContactSectionList sectionListData={displayUsers} isTransferCall />
+  }
+  renderAllUserMode = () => {
+    const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return null
+    }
+    const users = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
     type User = typeof users[0]
 
     const map = {} as { [k: string]: User[] }
@@ -66,14 +73,34 @@ export class PageCallTransferChooseUser extends Component {
     })
 
     let groups = Object.keys(map).map(k => ({
-      key: k,
-      users: map[k],
+      title: k,
+      data: map[k],
     }))
-    groups = orderBy(groups, 'key')
+    groups = orderBy(groups, 'title')
     groups.forEach(gr => {
-      gr.users = orderBy(gr.users, 'name')
+      gr.data = orderBy(gr.data, 'name')
     })
-    const c = callStore.getCurrentCall()
+    return (
+      <SectionList
+        sections={groups}
+        keyExtractor={(item, index) => item.number}
+        renderItem={({ item, index }: { item: any; index: number }) => (
+          <RenderItemUser item={item} index={index} />
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          <Field isGroup label={title} />
+        )}
+      />
+    )
+  }
+  render() {
+    const s = getAuthStore()
+    const cp = s.currentProfile
+    if (!cp) {
+      return null
+    }
+    const isUserSelectionMode = s.isBigMode || !cp.pbxLocalAllUsers
+
     return (
       <Layout
         description={intl`Select target to start transfer`}
@@ -83,25 +110,30 @@ export class PageCallTransferChooseUser extends Component {
         isTab
         title={intl`Transfer`}
       >
-        {groups.map(gr => (
-          <Fragment key={gr.key}>
-            <Field isGroup label={gr.key} />
-            {gr.users.map((u, i) => (
-              <UserItem
-                iconFuncs={[
-                  () => c?.transferAttended(u.number),
-                  () => c?.transferBlind(u.number),
-                ]}
-                icons={[mdiPhoneForward, mdiPhone]}
-                key={i}
-                {...u}
-              />
-            ))}
-          </Fragment>
-        ))}
+        {isUserSelectionMode
+          ? this.renderUserSelectionMode()
+          : this.renderAllUserMode()}
       </Layout>
     )
   }
 }
 
 setPageCallTransferChooseUser(PageCallTransferChooseUser)
+type ItemUser = {
+  item: any
+  index: number
+}
+const RenderItemUser = observer(({ item, index }: ItemUser) => {
+  const c = callStore.getCurrentCall()
+  return (
+    <UserItem
+      iconFuncs={[
+        () => c?.transferAttended(item.number),
+        () => c?.transferBlind(item.number),
+      ]}
+      icons={[mdiPhoneForward, mdiPhone]}
+      key={index}
+      {...item}
+    />
+  )
+})

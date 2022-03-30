@@ -18,6 +18,7 @@ import {
   mdiMenuRight,
   mdiMoreHoriz,
   mdiPhone,
+  mdiPhoneForward,
   mdiVideo,
 } from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
@@ -72,6 +73,7 @@ type ContactSectionListProps = {
   sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
   isEditMode?: boolean
   ddItems?: DropdownItemProps[]
+  isTransferCall?: boolean
 }
 export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
   observer(p => {
@@ -167,6 +169,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
               item={item}
               title={section.title}
               isEditMode={p?.isEditMode}
+              isTransferCall={p?.isTransferCall}
             />
           )}
           renderSectionHeader={({ section: { title, data } }) => (
@@ -203,13 +206,16 @@ type ItemUser = {
   item: UcBuddy
   title: string
   isEditMode?: boolean
+  isTransferCall?: boolean
 }
 const RenderItemUser = observer(
-  ({ sectionListData, item, title, isEditMode }: ItemUser) => {
+  ({ sectionListData, item, title, isEditMode, isTransferCall }: ItemUser) => {
     const index = sectionListData.findIndex(i => i.title === title)
     const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
       idx => idx === index,
     )
+    const c = callStore.getCurrentCall()
+
     return !isHidden ? (
       <View
         key={`ItemUser-${item.user_id}-${index}`}
@@ -235,7 +241,7 @@ const RenderItemUser = observer(
               isSelection
             />
           </RnTouchableOpacity>
-        ) : (
+        ) : !isTransferCall ? (
           <RnTouchableOpacity
             onPress={
               getAuthStore().currentProfile?.ucEnabled
@@ -256,6 +262,18 @@ const RenderItemUser = observer(
               status={item.status}
             />
           </RnTouchableOpacity>
+        ) : (
+          <UserItem
+            iconFuncs={[
+              () => c?.transferAttended(item.user_id),
+              () => c?.transferBlind(item.user_id),
+            ]}
+            icons={[mdiPhoneForward, mdiPhone]}
+            id={item.user_id}
+            name={item.name}
+            avatar={item.profile_image_url}
+            status={item.status}
+          />
         )}
       </View>
     ) : null
