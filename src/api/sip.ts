@@ -5,6 +5,7 @@ import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
+import { getAuthStore } from '../stores/authStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { CallOptions, Sip } from './brekekejs'
@@ -109,7 +110,12 @@ export class SIP extends EventEmitter {
           partyName ||
           partyNumber
       }
-      partyName = partyName || partyNumber
+      partyName =
+        partyName ||
+        getAuthStore().currentData.recentCalls.find(
+          c => c.partyNumber === partyNumber,
+        )?.partyName ||
+        partyNumber
 
       this.emit('session-started', {
         id: ev.sessionId,
