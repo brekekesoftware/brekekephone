@@ -1,6 +1,6 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'

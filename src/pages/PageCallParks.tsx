@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
@@ -49,6 +49,9 @@ export class PageCallParks extends Component<{
 
   render() {
     const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return null
+    }
     const parks = cp.parks.map((p, i) => ({
       park: p,
       name: cp.parkNames?.[i] || '',

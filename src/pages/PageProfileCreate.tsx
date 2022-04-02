@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { ProfileCreateForm } from '../components/ProfileCreateForm'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'

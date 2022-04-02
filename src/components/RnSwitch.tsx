@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet, View, ViewProps } from 'react-native'
 
 import { v } from './variables'

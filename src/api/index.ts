@@ -6,11 +6,10 @@ import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
-import { Conference, UcBuddy } from './brekekejs'
+import { Conference } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -46,49 +45,31 @@ class Api {
   }
 
   @action onPBXConnectionStarted = async () => {
-    console.error('PBX PN debug: set pbxState succsess')
+    console.error('PBX PN debug: set pbxState success')
     const s = getAuthStore()
     s.pbxState = 'success'
     await waitSip()
-    const p = s.currentProfile
-    try {
-      const ids = await pbx.getUsers(p.pbxTenant)
-      if (!ids) {
-        return
-      }
-      const userIds = ids.filter(id => id !== p.pbxUsername)
-      const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
-      if (!users) {
-        return
-      }
-      const pbxUser: UcBuddy[] = ids.map(u => {
-        return {
-          disabledBuddy: false,
-          user_id: u,
-          name: u,
-          profile_image_url: '',
-          group: '',
-          tenant: p.pbxTenant,
-          block_settings: {},
-          status: false,
-        } as unknown as UcBuddy
-      })
-      contactStore.pbxUsers = users
-
-      const pbxConfig = await pbx.getConfig()
-      const isEnablePbxBuddy = pbxConfig?.['webphone.allusers'] === 'false'
-      !p.ucEnabled && isEnablePbxBuddy && userStore.loadGroupPbxUser(pbxUser)
-    } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to load PBX users`,
-        err: err as Error,
-      })
+    await pbx.getConfig()
+    const cp = s.currentProfile
+    if (!cp) {
+      return
     }
+    // load list local  when pbx start
+    // set default pbxLocalAllUsers = true
+    if (cp.pbxLocalAllUsers === undefined) {
+      cp.pbxLocalAllUsers = true
+    }
+    if (s.isBigMode || !cp.pbxLocalAllUsers) {
+      cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+    } else {
+      contactStore.getPbxUsers()
+    }
+
     if (s.isSignInByNotification) {
       return
     }
     SyncPnToken()
-      .sync(p)
+      .sync(cp)
       .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {
@@ -118,7 +99,7 @@ class Api {
   }
 
   @action onSIPConnectionStarted = () => {
-    console.error('SIP PN debug: set sipState succsess')
+    console.error('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     const s = getAuthStore()
     s.sipPn.sipAuth = ''

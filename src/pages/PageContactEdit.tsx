@@ -1,10 +1,11 @@
 // eslint-disable-next-line simple-import-sort/imports
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
   View,
   StyleSheet,
   TouchableWithoutFeedback,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native'
 
 import { Layout } from '../components/Layout'
@@ -27,8 +28,9 @@ import { mdiFolderPlus } from '../assets/icons'
 import { RnText } from '../components/RnText'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore } from '../stores/authStore'
+import { profileStore } from '../stores/profileStore'
 
-const css = StyleSheet.create({
+export const css = StyleSheet.create({
   listHeaderSection: {
     paddingHorizontal: 10,
   },
@@ -38,16 +40,34 @@ const css = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 10,
   },
-  rowGroupTitle: { flexDirection: 'row', justifyContent: 'space-between' },
+  rowGroupTitle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   rowCapacity: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  errorText: { color: 'red' },
+  errorText: {
+    color: 'red',
+  },
+  loadingIcon: {
+    marginTop: 20,
+  },
 })
 
 @observer
 export class PageContactEdit extends Component {
+  state = { didMount: false }
+
+  componentDidMount = () => {
+    if (getAuthStore().currentProfile?.ucEnabled) {
+      userStore.loadUcBuddyList(true)
+    } else {
+      userStore.loadPbxBuddyList(true)
+    }
+    setTimeout(() => this.setState({ didMount: true }), 300)
+  }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
     return [
       {
@@ -126,7 +146,6 @@ export class PageContactEdit extends Component {
 
   onGoBack = () => {
     RnDropdownSectionList.closeDropdown()
-    userStore.updateList()
     Nav().backToPageContactUsers()
   }
 
@@ -159,17 +178,18 @@ export class PageContactEdit extends Component {
         fabOnNext={this.save}
         fabOnNextText={intl`SAVE`}
         onBack={this.onGoBack}
-        title={intl`Edit the user list`}
+        title={intl`Edit buddy list`}
         containerRef={this.setViewRef}
       >
         <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
           <View style={css.listHeaderSection}>
-            <SelectionItem
-              isSelected={isSelectedAddAllUser}
-              onPress={userStore.toggleIsSelectedAddAllUser}
-              title={intl`Add all user to the list`}
-              disabled={isDisableAddAllUserToTheList}
-            />
+            {!isDisableAddAllUserToTheList && (
+              <SelectionItem
+                isSelected={isSelectedAddAllUser}
+                onPress={userStore.toggleIsSelectedAddAllUser}
+                title={intl`Add all user to the list`}
+              />
+            )}
             <View style={css.rowGroupTitle}>
               <SelectionItem
                 isSelected={isSelectEditGroupingAndUserOrder}
@@ -192,14 +212,16 @@ export class PageContactEdit extends Component {
                 <RnText style={isCapacityInvalid && css.errorText}>{`    ${
                   isSelectedAddAllUser
                     ? dataListAllUser.length
-                    : selectedUserIds.length
+                    : Object.keys(selectedUserIds).length
                 }`}</RnText>
                 <RnText>{` / ${buddyMax}`}</RnText>
               </View>
             </View>
           </View>
         </TouchableWithoutFeedback>
-        {isSelectEditGroupingAndUserOrder ? (
+        {!this.state.didMount ? (
+          <ActivityIndicator style={css.loadingIcon} size='large' />
+        ) : isSelectEditGroupingAndUserOrder ? (
           <ContactSectionList
             sectionListData={dataGroupAllUser}
             isEditMode={true}
@@ -215,12 +237,11 @@ export class PageContactEdit extends Component {
   saveUC = () => {
     const { isSelectedAddAllUser, groups, dataListAllUser, selectedUserIds } =
       userStore
-    uc.saveProperties(!isSelectedAddAllUser, [
+    const data = [
       ...groups,
-      ...dataListAllUser.filter(user =>
-        selectedUserIds.some(id => id === user.user_id),
-      ),
-    ])
+      ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
+    ]
+    uc.saveProperties(!isSelectedAddAllUser, data)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)
   }
@@ -231,12 +252,11 @@ export class PageContactEdit extends Component {
       screened: !isSelectedAddAllUser,
       users: [
         ...groups,
-        ...dataListAllUser.filter(user =>
-          selectedUserIds.some(id => id === user.user_id),
-        ),
+        ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
       ],
     }
     getAuthStore().savePbxBuddyList(data)
+    userStore.updateDisplayGroupList()
     this.onGoBack()
   }
   save = () => {
@@ -246,6 +266,8 @@ export class PageContactEdit extends Component {
     }
   }
   onSaveSuccess = () => {
+    profileStore.saveProfilesToLocalStorage()
+    userStore.updateDisplayGroupList()
     this.onGoBack()
   }
   onSaveFailure = (err: Error) => {

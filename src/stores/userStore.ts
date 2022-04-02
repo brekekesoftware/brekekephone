@@ -1,85 +1,122 @@
-import { uniq } from 'lodash'
+import _ from 'lodash'
 import { action, observable } from 'mobx'
 import { DefaultSectionT, SectionListData } from 'react-native'
 
-import { PbxGetProductInfoRes, UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { pbx } from '../api/pbx'
 import { isUcBuddy, uc } from '../api/uc'
-import { getAuthStore } from './authStore'
+import { getAuthStore, waitPbx, waitUc } from './authStore'
+import { contactStore } from './contactStore'
 import { intl } from './intl'
+import { profileStore } from './profileStore'
 
-const defaultBuddyMax = 500
+const defaultBuddyMax = 100
 
 type BuddyType = 'PbxBuddy' | 'UcBuddy'
 class UserStore {
-  @observable dataGroupUserIds: SectionListData<string>[] = []
   @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax = defaultBuddyMax
   @observable isDisableAddAllUserToTheList = false
-  @observable selectedUserIds: string[] = []
+  @observable isSelectedAddAllUser: boolean = true
+  @observable selectedUserIds: { [userId: string]: boolean } = {}
+  @observable saveSelectedUserIds: { [userId: string]: boolean } = {}
+  @observable userOnline: { [userId: string]: string } = {}
   @observable isCapacityInvalid = false
-  @observable byIds: any = {} // dictionary object by id
   @observable buddyMode = 0
-
+  @observable dataDisplayGroupAllUser: SectionListData<UcBuddy>[] = []
   type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
-  private userStatus?: [
-    {
-      id: string
-      status: string
-    },
-  ]
 
-  @action loadGroupPbxUser = (pbxUsers: UcBuddy[]) => {
+  @action loadPbxBuddyList = async (isAllUser: boolean = false) => {
+    await waitPbx()
+    this.resetCache()
     this.type = 'PbxBuddy'
-    // get user from pbx
-    const allUsers: UcBuddy[] = pbxUsers
-    // get from local
-    const buddyList = getAuthStore().currentData?.pbxBuddyList
-    const users = buddyList?.users || allUsers
+    const s = getAuthStore()
+    const cp = s.currentProfile
+    if (!cp) {
+      return
+    }
+    let allUsers: UcBuddy[] = []
+    // get all user from pbx
+    if (isAllUser) {
+      const ids = await pbx.getUsers(cp.pbxTenant)
+      if (!ids) {
+        return
+      }
+      allUsers = ids
+        .filter(u => u[0] !== cp.pbxUsername)
+        .map(u => {
+          return {
+            disabledBuddy: false,
+            user_id: u[0],
+            name: u[1],
+            profile_image_url: '',
+            group: '',
+            tenant: cp.pbxTenant,
+            block_settings: {},
+            status: false,
+          } as unknown as UcBuddy
+        })
+    }
 
-    this.isSelectedAddAllUser = buddyList?.screened || true // !userList.screened
-    this.isDisableAddAllUserToTheList = 200 < allUsers?.length // limit set default 200
+    // get from local
+    const buddyList = s.currentData?.pbxBuddyList
+    const users = _.cloneDeep(buddyList?.users || [])
+
+    if (s.isBigMode) {
+      this.isSelectedAddAllUser = false
+    } else {
+      this.isSelectedAddAllUser = !!s.currentProfile?.pbxLocalAllUsers
+    }
+    this.isDisableAddAllUserToTheList = s.isBigMode
     this.buddyMax =
-      Number(userStore.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
+      Number(s.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
     this.groups = []
-
-    if (allUsers?.length > 0) {
-      this.filterDataUserGroup(users, allUsers, this.buddyMode === 1)
-    }
+    this.filterDataUserGroup(users, allUsers, this.buddyMode === 1)
   }
-  @action loadGroupUser = () => {
+  @action loadUcBuddyList = async (isAllUser: boolean = false) => {
+    await waitUc()
+    const s = getAuthStore()
+    this.resetCache()
+    this.type = 'UcBuddy'
     const userList = uc.client.getBuddylist()
     const configProperties = uc.client.getConfigProperties()
     const profile = uc.client.getProfile()
-    const allUsers: UcBuddy[] = uc.client
-      .getAllUsers()
-      .user?.filter(u => !u.disabledBuddy && u.user_id !== profile.user_id)
-      .map(
-        user =>
-          ({
-            user_id: user.user_id,
-            name: user.user_name,
-            group: configProperties.buddy_mode === 1 ? user.user_group : '',
-            tenant: profile.tenant,
-          } as UcBuddy),
-      )
+    let allUsers: UcBuddy[] = []
+    if (isAllUser) {
+      allUsers = uc.client
+        .getAllUsers()
+        .user?.filter(u => !u.disabledBuddy && u.user_id !== profile.user_id)
+        .map(
+          user =>
+            ({
+              user_id: user.user_id,
+              name: user.user_name,
+              group: configProperties.buddy_mode === 1 ? user.user_group : '',
+              tenant: profile.tenant,
+            } as UcBuddy),
+        )
+    }
 
-    this.isSelectedAddAllUser = !userList.screened
+    if (s.isBigMode) {
+      this.isSelectedAddAllUser = false
+    } else {
+      this.isSelectedAddAllUser = !!s.currentProfile?.pbxLocalAllUsers
+    }
     this.isDisableAddAllUserToTheList =
+      s.isBigMode ||
       configProperties.optional_config?.buddy_max < allUsers?.length
     this.buddyMax =
       configProperties.optional_config?.buddy_max || defaultBuddyMax
     this.buddyMode = configProperties.buddy_mode
     this.groups = []
-    if (allUsers?.length > 0) {
-      this.filterDataUserGroup(
-        userList.user,
-        allUsers,
-        configProperties.buddy_mode === 1,
-      )
-    }
+    this.filterDataUserGroup(
+      userList.user,
+      allUsers,
+      configProperties.buddy_mode === 1,
+    )
   }
 
   @action filterDataUserGroup = (
@@ -97,9 +134,9 @@ class UserStore {
       title: `(${intl`No Group`})`,
       data: [],
     }
+
     const listDataUser: UcBuddy[] = []
-    const selectedUserIds: string[] = []
-    let byIds: any = {} // dictionary object by id
+    const selectedUserIds: { [userId: string]: boolean } = {}
 
     if (dataGroupUser.length > 0) {
       dataGroupUser.forEach(user => {
@@ -121,8 +158,7 @@ class UserStore {
             ]
           }
           listDataUser.push(user)
-          selectedUserIds.push(user.user_id)
-          byIds = { ...byIds, ...{ [user.user_id]: user } }
+          selectedUserIds[user.user_id] = true
         } else if (!this.groups.some(g => g.id === user.id)) {
           sectionData.push({ title: user.id, data: [] })
           sectionDataIds.push({ title: user.id, data: [] })
@@ -133,64 +169,69 @@ class UserStore {
     const listUserNotSelected = listAllUser.filter(
       itm => !listDataUser.some(u => u.user_id === itm.user_id),
     )
-    if (this.userStatus && this.userStatus.length > 0) {
-      this.userStatus.forEach(status => {
-        if (byIds[status.id]) {
-          byIds[status.id].status = status.status
-        }
-      })
-    }
-    this.byIds = byIds
+
     if (!isDisableEditGroup) {
       sectionDataOther.data = [...sectionDataOther.data, ...listUserNotSelected]
-      this.dataGroupUserIds = [...sectionDataIds, sectionDataOtherIds]
       sectionData.push(sectionDataOther)
     } else if (sectionData.length > 0) {
       sectionData[0].data = [...sectionData[0].data, ...listUserNotSelected]
-      this.dataGroupUserIds = [...sectionDataIds]
     }
 
     this.dataGroupAllUser = sectionData
     this.dataListAllUser = [...listDataUser, ...listUserNotSelected]
     this.selectedUserIds = selectedUserIds
+    this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
+    this.dataDisplayGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
   }
 
   filterUser = (searchTxt: string, isOnline: boolean) => {
     const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
     let totalContact = 0
     let totalOnlineContact = 0
-    this.dataGroupAllUser.forEach(s => {
+
+    this.dataDisplayGroupAllUser.forEach(s => {
       // list all user
-      const dataAllUsers = s.data?.filter(u => this.byIds[u.user_id]) || []
+      const dataAllUsers =
+        s.data
+          ?.filter(u => this.saveSelectedUserIds[u.user_id])
+          .map(u => ({ ...u, status: this.userOnline[u.user_id] })) || []
+
       totalContact += dataAllUsers.length
 
-      const dataAllUsersFiltered =
-        dataAllUsers?.filter(
-          u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
-        ) || []
+      const dataAllUsersFiltered = dataAllUsers.filter(
+        u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
+      )
+
       // list online user
       const dataOnlineUser = s.data
-        .map(i =>
-          this.byIds[i.user_id]?.status === 'online'
-            ? this.byIds[i.user_id]
-            : null,
-        )
-        .filter(u => u)
+        .filter(u => this.userOnline[u.user_id])
+        .map(u => ({ ...u, status: this.userOnline[u.user_id] }))
       totalOnlineContact += dataOnlineUser.length
       const dataOnlineUserFiltered = dataOnlineUser.filter(
         u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
       )
-
+      const isNoGroup = s.title === `(${intl`No Group`})`
+      if (isNoGroup && dataAllUsersFiltered.length === 0) {
+        return
+      }
       displayUsers.push({
-        title: s.title,
+        title: !isNoGroup ? s.title : '',
         data: isOnline ? dataAllUsersFiltered : dataOnlineUserFiltered,
       })
     })
     return { displayUsers, totalContact, totalOnlineContact }
   }
-  @observable isSelectedAddAllUser: boolean = false
+
   @action toggleIsSelectedAddAllUser = () => {
+    if (!this.isSelectedAddAllUser && !contactStore.pbxUsers.length) {
+      contactStore.getPbxUsers()
+    }
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
+    const s = getAuthStore()
+    profileStore.upsertProfile({
+      id: s.currentProfile?.id,
+      pbxLocalAllUsers: this.isSelectedAddAllUser,
+    })
   }
 
   @observable isSelectEditGroupingAndUserOrder: boolean = false
@@ -200,167 +241,136 @@ class UserStore {
   }
 
   @action selectUserId = (userId: string) => {
-    const indexSelectedUser = this.selectedUserIds.indexOf(userId)
-    if (indexSelectedUser > -1) {
-      this.selectedUserIds.splice(indexSelectedUser, 1)
+    if (this.selectedUserIds[userId]) {
+      delete this.selectedUserIds[userId]
     } else {
-      this.selectedUserIds.push(userId)
+      this.selectedUserIds[userId] = true
     }
-    this.isCapacityInvalid = this.selectedUserIds.length > this.buddyMax
+    this.isCapacityInvalid =
+      Object.keys(this.selectedUserIds).length > this.buddyMax
   }
 
   @action selectAllUserIdsByGroup = (groupIndex: number) => {
-    this.selectedUserIds = uniq([
-      ...this.selectedUserIds,
-      ...this.dataGroupAllUser[groupIndex].data.map(itm => itm.user_id),
-    ])
+    this.dataGroupAllUser[groupIndex]?.data.forEach(u => {
+      this.selectedUserIds[u.user_id] = true
+    })
   }
 
   @action removeGroup = (groupIndex: number) => {
-    const removedUsers = [...this.dataGroupAllUser[groupIndex]?.data]
-    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
-    cloneDataGroupAllUser.splice(groupIndex, 1)
-
-    if (removedUsers.length > 0) {
-      removedUsers.forEach(itm => {
-        cloneDataGroupAllUser[cloneDataGroupAllUser.length - 1].data = [
-          ...cloneDataGroupAllUser[cloneDataGroupAllUser.length - 1].data,
-          itm,
-        ]
-      })
+    this.dataGroupAllUser[groupIndex].data.forEach(u => {
+      delete this.selectedUserIds[u.user_id]
+    })
+    if (this.groups.length >= 1) {
+      this.groups.splice(groupIndex, 1)
     }
-
-    this.groups.splice(groupIndex, 1)
-    this.dataGroupUserIds.splice(groupIndex, 1)
-    this.dataGroupAllUser = cloneDataGroupAllUser
-    this.selectedUserIds = this.selectedUserIds.filter(
-      i => !removedUsers.some(user => user.user_id === i),
-    )
+    if (this.dataGroupAllUser.length >= 1) {
+      this.dataGroupAllUser.splice(groupIndex, 1)
+    }
   }
 
   @action unselectAllUserIdsByGroup = (groupIndex: number) => {
-    this.selectedUserIds = this.selectedUserIds.filter(
-      id =>
-        !this.dataGroupAllUser[groupIndex].data
-          .map(itm => itm.user_id)
-          .some(userId => userId === id),
-    )
+    this.dataGroupAllUser[groupIndex].data.forEach(u => {
+      delete this.selectedUserIds[u.user_id]
+    })
   }
 
   @action updateStatusBuddy = (buddy_id: string, status: string) => {
-    if (this.byIds[buddy_id]) {
-      this.byIds[buddy_id].status = status
-    }
-    if (!this.userStatus) {
-      this.userStatus = [{ id: buddy_id, status }]
+    if (status !== 'offline') {
+      this.userOnline[buddy_id] = status
     } else {
-      this.userStatus.push({ id: buddy_id, status })
+      delete this.userOnline[buddy_id]
     }
   }
 
-  @action addGroup = (groupName: string, selectedUsers: UcBuddy[]) => {
-    const cloneDataListAllUser = [...this.dataListAllUser]
-    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
-
+  @action addGroup = (
+    groupName: string,
+    selectedUsers: { [k: string]: UcBuddy },
+  ) => {
     this.dataListAllUser.forEach((user, index) => {
-      if (
-        selectedUsers.some(
-          selectedUser => selectedUser.user_id === user.user_id,
-        )
-      ) {
-        cloneDataListAllUser[index].group = groupName
+      if (selectedUsers[user.user_id]) {
+        this.dataListAllUser[index].group = groupName
       }
     })
 
     this.dataGroupAllUser.forEach((group, index) => {
-      cloneDataGroupAllUser[index].data = group.data.filter(
-        item =>
-          !selectedUsers.some(
-            selectedUser => selectedUser.user_id === item.user_id,
-          ),
+      this.dataGroupAllUser[index].data = group.data.filter(
+        item => !selectedUsers[item.user_id],
       )
     })
 
     const newGroupContact: SectionListData<UcBuddy, DefaultSectionT> = {
-      data: cloneDataListAllUser.filter(itm =>
-        selectedUsers.some(
-          selectedUser => selectedUser.user_id === itm.user_id,
-        ),
-      ),
+      data: Object.keys(selectedUsers).map(key => {
+        return selectedUsers[key]
+      }),
       title: groupName,
     }
 
-    cloneDataGroupAllUser.unshift(newGroupContact)
-    this.dataGroupAllUser = cloneDataGroupAllUser
-    this.dataListAllUser = cloneDataListAllUser
-    this.selectedUserIds = uniq([
-      ...this.selectedUserIds,
-      ...selectedUsers.map(selectedUser => selectedUser.user_id),
-    ])
+    this.dataGroupAllUser.unshift(newGroupContact)
+
+    Object.keys(selectedUsers).forEach(u => {
+      this.selectedUserIds[u] = true
+    })
     this.groups.push({ id: groupName, name: groupName })
   }
-  @action updateList = () => {
-    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
-    this.dataGroupAllUser.forEach((group, index) => {
-      cloneDataGroupAllUser[index].data = group.data.filter(item =>
-        this.selectedUserIds.some(id => item.user_id === id),
-      )
-    })
-    this.dataGroupAllUser = cloneDataGroupAllUser
+  resetCache = () => {
+    this.dataGroupAllUser = []
+    this.groups = []
+    this.selectedUserIds = {}
+    this.dataListAllUser = []
+  }
+  @action updateDisplayGroupList = () => {
+    this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
+    this.dataDisplayGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
+    // reset dataGroupAllUser
+    this.resetCache()
   }
   @action editGroup = (
     groupName: string,
-    selectedUsers: UcBuddy[],
     removedUsers: UcBuddy[],
+    selectedUserItems: { [k: string]: UcBuddy },
   ) => {
-    const cloneDataListAllUser = [...this.dataListAllUser]
-    const cloneDataGroupAllUser = [...this.dataGroupAllUser]
-
     this.dataListAllUser.forEach((user, index) => {
-      if (
-        selectedUsers.some(
-          selectedUser => selectedUser.user_id === user.user_id,
-        )
-      ) {
-        cloneDataListAllUser[index].group = groupName
+      if (selectedUserItems[user.user_id]) {
+        this.dataListAllUser[index].group = groupName
       }
     })
 
     this.dataGroupAllUser.forEach((group, index) => {
       if (group.title === groupName) {
-        cloneDataGroupAllUser[index].data = selectedUsers
+        this.dataGroupAllUser[index].data = Object.keys(selectedUserItems).map(
+          key => {
+            return selectedUserItems[key]
+          },
+        )
       } else {
-        cloneDataGroupAllUser[index].data = group.data.filter(
-          item =>
-            !selectedUsers.some(
-              selectedUser => selectedUser.user_id === item.user_id,
-            ),
+        this.dataGroupAllUser[index].data = group.data.filter(
+          item => !selectedUserItems[item.user_id],
         )
       }
       if (index === this.dataGroupAllUser.length - 1) {
-        cloneDataGroupAllUser[index].data = [
-          ...cloneDataGroupAllUser[index].data,
+        this.dataGroupAllUser[index].data = [
+          ...this.dataGroupAllUser[index].data,
           ...removedUsers,
         ]
       }
     })
 
-    this.dataGroupAllUser = cloneDataGroupAllUser
-    this.selectedUserIds = uniq([
-      ...this.selectedUserIds.filter(
-        id => !removedUsers.some(u => u.user_id === id),
-      ),
-      ...selectedUsers.map(u => u.user_id),
-    ])
+    Object.keys(selectedUserItems).forEach(u => {
+      this.selectedUserIds[u] = true
+    })
+    // this.selectedUserIds = _.merge(this.selectedUserIds, selectedUsersId)
+    removedUsers.forEach(u => {
+      delete this.selectedUserIds[u.user_id]
+    })
   }
-
-  @observable pbxConfig?: PbxGetProductInfoRes
 
   @action clearStore = () => {
     this.groups = []
     this.dataGroupAllUser = []
     this.dataListAllUser = []
-    this.selectedUserIds = []
+    this.selectedUserIds = {}
+    this.saveSelectedUserIds = {}
+    this.dataDisplayGroupAllUser = []
   }
 }
 

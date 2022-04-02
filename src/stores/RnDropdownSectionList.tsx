@@ -1,4 +1,4 @@
-import { uniq } from 'lodash'
+import _, { uniq } from 'lodash'
 import { action, observable } from 'mobx'
 
 export type RnDropdownSectionListOption = {}
@@ -32,7 +32,7 @@ export class RnDropdownSectionListStore {
 
   @action removeSection = (sectionIndex: number, itemSize: number) => {
     const clonePositionDD = [...this.listDropdownPosition]
-    this.listDropdownPosition.forEach((_, index) => {
+    this.listDropdownPosition.forEach((pos, index) => {
       if (index > sectionIndex) {
         clonePositionDD[index] = {
           top:
@@ -43,8 +43,9 @@ export class RnDropdownSectionListStore {
         }
       }
     })
-
-    clonePositionDD.splice(sectionIndex, 1)
+    if (clonePositionDD.length >= 1) {
+      clonePositionDD.splice(sectionIndex, 1)
+    }
     this.listDropdownPosition = clonePositionDD
     this.hiddenGroupIndex = this.hiddenGroupIndex.map(idx => idx - 1)
     this.dropdownOpenedIndex = -1
@@ -55,14 +56,16 @@ export class RnDropdownSectionListStore {
     const indexSectionInHiddenGroup =
       cloneHiddenGroupIndex.indexOf(sectionIndex)
     if (indexSectionInHiddenGroup > -1) {
-      cloneHiddenGroupIndex.splice(indexSectionInHiddenGroup, 1)
+      if (cloneHiddenGroupIndex.length >= 1) {
+        cloneHiddenGroupIndex.splice(indexSectionInHiddenGroup, 1)
+      }
     } else {
       cloneHiddenGroupIndex.push(sectionIndex)
     }
     const isCollapse = !this.hiddenGroupIndex.some(itm => itm === sectionIndex)
-    const clonePositionDD = [...this.listDropdownPosition]
+    const clonePositionDD = _.cloneDeep(this.listDropdownPosition)
 
-    this.listDropdownPosition.forEach((_, index) => {
+    this.listDropdownPosition.forEach((i, index) => {
       if (index > sectionIndex) {
         clonePositionDD[index] = {
           top:

@@ -1,6 +1,9 @@
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
+import { AppState, Platform } from 'react-native'
+import FCM from 'react-native-fcm'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
@@ -8,7 +11,10 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
+import { playDing, vibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
+import { getPartyName } from './contactStore'
+import { RnStacker } from './RnStacker'
 
 export type ChatMessage = {
   id: string
@@ -58,6 +64,7 @@ export const TIMEOUT_TRANSFER_IMAGE = 30000
 export const TIMEOUT_TRANSFER_VIDEO = 600000
 
 class ChatStore {
+  @observable isPauseTingTing: boolean = true
   timeoutTransferImage: { [k: string]: number } = {}
 
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
@@ -114,6 +121,63 @@ class ChatStore {
   isWebchat(conf_id: string) {
     return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
   }
+  playTingTing = () => {
+    if (Platform.OS === 'web') {
+      playDing()
+    } else {
+      if (this.isPauseTingTing) {
+        this.isPauseTingTing = false
+        vibration()
+        setTimeout(() => {
+          this.isPauseTingTing = true
+        }, 700)
+      }
+    }
+  }
+
+  pushChatNotification = (title: string, body: string) => {
+    if (Platform.OS === 'web') {
+      return
+    }
+
+    if (Platform.OS === 'android') {
+      FCM.presentLocalNotification({
+        title,
+        body,
+        number: 0,
+        priority: 'high',
+        show_in_foreground: true,
+        local_notification: true,
+        wake_screen: false,
+        ongoing: false,
+        lights: true,
+        channel: 'default',
+        icon: 'ic_launcher',
+        id: `message-${Date.now()}`,
+        pre_app_state: AppState.currentState,
+        my_custom_data: 'local_notification',
+        is_local_notification: 'local_notification',
+      })
+    } else {
+      PushNotificationIOS.addNotificationRequest({
+        id: `message-${Date.now()}`,
+        title,
+        body,
+        sound: undefined,
+        userInfo: {
+          id: `message-${Date.now()}`,
+          aps: {
+            title,
+            body,
+            my_custom_data: 'local_notification',
+            pre_app_state: AppState.currentState,
+            local_notification: true,
+            is_local_notification: 'local_notification',
+          },
+        },
+      })
+    }
+  }
   pushMessages = (
     threadId: string,
     m: ChatMessage | ChatMessage[],
@@ -136,6 +200,31 @@ class ChatStore {
     if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
     }
+
+    // check screen to open ringOrVibration
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+      groupId?: string
+      buddy?: string
+      name?: string
+    }
+    // handle notification and ringring notice
+    let name = ''
+    if (isGroup) {
+      if (!(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)) {
+        this.playTingTing()
+      }
+      name = chatStore.getGroupById(threadId)?.name
+    } else {
+      if (!(s?.name === 'PageChatDetail' && s?.buddy === threadId)) {
+        this.playTingTing()
+      }
+      name = getPartyName(threadId) || ''
+    }
+    if (m.length === 1 && AppState.currentState !== 'active') {
+      this.pushChatNotification(name, m[0]?.text || '')
+    }
+    //=============
+
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })

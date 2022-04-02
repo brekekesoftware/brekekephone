@@ -3,12 +3,12 @@
     /* Basic Options */
     "target": "esnext",
     "module": "esnext",
-    // "lib": [],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "checkJs": false,
     "resolveJsonModule": true,
-    "jsx": "preserve",
-    "declaration": true,
+    "jsx": "react-jsx",
+    "declaration": false,
     "declarationMap": false,
     "sourceMap": false,
     // "outFile": "./",
@@ -61,5 +61,6 @@
     /* Experimental Options */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  }
+  },
+  "include": ["src"]
 }

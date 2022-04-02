@@ -2,7 +2,7 @@ import stableStringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 import { Conference, UcMessageLog } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'

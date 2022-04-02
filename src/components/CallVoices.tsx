@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 
 import { callStore } from '../stores/callStore'
 import { AnsweredItem, OutgoingItem } from './CallVoicesUI'

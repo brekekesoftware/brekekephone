@@ -1,6 +1,7 @@
 import { orderBy, uniq } from 'lodash'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import { Component } from 'react'
+import { SectionList } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
@@ -75,26 +76,65 @@ export class PageContactUsers extends Component {
   }
 
   componentDidUpdate() {
-    if (
-      this.displayOfflineUsers.enabled !==
-      getAuthStore().currentProfile.displayOfflineUsers
-    ) {
-      this.displayOfflineUsers.setEnabled(
-        getAuthStore().currentProfile.displayOfflineUsers,
-      )
+    const cp = getAuthStore().currentProfile
+    if (this.displayOfflineUsers.enabled !== cp?.displayOfflineUsers) {
+      this.displayOfflineUsers.setEnabled(cp?.displayOfflineUsers)
     }
   }
-
-  getLastMessageChat = (id: string) => {
-    const chats = filterTextOnly(chatStore.messagesByThreadId[id])
-    return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+  getDescription = (isUserSelectionMode: boolean) => {
+    const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return ''
+    }
+    if (!isUserSelectionMode) {
+      const allUsers = this.getMatchUserIds().map(this.resolveUser)
+      const onlineUsers = allUsers.filter(
+        i => i.status && i.status !== 'offline',
+      )
+      let desc = intl`Users, ${allUsers.length} total`
+      if (allUsers.length && cp.ucEnabled) {
+        desc = desc.replace(
+          intl`${allUsers.length} total`,
+          intl`${onlineUsers.length}/${allUsers.length} online`,
+        )
+      }
+      return desc
+    } else {
+      const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+      const isShowOfflineUser =
+        !cp.ucEnabled || this.displayOfflineUsers.enabled
+      const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
+        searchTxt,
+        isShowOfflineUser,
+      )
+      let desc = intl`Users, ${totalContact} total`
+      if (cp.ucEnabled) {
+        desc = desc.replace(
+          intl`${totalContact} total`,
+          intl`${totalOnlineContact}/${totalContact} online`,
+        )
+      }
+      return desc
+    }
   }
-
-  renderPbxUsers = () => {
+  renderUserSelectionMode = () => {
+    const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+    const isShowOfflineUser =
+      !getAuthStore().currentProfile?.ucEnabled ||
+      this.displayOfflineUsers.enabled
+    const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
+    return <ContactSectionList sectionListData={displayUsers} />
+  }
+  renderAllUserMode = () => {
+    const cp = getAuthStore().currentProfile
+    if (!cp) {
+      return null
+    }
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
+    const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
     type User = typeof allUsers[0]
-    const displayUsers = allUsers
-
+    const displayUsers =
+      !this.displayOfflineUsers.enabled && cp.ucEnabled ? onlineUsers : allUsers
     const map = {} as { [k: string]: User[] }
     displayUsers.forEach(u => {
       u.name = u.name || u.id || ''
@@ -107,86 +147,43 @@ export class PageContactUsers extends Component {
       }
       map[c0].push(u)
     })
-
     let groups = Object.keys(map).map(k => ({
-      key: k,
-      users: map[k],
+      title: k,
+      data: map[k],
     }))
-    groups = orderBy(groups, 'key')
+    groups = orderBy(groups, 'title')
     groups.forEach(gr => {
-      gr.users = orderBy(gr.users, 'name')
+      gr.data = orderBy(gr.data, 'name')
     })
-
     return (
-      <Layout
-        description={(() => {
-          return intl`PBX users, ${allUsers.length} total`
-        })()}
-        menu='contact'
-        subMenu='users'
-        title={intl`Users`}
-      >
-        <Field
-          icon={mdiMagnify}
-          label={intl`SEARCH FOR USERS`}
-          onValueChange={(v: string) => {
-            contactStore.usersSearchTerm = v
-          }}
-          value={contactStore.usersSearchTerm}
-        />
-        {groups.map(gr => (
-          <Fragment key={gr.key}>
-            <Field isGroup label={gr.key} />
-            {gr.users.map((u, i) => (
-              <RnTouchableOpacity
-                key={i}
-                onPress={
-                  getAuthStore().currentProfile.ucEnabled
-                    ? () => Nav().goToPageChatDetail({ buddy: u.id })
-                    : undefined
-                }
-              >
-                <UserItem
-                  iconFuncs={[
-                    () => callStore.startVideoCall(u.id),
-                    () => callStore.startCall(u.id),
-                  ]}
-                  icons={[mdiVideo, mdiPhone]}
-                  lastMessage={this.getLastMessageChat(u.id)?.text}
-                  {...u}
-                />
-              </RnTouchableOpacity>
-            ))}
-          </Fragment>
-        ))}
-      </Layout>
+      <SectionList
+        sections={groups}
+        keyExtractor={(item, index) => item.id}
+        renderItem={({ item, index }: { item: any; index: number }) => (
+          <RenderItemUser item={item} index={index} />
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          // TODO move to a new component with observer
+          <Field isGroup label={title} />
+        )}
+      />
     )
   }
 
-  renderBuddyList = () => {
-    const searchTxt = contactStore.usersSearchTerm.toLowerCase()
-    const isShowOfflineUser = this.displayOfflineUsers.enabled
-    const {
-      displayUsers,
-      totalContact = 0,
-      totalOnlineContact = 0,
-    } = userStore.filterUser(searchTxt, isShowOfflineUser)
-
+  render() {
+    const s = getAuthStore()
+    const cp = s.currentProfile
+    if (!cp) {
+      return null
+    }
+    const isUserSelectionMode = s.isBigMode || !cp.pbxLocalAllUsers
+    const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
-        description={(() => {
-          let desc = intl`UC users, ${totalOnlineContact} total`
-          if (isShowOfflineUser) {
-            desc = desc.replace(
-              intl`${totalOnlineContact} total`,
-              intl`${totalOnlineContact}/${totalContact} online`,
-            )
-          }
-          return desc
-        })()}
+        description={description}
         dropdown={[
           {
-            label: intl`Edit the user list`,
+            label: intl`Edit buddy list`,
             onPress: Nav().goToPageContactEdit,
           },
         ]}
@@ -202,29 +199,53 @@ export class PageContactUsers extends Component {
           }}
           value={contactStore.usersSearchTerm}
         />
-
-        <Field
-          label={intl`SHOW OFFLINE USERS`}
-          onValueChange={(v: boolean) => {
-            profileStore.upsertProfile({
-              id: getAuthStore().signedInId,
-              displayOfflineUsers: v,
-            })
-          }}
-          type='Switch'
-          value={getAuthStore().currentProfile.displayOfflineUsers}
-        />
-        <ContactSectionList sectionListData={displayUsers} />
+        {getAuthStore().currentProfile?.ucEnabled && (
+          <Field
+            label={intl`SHOW OFFLINE USERS`}
+            onValueChange={(v: boolean) => {
+              profileStore.upsertProfile({
+                id: getAuthStore().signedInId,
+                displayOfflineUsers: v,
+              })
+            }}
+            type='Switch'
+            value={cp.displayOfflineUsers}
+          />
+        )}
+        {isUserSelectionMode
+          ? this.renderUserSelectionMode()
+          : this.renderAllUserMode()}
       </Layout>
     )
   }
-
-  render() {
-    const { ucEnabled } = getAuthStore().currentProfile
-    const isEnablePbxBuddy =
-      userStore.pbxConfig?.['webphone.allusers'] === 'false'
-    return ucEnabled || isEnablePbxBuddy
-      ? this.renderBuddyList()
-      : this.renderPbxUsers()
-  }
 }
+
+const getLastMessageChat = (id: string) => {
+  const chats = filterTextOnly(chatStore.messagesByThreadId[id])
+  return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+}
+type ItemUser = {
+  item: any
+  index: number
+}
+const RenderItemUser = observer(({ item, index }: ItemUser) => (
+  // TODO move to a new component with observer
+  <RnTouchableOpacity
+    key={index}
+    onPress={
+      getAuthStore().currentProfile?.ucEnabled
+        ? () => Nav().goToPageChatDetail({ buddy: item.id })
+        : undefined
+    }
+  >
+    <UserItem
+      iconFuncs={[
+        () => callStore.startVideoCall(item.id),
+        () => callStore.startCall(item.id),
+      ]}
+      icons={[mdiVideo, mdiPhone]}
+      lastMessage={getLastMessageChat(item.id)?.text}
+      {...item}
+    />
+  </RnTouchableOpacity>
+))

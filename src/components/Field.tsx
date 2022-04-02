@@ -2,7 +2,7 @@ import flow from 'lodash/flow'
 import omit from 'lodash/omit'
 import { observer } from 'mobx-react'
 import { ReactElementLike } from 'prop-types'
-import React, { FC, useRef } from 'react'
+import { FC, useRef } from 'react'
 import {
   ActivityIndicator,
   Keyboard,

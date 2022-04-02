@@ -1,6 +1,6 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,

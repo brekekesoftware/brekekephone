@@ -1,9 +1,10 @@
+import _, { debounce } from 'lodash'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
-import { getAuthStore } from './authStore'
+import { getAuthStore, waitPbx } from './authStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -53,11 +54,11 @@ class ContactStore {
   numberOfContactsPerPage = 20
 
   loadContacts = async () => {
+    await waitPbx()
     if (getAuthStore().pbxState !== 'success' || this.loading) {
       return
     }
     this.loading = true
-
     await pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,
@@ -100,6 +101,27 @@ class ContactStore {
     this.loadContacts()
   }
   @observable pbxUsers: PbxUser[] = []
+
+  getPbxUsers = async () => {
+    try {
+      const p = getAuthStore().currentProfile
+      if (!p) {
+        return
+      }
+      const res = await pbx.getUsers(p.pbxTenant)
+      if (!res) {
+        return
+      }
+      this.pbxUsers = res
+        .filter(u => u[0] !== p.pbxUsername)
+        .map(id => ({ id: id[0], name: id[1] }))
+    } catch (error) {
+      RnAlert.error({
+        message: intlDebug`Failed to load PBX users`,
+        err: error as Error,
+      })
+    }
+  }
   setTalkerStatus = (userId: string, talkerId: string, status: string) => {
     const u = this.getPbxUserById(userId)
     if (!u) {
@@ -128,14 +150,48 @@ class ContactStore {
       [k: string]: PbxUser
     }
   }
+  @observable private extraPbxUsersMap: { [k: string]: PbxUser } = {}
   getPbxUserById = (id: string) => {
-    return this.pbxUsersMap[id]
+    const u = this.pbxUsersMap[id] || this.extraPbxUsersMap[id]
+    if (!u && !this.extraPbxUsersLoadingMap[id]) {
+      this.extraPbxUsersLoadingMap[id] = true
+      this.extraPbxUsersBatch.push(id)
+      this.getExtraPbxUsersBatch()
+    }
+    return u
   }
+
+  private extraPbxUsersLoadingMap: { [k: string]: boolean } = {}
+  private extraPbxUsersBatch: string[] = []
+  private getExtraPbxUsersBatch = debounce(() => {
+    const ids = this.extraPbxUsersBatch
+    this.extraPbxUsersBatch = []
+    pbx
+      .getExtraUsers(ids)
+      .then(
+        action(arr => {
+          arr?.forEach(u => {
+            this.extraPbxUsersMap[u.id] = u
+          })
+        }),
+      )
+      .catch(() => {
+        // mimic finally
+      })
+      .then(() =>
+        ids.forEach(id => {
+          delete this.extraPbxUsersLoadingMap[id]
+        }),
+      )
+  }, 17)
 
   @observable ucUsers: UcUser[] = []
   updateUcUser = (u: UcUser) => {
     const u0 = this.getUcUserById(u.id)
     if (!u0) {
+      return
+    }
+    if (_.isEqual(u0, u)) {
       return
     }
     Object.assign(u0, u)

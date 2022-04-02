@@ -10,7 +10,6 @@ import { ChatMessage, chatStore } from './chatStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
-import { userStore } from './userStore'
 
 const UCClient = UCClient0 as {
   Errors: UcErrors
@@ -45,10 +44,13 @@ class AuthUC {
     if (!c) {
       throw new Error('AuthUC.authWithoutCatch pbx.getConfig() undefined')
     }
+    const p = s.currentProfile
+    if (!p) {
+      return
+    }
     await uc.connect(
-      s.currentProfile,
-      c['webphone.uc.host'] ||
-        `${s.currentProfile.pbxHostname}:${s.currentProfile.pbxPort}`,
+      p,
+      c['webphone.uc.host'] || `${p.pbxHostname}:${p.pbxPort}`,
     )
     this.loadUsers()
     this.loadUnreadChats().then(
@@ -79,13 +81,13 @@ class AuthUC {
     s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
   }
   @action private loadUsers = () => {
-    const { ucEnabled } = getAuthStore().currentProfile
-    if (ucEnabled) {
-      userStore.loadGroupUser()
-    } else {
-      const users = uc.getUsers()
-      contactStore.ucUsers = users
-    }
+    // const { ucEnabled } = getAuthStore().currentProfile
+    // if (ucEnabled) {
+    //   userStore.loadUcBuddyList()
+    // } else {
+    const users = uc.getUsers()
+    contactStore.ucUsers = users
+    // }
   }
   private loadUnreadChats = () =>
     uc

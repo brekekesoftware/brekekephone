@@ -1,6 +1,6 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -20,7 +20,7 @@ import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
+import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -121,7 +121,6 @@ export class PageChatDetail extends Component<{
 
   render() {
     const { buddy: id } = this.props
-    const u = contactStore.getUcUserById(id)
     const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state
     const listMessage = chatStore.messagesByThreadId[this.props.buddy]
@@ -138,7 +137,7 @@ export class PageChatDetail extends Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
-        title={u?.name || u?.id}
+        title={getPartyName(id)}
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
       >

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { mdiPlus } from '../assets/icons'

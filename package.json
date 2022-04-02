@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.9.2",
+  "version": "2.9.7",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -83,6 +83,7 @@
     "@babel/core": "7.17.5",
     "@babel/plugin-proposal-decorators": "7.17.2",
     "@babel/plugin-proposal-optional-chaining": "7.16.7",
+    "@babel/plugin-transform-react-jsx": "7.17.3",
     "@babel/plugin-transform-runtime": "7.17.0",
     "@craco/craco": "6.4.3",
     "@prettier/plugin-xml": "1.2.0",

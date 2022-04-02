@@ -1,10 +1,10 @@
+// import vi from '../assets/intl-vi.json'
+import RnAsyncStorage from '@react-native-async-storage/async-storage'
 import { action, computed, observable, runInAction } from 'mobx'
 import { NativeModules, Platform } from 'react-native'
 
 import en from '../assets/intl-en.json'
 import ja from '../assets/intl-ja.json'
-// import vi from '../assets/intl-vi.json'
-import { RnAsyncStorage } from '../components/Rn'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'

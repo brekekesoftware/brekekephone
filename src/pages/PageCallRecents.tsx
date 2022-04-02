@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { AppState, NativeEventSubscription, Platform } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
@@ -97,7 +97,7 @@ export class PageCallRecents extends Component {
             {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
-            canChat={getAuthStore().currentProfile.ucEnabled}
+            canChat={getAuthStore().currentProfile?.ucEnabled}
             key={i}
             {...this.getAvatar(c.partyNumber)}
             {...c}

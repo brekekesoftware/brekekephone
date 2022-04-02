@@ -2,7 +2,12 @@ import debounce from 'lodash/debounce'
 import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 
-import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import {
+  PbxGetProductInfoRes,
+  UcBuddy,
+  UcBuddyGroup,
+  UcConfig,
+} from '../api/brekekejs'
 import { sip } from '../api/sip'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
@@ -92,8 +97,16 @@ export class AuthStore {
 
   @observable signedInId = ''
   @computed get currentProfile() {
-    return profileStore.profiles.find(p => p.id === this.signedInId) as Profile
+    return profileStore.profiles.find(p => p.id === this.signedInId)
   }
+
+  @observable ucConfig?: UcConfig
+  @observable pbxConfig?: PbxGetProductInfoRes
+
+  @computed get isBigMode() {
+    return this.pbxConfig?.['webphone.allusers'] === 'false'
+  }
+
   @computed get currentData() {
     return profileStore.getProfileData(this.currentProfile)
   }
@@ -139,6 +152,8 @@ export class AuthStore {
     sip.stopWebRTC()
     this.ucState = 'stopped'
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()
+    this.pbxConfig = undefined
+    this.ucConfig = undefined
   }
 
   @action resetFailureState = () => {

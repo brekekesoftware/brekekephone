@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react'
+import { Component, createRef } from 'react'
 
 import ringback from '../assets/incallmanager_ringback.mp3'
 import ringtone from '../assets/incallmanager_ringtone.mp3'

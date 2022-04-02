@@ -26,6 +26,7 @@ export type Profile = {
   pbxPassword: string
   pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
   pbxTurnEnabled: boolean
+  pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
   parks: string[]

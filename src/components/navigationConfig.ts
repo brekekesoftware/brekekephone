@@ -109,7 +109,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().currentProfile.ucEnabled) {
+        if (s.ucRequired && !getAuthStore().currentProfile?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
@@ -119,7 +119,10 @@ const genMenus = () => {
       }
     })
     m.navFn = () => {
-      let k = getAuthStore().currentProfile.navSubMenus?.[i]
+      let k = getAuthStore().currentProfile?.navSubMenus?.[i]
+      if (!k) {
+        return
+      }
       if (!(k in m.subMenusMap)) {
         k = m.defaultSubMenuKey
       }
@@ -159,6 +162,9 @@ const saveNavigation = (i: number, k: string) => {
 export const normalizeSavedNavigation = () => {
   const arr = menus()
   const p = getAuthStore().currentProfile
+  if (!p) {
+    return
+  }
   if (!arr[p.navIndex]) {
     p.navIndex = 0
   }
@@ -182,6 +188,6 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !getAuthStore().currentProfile.ucEnabled),
+    s => !(s.ucRequired && !getAuthStore().currentProfile?.ucEnabled),
   )
 }

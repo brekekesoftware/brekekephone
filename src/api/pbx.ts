@@ -3,9 +3,9 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
-import { waitPbx } from '../stores/authStore'
+import { getAuthStore, waitPbx } from '../stores/authStore'
+import { PbxUser } from '../stores/contactStore'
 import { Profile, profileStore } from '../stores/profileStore'
-import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { Pbx } from './brekekejs'
 
@@ -23,8 +23,8 @@ export class PBX extends EventEmitter {
       // TODO
       return
     }
-
-    userStore.pbxConfig = undefined
+    // got issue: any function get pbxConfig on this time. will get undefined
+    // getAuthStore().pbxConfig = undefined
 
     const d = profileStore.getProfileData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
@@ -164,18 +164,19 @@ export class PBX extends EventEmitter {
   }
 
   getConfig = async () => {
-    if (!userStore.pbxConfig) {
+    const s = getAuthStore()
+    if (!s.pbxConfig) {
       if (this.needToWait) {
         await waitPbx()
       }
       if (!this.client) {
         return
       }
-      userStore.pbxConfig = await this.client._pal('getProductInfo', {
+      s.pbxConfig = await this.client._pal('getProductInfo', {
         webphone: 'true',
       })
     }
-    return userStore.pbxConfig
+    return s.pbxConfig
   }
 
   createSIPAccessToken = async (sipUsername: string) => {
@@ -202,40 +203,30 @@ export class PBX extends EventEmitter {
       pattern: '..*',
       limit: -1,
       type: 'user',
-    })
-  }
-
-  getOtherUsers = async (tenant: string, userIds: string | string[]) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return
-    }
-
-    const res = await this.client._pal('getExtensionProperties', {
-      tenant,
-      extension: userIds,
       property_names: ['name'],
     })
-
-    const users = new Array(res.length)
-
-    for (let i = 0; i < res.length; i++) {
-      const srcUser = res[i]
-
-      const dstUser = {
-        id: userIds[i],
-        name: srcUser[0],
-      }
-
-      users[i] = dstUser
+  }
+  getExtraUsers = async (ids: string[]): Promise<PbxUser[] | undefined> => {
+    if (this.needToWait) {
+      await waitPbx()
     }
-
-    return users
+    const cp = getAuthStore().currentProfile
+    if (!this.client || !cp) {
+      return
+    }
+    const res = await this.client._pal('getExtensionProperties', {
+      tenant: cp.pbxTenant,
+      extension: ids,
+      property_names: ['name'],
+    })
+    // server return "No permission." if id not exist on Pbx.
+    return res.map((r, i) => ({
+      id: ids[i],
+      name: (r as unknown as string) === 'No permission.' ? '' : r[0],
+    }))
   }
 
-  getUserForSelf = async (tenant: string, userId: string) => {
+  getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
     if (this.needToWait) {
       await waitPbx()
     }
@@ -243,10 +234,9 @@ export class PBX extends EventEmitter {
       return
     }
 
-    const res = await this.client._pal('getExtensionProperties', {
+    const [res] = await this.client._pal('getExtensionProperties', {
       tenant,
-      extension: userId,
-
+      extension: [userId],
       property_names: [
         'name',
         'p1_ptype',
@@ -263,19 +253,19 @@ export class PBX extends EventEmitter {
     const phones = [
       {
         id: pnumber[0],
-        type: res[1] as string,
+        type: res[1],
       },
       {
         id: pnumber[1],
-        type: res[2] as string,
+        type: res[2],
       },
       {
         id: pnumber[2],
-        type: res[3] as string,
+        type: res[3],
       },
       {
         id: pnumber[3],
-        type: res[4] as string,
+        type: res[4],
       },
     ]
 
@@ -284,9 +274,9 @@ export class PBX extends EventEmitter {
 
     return {
       id: userId,
-      name: userName as string,
+      name: userName,
       phones,
-      language: lang as string,
+      language: lang,
     }
   }
 

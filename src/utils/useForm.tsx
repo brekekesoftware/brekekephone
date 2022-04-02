@@ -1,7 +1,7 @@
 import flow from 'lodash/flow'
 import get from 'lodash/get'
 import { observer } from 'mobx-react'
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 

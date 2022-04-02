@@ -1,6 +1,6 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import { Component, Fragment } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import {

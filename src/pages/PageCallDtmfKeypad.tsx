@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, createRef } from 'react'
+import { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
@@ -41,13 +41,14 @@ export class PageCallDtmfKeypad extends Component {
 
   sendKey = (key: string) => {
     const c = callStore.getCurrentCall()
-    if (!c) {
+    const cp = getAuthStore().currentProfile
+    if (!c || !cp) {
       return
     }
     sip.sendDTMF({
       signal: key,
       sessionId: c.id,
-      tenant: c.pbxTenant || getAuthStore().currentProfile.pbxTenant,
+      tenant: c.pbxTenant || cp.pbxTenant,
       talkerId: c.pbxTalkerId || c.partyNumber,
     })
   }

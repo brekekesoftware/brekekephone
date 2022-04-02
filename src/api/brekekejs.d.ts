@@ -81,12 +81,12 @@ export type PbxPal = {
 
   getExtensions(
     p: PbxGetExtensionsParam,
-    resolve: (extensions: string[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
-  getExtensionProperties<T extends string | string[]>(
+  getExtensionProperties(
     p: PbxGetExtensionPropertiesParam,
-    resolve: (properties: T[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
   setExtensionProperties(
@@ -144,10 +144,11 @@ export type PbxGetExtensionsParam = {
   pattern: '..*'
   type: 'user'
   limit: number
+  property_names: string[]
 }
 export type PbxGetExtensionPropertiesParam = {
   tenant: string
-  extension: T
+  extension: string[]
   property_names: string[]
 }
 export type PbxSetExtensionPropertiesParam = {
@@ -406,15 +407,7 @@ export type UcChatClient = {
     profile_image_url: string
     tenant: string
   }
-  getConfigProperties(): {
-    buddy_mode: number
-    chat_mode: number
-    webnotif_timeout: number
-    webchat_enabled: string
-    optional_config: {
-      buddy_max: number
-    }
-  }
+  getConfigProperties(): UcConfig
 
   saveProperties(
     profile?: null,
@@ -792,6 +785,15 @@ export type UcEventMap = {
     conference: Conference
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
+}
+export type UcConfig = {
+  buddy_mode: number
+  chat_mode: number
+  webnotif_timeout: number
+  webchat_enabled: string
+  optional_config: {
+    buddy_max: number
+  }
 }
 
 export type UcConstants = {

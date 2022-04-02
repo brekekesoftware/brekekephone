@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 
 import { mdiPhone, mdiPhoneHangup } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
