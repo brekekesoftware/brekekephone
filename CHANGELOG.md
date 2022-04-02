@@ -1,3 +1,7 @@
+#### 2.9.8
+
+- Enhancement for PBX buddy list
+
 #### 2.9.2
 
 - Implement PBX buddy list
