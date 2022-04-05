@@ -27,11 +27,12 @@ export class PagePhonebookUpdate extends Component<{
   }
 
   save = (phonebook: Phonebook2) => {
-    pbx.setContact(phonebook).then(this.onSaveSuccess).catch(this.onSaveFailure)
+    const displayName = `${phonebook.lastName} ${phonebook.firstName}`
     Object.assign(phonebook, {
-      name:
-        phonebook.displayName || `${phonebook.firstName} ${phonebook.lastName}`,
+      name: displayName,
+      displayName,
     })
+    pbx.setContact(phonebook).then(this.onSaveSuccess).catch(this.onSaveFailure)
     contactStore.upsertPhonebook(phonebook)
   }
   onSaveSuccess = () => {
