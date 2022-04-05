@@ -210,10 +210,10 @@ export type PbxContact = {
   aid: string
   phonebook: string
   shared: string
+  display_name: string
   info: {
     $firstname: string
     $lastname: string
-    $displayname: string
     $tel_work: string
     $tel_home: string
     $tel_mobile: string
