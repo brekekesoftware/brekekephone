@@ -37,7 +37,9 @@ export class PagePhonebookCreate extends Component<{
         }
         phonebook = Object.assign(phonebook, {
           id: val.aid,
-          name: `${phonebook.firstName} ${phonebook.lastName}`,
+          name:
+            phonebook.displayName ||
+            `${phonebook.firstName} ${phonebook.lastName}`,
         })
         contactStore.upsertPhonebook(phonebook)
       })

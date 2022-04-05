@@ -29,7 +29,8 @@ export class PagePhonebookUpdate extends Component<{
   save = (phonebook: Phonebook2) => {
     pbx.setContact(phonebook).then(this.onSaveSuccess).catch(this.onSaveFailure)
     Object.assign(phonebook, {
-      name: `${phonebook.firstName} ${phonebook.lastName}`,
+      name:
+        phonebook.displayName || `${phonebook.firstName} ${phonebook.lastName}`,
     })
     contactStore.upsertPhonebook(phonebook)
   }

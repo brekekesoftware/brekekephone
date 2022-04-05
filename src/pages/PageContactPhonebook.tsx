@@ -70,7 +70,7 @@ export class PageContactPhonebook extends Component {
         const x = {
           ...ct,
           loaded: true,
-          name: ct.firstName + ' ' + ct.lastName,
+          name: ct.displayName || ct.firstName + ' ' + ct.lastName,
           hidden: ct.hidden === 'true',
         }
         contactStore.upsertPhonebook(x)
@@ -234,7 +234,7 @@ export class PageContactPhonebook extends Component {
                   iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}
                   key={i}
-                  name={u.name}
+                  name={u.displayName || u.name}
                 />
               ))}
             </Fragment>

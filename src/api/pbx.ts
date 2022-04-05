@@ -331,6 +331,7 @@ export class PBX extends EventEmitter {
       id,
       firstName: res.info.$firstname,
       lastName: res.info.$lastname,
+      displayName: res.info.$displayname,
       workNumber: res.info.$tel_work,
       homeNumber: res.info.$tel_home,
       cellNumber: res.info.$tel_mobile,
@@ -350,6 +351,8 @@ export class PBX extends EventEmitter {
     shared: boolean
     firstName: string
     lastName: string
+    name: string
+    displayName?: string
     workNumber: string
     homeNumber: string
     cellNumber: string
@@ -373,6 +376,7 @@ export class PBX extends EventEmitter {
       info: {
         $firstname: contact.firstName,
         $lastname: contact.lastName,
+        $displayname: contact.displayName || contact.name,
         $tel_work: contact.workNumber,
         $tel_home: contact.homeNumber,
         $tel_mobile: contact.cellNumber,

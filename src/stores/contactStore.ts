@@ -29,6 +29,7 @@ export type Phonebook2 = {
   book: string
   firstName: string
   lastName: string
+  displayName?: string
   workNumber: string
   cellNumber: string
   homeNumber: string

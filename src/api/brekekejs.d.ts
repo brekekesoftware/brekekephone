@@ -213,6 +213,7 @@ export type PbxContact = {
   info: {
     $firstname: string
     $lastname: string
+    $displayname: string
     $tel_work: string
     $tel_home: string
     $tel_mobile: string
