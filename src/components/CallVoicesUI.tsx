@@ -7,18 +7,30 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 
 export class IncomingItem extends Component {
   ringtonePlaying = false
+  isUnmounted = false
   async componentDidMount() {
     if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
       return
     }
+    // Incase component unmount already
+    if (this.isUnmounted) {
+      return
+    }
+
     IncallManager.startRingtone('_BUNDLE_')
     this.ringtonePlaying = true
     // TODO stop ringtone if user press hardware button
     // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
-    IncallManager.stopRingtone()
-    this.ringtonePlaying = false
+    // Incase component unmount before mounted(async)
+    if (!this.ringtonePlaying) {
+      this.isUnmounted = true
+    } else {
+      IncallManager.stopRingtone()
+      this.ringtonePlaying = false
+    }
+
     if (Platform.OS === 'android') {
       // Bug speaker auto turn on after call stopRingtone/stopRingback
       IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
