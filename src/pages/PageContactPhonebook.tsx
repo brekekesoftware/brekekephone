@@ -216,11 +216,13 @@ export class PageContactPhonebook extends Component {
         <Field
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
-            profileStore.upsertProfile({
-              id: getAuthStore().signedInId,
-              displaySharedContacts: v,
-            })
-            contactStore.refreshContacts()
+            if (pbx.client && getAuthStore().pbxState === 'success') {
+              profileStore.upsertProfile({
+                id: getAuthStore().signedInId,
+                displaySharedContacts: v,
+              })
+              contactStore.refreshContacts()
+            }
           }}
           type='Switch'
           value={getAuthStore().currentProfile?.displaySharedContacts}
