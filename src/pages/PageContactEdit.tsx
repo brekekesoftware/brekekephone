@@ -145,6 +145,9 @@ export class PageContactEdit extends Component {
   }
 
   onGoBack = () => {
+    if (getAuthStore().currentProfile?.ucEnabled) {
+      userStore.loadUcBuddyList()
+    }
     RnDropdownSectionList.closeDropdown()
     Nav().backToPageContactUsers()
   }
