@@ -3,6 +3,7 @@ import { Component } from 'react'
 
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
+import { getAuthStore } from '../stores/authStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -17,8 +18,9 @@ export class PagePhonebookUpdate extends Component<{
       <ContactsCreateForm
         onBack={Nav().backToPageContactPhonebook}
         onSave={(p: Phonebook2) => {
-          this.save(p)
-          Nav().goToPageContactPhonebook()
+          if (pbx.client && getAuthStore().pbxState === 'success') {
+            this.save(p)
+          }
         }}
         title={intl`Update Phonebook`}
         updatingPhonebook={this.props.contact}
@@ -27,13 +29,18 @@ export class PagePhonebookUpdate extends Component<{
   }
 
   save = (phonebook: Phonebook2) => {
-    pbx.setContact(phonebook).then(this.onSaveSuccess).catch(this.onSaveFailure)
+    const displayName = `${phonebook.lastName} ${phonebook.firstName}`
     Object.assign(phonebook, {
-      name: `${phonebook.firstName} ${phonebook.lastName}`,
+      name: displayName,
+      displayName,
     })
-    contactStore.upsertPhonebook(phonebook)
+    pbx
+      .setContact(phonebook)
+      .then(() => this.onSaveSuccess(phonebook))
+      .catch(this.onSaveFailure)
   }
-  onSaveSuccess = () => {
+  onSaveSuccess = (phonebook: Phonebook2) => {
+    contactStore.upsertPhonebook(phonebook)
     Nav().goToPageContactPhonebook()
   }
   onSaveFailure = (err: Error) => {

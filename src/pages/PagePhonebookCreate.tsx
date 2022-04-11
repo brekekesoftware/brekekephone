@@ -3,6 +3,7 @@ import { Component } from 'react'
 
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
+import { getAuthStore } from '../stores/authStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -18,8 +19,9 @@ export class PagePhonebookCreate extends Component<{
         book={this.props.book}
         onBack={Nav().backToPageContactPhonebook}
         onSave={(p: Phonebook2) => {
-          this.save(p)
-          Nav().goToPageContactPhonebook()
+          if (pbx.client && getAuthStore().pbxState === 'success') {
+            this.save(p)
+          }
         }}
         title={intl`New Phonebook`}
       />
@@ -37,7 +39,9 @@ export class PagePhonebookCreate extends Component<{
         }
         phonebook = Object.assign(phonebook, {
           id: val.aid,
-          name: `${phonebook.firstName} ${phonebook.lastName}`,
+          name:
+            phonebook.displayName ||
+            `${phonebook.lastName} ${phonebook.firstName}`,
         })
         contactStore.upsertPhonebook(phonebook)
       })
