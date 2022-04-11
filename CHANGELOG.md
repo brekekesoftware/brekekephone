@@ -1,3 +1,8 @@
+#### 2.9.9
+
+- Fix: send file UC chat should work correctly
+- Fix: contact display name not correct
+
 #### 2.9.8
 
 - Enhancement for PBX buddy list
