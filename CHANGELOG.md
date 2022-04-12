@@ -1,4 +1,4 @@
-#### 2.9.9
+#### 2.9.10
 
 - Fix: send file UC chat should work correctly
 - Fix: contact display name not correct
