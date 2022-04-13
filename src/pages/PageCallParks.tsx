@@ -52,7 +52,7 @@ export class PageCallParks extends Component<{
     if (!cp) {
       return null
     }
-    const parks = cp.parks.map((p, i) => ({
+    const parks = cp?.parks?.map((p, i) => ({
       park: p,
       name: cp.parkNames?.[i] || '',
     }))
@@ -70,13 +70,13 @@ export class PageCallParks extends Component<{
         subMenu={cp2 ? undefined : 'parks'}
         title={intl`Park`}
       >
-        {!parks.length && (
+        {!parks?.length && (
           <>
             <Field isGroup label={intl`PARK (0)`} />
             <RnText padding>{intl`This account has no park number`}</RnText>
           </>
         )}
-        {parks.map((p, i) => (
+        {parks?.map((p, i) => (
           <RnTouchableOpacity key={i} onPress={() => this.selectPark(p.park)}>
             <UserItem
               key={i}

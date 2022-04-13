@@ -48,12 +48,13 @@ export const ProfileCreateForm: FC<{
       $.set('profile', (p: Profile) => {
         if ($.addingPark.name && $.addingPark.number) {
           // Lower version compare Park
-          const comparePark = p.parks.length - p?.parkNames?.length || 0
+          const comparePark =
+            (p?.parks?.length || 0) - (p?.parkNames?.length || 0)
           if (comparePark) {
             p['parkNames'] = Array(comparePark).fill('')
           }
-          p.parks.push($.addingPark.number)
-          p.parkNames.push($.addingPark.name)
+          p?.parks?.push($.addingPark.number)
+          p?.parkNames?.push($.addingPark.name)
           $.addingPark = { name: '', number: '' }
         }
         return p
@@ -66,7 +67,7 @@ export const ProfileCreateForm: FC<{
           <>
             <RnText small>
               Park {i + 1}:{' '}
-              {$.profile.parks[i] + ' - ' + $.profile?.parkNames?.[i]}
+              {$.profile?.parks?.[i] + ' - ' + $.profile?.parkNames?.[i]}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
@@ -74,7 +75,7 @@ export const ProfileCreateForm: FC<{
         ),
         onConfirm: () => {
           $.set('profile', (p: Profile) => {
-            p.parks = p.parks.filter((p0, i0) => i0 !== i)
+            p.parks = p?.parks?.filter((p0, i0) => i0 !== i)
             return p
           })
         },
@@ -234,10 +235,10 @@ export const ProfileCreateForm: FC<{
           },
           {
             isGroup: true,
-            label: intl`PARKS (${$.profile.parks.length})`,
+            label: intl`PARKS (${$.profile?.parks?.length})`,
             hasMargin: true,
           },
-          ...$.profile.parks.map((p, i) => {
+          ...($.profile?.parks?.map((p, i) => {
             const parkName = $.profile?.parkNames?.[i]
             return {
               disabled: true,
@@ -249,7 +250,7 @@ export const ProfileCreateForm: FC<{
                 ? null
                 : () => $.onAddingParkRemove(i),
             }
-          }),
+          }) || []),
           ...(props.footerLogout
             ? []
             : [

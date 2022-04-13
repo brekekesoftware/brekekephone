@@ -29,8 +29,8 @@ export type Profile = {
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
-  parks: string[]
-  parkNames: string[]
+  parks?: string[]
+  parkNames?: string[]
   ucEnabled: boolean
   displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
