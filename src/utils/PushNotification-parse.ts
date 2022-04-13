@@ -222,8 +222,16 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     signInByLocalNotification(n)
     if (!rawId?.startsWith('missedcall')) {
       const nav = Nav()
-      nav.customPageIndex = nav.goToPageChatRecents
-      waitTimeout().then(nav.goToPageChatRecents)
+      const id = getAuthStore().currentData?.recentChats?.find(
+        c => c.name === raw?.title,
+      )?.id
+      if (id && id.length > 0) {
+        nav.customPageIndex = nav.goToPageChatDetail
+        waitTimeout(1000).then(() => nav.goToPageChatDetail({ buddy: id }))
+      } else {
+        nav.customPageIndex = nav.goToPageChatRecents
+        waitTimeout().then(nav.goToPageChatRecents)
+      }
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
