@@ -13,6 +13,7 @@ import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
+import { callStore } from './callStore'
 import { getPartyName } from './contactStore'
 import { RnStacker } from './RnStacker'
 
@@ -208,14 +209,23 @@ class ChatStore {
       name?: string
     }
     // handle notification and ringring notice
+
+    const c = callStore.getCurrentCall()
+
     let name = ''
     if (isGroup) {
-      if (!(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)) {
+      if (
+        !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId) &&
+        (!c || c?.answered)
+      ) {
         this.playTingTing()
       }
       name = chatStore.getGroupById(threadId)?.name
     } else {
-      if (!(s?.name === 'PageChatDetail' && s?.buddy === threadId)) {
+      if (
+        !(s?.name === 'PageChatDetail' && s?.buddy === threadId) &&
+        (!c || c?.answered)
+      ) {
         this.playTingTing()
       }
       name = getPartyName(threadId) || ''
