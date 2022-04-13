@@ -130,18 +130,19 @@ export class AuthStore {
 
   signOut = () => {
     callStore.calls.forEach(c => c.hangupWithUnhold())
-    if (callStore.calls.length > 0) {
-      const intervalStartedAt = Date.now()
-      const id = BackgroundTimer.setInterval(() => {
-        // TODO show/hide loader
-        if (!callStore.calls.length || Date.now() - intervalStartedAt > 3000) {
-          BackgroundTimer.clearInterval(id)
-          this.resetState()
-        }
-      }, 1000)
-    } else {
-      this.resetState()
-    }
+    this.resetState()
+    Nav().goToPageProfileSignIn()
+    // if (!callStore.calls.length) {
+    //   return
+    // }
+    // const intervalStartedAt = Date.now()
+    // const id = BackgroundTimer.setInterval(() => {
+    //   // TODO show/hide loader
+    //   if (!callStore.calls.length || Date.now() - intervalStartedAt > 3000) {
+    //     BackgroundTimer.clearInterval(id)
+    //     this.resetState()
+    //   }
+    // }, 1000)
   }
   @action private resetState = () => {
     this.signedInId = ''
