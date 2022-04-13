@@ -52,10 +52,11 @@ export class PageCallParks extends Component<{
     if (!cp) {
       return null
     }
-    const parks = cp.parks.map((p, i) => ({
-      park: p,
-      name: cp.parkNames?.[i] || '',
-    }))
+    const parks =
+      cp.parks?.map((p, i) => ({
+        park: p,
+        name: cp.parkNames?.[i] || '',
+      })) || []
     const sp = this.state.selectedPark
     const cp2 = this.props.callParks2
     void callStore.getCurrentCall() // trigger componentDidUpdate

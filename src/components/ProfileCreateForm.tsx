@@ -46,11 +46,12 @@ export const ProfileCreateForm: FC<{
     //
     onAddingParkSubmit: () => {
       $.set('profile', (p: Profile) => {
+        p.parks = p.parks || []
+        p.parkNames = p.parkNames || []
         if ($.addingPark.name && $.addingPark.number) {
-          // Lower version compare Park
-          const comparePark = p.parks.length - p?.parkNames?.length || 0
-          if (comparePark) {
-            p['parkNames'] = Array(comparePark).fill('')
+          if (p.parkNames.length !== p.parks.length) {
+            const { parkNames } = p
+            p.parkNames = p.parks.map((_, i) => parkNames[i] || '')
           }
           p.parks.push($.addingPark.number)
           p.parkNames.push($.addingPark.name)
@@ -66,7 +67,7 @@ export const ProfileCreateForm: FC<{
           <>
             <RnText small>
               Park {i + 1}:{' '}
-              {$.profile.parks[i] + ' - ' + $.profile?.parkNames?.[i]}
+              {$.profile.parks?.[i] + ' - ' + $.profile.parkNames?.[i]}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
@@ -74,7 +75,7 @@ export const ProfileCreateForm: FC<{
         ),
         onConfirm: () => {
           $.set('profile', (p: Profile) => {
-            p.parks = p.parks.filter((p0, i0) => i0 !== i)
+            p.parks = p.parks?.filter((p0, i0) => i0 !== i)
             return p
           })
         },
@@ -234,11 +235,11 @@ export const ProfileCreateForm: FC<{
           },
           {
             isGroup: true,
-            label: intl`PARKS (${$.profile.parks.length})`,
+            label: intl`PARKS (${$.profile.parks?.length})`,
             hasMargin: true,
           },
-          ...$.profile.parks.map((p, i) => {
-            const parkName = $.profile?.parkNames?.[i]
+          ...($.profile.parks?.map((p, i) => {
+            const parkName = $.profile.parkNames?.[i]
             return {
               disabled: true,
               name: `parks[${i}]`,
@@ -249,7 +250,7 @@ export const ProfileCreateForm: FC<{
                 ? null
                 : () => $.onAddingParkRemove(i),
             }
-          }),
+          }) || []),
           ...(props.footerLogout
             ? []
             : [
