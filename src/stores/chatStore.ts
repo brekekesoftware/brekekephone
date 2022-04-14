@@ -163,7 +163,6 @@ class ChatStore {
     } else {
       PushNotificationIOS.addNotificationRequest({
         id: `message-${Date.now()}`,
-        threadId,
         title,
         body,
         sound: undefined,
@@ -171,6 +170,7 @@ class ChatStore {
           id: `message-${Date.now()}`,
           aps: {
             title,
+            threadId,
             body,
             my_custom_data: 'local_notification',
             pre_app_state: AppState.currentState,
