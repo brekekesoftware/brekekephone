@@ -10,6 +10,7 @@ import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
   'title',
+  'threadId',
   'alert',
   'body',
   'message',
@@ -222,12 +223,9 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     signInByLocalNotification(n)
     if (!rawId?.startsWith('missedcall')) {
       const nav = Nav()
-      const id = getAuthStore().currentData?.recentChats?.find(
-        c => c.name === raw?.title,
-      )?.id
-      if (id && id.length > 0) {
+      if (n.threadId && n.threadId.length > 0) {
         nav.customPageIndex = nav.goToPageChatDetail
-        waitTimeout(1000).then(() => nav.goToPageChatDetail({ buddy: id }))
+        waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
       } else {
         nav.customPageIndex = nav.goToPageChatRecents
         waitTimeout().then(nav.goToPageChatRecents)
@@ -281,6 +279,7 @@ export type ParsedPn = {
   id: string
   title: string
   body: string
+  threadId: string
   alert: string
   message: string
   from: string

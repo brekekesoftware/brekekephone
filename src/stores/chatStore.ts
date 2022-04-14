@@ -136,7 +136,7 @@ class ChatStore {
     }
   }
 
-  pushChatNotification = (title: string, body: string) => {
+  pushChatNotification = (title: string, body: string, threadId?: string) => {
     if (Platform.OS === 'web') {
       return
     }
@@ -145,6 +145,7 @@ class ChatStore {
       FCM.presentLocalNotification({
         title,
         body,
+        threadId,
         number: 0,
         priority: 'high',
         show_in_foreground: true,
@@ -162,6 +163,7 @@ class ChatStore {
     } else {
       PushNotificationIOS.addNotificationRequest({
         id: `message-${Date.now()}`,
+        threadId,
         title,
         body,
         sound: undefined,
@@ -231,7 +233,7 @@ class ChatStore {
       name = getPartyName(threadId) || ''
     }
     if (m.length === 1 && AppState.currentState !== 'active') {
-      this.pushChatNotification(name, m[0]?.text || '')
+      this.pushChatNotification(name, m[0]?.text || '', threadId)
     }
     //=============
 
