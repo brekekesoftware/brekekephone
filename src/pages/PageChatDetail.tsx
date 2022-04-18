@@ -79,6 +79,7 @@ export class PageChatDetail extends Component<{
   componentDidMount() {
     this.loadRecent()
     const { buddy: id } = this.props
+    uc.readUnreadChats(id)
     chatStore.updateThreadConfig(id, false, {
       isUnread: false,
     })

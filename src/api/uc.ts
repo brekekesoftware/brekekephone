@@ -336,6 +336,17 @@ export class UC extends EventEmitter {
     }
     return s.ucConfig
   }
+
+  readUnreadChats = async (id: string) => {
+    const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
+      this.client.receiveUnreadText(resolve, reject)
+    })
+    const readRequiredMessageIds = res.messages
+      .filter(msg => msg.requires_read && msg.sender?.user_id === id)
+      .map(msg => msg.received_text_id)
+    this.client.readText(readRequiredMessageIds)
+  }
+
   getUnreadChats = async () => {
     const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
       this.client.receiveUnreadText(resolve, reject)
