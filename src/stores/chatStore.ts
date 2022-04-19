@@ -13,7 +13,6 @@ import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
-import { callStore } from './callStore'
 import { getPartyName } from './contactStore'
 import { RnStacker } from './RnStacker'
 
@@ -65,6 +64,7 @@ export const TIMEOUT_TRANSFER_IMAGE = 30000
 export const TIMEOUT_TRANSFER_VIDEO = 600000
 
 class ChatStore {
+  @observable isTalking: boolean = false
   @observable isPauseTingTing: boolean = true
   timeoutTransferImage: { [k: string]: number } = {}
 
@@ -211,14 +211,11 @@ class ChatStore {
       name?: string
     }
     // handle notification and ringring notice
-
-    const c = callStore.getCurrentCall()
-
     let name = ''
     if (isGroup) {
       if (
         !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId) &&
-        (!c || c?.answered)
+        !this.isTalking
       ) {
         this.playTingTing()
       }
@@ -226,7 +223,7 @@ class ChatStore {
     } else {
       if (
         !(s?.name === 'PageChatDetail' && s?.buddy === threadId) &&
-        (!c || c?.answered)
+        !this.isTalking
       ) {
         this.playTingTing()
       }
