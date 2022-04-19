@@ -161,23 +161,27 @@ class ChatStore {
         is_local_notification: 'local_notification',
       })
     } else {
-      PushNotificationIOS.addNotificationRequest({
-        id: `message-${Date.now()}`,
-        title,
-        body,
-        sound: undefined,
-        userInfo: {
+      PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
+        badge = Number(badge) || 0
+        PushNotificationIOS.addNotificationRequest({
           id: `message-${Date.now()}`,
-          aps: {
-            title,
-            threadId,
-            body,
-            my_custom_data: 'local_notification',
-            pre_app_state: AppState.currentState,
-            local_notification: true,
-            is_local_notification: 'local_notification',
+          title,
+          body,
+          badge,
+          sound: undefined,
+          userInfo: {
+            id: `message-${Date.now()}`,
+            aps: {
+              title,
+              threadId,
+              body,
+              my_custom_data: 'local_notification',
+              pre_app_state: AppState.currentState,
+              local_notification: true,
+              is_local_notification: 'local_notification',
+            },
           },
-        },
+        })
       })
     }
   }
