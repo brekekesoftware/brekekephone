@@ -10,6 +10,7 @@ import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
   'title',
+  'threadId',
   'alert',
   'body',
   'message',
@@ -222,8 +223,13 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     signInByLocalNotification(n)
     if (!rawId?.startsWith('missedcall')) {
       const nav = Nav()
-      nav.customPageIndex = nav.goToPageChatRecents
-      waitTimeout().then(nav.goToPageChatRecents)
+      if (n.threadId && n.threadId.length > 0) {
+        nav.customPageIndex = nav.goToPageChatDetail
+        waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
+      } else {
+        nav.customPageIndex = nav.goToPageChatRecents
+        waitTimeout().then(nav.goToPageChatRecents)
+      }
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
     return null
@@ -273,6 +279,7 @@ export type ParsedPn = {
   id: string
   title: string
   body: string
+  threadId: string
   alert: string
   message: string
   from: string

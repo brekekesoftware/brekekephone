@@ -77,13 +77,9 @@ export class PageChatDetail extends Component<{
   editingTextReplace = false
 
   componentDidMount() {
-    const noChat = !this.chatIds.length
-    if (noChat) {
-      this.loadRecent()
-    } else {
-      BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
-    }
+    this.loadRecent()
     const { buddy: id } = this.props
+    uc.readUnreadChats(id)
     chatStore.updateThreadConfig(id, false, {
       isUnread: false,
     })

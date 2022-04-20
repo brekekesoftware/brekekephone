@@ -18,6 +18,7 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
 import { CancelRecentPn } from './cancelRecentPn'
+import { chatStore } from './chatStore'
 import { Nav } from './Nav'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
@@ -152,6 +153,7 @@ export class CallStore {
       }
       if (!cExisting.answered && cPartial.answered) {
         this.currentCallId = cExisting.id
+        chatStore.isTalking = true
         cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
@@ -174,6 +176,7 @@ export class CallStore {
           !!cExisting.localVideoEnabled,
         )
       }
+      chatStore.isTalking = false
       return
     }
     // Construct a new call
@@ -192,10 +195,12 @@ export class CallStore {
     )
     if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
+      chatStore.isTalking = true
       c.answer()
       console.error('SIP PN debug: answer by recentPnAction')
     } else if (callkeepAction === 'rejectCall') {
       c.callkeepAlreadyRejected = true
+      chatStore.isTalking = false
       c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
     }
