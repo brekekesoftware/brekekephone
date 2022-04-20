@@ -210,10 +210,6 @@ class UserStore {
       const dataOnlineUserFiltered = dataOnlineUser.filter(
         u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
       )
-      // const isNoGroup = s.title === `(${intl`No Group`})`
-      // if (isNoGroup && dataAllUsersFiltered.length === 0) {
-      //   return
-      // }
       displayUsers.push({
         title: s.title,
         data: isOnline ? dataAllUsersFiltered : dataOnlineUserFiltered,
