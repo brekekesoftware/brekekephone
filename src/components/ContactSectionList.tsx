@@ -296,26 +296,15 @@ const RenderHeaderSection = observer(
     data,
   }: SectionHeader) => {
     const index = sectionListData.findIndex(i => i.title === title)
-    const selectedItemCount = userStore.isSelectedAddAllUser
-      ? data.length
-      : data.filter(i => userStore.selectedUserIds[i.user_id]).length
     const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
       i => i === index,
     )
+    const titleHeaderRender = userStore.getHeaderTitle(title, data, isEditMode)
+
     const isDisableMarginTop =
       sectionListData[index - 1]?.data?.length === 0 ||
       RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
-    const txtOnOff = `${
-      isEditMode
-        ? selectedItemCount
-        : data.filter(itm => itm.status === 'online').length
-    }/${data.length}` // name 0/3
-    const txtNumberUser = ` (${data.length})` // nam (3)
-    const titleHeader = `${title} ${
-      getAuthStore().currentProfile?.ucEnabled || isEditMode
-        ? txtOnOff
-        : txtNumberUser
-    }`
+
     return (
       <RnTouchableOpacity
         onPress={() => RnDropdownSectionList.toggleSection(index, data.length)}
@@ -336,7 +325,7 @@ const RenderHeaderSection = observer(
               <View>
                 <RnIcon path={isHidden ? mdiMenuRight : mdiMenuDown} />
               </View>
-              <RnText small>{titleHeader}</RnText>
+              <RnText small>{titleHeaderRender}</RnText>
             </View>
             {isEditMode && (
               <RnTouchableOpacity

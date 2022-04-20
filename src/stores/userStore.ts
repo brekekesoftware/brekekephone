@@ -210,15 +210,12 @@ class UserStore {
       const dataOnlineUserFiltered = dataOnlineUser.filter(
         u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
       )
-      const isNoGroup = s.title === `(${intl`No Group`})`
-      if (isNoGroup && dataAllUsersFiltered.length === 0) {
-        return
-      }
       displayUsers.push({
-        title: !isNoGroup ? s.title : '',
+        title: s.title,
         data: isOnline ? dataAllUsersFiltered : dataOnlineUserFiltered,
       })
     })
+
     return { displayUsers, totalContact, totalOnlineContact }
   }
 
@@ -274,6 +271,37 @@ class UserStore {
     })
   }
 
+  getHeaderTitle = (
+    sectionTitle: string,
+    renderData: readonly UcBuddy[],
+    isEditMode?: boolean,
+  ) => {
+    if (!getAuthStore().currentProfile?.ucEnabled) {
+      return `(${renderData.length})`
+    }
+
+    if (isEditMode) {
+      const selectedItemCount = this.isSelectedAddAllUser
+        ? renderData.length
+        : renderData.filter(i => this.selectedUserIds[i.user_id]).length
+      return `${selectedItemCount}/${renderData.length}`
+    }
+
+    const indexGroup = this.dataGroupAllUser.findIndex(
+      item => item.title === sectionTitle,
+    )
+    if (indexGroup <= -1) {
+      return ''
+    }
+    const totalUser = this.dataGroupAllUser[indexGroup].data.length
+    const totalOnline = this.dataGroupAllUser[indexGroup].data.filter(
+      u => this.userOnline[u.user_id],
+    ).length
+    return `${
+      sectionTitle === `(${intl`No Group`})` ? '' : sectionTitle
+    } ${totalOnline}/${totalUser}`
+  }
+
   @action updateStatusBuddy = (buddy_id: string, status: string) => {
     if (status !== 'offline') {
       this.userOnline[buddy_id] = status
@@ -313,7 +341,6 @@ class UserStore {
     this.groups.push({ id: groupName, name: groupName })
   }
   resetCache = () => {
-    this.dataGroupAllUser = []
     this.groups = []
     this.selectedUserIds = {}
     this.dataListAllUser = []
