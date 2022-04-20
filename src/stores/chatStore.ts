@@ -64,6 +64,7 @@ export const TIMEOUT_TRANSFER_IMAGE = 30000
 export const TIMEOUT_TRANSFER_VIDEO = 600000
 
 class ChatStore {
+  @observable isTalking: boolean = false
   @observable isPauseTingTing: boolean = true
   timeoutTransferImage: { [k: string]: number } = {}
 
@@ -135,7 +136,7 @@ class ChatStore {
     }
   }
 
-  pushChatNotification = (title: string, body: string) => {
+  pushChatNotification = (title: string, body: string, threadId?: string) => {
     if (Platform.OS === 'web') {
       return
     }
@@ -144,6 +145,7 @@ class ChatStore {
       FCM.presentLocalNotification({
         title,
         body,
+        threadId,
         number: 0,
         priority: 'high',
         show_in_foreground: true,
@@ -159,22 +161,27 @@ class ChatStore {
         is_local_notification: 'local_notification',
       })
     } else {
-      PushNotificationIOS.addNotificationRequest({
-        id: `message-${Date.now()}`,
-        title,
-        body,
-        sound: undefined,
-        userInfo: {
+      PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
+        badge = Number(badge) || 0
+        PushNotificationIOS.addNotificationRequest({
           id: `message-${Date.now()}`,
-          aps: {
-            title,
-            body,
-            my_custom_data: 'local_notification',
-            pre_app_state: AppState.currentState,
-            local_notification: true,
-            is_local_notification: 'local_notification',
+          title,
+          body,
+          badge,
+          sound: undefined,
+          userInfo: {
+            id: `message-${Date.now()}`,
+            aps: {
+              title,
+              threadId,
+              body,
+              my_custom_data: 'local_notification',
+              pre_app_state: AppState.currentState,
+              local_notification: true,
+              is_local_notification: 'local_notification',
+            },
           },
-        },
+        })
       })
     }
   }
@@ -210,18 +217,24 @@ class ChatStore {
     // handle notification and ringring notice
     let name = ''
     if (isGroup) {
-      if (!(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)) {
+      if (
+        !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId) &&
+        !this.isTalking
+      ) {
         this.playTingTing()
       }
       name = chatStore.getGroupById(threadId)?.name
     } else {
-      if (!(s?.name === 'PageChatDetail' && s?.buddy === threadId)) {
+      if (
+        !(s?.name === 'PageChatDetail' && s?.buddy === threadId) &&
+        !this.isTalking
+      ) {
         this.playTingTing()
       }
       name = getPartyName(threadId) || ''
     }
     if (m.length === 1 && AppState.currentState !== 'active') {
-      this.pushChatNotification(name, m[0]?.text || '')
+      this.pushChatNotification(name, m[0]?.text || '', threadId)
     }
     //=============
 
