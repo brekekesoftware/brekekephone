@@ -96,6 +96,7 @@ export class CallStore {
     console.error(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
+      chatStore.isTalking = true
       c.answer()
     }
   }
@@ -109,6 +110,7 @@ export class CallStore {
     console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
       c.callkeepAlreadyRejected = true
+      chatStore.isTalking = false
       c.hangupWithUnhold()
     }
     this.endCallKeep(uuid)
@@ -176,7 +178,6 @@ export class CallStore {
           !!cExisting.localVideoEnabled,
         )
       }
-      chatStore.isTalking = false
       return
     }
     // Construct a new call
@@ -443,6 +444,7 @@ export class CallStore {
       return
     }
     console.error('PN callkeep debug: endCallKeep ' + uuid)
+    chatStore.isTalking = false
     if (setAction) {
       this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
