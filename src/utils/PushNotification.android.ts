@@ -5,7 +5,7 @@ import FCM, { FCMEvent, Notification } from 'react-native-fcm'
 
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
-import { parse } from './PushNotification-parse'
+import { parse, toXPN } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
 let fcmPnToken = ''
@@ -29,6 +29,7 @@ const onNotification = async (n0: Notification, initApp: Function) => {
     //
     FCM.presentLocalNotification({
       ...n,
+      ...toXPN(n),
       body: 'Click to view',
       title: n.body,
       number: 0,

@@ -46,6 +46,9 @@ const onNotification = async (
   if (!n) {
     return
   }
+  // TODO ios present local PN?
+  // Modify server background mode content only PN?
+  // toXPN
 }
 
 export const PushNotification = {

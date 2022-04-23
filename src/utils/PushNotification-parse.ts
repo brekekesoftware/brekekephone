@@ -304,3 +304,9 @@ export type SipPn = {
   turnUsername: string
   turnCredential: string
 }
+
+export const toXPN = (n: object) =>
+  Object.entries(n).reduce((m, [k, v]) => {
+    m['x_' + k] = v
+    return m
+  }, {} as { [k: string]: unknown })
