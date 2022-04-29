@@ -18,6 +18,9 @@ export class PageCallRecents extends Component {
   appStateSubscription?: NativeEventSubscription
   componentDidMount = () => {
     if (Platform.OS === 'ios') {
+      // for case the first go to this page
+      PushNotification.resetBadgeNumber()
+
       this.appStateSubscription = AppState.addEventListener('change', () => {
         if (AppState.currentState === 'active') {
           PushNotification.resetBadgeNumber()
