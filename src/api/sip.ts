@@ -343,13 +343,13 @@ export const parseCanceledPnIds = (data?: string) => {
   }
   const msg = data.substr(i + m[0].length)
   console.error(`parseCanceledPnIds: msg.length=${msg.length} l=${l}`)
-  return msg
-    .split(/\n/g)
-    .map(s => s.trim())
-    .filter(s => /Canceled$/i.test(s))
-    .map(s => ({
-      pnId: s.match(/(\w+)\W*INVITE/)?.[1],
-      completedElseWhere: s.toLowerCase().includes('call completed elsewhere'),
-    }))
-    .filter(s => s.pnId)
+  return msg.split(/\n/g).map(s => {
+    const lowers = s.toLowerCase()
+    return lowers.replace(/\s+/g, '').includes(',canceled')
+      ? {
+          pnId: s.match(/(\w+)\W*INVITE/)?.[1],
+          completedElseWhere: lowers.includes('call completed elsewhere'),
+        }
+      : undefined
+  })
 }

@@ -563,8 +563,8 @@ export class CallStore {
   }
 
   // To be used in sip.phone._ua.on('newNotify')
-  onSipUaCancel = (n: CancelRecentPn) => {
-    if (!n.pnId) {
+  onSipUaCancel = (n?: CancelRecentPn) => {
+    if (!n?.pnId) {
       return
     }
     const uuid = this.getUuidFromPnId(n.pnId)
