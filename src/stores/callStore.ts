@@ -539,9 +539,18 @@ export class CallStore {
     })
   }
   shouldRingInNotify = (uuid?: string) => {
+    // Disable ringtone when enable PN
+    if (
+      Platform.OS === 'ios' &&
+      getAuthStore().currentProfile?.pushNotificationEnabled
+    ) {
+      return false
+    }
+
     if (Platform.OS === 'web' || !uuid) {
       return true
     }
+
     // Do not ring on background
     if (RnAppState.currentState !== 'active') {
       return false
@@ -559,6 +568,7 @@ export class CallStore {
     ) {
       return false
     }
+
     return true
   }
 
