@@ -126,7 +126,7 @@ class AuthSIP {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, 300)
+  private authWithCheckDebounced = debounce(this.authWithCheck, 30000)
 }
 
 export const authSIP = new AuthSIP()
