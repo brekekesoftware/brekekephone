@@ -41,7 +41,7 @@ class AuthPBX {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, 300)
+  private authWithCheckDebounced = debounce(this.authWithCheck, 30000)
 }
 
 export const authPBX = new AuthPBX()
