@@ -120,7 +120,7 @@ class UserStore {
   }
 
   @action getBuddyById = (buddy_id: string) => {
-    return this.byIds[buddy_id]
+    return this.dataListAllUser.find(item => item.user_id === buddy_id)
   }
 
   @action filterDataUserGroup = (
@@ -306,7 +306,11 @@ class UserStore {
     } ${totalOnline}/${totalUser}`
   }
 
-  @action updateStatusBuddy = (buddy_id: string, status: string) => {
+  @action updateStatusBuddy = (
+    buddy_id: string,
+    status: string,
+    avatar: string,
+  ) => {
     if (status !== 'offline') {
       this.userOnline[buddy_id] = status
     } else {
