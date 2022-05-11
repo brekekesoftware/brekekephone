@@ -185,7 +185,7 @@ export class PageCallManage extends Component<{
       >
         <View style={css.Btns_VerticalMargin} />
         {/* TODO add Connecting... */}
-        <View style={{}}>
+        <View>
           <View style={css.Btns_Inner}>
             <ButtonIcon
               disabled={!c.answered}
