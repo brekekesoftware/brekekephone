@@ -7,11 +7,17 @@ export const CallVoices = observer(() => {
   // Try trigger observer?
   void Object.keys(callStore.callkeepMap)
   void callStore.calls.map(_ => _.callkeepUuid)
+
+  const currentCall = callStore.getCurrentCall()
+  const isOutgoingCallStart =
+    currentCall &&
+    !currentCall.withSDP &&
+    !currentCall.incoming &&
+    currentCall.sessionStatus === 'progress'
+
   return (
     <>
-      {!!callStore.calls.filter(c => !c.incoming && !c.answered).length && (
-        <OutgoingItem />
-      )}
+      {isOutgoingCallStart && <OutgoingItem />}
       {callStore.calls
         .filter(c => c.answered)
         .map(c => (

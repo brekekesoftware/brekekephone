@@ -185,10 +185,10 @@ export class PageCallManage extends Component<{
       >
         <View style={css.Btns_VerticalMargin} />
         {/* TODO add Connecting... */}
-        <View style={{}}>
+        <View style={!(c.withSDP || c.answered) && css.Btns_Hidden}>
           <View style={css.Btns_Inner}>
             <ButtonIcon
-              disabled={!c.answered}
+              disabled={c.withSDP}
               bgcolor='white'
               color='black'
               name={intl`TRANSFER`}
@@ -199,7 +199,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
-              disabled={!c.answered}
+              disabled={c.withSDP}
               bgcolor='white'
               color='black'
               name={intl`PARK`}
@@ -210,7 +210,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
-              disabled={!c.answered}
+              disabled={c.withSDP}
               bgcolor={c.localVideoEnabled ? activeColor : 'white'}
               color={c.localVideoEnabled ? 'white' : 'black'}
               name={intl`VIDEO`}
@@ -222,7 +222,7 @@ export class PageCallManage extends Component<{
             />
             {Platform.OS !== 'web' && (
               <ButtonIcon
-                disabled={!c.answered}
+                disabled={c.withSDP}
                 bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
                 color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
@@ -241,7 +241,7 @@ export class PageCallManage extends Component<{
           <View style={css.Btns_Space} />
           <View style={css.Btns_Inner}>
             <ButtonIcon
-              disabled={!c.answered}
+              disabled={c.withSDP}
               bgcolor={c.muted ? activeColor : 'white'}
               color={c.muted ? 'white' : 'black'}
               name={c.muted ? intl`UNMUTE` : intl`MUTE`}
@@ -252,7 +252,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
-              disabled={!c.answered}
+              disabled={c.withSDP}
               bgcolor={c.recording ? activeColor : 'white'}
               color={c.recording ? 'white' : 'black'}
               name={intl`RECORD`}
@@ -273,7 +273,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
-              disabled={!c.answered}
+              disabled={c.withSDP}
               bgcolor={c.holding ? activeColor : 'white'}
               color={c.holding ? 'white' : 'black'}
               name={c.holding ? intl`UNHOLD` : intl`HOLD`}

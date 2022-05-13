@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
 
+import { SessionStatus } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
@@ -18,6 +19,8 @@ import { RnAlert } from './RnAlert'
 export class Call {
   constructor(private store: CallStore) {}
 
+  @observable withSDP: boolean = false
+  @observable sessionStatus: SessionStatus = 'dialing'
   @observable id = ''
   @observable pnId = ''
   @observable partyNumber = ''

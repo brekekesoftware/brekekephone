@@ -125,6 +125,7 @@ export class SIP extends EventEmitter {
         partyName,
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
+        sessionStatus: ev.sessionStatus,
       })
     })
     phone.addEventListener('sessionStatusChanged', ev => {
@@ -134,9 +135,11 @@ export class SIP extends EventEmitter {
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId)
       }
+      const withSDP =
+        ev.sessionStatus === 'progress' && ev.remoteStreamObject !== null
       const patch = {
         id: ev.sessionId,
-        answered: ev.sessionStatus === 'connected',
+        answered: withSDP || ev.sessionStatus === 'connected',
         voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo,
         remoteVideoEnabled: ev.remoteWithVideo,
@@ -144,7 +147,10 @@ export class SIP extends EventEmitter {
         pbxRoomId: '',
         pbxTalkerId: '',
         pbxUsername: '',
+        sessionStatus: ev.sessionStatus,
+        withSDP,
       }
+
       if (ev.incomingMessage) {
         const pbxSessionInfo =
           ev.incomingMessage.getHeader('X-PBX-Session-Info')
