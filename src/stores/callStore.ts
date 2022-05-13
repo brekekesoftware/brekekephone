@@ -121,7 +121,6 @@ export class CallStore {
   getCurrentCall = () => {
     this.updateCurrentCallDebounce()
     const call = this.calls.find(c => c.id === this.currentCallId)
-    console.log('getCurrentCall -> call', call)
     if (call) {
       if (
         !call.answered &&
@@ -225,9 +224,7 @@ export class CallStore {
             : '',
         )
       }
-      console.log('upsertCall', cExisting)
       if (cExisting.talkingImageUrl && cExisting.talkingImageUrl.length > 0) {
-        console.log('talkingImageUrl -> ', cExisting.talkingImageUrl)
         BrekekeUtils.setTalkingAvatar(
           cExisting.callkeepUuid,
           cExisting.talkingImageUrl,

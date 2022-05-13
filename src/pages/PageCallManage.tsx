@@ -354,8 +354,6 @@ export class PageCallManage extends Component<{
   renderHangupBtn = (c: Call) => {
     const incoming = c.incoming && !c.answered
     const isLarge = c.partyImageSize && c.partyImageSize === 'large'
-
-    console.log('renderHangupBtn -> isLarge', isLarge)
     return (
       <>
         <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
