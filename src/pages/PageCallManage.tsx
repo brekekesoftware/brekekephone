@@ -240,99 +240,101 @@ export class PageCallManage extends Component<{
         style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
-        {/* TODO add Connecting... */}
-        <View style={!c.answered && css.Btns_Hidden}>
-          <View style={css.Btns_Inner}>
+        <View style={css.Btns_Inner}>
+          <ButtonIcon
+            disabled={!c.answered}
+            bgcolor='white'
+            color='black'
+            name={intl`TRANSFER`}
+            noborder
+            onPress={Nav().goToPageCallTransferChooseUser}
+            path={mdiCallSplit}
+            size={40}
+            textcolor='white'
+          />
+          <ButtonIcon
+            disabled={!c.answered}
+            bgcolor='white'
+            color='black'
+            name={intl`PARK`}
+            noborder
+            onPress={Nav().goToPageCallParks2}
+            path={mdiAlphaPCircle}
+            size={40}
+            textcolor='white'
+          />
+          <ButtonIcon
+            disabled={!c.answered}
+            bgcolor={c.localVideoEnabled ? activeColor : 'white'}
+            color={c.localVideoEnabled ? 'white' : 'black'}
+            name={intl`VIDEO`}
+            noborder
+            onPress={c.toggleVideo}
+            path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
+            size={40}
+            textcolor='white'
+          />
+          {Platform.OS !== 'web' && (
             <ButtonIcon
-              bgcolor='white'
-              color='black'
-              name={intl`TRANSFER`}
+              disabled={!c.answered}
+              bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
+              color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
+              name={intl`SPEAKER`}
               noborder
-              onPress={Nav().goToPageCallTransferChooseUser}
-              path={mdiCallSplit}
+              onPress={callStore.toggleLoudSpeaker}
+              path={
+                callStore.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
+              }
               size={40}
               textcolor='white'
             />
-            <ButtonIcon
-              bgcolor='white'
-              color='black'
-              name={intl`PARK`}
-              noborder
-              onPress={Nav().goToPageCallParks2}
-              path={mdiAlphaPCircle}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor={c.localVideoEnabled ? activeColor : 'white'}
-              color={c.localVideoEnabled ? 'white' : 'black'}
-              name={intl`VIDEO`}
-              noborder
-              onPress={c.toggleVideo}
-              path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
-              size={40}
-              textcolor='white'
-            />
-            {Platform.OS !== 'web' && (
-              <ButtonIcon
-                bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
-                color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
-                name={intl`SPEAKER`}
-                noborder
-                onPress={callStore.toggleLoudSpeaker}
-                path={
-                  callStore.isLoudSpeakerEnabled
-                    ? mdiVolumeHigh
-                    : mdiVolumeMedium
-                }
-                size={40}
-                textcolor='white'
-              />
-            )}
-          </View>
-          <View style={css.Btns_Space} />
-          <View style={css.Btns_Inner}>
-            <ButtonIcon
-              bgcolor={c.muted ? activeColor : 'white'}
-              color={c.muted ? 'white' : 'black'}
-              name={c.muted ? intl`UNMUTE` : intl`MUTE`}
-              noborder
-              onPress={() => c.toggleMuted()}
-              path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor={c.recording ? activeColor : 'white'}
-              color={c.recording ? 'white' : 'black'}
-              name={intl`RECORD`}
-              noborder
-              onPress={c.toggleRecording}
-              path={c.recording ? mdiRecordCircle : mdiRecord}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor='white'
-              color='black'
-              name={intl`DTMF`}
-              noborder
-              onPress={Nav().goToPageCallDtmfKeypad}
-              path={mdiDialpad}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor={c.holding ? activeColor : 'white'}
-              color={c.holding ? 'white' : 'black'}
-              name={c.holding ? intl`UNHOLD` : intl`HOLD`}
-              noborder
-              onPress={c.toggleHoldWithCheck}
-              path={c.holding ? mdiPlayCircle : mdiPauseCircle}
-              size={40}
-              textcolor='white'
-            />
-          </View>
+          )}
+        </View>
+        <View style={css.Btns_Space} />
+        <View style={css.Btns_Inner}>
+          <ButtonIcon
+            disabled={!c.answered}
+            bgcolor={c.muted ? activeColor : 'white'}
+            color={c.muted ? 'white' : 'black'}
+            name={c.muted ? intl`UNMUTE` : intl`MUTE`}
+            noborder
+            onPress={() => c.toggleMuted()}
+            path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+            size={40}
+            textcolor='white'
+          />
+          <ButtonIcon
+            disabled={!c.answered}
+            bgcolor={c.recording ? activeColor : 'white'}
+            color={c.recording ? 'white' : 'black'}
+            name={intl`RECORD`}
+            noborder
+            onPress={c.toggleRecording}
+            path={c.recording ? mdiRecordCircle : mdiRecord}
+            size={40}
+            textcolor='white'
+          />
+          <ButtonIcon
+            bgcolor='white'
+            color='black'
+            name={intl`DTMF`}
+            noborder
+            onPress={Nav().goToPageCallDtmfKeypad}
+            path={mdiDialpad}
+            size={40}
+            textcolor='white'
+          />
+          <ButtonIcon
+            disabled={!c.answered}
+            bgcolor={c.holding ? activeColor : 'white'}
+            color={c.holding ? 'white' : 'black'}
+            name={c.holding ? intl`UNHOLD` : intl`HOLD`}
+            noborder
+            onPress={c.toggleHoldWithCheck}
+            path={c.holding ? mdiPlayCircle : mdiPauseCircle}
+            size={40}
+            textcolor='white'
+          />
         </View>
         {n > 0 && (
           <FieldButton
