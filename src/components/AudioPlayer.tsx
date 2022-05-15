@@ -14,7 +14,7 @@ const css = StyleSheet.create({
   },
 })
 export const AudioPlayer = observer(() => {
-  return !chatStore.isPauseTingTing ? (
+  return chatStore.chatNotificationSoundRunning ? (
     <Video
       source={require('../assets/ding.mp3')}
       style={css.video}
