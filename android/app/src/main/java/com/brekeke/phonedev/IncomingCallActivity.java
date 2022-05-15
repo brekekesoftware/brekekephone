@@ -18,7 +18,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-
 import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -278,7 +277,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vIncomingCall
 
-
   private void updateLayoutManagerCall() {
     GradientDrawable shape = new GradientDrawable();
     DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -287,16 +285,32 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintSet constraintSet = new ConstraintSet();
     int height = displayMetrics.heightPixels;
     boolean isLargeDevice = height > 1200;
-    int flexValue = height/6;
+    int flexValue = height / 6;
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
     vCardAvatarTalking.getLayoutParams().width = flexValue;
-    shape.setCornerRadius(flexValue/2);
+    shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
-    constraintSet.connect(R.id.btn_unlock,ConstraintSet.TOP,R.id.card_avatar_talking,ConstraintSet.BOTTOM,12);
-    constraintSet.connect(R.id.view_call_manage_controls,ConstraintSet.BOTTOM,R.id.view_button_end,ConstraintSet.TOP,isLargeDevice ? flexValue/2 : 30);
-    constraintSet.connect(R.id.card_avatar_talking,ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP, (int) (flexValue/1.1));
-    constraintSet.connect(R.id.view_button_end,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,isLargeDevice ? flexValue/2 : 30);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
+    constraintSet.connect(
+        R.id.view_call_manage_controls,
+        ConstraintSet.BOTTOM,
+        R.id.view_button_end,
+        ConstraintSet.TOP,
+        isLargeDevice ? flexValue / 2 : 30);
+    constraintSet.connect(
+        R.id.card_avatar_talking,
+        ConstraintSet.TOP,
+        ConstraintSet.PARENT_ID,
+        ConstraintSet.TOP,
+        (int) (flexValue / 1.1));
+    constraintSet.connect(
+        R.id.view_button_end,
+        ConstraintSet.BOTTOM,
+        ConstraintSet.PARENT_ID,
+        ConstraintSet.BOTTOM,
+        isLargeDevice ? flexValue / 2 : 30);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -305,8 +319,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
-    constraintSet.connect(R.id.btn_unlock,ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,50);
-    constraintSet.connect(R.id.view_call_manage_loading,ConstraintSet.TOP,R.id.btn_unlock,ConstraintSet.BOTTOM,40);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+    constraintSet.connect(
+        R.id.view_call_manage_loading,
+        ConstraintSet.TOP,
+        R.id.btn_unlock,
+        ConstraintSet.BOTTOM,
+        40);
     constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.BOTTOM);
     constraintSet.applyTo(constraintLayout);
   }
@@ -315,9 +335,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
-    constraintSet.clear(R.id.btn_unlock,ConstraintSet.TOP);
-    constraintSet.connect(R.id.btn_unlock,ConstraintSet.BOTTOM,R.id.view_call_manage_controls,ConstraintSet.TOP,20);
-    constraintSet.connect(R.id.view_call_manage_loading,ConstraintSet.BOTTOM,R.id.view_call_manage_controls,ConstraintSet.TOP,20);
+    constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.connect(
+        R.id.btn_unlock,
+        ConstraintSet.BOTTOM,
+        R.id.view_call_manage_controls,
+        ConstraintSet.TOP,
+        20);
+    constraintSet.connect(
+        R.id.view_call_manage_loading,
+        ConstraintSet.BOTTOM,
+        R.id.view_call_manage_controls,
+        ConstraintSet.TOP,
+        20);
     constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
     constraintSet.applyTo(constraintLayout);
   }
@@ -326,23 +356,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeModule.putUserActionAnswerCall(uuid);
     BrekekeModule.emit("answerCall", uuid);
     if (BrekekeModule.isLocked()) {
-      if(talkingAvatar != null && !talkingAvatar.isEmpty()) {
-        if(!isLarge) {
+      if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
+        if (!isLarge) {
           updateLayoutManagerCall();
         }
-        Glide.with(this)
-                .load(talkingAvatar)
-                .centerCrop()
-                .into(imgAvatarTalking);
+        Glide.with(this).load(talkingAvatar).centerCrop().into(imgAvatarTalking);
       }
-
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
       vHeaderIncomingCall.setVisibility(View.GONE);
       vHeaderManageCall.setVisibility(View.VISIBLE);
       vCallManage.setVisibility(View.VISIBLE);
-      if(v != null) {
+      if (v != null) {
         vCardAvatarTalking.setVisibility(View.GONE);
         vCallManageControls.setVisibility(View.GONE);
         updateLayoutManagerCallLoading();
@@ -509,7 +535,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
-
 
   public void setImageTalkingUrl(String url, Boolean isLarge) {
     this.talkingAvatar = url;

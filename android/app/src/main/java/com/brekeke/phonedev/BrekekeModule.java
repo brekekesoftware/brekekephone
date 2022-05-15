@@ -606,7 +606,6 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
         });
   }
 
-
   @ReactMethod
   public void setTalkingAvatar(String uuid, String url, Boolean isLarge) {
     UiThreadUtil.runOnUiThread(

@@ -43,10 +43,7 @@ keysInCustomNotification.forEach(k => {
 })
 
 const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
-  let imageUrl = ''
-  let imageSize
-
-  const parsedPN = fields
+  const n = fields
     .filter(f => !!f)
     .map(f => {
       // @ts-ignore
@@ -61,38 +58,20 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       if (!f || typeof f !== 'object') {
         return map
       }
-
       keysInCustomNotification.forEach(k => {
         const v = f[k]
         if (!(k in map) && v) {
           map[k] = v
         }
-        if (
-          k === 'x_image' &&
-          f[k] &&
-          typeof f[k] === 'string' &&
-          `${f[k]}`.length > 0
-        ) {
-          imageUrl = `${f[k]}`
-        }
-
-        if (
-          k === 'x_image_size' &&
-          f[k] &&
-          typeof f[k] === 'string' &&
-          `${f[k]}`.length > 0
-        ) {
-          imageSize = `${f[k]}`
-        }
       })
       return map
     }, {})
 
-  if (imageUrl.length > 0) {
-    callStore.updateCallAvatar(imageUrl, imageSize)
+  if (n.image) {
+    callStore.updateCallAvatar(n.image, n.image_size)
   }
 
-  return parsedPN
+  return n
 }
 
 export const parseNotificationData = (raw: object) => {
@@ -314,6 +293,8 @@ export type ParsedPn = {
   alert: string
   message: string
   from: string
+  image: string
+  image_size: string
   displayName: string
   to: string
   tenant: string
