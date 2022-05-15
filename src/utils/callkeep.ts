@@ -188,7 +188,7 @@ export const setupCallKeep = async () => {
     // Only in ios
     console.error('CallKeep debug: didDeactivateAudioSession')
     callStore.calls
-      .filter(c => c.answered && !c.holding)
+      .filter(c => c.answered && !c.holding && c.id !== callStore.currentCallId)
       .forEach(c => c.toggleHoldWithCheck())
   }
 
