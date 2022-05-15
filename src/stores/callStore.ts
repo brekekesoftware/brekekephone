@@ -18,11 +18,11 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
 import { CancelRecentPn } from './cancelRecentPn'
-import { chatStore } from './chatStore'
 import { Nav } from './Nav'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
+import { userStore } from './userStore'
 
 export class CallStore {
   private recentCallActivityAt = 0
@@ -116,9 +116,66 @@ export class CallStore {
 
   @observable calls: Call[] = []
   @observable currentCallId: string = ''
+
   getCurrentCall = () => {
     this.updateCurrentCallDebounce()
-    return this.calls.find(c => c.id === this.currentCallId)
+    const call = this.calls.find(c => c.id === this.currentCallId)
+    if (call) {
+      if (
+        !call.answered &&
+        (!call.partyImageUrl || call.partyImageUrl?.length === 0)
+      ) {
+        const ucEnabled = getAuthStore()?.currentProfile?.ucEnabled
+        call.partyImageUrl = ucEnabled
+          ? userStore.getBuddyById(call.partyNumber)?.profile_image_url || ''
+          : this.getOriginalUserImageUrl(call.pbxTenant, call.computedName)
+        call.partyImageSize = !ucEnabled ? 'large' : ''
+      }
+      if (
+        call.answered &&
+        (!call.talkingImageUrl || call.talkingImageUrl.length === 0)
+      ) {
+        call.talkingImageUrl = this.getOriginalUserImageUrl(
+          call.pbxTenant,
+          call.computedName,
+        )
+      }
+    }
+
+    return call
+  }
+
+  @action updateCallAvatar = (url: string, size?: string) => {
+    this.updateCurrentCallDebounce()
+    const call = this.calls.find(c => c.id === this.currentCallId)
+    if (call) {
+      call.partyImageUrl = url
+      call.partyImageSize = size || 'small'
+    }
+  }
+
+  private getOriginalUserImageUrl = (tenant: string, name: string): string => {
+    if (!tenant || !name) {
+      return ''
+    }
+    const currentProfile = getAuthStore().currentProfile
+    if (!currentProfile) {
+      return ''
+    }
+    const { pbxHostname, pbxPort } = currentProfile
+    let url = ''
+
+    if (url.length === 0) {
+      let ucHost = `${pbxHostname}:${pbxPort}`
+      if (ucHost.indexOf(':') < 0) {
+        ucHost += ':443'
+      }
+      const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
+      const baseUrl = `${ucScheme}://${ucHost}`
+      url = `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
+    }
+
+    return url
   }
 
   private incallManagerStarted = false
@@ -153,7 +210,6 @@ export class CallStore {
       }
       if (!cExisting.answered && cPartial.answered) {
         this.currentCallId = cExisting.id
-        chatStore.isTalking = true
         cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
@@ -166,6 +222,13 @@ export class CallStore {
             : '',
         )
       }
+      if (cExisting.talkingImageUrl && cExisting.talkingImageUrl.length > 0) {
+        BrekekeUtils.setTalkingAvatar(
+          cExisting.callkeepUuid,
+          cExisting.talkingImageUrl,
+          cExisting.partyImageSize === 'large',
+        )
+      }
       if (
         cExisting.incoming &&
         cExisting.callkeepUuid &&
@@ -176,7 +239,6 @@ export class CallStore {
           !!cExisting.localVideoEnabled,
         )
       }
-      chatStore.isTalking = false
       return
     }
     // Construct a new call
@@ -195,12 +257,10 @@ export class CallStore {
     )
     if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
-      chatStore.isTalking = true
       c.answer()
       console.error('SIP PN debug: answer by recentPnAction')
     } else if (callkeepAction === 'rejectCall') {
       c.callkeepAlreadyRejected = true
-      chatStore.isTalking = false
       c.hangupWithUnhold()
       console.error('SIP PN debug: reject by recentPnAction')
     }
@@ -501,7 +561,7 @@ export class CallStore {
 
   // Actions map in case of call is not available at the time receive the action
   // This map wont be deleted if the callkeep end
-  private callkeepActionMap: {
+  @observable callkeepActionMap: {
     [uuidOrPnId: string]: TCallkeepAction
   } = {}
   private setCallkeepAction = (c: TCallkeepIds, a: TCallkeepAction) => {
@@ -539,9 +599,18 @@ export class CallStore {
     })
   }
   shouldRingInNotify = (uuid?: string) => {
+    // Disable ringtone when enable PN
+    if (
+      Platform.OS === 'ios' &&
+      getAuthStore().currentProfile?.pushNotificationEnabled
+    ) {
+      return false
+    }
+
     if (Platform.OS === 'web' || !uuid) {
       return true
     }
+
     // Do not ring on background
     if (RnAppState.currentState !== 'active') {
       return false
@@ -559,6 +628,7 @@ export class CallStore {
     ) {
       return false
     }
+
     return true
   }
 

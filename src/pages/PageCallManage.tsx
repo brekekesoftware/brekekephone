@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, Fragment } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import React, { Component, Fragment } from 'react'
+import { Image, Platform, StyleSheet, View } from 'react-native'
 
 import {
   mdiAlphaPCircle,
@@ -51,11 +51,10 @@ const css = StyleSheet.create({
 
   Btns: {
     position: 'absolute',
-    top: 40, // Header compact height
+    height: '75%', // Header compact height
     left: 0,
     right: 0,
     bottom: 0,
-    paddingBottom: 124, // Hangup button 64 + 2*30
   },
   Btns_Hidden: {
     opacity: 0,
@@ -70,7 +69,6 @@ const css = StyleSheet.create({
   Btns_VerticalMargin: {
     flex: 1,
   },
-
   Hangup: {
     position: 'absolute',
     bottom: 40,
@@ -87,8 +85,38 @@ const css = StyleSheet.create({
     bottom: undefined,
     top: 100,
   },
+  Hangup_incomingText_avoidLargeImg: {
+    bottom: undefined,
+    top: 200,
+  },
   labelStyle: {
     paddingRight: 50,
+  },
+
+  Image_wrapper: {
+    marginHorizontal: 15,
+    flexDirection: 'column',
+    alignItems: 'center',
+    height: '30%',
+  },
+
+  ImageSize: {
+    height: 130,
+    width: 130,
+    borderRadius: 75,
+  },
+
+  ImageLargeSize: {
+    height: '100%',
+    width: '85%',
+    backgroundColor: 'white',
+  },
+
+  Hangup_avoidAvatar: {
+    top: '35%',
+  },
+  Hangup_avoidAvatar_Large: {
+    top: '60%',
   },
 })
 
@@ -151,12 +179,14 @@ export class PageCallManage extends Component<{
       ) : (
         <>
           {isVideoEnabled && this.renderVideo(c)}
+          {this.renderAvatar(c, isVideoEnabled)}
           {this.renderBtns(c, isVideoEnabled)}
           {this.renderHangupBtn(c)}
         </>
       )}
     </Layout>
   )
+
   renderVideo = (c: Call) => (
     <>
       <View style={css.Video_Space} />
@@ -169,6 +199,32 @@ export class PageCallManage extends Component<{
       />
     </>
   )
+
+  renderAvatar = (c: Call, isVideoEnabled?: boolean) => {
+    if (isVideoEnabled) {
+      return
+    }
+    const incoming = c.incoming && !c.answered
+    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+
+    return (
+      <View style={css.Image_wrapper}>
+        <Image
+          source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
+          style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
+          resizeMode={isLarge ? 'contain' : 'cover'}
+        />
+        <View>
+          {!incoming && (
+            <RnText title white center numberOfLines={2}>
+              {`${c.computedName}`}
+            </RnText>
+          )}
+        </View>
+      </View>
+    )
+  }
+
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
     const n = callStore.calls.filter(
       _ => _.id !== callStore.currentCallId,
@@ -301,8 +357,10 @@ export class PageCallManage extends Component<{
       </Container>
     )
   }
+
   renderHangupBtn = (c: Call) => {
     const incoming = c.incoming && !c.answered
+    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
     return (
       <>
         <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
@@ -325,9 +383,19 @@ export class PageCallManage extends Component<{
         {incoming && (
           <>
             <IncomingItemWithTimer />
-            <View style={[css.Hangup, css.Hangup_incomingText]}>
-              <RnText title white center>
-                {c.computedName}
+            <View
+              style={[
+                css.Hangup,
+                css.Hangup_incomingText,
+                c.partyImageUrl.length > 0
+                  ? isLarge
+                    ? css.Hangup_avoidAvatar_Large
+                    : css.Hangup_avoidAvatar
+                  : null,
+              ]}
+            >
+              <RnText title white center numberOfLines={2}>
+                {`${c.computedName}`}
               </RnText>
               <RnText bold white center>
                 {intl`Incoming Call`}

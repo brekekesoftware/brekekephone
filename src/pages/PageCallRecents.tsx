@@ -18,11 +18,14 @@ export class PageCallRecents extends Component {
   appStateSubscription?: NativeEventSubscription
   componentDidMount = () => {
     if (Platform.OS === 'ios') {
-      this.appStateSubscription = AppState.addEventListener('change', () => {
+      const h = () => {
         if (AppState.currentState === 'active') {
           PushNotification.resetBadgeNumber()
         }
-      })
+      }
+      // Reset notification badge whenever go to this page
+      h()
+      this.appStateSubscription = AppState.addEventListener('change', h)
     }
   }
   componentWillUnmount = () => {

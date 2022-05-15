@@ -6,6 +6,7 @@ import { PbxGetProductInfoRes } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { updatePhoneIndex } from '../api/updatePhoneIndex'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { SipPn } from '../utils/PushNotification-parse'
 import { getAuthStore } from './authStore'
 import { sipErrorEmitter } from './sipErrorEmitter'
@@ -114,6 +115,13 @@ class AuthSIP {
       })}`,
     )
     if (!sipShouldAuth) {
+      return
+    }
+    if (s.sipTotalFailure > 1) {
+      BackgroundTimer.setTimeout(
+        this.authWithCheckDebounced,
+        s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000,
+      )
       return
     }
     this.authWithoutCatch().catch(
