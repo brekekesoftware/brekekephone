@@ -18,7 +18,9 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
 import { CancelRecentPn } from './cancelRecentPn'
+import { intlDebug } from './intl'
 import { Nav } from './Nav'
+import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
@@ -319,6 +321,13 @@ export class CallStore {
     }
   }
   startCall = async (number: string, options = {}) => {
+    if (callStore.calls.filter(c => !c.incoming && !c.answered).length) {
+      RnAlert.error({
+        message: intlDebug`Only make one outgoing call`,
+      })
+      return
+    }
+
     let reconnectCalled = false
     const sipCreateSession = () => sip.createSession(number, options)
     try {

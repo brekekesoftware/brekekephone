@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 
 import { callStore } from '../stores/callStore'
-import { AnsweredItem, OutgoingItem } from './CallVoicesUI'
+import { AnsweredItem, OutgoingItem, OutgoingItemWithSDP } from './CallVoicesUI'
 
 export const CallVoices = observer(() => {
   // Try trigger observer?
@@ -11,13 +11,22 @@ export const CallVoices = observer(() => {
   const currentCall = callStore.getCurrentCall()
   const isOutgoingCallStart =
     currentCall &&
-    !currentCall.withSDP &&
     !currentCall.incoming &&
+    !currentCall.answered &&
     currentCall.sessionStatus === 'progress'
+
+  const outgoingWithSDP =
+    currentCall && currentCall?.withSDP && currentCall?.earlyMedia
 
   return (
     <>
-      {isOutgoingCallStart && <OutgoingItem />}
+      {isOutgoingCallStart &&
+        (outgoingWithSDP ? (
+          <OutgoingItemWithSDP earlyMedia={currentCall.earlyMedia} />
+        ) : (
+          <OutgoingItem />
+        ))}
+
       {callStore.calls
         .filter(c => c.answered)
         .map(c => (

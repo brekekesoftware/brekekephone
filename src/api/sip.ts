@@ -139,7 +139,7 @@ export class SIP extends EventEmitter {
         ev.sessionStatus === 'progress' && ev.remoteStreamObject !== null
       const patch = {
         id: ev.sessionId,
-        answered: withSDP || ev.sessionStatus === 'connected',
+        answered: ev.sessionStatus === 'connected',
         voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo,
         remoteVideoEnabled: ev.remoteWithVideo,
@@ -152,6 +152,7 @@ export class SIP extends EventEmitter {
         talkingImageUrl: '',
         sessionStatus: ev.sessionStatus,
         withSDP,
+        earlyMedia: withSDP ? ev.remoteStreamObject : null,
       }
 
       if (ev.incomingMessage) {

@@ -19,6 +19,7 @@ import { RnAlert } from './RnAlert'
 export class Call {
   constructor(private store: CallStore) {}
 
+  @observable earlyMedia: MediaStream | null = null
   @observable withSDP: boolean = false
   @observable sessionStatus: SessionStatus = 'dialing'
   @observable id = ''
