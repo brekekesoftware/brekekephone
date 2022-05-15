@@ -13,6 +13,7 @@ import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
+import { callStore } from './callStore'
 import { getPartyName } from './contactStore'
 import { RnStacker } from './RnStacker'
 
@@ -64,8 +65,6 @@ export const TIMEOUT_TRANSFER_IMAGE = 30000
 export const TIMEOUT_TRANSFER_VIDEO = 600000
 
 class ChatStore {
-  @observable isTalking: boolean = false
-  @observable isPauseTingTing: boolean = true
   timeoutTransferImage: { [k: string]: number } = {}
 
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
@@ -121,19 +120,6 @@ class ChatStore {
   }
   isWebchat(conf_id: string) {
     return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
-  }
-  playTingTing = () => {
-    if (Platform.OS === 'web') {
-      playDing()
-    } else {
-      if (this.isPauseTingTing) {
-        this.isPauseTingTing = false
-        vibration()
-        setTimeout(() => {
-          this.isPauseTingTing = true
-        }, 700)
-      }
-    }
   }
 
   pushChatNotification = (title: string, body: string, threadId?: string) => {
@@ -202,45 +188,56 @@ class ChatStore {
       uniqBy(messages, 'id'),
       'created',
     )
-
     const a2 = filterTextOnly(m)
     if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
     }
-
-    // check screen to open ringOrVibration
-    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
-      groupId?: string
-      buddy?: string
-      name?: string
-    }
-    // handle notification and ringring notice
+    this.updateThreadConfig(threadId, isGroup, {
+      isUnread,
+    })
+    // show chat in-app notification
     let name = ''
     if (isGroup) {
-      if (
-        !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId) &&
-        !this.isTalking
-      ) {
-        this.playTingTing()
-      }
       name = chatStore.getGroupById(threadId)?.name
     } else {
-      if (
-        !(s?.name === 'PageChatDetail' && s?.buddy === threadId) &&
-        !this.isTalking
-      ) {
-        this.playTingTing()
-      }
       name = getPartyName(threadId) || ''
     }
     if (m.length === 1 && AppState.currentState !== 'active') {
       this.pushChatNotification(name, m[0]?.text || '', threadId)
     }
-    //=============
+    // play chat notification sound & vibration
+    const isTalking =
+      callStore.calls.some(c => c.answered) ||
+      Object.values(callStore.callkeepActionMap).some(a => a === 'answerCall')
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+      groupId?: string
+      buddy?: string
+      name?: string
+    }
+    const shouldPlayChatNotificationSoundVibration =
+      !isTalking &&
+      (isGroup
+        ? !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)
+        : !(s?.name === 'PageChatDetail' && s?.buddy === threadId))
+    if (shouldPlayChatNotificationSoundVibration) {
+      this.playChatNotificationSoundVibration()
+    }
+  }
 
-    this.updateThreadConfig(threadId, isGroup, {
-      isUnread,
-    })
+  @observable chatNotificationSoundRunning: boolean = false
+  private playChatNotificationSoundVibration = () => {
+    if (Platform.OS === 'web') {
+      playDing()
+      return
+    }
+    if (this.chatNotificationSoundRunning) {
+      return
+    }
+    vibration()
+    this.chatNotificationSoundRunning = true
+    setTimeout(() => {
+      this.chatNotificationSoundRunning = false
+    }, 700)
   }
 
   removeWebchatItem = (conf_id: string) => {
