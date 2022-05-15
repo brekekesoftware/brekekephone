@@ -3,6 +3,7 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -15,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import com.bumptech.glide.Glide;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -27,9 +30,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vHeaderIncomingCall,
       vHeaderManageCall;
   public LinearLayout vCallManageControls;
+  public View vCardAvatar;
+  public View vCardAvatarTalking;
   public WebRTCView vWebrtcVideo;
   public ImageView imgAvatar;
-  public View cardAvatar;
+  public ImageView imgAvatarTalking;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -55,8 +60,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold;
-  public String uuid, callerName, avatar, avatarSize;
-  public boolean destroyed = false, paused = false, answered = false;
+  public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
+  public boolean destroyed = false, paused = false, answered = false, isLarge = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,11 +106,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
     vCallManageLoading = (RelativeLayout) findViewById(R.id.view_call_manage_loading);
     vCallManageControls = (LinearLayout) findViewById(R.id.view_call_manage_controls);
-
+    vCardAvatarTalking = (View) findViewById(R.id.card_avatar_talking);
+    vCardAvatar = (View) findViewById(R.id.card_avatar);
     vCallManage.setOnClickListener(this);
 
-    cardAvatar = (View) findViewById(R.id.card_avatar);
     imgAvatar = (ImageView) findViewById(R.id.avatar);
+    imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
     btnAnswer = (Button) findViewById(R.id.btn_answer);
     btnReject = (Button) findViewById(R.id.btn_reject);
     btnUnlock = (Button) findViewById(R.id.btn_unlock);
@@ -159,11 +165,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       int height = displayMetrics.heightPixels;
       int width = displayMetrics.widthPixels;
       // CardAvatar Layout
-      cardAvatar.getLayoutParams().height = (int) (height / 2.2);
-      cardAvatar.getLayoutParams().width = width - 60;
+      vCardAvatar.getLayoutParams().height = (int) (height / 2.2);
+      vCardAvatar.getLayoutParams().width = width - 60;
       GradientDrawable shape = new GradientDrawable();
       shape.setCornerRadius(0);
-      cardAvatar.setBackground(shape);
+      vCardAvatar.setBackground(shape);
+      vCardAvatar.setBackgroundColor(Color.WHITE);
       // TextIncomingCall margin
       RelativeLayout.LayoutParams params =
           new RelativeLayout.LayoutParams(
@@ -270,16 +277,102 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vIncomingCall
 
+  private void updateLayoutManagerCall() {
+    GradientDrawable shape = new GradientDrawable();
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    int height = displayMetrics.heightPixels;
+    boolean isLargeDevice = height > 1200;
+    int flexValue = height / 6;
+    vCardAvatarTalking.setBackgroundColor(Color.WHITE);
+    vCardAvatarTalking.getLayoutParams().height = flexValue;
+    vCardAvatarTalking.getLayoutParams().width = flexValue;
+    shape.setCornerRadius(flexValue / 2);
+    constraintSet.clone(constraintLayout);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
+    constraintSet.connect(
+        R.id.view_call_manage_controls,
+        ConstraintSet.BOTTOM,
+        R.id.view_button_end,
+        ConstraintSet.TOP,
+        isLargeDevice ? flexValue / 2 : 30);
+    constraintSet.connect(
+        R.id.card_avatar_talking,
+        ConstraintSet.TOP,
+        ConstraintSet.PARENT_ID,
+        ConstraintSet.TOP,
+        (int) (flexValue / 1.1));
+    constraintSet.connect(
+        R.id.view_button_end,
+        ConstraintSet.BOTTOM,
+        ConstraintSet.PARENT_ID,
+        ConstraintSet.BOTTOM,
+        isLargeDevice ? flexValue / 2 : 30);
+    vCardAvatarTalking.setBackground(shape);
+    constraintSet.applyTo(constraintLayout);
+  }
+
+  private void updateLayoutManagerCallLoading() {
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(constraintLayout);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+    constraintSet.connect(
+        R.id.view_call_manage_loading,
+        ConstraintSet.TOP,
+        R.id.btn_unlock,
+        ConstraintSet.BOTTOM,
+        40);
+    constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.BOTTOM);
+    constraintSet.applyTo(constraintLayout);
+  }
+
+  private void updateLayoutManagerCallLoaded() {
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(constraintLayout);
+    constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.connect(
+        R.id.btn_unlock,
+        ConstraintSet.BOTTOM,
+        R.id.view_call_manage_controls,
+        ConstraintSet.TOP,
+        20);
+    constraintSet.connect(
+        R.id.view_call_manage_loading,
+        ConstraintSet.BOTTOM,
+        R.id.view_call_manage_controls,
+        ConstraintSet.TOP,
+        20);
+    constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
+    constraintSet.applyTo(constraintLayout);
+  }
+
   public void onBtnAnswerClick(View v) {
     BrekekeModule.putUserActionAnswerCall(uuid);
     BrekekeModule.emit("answerCall", uuid);
     if (BrekekeModule.isLocked()) {
+      if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
+        if (!isLarge) {
+          updateLayoutManagerCall();
+        }
+        Glide.with(this).load(talkingAvatar).centerCrop().into(imgAvatarTalking);
+      }
       answered = true;
       BrekekeModule.stopRingtone();
       vIncomingCall.setVisibility(View.GONE);
       vHeaderIncomingCall.setVisibility(View.GONE);
       vHeaderManageCall.setVisibility(View.VISIBLE);
       vCallManage.setVisibility(View.VISIBLE);
+      if (v != null) {
+        vCardAvatarTalking.setVisibility(View.GONE);
+        vCallManageControls.setVisibility(View.GONE);
+        updateLayoutManagerCallLoading();
+      }
     } else {
       BrekekeModule.removeAllAndBackToForeground();
     }
@@ -427,7 +520,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onCallConnected() {
     vCallManageLoading.setVisibility(View.GONE);
+    vCardAvatarTalking.setVisibility(View.VISIBLE);
     vCallManageControls.setVisibility(View.VISIBLE);
+    updateLayoutManagerCallLoaded();
   }
 
   public void setBtnVideoSelected(boolean isVideoCall) {
@@ -439,6 +534,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+  }
+
+  public void setImageTalkingUrl(String url, Boolean isLarge) {
+    this.talkingAvatar = url;
+    this.isLarge = isLarge;
   }
 
   public void forceFinish() {
