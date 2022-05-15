@@ -144,16 +144,27 @@ export class SIP extends EventEmitter {
         pbxRoomId: '',
         pbxTalkerId: '',
         pbxUsername: '',
+        partyImageUrl: '',
+        partyImageSize: '',
+        talkingImageUrl: '',
       }
       if (ev.incomingMessage) {
         const pbxSessionInfo =
           ev.incomingMessage.getHeader('X-PBX-Session-Info')
+        const imageUrl = ev.incomingMessage?.getHeader('X-PBX-IMAGE-RINGING')
+        const talkingImageUrl = ev.incomingMessage?.getHeader(
+          'X-PBX-IMAGE-TALKING',
+        )
+        const imageSize = ev.incomingMessage?.getHeader('X-PBX-IMAGE-SIZE')
         if (typeof pbxSessionInfo === 'string') {
           const infos = pbxSessionInfo.split(';')
           patch.pbxTenant = infos[0]
           patch.pbxRoomId = infos[1]
           patch.pbxTalkerId = infos[2]
           patch.pbxUsername = infos[3]
+          patch.partyImageUrl = imageUrl
+          patch.partyImageSize = imageSize
+          patch.talkingImageUrl = talkingImageUrl
         }
       }
       this.emit('session-updated', patch)

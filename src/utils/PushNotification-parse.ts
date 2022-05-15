@@ -15,6 +15,8 @@ const keysInCustomNotification = [
   'body',
   'message',
   'from',
+  'image',
+  'image_size',
   'displayname',
   'to',
   'tenant',
@@ -40,8 +42,8 @@ keysInCustomNotification.forEach(k => {
   keysInCustomNotification.push('x_' + k)
 })
 
-const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
-  fields
+const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
+  const n = fields
     .filter(f => !!f)
     .map(f => {
       // @ts-ignore
@@ -64,6 +66,14 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
       })
       return map
     }, {})
+
+  if (n.image) {
+    callStore.updateCallAvatar(n.image, n.image_size)
+  }
+
+  return n
+}
+
 export const parseNotificationData = (raw: object) => {
   let n: ParsedPn | undefined
   if (Platform.OS === 'android') {
@@ -283,6 +293,8 @@ export type ParsedPn = {
   alert: string
   message: string
   from: string
+  image: string
+  image_size: string
   displayName: string
   to: string
   tenant: string
