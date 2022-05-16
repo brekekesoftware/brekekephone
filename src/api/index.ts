@@ -74,6 +74,7 @@ class Api {
   }
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'
+    getAuthStore().pbxTotalFailure += 1
   }
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
@@ -111,6 +112,7 @@ class Api {
     if (!e?.reason && !e?.response) {
       console.error('SIP PN debug: set sipState stopped')
       getAuthStore().sipState = 'stopped'
+      s.sipTotalFailure += 1
     } else {
       console.error('SIP PN debug: set sipState failure stopped')
       s.sipState = 'failure'

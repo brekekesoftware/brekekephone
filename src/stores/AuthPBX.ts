@@ -2,7 +2,7 @@ import { debounce } from 'lodash'
 import { action, autorun, Lambda } from 'mobx'
 
 import { pbx } from '../api/pbx'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 
 class AuthPBX {
@@ -26,17 +26,14 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
-  @action private authWithCheck = () => {
+  @action private authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.pbxShouldAuth() || !s.currentProfile) {
       return
     }
     if (s.pbxTotalFailure > 1) {
-      BackgroundTimer.setTimeout(
-        this.authWithCheckDebounced,
-        s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000,
-      )
-      return
+      const timeWait = s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000
+      await waitTimeout(timeWait)
     }
     console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
