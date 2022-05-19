@@ -52,15 +52,14 @@ export const saveBlob = (blob: Blob, name: string) => {
 // }
 
 const readChunkFile = (p: string, pos: number, data: Blob) => {
-  console.error('readChunkFile::', data.size)
+  // console.error('readChunkFile::', data.size)
   return new Promise(async (a, b) => {
     const fr = new FileReader()
-    console.error('readChunkFile::', data)
     fr.readAsDataURL(data)
     fr.onloadend = async () => {
       const r = fr.result as string
       const b64 = r.replace(/^data:.*base64,/, '')
-      console.error('dataFile::', b64)
+      // console.error('dataFile::', b64)
       try {
         if (pos === 0) {
           await RNFS.writeFile(p, b64, 'base64')
@@ -83,24 +82,27 @@ export const saveBlobFile = (id: string, topic_id: string, type?: string) => {
     // except from the last chunk
     try {
       const data: Blob = (await uc.acceptFile(id)) as Blob
-      const chunkSize = 1024 * 2 // 4227529
+      // const defaultSize = 1024 * 8 * 10
+      const chunkSize = 1024 * 8 * 10 // 4227529
       // var pos = 0
       const p = `${RNFS.DocumentDirectoryPath}/${id}.${
         fileType === 'image' ? 'jpeg' : 'mp4'
       }`
-      console.error('Blob::Size::', data.size)
-
-      for (let pos = 0; pos < data.size; pos += chunkSize) {
-        const blob: Blob = data.slice(pos, pos + chunkSize)
+      for (let pos = 0; pos <= data.size; pos += chunkSize) {
         console.error(
-          'Blob::Pos::',
-          pos,
           'Blob::Size::',
           data.size,
-          'Blob::Data::Size::',
-          blob,
+          '::pos::',
+          pos,
+          '::chunkSize::',
+          chunkSize,
         )
+        const blob: Blob = data.slice(pos, pos + chunkSize)
         await readChunkFile(p, pos, blob)
+        if (chunkSize > data.size - pos) {
+          console.error('Blob::Size::LastSize', data.size - pos)
+          await readChunkFile(p, pos, data.slice(pos, data.size))
+        }
       }
       resolve(p)
     } catch (err) {
