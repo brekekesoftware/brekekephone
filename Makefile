@@ -23,3 +23,27 @@ imagemin:
 ls:
 	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' \
 	| egrep -h '\.($(EXT))$$'
+
+release:
+	git checkout release && \
+	git rebase master && \
+	git push -f;
+
+checkout:
+	cd /var/www/brekekephone && git fetch --prune && \
+	git checkout -b tmp && git branch -D release && git checkout release && git branch -D tmp && \
+	yarn --check-files --frozen-lockfile;
+
+web:
+	make checkout && \
+	cd /var/www/brekekephone && yarn build && \
+	mv build brekeke_phone && \
+	zip -vr brekeke_phone.zip brekeke_phone && mv ./brekeke_phone.zip /var/www/apps-static/0/ && \
+	mv brekeke_phone build;
+
+comp:
+	make checkout && \
+	cd /var/www/brekekephone && yarn comp && \
+	mv build/component brekeke_phone_component && \
+	zip -vr brekeke_phone_component.zip brekeke_phone_component && mv ./brekeke_phone_component.zip /var/www/apps-static/0/ && \
+	rm -rf brekeke_phone_component;
