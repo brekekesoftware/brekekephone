@@ -47,3 +47,8 @@ comp:
 	mv build/component brekeke_phone_component && \
 	zip -vr brekeke_phone_component.zip brekeke_phone_component && mv ./brekeke_phone_component.zip /var/www/apps-static/0/ && \
 	rm -rf brekeke_phone_component;
+
+apps:
+	cd /var/www/apps && git fetch --prune && \
+	git checkout -b tmp && git branch -D master && git checkout master && git branch -D tmp && \
+	yarn --check-files --frozen-lockfile && yarn build;
