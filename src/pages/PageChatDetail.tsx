@@ -450,7 +450,7 @@ export class PageChatDetail extends Component<{
       .then(res => {
         this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
-        Object.assign(res.file, this.state.blobFile)
+        Object.assign(res.file, this.state.blobFile, { save: 'success' })
         Object.assign(res.file, { target: { user_id: buddyId } })
         if (Platform.OS === 'web') {
           this.handleSaveBlobFileWeb(

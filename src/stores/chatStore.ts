@@ -37,6 +37,7 @@ export type ChatFile = {
   url?: string
   target?: ChatTarget
   topic_id: string
+  save?: 'started' | 'success' | 'failure'
 }
 export type ChatTarget = {
   tenant: string
@@ -61,8 +62,8 @@ export const FileEvent = {
   onFileProgress: 'onFileProgress',
   onFileFinished: 'onFileFinished',
 }
-export const TIMEOUT_TRANSFER_IMAGE = 30000
-export const TIMEOUT_TRANSFER_VIDEO = 600000
+export const TIMEOUT_TRANSFER_IMAGE = 60000
+export const TIMEOUT_TRANSFER_VIDEO = 180000
 
 class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
@@ -266,15 +267,19 @@ class ChatStore {
   @observable private filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
+    Object.assign(f, { save: 'started' })
+    chatStore.upsertFile(f)
     saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url,
+          save: 'success',
         })
       })
       .catch(() => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: '',
+          save: 'failure',
         })
       })
   }
