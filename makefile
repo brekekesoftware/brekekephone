@@ -25,9 +25,11 @@ ls:
 	| egrep -h '\.($(EXT))$$'
 
 release:
+	git push && \
 	git checkout release && \
 	git rebase master && \
-	git push -f;
+	git push -f && \
+	git checkout master;
 
 checkout:
 	cd /var/www/brekekephone && git fetch --prune && \

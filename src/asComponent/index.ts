@@ -79,10 +79,4 @@ const render = (div: HTMLElement, o: Options) => {
   return asComponent
 }
 
-if (!window.Brekeke) {
-  window.Brekeke = {} as any
-}
-if (!window.Brekeke.Phone) {
-  window.Brekeke.Phone = {} as any
-}
 window.Brekeke.Phone.render = render
