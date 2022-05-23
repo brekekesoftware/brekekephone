@@ -1,5 +1,7 @@
 import { CallStore } from './callStore'
 
+export const getCallStore = () => store
+
 let store: Immutable<CallStore>
 export const setCallStore = (s: Immutable<CallStore>) => {
   store = s

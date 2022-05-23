@@ -11,6 +11,9 @@ export type Brekeke = {
   WebrtcClient: {
     Phone: Sip
   }
+  Phone: {
+    render: Function
+  }
 }
 
 export type GetPalOptions = {
@@ -43,7 +46,7 @@ export type Pbx = PbxPal & {
   notify_voicemail?(e: PbxEvent['voicemail']): void
 
   // not actually exist in the sdk, should be added manually
-  _pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
+  call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
     ...p: P extends undefined ? [] : [P]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>

@@ -26,8 +26,10 @@ onReactionError((err: Error) => {
 setCallStore(callStore)
 AppRegistry.registerComponent('BrekekePhone', () => App)
 
-if (Platform.OS === 'web') {
-  AppRegistry.runApplication('BrekekePhone', {
-    rootTag: document.getElementById('root'),
-  })
+export const runApp = (rootTag: HTMLElement | null) => {
+  AppRegistry.runApplication('BrekekePhone', { rootTag })
+}
+
+if (Platform.OS === 'web' && !window._BrekekePhoneAsComponent) {
+  runApp(document.getElementById('root'))
 }

@@ -9,6 +9,7 @@ import {
   UcConfig,
 } from '../api/brekekejs'
 import { sip } from '../api/sip'
+import { RnAsyncStorage } from '../components/Rn'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
@@ -17,7 +18,7 @@ import { compareProfile, setAuthStore } from './authStore'
 import { callStore } from './callStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
-import { Profile, profileStore } from './profileStore'
+import { getAccountUniqueId, Profile, profileStore } from './profileStore'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 
@@ -125,7 +126,18 @@ export class AuthStore {
       return true
     }
     this.signedInId = p.id
+    RnAsyncStorage.setItem('lastSignedInId', getAccountUniqueId(p))
     return true
+  }
+  autoSignIn = async () => {
+    const id = await RnAsyncStorage.getItem('lastSignedInId')
+    const p =
+      profileStore.profiles.find(_ => getAccountUniqueId(_) === id) ||
+      profileStore.profiles[0]
+    if (!p) {
+      return
+    }
+    this.signIn(p.id)
   }
 
   signOut = () => {

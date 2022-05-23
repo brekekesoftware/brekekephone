@@ -3,6 +3,7 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
+import { asComponent } from '../asComponent/asComponent'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser } from '../stores/contactStore'
 import { Profile, profileStore } from '../stores/profileStore'
@@ -43,7 +44,7 @@ export class PBX extends EventEmitter {
     this.client = client
     console.error('PBX PN debug: construct pbx.client')
 
-    client._pal = ((method: keyof Pbx, params?: object) => {
+    client.call_pal = ((method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
@@ -51,7 +52,7 @@ export class PBX extends EventEmitter {
         }
         f(params, resolve, reject)
       })
-    }) as unknown as Pbx['_pal']
+    }) as unknown as Pbx['call_pal']
 
     client.debugLevel = 2
 
@@ -71,6 +72,7 @@ export class PBX extends EventEmitter {
     ])
 
     this.clearConnectTimeoutId()
+    asComponent.emit('pal', p, client)
 
     client.onClose = () => {
       this.emit('connection-stopped')
@@ -172,7 +174,7 @@ export class PBX extends EventEmitter {
       if (!this.client) {
         return
       }
-      s.pbxConfig = await this.client._pal('getProductInfo', {
+      s.pbxConfig = await this.client.call_pal('getProductInfo', {
         webphone: 'true',
       })
     }
@@ -186,7 +188,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    return this.client._pal('createAuthHeader', {
+    return this.client.call_pal('createAuthHeader', {
       username: sipUsername,
     })
   }
@@ -198,7 +200,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    return this.client._pal('getExtensions', {
+    return this.client.call_pal('getExtensions', {
       tenant,
       pattern: '..*',
       limit: -1,
@@ -214,7 +216,7 @@ export class PBX extends EventEmitter {
     if (!this.client || !cp) {
       return
     }
-    const res = await this.client._pal('getExtensionProperties', {
+    const res = await this.client.call_pal('getExtensionProperties', {
       tenant: cp.pbxTenant,
       extension: ids,
       property_names: ['name'],
@@ -234,7 +236,7 @@ export class PBX extends EventEmitter {
       return
     }
 
-    const [res] = await this.client._pal('getExtensionProperties', {
+    const [res] = await this.client.call_pal('getExtensionProperties', {
       tenant,
       extension: [userId],
       property_names: [
@@ -298,7 +300,7 @@ export class PBX extends EventEmitter {
       return
     }
 
-    const res = await this.client._pal('getContactList', {
+    const res = await this.client.call_pal('getContactList', {
       phonebook: '',
       search_text,
       shared,
@@ -322,7 +324,7 @@ export class PBX extends EventEmitter {
       return
     }
 
-    const res = await this.client._pal('getContact', {
+    const res = await this.client.call_pal('getContact', {
       aid: id,
     })
     res.info = res.info || {}
@@ -368,7 +370,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    return this.client._pal('setContact', {
+    return this.client.call_pal('setContact', {
       aid: contact.id,
       phonebook: contact.book,
       shared: contact.shared ? 'true' : 'false',
@@ -395,7 +397,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('hold', {
+    await this.client.call_pal('hold', {
       tenant,
       tid: talker,
     })
@@ -409,7 +411,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('unhold', {
+    await this.client.call_pal('unhold', {
       tenant,
       tid: talker,
     })
@@ -423,7 +425,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('startRecording', {
+    await this.client.call_pal('startRecording', {
       tenant,
       tid: talker,
     })
@@ -437,7 +439,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('stopRecording', {
+    await this.client.call_pal('stopRecording', {
       tenant,
       tid: talker,
     })
@@ -455,7 +457,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('transfer', {
+    await this.client.call_pal('transfer', {
       tenant,
       user: toUser,
       tid: talker,
@@ -475,7 +477,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('transfer', {
+    await this.client.call_pal('transfer', {
       tenant,
       user: toUser,
       tid: talker,
@@ -490,7 +492,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('conference', {
+    await this.client.call_pal('conference', {
       tenant,
       tid: talker,
     })
@@ -504,7 +506,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('cancelTransfer', {
+    await this.client.call_pal('cancelTransfer', {
       tenant,
       tid: talker,
     })
@@ -518,7 +520,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('park', {
+    await this.client.call_pal('park', {
       tenant,
       tid: talker,
       number: atNumber,
@@ -533,7 +535,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('sendDTMF', {
+    await this.client.call_pal('sendDTMF', {
       signal,
       tenant,
       talker_id,
@@ -556,7 +558,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('pnmanage', {
+    await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '11',
       application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
@@ -582,7 +584,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('pnmanage', {
+    await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '12',
       application_id: '22177122297',
@@ -608,7 +610,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('pnmanage', {
+    await this.client.call_pal('pnmanage', {
       command: 'remove',
       service_id: '11',
       application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
@@ -634,7 +636,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client._pal('pnmanage', {
+    await this.client.call_pal('pnmanage', {
       command: 'remove',
       service_id: '12',
       application_id: '22177122297',
@@ -663,7 +665,7 @@ export class PBX extends EventEmitter {
       return false
     }
     await this.client
-      ._pal('pnmanage', {
+      .call_pal('pnmanage', {
         command: 'set',
         service_id: '13',
         application_id: '22177122297',
