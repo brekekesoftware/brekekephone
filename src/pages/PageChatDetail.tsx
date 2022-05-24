@@ -133,7 +133,7 @@ export class PageChatDetail extends Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
-        title={getPartyName(id)}
+        title={getPartyName(id) || id} // for user not set username
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
       >
