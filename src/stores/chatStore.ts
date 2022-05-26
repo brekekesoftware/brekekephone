@@ -13,7 +13,7 @@ import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { getAuthStore } from './authStore'
-import { callStore } from './callStore'
+import { getCallStore } from './cancelRecentPn'
 import { getPartyName } from './contactStore'
 import { RnStacker } from './RnStacker'
 
@@ -206,9 +206,10 @@ class ChatStore {
       this.pushChatNotification(name, m[0]?.text || '', threadId)
     }
     // play chat notification sound & vibration
+    const cs = getCallStore()
     const isTalking =
-      callStore.calls.some(c => c.answered) ||
-      Object.values(callStore.callkeepActionMap).some(a => a === 'answerCall')
+      cs.calls.some(c => c.answered) ||
+      Object.values(cs.callkeepActionMap).some(a => a === 'answerCall')
     const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
       groupId?: string
       buddy?: string

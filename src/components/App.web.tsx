@@ -45,7 +45,9 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'fixed' as 'absolute',
+    position: window._BrekekePhoneAsComponent
+      ? 'absolute'
+      : ('fixed' as 'absolute'),
     top: 0,
     bottom: 0,
     left: 0,

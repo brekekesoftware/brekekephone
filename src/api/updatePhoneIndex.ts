@@ -37,7 +37,7 @@ export const updatePhoneIndex = async (
       )
       return
     }
-    await api.client._pal('setExtensionProperties', {
+    await api.client.call_pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
       properties: {

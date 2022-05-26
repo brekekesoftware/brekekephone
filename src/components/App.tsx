@@ -34,11 +34,14 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { onBackPressed, setupCallKeep } from '../utils/callkeep'
+import {
+  getAudioVideoPermission,
+  promptBrowserPermission,
+} from '../utils/promptBrowserPermission'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { triggerAudioPerrmission } from '../utils/triggerAudioPerrmission'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -75,33 +78,10 @@ PushNotification.register(async () => {
   // Handle android hardware back button press
   BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
-  const getAudioVideoPermission = () => {
-    const cb = (stream: MediaStream) =>
-      stream.getTracks().forEach(t => t.stop())
-    // @ts-ignore
-    const eb = (err: MediaStreamError) => {
-      /* TODO */
-    }
-    // @ts-ignore
-    const p = window.navigator.getUserMedia(
-      { audio: true, video: true },
-      cb,
-      eb,
-    ) as unknown as Promise<MediaStream>
-    if (p?.then) {
-      p.then(cb).catch(eb)
-    }
-    triggerAudioPerrmission()
-  }
   if (Platform.OS === 'web') {
-    RnAlert.prompt({
-      title: intl`Action Required`,
-      message: intl`Web Phone needs your action to work well on browser. Press OK to continue`,
-      confirmText: 'OK',
-      dismissText: false,
-      onConfirm: getAudioVideoPermission,
-      onDismiss: getAudioVideoPermission,
-    })
+    if (!window._BrekekePhoneAsComponent) {
+      promptBrowserPermission()
+    }
   } else if (
     AppState.currentState === 'active' &&
     !callStore.calls.length &&

@@ -13,6 +13,7 @@
     "clean": "yarn --check-files && rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && cd ios && pod install --repo-update && cd .. && npx jetify && cd android && ./gradlew clean",
     "build": "rm -rf node_modules/.cache/babel* && craco build",
     "intl": "rm -rf node_modules/.cache/babel* .intlNewEn.json && export EXTRACT_INTL=1 && babel src -x .js,.ts,.tsx -d build && rm -rf build && node .intlBuild",
+    "comp": "rm -rf node_modules/.cache/babel* && webpack",
     "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --loglevel=error --ignore-path=.gitignore --write .",
     "test": "yarn test:eslint && yarn test:prettier && yarn test:typescript && yarn test:type-coverage",
     "test:eslint": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 .",
@@ -106,10 +107,13 @@
     "@types/uuid": "8.3.4",
     "@types/validatorjs": "3.15.0",
     "@typescript-eslint/parser": "5.17.0",
+    "babel-loader": "8.1.0",
     "circular-dependency-plugin": "5.2.2",
+    "clean-webpack-plugin": "4.0.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-react-app": "6.2.2",
     "eslint-plugin-simple-import-sort": "7.0.0",
+    "file-loader": "6.2.0",
     "fs-extra": "10.0.1",
     "husky": "7.0.4",
     "lint-staged": "12.3.7",
@@ -117,7 +121,8 @@
     "prettier": "2.6.1",
     "react-scripts": "4.0.3",
     "type-coverage": "2.21.1",
-    "typescript": "4.6.3"
+    "typescript": "4.6.3",
+    "webpack-cli": "4.9.2"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
