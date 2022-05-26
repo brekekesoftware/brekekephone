@@ -218,6 +218,7 @@ class ChatStore {
     }
     const shouldPlayChatNotificationSoundVibration =
       !isTalking &&
+      AppState.currentState === 'active' &&
       (isGroup
         ? !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)
         : !(s?.name === 'PageChatDetail' && s?.buddy === threadId))
