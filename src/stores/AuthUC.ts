@@ -56,6 +56,7 @@ class AuthUC {
     this.loadUnreadChats().then(
       action(() => {
         s.ucState = 'success'
+        s.ucTotalFailure = 0
       }),
     )
   }

@@ -6,8 +6,8 @@ import { PbxGetProductInfoRes } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { updatePhoneIndex } from '../api/updatePhoneIndex'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { SipPn } from '../utils/PushNotification-parse'
+import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import { sipErrorEmitter } from './sipErrorEmitter'
 
@@ -102,7 +102,9 @@ class AuthSIP {
     pn.sipAuth = await pbx.createSIPAccessToken(pn.phoneId)
     await this.authPnWithoutCatch(pn)
   }
-  authWithCheck = () => {
+
+  private waitingTimeout = false
+  authWithCheck = async () => {
     const s = getAuthStore()
     const sipShouldAuth = s.sipShouldAuth()
     console.error(
@@ -112,17 +114,16 @@ class AuthSIP {
         sipAuth: !!s.sipPn.sipAuth,
         pbxState: s.pbxState,
         sipTotalFailure: s.sipTotalFailure,
+        waitingTimeout: this.waitingTimeout,
       })}`,
     )
-    if (!sipShouldAuth) {
+    if (!sipShouldAuth || this.waitingTimeout) {
       return
     }
     if (s.sipTotalFailure > 1) {
-      BackgroundTimer.setTimeout(
-        this.authWithCheckDebounced,
-        s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000,
-      )
-      return
+      const timeWait = s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000
+      this.waitingTimeout = true
+      await waitTimeout(timeWait)
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {
@@ -133,6 +134,7 @@ class AuthSIP {
         console.error('Failed to connect to sip', err)
       }),
     )
+    this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
