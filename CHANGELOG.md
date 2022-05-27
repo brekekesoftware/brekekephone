@@ -1,3 +1,22 @@
+#### 2.10.1
+
+- Fix 547: UC chat display name empty in some case
+- Fix 548: UC chat should not play sound + vibration in background
+- Fix 532: UC chat group name buddy list incorrect
+- Fix 537: UC chat send big file cause app crash
+- Fix 544 545: Fix retry login too frequently
+- Early media SDP handling
+- Show controls & keypad in outgoing call before answered/connected
+- Fix 456 533: Incorrect hold current call
+- Fix 481: Should not play both ring tone of Brekeke phone and device
+- Fix 529: Clear notification badge number when open screen recent calls
+- Fix 494: Message alert should not play sound or vibrate when talking
+- Show avatar in incoming/outbound/manage call using x-image
+- Handle PN canceled somewhere else SIP header
+- Fix 492 493 494 495 499 500 528ios: Various minor UC chat bugs
+- Fix sometimes can not logout, app stuck
+- Fix sometimes can not login, white screen
+
 #### 2.9.10
 
 - Fix: send file UC chat should work correctly
