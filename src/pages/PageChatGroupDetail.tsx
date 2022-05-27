@@ -499,7 +499,7 @@ export class PageChatGroupDetail extends Component<{
     const groupId = this.props.groupId
     const { blobFile } = this.state
     this.setState({ topic_id: res.file.topic_id })
-    Object.assign(res.file, blobFile)
+    Object.assign(res.file, blobFile, { save: 'success' })
     if (Platform.OS === 'web') {
       this.handleSaveBlobFileWeb(file, res.file as ChatFile, res.chat)
     } else {
