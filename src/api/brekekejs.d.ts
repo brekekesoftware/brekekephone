@@ -333,9 +333,10 @@ export type PhoneStatusChangedEvent = {
   reason: string
   response: unknown
 }
+export type SessionStatus = 'dialing' | 'terminated' | 'connected' | 'progress'
 export type Session = {
   sessionId: string
-  sessionStatus: 'dialing' | 'terminated' | 'connected'
+  sessionStatus: SessionStatus
   rtcSession: {
     remote_identity: {
       display_name: string

@@ -44,7 +44,13 @@ export class OutgoingItem extends Component {
     return null
   }
 }
-
+export class OutgoingItemWithSDP extends Component<{
+  earlyMedia: MediaStream | null
+}> {
+  render() {
+    return null
+  }
+}
 // polyfill for web
 export const AnsweredItem = (p: { voiceStreamObject: MediaStream | null }) =>
   null
