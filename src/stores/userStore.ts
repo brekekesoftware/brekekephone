@@ -288,7 +288,7 @@ class UserStore {
       const selectedItemCount = this.isSelectedAddAllUser
         ? renderData.length
         : renderData.filter(i => this.selectedUserIds[i.user_id]).length
-      return `${selectedItemCount}/${renderData.length}`
+      return `${sectionTitle} ${selectedItemCount}/${renderData.length}`
     }
 
     const indexGroup = this.dataGroupAllUser.findIndex(
