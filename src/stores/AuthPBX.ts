@@ -26,13 +26,15 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
+  private waitingTimeout = false
   @action private authWithCheck = async () => {
     const s = getAuthStore()
-    if (!s.pbxShouldAuth() || !s.currentProfile) {
+    if (!s.pbxShouldAuth() || !s.currentProfile || this.waitingTimeout) {
       return
     }
     if (s.pbxTotalFailure > 1) {
       const timeWait = s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000
+      this.waitingTimeout = true
       await waitTimeout(timeWait)
     }
     console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')
@@ -45,6 +47,7 @@ class AuthPBX {
         console.error('Failed to connect to pbx', err)
       }),
     )
+    this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }

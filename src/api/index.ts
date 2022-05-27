@@ -48,6 +48,7 @@ class Api {
     console.error('PBX PN debug: set pbxState success')
     const s = getAuthStore()
     s.pbxState = 'success'
+    s.pbxTotalFailure = 0
     await waitSip()
     await pbx.getConfig()
     const cp = s.currentProfile
@@ -105,6 +106,7 @@ class Api {
     const s = getAuthStore()
     s.sipPn.sipAuth = ''
     s.sipState = 'success'
+    s.sipTotalFailure = 0
     authPBX.auth()
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
