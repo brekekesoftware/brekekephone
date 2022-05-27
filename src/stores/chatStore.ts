@@ -201,7 +201,8 @@ class ChatStore {
     if (isGroup) {
       name = chatStore.getGroupById(threadId)?.name
     } else {
-      name = getPartyName(threadId) || ''
+      // user not set username
+      name = getPartyName(threadId) || threadId
     }
     if (m.length === 1 && AppState.currentState !== 'active') {
       this.pushChatNotification(name, m[0]?.text || '', threadId)
@@ -218,6 +219,7 @@ class ChatStore {
     }
     const shouldPlayChatNotificationSoundVibration =
       !isTalking &&
+      AppState.currentState === 'active' &&
       (isGroup
         ? !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)
         : !(s?.name === 'PageChatDetail' && s?.buddy === threadId))
