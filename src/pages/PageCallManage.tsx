@@ -212,7 +212,7 @@ export class PageCallManage extends Component<{
         <Image
           source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
           style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
-          resizeMode={isLarge ? 'contain' : 'cover'}
+          resizeMode={'cover'}
         />
         <View>
           {!incoming && (
