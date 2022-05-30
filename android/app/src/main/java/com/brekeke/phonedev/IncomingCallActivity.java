@@ -162,11 +162,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if ("large".equalsIgnoreCase(avatarSize)) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-      int height = displayMetrics.heightPixels;
+      int height = (int) (displayMetrics.heightPixels / 2.2);
       int width = displayMetrics.widthPixels;
       // CardAvatar Layout
-      vCardAvatar.getLayoutParams().height = (int) (height / 2.2);
-      vCardAvatar.getLayoutParams().width = width - 60;
+
+      vCardAvatar.getLayoutParams().height = height;
+      vCardAvatar.getLayoutParams().width = height;
       GradientDrawable shape = new GradientDrawable();
       shape.setCornerRadius(0);
       vCardAvatar.setBackground(shape);
@@ -175,16 +176,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       RelativeLayout.LayoutParams params =
           new RelativeLayout.LayoutParams(
               RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-      params.setMargins(0, (int) (height / 1.4), 0, 0);
+      params.setMargins(0, (int) (height * 1.4), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
-    Glide.with(this)
-        .load(
-            avatar != null && !avatar.isEmpty()
-                ? avatar
-                : getResources().getIdentifier("default_avatar", "mipmap", getPackageName()))
-        .centerCrop()
-        .into(imgAvatar);
+    if (avatar == null || avatar.isEmpty()) {
+      vCardAvatar.getLayoutParams().height = 0;
+    } else {
+      Glide.with(this)
+          .load(avatar)
+          .placeholder(getResources().getIdentifier("default_avatar", "mipmap", getPackageName()))
+          .centerCrop()
+          .into(imgAvatar);
+    }
   }
 
   public void updateLabels() {
@@ -336,12 +339,35 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
-    constraintSet.connect(
-        R.id.btn_unlock,
-        ConstraintSet.BOTTOM,
-        R.id.view_call_manage_controls,
-        ConstraintSet.TOP,
-        20);
+    if (talkingAvatar == null || talkingAvatar.isEmpty()) {
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+      int height = displayMetrics.heightPixels;
+      int flexValue = height * 1 / 3;
+      constraintSet.connect(
+          R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+
+      constraintSet.connect(
+          R.id.view_call_manage_controls,
+          ConstraintSet.TOP,
+          ConstraintSet.PARENT_ID,
+          ConstraintSet.TOP,
+          flexValue);
+
+      constraintSet.connect(
+          R.id.view_button_end,
+          ConstraintSet.BOTTOM,
+          ConstraintSet.PARENT_ID,
+          ConstraintSet.BOTTOM,
+          30);
+    } else {
+      constraintSet.connect(
+          R.id.btn_unlock,
+          ConstraintSet.BOTTOM,
+          R.id.view_call_manage_controls,
+          ConstraintSet.TOP,
+          20);
+    }
     constraintSet.connect(
         R.id.view_call_manage_loading,
         ConstraintSet.BOTTOM,
@@ -360,7 +386,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         if (!isLarge) {
           updateLayoutManagerCall();
         }
-        Glide.with(this).load(talkingAvatar).centerCrop().into(imgAvatarTalking);
+        Glide.with(this)
+            .load(talkingAvatar)
+            .placeholder(getResources().getIdentifier("default_avatar", "mipmap", getPackageName()))
+            .centerCrop()
+            .into(imgAvatarTalking);
       }
       answered = true;
       BrekekeModule.stopRingtone();
@@ -520,7 +550,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onCallConnected() {
     vCallManageLoading.setVisibility(View.GONE);
-    vCardAvatarTalking.setVisibility(View.VISIBLE);
+    if (talkingAvatar == null || talkingAvatar.isEmpty()) {
+      vCardAvatarTalking.setVisibility(View.GONE);
+    } else {
+      vCardAvatarTalking.setVisibility(View.VISIBLE);
+    }
     vCallManageControls.setVisibility(View.VISIBLE);
     updateLayoutManagerCallLoaded();
   }

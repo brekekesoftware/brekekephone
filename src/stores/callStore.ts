@@ -130,7 +130,7 @@ export class CallStore {
         call.partyImageUrl = ucEnabled
           ? userStore.getBuddyById(call.partyNumber)?.profile_image_url || ''
           : this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
-        call.partyImageSize = !ucEnabled ? 'large' : ''
+        call.partyImageSize = ucEnabled ? 'large' : ''
       }
       if (
         call.answered &&
