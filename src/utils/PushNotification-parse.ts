@@ -2,6 +2,7 @@ import jsonStableStringify from 'json-stable-stringify'
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 
+import { removePnTokenViaSip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
@@ -43,7 +44,7 @@ keysInCustomNotification.forEach(k => {
 })
 
 const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
-  const n = fields
+  const n: { [k: string]: unknown } = fields
     .filter(f => !!f)
     .map(f => {
       // @ts-ignore
@@ -104,6 +105,16 @@ export const parseNotificationData = (raw: object) => {
     )
   }
   if (!n) {
+    return
+  }
+
+  const p = getAuthStore().findProfile({
+    ...n,
+    pbxUsername: n.to,
+    pbxTenant: n.tenant,
+  })
+  if (!p) {
+    removePnTokenViaSip(n)
     return
   }
 
@@ -318,7 +329,7 @@ export type SipPn = {
 }
 
 export const toXPN = (n: object) =>
-  Object.entries(n).reduce((m, [k, v]) => {
+  Object.entries(n).reduce((m, [k, v]: [string, unknown]) => {
     m['x_' + k] = v
     return m
   }, {} as { [k: string]: unknown })

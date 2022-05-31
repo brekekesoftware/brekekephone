@@ -267,8 +267,14 @@ export type Sip = {
   getPhoneStatus(): string
 
   _ua?: {
+    _transport?: {
+      socket?: object
+    }
+    registrator?(): {
+      _registered: boolean
+      setExtraHeaders: Function
+    }
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
-    _transport?: { socket?: object }
   }
   _removeEventListenerPhoneStatusChange?: Function
 }
@@ -301,7 +307,6 @@ export type SipConfiguration = {
 
   user: string
   auth?: string
-  password?: string
 
   useVideoClient?: boolean
   videoClientUser?: string

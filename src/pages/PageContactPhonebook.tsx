@@ -26,6 +26,7 @@ import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { toBoolean } from '../utils/string'
 
 const css = StyleSheet.create({
   Loading: {
@@ -71,7 +72,7 @@ export class PageContactPhonebook extends Component {
           ...ct,
           loaded: true,
           name: ct.displayName || ct.firstName + ' ' + ct.lastName,
-          hidden: ct.hidden === 'true',
+          hidden: toBoolean(ct.hidden),
         }
         contactStore.upsertPhonebook(x)
         cb(x)

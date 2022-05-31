@@ -159,9 +159,13 @@ export class PageContactUsers extends Component {
       <SectionList
         sections={groups}
         keyExtractor={(item, index) => item.id}
-        renderItem={({ item, index }: { item: any; index: number }) => (
-          <RenderItemUser item={item} index={index} />
-        )}
+        renderItem={({
+          item,
+          index,
+        }: {
+          item: ItemUser['item']
+          index: number
+        }) => <RenderItemUser item={item} index={index} />}
         renderSectionHeader={({ section: { title } }) => (
           // TODO move to a new component with observer
           <Field isGroup label={title} />
@@ -225,7 +229,9 @@ const getLastMessageChat = (id: string) => {
   return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
 }
 type ItemUser = {
-  item: any
+  item: {
+    id: string
+  }
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => (

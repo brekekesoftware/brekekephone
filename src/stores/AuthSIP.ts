@@ -7,6 +7,7 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { updatePhoneIndex } from '../api/updatePhoneIndex'
 import { SipPn } from '../utils/PushNotification-parse'
+import { toBoolean } from '../utils/string'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import { sipErrorEmitter } from './sipErrorEmitter'
@@ -61,8 +62,7 @@ class AuthSIP {
       username: pn.phoneId,
       accessToken: pn.sipAuth,
       pbxTurnEnabled: p.pbxTurnEnabled,
-      dtmfSendPal:
-        pn.dtmfSendPal === 'true' || pn.dtmfSendPal === '1' ? true : false,
+      dtmfSendPal: toBoolean(pn.dtmfSendPal),
       turnConfig,
     })
   }

@@ -2,56 +2,63 @@ import 'brekekejs/lib/jsonrpc'
 import 'brekekejs/lib/webrtcclient'
 
 import EventEmitter from 'eventemitter3'
+import stableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
 import { getAuthStore } from '../stores/authStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
+import { ParsedPn } from '../utils/PushNotification-parse'
+import { toBoolean } from '../utils/string'
 import { CallOptions, Sip } from './brekekejs'
 import { getFrontCameraSourceId } from './getFrontCameraSourceId'
 import { pbx } from './pbx'
 import { turnConfig } from './turnConfig'
 
-const sipCreateMediaConstraints = (sourceId?: string) => {
-  return {
-    audio: false,
-    video: {
-      mandatory: {
-        minWidth: 0,
-        minHeight: 0,
-        minFrameRate: 0,
-      },
-      facingMode: Platform.OS === 'web' ? undefined : 'user',
-      optional: sourceId ? [{ sourceId }] : [],
-    },
-  } as unknown as MediaStreamConstraints
+const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
+export const removePnTokenViaSip = async (n: ParsedPn) => {
+  const k = stableStringify(n)
+  if (alreadyRemovePnTokenViaSip[k]) {
+    return
+  }
+  alreadyRemovePnTokenViaSip[k] = true
+  console.log('removePnTokenViaSip debug: begin')
+  const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
+  phone.startWebRTC({
+    register: false,
+    url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
+    tls: true,
+    user: n.to,
+    auth: n.sipPn.sipAuth,
+    useVideoClient: true,
+    userAgent: getUserAgent(),
+  })
+  const started = await new Promise(r => {
+    phone.addEventListener(
+      'phoneStatusChanged',
+      e => e.phoneStatus === 'started' && r(true),
+    )
+    setTimeout(() => r(false), 10000)
+  })
+  const o = phone._ua?.registrator?.()
+  if (!started || !o) {
+    console.log(
+      `removePnTokenViaSip debug: failed started=${started} registrator=${!!o}`,
+    )
+    return
+  }
+  o._registered = true
+  o.setExtraHeaders(['X-PN-Manage: remove'])
+  phone.stopWebRTC()
+  console.log('removePnTokenViaSip debug: done')
 }
 
 export class SIP extends EventEmitter {
   phone?: Sip
   private init = async (o: SipLoginOption) => {
     const sourceId = await getFrontCameraSourceId()
-    const phone = new window.Brekeke.WebrtcClient.Phone({
-      logLevel: 'all',
-      multiSession: 1,
-      defaultOptions: {
-        videoOptions: {
-          call: {
-            mediaConstraints: sipCreateMediaConstraints(sourceId),
-          },
-          answer: {
-            mediaConstraints: sipCreateMediaConstraints(sourceId),
-          },
-        },
-      },
-      dtmfSendPal: o.dtmfSendPal,
-      ctiAutoAnswer: 1,
-      eventTalk: 1,
-      configuration: {
-        socketKeepAlive: 60,
-      },
-    })
+    const phone = getWebrtcClient(o.dtmfSendPal, sourceId)
     this.phone = phone
 
     const h = (ev: { phoneStatus: string }) => {
@@ -217,25 +224,6 @@ export class SIP extends EventEmitter {
     this.stopWebRTC()
     const phone = await this.init(sipLoginOption)
     //
-    let platformOs: string = Platform.OS
-    if (platformOs === 'ios') {
-      platformOs = 'iOS'
-    } else if (platformOs === 'android') {
-      platformOs = 'Android'
-    } else if (platformOs === 'web') {
-      platformOs = 'Web'
-    }
-    //
-    const jssipVersion = '3.2.15'
-    const appVersion = currentVersion
-    const lUseragent =
-      'Brekeke Phone for ' +
-      platformOs +
-      ' ' +
-      appVersion +
-      '/JsSIP ' +
-      jssipVersion
-    //
     const callOptions = ((sipLoginOption.pbxTurnEnabled && turnConfig) ||
       {}) as CallOptions
     if (!callOptions.pcConfig) {
@@ -250,12 +238,12 @@ export class SIP extends EventEmitter {
     phone.setDefaultCallOptions(callOptions)
     //
     phone.startWebRTC({
-      url: `wss://${sipLoginOption.hostname}:${sipLoginOption.port}/phone`,
+      url: getWssUrl(sipLoginOption.hostname, sipLoginOption.port),
       tls: true,
       user: sipLoginOption.username,
       auth: sipLoginOption.accessToken,
       useVideoClient: true,
-      userAgent: lUseragent,
+      userAgent: getUserAgent(),
     })
     //
     console.error('SIP PN debug: added listener on _ua')
@@ -346,7 +334,7 @@ export interface SipLoginOption {
   turnConfig?: RTCIceServer
 }
 
-export const parseCanceledPnIds = (data?: string) => {
+const parseCanceledPnIds = (data?: string) => {
   if (!data || !/Canceled/i.test(data)) {
     return
   }
@@ -371,3 +359,62 @@ export const parseCanceledPnIds = (data?: string) => {
       : undefined
   })
 }
+
+const getUserAgent = () => {
+  let platformOs: string = Platform.OS
+  if (platformOs === 'ios') {
+    platformOs = 'iOS'
+  } else if (platformOs === 'android') {
+    platformOs = 'Android'
+  } else if (platformOs === 'web') {
+    platformOs = 'Web'
+  }
+  const jssipVersion = '3.2.15'
+  const appVersion = currentVersion
+  return (
+    'Brekeke Phone for ' +
+    platformOs +
+    ' ' +
+    appVersion +
+    '/JsSIP ' +
+    jssipVersion
+  )
+}
+const getWssUrl = (host?: string, port?: string) =>
+  `wss://${host}:${port}/phone`
+
+const sipCreateMediaConstraints = (sourceId?: string) => {
+  return {
+    audio: false,
+    video: {
+      mandatory: {
+        minWidth: 0,
+        minHeight: 0,
+        minFrameRate: 0,
+      },
+      facingMode: Platform.OS === 'web' ? undefined : 'user',
+      optional: sourceId ? [{ sourceId }] : [],
+    },
+  } as unknown as MediaStreamConstraints
+}
+const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
+  new window.Brekeke.WebrtcClient.Phone({
+    logLevel: 'all',
+    multiSession: 1,
+    defaultOptions: {
+      videoOptions: {
+        call: {
+          mediaConstraints: sipCreateMediaConstraints(sourceId),
+        },
+        answer: {
+          mediaConstraints: sipCreateMediaConstraints(sourceId),
+        },
+      },
+    },
+    dtmfSendPal,
+    ctiAutoAnswer: 1,
+    eventTalk: 1,
+    configuration: {
+      socketKeepAlive: 60,
+    },
+  })

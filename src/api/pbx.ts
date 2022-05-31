@@ -8,6 +8,7 @@ import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser } from '../stores/contactStore'
 import { Profile, profileStore } from '../stores/profileStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { toBoolean } from '../utils/string'
 import { Pbx } from './brekekejs'
 
 export class PBX extends EventEmitter {
@@ -343,7 +344,7 @@ export class PBX extends EventEmitter {
       job: res.info.$title,
       book: res.phonebook,
       hidden: res.info.$hidden,
-      shared: res.shared === 'true',
+      shared: toBoolean(res.shared),
     }
   }
 

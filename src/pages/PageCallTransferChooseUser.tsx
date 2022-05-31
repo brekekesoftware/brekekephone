@@ -84,9 +84,13 @@ export class PageCallTransferChooseUser extends Component {
       <SectionList
         sections={groups}
         keyExtractor={(item, index) => item.number}
-        renderItem={({ item, index }: { item: any; index: number }) => (
-          <RenderItemUser item={item} index={index} />
-        )}
+        renderItem={({
+          item,
+          index,
+        }: {
+          item: ItemUser['item']
+          index: number
+        }) => <RenderItemUser item={item} index={index} />}
         renderSectionHeader={({ section: { title } }) => (
           <Field isGroup label={title} />
         )}
@@ -120,7 +124,9 @@ export class PageCallTransferChooseUser extends Component {
 
 setPageCallTransferChooseUser(PageCallTransferChooseUser)
 type ItemUser = {
-  item: any
+  item: {
+    number: string
+  }
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => {

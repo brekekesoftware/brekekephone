@@ -6,7 +6,7 @@ import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
+import { removePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { asComponent } from '../asComponent/asComponent'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -21,6 +21,7 @@ import { Call } from './Call'
 import { CancelRecentPn } from './cancelRecentPn'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
+import { profileStore } from './profileStore'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
@@ -53,6 +54,7 @@ export class CallStore {
     uuid: string,
     pnData: ParsedPn,
   ) => {
+    this.checkInvalidPN(uuid, pnData)
     this.setAutoEndCallKeepTimer(uuid, pnData)
     // Check if call is rejected already
     const rejected = this.isCallRejected({
@@ -92,6 +94,23 @@ export class CallStore {
         authSIP.authWithCheck()
       }
     }
+  }
+  private checkInvalidPN = async (uuid: string, n: ParsedPn) => {
+    if (!uuid || !n) {
+      return
+    }
+    await profileStore.profilesLoaded()
+    const as = getAuthStore()
+    const p = as.findProfile({
+      ...n,
+      pbxUsername: n.to,
+      pbxTenant: n.tenant,
+    })
+    if (p) {
+      return
+    }
+    this.onCallKeepEndCall(uuid)
+    removePnTokenViaSip(n)
   }
   @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
