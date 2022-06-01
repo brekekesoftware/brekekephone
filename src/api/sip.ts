@@ -18,7 +18,7 @@ import { turnConfig } from './turnConfig'
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const removePnTokenViaSip = async (n: ParsedPn) => {
-  const k = stableStringify(n)
+  const k = n.id || stableStringify(n)
   if (alreadyRemovePnTokenViaSip[k]) {
     return
   }
@@ -26,7 +26,7 @@ export const removePnTokenViaSip = async (n: ParsedPn) => {
   console.log('removePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
   phone.startWebRTC({
-    register: false,
+    // register: false,
     url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
     tls: true,
     user: n.to,

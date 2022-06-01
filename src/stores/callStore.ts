@@ -100,13 +100,7 @@ export class CallStore {
       return
     }
     await profileStore.profilesLoaded()
-    const as = getAuthStore()
-    const p = as.findProfile({
-      ...n,
-      pbxUsername: n.to,
-      pbxTenant: n.tenant,
-    })
-    if (p) {
+    if (getAuthStore().findProfileByPn(n)) {
       return
     }
     this.onCallKeepEndCall(uuid)

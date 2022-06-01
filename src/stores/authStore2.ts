@@ -92,8 +92,15 @@ export class AuthStore {
     ].some(s => s === 'failure')
   }
 
-  findProfile = (p: Partial<Profile>) => {
+  private findProfile = (p: Partial<Profile>) => {
     return profileStore.profiles.find(p0 => compareProfile(p0, p))
+  }
+  findProfileByPn = (n: ParsedPn) => {
+    return this.findProfile({
+      ...n,
+      pbxUsername: n.to,
+      pbxTenant: n.tenant,
+    })
   }
 
   @observable signedInId = ''

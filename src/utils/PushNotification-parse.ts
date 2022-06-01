@@ -6,6 +6,7 @@ import { removePnTokenViaSip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
+import { profileStore } from '../stores/profileStore'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -44,7 +45,7 @@ keysInCustomNotification.forEach(k => {
 })
 
 const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
-  const n: { [k: string]: unknown } = fields
+  const n: ParsedPn = fields
     .filter(f => !!f)
     .map(f => {
       // @ts-ignore
@@ -55,7 +56,7 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       }
       return f
     })
-    .reduce((map: { [k: string]: unknown }, f: { [k: string]: unknown }) => {
+    .reduce((map: { [k: string]: string }, f: { [k: string]: string }) => {
       if (!f || typeof f !== 'object') {
         return map
       }
@@ -67,11 +68,9 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       })
       return map
     }, {})
-
   if (n.image) {
     callStore.updateCallAvatar(n.image, n.image_size)
   }
-
   return n
 }
 
@@ -105,16 +104,6 @@ export const parseNotificationData = (raw: object) => {
     )
   }
   if (!n) {
-    return
-  }
-
-  const p = getAuthStore().findProfile({
-    ...n,
-    pbxUsername: n.to,
-    pbxTenant: n.tenant,
-  })
-  if (!p) {
-    removePnTokenViaSip(n)
     return
   }
 
@@ -179,21 +168,18 @@ const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
 export const signInByLocalNotification = (n: ParsedPn) => {
-  const p = getAuthStore().findProfile({
-    ...n,
-    pbxUsername: n.to,
-    pbxTenant: n.tenant,
-  })
-  if (getAuthStore().signedInId === p?.id) {
-    getAuthStore().resetFailureState()
+  const as = getAuthStore()
+  const p = as.findProfileByPn(n)
+  if (as.signedInId === p?.id) {
+    as.resetFailureState()
   }
-  if (p?.id && !getAuthStore().signedInId) {
-    getAuthStore().signIn(p.id)
+  if (p?.id && !as.signedInId) {
+    as.signIn(p.id)
   }
 }
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
-    return null
+    return
   }
 
   const rawId = raw['id'] as string | undefined
@@ -205,7 +191,13 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
 
   const n = parseNotificationData(raw)
   if (!n) {
-    return null
+    return
+  }
+
+  await profileStore.profilesLoaded()
+  if (!getAuthStore().findProfileByPn(n)) {
+    removePnTokenViaSip(n)
+    return
   }
 
   isLocal = Boolean(
@@ -217,22 +209,15 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   )
 
   if (Platform.OS === 'android') {
-    if (n.id) {
-      if (androidAlreadyProccessedPn[n.id]) {
-        console.error(
-          `SIP PN debug: PushNotification-parse: already processed pnId=${n.id}`,
-        )
-        return null
-      }
-      androidAlreadyProccessedPn[n.id] = true
-    } else {
-      // handle duplicated pn
-      const s = jsonStableStringify(n)
-      if (androidAlreadyProccessedPn[s]) {
-        return
-      }
-      androidAlreadyProccessedPn[s] = true
+    // handle duplicated pn
+    const k = n.id || jsonStableStringify(raw)
+    if (androidAlreadyProccessedPn[k]) {
+      console.error(
+        `SIP PN debug: PushNotification-parse: already processed k=${k}`,
+      )
+      return
     }
+    androidAlreadyProccessedPn[k] = true
   }
 
   if (n.callkeepAt) {
@@ -253,7 +238,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       }
     }
     console.error('SIP PN debug: PushNotification-parse: local notification')
-    return null
+    return
   }
   if (!n.isCall) {
     console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
@@ -293,7 +278,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
-  return null
+  return
 }
 
 export type ParsedPn = {
