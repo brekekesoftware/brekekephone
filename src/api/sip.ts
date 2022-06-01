@@ -41,12 +41,11 @@ export const removePnTokenViaSip = async (n: ParsedPn) => {
     )
     setTimeout(() => r(false), 10000)
   })
-  const o = phone._ua?.registrator?.()
+  const o = phone._ua?.registrator?.()!
   if (!started || !o) {
     console.log(
-      `removePnTokenViaSip debug: failed started=${started} registrator=${!!o}`,
+      `removePnTokenViaSip debug: started=${started} registrator=${!!o}`,
     )
-    return
   }
   o._registered = true
   o.setExtraHeaders(['X-PN-Manage: remove'])
