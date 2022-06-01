@@ -317,11 +317,7 @@ export class AuthStore {
     this.resetFailureState()
     await profileStore.profilesLoaded()
     // Find account for the notification target
-    const p = this.findProfile({
-      ...n,
-      pbxUsername: n.to,
-      pbxTenant: n.tenant,
-    })
+    const p = this.findProfileByPn(n)
     if (!p?.id) {
       console.error('SIP PN debug: can not find account from notification')
       return false
