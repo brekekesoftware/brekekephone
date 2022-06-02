@@ -22,6 +22,7 @@ const keysInCustomNotification = [
   'displayname',
   'to',
   'tenant',
+  'host',
   'pbxHostname',
   'pbxPort',
   'my_custom_data',
@@ -119,7 +120,9 @@ export const parseNotificationData = (raw: object) => {
     // }
     n2[k2] = v
   })
+
   n.id = get(n, 'pn-id')
+  n.pbxHostname = get(n, 'host')
 
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
