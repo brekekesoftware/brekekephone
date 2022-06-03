@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class BrekekeModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
@@ -146,11 +148,9 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     if (data.get("x_pn-id") == null) {
       return;
     }
-    //
     // Init services if not
     initStaticServices(c);
     acquireWakeLock();
-    //
     // Read locale from async storage if not
     if (L.l == null) {
       try {
@@ -167,7 +167,42 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     if (!"en".equals(L.l) && !"ja".equals(L.l)) {
       L.l = "en";
     }
-    //
+
+    boolean profileExist = false;
+    String pbxHostname = data.get("x_host");
+    String pbxTenant = data.get("x_tenant");
+    String pbxUsername = data.get("x_to");
+    // String pbxPort = data.get("x_port");
+    
+    // check profile exist on local storage
+    try {
+      String profiles =
+          AsyncLocalStorageUtil.getItemImpl(
+              ReactDatabaseSupplier.getInstance(c.getApplicationContext()).getReadableDatabase(),
+              "_api_profiles");
+
+      if (profiles != null) {
+        JSONObject profilesObj = new JSONObject(profiles);
+        JSONArray arrProfile = profilesObj.getJSONArray("profiles");
+        if (arrProfile != null) {
+          if (arrProfile.length() == 0) {
+            profileExist = false;
+          } else {
+            for (int i = 0; i < arrProfile.length(); i++) {
+              JSONObject object = arrProfile.getJSONObject(i);
+              if (object.getString("pbxUsername").equals(pbxUsername)
+                  && object.getString("pbxTenant").equals(pbxTenant)
+                  && object.getString("pbxHostname").equals(pbxHostname)) {
+                profileExist = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception ex) {
+    }
+
     // Generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
@@ -232,9 +267,12 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
         || activitiesSize > 0) {
       onShowIncomingCallUi.run();
     }
-    RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
-    RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+
+    if (profileExist == true) {
+      RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
+      RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
+      RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+    }
   }
 
   // When an incoming GSM call is ringing, if another incoming Brekeke Phone call comes
