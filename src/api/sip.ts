@@ -29,7 +29,7 @@ export const removePnTokenViaSip = async (n: ParsedPn) => {
     // register: false,
     url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
     tls: true,
-    user: n.to,
+    user: n.sipPn.phoneId,
     auth: n.sipPn.sipAuth,
     useVideoClient: true,
     userAgent: getUserAgent(),
