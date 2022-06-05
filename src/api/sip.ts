@@ -6,7 +6,9 @@ import stableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
+import { CallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { ParsedPn } from '../utils/PushNotification-parse'
@@ -17,7 +19,17 @@ import { pbx } from './pbx'
 import { turnConfig } from './turnConfig'
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
-export const removePnTokenViaSip = async (n: ParsedPn) => {
+export const checkAndRemovePnTokenViaSip = async (
+  n: ParsedPn,
+  s: CallStore,
+) => {
+  await accountStore.waitStorageLoaded()
+  if (getAuthStore().findAccountByPn(n)) {
+    return
+  }
+  if (n.callkeepUuid) {
+    s.onCallKeepEndCall(n.callkeepUuid)
+  }
   const k = n.id || stableStringify(n)
   if (alreadyRemovePnTokenViaSip[k]) {
     return

@@ -52,7 +52,7 @@ export class PageCallTransferChooseUser extends Component {
     return <ContactSectionList sectionListData={displayUsers} isTransferCall />
   }
   renderAllUserMode = () => {
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (!cp) {
       return null
     }
@@ -99,7 +99,7 @@ export class PageCallTransferChooseUser extends Component {
   }
   render() {
     const s = getAuthStore()
-    const cp = s.currentProfile
+    const cp = s.currentAccount
     if (!cp) {
       return null
     }

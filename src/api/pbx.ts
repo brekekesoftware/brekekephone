@@ -4,9 +4,9 @@ import 'brekekejs/lib/pal'
 import EventEmitter from 'eventemitter3'
 
 import { asComponent } from '../asComponent/asComponent'
+import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser } from '../stores/contactStore'
-import { Profile, profileStore } from '../stores/profileStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
 import { Pbx } from './brekekejs'
@@ -18,7 +18,7 @@ export class PBX extends EventEmitter {
   // wait auth state to success
   needToWait = true
 
-  connect = async (p: Profile) => {
+  connect = async (p: Account) => {
     console.error('PBX PN debug: call pbx.connect')
     if (this.client) {
       // return Promise.reject(new Error('PAL client is connected'))
@@ -28,7 +28,7 @@ export class PBX extends EventEmitter {
     // got issue: any function get pbxConfig on this time. will get undefined
     // getAuthStore().pbxConfig = undefined
 
-    const d = profileStore.getProfileData(p)
+    const d = accountStore.getAccountData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: p.pbxTenant,
@@ -213,7 +213,7 @@ export class PBX extends EventEmitter {
     if (this.needToWait) {
       await waitPbx()
     }
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (!this.client || !cp) {
       return
     }

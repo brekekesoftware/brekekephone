@@ -17,7 +17,7 @@ const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
 
-export type Profile = {
+export type Account = {
   id: string
   pbxHostname: string
   pbxPort: string
@@ -37,7 +37,7 @@ export type Profile = {
   navIndex: number
   navSubMenus: string[]
 }
-export type ProfileData = {
+export type AccountData = {
   id: string
   accessToken: string
   recentCalls: {
@@ -63,19 +63,19 @@ export type ProfileData = {
   }
 }
 
-class ProfileStore {
+class AccountStore {
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
 
-  @observable profiles: Profile[] = []
+  @observable accounts: Account[] = []
   @computed get profilesMap() {
-    return arrToMap(this.profiles, 'id', (p: Profile) => p) as {
-      [k: string]: Profile
+    return arrToMap(this.accounts, 'id', (p: Account) => p) as {
+      [k: string]: Account
     }
   }
-  @observable profileData: ProfileData[] = []
-  @observable profilesLoadedObservable = false
-  profilesLoaded = () => profilesLoaded
-  genEmptyProfile = (): Profile => ({
+  @observable accountData: AccountData[] = []
+  @observable storageLoadedObservable = false
+  waitStorageLoaded = () => profilesLoaded
+  genEmptyAccount = (): Account => ({
     id: newUuid(),
     pbxTenant: '',
     pbxUsername: '',
@@ -91,9 +91,9 @@ class ProfileStore {
     navIndex: -1,
     navSubMenus: [],
   })
-  loadProfilesFromLocalStorage = async () => {
+  loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
-    let x: TProfileDataInStorage | undefined
+    let x: TAccountDataInStorage | undefined
     if (arr && !Array.isArray(arr)) {
       try {
         x = JSON.parse(arr)
@@ -109,20 +109,22 @@ class ProfileStore {
         profileData = []
       }
       runInAction(() => {
-        this.profiles = profiles
-        this.profileData = uniqBy(profileData, 'id') as unknown as ProfileData[]
+        this.accounts = profiles
+        this.accountData = uniqBy(profileData, 'id') as unknown as AccountData[]
       })
     }
     resolveFn?.()
     resolveFn = undefined
-    this.profilesLoadedObservable = true
+    this.storageLoadedObservable = true
   }
-  saveProfilesToLocalStorage = async () => {
+  saveAccountsToLocalStorage = async () => {
     try {
-      const { profiles, profileData } = this
       await RnAsyncStorage.setItem(
         '_api_profiles',
-        JSON.stringify({ profiles, profileData }),
+        JSON.stringify({
+          profiles: this.accounts,
+          profileData: this.accountData,
+        }),
       )
     } catch (err) {
       RnAlert.error({
@@ -131,10 +133,10 @@ class ProfileStore {
       })
     }
   }
-  @action upsertProfile = (p: Partial<Profile>) => {
-    const p1 = this.profiles.find(p0 => p0.id === p.id)
+  @action upsertAccount = (p: Partial<Account>) => {
+    const p1 = this.accounts.find(p0 => p0.id === p.id)
     if (!p1) {
-      this.profiles.push(p as Profile)
+      this.accounts.push(p as Account)
     } else {
       const p0 = { ...p1 } // Clone before assign
       Object.assign(p1, p)
@@ -156,17 +158,17 @@ class ProfileStore {
             })
             p1.pushNotificationEnabled = p0.pushNotificationEnabled
             p1.pushNotificationEnabledSynced = p0.pushNotificationEnabledSynced
-            this.saveProfilesToLocalStorage()
+            this.saveAccountsToLocalStorage()
           },
         })
       }
     }
-    this.saveProfilesToLocalStorage()
+    this.saveAccountsToLocalStorage()
   }
-  @action removeProfile = (id: string) => {
-    const p0 = this.profiles.find(p => p.id === id)
-    this.profiles = this.profiles.filter(p => p.id !== id)
-    this.saveProfilesToLocalStorage()
+  @action removeAccount = (id: string) => {
+    const p0 = this.accounts.find(p => p.id === id)
+    this.accounts = this.accounts.filter(p => p.id !== id)
+    this.saveAccountsToLocalStorage()
     if (p0) {
       p0.pushNotificationEnabled = false
       SyncPnToken().sync(p0, {
@@ -174,7 +176,7 @@ class ProfileStore {
       })
     }
   }
-  getProfileData = (p?: Profile) => {
+  getAccountData = (p?: Account) => {
     if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
       return {
         id: '',
@@ -185,36 +187,36 @@ class ProfileStore {
       }
     }
     const id = getAccountUniqueId(p)
-    const d = this.profileData.find(_ => _.id === id) || {
+    const d = this.accountData.find(_ => _.id === id) || {
       id,
       accessToken: '',
       recentCalls: [],
       recentChats: [],
       pbxBuddyList: undefined,
     }
-    this.updateProfileDataDebounced(d)
+    this.updateAccountDataDebounced(d)
     return d
   }
-  updateProfileDataDebounced = debounce(
-    (d: ProfileData) => {
-      if (d.id === this.profileData[0]?.id) {
+  updateAccountDataDebounced = debounce(
+    (d: AccountData) => {
+      if (d.id === this.accountData[0]?.id) {
         return
       }
-      const arr = [d, ...this.profileData.filter(d2 => d2.id !== d.id)]
+      const arr = [d, ...this.accountData.filter(d2 => d2.id !== d.id)]
       if (arr.length > 20) {
         arr.pop()
       }
       runInAction(() => {
-        this.profileData = arr
+        this.accountData = arr
       })
-      this.saveProfilesToLocalStorage()
+      this.saveAccountsToLocalStorage()
     },
     300,
     { maxWait: 3000 },
   )
 }
 
-export const getAccountUniqueId = (p: Profile) =>
+export const getAccountUniqueId = (p: Account) =>
   stringify({
     u: p.pbxUsername,
     t: p.pbxTenant,
@@ -222,9 +224,9 @@ export const getAccountUniqueId = (p: Profile) =>
     p: p.pbxPort,
   })
 
-export const profileStore = new ProfileStore()
+export const accountStore = new AccountStore()
 
-export type TProfileDataInStorage = {
-  profiles: Profile[]
-  profileData: ProfileData[]
+type TAccountDataInStorage = {
+  profiles: Account[]
+  profileData: AccountData[]
 }

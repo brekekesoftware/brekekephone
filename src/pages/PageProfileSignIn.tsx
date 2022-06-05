@@ -12,10 +12,10 @@ import { Layout } from '../components/Layout'
 import { ProfileSignInItem } from '../components/ProfileSignInItem'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { currentVersion, v } from '../components/variables'
+import { Account, accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { Profile, profileStore } from '../stores/profileStore'
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -73,7 +73,7 @@ const css = StyleSheet.create({
 })
 
 export const PageProfileSignIn = observer(() => {
-  const l = profileStore.profiles.length
+  const l = accountStore.accounts.length
   return (
     <BrekekeGradient>
       <Layout
@@ -87,10 +87,10 @@ export const PageProfileSignIn = observer(() => {
         {!!l && (
           <FlatList
             data={
-              toJS(profileStore.profiles) /* Fix observable inside FlatList */
+              toJS(accountStore.accounts) /* Fix observable inside FlatList */
             }
             horizontal
-            keyExtractor={(item: Profile) => item.id}
+            keyExtractor={(item: Account) => item.id}
             renderItem={({ index, item }) => (
               <ProfileSignInItem id={item.id} last={index === l - 1} />
             )}

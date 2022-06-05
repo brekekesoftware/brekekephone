@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 
-import { Profile, profileStore } from '../stores/profileStore'
+import { Account, accountStore } from '../stores/accountStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { PBX } from './pbx'
@@ -8,7 +8,7 @@ import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
 
 const syncPnTokenWithoutCatch = async (
-  p: Profile,
+  p: Account,
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   if (Platform.OS === 'web') {
@@ -16,11 +16,11 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
-  if (profileStore.pnSyncLoadingMap[p.id]) {
+  if (accountStore.pnSyncLoadingMap[p.id]) {
     console.error('PN sync debug: sync is loading')
     return
   }
-  profileStore.pnSyncLoadingMap[p.id] = true
+  accountStore.pnSyncLoadingMap[p.id] = true
 
   const pbx = new PBX()
   pbx.needToWait = false
@@ -86,13 +86,13 @@ const syncPnTokenWithoutCatch = async (
   pbx.disconnect()
 
   if (!noUpsert) {
-    profileStore.upsertProfile({
+    accountStore.upsertAccount({
       id: p.id,
       pushNotificationEnabledSynced: true,
     })
   }
 
-  profileStore.pnSyncLoadingMap[p.id] = false
+  accountStore.pnSyncLoadingMap[p.id] = false
 }
 
 export interface SyncPnTokenOption {
@@ -100,9 +100,9 @@ export interface SyncPnTokenOption {
   onError?: (err: Error) => void
 }
 
-const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
+const syncPnToken = (p: Account, o: SyncPnTokenOption = {}) => {
   return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
-    profileStore.pnSyncLoadingMap[p.id] = false
+    accountStore.pnSyncLoadingMap[p.id] = false
     if (o.onError) {
       o.onError(err)
       return
@@ -115,7 +115,7 @@ const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
 }
 
 const syncPnTokenForAllAccounts = () => {
-  profileStore.profiles.forEach(p => {
+  accountStore.accounts.forEach(p => {
     if (p.pushNotificationEnabledSynced) {
       return
     }

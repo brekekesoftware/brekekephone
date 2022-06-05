@@ -4,10 +4,10 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { Account } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { ChatFile } from '../stores/chatStore'
 import { UcUser } from '../stores/contactStore'
-import { Profile } from '../stores/profileStore'
 import { formatFileType } from '../utils/formatFileType'
 import {
   UcBuddy,
@@ -237,7 +237,7 @@ export class UC extends EventEmitter {
     })
   }
 
-  connect = (profile: Profile, ucHost: string) => {
+  connect = (a: Account, ucHost: string) => {
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
     }
@@ -246,9 +246,9 @@ export class UC extends EventEmitter {
       this.client.signIn(
         `${ucScheme}://${ucHost}`,
         'uc',
-        profile.pbxTenant,
-        profile.pbxUsername,
-        profile.pbxPassword,
+        a.pbxTenant,
+        a.pbxUsername,
+        a.pbxPassword,
         undefined,
         () => resolve(undefined),
         reject,

@@ -244,7 +244,7 @@ const RenderItemUser = observer(
         ) : !isTransferCall ? (
           <RnTouchableOpacity
             onPress={
-              getAuthStore().currentProfile?.ucEnabled
+              getAuthStore().currentAccount?.ucEnabled
                 ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
                 : undefined
             }

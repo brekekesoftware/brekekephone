@@ -10,12 +10,12 @@ import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, UcUser } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
@@ -47,7 +47,7 @@ export class PageChatRecents extends Component {
       stableStringify(getAuthStore().currentData.recentChats)
     ) {
       getAuthStore().currentData.recentChats = arr2
-      profileStore.saveProfilesToLocalStorage()
+      accountStore.saveAccountsToLocalStorage()
     }
   }
   handleGroupSelect = (groupId: string) => {

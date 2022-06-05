@@ -59,7 +59,7 @@ export const Navigation: FC<{
       const totalNoticesWebchat = chatStore.numberNoticesWebchat
       const totalNoticesContact = totalUnreadChat + totalNoticesWebchat
       const showUnreadChat =
-        getAuthStore().currentProfile?.ucEnabled &&
+        getAuthStore().currentAccount?.ucEnabled &&
         !!totalNoticesContact &&
         m.key === 'contact' &&
         !active

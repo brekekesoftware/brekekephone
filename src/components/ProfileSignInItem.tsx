@@ -10,11 +10,11 @@ import {
   mdiServerNetwork,
   mdiWeb,
 } from '../assets/icons'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { Field } from './Field'
 import { FooterActions } from './FooterActions'
@@ -68,8 +68,8 @@ export const ProfileSignInItem: FC<{
     )
   }
   const isWeb = Platform.OS === 'web'
-  const p = profileStore.profilesMap[props.id]
-  const isLoading = profileStore.pnSyncLoadingMap[props.id]
+  const p = accountStore.profilesMap[props.id]
+  const isLoading = accountStore.pnSyncLoadingMap[props.id]
   return (
     <View
       style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
@@ -94,7 +94,7 @@ export const ProfileSignInItem: FC<{
         <Field
           label={intl`PUSH NOTIFICATION`}
           onValueChange={(e: boolean) =>
-            profileStore.upsertProfile({ id: p.id, pushNotificationEnabled: e })
+            accountStore.upsertAccount({ id: p.id, pushNotificationEnabled: e })
           }
           type='Switch'
           value={p.pushNotificationEnabled}
@@ -104,7 +104,7 @@ export const ProfileSignInItem: FC<{
       <Field
         label={intl`UC`}
         onValueChange={(e: boolean) =>
-          profileStore.upsertProfile({ id: p.id, ucEnabled: e })
+          accountStore.upsertAccount({ id: p.id, ucEnabled: e })
         }
         type='Switch'
         value={p.ucEnabled}
@@ -125,7 +125,7 @@ export const ProfileSignInItem: FC<{
                 </>
               ),
               onConfirm: () => {
-                profileStore.removeProfile(p.id)
+                accountStore.removeAccount(p.id)
               },
             })
           }}

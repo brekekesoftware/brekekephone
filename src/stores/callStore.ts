@@ -6,7 +6,7 @@ import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
-import { removePnTokenViaSip, sip } from '../api/sip'
+import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { asComponent } from '../asComponent/asComponent'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -21,7 +21,6 @@ import { Call } from './Call'
 import { CancelRecentPn } from './cancelRecentPn'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
-import { profileStore } from './profileStore'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
@@ -50,16 +49,13 @@ export class CallStore {
         !c.isAboutToHangup,
     )
   }
-  @action onCallKeepDidDisplayIncomingCall = (
-    uuid: string,
-    pnData: ParsedPn,
-  ) => {
-    this.checkInvalidPN(uuid, pnData)
-    this.setAutoEndCallKeepTimer(uuid, pnData)
+  @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
+    this.setAutoEndCallKeepTimer(uuid, n)
+    checkAndRemovePnTokenViaSip(n, this)
     // Check if call is rejected already
     const rejected = this.isCallRejected({
       callkeepUuid: uuid,
-      pnId: pnData.id,
+      pnId: n.id,
     })
     // Find the current incoming call which is not callkeep
     const c = this.getCallkeep(uuid)
@@ -67,7 +63,7 @@ export class CallStore {
       c.callkeepUuid = uuid
     }
     console.error(
-      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${pnData.id} sessionId=${c?.id} rejected=${rejected}`,
+      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${n.id} sessionId=${c?.id} rejected=${rejected}`,
     )
     if (rejected) {
       this.endCallKeep(uuid)
@@ -94,17 +90,6 @@ export class CallStore {
         authSIP.authWithCheck()
       }
     }
-  }
-  private checkInvalidPN = async (uuid: string, n: ParsedPn) => {
-    if (!uuid || !n) {
-      return
-    }
-    await profileStore.profilesLoaded()
-    if (getAuthStore().findProfileByPn(n)) {
-      return
-    }
-    this.onCallKeepEndCall(uuid)
-    removePnTokenViaSip(n)
   }
   @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
@@ -141,7 +126,7 @@ export class CallStore {
         !call.answered &&
         (!call.partyImageUrl || call.partyImageUrl?.length === 0)
       ) {
-        const ucEnabled = getAuthStore()?.currentProfile?.ucEnabled
+        const ucEnabled = getAuthStore()?.currentAccount?.ucEnabled
         call.partyImageUrl = ucEnabled
           ? userStore.getBuddyById(call.partyNumber)?.profile_image_url || ''
           : this.getOriginalUserImageUrl(call.pbxTenant, call.computedName)
@@ -174,13 +159,12 @@ export class CallStore {
     if (!tenant || !name) {
       return ''
     }
-    const currentProfile = getAuthStore().currentProfile
-    if (!currentProfile) {
+    const a = getAuthStore().currentAccount
+    if (!a) {
       return ''
     }
-    const { pbxHostname, pbxPort } = currentProfile
+    const { pbxHostname, pbxPort } = a
     let url = ''
-
     if (url.length === 0) {
       let ucHost = `${pbxHostname}:${pbxPort}`
       if (ucHost.indexOf(':') < 0) {
@@ -190,7 +174,6 @@ export class CallStore {
       const baseUrl = `${ucScheme}://${ucHost}`
       url = `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
     }
-
     return url
   }
 
@@ -628,7 +611,7 @@ export class CallStore {
     // Disable ringtone when enable PN
     if (
       Platform.OS === 'ios' &&
-      getAuthStore().currentProfile?.pushNotificationEnabled
+      getAuthStore().currentAccount?.pushNotificationEnabled
     ) {
       return false
     }
@@ -709,7 +692,7 @@ export class CallStore {
   @observable videoPositionL = 5
 }
 
-export const callStore = new CallStore() as Immutable<CallStore>
+export const callStore = new CallStore()
 
 export type TCallkeepAction = 'answerCall' | 'rejectCall'
 type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>

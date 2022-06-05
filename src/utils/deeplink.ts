@@ -1,6 +1,6 @@
 import { Linking } from 'react-native'
 
-import { compareProfile, getAuthStore } from '../stores/authStore'
+import { compareAccount, getAuthStore } from '../stores/authStore'
 import { parse, UrlParams } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
@@ -20,12 +20,12 @@ export const getUrlParams = () => {
 
 Linking.addEventListener('url', e => {
   const p = (urlParams = parse(e.url))
-  const cp = getAuthStore().currentProfile
+  const cp = getAuthStore().currentAccount
   // Check against the current user
   if (
     !p ||
     !cp ||
-    compareProfile(cp, {
+    compareAccount(cp, {
       pbxHostname: p.host,
       pbxPort: p.port,
       pbxUsername: p.user,

@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class BrekekeModule extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
@@ -143,6 +145,8 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   }
 
   public static void onFcmMessageReceived(Context c, Map<String, String> data) {
+    //
+    // Check if it is a PN for incoming call
     if (data.get("x_pn-id") == null) {
       return;
     }
@@ -151,28 +155,20 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     initStaticServices(c);
     acquireWakeLock();
     //
-    // Read locale from async storage if not
-    if (L.l == null) {
-      try {
-        L.l =
-            AsyncLocalStorageUtil.getItemImpl(
-                ReactDatabaseSupplier.getInstance(c.getApplicationContext()).getReadableDatabase(),
-                "locale");
-      } catch (Exception ex) {
-      }
-    }
-    if (L.l == null) {
-      L.l = "en";
-    }
-    if (!"en".equals(L.l) && !"ja".equals(L.l)) {
-      L.l = "en";
-    }
-    //
     // Generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
+    //
+    // Check if the account exist and load the locale
+    Context appCtx = c.getApplicationContext();
+    if (!checkAccountExist(appCtx, data)) {
+      return;
+    }
+    prepareLocale(appCtx);
+    //
+    // Show call
     String displayName = data.get("x_displayname");
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
@@ -183,9 +179,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       displayName = "Loading...";
     }
     String callerName = displayName;
-    //
-    // Show call
-    RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
+    RNCallKeepModule.registerPhoneAccount(appCtx);
     Runnable onShowIncomingCallUi =
         new Runnable() {
           @Override
@@ -226,6 +220,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
             onPassiveReject(uuid);
           }
         };
+    //
     // Try to run onShowIncomingCallUi if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
@@ -235,6 +230,49 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+  }
+
+  private static void prepareLocale(Context appCtx) {
+    if (L.l == null) {
+      try {
+        L.l =
+            AsyncLocalStorageUtil.getItemImpl(
+                ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "locale");
+      } catch (Exception ex) {
+      }
+    }
+    if (L.l == null) {
+      L.l = "en";
+    }
+    if (!"en".equals(L.l) && !"ja".equals(L.l)) {
+      L.l = "en";
+    }
+  }
+
+  private static boolean checkAccountExist(Context appCtx, Map<String, String> data) {
+    try {
+      String pbxUsername = data.get("x_to");
+      if (pbxUsername == null || "".equals(pbxUsername)) {
+        return false;
+      }
+      String pbxHostname = data.get("x_host");
+      String pbxTenant = data.get("x_tenant");
+      String jsonStr =
+          AsyncLocalStorageUtil.getItemImpl(
+              ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "_api_profiles");
+      JSONArray accounts = (new JSONObject(jsonStr)).getJSONArray("profiles");
+      for (int i = 0; i < accounts.length(); i++) {
+        JSONObject a = accounts.getJSONObject(i);
+        // Same logic compareAccount in js code authStore
+        if (pbxUsername.equals(a.getString("pbxUsername"))
+            && (pbxHostname == null || pbxHostname.equals(a.getString("pbxHostname")))
+            && (pbxTenant == null || pbxTenant.equals(a.getString("pbxTenant")))) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+    }
+    return false;
   }
 
   // When an incoming GSM call is ringing, if another incoming Brekeke Phone call comes
