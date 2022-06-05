@@ -155,33 +155,18 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     initStaticServices(c);
     acquireWakeLock();
     //
-    // Read locale from async storage if not
-    if (L.l == null) {
-      try {
-        L.l =
-            AsyncLocalStorageUtil.getItemImpl(
-                ReactDatabaseSupplier.getInstance(c.getApplicationContext()).getReadableDatabase(),
-                "locale");
-      } catch (Exception ex) {
-      }
-    }
-    if (L.l == null) {
-      L.l = "en";
-    }
-    if (!"en".equals(L.l) && !"ja".equals(L.l)) {
-      L.l = "en";
-    }
-    //
     // Generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
     //
-    // Check if the account exist
-    if (!checkAccountExist(data)) {
+    // Check if the account exist and load the locale
+    Context appCtx = c.getApplicationContext();
+    if (!checkAccountExist(appCtx, data)) {
       return;
     }
+    prepareLocale(appCtx);
     //
     // Show call
     String displayName = data.get("x_displayname");
@@ -194,7 +179,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       displayName = "Loading...";
     }
     String callerName = displayName;
-    RNCallKeepModule.registerPhoneAccount(c.getApplicationContext());
+    RNCallKeepModule.registerPhoneAccount(appCtx);
     Runnable onShowIncomingCallUi =
         new Runnable() {
           @Override
@@ -247,7 +232,24 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
   }
 
-  private static boolean checkAccountExist(Map<String, String> data) {
+  private static void prepareLocale(Context appCtx) {
+    if (L.l == null) {
+      try {
+        L.l =
+            AsyncLocalStorageUtil.getItemImpl(
+                ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "locale");
+      } catch (Exception ex) {
+      }
+    }
+    if (L.l == null) {
+      L.l = "en";
+    }
+    if (!"en".equals(L.l) && !"ja".equals(L.l)) {
+      L.l = "en";
+    }
+  }
+
+  private static boolean checkAccountExist(Context appCtx, Map<String, String> data) {
     try {
       String pbxUsername = data.get("x_to");
       if (pbxUsername == null || "".equals(pbxUsername)) {
@@ -257,8 +259,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
       String pbxTenant = data.get("x_tenant");
       String jsonStr =
           AsyncLocalStorageUtil.getItemImpl(
-              ReactDatabaseSupplier.getInstance(c.getApplicationContext()).getReadableDatabase(),
-              "_api_profiles");
+              ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "_api_profiles");
       JSONArray accounts = (new JSONObject(jsonStr)).getJSONArray("profiles");
       for (int i = 0; i < accounts.length(); i++) {
         JSONObject a = accounts.getJSONObject(i);

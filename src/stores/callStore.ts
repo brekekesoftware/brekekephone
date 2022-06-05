@@ -6,7 +6,7 @@ import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
-import { removePnTokenViaSip, sip } from '../api/sip'
+import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { asComponent } from '../asComponent/asComponent'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -14,7 +14,6 @@ import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
-import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
@@ -50,16 +49,13 @@ export class CallStore {
         !c.isAboutToHangup,
     )
   }
-  @action onCallKeepDidDisplayIncomingCall = (
-    uuid: string,
-    pnData: ParsedPn,
-  ) => {
-    this.checkInvalidPN(uuid, pnData)
-    this.setAutoEndCallKeepTimer(uuid, pnData)
+  @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
+    this.setAutoEndCallKeepTimer(uuid, n)
+    checkAndRemovePnTokenViaSip(n, this)
     // Check if call is rejected already
     const rejected = this.isCallRejected({
       callkeepUuid: uuid,
-      pnId: pnData.id,
+      pnId: n.id,
     })
     // Find the current incoming call which is not callkeep
     const c = this.getCallkeep(uuid)
@@ -67,7 +63,7 @@ export class CallStore {
       c.callkeepUuid = uuid
     }
     console.error(
-      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${pnData.id} sessionId=${c?.id} rejected=${rejected}`,
+      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${n.id} sessionId=${c?.id} rejected=${rejected}`,
     )
     if (rejected) {
       this.endCallKeep(uuid)
@@ -94,17 +90,6 @@ export class CallStore {
         authSIP.authWithCheck()
       }
     }
-  }
-  private checkInvalidPN = async (uuid: string, n: ParsedPn) => {
-    if (!uuid || !n) {
-      return
-    }
-    await accountStore.waitStorageLoaded()
-    if (getAuthStore().findAccountByPn(n)) {
-      return
-    }
-    this.onCallKeepEndCall(uuid)
-    removePnTokenViaSip(n)
   }
   @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
@@ -707,7 +692,7 @@ export class CallStore {
   @observable videoPositionL = 5
 }
 
-export const callStore = new CallStore() as Immutable<CallStore>
+export const callStore = new CallStore()
 
 export type TCallkeepAction = 'answerCall' | 'rejectCall'
 type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>

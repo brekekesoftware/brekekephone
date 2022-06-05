@@ -2,8 +2,7 @@ import jsonStableStringify from 'json-stable-stringify'
 import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 
-import { removePnTokenViaSip } from '../api/sip'
-import { accountStore } from '../stores/accountStore'
+import { checkAndRemovePnTokenViaSip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
@@ -197,11 +196,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return
   }
 
-  await accountStore.waitStorageLoaded()
-  if (!getAuthStore().findAccountByPn(n)) {
-    removePnTokenViaSip(n)
-    return
-  }
+  checkAndRemovePnTokenViaSip(n, callStore)
 
   isLocal = Boolean(
     isLocal ||
