@@ -23,7 +23,7 @@ export type GetPalOptions = {
   _wn: string
   park: string[]
   voicemail: string
-  user: string
+  user?: string
   status: boolean
   secure_login_password: boolean
   phonetype: string

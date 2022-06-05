@@ -37,7 +37,7 @@ export class PBX extends EventEmitter {
       _wn: d.accessToken,
       park: p.parks || [],
       voicemail: 'self',
-      user: '*',
+      // user: '*',
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
