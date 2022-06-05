@@ -3,8 +3,8 @@ import './polyfill'
 import { runApp } from '..'
 import { getAuthStore } from '../stores/authStore'
 import {
+  Account,
   getAccountUniqueId,
-  Profile,
   profileStore,
 } from '../stores/profileStore'
 import { arrToMap } from '../utils/toMap'
@@ -25,7 +25,7 @@ type Options = {
   clear_existing_account?: boolean
   accounts: Account[]
 }
-const convertToStorage = (a: Account): Profile => {
+const convertToStorage = (a: Account): Account => {
   const p = profileStore.genEmptyProfile()
   p.pbxHostname = a.hostname || ''
   p.pbxPort = a.port || ''
@@ -37,7 +37,7 @@ const convertToStorage = (a: Account): Profile => {
   p.parkNames = a.parkNames || []
   return p
 }
-const copyToStorage = (fr: Profile, to: Profile) => {
+const copyToStorage = (fr: Account, to: Account) => {
   to.pbxHostname = fr.pbxHostname
   to.pbxPort = fr.pbxPort
   to.pbxTenant = fr.pbxTenant
@@ -58,8 +58,8 @@ const renderAsync = async (div: HTMLElement, o: Options) => {
   const profilesMap = arrToMap(
     profileStore.profiles,
     getAccountUniqueId,
-    (p: Profile) => p,
-  ) as { [k: string]: Profile }
+    (p: Account) => p,
+  ) as { [k: string]: Account }
   o.accounts.forEach(a => {
     const fr = convertToStorage(a)
     const to = profilesMap[getAccountUniqueId(fr)]

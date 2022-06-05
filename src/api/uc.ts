@@ -7,7 +7,7 @@ import { Platform } from 'react-native'
 import { getAuthStore } from '../stores/authStore'
 import { ChatFile } from '../stores/chatStore'
 import { UcUser } from '../stores/contactStore'
-import { Profile } from '../stores/profileStore'
+import { Account } from '../stores/profileStore'
 import { formatFileType } from '../utils/formatFileType'
 import {
   UcBuddy,
@@ -237,7 +237,7 @@ export class UC extends EventEmitter {
     })
   }
 
-  connect = (profile: Profile, ucHost: string) => {
+  connect = (profile: Account, ucHost: string) => {
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
     }

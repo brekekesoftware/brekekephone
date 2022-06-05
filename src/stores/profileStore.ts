@@ -17,7 +17,7 @@ const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
 
-export type Profile = {
+export type Account = {
   id: string
   pbxHostname: string
   pbxPort: string
@@ -66,16 +66,16 @@ export type ProfileData = {
 class ProfileStore {
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
 
-  @observable profiles: Profile[] = []
+  @observable profiles: Account[] = []
   @computed get profilesMap() {
-    return arrToMap(this.profiles, 'id', (p: Profile) => p) as {
-      [k: string]: Profile
+    return arrToMap(this.profiles, 'id', (p: Account) => p) as {
+      [k: string]: Account
     }
   }
   @observable profileData: ProfileData[] = []
   @observable profilesLoadedObservable = false
   profilesLoaded = () => profilesLoaded
-  genEmptyProfile = (): Profile => ({
+  genEmptyProfile = (): Account => ({
     id: newUuid(),
     pbxTenant: '',
     pbxUsername: '',
@@ -131,10 +131,10 @@ class ProfileStore {
       })
     }
   }
-  @action upsertProfile = (p: Partial<Profile>) => {
+  @action upsertProfile = (p: Partial<Account>) => {
     const p1 = this.profiles.find(p0 => p0.id === p.id)
     if (!p1) {
-      this.profiles.push(p as Profile)
+      this.profiles.push(p as Account)
     } else {
       const p0 = { ...p1 } // Clone before assign
       Object.assign(p1, p)
@@ -174,7 +174,7 @@ class ProfileStore {
       })
     }
   }
-  getProfileData = (p?: Profile) => {
+  getProfileData = (p?: Account) => {
     if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
       return {
         id: '',
@@ -214,7 +214,7 @@ class ProfileStore {
   )
 }
 
-export const getAccountUniqueId = (p: Profile) =>
+export const getAccountUniqueId = (p: Account) =>
   stringify({
     u: p.pbxUsername,
     t: p.pbxTenant,
@@ -225,6 +225,6 @@ export const getAccountUniqueId = (p: Profile) =>
 export const profileStore = new ProfileStore()
 
 export type TProfileDataInStorage = {
-  profiles: Profile[]
+  profiles: Account[]
   profileData: ProfileData[]
 }

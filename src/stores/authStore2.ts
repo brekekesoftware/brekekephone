@@ -14,11 +14,11 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { authSIP } from './AuthSIP'
-import { compareProfile, setAuthStore } from './authStore'
+import { compareAccount, setAuthStore } from './authStore'
 import { callStore } from './callStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
-import { getAccountUniqueId, Profile, profileStore } from './profileStore'
+import { Account, getAccountUniqueId, profileStore } from './profileStore'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 
@@ -92,8 +92,8 @@ export class AuthStore {
     ].some(s => s === 'failure')
   }
 
-  private findProfile = (p: Partial<Profile>) => {
-    return profileStore.profiles.find(p0 => compareProfile(p0, p))
+  private findProfile = (p: Partial<Account>) => {
+    return profileStore.profiles.find(p0 => compareAccount(p0, p))
   }
   findProfileByPn = (n: ParsedPn) => {
     return this.findProfile({

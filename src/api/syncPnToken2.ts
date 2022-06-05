@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 
-import { Profile, profileStore } from '../stores/profileStore'
+import { Account, profileStore } from '../stores/profileStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { PBX } from './pbx'
@@ -8,7 +8,7 @@ import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
 
 const syncPnTokenWithoutCatch = async (
-  p: Profile,
+  p: Account,
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   if (Platform.OS === 'web') {
@@ -100,7 +100,7 @@ export interface SyncPnTokenOption {
   onError?: (err: Error) => void
 }
 
-const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
+const syncPnToken = (p: Account, o: SyncPnTokenOption = {}) => {
   return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
     profileStore.pnSyncLoadingMap[p.id] = false
     if (o.onError) {

@@ -6,7 +6,7 @@ import { Platform, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
-import { Profile, profileStore } from '../stores/profileStore'
+import { Account, profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -14,7 +14,7 @@ import { Layout } from './Layout'
 import { RnText } from './Rn'
 
 export const ProfileCreateForm: FC<{
-  updatingProfile?: Profile
+  updatingProfile?: Account
   onBack: Function
   onSave: Function
   footerLogout?: boolean
@@ -34,7 +34,7 @@ export const ProfileCreateForm: FC<{
         title: intl`Reset`,
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
-          $.set('profile', (p: Profile) => ({
+          $.set('profile', (p: Account) => ({
             ...profileStore.genEmptyProfile(),
             ...cloneDeep(props.updatingProfile),
             id: p.id,
@@ -45,7 +45,7 @@ export const ProfileCreateForm: FC<{
     },
     //
     onAddingParkSubmit: () => {
-      $.set('profile', (p: Profile) => {
+      $.set('profile', (p: Account) => {
         p.parks = p.parks || []
         p.parkNames = p.parkNames || []
         if ($.addingPark.name && $.addingPark.number) {
@@ -74,7 +74,7 @@ export const ProfileCreateForm: FC<{
           </>
         ),
         onConfirm: () => {
-          $.set('profile', (p: Profile) => {
+          $.set('profile', (p: Account) => {
             p.parks = p.parks?.filter((p0, i0) => i0 !== i)
             return p
           })
@@ -227,7 +227,7 @@ export const ProfileCreateForm: FC<{
             name: 'ucEnabled',
             label: intl`UC`,
             onValueChange: (v: boolean) => {
-              $.set('profile', (p: Profile) => {
+              $.set('profile', (p: Account) => {
                 p.ucEnabled = v
                 return p
               })

@@ -6,7 +6,7 @@ import EventEmitter from 'eventemitter3'
 import { asComponent } from '../asComponent/asComponent'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser } from '../stores/contactStore'
-import { Profile, profileStore } from '../stores/profileStore'
+import { Account, profileStore } from '../stores/profileStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
 import { Pbx } from './brekekejs'
@@ -18,7 +18,7 @@ export class PBX extends EventEmitter {
   // wait auth state to success
   needToWait = true
 
-  connect = async (p: Profile) => {
+  connect = async (p: Account) => {
     console.error('PBX PN debug: call pbx.connect')
     if (this.client) {
       // return Promise.reject(new Error('PAL client is connected'))
