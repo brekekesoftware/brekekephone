@@ -28,7 +28,7 @@ import { mdiFolderPlus } from '../assets/icons'
 import { RnText } from '../components/RnText'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getAuthStore } from '../stores/authStore'
-import { profileStore } from '../stores/profileStore'
+import { accountStore } from '../stores/accountStore'
 
 export const css = StyleSheet.create({
   listHeaderSection: {
@@ -61,7 +61,7 @@ export class PageContactEdit extends Component {
   state = { didMount: false }
 
   componentDidMount = () => {
-    if (getAuthStore().currentProfile?.ucEnabled) {
+    if (getAuthStore().currentAccount?.ucEnabled) {
       userStore.loadUcBuddyList(true)
     } else {
       userStore.loadPbxBuddyList(true)
@@ -145,7 +145,7 @@ export class PageContactEdit extends Component {
   }
 
   onGoBack = () => {
-    if (getAuthStore().currentProfile?.ucEnabled) {
+    if (getAuthStore().currentAccount?.ucEnabled) {
       userStore.loadUcBuddyList()
     }
     RnDropdownSectionList.closeDropdown()
@@ -269,7 +269,7 @@ export class PageContactEdit extends Component {
     }
   }
   onSaveSuccess = () => {
-    profileStore.saveProfilesToLocalStorage()
+    accountStore.saveAccountsToLocalStorage()
     userStore.updateDisplayGroupList()
     this.onGoBack()
   }

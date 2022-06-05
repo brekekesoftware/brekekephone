@@ -110,7 +110,7 @@ export class Call {
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
     // We dont want to display incoming call here again
-    if (getAuthStore().currentProfile?.pushNotificationEnabled) {
+    if (getAuthStore().currentAccount?.pushNotificationEnabled) {
       return
     }
     this.callkeepUuid = newUuid().toUpperCase()

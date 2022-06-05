@@ -51,7 +51,7 @@ class Api {
     s.pbxTotalFailure = 0
     await waitSip()
     await pbx.getConfig()
-    const cp = s.currentProfile
+    const cp = s.currentAccount
     if (!cp) {
       return
     }

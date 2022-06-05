@@ -51,7 +51,7 @@ export class PageSettingsOther extends Component {
       })
   }
   render() {
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}

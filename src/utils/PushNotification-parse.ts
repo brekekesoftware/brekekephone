@@ -3,10 +3,10 @@ import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 
 import { removePnTokenViaSip } from '../api/sip'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -172,7 +172,7 @@ const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
 export const signInByLocalNotification = (n: ParsedPn) => {
   const as = getAuthStore()
-  const p = as.findProfileByPn(n)
+  const p = as.findAccountByPn(n)
   if (as.signedInId === p?.id) {
     as.resetFailureState()
   }
@@ -197,8 +197,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     return
   }
 
-  await profileStore.profilesLoaded()
-  if (!getAuthStore().findProfileByPn(n)) {
+  await accountStore.waitStorageLoaded()
+  if (!getAuthStore().findAccountByPn(n)) {
     removePnTokenViaSip(n)
     return
   }
@@ -246,7 +246,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!n.isCall) {
     console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
     return AppState.currentState !== 'active' ||
-      getAuthStore().currentProfile?.pbxUsername !== n.to
+      getAuthStore().currentAccount?.pbxUsername !== n.to
       ? n
       : null
   }

@@ -9,13 +9,13 @@ import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { userStore } from '../stores/userStore'
 import { DelayFlag } from '../utils/DelayFlag'
 import { filterTextOnly } from '../utils/formatChatContent'
@@ -76,13 +76,13 @@ export class PageContactUsers extends Component {
   }
 
   componentDidUpdate() {
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (this.displayOfflineUsers.enabled !== cp?.displayOfflineUsers) {
       this.displayOfflineUsers.setEnabled(cp?.displayOfflineUsers)
     }
   }
   getDescription = (isUserSelectionMode: boolean) => {
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (!cp) {
       return ''
     }
@@ -120,13 +120,13 @@ export class PageContactUsers extends Component {
   renderUserSelectionMode = () => {
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
     const isShowOfflineUser =
-      !getAuthStore().currentProfile?.ucEnabled ||
+      !getAuthStore().currentAccount?.ucEnabled ||
       this.displayOfflineUsers.enabled
     const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
     return <ContactSectionList sectionListData={displayUsers} />
   }
   renderAllUserMode = () => {
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (!cp) {
       return null
     }
@@ -176,7 +176,7 @@ export class PageContactUsers extends Component {
 
   render() {
     const s = getAuthStore()
-    const cp = s.currentProfile
+    const cp = s.currentAccount
     if (!cp) {
       return null
     }
@@ -203,11 +203,11 @@ export class PageContactUsers extends Component {
           }}
           value={contactStore.usersSearchTerm}
         />
-        {getAuthStore().currentProfile?.ucEnabled && (
+        {getAuthStore().currentAccount?.ucEnabled && (
           <Field
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={(v: boolean) => {
-              profileStore.upsertProfile({
+              accountStore.upsertAccount({
                 id: getAuthStore().signedInId,
                 displayOfflineUsers: v,
               })
@@ -239,7 +239,7 @@ const RenderItemUser = observer(({ item, index }: ItemUser) => (
   <RnTouchableOpacity
     key={index}
     onPress={
-      getAuthStore().currentProfile?.ucEnabled
+      getAuthStore().currentAccount?.ucEnabled
         ? () => Nav().goToPageChatDetail({ buddy: item.id })
         : undefined
     }

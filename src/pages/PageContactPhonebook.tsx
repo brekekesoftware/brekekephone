@@ -17,12 +17,12 @@ import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -218,7 +218,7 @@ export class PageContactPhonebook extends Component {
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
             if (pbx.client && getAuthStore().pbxState === 'success') {
-              profileStore.upsertProfile({
+              accountStore.upsertAccount({
                 id: getAuthStore().signedInId,
                 displaySharedContacts: v,
               })
@@ -226,7 +226,7 @@ export class PageContactPhonebook extends Component {
             }
           }}
           type='Switch'
-          value={getAuthStore().currentProfile?.displaySharedContacts}
+          value={getAuthStore().currentAccount?.displaySharedContacts}
         />
         <View>
           {groups.map(gr => (

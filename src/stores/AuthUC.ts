@@ -44,7 +44,7 @@ class AuthUC {
     if (!c) {
       throw new Error('AuthUC.authWithoutCatch pbx.getConfig() undefined')
     }
-    const p = s.currentProfile
+    const p = s.currentAccount
     if (!p) {
       return
     }
@@ -82,13 +82,8 @@ class AuthUC {
     s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
   }
   @action private loadUsers = () => {
-    // const { ucEnabled } = getAuthStore().currentProfile
-    // if (ucEnabled) {
-    //   userStore.loadUcBuddyList()
-    // } else {
     const users = uc.getUsers()
     contactStore.ucUsers = users
-    // }
   }
   private loadUnreadChats = () =>
     uc

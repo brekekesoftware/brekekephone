@@ -48,7 +48,7 @@ export class PageCallParks extends Component<{
   }
 
   render() {
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (!cp) {
       return null
     }

@@ -16,6 +16,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import { SyncPnToken } from '../api/syncPnToken'
+import { accountStore } from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
@@ -26,7 +27,6 @@ import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
@@ -92,7 +92,7 @@ PushNotification.register(async () => {
   }
 
   setupCallKeep()
-  profileStore.loadProfilesFromLocalStorage().then(() => {
+  accountStore.loadAccountsFromLocalStorage().then(() => {
     if (AppState.currentState === 'active') {
       SyncPnToken().syncForAllAccounts()
     }
@@ -228,7 +228,7 @@ export const App = observer(() => {
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
 
-      {!profileStore.profilesLoadedObservable && (
+      {!accountStore.storageLoadedObservable && (
         <View style={css.LoadingFullscreen}>
           <ActivityIndicator size='small' color='white' />
         </View>

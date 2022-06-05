@@ -73,7 +73,7 @@ export const CallNotify = observer(() => {
   const Wrapper =
     k?.hasAction ||
     Platform.OS === 'web' ||
-    !getAuthStore().currentProfile?.pushNotificationEnabled
+    !getAuthStore().currentAccount?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
   return (

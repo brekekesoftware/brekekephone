@@ -13,12 +13,12 @@ import { RnAsyncStorage } from '../components/Rn'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
+import { Account, accountStore, getAccountUniqueId } from './accountStore'
 import { authSIP } from './AuthSIP'
 import { compareAccount, setAuthStore } from './authStore'
 import { callStore } from './callStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
-import { Account, getAccountUniqueId, profileStore } from './profileStore'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 
@@ -67,7 +67,7 @@ export class AuthStore {
 
   ucShouldAuth = () => {
     return (
-      this.currentProfile?.ucEnabled &&
+      this.currentAccount?.ucEnabled &&
       !this.ucLoginFromAnotherPlace &&
       !this.isSignInByNotification &&
       this.pbxState === 'success' &&
@@ -79,7 +79,7 @@ export class AuthStore {
   }
   ucConnectingOrFailure = () => {
     return (
-      this.currentProfile?.ucEnabled &&
+      this.currentAccount?.ucEnabled &&
       ['connecting', 'failure'].some(s => s === this.ucState)
     )
   }
@@ -88,15 +88,15 @@ export class AuthStore {
     return [
       this.pbxState,
       this.sipState,
-      this.currentProfile?.ucEnabled && this.ucState,
+      this.currentAccount?.ucEnabled && this.ucState,
     ].some(s => s === 'failure')
   }
 
-  private findProfile = (p: Partial<Account>) => {
-    return profileStore.profiles.find(p0 => compareAccount(p0, p))
+  private findAccount = (p: Partial<Account>) => {
+    return accountStore.accounts.find(p0 => compareAccount(p0, p))
   }
-  findProfileByPn = (n: ParsedPn) => {
-    return this.findProfile({
+  findAccountByPn = (n: ParsedPn) => {
+    return this.findAccount({
       ...n,
       pbxUsername: n.to,
       pbxTenant: n.tenant,
@@ -104,8 +104,8 @@ export class AuthStore {
   }
 
   @observable signedInId = ''
-  @computed get currentProfile() {
-    return profileStore.profiles.find(p => p.id === this.signedInId)
+  @computed get currentAccount() {
+    return accountStore.accounts.find(p => p.id === this.signedInId)
   }
 
   @observable ucConfig?: UcConfig
@@ -116,15 +116,15 @@ export class AuthStore {
   }
 
   @computed get currentData() {
-    return profileStore.getProfileData(this.currentProfile)
+    return accountStore.getAccountData(this.currentAccount)
   }
 
   signIn = (id: string) => {
-    const p = profileStore.profiles.find(_ => _.id === id)
+    const p = accountStore.accounts.find(_ => _.id === id)
     if (!p) {
       return false
     }
-    const d = profileStore.getProfileData(p)
+    const d = accountStore.getAccountData(p)
     if (!p.pbxPassword && !d.accessToken) {
       Nav().goToPageProfileUpdate({ id: p.id })
       RnAlert.error({
@@ -139,8 +139,8 @@ export class AuthStore {
   autoSignIn = async () => {
     const id = await RnAsyncStorage.getItem('lastSignedInId')
     const p =
-      profileStore.profiles.find(_ => getAccountUniqueId(_) === id) ||
-      profileStore.profiles[0]
+      accountStore.accounts.find(_ => getAccountUniqueId(_) === id) ||
+      accountStore.accounts[0]
     if (!p) {
       return
     }
@@ -210,7 +210,7 @@ export class AuthStore {
     if (this.currentData.recentCalls.length > 20) {
       this.currentData.recentCalls.pop()
     }
-    profileStore.saveProfilesToLocalStorage()
+    accountStore.saveAccountsToLocalStorage()
   }
 
   savePbxBuddyList = (pbxBuddyList: {
@@ -218,7 +218,7 @@ export class AuthStore {
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
     this.currentData.pbxBuddyList = pbxBuddyList
-    profileStore.saveProfilesToLocalStorage()
+    accountStore.saveAccountsToLocalStorage()
   }
 
   handleUrlParams = async () => {
@@ -230,7 +230,7 @@ export class AuthStore {
       return
     }
     //
-    await profileStore.profilesLoaded()
+    await accountStore.waitStorageLoaded()
     const urlParams = await getUrlParams()
     if (!urlParams) {
       return
@@ -241,7 +241,7 @@ export class AuthStore {
       return
     }
     //
-    const p = this.findProfile({
+    const p = this.findAccount({
       pbxUsername: user,
       pbxTenant: tenant,
       pbxHostname: host,
@@ -260,12 +260,12 @@ export class AuthStore {
         p.pbxPort = port
       }
       p.pbxPhoneIndex = `${phoneIdx}`
-      const d = profileStore.getProfileData(p)
+      const d = accountStore.getAccountData(p)
       if (_wn) {
         d.accessToken = _wn
       }
       //
-      profileStore.upsertProfile(p)
+      accountStore.upsertAccount(p)
       if (p.pbxPassword || d.accessToken) {
         this.signIn(p.id)
       } else {
@@ -275,16 +275,16 @@ export class AuthStore {
     }
     //
     const newP = {
-      ...profileStore.genEmptyProfile(),
+      ...accountStore.genEmptyAccount(),
       pbxTenant: tenant,
       pbxUsername: user,
       pbxHostname: host,
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
-    const d = profileStore.getProfileData(newP)
+    const d = accountStore.getAccountData(newP)
     //
-    profileStore.upsertProfile(newP)
+    accountStore.upsertAccount(newP)
     if (d.accessToken) {
       this.signIn(newP.id)
     } else {
@@ -315,9 +315,9 @@ export class AuthStore {
     )
     this.sipPn = n.sipPn
     this.resetFailureState()
-    await profileStore.profilesLoaded()
+    await accountStore.waitStorageLoaded()
     // Find account for the notification target
-    const p = this.findProfileByPn(n)
+    const p = this.findAccountByPn(n)
     if (!p?.id) {
       console.error('SIP PN debug: can not find account from notification')
       return false

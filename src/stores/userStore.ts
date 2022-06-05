@@ -5,10 +5,10 @@ import { DefaultSectionT, SectionListData } from 'react-native'
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { isUcBuddy, uc } from '../api/uc'
+import { accountStore } from './accountStore'
 import { getAuthStore, waitPbx, waitUc } from './authStore'
 import { contactStore } from './contactStore'
 import { intl } from './intl'
-import { profileStore } from './profileStore'
 
 const defaultBuddyMax = 100
 
@@ -33,7 +33,7 @@ class UserStore {
     this.resetCache()
     this.type = 'PbxBuddy'
     const s = getAuthStore()
-    const cp = s.currentProfile
+    const cp = s.currentAccount
     if (!cp) {
       return
     }
@@ -67,7 +67,7 @@ class UserStore {
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentProfile?.pbxLocalAllUsers
+      this.isSelectedAddAllUser = !!s.currentAccount?.pbxLocalAllUsers
     }
     this.isDisableAddAllUserToTheList = s.isBigMode
     this.buddyMax =
@@ -83,19 +83,19 @@ class UserStore {
     this.type = 'UcBuddy'
     const userList = uc.client.getBuddylist()
     const configProperties = uc.client.getConfigProperties()
-    const profile = uc.client.getProfile()
+    const p = uc.client.getProfile()
     let allUsers: UcBuddy[] = []
     if (isAllUser) {
       allUsers = uc.client
         .getAllUsers()
-        .user?.filter(u => !u.disabledBuddy && u.user_id !== profile.user_id)
+        .user?.filter(u => !u.disabledBuddy && u.user_id !== p.user_id)
         .map(
           user =>
             ({
               user_id: user.user_id,
               name: user.user_name,
               group: configProperties.buddy_mode === 1 ? user.user_group : '',
-              tenant: profile.tenant,
+              tenant: p.tenant,
             } as UcBuddy),
         )
     }
@@ -103,7 +103,7 @@ class UserStore {
     if (s.isBigMode) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentProfile?.pbxLocalAllUsers
+      this.isSelectedAddAllUser = !!s.currentAccount?.pbxLocalAllUsers
     }
     this.isDisableAddAllUserToTheList =
       s.isBigMode ||
@@ -229,8 +229,8 @@ class UserStore {
     }
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
     const s = getAuthStore()
-    profileStore.upsertProfile({
-      id: s.currentProfile?.id,
+    accountStore.upsertAccount({
+      id: s.currentAccount?.id,
       pbxLocalAllUsers: this.isSelectedAddAllUser,
     })
   }
@@ -280,7 +280,7 @@ class UserStore {
     renderData: readonly UcBuddy[],
     isEditMode?: boolean,
   ) => {
-    if (!getAuthStore().currentProfile?.ucEnabled) {
+    if (!getAuthStore().currentAccount?.ucEnabled) {
       return `(${renderData.length})`
     }
 

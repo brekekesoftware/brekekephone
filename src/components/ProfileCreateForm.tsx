@@ -4,9 +4,9 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { Platform, View } from 'react-native'
 
+import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
-import { Account, profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -24,7 +24,7 @@ export const ProfileCreateForm: FC<{
   const m = () => ({
     observable: {
       profile: {
-        ...profileStore.genEmptyProfile(),
+        ...accountStore.genEmptyAccount(),
         ...cloneDeep(props.updatingProfile),
       },
       addingPark: { name: '', number: '' },
@@ -35,7 +35,7 @@ export const ProfileCreateForm: FC<{
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
           $.set('profile', (p: Account) => ({
-            ...profileStore.genEmptyProfile(),
+            ...accountStore.genEmptyAccount(),
             ...cloneDeep(props.updatingProfile),
             id: p.id,
           }))
@@ -83,7 +83,7 @@ export const ProfileCreateForm: FC<{
     },
     //
     hasUnsavedChanges: () => {
-      const p = props.updatingProfile || profileStore.genEmptyProfile()
+      const p = props.updatingProfile || accountStore.genEmptyAccount()
       if (!props.updatingProfile) {
         Object.assign(p, {
           id: $.profile.id,

@@ -1,16 +1,16 @@
 import './polyfill'
 
 import { runApp } from '..'
-import { getAuthStore } from '../stores/authStore'
 import {
   Account,
+  accountStore,
   getAccountUniqueId,
-  profileStore,
-} from '../stores/profileStore'
+} from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
 import { arrToMap } from '../utils/toMap'
 import { asComponent } from './asComponent'
 
-type Account = {
+type ComponentAccount = {
   hostname: string
   port: string
   tenant?: string
@@ -23,10 +23,10 @@ type Account = {
 type Options = {
   auto_login?: boolean
   clear_existing_account?: boolean
-  accounts: Account[]
+  accounts: ComponentAccount[]
 }
-const convertToStorage = (a: Account): Account => {
-  const p = profileStore.genEmptyProfile()
+const convertToStorage = (a: ComponentAccount): Account => {
+  const p = accountStore.genEmptyAccount()
   p.pbxHostname = a.hostname || ''
   p.pbxPort = a.port || ''
   p.pbxTenant = a.tenant || ''
@@ -50,26 +50,26 @@ const copyToStorage = (fr: Account, to: Account) => {
 
 const renderAsync = async (div: HTMLElement, o: Options) => {
   runApp(div)
-  await profileStore.profilesLoaded()
+  await accountStore.waitStorageLoaded()
   if (o.clear_existing_account) {
-    profileStore.profiles = []
-    profileStore.profileData = []
+    accountStore.accounts = []
+    accountStore.accountData = []
   }
-  const profilesMap = arrToMap(
-    profileStore.profiles,
+  const accountsMap = arrToMap(
+    accountStore.accounts,
     getAccountUniqueId,
     (p: Account) => p,
   ) as { [k: string]: Account }
   o.accounts.forEach(a => {
     const fr = convertToStorage(a)
-    const to = profilesMap[getAccountUniqueId(fr)]
+    const to = accountsMap[getAccountUniqueId(fr)]
     if (to) {
       copyToStorage(fr, to)
     } else {
-      profileStore.profiles.push(fr)
+      accountStore.accounts.push(fr)
     }
   })
-  await profileStore.saveProfilesToLocalStorage()
+  await accountStore.saveAccountsToLocalStorage()
   if (o.auto_login) {
     await getAuthStore().autoSignIn()
   }

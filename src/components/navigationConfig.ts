@@ -3,11 +3,11 @@ import {
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/toMap'
 
@@ -109,7 +109,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().currentProfile?.ucEnabled) {
+        if (s.ucRequired && !getAuthStore().currentAccount?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
@@ -119,7 +119,7 @@ const genMenus = () => {
       }
     })
     m.navFn = () => {
-      let k = getAuthStore().currentProfile?.navSubMenus?.[i]
+      let k = getAuthStore().currentAccount?.navSubMenus?.[i]
       if (!k) {
         return
       }
@@ -145,7 +145,7 @@ export const menus = () => {
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const p = getAuthStore().currentProfile
+  const p = getAuthStore().currentAccount
   if (!m || !p) {
     return
   }
@@ -157,11 +157,11 @@ const saveNavigation = (i: number, k: string) => {
     p.navIndex = i
   }
   p.navSubMenus[i] = k
-  profileStore.saveProfilesToLocalStorage()
+  accountStore.saveAccountsToLocalStorage()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const p = getAuthStore().currentProfile
+  const p = getAuthStore().currentAccount
   if (!p) {
     return
   }
@@ -188,6 +188,6 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !getAuthStore().currentProfile?.ucEnabled),
+    s => !(s.ucRequired && !getAuthStore().currentAccount?.ucEnabled),
   )
 }

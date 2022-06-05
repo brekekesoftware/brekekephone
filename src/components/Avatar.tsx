@@ -55,7 +55,7 @@ export const Avatar = observer(
         <View style={css.ImageOuter}>
           <RnImage source={imgSource} style={css.Image} />
         </View>
-        {getAuthStore().currentProfile?.ucEnabled &&
+        {getAuthStore().currentAccount?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
               color={statusMapColor[status as keyof typeof statusMapColor]}

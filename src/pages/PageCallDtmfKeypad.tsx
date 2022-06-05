@@ -41,7 +41,7 @@ export class PageCallDtmfKeypad extends Component {
 
   sendKey = (key: string) => {
     const c = callStore.getCurrentCall()
-    const cp = getAuthStore().currentProfile
+    const cp = getAuthStore().currentAccount
     if (!c || !cp) {
       return
     }
