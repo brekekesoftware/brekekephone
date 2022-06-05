@@ -1,3 +1,8 @@
+#### 2.10.2
+
+- Remove user=\* in pal construction
+- Remove PN token via sip header if no account match
+
 #### 2.10.1
 
 - Fix 547: UC chat display name empty in some case
