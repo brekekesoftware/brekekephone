@@ -199,12 +199,6 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
 
   checkAndRemovePnTokenViaSip(n, callStore)
 
-  await accountStore.waitStorageLoaded()
-  if (!getAuthStore().findAccountByPn(n)) {
-    console.log('checkAndRemovePnTokenViaSip debug: account not exist')
-    return
-  }
-
   isLocal = Boolean(
     isLocal ||
       raw.my_custom_data ||
