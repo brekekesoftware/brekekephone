@@ -201,7 +201,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
 
   await accountStore.waitStorageLoaded()
   if (!getAuthStore().findAccountByPn(n)) {
-    console.error('removePnTokenViaSip PN exist account')
+    console.log('checkAndRemovePnTokenViaSip debug: account not exist')
     return
   }
 
