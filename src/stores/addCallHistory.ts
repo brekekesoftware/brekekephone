@@ -6,13 +6,15 @@ import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
 import { ParsedPn } from '../utils/PushNotification-parse'
+import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
 import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
-export const addCallHistory = (c: Call | ParsedPn) => {
+export const addCallHistory = async (c: Call | ParsedPn) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
+
   if (isTypeCall && c.partyNumber === '8') {
     // voice mail
     return
@@ -24,6 +26,14 @@ export const addCallHistory = (c: Call | ParsedPn) => {
     }
     alreadyAddHistoryMap[pnId] = true
   }
+
+  await accountStore.waitStorageLoaded()
+  const as = getAuthStore()
+  if (!isTypeCall && !as.findAccountByPn(c)) {
+    console.log('checkAndRemovePnTokenViaSip debug: account not exist')
+    return
+  }
+
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const info = isTypeCall
@@ -49,7 +59,7 @@ export const addCallHistory = (c: Call | ParsedPn) => {
         // -> B got cancel event from sip
         isAboutToHangup: false,
       }
-  getAuthStore().pushRecentCall(info)
+  as.pushRecentCall(info)
   presentNotification(info)
 }
 
