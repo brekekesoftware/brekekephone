@@ -188,7 +188,7 @@ export const App = observer(() => {
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
-      <AudioPlayer />
+      {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize

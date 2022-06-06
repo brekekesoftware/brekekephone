@@ -38,7 +38,7 @@ export const checkAndRemovePnTokenViaSip = async (
   console.log('checkAndRemovePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
   phone.startWebRTC({
-    // register: false,
+    register: false,
     url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
     tls: true,
     user: n.sipPn.phoneId,

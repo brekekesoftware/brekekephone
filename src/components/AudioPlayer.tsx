@@ -1,8 +1,5 @@
-import { observer } from 'mobx-react'
 import { StyleSheet } from 'react-native'
 import Video from 'react-native-video'
-
-import { chatStore } from '../stores/chatStore'
 
 const css = StyleSheet.create({
   video: {
@@ -13,14 +10,12 @@ const css = StyleSheet.create({
     right: 0,
   },
 })
-export const AudioPlayer = observer(() => {
-  return chatStore.chatNotificationSoundRunning ? (
-    <Video
-      source={require('../assets/ding.mp3')}
-      style={css.video}
-      // ignoreSilentSwitch="ignore"
-      // playInBackground={true}
-      // playWhenInactive={true}
-    />
-  ) : null
-})
+export const AudioPlayer = () => (
+  <Video
+    source={require('../assets/ding.mp3')}
+    style={css.video}
+    // ignoreSilentSwitch="ignore"
+    // playInBackground={true}
+    // playWhenInactive={true}
+  />
+)
