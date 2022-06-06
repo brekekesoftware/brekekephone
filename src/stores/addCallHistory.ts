@@ -15,13 +15,6 @@ const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const addCallHistory = async (c: Call | ParsedPn) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
 
-  if (!isTypeCall) {
-    await accountStore.waitStorageLoaded()
-    if (!getAuthStore().findAccountByPn(c)) {
-      console.log('checkAndRemovePnTokenViaSip debug: account not exist')
-      return
-    }
-  }
   if (isTypeCall && c.partyNumber === '8') {
     // voice mail
     return
@@ -32,6 +25,13 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
       return
     }
     alreadyAddHistoryMap[pnId] = true
+  }
+
+  await accountStore.waitStorageLoaded()
+  const as = getAuthStore()
+  if (!isTypeCall && !as.findAccountByPn(c)) {
+    console.log('checkAndRemovePnTokenViaSip debug: account not exist')
+    return
   }
 
   const id = newUuid()
@@ -59,7 +59,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         // -> B got cancel event from sip
         isAboutToHangup: false,
       }
-  getAuthStore().pushRecentCall(info)
+  as.pushRecentCall(info)
   presentNotification(info)
 }
 
