@@ -3,6 +3,7 @@ import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
@@ -197,6 +198,12 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
 
   checkAndRemovePnTokenViaSip(n, callStore)
+
+  await accountStore.waitStorageLoaded()
+  if (!getAuthStore().findAccountByPn(n)) {
+    console.error('removePnTokenViaSip PN exist account')
+    return
+  }
 
   isLocal = Boolean(
     isLocal ||
