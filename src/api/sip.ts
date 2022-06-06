@@ -35,7 +35,7 @@ export const checkAndRemovePnTokenViaSip = async (
     return
   }
   alreadyRemovePnTokenViaSip[k] = true
-  console.log('removePnTokenViaSip debug: begin')
+  console.log('checkAndRemovePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
   phone.startWebRTC({
     // register: false,
@@ -56,13 +56,13 @@ export const checkAndRemovePnTokenViaSip = async (
   const o = phone._ua?.registrator?.()!
   if (!started || !o) {
     console.log(
-      `removePnTokenViaSip debug: started=${started} registrator=${!!o}`,
+      `checkAndRemovePnTokenViaSip debug: started=${started} registrator=${!!o}`,
     )
   }
   o._registered = true
   o.setExtraHeaders(['X-PN-Manage: remove'])
   phone.stopWebRTC()
-  console.log('removePnTokenViaSip debug: done')
+  console.log('checkAndRemovePnTokenViaSip debug: done')
 }
 
 export class SIP extends EventEmitter {
