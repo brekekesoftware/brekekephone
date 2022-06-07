@@ -30,7 +30,9 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
   await accountStore.waitStorageLoaded()
   const as = getAuthStore()
   if (!isTypeCall && !as.findAccountByPn(c)) {
-    console.log('checkAndRemovePnTokenViaSip debug: account not exist')
+    console.log(
+      'checkAndRemovePnTokenViaSip debug: do not add history account not exist',
+    )
     return
   }
 

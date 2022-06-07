@@ -3,6 +3,7 @@ import get from 'lodash/get'
 import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
@@ -240,10 +241,22 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   if (!n.isCall) {
     console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
-    return AppState.currentState !== 'active' ||
-      getAuthStore().currentAccount?.pbxUsername !== n.to
-      ? n
-      : null
+    await accountStore.waitStorageLoaded()
+    const as = getAuthStore()
+    if (!as.findAccountByPn(n)) {
+      console.log(
+        'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
+      )
+      return
+    }
+    // App currently active and already logged in using this account
+    if (
+      AppState.currentState === 'active' &&
+      as.currentAccount?.pbxUsername === n.to
+    ) {
+      return
+    }
+    return n
   }
   console.error('SIP PN debug: call signInByNotification')
   getAuthStore().signInByNotification(n)
