@@ -212,13 +212,13 @@ export class PageCallManage extends Component<{
     const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
     return (
       <View style={css.Image_wrapper}>
-        {isShowAvatar && (
+        {isShowAvatar ? (
           <Image
             source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
             style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
             resizeMode={'cover'}
           />
-        )}
+        ) : null}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           {!incoming && (
             <RnText title white center numberOfLines={2}>
