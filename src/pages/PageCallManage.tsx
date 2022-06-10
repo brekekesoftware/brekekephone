@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
-import { Image, Platform, StyleSheet, View } from 'react-native'
+import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native'
 
 import {
   mdiAlphaPCircle,
@@ -35,6 +35,7 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
+const height = Dimensions.get('window').height
 const css = StyleSheet.create({
   Video: {
     position: 'absolute',
@@ -97,7 +98,7 @@ const css = StyleSheet.create({
     marginHorizontal: 15,
     flexDirection: 'column',
     alignItems: 'center',
-    height: '30%',
+    height: (height * 30) / 100,
   },
 
   ImageSize: {
@@ -108,10 +109,12 @@ const css = StyleSheet.create({
 
   ImageLargeSize: {
     height: '100%',
-    width: '85%',
+    width: (height * 30) / 100,
     backgroundColor: 'white',
   },
-
+  styleTextBottom: {
+    marginTop: 20,
+  },
   Hangup_avoidAvatar: {
     top: '35%',
   },
@@ -206,15 +209,17 @@ export class PageCallManage extends Component<{
     }
     const incoming = c.incoming && !c.answered
     const isLarge = c.partyImageSize && c.partyImageSize === 'large'
-
+    const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
     return (
       <View style={css.Image_wrapper}>
-        <Image
-          source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
-          style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
-          resizeMode={isLarge ? 'contain' : 'cover'}
-        />
-        <View>
+        {isShowAvatar ? (
+          <Image
+            source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
+            style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
+            resizeMode={'cover'}
+          />
+        ) : null}
+        <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           {!incoming && (
             <RnText title white center numberOfLines={2}>
               {`${c.computedName}`}

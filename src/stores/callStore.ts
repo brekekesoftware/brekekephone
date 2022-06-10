@@ -127,10 +127,11 @@ export class CallStore {
         (!call.partyImageUrl || call.partyImageUrl?.length === 0)
       ) {
         const ucEnabled = getAuthStore()?.currentAccount?.ucEnabled
-        call.partyImageUrl = ucEnabled
-          ? userStore.getBuddyById(call.partyNumber)?.profile_image_url || ''
-          : this.getOriginalUserImageUrl(call.pbxTenant, call.computedName)
-        call.partyImageSize = !ucEnabled ? 'large' : ''
+        call.partyImageUrl = this.getOriginalUserImageUrl(
+          call.pbxTenant,
+          call.partyNumber,
+        )
+        call.partyImageSize = ucEnabled ? 'large' : ''
       }
       if (
         call.answered &&
@@ -138,7 +139,7 @@ export class CallStore {
       ) {
         call.talkingImageUrl = this.getOriginalUserImageUrl(
           call.pbxTenant,
-          call.computedName,
+          call.partyNumber,
         )
       }
     }
