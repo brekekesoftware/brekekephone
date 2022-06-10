@@ -3,6 +3,8 @@
 - Reduce console error, use log instead for debug purpose
 - Some fixes remove PN token via sip header
 - Some fixes UC chat image url resolver
+- Allow loud speaker on early media
+- Fix issue ios no audio on early media
 
 #### 2.10.2
 
