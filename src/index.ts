@@ -20,7 +20,7 @@ configure({
   disableErrorBoundaries: false,
 })
 onReactionError((err: Error) => {
-  console.error(err)
+  console.error('onEractionError', err)
 })
 
 setCallStore(callStore)

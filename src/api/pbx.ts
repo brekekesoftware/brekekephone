@@ -19,7 +19,7 @@ export class PBX extends EventEmitter {
   needToWait = true
 
   connect = async (p: Account) => {
-    console.error('PBX PN debug: call pbx.connect')
+    console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
       // return Promise.reject(new Error('PAL client is connected'))
       // TODO
@@ -43,7 +43,7 @@ export class PBX extends EventEmitter {
       phonetype: 'webphone',
     })
     this.client = client
-    console.error('PBX PN debug: construct pbx.client')
+    console.log('PBX PN debug: construct pbx.client')
 
     client.call_pal = ((method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
@@ -155,7 +155,7 @@ export class PBX extends EventEmitter {
     if (this.client) {
       this.client.close()
       this.client = undefined
-      console.error('PBX PN debug: pbx.client set to null')
+      console.log('PBX PN debug: pbx.client set to null')
     }
     this.clearConnectTimeoutId()
   }
@@ -677,7 +677,7 @@ export class PBX extends EventEmitter {
         key,
       })
       .catch((err: Error) => {
-        console.error('addWebPnToken:', err)
+        console.error('pbx.addWebPnToken:', err)
       })
     return true
   }

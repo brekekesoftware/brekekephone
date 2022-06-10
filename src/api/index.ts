@@ -45,7 +45,7 @@ class Api {
   }
 
   @action onPBXConnectionStarted = async () => {
-    console.error('PBX PN debug: set pbxState success')
+    console.log('PBX PN debug: set pbxState success')
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
@@ -101,7 +101,7 @@ class Api {
   }
 
   @action onSIPConnectionStarted = () => {
-    console.error('SIP PN debug: set sipState success')
+    console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     const s = getAuthStore()
     s.sipPn.sipAuth = ''
@@ -112,17 +112,17 @@ class Api {
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     const s = getAuthStore()
     if (!e?.reason && !e?.response) {
-      console.error('SIP PN debug: set sipState stopped')
+      console.log('SIP PN debug: set sipState stopped')
       getAuthStore().sipState = 'stopped'
       s.sipTotalFailure += 1
     } else {
-      console.error('SIP PN debug: set sipState failure stopped')
+      console.log('SIP PN debug: set sipState failure stopped')
       s.sipState = 'failure'
       s.sipTotalFailure += 1
     }
   }
   onSIPConnectionTimeout = () => {
-    console.error('SIP PN debug: set sipState failure timeout')
+    console.log('SIP PN debug: set sipState failure timeout')
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
     sip.stopWebRTC()

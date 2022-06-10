@@ -166,7 +166,7 @@ export class AuthStore {
   @action private resetState = () => {
     this.signedInId = ''
     this.pbxState = 'stopped'
-    console.error('SIP PN debug: set sipState stopped sign out')
+    console.log('SIP PN debug: set sipState stopped sign out')
     this.sipState = 'stopped'
     this.sipPn = {}
     sip.stopWebRTC()
@@ -186,7 +186,7 @@ export class AuthStore {
     this.pbxState = 'stopped'
   }
   @action reconnectSip = () => {
-    console.error('SIP PN debug: set sipState stopped reconnect')
+    console.log('SIP PN debug: set sipState stopped reconnect')
     this.resetFailureState()
     this.sipState = 'stopped'
     // Mobx observe not call automatically?
@@ -310,7 +310,7 @@ export class AuthStore {
   )
 
   @action signInByNotification = async (n: ParsedPn) => {
-    console.error(
+    console.log(
       `SIP PN debug: signInByNotification pnId=${n.id} token=${n.sipPn.sipAuth}`,
     )
     this.sipPn = n.sipPn
@@ -319,7 +319,7 @@ export class AuthStore {
     // Find account for the notification target
     const p = this.findAccountByPn(n)
     if (!p?.id) {
-      console.error('SIP PN debug: can not find account from notification')
+      console.log('SIP PN debug: can not find account from notification')
       return false
     }
     // Use isSignInByNotification to disable UC auto sign in for a while

@@ -122,7 +122,7 @@ export const parseNotificationData = (raw: object) => {
   })
 
   n.id = get(n, 'pn-id')
-  n.pbxHostname = get(n, 'host')
+  n.pbxHostname = n.pbxHostname || get(n, 'host')
 
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
@@ -184,21 +184,25 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
     return
   }
-
-  const rawId = raw['id'] as string | undefined
-  if (rawId?.startsWith('missedcall')) {
-    // Nav after signin in App.tsx mobx observe?
-    Nav().customPageIndex = Nav().goToPageCallRecents
-    waitTimeout().then(Nav().goToPageCallRecents)
-  }
-
   const n = parseNotificationData(raw)
   if (!n) {
     return
   }
-
-  checkAndRemovePnTokenViaSip(n, callStore)
-
+  const accountExist = await checkAndRemovePnTokenViaSip(n, callStore)
+  //
+  // Handle duplicated pn on android
+  if (Platform.OS === 'android') {
+    const k = n.id || jsonStableStringify(raw)
+    if (androidAlreadyProccessedPn[k]) {
+      console.log(
+        `SIP PN debug: PushNotification-parse: already processed k=${k}`,
+      )
+      return
+    }
+    androidAlreadyProccessedPn[k] = true
+  }
+  //
+  // Update isLocal
   isLocal = Boolean(
     isLocal ||
       raw.my_custom_data ||
@@ -206,44 +210,34 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       n.my_custom_data ||
       n.is_local_notification,
   )
-
-  if (Platform.OS === 'android') {
-    // handle duplicated pn
-    const k = n.id || jsonStableStringify(raw)
-    if (androidAlreadyProccessedPn[k]) {
-      console.error(
-        `SIP PN debug: PushNotification-parse: already processed k=${k}`,
-      )
-      return
-    }
-    androidAlreadyProccessedPn[k] = true
-  }
-
-  if (n.callkeepAt) {
-    console.error(
-      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
-    )
-  }
-  if (isLocal) {
+  //
+  // Handle nav on notification
+  const rawId = raw['id'] as string | undefined
+  const nav = Nav()
+  if (!accountExist) {
+    // Do nothing
+  } else if (rawId?.startsWith('missedcall')) {
+    // Missed call local notification
+    nav.customPageIndex = nav.goToPageCallRecents
+    waitTimeout().then(Nav().goToPageCallRecents)
+  } else if (isLocal) {
+    // Chat local notification
     signInByLocalNotification(n)
-    if (!rawId?.startsWith('missedcall')) {
-      const nav = Nav()
-      if (n.threadId && n.threadId.length > 0) {
-        nav.customPageIndex = nav.goToPageChatDetail
-        waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
-      } else {
-        nav.customPageIndex = nav.goToPageChatRecents
-        waitTimeout().then(nav.goToPageChatRecents)
-      }
+    if (n.threadId && n.threadId.length > 0) {
+      nav.customPageIndex = nav.goToPageChatDetail
+      waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
+    } else {
+      nav.customPageIndex = nav.goToPageChatRecents
+      waitTimeout().then(nav.goToPageChatRecents)
     }
-    console.error('SIP PN debug: PushNotification-parse: local notification')
+    console.log('SIP PN debug: PushNotification-parse: local notification')
     return
   }
+  //
+  // Handle chat notification
   if (!n.isCall) {
-    console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
-    await accountStore.waitStorageLoaded()
-    const as = getAuthStore()
-    if (!as.findAccountByPn(n)) {
+    console.log('SIP PN debug: PushNotification-parse: n.isCall=false')
+    if (!accountExist) {
       console.log(
         'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
       )
@@ -252,19 +246,26 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     // App currently active and already logged in using this account
     if (
       AppState.currentState === 'active' &&
-      as.currentAccount?.pbxUsername === n.to
+      getAuthStore().currentAccount?.pbxUsername === n.to
     ) {
       return
     }
     return n
   }
-  console.error('SIP PN debug: call signInByNotification')
+  //
+  // Handle call notification
+  if (n.callkeepAt) {
+    console.log(
+      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
+    )
+  }
+  console.log('SIP PN debug: call signInByNotification')
   getAuthStore().signInByNotification(n)
   // Custom fork of react-native-voip-push-notification to get callkeepUuid
   // Also we forked fcm to insert callkeepUuid there as well
   if (!n.callkeepUuid) {
     // Should not happen
-    console.error(
+    console.log(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
   }
@@ -279,7 +280,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,
     )
-    console.error(`SIP PN debug: getPendingUserAction=${action}`)
+    console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       callStore.onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {

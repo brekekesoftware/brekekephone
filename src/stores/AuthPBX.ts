@@ -18,7 +18,7 @@ class AuthPBX {
     })
   }
   @action dispose = () => {
-    console.error('PBX PN debug: disconnect by AuthPBX.dispose')
+    console.log('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()
     this.clearObserve = undefined
     pbx.disconnect()
@@ -37,7 +37,7 @@ class AuthPBX {
       this.waitingTimeout = true
       await waitTimeout(timeWait)
     }
-    console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')
+    console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
     s.pbxState = 'connecting'
     pbx.connect(s.currentAccount).catch(

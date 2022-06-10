@@ -71,7 +71,7 @@ const setupCallKeepWithCheck = async () => {
     })
     .catch((err: Error) => {
       if (AppState.currentState !== 'active') {
-        console.error(err)
+        console.error('RNCallKeep.setup error:', err)
         return
       }
       RnAlert.error({
@@ -132,13 +132,13 @@ export const setupCallKeep = async () => {
       return
     }
     const n = parseNotificationData(e.payload)
-    console.error(
+    console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
     if (n) {
       callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
     } else {
-      console.error('SIP PN debug: call RNCallKeep.endCall: pnData not found')
+      console.log('SIP PN debug: call RNCallKeep.endCall: pnData not found')
       RNCallKeep.endCall(uuid)
     }
   }
@@ -182,11 +182,11 @@ export const setupCallKeep = async () => {
   }
   const didActivateAudioSession = () => {
     // Only in ios
-    console.error('CallKeep debug: didActivateAudioSession')
+    console.log('CallKeep debug: didActivateAudioSession')
   }
   const didDeactivateAudioSession = () => {
     // Only in ios
-    console.error('CallKeep debug: didDeactivateAudioSession')
+    console.log('CallKeep debug: didDeactivateAudioSession')
     callStore.calls
       .filter(c => c.answered && !c.holding && c.id !== callStore.currentCallId)
       .forEach(c => c.toggleHoldWithCheck())
@@ -273,7 +273,7 @@ export const setupCallKeep = async () => {
 
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
-      console.error('SIP PN debug: backToForeground')
+      console.log('SIP PN debug: backToForeground')
       BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
       BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
     })

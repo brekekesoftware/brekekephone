@@ -28,7 +28,7 @@ class AuthSIP {
     })
   }
   @action dispose = () => {
-    console.error('SIP PN debug: set sipState stopped dispose')
+    console.log('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
     const s = getAuthStore()
     s.sipPn = {}
@@ -39,7 +39,7 @@ class AuthSIP {
   private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
     const p = getAuthStore().currentAccount
     if (!p) {
-      console.error('SIP PN debug: Already signed out after long await')
+      console.log('SIP PN debug: Already signed out after long await')
       return
     }
     if (!pn.sipAuth || !pn.sipWssPort || !pn.phoneId) {
@@ -68,23 +68,23 @@ class AuthSIP {
   }
 
   @action private authWithoutCatch = async () => {
-    console.error('SIP PN debug: set sipState connecting')
+    console.log('SIP PN debug: set sipState connecting')
     const s = getAuthStore()
     s.sipState = 'connecting'
     sipErrorEmitter.removeAllListeners()
     sipErrorEmitter.on('error', () => {
-      console.error('SIP PN debug: got error from sipErrorEmitter')
+      console.log('SIP PN debug: got error from sipErrorEmitter')
       this.dispose()
       this.authWithCheck()
     })
     //
     const pn = s.sipPn
     if (pn.sipAuth) {
-      console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
+      console.log('SIP PN debug: AuthSIP.authPnWithoutCatch')
       this.authPnWithoutCatch(pn)
       return
     }
-    console.error('SIP PN debug: AuthSIP.authWithoutCatch')
+    console.log('SIP PN debug: AuthSIP.authWithoutCatch')
     //
     pn.sipWssPort = pn.sipWssPort || (await getPbxConfig('sip.wss.port'))
     pn.dtmfSendPal =
@@ -107,7 +107,7 @@ class AuthSIP {
   authWithCheck = async () => {
     const s = getAuthStore()
     const sipShouldAuth = s.sipShouldAuth()
-    console.error(
+    console.log(
       `SIP PN debug: authWithCheck ${sipShouldAuth} ${JSON.stringify({
         sipState: s.sipState,
         signedInId: !!s.signedInId,
@@ -127,7 +127,7 @@ class AuthSIP {
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {
-        console.error('SIP PN debug: set sipState failure catch')
+        console.log('SIP PN debug: set sipState failure catch')
         s.sipState = 'failure'
         s.sipTotalFailure += 1
         sip.stopWebRTC()

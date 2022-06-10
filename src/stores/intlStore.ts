@@ -57,7 +57,7 @@ export class IntlStore {
             TypedNativeModules?.SettingsManager?.settings?.AppleLanguages?.[0]
           : TypedNativeModules?.I18nManager?.localeIdentifier) || ''
       locale = locale?.substr(0, 2)
-      console.error(`Intl debug: system locale=${locale}`)
+      console.log(`Intl debug: system locale=${locale}`)
     }
     if (!locale || !labels[locale]) {
       locale = 'en'

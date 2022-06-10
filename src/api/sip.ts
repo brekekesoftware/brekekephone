@@ -24,17 +24,25 @@ export const checkAndRemovePnTokenViaSip = async (
   s: CallStore,
 ) => {
   await accountStore.waitStorageLoaded()
-  if (getAuthStore().findAccountByPn(n)) {
-    return
+  const exist = !!getAuthStore().findAccountByPn(n)
+  const k = n.id || stableStringify(n)
+  if (!alreadyRemovePnTokenViaSip[k] && !exist) {
+    alreadyRemovePnTokenViaSip[k] = true
+    removePnTokenViaSip(n, s)
   }
+  return exist
+}
+
+const removePnTokenViaSip = async (n: ParsedPn, s: CallStore) => {
   if (n.callkeepUuid) {
     s.onCallKeepEndCall(n.callkeepUuid)
   }
-  const k = n.id || stableStringify(n)
-  if (alreadyRemovePnTokenViaSip[k]) {
+  if (!n.sipPn.sipAuth) {
+    console.log(
+      `checkAndRemovePnTokenViaSip debug: no sip auth token isCall=${n.isCall}`,
+    )
     return
   }
-  alreadyRemovePnTokenViaSip[k] = true
   console.log('checkAndRemovePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
   phone.startWebRTC({
@@ -84,7 +92,7 @@ export class SIP extends EventEmitter {
       if (s === 'stopping' || s === 'stopped') {
         phone._removeEventListenerPhoneStatusChange?.()
         this.emit('connection-stopped', ev)
-        console.error(`SIP PN debug: phoneStatusChanged: phoneStatus=${s}`)
+        console.log(`SIP PN debug: phoneStatusChanged: phoneStatus=${s}`)
         this.phone?._removeEventListenerPhoneStatusChange?.()
         this.phone = undefined
       }
@@ -223,14 +231,14 @@ export class SIP extends EventEmitter {
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
-      console.error('sip.phone.rtcErrorOccurred:', ev) // TODO
+      console.error('sip.phone.rtcErrorOccurred:', ev)
     })
 
     return phone
   }
 
   connect = async (sipLoginOption: SipLoginOption) => {
-    console.error('SIP PN debug: call sip.stopWebRTC in sip.connect')
+    console.log('SIP PN debug: call sip.stopWebRTC in sip.connect')
     this.phone?._removeEventListenerPhoneStatusChange?.()
     this.stopWebRTC()
     const phone = await this.init(sipLoginOption)
@@ -257,10 +265,10 @@ export class SIP extends EventEmitter {
       userAgent: getUserAgent(),
     })
     //
-    console.error('SIP PN debug: added listener on _ua')
+    console.log('SIP PN debug: added listener on _ua')
     phone._ua?.on('newNotify', e => {
       const pnIds = parseCanceledPnIds(e?.request?.data)
-      console.error(`SIP PN debug: newNotify fired on _ua pnIds=${pnIds}`)
+      console.log(`SIP PN debug: newNotify fired on _ua pnIds=${pnIds}`)
       pnIds?.forEach(cancelRecentPn)
     })
   }
@@ -272,21 +280,21 @@ export class SIP extends EventEmitter {
   stopWebRTC = () => {
     this.hackJssipFork()
     if (this.phone) {
-      console.error('SIP PN debug: sip.stopWebRTC: call phone.stopWebRTC')
+      console.log('SIP PN debug: sip.stopWebRTC: call phone.stopWebRTC')
       this.phone.stopWebRTC()
       this.phone = undefined
     } else {
-      console.error('SIP PN debug: sip.stopWebRTC: already disconnected')
+      console.log('SIP PN debug: sip.stopWebRTC: already disconnected')
     }
   }
   destroyWebRTC = () => {
     this.hackJssipFork()
     if (this.phone) {
-      console.error('SIP PN debug: sip.destroyWebRTC: call phone.destroyWebRTC')
+      console.log('SIP PN debug: sip.destroyWebRTC: call phone.destroyWebRTC')
       this.phone.destroyWebRTC()
       this.phone = undefined
     } else {
-      console.error('SIP PN debug: sip.destroyWebRTC: already disconnected')
+      console.log('SIP PN debug: sip.destroyWebRTC: already disconnected')
     }
   }
 
@@ -359,7 +367,7 @@ const parseCanceledPnIds = (data?: string) => {
     return
   }
   const msg = data.substr(i + m[0].length)
-  console.error(`parseCanceledPnIds: msg.length=${msg.length} l=${l}`)
+  console.log(`parseCanceledPnIds: msg.length=${msg.length} l=${l}`)
   return msg.split(/\n/g).map(s => {
     const lowers = s.toLowerCase()
     return lowers.replace(/\s+/g, '').includes(',canceled')

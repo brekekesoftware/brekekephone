@@ -12,12 +12,12 @@ const syncPnTokenWithoutCatch = async (
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   if (Platform.OS === 'web') {
-    console.error('PN sync debug: invalid platform')
+    console.log('PN sync debug: invalid platform')
     return
   }
 
   if (accountStore.pnSyncLoadingMap[p.id]) {
-    console.error('PN sync debug: sync is loading')
+    console.log('PN sync debug: sync is loading')
     return
   }
   accountStore.pnSyncLoadingMap[p.id] = true
@@ -28,7 +28,7 @@ const syncPnTokenWithoutCatch = async (
 
   const webPhone = await updatePhoneIndex(p, pbx)
   if (!webPhone) {
-    console.error('PN sync debug: can not find webphone')
+    console.log('PN sync debug: can not find webphone')
     return
   }
 
@@ -52,11 +52,11 @@ const syncPnTokenWithoutCatch = async (
         : pbx.removeFcmPnToken
       : null
   if (!fn) {
-    console.error('PN sync debug: invalid platform')
+    console.log('PN sync debug: invalid platform')
     return
   }
 
-  console.error(
+  console.log(
     `PN sync debug: trying to turn ${
       p.pushNotificationEnabled ? 'on' : 'off'
     } PN for account ${p.pbxUsername}`,
@@ -82,7 +82,7 @@ const syncPnTokenWithoutCatch = async (
   }
   await Promise.all(arr)
 
-  console.error('PBX PN debug: disconnect by syncPnToken')
+  console.log('PBX PN debug: disconnect by syncPnToken')
   pbx.disconnect()
 
   if (!noUpsert) {

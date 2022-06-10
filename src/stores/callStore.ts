@@ -62,7 +62,7 @@ export class CallStore {
     if (c) {
       c.callkeepUuid = uuid
     }
-    console.error(
+    console.log(
       `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${n.id} sessionId=${c?.id} rejected=${rejected}`,
     )
     if (rejected) {
@@ -82,7 +82,7 @@ export class CallStore {
       }
       const count = sip.phone?.getSessionCount()
       if (!count) {
-        console.error(
+        console.log(
           `SIP PN debug: new notification: phone.getSessionCount()=${count} | call destroyWebRTC()`,
         )
         as.sipState = 'stopped'
@@ -94,7 +94,7 @@ export class CallStore {
   @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
     const c = this.getCallkeep(uuid)
-    console.error(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
+    console.log(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
@@ -107,7 +107,7 @@ export class CallStore {
       includingRejected: Platform.OS === 'android',
       includingOutgoing: Platform.OS === 'ios',
     })
-    console.error(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
+    console.log(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
@@ -253,17 +253,17 @@ export class CallStore {
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
     const callkeepAction = this.getCallkeepAction(c)
-    console.error(
+    console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
     )
     if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
       c.answer()
-      console.error('SIP PN debug: answer by recentPnAction')
+      console.log('SIP PN debug: answer by recentPnAction')
     } else if (callkeepAction === 'rejectCall') {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
-      console.error('SIP PN debug: reject by recentPnAction')
+      console.log('SIP PN debug: reject by recentPnAction')
     }
   }
 
@@ -511,7 +511,7 @@ export class CallStore {
     if (!uuid) {
       return
     }
-    console.error('PN callkeep debug: endCallKeep ' + uuid)
+    console.log('PN callkeep debug: endCallKeep ' + uuid)
     if (setAction) {
       this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
@@ -554,12 +554,12 @@ export class CallStore {
   showIncomingCallUi = (e: TEvent & { pnData: ParsedPn }) => {
     const uuid = e.callUUID.toUpperCase()
     if (this.alreadyShowIncomingCallUi[uuid]) {
-      console.error('SIP PN debug: showIncomingCallUi: already show this uuid')
+      console.log('SIP PN debug: showIncomingCallUi: already show this uuid')
       return
     }
     this.alreadyShowIncomingCallUi[uuid] = true
     if (this.isCallRejected({ callkeepUuid: uuid, pnId: e.pnData.id })) {
-      console.error(
+      console.log(
         'SIP PN debug: showIncomingCallUi: call already rejected on js side',
       )
       this.endCallKeep(uuid)
@@ -647,7 +647,7 @@ export class CallStore {
       return
     }
     const uuid = this.getUuidFromPnId(n.pnId)
-    console.error(`SIP PN debug: cancel PN uuid=${uuid}`)
+    console.log(`SIP PN debug: cancel PN uuid=${uuid}`)
     this.setCallkeepAction({ pnId: n.pnId }, 'rejectCall')
     uuid &&
       this.endCallKeep(uuid, {
