@@ -282,7 +282,6 @@ export class PageCallManage extends Component<{
             />
             {Platform.OS !== 'web' && (
               <ButtonIcon
-                disabled={!c.answered}
                 bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
                 color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
