@@ -2,6 +2,7 @@
 
 - Reduce console error, use log instead for debug purpose
 - Some fixes remove PN token via sip header
+- Some fixes UC chat image url resolver
 
 #### 2.10.2
 
