@@ -1,3 +1,8 @@
+#### 2.10.3
+
+- Reduce console error, use log instead for debug purpose
+- Some fixes remove PN token via sip header
+
 #### 2.10.2
 
 - Remove user=\* in pal construction
