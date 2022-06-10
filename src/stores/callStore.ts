@@ -25,7 +25,6 @@ import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
-import { userStore } from './userStore'
 
 export class CallStore {
   private recentCallActivityAt = 0
