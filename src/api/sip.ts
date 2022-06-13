@@ -161,8 +161,10 @@ export class SIP extends EventEmitter {
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId)
       }
+
       const withSDP =
-        ev.sessionStatus === 'progress' && ev.remoteStreamObject !== null
+        ev.sessionStatus === 'progress' && !!ev?.incomingMessage?.body
+
       const patch = {
         id: ev.sessionId,
         answered: ev.sessionStatus === 'connected',
