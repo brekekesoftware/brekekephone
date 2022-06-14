@@ -163,7 +163,7 @@ export class SIP extends EventEmitter {
       }
 
       const withSDP =
-        ev.sessionStatus === 'progress' && !!ev?.incomingMessage?.body
+        ev.sessionStatus === 'progress' && !!ev.incomingMessage?.body
 
       const patch = {
         id: ev.sessionId,
