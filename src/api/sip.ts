@@ -161,10 +161,8 @@ export class SIP extends EventEmitter {
       if (ev.sessionStatus === 'terminated') {
         return this.emit('session-stopped', ev.sessionId)
       }
-
       const withSDP =
         ev.sessionStatus === 'progress' && !!ev.incomingMessage?.body
-
       const patch = {
         id: ev.sessionId,
         answered: ev.sessionStatus === 'connected',
@@ -182,7 +180,6 @@ export class SIP extends EventEmitter {
         withSDP,
         earlyMedia: withSDP ? ev.remoteStreamObject : null,
       }
-
       if (ev.incomingMessage) {
         const pbxSessionInfo =
           ev.incomingMessage.getHeader('X-PBX-Session-Info')
