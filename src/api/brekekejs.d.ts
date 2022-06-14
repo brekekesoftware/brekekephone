@@ -358,6 +358,7 @@ export type Session = {
   localStreamObject: MediaStream
   incomingMessage?: {
     getHeader(h: string): string
+    body?: object
   }
   videoClientSessionTable: {
     [id: string]: Session
