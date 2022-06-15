@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { StyleSheet, TouchableOpacityProps, View } from 'react-native'
+import { Platform, StyleSheet, TouchableOpacityProps, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { RnText, RnTouchableOpacity } from './Rn'
@@ -16,7 +16,8 @@ const css = StyleSheet.create({
   },
   ButtonIcon_Name: {
     paddingTop: 5,
-    maxWidth: 74,
+    minWidth: Platform.OS === 'ios' ? 70 : 80,
+    textAlign: 'center',
   },
 })
 
