@@ -1,7 +1,13 @@
 import { observer } from 'mobx-react'
+import { Platform } from 'react-native'
 
 import { callStore } from '../stores/callStore'
-import { AnsweredItem, OutgoingItem, OutgoingItemWithSDP } from './CallVoicesUI'
+import {
+  AnsweredItem,
+  OutgoingItem,
+  OutgoingItemWithSDP,
+  VideoRBT,
+} from './CallVoicesUI'
 
 export const CallVoices = observer(() => {
   // Try trigger observer?
@@ -26,7 +32,12 @@ export const CallVoices = observer(() => {
         ) : (
           <OutgoingItem />
         ))}
-
+      {
+        // load RBT first
+        Platform.OS === 'ios' && (
+          <VideoRBT isPaused={!isOutgoingCallStart || !!outgoingWithSDP} />
+        )
+      }
       {callStore.calls
         .filter(c => c.answered)
         .map(c => (

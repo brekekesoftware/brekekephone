@@ -212,7 +212,9 @@ export class CallStore {
         cExisting.answerCallKeep()
         cPartial.answeredAt = now
       }
-      Object.assign(cExisting, cPartial)
+      Object.assign(cExisting, cPartial, {
+        withSDPControls: cExisting.withSDPControls || cPartial.withSDP,
+      })
       if (cExisting.incoming && cExisting.callkeepUuid) {
         BrekekeUtils.setRemoteVideoStreamURL(
           cExisting.callkeepUuid,

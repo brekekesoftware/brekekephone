@@ -163,6 +163,9 @@ export class SIP extends EventEmitter {
       }
       const withSDP =
         ev.sessionStatus === 'progress' && !!ev.incomingMessage?.body
+
+      console.log('sessionStatusChanged::withSDP::', withSDP)
+
       const patch = {
         id: ev.sessionId,
         answered: ev.sessionStatus === 'connected',
@@ -305,6 +308,18 @@ export class SIP extends EventEmitter {
     const session = this.phone?.getSession(sessionId)
     const rtcSession = session && session.rtcSession
     return rtcSession && rtcSession.terminate()
+  }
+  disableMedia = (sessionId: string) => {
+    const session = this.phone?.getSession(sessionId)
+    session?.remoteStreamObject?.getTracks().forEach(track => {
+      track.enabled = false
+    })
+  }
+  enableMedia = (sessionId: string) => {
+    const session = this.phone?.getSession(sessionId)
+    session?.remoteStreamObject?.getTracks().forEach(track => {
+      track.enabled = true
+    })
   }
   answerSession = (
     sessionId: string,
