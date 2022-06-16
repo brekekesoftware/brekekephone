@@ -1,18 +1,11 @@
 import { Component } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
-import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
 import { callStore } from '../stores/callStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
-const css = StyleSheet.create({
-  video: {
-    width: 0,
-    height: 0,
-  },
-})
 export class IncomingItem extends Component {
   ringtonePlaying = false
   async componentDidMount() {
@@ -47,8 +40,6 @@ export class OutgoingItem extends Component<{}, { isPause: boolean }> {
 
     if (Platform.OS === 'android') {
       IncallManager.startRingback('_BUNDLE_')
-    } else {
-      this.setState({ isPause: false })
     }
   }
   componentWillUnmount() {
@@ -58,15 +49,7 @@ export class OutgoingItem extends Component<{}, { isPause: boolean }> {
     }
   }
   render() {
-    return Platform.OS === 'android' ? null : (
-      <Video
-        source={require('../assets/incallmanager_ringback.mp3')}
-        style={css.video}
-        paused={this.state.isPause}
-        repeat={true}
-        playInBackground={true}
-      />
-    )
+    return null
   }
 }
 export class OutgoingItemWithSDP extends Component<{

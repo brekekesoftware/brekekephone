@@ -21,6 +21,7 @@ export class Call {
 
   @observable earlyMedia: MediaStream | null = null
   @observable withSDP: boolean = false
+  @observable withSDPControls: boolean = false
   @observable sessionStatus: SessionStatus = 'dialing'
   @observable id = ''
   @observable pnId = ''
