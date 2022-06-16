@@ -1,11 +1,18 @@
 import { Component } from 'react'
-import { Platform } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
+import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
 import { callStore } from '../stores/callStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
+const css = StyleSheet.create({
+  video: {
+    width: 0,
+    height: 0,
+  },
+})
 export class IncomingItem extends Component {
   ringtonePlaying = false
   async componentDidMount() {
@@ -73,4 +80,16 @@ export class AnsweredItem extends Component<{
   render() {
     return null
   }
+}
+// fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
+export const VideoRBT = (p: { isPaused: boolean }) => {
+  return (
+    <Video
+      source={require('../assets/incallmanager_ringback.mp3')}
+      style={css.video}
+      paused={p.isPaused}
+      repeat={true}
+      playInBackground={true}
+    />
+  )
 }

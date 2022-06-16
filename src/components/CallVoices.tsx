@@ -1,16 +1,14 @@
 import { observer } from 'mobx-react'
-import { Platform, StyleSheet } from 'react-native'
-import Video from 'react-native-video'
+import { Platform } from 'react-native'
 
 import { callStore } from '../stores/callStore'
-import { AnsweredItem, OutgoingItem, OutgoingItemWithSDP } from './CallVoicesUI'
+import {
+  AnsweredItem,
+  OutgoingItem,
+  OutgoingItemWithSDP,
+  VideoRBT,
+} from './CallVoicesUI'
 
-const css = StyleSheet.create({
-  video: {
-    width: 0,
-    height: 0,
-  },
-})
 export const CallVoices = observer(() => {
   // Try trigger observer?
   void Object.keys(callStore.callkeepMap)
@@ -37,13 +35,7 @@ export const CallVoices = observer(() => {
       {
         // load RBT first
         Platform.OS === 'ios' && (
-          <Video
-            source={require('../assets/incallmanager_ringback.mp3')}
-            style={css.video}
-            paused={!isOutgoingCallStart || !!outgoingWithSDP}
-            repeat={true}
-            playInBackground={true}
-          />
+          <VideoRBT isPaused={!isOutgoingCallStart || !!outgoingWithSDP} />
         )
       }
       {callStore.calls
