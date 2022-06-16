@@ -11,7 +11,6 @@ const css = StyleSheet.create({
   video: {
     width: 0,
     height: 0,
-    backgroundColor: 'blue',
   },
 })
 export class IncomingItem extends Component {
