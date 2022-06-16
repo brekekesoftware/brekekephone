@@ -9,11 +9,9 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 
 const css = StyleSheet.create({
   video: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
+    width: 0,
+    height: 0,
+    backgroundColor: 'blue',
   },
 })
 export class IncomingItem extends Component {
