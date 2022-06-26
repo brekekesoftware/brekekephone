@@ -123,11 +123,14 @@ const css = StyleSheet.create({
   },
 })
 
+const TIME_OUT_SPEAKER = Platform.select({ ios: 3000, android: 500, web: 0 })
 @observer
 export class PageCallManage extends Component<{
   isFromCallBar?: boolean
 }> {
   @observable showButtonsInVideoCall = true
+  @observable enableSpeaker = false
+  alreadySetTimeoutEnableSpeaker = false
   alreadySetShowButtonsInVideoCall = false
 
   componentDidMount() {
@@ -239,6 +242,15 @@ export class PageCallManage extends Component<{
     }
     const Container = isVideoEnabled ? RnTouchableOpacity : View
     const activeColor = isVideoEnabled ? v.colors.primary : v.colors.warning
+
+    // wait render then enable Speaker
+    if (!this.alreadySetTimeoutEnableSpeaker) {
+      this.alreadySetTimeoutEnableSpeaker = true
+      setTimeout(() => {
+        this.enableSpeaker = true
+      }, TIME_OUT_SPEAKER)
+    }
+
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
@@ -282,7 +294,7 @@ export class PageCallManage extends Component<{
             />
             {Platform.OS !== 'web' && (
               <ButtonIcon
-                // disabled={!c.answered}
+                disabled={!this.enableSpeaker}
                 bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
                 color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
