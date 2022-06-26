@@ -85,7 +85,7 @@ export class AnsweredItem extends Component<{
   }
 }
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
-export const VideoRBT = observer((p: { isPaused: boolean }) => {
+export const VideoRBT = (p: { isPaused: boolean }) => {
   return (
     <Video
       source={require('../assets/incallmanager_ringback.mp3')}
@@ -97,4 +97,4 @@ export const VideoRBT = observer((p: { isPaused: boolean }) => {
       audioOnly
     />
   )
-})
+}
