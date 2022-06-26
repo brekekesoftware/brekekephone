@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
@@ -44,14 +45,13 @@ export class OutgoingItem extends Component<{}, { isPause: boolean }> {
   componentDidMount = () => {
     const currentCall = callStore.getCurrentCall()
     currentCall && sip.disableMedia(currentCall.id)
-
     if (Platform.OS === 'android') {
       IncallManager.startRingback('_BUNDLE_')
     }
   }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
-      IncallManager.stopRingback()
+      IncallManager.stop()
       IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
     }
   }
@@ -76,20 +76,25 @@ export class AnsweredItem extends Component<{
   componentDidMount = () => {
     const currentCall = callStore.getCurrentCall()
     currentCall && sip.enableMedia(currentCall.id)
+    // update status speaker, again
+    IncallManager.start()
+    IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
   }
   render() {
     return null
   }
 }
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
-export const VideoRBT = (p: { isPaused: boolean }) => {
+export const VideoRBT = observer((p: { isPaused: boolean }) => {
   return (
     <Video
       source={require('../assets/incallmanager_ringback.mp3')}
       style={css.video}
       paused={p.isPaused}
       repeat={true}
+      // ignoreSilentSwitch={'obey'}
       playInBackground={true}
+      audioOnly
     />
   )
-}
+})

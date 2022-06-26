@@ -21,9 +21,9 @@ export const CallVoices = observer(() => {
     !currentCall.answered &&
     currentCall.sessionStatus === 'progress'
 
-  const outgoingWithSDP =
-    currentCall && currentCall?.withSDP && currentCall?.earlyMedia
+  const outgoingWithSDP = currentCall && currentCall?.withSDP
 
+  const isPaused = !(isOutgoingCallStart && !outgoingWithSDP)
   return (
     <>
       {isOutgoingCallStart &&
@@ -34,9 +34,7 @@ export const CallVoices = observer(() => {
         ))}
       {
         // load RBT first
-        Platform.OS === 'ios' && (
-          <VideoRBT isPaused={!isOutgoingCallStart || !!outgoingWithSDP} />
-        )
+        Platform.OS === 'ios' && <VideoRBT isPaused={isPaused} />
       }
       {callStore.calls
         .filter(c => c.answered)
