@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brekeke Phone Component Example</title>
     <style>
-      #brekeke_phone_component {
+      #web_phone_embed_div {
         /* must display flex */
         display: flex;
         /* others are customizable */
@@ -23,12 +23,12 @@
     </style>
   </head>
   <body>
-    <div id="brekeke_phone_component"></div>
+    <div id="web_phone_embed_div"></div>
   </body>
   <script type="text/javascript" src="./component.js"></script>
   <script type="text/javascript">
     // we need to create div in our html code and get it
-    var div = document.getElementById('brekeke_phone_component')
+    var div = document.getElementById('web_phone_embed_div')
 
     // init a new Brekeke Phone instance to use
     var phone = window.Brekeke.Phone.render(div, {
@@ -50,8 +50,8 @@
         {
           hostname: 'apps.brekeke.com',
           port: '8443',
-          username: 'nam01',
-          password: '123',
+          username: 'USERNAME',
+          password: 'PASSWORD',
         },
       ],
     })
