@@ -1,9 +1,15 @@
+import { Platform } from 'react-native'
+
 declare global {
   interface Window {
-    _BrekekePhoneAsComponent: boolean
+    _BrekekePhoneWebRoot: HTMLElement | null
   }
 }
-window._BrekekePhoneAsComponent = true
+
+window._BrekekePhoneWebRoot =
+  Platform.OS === 'web'
+    ? document.getElementById('__web_phone_not_as_component_api')
+    : null
 
 if (!window.Brekeke) {
   // type-coverage:ignore-next-line
@@ -13,6 +19,3 @@ if (!window.Brekeke.Phone) {
   // type-coverage:ignore-next-line
   window.Brekeke.Phone = {} as any
 }
-
-// eslint-disable-next-line import/no-default-export
-export default null

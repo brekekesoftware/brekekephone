@@ -52,6 +52,9 @@ const formatErrors = (...errs: Error[]) => {
 }
 
 const captureConsoleOutput = () => {
+  if (!window._BrekekePhoneWebRoot) {
+    return
+  }
   const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
     (m, k) => {
       const f0 = console[k as keyof Console] as Function
@@ -88,6 +91,4 @@ const captureConsoleOutput = () => {
   console.info('captureConsoleOutput: console output is being captured!')
 }
 
-if (!window._BrekekePhoneAsComponent) {
-  captureConsoleOutput()
-}
+captureConsoleOutput()

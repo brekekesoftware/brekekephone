@@ -79,7 +79,7 @@ PushNotification.register(async () => {
   BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
   if (Platform.OS === 'web') {
-    if (!window._BrekekePhoneAsComponent) {
+    if (window._BrekekePhoneWebRoot) {
       promptBrowserPermission()
     }
   } else if (
