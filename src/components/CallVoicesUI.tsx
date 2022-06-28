@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
