@@ -251,7 +251,7 @@
       <RelativeLayout
         android:id="@+id/view_button_end"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -300,9 +300,10 @@
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
           >
             <Button
               android:id="@+id/btn_transfer"
@@ -329,9 +330,10 @@
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
           >
             <Button
               android:id="@+id/btn_park"
@@ -358,9 +360,10 @@
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
           >
             <Button
               android:id="@+id/btn_video"
@@ -384,9 +387,10 @@
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
           >
             <Button
               android:id="@+id/btn_speaker"
@@ -411,14 +415,16 @@
         <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_marginTop="5dp"
           android:layout_gravity="center"
         >
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
+            android:layout_marginTop="5dp"
           >
             <Button
               android:id="@+id/btn_mute"
@@ -436,15 +442,17 @@
               android:textColor="@color/white"
               android:textSize="14dp"
               android:textStyle="bold"
+              android:textAlignment="center"
             />
           </LinearLayout>
 
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
+            android:layout_marginTop="5dp"
           >
             <Button
               android:id="@+id/btn_record"
@@ -468,9 +476,10 @@
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
+            android:layout_marginTop="5dp"
           >
             <Button
               android:id="@+id/btn_dtmf"
@@ -497,9 +506,10 @@
           <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:minWidth="90dp"
+            android:layout_marginTop="5dp"
           >
             <Button
               android:id="@+id/btn_hold"
