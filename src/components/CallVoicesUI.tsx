@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
@@ -44,14 +45,13 @@ export class OutgoingItem extends Component<{}, { isPause: boolean }> {
   componentDidMount = () => {
     const currentCall = callStore.getCurrentCall()
     currentCall && sip.disableMedia(currentCall.id)
-
     if (Platform.OS === 'android') {
       IncallManager.startRingback('_BUNDLE_')
     }
   }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
-      IncallManager.stopRingback()
+      IncallManager.stop()
       IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
     }
   }
@@ -76,6 +76,9 @@ export class AnsweredItem extends Component<{
   componentDidMount = () => {
     const currentCall = callStore.getCurrentCall()
     currentCall && sip.enableMedia(currentCall.id)
+    // update status speaker, again
+    IncallManager.start()
+    IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
   }
   render() {
     return null
@@ -89,7 +92,9 @@ export const VideoRBT = (p: { isPaused: boolean }) => {
       style={css.video}
       paused={p.isPaused}
       repeat={true}
+      // ignoreSilentSwitch={'obey'}
       playInBackground={true}
+      audioOnly
     />
   )
 }
