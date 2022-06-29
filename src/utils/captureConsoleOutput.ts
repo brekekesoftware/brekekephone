@@ -52,7 +52,7 @@ const formatErrors = (...errs: Error[]) => {
 }
 
 const captureConsoleOutput = () => {
-  if (!window._BrekekePhoneWebRoot) {
+  if (Platform.OS === 'web' && !window._BrekekePhoneWebRoot) {
     return
   }
   const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
