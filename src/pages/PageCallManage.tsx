@@ -214,12 +214,10 @@ export class PageCallManage extends Component<{
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
-    console.log('dev::renderAvatar', { isShowAvatar })
     return (
       <View style={css.Image_wrapper}>
         {isShowAvatar ? (
           <SmartImage
-            // source={{ uri: `${!c.answered ? c.partyImageUrl : c.talkingImageUrl}?random=${Math.random().toString(36).substring(7)}` }}
             uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
             size={isLarge ? (height * 32) / 100 : 150}
             isLarge={isLarge}
