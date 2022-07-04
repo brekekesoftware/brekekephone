@@ -1,3 +1,7 @@
+#### 2.10.7
+
+- Fix avatar: remove cache, add loading, error
+
 #### 2.10.6
 
 - Fix 571: speaker on immediately after make a call does not work
