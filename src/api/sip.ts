@@ -162,7 +162,9 @@ export class SIP extends EventEmitter {
         return this.emit('session-stopped', ev.sessionId)
       }
       const withSDP =
-        ev.sessionStatus === 'progress' && !!ev.incomingMessage?.body
+        ev.rtcSession.direction === 'outgoing' &&
+        ev.sessionStatus === 'progress' &&
+        !!ev.incomingMessage?.body
 
       console.log('sessionStatusChanged::withSDP::', withSDP)
 

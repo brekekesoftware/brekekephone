@@ -18,7 +18,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
 
@@ -162,8 +164,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if ("large".equalsIgnoreCase(avatarSize)) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-      int height = (int) (displayMetrics.heightPixels / 2.2);
-      int width = displayMetrics.widthPixels;
+      int height = (int) (displayMetrics.heightPixels * 4 / 10);
       // CardAvatar Layout
 
       vCardAvatar.getLayoutParams().height = height;
@@ -176,15 +177,25 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       RelativeLayout.LayoutParams params =
           new RelativeLayout.LayoutParams(
               RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-      params.setMargins(0, (int) (height * 1.4), 0, 0);
+      params.setMargins(0, (int) (height * 1.5), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
     } else {
+      // create a ProgressDrawable object which we will show as placeholder
+      CircularProgressDrawable drawable = new CircularProgressDrawable(this);
+      drawable.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
+      drawable.setCenterRadius(30f);
+      drawable.setStrokeWidth(5f);
+      // set all other properties as you would see fit and start it
+      drawable.start();
       Glide.with(this)
           .load(avatar)
-          .placeholder(getResources().getIdentifier("default_avatar", "mipmap", getPackageName()))
+          .diskCacheStrategy(DiskCacheStrategy.NONE)
+          .skipMemoryCache(true)
+          .placeholder(drawable)
+          .error(R.mipmap.avatar_failed)
           .centerCrop()
           .into(imgAvatar);
     }
@@ -386,9 +397,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         if (!isLarge) {
           updateLayoutManagerCall();
         }
+        CircularProgressDrawable drawable = new CircularProgressDrawable(this);
+        drawable.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
+        drawable.setCenterRadius(30f);
+        drawable.setStrokeWidth(5f);
+        drawable.start();
         Glide.with(this)
             .load(talkingAvatar)
-            .placeholder(getResources().getIdentifier("default_avatar", "mipmap", getPackageName()))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .placeholder(drawable)
+            .error(R.mipmap.avatar_failed)
             .centerCrop()
             .into(imgAvatarTalking);
       }

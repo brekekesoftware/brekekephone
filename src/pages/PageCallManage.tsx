@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
-import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native'
+import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 
 import {
   mdiAlphaPCircle,
@@ -27,6 +27,7 @@ import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
+import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { Call } from '../stores/Call'
@@ -98,7 +99,7 @@ const css = StyleSheet.create({
     marginHorizontal: 15,
     flexDirection: 'column',
     alignItems: 'center',
-    height: (height * 30) / 100,
+    justifyContent: 'flex-start',
   },
 
   ImageSize: {
@@ -211,15 +212,15 @@ export class PageCallManage extends Component<{
       return
     }
     const incoming = c.incoming && !c.answered
-    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+    const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
     return (
       <View style={css.Image_wrapper}>
         {isShowAvatar ? (
-          <Image
-            source={{ uri: !c.answered ? c.partyImageUrl : c.talkingImageUrl }}
-            style={[isLarge ? css.ImageLargeSize : css.ImageSize]}
-            resizeMode={'cover'}
+          <SmartImage
+            uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
+            size={isLarge ? (height * 32) / 100 : 150}
+            isLarge={isLarge}
           />
         ) : null}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
