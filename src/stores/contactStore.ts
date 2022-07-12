@@ -2,6 +2,7 @@ import _, { debounce } from 'lodash'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable } from 'mobx'
 
+import { PbxBook } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { arrToMap } from '../utils/toMap'
 import { getAuthStore, waitPbx } from './authStore'
@@ -29,7 +30,6 @@ export type Phonebook2 = {
   book: string
   firstName: string
   lastName: string
-  displayName?: string
   workNumber: string
   cellNumber: string
   homeNumber: string
@@ -208,6 +208,16 @@ class ContactStore {
   }
 
   @observable phoneBooks: Phonebook2[] = []
+  @observable pbxBooks: PbxBook[] = []
+
+  @action loadPbxBoook = () => {
+    this.pbxBooks = []
+    pbx.getPhonebooks().then(res => {
+      if (res) {
+        this.pbxBooks = res
+      }
+    })
+  }
   @action upsertPhonebook = (p: Phonebook2) => {
     const p0 = this.getPhonebookById(p.id)
     if (!p0) {

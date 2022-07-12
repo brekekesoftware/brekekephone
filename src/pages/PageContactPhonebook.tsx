@@ -71,7 +71,6 @@ export class PageContactPhonebook extends Component {
         const x = {
           ...ct,
           loaded: true,
-          name: ct.displayName || ct.firstName + ' ' + ct.lastName,
           hidden: toBoolean(ct.hidden),
         }
         contactStore.upsertPhonebook(x)
@@ -191,6 +190,7 @@ export class PageContactPhonebook extends Component {
     groups.forEach(gr => {
       gr.phonebooks = orderBy(gr.phonebooks, 'name')
     })
+
     return (
       <Layout
         description={intl`Your phonebook contacts`}
@@ -237,7 +237,7 @@ export class PageContactPhonebook extends Component {
                   iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}
                   key={i}
-                  name={u.displayName || u.name}
+                  name={u.name}
                 />
               ))}
             </Fragment>

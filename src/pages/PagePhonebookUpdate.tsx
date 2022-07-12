@@ -6,6 +6,7 @@ import { ContactsCreateForm } from '../components/ContactCreateForm'
 import { getAuthStore } from '../stores/authStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
+import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 
@@ -29,10 +30,11 @@ export class PagePhonebookUpdate extends Component<{
   }
 
   save = (phonebook: Phonebook2) => {
-    const displayName = `${phonebook.lastName} ${phonebook.firstName}`
+    const displayName = window.Brekeke.Phonebook.getManager(
+      intlStore.locale,
+    )?.toDisplayName(phonebook)
     Object.assign(phonebook, {
       name: displayName,
-      displayName,
     })
     pbx
       .setContact(phonebook)

@@ -14,8 +14,24 @@ export type Brekeke = {
   Phone: {
     render: Function
   }
+  Phonebook: Phonebook
 }
-
+export type Phonebook = {
+  getManager(lan: string): ManagerPhonebook
+  getManagers(): ManagerPhonebook[]
+}
+export type ManagerPhonebook = {
+  item: ItemPhonebook[]
+  toDisplayName(map: object): string
+  getLang(): void
+  toSortStr(map: object): void
+}
+export type ItemPhonebook = {
+  id: string
+  caption: string
+  onscreen?: boolean
+  type: string
+}
 export type GetPalOptions = {
   tenant: string
   login_user: string
@@ -101,6 +117,11 @@ export type PbxPal = {
   getContactList(
     p: PbxGetContactListParam,
     resolve: (res: PbxGetContactListItem[]) => void,
+    reject: ErrorHandler,
+  ): void
+  getPhonebooks(
+    p: {},
+    resolve: (res: PbxBook[]) => void,
     reject: ErrorHandler,
   ): void
   getContact(
@@ -208,7 +229,10 @@ export type PbxParkParam = {
   tid: string
   number: string
 }
-
+export type PbxBook = {
+  phonebook: string
+  shared?: string
+}
 export type PbxContact = {
   aid: string
   phonebook: string

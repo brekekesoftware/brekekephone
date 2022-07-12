@@ -5,7 +5,9 @@ import { Fragment } from 'react'
 import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 
+import { PbxBook } from '../api/brekekejs'
 import { Field } from '../components/Field'
+import { PBAutoComplete } from '../components/PBAutoComplete'
 import { CreatedStore } from './createStore'
 import { arrToMap, mapToMap } from './toMap'
 import { useStore } from './useStore'
@@ -74,6 +76,13 @@ export const useForm = () => {
       const { $: $parent, fields, k } = $.props
       const RnForm = Platform.OS === 'web' ? 'form' : Fragment
       const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
+      const onPressItem = (item: PbxBook) => {
+        const f = fields.find(_ => _.name === 'book')
+        if (!f) {
+          return
+        }
+        $parent.set(k + '.' + f.name, item.phonebook)
+      }
       return (
         <RnForm {...(formProps as object)}>
           {fields.map(
@@ -115,6 +124,11 @@ export const useForm = () => {
                 />
               ),
           )}
+
+          <PBAutoComplete
+            value={get($parent, k + '.book')}
+            onPressItem={onPressItem}
+          />
         </RnForm>
       )
     }),

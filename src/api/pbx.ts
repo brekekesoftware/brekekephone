@@ -316,7 +316,13 @@ export class PBX extends EventEmitter {
       user: contact.user,
     }))
   }
-
+  getPhonebooks = async () => {
+    if (!this.client) {
+      return
+    }
+    const res = await this.client.call_pal('getPhonebooks', {})
+    return res || []
+  }
   getContact = async (id: string) => {
     if (this.needToWait) {
       await waitPbx()
@@ -334,7 +340,7 @@ export class PBX extends EventEmitter {
       id,
       firstName: res.info.$firstname,
       lastName: res.info.$lastname,
-      displayName: res.display_name,
+      name: res.display_name,
       workNumber: res.info.$tel_work,
       homeNumber: res.info.$tel_home,
       cellNumber: res.info.$tel_mobile,
@@ -355,7 +361,6 @@ export class PBX extends EventEmitter {
     firstName: string
     lastName: string
     name: string
-    displayName?: string
     workNumber: string
     homeNumber: string
     cellNumber: string
@@ -375,7 +380,7 @@ export class PBX extends EventEmitter {
       aid: contact.id,
       phonebook: contact.book,
       shared: contact.shared ? 'true' : 'false',
-      display_name: contact.displayName,
+      display_name: contact.name,
       info: {
         $firstname: contact.firstName,
         $lastname: contact.lastName,
