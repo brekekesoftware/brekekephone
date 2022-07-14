@@ -1,5 +1,16 @@
-import { useState } from 'react'
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
+
+import noPhoto from '../assets/no_photo.png'
+
+const noPhotoImg =
+  Platform.OS === 'web' ? { uri: noPhoto } : require('../assets/no_photo.png')
 
 const css = StyleSheet.create({
   image: {
@@ -22,6 +33,11 @@ export const SmartImage = (p: {
   isLarge: boolean
 }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
+
+  useEffect(() => {
+    setStatusImageLoading(0)
+  }, [p.uri])
+
   const onImageLoadError = () => {
     setStatusImageLoading(2)
   }
@@ -29,11 +45,6 @@ export const SmartImage = (p: {
     setStatusImageLoading(1)
   }
   const styleBorderRadius = p.isLarge ? {} : { borderRadius: p.size / 2 }
-  // cache just reset when url change
-  const resetCache = `${p.uri}?random=${Math.random()
-    .toString(36)
-    .substring(7)}`
-
   return (
     <View
       style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}
@@ -48,7 +59,7 @@ export const SmartImage = (p: {
       {statusImageLoading !== 2 && (
         <Image
           source={{
-            uri: resetCache,
+            uri: p.uri,
           }}
           style={[css.image, { width: p.size, height: p.size }]}
           onError={onImageLoadError}
@@ -58,7 +69,7 @@ export const SmartImage = (p: {
       )}
       {statusImageLoading === 2 && (
         <Image
-          source={require('../assets/no_photo.png')}
+          source={noPhotoImg}
           style={[css.image, { width: p.size, height: p.size }]}
           resizeMode={'cover'}
         />

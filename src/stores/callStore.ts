@@ -121,25 +121,23 @@ export class CallStore {
     this.updateCurrentCallDebounce()
     const call = this.calls.find(c => c.id === this.currentCallId)
     if (call) {
+      const ucEnabled = getAuthStore()?.currentAccount?.ucEnabled
       if (
         !call.answered &&
         (!call.partyImageUrl || call.partyImageUrl?.length === 0)
       ) {
-        const ucEnabled = getAuthStore()?.currentAccount?.ucEnabled
-        call.partyImageUrl = this.getOriginalUserImageUrl(
-          call.pbxTenant,
-          call.partyNumber,
-        )
+        call.partyImageUrl = ucEnabled
+          ? this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
+          : ''
         call.partyImageSize = ucEnabled ? 'large' : ''
       }
       if (
         call.answered &&
         (!call.talkingImageUrl || call.talkingImageUrl.length === 0)
       ) {
-        call.talkingImageUrl = this.getOriginalUserImageUrl(
-          call.pbxTenant,
-          call.partyNumber,
-        )
+        call.talkingImageUrl = ucEnabled
+          ? this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
+          : ''
       }
     }
 
