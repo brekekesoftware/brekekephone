@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import {
-  FlatList,
+  Dimensions,
   Platform,
   StyleSheet,
   Text,
@@ -34,15 +34,13 @@ const css = StyleSheet.create({
       },
     }),
   },
-  list: {
-    // flex:1,
-  },
   viewFlatList: {
     position: 'absolute',
     borderRadius: 5,
     backgroundColor: 'white',
     paddingVertical: 5,
     paddingHorizontal: 10,
+    width: Dimensions.get('screen').width - 30,
     top: 154,
     zIndex: 100000,
     marginHorizontal: 15,
@@ -78,7 +76,6 @@ export const PBAutoComplete: FC<
   }>
 > = p0 => {
   const { value, onPressItem } = p0
-  console.log('autocomplete', value)
 
   useEffect(() => {
     contactStore.loadPbxBoook()
@@ -89,53 +86,57 @@ export const PBAutoComplete: FC<
       return []
     }
     if (!!!value) {
-      return contactStore.pbxBooks
+      return [...contactStore.pbxBooks]
     }
-    // const regex = new RegExp(`${value.trim()}`, 'i')
     const result = contactStore.pbxBooks.filter(item =>
       item.phonebook.match(value.trim()),
     )
-    console.log('dev::result::', result)
-
-    if (result && result.length === 1) {
-      if (value === result[0].phonebook) {
-        return []
-      } else {
-        return result
-      }
-    } else if (!result.length) {
-      return contactStore.pbxBooks
-    } else {
-      return result
+    if (
+      !result.length ||
+      (result.length === 1 && value === result[0].phonebook)
+    ) {
+      return []
     }
+    return result
   }
-  if (!getData().length) {
+  const result = [...getData()]
+  console.error('dev::', result)
+  console.error('dev::pbxBooks::', contactStore.pbxBooks)
+  if (!result.length) {
     return null
   }
   return (
-    <View style={[StyleSheet.absoluteFill, css.viewFlatList]}>
-      <FlatList
-        style={css.list}
-        data={getData()}
-        renderItem={({ item, index }: { item: PbxBook; index: number }) => (
-          <RnTouchableOpacity
-            style={{ width: '100%', paddingVertical: 10 }}
-            onPress={() => onPressItem && onPressItem(item)}
+    <View style={[css.viewFlatList]}>
+      {result.map(item => (
+        <RnTouchableOpacity
+          style={{
+            width: '100%',
+            paddingVertical: 10,
+            borderBottomColor: 'grey',
+            borderBottomWidth: 0.5,
+          }}
+          onPress={() => onPressItem && onPressItem(item)}
+        >
+          <Text
+            style={{ width: '100%', textAlign: 'left', marginHorizontal: 10 }}
           >
-            <Text
-              style={{ width: '100%', textAlign: 'left', marginHorizontal: 10 }}
-            >
-              {item.phonebook}
-            </Text>
-          </RnTouchableOpacity>
+            {item.phonebook}
+          </Text>
+        </RnTouchableOpacity>
+      ))}
+      {/* <FlatList
+        style={css.list}
+        data={result}
+        renderItem={({ item, index }: { item: PbxBook; index: number }) => (
+          
         )}
-        keyExtractor={item => item.phonebook}
+        keyExtractor={item => item.id}
         ItemSeparatorComponent={() => (
           <View
             style={{ width: '100%', height: 0.5, backgroundColor: 'grey' }}
           />
         )}
-      />
+      /> */}
     </View>
   )
 }

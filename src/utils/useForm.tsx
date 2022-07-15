@@ -76,13 +76,22 @@ export const useForm = () => {
       const { $: $parent, fields, k } = $.props
       const RnForm = Platform.OS === 'web' ? 'form' : Fragment
       const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
+
+      const valueBook = get($parent, k + '.book')
+      console.error('valueBook::', valueBook)
+
       const onPressItem = (item: PbxBook) => {
         const f = fields.find(_ => _.name === 'book')
         if (!f) {
           return
         }
+        console.error('onPressItem::', k + '.' + f.name)
+
         $parent.set(k + '.' + f.name, item.phonebook)
+        $.onFieldChange(f.name, item.phonebook)
+        // f.onValueChange(item.phonebook)
       }
+
       return (
         <RnForm {...(formProps as object)}>
           {fields.map(
@@ -124,11 +133,7 @@ export const useForm = () => {
                 />
               ),
           )}
-
-          <PBAutoComplete
-            value={get($parent, k + '.book')}
-            onPressItem={onPressItem}
-          />
+          <PBAutoComplete value={valueBook} onPressItem={onPressItem} />
         </RnForm>
       )
     }),
