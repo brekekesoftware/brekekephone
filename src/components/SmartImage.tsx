@@ -17,6 +17,14 @@ const css = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: 'white',
   },
+  imageError: {
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 100,
+  },
   loading: {
     position: 'absolute',
     top: 0,
@@ -56,21 +64,19 @@ export const SmartImage = (p: {
           style={[css.loading, { width: p.size, height: p.size }]}
         />
       )}
-      {statusImageLoading !== 2 && (
-        <Image
-          source={{
-            uri: p.uri,
-          }}
-          style={[css.image, { width: p.size, height: p.size }]}
-          onError={onImageLoadError}
-          onLoad={onImageLoad}
-          resizeMode={'cover'}
-        />
-      )}
+      <Image
+        source={{
+          uri: p.uri,
+        }}
+        style={[css.image, { width: p.size, height: p.size }]}
+        onError={onImageLoadError}
+        onLoad={onImageLoad}
+        resizeMode={'cover'}
+      />
       {statusImageLoading === 2 && (
         <Image
           source={noPhotoImg}
-          style={[css.image, { width: p.size, height: p.size }]}
+          style={[css.imageError, { width: p.size, height: p.size }]}
           resizeMode={'cover'}
         />
       )}
