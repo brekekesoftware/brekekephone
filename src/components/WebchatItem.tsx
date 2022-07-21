@@ -90,7 +90,7 @@ export const WebchatItem: FC<{
     <View style={[css.Row, isEnabledAnswer ? css.bgUnread : null]}>
       <View style={css.Column}>
         {isEnabledAnswer ? (
-          <RnTouchableOpacity onPress={answerPress} style={[css.BtnText]}>
+          <RnTouchableOpacity onPress={answerPress} style={css.BtnText}>
             <RnText normal white bold>
               {intl`Answer`}
             </RnText>

@@ -330,7 +330,7 @@ export const Field: FC<
       props?.onValueChange && props?.onValueChange(newPark)
     }
     return (
-      <View style={[css.Field_ViewRow]}>
+      <View style={css.Field_ViewRow}>
         <RnTextInput
           ref={inputRef}
           {...omit(props, [
