@@ -25,7 +25,7 @@
   <body>
     <div id="web_phone_embed_div"></div>
   </body>
-  <script type="text/javascript" src="./component.js"></script>
+  <script type="text/javascript" src="./webphone.js"></script>
   <script type="text/javascript">
     // we need to create div in our html code and get it
     var div = document.getElementById('web_phone_embed_div')
@@ -41,6 +41,7 @@
       clear_existing_accounts: false,
       // hostname: string
       // port: string
+      // tenant: string - optional
       // username: string
       // password: string
       // uc: boolean - optional
@@ -50,6 +51,7 @@
         {
           hostname: 'YOUR_PBX_HOSTNAME',
           port: 'YOUR_PBX_PORT',
+          tenant: 'TENANT',
           username: 'USERNAME',
           password: 'PASSWORD',
         },
