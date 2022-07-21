@@ -5,7 +5,7 @@
 #### 2.10.6
 
 - Fix 571: speaker on immediately after make a call does not work
-- Fix 572: speaker on does not affect when change from ringing to tal…
+- Fix 572: speaker on does not affect when change from ringing to talking
 - Fix css icon text position change on length
 
 #### 2.10.3
