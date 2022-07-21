@@ -185,8 +185,8 @@ class DebugStore {
             .then(res => res.text())
             .then(
               t =>
-                t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim() ||
-                t.match(/\[\[\["(\d+\.\d+\.\d+)"\]/)?.[1].trim(),
+                t.match(/\[\[\["(\d+\.\d+\.\d+)"\]/)?.[1].trim() ||
+                t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
             )
         : window
             .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
@@ -208,11 +208,8 @@ class DebugStore {
     })
       .then(this.saveRemoteVersionToStorage)
       .catch((err: Error) => {
-        // RnAlert.error({
-        //   message: intlDebug`Failed to get app version from app store`,
-        //   err,
-        // })
-        console.error('checkForUpdate error: ', err)
+        console.error('Failed to get app version from app store:')
+        console.error(err)
         this.isCheckingForUpdate = false
       })
   }
@@ -224,10 +221,8 @@ class DebugStore {
         lastCheck: this.remoteVersionLastCheck,
       }),
     ).catch((err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to save app version to storage`,
-        err,
-      })
+      console.error('Failed to save app version to storage:')
+      console.error(err)
     })
   }
 
@@ -295,10 +290,8 @@ class DebugStore {
           this.autoCheckForUpdate()
         })
         .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to read app version from storage`,
-            err,
-          })
+          console.error('Failed to read app version from storage:')
+          console.error(err)
         }),
     )
     //
