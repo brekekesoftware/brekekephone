@@ -53,7 +53,7 @@ const css = StyleSheet.create({
 
   Btns: {
     position: 'absolute',
-    height: '75%', // Header compact height
+    height: '70%', // Header compact height
     left: 0,
     right: 0,
     bottom: 0,
@@ -219,7 +219,7 @@ export class PageCallManage extends Component<{
         {isShowAvatar ? (
           <SmartImage
             uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
-            size={isLarge ? (height * 32) / 100 : 150}
+            size={isLarge ? (height * 30) / 100 : 150}
             isLarge={isLarge}
           />
         ) : null}
