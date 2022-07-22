@@ -1,4 +1,4 @@
-#### 2.11.0
+#### 2.10.8
 
 - Android: try to fix loud speaker is not showing correctly as UI in a rare case with RBT. Currently fix using hacky timeout 2000ms. Need to check the library incall-manager and merge their latest change to see if they fixed it in a correct way not hacky
 - ios: fix the issue with proximity sensor still works after end call
@@ -6,6 +6,8 @@
 - Fix avatar placeholder in case of no photo not showing on the browser
 - Do not use avatar UC url if UC is disabled
 - Do not send random parameter when get avatar url, in combination with a fix on server
+- Do not show error when failed to get appstore version
+- Update label DTMF -> KEYPAD
 
 #### 2.10.7
 
