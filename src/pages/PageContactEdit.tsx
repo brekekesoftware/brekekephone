@@ -66,7 +66,7 @@ export class PageContactEdit extends Component {
     } else {
       userStore.loadPbxBuddyList(true)
     }
-    setTimeout(() => this.setState({ didMount: true }), 300)
+    BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => {
     return [

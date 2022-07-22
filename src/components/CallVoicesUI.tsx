@@ -5,6 +5,7 @@ import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
 import { callStore } from '../stores/callStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
 const css = StyleSheet.create({
@@ -76,7 +77,7 @@ export class AnsweredItem extends Component<{
     // ref: https://stackoverflow.com/questions/41762392/what-happens-with-onaudiofocuschange-when-a-phone-call-ends
     if (Platform.OS === 'android') {
       IncallManager.start()
-      setTimeout(() => {
+      BackgroundTimer.setTimeout(() => {
         IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
       }, 2000)
     }

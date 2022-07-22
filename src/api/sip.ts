@@ -11,6 +11,7 @@ import { getAuthStore } from '../stores/authStore'
 import { CallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
 import { CallOptions, Sip } from './brekekejs'
@@ -59,7 +60,7 @@ const removePnTokenViaSip = async (n: ParsedPn, s: CallStore) => {
       'phoneStatusChanged',
       e => e.phoneStatus === 'started' && r(true),
     )
-    setTimeout(() => r(false), 10000)
+    BackgroundTimer.setTimeout(() => r(false), 10000)
   })
   const o = phone._ua?.registrator?.()!
   if (!started || !o) {

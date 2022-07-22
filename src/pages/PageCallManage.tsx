@@ -34,6 +34,7 @@ import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const height = Dimensions.get('window').height
@@ -124,7 +125,7 @@ const css = StyleSheet.create({
   },
 })
 
-const TIME_OUT_SPEAKER = Platform.select({ ios: 3000, android: 500, web: 0 })
+const TIME_OUT_SPEAKER = Platform.select({ ios: 3000, android: 500 }) || 0
 @observer
 export class PageCallManage extends Component<{
   isFromCallBar?: boolean
@@ -247,7 +248,7 @@ export class PageCallManage extends Component<{
     // wait render then enable Speaker
     if (!this.alreadySetTimeoutEnableSpeaker) {
       this.alreadySetTimeoutEnableSpeaker = true
-      setTimeout(() => {
+      BackgroundTimer.setTimeout(() => {
         this.enableSpeaker = true
       }, TIME_OUT_SPEAKER)
     }

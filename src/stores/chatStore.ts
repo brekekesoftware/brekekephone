@@ -239,7 +239,7 @@ class ChatStore {
     }
     vibration()
     this.chatNotificationSoundRunning = true
-    setTimeout(() => {
+    BackgroundTimer.setTimeout(() => {
       this.chatNotificationSoundRunning = false
     }, 700)
   }

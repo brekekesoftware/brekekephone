@@ -12,6 +12,7 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
 import { userStore } from '../stores/userStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { css } from './PageContactEdit'
 
 @observer
@@ -29,7 +30,7 @@ export class PageContactGroupEdit extends Component<{
         this.selectedUserItems[u.user_id] = u
       }
     })
-    setTimeout(() => this.setState({ didMount: true }), 300)
+    BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
   render() {

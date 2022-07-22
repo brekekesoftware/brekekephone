@@ -1,4 +1,5 @@
 import ding from '../assets/ding.mp3'
+import { BackgroundTimer } from './BackgroundTimer'
 
 export const triggerAudioPermission = () => {
   const a = new Audio()
@@ -6,7 +7,7 @@ export const triggerAudioPermission = () => {
   a.src = ding
   document.body.appendChild(a)
   a.play()
-  setTimeout(() => {
+  BackgroundTimer.setTimeout(() => {
     document.body.removeChild(a)
   }, 3000)
 }

@@ -1,6 +1,7 @@
 import { Vibration } from 'react-native'
 
 import ding from '../assets/ding.mp3'
+import { BackgroundTimer } from './BackgroundTimer'
 
 export const playDing = () => {
   const a = new Audio()
@@ -8,7 +9,7 @@ export const playDing = () => {
   a.src = ding
   document.body.appendChild(a)
   a.play()
-  setTimeout(() => {
+  BackgroundTimer.setTimeout(() => {
     document.body.removeChild(a)
   }, 3000)
 }
