@@ -338,7 +338,7 @@ export class PageCallManage extends Component<{
             <ButtonIcon
               bgcolor='white'
               color='black'
-              name={intl`DTMF`}
+              name={intl`KEYPAD`}
               noborder
               onPress={Nav().goToPageCallDtmfKeypad}
               path={mdiDialpad}
