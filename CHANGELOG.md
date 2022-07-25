@@ -1,3 +1,7 @@
+#### 2.10.9
+
+- Fix RBT low volume after a call
+
 #### 2.10.8
 
 - Android: try to fix loud speaker is not showing correctly as UI in a rare case with RBT. Currently fix using hacky timeout 2000ms. Need to check the library incall-manager and merge their latest change to see if they fixed it in a correct way not hacky
