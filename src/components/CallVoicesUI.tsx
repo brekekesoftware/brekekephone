@@ -97,7 +97,7 @@ export const VideoRBT = (p: { isPaused: boolean }) => {
       style={css.video}
       paused={p.isPaused}
       repeat={true}
-      // ignoreSilentSwitch={'obey'}
+      ignoreSilentSwitch={'ignore'}
       playInBackground={true}
       audioOnly
     />
