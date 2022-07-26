@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react'
-import {
-  ActivityIndicator,
-  Image,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 
 import noPhoto from '../assets/no_photo.png'
 
-const noPhotoImg =
-  Platform.OS === 'web' ? { uri: noPhoto } : require('../assets/no_photo.png')
+const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
 const css = StyleSheet.create({
   image: {

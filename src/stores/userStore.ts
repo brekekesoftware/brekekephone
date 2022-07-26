@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { action, observable } from 'mobx'
-import { DefaultSectionT, SectionListData } from 'react-native'
+import { SectionListData } from 'react-native'
 
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
@@ -12,9 +12,14 @@ import { intl } from './intl'
 
 const defaultBuddyMax = 100
 
-type BuddyType = 'PbxBuddy' | 'UcBuddy'
+export type GroupUserSectionListData = SectionListData<
+  UcBuddy,
+  { title: string }
+>
+export type BuddyType = 'PbxBuddy' | 'UcBuddy'
+
 class UserStore {
-  @observable dataGroupAllUser: SectionListData<UcBuddy>[] = []
+  @observable dataGroupAllUser: GroupUserSectionListData[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax = defaultBuddyMax
   @observable isDisableAddAllUserToTheList = false
@@ -24,7 +29,7 @@ class UserStore {
   @observable userOnline: { [userId: string]: string } = {}
   @observable isCapacityInvalid = false
   @observable buddyMode = 0
-  @observable dataDisplayGroupAllUser: SectionListData<UcBuddy>[] = []
+  @observable dataDisplayGroupAllUser: GroupUserSectionListData[] = []
   type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
 
@@ -128,8 +133,8 @@ class UserStore {
     listAllUser: UcBuddy[],
     isDisableEditGroup: boolean,
   ) => {
-    const sectionData: SectionListData<UcBuddy>[] = []
-    const sectionDataOther: SectionListData<UcBuddy> = {
+    const sectionData: GroupUserSectionListData[] = []
+    const sectionDataOther: GroupUserSectionListData = {
       title: `(${intl`No Group`})`,
       data: [],
     }
@@ -189,7 +194,7 @@ class UserStore {
   }
 
   filterUser = (searchTxt: string, isOnline: boolean) => {
-    const displayUsers: SectionListData<UcBuddy, DefaultSectionT>[] = []
+    const displayUsers: GroupUserSectionListData[] = []
     let totalContact = 0
     let totalOnlineContact = 0
 
@@ -334,7 +339,7 @@ class UserStore {
       )
     })
 
-    const newGroupContact: SectionListData<UcBuddy, DefaultSectionT> = {
+    const newGroupContact: GroupUserSectionListData = {
       data: Object.keys(selectedUsers).map(key => {
         return selectedUsers[key]
       }),

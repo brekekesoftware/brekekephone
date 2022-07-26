@@ -1,6 +1,7 @@
 #### 2.10.9
 
 - Fix RBT low volume after a call
+- Webphone embed: fix auto_login logic
 
 #### 2.10.8
 

@@ -2,10 +2,8 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import { FC, Fragment, MutableRefObject, useEffect, useRef } from 'react'
 import {
-  DefaultSectionT,
   Platform,
   SectionList,
-  SectionListData,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -29,7 +27,7 @@ import {
   DropdownPosition,
   RnDropdownSectionList,
 } from '../stores/RnDropdownSectionList'
-import { userStore } from '../stores/userStore'
+import { GroupUserSectionListData, userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { UserItem } from './ContactUserItem'
@@ -70,7 +68,7 @@ const css = StyleSheet.create({
 })
 
 type ContactSectionListProps = {
-  sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
+  sectionListData: GroupUserSectionListData[]
   isEditMode?: boolean
   ddItems?: DropdownItemProps[]
   isTransferCall?: boolean
@@ -146,9 +144,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
 
     const { dropdownOpenedIndex, listDropdownPosition } = RnDropdownSectionList
 
-    const sectionListData: SectionListData<UcBuddy, DefaultSectionT>[] = toJS(
-      p.sectionListData,
-    ) //p.sectionListData
+    const sectionListData: GroupUserSectionListData[] = toJS(p.sectionListData) //p.sectionListData
 
     return (
       <Fragment>
@@ -162,7 +158,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
           }: {
             item: UcBuddy
             index: Number
-            section: SectionListData<UcBuddy, DefaultSectionT>
+            section: GroupUserSectionListData
           }) => (
             <RenderItemUser
               sectionListData={sectionListData}
@@ -202,7 +198,7 @@ const getLastMessageChat = (id: string) => {
   return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
 }
 type ItemUser = {
-  sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
+  sectionListData: GroupUserSectionListData[]
   item: UcBuddy
   title: string
   isEditMode?: boolean
@@ -281,7 +277,7 @@ const RenderItemUser = observer(
 )
 type SectionHeader = {
   sectionHeaderRefs: MutableRefObject<View[]>
-  sectionListData: SectionListData<UcBuddy, DefaultSectionT>[]
+  sectionListData: GroupUserSectionListData[]
   isEditMode?: boolean
   title: string
   data: readonly UcBuddy[]

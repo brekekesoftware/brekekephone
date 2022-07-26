@@ -393,14 +393,16 @@ export class PageChatDetail extends Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      Object.assign(chatStore.getFileById(file.id), {
+      const f = chatStore.getFileById(file.id)
+      if (!f) {
+        return
+      }
+      Object.assign(f, {
         url,
         fileType,
       })
     }
-
     reader.readAsDataURL(blob)
-
     saveBlob(blob, file.name)
   }
   onAcceptFileFailure = (err: Error) => {
