@@ -60,7 +60,7 @@
 
     /* Experimental Options */
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": false
   },
   "include": ["src"]
 }

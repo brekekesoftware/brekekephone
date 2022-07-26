@@ -96,19 +96,28 @@ const renderAsync = async (div: HTMLElement, o: Options) => {
     getAccountUniqueId,
     (p: Account) => p,
   ) as { [k: string]: Account }
+  let firstAccountInOptions: Account | undefined
   o.accounts.forEach(a => {
     const fr = convertToStorage(a)
     const to = accountsMap[getAccountUniqueId(fr)]
     if (to) {
       copyToStorage(fr, to)
+      firstAccountInOptions = firstAccountInOptions || to
     } else {
       accountStore.accounts.push(fr)
+      firstAccountInOptions = firstAccountInOptions || fr
     }
   })
   await accountStore.saveAccountsToLocalStorage()
-  if (o.auto_login) {
-    await getAuthStore().autoSignIn()
+  if (!o.auto_login) {
+    return
   }
+  const as = getAuthStore()
+  if (firstAccountInOptions) {
+    as.signIn(firstAccountInOptions.id)
+    return
+  }
+  await as.autoSignIn()
 }
 const render = (div: HTMLElement, o: Options) => {
   renderAsync(div, o)
