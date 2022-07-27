@@ -19,6 +19,7 @@ export const useForm = () => {
     $: CreatedStore & {
       dirtyMap: { [k: string]: boolean }
       errorMap: { [k: string]: string }
+      currentFocus: string | undefined
       props: {
         $: CreatedStore
         fields: FormField[]
@@ -28,15 +29,21 @@ export const useForm = () => {
       submit: Function
       onFieldBlur: Function
       onFieldChange: Function
+      onFocus: Function
     },
   ) => ({
     observable: {
       dirtyMap: {},
       errorMap: {},
+      currentFocus: undefined,
     },
     props: {},
     onFieldBlur: (k: string) => {
       $.set(`dirtyMap.${k}`, true)
+      // $.set('currentFocus', undefined)
+    },
+    onFocus: (k: string) => {
+      $.set('currentFocus', k)
     },
     onFieldChange: (k: string, v: string) => {
       // TODO batch, remember k
@@ -76,22 +83,6 @@ export const useForm = () => {
       const { $: $parent, fields, k } = $.props
       const RnForm = Platform.OS === 'web' ? 'form' : Fragment
       const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
-
-      const valueBook = get($parent, k + '.book')
-      console.error('valueBook::', valueBook)
-
-      const onPressItem = (item: PbxBook) => {
-        const f = fields.find(_ => _.name === 'book')
-        if (!f) {
-          return
-        }
-        console.error('onPressItem::', k + '.' + f.name)
-
-        $parent.set(k + '.' + f.name, item.phonebook)
-        $.onFieldChange(f.name, item.phonebook)
-        // f.onValueChange(item.phonebook)
-      }
-
       return (
         <RnForm {...(formProps as object)}>
           {fields.map(
@@ -101,7 +92,9 @@ export const useForm = () => {
                   key={i}
                   {...f}
                   error={
-                    !f.disabled && $.dirtyMap[f.name]
+                    !f.disabled &&
+                    $.dirtyMap[f.name] &&
+                    $.currentFocus !== f.name
                       ? $.errorMap[f.name]
                       : undefined
                   }
@@ -123,6 +116,7 @@ export const useForm = () => {
                         : (...args: unknown[]) => f.onValueChange(...args),
                     ].filter(_ => _),
                   )}
+                  onFocus={() => $.onFocus(f.name)}
                   // Error
                   value={
                     // Default value from store
@@ -133,7 +127,15 @@ export const useForm = () => {
                 />
               ),
           )}
-          <PBAutoComplete value={valueBook} onPressItem={onPressItem} />
+          {k === 'phonebook' && $.currentFocus === 'book' && (
+            <PBAutoComplete
+              value={get($parent, k + '.book')}
+              onPressItem={(item: PbxBook) => {
+                $parent.set(k + '.book', item.phonebook)
+                $.onFieldChange('book', item.phonebook)
+              }}
+            />
+          )}
         </RnForm>
       )
     }),

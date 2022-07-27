@@ -37,6 +37,7 @@ const css = StyleSheet.create({
 @observer
 export class PageContactPhonebook extends Component {
   componentDidMount() {
+    contactStore.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
         return
@@ -71,7 +72,7 @@ export class PageContactPhonebook extends Component {
         const x = {
           ...ct,
           loaded: true,
-          hidden: toBoolean(ct.hidden),
+          hidden: toBoolean(ct.$hidden),
         }
         contactStore.upsertPhonebook(x)
         cb(x)

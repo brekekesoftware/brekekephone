@@ -37,7 +37,11 @@ export class PagePhonebookUpdate extends Component<{
       name: displayName,
     })
     pbx
-      .setContact(phonebook)
+      .setContact(
+        contactStore.renameKeys(
+          phonebook as unknown as { [k: string]: string },
+        ),
+      )
       .then(() => this.onSaveSuccess(phonebook))
       .catch(this.onSaveFailure)
   }

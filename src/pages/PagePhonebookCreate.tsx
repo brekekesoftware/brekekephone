@@ -20,7 +20,7 @@ export class PagePhonebookCreate extends Component<{
         onBack={Nav().backToPageContactPhonebook}
         onSave={(p: Phonebook2) => {
           if (pbx.client && getAuthStore().pbxState === 'success') {
-            this.save(p)
+            this.save(p as unknown as { [k: string]: string })
           }
         }}
         title={intl`New Phonebook`}
@@ -28,11 +28,9 @@ export class PagePhonebookCreate extends Component<{
     )
   }
 
-  save = (phonebook: Phonebook2) => {
+  save = (phonebook: { [k: string]: string }) => {
     pbx
-      .setContact({
-        ...phonebook,
-      })
+      .setContact(contactStore.renameKeys(phonebook))
       .then(val => {
         if (!val) {
           return
@@ -40,7 +38,7 @@ export class PagePhonebookCreate extends Component<{
         phonebook = Object.assign(phonebook, {
           id: val.aid,
         })
-        contactStore.upsertPhonebook(phonebook)
+        contactStore.upsertPhonebook(phonebook as unknown as Phonebook2)
       })
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)

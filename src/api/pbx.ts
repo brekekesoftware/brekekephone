@@ -6,7 +6,7 @@ import EventEmitter from 'eventemitter3'
 import { asComponent } from '../asComponent/asComponent'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
-import { PbxUser } from '../stores/contactStore'
+import { contactStore, PbxUser } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
 import { Pbx } from './brekekejs'
@@ -321,7 +321,7 @@ export class PBX extends EventEmitter {
       return
     }
     const res = await this.client.call_pal('getPhonebooks', {})
-    return res || []
+    return res?.filter(item => !!!item.shared) || []
   }
   getContact = async (id: string) => {
     if (this.needToWait) {
@@ -335,41 +335,15 @@ export class PBX extends EventEmitter {
       aid: id,
     })
     res.info = res.info || {}
-
     return {
       id,
-      firstName: res.info.$firstname,
-      lastName: res.info.$lastname,
-      name: res.display_name,
-      workNumber: res.info.$tel_work,
-      homeNumber: res.info.$tel_home,
-      cellNumber: res.info.$tel_mobile,
-      address: res.info.$address,
-      company: res.info.$company,
-      email: res.info.$email,
-      job: res.info.$title,
+      ...contactStore.renameKeys(res.info, true),
       book: res.phonebook,
-      hidden: res.info.$hidden,
       shared: toBoolean(res.shared),
     }
   }
 
-  setContact = async (contact: {
-    id: string
-    book: string
-    shared: boolean
-    firstName: string
-    lastName: string
-    name: string
-    workNumber: string
-    homeNumber: string
-    cellNumber: string
-    address: string
-    job: string
-    email: string
-    company: string
-    hidden: boolean
-  }) => {
+  setContact = async (contact: { [k: string]: string }) => {
     if (this.needToWait) {
       await waitPbx()
     }
@@ -381,18 +355,7 @@ export class PBX extends EventEmitter {
       phonebook: contact.book,
       shared: contact.shared ? 'true' : 'false',
       display_name: contact.name,
-      info: {
-        $firstname: contact.firstName,
-        $lastname: contact.lastName,
-        $tel_work: contact.workNumber,
-        $tel_home: contact.homeNumber,
-        $tel_mobile: contact.cellNumber,
-        $address: contact.address,
-        $title: contact.job,
-        $email: contact.email,
-        $company: contact.company,
-        $hidden: contact.hidden ? 'true' : 'false',
-      },
+      info: contact,
     })
   }
 

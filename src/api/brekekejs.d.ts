@@ -17,7 +17,7 @@ export type Brekeke = {
   Phonebook: Phonebook
 }
 export type Phonebook = {
-  getManager(lan: string): ManagerPhonebook
+  getManager(lan: string): ManagerPhonebook | undefined
   getManagers(): ManagerPhonebook[]
 }
 export type ManagerPhonebook = {
@@ -28,9 +28,9 @@ export type ManagerPhonebook = {
 }
 export type ItemPhonebook = {
   id: string
-  caption: string
+  caption?: string
   onscreen?: boolean
-  type: string
+  type?: string
 }
 export type GetPalOptions = {
   tenant: string

@@ -1,7 +1,8 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import {
   Dimensions,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacityProps,
@@ -14,6 +15,17 @@ import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 const css = StyleSheet.create({
+  txtPb: {
+    width: '100%',
+    textAlign: 'left',
+    marginHorizontal: 10,
+  },
+  itemPb: {
+    width: '100%',
+    paddingVertical: 5,
+    borderBottomColor: 'grey',
+    borderBottomWidth: 0.5,
+  },
   autocompleteContainer: {
     // Hack required to make the autocomplete
     // work on Andrdoid
@@ -41,6 +53,7 @@ const css = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     width: Dimensions.get('screen').width - 30,
+    maxHeight: 300,
     top: 154,
     zIndex: 100000,
     marginHorizontal: 15,
@@ -76,10 +89,12 @@ export const PBAutoComplete: FC<
   }>
 > = p0 => {
   const { value, onPressItem } = p0
+  const [isChoose, setChoose] = useState(false)
 
   useEffect(() => {
     contactStore.loadPbxBoook()
-  }, [])
+    setChoose(false)
+  }, [value])
 
   const getData = () => {
     if (!contactStore.pbxBooks.length) {
@@ -100,43 +115,26 @@ export const PBAutoComplete: FC<
     return result
   }
   const result = [...getData()]
-  console.error('dev::', result)
-  console.error('dev::pbxBooks::', contactStore.pbxBooks)
-  if (!result.length) {
+
+  if (!result.length || isChoose === true) {
     return null
   }
   return (
     <View style={[css.viewFlatList]}>
-      {result.map(item => (
-        <RnTouchableOpacity
-          style={{
-            width: '100%',
-            paddingVertical: 10,
-            borderBottomColor: 'grey',
-            borderBottomWidth: 0.5,
-          }}
-          onPress={() => onPressItem && onPressItem(item)}
-        >
-          <Text
-            style={{ width: '100%', textAlign: 'left', marginHorizontal: 10 }}
+      <ScrollView>
+        {result.map((item, index) => (
+          <RnTouchableOpacity
+            key={index}
+            style={css.itemPb}
+            onPress={() => {
+              setChoose(true)
+              onPressItem && onPressItem(item)
+            }}
           >
-            {item.phonebook}
-          </Text>
-        </RnTouchableOpacity>
-      ))}
-      {/* <FlatList
-        style={css.list}
-        data={result}
-        renderItem={({ item, index }: { item: PbxBook; index: number }) => (
-          
-        )}
-        keyExtractor={item => item.id}
-        ItemSeparatorComponent={() => (
-          <View
-            style={{ width: '100%', height: 0.5, backgroundColor: 'grey' }}
-          />
-        )}
-      /> */}
+            <Text style={css.txtPb}>{item.phonebook}</Text>
+          </RnTouchableOpacity>
+        ))}
+      </ScrollView>
     </View>
   )
 }

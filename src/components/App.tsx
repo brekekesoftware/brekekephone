@@ -27,6 +27,7 @@ import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
+import { PBAddItem } from '../stores/PBAddItem'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
@@ -218,6 +219,8 @@ export const App = observer(() => {
       <View style={css.App_Inner}>
         <RnStackerRoot />
         <RnPickerRoot />
+        <PBAddItem />
+
         <RnAlertRoot />
         {failure && (
           <RnTouchableOpacity

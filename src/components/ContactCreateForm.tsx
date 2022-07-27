@@ -2,13 +2,17 @@ import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
+import { StyleSheet } from 'react-native'
 
-import { Phonebook2 } from '../stores/contactStore'
+import { contactStore, ItemPBForm, Phonebook2 } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
 import { Layout } from './Layout'
+import { RnText } from './RnText'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
+import { v } from './variables'
 
 const genEmptyPhonebook = () => {
   return {
@@ -22,9 +26,28 @@ const genEmptyPhonebook = () => {
     address: '',
     email: '',
     shared: false,
+    phonebook: '',
+    user: '',
+    nickname: '',
+    telExt: '',
+    telOther: '',
+    fax: '',
+    emailWork: '',
+    addressWork: '',
+    url: '',
+    notes: '',
   }
 }
-
+const css = StyleSheet.create({
+  styleAddItem: {
+    marginVertical: 10,
+    marginHorizontal: 15,
+  },
+  labelAddItem: {
+    color: v.subColor,
+    fontWeight: v.fontWeight,
+  },
+})
 export const ContactsCreateForm: FC<{
   updatingPhonebook?: Phonebook2
   book?: string
@@ -39,6 +62,7 @@ export const ContactsCreateForm: FC<{
         ...genEmptyPhonebook(),
         ...cloneDeep(props.updatingPhonebook),
       },
+      fields: [] as ItemPBForm[],
     },
 
     hasUnsavedChanges: () => {
@@ -67,7 +91,6 @@ export const ContactsCreateForm: FC<{
     onValidSubmit: () => {
       props.onSave($.phonebook, $.hasUnsavedChanges())
     },
-    //
   })
   type M0 = ReturnType<typeof m>
   type M = Omit<M0, 'observable'> & M0['observable']
@@ -75,6 +98,53 @@ export const ContactsCreateForm: FC<{
 
   const [Form, submitForm] = useForm()
   const disabled = props.updatingPhonebook?.shared
+  const items = contactStore.getItemPB()?.filter(i => i?.onscreen)
+  if (props.updatingPhonebook) {
+    $.fields = Object.keys(props.updatingPhonebook).map(key => {
+      return {
+        id: key,
+        name: key,
+        label: key,
+      }
+    })
+  } else {
+    $.fields = [
+      {
+        id: 'book',
+        name: 'book',
+        label: intl`BOOK`,
+        rule: 'required',
+        isFocus: false,
+      },
+      ...items,
+    ]
+  }
+
+  const onSelectItem = (value: string) => {
+    contactStore.dismissPicker()
+    const isExistField = !!$.fields.find(_ => _.label === value)
+    if (isExistField) {
+      return
+    }
+    const itemExist = contactStore.getItemPB().find(_ => _.label === value)
+    if (itemExist) {
+      $.fields.push(itemExist)
+      return
+    }
+    const newField = {
+      label: value,
+      name: value,
+      id: value,
+      keyboardType: 'default',
+    } as unknown as ItemPBForm
+    $.fields.push(newField)
+  }
+  const openPicker = () => {
+    contactStore.openPicker({
+      onSelect: onSelectItem,
+      listOption: contactStore.getItemPB().filter(i => !i?.onscreen),
+    })
+  }
   return (
     <Layout
       fabOnBack={$.onBackBtnPress}
@@ -84,73 +154,15 @@ export const ContactsCreateForm: FC<{
     >
       <Form
         $={$}
-        fields={[
-          {
-            disabled,
-            name: 'book',
-            label: intl`BOOK`,
-            rule: 'required',
-          },
-          {
-            disabled,
-            name: 'firstName',
-            label: intl`FIRST NAME`,
-            rule: 'required',
-          },
-          {
-            disabled,
-            name: 'lastName',
-            label: intl`LAST NAME`,
-            rule: 'required',
-          },
-          {
-            disabled,
-            keyboardType: 'numeric',
-            name: 'cellNumber',
-            label: intl`MOBILE NUMBER`,
-          },
-          {
-            disabled,
-            keyboardType: 'numeric',
-            name: 'workNumber',
-            label: intl`WORK NUMBER`,
-          },
-          {
-            disabled,
-            keyboardType: 'numeric',
-            name: 'homeNumber',
-            label: intl`HOME NUMBER`,
-          },
-          {
-            disabled,
-            name: 'job',
-            label: intl`JOB`,
-          },
-          {
-            disabled,
-            name: 'company',
-            label: intl`COMPANY`,
-          },
-          {
-            disabled,
-            name: 'address',
-            label: intl`ADDRESS`,
-          },
-          {
-            disabled,
-            name: 'email',
-            label: intl`EMAIL`,
-          },
-          {
-            disabled,
-            type: 'Switch',
-            name: 'shared',
-            label: intl`SHARED`,
-          },
-        ]}
+        fields={$.fields}
         k='phonebook'
         onValidSubmit={$.onValidSubmit}
       />
+      <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
+        <RnText small style={css.labelAddItem}>
+          {'>>' + intl`Add item`}
+        </RnText>
+      </RnTouchableOpacity>
     </Layout>
   )
 })
