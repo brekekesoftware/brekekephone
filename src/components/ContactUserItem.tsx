@@ -210,7 +210,15 @@ export const UserItem: FC<
         )}
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
-            <RnText black bold singleLine>
+            <RnText
+              black
+              bold
+              singleLine
+              style={{
+                color:
+                  name === intl`<Unnamed>` ? v.colors.greyTextChat : 'black',
+              }}
+            >
               {getPartyName(partyNumber) ||
                 partyName ||
                 name ||

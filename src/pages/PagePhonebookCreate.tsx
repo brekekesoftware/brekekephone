@@ -1,26 +1,27 @@
+import { isEmpty } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
 import { getAuthStore } from '../stores/authStore'
-import { contactStore, Phonebook2 } from '../stores/contactStore'
+import { ContactInfo, contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 
 @observer
 export class PagePhonebookCreate extends Component<{
-  book?: string
+  phonebook?: string
 }> {
   render() {
     return (
       <ContactsCreateForm
-        book={this.props.book}
+        phonebook={this.props.phonebook}
         onBack={Nav().backToPageContactPhonebook}
-        onSave={(p: Phonebook2) => {
+        onSave={(p: ContactInfo) => {
           if (pbx.client && getAuthStore().pbxState === 'success') {
-            this.save(p as unknown as { [k: string]: string })
+            this.save(p)
           }
         }}
         title={intl`New Phonebook`}
@@ -28,17 +29,30 @@ export class PagePhonebookCreate extends Component<{
     )
   }
 
-  save = (phonebook: { [k: string]: string }) => {
+  save = (p: ContactInfo) => {
+    if (isEmpty(p)) {
+      return
+    }
+    const phonebook = p.phonebook
+    delete p.phonebook
+    const contact = {
+      display_name: contactStore.getManagerContact(p.$lang)?.toDisplayName(p),
+      phonebook,
+      shared: false, // admin can't login on brekeke phone => share = false
+      info: p,
+    } as Phonebook2
+
     pbx
-      .setContact(contactStore.renameKeys(phonebook))
+      .setContact(contact)
       .then(val => {
         if (!val) {
           return
         }
-        phonebook = Object.assign(phonebook, {
-          id: val.aid,
-        })
-        contactStore.upsertPhonebook(phonebook as unknown as Phonebook2)
+        contactStore.upsertPhonebook(
+          Object.assign(contact, {
+            id: val.aid,
+          }),
+        )
       })
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)

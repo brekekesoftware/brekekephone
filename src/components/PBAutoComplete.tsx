@@ -104,7 +104,7 @@ export const PBAutoComplete: FC<
       return [...contactStore.pbxBooks]
     }
     const result = contactStore.pbxBooks.filter(item =>
-      item.phonebook.match(value.trim()),
+      item.phonebook.toLowerCase().match(value.toLowerCase().trim()),
     )
     if (
       !result.length ||

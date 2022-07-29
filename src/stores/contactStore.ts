@@ -34,42 +34,16 @@ export type UcUser = {
 //   hidden: boolean
 //   info: Phonebook2
 // }
-
-// export type Phonebook2 = {
-//   id: string
-//   display_name: string
-//   phonebook: string
-//   shared: boolean
-//   loaded?: boolean
-//   info: {[k: string]: string}
-// }
+export type ContactInfo = { [k: string]: string }
 export type Phonebook2 = {
   id: string
-  name: string
-  book: string
-  firstName: string
-  lastName: string
-  workNumber: string
-  cellNumber: string
-  homeNumber: string
-  job: string
-  company: string
-  address: string
-  email: string
+  display_name: string
+  phonebook: string
   shared: boolean
   loaded?: boolean
-  hidden: boolean
-  phonebook?: string
   user?: string
-  nickname?: string
-  telExt?: string
-  telOther?: string
-  fax?: string
-  emailWork?: string
-  addressWork?: string
-  url?: string
-  notes?: string
-} & { someExtensionProperty?: string | number }
+  info: ContactInfo
+}
 export type ItemPBForm = brekekejs.ItemPhonebook & {
   name: string
   disabled?: boolean
@@ -85,37 +59,7 @@ export type PickerItemOption = {
   onSelect: Function
   listOption: ItemPBForm[]
 }
-const itemMap = {
-  lastName: '$lastname',
-  firstName: '$firstname',
-  workNumber: '$tel_work',
-  homeNumber: '$tel_home',
-  cellNumber: '$tel_mobile',
-  job: '$title',
-  telExt: '$tel_ext',
-  telOther: '$tel_other',
-  fax: '$fax',
-  emailWork: '$email_work',
-  addressWork: '$address_work',
-  url: '$url',
-  notes: '$notes',
-} as { [k: string]: string | undefined }
 
-const KeyMap = {
-  $lastname: 'lastName',
-  $firstname: 'firstName',
-  $tel_work: 'workNumber',
-  $tel_home: 'homeNumber',
-  $tel_mobile: 'cellNumber',
-  $title: 'job',
-  $tel_ext: 'telExt',
-  $tel_other: 'telOther',
-  $fax: 'fax',
-  $email_work: 'emailWork',
-  $address_work: 'addressWork',
-  $url: 'url',
-  $notes: 'notes',
-} as { [k: string]: string | undefined }
 class ContactStore {
   @observable usersSearchTerm = ''
   @observable phonebookSearchTerm = ''
@@ -176,7 +120,7 @@ class ContactStore {
   }
 
   @observable showPickerItem: PickerItemOption | null = null
-  @observable itemPB: ItemPBForm[] = []
+
   @action openPicker = (picker: PickerItemOption) => {
     this.showPickerItem = picker
   }
@@ -184,72 +128,34 @@ class ContactStore {
   @action dismissPicker = () => {
     this.showPickerItem = null
   }
-  getManagerContact = () => {
-    return window.Brekeke.Phonebook.getManager(intlStore.locale)
+  getManagerContact = (lang?: string) => {
+    return window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)
   }
-  getItemPhonebook = () => {
-    return window.Brekeke.Phonebook.getManager(intlStore.locale)?.item
+  getItemPhonebook = (lang?: string) => {
+    return window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)
+      ?.item
   }
-  getManageItems = () => {
-    const items = window.Brekeke.Phonebook.getManager(intlStore.locale)?.item
+
+  getManagerItemLang = () => {}
+  getManageItems = (lang?: string) => {
+    const items = window.Brekeke.Phonebook.getManager(
+      lang ? lang : intlStore.locale,
+    )?.item
     if (!items || !items.length) {
-      this.itemPB = []
-      return
+      return []
     }
     const newItems = items.map(i => {
       return {
         ...i,
-        name: this.convertIdToName(i.id),
+        name: i.id,
         disabled: undefined,
         label: i.id.startsWith('$') ? i.caption : i.id,
         keyboardType: i.type === 'phone' ? 'numeric' : 'default',
       }
     }) as unknown as ItemPBForm[]
-    this.itemPB = newItems
+    return newItems
   }
-  @action getItemPB = () => {
-    return this.itemPB
-  }
-  renameKeys(obj: { [k: string]: string }, isKey?: boolean) {
-    const keyValues = Object.keys(obj).map(key => {
-      const newKey = (isKey ? KeyMap[key] : itemMap[key]) || key
-      return { [newKey]: obj[key] }
-    })
-    return Object.assign({}, ...keyValues)
-  }
-  convertIdToName = (id: string) => {
-    switch (id) {
-      case '$lastname':
-        return 'lastName'
-      case '$firstname':
-        return 'firstName'
-      case '$tel_work':
-        return 'workNumber'
-      case '$tel_home':
-        return 'homeNumber'
-      case '$tel_mobile':
-        return 'cellNumber'
-      case '$title':
-        return 'job'
-      case '$tel_ext':
-        return 'telExt'
-      case '$tel_other':
-        return 'telOther'
-      case '$fax':
-        return 'fax'
-      case '$email_work':
-        return 'emailWork'
-      case '$address_work':
-        return 'addressWork'
-      case '$url':
-        return 'url'
-      case '$notes':
-        return 'notes'
-      default:
-        break
-    }
-    return id
-  }
+
   @observable pbxUsers: PbxUser[] = []
 
   getPbxUsers = async () => {
@@ -401,9 +307,9 @@ class ContactStore {
     }
     return this.phoneBooks.filter(
       p =>
-        p.cellNumber === phoneNumber ||
-        p.homeNumber === phoneNumber ||
-        p.workNumber === phoneNumber,
+        p.info.$tel_mobile === phoneNumber ||
+        p.info.$tel_home === phoneNumber ||
+        p.info.$tel_work === phoneNumber,
     )?.[0]
   }
   getPhonebookById = (id: string) => {
@@ -426,4 +332,4 @@ export const contactStore = new ContactStore()
 
 export const getPartyName = (partyNumber?: string) =>
   (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
-  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.name
+  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name

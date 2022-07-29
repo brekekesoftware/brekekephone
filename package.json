@@ -24,7 +24,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.3",
     "@react-native-community/push-notification-ios": "1.10.1",
-    "brekekejs": "github:brekekesoftware/brekekejs#1d9cead351a16a740da3c7cc6be8af029f2a07b9",
+    "brekekejs": "github:brekekesoftware/brekekejs#7b0ddacfc2e628a0e9a6ea9b0259843091bc2525",
     "buffer": "6.0.3",
     "circular-json": "0.5.9",
     "es6-shim": "0.35.6",

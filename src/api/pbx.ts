@@ -6,7 +6,7 @@ import EventEmitter from 'eventemitter3'
 import { asComponent } from '../asComponent/asComponent'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
-import { contactStore, PbxUser } from '../stores/contactStore'
+import { PbxUser, Phonebook2 } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
 import { Pbx } from './brekekejs'
@@ -311,9 +311,11 @@ export class PBX extends EventEmitter {
 
     return res.map(contact => ({
       id: contact.aid,
-      name: contact.display_name,
+      display_name: contact.display_name,
       phonebook: contact.phonebook,
       user: contact.user,
+      shared,
+      info: {},
     }))
   }
   getPhonebooks = async () => {
@@ -334,16 +336,18 @@ export class PBX extends EventEmitter {
     const res = await this.client.call_pal('getContact', {
       aid: id,
     })
+
     res.info = res.info || {}
     return {
-      id,
-      ...contactStore.renameKeys(res.info, true),
-      book: res.phonebook,
+      id: res.aid,
+      display_name: res.display_name,
+      phonebook: res.phonebook,
       shared: toBoolean(res.shared),
+      info: res.info,
     }
   }
 
-  setContact = async (contact: { [k: string]: string }) => {
+  setContact = async (contact: Phonebook2) => {
     if (this.needToWait) {
       await waitPbx()
     }
@@ -352,10 +356,10 @@ export class PBX extends EventEmitter {
     }
     return this.client.call_pal('setContact', {
       aid: contact.id,
-      phonebook: contact.book,
+      phonebook: contact.phonebook,
       shared: contact.shared ? 'true' : 'false',
-      display_name: contact.name,
-      info: contact,
+      display_name: contact.display_name,
+      info: contact.info,
     })
   }
 

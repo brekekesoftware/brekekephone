@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native'
 
 import { contactStore, ItemPBForm, Phonebook2 } from '../stores/contactStore'
 import { intl } from '../stores/intl'
+import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -14,31 +15,20 @@ import { RnText } from './RnText'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
-const genEmptyPhonebook = () => {
-  return {
-    firstName: '',
-    lastName: '',
-    workNumber: '',
-    cellNumber: '',
-    homeNumber: '',
-    job: '',
-    company: '',
-    address: '',
-    email: '',
-    shared: false,
-    phonebook: '',
-    user: '',
-    nickname: '',
-    telExt: '',
-    telOther: '',
-    fax: '',
-    emailWork: '',
-    addressWork: '',
-    url: '',
-    notes: '',
-  }
+const genEmptyPhonebook = (lang: string) => {
+  const emptyObj = {}
+  contactStore
+    .getManageItems(lang)
+    ?.filter(i => i?.onscreen)
+    .forEach(u => {
+      Object.assign(emptyObj, { [u.name]: '' })
+    })
+  return emptyObj
 }
 const css = StyleSheet.create({
+  stylePreviewName: {
+    marginHorizontal: 20,
+  },
   styleAddItem: {
     marginVertical: 10,
     marginHorizontal: 15,
@@ -48,31 +38,72 @@ const css = StyleSheet.create({
     fontWeight: v.fontWeight,
   },
 })
+
+const phonebookField = {
+  id: 'phonebook',
+  name: 'phonebook',
+  label: intl`PHONEBOOK`,
+  rule: 'required',
+  isFocus: false,
+}
 export const ContactsCreateForm: FC<{
   updatingPhonebook?: Phonebook2
-  book?: string
+  phonebook?: string
   onBack: Function
   onSave: Function
   title: string
 }> = observer(props => {
+  const lang = props.updatingPhonebook?.info?.$lang || intlStore.locale
+  const disabled = props.updatingPhonebook?.shared
+  const defaultObj = {
+    phonebook: props.updatingPhonebook?.phonebook || '',
+    $lang: lang,
+    ...genEmptyPhonebook(lang),
+    ...cloneDeep(props.updatingPhonebook?.info),
+  }
+
+  // don't show field: $lang
+  const getFields = () => {
+    if (props.updatingPhonebook) {
+      console.log(defaultObj, Object.keys({ ...defaultObj }))
+      const fields = Object.keys({ ...defaultObj })?.map(key => {
+        if (key === 'phonebook') {
+          return phonebookField
+        }
+        const item = contactStore.getManageItems(lang).find(_ => _.id === key)
+        if (item) {
+          return item
+        }
+        return {
+          id: key,
+          name: key,
+          label: key,
+          keyboardType: 'default',
+        }
+      })
+
+      return (
+        fields
+          ?.filter(_ => _.label !== '$lang' || _.id !== '$lang')
+          ?.filter(_ => _.id !== 'get')
+          ?.map(i => ({ ...i, disabled })) || ([] as ItemPBForm[])
+      )
+    } else {
+      const items = contactStore.getManageItems(lang)?.filter(i => i?.onscreen)
+      return (
+        ([phonebookField, ...items]?.filter(
+          _ => _.label !== '$lang' || _.id !== '$lang',
+        ) as ItemPBForm[]) || []
+      )
+    }
+  }
   const m = () => ({
     observable: {
-      phonebook: {
-        book: props.book || '',
-        ...genEmptyPhonebook(),
-        ...cloneDeep(props.updatingPhonebook),
-      },
-      fields: [] as ItemPBForm[],
+      phonebook: defaultObj,
+      fields: getFields() as ItemPBForm[],
     },
-
     hasUnsavedChanges: () => {
-      const p = props.updatingPhonebook || genEmptyPhonebook()
-      if (!props.updatingPhonebook) {
-        Object.assign(p, {
-          book: props.book,
-        })
-      }
-      return !isEqual($.phonebook, p)
+      return !isEqual($.phonebook, defaultObj)
     },
 
     onBackBtnPress: () => {
@@ -97,38 +128,22 @@ export const ContactsCreateForm: FC<{
   const $ = useStore(m) as any as M
 
   const [Form, submitForm] = useForm()
-  const disabled = props.updatingPhonebook?.shared
-  const items = contactStore.getItemPB()?.filter(i => i?.onscreen)
-  if (props.updatingPhonebook) {
-    $.fields = Object.keys(props.updatingPhonebook).map(key => {
-      return {
-        id: key,
-        name: key,
-        label: key,
-      }
-    })
-  } else {
-    $.fields = [
-      {
-        id: 'book',
-        name: 'book',
-        label: intl`BOOK`,
-        rule: 'required',
-        isFocus: false,
-      },
-      ...items,
-    ]
-  }
 
   const onSelectItem = (value: string) => {
+    value.replace('$', '') // prevent key on manage.item in phonebook.js
     contactStore.dismissPicker()
-    const isExistField = !!$.fields.find(_ => _.label === value)
+    const isExistField = !!$.fields.find(
+      _ => _.label === value || _.id === value,
+    )
     if (isExistField) {
       return
     }
-    const itemExist = contactStore.getItemPB().find(_ => _.label === value)
+    const itemExist = contactStore
+      .getManageItems(lang)
+      .find(_ => _.label === value || _.id === value)
     if (itemExist) {
       $.fields.push(itemExist)
+      $.phonebook = { ...$.phonebook, [itemExist.id]: '' }
       return
     }
     const newField = {
@@ -136,15 +151,19 @@ export const ContactsCreateForm: FC<{
       name: value,
       id: value,
       keyboardType: 'default',
-    } as unknown as ItemPBForm
+    }
     $.fields.push(newField)
+    $.phonebook = { ...$.phonebook, [newField.id]: '' }
   }
   const openPicker = () => {
     contactStore.openPicker({
       onSelect: onSelectItem,
-      listOption: contactStore.getItemPB().filter(i => !i?.onscreen),
+      listOption: contactStore.getManageItems(lang).filter(i => !i?.onscreen),
     })
   }
+  const previewName = contactStore
+    .getManagerContact($.phonebook?.$lang)
+    ?.toDisplayName($.phonebook)
   return (
     <Layout
       fabOnBack={$.onBackBtnPress}
@@ -152,17 +171,30 @@ export const ContactsCreateForm: FC<{
       onBack={$.onBackBtnPress}
       title={props.title}
     >
+      {!!!disabled && (
+        <RnText
+          title
+          style={[
+            css.stylePreviewName,
+            { color: !previewName ? v.colors.greyTextChat : 'black' },
+          ]}
+        >
+          {previewName || intl`<Unnamed>`}
+        </RnText>
+      )}
       <Form
         $={$}
         fields={$.fields}
         k='phonebook'
         onValidSubmit={$.onValidSubmit}
       />
-      <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
-        <RnText small style={css.labelAddItem}>
-          {'>>' + intl`Add item`}
-        </RnText>
-      </RnTouchableOpacity>
+      {!!!disabled && (
+        <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
+          <RnText small style={css.labelAddItem}>
+            {'>>' + intl`Add item`}
+          </RnText>
+        </RnTouchableOpacity>
+      )}
     </Layout>
   )
 })

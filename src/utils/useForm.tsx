@@ -127,12 +127,12 @@ export const useForm = () => {
                 />
               ),
           )}
-          {k === 'phonebook' && $.currentFocus === 'book' && (
+          {k === 'phonebook' && $.currentFocus === 'phonebook' && (
             <PBAutoComplete
-              value={get($parent, k + '.book')}
+              value={get($parent, k + '.phonebook')}
               onPressItem={(item: PbxBook) => {
-                $parent.set(k + '.book', item.phonebook)
-                $.onFieldChange('book', item.phonebook)
+                $parent.set(k + '.phonebook', item.phonebook)
+                $.onFieldChange('phonebook', item.phonebook)
               }}
             />
           )}
