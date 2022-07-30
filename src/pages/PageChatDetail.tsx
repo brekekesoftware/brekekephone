@@ -19,6 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
+import { callStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -136,6 +137,19 @@ export class PageChatDetail extends Component<{
         title={getPartyName(id) || id} // for user not set username
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
+        dropdown={[
+          {
+            label: intl`Audio call`,
+            onPress: () => callStore.startCall(id),
+          },
+          {
+            label: intl`Video call`,
+            onPress: () =>
+              callStore.startCall(id, {
+                videoEnabled: true,
+              }),
+          },
+        ]}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>

@@ -9,7 +9,7 @@ import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
-import { Pbx } from './brekekejs'
+import { Pbx, PbxEvent } from './brekekejs'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -73,6 +73,8 @@ export class PBX extends EventEmitter {
       }),
     ])
 
+    const pendingServerStatuses: PbxEvent['serverStatus'][] = []
+    client.notify_serverstatus = e => pendingServerStatuses.push(e)
     // Check again webphone.pal.param.user
     if (!palParamUserReconnect) {
       const as = getAuthStore()
@@ -110,6 +112,7 @@ export class PBX extends EventEmitter {
       }
       return
     }
+    pendingServerStatuses.forEach(client.notify_serverstatus)
 
     // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
     // {"time":1587451575120,"park":"777","status":"off"}
