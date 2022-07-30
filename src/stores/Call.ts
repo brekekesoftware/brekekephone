@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
@@ -29,19 +29,16 @@ export class Call {
   @observable partyImageUrl = ''
   @observable partyImageSize = ''
   @observable talkingImageUrl = ''
-  /** @deprecated use computedName instead */
+  /** @deprecated use below getDisplayName instead */
   @observable partyName = ''
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
-  @computed get computedName() {
-    return (
-      getPartyName(this.partyNumber) ||
-      this.partyName ||
-      this.partyNumber ||
-      this.pbxTalkerId ||
-      this.id
-    )
-  }
+  getDisplayName = () =>
+    getPartyName(this.partyNumber) ||
+    this.partyName ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
   createdAt = Date.now()
 
   @observable incoming = false
@@ -111,7 +108,7 @@ export class Call {
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
     // We dont want to display incoming call here again
-    if (getAuthStore().currentAccount?.pushNotificationEnabled) {
+    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
       return
     }
     this.callkeepUuid = newUuid().toUpperCase()

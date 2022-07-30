@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 import debounce from 'lodash/debounce'
-import { computed, observable } from 'mobx'
+import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking, Platform } from 'react-native'
 import RNFS from 'react-native-fs'
@@ -47,9 +47,7 @@ class DebugStore {
 
   // Cache the size of log files
   @observable logSizes = [0, 0]
-  @computed get logSize() {
-    return this.logSizes.reduce((sum, s) => sum + s, 0)
-  }
+  getLogSize = () => this.logSizes.reduce((sum, s) => sum + s, 0)
 
   // Use a queue to write logs to file in batch
   logQueue: string[] = []
@@ -154,7 +152,7 @@ class DebugStore {
   @observable isCheckingForUpdate = false
   @observable remoteVersion = ''
   @observable remoteVersionLastCheck = 0
-  @computed get isUpdateAvailable() {
+  isUpdateAvailable = () => {
     const ac = currentVersion.split('.').map(Number)
     const ar = this.remoteVersion.split('.').map(Number)
     if (ac.length !== 3 || ar.length !== 3) {

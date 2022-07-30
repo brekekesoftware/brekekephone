@@ -139,9 +139,9 @@ export class SIP extends EventEmitter {
       }
       partyName =
         partyName ||
-        getAuthStore().currentData.recentCalls.find(
-          c => c.partyNumber === partyNumber,
-        )?.partyName ||
+        getAuthStore()
+          .getCurrentData()
+          .recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
 
       this.emit('session-started', {

@@ -57,14 +57,9 @@ const css = StyleSheet.create({
 export class PageChatGroupDetail extends Component<{
   groupId: string
 }> {
-  @computed get chatIds() {
-    return (chatStore.messagesByThreadId[this.props.groupId] || []).map(
-      m => m.id,
-    )
-  }
   @computed get chatById() {
     return arrToMap(
-      chatStore.messagesByThreadId[this.props.groupId] || [],
+      chatStore.getMessagesByThreadId(this.props.groupId),
       'id',
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
@@ -125,7 +120,7 @@ export class PageChatGroupDetail extends Component<{
     const gr = chatStore.getGroupById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
-    const chats = chatStore.messagesByThreadId[this.props.groupId]
+    const chats = chatStore.getMessagesByThreadId(this.props.groupId)
     return (
       <Layout
         compact
@@ -159,7 +154,7 @@ export class PageChatGroupDetail extends Component<{
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
           <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
-            {this.chatIds.length === 0
+            {!chatStore.getMessagesByThreadId(this.props.groupId).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
           </RnText>
@@ -336,7 +331,9 @@ export class PageChatGroupDetail extends Component<{
     this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
-    const oldestChat = (this.chatById[this.chatIds[0]] || {}) as ChatMessage
+    const oldestChat =
+      chatStore.getMessagesByThreadId(this.props.groupId)[0] ||
+      ({} as ChatMessage)
     const oldestCreated = oldestChat.created || 0
     const max = this.numberOfChatsPerLoadMore
     const end = oldestCreated
@@ -359,7 +356,7 @@ export class PageChatGroupDetail extends Component<{
       })
       .then(() => {
         const id = this.props.groupId
-        const totalChatLoaded = chatStore.messagesByThreadId[id]?.length || 0
+        const totalChatLoaded = chatStore.getMessagesByThreadId(id).length
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
           chatStore.updateThreadConfig(id, true, {
             allMessagesLoaded: true,
@@ -535,7 +532,11 @@ export class PageChatGroupDetail extends Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      Object.assign(chatStore.getFileById(file.id), {
+      const f = chatStore.getFileById(file.id)
+      if (!f) {
+        return
+      }
+      Object.assign(f, {
         url,
         fileType,
       })

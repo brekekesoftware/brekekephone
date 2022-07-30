@@ -52,7 +52,7 @@ export const ProfileSignInItem: FC<{
   id?: string
   last?: boolean
 }> = observer(props => {
-  if (props.empty || !props.id) {
+  if (props.empty) {
     return (
       <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
         <RnText subTitle>{intl`No account`}</RnText>
@@ -67,8 +67,14 @@ export const ProfileSignInItem: FC<{
       </View>
     )
   }
+  if (!props.id) {
+    return null
+  }
+  const p = accountStore.accountsMap[props.id]
+  if (!p) {
+    return null
+  }
   const isWeb = Platform.OS === 'web'
-  const p = accountStore.profilesMap[props.id]
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
   return (
     <View

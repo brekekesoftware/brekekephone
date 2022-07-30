@@ -50,7 +50,7 @@ export const SmartImage = (p: {
     <View
       style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}
     >
-      {statusImageLoading === 0 && (
+      {!statusImageLoading && (
         <ActivityIndicator
           size='small'
           color='white'

@@ -1,4 +1,3 @@
-import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -50,9 +49,6 @@ const css = StyleSheet.create({
 export class PageChatGroupInvite extends Component<{
   groupId: string
 }> {
-  @computed get buddyIds() {
-    return contactStore.ucUsers.map(u => u.id).filter(this.isNotMember)
-  }
   state = {
     selectedBuddy: {} as { [k: string]: boolean },
   }
@@ -75,15 +71,18 @@ export class PageChatGroupInvite extends Component<{
           <RnText style={css.PageChatGroupInvite_Text}>{intl`Members`}</RnText>
         </View>
         <Field isGroup />
-        {this.buddyIds.map((id, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
-            <UserItem
-              key={id}
-              {...this.resolveBuddy(id)}
-              selected={this.state.selectedBuddy[id]}
-            />
-          </RnTouchableOpacity>
-        ))}
+        {contactStore.ucUsers
+          .map(u => u.id)
+          .filter(this.isNotMember)
+          .map((id, i) => (
+            <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
+              <UserItem
+                key={id}
+                {...this.resolveBuddy(id)}
+                selected={this.state.selectedBuddy[id]}
+              />
+            </RnTouchableOpacity>
+          ))}
       </Layout>
     )
   }

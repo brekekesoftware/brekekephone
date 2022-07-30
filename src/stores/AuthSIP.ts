@@ -37,7 +37,7 @@ class AuthSIP {
   }
 
   private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
-    const p = getAuthStore().currentAccount
+    const p = getAuthStore().getCurrentAccount()
     if (!p) {
       console.log('SIP PN debug: Already signed out after long await')
       return

@@ -109,7 +109,7 @@ const renderAsync = async (div: HTMLElement, o: Options) => {
       firstAccountInOptions = firstAccountInOptions || fr
     }
   })
-  await accountStore.saveAccountsToLocalStorage()
+  await accountStore.saveAccountsToLocalStorageDebounced()
   if (!o.auto_login) {
     return
   }

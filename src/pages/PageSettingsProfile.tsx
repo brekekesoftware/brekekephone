@@ -28,6 +28,6 @@ export const PageSettingsProfile = observer(() => (
       })
     }}
     title={intl`Current Account`}
-    updatingProfile={getAuthStore().currentAccount}
+    updatingProfile={getAuthStore().getCurrentAccount()}
   />
 ))

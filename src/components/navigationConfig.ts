@@ -109,7 +109,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().currentAccount?.ucEnabled) {
+        if (s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
@@ -119,7 +119,7 @@ const genMenus = () => {
       }
     })
     m.navFn = () => {
-      let k = getAuthStore().currentAccount?.navSubMenus?.[i]
+      let k = getAuthStore().getCurrentAccount()?.navSubMenus?.[i]
       if (!k) {
         return
       }
@@ -145,7 +145,7 @@ export const menus = () => {
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const p = getAuthStore().currentAccount
+  const p = getAuthStore().getCurrentAccount()
   if (!m || !p) {
     return
   }
@@ -157,11 +157,11 @@ const saveNavigation = (i: number, k: string) => {
     p.navIndex = i
   }
   p.navSubMenus[i] = k
-  accountStore.saveAccountsToLocalStorage()
+  accountStore.saveAccountsToLocalStorageDebounced()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const p = getAuthStore().currentAccount
+  const p = getAuthStore().getCurrentAccount()
   if (!p) {
     return
   }
@@ -188,6 +188,6 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !getAuthStore().currentAccount?.ucEnabled),
+    s => !(s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled),
   )
 }

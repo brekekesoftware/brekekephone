@@ -73,7 +73,7 @@ export const CallNotify = observer(() => {
   const Wrapper =
     k?.hasAction ||
     Platform.OS === 'web' ||
-    !getAuthStore().currentAccount?.pushNotificationEnabled
+    !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
   return (
@@ -84,7 +84,7 @@ export const CallNotify = observer(() => {
         onPress={() => Nav().goToPageCallManage()}
       >
         <View style={css.Notify_Info}>
-          <RnText bold>{c.computedName}</RnText>
+          <RnText bold>{c.getDisplayName()}</RnText>
           <RnText>{intl`Incoming Call`}</RnText>
         </View>
         <ButtonIcon

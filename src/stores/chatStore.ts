@@ -69,39 +69,38 @@ class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
+
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
     const l1 = filterTextOnly(
       Object.values(this.threadConfig).filter(v => {
         idMap[v.id] = true
-        return v.isUnread && this.messagesByThreadId[v.id]?.length
+        return v.isUnread && this.getMessagesByThreadId(v.id).length
       }) as any,
     ).length
     const l2 = filterTextOnly(
-      getAuthStore().currentData.recentChats.filter(
-        c => !idMap[c.id] && c.unread,
-      ),
+      getAuthStore()
+        .getCurrentData()
+        .recentChats.filter(c => !idMap[c.id] && c.unread),
     ).length
     return l1 + l2
   }
-  @computed get numberNoticesWebchat() {
-    return this.groups.filter(
+  getNumberWebchatNoti = () =>
+    this.groups.filter(
       s =>
         s.webchat &&
         s.webchat.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT,
     )?.length
-  }
+
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
-    return sortBy(Object.keys(this.messagesByThreadId), k => {
-      const messages = this.messagesByThreadId[k]
-      if (!messages?.length) {
-        return -1
-      }
-      return messages[0].created
-    })
+    return sortBy(
+      Object.keys(this.messagesByThreadId),
+      k => this.getMessagesByThreadId(k)[0]?.created || -1,
+    )
   }
   getWebChatInactiveIds() {
     return this.groups
@@ -183,7 +182,7 @@ class ChatStore {
     if (!Array.isArray(m)) {
       m = [m]
     }
-    const messages = this.messagesByThreadId[threadId] || []
+    const messages = this.getMessagesByThreadId(threadId)
     messages.push(...m)
     this.messagesByThreadId[threadId] = sortBy(
       uniqBy(messages, 'id'),

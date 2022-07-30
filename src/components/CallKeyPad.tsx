@@ -25,6 +25,7 @@ const css = StyleSheet.create({
   KeyPad_Btn: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 25,
   },
   KeyPad_Btn__call: {
     backgroundColor: v.colors.primary,
@@ -38,7 +39,6 @@ const css = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     borderRadius: 25,
-    // paddingVertical: 10,
   },
   KeyPad_view: {
     flex: 1,
@@ -85,7 +85,7 @@ export const KeyPad = (p: {
           path={mdiKeyboard}
         />
       </RnTouchableOpacity>
-      <View style={p.callVoiceForward ? css.KeyPad_view : {}}>
+      <View style={p.callVoiceForward ? css.KeyPad_view : undefined}>
         {p.callVoiceForward && (
           <RnTouchableOpacity
             onPress={p.callVoiceForward}

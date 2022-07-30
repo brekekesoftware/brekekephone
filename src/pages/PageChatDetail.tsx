@@ -19,6 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
+import { callStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -50,12 +51,9 @@ const css = StyleSheet.create({
 export class PageChatDetail extends Component<{
   buddy: string
 }> {
-  @computed get chatIds() {
-    return (chatStore.messagesByThreadId[this.props.buddy] || []).map(m => m.id)
-  }
   @computed get chatById() {
     return arrToMap(
-      chatStore.messagesByThreadId[this.props.buddy] || [],
+      chatStore.getMessagesByThreadId(this.props.buddy),
       'id',
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
@@ -119,7 +117,7 @@ export class PageChatDetail extends Component<{
     const { buddy: id } = this.props
     const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state
-    const listMessage = chatStore.messagesByThreadId[this.props.buddy]
+    const listMessage = chatStore.getMessagesByThreadId(this.props.buddy)
     const incomingMessage = listMessage
       ? listMessage[listMessage.length - 1]?.text
       : undefined
@@ -136,12 +134,25 @@ export class PageChatDetail extends Component<{
         title={getPartyName(id) || id} // for user not set username
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
+        dropdown={[
+          {
+            label: intl`Start voice call`,
+            onPress: () => callStore.startCall(id),
+          },
+          {
+            label: intl`Start video call`,
+            onPress: () =>
+              callStore.startCall(id, {
+                videoEnabled: true,
+              }),
+          },
+        ]}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
           <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
-            {this.chatIds.length === 0
+            {!chatStore.getMessagesByThreadId(this.props.buddy).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
           </RnText>
@@ -321,7 +332,9 @@ export class PageChatDetail extends Component<{
     this.setState({ loadingMore: true })
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
-    const oldestChat = (this.chatById[this.chatIds[0]] || {}) as ChatMessage
+    const oldestChat =
+      chatStore.getMessagesByThreadId(this.props.buddy)[0] ||
+      ({} as ChatMessage)
     const oldestCreated = oldestChat.created || 0
     const max = this.numberOfChatsPerLoadMore
     const end = oldestCreated
@@ -342,7 +355,7 @@ export class PageChatDetail extends Component<{
       })
       .then(() => {
         const { buddy } = this.props
-        const totalChatLoaded = chatStore.messagesByThreadId[buddy]?.length || 0
+        const totalChatLoaded = chatStore.getMessagesByThreadId(buddy).length
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
           chatStore.updateThreadConfig(buddy, false, {
             allMessagesLoaded: true,

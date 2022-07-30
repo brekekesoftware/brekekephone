@@ -1,6 +1,6 @@
 export const formatBytes = (bytes: number | string, decimals = 2) => {
   bytes = +bytes
-  if (bytes === 0) {
+  if (!bytes) {
     return '0 Bytes'
   }
   const k = 1024

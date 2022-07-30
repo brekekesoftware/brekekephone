@@ -38,7 +38,7 @@ class UserStore {
     this.resetCache()
     this.type = 'PbxBuddy'
     const s = getAuthStore()
-    const cp = s.currentAccount
+    const cp = s.getCurrentAccount()
     if (!cp) {
       return
     }
@@ -66,15 +66,15 @@ class UserStore {
     }
 
     // get from local
-    const buddyList = s.currentData?.pbxBuddyList
+    const buddyList = s.getCurrentData()?.pbxBuddyList
     const users = _.cloneDeep(buddyList?.users || [])
 
-    if (s.isBigMode) {
+    if (s.isBigMode()) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentAccount?.pbxLocalAllUsers
+      this.isSelectedAddAllUser = !!s.getCurrentAccount()?.pbxLocalAllUsers
     }
-    this.isDisableAddAllUserToTheList = s.isBigMode
+    this.isDisableAddAllUserToTheList = s.isBigMode()
     this.buddyMax =
       Number(s.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
@@ -105,13 +105,13 @@ class UserStore {
         )
     }
 
-    if (s.isBigMode) {
+    if (s.isBigMode()) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.currentAccount?.pbxLocalAllUsers
+      this.isSelectedAddAllUser = !!s.getCurrentAccount()?.pbxLocalAllUsers
     }
     this.isDisableAddAllUserToTheList =
-      s.isBigMode ||
+      s.isBigMode() ||
       configProperties.optional_config?.buddy_max < allUsers?.length
     this.buddyMax =
       configProperties.optional_config?.buddy_max || defaultBuddyMax
@@ -235,7 +235,7 @@ class UserStore {
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
     const s = getAuthStore()
     accountStore.upsertAccount({
-      id: s.currentAccount?.id,
+      id: s.getCurrentAccount()?.id,
       pbxLocalAllUsers: this.isSelectedAddAllUser,
     })
   }
@@ -285,7 +285,7 @@ class UserStore {
     renderData: readonly UcBuddy[],
     isEditMode?: boolean,
   ) => {
-    if (!getAuthStore().currentAccount?.ucEnabled) {
+    if (!getAuthStore().getCurrentAccount()?.ucEnabled) {
       return `(${renderData.length})`
     }
 

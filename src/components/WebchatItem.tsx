@@ -60,7 +60,7 @@ export const WebchatItem: FC<{
   // CONF_STATUS_INVITED: 1 => enabled join
   // CONF_STATUS_JOINED: 2 => enable show
   // CONF_STATUS_INVITED_WEBCHAT: 5 => enabled answer
-  const messages = chatStore.messagesByThreadId[data.conf_id] || []
+  const messages = chatStore.getMessagesByThreadId(data.conf_id)
   const isEnabledAnswer =
     data.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT
   const isEnabledJoin = data.conf_status === Constants.CONF_STATUS_INVITED

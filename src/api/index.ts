@@ -51,7 +51,7 @@ class Api {
     s.pbxTotalFailure = 0
     await waitSip()
     await pbx.getConfig()
-    const cp = s.currentAccount
+    const cp = s.getCurrentAccount()
     if (!cp) {
       return
     }
@@ -60,7 +60,7 @@ class Api {
     if (cp.pbxLocalAllUsers === undefined) {
       cp.pbxLocalAllUsers = true
     }
-    if (s.isBigMode || !cp.pbxLocalAllUsers) {
+    if (s.isBigMode() || !cp.pbxLocalAllUsers) {
       cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
     } else {
       contactStore.getPbxUsers()

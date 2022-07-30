@@ -245,7 +245,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     // App currently active and already logged in using this account
     if (
       AppState.currentState === 'active' &&
-      getAuthStore().currentAccount?.pbxUsername === n.to
+      getAuthStore().getCurrentAccount()?.pbxUsername === n.to
     ) {
       return
     }

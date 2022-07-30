@@ -156,6 +156,7 @@ export type PbxGetProductInfoRes = {
   'webphone.uc.host': string
   'webphone.allusers': string
   'webphone.users.max': string
+  'webphone.pal.param.user': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string

@@ -29,6 +29,7 @@ const css = StyleSheet.create({
 @observer
 export class PageSettingsDebug extends Component {
   render() {
+    const isUpdateAvailable = debugStore.isUpdateAvailable()
     return (
       <Layout
         description={intl`App information and debugging`}
@@ -65,7 +66,7 @@ export class PageSettingsDebug extends Component {
               label={intl`OPEN DEBUG LOG`}
               onCreateBtnPress={debugStore.openLogFile}
               onTouchPress={debugStore.openLogFile}
-              value={filesize(debugStore.logSize, { round: 0 })}
+              value={filesize(debugStore.getLogSize(), { round: 0 })}
             />
 
             <Field hasMargin isGroup label={intl`UPDATE`} />
@@ -79,16 +80,16 @@ export class PageSettingsDebug extends Component {
             />
             <RnText
               normal
-              primary={!debugStore.isUpdateAvailable}
+              primary={!isUpdateAvailable}
               small
               style={css.Text}
-              warning={debugStore.isUpdateAvailable}
+              warning={isUpdateAvailable}
             >
               {intl`Current version: ${currentVersion}`}
               {'\n'}
               {debugStore.isCheckingForUpdate
                 ? intl`Checking for update...`
-                : debugStore.isUpdateAvailable
+                : isUpdateAvailable
                 ? intl`A new version is available: ${debugStore.remoteVersion}`
                 : intl`Brekeke Phone is up-to-date, checked ${moment(
                     debugStore.remoteVersionLastCheck,
