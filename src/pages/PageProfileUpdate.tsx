@@ -16,6 +16,6 @@ export const PageProfileUpdate: FC<{
       Nav().backToPageProfileSignIn()
     }}
     title={intl`Update Account`}
-    updatingProfile={accountStore.profilesMap[props.id]}
+    updatingProfile={accountStore.accountsMap[props.id]}
   />
 ))

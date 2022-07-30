@@ -61,20 +61,23 @@ export type AccountData = {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
   }
+  palParamUser?: string
 }
 
 class AccountStore {
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
 
   @observable accounts: Account[] = []
-  @computed get profilesMap() {
+  @computed get accountsMap() {
     return arrToMap(this.accounts, 'id', (p: Account) => p) as {
       [k: string]: Account
     }
   }
   @observable accountData: AccountData[] = []
+
   @observable storageLoadedObservable = false
   waitStorageLoaded = () => profilesLoaded
+
   genEmptyAccount = (): Account => ({
     id: newUuid(),
     pbxTenant: '',
@@ -91,6 +94,7 @@ class AccountStore {
     navIndex: -1,
     navSubMenus: [],
   })
+
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
     let x: TAccountDataInStorage | undefined
@@ -117,7 +121,7 @@ class AccountStore {
     resolveFn = undefined
     this.storageLoadedObservable = true
   }
-  saveAccountsToLocalStorage = async () => {
+  private saveAccountsToLocalStorage = async () => {
     try {
       await RnAsyncStorage.setItem(
         '_api_profiles',
@@ -133,6 +137,12 @@ class AccountStore {
       })
     }
   }
+  saveAccountsToLocalStorageDebounced = debounce(
+    this.saveAccountsToLocalStorage,
+    100,
+    { maxWait: 1000 },
+  )
+
   @action upsertAccount = (p: Partial<Account>) => {
     const p1 = this.accounts.find(p0 => p0.id === p.id)
     if (!p1) {
@@ -158,17 +168,17 @@ class AccountStore {
             })
             p1.pushNotificationEnabled = p0.pushNotificationEnabled
             p1.pushNotificationEnabledSynced = p0.pushNotificationEnabledSynced
-            this.saveAccountsToLocalStorage()
+            this.saveAccountsToLocalStorageDebounced()
           },
         })
       }
     }
-    this.saveAccountsToLocalStorage()
+    this.saveAccountsToLocalStorageDebounced()
   }
   @action removeAccount = (id: string) => {
     const p0 = this.accounts.find(p => p.id === id)
     this.accounts = this.accounts.filter(p => p.id !== id)
-    this.saveAccountsToLocalStorage()
+    this.saveAccountsToLocalStorageDebounced()
     if (p0) {
       p0.pushNotificationEnabled = false
       SyncPnToken().sync(p0, {
@@ -194,26 +204,19 @@ class AccountStore {
       recentChats: [],
       pbxBuddyList: undefined,
     }
-    this.updateAccountDataDebounced(d)
+    setTimeout(() => this.updateAccountData(d))
     return d
   }
-  updateAccountDataDebounced = debounce(
-    (d: AccountData) => {
-      if (d.id === this.accountData[0]?.id) {
-        return
-      }
-      const arr = [d, ...this.accountData.filter(d2 => d2.id !== d.id)]
-      if (arr.length > 20) {
-        arr.pop()
-      }
-      runInAction(() => {
-        this.accountData = arr
-      })
-      this.saveAccountsToLocalStorage()
-    },
-    300,
-    { maxWait: 3000 },
-  )
+  updateAccountData = (d: AccountData) => {
+    const arr = [d, ...this.accountData.filter(d2 => d2.id !== d.id)]
+    if (arr.length > 20) {
+      arr.pop()
+    }
+    runInAction(() => {
+      this.accountData = arr
+    })
+    this.saveAccountsToLocalStorageDebounced()
+  }
 }
 
 export const getAccountUniqueId = (p: Account) =>

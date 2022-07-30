@@ -269,7 +269,7 @@ export class PageContactEdit extends Component {
     }
   }
   onSaveSuccess = () => {
-    accountStore.saveAccountsToLocalStorage()
+    accountStore.saveAccountsToLocalStorageDebounced()
     userStore.updateDisplayGroupList()
     this.onGoBack()
   }

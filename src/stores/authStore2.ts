@@ -210,7 +210,7 @@ export class AuthStore {
     if (this.currentData.recentCalls.length > 20) {
       this.currentData.recentCalls.pop()
     }
-    accountStore.saveAccountsToLocalStorage()
+    accountStore.saveAccountsToLocalStorageDebounced()
   }
 
   savePbxBuddyList = (pbxBuddyList: {
@@ -218,7 +218,7 @@ export class AuthStore {
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
     this.currentData.pbxBuddyList = pbxBuddyList
-    accountStore.saveAccountsToLocalStorage()
+    accountStore.saveAccountsToLocalStorageDebounced()
   }
 
   handleUrlParams = async () => {

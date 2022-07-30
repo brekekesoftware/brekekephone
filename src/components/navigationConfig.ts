@@ -157,7 +157,7 @@ const saveNavigation = (i: number, k: string) => {
     p.navIndex = i
   }
   p.navSubMenus[i] = k
-  accountStore.saveAccountsToLocalStorage()
+  accountStore.saveAccountsToLocalStorageDebounced()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()

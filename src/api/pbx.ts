@@ -18,17 +18,19 @@ export class PBX extends EventEmitter {
   // wait auth state to success
   needToWait = true
 
-  connect = async (p: Account) => {
+  connect = async (p: Account, palParamUserReconnect?: boolean) => {
     console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
-      // return Promise.reject(new Error('PAL client is connected'))
-      // TODO
+      console.warn('PAL client already connected, ignore...')
       return
     }
-    // got issue: any function get pbxConfig on this time. will get undefined
-    // getAuthStore().pbxConfig = undefined
 
     const d = accountStore.getAccountData(p)
+    const oldPalParamUser = d.palParamUser
+    console.log(
+      `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
+    )
+
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: p.pbxTenant,
@@ -37,13 +39,12 @@ export class PBX extends EventEmitter {
       _wn: d.accessToken,
       park: p.parks || [],
       voicemail: 'self',
-      // user: '*',
+      user: d.palParamUser,
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
     })
     this.client = client
-    console.log('PBX PN debug: construct pbx.client')
 
     client.call_pal = ((method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
@@ -71,6 +72,23 @@ export class PBX extends EventEmitter {
         client.login(() => resolve(undefined), reject)
       }),
     ])
+
+    // Check again webphone.pal.param.user
+    if (!palParamUserReconnect) {
+      const as = getAuthStore()
+      // TODO may any function get pbxConfig on this time may get undefined
+      as.pbxConfig = undefined
+      await this.getConfig(true)
+      const newPalParamUser = as.pbxConfig?.['webphone.pal.param.user']
+      if (newPalParamUser !== oldPalParamUser) {
+        console.warn(
+          `Attempt to reconnect due to mismatch webphone.pal.param.user after login: old=${oldPalParamUser} new=${newPalParamUser}`,
+        )
+        this.disconnect()
+        await this.connect(p, true)
+        return
+      }
+    }
 
     this.clearConnectTimeoutId()
     asComponent.emit('pal', p, client)
@@ -166,19 +184,23 @@ export class PBX extends EventEmitter {
     }
   }
 
-  getConfig = async () => {
+  getConfig = async (force?: boolean) => {
     const s = getAuthStore()
-    if (!s.pbxConfig) {
-      if (this.needToWait) {
-        await waitPbx()
-      }
-      if (!this.client) {
-        return
-      }
-      s.pbxConfig = await this.client.call_pal('getProductInfo', {
-        webphone: 'true',
-      })
+    if (s.pbxConfig) {
+      return s.pbxConfig
     }
+    if (this.needToWait && !force) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    s.pbxConfig = await this.client.call_pal('getProductInfo', {
+      webphone: 'true',
+    })
+    const d = accountStore.getAccountData(s.currentAccount)
+    d.palParamUser = s.pbxConfig['webphone.pal.param.user']
+    accountStore.updateAccountData(d)
     return s.pbxConfig
   }
 

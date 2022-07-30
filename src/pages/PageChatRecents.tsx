@@ -47,7 +47,7 @@ export class PageChatRecents extends Component {
       stableStringify(getAuthStore().currentData.recentChats)
     ) {
       getAuthStore().currentData.recentChats = arr2
-      accountStore.saveAccountsToLocalStorage()
+      accountStore.saveAccountsToLocalStorageDebounced()
     }
   }
   handleGroupSelect = (groupId: string) => {

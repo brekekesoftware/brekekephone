@@ -68,7 +68,7 @@ export const ProfileSignInItem: FC<{
     )
   }
   const isWeb = Platform.OS === 'web'
-  const p = accountStore.profilesMap[props.id]
+  const p = accountStore.accountsMap[props.id]
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
   return (
     <View
