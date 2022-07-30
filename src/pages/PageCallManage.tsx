@@ -179,7 +179,7 @@ export class PageCallManage extends Component<{
       }
       noScroll
       onBack={Nav().goToPageCallRecents}
-      title={c?.computedName || intl`Connecting...`}
+      title={c?.getDisplayName() || intl`Connecting...`}
       transparent={!c?.transferring}
     >
       {!c ? null : c.transferring ? (
@@ -227,7 +227,7 @@ export class PageCallManage extends Component<{
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           {!incoming && (
             <RnText title white center numberOfLines={2}>
-              {`${c.computedName}`}
+              {`${c.getDisplayName()}`}
             </RnText>
           )}
         </View>
@@ -413,7 +413,7 @@ export class PageCallManage extends Component<{
               ]}
             >
               <RnText title white center numberOfLines={2}>
-                {`${c.computedName}`}
+                {`${c.getDisplayName()}`}
               </RnText>
               <RnText bold white center>
                 {intl`Incoming Call`}

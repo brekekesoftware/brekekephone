@@ -51,7 +51,7 @@ export class PageSettingsOther extends Component {
       })
   }
   render() {
-    const cp = getAuthStore().currentAccount
+    const cp = getAuthStore().getCurrentAccount()
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
@@ -88,7 +88,7 @@ export class PageSettingsOther extends Component {
           label={intl`LANGUAGE`}
           onTouchPress={intlStore.selectLocale}
           value={intlStore.locale}
-          valueRender={() => intlStore.localeName}
+          valueRender={() => intlStore.getLocaleName()}
         />
         {cp?.ucEnabled && (
           <>

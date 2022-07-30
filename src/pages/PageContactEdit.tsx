@@ -61,7 +61,7 @@ export class PageContactEdit extends Component {
   state = { didMount: false }
 
   componentDidMount = () => {
-    if (getAuthStore().currentAccount?.ucEnabled) {
+    if (getAuthStore().getCurrentAccount()?.ucEnabled) {
       userStore.loadUcBuddyList(true)
     } else {
       userStore.loadPbxBuddyList(true)
@@ -83,7 +83,7 @@ export class PageContactEdit extends Component {
         },
         disabled:
           userStore.isSelectedAddAllUser ||
-          userStore.dataGroupAllUser[ddIndex]?.data?.length === 0,
+          !userStore.dataGroupAllUser[ddIndex]?.data?.length,
       },
       {
         title: intl`Uncheck all`,
@@ -93,7 +93,7 @@ export class PageContactEdit extends Component {
         },
         disabled:
           userStore.isSelectedAddAllUser ||
-          userStore.dataGroupAllUser[ddIndex]?.data?.length === 0,
+          !userStore.dataGroupAllUser[ddIndex]?.data?.length,
       },
       {
         title: intl`Remove group`,
@@ -145,7 +145,7 @@ export class PageContactEdit extends Component {
   }
 
   onGoBack = () => {
-    if (getAuthStore().currentAccount?.ucEnabled) {
+    if (getAuthStore().getCurrentAccount()?.ucEnabled) {
       userStore.loadUcBuddyList()
     }
     RnDropdownSectionList.closeDropdown()

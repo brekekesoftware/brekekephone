@@ -56,10 +56,10 @@ export const Navigation: FC<{
     {menus().map(m => {
       const active = m.key === menu
       const totalUnreadChat = chatStore.unreadCount
-      const totalNoticesWebchat = chatStore.numberNoticesWebchat
+      const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
       const totalNoticesContact = totalUnreadChat + totalNoticesWebchat
       const showUnreadChat =
-        getAuthStore().currentAccount?.ucEnabled &&
+        getAuthStore().getCurrentAccount()?.ucEnabled &&
         !!totalNoticesContact &&
         m.key === 'contact' &&
         !active

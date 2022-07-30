@@ -44,7 +44,7 @@ class AuthUC {
     if (!c) {
       throw new Error('AuthUC.authWithoutCatch pbx.getConfig() undefined')
     }
-    const p = s.currentAccount
+    const p = s.getCurrentAccount()
     if (!p) {
       return
     }

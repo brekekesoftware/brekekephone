@@ -20,7 +20,7 @@ export const getUrlParams = () => {
 
 Linking.addEventListener('url', e => {
   const p = (urlParams = parse(e.url))
-  const cp = getAuthStore().currentAccount
+  const cp = getAuthStore().getCurrentAccount()
   // Check against the current user
   if (
     !p ||

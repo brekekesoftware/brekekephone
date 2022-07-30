@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import { action, computed, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 import {
@@ -67,7 +67,7 @@ export class AuthStore {
 
   ucShouldAuth = () => {
     return (
-      this.currentAccount?.ucEnabled &&
+      this.getCurrentAccount()?.ucEnabled &&
       !this.ucLoginFromAnotherPlace &&
       !this.isSignInByNotification &&
       this.pbxState === 'success' &&
@@ -79,7 +79,7 @@ export class AuthStore {
   }
   ucConnectingOrFailure = () => {
     return (
-      this.currentAccount?.ucEnabled &&
+      this.getCurrentAccount()?.ucEnabled &&
       ['connecting', 'failure'].some(s => s === this.ucState)
     )
   }
@@ -88,7 +88,7 @@ export class AuthStore {
     return [
       this.pbxState,
       this.sipState,
-      this.currentAccount?.ucEnabled && this.ucState,
+      this.getCurrentAccount()?.ucEnabled && this.ucState,
     ].some(s => s === 'failure')
   }
 
@@ -104,19 +104,15 @@ export class AuthStore {
   }
 
   @observable signedInId = ''
-  @computed get currentAccount() {
-    return accountStore.accounts.find(p => p.id === this.signedInId)
-  }
+  getCurrentAccount = () =>
+    accountStore.accounts.find(p => p.id === this.signedInId) as Account
+  getCurrentData = () => accountStore.getAccountData(this.getCurrentAccount())
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
 
-  @computed get isBigMode() {
+  isBigMode() {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
-  }
-
-  @computed get currentData() {
-    return accountStore.getAccountData(this.currentAccount)
   }
 
   signIn = (id: string) => {
@@ -206,9 +202,12 @@ export class AuthStore {
     duration: number
     created: string
   }) => {
-    this.currentData.recentCalls = [call, ...this.currentData.recentCalls]
-    if (this.currentData.recentCalls.length > 20) {
-      this.currentData.recentCalls.pop()
+    this.getCurrentData().recentCalls = [
+      call,
+      ...this.getCurrentData().recentCalls,
+    ]
+    if (this.getCurrentData().recentCalls.length > 20) {
+      this.getCurrentData().recentCalls.pop()
     }
     accountStore.saveAccountsToLocalStorageDebounced()
   }
@@ -217,7 +216,7 @@ export class AuthStore {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
-    this.currentData.pbxBuddyList = pbxBuddyList
+    this.getCurrentData().pbxBuddyList = pbxBuddyList
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 

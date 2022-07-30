@@ -201,7 +201,7 @@ export class PBX extends EventEmitter {
     s.pbxConfig = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
-    const d = accountStore.getAccountData(s.currentAccount)
+    const d = accountStore.getAccountData(s.getCurrentAccount())
     d.palParamUser = s.pbxConfig['webphone.pal.param.user']
     accountStore.updateAccountData(d)
     return s.pbxConfig
@@ -238,7 +238,7 @@ export class PBX extends EventEmitter {
     if (this.needToWait) {
       await waitPbx()
     }
-    const cp = getAuthStore().currentAccount
+    const cp = getAuthStore().getCurrentAccount()
     if (!this.client || !cp) {
       return
     }

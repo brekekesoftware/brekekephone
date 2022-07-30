@@ -41,7 +41,7 @@ export class PageCallDtmfKeypad extends Component {
 
   sendKey = (key: string) => {
     const c = callStore.getCurrentCall()
-    const cp = getAuthStore().currentAccount
+    const cp = getAuthStore().getCurrentAccount()
     if (!c || !cp) {
       return
     }
@@ -57,7 +57,7 @@ export class PageCallDtmfKeypad extends Component {
     const c = callStore.getCurrentCall()
     return (
       <Layout
-        title={c?.computedName}
+        title={c?.getDisplayName()}
         description={intl`Keypad dial manually`}
         onBack={Nav().backToPageCallManage}
       >

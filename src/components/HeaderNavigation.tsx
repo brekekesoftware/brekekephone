@@ -67,7 +67,7 @@ export const Navigation: FC<{
       {tabs.map(s => {
         const active = s.key === subMenu
         const totalUnreadChat = chatStore.unreadCount
-        const totalNoticesWebchat = chatStore.numberNoticesWebchat
+        const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
 
         return (
           <RnTouchableOpacity

@@ -1,6 +1,7 @@
 // API was a component but had been rewritten to a listener
 import '../api'
 
+import { debounce } from 'lodash'
 import { observe } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
@@ -101,7 +102,7 @@ PushNotification.register(async () => {
   Nav().goToPageIndex()
   s.handleUrlParams()
 
-  observe(s, 'signedInId', () => {
+  const onAuthUpdate = debounce(() => {
     Nav().goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
@@ -116,7 +117,8 @@ PushNotification.register(async () => {
       authSIP.dispose()
       authUC.dispose()
     }
-  })
+  }, 17)
+  observe(s, 'signedInId', onAuthUpdate)
 })
 
 const css = StyleSheet.create({

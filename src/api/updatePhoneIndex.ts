@@ -5,7 +5,7 @@ import { RnAlert } from '../stores/RnAlert'
 import { pbx } from './pbx'
 
 export const updatePhoneIndex = async (
-  p = getAuthStore().currentAccount,
+  p = getAuthStore().getCurrentAccount(),
   api = pbx,
 ): Promise<null | {
   id: string
@@ -46,7 +46,7 @@ export const updatePhoneIndex = async (
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })
-    if (p === getAuthStore().currentAccount) {
+    if (p === getAuthStore().getCurrentAccount()) {
       getAuthStore().userExtensionProperties = extProps
     }
   }

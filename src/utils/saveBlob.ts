@@ -28,7 +28,7 @@ const readChunkFile = (p: string, pos: number, data: Blob) => {
       const r = fr.result as string
       const b64 = r.replace(/^data:.*base64,/, '')
       try {
-        if (pos === 0) {
+        if (!pos) {
           await RNFS.writeFile(p, b64, 'base64')
         } else {
           await RNFS.appendFile(p, b64, 'base64')

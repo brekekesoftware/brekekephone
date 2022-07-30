@@ -123,7 +123,7 @@ export const PageProfileSignIn = observer(() => {
           style={[css.CornerButton_Inner, css.CornerButton_Inner__language]}
         >
           <RnText bold white>
-            {intlStore.localeLoading ? '\u200a' : intlStore.localeName}
+            {intlStore.localeLoading ? '\u200a' : intlStore.getLocaleName()}
           </RnText>
           <RnIcon
             color='white'

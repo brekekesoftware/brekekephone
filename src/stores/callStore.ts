@@ -121,10 +121,10 @@ export class CallStore {
     this.updateCurrentCallDebounce()
     const call = this.calls.find(c => c.id === this.currentCallId)
     if (call) {
-      const ucEnabled = getAuthStore()?.currentAccount?.ucEnabled
+      const ucEnabled = getAuthStore()?.getCurrentAccount()?.ucEnabled
       if (
         !call.answered &&
-        (!call.partyImageUrl || call.partyImageUrl?.length === 0)
+        (!call.partyImageUrl || !call.partyImageUrl?.length)
       ) {
         call.partyImageUrl = ucEnabled
           ? this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
@@ -133,7 +133,7 @@ export class CallStore {
       }
       if (
         call.answered &&
-        (!call.talkingImageUrl || call.talkingImageUrl.length === 0)
+        (!call.talkingImageUrl || !call.talkingImageUrl.length)
       ) {
         call.talkingImageUrl = ucEnabled
           ? this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
@@ -157,22 +157,18 @@ export class CallStore {
     if (!tenant || !name) {
       return ''
     }
-    const a = getAuthStore().currentAccount
+    const a = getAuthStore().getCurrentAccount()
     if (!a) {
       return ''
     }
     const { pbxHostname, pbxPort } = a
-    let url = ''
-    if (url.length === 0) {
-      let ucHost = `${pbxHostname}:${pbxPort}`
-      if (ucHost.indexOf(':') < 0) {
-        ucHost += ':443'
-      }
-      const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
-      const baseUrl = `${ucScheme}://${ucHost}`
-      url = `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
+    let ucHost = `${pbxHostname}:${pbxPort}`
+    if (ucHost.indexOf(':') < 0) {
+      ucHost += ':443'
     }
-    return url
+    const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
+    const baseUrl = `${ucScheme}://${ucHost}`
+    return `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
   }
 
   private incallManagerStarted = false
@@ -614,7 +610,7 @@ export class CallStore {
     // Disable ringtone when enable PN
     if (
       Platform.OS === 'ios' &&
-      getAuthStore().currentAccount?.pushNotificationEnabled
+      getAuthStore().getCurrentAccount()?.pushNotificationEnabled
     ) {
       return false
     }

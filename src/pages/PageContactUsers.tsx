@@ -76,13 +76,13 @@ export class PageContactUsers extends Component {
   }
 
   componentDidUpdate() {
-    const cp = getAuthStore().currentAccount
+    const cp = getAuthStore().getCurrentAccount()
     if (this.displayOfflineUsers.enabled !== cp?.displayOfflineUsers) {
       this.displayOfflineUsers.setEnabled(cp?.displayOfflineUsers)
     }
   }
   getDescription = (isUserSelectionMode: boolean) => {
-    const cp = getAuthStore().currentAccount
+    const cp = getAuthStore().getCurrentAccount()
     if (!cp) {
       return ''
     }
@@ -120,13 +120,13 @@ export class PageContactUsers extends Component {
   renderUserSelectionMode = () => {
     const searchTxt = contactStore.usersSearchTerm.toLowerCase()
     const isShowOfflineUser =
-      !getAuthStore().currentAccount?.ucEnabled ||
+      !getAuthStore().getCurrentAccount()?.ucEnabled ||
       this.displayOfflineUsers.enabled
     const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
     return <ContactSectionList sectionListData={displayUsers} />
   }
   renderAllUserMode = () => {
-    const cp = getAuthStore().currentAccount
+    const cp = getAuthStore().getCurrentAccount()
     if (!cp) {
       return null
     }
@@ -176,11 +176,11 @@ export class PageContactUsers extends Component {
 
   render() {
     const s = getAuthStore()
-    const cp = s.currentAccount
+    const cp = s.getCurrentAccount()
     if (!cp) {
       return null
     }
-    const isUserSelectionMode = s.isBigMode || !cp.pbxLocalAllUsers
+    const isUserSelectionMode = s.isBigMode() || !cp.pbxLocalAllUsers
     const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
@@ -203,7 +203,7 @@ export class PageContactUsers extends Component {
           }}
           value={contactStore.usersSearchTerm}
         />
-        {getAuthStore().currentAccount?.ucEnabled && (
+        {getAuthStore().getCurrentAccount()?.ucEnabled && (
           <Field
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={(v: boolean) => {
@@ -225,8 +225,8 @@ export class PageContactUsers extends Component {
 }
 
 const getLastMessageChat = (id: string) => {
-  const chats = filterTextOnly(chatStore.messagesByThreadId[id])
-  return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+  const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+  return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
 }
 type ItemUser = {
   item: {
@@ -239,7 +239,7 @@ const RenderItemUser = observer(({ item, index }: ItemUser) => (
   <RnTouchableOpacity
     key={index}
     onPress={
-      getAuthStore().currentAccount?.ucEnabled
+      getAuthStore().getCurrentAccount()?.ucEnabled
         ? () => Nav().goToPageChatDetail({ buddy: item.id })
         : undefined
     }

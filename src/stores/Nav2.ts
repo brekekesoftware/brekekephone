@@ -217,7 +217,7 @@ export class Nav2 {
   })
   customPageIndex?: Function
   goToPageIndex = () => {
-    const p = getAuthStore().currentAccount
+    const p = getAuthStore().getCurrentAccount()
     if (!p) {
       this.customPageIndex = undefined
       this.goToPageProfileSignIn()

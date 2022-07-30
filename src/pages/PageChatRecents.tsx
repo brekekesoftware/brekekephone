@@ -23,8 +23,8 @@ import { arrToMap } from '../utils/toMap'
 @observer
 export class PageChatRecents extends Component {
   getLastChat = (id: string) => {
-    const chats = filterTextOnly(chatStore.messagesByThreadId[id] || [])
-    return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+    const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+    return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
   }
   saveLastChatItem = (
     arr: {
@@ -44,9 +44,9 @@ export class PageChatRecents extends Component {
     }
     if (
       stableStringify(arr2) !==
-      stableStringify(getAuthStore().currentData.recentChats)
+      stableStringify(getAuthStore().getCurrentData().recentChats)
     ) {
-      getAuthStore().currentData.recentChats = arr2
+      getAuthStore().getCurrentData().recentChats = arr2
       accountStore.saveAccountsToLocalStorageDebounced()
     }
   }
@@ -57,10 +57,10 @@ export class PageChatRecents extends Component {
       RnAlert.error({
         message: intlDebug`You have rejected this group or this group has been deleted`,
       })
-      const newList = getAuthStore().currentData.recentChats.filter(
-        c => c.id !== groupId,
-      )
-      getAuthStore().currentData.recentChats = [...newList]
+      const newList = getAuthStore()
+        .getCurrentData()
+        .recentChats.filter(c => c.id !== groupId)
+      getAuthStore().getCurrentData().recentChats = [...newList]
     } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
       RnAlert.prompt({
         title: '',
@@ -94,9 +94,11 @@ export class PageChatRecents extends Component {
       [k: string]: UcUser
     }
 
-    const recentFromStorage = getAuthStore().currentData.recentChats.filter(
-      c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
-    )
+    const recentFromStorage = getAuthStore()
+      .getCurrentData()
+      .recentChats.filter(
+        c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
+      )
     type WithThreadId = {
       threadId: string
     }
@@ -156,7 +158,7 @@ export class PageChatRecents extends Component {
       return m
     }, {} as { [k: string]: boolean })
 
-    filterTextOnly(getAuthStore().currentData.recentChats).forEach(c => {
+    filterTextOnly(getAuthStore().getCurrentData().recentChats).forEach(c => {
       if (!arrMap[c.id]) {
         arr.push(c)
       }

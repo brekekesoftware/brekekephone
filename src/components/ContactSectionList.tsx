@@ -194,8 +194,8 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     )
   })
 const getLastMessageChat = (id: string) => {
-  const chats = filterTextOnly(chatStore.messagesByThreadId[id])
-  return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+  const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+  return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
 }
 type ItemUser = {
   sectionListData: GroupUserSectionListData[]
@@ -240,7 +240,7 @@ const RenderItemUser = observer(
         ) : !isTransferCall ? (
           <RnTouchableOpacity
             onPress={
-              getAuthStore().currentAccount?.ucEnabled
+              getAuthStore().getCurrentAccount()?.ucEnabled
                 ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
                 : undefined
             }
@@ -298,7 +298,7 @@ const RenderHeaderSection = observer(
     const titleHeaderRender = userStore.getHeaderTitle(title, data, isEditMode)
 
     const isDisableMarginTop =
-      sectionListData[index - 1]?.data?.length === 0 ||
+      !sectionListData[index - 1]?.data?.length ||
       RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
 
     return (

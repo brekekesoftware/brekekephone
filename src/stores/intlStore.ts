@@ -1,6 +1,6 @@
 // import vi from '../assets/intl-vi.json'
 import RnAsyncStorage from '@react-native-async-storage/async-storage'
-import { action, computed, observable, runInAction } from 'mobx'
+import { action, observable, runInAction } from 'mobx'
 import { NativeModules, Platform } from 'react-native'
 
 import en from '../assets/intl-en.json'
@@ -44,9 +44,7 @@ export class IntlStore {
   @observable locale = 'en'
   @observable localeReady = false
   @observable localeLoading = true
-  @computed get localeName() {
-    return localeOptions.find(o => o.key === this.locale)?.label
-  }
+  getLocaleName = () => localeOptions.find(o => o.key === this.locale)?.label
 
   private getLocale = async () => {
     let locale = await RnAsyncStorage.getItem('locale').then(l => l || '')

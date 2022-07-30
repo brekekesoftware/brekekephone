@@ -226,7 +226,7 @@ export class PageContactPhonebook extends Component {
             }
           }}
           type='Switch'
-          value={getAuthStore().currentAccount?.displaySharedContacts}
+          value={getAuthStore().getCurrentAccount()?.displaySharedContacts}
         />
         <View>
           {groups.map(gr => (

@@ -261,8 +261,8 @@ export class Message extends Component<{
   }
 
   onRnPickerSelect = (k: number, url: string) => {
-    const message = k === 0 || k === 1 ? this.props.text : url
-    if (k === 0 || k === 2) {
+    const message = !k || k === 1 ? this.props.text : url
+    if (!k || k === 2) {
       Clipboard.setString(message)
     } else {
       Share.open({ message })
@@ -295,7 +295,7 @@ export class Message extends Component<{
         {!!file && isImage && <ItemImageVideoChat {...file} />}
         {!!file && !isImage && (
           <File
-            {...p.file}
+            {...(p.file as any)}
             accept={() => p.acceptFile(p.file)}
             createdByMe={p.createdByMe}
             reject={() => p.rejectFile(p.file)}

@@ -109,7 +109,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__from]}>
             <Avatar source={{ uri: usersource?.avatar }} />
             <RnText center singleLine small>
-              {c.computedName}
+              {c.getDisplayName()}
             </RnText>
           </View>
           <View style={css.Arrow}>

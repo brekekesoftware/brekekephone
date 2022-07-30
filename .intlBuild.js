@@ -18,5 +18,5 @@ en2.forEach((l, i) => {
   ja2[i] = ja[enMap[l.toLowerCase()]] || '**TRANSLATE**' + l
 })
 
-fs.writeFileSync(currentJa, JSON.stringify(ja2, null, 2))
-fs.writeFileSync(currentEn, JSON.stringify(en2, null, 2))
+fs.writeFileSync(currentJa, JSON.stringify(ja2, null, 2) + '\n')
+fs.writeFileSync(currentEn, JSON.stringify(en2, null, 2) + '\n')

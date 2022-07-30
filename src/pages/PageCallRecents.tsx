@@ -46,9 +46,9 @@ export class PageCallRecents extends Component {
     }
   }
   getMatchedCalls = () => {
-    const calls = getAuthStore().currentData.recentCalls.filter(
-      this.isMatchUser,
-    )
+    const calls = getAuthStore()
+      .getCurrentData()
+      .recentCalls.filter(this.isMatchUser)
     // Backward compatibility to remove invalid items from the previous versions
     const filteredCalls = calls.filter(
       c =>
@@ -100,7 +100,7 @@ export class PageCallRecents extends Component {
             {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
-            canChat={getAuthStore().currentAccount?.ucEnabled}
+            canChat={getAuthStore().getCurrentAccount()?.ucEnabled}
             key={i}
             {...this.getAvatar(c.partyNumber)}
             {...c}

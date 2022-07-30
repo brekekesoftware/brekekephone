@@ -63,7 +63,8 @@ class ContactStore {
     await pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,
-        shared: getAuthStore().currentAccount?.displaySharedContacts || false,
+        shared:
+          getAuthStore().getCurrentAccount()?.displaySharedContacts || false,
         offset: this.offset,
         limit: this.numberOfContactsPerPage,
       })
@@ -105,7 +106,7 @@ class ContactStore {
 
   getPbxUsers = async () => {
     try {
-      const p = getAuthStore().currentAccount
+      const p = getAuthStore().getCurrentAccount()
       if (!p) {
         return
       }

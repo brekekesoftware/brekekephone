@@ -44,7 +44,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         created,
         incoming: c.incoming,
         answered: c.answered,
-        partyName: c.computedName,
+        partyName: c.getDisplayName(),
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
