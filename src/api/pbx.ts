@@ -25,7 +25,7 @@ export class PBX extends EventEmitter {
       return
     }
 
-    const d = accountStore.getAccountData(p)
+    const d = await accountStore.getAccountDataAsync(p)
     const oldPalParamUser = d.palParamUser
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
@@ -201,7 +201,7 @@ export class PBX extends EventEmitter {
     s.pbxConfig = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
-    const d = accountStore.getAccountData(s.getCurrentAccount())
+    const d = await s.getCurrentDataAsync()
     d.palParamUser = s.pbxConfig['webphone.pal.param.user']
     accountStore.updateAccountData(d)
     return s.pbxConfig

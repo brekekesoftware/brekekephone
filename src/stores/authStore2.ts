@@ -107,6 +107,8 @@ export class AuthStore {
   getCurrentAccount = () =>
     accountStore.accounts.find(p => p.id === this.signedInId) as Account
   getCurrentData = () => accountStore.getAccountData(this.getCurrentAccount())
+  getCurrentDataAsync = () =>
+    accountStore.getAccountDataAsync(this.getCurrentAccount())
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
@@ -115,12 +117,12 @@ export class AuthStore {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
 
-  signIn = (id: string) => {
+  signIn = async (id: string) => {
     const p = accountStore.accounts.find(_ => _.id === id)
     if (!p) {
       return false
     }
-    const d = accountStore.getAccountData(p)
+    const d = await accountStore.getAccountDataAsync(p)
     if (!p.pbxPassword && !d.accessToken) {
       Nav().goToPageProfileUpdate({ id: p.id })
       RnAlert.error({
@@ -129,7 +131,7 @@ export class AuthStore {
       return true
     }
     this.signedInId = p.id
-    RnAsyncStorage.setItem('lastSignedInId', getAccountUniqueId(p))
+    await RnAsyncStorage.setItem('lastSignedInId', getAccountUniqueId(p))
     return true
   }
   autoSignIn = async () => {
@@ -193,7 +195,7 @@ export class AuthStore {
     this.ucLoginFromAnotherPlace = false
   }
 
-  pushRecentCall = (call: {
+  pushRecentCall = async (call: {
     id: string
     incoming: boolean
     answered: boolean
@@ -202,21 +204,20 @@ export class AuthStore {
     duration: number
     created: string
   }) => {
-    this.getCurrentData().recentCalls = [
-      call,
-      ...this.getCurrentData().recentCalls,
-    ]
-    if (this.getCurrentData().recentCalls.length > 20) {
-      this.getCurrentData().recentCalls.pop()
+    const d = await this.getCurrentDataAsync()
+    d.recentCalls = [call, ...d.recentCalls]
+    if (d.recentCalls.length > 20) {
+      d.recentCalls.pop()
     }
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
-  savePbxBuddyList = (pbxBuddyList: {
+  savePbxBuddyList = async (pbxBuddyList: {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
-    this.getCurrentData().pbxBuddyList = pbxBuddyList
+    const d = await this.getCurrentDataAsync()
+    d.pbxBuddyList = pbxBuddyList
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
@@ -259,7 +260,7 @@ export class AuthStore {
         p.pbxPort = port
       }
       p.pbxPhoneIndex = `${phoneIdx}`
-      const d = accountStore.getAccountData(p)
+      const d = await accountStore.getAccountDataAsync(p)
       if (_wn) {
         d.accessToken = _wn
       }
@@ -281,7 +282,7 @@ export class AuthStore {
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
-    const d = accountStore.getAccountData(newP)
+    const d = await accountStore.getAccountDataAsync(newP)
     //
     accountStore.upsertAccount(newP)
     if (d.accessToken) {

@@ -12,6 +12,7 @@ import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
+import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
 import { getCallStore } from './cancelRecentPn'
 import { getPartyName } from './contactStore'
@@ -80,10 +81,13 @@ class ChatStore {
         return v.isUnread && this.getMessagesByThreadId(v.id).length
       }) as any,
     ).length
+    const as = getAuthStore()
+    const d = as.getCurrentData()
+    if (!d) {
+      accountStore.getAccountDataAsync(as.getCurrentAccount())
+    }
     const l2 = filterTextOnly(
-      getAuthStore()
-        .getCurrentData()
-        .recentChats.filter(c => !idMap[c.id] && c.unread),
+      d?.recentChats.filter(c => !idMap[c.id] && c.unread),
     ).length
     return l1 + l2
   }

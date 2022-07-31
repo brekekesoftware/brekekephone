@@ -280,7 +280,7 @@ export const setupCallKeep = async () => {
     // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
     eventEmitter.addListener('debug', (m: string) =>
-      console.error(`Android debug: ${m}`),
+      console.log(`Android debug: ${m}`),
     )
   }
 }

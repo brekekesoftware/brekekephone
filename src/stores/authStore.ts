@@ -1,4 +1,5 @@
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { AccountData } from './accountStore'
 import { AuthStore } from './authStore2'
 
 // circular dep
@@ -8,9 +9,7 @@ export const setAuthStore = (s: AuthStore) => {
 }
 export const getAuthStore = () => authStore
 
-export type RecentCall = ReturnType<
-  AuthStore['getCurrentData']
->['recentCalls'][0]
+export type RecentCall = AccountData['recentCalls'][0]
 
 const compareField = (p1: object, p2: object, field: string) => {
   const v1 = p1[field as keyof typeof p1]

@@ -7,6 +7,7 @@ import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
 import { BrekekeUtils } from './RnNativeModules'
+import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
@@ -34,6 +35,7 @@ const keysInCustomNotification = [
   'webphone.turn.server',
   'webphone.turn.username',
   'webphone.turn.credential',
+  'autoanswer',
   // Others
   'pn-id',
   'callkeepUuid',
@@ -130,6 +132,8 @@ export const parseNotificationData = (raw: object) => {
   const turnServer: string = get(n, 'webphone.turn.server')
   const turnUsername: string = get(n, 'webphone.turn.username')
   const turnCredential: string = get(n, 'webphone.turn.credential')
+  const autoAnswer = true // TODO: test
+  void toBoolean(get(n, 'autoanswer'))
   n.sipPn = {
     phoneId,
     sipAuth,
@@ -138,6 +142,7 @@ export const parseNotificationData = (raw: object) => {
     turnServer,
     turnUsername,
     turnCredential,
+    autoAnswer,
   }
 
   if (!n.body) {
@@ -322,6 +327,7 @@ export type SipPn = {
   turnServer: string
   turnUsername: string
   turnCredential: string
+  autoAnswer: boolean
 }
 
 export const toXPN = (n: object) =>

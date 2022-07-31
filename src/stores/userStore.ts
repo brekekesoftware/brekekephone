@@ -66,7 +66,8 @@ class UserStore {
     }
 
     // get from local
-    const buddyList = s.getCurrentData()?.pbxBuddyList
+    const d = await s.getCurrentDataAsync()
+    const buddyList = d?.pbxBuddyList
     const users = _.cloneDeep(buddyList?.users || [])
 
     if (s.isBigMode()) {

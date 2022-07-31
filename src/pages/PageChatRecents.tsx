@@ -26,7 +26,7 @@ export class PageChatRecents extends Component {
     const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
     return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
   }
-  saveLastChatItem = (
+  saveLastChatItem = async (
     arr: {
       id: string
       name: string
@@ -42,25 +42,22 @@ export class PageChatRecents extends Component {
     while (arr2.length > 20) {
       arr2.pop()
     }
-    if (
-      stableStringify(arr2) !==
-      stableStringify(getAuthStore().getCurrentData().recentChats)
-    ) {
-      getAuthStore().getCurrentData().recentChats = arr2
+    const d = await getAuthStore().getCurrentDataAsync()
+    if (stableStringify(arr2) !== stableStringify(d.recentChats)) {
+      d.recentChats = arr2
       accountStore.saveAccountsToLocalStorageDebounced()
     }
   }
-  handleGroupSelect = (groupId: string) => {
+  handleGroupSelect = async (groupId: string) => {
     const groupInfo: Conference = uc.getChatGroupInfo(groupId)
     const groupStatus = groupInfo.conf_status
     if (groupStatus === Constants.CONF_STATUS_INACTIVE) {
       RnAlert.error({
         message: intlDebug`You have rejected this group or this group has been deleted`,
       })
-      const newList = getAuthStore()
-        .getCurrentData()
-        .recentChats.filter(c => c.id !== groupId)
-      getAuthStore().getCurrentData().recentChats = [...newList]
+      const d = await getAuthStore().getCurrentDataAsync()
+      const newList = d.recentChats.filter(c => c.id !== groupId)
+      d.recentChats = [...newList]
     } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
       RnAlert.prompt({
         title: '',
@@ -94,11 +91,15 @@ export class PageChatRecents extends Component {
       [k: string]: UcUser
     }
 
-    const recentFromStorage = getAuthStore()
-      .getCurrentData()
-      .recentChats.filter(
+    const as = getAuthStore()
+    const d = as.getCurrentData()
+    if (!d) {
+      accountStore.getAccountDataAsync(as.getCurrentAccount())
+    }
+    const recentFromStorage =
+      d?.recentChats.filter(
         c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
-      )
+      ) || []
     type WithThreadId = {
       threadId: string
     }
@@ -158,7 +159,7 @@ export class PageChatRecents extends Component {
       return m
     }, {} as { [k: string]: boolean })
 
-    filterTextOnly(getAuthStore().getCurrentData().recentChats).forEach(c => {
+    filterTextOnly(d?.recentChats).forEach(c => {
       if (!arrMap[c.id]) {
         arr.push(c)
       }

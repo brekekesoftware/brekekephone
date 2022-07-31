@@ -1,3 +1,13 @@
+#### 2.11.0
+
+- Save webphone.pal.param.user to local storage and reconnect if mismatch
+- Add some more space to Keypad with the call green button
+- Add dropdown to start voice/video call from screen user chat detail. For screen group chat detail, they were added already in the past
+- Fix: should not show "No Account" although it has
+- Fix: should not logout when app is in background
+- Handle PN data x_autoanswer
+- Update phonebook.js
+
 #### 2.10.9
 
 - Fix RBT low volume after a call

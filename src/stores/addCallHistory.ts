@@ -61,7 +61,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         // -> B got cancel event from sip
         isAboutToHangup: false,
       }
-  as.pushRecentCall(info)
+  await as.pushRecentCall(info)
   presentNotification(info)
 }
 

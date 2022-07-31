@@ -14,7 +14,7 @@ import { chatStore } from '../stores/chatStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
-import { CallOptions, Sip } from './brekekejs'
+import { CallOptions, Session, Sip } from './brekekejs'
 import { getFrontCameraSourceId } from './getFrontCameraSourceId'
 import { pbx } from './pbx'
 import { turnConfig } from './turnConfig'
@@ -104,6 +104,35 @@ export class SIP extends EventEmitter {
       phone.removeEventListener('phoneStatusChanged', h)
     }
 
+    const computeCallPatch = async (ev: Session) => {
+      const partyNumber = ev.rtcSession.remote_identity.uri.user
+      let partyName = ev.rtcSession.remote_identity.display_name
+      if (
+        (!partyName || partyName.startsWith('uc')) &&
+        partyNumber.startsWith('uc')
+      ) {
+        partyName =
+          chatStore.getGroupById(partyNumber.replace('uc', ''))?.name ||
+          partyName ||
+          partyNumber
+      }
+      const d = await getAuthStore().getCurrentDataAsync()
+      partyName =
+        partyName ||
+        d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
+        partyNumber
+      return {
+        id: ev.sessionId,
+        pnId: ev.incomingMessage?.getHeader('X-PN-ID'),
+        incoming: ev.rtcSession.direction === 'incoming',
+        partyNumber,
+        partyName,
+        remoteVideoEnabled: ev.remoteWithVideo,
+        localVideoEnabled: ev.withVideo,
+        sessionStatus: ev.sessionStatus,
+      }
+    }
+
     // sessionId: "1"
     // sessionStatus: "dialing"
     // answering: false
@@ -122,40 +151,14 @@ export class SIP extends EventEmitter {
     // incomingMessage: null
     // remoteUserOptionsTable: {}
     // analyser: null
-    phone.addEventListener('sessionCreated', ev => {
+    phone.addEventListener('sessionCreated', async ev => {
       if (!ev) {
         return
       }
-      const partyNumber = ev.rtcSession.remote_identity.uri.user
-      let partyName = ev.rtcSession.remote_identity.display_name
-      if (
-        (!partyName || partyName.startsWith('uc')) &&
-        partyNumber.startsWith('uc')
-      ) {
-        partyName =
-          chatStore.getGroupById(partyNumber.replace('uc', ''))?.name ||
-          partyName ||
-          partyNumber
-      }
-      partyName =
-        partyName ||
-        getAuthStore()
-          .getCurrentData()
-          .recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
-        partyNumber
-
-      this.emit('session-started', {
-        id: ev.sessionId,
-        pnId: ev.incomingMessage?.getHeader('X-PN-ID'),
-        incoming: ev.rtcSession.direction === 'incoming',
-        partyNumber,
-        partyName,
-        remoteVideoEnabled: ev.remoteWithVideo,
-        localVideoEnabled: ev.withVideo,
-        sessionStatus: ev.sessionStatus,
-      })
+      const p = await computeCallPatch(ev)
+      this.emit('session-started', p)
     })
-    phone.addEventListener('sessionStatusChanged', ev => {
+    phone.addEventListener('sessionStatusChanged', async ev => {
       if (!ev) {
         return
       }
@@ -166,11 +169,10 @@ export class SIP extends EventEmitter {
         ev.rtcSession.direction === 'outgoing' &&
         ev.sessionStatus === 'progress' &&
         !!ev.incomingMessage?.body
-
-      console.log('sessionStatusChanged::withSDP::', withSDP)
-
+      console.log(`sessionStatusChanged withSDP=${withSDP}`)
+      const p = await computeCallPatch(ev)
       const patch = {
-        id: ev.sessionId,
+        ...p,
         answered: ev.sessionStatus === 'connected',
         voiceStreamObject: ev.remoteStreamObject,
         localVideoEnabled: ev.withVideo,

@@ -9,6 +9,7 @@ import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
 import { arrToMap } from '../utils/toMap'
+import { waitTimeout } from '../utils/waitTimeout'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -186,7 +187,7 @@ class AccountStore {
       })
     }
   }
-  getAccountData = (p?: Account) => {
+  getAccountData = (p?: Account): AccountData | undefined => {
     if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
       return {
         id: '',
@@ -197,15 +198,23 @@ class AccountStore {
       }
     }
     const id = getAccountUniqueId(p)
-    const d = this.accountData.find(_ => _.id === id) || {
-      id,
+    return this.accountData.find(_ => _.id === id)
+  }
+  getAccountDataAsync = async (p?: Account): Promise<AccountData> => {
+    const d = this.getAccountData(p)
+    if (d) {
+      return d
+    }
+    const newD = {
+      id: getAccountUniqueId(p!),
       accessToken: '',
       recentCalls: [],
       recentChats: [],
       pbxBuddyList: undefined,
     }
-    setTimeout(() => this.updateAccountData(d))
-    return d
+    await waitTimeout(17)
+    this.updateAccountData(newD)
+    return newD
   }
   updateAccountData = (d: AccountData) => {
     const arr = [d, ...this.accountData.filter(d2 => d2.id !== d.id)]

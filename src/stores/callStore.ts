@@ -48,7 +48,18 @@ export class CallStore {
         !c.isAboutToHangup,
     )
   }
+  autoAnswer = (uuid: string) => {
+    if (Platform.OS === 'ios') {
+      RNCallKeep.answerIncomingCall(uuid)
+    }
+    if (Platform.OS === 'android') {
+      BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+    }
+  }
   @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
+    if (n.sipPn.autoAnswer) {
+      BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 300)
+    }
     this.setAutoEndCallKeepTimer(uuid, n)
     checkAndRemovePnTokenViaSip(n, this)
     // Check if call is rejected already
