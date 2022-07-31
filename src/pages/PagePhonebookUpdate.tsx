@@ -1,10 +1,11 @@
+import { isEmpty } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
 import { getAuthStore } from '../stores/authStore'
-import { contactStore, Phonebook2 } from '../stores/contactStore'
+import { ContactInfo, contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -17,9 +18,9 @@ export class PagePhonebookUpdate extends Component<{
     return (
       <ContactsCreateForm
         onBack={Nav().backToPageContactPhonebook}
-        onSave={(p: Phonebook2) => {
+        onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
           if (pbx.client && getAuthStore().pbxState === 'success') {
-            this.save(p)
+            this.save(p, hasUnsavedChanges)
           }
         }}
         title={intl`Update Phonebook`}
@@ -28,20 +29,32 @@ export class PagePhonebookUpdate extends Component<{
     )
   }
 
-  save = (phonebook: Phonebook2) => {
-    const displayName = `${phonebook.lastName} ${phonebook.firstName}`
-    Object.assign(phonebook, {
-      name: displayName,
-      displayName,
-    })
+  save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
+    if (!hasUnsavedChanges) {
+      Nav().goToPageContactPhonebook()
+      return
+    }
+    if (isEmpty(p)) {
+      return
+    }
+    const phonebook = p.phonebook
+    delete p.phonebook
+
+    const contactUpdate = {
+      id: this.props.contact.id,
+      display_name: contactStore.getManagerContact(p.$lang)?.toDisplayName(p),
+      phonebook,
+      shared: !!this.props.contact?.shared,
+      info: { ...p },
+    } as Phonebook2
     pbx
-      .setContact(phonebook)
-      .then(() => this.onSaveSuccess(phonebook))
+      .setContact(contactUpdate)
+      .then(() => this.onSaveSuccess(contactUpdate))
       .catch(this.onSaveFailure)
   }
   onSaveSuccess = (phonebook: Phonebook2) => {
-    contactStore.upsertPhonebook(phonebook)
     Nav().goToPageContactPhonebook()
+    contactStore.upsertPhonebook(phonebook)
   }
   onSaveFailure = (err: Error) => {
     RnAlert.error({

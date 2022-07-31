@@ -26,7 +26,6 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { toBoolean } from '../utils/string'
 
 const css = StyleSheet.create({
   Loading: {
@@ -37,6 +36,7 @@ const css = StyleSheet.create({
 @observer
 export class PageContactPhonebook extends Component {
   componentDidMount() {
+    contactStore.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
         return
@@ -71,8 +71,6 @@ export class PageContactPhonebook extends Component {
         const x = {
           ...ct,
           loaded: true,
-          name: ct.displayName || ct.firstName + ' ' + ct.lastName,
-          hidden: toBoolean(ct.hidden),
         }
         contactStore.upsertPhonebook(x)
         cb(x)
@@ -105,7 +103,7 @@ export class PageContactPhonebook extends Component {
       if (!u) {
         return
       }
-      if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
+      if (!u.info.$tel_work && !u.info.$tel_home && !u.info.$tel_mobile) {
         this.callRequest('', u)
         return
       }
@@ -114,24 +112,24 @@ export class PageContactPhonebook extends Component {
         value: string
         icon: string
       }[] = []
-      if (u.workNumber) {
+      if (u.info.$tel_work) {
         numbers.push({
           key: 'workNumber',
-          value: u.workNumber,
+          value: u.info.$tel_work,
           icon: mdiBriefcase,
         })
       }
-      if (u.cellNumber) {
+      if (u.info.$tel_mobile) {
         numbers.push({
           key: 'cellNumber',
-          value: u.cellNumber,
+          value: u.info.$tel_mobile,
           icon: mdiCellphone,
         })
       }
-      if (u.homeNumber) {
+      if (u.info.$tel_home) {
         numbers.push({
           key: 'homeNumber',
-          value: u.homeNumber,
+          value: u.info.$tel_home,
           icon: mdiHome,
         })
       }
@@ -172,7 +170,7 @@ export class PageContactPhonebook extends Component {
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
-      let c0 = u?.name?.charAt(0).toUpperCase()
+      let c0 = u?.display_name?.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
         c0 = '#'
       }
@@ -191,6 +189,7 @@ export class PageContactPhonebook extends Component {
     groups.forEach(gr => {
       gr.phonebooks = orderBy(gr.phonebooks, 'name')
     })
+
     return (
       <Layout
         description={intl`Your phonebook contacts`}
@@ -237,7 +236,7 @@ export class PageContactPhonebook extends Component {
                   iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}
                   key={i}
-                  name={u.displayName || u.name}
+                  name={u?.display_name || intl`<Unnamed>`}
                 />
               ))}
             </Fragment>
