@@ -57,7 +57,7 @@ export class CallStore {
     }
   }
   @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
-    if (n.sipPn.autoAnswer) {
+    if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
       BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 300)
     }
     this.setAutoEndCallKeepTimer(uuid, n)

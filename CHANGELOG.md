@@ -33,6 +33,7 @@
 - Fix 571: speaker on immediately after make a call does not work
 - Fix 572: speaker on does not affect when change from ringing to talking
 - Fix css icon text position change on length
+- Webphone embed: merge into the main bundle
 
 #### 2.10.3
 
@@ -65,6 +66,7 @@
 - Fix 492 493 494 495 499 500 528ios: Various minor UC chat bugs
 - Fix sometimes can not logout, app stuck
 - Fix sometimes can not login, white screen
+- Webphone embed: init api as a separated bundle
 
 #### 2.9.10
 
