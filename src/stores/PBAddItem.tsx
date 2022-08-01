@@ -135,9 +135,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
       return
     }
     const newList = listOption.filter(item =>
-      item.label
-        .toLocaleLowerCase()
-        .match(new RegExp(txt.toLocaleLowerCase().trim())),
+      item.label.toLowerCase().startsWith(txt.toLowerCase()),
     )
     updateItems(newList)
     updateValue(txt)

@@ -54,7 +54,7 @@ const css = StyleSheet.create({
     paddingHorizontal: 10,
     width: Dimensions.get('screen').width - 30,
     maxHeight: 300,
-    top: 154,
+    top: 188,
     zIndex: 100000,
     marginHorizontal: 15,
     ...Platform.select({
@@ -103,9 +103,10 @@ export const PBAutoComplete: FC<
     if (!!!value) {
       return [...contactStore.pbxBooks]
     }
-    const result = contactStore.pbxBooks.filter(item =>
-      item.phonebook.toLowerCase().match(value.toLowerCase().trim()),
-    )
+    const result = contactStore.pbxBooks.filter(item => {
+      // make same web search
+      return item.phonebook.toLowerCase().startsWith(value.toLowerCase())
+    })
     if (
       !result.length ||
       (result.length === 1 && value === result[0].phonebook)

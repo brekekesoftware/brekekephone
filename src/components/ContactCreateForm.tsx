@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash/cloneDeep'
-import isEqual from 'lodash/isEqual'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { StyleSheet } from 'react-native'
@@ -45,6 +44,7 @@ const phonebookField = {
   label: intl`PHONEBOOK`,
   rule: 'required',
   isFocus: false,
+  maxLength: 100,
 }
 export const ContactsCreateForm: FC<{
   updatingPhonebook?: Phonebook2
@@ -65,8 +65,7 @@ export const ContactsCreateForm: FC<{
   // don't show field: $lang
   const getFields = () => {
     if (props.updatingPhonebook) {
-      console.log(defaultObj, Object.keys({ ...defaultObj }))
-      const fields = Object.keys({ ...defaultObj })?.map(key => {
+      const fields = Object.keys(defaultObj)?.map(key => {
         if (key === 'phonebook') {
           return phonebookField
         }
@@ -79,6 +78,7 @@ export const ContactsCreateForm: FC<{
           name: key,
           label: key,
           keyboardType: 'default',
+          maxLength: 50,
         }
       })
 
@@ -99,11 +99,11 @@ export const ContactsCreateForm: FC<{
   }
   const m = () => ({
     observable: {
-      phonebook: defaultObj,
+      phonebook: { ...defaultObj },
       fields: getFields() as ItemPBForm[],
     },
     hasUnsavedChanges: () => {
-      return !isEqual($.phonebook, defaultObj)
+      return !(JSON.stringify($.phonebook) === JSON.stringify(defaultObj))
     },
 
     onBackBtnPress: () => {
@@ -151,6 +151,7 @@ export const ContactsCreateForm: FC<{
       name: value,
       id: value,
       keyboardType: 'default',
+      maxLength: 50,
     }
     $.fields.push(newField)
     $.phonebook = { ...$.phonebook, [newField.id]: '' }
