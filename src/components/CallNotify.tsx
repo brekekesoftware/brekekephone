@@ -1,17 +1,18 @@
-import { mdiCheck, mdiClose } from '@mdi/js'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import { Component, Fragment } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
+import { mdiCheck, mdiClose } from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ButtonIcon } from './ButtonIcon'
 import { IncomingItem } from './CallVoicesUI'
-import { RnText } from './Rn'
+import { RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -72,15 +73,18 @@ export const CallNotify = observer(() => {
   const Wrapper =
     k?.hasAction ||
     Platform.OS === 'web' ||
-    !getAuthStore().currentProfile?.pushNotificationEnabled
+    !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
   return (
     <Wrapper>
       {callStore.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
-      <View style={css.Notify}>
+      <RnTouchableOpacity
+        style={css.Notify}
+        onPress={() => Nav().goToPageCallManage()}
+      >
         <View style={css.Notify_Info}>
-          <RnText bold>{c.partyName || c.partyNumber}</RnText>
+          <RnText bold>{c.getDisplayName()}</RnText>
           <RnText>{intl`Incoming Call`}</RnText>
         </View>
         <ButtonIcon
@@ -99,7 +103,7 @@ export const CallNotify = observer(() => {
           size={20}
           style={css.Notify_Btn_accept}
         />
-      </View>
+      </RnTouchableOpacity>
     </Wrapper>
   )
 })

@@ -1,21 +1,21 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { ProfileCreateForm } from '../components/ProfileCreateForm'
+import { Account, accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { Profile, profileStore } from '../stores/profileStore'
 
 export const PageProfileUpdate: FC<{
   id: string
 }> = observer(props => (
   <ProfileCreateForm
     onBack={Nav().backToPageProfileSignIn}
-    onSave={(p: Profile) => {
-      profileStore.upsertProfile(p)
+    onSave={(p: Account) => {
+      accountStore.upsertAccount(p)
       Nav().backToPageProfileSignIn()
     }}
     title={intl`Update Account`}
-    updatingProfile={profileStore.profilesMap[props.id]}
+    updatingProfile={accountStore.accountsMap[props.id]}
   />
 ))

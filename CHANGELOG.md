@@ -1,3 +1,139 @@
+#### 2.11.0
+
+- Save webphone.pal.param.user to local storage and reconnect if mismatch
+- Add some more space to Keypad with the call green button
+- Add dropdown to start voice/video call from screen user chat detail. For screen group chat detail, they were added already in the past
+- Fix: should not show "No Account" although it has
+- Fix: should not logout when app is in background
+- Handle PN data x_autoanswer
+- Update phonebook.js
+
+#### 2.10.9
+
+- Fix RBT low volume after a call
+- Webphone embed: fix auto_login logic
+
+#### 2.10.8
+
+- Android: try to fix loud speaker is not showing correctly as UI in a rare case with RBT. Currently fix using hacky timeout 2000ms. Need to check the library incall-manager and merge their latest change to see if they fixed it in a correct way not hacky
+- ios: fix the issue with proximity sensor still works after end call
+- Fix text style callee name or caller name is cut off sometimes if too long
+- Fix avatar placeholder in case of no photo not showing on the browser
+- Do not use avatar UC url if UC is disabled
+- Do not send random parameter when get avatar url, in combination with a fix on server
+- Do not show error when failed to get appstore version
+- Update label DTMF -> KEYPAD
+
+#### 2.10.7
+
+- Fix avatar: remove cache, add loading, error
+
+#### 2.10.6
+
+- Fix 571: speaker on immediately after make a call does not work
+- Fix 572: speaker on does not affect when change from ringing to talking
+- Fix css icon text position change on length
+- Webphone embed: merge into the main bundle
+
+#### 2.10.3
+
+- Reduce console error, use log instead for debug purpose
+- Some fixes remove PN token via sip header
+- Some fixes UC chat image url resolver
+- Allow loud speaker on early media
+- Fix issue ios no audio on early media
+
+#### 2.10.2
+
+- Remove user=\* in pal construction
+- Remove PN token via sip header if no account match
+
+#### 2.10.1
+
+- Fix 547: UC chat display name empty in some case
+- Fix 548: UC chat should not play sound + vibration in background
+- Fix 532: UC chat group name buddy list incorrect
+- Fix 537: UC chat send big file cause app crash
+- Fix 544 545: Fix retry login too frequently
+- Early media SDP handling
+- Show controls & keypad in outgoing call before answered/connected
+- Fix 456 533: Incorrect hold current call
+- Fix 481: Should not play both ring tone of Brekeke phone and device
+- Fix 529: Clear notification badge number when open screen recent calls
+- Fix 494: Message alert should not play sound or vibrate when talking
+- Show avatar in incoming/outbound/manage call using x-image
+- Handle PN canceled somewhere else SIP header
+- Fix 492 493 494 495 499 500 528ios: Various minor UC chat bugs
+- Fix sometimes can not logout, app stuck
+- Fix sometimes can not login, white screen
+- Webphone embed: init api as a separated bundle
+
+#### 2.9.10
+
+- Fix: send file UC chat should work correctly
+- Fix: contact display name not correct
+
+#### 2.9.8
+
+- Enhancement for PBX buddy list
+
+#### 2.9.2
+
+- Implement PBX buddy list
+- Handle canceled PN call completed elsewhere: do not add history
+- Trim html on UC message render
+- Fix: android 10 rare case ringtone can not stop reported by Akira
+- Fix: PN switch enable take long time
+- Fix: bug chat scroll to end on new message
+- Web: Try trigger audio permission on OK press so it can play ringtone even window minimized
+
+#### 2.9.0
+
+- Update webrtcclient to 2.0.30.333
+- Update ucclient to 1.2.9.6u2294
+- Add feature UC Buddy group select
+- Allow to add label/name for each park
+- Enhance performance for emoji selector in chat
+- Click on the top call bar notify should be able to go back to page call manage, to see other background calls if any
+- Fix bug shared contacts not load correctly
+- Fix search phonebook/contact params call to api
+- Fix bug press on chat notification, app should log in automatically
+- Android: Add feature displaying avatar in Push Notification, white background, also handle large image case
+- Android: Fix bug press on the notification should navigate, on killed state
+- Android: Fix bug open image in chat sometimes get black screen and can not go back
+
+#### 2.8.62
+
+- Incoming call and outgoing call should be hold correctly in the order of answer
+- Test and verify gsm conflict with LTE:
+  - If VoLTE is enabled: all issues are resolved
+  - If VoLTE is not enabled: BrekekePhone calls alway disconnect when having gsm call
+- Test and verify some other bugs
+
+#### 2.8.61
+
+- Android: Try fix click notification in killed state should navigate to page recent calls
+- Android: Add bluetooth permission and test bluetooth earphone (still has some issues)
+- Add missing locale labels
+- If there's no locale selected, system locale will be selected by default
+- Update missed call notification as Akira requested: title={{name || number}} body="Missed call"
+
+#### 2.8.60
+
+- Fix chat load more scroll issue
+- Fix phonebook loading issue, implement search phonebook, 20 items per load
+- Reject call should not show notification
+- Android: Try fix click notification in killed state should navigate to page recent calls
+- Open deeplink url should work in background, if there's no on going sip session then login to that account
+- Deeplink param phone_idx outside of 1-4 should be converted to 4
+
+#### 2.8.59
+
+- Show notification for missed call, badge number will be updated
+- Click on the notification will go to page list recent calls and reset the badge number
+- Quick button to call voice mail
+- Remove @mdi/js package to reduce bundle size
+
 #### 2.8.58
 
 - Fix android 348: answer from notification list should have audio working correctly on android 11
@@ -102,7 +238,7 @@
 - Auto accept/display image/video on UC chat. Certain kinds of file extensions are supported differently on each platform browser/ios/android. Generally jpg image and mp4 video
 - Reconnect SIP if PN token is expired or timeout of 10s
 - Try to cancel/not displaying the PN if caller canceled the call: add more logic and fix bugs
-- Insert call history for cancelled PN calls
+- Insert call history for canceled PN calls
 - Improve PN settings (enabled/disabled) loading (remove the loading icon covers the whole login screen, only show it on the switcher). Only show error if user proactively changes the setting
 - Add group chat icon to make it different with user icon
 - Add call history on group chat call, fix incorrect group name in call history

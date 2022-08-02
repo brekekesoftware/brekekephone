@@ -1,3 +1,8 @@
+import { action, observable } from 'mobx'
+import { observer } from 'mobx-react'
+import React, { Component, Fragment } from 'react'
+import { Dimensions, Platform, StyleSheet, View } from 'react-native'
+
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -16,12 +21,7 @@ import {
   mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '@mdi/js'
-import { action, observable } from 'mobx'
-import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
-
+} from '../assets/icons'
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
 import { IncomingItemWithTimer } from '../components/CallNotify'
@@ -29,14 +29,17 @@ import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
+import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
+const height = Dimensions.get('window').height
 const css = StyleSheet.create({
   Video: {
     position: 'absolute',
@@ -58,11 +61,10 @@ const css = StyleSheet.create({
   },
   Btns: {
     position: 'absolute',
-    top: 40, // Header compact height
+    height: '70%', // Header compact height
     left: 0,
     right: 0,
     bottom: 0,
-    paddingBottom: 124, // Hangup button 64 + 2*30
   },
   Btns_Hidden: {
     opacity: 0,
@@ -77,7 +79,6 @@ const css = StyleSheet.create({
   Btns_VerticalMargin: {
     flex: 1,
   },
-
   Hangup: {
     position: 'absolute',
     bottom: 40,
@@ -100,13 +101,51 @@ const css = StyleSheet.create({
     right: 10,
     zIndex: 100,
   },
+  Hangup_incomingText_avoidLargeImg: {
+    bottom: undefined,
+    top: 200,
+  },
+  labelStyle: {
+    paddingRight: 50,
+  },
+
+  Image_wrapper: {
+    marginHorizontal: 15,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+
+  ImageSize: {
+    height: 130,
+    width: 130,
+    borderRadius: 75,
+  },
+
+  ImageLargeSize: {
+    height: '100%',
+    width: (height * 30) / 100,
+    backgroundColor: 'white',
+  },
+  styleTextBottom: {
+    marginTop: 20,
+  },
+  Hangup_avoidAvatar: {
+    top: '35%',
+  },
+  Hangup_avoidAvatar_Large: {
+    top: '60%',
+  },
 })
 
+const TIME_OUT_SPEAKER = Platform.select({ ios: 3000, android: 500 }) || 0
 @observer
 export class PageCallManage extends Component<{
   isFromCallBar?: boolean
 }> {
   @observable showButtonsInVideoCall = true
+  @observable enableSpeaker = false
+  alreadySetTimeoutEnableSpeaker = false
   alreadySetShowButtonsInVideoCall = false
 
   componentDidMount() {
@@ -153,7 +192,7 @@ export class PageCallManage extends Component<{
       }
       noScroll
       onBack={Nav().goToPageCallRecents}
-      title={c?.title || intl`Connecting...`}
+      title={c?.getDisplayName() || intl`Connecting...`}
       transparent={!c?.transferring}
     >
       {!c ? null : c.transferring ? (
@@ -161,6 +200,7 @@ export class PageCallManage extends Component<{
       ) : (
         <>
           {isVideoEnabled && this.renderVideo(c)}
+          {this.renderAvatar(c, isVideoEnabled)}
           {this.renderBtns(c, isVideoEnabled)}
           {this.renderHangupBtn(c)}
         </>
@@ -190,6 +230,34 @@ export class PageCallManage extends Component<{
       />
     </>
   )
+
+  renderAvatar = (c: Call, isVideoEnabled?: boolean) => {
+    if (isVideoEnabled) {
+      return
+    }
+    const incoming = c.incoming && !c.answered
+    const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
+    const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
+    return (
+      <View style={css.Image_wrapper}>
+        {isShowAvatar ? (
+          <SmartImage
+            uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
+            size={isLarge ? (height * 30) / 100 : 150}
+            isLarge={isLarge}
+          />
+        ) : null}
+        <View style={!isShowAvatar ? css.styleTextBottom : {}}>
+          {!incoming && (
+            <RnText title white center numberOfLines={2}>
+              {`${c.getDisplayName()}`}
+            </RnText>
+          )}
+        </View>
+      </View>
+    )
+  }
+
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
     const n = callStore.calls.filter(
       _ => _.id !== callStore.currentCallId,
@@ -199,16 +267,25 @@ export class PageCallManage extends Component<{
     }
     const Container = isVideoEnabled ? RnTouchableOpacity : View
     const activeColor = isVideoEnabled ? v.colors.primary : v.colors.warning
+
+    // wait render then enable Speaker
+    if (!this.alreadySetTimeoutEnableSpeaker) {
+      this.alreadySetTimeoutEnableSpeaker = true
+      BackgroundTimer.setTimeout(() => {
+        this.enableSpeaker = true
+      }, TIME_OUT_SPEAKER)
+    }
+
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
         style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
-        {/* TODO add Connecting... */}
-        <View style={!c.answered && css.Btns_Hidden}>
+        <View style={!(c.withSDPControls || c.answered) && css.Btns_Hidden}>
           <View style={css.Btns_Inner}>
             <ButtonIcon
+              disabled={!c.answered}
               bgcolor='white'
               color='black'
               name={intl`TRANSFER`}
@@ -219,6 +296,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
+              disabled={!c.answered}
               bgcolor='white'
               color='black'
               name={intl`PARK`}
@@ -229,6 +307,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
+              disabled={!c.answered}
               bgcolor={c.localVideoEnabled ? activeColor : 'white'}
               color={c.localVideoEnabled ? 'white' : 'black'}
               name={intl`VIDEO`}
@@ -240,6 +319,7 @@ export class PageCallManage extends Component<{
             />
             {Platform.OS !== 'web' && (
               <ButtonIcon
+                disabled={!this.enableSpeaker}
                 bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
                 color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
@@ -258,6 +338,7 @@ export class PageCallManage extends Component<{
           <View style={css.Btns_Space} />
           <View style={css.Btns_Inner}>
             <ButtonIcon
+              disabled={!c.answered}
               bgcolor={c.muted ? activeColor : 'white'}
               color={c.muted ? 'white' : 'black'}
               name={c.muted ? intl`UNMUTE` : intl`MUTE`}
@@ -268,6 +349,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
+              disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
               color={c.recording ? 'white' : 'black'}
               name={intl`RECORD`}
@@ -280,7 +362,7 @@ export class PageCallManage extends Component<{
             <ButtonIcon
               bgcolor='white'
               color='black'
-              name={intl`DTMF`}
+              name={intl`KEYPAD`}
               noborder
               onPress={Nav().goToPageCallDtmfKeypad}
               path={mdiDialpad}
@@ -288,6 +370,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
+              disabled={!c.answered}
               bgcolor={c.holding ? activeColor : 'white'}
               color={c.holding ? 'white' : 'black'}
               name={c.holding ? intl`UNHOLD` : intl`HOLD`}
@@ -303,6 +386,7 @@ export class PageCallManage extends Component<{
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageCallBackgrounds}
+            textInputStyle={css.labelStyle}
             value={
               n > 1
                 ? intl`${n} other calls are in background`
@@ -314,8 +398,10 @@ export class PageCallManage extends Component<{
       </Container>
     )
   }
+
   renderHangupBtn = (c: Call) => {
     const incoming = c.incoming && !c.answered
+    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
     return (
       <>
         <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
@@ -338,9 +424,19 @@ export class PageCallManage extends Component<{
         {incoming && (
           <>
             <IncomingItemWithTimer />
-            <View style={[css.Hangup, css.Hangup_incomingText]}>
-              <RnText title white center>
-                {c.title}
+            <View
+              style={[
+                css.Hangup,
+                css.Hangup_incomingText,
+                c.partyImageUrl.length > 0
+                  ? isLarge
+                    ? css.Hangup_avoidAvatar_Large
+                    : css.Hangup_avoidAvatar
+                  : null,
+              ]}
+            >
+              <RnText title white center numberOfLines={2}>
+                {`${c.getDisplayName()}`}
               </RnText>
               <RnText bold white center>
                 {intl`Incoming Call`}

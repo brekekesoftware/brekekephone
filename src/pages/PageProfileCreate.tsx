@@ -1,15 +1,13 @@
-import React from 'react'
-
 import { ProfileCreateForm } from '../components/ProfileCreateForm'
+import { Account, accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { Profile, profileStore } from '../stores/profileStore'
 
 export const PageProfileCreate = () => (
   <ProfileCreateForm
     onBack={Nav().backToPageProfileSignIn}
-    onSave={(p: Profile) => {
-      profileStore.upsertProfile(p)
+    onSave={(p: Account) => {
+      accountStore.upsertAccount(p)
       Nav().backToPageProfileSignIn()
     }}
     title={intl`New Account`}

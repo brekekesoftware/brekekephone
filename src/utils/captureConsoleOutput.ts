@@ -51,38 +51,44 @@ const formatErrors = (...errs: Error[]) => {
   return msg
 }
 
-const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
-  (m, k) => {
-    const f0 = console[k as keyof Console] as Function
-    const f = f0.bind(console) as Function
-    m[k] =
-      Platform.OS === 'web' || process.env.NODE_ENV !== 'production'
-        ? (...args: Error[]) => {
-            const msg = formatErrors(...args)
-            // add timestamp on dev (prod already added in debugStore)
-            msg && f(moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + msg)
-          }
-        : (...args: Error[]) => {
-            // debugStore was added globally in src/stores/debugStore.ts
-            //    so it can be used here
-            const msg = formatErrors(...args)
-            msg && window.debugStore?.captureConsoleOutput(k, msg)
-          }
-    return m
-  },
-  {} as { [k: string]: Function },
-)
+const captureConsoleOutput = () => {
+  if (Platform.OS === 'web' && !window._BrekekePhoneWebRoot) {
+    return
+  }
+  const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
+    (m, k) => {
+      const f0 = console[k as keyof Console] as Function
+      const f = f0.bind(console) as Function
+      m[k] =
+        Platform.OS === 'web' || process.env.NODE_ENV !== 'production'
+          ? (...args: Error[]) => {
+              const msg = formatErrors(...args)
+              // add timestamp on dev (prod already added in debugStore)
+              msg && f(moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + msg)
+            }
+          : (...args: Error[]) => {
+              // debugStore was added globally in src/stores/debugStore.ts
+              //    so it can be used here
+              const msg = formatErrors(...args)
+              msg && window.debugStore?.captureConsoleOutput(k, msg)
+            }
+      return m
+    },
+    {} as { [k: string]: Function },
+  )
 
-Object.entries(customConsoleObject).forEach(([k, v]) => {
-  Object.defineProperty(console, k, {
-    get() {
-      return v
-    },
-    set() {
-      // Prevent set to keep using our functions
-    },
+  Object.entries(customConsoleObject).forEach(([k, v]) => {
+    Object.defineProperty(console, k, {
+      get() {
+        return v
+      },
+      set() {
+        // Prevent set to keep using our functions
+      },
+    })
   })
-})
+  // Write a log to console to note about this
+  console.info('captureConsoleOutput: console output is being captured!')
+}
 
-// Write a log to console to note about this
-console.info('captureConsoleOutput: console output is being captured!')
+captureConsoleOutput()

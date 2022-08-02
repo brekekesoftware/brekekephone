@@ -10,7 +10,10 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from './BackgroundTimer'
-import { parseNotificationData } from './PushNotification-parse'
+import {
+  parseNotificationData,
+  signInByLocalNotification,
+} from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
 let alreadySetupCallKeep = false
@@ -51,7 +54,7 @@ const setupCallKeepWithCheck = async () => {
       additionalPermissions: [],
       foregroundService: {
         channelId: 'com.brekeke.phone',
-        channelName: intl`Foreground service for Brekeke Phone`,
+        channelName: intl`Background service for Brekeke Phone`,
         notificationTitle: intl`Brekeke Phone is running on background`,
         notificationIcon: 'ic_launcher',
       },
@@ -68,7 +71,7 @@ const setupCallKeepWithCheck = async () => {
     })
     .catch((err: Error) => {
       if (AppState.currentState !== 'active') {
-        console.error(err)
+        console.error('RNCallKeep.setup error:', err)
         return
       }
       RnAlert.error({
@@ -129,13 +132,13 @@ export const setupCallKeep = async () => {
       return
     }
     const n = parseNotificationData(e.payload)
-    console.error(
+    console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
     if (n) {
       callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
     } else {
-      console.error('SIP PN debug: call RNCallKeep.endCall: pnData not found')
+      console.log('SIP PN debug: call RNCallKeep.endCall: pnData not found')
       RNCallKeep.endCall(uuid)
     }
   }
@@ -179,13 +182,13 @@ export const setupCallKeep = async () => {
   }
   const didActivateAudioSession = () => {
     // Only in ios
-    console.error('CallKeep debug: didActivateAudioSession')
+    console.log('CallKeep debug: didActivateAudioSession')
   }
   const didDeactivateAudioSession = () => {
     // Only in ios
-    console.error('CallKeep debug: didDeactivateAudioSession')
+    console.log('CallKeep debug: didDeactivateAudioSession')
     callStore.calls
-      .filter(c => c.answered && !c.holding)
+      .filter(c => c.answered && !c.holding && c.id !== callStore.currentCallId)
       .forEach(c => c.toggleHoldWithCheck())
   }
 
@@ -253,16 +256,33 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('switchCamera', (uuid: string) => {
       callStore.getCurrentCall()?.toggleSwitchCamera()
     })
+    eventEmitter.addListener('onNotificationPress', (data: string) => {
+      if (!data) {
+        return
+      }
+      const raw: { id?: string } = JSON.parse(data)
+      const n = parseNotificationData(raw)
+      if (!n) {
+        return
+      }
+      signInByLocalNotification(n)
+      if (raw.id?.startsWith('missedcall')) {
+        Nav().goToPageCallRecents()
+      } else {
+        Nav().goToPageChatRecents()
+      }
+    })
+
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
-      console.error('SIP PN debug: backToForeground')
+      console.log('SIP PN debug: backToForeground')
       BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
       BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
     })
     // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
     eventEmitter.addListener('debug', (m: string) =>
-      console.error(`Android debug: ${m}`),
+      console.log(`Android debug: ${m}`),
     )
   }
 }

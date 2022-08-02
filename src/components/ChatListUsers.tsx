@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 // import {intl} from '../stores/intl'
 import { chatStore } from '../stores/chatStore'
+import { getPartyName } from '../stores/contactStore'
 import { formatDateTimeSemantic } from './chatConfig'
 import { UserItem } from './ContactUserItem'
 import { RnTouchableOpacity } from './Rn'
@@ -25,7 +26,7 @@ export const ListUsers: FC<{
     created: string
   }[]
   onGroupSelect: Function
-  onUserSelect: Function
+  onUserSelect: (id: string) => void
   groupById: { [k: string]: object }
   userById: { [k: string]: object }
 }> = observer(p => (
@@ -38,7 +39,7 @@ export const ListUsers: FC<{
       >
         <UserItem
           key={id}
-          name={name}
+          name={name || getPartyName(id)}
           {...(group ? p.groupById : p.userById)[id]}
           lastMessage={text}
           group={group}

@@ -1,9 +1,9 @@
-import { mdiCloseCircle } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
+import { mdiCloseCircle } from '../assets/icons'
 import { ChatFile } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'

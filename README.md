@@ -33,12 +33,12 @@ yarn cache clean && yarn --check-files && yarn rn --reset-cache
 
 ### Keystores and other credentials keys
 
-- You need to contact us to download or generate your own following files:
+- Those private files are ignored from git history, you need to download or generate your own files to build your custom app. See [Custom branding build](./.doc/custom-branding.md) for more detail.
   - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
   - `src/api/turnConfig.ts`
-- Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off. Example of real config:
+- Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off. Example of real turn config:
 
 ```js
 export const turnConfig = {
@@ -138,12 +138,10 @@ yarn android --deviceId=DEVICE_ID
 
 - Android
   - Ensure latest google-services.json
-  - Ensure correct server api key in the sip proxy server
-    - Contact us at support@brekeke.com if you want to add your custom key/token
+  - Ensure correct firebase config in the pbx admin push notification
 - iOS
   - Ensure the push notification gets configured correctly in General, Info.plist, Phone.entitlements
-  - Ensure correct api key (string or file) in sip proxy server
-    - Contact us at support@brekeke.com if you want to add your custom key/token
+  - Ensure correct APN config in the pbx admin push notification
 
 ### Automation format tools
 

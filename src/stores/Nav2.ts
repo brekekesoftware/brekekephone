@@ -15,6 +15,9 @@ import { PageChatGroupCreate } from '../pages/PageChatGroupCreate'
 import { PageChatGroupDetail } from '../pages/PageChatGroupDetail'
 import { PageChatGroupInvite } from '../pages/PageChatGroupInvite'
 import { PageChatRecents } from '../pages/PageChatRecents'
+import { PageContactEdit } from '../pages/PageContactEdit'
+import { PageContactGroupCreate } from '../pages/PageContactGroupCreate'
+import { PageContactGroupEdit } from '../pages/PageContactGroupEdit'
 import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
 import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
@@ -192,14 +195,41 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
+  //Contact Group
+  goToPageContactEdit = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactEdit>
+  >({
+    PageContactEdit,
+  })
+  backToPageContactEdit = RnStacker.createBackTo<
+    ComponentProps<typeof PageContactEdit>
+  >({ PageContactEdit }, true)
+
+  goToPageContactGroupCreate = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactGroupCreate>
+  >({
+    PageContactGroupCreate,
+  })
+  goToPageContactGroupEdit = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactGroupEdit>
+  >({
+    PageContactGroupEdit,
+  })
+  customPageIndex?: Function
   goToPageIndex = () => {
-    if (!getAuthStore().currentProfile) {
+    const p = getAuthStore().getCurrentAccount()
+    if (!p) {
+      this.customPageIndex = undefined
       this.goToPageProfileSignIn()
+      return
+    }
+    if (this.customPageIndex) {
+      this.customPageIndex()
+      this.customPageIndex = undefined
       return
     }
     const arr = menus()
     normalizeSavedNavigation()
-    const p = getAuthStore().currentProfile
     const i = p.navIndex
     const k = p.navSubMenus?.[i]
     arr[i].subMenusMap[k].navFn()

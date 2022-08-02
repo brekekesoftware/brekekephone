@@ -7,6 +7,8 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { updatePhoneIndex } from '../api/updatePhoneIndex'
 import { SipPn } from '../utils/PushNotification-parse'
+import { toBoolean } from '../utils/string'
+import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import { sipErrorEmitter } from './sipErrorEmitter'
 
@@ -26,7 +28,7 @@ class AuthSIP {
     })
   }
   @action dispose = () => {
-    console.error('SIP PN debug: set sipState stopped dispose')
+    console.log('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
     const s = getAuthStore()
     s.sipPn = {}
@@ -35,9 +37,9 @@ class AuthSIP {
   }
 
   private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
-    const p = getAuthStore().currentProfile
+    const p = getAuthStore().getCurrentAccount()
     if (!p) {
-      console.error('SIP PN debug: Already signed out after long await')
+      console.log('SIP PN debug: Already signed out after long await')
       return
     }
     if (!pn.sipAuth || !pn.sipWssPort || !pn.phoneId) {
@@ -60,30 +62,29 @@ class AuthSIP {
       username: pn.phoneId,
       accessToken: pn.sipAuth,
       pbxTurnEnabled: p.pbxTurnEnabled,
-      dtmfSendPal:
-        pn.dtmfSendPal === 'true' || pn.dtmfSendPal === '1' ? true : false,
+      dtmfSendPal: toBoolean(pn.dtmfSendPal),
       turnConfig,
     })
   }
 
   @action private authWithoutCatch = async () => {
-    console.error('SIP PN debug: set sipState connecting')
+    console.log('SIP PN debug: set sipState connecting')
     const s = getAuthStore()
     s.sipState = 'connecting'
     sipErrorEmitter.removeAllListeners()
     sipErrorEmitter.on('error', () => {
-      console.error('SIP PN debug: got error from sipErrorEmitter')
+      console.log('SIP PN debug: got error from sipErrorEmitter')
       this.dispose()
       this.authWithCheck()
     })
     //
     const pn = s.sipPn
     if (pn.sipAuth) {
-      console.error('SIP PN debug: AuthSIP.authPnWithoutCatch')
+      console.log('SIP PN debug: AuthSIP.authPnWithoutCatch')
       this.authPnWithoutCatch(pn)
       return
     }
-    console.error('SIP PN debug: AuthSIP.authWithoutCatch')
+    console.log('SIP PN debug: AuthSIP.authWithoutCatch')
     //
     pn.sipWssPort = pn.sipWssPort || (await getPbxConfig('sip.wss.port'))
     pn.dtmfSendPal =
@@ -101,30 +102,39 @@ class AuthSIP {
     pn.sipAuth = await pbx.createSIPAccessToken(pn.phoneId)
     await this.authPnWithoutCatch(pn)
   }
-  authWithCheck = () => {
+
+  private waitingTimeout = false
+  authWithCheck = async () => {
     const s = getAuthStore()
     const sipShouldAuth = s.sipShouldAuth()
-    console.error(
+    console.log(
       `SIP PN debug: authWithCheck ${sipShouldAuth} ${JSON.stringify({
         sipState: s.sipState,
         signedInId: !!s.signedInId,
         sipAuth: !!s.sipPn.sipAuth,
         pbxState: s.pbxState,
         sipTotalFailure: s.sipTotalFailure,
+        waitingTimeout: this.waitingTimeout,
       })}`,
     )
-    if (!sipShouldAuth) {
+    if (!sipShouldAuth || this.waitingTimeout) {
       return
+    }
+    if (s.sipTotalFailure > 1) {
+      const timeWait = s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000
+      this.waitingTimeout = true
+      await waitTimeout(timeWait)
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {
-        console.error('SIP PN debug: set sipState failure catch')
+        console.log('SIP PN debug: set sipState failure catch')
         s.sipState = 'failure'
         s.sipTotalFailure += 1
         sip.stopWebRTC()
         console.error('Failed to connect to sip', err)
       }),
     )
+    this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }

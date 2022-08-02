@@ -1,6 +1,9 @@
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { computed, observable } from 'mobx'
+import { AppState, Platform } from 'react-native'
+import FCM from 'react-native-fcm'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
@@ -8,7 +11,12 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
+import { playDing, vibration } from '../utils/vibrationAndSound'
+import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
+import { getCallStore } from './cancelRecentPn'
+import { getPartyName } from './contactStore'
+import { RnStacker } from './RnStacker'
 
 export type ChatMessage = {
   id: string
@@ -30,6 +38,7 @@ export type ChatFile = {
   url?: string
   target?: ChatTarget
   topic_id: string
+  save?: 'started' | 'success' | 'failure'
 }
 export type ChatTarget = {
   tenant: string
@@ -54,46 +63,48 @@ export const FileEvent = {
   onFileProgress: 'onFileProgress',
   onFileFinished: 'onFileFinished',
 }
-export const TIMEOUT_TRANSFER_IMAGE = 30000
-export const TIMEOUT_TRANSFER_VIDEO = 600000
+export const TIMEOUT_TRANSFER_IMAGE = 60000
+export const TIMEOUT_TRANSFER_VIDEO = 180000
 
 class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
+
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
     const l1 = filterTextOnly(
       Object.values(this.threadConfig).filter(v => {
         idMap[v.id] = true
-        return v.isUnread && this.messagesByThreadId[v.id]?.length
+        return v.isUnread && this.getMessagesByThreadId(v.id).length
       }) as any,
     ).length
+    const as = getAuthStore()
+    const d = as.getCurrentData()
+    if (!d) {
+      accountStore.getAccountDataAsync(as.getCurrentAccount())
+    }
     const l2 = filterTextOnly(
-      getAuthStore().currentData.recentChats.filter(
-        c => !idMap[c.id] && c.unread,
-      ),
+      d?.recentChats.filter(c => !idMap[c.id] && c.unread),
     ).length
     return l1 + l2
   }
-  @computed get numberNoticesWebchat() {
-    return this.groups.filter(
+  getNumberWebchatNoti = () =>
+    this.groups.filter(
       s =>
         s.webchat &&
         s.webchat.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT,
     )?.length
-  }
+
   // threadId can be uc user id or group id
   // TODO threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
-    return sortBy(Object.keys(this.messagesByThreadId), k => {
-      const messages = this.messagesByThreadId[k]
-      if (!messages?.length) {
-        return -1
-      }
-      return messages[0].created
-    })
+    return sortBy(
+      Object.keys(this.messagesByThreadId),
+      k => this.getMessagesByThreadId(k)[0]?.created || -1,
+    )
   }
   getWebChatInactiveIds() {
     return this.groups
@@ -114,6 +125,56 @@ class ChatStore {
   isWebchat(conf_id: string) {
     return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
   }
+
+  pushChatNotification = (title: string, body: string, threadId?: string) => {
+    if (Platform.OS === 'web') {
+      return
+    }
+
+    if (Platform.OS === 'android') {
+      FCM.presentLocalNotification({
+        title,
+        body,
+        threadId,
+        number: 0,
+        priority: 'high',
+        show_in_foreground: true,
+        local_notification: true,
+        wake_screen: false,
+        ongoing: false,
+        lights: true,
+        channel: 'default',
+        icon: 'ic_launcher',
+        id: `message-${Date.now()}`,
+        pre_app_state: AppState.currentState,
+        my_custom_data: 'local_notification',
+        is_local_notification: 'local_notification',
+      })
+    } else {
+      PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
+        badge = Number(badge) || 0
+        PushNotificationIOS.addNotificationRequest({
+          id: `message-${Date.now()}`,
+          title,
+          body,
+          badge,
+          sound: undefined,
+          userInfo: {
+            id: `message-${Date.now()}`,
+            aps: {
+              title,
+              threadId,
+              body,
+              my_custom_data: 'local_notification',
+              pre_app_state: AppState.currentState,
+              local_notification: true,
+              is_local_notification: 'local_notification',
+            },
+          },
+        })
+      })
+    }
+  }
   pushMessages = (
     threadId: string,
     m: ChatMessage | ChatMessage[],
@@ -125,13 +186,12 @@ class ChatStore {
     if (!Array.isArray(m)) {
       m = [m]
     }
-    const messages = this.messagesByThreadId[threadId] || []
+    const messages = this.getMessagesByThreadId(threadId)
     messages.push(...m)
     this.messagesByThreadId[threadId] = sortBy(
       uniqBy(messages, 'id'),
       'created',
     )
-
     const a2 = filterTextOnly(m)
     if (!a2.length || (isWebchat && !isWebchatJoined)) {
       return
@@ -139,6 +199,52 @@ class ChatStore {
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })
+    // show chat in-app notification
+    let name = ''
+    if (isGroup) {
+      name = chatStore.getGroupById(threadId)?.name
+    } else {
+      // user not set username
+      name = getPartyName(threadId) || threadId
+    }
+    if (m.length === 1 && AppState.currentState !== 'active') {
+      this.pushChatNotification(name, m[0]?.text || '', threadId)
+    }
+    // play chat notification sound & vibration
+    const cs = getCallStore()
+    const isTalking =
+      cs.calls.some(c => c.answered) ||
+      Object.values(cs.callkeepActionMap).some(a => a === 'answerCall')
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+      groupId?: string
+      buddy?: string
+      name?: string
+    }
+    const shouldPlayChatNotificationSoundVibration =
+      !isTalking &&
+      AppState.currentState === 'active' &&
+      (isGroup
+        ? !(s?.name === 'PageChatGroupDetail' && s?.groupId === threadId)
+        : !(s?.name === 'PageChatDetail' && s?.buddy === threadId))
+    if (shouldPlayChatNotificationSoundVibration) {
+      this.playChatNotificationSoundVibration()
+    }
+  }
+
+  @observable chatNotificationSoundRunning: boolean = false
+  private playChatNotificationSoundVibration = () => {
+    if (Platform.OS === 'web') {
+      playDing()
+      return
+    }
+    if (this.chatNotificationSoundRunning) {
+      return
+    }
+    vibration()
+    this.chatNotificationSoundRunning = true
+    BackgroundTimer.setTimeout(() => {
+      this.chatNotificationSoundRunning = false
+    }, 700)
   }
 
   removeWebchatItem = (conf_id: string) => {
@@ -166,20 +272,24 @@ class ChatStore {
   @observable private filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
+    Object.assign(f, { save: 'started' })
+    chatStore.upsertFile(f)
     saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url,
+          save: 'success',
         })
       })
       .catch(() => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
           url: '',
+          save: 'failure',
         })
       })
   }
   startTimeout = (id: string, fileType?: string) => {
-    if (!!!this.timeoutTransferImage[id]) {
+    if (!this.timeoutTransferImage[id]) {
       this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(
         () => {
           this.clearTimeout(id)

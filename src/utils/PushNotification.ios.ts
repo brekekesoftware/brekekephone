@@ -3,7 +3,6 @@ import './callkeep'
 import PushNotificationIOS, {
   PushNotification as PN,
 } from '@react-native-community/push-notification-ios'
-import { AppState } from 'react-native'
 import Voip from 'react-native-voip-push-notification'
 
 import { parse } from './PushNotification-parse'
@@ -42,26 +41,14 @@ const onNotification = async (
     withCallkeepUuid = withDictionaryPayload.dictionaryPayload
     withCallkeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
-  initApp()
+  await initApp()
   const n = await parse(withCallkeepUuid, isLocal)
   if (!n) {
     return
   }
-  //
-  PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
-    badge = 1 + (Number(badge) || 0)
-    if (AppState.currentState === 'active') {
-      badge = 0
-    }
-    PushNotificationIOS.addNotificationRequest({
-      id: 'call',
-      title: n.body,
-      body: n.isCall ? 'Answer' : 'View',
-      sound: n.isCall ? 'incallmanager_ringtone.mp3' : undefined,
-      badge,
-    })
-    PushNotificationIOS.setApplicationIconBadgeNumber(badge)
-  })
+  // TODO ios present local PN?
+  // Modify server background mode content only PN?
+  // toXPN
 }
 
 export const PushNotification = {
@@ -98,7 +85,6 @@ export const PushNotification = {
     )
     //
     PushNotificationIOS.requestPermissions()
-    Voip.requestPermissions()
     //
     const n0 = await PushNotificationIOS.getInitialNotification()
     onNotification(n0, initApp, true)

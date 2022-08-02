@@ -6,8 +6,8 @@ class RnAppStateStore {
   constructor() {
     AppState.addEventListener(
       'change',
-      action(() => {
-        this.currentState = AppState.currentState
+      action(nextAppState => {
+        this.currentState = nextAppState
       }),
     )
   }

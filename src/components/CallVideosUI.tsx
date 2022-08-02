@@ -1,6 +1,6 @@
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, FC } from 'react'
+import { Component, FC } from 'react'
 import {
   GestureResponderEvent,
   PanResponder,

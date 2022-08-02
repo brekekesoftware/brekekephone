@@ -12,6 +12,7 @@ const Polyfill = {
     closeIncomingCall: () => undefined,
     closeAllIncomingCalls: () => undefined,
     setIsAppActive: () => undefined,
+    setTalkingAvatar: () => undefined,
     setIsVideoCall: () => undefined,
     setRemoteVideoStreamURL: () => undefined,
     setOnHold: () => undefined,
@@ -36,6 +37,7 @@ export type TNativeModules = {
     closeIncomingCall(uuid: string): void
     closeAllIncomingCalls(): void
     setIsAppActive(b1: boolean, b2: boolean): void
+    setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
     setIsVideoCall(uuid: string, isVideoCall: boolean): void
     setRemoteVideoStreamURL(uuid: string, url: string): void
     setOnHold(uuid: string, holding: boolean): void

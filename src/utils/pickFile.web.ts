@@ -1,5 +1,4 @@
-import { mdiDotsHorizontal } from '@mdi/js'
-
+import { mdiDotsHorizontal } from '../assets/icons'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 

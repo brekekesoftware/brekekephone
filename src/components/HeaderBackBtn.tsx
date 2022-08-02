@@ -1,7 +1,7 @@
-import { mdiKeyboardBackspace } from '@mdi/js'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Animated, StyleSheet } from 'react-native'
 
+import { mdiKeyboardBackspace } from '../assets/icons'
 import { useAnimation } from '../utils/animation'
 import { RnIcon, RnTouchableOpacity } from './Rn'
 

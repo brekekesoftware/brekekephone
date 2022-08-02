@@ -1,9 +1,4 @@
-import {
-  mdiCloseCircleOutline,
-  mdiImageBrokenVariant,
-  mdiPlayCircleOutline,
-} from '@mdi/js'
-import React, { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -19,6 +14,11 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
 
+import {
+  mdiCloseCircleOutline,
+  mdiImageBrokenVariant,
+  mdiPlayCircleOutline,
+} from '../assets/icons'
 import { ChatFile } from '../stores/chatStore'
 import { RnIcon } from './RnIcon'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
@@ -104,22 +104,10 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   name,
   incoming,
   fileType,
+  save,
 }) => {
   const [visible, setIsVisible] = useState(false)
 
-  const images = url ? [{ url }] : []
-  const isLoading =
-    state !== 'success' && state !== 'failure' && state !== 'stopped'
-  const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && !!url
-
-  const onShowImage = useCallback(() => {
-    images.length > 0 && setIsVisible(true)
-  }, [images])
-
-  const onSwipeDown = useCallback(() => {
-    setIsVisible(false)
-  }, [])
   const convertUri = useCallback((_?: string) => {
     if (!_) {
       return ''
@@ -129,6 +117,23 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     }
     const nextUrl = _.startsWith('file://') ? _ : `file://${_}`
     return nextUrl
+  }, [])
+
+  const images = url ? [{ url: convertUri(url) }] : []
+  const isLoading =
+    (state !== 'success' && state !== 'failure' && state !== 'stopped') ||
+    (save && save === 'started')
+  const isLoadFailed =
+    state === 'failure' || state === 'stopped' || (save && save === 'failure')
+  const isLoadSuccess =
+    state === 'success' && !!url && save && save === 'success'
+
+  const onShowImage = useCallback(() => {
+    images.length > 0 && setIsVisible(true)
+  }, [images])
+
+  const onSwipeDown = useCallback(() => {
+    setIsVisible(false)
   }, [])
 
   const renderVideo = () => {
@@ -173,6 +178,9 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       renderVideo()
     )
   }
+  const onRequestClose = () => {
+    setIsVisible(false)
+  }
   return (
     <View style={css.image}>
       {isLoading && (
@@ -189,7 +197,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
         </Svg>
       )}
-      <Modal visible={visible} style={css.modal} animationType={'slide'}>
+      <Modal
+        visible={visible}
+        style={css.modal}
+        animationType={'slide'}
+        onRequestClose={onRequestClose}
+      >
         <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
           <RnIcon path={mdiCloseCircleOutline} color={'black'} size={30} />
         </RnTouchableOpacity>

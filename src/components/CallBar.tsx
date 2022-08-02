@@ -1,3 +1,6 @@
+import { observer } from 'mobx-react'
+import { Platform, StyleSheet, View } from 'react-native'
+
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -8,11 +11,7 @@ import {
   mdiPlay,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '@mdi/js'
-import { observer } from 'mobx-react'
-import React from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
-
+} from '../assets/icons'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -73,7 +72,9 @@ export const CallBar = observer(() => {
           />
         </View>
         <View style={css.CallBar_Info}>
-          <RnText style={css.Notify_Info_PartyName}>{c.title}</RnText>
+          <RnText style={css.Notify_Info_PartyName}>
+            {c.getDisplayName()}
+          </RnText>
           <RnText>
             {c.answered ? (
               <Duration>{c.answeredAt}</Duration>

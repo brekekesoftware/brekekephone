@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brekeke Phone Component Example</title>
+    <style>
+      #web_phone_embed_div {
+        /* must display flex */
+        display: flex;
+        /* others are customizable */
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 400px;
+      }
+      .brekeke_phone_component_hidden {
+        visibility: hidden;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="web_phone_embed_div"></div>
+  </body>
+  <script type="text/javascript" src="./webphone.js"></script>
+  <script type="text/javascript">
+    // we need to create div in our html code and get it
+    var div = document.getElementById('web_phone_embed_div')
+
+    // init a new Brekeke Phone instance to use
+    var phone = window.Brekeke.Phone.render(div, {
+      // login automatically with the account, the first one in the account you specify below
+      // or when accounts are not specified here and you have existing accounts, login to the last recently used
+      auto_login: true,
+      // clear all the existing accounts, default false
+      // the accounts are stored in the localStorage
+      // if false, the accounts will overwrite the same entry (host, port, tenant, user)
+      clear_existing_accounts: false,
+      // hostname: string
+      // port: string
+      // tenant: string - optional
+      // username: string
+      // password: string
+      // uc: boolean - optional
+      // parks: string[] - optional
+      // parkNames: string[] - optional
+      accounts: [
+        {
+          hostname: 'YOUR_PBX_HOSTNAME',
+          port: 'YOUR_PBX_PORT',
+          tenant: 'TENANT',
+          username: 'USERNAME',
+          password: 'PASSWORD',
+        },
+      ],
+    })
+
+    // prompt for permission if needed
+    // phone.promptBrowserPermission()
+
+    // show/hide the instance via the div, using above css in <style> tag
+    div.classList.remove('brekeke_phone_component_hidden')
+    div.classList.add('brekeke_phone_component_hidden')
+
+    phone.on('call', c => {
+      console.log('phone.on.call', c.id, c.incoming)
+      console.log(c) // console log to see all details
+      // here you manually can show the UI
+      div.classList.remove('brekeke_phone_component_hidden')
+    })
+    phone.on('call_update', c => {
+      console.log('phone.on.call_update', c.id) // identify by the same above id
+      console.log(c) // all fields same with above
+    })
+    phone.on('call_end', c => {
+      console.log('phone.on.call_end', c.id) // identify by the same above id
+      // here you can manually hide the UI if no running call
+      if (!phone.getRunningCalls().length) {
+        div.classList.add('brekeke_phone_component_hidden')
+      }
+    })
+
+    // get the raw pal instance from pbx:
+    // when account login, it will construct pal and you can access the pbx pal
+    phone.on('pal', (account, pal) => {
+      // account fields can be found github Brekeke Phone src/stores/accountStore.ts
+      console.log('phone.on.pal', account.pbxTenant, account.pbxUsername)
+      // pal is from window.Brekeke.pbx.getPal
+      // console log to see all details
+      console.log(pal)
+      // here you can listen on events like: notify_status...
+      // note that you need to keep the current listener so it wont be overrided
+      var old_notify_status = pal.notify_status
+      pal.notify_status = e => {
+        old_notify_status && old_notify_status(e) // call old listener
+        console.log(e.status, e.user, e.talker_id)
+      }
+      // you can call pal method here using promise:
+      // var res = await pal.call_pal('name', options)
+    })
+
+    // make outgoing call
+    // the new call will be notified via above event phone.on('call', ...)
+    // phone.call('number', options)
+
+    // attach to window so we can test in devtool
+    window._brekeke_phone = phone
+  </script>
+</html>

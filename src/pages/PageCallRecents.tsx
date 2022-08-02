@@ -1,26 +1,44 @@
-import { mdiMagnify, mdiPhone, mdiVideo } from '@mdi/js'
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import React, { Component } from 'react'
+import { Component } from 'react'
+import { AppState, NativeEventSubscription, Platform } from 'react-native'
 
+import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
-import { getAuthStore } from '../stores/authStore'
-import { AuthStore } from '../stores/authStore2'
+import { accountStore } from '../stores/accountStore'
+import { getAuthStore, RecentCall } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
+import { PushNotification } from '../utils/PushNotification.ios'
 
 @observer
 export class PageCallRecents extends Component {
-  isMatchUser = (call: AuthStore['currentData']['recentCalls'][0]) => {
+  appStateSubscription?: NativeEventSubscription
+  componentDidMount = () => {
+    if (Platform.OS === 'ios') {
+      const h = () => {
+        if (AppState.currentState === 'active') {
+          PushNotification.resetBadgeNumber()
+        }
+      }
+      // Reset notification badge whenever go to this page
+      h()
+      this.appStateSubscription = AppState.addEventListener('change', h)
+    }
+  }
+  componentWillUnmount = () => {
+    this.appStateSubscription?.remove()
+  }
+
+  isMatchUser = (call: RecentCall) => {
     if (call.partyNumber.includes(contactStore.callSearchRecents)) {
       return call.id
     }
     return ''
   }
-
   getAvatar = (id: string) => {
     const ucUser = contactStore.getUcUserById(id) || {}
     return {
@@ -29,9 +47,12 @@ export class PageCallRecents extends Component {
     }
   }
   getMatchedCalls = () => {
-    const calls = getAuthStore().currentData.recentCalls.filter(
-      this.isMatchUser,
-    )
+    const as = getAuthStore()
+    const d = as.getCurrentData()
+    if (!d) {
+      accountStore.getAccountDataAsync(as.getCurrentAccount())
+    }
+    const calls = d?.recentCalls.filter(this.isMatchUser) || []
     // Backward compatibility to remove invalid items from the previous versions
     const filteredCalls = calls.filter(
       c =>
@@ -50,7 +71,7 @@ export class PageCallRecents extends Component {
     const calls = this.getMatchedCalls()
     return (
       <Layout
-        description={intl`Recent voicemails and calls`}
+        description={intl`Voicemail and recent calls`}
         menu='call'
         subMenu='recents'
         title={intl`Recents`}
@@ -65,7 +86,13 @@ export class PageCallRecents extends Component {
         />
         <Field
           isGroup
-          label={intl`VOICEMAILS (${callStore.newVoicemailCount})`}
+          label={intl`VOICEMAIL (${callStore.newVoicemailCount})`}
+        />
+        <UserItem
+          iconFuncs={[() => callStore.startCall('8')]}
+          icons={[mdiPhone]}
+          name={intl`Voicemail`}
+          isVoicemail
         />
         <Field isGroup label={intl`RECENT CALLS (${calls.length})`} />
         {calls.map((c, i) => (
@@ -77,7 +104,7 @@ export class PageCallRecents extends Component {
             {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
-            canChat={getAuthStore().currentProfile.ucEnabled}
+            canChat={getAuthStore().getCurrentAccount()?.ucEnabled}
             key={i}
             {...this.getAvatar(c.partyNumber)}
             {...c}

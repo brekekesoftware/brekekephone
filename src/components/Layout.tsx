@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -14,6 +14,10 @@ import { toLowerCaseFirstChar } from '../utils/string'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
+import { Toast } from './Toast'
+import { v } from './variables'
+
+const DEFAULT_TOAST_MESSAGE = 'new message'
 
 const css = StyleSheet.create({
   Layout: {
@@ -29,6 +33,18 @@ const css = StyleSheet.create({
   },
   FooterSpaceInsideScroller: {
     height: 15,
+  },
+  LoadMore: {
+    alignSelf: 'center',
+    paddingBottom: 15,
+    fontSize: v.fontSizeSmall,
+    paddingHorizontal: 10,
+  },
+  LoadMore__btn: {
+    color: v.colors.primary,
+  },
+  LoadMore__finished: {
+    color: v.colors.warning,
   },
 })
 
@@ -52,20 +68,22 @@ export const Layout: FC<
     title: string
     transparent: boolean
     isTab?: boolean
+    isShowToastMessage?: boolean
+    incomingMessage: string
   }>
-> = observer(props => {
+> = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
 
-  props = { ...props } // Clone so it can be mutated
+  const props = { ...originalProps } // Clone so it can be mutated
 
   const Container = props.noScroll ? View : ScrollView
-  const containerProps = Object.entries(props).reduce((m, [k, v]) => {
+  const containerProps = Object.entries(props).reduce((m, [k, vk]) => {
     type K = keyof typeof props
     if (k.startsWith('container')) {
       delete props[k as K]
       k = k.replace('container', '')
       k = toLowerCaseFirstChar(k)
-      m[k] = v as typeof props[K]
+      m[k] = vk as typeof props[K]
     }
     return m
   }, {} as { [k: string]: unknown })
@@ -78,10 +96,13 @@ export const Layout: FC<
     Object.assign(containerProps, {
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: 'always',
-      onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) =>
+      onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         // eslint-disable-next-line no-mixed-operators
-        e.nativeEvent.contentOffset.y > 60 !== headerOverflow &&
-        setHeaderOverflow(!headerOverflow),
+        if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
+          setHeaderOverflow(!headerOverflow)
+        }
+        originalProps.containerOnScroll?.(e)
+      },
       scrollEventThrottle: 170,
       showsVerticalScrollIndicator: false,
     })
@@ -112,6 +133,7 @@ export const Layout: FC<
       footerSpace += 56
     }
   }
+
   return (
     <>
       <Container {...containerProps}>
@@ -119,7 +141,16 @@ export const Layout: FC<
         {props.children}
         <View style={css.FooterSpaceInsideScroller} />
       </Container>
-
+      {props.isShowToastMessage && (
+        <Toast
+          isVisible={props.isShowToastMessage}
+          title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
+          containerStyles={{
+            marginTop: headerSpace,
+            backgroundColor: 'yellow',
+          }}
+        />
+      )}
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />

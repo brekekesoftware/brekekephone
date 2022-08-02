@@ -1,26 +1,28 @@
+import { debounce } from 'lodash'
+import orderBy from 'lodash/orderBy'
+import { observer } from 'mobx-react'
+import { Component, Fragment } from 'react'
+import { StyleSheet, View } from 'react-native'
+
+import { pbx } from '../api/pbx'
 import {
   mdiBriefcase,
   mdiCellphone,
   mdiHome,
   mdiInformation,
+  mdiMagnify,
   mdiPhone,
-} from '@mdi/js'
-import orderBy from 'lodash/orderBy'
-import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
-import { StyleSheet, View } from 'react-native'
-
-import { pbx } from '../api/pbx'
+} from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -34,6 +36,7 @@ const css = StyleSheet.create({
 @observer
 export class PageContactPhonebook extends Component {
   componentDidMount() {
+    contactStore.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
         return
@@ -68,8 +71,6 @@ export class PageContactPhonebook extends Component {
         const x = {
           ...ct,
           loaded: true,
-          name: ct.firstName + ' ' + ct.lastName,
-          hidden: ct.hidden === 'true',
         }
         contactStore.upsertPhonebook(x)
         cb(x)
@@ -97,11 +98,12 @@ export class PageContactPhonebook extends Component {
     if (!u0) {
       return
     }
+
     const onIcon0 = (u: Phonebook2) => {
       if (!u) {
         return
       }
-      if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
+      if (!u.info.$tel_work && !u.info.$tel_home && !u.info.$tel_mobile) {
         this.callRequest('', u)
         return
       }
@@ -110,24 +112,24 @@ export class PageContactPhonebook extends Component {
         value: string
         icon: string
       }[] = []
-      if (u.workNumber !== '') {
+      if (u.info.$tel_work) {
         numbers.push({
           key: 'workNumber',
-          value: u.workNumber,
+          value: u.info.$tel_work,
           icon: mdiBriefcase,
         })
       }
-      if (u.cellNumber !== '') {
+      if (u.info.$tel_mobile) {
         numbers.push({
           key: 'cellNumber',
-          value: u.cellNumber,
+          value: u.info.$tel_mobile,
           icon: mdiCellphone,
         })
       }
-      if (u.homeNumber !== '') {
+      if (u.info.$tel_home) {
         numbers.push({
           key: 'homeNumber',
-          value: u.homeNumber,
+          value: u.info.$tel_home,
           icon: mdiHome,
         })
       }
@@ -153,15 +155,22 @@ export class PageContactPhonebook extends Component {
     })
   }
 
+  updateSearchText = (v: string) => {
+    contactStore.phonebookSearchTerm = v
+    this.updateListPhoneBook()
+  }
+
+  updateListPhoneBook = debounce(() => {
+    contactStore.offset = 0
+    contactStore.loadContacts()
+  }, 500)
+
   render() {
-    let phonebooks = contactStore.phoneBooks
-    if (!getAuthStore().currentProfile.displaySharedContacts) {
-      phonebooks = phonebooks.filter(i => i.shared !== true)
-    }
+    const phonebooks = contactStore.phoneBooks
 
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
-      let c0 = u.name.charAt(0).toUpperCase()
+      let c0 = u?.display_name?.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
         c0 = '#'
       }
@@ -180,6 +189,7 @@ export class PageContactPhonebook extends Component {
     groups.forEach(gr => {
       gr.phonebooks = orderBy(gr.phonebooks, 'name')
     })
+
     return (
       <Layout
         description={intl`Your phonebook contacts`}
@@ -198,15 +208,24 @@ export class PageContactPhonebook extends Component {
         title={intl`Phonebook`}
       >
         <Field
+          icon={mdiMagnify}
+          label={intl`SEARCH CONTACTS`}
+          onValueChange={this.updateSearchText}
+          value={contactStore.phonebookSearchTerm}
+        />
+        <Field
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
-            profileStore.upsertProfile({
-              id: getAuthStore().signedInId,
-              displaySharedContacts: v,
-            })
+            if (pbx.client && getAuthStore().pbxState === 'success') {
+              accountStore.upsertAccount({
+                id: getAuthStore().signedInId,
+                displaySharedContacts: v,
+              })
+              contactStore.refreshContacts()
+            }
           }}
           type='Switch'
-          value={getAuthStore().currentProfile.displaySharedContacts}
+          value={getAuthStore().getCurrentAccount()?.displaySharedContacts}
         />
         <View>
           {groups.map(gr => (
@@ -217,7 +236,7 @@ export class PageContactPhonebook extends Component {
                   iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}
                   key={i}
-                  name={u.name}
+                  name={u?.display_name || intl`<Unnamed>`}
                 />
               ))}
             </Fragment>

@@ -1,7 +1,7 @@
-import { mdiCached, mdiKeyboardBackspace } from '@mdi/js'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import { mdiCached, mdiKeyboardBackspace } from '../assets/icons'
 import { intl } from '../stores/intl'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'

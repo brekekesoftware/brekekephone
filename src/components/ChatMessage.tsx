@@ -1,6 +1,5 @@
-import { mdiDotsHorizontal, mdiFile } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React, { Component, FC } from 'react'
+import { Component, FC } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -12,11 +11,13 @@ import {
 import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
+import { mdiDotsHorizontal, mdiFile } from '../assets/icons'
 import { ChatFile } from '../stores/chatStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { formatChatContent } from '../utils/formatChatContent'
+import { trimHtml } from '../utils/trimHtml'
 import { ItemImageVideoChat } from './ItemImageVideoChat'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
@@ -260,8 +261,8 @@ export class Message extends Component<{
   }
 
   onRnPickerSelect = (k: number, url: string) => {
-    const message = k === 0 || k === 1 ? this.props.text : url
-    if (k === 0 || k === 2) {
+    const message = !k || k === 1 ? this.props.text : url
+    if (!k || k === 2) {
       Clipboard.setString(message)
     } else {
       Share.open({ message })
@@ -278,21 +279,23 @@ export class Message extends Component<{
 
     return (
       <>
-        {!!text && !!!file && (
+        {!!text && !file && (
           <TextContainer style={css.Message} onLongPress={this.onMessagePress}>
             <Hyperlink
               onPress={this.onLinkPress}
               linkStyle={css.Link}
               onLongPress={this.onLinkLongPress}
             >
-              <RnText style={!isTextOnly && css.Message__call}>{text}</RnText>
+              <RnText style={!isTextOnly && css.Message__call}>
+                {trimHtml(text)}
+              </RnText>
             </Hyperlink>
           </TextContainer>
         )}
         {!!file && isImage && <ItemImageVideoChat {...file} />}
         {!!file && !isImage && (
           <File
-            {...p.file}
+            {...(p.file as any)}
             accept={() => p.acceptFile(p.file)}
             createdByMe={p.createdByMe}
             reject={() => p.rejectFile(p.file)}

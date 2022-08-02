@@ -1,7 +1,7 @@
-import { mdiDotsVertical } from '@mdi/js'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
+import { mdiDotsVertical } from '../assets/icons'
 import { AnimatedSize } from './AnimatedSize'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'

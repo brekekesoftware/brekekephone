@@ -2,6 +2,7 @@ import { debounce } from 'lodash'
 import { action, autorun, Lambda } from 'mobx'
 
 import { pbx } from '../api/pbx'
+import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 
 class AuthPBX {
@@ -17,7 +18,7 @@ class AuthPBX {
     })
   }
   @action dispose = () => {
-    console.error('PBX PN debug: disconnect by AuthPBX.dispose')
+    console.log('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()
     this.clearObserve = undefined
     pbx.disconnect()
@@ -25,21 +26,28 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
-  @action private authWithCheck = () => {
+  private waitingTimeout = false
+  @action private authWithCheck = async () => {
     const s = getAuthStore()
-    if (!s.pbxShouldAuth()) {
+    if (!s.pbxShouldAuth() || !s.getCurrentAccount() || this.waitingTimeout) {
       return
     }
-    console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')
+    if (s.pbxTotalFailure > 1) {
+      const timeWait = s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000
+      this.waitingTimeout = true
+      await waitTimeout(timeWait)
+    }
+    console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
     s.pbxState = 'connecting'
-    pbx.connect(s.currentProfile).catch(
+    pbx.connect(s.getCurrentAccount()).catch(
       action((err: Error) => {
         s.pbxState = 'failure'
         s.pbxTotalFailure += 1
         console.error('Failed to connect to pbx', err)
       }),
     )
+    this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }

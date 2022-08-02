@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 
-const jsonOutputPath = path.join(__dirname, './.babelPluginIntl.json')
+const jsonOutputPath = path.join(__dirname, './.intlNewEn.json')
 
 // Only add brackets if there's no existing brackets
 const withBrackets = (exprName, rawTemplate, i) =>
@@ -28,7 +28,7 @@ const findBrackets = (rawTemplate, i, bracket) => {
   }
 }
 
-const babelPluginIntl = () => ({
+const intlBabelPlugin = () => ({
   visitor: {
     TaggedTemplateExpression(p, s) {
       //
@@ -86,4 +86,4 @@ const babelPluginIntl = () => ({
   },
 })
 
-module.exports = babelPluginIntl
+module.exports = intlBabelPlugin

@@ -1,7 +1,14 @@
 import { CallStore } from './callStore'
 
-let store: Immutable<CallStore>
-export const setCallStore = (s: Immutable<CallStore>) => {
+export const getCallStore = () => store
+
+let store: CallStore
+export const setCallStore = (s: CallStore) => {
   store = s
 }
-export const cancelRecentPn = (pnId?: string) => store.onSipUaCancel(pnId)
+export const cancelRecentPn = (n?: CancelRecentPn) => store.onSipUaCancel(n)
+
+export type CancelRecentPn = {
+  pnId?: string
+  completedElseWhere?: boolean
+}

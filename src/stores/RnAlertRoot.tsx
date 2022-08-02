@@ -1,6 +1,6 @@
 import flow from 'lodash/flow'
 import { observer } from 'mobx-react'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { RnText, RnTouchableOpacity } from '../components/Rn'

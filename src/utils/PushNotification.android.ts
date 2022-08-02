@@ -5,7 +5,7 @@ import FCM, { FCMEvent, Notification } from 'react-native-fcm'
 
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
-import { parse } from './PushNotification-parse'
+import { parse, toXPN } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
 let fcmPnToken = ''
@@ -17,7 +17,7 @@ const onToken = (t: string) => {
 
 const onNotification = async (n0: Notification, initApp: Function) => {
   try {
-    initApp()
+    await initApp()
     // flush initial notification
     getInitialNotifications().then(ns =>
       ns.forEach(n => onNotification(n, initApp)),
@@ -28,6 +28,8 @@ const onNotification = async (n0: Notification, initApp: Function) => {
     }
     //
     FCM.presentLocalNotification({
+      ...n,
+      ...toXPN(n),
       body: 'Click to view',
       title: n.body,
       number: 0,
@@ -69,6 +71,8 @@ export const PushNotification = {
       await getInitialNotifications().then(ns =>
         ns.forEach(n => onNotification(n, initApp)),
       )
+      // killed state local PN interaction?
+      await FCM.getInitialNotification().then(n => onNotification(n, initApp))
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,

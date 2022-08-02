@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { ChatMessage } from '../stores/chatStore'

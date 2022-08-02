@@ -1,4 +1,5 @@
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { AccountData } from './accountStore'
 import { AuthStore } from './authStore2'
 
 // circular dep
@@ -8,12 +9,14 @@ export const setAuthStore = (s: AuthStore) => {
 }
 export const getAuthStore = () => authStore
 
+export type RecentCall = AccountData['recentCalls'][0]
+
 const compareField = (p1: object, p2: object, field: string) => {
   const v1 = p1[field as keyof typeof p1]
   const v2 = p2[field as keyof typeof p2]
   return !v1 || !v2 || v1 === v2
 }
-export const compareProfile = (p1: { pbxUsername: string }, p2: object) => {
+export const compareAccount = (p1: { pbxUsername: string }, p2: object) => {
   return (
     p1.pbxUsername && // Must have pbxUsername
     compareField(p1, p2, 'pbxUsername') &&

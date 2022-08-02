@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 
-import { Profile, profileStore } from '../stores/profileStore'
+import { Account, accountStore } from '../stores/accountStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { PBX } from './pbx'
@@ -8,26 +8,27 @@ import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
 
 const syncPnTokenWithoutCatch = async (
-  p: Profile,
+  p: Account,
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   if (Platform.OS === 'web') {
-    console.error('PN sync debug: invalid platform')
+    console.log('PN sync debug: invalid platform')
     return
   }
 
-  if (profileStore.pnSyncLoadingMap[p.id]) {
-    console.error('PN sync debug: sync is loading')
+  if (accountStore.pnSyncLoadingMap[p.id]) {
+    console.log('PN sync debug: sync is loading')
     return
   }
-  profileStore.pnSyncLoadingMap[p.id] = true
+  accountStore.pnSyncLoadingMap[p.id] = true
 
   const pbx = new PBX()
+  pbx.needToWait = false
   await pbx.connect(p)
 
   const webPhone = await updatePhoneIndex(p, pbx)
   if (!webPhone) {
-    console.error('PN sync debug: can not find webphone')
+    console.log('PN sync debug: can not find webphone')
     return
   }
 
@@ -51,11 +52,11 @@ const syncPnTokenWithoutCatch = async (
         : pbx.removeFcmPnToken
       : null
   if (!fn) {
-    console.error('PN sync debug: invalid platform')
+    console.log('PN sync debug: invalid platform')
     return
   }
 
-  console.error(
+  console.log(
     `PN sync debug: trying to turn ${
       p.pushNotificationEnabled ? 'on' : 'off'
     } PN for account ${p.pbxUsername}`,
@@ -81,17 +82,17 @@ const syncPnTokenWithoutCatch = async (
   }
   await Promise.all(arr)
 
-  console.error('PBX PN debug: disconnect by syncPnToken')
+  console.log('PBX PN debug: disconnect by syncPnToken')
   pbx.disconnect()
 
   if (!noUpsert) {
-    profileStore.upsertProfile({
+    accountStore.upsertAccount({
       id: p.id,
       pushNotificationEnabledSynced: true,
     })
   }
 
-  profileStore.pnSyncLoadingMap[p.id] = false
+  accountStore.pnSyncLoadingMap[p.id] = false
 }
 
 export interface SyncPnTokenOption {
@@ -99,9 +100,9 @@ export interface SyncPnTokenOption {
   onError?: (err: Error) => void
 }
 
-const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
+const syncPnToken = (p: Account, o: SyncPnTokenOption = {}) => {
   return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
-    profileStore.pnSyncLoadingMap[p.id] = false
+    accountStore.pnSyncLoadingMap[p.id] = false
     if (o.onError) {
       o.onError(err)
       return
@@ -114,7 +115,7 @@ const syncPnToken = (p: Profile, o: SyncPnTokenOption = {}) => {
 }
 
 const syncPnTokenForAllAccounts = () => {
-  profileStore.profiles.forEach(p => {
+  accountStore.accounts.forEach(p => {
     if (p.pushNotificationEnabledSynced) {
       return
     }

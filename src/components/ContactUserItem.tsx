@@ -1,21 +1,23 @@
+import { observer } from 'mobx-react'
+import { FC, ReactNode } from 'react'
+import { StyleSheet, View } from 'react-native'
+
+import { Conference } from '../api/brekekejs'
+import { Constants, uc } from '../api/uc'
 import {
   mdiAccountGroup,
   mdiPhoneIncoming,
   mdiPhoneMissed,
   mdiPhoneOutgoing,
-} from '@mdi/js'
-import { observer } from 'mobx-react'
-import React, { FC, ReactNode } from 'react'
-import { StyleSheet, View } from 'react-native'
-
-import { Conference } from '../api/brekekejs'
-import { Constants, uc } from '../api/uc'
+} from '../assets/icons'
 import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { trimHtml } from '../utils/trimHtml'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
+import { RnCheckBox } from './RnCheckbox'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -79,6 +81,14 @@ const css = StyleSheet.create({
     marginVertical: 5,
     alignItems: 'center',
   },
+  CheckboxContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 15,
+  },
+  disableContainer: {
+    opacity: 0.5,
+  },
 })
 
 export const UserItem: FC<
@@ -102,6 +112,12 @@ export const UserItem: FC<
     canChat: boolean
     group: boolean
     partyName: string
+    isVoicemail?: boolean
+    status?: string
+    disabled?: boolean
+    isSelection?: boolean
+    isSelected?: boolean
+    onSelect?: () => void
   }>
 > = observer(p0 => {
   const {
@@ -124,6 +140,11 @@ export const UserItem: FC<
     canChat,
     group,
     partyName,
+    isVoicemail,
+    disabled,
+    isSelection,
+    isSelected,
+    onSelect,
     ...p
   } = p0
   const Container = canChat ? RnTouchableOpacity : View
@@ -165,7 +186,10 @@ export const UserItem: FC<
   }
 
   return (
-    <Container style={css.Outer} onPress={onPressItem}>
+    <Container
+      style={[css.Outer, disabled && css.disableContainer]}
+      onPress={onPressItem}
+    >
       <View style={[css.Inner, selected && css.Inner_selected]}>
         {group ? (
           <View style={css.VGroup}>
@@ -179,13 +203,22 @@ export const UserItem: FC<
         ) : (
           <Avatar
             source={{ uri: avatar as string }}
+            status={p0.status}
             {...p}
             style={css.WithSpace}
           />
         )}
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
-            <RnText black bold singleLine>
+            <RnText
+              black
+              bold
+              singleLine
+              style={{
+                color:
+                  name === intl`<Unnamed>` ? v.colors.greyTextChat : 'black',
+              }}
+            >
               {getPartyName(partyNumber) ||
                 partyName ||
                 name ||
@@ -200,10 +233,12 @@ export const UserItem: FC<
           </View>
           {!isRecentCall && !!lastMessage && (
             <RnText normal singleLine small>
-              {lastMessage}
+              {typeof lastMessage === 'string'
+                ? trimHtml(lastMessage)
+                : lastMessage}
             </RnText>
           )}
-          {isRecentCall && !lastMessage && (
+          {((isRecentCall && !lastMessage) || isVoicemail) && (
             <View style={css.Detail}>
               <RnIcon
                 color={
@@ -224,7 +259,7 @@ export const UserItem: FC<
                 style={css.CallIcon}
               />
               <RnText normal small style={css.CallCreatedAt}>
-                {intl`at ${created}`}
+                {isVoicemail ? intl`Voicemail` : intl`at ${created}`}
               </RnText>
             </View>
           )}
@@ -241,6 +276,15 @@ export const UserItem: FC<
             <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
+        {!!isSelection && (
+          <View style={css.CheckboxContainer}>
+            <RnCheckBox
+              isSelected={!!isSelected}
+              onPress={() => (onSelect ? onSelect() : true)}
+              disabled={disabled || false}
+            />
+          </View>
+        )}
       </View>
     </Container>
   )

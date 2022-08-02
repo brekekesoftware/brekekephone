@@ -5,15 +5,21 @@ import { RnAlert } from '../stores/RnAlert'
 import { pbx } from './pbx'
 
 export const updatePhoneIndex = async (
-  p = getAuthStore().currentProfile,
+  p = getAuthStore().getCurrentAccount(),
   api = pbx,
 ): Promise<null | {
   id: string
   type: string
 }> => {
+  if (!p) {
+    return null
+  }
   //
   const phoneIndex = parseInt(p.pbxPhoneIndex) || 4
-  const extProps = await api.getUserForSelf(p.pbxTenant, p.pbxUsername)
+  const extProps = await api.getPbxPropertiesForCurrentUser(
+    p.pbxTenant,
+    p.pbxUsername,
+  )
   if (!extProps) {
     console.error('updatePhoneIndex.setExtensionProperties: extProps undefined')
     return null
@@ -31,7 +37,7 @@ export const updatePhoneIndex = async (
       )
       return
     }
-    await api.client._pal('setExtensionProperties', {
+    await api.client.call_pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
       properties: {
@@ -40,7 +46,7 @@ export const updatePhoneIndex = async (
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })
-    if (p === getAuthStore().currentProfile) {
+    if (p === getAuthStore().getCurrentAccount()) {
       getAuthStore().userExtensionProperties = extProps
     }
   }

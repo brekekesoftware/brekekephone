@@ -8,6 +8,6 @@ export const registerOnUnhandledError = (fn: JSExceptionHandler) => {
   setJSExceptionHandler(fn)
   setNativeExceptionHandler(nativeErr => {
     //
-    console.error(nativeErr)
+    console.error('exception-handler error:', nativeErr)
   })
 }

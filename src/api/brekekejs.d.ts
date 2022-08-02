@@ -11,8 +11,27 @@ export type Brekeke = {
   WebrtcClient: {
     Phone: Sip
   }
+  Phone: {
+    render: Function
+  }
+  Phonebook: Phonebook
 }
-
+export type Phonebook = {
+  getManager(lan: string): ManagerPhonebook | undefined
+  getManagers(): ManagerPhonebook[]
+}
+export type ManagerPhonebook = {
+  item: ItemPhonebook[]
+  toDisplayName(map: object): string
+  getLang(): void
+  toSortStr(map: object): void
+}
+export type ItemPhonebook = {
+  id: string
+  caption?: string
+  onscreen?: boolean
+  type?: string
+}
 export type GetPalOptions = {
   tenant: string
   login_user: string
@@ -20,7 +39,7 @@ export type GetPalOptions = {
   _wn: string
   park: string[]
   voicemail: string
-  user: string
+  user?: string
   status: boolean
   secure_login_password: boolean
   phonetype: string
@@ -43,7 +62,7 @@ export type Pbx = PbxPal & {
   notify_voicemail?(e: PbxEvent['voicemail']): void
 
   // not actually exist in the sdk, should be added manually
-  _pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
+  call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
     ...p: P extends undefined ? [] : [P]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
@@ -81,12 +100,12 @@ export type PbxPal = {
 
   getExtensions(
     p: PbxGetExtensionsParam,
-    resolve: (extensions: string[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
-  getExtensionProperties<T extends string | string[]>(
+  getExtensionProperties(
     p: PbxGetExtensionPropertiesParam,
-    resolve: (properties: T[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
   setExtensionProperties(
@@ -98,6 +117,11 @@ export type PbxPal = {
   getContactList(
     p: PbxGetContactListParam,
     resolve: (res: PbxGetContactListItem[]) => void,
+    reject: ErrorHandler,
+  ): void
+  getPhonebooks(
+    p: {},
+    resolve: (res: PbxBook[]) => void,
     reject: ErrorHandler,
   ): void
   getContact(
@@ -130,6 +154,9 @@ export type PbxGetProductInfoRes = {
   'webphone.turn.username': string
   'webphone.turn.credential': string
   'webphone.uc.host': string
+  'webphone.allusers': string
+  'webphone.users.max': string
+  'webphone.pal.param.user': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
@@ -142,10 +169,11 @@ export type PbxGetExtensionsParam = {
   pattern: '..*'
   type: 'user'
   limit: number
+  property_names: string[]
 }
 export type PbxGetExtensionPropertiesParam = {
   tenant: string
-  extension: T
+  extension: string[]
   property_names: string[]
 }
 export type PbxSetExtensionPropertiesParam = {
@@ -161,13 +189,17 @@ export type PbxExtensionProperties = {
   pnumber: string
 }
 export type PbxGetContactListParam = {
-  shared: string
+  phonebook?: string
+  search_text?: string
+  shared: boolean
   offset: number
   limit: number
 }
 export type PbxGetContactListItem = {
   aid: string
   display_name: string
+  phonebook: string
+  user?: string
 }
 export type PbxGetContactParam = {
   aid: string
@@ -198,11 +230,15 @@ export type PbxParkParam = {
   tid: string
   number: string
 }
-
+export type PbxBook = {
+  phonebook: string
+  shared?: string
+}
 export type PbxContact = {
   aid: string
   phonebook: string
   shared: string
+  display_name: string
   info: {
     $firstname: string
     $lastname: string
@@ -260,8 +296,14 @@ export type Sip = {
   getPhoneStatus(): string
 
   _ua?: {
+    _transport?: {
+      socket?: object
+    }
+    registrator?(): {
+      _registered: boolean
+      setExtraHeaders: Function
+    }
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
-    _transport?: { socket?: object }
   }
   _removeEventListenerPhoneStatusChange?: Function
 }
@@ -302,7 +344,6 @@ export type SipConfiguration = {
 
   user: string
   auth?: string
-  password?: string
 
   useVideoClient?: boolean
   videoClientUser?: string
@@ -334,9 +375,10 @@ export type PhoneStatusChangedEvent = {
   reason: string
   response: unknown
 }
+export type SessionStatus = 'dialing' | 'terminated' | 'connected' | 'progress'
 export type Session = {
   sessionId: string
-  sessionStatus: 'dialing' | 'terminated' | 'connected'
+  sessionStatus: SessionStatus
   rtcSession: {
     remote_identity: {
       display_name: string
@@ -353,6 +395,7 @@ export type Session = {
   localStreamObject: MediaStream
   incomingMessage?: {
     getHeader(h: string): string
+    body?: object
   }
   videoClientSessionTable: {
     [id: string]: Session
@@ -396,11 +439,35 @@ export type UcChatClient = {
     reject: ErrorHandler,
   ): void
   signOut(): void
+  getAllUsers(): {
+    user: [
+      {
+        disabledBuddy?: boolean
+        user_group: string
+        user_id: string
+        user_name: string
+      },
+    ]
+  }
   getProfile(): {
     user_id: string
     name: string
     profile_image_url: string
+    tenant: string
   }
+  getConfigProperties(): UcConfig
+
+  saveProperties(
+    profile?: null,
+    settings?: null,
+    buddylist: {
+      screened: boolean
+      user: (UcBuddy | UcBuddyGroup)[]
+    },
+    resolve: () => void,
+    reject: ErrorHandler,
+  )
+
   getStatus(): {
     status: number // 0 | 1 | 2 | 3
     display: string
@@ -411,8 +478,10 @@ export type UcChatClient = {
     resolve: () => void,
     reject: ErrorHandler,
   )
+
   getBuddylist(): {
-    user: UcUser[]
+    user: (UcBuddy | UcBuddyGroup)[]
+    screened: boolean
   }
 
   receiveUnreadText(
@@ -555,12 +624,20 @@ export type UcWebchat = {
   baseTime: number
   isTalking: boolean
 }
-export type UcUser = {
+export type UcBuddy = {
+  disabledBuddy?: boolean
   user_id: string
   name: string
   profile_image_url: string
-  status: number
-  display: string
+  group: string
+  tenant: string
+  block_settings: object
+  status?: string
+}
+export type UcBuddyGroup = {
+  id: string
+  name?: string
+  group?: string
 }
 export type UcReceieveUnreadText = {
   messages: UcMessage[]
@@ -756,6 +833,15 @@ export type UcEventMap = {
     conference: Conference
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
+}
+export type UcConfig = {
+  buddy_mode: number
+  chat_mode: number
+  webnotif_timeout: number
+  webchat_enabled: string
+  optional_config: {
+    buddy_max: number
+  }
 }
 
 export type UcConstants = {

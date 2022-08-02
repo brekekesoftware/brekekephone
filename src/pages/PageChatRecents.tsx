@@ -2,7 +2,7 @@ import stableStringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 import { Conference, UcMessageLog } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
@@ -10,12 +10,12 @@ import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, UcUser } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
 import { arrToMap } from '../utils/toMap'
@@ -23,10 +23,10 @@ import { arrToMap } from '../utils/toMap'
 @observer
 export class PageChatRecents extends Component {
   getLastChat = (id: string) => {
-    const chats = filterTextOnly(chatStore.messagesByThreadId[id] || [])
-    return chats.length !== 0 ? chats[chats.length - 1] : ({} as ChatMessage)
+    const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+    return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
   }
-  saveLastChatItem = (
+  saveLastChatItem = async (
     arr: {
       id: string
       name: string
@@ -42,25 +42,22 @@ export class PageChatRecents extends Component {
     while (arr2.length > 20) {
       arr2.pop()
     }
-    if (
-      stableStringify(arr2) !==
-      stableStringify(getAuthStore().currentData.recentChats)
-    ) {
-      getAuthStore().currentData.recentChats = arr2
-      profileStore.saveProfilesToLocalStorage()
+    const d = await getAuthStore().getCurrentDataAsync()
+    if (stableStringify(arr2) !== stableStringify(d.recentChats)) {
+      d.recentChats = arr2
+      accountStore.saveAccountsToLocalStorageDebounced()
     }
   }
-  handleGroupSelect = (groupId: string) => {
+  handleGroupSelect = async (groupId: string) => {
     const groupInfo: Conference = uc.getChatGroupInfo(groupId)
     const groupStatus = groupInfo.conf_status
     if (groupStatus === Constants.CONF_STATUS_INACTIVE) {
       RnAlert.error({
         message: intlDebug`You have rejected this group or this group has been deleted`,
       })
-      const newList = getAuthStore().currentData.recentChats.filter(
-        c => c.id !== groupId,
-      )
-      getAuthStore().currentData.recentChats = [...newList]
+      const d = await getAuthStore().getCurrentDataAsync()
+      const newList = d.recentChats.filter(c => c.id !== groupId)
+      d.recentChats = [...newList]
     } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
       RnAlert.prompt({
         title: '',
@@ -94,9 +91,15 @@ export class PageChatRecents extends Component {
       [k: string]: UcUser
     }
 
-    const recentFromStorage = getAuthStore().currentData.recentChats.filter(
-      c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
-    )
+    const as = getAuthStore()
+    const d = as.getCurrentData()
+    if (!d) {
+      accountStore.getAccountDataAsync(as.getCurrentAccount())
+    }
+    const recentFromStorage =
+      d?.recentChats.filter(
+        c => groupIds.indexOf(c.id) < 0 && threadIds.indexOf(c.id) < 0,
+      ) || []
     type WithThreadId = {
       threadId: string
     }
@@ -156,7 +159,7 @@ export class PageChatRecents extends Component {
       return m
     }, {} as { [k: string]: boolean })
 
-    filterTextOnly(getAuthStore().currentData.recentChats).forEach(c => {
+    filterTextOnly(d?.recentChats).forEach(c => {
       if (!arrMap[c.id]) {
         arr.push(c)
       }
@@ -195,7 +198,7 @@ export class PageChatRecents extends Component {
           groupById={groupById}
           onGroupSelect={this.handleGroupSelect}
           userById={userById}
-          onUserSelect={(id: string) => Nav().goToPageChatDetail({ buddy: id })}
+          onUserSelect={id => Nav().goToPageChatDetail({ buddy: id })}
         />
       </Layout>
     )

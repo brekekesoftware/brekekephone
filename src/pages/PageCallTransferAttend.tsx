@@ -1,19 +1,19 @@
+import { observer } from 'mobx-react'
+import { Component } from 'react'
+import { StyleSheet, View } from 'react-native'
+
+import { sip } from '../api/sip'
 import {
   mdiArrowRight,
   mdiPhoneForward,
   mdiPhoneHangup,
   mdiPhoneOff,
-} from '@mdi/js'
-import { observer } from 'mobx-react'
-import React, { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
-
-import { sip } from '../api/sip'
+} from '../assets/icons'
 import { Avatar } from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { callStore } from '../stores/callStore'
-import { contactStore } from '../stores/contactStore'
+import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
@@ -109,7 +109,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__from]}>
             <Avatar source={{ uri: usersource?.avatar }} />
             <RnText center singleLine small>
-              {c.partyName}
+              {c.getDisplayName()}
             </RnText>
           </View>
           <View style={css.Arrow}>
@@ -118,7 +118,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__to]}>
             <Avatar source={{ uri: usertarget?.avatar }} />
             <RnText center singleLine small>
-              {c.transferring}
+              {getPartyName(c.transferring) || c.transferring}
             </RnText>
           </View>
         </View>

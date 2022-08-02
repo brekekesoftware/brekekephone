@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 import debounce from 'lodash/debounce'
-import { computed, observable } from 'mobx'
+import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking, Platform } from 'react-native'
 import RNFS from 'react-native-fs'
@@ -47,9 +47,7 @@ class DebugStore {
 
   // Cache the size of log files
   @observable logSizes = [0, 0]
-  @computed get logSize() {
-    return this.logSizes.reduce((sum, s) => sum + s, 0)
-  }
+  getLogSize = () => this.logSizes.reduce((sum, s) => sum + s, 0)
 
   // Use a queue to write logs to file in batch
   logQueue: string[] = []
@@ -154,14 +152,21 @@ class DebugStore {
   @observable isCheckingForUpdate = false
   @observable remoteVersion = ''
   @observable remoteVersionLastCheck = 0
-  @computed get isUpdateAvailable() {
-    const a1 = currentVersion.split('.')
-    const a2 = this.remoteVersion.split('.')
-    return a1.reduce((available, v, i) => {
-      const v1 = Number(v) || 0
-      const v2 = Number(a2[i]) || 0
-      return available || v2 > v1
-    }, false)
+  isUpdateAvailable = () => {
+    const ac = currentVersion.split('.').map(Number)
+    const ar = this.remoteVersion.split('.').map(Number)
+    if (ac.length !== 3 || ar.length !== 3) {
+      return false
+    }
+    const [cMajor, cMinor, cPatch] = ac
+    const [rMajor, rMinor, rPatch] = ar
+    if (cMajor !== rMajor) {
+      return cMajor < rMajor
+    }
+    if (cMinor !== rMinor) {
+      return cMinor < rMinor
+    }
+    return cPatch < rPatch
   }
 
   checkForUpdate = () => {
@@ -176,8 +181,10 @@ class DebugStore {
               'https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en',
             )
             .then(res => res.text())
-            .then(t =>
-              t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
+            .then(
+              t =>
+                t.match(/\[\[\["(\d+\.\d+\.\d+)"\]/)?.[1].trim() ||
+                t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
             )
         : window
             .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
@@ -199,10 +206,8 @@ class DebugStore {
     })
       .then(this.saveRemoteVersionToStorage)
       .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get app version from app store`,
-          err,
-        })
+        console.error('Failed to get app version from app store:')
+        console.error(err)
         this.isCheckingForUpdate = false
       })
   }
@@ -214,10 +219,8 @@ class DebugStore {
         lastCheck: this.remoteVersionLastCheck,
       }),
     ).catch((err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to save app version to storage`,
-        err,
-      })
+      console.error('Failed to save app version to storage:')
+      console.error(err)
     })
   }
 
@@ -285,10 +288,8 @@ class DebugStore {
           this.autoCheckForUpdate()
         })
         .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to read app version from storage`,
-            err,
-          })
+          console.error('Failed to read app version from storage:')
+          console.error(err)
         }),
     )
     //

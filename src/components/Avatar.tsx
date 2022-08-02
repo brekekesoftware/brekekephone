@@ -1,10 +1,9 @@
-import { mdiRecord } from '@mdi/js'
 import { observer } from 'mobx-react'
-import React from 'react'
 import { Platform, StyleSheet, View, ViewProps } from 'react-native'
 import { FastImageProps } from 'react-native-fast-image'
 
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
+import { mdiRecord } from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
 import { RnIcon, RnImage } from './Rn'
 import { v } from './variables'
@@ -56,7 +55,7 @@ export const Avatar = observer(
         <View style={css.ImageOuter}>
           <RnImage source={imgSource} style={css.Image} />
         </View>
-        {getAuthStore().currentProfile.ucEnabled &&
+        {getAuthStore().getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
               color={statusMapColor[status as keyof typeof statusMapColor]}

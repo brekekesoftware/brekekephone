@@ -2,13 +2,12 @@ import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
-} from '@mdi/js'
-
+} from '../assets/icons'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/toMap'
 
@@ -110,7 +109,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().currentProfile.ucEnabled) {
+        if (s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
@@ -120,7 +119,10 @@ const genMenus = () => {
       }
     })
     m.navFn = () => {
-      let k = getAuthStore().currentProfile.navSubMenus?.[i]
+      let k = getAuthStore().getCurrentAccount()?.navSubMenus?.[i]
+      if (!k) {
+        return
+      }
       if (!(k in m.subMenusMap)) {
         k = m.defaultSubMenuKey
       }
@@ -143,7 +145,7 @@ export const menus = () => {
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const p = getAuthStore().currentProfile
+  const p = getAuthStore().getCurrentAccount()
   if (!m || !p) {
     return
   }
@@ -155,11 +157,14 @@ const saveNavigation = (i: number, k: string) => {
     p.navIndex = i
   }
   p.navSubMenus[i] = k
-  profileStore.saveProfilesToLocalStorage()
+  accountStore.saveAccountsToLocalStorageDebounced()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const p = getAuthStore().currentProfile
+  const p = getAuthStore().getCurrentAccount()
+  if (!p) {
+    return
+  }
   if (!arr[p.navIndex]) {
     p.navIndex = 0
   }
@@ -183,6 +188,6 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !getAuthStore().currentProfile.ucEnabled),
+    s => !(s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled),
   )
 }

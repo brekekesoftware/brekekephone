@@ -1,8 +1,9 @@
-import { action, computed, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
 
+import { SessionStatus } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
@@ -18,26 +19,32 @@ import { RnAlert } from './RnAlert'
 export class Call {
   constructor(private store: CallStore) {}
 
+  @observable earlyMedia: MediaStream | null = null
+  @observable withSDP: boolean = false
+  @observable withSDPControls: boolean = false
+  @observable sessionStatus: SessionStatus = 'dialing'
   @observable id = ''
   @observable pnId = ''
   @observable partyNumber = ''
+  @observable partyImageUrl = ''
+  @observable partyImageSize = ''
+  @observable talkingImageUrl = ''
+  /** @deprecated use below getDisplayName instead */
   @observable partyName = ''
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
-  @computed get title() {
-    return (
-      getPartyName(this.partyNumber) ||
-      this.partyName ||
-      this.partyNumber ||
-      this.pbxTalkerId ||
-      this.id
-    )
-  }
+  getDisplayName = () =>
+    getPartyName(this.partyNumber) ||
+    this.partyName ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
   createdAt = Date.now()
 
   @observable incoming = false
   @observable answered = false
   @observable answeredAt = 0
+
   getDuration = () => this.answeredAt && Date.now() - this.answeredAt
 
   callkeepUuid = ''
@@ -103,7 +110,7 @@ export class Call {
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
     // We dont want to display incoming call here again
-    if (getAuthStore().currentProfile?.pushNotificationEnabled) {
+    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
       return
     }
     this.callkeepUuid = newUuid().toUpperCase()
@@ -140,9 +147,7 @@ export class Call {
     BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, this.isFrontCamera)
   }
   toggleVideo = () => {
-    const pbxUser = contactStore.getPbxUserById(
-      this.partyNumber || this.partyName,
-    )
+    const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
     if (this.holding || callerStatus === 'holding') {
       return

@@ -1,18 +1,20 @@
-import { mdiDotsHorizontal, mdiLadybug, mdiUnfoldMoreHorizontal } from '@mdi/js'
-import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
 import { FlatList, Platform, StyleSheet, View } from 'react-native'
 
+import {
+  mdiDotsHorizontal,
+  mdiLadybug,
+  mdiUnfoldMoreHorizontal,
+} from '../assets/icons'
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { Layout } from '../components/Layout'
 import { ProfileSignInItem } from '../components/ProfileSignInItem'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { currentVersion, v } from '../components/variables'
+import { accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { Profile, profileStore } from '../stores/profileStore'
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -70,7 +72,8 @@ const css = StyleSheet.create({
 })
 
 export const PageProfileSignIn = observer(() => {
-  const l = profileStore.profiles.length
+  const ids = accountStore.accounts.map(a => a.id).filter(id => id)
+  const l = ids.length
   return (
     <BrekekeGradient>
       <Layout
@@ -81,21 +84,20 @@ export const PageProfileSignIn = observer(() => {
         transparent
       >
         <View style={css.PageProfileSignIn_Spacing} />
-        {!!l && (
+        {!l ? (
+          <ProfileSignInItem empty />
+        ) : (
           <FlatList
-            data={
-              toJS(profileStore.profiles) /* Fix observable inside FlatList */
-            }
+            data={ids}
             horizontal
-            keyExtractor={(item: Profile) => item.id}
+            keyExtractor={(id: string) => id}
             renderItem={({ index, item }) => (
-              <ProfileSignInItem id={item.id} last={index === l - 1} />
+              <ProfileSignInItem id={item} last={index === l - 1} />
             )}
             showsHorizontalScrollIndicator={false}
             style={css.PageProfileSignIn_ListServers}
           />
         )}
-        {!l && <ProfileSignInItem empty />}
       </Layout>
       <RnTouchableOpacity
         onPress={Nav().goToPageSettingsDebug}
@@ -121,7 +123,7 @@ export const PageProfileSignIn = observer(() => {
           style={[css.CornerButton_Inner, css.CornerButton_Inner__language]}
         >
           <RnText bold white>
-            {intlStore.localeLoading ? '\u200a' : intlStore.localeName}
+            {intlStore.localeLoading ? '\u200a' : intlStore.getLocaleName()}
           </RnText>
           <RnIcon
             color='white'
