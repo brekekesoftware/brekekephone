@@ -20,6 +20,7 @@ const Polyfill = {
     setLocale: () => undefined,
     onCallConnected: () => undefined,
     onCallKeepAction: () => undefined,
+    setOnSwitchCamera: () => undefined,
   },
 }
 const M = (
@@ -44,6 +45,7 @@ export type TNativeModules = {
     setLocale(locale: string): void
     onCallConnected(uuid: string): void
     onCallKeepAction(uuid: string, action: TCallkeepAction): void
+    setOnSwitchCamera(uuid: string, isFrontCamera: boolean): void
   }
 }
 

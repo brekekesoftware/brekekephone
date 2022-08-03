@@ -48,7 +48,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnRecord,
       btnDtmf,
       btnHold,
-      btnEndcall;
+      btnEndcall,
+      btnSwitchCamera;
   public TextView txtCallerName,
       txtHeaderCallerName,
       txtIncomingCall,
@@ -126,6 +127,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf = (Button) findViewById(R.id.btn_dtmf);
     btnHold = (Button) findViewById(R.id.btn_hold);
     btnEndcall = (Button) findViewById(R.id.btn_end_call);
+    btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
 
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
@@ -139,6 +141,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf.setOnClickListener(this);
     btnHold.setOnClickListener(this);
     btnEndcall.setOnClickListener(this);
+    btnSwitchCamera.setOnClickListener(this);
+    // set default icon front camera
+    btnSwitchCamera.setSelected(true);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
@@ -253,11 +258,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         return;
       }
       vWebrtc.setVisibility(View.GONE);
+      btnSwitchCamera.setVisibility(View.GONE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
       showCallManageControls();
     } else {
       initWebrtcVideo();
+      btnSwitchCamera.setVisibility(View.VISIBLE);
       vWebrtcVideo.setStreamURL(url);
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
@@ -265,6 +272,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  public void onBtnSwitchCamera(View v) {
+    BrekekeModule.emit("switchCamera", uuid);
+  }
   // Show/hide call manage controls in video call
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
@@ -562,6 +572,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_end_call:
         onBtnRejectClick(v);
         break;
+      case R.id.btn_switch_camera:
+        onBtnSwitchCamera(v);
+        break;
       default:
         break;
     }
@@ -587,6 +600,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+  }
+
+  public void setBtnSwitchCamera(boolean isFrontCamera) {
+    btnSwitchCamera.setSelected(isFrontCamera);
   }
 
   public void setImageTalkingUrl(String url, Boolean isLarge) {

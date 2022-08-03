@@ -33,6 +33,7 @@ export class Call {
   @observable partyName = ''
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
+  @observable isFrontCamera = true
   getDisplayName = () =>
     getPartyName(this.partyNumber) ||
     this.partyName ||
@@ -138,6 +139,11 @@ export class Call {
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
+  toggleSwitchCamera = () => {
+    sip.switchCamera(this.id)
+    this.isFrontCamera = !this.isFrontCamera
+    BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, this.isFrontCamera)
+  }
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status

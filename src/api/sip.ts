@@ -15,10 +15,17 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
 import { CallOptions, Session, Sip } from './brekekejs'
-import { getFrontCameraSourceId } from './getFrontCameraSourceId'
+import { getCameraSourceIds } from './getCameraSourceId'
 import { pbx } from './pbx'
 import { turnConfig } from './turnConfig'
 
+type DeviceInputWeb = {
+  deviceId: string
+  kind: string
+  label: string
+  groupId: string
+  facing: string
+}
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (
   n: ParsedPn,
@@ -76,9 +83,14 @@ const removePnTokenViaSip = async (n: ParsedPn, s: CallStore) => {
 
 export class SIP extends EventEmitter {
   phone?: Sip
+  currentCamera: string | undefined = '1'
+
+  cameraIds?: DeviceInputWeb[] = []
   private init = async (o: SipLoginOption) => {
-    const sourceId = await getFrontCameraSourceId()
-    const phone = getWebrtcClient(o.dtmfSendPal, sourceId)
+    // const sourceId = await getFrontCameraSourceId()
+    this.cameraIds = await getCameraSourceIds()
+    this.currentCamera = this.cameraIds?.[0]?.deviceId || '1'
+    const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
     this.phone = phone
 
     const h = (ev: { phoneStatus: string }) => {
@@ -358,6 +370,48 @@ export class SIP extends EventEmitter {
   setMuted = (muted: boolean, sessionId: string) => {
     return this.phone?.setMuted({ main: muted }, sessionId)
   }
+  switchCamera = async (sessionId: string) => {
+    // alert(this.currentFrontCamera)
+    if (!this.phone) {
+      return
+    }
+    // get camera info again for web mobile
+    if (this.cameraIds === undefined || this.cameraIds.length === 0) {
+      this.cameraIds = await getCameraSourceIds()
+    }
+    // if don't have camera or just have one
+    if (
+      this.cameraIds === undefined ||
+      this.cameraIds.length === 1 ||
+      this.cameraIds.length === 0
+    ) {
+      return
+    }
+
+    let isFrontCamera = false
+    const cameras = this.cameraIds.map(s => s.deviceId)
+    isFrontCamera = this.currentCamera === cameras[0]
+    this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
+
+    const videoOptions = {
+      call: {
+        mediaConstraints: sipCreateMediaConstraints(
+          this.currentCamera,
+          isFrontCamera,
+        ),
+      },
+      answer: {
+        mediaConstraints: sipCreateMediaConstraints(
+          this.currentCamera,
+          isFrontCamera,
+        ),
+      },
+    }
+    // console.log({ videoOptions })
+    // this.phone._options.defaultOptions.videoOptions = videoOptions
+    this.phone?.setWithVideo(sessionId, false, videoOptions)
+    this.phone?.setWithVideo(sessionId, true, videoOptions)
+  }
 }
 
 export const sip = new SIP()
@@ -421,7 +475,10 @@ const getUserAgent = () => {
 const getWssUrl = (host?: string, port?: string) =>
   `wss://${host}:${port}/phone`
 
-const sipCreateMediaConstraints = (sourceId?: string) => {
+const sipCreateMediaConstraints = (
+  sourceId?: string,
+  isFrontCamera?: boolean,
+) => {
   return {
     audio: false,
     video: {
@@ -430,7 +487,7 @@ const sipCreateMediaConstraints = (sourceId?: string) => {
         minHeight: 0,
         minFrameRate: 0,
       },
-      facingMode: Platform.OS === 'web' ? undefined : 'user',
+      facingMode: isFrontCamera ? 'user' : 'environment',
       optional: sourceId ? [{ sourceId }] : [],
     },
   } as unknown as MediaStreamConstraints
@@ -442,10 +499,10 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
     defaultOptions: {
       videoOptions: {
         call: {
-          mediaConstraints: sipCreateMediaConstraints(sourceId),
+          mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
         answer: {
-          mediaConstraints: sipCreateMediaConstraints(sourceId),
+          mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
       },
     },
