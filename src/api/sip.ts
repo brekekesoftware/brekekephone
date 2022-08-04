@@ -87,7 +87,6 @@ export class SIP extends EventEmitter {
 
   cameraIds?: DeviceInputWeb[] = []
   private init = async (o: SipLoginOption) => {
-    // const sourceId = await getFrontCameraSourceId()
     this.cameraIds = await getCameraSourceIds()
     this.currentCamera = this.cameraIds?.[0]?.deviceId || '1'
     const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
