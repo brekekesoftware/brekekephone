@@ -53,6 +53,7 @@ export type ItemPBForm = brekekejs.ItemPhonebook & {
   hidden?: boolean | undefined
   label: string
   isFocus?: boolean
+  maxLength: number
 }
 
 export type PickerItemOption = {
@@ -152,6 +153,7 @@ class ContactStore {
         disabled: undefined,
         label: i.id.startsWith('$') ? i.caption : i.id,
         keyboardType: i.type === 'phone' ? 'numeric' : 'default',
+        maxLength: 50,
       }
     }) as unknown as ItemPBForm[]
     return newItems

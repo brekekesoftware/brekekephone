@@ -243,6 +243,7 @@ export const Field: FC<
     error: string
     loading: boolean
     horizontalInput: string[]
+    maxLength?: number
   }>
 > = observer(({ ...props }) => {
   if (props.isGroup) {
@@ -500,6 +501,7 @@ export const Field: FC<
             {props.inputElement || (
               <RnTextInput
                 disabled
+                maxLength={props?.maxLength || 100000}
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
                 style={[css.Field_TextInput, props.textInputStyle]}
                 value={
