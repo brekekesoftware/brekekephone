@@ -1,30 +1,30 @@
-format:
+f:
 	yarn format
 	make format-objc
 	make format-java
 	make format-xml
 
 format-objc:
-	export EXT="h|m" \
-	&& make -s ls \
-	| xargs clang-format -i -style=file
+	export EXT="h|m" && \
+	make -s ls | \
+	xargs clang-format -i -style=file;
 format-java:
-	export EXT="java" \
-	&& make -s ls \
-	| xargs google-java-format -i
+	export EXT="java" && \
+	make -s ls | \
+	xargs google-java-format -i;
 format-xml:
-	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" \
-	&& make -s ls \
-	| xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --loglevel=error --write
+	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" && \
+	make -s ls | \
+	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --loglevel=error --write;
 imagemin:
-	export EXT="png|jpg|gif|ico" \
-	&& make -s ls \
-	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)'
+	export EXT="png|jpg|gif|ico" && \
+	make -s ls | \
+	xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)';
 ls:
-	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' \
-	| egrep -h '\.($(EXT))$$'
+	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' | \
+	egrep -h '\.($(EXT))$$';
 
-web:
+w:
 	git status && \
 	yarn build && \
 	mv build brekeke_phone && \
@@ -34,14 +34,14 @@ web:
 	rm -rf brekeke_phone* && \
 	git checkout master;
 
-dev:
+d:
 	git status && \
 	scp ../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa bre:/var/www/apps-static/0/brekeke_phonedev.ipa && \
 	rm -rf ../0/build/BrekekePhone/ && \
 	cd android && ./gradlew clean && ./gradlew assembleRelease && \
 	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/apps-static/0/brekeke_phonedev.apk;
 
-prod:
+p:
 	git status && \
 	scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa bre:/var/www/apps-static/0/brekeke_phone.ipa && \
 	rm -rf ../0/build/BrekekePhone/ && \
@@ -49,8 +49,19 @@ prod:
 	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/apps-static/0/brekeke_phone.apk && \
 	git checkout master;
 
-release:
+r:
 	git push && \
 	git checkout release && \
 	git rebase master && \
 	git push -f;
+
+apps:
+	cd dev/apps && \
+	yarn build && \
+	zip -vr build.zip build && \
+	scp ./build.zip bre:/var/www/apps/ && \
+	ssh bre "cd /var/www/apps && rm -rf build && unzip build.zip && rm -f build.zip" && \
+	rm -rf build* && \
+	cd ../apps-server && \
+	scp index.js package.json yarn.lock bre:/var/www/apps/server && \
+	ssh bre "cd /var/www/apps/server && yarn && pm2 -s restart dev";

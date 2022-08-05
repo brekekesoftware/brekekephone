@@ -1,4 +1,4 @@
-import './asComponent/polyfill'
+import './embed/polyfill'
 import './utils/captureConsoleOutput'
 import './polyfill'
 import './utils/validator'
@@ -10,8 +10,8 @@ import 'brekekejs/lib/phonebook'
 import { configure, onReactionError } from 'mobx'
 import { AppRegistry } from 'react-native'
 
-import { asComponent } from './asComponent/asComponent'
 import { App } from './components/App'
+import { embedApi } from './embed/embedApi'
 import {
   Account,
   accountStore,
@@ -122,7 +122,7 @@ const renderAsync = async (div: HTMLElement, o: Options) => {
 }
 const render = (div: HTMLElement, o: Options) => {
   renderAsync(div, o)
-  return asComponent
+  return embedApi
 }
 
 window.Brekeke.Phone.render = render

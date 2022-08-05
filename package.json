@@ -11,7 +11,7 @@
     "ios": "react-native run-ios",
     "bitcode": "[ -d node_modules/react-native-webrtc/ios/WebRTC.dSYM ] || bash node_modules/react-native-webrtc/tools/downloadBitcode.sh",
     "clean": "yarn --check-files && rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && cd ios && pod install --repo-update && cd .. && npx jetify && cd android && ./gradlew clean",
-    "build": "rm -rf node_modules/.cache/babel* && craco build && node .component",
+    "build": "rm -rf node_modules/.cache/babel* && craco build && node .embed",
     "intl": "rm -rf node_modules/.cache/babel* .intlNewEn.json && export EXTRACT_INTL=1 && babel src -x .js,.ts,.tsx -d build && rm -rf build && node .intlBuild",
     "format": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --fix . && prettier --loglevel=error --ignore-path=.gitignore --write .",
     "test": "yarn test:eslint && yarn test:prettier && yarn test:typescript && yarn test:type-coverage",

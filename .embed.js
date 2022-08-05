@@ -20,13 +20,11 @@ fs.readFileSync(path.join(b, './index.html'), 'utf-8')
   })
 
 if (!contents.length) {
-  console.error(
-    '.component.js error: can not find any script tag for component api',
-  )
+  console.error('.embed.js error: can not find any script tag for embed api')
   process.exit(1)
 }
 
-console.log(`.component.js total script tags: ${contents.length}`)
+console.log(`.embed.js total script tags: ${contents.length}`)
 fs.writeFileSync(path.join(b, 'webphone.js'), contents.join(';\n'))
 
 const p = path.join(__dirname, './public')

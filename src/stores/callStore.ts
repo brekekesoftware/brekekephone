@@ -8,7 +8,7 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
-import { asComponent } from '../asComponent/asComponent'
+import { embedApi } from '../embed/embedApi'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
@@ -245,7 +245,7 @@ export class CallStore {
           !!cExisting.localVideoEnabled,
         )
       }
-      asComponent.emit('call_update', cExisting)
+      embedApi.emit('call_update', cExisting)
       return
     }
     // Construct a new call
@@ -253,7 +253,7 @@ export class CallStore {
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
     BrekekeUtils.setJsCallsSize(this.calls.length)
-    asComponent.emit('call', c)
+    embedApi.emit('call', c)
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
@@ -308,7 +308,7 @@ export class CallStore {
     }
     // Update current call
     this.updateCurrentCallDebounce()
-    asComponent.emit('call_end', c)
+    embedApi.emit('call_end', c)
   }
 
   @action onSelectBackgroundCall = (c: Immutable<Call>) => {

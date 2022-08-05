@@ -3,7 +3,7 @@ import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
 
-import { asComponent } from '../asComponent/asComponent'
+import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser, Phonebook2 } from '../stores/contactStore'
@@ -93,7 +93,7 @@ export class PBX extends EventEmitter {
     }
 
     this.clearConnectTimeoutId()
-    asComponent.emit('pal', p, client)
+    embedApi.emit('pal', p, client)
 
     client.onClose = () => {
       this.emit('connection-stopped')
