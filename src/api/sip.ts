@@ -88,7 +88,9 @@ export class SIP extends EventEmitter {
   cameraIds?: DeviceInputWeb[] = []
   private init = async (o: SipLoginOption) => {
     this.cameraIds = await getCameraSourceIds()
+
     this.currentCamera = this.cameraIds?.[0]?.deviceId || '1'
+
     const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
     this.phone = phone
 
@@ -369,7 +371,7 @@ export class SIP extends EventEmitter {
   setMuted = (muted: boolean, sessionId: string) => {
     return this.phone?.setMuted({ main: muted }, sessionId)
   }
-  switchCamera = async (sessionId: string) => {
+  switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
       return
@@ -378,18 +380,11 @@ export class SIP extends EventEmitter {
     if (this.cameraIds === undefined || this.cameraIds.length === 0) {
       this.cameraIds = await getCameraSourceIds()
     }
-    // if don't have camera or just have one
-    if (
-      this.cameraIds === undefined ||
-      this.cameraIds.length === 1 ||
-      this.cameraIds.length === 0
-    ) {
+    // if don't have camera
+    if (this.cameraIds === undefined || this.cameraIds.length === 0) {
       return
     }
-
-    let isFrontCamera = false
     const cameras = this.cameraIds.map(s => s.deviceId)
-    isFrontCamera = this.currentCamera === cameras[0]
     this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
 
     const videoOptions = {
@@ -406,8 +401,6 @@ export class SIP extends EventEmitter {
         ),
       },
     }
-    // console.log({ videoOptions })
-    // this.phone._options.defaultOptions.videoOptions = videoOptions
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
@@ -478,17 +471,25 @@ const sipCreateMediaConstraints = (
   sourceId?: string,
   isFrontCamera?: boolean,
 ) => {
+  // web change config for browser chromium 2016
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=614716
+  const webVideoConfig = {
+    facingMode: isFrontCamera ? 'user' : 'environment',
+    deviceId: sourceId ? { exact: sourceId } : undefined,
+  }
+  const appVideoConfig = {
+    mandatory: {
+      minWidth: 0,
+      minHeight: 0,
+      minFrameRate: 0,
+    },
+    facingMode: isFrontCamera ? 'user' : 'environment',
+    optional: sourceId ? [{ sourceId }] : [],
+  }
+
   return {
     audio: false,
-    video: {
-      mandatory: {
-        minWidth: 0,
-        minHeight: 0,
-        minFrameRate: 0,
-      },
-      facingMode: isFrontCamera ? 'user' : 'environment',
-      optional: sourceId ? [{ sourceId }] : [],
-    },
+    video: Platform.OS === 'web' ? webVideoConfig : appVideoConfig,
   } as unknown as MediaStreamConstraints
 }
 const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>

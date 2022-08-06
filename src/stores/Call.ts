@@ -140,9 +140,9 @@ export class Call {
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
   toggleSwitchCamera = () => {
-    sip.switchCamera(this.id)
+    sip.switchCamera(this.id, !this.isFrontCamera)
+    BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, !this.isFrontCamera)
     this.isFrontCamera = !this.isFrontCamera
-    BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, this.isFrontCamera)
   }
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)

@@ -50,10 +50,14 @@ export const getCameraSourceIds = async () => {
     })
     return []
   }
+
   return mediaDevices
     .enumerateDevices()
     .then(a => {
       const videoInputs = a.filter(i => /videoinput/i.test(i.kind))
+      if (videoInputs.length === 1) {
+        return [...videoInputs, ...videoInputs]
+      }
       const frontCamera = videoInputs.find(i =>
         Platform.OS === 'web'
           ? i.label.includes('Front')
