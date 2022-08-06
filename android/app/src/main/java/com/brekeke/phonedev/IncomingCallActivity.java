@@ -202,13 +202,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
     } else {
-      // create a ProgressDrawable object which we will show as placeholder
-      //      CircularProgressDrawable drawable = new CircularProgressDrawable(this);
-      //      drawable.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
-      //      drawable.setCenterRadius(30f);
-      //      drawable.setStrokeWidth(5f);
-      // set all other properties as you would see fit and start it
-      //      drawable.start();
       Glide.with(this)
           .load(avatar)
           .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -430,11 +423,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         if (!isLarge) {
           updateLayoutManagerCall();
         }
-        //        CircularProgressDrawable drawable = new CircularProgressDrawable(this);
-        //        drawable.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
-        //        drawable.setCenterRadius(30f);
-        //        drawable.setStrokeWidth(5f);
-        //        drawable.start();
         Glide.with(this)
             .load(talkingAvatar)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
