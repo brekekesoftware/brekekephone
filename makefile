@@ -1,4 +1,4 @@
-f:
+format:
 	yarn format
 	make format-objc
 	make format-java
@@ -23,6 +23,9 @@ imagemin:
 ls:
 	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' | \
 	egrep -h '\.($(EXT))$$';
+
+###
+# dev server
 
 w:
 	git status && \

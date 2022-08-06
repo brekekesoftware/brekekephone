@@ -71,7 +71,7 @@ export const App = () => {
                   </div>
                   {apk && (
                     <div>
-                      <a href={apk}>Download for Android</a>
+                      <a href={apk}>Download apk</a>
                     </div>
                   )}
                   {ipa && (
