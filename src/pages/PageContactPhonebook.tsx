@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
@@ -158,16 +158,38 @@ export class PageContactPhonebook extends Component {
   updateSearchText = (v: string) => {
     contactStore.phonebookSearchTerm = v
     this.updateListPhoneBook()
+    contactStore.selectedContactIds = {}
   }
 
   updateListPhoneBook = debounce(() => {
     contactStore.offset = 0
     contactStore.loadContacts()
   }, 500)
-
+  onDelete = async () => {
+    if (isEmpty(contactStore.selectedContactIds)) {
+      return
+    }
+    try {
+      const result = await pbx.deleteContact(
+        Object.keys(contactStore.selectedContactIds),
+      )
+      if (result?.succeeded?.length) {
+        contactStore.removeContacts(result.succeeded)
+      }
+      contactStore.selectedContactIds = {}
+    } catch (error) {
+      RnAlert.error({
+        message: intlDebug`Failed to delete contact`,
+        err: error as Error,
+      })
+    }
+  }
+  onCancel = () => {
+    contactStore.isDeleteState = false
+    contactStore.selectedContactIds = {}
+  }
   render() {
     const phonebooks = contactStore.phoneBooks
-
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
       let c0 = u?.display_name?.charAt(0).toUpperCase()
@@ -189,24 +211,38 @@ export class PageContactPhonebook extends Component {
     groups.forEach(gr => {
       gr.phonebooks = orderBy(gr.phonebooks, 'name')
     })
-
+    const optionDelete = [
+      {
+        label:
+          intl`Delete ` +
+          `(${Object.keys(contactStore.selectedContactIds).length})`,
+        onPress: this.onDelete,
+      },
+      {
+        label: intl`Cancel`,
+        onPress: this.onCancel,
+      },
+    ]
+    const options = [
+      {
+        label: intl`Create new contact`,
+        onPress: Nav().goToPagePhonebookCreate,
+      },
+      {
+        label: intl`Delete contacts`,
+        onPress: () => {
+          contactStore.isDeleteState = true
+        },
+      },
+      {
+        label: intl`Reload`,
+        onPress: contactStore.loadContacts,
+      },
+    ]
     return (
       <Layout
         description={intl`Your phonebook contacts`}
-        dropdown={[
-          {
-            label: intl`Create new contact`,
-            onPress: Nav().goToPagePhonebookCreate,
-          },
-          {
-            label: intl`Delete contacts`,
-            onPress: Nav().goToPageContactDelete,
-          },
-          {
-            label: intl`Reload`,
-            onPress: contactStore.loadContacts,
-          },
-        ]}
+        dropdown={contactStore.isDeleteState ? optionDelete : options}
         menu='contact'
         subMenu='phonebook'
         title={intl`Phonebook`}
@@ -226,6 +262,7 @@ export class PageContactPhonebook extends Component {
                 displaySharedContacts: v,
               })
               contactStore.refreshContacts()
+              contactStore.selectedContactIds = {}
             }
           }}
           type='Switch'
@@ -235,14 +272,30 @@ export class PageContactPhonebook extends Component {
           {groups.map(gr => (
             <Fragment key={gr.key}>
               <Field isGroup label={gr.key} />
-              {gr.phonebooks.map((u, i) => (
-                <UserItem
-                  iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
-                  icons={[mdiPhone, mdiInformation]}
-                  key={i}
-                  name={u?.display_name || intl`<Unnamed>`}
-                />
-              ))}
+              {gr.phonebooks.map((u, i) =>
+                contactStore.isDeleteState ? (
+                  <RnTouchableOpacity
+                    onPress={() => contactStore.selectContactId(u.id)}
+                    disabled={u.shared}
+                  >
+                    <UserItem
+                      key={i}
+                      name={u?.display_name || intl`<Unnamed>`}
+                      isSelection
+                      isSelected={contactStore.selectedContactIds[u.id]}
+                      disabled={u.shared}
+                      onSelect={() => contactStore.selectContactId(u.id)}
+                    />
+                  </RnTouchableOpacity>
+                ) : (
+                  <UserItem
+                    iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
+                    icons={[mdiPhone, mdiInformation]}
+                    key={i}
+                    name={u?.display_name || intl`<Unnamed>`}
+                  />
+                ),
+              )}
             </Fragment>
           ))}
         </View>

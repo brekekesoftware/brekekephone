@@ -41,7 +41,7 @@ export type Phonebook2 = {
   phonebook: string
   shared: boolean
   loaded?: boolean
-  user?: string
+  user?: string // I mean if user is empty, it is shared. if user is specified, it means it is user's
   info: ContactInfo
 }
 export type ItemPBForm = brekekejs.ItemPhonebook & {
@@ -121,6 +121,7 @@ class ContactStore {
   }
   // delete function
   @observable selectedContactIds: { [id: string]: boolean } = {}
+  @observable isDeleteState: boolean = false
 
   @action selectContactId = (userId: string) => {
     if (this.selectedContactIds[userId]) {
@@ -128,6 +129,12 @@ class ContactStore {
     } else {
       this.selectedContactIds[userId] = true
     }
+  }
+  @action removeContacts = (ids: string[] | number[]) => {
+    ids.forEach(id => {
+      delete this.phoneBooksMap[id.toString()]
+    })
+    this.phoneBooks = Object.values(this.phoneBooksMap)
   }
 
   // Create/update contact
