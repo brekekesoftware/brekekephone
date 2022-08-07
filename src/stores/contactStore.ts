@@ -69,7 +69,6 @@ class ContactStore {
   @observable loading = false
   @observable hasLoadmore = false
   @observable offset = 0
-
   numberOfContactsPerPage = 20
 
   loadContacts = async () => {
@@ -120,7 +119,18 @@ class ContactStore {
     this.offset = 0
     this.loadContacts()
   }
+  // delete function
+  @observable selectedContactIds: { [id: string]: boolean } = {}
 
+  @action selectContactId = (userId: string) => {
+    if (this.selectedContactIds[userId]) {
+      delete this.selectedContactIds[userId]
+    } else {
+      this.selectedContactIds[userId] = true
+    }
+  }
+
+  // Create/update contact
   @observable showPickerItem: PickerItemOption | null = null
 
   @action openPicker = (picker: PickerItemOption) => {
@@ -159,6 +169,7 @@ class ContactStore {
     return newItems
   }
 
+  // pbxUsers
   @observable pbxUsers: PbxUser[] = []
 
   getPbxUsers = async () => {
@@ -328,6 +339,7 @@ class ContactStore {
     this.showPickerItem = null
     this.pbxBooks = []
     this.alreadyLoadContactsFirstTime = false
+    this.selectedContactIds = {}
   }
 }
 

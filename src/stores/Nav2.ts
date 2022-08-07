@@ -15,6 +15,7 @@ import { PageChatGroupCreate } from '../pages/PageChatGroupCreate'
 import { PageChatGroupDetail } from '../pages/PageChatGroupDetail'
 import { PageChatGroupInvite } from '../pages/PageChatGroupInvite'
 import { PageChatRecents } from '../pages/PageChatRecents'
+import { PageContactDelete } from '../pages/PageContactDelete'
 import { PageContactEdit } from '../pages/PageContactEdit'
 import { PageContactGroupCreate } from '../pages/PageContactGroupCreate'
 import { PageContactGroupEdit } from '../pages/PageContactGroupEdit'
@@ -196,6 +197,15 @@ export class Nav2 {
   >({ PageSettingsDebug })
 
   //Contact Group
+  goToPageContactDelete = RnStacker.createGoTo<
+    ComponentProps<typeof PageContactDelete>
+  >({
+    PageContactDelete,
+  })
+  backToPageContactDelete = RnStacker.createBackTo<
+    ComponentProps<typeof PageContactDelete>
+  >({ PageContactDelete })
+
   goToPageContactEdit = RnStacker.createGoTo<
     ComponentProps<typeof PageContactEdit>
   >({

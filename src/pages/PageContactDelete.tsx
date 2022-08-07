@@ -1,31 +1,19 @@
 import { debounce } from 'lodash'
-import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { pbx } from '../api/pbx'
-import {
-  mdiBriefcase,
-  mdiCellphone,
-  mdiHome,
-  mdiInformation,
-  mdiMagnify,
-  mdiPhone,
-} from '../assets/icons'
+import { mdiBriefcase, mdiCellphone, mdiHome } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   Loading: {
@@ -34,17 +22,8 @@ const css = StyleSheet.create({
 })
 
 @observer
-export class PageContactPhonebook extends Component {
-  componentDidMount() {
-    contactStore.getManageItems()
-    const id = BackgroundTimer.setInterval(() => {
-      if (!pbx.client) {
-        return
-      }
-      contactStore.loadContactsFirstTime()
-      BackgroundTimer.clearInterval(id)
-    }, 1000)
-  }
+export class PageContactDelete extends Component {
+  componentDidMount() {}
 
   update = (id: string) => {
     const contact = contactStore.getPhonebookById(id)
@@ -167,7 +146,6 @@ export class PageContactPhonebook extends Component {
 
   render() {
     const phonebooks = contactStore.phoneBooks
-
     const map = {} as { [k: string]: Phonebook2[] }
     phonebooks.forEach(u => {
       let c0 = u?.display_name?.charAt(0).toUpperCase()
@@ -180,67 +158,42 @@ export class PageContactPhonebook extends Component {
       map[c0].push(u)
     })
 
-    let groups = Object.keys(map).map(k => ({
+    const groups = Object.keys(map).map(k => ({
       key: k,
       phonebooks: map[k],
     }))
 
-    groups = orderBy(groups, 'key')
-    groups.forEach(gr => {
-      gr.phonebooks = orderBy(gr.phonebooks, 'name')
-    })
-
+    const onDelete = () => {}
     return (
       <Layout
-        description={intl`Your phonebook contacts`}
+        description={intl`Choose contacts do you want to delete`}
+        onBack={Nav().backToPageContactPhonebook}
+        title={intl`Delete contacts`}
         dropdown={[
           {
-            label: intl`Create new contact`,
-            onPress: Nav().goToPagePhonebookCreate,
+            label:
+              intl`Delete ` +
+              `(${Object.keys(contactStore.selectedContactIds).length})`,
+            onPress: onDelete,
           },
           {
-            label: intl`Delete contacts`,
-            onPress: Nav().goToPageContactDelete,
-          },
-          {
-            label: intl`Reload`,
-            onPress: contactStore.loadContacts,
+            label: intl`Delete All`,
+            onPress: onDelete,
           },
         ]}
-        menu='contact'
-        subMenu='phonebook'
-        title={intl`Phonebook`}
       >
-        <Field
-          icon={mdiMagnify}
-          label={intl`SEARCH CONTACTS`}
-          onValueChange={this.updateSearchText}
-          value={contactStore.phonebookSearchTerm}
-        />
-        <Field
-          label={intl`SHOW SHARED CONTACTS`}
-          onValueChange={(v: boolean) => {
-            if (pbx.client && getAuthStore().pbxState === 'success') {
-              accountStore.upsertAccount({
-                id: getAuthStore().signedInId,
-                displaySharedContacts: v,
-              })
-              contactStore.refreshContacts()
-            }
-          }}
-          type='Switch'
-          value={getAuthStore().getCurrentAccount()?.displaySharedContacts}
-        />
         <View>
           {groups.map(gr => (
             <Fragment key={gr.key}>
               <Field isGroup label={gr.key} />
               {gr.phonebooks.map((u, i) => (
                 <UserItem
-                  iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
-                  icons={[mdiPhone, mdiInformation]}
                   key={i}
                   name={u?.display_name || intl`<Unnamed>`}
+                  isSelection
+                  isSelected={contactStore.selectedContactIds[u.id]}
+                  disabled={u.shared}
+                  onSelect={() => contactStore.selectContactId(u.id)}
                 />
               ))}
             </Fragment>
