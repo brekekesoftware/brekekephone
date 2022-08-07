@@ -258,8 +258,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
-  public void updateDisplayVideo() {
-    if (this.isVideoCall) {
+  public void updateDisplayVideo(Boolean isVideoCall) {
+    if (isVideoCall) {
       videoLoading.setVisibility(View.VISIBLE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
@@ -277,7 +277,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       if (vWebrtcVideo == null) {
         return;
       }
-      updateDisplayVideo();
+      btnSwitchCamera.setVisibility(View.GONE);
+      updateDisplayVideo(this.isVideoCall);
     } else {
       initWebrtcVideo();
       btnSwitchCamera.setVisibility(View.VISIBLE);
@@ -478,8 +479,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnVideoClick(View v) {
     BrekekeModule.emit("video", uuid);
-    this.isVideoCall = !this.isVideoCall;
-    updateDisplayVideo();
+    updateDisplayVideo(!this.isVideoCall);
+    updateUILayoutManagerCall(!this.isVideoCall);
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -604,68 +605,56 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateLayoutManagerCallLoaded();
   }
 
-  private void updateUILayoutManagerCall() {
+  private void disableAvatarTalking() {
+    vCardAvatarTalking.setVisibility(View.GONE);
+    // update position Top for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
-    if (this.isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
-      vCardAvatarTalking.setVisibility(View.GONE);
-      DisplayMetrics displayMetrics = new DisplayMetrics();
-      getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-      int height = displayMetrics.heightPixels;
-      int flexValue = height * 1 / 3;
-      constraintSet.connect(
-          R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
-      constraintSet.connect(
-          R.id.view_call_manage_controls,
-          ConstraintSet.TOP,
-          ConstraintSet.PARENT_ID,
-          ConstraintSet.TOP,
-          flexValue);
-      constraintSet.connect(
-          R.id.view_button_end,
-          ConstraintSet.BOTTOM,
-          ConstraintSet.PARENT_ID,
-          ConstraintSet.BOTTOM,
-          30);
-    } else {
-      constraintSet.connect(
-          R.id.btn_unlock,
-          ConstraintSet.BOTTOM,
-          R.id.view_call_manage_controls,
-          ConstraintSet.TOP,
-          20);
-    }
     constraintSet.connect(
-        R.id.view_call_manage_loading,
+        R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+    constraintSet.applyTo(constraintLayout);
+  }
+
+  private void enableAvatarTalking() {
+    // update position bottom for btn Unlock
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(constraintLayout);
+    constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.connect(
+        R.id.btn_unlock,
         ConstraintSet.BOTTOM,
         R.id.view_call_manage_controls,
         ConstraintSet.TOP,
         20);
-    constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
     constraintSet.applyTo(constraintLayout);
 
-    if (this.isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
-      vCardAvatarTalking.setVisibility(View.GONE);
+    vCardAvatarTalking.setVisibility(View.VISIBLE);
+    // load image content
+    Glide.with(this)
+        .load(talkingAvatar)
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .placeholder(drawableProgress)
+        .error(R.mipmap.avatar_failed)
+        .centerCrop()
+        .into(imgAvatarTalking);
+  }
+
+  private void updateUILayoutManagerCall(Boolean isVideoCall) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
+      disableAvatarTalking();
     } else {
-      vCardAvatarTalking.setVisibility(View.VISIBLE);
-      Glide.with(this)
-          .load(talkingAvatar)
-          .diskCacheStrategy(DiskCacheStrategy.NONE)
-          .skipMemoryCache(true)
-          .placeholder(drawableProgress)
-          .error(R.mipmap.avatar_failed)
-          .centerCrop()
-          .into(imgAvatarTalking);
+      enableAvatarTalking();
     }
   }
 
   public void setBtnVideoSelected(boolean isVideoCall) {
-    this.isVideoCall = isVideoCall;
-    btnVideo.setSelected(isVideoCall);
-    if (this.answered) {
-      updateUILayoutManagerCall();
+    if (this.isVideoCall != isVideoCall) {
+      this.isVideoCall = isVideoCall;
+      btnVideo.setSelected(isVideoCall);
     }
   }
 
