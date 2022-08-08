@@ -65,6 +65,6 @@ apps:
 	scp ./build.zip bre:/var/www/apps/ && \
 	ssh bre "cd /var/www/apps && rm -rf build && unzip build.zip && rm -f build.zip" && \
 	rm -rf build* && \
-	cd ../apps-server && \
+	cd ../server && \
 	scp index.js package.json yarn.lock bre:/var/www/apps/server && \
 	ssh bre "cd /var/www/apps/server && yarn && pm2 -s restart dev";
