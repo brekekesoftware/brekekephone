@@ -63,9 +63,10 @@ export class Call {
     sip.answerSession(this.id, {
       videoEnabled: this.remoteVideoEnabled,
     })
-    if (Platform.OS === 'android') {
-      BrekekeUtils.onCallConnected(this.callkeepUuid)
-    }
+    // move to upsert call
+    // if (Platform.OS === 'android') {
+    //   BrekekeUtils.onCallConnected(this.callkeepUuid)
+    // }
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
