@@ -274,9 +274,19 @@ export class SIP extends EventEmitter {
     //
     console.log('SIP PN debug: added listener on _ua')
     phone._ua?.on('newNotify', e => {
-      const pnIds = parseCanceledPnIds(e?.request?.data)
-      console.log(`SIP PN debug: newNotify fired on _ua pnIds=${pnIds}`)
-      pnIds?.forEach(cancelRecentPn)
+      const data = e?.request?.data
+      if (!data) {
+        return
+      }
+      console.log(`SIP PN debug: newNotify fired on _ua data=${data}`)
+      const pnIds = parseCanceledPnIds(data)
+      if (!pnIds?.length) {
+        return
+      }
+      console.log(
+        `SIP PN debug: newNotify canceled pnIds=${JSON.stringify(pnIds)}`,
+      )
+      pnIds.forEach(cancelRecentPn)
     })
   }
 
