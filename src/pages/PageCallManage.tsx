@@ -259,7 +259,7 @@ export class PageCallManage extends Component<{
         style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
-        <View style={!(c.withSDPControls || c.answered) && css.Btns_Hidden}>
+        <View style={{}}>
           <View style={css.Btns_Inner}>
             <ButtonIcon
               disabled={!c.answered}
@@ -296,7 +296,7 @@ export class PageCallManage extends Component<{
             />
             {Platform.OS !== 'web' && (
               <ButtonIcon
-                disabled={!this.enableSpeaker}
+                // disabled={!this.enableSpeaker}
                 bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
                 color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
