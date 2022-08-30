@@ -195,6 +195,11 @@ export class CallStore {
       IncallManager.setForceSpeakerphoneOn(false)
     }
   }
+  onForeUpdateSpeaker = () => {
+    BackgroundTimer.setTimeout(() => {
+      IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+    }, 2000)
+  }
   @action private upsertCall = (
     cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
   ) => {
@@ -216,6 +221,8 @@ export class CallStore {
         this.currentCallId = cExisting.id
         cExisting.answerCallKeep()
         cPartial.answeredAt = now
+        // update speaker again - ios
+        Platform.OS === 'ios' && this.onForeUpdateSpeaker()
       }
       Object.assign(cExisting, cPartial, {
         withSDPControls: cExisting.withSDPControls || cPartial.withSDP,

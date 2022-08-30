@@ -252,14 +252,15 @@ export class PageCallManage extends Component<{
         this.enableSpeaker = true
       }, TIME_OUT_SPEAKER)
     }
-
+    const isHideButtons =
+      !(c.withSDPControls || c.answered) && Platform.OS === 'web'
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
         style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
-        <View style={{}}>
+        <View style={isHideButtons && css.Btns_Hidden}>
           <View style={css.Btns_Inner}>
             <ButtonIcon
               disabled={!c.answered}
@@ -337,6 +338,7 @@ export class PageCallManage extends Component<{
               textcolor='white'
             />
             <ButtonIcon
+              disabled={!(c.withSDPControls || c.answered)}
               bgcolor='white'
               color='black'
               name={intl`KEYPAD`}

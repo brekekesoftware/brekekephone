@@ -1,5 +1,5 @@
 import { Component, useEffect, useState } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { NativeModules, Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
 
@@ -93,26 +93,28 @@ export class AnsweredItem extends Component<{
 }
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
 export const VideoRBT = (p: { isPaused: boolean; isLoudSpeaker: boolean }) => {
-  const [pauseVideo, setPauseVideo] = useState(p.isPaused)
+  const [pauseVideo, setPauseVideo] = useState(true)
+
   useEffect(() => {
     if (!p.isPaused) {
       if (p.isLoudSpeaker) {
-        IncallManager.stopRingback()
-        setTimeout(() => {
-          setPauseVideo(false)
-        }, 1000)
+        NativeModules.PlayRBT.stop()
+        setPauseVideo(false)
       } else {
         setPauseVideo(true)
-        IncallManager.startRingback('_BUNDLE_')
+        NativeModules.PlayRBT.play()
+      }
+    } else {
+      if (p.isLoudSpeaker) {
+        setPauseVideo(true)
+      } else {
+        NativeModules.PlayRBT.stop()
       }
     }
-
     return () => {
-      IncallManager.stopRingback()
+      NativeModules.PlayRBT.stop()
     }
   }, [p.isLoudSpeaker, p.isPaused])
-  // const  playRingBack = !p.isPaused && callStore.isLoudSpeakerEnabled
-  // console.log({playRingBack})
 
   return (
     <Video
