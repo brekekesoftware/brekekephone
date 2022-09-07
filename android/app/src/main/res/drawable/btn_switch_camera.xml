@@ -3,11 +3,9 @@
   <item
     android:state_selected="false"
     android:drawable="@drawable/ic_back_camera"
-  >
-  </item>
+  />
   <item
     android:state_selected="true"
     android:drawable="@drawable/ic_front_camera"
-  >
-  </item>
+  />
 </selector>

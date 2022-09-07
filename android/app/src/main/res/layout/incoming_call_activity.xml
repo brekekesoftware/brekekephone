@@ -94,7 +94,6 @@
         app:layout_constraintTop_toBottomOf="@+id/card_avatar"
         tools:layout_editor_absoluteX="0dp"
       />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
   </RelativeLayout>
   <!-- Header manage call -->
@@ -138,7 +137,6 @@
       android:textSize="22dp"
       android:textStyle="bold"
     />
-
   </RelativeLayout>
 
   <!-- view_incoming_call -->
@@ -196,7 +194,6 @@
     android:layout_height="match_parent"
     android:visibility="gone"
   >
-
     <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/call_manager_layout"
       android:layout_width="match_parent"
