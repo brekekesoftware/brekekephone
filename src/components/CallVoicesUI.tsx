@@ -1,5 +1,5 @@
-import { Component } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { Component, useEffect, useState } from 'react'
+import { NativeModules, Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
 
@@ -52,6 +52,8 @@ export class OutgoingItem extends Component<{}, { isPause: boolean }> {
   componentWillUnmount() {
     if (Platform.OS === 'android') {
       IncallManager.stop()
+    } else {
+      IncallManager.stopRingback()
     }
   }
   render() {
@@ -90,12 +92,35 @@ export class AnsweredItem extends Component<{
   }
 }
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
-export const VideoRBT = (p: { isPaused: boolean }) => {
+export const VideoRBT = (p: { isPaused: boolean; isLoudSpeaker: boolean }) => {
+  const [pauseVideo, setPauseVideo] = useState(true)
+
+  useEffect(() => {
+    if (!p.isPaused) {
+      if (p.isLoudSpeaker) {
+        NativeModules.PlayRBT.stop()
+        setPauseVideo(false)
+      } else {
+        setPauseVideo(true)
+        NativeModules.PlayRBT.play()
+      }
+    } else {
+      if (p.isLoudSpeaker) {
+        setPauseVideo(true)
+      } else {
+        NativeModules.PlayRBT.stop()
+      }
+    }
+    return () => {
+      NativeModules.PlayRBT.stop()
+    }
+  }, [p.isLoudSpeaker, p.isPaused])
+
   return (
     <Video
       source={require('../assets/incallmanager_ringback.mp3')}
       style={css.video}
-      paused={p.isPaused}
+      paused={pauseVideo}
       repeat={true}
       ignoreSilentSwitch={'ignore'}
       playInBackground={true}

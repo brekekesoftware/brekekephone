@@ -34,7 +34,12 @@ export const CallVoices = observer(() => {
         ))}
       {
         // load RBT first
-        Platform.OS === 'ios' && <VideoRBT isPaused={isPaused} />
+        Platform.OS === 'ios' && (
+          <VideoRBT
+            isPaused={isPaused}
+            isLoudSpeaker={callStore.isLoudSpeakerEnabled}
+          />
+        )
       }
       {callStore.calls
         .filter(c => c.answered)
