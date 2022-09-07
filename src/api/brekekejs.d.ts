@@ -287,7 +287,11 @@ export type Sip = {
   answer(sessionId: string, options: null, videoEnabled?: boolean): void
   setWithVideo(sessionId: string, withVideo?: boolean): void
   setMuted(options: { main: boolean }, sessionId: string): void
-
+  setWithVideo(
+    sessionId: string,
+    withVideo?: boolean,
+    videoOptions?: VideoOptions,
+  ): void
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
 
@@ -304,6 +308,14 @@ export type Sip = {
   _removeEventListenerPhoneStatusChange?: Function
 }
 
+export type VideoOptions = {
+  call: {
+    mediaConstraints: MediaStreamConstraints
+  }
+  answer: {
+    mediaConstraints: MediaStreamConstraints
+  }
+}
 export type SipConstructorOptions = {
   logLevel: string
   multiSession: number

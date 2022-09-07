@@ -253,7 +253,9 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('hold', (uuid: string) => {
       callStore.getCurrentCall()?.toggleHoldWithCheck()
     })
-
+    eventEmitter.addListener('switchCamera', (uuid: string) => {
+      callStore.getCurrentCall()?.toggleSwitchCamera()
+    })
     eventEmitter.addListener('onNotificationPress', (data: string) => {
       if (!data) {
         return

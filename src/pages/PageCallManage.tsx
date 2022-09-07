@@ -6,6 +6,8 @@ import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
+  mdiCameraFrontVariant,
+  mdiCameraRearVariant,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -39,6 +41,18 @@ import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const height = Dimensions.get('window').height
 const css = StyleSheet.create({
+  BtnSwitchCamera: {
+    position: 'absolute',
+    top: 10, // Header compact height
+    right: 10,
+    zIndex: 100,
+  },
+  cameraStyle: {
+    position: 'absolute',
+    top: 50,
+    right: 10,
+    zIndex: 100,
+  },
   Video: {
     position: 'absolute',
     top: 40, // Header compact height
@@ -197,6 +211,15 @@ export class PageCallManage extends Component<{
 
   renderVideo = (c: Call) => (
     <>
+      <View style={css.cameraStyle}>
+        <ButtonIcon
+          color={'white'}
+          noborder
+          onPress={c.toggleSwitchCamera}
+          path={c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant}
+          size={40}
+        />
+      </View>
       <View style={css.Video_Space} />
       <View style={css.Video}>
         <VideoPlayer sourceObject={c.remoteVideoStreamObject} />

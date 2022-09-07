@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -37,6 +38,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public WebRTCView vWebrtcVideo;
   public ImageView imgAvatar;
   public ImageView imgAvatarTalking;
+  public ProgressBar videoLoading;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -48,7 +50,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnRecord,
       btnDtmf,
       btnHold,
-      btnEndcall;
+      btnEndcall,
+      btnSwitchCamera;
   public TextView txtCallerName,
       txtHeaderCallerName,
       txtIncomingCall,
@@ -63,7 +66,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtHoldBtn,
       txtCallIsOnHold;
   public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
-  public boolean destroyed = false, paused = false, answered = false, isLarge = false;
+  public boolean destroyed = false,
+      paused = false,
+      answered = false,
+      isLarge = false,
+      isVideoCall = false;
+  public CircularProgressDrawable drawableProgress;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +109,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeModule.activities.add(this);
     BrekekeModule.startRingtone();
 
+    drawableProgress = new CircularProgressDrawable(this);
+    drawableProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
+    drawableProgress.setCenterRadius(30f);
+    drawableProgress.setStrokeWidth(5f);
+    drawableProgress.start();
+
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
@@ -110,6 +124,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManageControls = (LinearLayout) findViewById(R.id.view_call_manage_controls);
     vCardAvatarTalking = (View) findViewById(R.id.card_avatar_talking);
     vCardAvatar = (View) findViewById(R.id.card_avatar);
+    videoLoading = (ProgressBar) findViewById(R.id.video_loading);
     vCallManage.setOnClickListener(this);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
@@ -126,6 +141,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf = (Button) findViewById(R.id.btn_dtmf);
     btnHold = (Button) findViewById(R.id.btn_hold);
     btnEndcall = (Button) findViewById(R.id.btn_end_call);
+    btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
 
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
@@ -139,6 +155,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf.setOnClickListener(this);
     btnHold.setOnClickListener(this);
     btnEndcall.setOnClickListener(this);
+    btnSwitchCamera.setOnClickListener(this);
+    // set default icon front camera
+    btnSwitchCamera.setSelected(true);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
@@ -183,18 +202,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
     } else {
-      // create a ProgressDrawable object which we will show as placeholder
-      CircularProgressDrawable drawable = new CircularProgressDrawable(this);
-      drawable.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
-      drawable.setCenterRadius(30f);
-      drawable.setStrokeWidth(5f);
-      // set all other properties as you would see fit and start it
-      drawable.start();
       Glide.with(this)
           .load(avatar)
           .diskCacheStrategy(DiskCacheStrategy.NONE)
           .skipMemoryCache(true)
-          .placeholder(drawable)
+          .placeholder(drawableProgress)
           .error(R.mipmap.avatar_failed)
           .centerCrop()
           .into(imgAvatar);
@@ -233,7 +245,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // vWebrtc
-
   public void initWebrtcVideo() {
     if (vWebrtcVideo != null) {
       return;
@@ -247,17 +258,30 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
+  public void updateDisplayVideo(Boolean isVideoCall) {
+    if (isVideoCall) {
+      videoLoading.setVisibility(View.VISIBLE);
+      vWebrtc.removeView(vWebrtcVideo);
+      vWebrtcVideo = null;
+    } else {
+      btnSwitchCamera.setVisibility(View.GONE);
+      vWebrtc.removeView(vWebrtcVideo);
+      vWebrtc.setVisibility(View.GONE);
+      videoLoading.setVisibility(View.GONE);
+      showCallManageControls();
+    }
+  }
+
   public void setRemoteVideoStreamURL(String url) {
     if (url == null || "".equals(url)) {
       if (vWebrtcVideo == null) {
         return;
       }
-      vWebrtc.setVisibility(View.GONE);
-      vWebrtc.removeView(vWebrtcVideo);
-      vWebrtcVideo = null;
-      showCallManageControls();
+      btnSwitchCamera.setVisibility(View.GONE);
+      updateDisplayVideo(this.isVideoCall);
     } else {
       initWebrtcVideo();
+      btnSwitchCamera.setVisibility(View.VISIBLE);
       vWebrtcVideo.setStreamURL(url);
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
@@ -265,6 +289,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  public void onBtnSwitchCamera(View v) {
+    BrekekeModule.emit("switchCamera", uuid);
+  }
   // Show/hide call manage controls in video call
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
@@ -290,7 +317,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // vIncomingCall
-
   private void updateLayoutManagerCall() {
     GradientDrawable shape = new GradientDrawable();
     DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -346,10 +372,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void updateLayoutManagerCallLoaded() {
+
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+
     if (talkingAvatar == null || talkingAvatar.isEmpty()) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -357,7 +385,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       int flexValue = height * 1 / 3;
       constraintSet.connect(
           R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
-
       constraintSet.connect(
           R.id.view_call_manage_controls,
           ConstraintSet.TOP,
@@ -397,16 +424,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         if (!isLarge) {
           updateLayoutManagerCall();
         }
-        CircularProgressDrawable drawable = new CircularProgressDrawable(this);
-        drawable.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
-        drawable.setCenterRadius(30f);
-        drawable.setStrokeWidth(5f);
-        drawable.start();
         Glide.with(this)
             .load(talkingAvatar)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
-            .placeholder(drawable)
+            .placeholder(drawableProgress)
             .error(R.mipmap.avatar_failed)
             .centerCrop()
             .into(imgAvatarTalking);
@@ -457,6 +479,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnVideoClick(View v) {
     BrekekeModule.emit("video", uuid);
+    updateDisplayVideo(!this.isVideoCall);
+    updateUILayoutManagerCall(!this.isVideoCall);
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -562,6 +586,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_end_call:
         onBtnRejectClick(v);
         break;
+      case R.id.btn_switch_camera:
+        onBtnSwitchCamera(v);
+        break;
       default:
         break;
     }
@@ -578,8 +605,57 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateLayoutManagerCallLoaded();
   }
 
+  private void disableAvatarTalking() {
+    vCardAvatarTalking.setVisibility(View.GONE);
+    // update position Top for btn Unlock
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(constraintLayout);
+    constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+    constraintSet.applyTo(constraintLayout);
+  }
+
+  private void enableAvatarTalking() {
+    // update position bottom for btn Unlock
+    ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(constraintLayout);
+    constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.connect(
+        R.id.btn_unlock,
+        ConstraintSet.BOTTOM,
+        R.id.view_call_manage_controls,
+        ConstraintSet.TOP,
+        20);
+    constraintSet.applyTo(constraintLayout);
+
+    vCardAvatarTalking.setVisibility(View.VISIBLE);
+    // load image content
+    Glide.with(this)
+        .load(talkingAvatar)
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .placeholder(drawableProgress)
+        .error(R.mipmap.avatar_failed)
+        .centerCrop()
+        .into(imgAvatarTalking);
+  }
+
+  private void updateUILayoutManagerCall(Boolean isVideoCall) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
+      disableAvatarTalking();
+    } else {
+      enableAvatarTalking();
+    }
+  }
+
   public void setBtnVideoSelected(boolean isVideoCall) {
-    btnVideo.setSelected(isVideoCall);
+    if (this.isVideoCall != isVideoCall) {
+      this.isVideoCall = isVideoCall;
+      btnVideo.setSelected(isVideoCall);
+    }
   }
 
   public void setBtnHoldSelected(boolean holding) {
@@ -587,6 +663,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+  }
+
+  public void setBtnSwitchCamera(boolean isFrontCamera) {
+    btnSwitchCamera.setSelected(isFrontCamera);
   }
 
   public void setImageTalkingUrl(String url, Boolean isLarge) {
