@@ -332,7 +332,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintSet constraintSet = new ConstraintSet();
     int height = displayMetrics.heightPixels;
     boolean isLargeDevice = height > 1200;
-    int flexValue = height / 6;
+    int flexValue = height / 7;
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
     vCardAvatarTalking.getLayoutParams().width = flexValue;
@@ -719,8 +719,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     destroyed = true;
-    timer.cancel();
-    timerTask.cancel();
+    try {
+      timer.cancel();
+      timerTask.cancel();
+    } catch (Exception e) {
+    }
+
     timerTask = null;
     timer = null;
     BrekekeModule.onActivityPauseOrDestroy(uuid, true);

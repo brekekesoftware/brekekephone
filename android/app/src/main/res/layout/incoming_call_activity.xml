@@ -243,71 +243,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
       />
-
-      <RelativeLayout
-        android:id="@+id/view_call_manage_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/view_call_manage_controls"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-      >
-        <ProgressBar
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:indeterminate="true"
-          android:indeterminateTint="@color/white"
-        />
-
-        <TextView
-          android:id="@+id/txt_connecting"
-          android:textStyle="normal"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="60dp"
-          android:gravity="center"
-          android:text="Connecting..."
-          android:textColor="@color/white"
-          android:textSize="20dp"
-        />
-      </RelativeLayout>
-
-      <RelativeLayout
-        android:id="@+id/view_button_end"
-        android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-      >
-        <Button
-          android:id="@+id/btn_end_call"
-          android:layout_width="65dp"
-          android:layout_height="65dp"
-          android:background="@drawable/btn_reject"
-          android:drawableLeft="@drawable/ic_reject"
-          android:paddingLeft="13dp"
-          android:paddingTop="39dp"
-        />
-
-        <TextView
-          android:id="@+id/txt_call_is_on_hold"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="20dp"
-          android:gravity="center"
-          android:text="CALL IS ON HOLD"
-          android:textColor="@color/white"
-          android:textSize="20dp"
-          android:textStyle="bold"
-          android:visibility="gone"
-        />
-      </RelativeLayout>
-
       <LinearLayout
         android:id="@+id/view_call_manage_controls"
         android:layout_width="wrap_content"
@@ -623,29 +558,6 @@
         />
       </RelativeLayout>
 
-      <androidx.cardview.widget.CardView
-        android:id="@+id/card_avatar_talking"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="85dp"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="center"
-        app:cardCornerRadius="0dp"
-        app:cardPreventCornerOverlap="true"
-        app:layout_constraintBottom_toTopOf="@+id/btn_unlock"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-      >
-        <ImageView
-          android:id="@+id/avatar_talking"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:layout_centerHorizontal="true"
-          android:gravity="center"
-        />
-      </androidx.cardview.widget.CardView>
       <Button
         android:id="@+id/btn_switch_camera"
         android:layout_width="40dp"
