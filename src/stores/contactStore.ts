@@ -41,7 +41,7 @@ export type Phonebook2 = {
   phonebook: string
   shared: boolean
   loaded?: boolean
-  user?: string
+  user?: string // I mean if user is empty, it is shared. if user is specified, it means it is user's
   info: ContactInfo
 }
 export type ItemPBForm = brekekejs.ItemPhonebook & {
@@ -69,7 +69,6 @@ class ContactStore {
   @observable loading = false
   @observable hasLoadmore = false
   @observable offset = 0
-
   numberOfContactsPerPage = 20
 
   loadContacts = async () => {
@@ -120,7 +119,25 @@ class ContactStore {
     this.offset = 0
     this.loadContacts()
   }
+  // delete function
+  @observable selectedContactIds: { [id: string]: boolean } = {}
+  @observable isDeleteState: boolean = false
 
+  @action selectContactId = (userId: string) => {
+    if (this.selectedContactIds[userId]) {
+      delete this.selectedContactIds[userId]
+    } else {
+      this.selectedContactIds[userId] = true
+    }
+  }
+  @action removeContacts = (ids: string[] | number[]) => {
+    ids.forEach(id => {
+      delete this.phoneBooksMap[id.toString()]
+    })
+    this.phoneBooks = Object.values(this.phoneBooksMap)
+  }
+
+  // Create/update contact
   @observable showPickerItem: PickerItemOption | null = null
 
   @action openPicker = (picker: PickerItemOption) => {
@@ -159,6 +176,7 @@ class ContactStore {
     return newItems
   }
 
+  // pbxUsers
   @observable pbxUsers: PbxUser[] = []
 
   getPbxUsers = async () => {
@@ -328,6 +346,7 @@ class ContactStore {
     this.showPickerItem = null
     this.pbxBooks = []
     this.alreadyLoadContactsFirstTime = false
+    this.selectedContactIds = {}
   }
 }
 

@@ -124,6 +124,11 @@ export type PbxPal = {
     resolve: (res: PbxBook[]) => void,
     reject: ErrorHandler,
   ): void
+  deleteContact(
+    p: PbxDeleteContactParam,
+    resolve: (res: PbxDeleteContactResponse) => void,
+    reject: ErrorHandler,
+  ): void
   getContact(
     p: PbxGetContactParam,
     resolve: (res: PbxContact) => void,
@@ -201,8 +206,16 @@ export type PbxGetContactListItem = {
   phonebook: string
   user?: string
 }
+
 export type PbxGetContactParam = {
   aid: string
+}
+export type PbxDeleteContactParam = {
+  aid: string[]
+}
+export type PbxDeleteContactResponse = {
+  succeeded: number[] | string[]
+  failed: number[] | string[]
 }
 export type PbxPnmanageParam = {
   command: string

@@ -339,7 +339,7 @@ export class PBX extends EventEmitter {
       display_name: contact.display_name,
       phonebook: contact.phonebook,
       user: contact.user,
-      shared,
+      shared: !!!contact?.user,
       info: {},
     }))
   }
@@ -371,7 +371,18 @@ export class PBX extends EventEmitter {
       info: res.info,
     }
   }
-
+  deleteContact = async (id: string[]) => {
+    if (this.needToWait) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    const res = await this.client.call_pal('deleteContact', {
+      aid: id,
+    })
+    return res
+  }
   setContact = async (contact: Phonebook2) => {
     if (this.needToWait) {
       await waitPbx()
