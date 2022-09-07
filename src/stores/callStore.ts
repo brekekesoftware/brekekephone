@@ -223,6 +223,9 @@ export class CallStore {
         cPartial.answeredAt = now
         // update speaker again - ios
         Platform.OS === 'ios' && this.onForeUpdateSpeaker()
+        if (Platform.OS === 'android') {
+          BrekekeUtils.onCallConnected(cExisting.callkeepUuid)
+        }
       }
       Object.assign(cExisting, cPartial, {
         withSDPControls: cExisting.withSDPControls || cPartial.withSDP,

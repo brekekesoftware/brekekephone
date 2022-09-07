@@ -63,9 +63,6 @@ export class Call {
     sip.answerSession(this.id, {
       videoEnabled: this.remoteVideoEnabled,
     })
-    if (Platform.OS === 'android') {
-      BrekekeUtils.onCallConnected(this.callkeepUuid)
-    }
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
@@ -139,11 +136,6 @@ export class Call {
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
-  toggleSwitchCamera = () => {
-    sip.switchCamera(this.id, !this.isFrontCamera)
-    BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, !this.isFrontCamera)
-    this.isFrontCamera = !this.isFrontCamera
-  }
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -153,6 +145,11 @@ export class Call {
     this.localVideoEnabled
       ? sip.disableVideo(this.id)
       : sip.enableVideo(this.id)
+  }
+  @action toggleSwitchCamera = () => {
+    this.isFrontCamera = !this.isFrontCamera
+    sip.switchCamera(this.id, this.isFrontCamera)
+    BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
   @observable remoteVideoStreamObject: MediaStream | null = null

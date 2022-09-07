@@ -36,6 +36,7 @@ import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { Duration } from '../stores/timerStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
@@ -252,6 +253,11 @@ export class PageCallManage extends Component<{
             <RnText title white center numberOfLines={2}>
               {`${c.getDisplayName()}`}
             </RnText>
+          )}
+          {c.answered && (
+            <Duration subTitle white center>
+              {c.answeredAt}
+            </Duration>
           )}
         </View>
       </View>

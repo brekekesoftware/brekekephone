@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public RelativeLayout vWebrtc,
@@ -64,7 +66,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtRecordBtn,
       txtDtmfBtn,
       txtHoldBtn,
-      txtCallIsOnHold;
+      txtCallIsOnHold,
+      txtDurationCall;
   public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
   public boolean destroyed = false,
       paused = false,
@@ -72,6 +75,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       isLarge = false,
       isVideoCall = false;
   public CircularProgressDrawable drawableProgress;
+
+  Timer timer;
+  TimerTask timerTask;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,7 +90,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       forceFinish();
       return;
     }
-
+    timer = new Timer();
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     avatar = b.getString("avatar");
@@ -172,6 +178,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
+    txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
 
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
@@ -325,7 +332,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintSet constraintSet = new ConstraintSet();
     int height = displayMetrics.heightPixels;
     boolean isLargeDevice = height > 1200;
-    int flexValue = height / 6;
+    int flexValue = height / 7;
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
     vCardAvatarTalking.getLayoutParams().width = flexValue;
@@ -595,6 +602,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onCallConnected() {
+    long answeredAt = System.currentTimeMillis();
+    startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
     if (talkingAvatar == null || talkingAvatar.isEmpty()) {
       vCardAvatarTalking.setVisibility(View.GONE);
@@ -710,6 +719,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     destroyed = true;
+    try {
+      timer.cancel();
+      timerTask.cancel();
+    } catch (Exception e) {
+    }
+
+    timerTask = null;
+    timer = null;
     BrekekeModule.onActivityPauseOrDestroy(uuid, true);
     super.onDestroy();
   }
@@ -723,5 +740,39 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     return onKeyDown(e.getAction(), e);
+  }
+
+  // function for count up timer
+  private void startTimer(long answeredAt) {
+    timerTask =
+        new TimerTask() {
+          @Override
+          public void run() {
+            runOnUiThread(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    long now = System.currentTimeMillis();
+                    long ms = now - answeredAt;
+                    txtDurationCall.setText(getTimerText(ms));
+                  }
+                });
+          }
+        };
+    timer.scheduleAtFixedRate(timerTask, 0, 1000);
+  }
+
+  private String getTimerText(long ms) {
+    long os = 1000;
+    long om = 60 * os;
+    long oh = 60 * om;
+    double h = Math.floor(ms / oh);
+    ms = ms % oh;
+    double m = Math.floor(ms / om);
+    ms = ms % om;
+    double s = Math.floor(ms / os);
+    return h != 0
+        ? (String.format("%02d", (int) h) + ":")
+        : "" + String.format("%02d", (int) m) + ":" + String.format("%02d", (int) s);
   }
 }
