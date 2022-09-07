@@ -117,6 +117,7 @@ export const UserItem: FC<
     disabled?: boolean
     isSelection?: boolean
     isSelected?: boolean
+    parkNumber?: string
     onSelect?: () => void
   }>
 > = observer(p0 => {
@@ -144,6 +145,7 @@ export const UserItem: FC<
     disabled,
     isSelection,
     isSelected,
+    parkNumber,
     onSelect,
     ...p
   } = p0
@@ -200,14 +202,14 @@ export const UserItem: FC<
               style={css.IconGroup}
             />
           </View>
-        ) : (
+        ) : !!!parkNumber ? (
           <Avatar
             source={{ uri: avatar as string }}
             status={p0.status}
             {...p}
             style={css.WithSpace}
           />
-        )}
+        ) : null}
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText
@@ -231,6 +233,11 @@ export const UserItem: FC<
               </RnText>
             )}
           </View>
+          {parkNumber && (
+            <RnText normal small style={css.CallCreatedAt}>
+              {intl`Park number: ` + `${parkNumber}`}
+            </RnText>
+          )}
           {!isRecentCall && !!lastMessage && (
             <RnText normal singleLine small>
               {typeof lastMessage === 'string'

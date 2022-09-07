@@ -6,7 +6,7 @@ import { Platform, View } from 'react-native'
 
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { intl } from '../stores/intl'
+import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -52,6 +52,12 @@ export const ProfileCreateForm: FC<{
           if (p.parkNames.length !== p.parks.length) {
             const { parkNames } = p
             p.parkNames = p.parks.map((_, i) => parkNames[i] || '')
+          }
+          if (p.parks.includes($.addingPark.number)) {
+            RnAlert.error({
+              message: intlDebug`Park number ${$.addingPark.number} already exist`,
+            })
+            return p
           }
           p.parks.push($.addingPark.number)
           p.parkNames.push($.addingPark.name)

@@ -52,15 +52,25 @@ export class PageCallParks extends Component<{
     if (!cp) {
       return null
     }
-    const parks =
+    const arr =
       cp.parks?.map((p, i) => ({
         park: p,
         name: cp.parkNames?.[i] || '',
       })) || []
+
+    // make sure park number unique
+    const parks =
+      arr.filter((a, i) => arr.findIndex(s => a.park === s.park) === i) || []
+
     const sp = this.state.selectedPark
     const cp2 = this.props.callParks2
     void callStore.getCurrentCall() // trigger componentDidUpdate
-
+    const isDisable = (parkNumber: string) => {
+      if (cp2) {
+        return !!callStore.parkNumbers[parkNumber]
+      }
+      return !!!callStore.parkNumbers[parkNumber]
+    }
     return (
       <Layout
         description={intl`Your park numbers`}
@@ -78,13 +88,17 @@ export class PageCallParks extends Component<{
           </>
         )}
         {parks.map((p, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.selectPark(p.park)}>
+          <RnTouchableOpacity
+            key={i}
+            onPress={() => !isDisable(p.park) && this.selectPark(p.park)}
+          >
             <UserItem
               key={i}
-              name={
-                intl`Park` + ` ${i + 1}: ${p.park}${p.name && ' - '}${p.name}`
-              }
+              avatar=''
+              name={intl`Park` + ` ${i + 1}: ${p.name}`}
+              parkNumber={`${p.park}`}
               selected={p.park === sp}
+              disabled={isDisable(p.park)}
             />
           </RnTouchableOpacity>
         ))}

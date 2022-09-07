@@ -42,8 +42,17 @@ class Api {
     uc.on('file-received', this.onFileReceived)
     uc.on('file-progress', this.onFileProgress)
     uc.on('file-finished', this.onFileFinished)
+    pbx.on('park-started', this.onPBXUserParkStarted)
+    pbx.on('park-stopped', this.onPBXUserParkStopped)
   }
-
+  onPBXUserParkStarted = (parkNumber: string) => {
+    console.log('onPBXUserParkStarted', parkNumber)
+    callStore.addParkNumber(parkNumber)
+  }
+  onPBXUserParkStopped = (parkNumber: string) => {
+    console.log('onPBXUserParkStopped', parkNumber)
+    callStore.removeParkNumber(parkNumber)
+  }
   @action onPBXConnectionStarted = async () => {
     console.log('PBX PN debug: set pbxState success')
     const s = getAuthStore()
