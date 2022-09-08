@@ -1,30 +1,40 @@
 //
-//  PlayRBT.m
+//  BrekekeUtils.m
 //  BrekekePhone
 //
 //  Created by ThangNT on 29/08/2022.
 //
 
-#import "PlayRBT.h"
+#import "BrekekeUtils.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 
-@implementation PlayRBT
+@implementation BrekekeUtils
 
 AVAudioPlayer *audio;
 AVAudioSession *audioSession;
 
-RCT_EXPORT_MODULE();
+
+RCT_EXPORT_MODULE(BrekekeUtils);
+
+
 
 - (instancetype)init {
   if (self = [super init]) {
     audio = nil;
     audioSession = [AVAudioSession sharedInstance];
   }
+  NSLog(@"BrekekeUtils.init(): initialized");
   return self;
 }
 
-RCT_EXPORT_METHOD(play) {
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
+
+RCT_EXPORT_METHOD(playRBT) {
   NSLog(@"play RBT");
   @try {
     if (audio != nil) {
@@ -32,7 +42,7 @@ RCT_EXPORT_METHOD(play) {
         NSLog(@"startRingback(): is already playing");
         return;
       } else {
-        [self stop];
+        [self stopRBT];
       }
     }
     NSString *soundFilePath =
@@ -57,7 +67,7 @@ RCT_EXPORT_METHOD(play) {
   }
 }
 
-RCT_EXPORT_METHOD(stop) {
+RCT_EXPORT_METHOD(stopRBT) {
   NSLog(@"stop RBT");
   @try {
     if (audio != nil) {

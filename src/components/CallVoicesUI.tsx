@@ -98,21 +98,21 @@ export const VideoRBT = (p: { isPaused: boolean; isLoudSpeaker: boolean }) => {
   useEffect(() => {
     if (!p.isPaused) {
       if (p.isLoudSpeaker) {
-        NativeModules.PlayRBT.stop()
+        BrekekeUtils.stopRBT()
         setPauseVideo(false)
       } else {
         setPauseVideo(true)
-        NativeModules.PlayRBT.play()
+        BrekekeUtils.playRBT()
       }
     } else {
       if (p.isLoudSpeaker) {
         setPauseVideo(true)
       } else {
-        NativeModules.PlayRBT.stop()
+        BrekekeUtils.stopRBT()
       }
     }
     return () => {
-      NativeModules.PlayRBT.stop()
+      BrekekeUtils.stopRBT()
     }
   }, [p.isLoudSpeaker, p.isPaused])
 
