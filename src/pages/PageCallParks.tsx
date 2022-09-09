@@ -1,3 +1,4 @@
+import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
@@ -52,15 +53,13 @@ export class PageCallParks extends Component<{
     if (!cp) {
       return null
     }
+
     const arr =
       cp.parks?.map((p, i) => ({
         park: p,
         name: cp.parkNames?.[i] || '',
       })) || []
-
-    // make sure park number unique
-    const parks =
-      arr.filter((a, i) => arr.findIndex(s => a.park === s.park) === i) || []
+    const parks = uniqBy(arr, 'park')
 
     const sp = this.state.selectedPark
     const cp2 = this.props.callParks2
@@ -69,7 +68,7 @@ export class PageCallParks extends Component<{
       if (cp2) {
         return !!callStore.parkNumbers[parkNumber]
       }
-      return !!!callStore.parkNumbers[parkNumber]
+      return !callStore.parkNumbers[parkNumber]
     }
     return (
       <Layout
