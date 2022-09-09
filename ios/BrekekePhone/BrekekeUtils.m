@@ -1,15 +1,15 @@
 //
-//  PlayRBT.m
+//  BrekekeUtils.m
 //  BrekekePhone
 //
 //  Created by ThangNT on 29/08/2022.
 //
 
-#import "PlayRBT.h"
+#import "BrekekeUtils.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 
-@implementation PlayRBT
+@implementation BrekekeUtils
 
 AVAudioPlayer *audio;
 AVAudioSession *audioSession;
@@ -21,18 +21,23 @@ RCT_EXPORT_MODULE();
     audio = nil;
     audioSession = [AVAudioSession sharedInstance];
   }
+  NSLog(@"BrekekeUtils.init(): initialized");
   return self;
 }
 
-RCT_EXPORT_METHOD(play) {
-  NSLog(@"play RBT");
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+RCT_EXPORT_METHOD(playRBT) {
+  NSLog(@"BrekekeUtils.playRBT()");
   @try {
     if (audio != nil) {
       if ([audio isPlaying]) {
         NSLog(@"startRingback(): is already playing");
         return;
       } else {
-        [self stop];
+        [self stopRBT];
       }
     }
     NSString *soundFilePath =
@@ -43,29 +48,27 @@ RCT_EXPORT_METHOD(play) {
       NSLog(@"startRingback(): no media file");
       return;
     }
-    // self.storeOriginalAudioSetup()
     audio = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL
                                                    error:nil];
     audio.delegate = self;
-    audio.numberOfLoops = -1; // you need to stop it explicitly
+    audio.numberOfLoops = -1;
     [audio prepareToPlay];
-    // set category play audio
     [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
     [audio play];
   } @catch (NSException *exception) {
-    NSLog(@"Start RBT error: %@", exception.reason);
+    NSLog(@"BrekekeUtils.playRBT() error: %@", exception.reason);
   }
 }
 
-RCT_EXPORT_METHOD(stop) {
-  NSLog(@"stop RBT");
+RCT_EXPORT_METHOD(stopRBT) {
+  NSLog(@"BrekekeUtils.stopRBT()");
   @try {
     if (audio != nil) {
       [audio stop];
       audio = nil;
     }
   } @catch (NSException *exception) {
-    NSLog(@"Stop RBT error: %@", exception.reason);
+    NSLog(@"BrekekeUtils.stopRBT() error: %@", exception.reason);
   }
 }
 @end

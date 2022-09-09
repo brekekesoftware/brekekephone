@@ -34,7 +34,7 @@ public class BrekekeMessagingService extends MessagingService {
 
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
-    BrekekeModule.onFcmMessageReceived(this, remoteMessage.getData());
+    BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
 
     if (!alreadyGetInitialNotifications) {
       if (initialNotifications == null) {
