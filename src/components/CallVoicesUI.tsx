@@ -1,5 +1,5 @@
 import { Component, useEffect, useState } from 'react'
-import { NativeModules, Platform, StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
 

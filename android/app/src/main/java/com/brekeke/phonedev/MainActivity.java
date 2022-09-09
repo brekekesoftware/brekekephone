@@ -11,7 +11,7 @@ import org.json.JSONObject;
 public class MainActivity extends ReactActivity {
   @Override
   protected void onStart() {
-    BrekekeModule.main = this;
+    BrekekeUtils.main = this;
     super.onStart();
   }
 
@@ -28,20 +28,20 @@ public class MainActivity extends ReactActivity {
           e.printStackTrace();
         }
       }
-      BrekekeModule.emit("onNotificationPress", data.toString());
+      BrekekeUtils.emit("onNotificationPress", data.toString());
     }
   }
 
   // @Override
   // protected void onDestroy() {
-  //   BrekekeModule.main = null;
+  //   BrekekeUtils.main = null;
   //   super.onDestroy();
   // }
 
   @Override
   public void onBackPressed() {
     // Do not exit on back pressed
-    BrekekeModule.emit("onBackPressed", "");
+    BrekekeUtils.emit("onBackPressed", "");
   }
 
   @Override

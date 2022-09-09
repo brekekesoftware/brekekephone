@@ -14,10 +14,7 @@
 AVAudioPlayer *audio;
 AVAudioSession *audioSession;
 
-
-RCT_EXPORT_MODULE(BrekekeUtils);
-
-
+RCT_EXPORT_MODULE();
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -28,14 +25,12 @@ RCT_EXPORT_MODULE(BrekekeUtils);
   return self;
 }
 
-+ (BOOL)requiresMainQueueSetup
-{
-    return YES;
++ (BOOL)requiresMainQueueSetup {
+  return YES;
 }
 
-
 RCT_EXPORT_METHOD(playRBT) {
-  NSLog(@"play RBT");
+  NSLog(@"BrekekeUtils.playRBT()");
   @try {
     if (audio != nil) {
       if ([audio isPlaying]) {
@@ -53,29 +48,27 @@ RCT_EXPORT_METHOD(playRBT) {
       NSLog(@"startRingback(): no media file");
       return;
     }
-    // self.storeOriginalAudioSetup()
     audio = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL
                                                    error:nil];
     audio.delegate = self;
-    audio.numberOfLoops = -1; // you need to stop it explicitly
+    audio.numberOfLoops = -1;
     [audio prepareToPlay];
-    // set category play audio
     [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
     [audio play];
   } @catch (NSException *exception) {
-    NSLog(@"Start RBT error: %@", exception.reason);
+    NSLog(@"BrekekeUtils.playRBT() error: %@", exception.reason);
   }
 }
 
 RCT_EXPORT_METHOD(stopRBT) {
-  NSLog(@"stop RBT");
+  NSLog(@"BrekekeUtils.stopRBT()");
   @try {
     if (audio != nil) {
       [audio stop];
       audio = nil;
     }
   } @catch (NSException *exception) {
-    NSLog(@"Stop RBT error: %@", exception.reason);
+    NSLog(@"BrekekeUtils.stopRBT() error: %@", exception.reason);
   }
 }
 @end

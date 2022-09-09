@@ -33,7 +33,7 @@ import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class BrekekeModule extends ReactContextBaseJavaModule {
+public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
@@ -69,7 +69,7 @@ public class BrekekeModule extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
 
-  BrekekeModule(ReactApplicationContext c) {
+  BrekekeUtils(ReactApplicationContext c) {
     super(c);
     ctx = c;
     initStaticServices(c);
