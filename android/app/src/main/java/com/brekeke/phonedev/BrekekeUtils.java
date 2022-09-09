@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import com.facebook.react.bridge.Promise;
@@ -567,15 +568,32 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void onCallConnected(String uuid) {
+  public void setTalkingAvatar(String uuid, String url, Boolean isLarge) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).onCallConnected();
+              at(uuid).setImageTalkingUrl(url, isLarge);
             } catch (Exception e) {
             }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setJsCallsSize(int n) {
+    if (n > 0) {
+      acquireWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    jsCallsSize = n;
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            updateBtnUnlockLabels();
           }
         });
   }
@@ -588,6 +606,82 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           public void run() {
             try {
               at(uuid).setBtnVideoSelected(isVideoCall);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setRemoteVideoStreamURL(String uuid, String url) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setRemoteVideoStreamURL(url);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setIsFrontCamera(String uuid, boolean isFrontCamera) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setBtnSwitchCamera(isFrontCamera);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setOnHold(String uuid, boolean holding) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setBtnHoldSelected(holding);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setLocale(String locale) {
+    L.l = locale;
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.updateLabels();
+                } catch (Exception e) {
+                }
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void onCallConnected(String uuid) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).onCallConnected();
             } catch (Exception e) {
             }
           }
@@ -617,95 +711,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setRemoteVideoStreamURL(String uuid, String url) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRemoteVideoStreamURL(url);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setOnHold(String uuid, boolean holding) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setBtnHoldSelected(holding);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setTalkingAvatar(String uuid, String url, Boolean isLarge) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setImageTalkingUrl(url, isLarge);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setOnSwitchCamera(String uuid, boolean isFrontCamera) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setBtnSwitchCamera(isFrontCamera);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setJsCallsSize(int n) {
-    if (n > 0) {
-      acquireWakeLock();
-    } else {
-      releaseWakeLock();
+  public void systemUptimeMs(Promise p) {
+    try {
+      p.resolve((double) SystemClock.elapsedRealtime());
+    } catch (Exception e) {
+      p.resolve(-1d);
     }
-    jsCallsSize = n;
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            updateBtnUnlockLabels();
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setLocale(String locale) {
-    L.l = locale;
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (IncomingCallActivity a : activities) {
-                try {
-                  a.updateLabels();
-                } catch (Exception e) {
-                }
-              }
-            } catch (Exception e) {
-            }
-          }
-        });
   }
 }

@@ -12,22 +12,23 @@ type TBrekekeUtils = {
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
-  setIsAppActive(b1: boolean, b2: boolean): void
+  setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
   setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
+  setJsCallsSize(n: number): void
   setIsVideoCall(uuid: string, isVideoCall: boolean): void
   setRemoteVideoStreamURL(uuid: string, url: string): void
+  setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
   setOnHold(uuid: string, holding: boolean): void
-  setJsCallsSize(n: number): void
   setLocale(locale: string): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallkeepAction): void
-  setOnSwitchCamera(uuid: string, isFrontCamera: boolean): void
 
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
 
   // these methods available on both
+  systemUptimeMs(): Promise<number>
 }
 
 export type TNativeModules = {
@@ -44,16 +45,17 @@ const Polyfill: TBrekekeUtils = {
   closeAllIncomingCalls: () => undefined,
   setIsAppActive: () => undefined,
   setTalkingAvatar: () => undefined,
+  setJsCallsSize: () => undefined,
   setIsVideoCall: () => undefined,
   setRemoteVideoStreamURL: () => undefined,
+  setIsFrontCamera: () => undefined,
   setOnHold: () => undefined,
-  setJsCallsSize: () => undefined,
   setLocale: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
-  setOnSwitchCamera: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
+  systemUptimeMs: () => Promise.resolve(-1),
 }
 
 const M = NativeModules as TNativeModules

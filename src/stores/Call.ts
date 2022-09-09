@@ -149,7 +149,7 @@ export class Call {
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera
     sip.switchCamera(this.id, this.isFrontCamera)
-    BrekekeUtils.setOnSwitchCamera(this.callkeepUuid, this.isFrontCamera)
+    BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
   @observable remoteVideoStreamObject: MediaStream | null = null

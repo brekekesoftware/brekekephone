@@ -1,9 +1,5 @@
-//
-//  BrekekeUtils.m
-//  BrekekePhone
-//
-//  Created by ThangNT on 29/08/2022.
-//
+#include <sys/sysctl.h>
+#include <sys/types.h>
 
 #import "BrekekeUtils.h"
 #import <AVFoundation/AVFoundation.h>
@@ -55,8 +51,8 @@ RCT_EXPORT_METHOD(playRBT) {
     [audio prepareToPlay];
     [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
     [audio play];
-  } @catch (NSException *exception) {
-    NSLog(@"BrekekeUtils.playRBT() error: %@", exception.reason);
+  } @catch (NSException *e) {
+    NSLog(@"BrekekeUtils.playRBT() error: %@", e.reason);
   }
 }
 
@@ -67,8 +63,31 @@ RCT_EXPORT_METHOD(stopRBT) {
       [audio stop];
       audio = nil;
     }
-  } @catch (NSException *exception) {
-    NSLog(@"BrekekeUtils.stopRBT() error: %@", exception.reason);
+  } @catch (NSException *e) {
+    NSLog(@"BrekekeUtils.stopRBT() error: %@", e.reason);
+  }
+}
+
+RCT_REMAP_METHOD(systemUptimeMs, resolver
+                 : (RCTPromiseResolveBlock)resolve rejecter
+                 : (RCTPromiseRejectBlock)reject) {
+  NSLog(@"BrekekeUtils.systemUptimeMs()");
+  @try {
+    int a[2];
+    a[0] = CTL_KERN;
+    a[1] = KERN_BOOTTIME;
+    struct timeval t;
+    size_t s = sizeof(t);
+    if (sysctl(a, 2, &t, &s, NULL, 0) != -1) {
+      time_t now;
+      (void)time(&now);
+      resolve(@((now - t.tv_sec) * 1000));
+    } else {
+      resolve(@(-1));
+    }
+  } @catch (NSException *e) {
+    NSLog(@"BrekekeUtils.systemUptimeMs() error: %@", e.reason);
+    resolve(@(-1));
   }
 }
 @end
