@@ -132,8 +132,7 @@ export const parseNotificationData = (raw: object) => {
   const turnServer: string = get(n, 'webphone.turn.server')
   const turnUsername: string = get(n, 'webphone.turn.username')
   const turnCredential: string = get(n, 'webphone.turn.credential')
-  const autoAnswer = true // TODO: test
-  void toBoolean(get(n, 'autoanswer'))
+  const autoAnswer = toBoolean(get(n, 'autoanswer'))
   n.sipPn = {
     phoneId,
     sipAuth,
