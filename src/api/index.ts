@@ -26,6 +26,8 @@ class Api {
     pbx.on('user-holding', this.onPBXUserHolding)
     pbx.on('user-hanging', this.onPBXUserHanging)
     pbx.on('voicemail-updated', this.onVoiceMailUpdated)
+    pbx.on('park-started', this.onPBXUserParkStarted)
+    pbx.on('park-stopped', this.onPBXUserParkStopped)
     sip.on('connection-started', this.onSIPConnectionStarted)
     sip.on('connection-stopped', this.onSIPConnectionStopped)
     sip.on('connection-timeout', this.onSIPConnectionTimeout)
@@ -42,17 +44,8 @@ class Api {
     uc.on('file-received', this.onFileReceived)
     uc.on('file-progress', this.onFileProgress)
     uc.on('file-finished', this.onFileFinished)
-    pbx.on('park-started', this.onPBXUserParkStarted)
-    pbx.on('park-stopped', this.onPBXUserParkStopped)
   }
-  onPBXUserParkStarted = (parkNumber: string) => {
-    console.log('onPBXUserParkStarted', parkNumber)
-    callStore.addParkNumber(parkNumber)
-  }
-  onPBXUserParkStopped = (parkNumber: string) => {
-    console.log('onPBXUserParkStopped', parkNumber)
-    callStore.removeParkNumber(parkNumber)
-  }
+
   @action onPBXConnectionStarted = async () => {
     console.log('PBX PN debug: set pbxState success')
     const s = getAuthStore()
@@ -107,6 +100,14 @@ class Api {
   }
   onVoiceMailUpdated = (ev: { new: number }) => {
     callStore.setNewVoicemailCount(ev?.new || 0)
+  }
+  onPBXUserParkStarted = (parkNumber: string) => {
+    console.log('onPBXUserParkStarted', parkNumber)
+    callStore.addParkNumber(parkNumber)
+  }
+  onPBXUserParkStopped = (parkNumber: string) => {
+    console.log('onPBXUserParkStopped', parkNumber)
+    callStore.removeParkNumber(parkNumber)
   }
 
   @action onSIPConnectionStarted = () => {
