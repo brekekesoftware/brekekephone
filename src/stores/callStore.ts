@@ -27,14 +27,6 @@ import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
 
 export class CallStore {
-  @observable parkNumbers: { [k: string]: boolean } = {}
-
-  @action addParkNumber = (parkNumber: string) => {
-    this.parkNumbers[parkNumber] = true
-  }
-  @action removeParkNumber = (parkNumber: string) => {
-    delete this.parkNumbers[parkNumber]
-  }
   private recentCallActivityAt = 0
 
   private getCallkeep = (
@@ -700,6 +692,14 @@ export class CallStore {
         }, 300)
       })
     }
+  }
+
+  @observable parkNumbers: { [k: string]: boolean } = {}
+  @action addParkNumber = (parkNumber: string) => {
+    this.parkNumbers[parkNumber] = true
+  }
+  @action removeParkNumber = (parkNumber: string) => {
+    delete this.parkNumbers[parkNumber]
   }
 
   // Some other fields
