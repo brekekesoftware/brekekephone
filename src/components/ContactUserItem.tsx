@@ -202,7 +202,7 @@ export const UserItem: FC<
               style={css.IconGroup}
             />
           </View>
-        ) : !!!parkNumber ? (
+        ) : !parkNumber ? (
           <Avatar
             source={{ uri: avatar as string }}
             status={p0.status}
