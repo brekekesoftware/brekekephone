@@ -350,7 +350,6 @@ export const Field: FC<
           ])}
           placeholder={intl`park number`}
           placeholderTextColor={'grey'}
-          // keyboardType={'phone-pad'}
           onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
           onChangeText={txt => onChangeNumber(txt)}
           onFocus={() => {
