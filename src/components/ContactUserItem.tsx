@@ -233,7 +233,7 @@ export const UserItem: FC<
               </RnText>
             )}
           </View>
-          {parkNumber && (
+          {!!parkNumber && (
             <RnText normal small style={css.CallCreatedAt}>
               {intl`Park number: ` + `${parkNumber}`}
             </RnText>
