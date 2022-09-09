@@ -694,6 +694,14 @@ export class CallStore {
     }
   }
 
+  @observable parkNumbers: { [k: string]: boolean } = {}
+  @action addParkNumber = (parkNumber: string) => {
+    this.parkNumbers[parkNumber] = true
+  }
+  @action removeParkNumber = (parkNumber: string) => {
+    delete this.parkNumbers[parkNumber]
+  }
+
   // Some other fields
   // TODO move them somewhere else
   @observable isLoudSpeakerEnabled = false

@@ -345,11 +345,11 @@ export const Field: FC<
             'createBtnIcon',
             'onRemoveBtnPress',
             'removeBtnIcon',
+            'disabled',
             'error',
           ])}
           placeholder={intl`park number`}
           placeholderTextColor={'grey'}
-          keyboardType={'numeric'}
           onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
           onChangeText={txt => onChangeNumber(txt)}
           onFocus={() => {
@@ -372,6 +372,7 @@ export const Field: FC<
             'createBtnIcon',
             'onRemoveBtnPress',
             'removeBtnIcon',
+            'disabled',
             'error',
           ])}
           placeholder={intl`label`}

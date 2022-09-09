@@ -192,7 +192,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
             onPress={() => onSelect(value)}
             style={[css.RnPicker_Option, css.RnPicker_Option__OK]}
           >
-            <RnText style={css.RnPicker_Text__Ok}>{intl`Ok`}</RnText>
+            <RnText style={css.RnPicker_Text__Ok}>{intl`OK`}</RnText>
           </RnTouchableOpacity>
           <RnTouchableOpacity
             onPress={contactStore.dismissPicker}
