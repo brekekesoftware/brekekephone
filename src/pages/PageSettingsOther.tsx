@@ -1,13 +1,11 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform } from 'react-native'
 
 import { uc } from '../api/uc'
 import { mdiCheck, mdiTranslate } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
@@ -51,30 +49,23 @@ export class PageSettingsOther extends Component {
       })
   }
   render() {
-    const cp = getAuthStore().getCurrentAccount()
+    const as = getAuthStore()
+    const cp = as.getCurrentAccount()
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
         dropdown={[
-          ...(getAuthStore().isConnFailure()
+          ...(as.isConnFailure()
             ? [
                 {
                   label: intl`Reconnect to server`,
-                  onPress:
-                    getAuthStore()
-                      .resetFailureStateIncludeUcLoginFromAnotherPlace,
+                  onPress: as.resetFailureStateIncludeUcLoginFromAnotherPlace,
                 },
               ]
             : []),
           {
             label: intl`Logout`,
-            onPress: () => {
-              getAuthStore().signOut()
-              // Try to end callkeep if it's stuck
-              if (Platform.OS !== 'web') {
-                callStore.endCallKeepAllCalls()
-              }
-            },
+            onPress: as.signOut,
             danger: true,
           },
         ]}

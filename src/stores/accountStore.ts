@@ -8,8 +8,11 @@ import { v4 as newUuid } from 'uuid'
 import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
+import { currentVersion } from '../components/variables'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'
+import { compareSemVer } from './debugStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
@@ -66,7 +69,9 @@ export type AccountData = {
 }
 
 class AccountStore {
+  @observable appInitDone = false
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+  waitStorageLoaded = () => profilesLoaded
 
   @observable accounts: Account[] = []
   @computed get accountsMap() {
@@ -75,9 +80,6 @@ class AccountStore {
     }
   }
   @observable accountData: AccountData[] = []
-
-  @observable storageLoadedObservable = false
-  waitStorageLoaded = () => profilesLoaded
 
   genEmptyAccount = (): Account => ({
     id: newUuid(),
@@ -120,7 +122,6 @@ class AccountStore {
     }
     resolveFn?.()
     resolveFn = undefined
-    this.storageLoadedObservable = true
   }
   private saveAccountsToLocalStorage = async () => {
     try {
@@ -241,4 +242,57 @@ export const accountStore = new AccountStore()
 type TAccountDataInStorage = {
   profiles: Account[]
   profileData: AccountData[]
+}
+
+type TLastSignedInId = {
+  id: string
+  at: number
+  version: string
+  logoutPressed?: boolean
+  autoSignInBrekekePhone?: boolean
+}
+
+export const getLastSignedInId = async (
+  checkAutoSignInBrekekePhone?: boolean,
+): Promise<TLastSignedInId> => {
+  const j = await RnAsyncStorage.getItem('lastSignedInId')
+  let d: any = null
+  try {
+    d = j && JSON.parse(j)
+  } catch (err) {}
+  if (d?.h) {
+    // unique account id is json
+    d = j
+  }
+  if (!d?.id) {
+    d = {
+      id: d || j || '',
+      at: Date.now(),
+      version: currentVersion,
+    }
+  }
+  if (!checkAutoSignInBrekekePhone) {
+    return d
+  }
+  if (d.logoutPressed || compareSemVer(currentVersion, d.version)) {
+    d.autoSignInBrekekePhone = false
+    return d
+  }
+  const uptime = await BrekekeUtils.systemUptimeMs()
+  d.autoSignInBrekekePhone = uptime > 0 && uptime > Date.now() - d.at
+  return d
+}
+export const saveLastSignedInId = async (id: string | false) => {
+  if (id === false) {
+    const d = await getLastSignedInId()
+    d.logoutPressed = true
+    await RnAsyncStorage.setItem('lastSignedInId', JSON.stringify(d))
+    return
+  }
+  const j = JSON.stringify({
+    id,
+    at: Date.now(),
+    version: currentVersion,
+  })
+  await RnAsyncStorage.setItem('lastSignedInId', j)
 }

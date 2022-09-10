@@ -115,10 +115,10 @@ const renderAsync = async (div: HTMLElement, o: Options) => {
   }
   const as = getAuthStore()
   if (firstAccountInOptions) {
-    as.signIn(firstAccountInOptions.id)
+    as.signIn(firstAccountInOptions)
     return
   }
-  await as.autoSignIn()
+  await as.autoSignInEmbed()
 }
 const render = (div: HTMLElement, o: Options) => {
   renderAsync(div, o)

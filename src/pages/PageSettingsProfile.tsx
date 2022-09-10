@@ -22,7 +22,7 @@ export const PageSettingsProfile = observer(() => (
         onConfirm: () => {
           accountStore.upsertAccount(p)
           Nav().goToPageProfileSignIn()
-          BackgroundTimer.setTimeout(() => getAuthStore().signIn(p.id), 300)
+          BackgroundTimer.setTimeout(() => getAuthStore().signIn(p), 300)
         },
         confirmText: intl`SAVE`,
       })

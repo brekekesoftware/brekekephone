@@ -2,7 +2,7 @@
 import '../api'
 
 import { debounce } from 'lodash'
-import { observe } from 'mobx'
+import { observe, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import {
@@ -17,7 +17,11 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import { SyncPnToken } from '../api/syncPnToken'
-import { accountStore } from '../stores/accountStore'
+import {
+  accountStore,
+  getAccountUniqueId,
+  getLastSignedInId,
+} from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
@@ -44,6 +48,7 @@ import {
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -54,13 +59,7 @@ import { AudioPlayer, RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
-let alreadyInitApp = false
-PushNotification.register(async () => {
-  if (alreadyInitApp) {
-    return
-  }
-  alreadyInitApp = true
-
+const initApp = async () => {
   await intlStore.wait()
   const s = getAuthStore()
 
@@ -80,28 +79,21 @@ PushNotification.register(async () => {
   // Handle android hardware back button press
   BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
+  const hasCallOrWakeFromPN =
+    callStore.calls.length ||
+    Object.keys(callStore.callkeepMap).length ||
+    s.sipPn.sipAuth
+
   if (Platform.OS === 'web') {
     if (window._BrekekePhoneWebRoot) {
       promptBrowserPermission()
     }
-  } else if (
-    AppState.currentState === 'active' &&
-    !callStore.calls.length &&
-    !Object.keys(callStore.callkeepMap).length &&
-    !s.sipPn.sipAuth
-  ) {
+  } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     getAudioVideoPermission()
   }
 
   setupCallKeep()
-  accountStore.loadAccountsFromLocalStorage().then(() => {
-    if (AppState.currentState === 'active') {
-      SyncPnToken().syncForAllAccounts()
-    }
-  })
-
-  Nav().goToPageIndex()
-  s.handleUrlParams()
+  await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {
     Nav().goToPageIndex()
@@ -120,6 +112,47 @@ PushNotification.register(async () => {
     }
   }, 17)
   observe(s, 'signedInId', onAuthUpdate)
+
+  if (await s.handleUrlParams()) {
+    console.log('App navigated by url params')
+    // already navigated
+  } else if (
+    // only auto sign in if app active mean user open app intentionally
+    // other cases like wakeup via push we should not auto sign in
+    Platform.OS !== 'web' &&
+    AppState.currentState === 'active' &&
+    !hasCallOrWakeFromPN
+  ) {
+    const d = await getLastSignedInId(true)
+    console.log('Auto signin data: ', d)
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+      console.log('App navigated by auto signin')
+      // already navigated
+    } else {
+      Nav().goToPageIndex()
+    }
+  } else {
+    Nav().goToPageIndex()
+  }
+
+  if (AppState.currentState === 'active') {
+    SyncPnToken().syncForAllAccounts()
+  }
+}
+
+let alreadyInitApp = false
+PushNotification.register(async () => {
+  if (alreadyInitApp) {
+    return
+  }
+  alreadyInitApp = true
+  await initApp()
+    .catch(err => void err)
+    .then(() => waitTimeout(100))
+  runInAction(() => {
+    accountStore.appInitDone = true
+  })
 })
 
 const css = StyleSheet.create({
@@ -233,7 +266,7 @@ export const App = observer(() => {
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
 
-      {!accountStore.storageLoadedObservable && (
+      {!accountStore.appInitDone && (
         <View style={css.LoadingFullscreen}>
           <ActivityIndicator size='small' color='white' />
         </View>

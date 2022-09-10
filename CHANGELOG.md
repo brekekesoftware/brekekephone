@@ -1,12 +1,23 @@
-#### 2.11.0
+#### 2.11.1
 
 - Save webphone.pal.param.user to local storage and reconnect if mismatch
 - Add some more space to Keypad with the call green button
 - Add dropdown to start voice/video call from screen user chat detail. For screen group chat detail, they were added already in the past
 - Fix: should not show "No Account" although it has
-- Fix: should not logout when app is in background
-- Handle PN data x_autoanswer
-- Update phonebook.js
+- Improve: should not logout when app is in background or killed (android/ios), it should re-login automatically every time user open the app, unless:
+  - user pressed log out intentionally in the last session
+  - or a new version installed
+  - or the OS restarted
+  - or the app wake in background by push or by linking url
+- Handle PN data x_autoanswer, automatically answer the new PN call if no ongoing call, test result:
+  - android: worked in most of cases: foreground, lock, kill, background - except press home button
+  - ios: only worked if app is foreground
+  - -> due to some security privacy policy, it is difficult for us to automatically receive and answer call
+- Update logic of phonebook contact using phonebook.js
+- Display call duration in screen call detail
+- Fix loud spkeaker RBT for ios
+- Switch back/front camera in video call
+- Update park logic to correctly listen on events
 
 #### 2.10.9
 

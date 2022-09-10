@@ -7,7 +7,6 @@ import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '../components/Rn'
-import { currentVersion } from '../components/variables'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { intl, intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
@@ -152,22 +151,6 @@ class DebugStore {
   @observable isCheckingForUpdate = false
   @observable remoteVersion = ''
   @observable remoteVersionLastCheck = 0
-  isUpdateAvailable = () => {
-    const ac = currentVersion.split('.').map(Number)
-    const ar = this.remoteVersion.split('.').map(Number)
-    if (ac.length !== 3 || ar.length !== 3) {
-      return false
-    }
-    const [cMajor, cMinor, cPatch] = ac
-    const [rMajor, rMinor, rPatch] = ar
-    if (cMajor !== rMajor) {
-      return cMajor < rMajor
-    }
-    if (cMinor !== rMinor) {
-      return cMinor < rMinor
-    }
-    return cPatch < rPatch
-  }
 
   checkForUpdate = () => {
     if (this.isCheckingForUpdate) {
@@ -307,3 +290,20 @@ if (Platform.OS !== 'web') {
   store.init()
 }
 export const debugStore = store
+
+export const compareSemVer = (newV: string, curV: string) => {
+  const curA = curV.split('.').map(Number)
+  const newA = newV.split('.').map(Number)
+  if (curA.length !== 3 || newA.length !== 3) {
+    return false
+  }
+  const [cMajor, cMinor, cPatch] = curA
+  const [nMajor, nMinor, nPatch] = newA
+  if (cMajor !== nMajor) {
+    return cMajor < nMajor
+  }
+  if (cMinor !== nMinor) {
+    return cMinor < nMinor
+  }
+  return cPatch < nPatch
+}

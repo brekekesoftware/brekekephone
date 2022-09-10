@@ -119,6 +119,7 @@ export const ProfileCreateForm: FC<{
     ReturnType<typeof useStore>
   const $ = useStore(m) as any as M
   const [Form, submitForm] = useForm()
+  const as = getAuthStore()
   return (
     <Layout
       description={
@@ -129,19 +130,18 @@ export const ProfileCreateForm: FC<{
       dropdown={
         props.footerLogout
           ? [
-              ...(getAuthStore().isConnFailure()
+              ...(as.isConnFailure()
                 ? [
                     {
                       label: intl`Reconnect to server`,
                       onPress:
-                        getAuthStore()
-                          .resetFailureStateIncludeUcLoginFromAnotherPlace,
+                        as.resetFailureStateIncludeUcLoginFromAnotherPlace,
                     },
                   ]
                 : []),
               {
                 label: intl`Logout`,
-                onPress: getAuthStore().signOut,
+                onPress: as.signOut,
                 danger: true,
               },
             ]

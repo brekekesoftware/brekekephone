@@ -9,7 +9,7 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { currentVersion } from '../components/variables'
-import { debugStore } from '../stores/debugStore'
+import { compareSemVer, debugStore } from '../stores/debugStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
@@ -29,7 +29,10 @@ const css = StyleSheet.create({
 @observer
 export class PageSettingsDebug extends Component {
   render() {
-    const isUpdateAvailable = debugStore.isUpdateAvailable()
+    const isUpdateAvailable = compareSemVer(
+      debugStore.remoteVersion,
+      currentVersion,
+    )
     return (
       <Layout
         description={intl`App information and debugging`}

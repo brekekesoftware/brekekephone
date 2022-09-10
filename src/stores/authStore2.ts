@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce'
 import { action, observable } from 'mobx'
-import { AppState } from 'react-native'
+import { AppState, Platform } from 'react-native'
 
 import {
   PbxGetProductInfoRes,
@@ -9,11 +9,16 @@ import {
   UcConfig,
 } from '../api/brekekejs'
 import { sip } from '../api/sip'
-import { RnAsyncStorage } from '../components/Rn'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
-import { Account, accountStore, getAccountUniqueId } from './accountStore'
+import {
+  Account,
+  accountStore,
+  getAccountUniqueId,
+  getLastSignedInId,
+  saveLastSignedInId,
+} from './accountStore'
 import { authSIP } from './AuthSIP'
 import { compareAccount, setAuthStore } from './authStore'
 import { callStore } from './callStore'
@@ -117,8 +122,7 @@ export class AuthStore {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
 
-  signIn = async (id: string) => {
-    const p = accountStore.accounts.find(_ => _.id === id)
+  signIn = async (p?: Account, autoSignIn?: boolean) => {
     if (!p) {
       return false
     }
@@ -131,35 +135,28 @@ export class AuthStore {
       return true
     }
     this.signedInId = p.id
-    await RnAsyncStorage.setItem('lastSignedInId', getAccountUniqueId(p))
+    if (!autoSignIn) {
+      await saveLastSignedInId(getAccountUniqueId(p))
+    }
     return true
   }
-  autoSignIn = async () => {
-    const id = await RnAsyncStorage.getItem('lastSignedInId')
-    const p =
-      accountStore.accounts.find(_ => getAccountUniqueId(_) === id) ||
-      accountStore.accounts[0]
-    if (!p) {
-      return
-    }
-    this.signIn(p.id)
+  autoSignInEmbed = async () => {
+    const d = await getLastSignedInId()
+    this.signIn(
+      accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id) ||
+        accountStore.accounts[0],
+    )
   }
 
   signOut = () => {
+    saveLastSignedInId(false)
     callStore.calls.forEach(c => c.hangupWithUnhold())
+    if (Platform.OS !== 'web') {
+      // Try to end callkeep if it's stuck
+      callStore.endCallKeepAllCalls()
+    }
     this.resetState()
     Nav().goToPageProfileSignIn()
-    // if (!callStore.calls.length) {
-    //   return
-    // }
-    // const intervalStartedAt = Date.now()
-    // const id = BackgroundTimer.setInterval(() => {
-    //   // TODO show/hide loader
-    //   if (!callStore.calls.length || Date.now() - intervalStartedAt > 3000) {
-    //     BackgroundTimer.clearInterval(id)
-    //     this.resetState()
-    //   }
-    // }, 1000)
   }
   @action private resetState = () => {
     this.signedInId = ''
@@ -227,18 +224,18 @@ export class AuthStore {
       Object.keys(callStore.callkeepMap).length ||
       sip.phone?.getSessionCount()
     ) {
-      return
+      return false
     }
     //
     await accountStore.waitStorageLoaded()
     const urlParams = await getUrlParams()
     if (!urlParams) {
-      return
+      return false
     }
     //
     const { _wn, host, phone_idx, port, tenant, user } = urlParams
     if (!tenant || !user) {
-      return
+      return false
     }
     //
     const p = this.findAccount({
@@ -267,11 +264,11 @@ export class AuthStore {
       //
       accountStore.upsertAccount(p)
       if (p.pbxPassword || d.accessToken) {
-        this.signIn(p.id)
+        this.signIn(p)
       } else {
         Nav().goToPageProfileUpdate({ id: p.id })
       }
-      return
+      return true
     }
     //
     const newP = {
@@ -286,10 +283,11 @@ export class AuthStore {
     //
     accountStore.upsertAccount(newP)
     if (d.accessToken) {
-      this.signIn(newP.id)
+      this.signIn(newP)
     } else {
       Nav().goToPageProfileUpdate({ id: newP.id })
     }
+    return true
   }
 
   @observable isSignInByNotification = false
@@ -328,7 +326,7 @@ export class AuthStore {
       this.clearSignInByNotification()
     }
     if (this.signedInId !== p.id) {
-      return this.signIn(p.id)
+      return this.signIn(p)
     }
     return false
   }

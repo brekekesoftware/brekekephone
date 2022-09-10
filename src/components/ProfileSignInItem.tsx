@@ -139,7 +139,7 @@ export const ProfileSignInItem: FC<{
           onMore={() => Nav().goToPageProfileUpdate({ id: p.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
-            getAuthStore().signIn(p.id)
+            getAuthStore().signIn(p)
             // Try to end callkeep if it's stuck
             if (Platform.OS !== 'web') {
               callStore.endCallKeepAllCalls()

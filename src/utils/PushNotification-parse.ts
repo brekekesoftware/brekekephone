@@ -180,7 +180,7 @@ export const signInByLocalNotification = (n: ParsedPn) => {
     as.resetFailureState()
   }
   if (p?.id && !as.signedInId) {
-    as.signIn(p.id)
+    as.signIn(p)
   }
 }
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
