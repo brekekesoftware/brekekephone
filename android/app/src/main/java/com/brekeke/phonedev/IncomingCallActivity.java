@@ -502,7 +502,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnRecordClick(View v) {
-    btnRecord.setSelected(!v.isSelected());
     BrekekeUtils.emit("record", uuid);
   }
 
@@ -681,6 +680,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void setImageTalkingUrl(String url, Boolean isLarge) {
     this.talkingAvatar = url;
     this.isLarge = isLarge;
+  }
+
+  public void setRecordingStatus(Boolean isRecording) {
+    btnRecord.setSelected(isRecording);
   }
 
   public void forceFinish() {

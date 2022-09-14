@@ -165,6 +165,10 @@ export class Call {
   }
 
   @observable recording = false
+  @action updateRecordingStatus = (status: boolean) => {
+    this.recording = status
+    BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
+  }
   @action toggleRecording = () => {
     const fn = this.recording
       ? pbx.stopRecordingTalker

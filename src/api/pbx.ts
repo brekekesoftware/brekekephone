@@ -43,6 +43,7 @@ export class PBX extends EventEmitter {
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
+      callrecording: 'self',
     })
     this.client = client
 
@@ -125,6 +126,12 @@ export class PBX extends EventEmitter {
         return this.emit('park-stopped', e.park)
       }
       return
+    }
+    client.notify_callrecording = e => {
+      if (!e) {
+        return
+      }
+      this.emit('call-recording', e)
     }
 
     client.notify_voicemail = e => {
