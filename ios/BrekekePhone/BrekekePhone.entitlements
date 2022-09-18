@@ -5,6 +5,10 @@
   <dict>
     <key>aps-environment</key>
     <string>production</string>
+    <key>com.apple.developer.networking.networkextension</key>
+    <array>
+      <string>app-push-provider</string>
+    </array>
     <key>com.apple.developer.icloud-container-identifiers</key>
     <array>
       <string>iCloud.$(CFBundleIdentifier)</string>

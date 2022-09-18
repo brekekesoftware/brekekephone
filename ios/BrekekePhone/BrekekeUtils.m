@@ -90,4 +90,5 @@ RCT_REMAP_METHOD(systemUptimeMs, resolver
     resolve(@(-1));
   }
 }
+
 @end
