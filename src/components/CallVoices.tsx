@@ -24,6 +24,7 @@ export const CallVoices = observer(() => {
   const outgoingWithSDP = currentCall && currentCall?.withSDP
 
   const isPaused = !(isOutgoingCallStart && !outgoingWithSDP)
+
   return (
     <>
       {isOutgoingCallStart &&
@@ -34,7 +35,7 @@ export const CallVoices = observer(() => {
         ))}
       {
         // load RBT first
-        Platform.OS === 'ios' && (
+        Platform.OS === 'ios' && isOutgoingCallStart && (
           <VideoRBT
             isPaused={isPaused}
             isLoudSpeaker={callStore.isLoudSpeakerEnabled}
