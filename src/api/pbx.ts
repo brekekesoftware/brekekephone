@@ -325,15 +325,15 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-
     const res = await this.client.call_pal('getContactList', {
       phonebook: '',
       search_text,
-      shared,
+      // The shared is just indicate if the phonebook is shared or not.
+      // In the future, maybe you can add a filter like PBX UI.
+      //shared,
       offset,
       limit,
     })
-
     return res.map(contact => ({
       id: contact.aid,
       display_name: contact.display_name,
