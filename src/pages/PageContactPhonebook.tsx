@@ -297,7 +297,8 @@ export class PageContactPhonebook extends Component {
                     iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                     icons={[mdiPhone, mdiInformation]}
                     key={i}
-                    name={u?.display_name || intl`<Unnamed>`}
+                    phonebook={`${u.phonebook}${u.shared ? 'Ⓢ' : ''}`}
+                    name={`${u?.display_name || intl`<Unnamed>`}`}
                   />
                 ),
               )}
