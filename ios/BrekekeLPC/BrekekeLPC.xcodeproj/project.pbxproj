@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		48303A6E2436E269009577D9 /* LPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 4848BDC42436D8B5004D40EA /* LPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		48303A6E2436E269009577D9 /* BrekekeLPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 4848BDC42436D8B5004D40EA /* BrekekeLPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		484F2B3024441DB800445692 /* Publisher+DropNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484F2B2F24441DB800445692 /* Publisher+DropNil.swift */; };
 		4860183D2437E03100AC5B48 /* Decodable+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4860183C2437E03100AC5B48 /* Decodable+JSON.swift */; };
 		4860EEC3246496510009A323 /* LengthPrefixedFramer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4860EEC2246496510009A323 /* LengthPrefixedFramer.swift */; };
@@ -33,8 +33,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		48303A752436E269009577D9 /* LPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4848BDC42436D8B5004D40EA /* LPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LPC.h; sourceTree = "<group>"; };
+		48303A752436E269009577D9 /* BrekekeLPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BrekekeLPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4848BDC42436D8B5004D40EA /* BrekekeLPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BrekekeLPC.h; sourceTree = "<group>"; };
 		4848BDC52436D8B5004D40EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		484F2B2F24441DB800445692 /* Publisher+DropNil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+DropNil.swift"; sourceTree = "<group>"; };
 		4860183C2437E03100AC5B48 /* Decodable+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable+JSON.swift"; sourceTree = "<group>"; };
@@ -74,7 +74,7 @@
 		4848BDB72436D8B5004D40EA = {
 			isa = PBXGroup;
 			children = (
-				4848BDC32436D8B5004D40EA /* LPC */,
+				4848BDC32436D8B5004D40EA /* BrekekeLPC */,
 				4848BDC22436D8B5004D40EA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -82,12 +82,12 @@
 		4848BDC22436D8B5004D40EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				48303A752436E269009577D9 /* LPC.framework */,
+				48303A752436E269009577D9 /* BrekekeLPC.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4848BDC32436D8B5004D40EA /* LPC */ = {
+		4848BDC32436D8B5004D40EA /* BrekekeLPC */ = {
 			isa = PBXGroup;
 			children = (
 				48BB37AD2438CD3A00D7D7AE /* Coding */,
@@ -96,7 +96,7 @@
 				B146FAFC2438D2BF00DD32B5 /* Utilities */,
 				48B5C0612437CFC100DBA7C9 /* Resources */,
 			);
-			path = LPC;
+			path = BrekekeLPC;
 			sourceTree = "<group>";
 		};
 		48B5C0602437CFB600DBA7C9 /* Models */ = {
@@ -118,7 +118,7 @@
 		48B5C0612437CFC100DBA7C9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				4848BDC42436D8B5004D40EA /* LPC.h */,
+				4848BDC42436D8B5004D40EA /* BrekekeLPC.h */,
 				4848BDC52436D8B5004D40EA /* Info.plist */,
 			);
 			path = Resources;
@@ -165,16 +165,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48303A6E2436E269009577D9 /* LPC.h in Headers */,
+				48303A6E2436E269009577D9 /* BrekekeLPC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		48303A6C2436E269009577D9 /* LPC-iOS */ = {
+		48303A6C2436E269009577D9 /* BrekekeLPC-iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 48303A722436E269009577D9 /* Build configuration list for PBXNativeTarget "LPC-iOS" */;
+			buildConfigurationList = 48303A722436E269009577D9 /* Build configuration list for PBXNativeTarget "BrekekeLPC-iOS" */;
 			buildPhases = (
 				48303A6D2436E269009577D9 /* Headers */,
 				48303A6F2436E269009577D9 /* Sources */,
@@ -185,9 +185,9 @@
 			);
 			dependencies = (
 			);
-			name = "LPC-iOS";
+			name = "BrekekeLPC-iOS";
 			productName = LPC;
-			productReference = 48303A752436E269009577D9 /* LPC.framework */;
+			productReference = 48303A752436E269009577D9 /* BrekekeLPC.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -204,7 +204,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 4848BDBB2436D8B5004D40EA /* Build configuration list for PBXProject "LPC" */;
+			buildConfigurationList = 4848BDBB2436D8B5004D40EA /* Build configuration list for PBXProject "BrekekeLPC" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -217,7 +217,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				48303A6C2436E269009577D9 /* LPC-iOS */,
+				48303A6C2436E269009577D9 /* BrekekeLPC-iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -287,7 +287,7 @@
 				);
 				MARKETING_VERSION = 2.11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.lpc;
-				PRODUCT_NAME = LPC;
+				PRODUCT_NAME = BrekekeLPC;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -320,7 +320,7 @@
 				);
 				MARKETING_VERSION = 2.11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.lpc;
-				PRODUCT_NAME = LPC;
+				PRODUCT_NAME = BrekekeLPC;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -457,7 +457,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		48303A722436E269009577D9 /* Build configuration list for PBXNativeTarget "LPC-iOS" */ = {
+		48303A722436E269009577D9 /* Build configuration list for PBXNativeTarget "BrekekeLPC-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				48303A732436E269009577D9 /* Debug */,
@@ -466,7 +466,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4848BDBB2436D8B5004D40EA /* Build configuration list for PBXProject "LPC" */ = {
+		4848BDBB2436D8B5004D40EA /* Build configuration list for PBXProject "BrekekeLPC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4848BDC72436D8B5004D40EA /* Debug */,

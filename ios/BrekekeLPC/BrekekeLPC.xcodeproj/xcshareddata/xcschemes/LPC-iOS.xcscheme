@@ -12,9 +12,9 @@
         <BuildableReference
           BuildableIdentifier="primary"
           BlueprintIdentifier="48303A6C2436E269009577D9"
-          BuildableName="LPC.framework"
-          BlueprintName="LPC-iOS"
-          ReferencedContainer="container:LPC.xcodeproj"
+          BuildableName="BrekekeLPC.framework"
+          BlueprintName="BrekekeLPC-iOS"
+          ReferencedContainer="container:BrekekeLPC.xcodeproj"
         />
       </BuildActionEntry>
     </BuildActionEntries>
@@ -49,9 +49,9 @@
       <BuildableReference
         BuildableIdentifier="primary"
         BlueprintIdentifier="48303A6C2436E269009577D9"
-        BuildableName="LPC.framework"
-        BlueprintName="LPC-iOS"
-        ReferencedContainer="container:LPC.xcodeproj"
+        BuildableName="BrekekeLPC.framework"
+        BlueprintName="BrekekeLPC-iOS"
+        ReferencedContainer="container:BrekekeLPC.xcodeproj"
       />
     </MacroExpansion>
   </ProfileAction>
