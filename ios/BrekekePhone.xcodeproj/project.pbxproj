@@ -159,6 +159,7 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 4XR752Y62T;
 						LastSwiftMigration = 1120;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -295,6 +296,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
@@ -311,6 +313,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "LPC com.brekeke.phonedev";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -325,6 +328,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
@@ -341,6 +345,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "LPC com.brekeke.phonedev";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
