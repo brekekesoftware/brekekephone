@@ -285,6 +285,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.lpc;
 				PRODUCT_NAME = LPC;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -317,6 +318,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.lpc;
 				PRODUCT_NAME = LPC;
 				PROVISIONING_PROFILE_SPECIFIER = "";
