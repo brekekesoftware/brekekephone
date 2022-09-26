@@ -17,14 +17,14 @@
 		9C4B210B26FB8B85000FE077 /* libswiftFileProvider.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4B210A26FB8B85000FE077 /* libswiftFileProvider.tbd */; };
 		9C93D88428CAE8CD00C7BF54 /* BrekekeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C93D88328CAE8CD00C7BF54 /* BrekekeUtils.m */; };
 		9C972B9928E1B34C00DD89B4 /* BrekekeLPCProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		9C972B9F28E1B3A900DD89B4 /* LPCProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972B9E28E1B3A900DD89B4 /* LPCProvider.swift */; };
+		9C972B9F28E1B3A900DD89B4 /* BrekekeLPCProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972B9E28E1B3A900DD89B4 /* BrekekeLPCProvider.swift */; };
 		9C972BAB28E1B4B200DD89B4 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972BA928E1B4B200DD89B4 /* Settings.swift */; };
 		9C972BAC28E1B4B200DD89B4 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972BAA28E1B4B200DD89B4 /* SettingsManager.swift */; };
 		9C972BAE28E1B4B900DD89B4 /* BaseChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972BAD28E1B4B900DD89B4 /* BaseChannel.swift */; };
 		9C972BB528E1B5BF00DD89B4 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972BA928E1B4B200DD89B4 /* Settings.swift */; };
 		9C972BB628E1B5BF00DD89B4 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972BAA28E1B4B200DD89B4 /* SettingsManager.swift */; };
 		9C972BB728E1B5BF00DD89B4 /* BaseChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972BAD28E1B4B900DD89B4 /* BaseChannel.swift */; };
-		9C972BB828E1B5BF00DD89B4 /* LPCProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972B9E28E1B3A900DD89B4 /* LPCProvider.swift */; };
+		9C972BB828E1B5BF00DD89B4 /* BrekekeLPCProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972B9E28E1B3A900DD89B4 /* BrekekeLPCProvider.swift */; };
 		9C972BC128E1B6E700DD89B4 /* BrekekeLPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C972BBE28E1B6BF00DD89B4 /* BrekekeLPC.framework */; };
 		9C972BC228E1B6F400DD89B4 /* BrekekeLPC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9C972BBE28E1B6BF00DD89B4 /* BrekekeLPC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9C972BC528E1B72C00DD89B4 /* BrekekeLPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C972BBE28E1B6BF00DD89B4 /* BrekekeLPC.framework */; };
@@ -40,7 +40,7 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 9C972B8B28E1B34C00DD89B4;
-			remoteInfo = LPCProvider;
+			remoteInfo = BrekekeLPCProvider;
 		};
 		9C972BBD28E1B6BF00DD89B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -120,8 +120,8 @@
 		9C93D88328CAE8CD00C7BF54 /* BrekekeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BrekekeUtils.m; path = BrekekePhone/BrekekeUtils.m; sourceTree = "<group>"; };
 		9C972B8C28E1B34C00DD89B4 /* BrekekeLPCProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BrekekeLPCProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C972B9628E1B34C00DD89B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9C972B9D28E1B3A900DD89B4 /* LPCProvider.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = LPCProvider.entitlements; sourceTree = "<group>"; };
-		9C972B9E28E1B3A900DD89B4 /* LPCProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPCProvider.swift; sourceTree = "<group>"; };
+		9C972B9D28E1B3A900DD89B4 /* BrekekeLPCProvider.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BrekekeLPCProvider.entitlements; sourceTree = "<group>"; };
+		9C972B9E28E1B3A900DD89B4 /* BrekekeLPCProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrekekeLPCProvider.swift; sourceTree = "<group>"; };
 		9C972BA928E1B4B200DD89B4 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Settings.swift; path = Settings/Settings.swift; sourceTree = "<group>"; };
 		9C972BAA28E1B4B200DD89B4 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsManager.swift; path = Settings/SettingsManager.swift; sourceTree = "<group>"; };
 		9C972BAD28E1B4B900DD89B4 /* BaseChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BaseChannel.swift; path = Networking/BaseChannel.swift; sourceTree = "<group>"; };
@@ -227,8 +227,8 @@
 			children = (
 				9C972BA828E1B4A700DD89B4 /* Settings */,
 				9C972BA628E1B48300DD89B4 /* Networking */,
-				9C972B9D28E1B3A900DD89B4 /* LPCProvider.entitlements */,
-				9C972B9E28E1B3A900DD89B4 /* LPCProvider.swift */,
+				9C972B9D28E1B3A900DD89B4 /* BrekekeLPCProvider.entitlements */,
+				9C972B9E28E1B3A900DD89B4 /* BrekekeLPCProvider.swift */,
 				9C972B9628E1B34C00DD89B4 /* Info.plist */,
 			);
 			path = BrekekeLPCProvider;
@@ -302,7 +302,7 @@
 				9C972BC028E1B6DB00DD89B4 /* PBXTargetDependency */,
 			);
 			name = BrekekeLPCProvider;
-			productName = LPCProvider;
+			productName = BrekekeLPCProvider;
 			productReference = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCProvider.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
@@ -471,7 +471,7 @@
 				9C972BB728E1B5BF00DD89B4 /* BaseChannel.swift in Sources */,
 				9C972BB528E1B5BF00DD89B4 /* Settings.swift in Sources */,
 				9C972BB628E1B5BF00DD89B4 /* SettingsManager.swift in Sources */,
-				9C972BB828E1B5BF00DD89B4 /* LPCProvider.swift in Sources */,
+				9C972BB828E1B5BF00DD89B4 /* BrekekeLPCProvider.swift in Sources */,
 				9C93D88428CAE8CD00C7BF54 /* BrekekeUtils.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
@@ -485,7 +485,7 @@
 				9C972BAE28E1B4B900DD89B4 /* BaseChannel.swift in Sources */,
 				9C972BAB28E1B4B200DD89B4 /* Settings.swift in Sources */,
 				9C972BAC28E1B4B200DD89B4 /* SettingsManager.swift in Sources */,
-				9C972B9F28E1B3A900DD89B4 /* LPCProvider.swift in Sources */,
+				9C972B9F28E1B3A900DD89B4 /* BrekekeLPCProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,7 +627,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
@@ -682,7 +681,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
@@ -701,25 +699,29 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BrekekeLPCProvider/BrekekeLPCProvider.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LPCProvider/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = LPCProvider;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
+				INFOPLIST_FILE = BrekekeLPCProvider/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BrekekeLPCProvider;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				MARKETING_VERSION = 2.11.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.LPCProvider;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -735,6 +737,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BrekekeLPCProvider/BrekekeLPCProvider.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -742,17 +745,20 @@
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LPCProvider/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = LPCProvider;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
+				INFOPLIST_FILE = BrekekeLPCProvider/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BrekekeLPCProvider;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				MARKETING_VERSION = 2.11.1;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.LPCProvider;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

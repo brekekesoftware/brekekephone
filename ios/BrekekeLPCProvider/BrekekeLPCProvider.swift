@@ -4,10 +4,10 @@ import NetworkExtension
 import UserNotifications
 import BrekekeLPC
 
-class LPCProvider: NEAppPushProvider {
+class BrekekeLPCProvider: NEAppPushProvider {
     private let channel = BaseChannel(port: Port.notification, heartbeatTimeout: .seconds(30), logger: Logger(prependString: "Notification Channel", subsystem: .networking))
     private var cancellables = Set<AnyCancellable>()
-    private let logger = Logger(prependString: "LPCProvider", subsystem: .general)
+    private let logger = Logger(prependString: "BrekekeLPCProvider", subsystem: .general)
 
     override init() {
         super.init()

@@ -186,7 +186,7 @@
 			dependencies = (
 			);
 			name = "BrekekeLPC-iOS";
-			productName = LPC;
+			productName = BrekekeLPC;
 			productReference = 48303A752436E269009577D9 /* BrekekeLPC.framework */;
 			productType = "com.apple.product-type.framework";
 		};
@@ -277,7 +277,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = LPC/Resources/Info.plist;
+				INFOPLIST_FILE = BrekekeLPC/Resources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -310,7 +310,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = LPC/Resources/Info.plist;
+				INFOPLIST_FILE = BrekekeLPC/Resources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (

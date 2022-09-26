@@ -18,7 +18,7 @@ class SettingsManager: NSObject {
     private(set) lazy var settingsPublisher = settingsSubject.eraseToAnyPublisher()
     private let settingsWillWriteSubject = PassthroughSubject<Void, Never>()
     private static let settingsKey = "settings"
-    private static let userDefaults = UserDefaults(suiteName: "com.brekeke.phonedev.LPCProvider")!
+    private static let userDefaults = UserDefaults(suiteName: "com.brekeke.phonedev.BrekekeLPCProvider")!
     private let settingsSubject: CurrentValueSubject<Settings, Never>
     private static let logger = Logger(prependString: "SettingsManager", subsystem: .general)
 
