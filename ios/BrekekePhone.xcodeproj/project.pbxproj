@@ -30,9 +30,9 @@
 		9CD3B8F325AE45B200D8A122 /* callkit.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CD3B8F225AE45B200D8A122 /* callkit.png */; };
 		9CE4DA042565F16E00512187 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */; };
 		9CE4DA052565F16E00512187 /* incallmanager_ringtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */; };
-		CBF22DF328E2A6E400E986BD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF22DF228E2A6E400E986BD /* AppDelegate.swift */; };
-		CBF22DF828E2E2C000E986BD /* BrekekeUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF22DF728E2E2C000E986BD /* BrekekeUtils.swift */; };
-		CBF22DFA28E312B800E986BD /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = CBF22DF928E312B800E986BD /* Bridging-Header.m */; };
+		9CF1917928E34BA20048E7A1 /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917628E34BA20048E7A1 /* Bridging-Header.m */; };
+		9CF1917A28E34BA20048E7A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917728E34BA20048E7A1 /* AppDelegate.swift */; };
+		9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,10 +126,10 @@
 		9CD3B8F225AE45B200D8A122 /* callkit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callkit.png; path = BrekekePhone/callkit.png; sourceTree = "<group>"; };
 		9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = ../src/assets/incallmanager_ringback.mp3; sourceTree = "<group>"; };
 		9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = ../src/assets/incallmanager_ringtone.mp3; sourceTree = "<group>"; };
-		CBF22DF228E2A6E400E986BD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CBF22DF628E2A83700E986BD /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		CBF22DF728E2E2C000E986BD /* BrekekeUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrekekeUtils.swift; sourceTree = "<group>"; };
-		CBF22DF928E312B800E986BD /* Bridging-Header.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Bridging-Header.m"; sourceTree = "<group>"; };
+		9CF1917528E34BA20048E7A1 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "BrekekePhone/Bridging-Header.h"; sourceTree = "<group>"; };
+		9CF1917628E34BA20048E7A1 /* Bridging-Header.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "Bridging-Header.m"; path = "BrekekePhone/Bridging-Header.m"; sourceTree = "<group>"; };
+		9CF1917728E34BA20048E7A1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BrekekePhone/AppDelegate.swift; sourceTree = "<group>"; };
+		9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrekekeUtils.swift; path = BrekekePhone/BrekekeUtils.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F076CB1F741A58F4BB3C3A03 /* libPods-BrekekePhone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BrekekePhone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -162,6 +162,10 @@
 		13B07FAE1A68108700A75B9A /* BrekekePhone */ = {
 			isa = PBXGroup;
 			children = (
+				9CF1917528E34BA20048E7A1 /* Bridging-Header.h */,
+				9CF1917628E34BA20048E7A1 /* Bridging-Header.m */,
+				9CF1917728E34BA20048E7A1 /* AppDelegate.swift */,
+				9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */,
 				9C391D932550EEAD00E3924D /* BrekekePhone.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -170,8 +174,6 @@
 				9CD3B8F225AE45B200D8A122 /* callkit.png */,
 				9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
-				CBF22DF228E2A6E400E986BD /* AppDelegate.swift */,
-				CBF22DF728E2E2C000E986BD /* BrekekeUtils.swift */,
 			);
 			name = BrekekePhone;
 			sourceTree = "<group>";
@@ -202,8 +204,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				CBF22DF628E2A83700E986BD /* Bridging-Header.h */,
-				CBF22DF928E312B800E986BD /* Bridging-Header.m */,
 				13B07FAE1A68108700A75B9A /* BrekekePhone */,
 				9C972B8F28E1B34C00DD89B4 /* BrekekeLPCProvider */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -470,11 +470,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CBF22DFA28E312B800E986BD /* Bridging-Header.m in Sources */,
-				CBF22DF328E2A6E400E986BD /* AppDelegate.swift in Sources */,
+				9CF1917A28E34BA20048E7A1 /* AppDelegate.swift in Sources */,
 				9C972BB728E1B5BF00DD89B4 /* BaseChannel.swift in Sources */,
+				9CF1917928E34BA20048E7A1 /* Bridging-Header.m in Sources */,
+				9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */,
 				9C972BB528E1B5BF00DD89B4 /* Settings.swift in Sources */,
-				CBF22DF828E2E2C000E986BD /* BrekekeUtils.swift in Sources */,
 				9C972BB628E1B5BF00DD89B4 /* SettingsManager.swift in Sources */,
 				9C972BB828E1B5BF00DD89B4 /* BrekekeLPCProvider.swift in Sources */,
 			);
@@ -535,7 +535,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "LPC com.brekeke.phonedev";
-				SWIFT_OBJC_BRIDGING_HEADER = "Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -566,7 +566,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "LPC com.brekeke.phonedev";
-				SWIFT_OBJC_BRIDGING_HEADER = "Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

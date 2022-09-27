@@ -1,9 +1,9 @@
 import Foundation
 
 public struct Heartbeat: Codable {
-    var count: Int64
+  var count: Int64
 
-    public init(count: Int64) {
-        self.count = count
-    }
+  public init(count: Int64) {
+    self.count = count
+  }
 }

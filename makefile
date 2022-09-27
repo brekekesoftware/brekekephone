@@ -10,9 +10,7 @@ format-objc:
 	make -s ls | \
 	xargs clang-format -i -style=file;
 format-swift:
-	export EXT="swift" && \
-	make -s ls | \
-	xargs swiftformat -i;
+	swiftformat ios;
 format-java:
 	export EXT="java" && \
 	make -s ls | \

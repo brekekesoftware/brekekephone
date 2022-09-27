@@ -1,5 +1,5 @@
 import { get, set } from 'lodash'
-import { NativeModule, NativeModules } from 'react-native'
+import { NativeModule, NativeModules, Platform } from 'react-native'
 
 import { TCallkeepAction } from '../stores/callStore'
 
@@ -60,6 +60,14 @@ const Polyfill: TBrekekeUtils = {
 
 const M = NativeModules as TNativeModules
 export const BrekekeUtils = M.BrekekeUtils || Polyfill
+
+if (__DEV__ && Platform.OS !== 'web') {
+  const k = Object.keys(M.BrekekeUtils || {})
+  console.log(
+    `BrekekeUtils debug: found ${k.length} methods` +
+      (k.length ? `: ${k.join(', ')}` : ''),
+  )
+}
 
 // Add polyfill
 Object.keys(Polyfill)

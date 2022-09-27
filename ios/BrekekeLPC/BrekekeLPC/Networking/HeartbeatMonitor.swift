@@ -1,87 +1,96 @@
-import Foundation
 import Combine
+import Foundation
 
 public class HeartbeatMonitor {
-    public enum Error: Swift.Error {
-        case missingSession
+  public enum Error: Swift.Error {
+    case missingSession
+  }
+
+  public var session: RequestResponseSession?
+  private let interval: DispatchTimeInterval
+  private let dispatchQueue =
+    DispatchQueue(label: "HeartbeatMonitor.dispatchQueue")
+  private var isRunning = false
+  private var lastCheckinTime: DispatchTime = .now()
+  private var cancellables = Set<AnyCancellable>()
+  private let logger: Logger
+
+  public init(interval: DispatchTimeInterval, logger: Logger) {
+    self.interval = interval
+    self.logger = logger
+  }
+
+  public func start() throws {
+    guard let session = session
+    else {
+      throw Error.missingSession
     }
 
-    public var session: RequestResponseSession?
-    private let interval: DispatchTimeInterval
-    private let dispatchQueue = DispatchQueue(label: "HeartbeatMonitor.dispatchQueue")
-    private var isRunning = false
-    private var lastCheckinTime: DispatchTime = .now()
-    private var cancellables = Set<AnyCancellable>()
-    private let logger: Logger
+    dispatchQueue.async { [weak self] in
+      guard let self = self,
+            self.isRunning == false
+      else {
+        return
+      }
 
-    public init(interval: DispatchTimeInterval, logger: Logger) {
-        self.interval = interval
-        self.logger = logger
-    }
+      self.logger.log("Starting heartbeat monitor")
 
-    public func start() throws {
-        guard let session = session else {
-            throw Error.missingSession
+      // Set the lastCheckinTime to now to ensure a clean slate.
+      self.lastCheckinTime = .now()
+
+      // Observe Heartbeat messages from the session's messagePublisher and update the lastCheckinTime.
+      session.messagePublisher
+        .compactMap { [weak self] message -> DispatchTime? in
+          guard let heartbeat = message as? Heartbeat
+          else {
+            return nil
+          }
+
+          self?.logger.log("Received - \(heartbeat.count)")
+
+          return .now()
         }
-
-        dispatchQueue.async { [weak self] in
-            guard let self = self,
-                self.isRunning == false else {
-                    return
-            }
-
-            self.logger.log("Starting heartbeat monitor")
-
-            // Set the lastCheckinTime to now to ensure a clean slate.
-            self.lastCheckinTime = .now()
-
-            // Observe Heartbeat messages from the session's messagePublisher and update the lastCheckinTime.
-            session.messagePublisher
-            .compactMap { [weak self] message -> DispatchTime? in
-                guard let heartbeat = message as? Heartbeat else {
-                    return nil
-                }
-
-                self?.logger.log("Received - \(heartbeat.count)")
-
-                return .now()
-            }
-            .receive(on: self.dispatchQueue)
-            .sink { [weak self] time in
-                self?.lastCheckinTime = time
-            }
-            .store(in: &self.cancellables)
-
-            self.isRunning = true
+        .receive(on: self.dispatchQueue)
+        .sink { [weak self] time in
+          self?.lastCheckinTime = time
         }
+        .store(in: &self.cancellables)
+
+      self.isRunning = true
     }
+  }
 
-    // Compare the current time to the lastCheckinTime and disconnect the session if the difference between now
-    // and lastCheckinTime exceeds the interval.
-    public func evaluate() {
-        dispatchQueue.async { [weak self] in
-            guard let self = self, self.isRunning else {
-                return
-            }
+  // Compare the current time to the lastCheckinTime and disconnect the session if the difference between now
+  // and lastCheckinTime exceeds the interval.
+  public func evaluate() {
+    dispatchQueue.async { [weak self] in
+      guard let self = self, self.isRunning
+      else {
+        return
+      }
 
-            let expirationTime = self.lastCheckinTime.advanced(by: self.interval)
+      let expirationTime = self.lastCheckinTime.advanced(by: self.interval)
 
-            if .now() >= expirationTime {
-                self.logger.log("Heartbeat didn't check in within the interval of \(self.interval), calling network session disconnect.")
-                self.session?.disconnect()
-            }
-        }
+      if .now() >= expirationTime {
+        self.logger
+          .log(
+            "Heartbeat didn't check in within the interval of \(self.interval), calling network session disconnect."
+          )
+        self.session?.disconnect()
+      }
     }
+  }
 
-    public func stop() {
-        dispatchQueue.async { [weak self] in
-            guard let self = self, self.isRunning == true else {
-                return
-            }
+  public func stop() {
+    dispatchQueue.async { [weak self] in
+      guard let self = self, self.isRunning == true
+      else {
+        return
+      }
 
-            self.logger.log("Canceling heartbeat monitor")
-            self.isRunning = false
-            self.cancellables = []
-        }
+      self.logger.log("Canceling heartbeat monitor")
+      self.isRunning = false
+      self.cancellables = []
     }
+  }
 }

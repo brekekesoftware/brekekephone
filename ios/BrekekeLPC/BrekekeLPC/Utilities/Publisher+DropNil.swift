@@ -1,9 +1,9 @@
-import Foundation
 import Combine
+import Foundation
 
-extension Publisher {
-    public func dropNil<T>() -> AnyPublisher<T, Failure> where Output == T? {
-        compactMap { $0 }
-        .eraseToAnyPublisher()
-    }
+public extension Publisher {
+  func dropNil<T>() -> AnyPublisher<T, Failure> where Output == T? {
+    compactMap { $0 }
+      .eraseToAnyPublisher()
+  }
 }

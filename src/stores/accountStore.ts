@@ -249,6 +249,7 @@ type TLastSignedInId = {
   at: number
   version: string
   logoutPressed?: boolean
+  uptime?: number
   autoSignInBrekekePhone?: boolean
 }
 
@@ -278,8 +279,8 @@ export const getLastSignedInId = async (
     d.autoSignInBrekekePhone = false
     return d
   }
-  const uptime = await BrekekeUtils.systemUptimeMs()
-  d.autoSignInBrekekePhone = uptime > 0 && uptime > Date.now() - d.at
+  d.uptime = await BrekekeUtils.systemUptimeMs()
+  d.autoSignInBrekekePhone = d.uptime > 0 && d.uptime > Date.now() - d.at
   return d
 }
 export const saveLastSignedInId = async (id: string | false) => {
