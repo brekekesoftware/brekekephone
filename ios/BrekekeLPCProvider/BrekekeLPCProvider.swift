@@ -22,12 +22,12 @@ class BrekekeLPCProvider: NEAppPushProvider {
   override init() {
     super.init()
 
-    logger.log("Initialized")
+    print("Initialized")
 
     // Observe notification channel connection state changes for logging purposes.
     channel.statePublisher
       .sink { [weak self] state in
-        self?.logger.log("Notification channel state changed to: \(state)")
+        print("Notification channel state changed to: \(state)")
       }
       .store(in: &cancellables)
 
@@ -39,7 +39,7 @@ class BrekekeLPCProvider: NEAppPushProvider {
         else {
           return
         }
-
+        print("message:\(message)")
         switch message {
         case let message as Invite:
           self.reportIncomingCall(invite: message)

@@ -26,7 +26,9 @@ type TBrekekeUtils = {
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
-
+  sendMessageLPC(message: string): void
+  makeCallLPC(): void
+  endCallLPC(): void
   // these methods available on both
   systemUptimeMs(): Promise<number>
 }
@@ -56,6 +58,9 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  sendMessageLPC: () => undefined,
+  makeCallLPC: () => undefined,
+  endCallLPC: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

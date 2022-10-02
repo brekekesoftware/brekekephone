@@ -1,6 +1,7 @@
 import Foundation
 import os.log
 
+@available(macOSApplicationExtension 11.0, *)
 public class Logger {
   public enum Subsystem: String {
     case general

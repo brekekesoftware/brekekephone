@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import Network
 
+@available(macOSApplicationExtension 11.0, *)
 public class NetworkSession {
   public enum State: String, Equatable {
     case disconnected
@@ -20,7 +21,8 @@ public class NetworkSession {
     stateSubject.value
   }
 
-  public var logger: Logger {
+    @available(macOSApplicationExtension 11.0, *)
+    public var logger: Logger {
     get {
       var logger: Logger!
 

@@ -1,6 +1,7 @@
 import Foundation
 import Network
 
+@available(macOSApplicationExtension 11.0, *)
 public class LengthPrefixedFramer: NWProtocolFramerImplementation {
   private typealias Header = UInt32
 

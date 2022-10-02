@@ -129,7 +129,7 @@ public class RequestResponseSession: NetworkSession {
 
       switch completion {
       case let .failure(error):
-        self.logger.log("Request failed.")
+        self.logger.log("Request failed. \(error)")
 
         switch error {
         case Error.connectionReset:

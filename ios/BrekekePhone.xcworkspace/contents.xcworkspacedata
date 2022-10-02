@@ -1,6 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<Workspace version="1.0">
-  <FileRef location="group:BrekekePhone.xcodeproj" />
-  <FileRef location="group:BrekekeLPC/BrekekeLPC.xcodeproj" />
-  <FileRef location="group:Pods/Pods.xcodeproj" />
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:BrekekePhone.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:BrekekeLPC/BrekekeLPC.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
 </Workspace>

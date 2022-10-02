@@ -30,6 +30,29 @@
 		B1DDE0F524533C9500331143 /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DDE0F424533C9500331143 /* Routable.swift */; };
 		B1DDE0F824534CE200331143 /* Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DDE0F724534CE200331143 /* Directory.swift */; };
 		B1EFC9A3244F2D60004CB381 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EFC9A2244F2D60004CB381 /* Logger.swift */; };
+		CB87672528E88A56002261CB /* BrekekeLPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 4848BDC42436D8B5004D40EA /* BrekekeLPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CB87672728E88A56002261CB /* Heartbeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = B146FB022438D34E00DD32B5 /* Heartbeat.swift */; };
+		CB87672828E88A56002261CB /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CC3EF4243F911D0033C168 /* ConnectionOptions.swift */; };
+		CB87672928E88A56002261CB /* CallAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B173A08E24804D9500CD8D53 /* CallAction.swift */; };
+		CB87672A28E88A56002261CB /* Decodable+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4860183C2437E03100AC5B48 /* Decodable+JSON.swift */; };
+		CB87672B28E88A56002261CB /* HeartbeatMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A21BBE244E485600A60DAE /* HeartbeatMonitor.swift */; };
+		CB87672C28E88A56002261CB /* Routing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DDE0F124533B3D00331143 /* Routing.swift */; };
+		CB87672D28E88A56002261CB /* TextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BB37A12438CA8A00D7D7AE /* TextMessage.swift */; };
+		CB87672E28E88A56002261CB /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EFC9A2244F2D60004CB381 /* Logger.swift */; };
+		CB87672F28E88A56002261CB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BB37982438C95700D7D7AE /* User.swift */; };
+		CB87673028E88A56002261CB /* Port.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BB37B02438CD7000D7D7AE /* Port.swift */; };
+		CB87673128E88A56002261CB /* HeartbeatCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48769A172439877F00314A49 /* HeartbeatCoordinator.swift */; };
+		CB87673228E88A56002261CB /* KeyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B5C05E2437CFB300DBA7C9 /* KeyCodable.swift */; };
+		CB87673328E88A56002261CB /* Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DDE0F724534CE200331143 /* Directory.swift */; };
+		CB87673428E88A56002261CB /* Publisher+Unfailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48769A1A24398A6E00314A49 /* Publisher+Unfailable.swift */; };
+		CB87673528E88A56002261CB /* Publisher+DropNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484F2B2F24441DB800445692 /* Publisher+DropNil.swift */; };
+		CB87673628E88A56002261CB /* LengthPrefixedFramer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4860EEC2246496510009A323 /* LengthPrefixedFramer.swift */; };
+		CB87673728E88A56002261CB /* Dictionary+Mutation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B146FB052438DE5800DD32B5 /* Dictionary+Mutation.swift */; };
+		CB87673828E88A56002261CB /* RequestResponseSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B5C06A2437DA6400DBA7C9 /* RequestResponseSession.swift */; };
+		CB87673928E88A56002261CB /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B5C05A2437C62800DBA7C9 /* NetworkSession.swift */; };
+		CB87673A28E88A56002261CB /* Invite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B5C0622437D0F300DBA7C9 /* Invite.swift */; };
+		CB87673B28E88A56002261CB /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DDE0F424533C9500331143 /* Routable.swift */; };
+		CB87673C28E88A56002261CB /* KeyCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B13910B5246DBA0C005925A0 /* KeyCoder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,10 +81,19 @@
 		B1DDE0F424533C9500331143 /* Routable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routable.swift; sourceTree = "<group>"; };
 		B1DDE0F724534CE200331143 /* Directory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Directory.swift; sourceTree = "<group>"; };
 		B1EFC9A2244F2D60004CB381 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		CB87671A28E8850A002261CB /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SampleCode.xcconfig; sourceTree = "<group>"; };
+		CB87674228E88A56002261CB /* BrekekeLPC-MacOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "BrekekeLPC-MacOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		48303A702436E269009577D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB87673D28E88A56002261CB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -74,6 +106,7 @@
 		4848BDB72436D8B5004D40EA = {
 			isa = PBXGroup;
 			children = (
+				CB87671928E8850A002261CB /* Configuration */,
 				4848BDC32436D8B5004D40EA /* BrekekeLPC */,
 				4848BDC22436D8B5004D40EA /* Products */,
 			);
@@ -83,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				48303A752436E269009577D9 /* BrekekeLPC.framework */,
+				CB87674228E88A56002261CB /* BrekekeLPC-MacOS.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,6 +192,15 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		CB87671928E8850A002261CB /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				CB87671A28E8850A002261CB /* SampleCode.xcconfig */,
+			);
+			name = Configuration;
+			path = ../Configuration;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -166,6 +209,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				48303A6E2436E269009577D9 /* BrekekeLPC.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB87672428E88A56002261CB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB87672528E88A56002261CB /* BrekekeLPC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +239,24 @@
 			name = "BrekekeLPC-iOS";
 			productName = BrekekeLPC;
 			productReference = 48303A752436E269009577D9 /* BrekekeLPC.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		CB87672328E88A56002261CB /* BrekekeLPC-MacOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB87673F28E88A56002261CB /* Build configuration list for PBXNativeTarget "BrekekeLPC-MacOS" */;
+			buildPhases = (
+				CB87672428E88A56002261CB /* Headers */,
+				CB87672628E88A56002261CB /* Sources */,
+				CB87673D28E88A56002261CB /* Frameworks */,
+				CB87673E28E88A56002261CB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "BrekekeLPC-MacOS";
+			productName = BrekekeLPC;
+			productReference = CB87674228E88A56002261CB /* BrekekeLPC-MacOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -218,12 +287,20 @@
 			projectRoot = "";
 			targets = (
 				48303A6C2436E269009577D9 /* BrekekeLPC-iOS */,
+				CB87672328E88A56002261CB /* BrekekeLPC-MacOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		48303A712436E269009577D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB87673E28E88A56002261CB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -262,6 +339,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CB87672628E88A56002261CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB87672728E88A56002261CB /* Heartbeat.swift in Sources */,
+				CB87672828E88A56002261CB /* ConnectionOptions.swift in Sources */,
+				CB87672928E88A56002261CB /* CallAction.swift in Sources */,
+				CB87672A28E88A56002261CB /* Decodable+JSON.swift in Sources */,
+				CB87672B28E88A56002261CB /* HeartbeatMonitor.swift in Sources */,
+				CB87672C28E88A56002261CB /* Routing.swift in Sources */,
+				CB87672D28E88A56002261CB /* TextMessage.swift in Sources */,
+				CB87672E28E88A56002261CB /* Logger.swift in Sources */,
+				CB87672F28E88A56002261CB /* User.swift in Sources */,
+				CB87673028E88A56002261CB /* Port.swift in Sources */,
+				CB87673128E88A56002261CB /* HeartbeatCoordinator.swift in Sources */,
+				CB87673228E88A56002261CB /* KeyCodable.swift in Sources */,
+				CB87673328E88A56002261CB /* Directory.swift in Sources */,
+				CB87673428E88A56002261CB /* Publisher+Unfailable.swift in Sources */,
+				CB87673528E88A56002261CB /* Publisher+DropNil.swift in Sources */,
+				CB87673628E88A56002261CB /* LengthPrefixedFramer.swift in Sources */,
+				CB87673728E88A56002261CB /* Dictionary+Mutation.swift in Sources */,
+				CB87673828E88A56002261CB /* RequestResponseSession.swift in Sources */,
+				CB87673928E88A56002261CB /* NetworkSession.swift in Sources */,
+				CB87673A28E88A56002261CB /* Invite.swift in Sources */,
+				CB87673B28E88A56002261CB /* Routable.swift in Sources */,
+				CB87673C28E88A56002261CB /* KeyCoder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -279,7 +385,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = BrekekeLPC/Resources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -290,8 +396,9 @@
 				PRODUCT_NAME = BrekekeLPC;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -312,7 +419,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = BrekekeLPC/Resources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -323,8 +430,9 @@
 				PRODUCT_NAME = BrekekeLPC;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -454,6 +562,73 @@
 			};
 			name = Release;
 		};
+		CB87674028E88A56002261CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4XR752Y62T;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "BrekekeLPC-iOS copy-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 2.11.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.lpc;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		CB87674128E88A56002261CB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4XR752Y62T;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "BrekekeLPC-iOS copy-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 2.11.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.SimplePushKit4XR752Y62T";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -471,6 +646,15 @@
 			buildConfigurations = (
 				4848BDC72436D8B5004D40EA /* Debug */,
 				4848BDC82436D8B5004D40EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB87673F28E88A56002261CB /* Build configuration list for PBXNativeTarget "BrekekeLPC-MacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB87674028E88A56002261CB /* Debug */,
+				CB87674128E88A56002261CB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 
+@available(macOSApplicationExtension 11.0, *)
 public class HeartbeatMonitor {
   public enum Error: Swift.Error {
     case missingSession
@@ -15,7 +16,8 @@ public class HeartbeatMonitor {
   private var cancellables = Set<AnyCancellable>()
   private let logger: Logger
 
-  public init(interval: DispatchTimeInterval, logger: Logger) {
+    @available(macOSApplicationExtension 11.0, *)
+    public init(interval: DispatchTimeInterval, logger: Logger) {
     self.interval = interval
     self.logger = logger
   }

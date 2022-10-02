@@ -1,6 +1,8 @@
 import Combine
 import Foundation
 
+@available(macOSApplicationExtension 11.0, *)
+@available(macOSApplicationExtension 11.0, *)
 public class HeartbeatCoordinator {
   public enum Error: Swift.Error {
     case missingSession

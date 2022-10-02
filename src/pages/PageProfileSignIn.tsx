@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { FlatList, Platform, StyleSheet, View } from 'react-native'
+import { Button, FlatList, Platform, StyleSheet, View } from 'react-native'
 
 import {
   mdiDotsHorizontal,
@@ -15,6 +15,7 @@ import { accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -83,6 +84,32 @@ export const PageProfileSignIn = observer(() => {
         title={intl`Accounts`}
         transparent
       >
+        <View
+          style={{
+            flexDirection: 'column',
+            width: '100%',
+            justifyContent: 'space-around',
+          }}
+        >
+          <Button
+            title={'Send Message LPC'}
+            onPress={() => {
+              BrekekeUtils.sendMessageLPC('Tôi là tôi')
+            }}
+          />
+          <Button
+            title={'Make Call LPC'}
+            onPress={() => {
+              BrekekeUtils.makeCallLPC()
+            }}
+          />
+          <Button
+            title={'End Call LPC'}
+            onPress={() => {
+              BrekekeUtils.endCallLPC()
+            }}
+          />
+        </View>
         <View style={css.PageProfileSignIn_Spacing} />
         {!l ? (
           <ProfileSignInItem empty />
