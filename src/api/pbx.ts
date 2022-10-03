@@ -551,6 +551,31 @@ export class PBX extends EventEmitter {
     })
     return true
   }
+  setLPCToken = async ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) => {
+    if (this.needToWait) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return false
+    }
+    await this.client.call_pal('pnmanage', {
+      command: 'set',
+      service_id: '4',
+      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
+    return true
+  }
 
   setApnsToken = async ({
     device_id,
@@ -603,7 +628,6 @@ export class PBX extends EventEmitter {
     })
     return true
   }
-
   removeApnsToken = async ({
     device_id,
     username,
@@ -622,6 +646,31 @@ export class PBX extends EventEmitter {
     await this.client.call_pal('pnmanage', {
       command: 'remove',
       service_id: '11',
+      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
+    return true
+  }
+  removeLPCToken = async ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) => {
+    if (this.needToWait) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return false
+    }
+    await this.client.call_pal('pnmanage', {
+      command: 'remove',
+      service_id: '4',
       application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
       user_agent: 'react-native',
       username: username + (voip ? '@voip' : ''),

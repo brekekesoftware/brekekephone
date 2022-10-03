@@ -44,8 +44,8 @@ const syncPnTokenWithoutCatch = async (
   const fn =
     Platform.OS === 'ios'
       ? p.pushNotificationEnabled
-        ? pbx.setApnsToken
-        : pbx.removeApnsToken
+        ? pbx.setLPCToken
+        : pbx.removeLPCToken
       : Platform.OS === 'android'
       ? p.pushNotificationEnabled
         ? pbx.setFcmPnToken
