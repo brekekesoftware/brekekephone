@@ -28,7 +28,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
 
   var window: UIWindow?
   var bridge: RCTBridge!
-  
+
 //  func application(
 //      _ application: UIApplication,
 //      configurationForConnecting connectingSceneSession: UISceneSession,
@@ -38,15 +38,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
 //      sceneConfig.delegateClass = AppDelegate.self // 👈🏻
 //      return sceneConfig
 //    }
-  
+
   func application(
     _: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication
       .LaunchOptionsKey: Any]?
   ) -> Bool {
-    
+
     initLCP()
-    
+
     let jsCodeLocation: URL
     jsCodeLocation = RCTBundleURLProvider.sharedSettings()
       .jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
@@ -66,8 +66,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     RNSplashScreen.show()
     return true
   }
- 
-  
+
+
   func initLCP(){
     print("initLCP")
     // It is important to initialize the PushConfigurationManager as early as possible during app initialization.
@@ -79,18 +79,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     do {
         print("Saving updated settings")
         try SettingsManager.shared.set(settings: SettingsManager.shared.settings)
-        ControlChannel.shared.connect()
+        // ControlChannel.shared.connect()
     } catch {
       print("Saving to settings failed with error: \(error)")
     }
 //    ControlChannel.shared.setHost("192.168.89.2")
 //    ControlChannel.shared.connect()
     // Register this device with the control channel.
-    let user = User(uuid: UserManager.shared.currentUser.uuid, deviceName: UserManager.shared.currentUser.deviceName)
-    ControlChannel.shared.register(user)
+    // let user = User(uuid: UserManager.shared.currentUser.uuid, deviceName: UserManager.shared.currentUser.deviceName)
+    // ControlChannel.shared.register(user)
 
-    
-    
+
+
     // Observe the active state of NEAppPushManager to display the active state in the SettingsView.
     PushConfigurationManager.shared.pushManagerIsActivePublisher
         .receive(on: DispatchQueue.main)
@@ -98,7 +98,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
             print("isActive:\(isAppPushManagerActive)")
         }
         .store(in: &cancellables)
-    
+
     // Connect the control channel when the app is in the foreground or responding to a CallKit call in the background. Disconnect the control
     // channel when the app is in the background and not in a CallKit call.
     isExecutingInBackgroundPublisher
@@ -110,33 +110,33 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
 
             if isExecutingInBackground {
                 switch callManagerState {
-                case .connecting:
+                // case .connecting:
 //                    self.logger.log("App running in background and the CallManager's state is connecting, connecting to control channel")
-                    ControlChannel.shared.connect()
-                case .disconnected:
+                    // ControlChannel.shared.connect()
+                // case .disconnected:
 //                    self.logger.log("App running in background and the CallManager's state is disconnected, disconnecting from control channel")
-                    ControlChannel.shared.disconnect()
+                    // ControlChannel.shared.disconnect()
                 default:
                     print("App running in background")
                 }
             } else {
 //                self.logger.log("App running in foreground, connecting to control channel")
-                ControlChannel.shared.connect()
+                // ControlChannel.shared.connect()
             }
         }
         .store(in: &cancellables)
   }
-  
+
 //  func viewModel(for user: User) -> UserViewModel {
 //      userViewModels.get(user.id, insert: UserViewModel(user: user))
 //  }
-  
+
   func applicationWillTerminate(_ application: UIApplication) {
 //      logger.log("Application is terminating, disconnecting control channel")
-      ControlChannel.shared.disconnect()
+      // ControlChannel.shared.disconnect()
   }
-  
-  
+
+
   func sourceURLForBridge(bridge _: RCTBridge!) -> NSURL! {
     #if DEBUG
       return ()

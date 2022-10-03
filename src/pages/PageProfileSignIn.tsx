@@ -91,24 +91,28 @@ export const PageProfileSignIn = observer(() => {
             justifyContent: 'space-around',
           }}
         >
-          <Button
-            title={'Send Message LPC'}
-            onPress={() => {
-              BrekekeUtils.sendMessageLPC('Tôi là tôi')
-            }}
-          />
-          <Button
-            title={'Make Call LPC'}
-            onPress={() => {
-              BrekekeUtils.makeCallLPC()
-            }}
-          />
-          <Button
-            title={'End Call LPC'}
-            onPress={() => {
-              BrekekeUtils.endCallLPC()
-            }}
-          />
+          {false && (
+            <>
+              <Button
+                title={'Send Message LPC'}
+                onPress={() => {
+                  BrekekeUtils.sendMessageLPC('Tôi là tôi')
+                }}
+              />
+              <Button
+                title={'Make Call LPC'}
+                onPress={() => {
+                  BrekekeUtils.makeCallLPC()
+                }}
+              />
+              <Button
+                title={'End Call LPC'}
+                onPress={() => {
+                  BrekekeUtils.endCallLPC()
+                }}
+              />
+            </>
+          )}
         </View>
         <View style={css.PageProfileSignIn_Spacing} />
         {!l ? (

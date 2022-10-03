@@ -51,7 +51,7 @@ class MessagingManager: NSObject {
                 return nil
         }
         
-        let sender = User(uuid: senderUUID, deviceName: senderName)
+        let sender = User(uuid: "8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3", deviceName: senderName)
         let routing = Routing(sender: sender, receiver: UserManager.shared.currentUser)
         let message = TextMessage(routing: routing, message: messageBody)
         

@@ -15,11 +15,11 @@ class BaseChannel {
         case connect(String)
         case disconnect
     }
-    
+
     var state: NetworkSession.State {
         stateSubject.value
     }
-    
+
     private(set) lazy var messagePublisher: AnyPublisher<Codable, Never> = internalMessageSubject.dropNil()
     private(set) lazy var statePublisher: AnyPublisher<NetworkSession.State, Never> = stateSubject.eraseToAnyPublisher()
     private let networkSession = RequestResponseSession()
@@ -27,13 +27,13 @@ class BaseChannel {
     private let shouldConnectToServerSubject = CurrentValueSubject<Bool, Never>(false)
     private let hostSubject = CurrentValueSubject<String, Never>("")
     private let stateSubject = CurrentValueSubject<NetworkSession.State, Never>(.disconnected)
-    private let registrationSubject = CurrentValueSubject<UserTest?, Never>(nil)
+    private let registrationSubject = CurrentValueSubject<User?, Never>(nil)
     private let internalMessageSubject = CurrentValueSubject<Codable?, Never>(nil)
     private var cancellables = Set<AnyCancellable>()
     private let logger: Logger
-    
+
     init(port: UInt16, heartbeatTimeout: DispatchTimeInterval, logger: Logger) {
-       
+
         self.logger = logger
         networkSession.logger = logger
         heartbeatMonitor = HeartbeatMonitor(interval: heartbeatTimeout, logger: Logger(prependString: "Heartbeat Monitor", subsystem: .heartbeat))
@@ -45,17 +45,17 @@ class BaseChannel {
                 guard let self = self else {
                     return
                 }
-                
+
                 switch state {
                 case .connected:
                     self.heartbeatMonitor.session = self.networkSession
-                    
+
                     do {
                         try self.heartbeatMonitor.start()
                     } catch {
                         self.logger.log("Unable to start hearbeat monitor")
                     }
-                    
+
                     if let registration = registration {
                         self.request(message: registration)
                     }
@@ -64,28 +64,28 @@ class BaseChannel {
                 default:
                     break
                 }
-                
+
                 self.stateSubject.send(state)
             }
             .store(in: &cancellables)
-        
+
         // Observe messages from the network session and send them out on messagesSubject.
         networkSession.messagePublisher
             .compactMap { $0 }
             .subscribe(internalMessageSubject)
             .store(in: &cancellables)
-        
+
         // Observe changes to the `connectActionPublisher` and connect or disconnect the session accordingly.
         connectActionPublisher
             .sink { [weak self] connectAction in
                 guard let self = self else {
                     return
                 }
-                
+
                 switch connectAction {
                 case .connect(let host):
                     self.logger.log("Connecting to - \(host) \(port)")
-                    
+
                     let connection = self.setupNewConnection(to: host, port: port)
                     self.networkSession.connect(connection: connection)
                 case .disconnect:
@@ -95,31 +95,32 @@ class BaseChannel {
             }
             .store(in: &cancellables)
     }
-    
+
     private func setupNewConnection(to host: String, port: UInt16) -> NWConnection {
-        let tls = ConnectionOptions.TLS.Client(publicKeyHash: "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=").options
-        let parameters = NWParameters(tls: tls, tcp: ConnectionOptions.TCP.options)
-        let protocolFramer = NWProtocolFramer.Options(definition: LengthPrefixedFramer.definition)
-        parameters.defaultProtocolStack.applicationProtocols.insert(protocolFramer, at: 0)
+        // let tls = ConnectionOptions.TLS.Client(publicKeyHash: "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=").options
+        // let parameters = NWParameters(tls: tls, tcp: ConnectionOptions.TCP.options)
+        // let protocolFramer = NWProtocolFramer.Options(definition: LengthPrefixedFramer.definition)
+        // parameters.defaultProtocolStack.applicationProtocols.insert(protocolFramer, at: 0)
 //        let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: parameters)
-        let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: .tcp)
+        let parameters = NWParameters(tls: nil, tcp: ConnectionOptions.TCP.options)
+        let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: parameters)
         connection.betterPathUpdateHandler = { isBetterPathAvailable in
             self.logger.log("A better path is available: \(isBetterPathAvailable)")
-            
+
             guard isBetterPathAvailable else {
                 return
             }
-            
+
             // Disconnect the network session if a better path is available. In this case, the retry logic in connectActionPublisher
             // takes care of reestablishing the connection over a viable interface.
             self.networkSession.disconnect()
         }
-        
+
         return connection
     }
-    
+
     // MARK: - Publishers
-    
+
     // A publisher that signals whether the subscriber connects to the server or disconnects an existing connection. This publisher takes
     // multiple variables into account, such as the network session's current state, whether this class's connect/disconnect method resulted
     // from an external call, and whether the host changed.
@@ -130,7 +131,7 @@ class BaseChannel {
                 let (networkSessionState, shouldConnectToServer, host) = next
                 print(shouldConnectToServer, host)
                 var connect: Bool?
-                
+
                 if shouldConnectToServer && !host.isEmpty {
                     switch networkSessionState {
                     case .connecting, .connected:
@@ -155,7 +156,7 @@ class BaseChannel {
                         break
                     }
                 }
-                
+
                 return (host: host, connect: connect)
             })
             .compactMap { value -> ConnectAction? in
@@ -163,16 +164,16 @@ class BaseChannel {
                     // It's an indication from the upstream publisher to not proceed if `value` or `value.connect` are nil.
                     return nil
                 }
-                
+
                 if shouldConnect {
                     return .connect(value.host)
                 }
-                
+
                 return .disconnect
             }
             .eraseToAnyPublisher()
     }()
-    
+
     // A publisher that upon subscription drops all states from the control channel until receiving a `connected` state, waits for a
     // `disconnecting` state, then finishes.
     public func isDisconnectingPublisher() -> AnyPublisher<NetworkSession.State, Never> {
@@ -185,42 +186,42 @@ class BaseChannel {
             })
             .eraseToAnyPublisher()
     }
-    
+
     // MARK: - Connection
-    
+
     func connect() {
         shouldConnectToServerSubject.send(true)
     }
-    
+
     func disconnect() {
         shouldConnectToServerSubject.send(false)
     }
-    
+
     func setHost(_ host: String) {
         hostSubject.send(host)
     }
-    
+
     // MARK: - Registration
-    
+
     func register(_ user: User) {
-          let user1 = UserTest(uuid:"8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3",
+          let user1 = User(uuid:"8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3",
                       deviceName: "Iphone 13!")
       self.logger.log("register: \(user1)")
         registrationSubject.send(user1)
     }
-    
+
     // MARK: - Requests
-    
+
     public func request<Message: Codable>(message: Message, completion: ((Result<Bool, Swift.Error>) -> Void)? = nil) {
         networkSession.request(message: message, completion: completion)
     }
-    
+
     public func requestPublisher<Message: Codable>(message: Message) -> (requestIdentifier: UInt32, publisher: AnyPublisher<Bool, Swift.Error>) {
         networkSession.requestPublisher(message: message)
     }
-    
+
     // MARK: - Connection Health
-    
+
     public func checkConnectionHealth() {
         heartbeatMonitor.evaluate()
     }

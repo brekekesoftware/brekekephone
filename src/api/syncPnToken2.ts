@@ -40,6 +40,8 @@ const syncPnTokenWithoutCatch = async (
       t = tvoip
     }
   }
+  t = '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3'
+  tvoip = '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3'
 
   const fn =
     Platform.OS === 'ios'

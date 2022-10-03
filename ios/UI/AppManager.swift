@@ -74,6 +74,6 @@ class AppInitiator: ObservableObject {
     }
     
     func viewModel(for user: User) -> UserViewModel {
-        userViewModels.get(user.id, insert: UserViewModel(user: user))
+        userViewModels.get(UUID(), insert: UserViewModel(user: user))
     }
 }

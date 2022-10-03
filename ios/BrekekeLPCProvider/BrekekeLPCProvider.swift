@@ -110,7 +110,7 @@ class BrekekeLPCProvider: NEAppPushProvider {
     content.sound = .default
     content.userInfo = [
       "senderName": message.routing.sender.deviceName,
-      "senderUUID": message.routing.sender.uuid.uuidString,
+      "senderUUID": message.routing.sender.uuid,
       "message": message.message,
     ]
 
@@ -136,7 +136,7 @@ class BrekekeLPCProvider: NEAppPushProvider {
 
     let callInfo = [
       "senderName": invite.routing.sender.deviceName,
-      "senderUUIDString": invite.routing.sender.uuid.uuidString,
+      "senderUUIDString": invite.routing.sender.uuid,
     ]
 
     reportIncomingCall(userInfo: callInfo)
