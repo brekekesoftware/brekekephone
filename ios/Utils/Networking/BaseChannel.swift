@@ -27,7 +27,7 @@ class BaseChannel {
     private let shouldConnectToServerSubject = CurrentValueSubject<Bool, Never>(false)
     private let hostSubject = CurrentValueSubject<String, Never>("")
     private let stateSubject = CurrentValueSubject<NetworkSession.State, Never>(.disconnected)
-    private let registrationSubject = CurrentValueSubject<User?, Never>(nil)
+    private let registrationSubject = CurrentValueSubject<UserTest?, Never>(nil)
     private let internalMessageSubject = CurrentValueSubject<Codable?, Never>(nil)
     private var cancellables = Set<AnyCancellable>()
     private let logger: Logger
@@ -84,7 +84,7 @@ class BaseChannel {
                 
                 switch connectAction {
                 case .connect(let host):
-                    self.logger.log("Connecting to - \(host)")
+                    self.logger.log("Connecting to - \(host) \(port)")
                     
                     let connection = self.setupNewConnection(to: host, port: port)
                     self.networkSession.connect(connection: connection)
@@ -97,12 +97,12 @@ class BaseChannel {
     }
     
     private func setupNewConnection(to host: String, port: UInt16) -> NWConnection {
-        let tls = ConnectionOptions.TLS.Client(publicKeyHash: "XTQSZGrHFDV6KdlHsGVhixmbI/Cm2EMsz2FqE2iZoqU=").options
+        let tls = ConnectionOptions.TLS.Client(publicKeyHash: "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=").options
         let parameters = NWParameters(tls: tls, tcp: ConnectionOptions.TCP.options)
         let protocolFramer = NWProtocolFramer.Options(definition: LengthPrefixedFramer.definition)
         parameters.defaultProtocolStack.applicationProtocols.insert(protocolFramer, at: 0)
-        let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: parameters)
-        
+//        let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: parameters)
+        let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: .tcp)
         connection.betterPathUpdateHandler = { isBetterPathAvailable in
             self.logger.log("A better path is available: \(isBetterPathAvailable)")
             
@@ -203,7 +203,10 @@ class BaseChannel {
     // MARK: - Registration
     
     func register(_ user: User) {
-        registrationSubject.send(user)
+          let user1 = UserTest(uuid:"8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3",
+                      deviceName: "Iphone 13!")
+      self.logger.log("register: \(user1)")
+        registrationSubject.send(user1)
     }
     
     // MARK: - Requests
