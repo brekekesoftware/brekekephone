@@ -239,29 +239,29 @@ public class RequestResponseSession: NetworkSession {
 //      self.logger.log("data:\(data.)")
       let str = String(decoding: data, as: UTF8.self)
       self.logger.log("str:\(str)")
-      do {
-          let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : AnyObject]
-           self.logger.log("str:json:\(json)")
-              if let dictionary = json as? [String: Any] {
-                  if let nestedDictionary = dictionary["payload"] as? [String: Any] {
-                      // access nested dictionary values by key
-                      for (key, value) in nestedDictionary {
-                          // access all key / value pairs in dictionary
-//                          print(key)
-//                          print(value)
-                          self.logger.log("str:json:\(key)")
-                          self.logger.log("str:json:\(value)")
-                      }
-                  }
-              }
-         
-          if let code = json?["payload"] as? Int {
-              self.logger.log("str:json:\(code)")
-          }
-//          self.logger.log("str:json:\(json)")
-      } catch {
-          print("errorMsg")
-      }
+//      do {
+//          let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : AnyObject]
+//           self.logger.log("str:json:\(json)")
+//              if let dictionary = json as? [String: Any] {
+//                  if let nestedDictionary = dictionary["payload"] as? [String: Any] {
+//                      // access nested dictionary values by key
+//                      for (key, value) in nestedDictionary {
+//                          // access all key / value pairs in dictionary
+////                          print(key)
+////                          print(value)
+//                          self.logger.log("str:json:\(key)")
+//                          self.logger.log("str:json:\(value)")
+//                      }
+//                  }
+//              }
+//
+//          if let code = json?["payload"] as? Int {
+//              self.logger.log("str:json:\(code)")
+//          }
+////          self.logger.log("str:json:\(json)")
+//      } catch {
+//          print("errorMsg")
+//      }
     do {
       let wrapper = try decoder.decode(Wrapper.self, from: data)
         
@@ -271,7 +271,7 @@ public class RequestResponseSession: NetworkSession {
         else {
           break
         }
-          self.logger.log("payload.data:\(payload.data)")
+//          self.logger.log("payload.data:\(payload.data)")
         let message = try keyCoder.decode(
           for: payload.codingKey,
           data: payload.data
