@@ -52,7 +52,6 @@ class BrekekeLPCProvider: NEAppPushProvider {
         case let message as Invite:
           self.logger.log("error: currently server will not send message as Invite")
         default:
-          self.logger.log("error: unknown message=\(message)")
           break
         }
       }
