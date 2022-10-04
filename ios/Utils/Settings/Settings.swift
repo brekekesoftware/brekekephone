@@ -10,13 +10,13 @@ import BrekekeLPC
 
 public struct Settings: Codable, Equatable {
     struct PushManagerSettings: Codable, Equatable {
-        var ssid = "NamN20"
+        var ssid = "NGOCTRAM"
         var mobileCountryCode = ""
         var mobileNetworkCode = ""
         var trackingAreaCode = ""
         var host = "apps.brekeke.com"
     }
-
+    var appId: String
     var uuid: String
     var deviceName: String
     var pushManagerSettings = PushManagerSettings()
@@ -24,7 +24,7 @@ public struct Settings: Codable, Equatable {
 
 extension Settings {
     var user: User {
-        User(uuid: uuid, deviceName: deviceName)
+      User(uuid: uuid, deviceName: deviceName, appid: appId)
     }
 }
 

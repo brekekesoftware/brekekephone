@@ -26,7 +26,13 @@ type TBrekekeUtils = {
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
-  sendMessageLPC(message: string): void
+  setConfig(
+    deviceId: string,
+    appId: string,
+    deviceName: string,
+    ssid: string,
+    host: string,
+  ): void
   makeCallLPC(): void
   endCallLPC(): void
   // these methods available on both
@@ -58,7 +64,7 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
-  sendMessageLPC: () => undefined,
+  setConfig: () => undefined,
   makeCallLPC: () => undefined,
   endCallLPC: () => undefined,
 }

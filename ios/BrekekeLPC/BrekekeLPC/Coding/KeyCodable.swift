@@ -18,6 +18,7 @@ protocol KeyCodable {
 
 extension KeyCodable {
   func decode(for key: Key, data: Data) throws -> Codable {
+      print("KeyCodable::decode")
     guard let mappedType = keymap[key]
     else {
       throw KeyCodableError

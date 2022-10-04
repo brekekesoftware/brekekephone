@@ -39,7 +39,7 @@ class BrekekeLPCProvider: NEAppPushProvider {
         else {
           return
         }
-        print("message:\(message)")
+        self.logger.log("message:\(message)")
         switch message {
         case let message as Invite:
           self.reportIncomingCall(invite: message)
@@ -61,7 +61,7 @@ class BrekekeLPCProvider: NEAppPushProvider {
 
         let user = User(uuid: settings.user.uuid,
                         deviceName: settings.deviceName)
-
+//        self.logger.log("user register:: \(user)")
         self.channel.register(user)
         self.channel.setHost(settings.pushManagerSettings.host)
       }

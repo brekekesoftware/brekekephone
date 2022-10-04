@@ -60,41 +60,54 @@ public class BrekekeUtils: NSObject {
     }
   }
   @objc
-  func  getListUser(){
-   
-    
-  }
-  @objc
-  func sendMessageLPC(_ message: String) {
-    print("sendMessagePN \(viewModel.users)")
-    
-//    let uuID = UUID(uuidString: "6F90DA39-1C24-4824-A653-EF4831E05EAD")
-//    if uuID != nil {
-//        print("UUID string with hypens is valid") // Will be valid
-//        let receiver = User(uuid: uuID!, deviceName: "iPhone (3)")
-//      let sender = UserManager.shared.currentUser
-//      let routing = Routing(sender: sender, receiver: sender)
-//      let textMessage = TextMessage(routing: routing, message: "isMe:\(message)")
-////      ControlChannel.shared.connect()
-//      print("Sending text message to \(sender.deviceName) through Control Channel")
-////      ControlChannel.shared.request(message: textMessage)
-//      MessagingManager.shared.send(message: "Anh day", to: sender)
-//    } else {
-//        print("UUID string with hypens is not valid")
-//    }
-    
-    let sender = UserManager.shared.currentUser
-    
-    if(viewModel.users.count <= 1){
-      return ()
+  func setConfig(_ deviceId: String, appId: String, deviceName: String, ssid: String, host: String ) {
+    var settingInfo = SettingsManager.shared.settings
+    settingInfo.uuid = deviceId
+    settingInfo.appId = appId
+    settingInfo.deviceName = deviceName
+    settingInfo.pushManagerSettings.ssid = ssid
+    settingInfo.pushManagerSettings.host = host
+    print("setConfig: \(settingInfo)");
+    do{
+      try SettingsManager.shared.set(settings: settingInfo)
+//      PushConfigurationManager.shared.initialize()
+    }catch let error as NSError {
+      print("Error encoding settings - \(error)")
     }
-    let receiver = viewModel.users[1]
-    let routing = Routing(sender: sender, receiver: viewModel.users[1])
-    let textMessage = TextMessage(routing: routing, message: "isMe:\(message)")
-//      ControlChannel.shared.connect()
-    print("Sending text message to \(receiver.deviceName) through Control Channel")
-    MessagingManager.shared.send(message: "bbb day", to: receiver)
+   
   }
+  
+//  @objc
+//  func sendMessageLPC(_ message: String) {
+//    print("sendMessagePN \(viewModel.users)")
+//
+////    let uuID = UUID(uuidString: "6F90DA39-1C24-4824-A653-EF4831E05EAD")
+////    if uuID != nil {
+////        print("UUID string with hypens is valid") // Will be valid
+////        let receiver = User(uuid: uuID!, deviceName: "iPhone (3)")
+////      let sender = UserManager.shared.currentUser
+////      let routing = Routing(sender: sender, receiver: sender)
+////      let textMessage = TextMessage(routing: routing, message: "isMe:\(message)")
+//////      ControlChannel.shared.connect()
+////      print("Sending text message to \(sender.deviceName) through Control Channel")
+//////      ControlChannel.shared.request(message: textMessage)
+////      MessagingManager.shared.send(message: "Anh day", to: sender)
+////    } else {
+////        print("UUID string with hypens is not valid")
+////    }
+//
+//    let sender = UserManager.shared.currentUser
+//
+//    if(viewModel.users.count <= 1){
+//      return ()
+//    }
+//    let receiver = viewModel.users[1]
+//    let routing = Routing(sender: sender, receiver: viewModel.users[1])
+//    let textMessage = TextMessage(routing: routing, message: "isMe:\(message)")
+////      ControlChannel.shared.connect()
+//    print("Sending text message to \(receiver.deviceName) through Control Channel")
+//    MessagingManager.shared.send(message: "bbb day", to: receiver)
+//  }
   
   @objc
   func makeCallLPC() {

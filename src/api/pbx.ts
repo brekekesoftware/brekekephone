@@ -8,6 +8,7 @@ import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser, Phonebook2 } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
 
@@ -566,6 +567,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
+
     await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '4',
@@ -574,6 +576,13 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+    BrekekeUtils.setConfig(
+      device_id,
+      'com.brekeke.phonedev',
+      username,
+      'NGOCTRAM',
+      'apps.brekeke.com',
+    )
     return true
   }
 
