@@ -10,7 +10,7 @@ import BrekekeLPC
 
 public struct Settings: Codable, Equatable {
     struct PushManagerSettings: Codable, Equatable {
-        var ssid = "NGOCTRAM"
+        var ssid = "NamN20"
         var mobileCountryCode = ""
         var mobileNetworkCode = ""
         var trackingAreaCode = ""
