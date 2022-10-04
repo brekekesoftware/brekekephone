@@ -236,59 +236,45 @@ public class RequestResponseSession: NetworkSession {
   }
 
   private func decode(data: Data) -> Wrapper? {
-//      self.logger.log("data:\(data.)")
-      let str = String(decoding: data, as: UTF8.self)
-      self.logger.log("str:\(str)")
-//      do {
-//          let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : AnyObject]
-//           self.logger.log("str:json:\(json)")
-//              if let dictionary = json as? [String: Any] {
-//                  if let nestedDictionary = dictionary["payload"] as? [String: Any] {
-//                      // access nested dictionary values by key
-//                      for (key, value) in nestedDictionary {
-//                          // access all key / value pairs in dictionary
-////                          print(key)
-////                          print(value)
-//                          self.logger.log("str:json:\(key)")
-//                          self.logger.log("str:json:\(value)")
-//                      }
-//                  }
-//              }
-//
-//          if let code = json?["payload"] as? Int {
-//              self.logger.log("str:json:\(code)")
-//          }
-////          self.logger.log("str:json:\(json)")
-//      } catch {
-//          print("errorMsg")
-//      }
     do {
       let wrapper = try decoder.decode(Wrapper.self, from: data)
-        
       switch wrapper.command {
       case .request:
         guard let payload = wrapper.payload
         else {
+          self.logger.log(".request break")
           break
         }
-//          self.logger.log("payload.data:\(payload.data)")
         let message = try keyCoder.decode(
           for: payload.codingKey,
           data: payload.data
         )
-          self.logger.log("str:\(message)")
-        messagesSubject.send(message)
+        self.logger.log(".request message: \(message)")
+        if var msg = message as? TextMessage {
+          self.logger.log(".request message as")
+          let datajson = String(data: payload.data, encoding: .utf8)
+          if var datajson = datajson {
+            if let json = try JSONSerialization.jsonObject(with: Data(datajson.utf8), options: []) as? [AnyHashable : Any] {
+              if let custom = json["custom"] as?[AnyHashable : Any] {
+              msg.custom = custom
+              }
+            }
+          }
+          self.logger.log(".request msg.custom nil? \(msg.custom == nil)")
+          messagesSubject.send(msg)
+        } else {
+          messagesSubject.send(message)
+        }
       case .acknowledge:
+        self.logger.log(".acknowledge")
         dispatchQueue.async { [weak self] in
           guard let request = self?.pendingRequests[wrapper.requestIdentifier]
           else {
             return
           }
-
           request.completion(.success(true))
         }
       }
-
       return wrapper
     } catch {
       logger.log("Error decoding - \(error)")

@@ -41,11 +41,18 @@ class BrekekeLPCProvider: NEAppPushProvider {
         }
         self.logger.log("message:\(message)")
         switch message {
-        case let message as Invite:
-          self.reportIncomingCall(invite: message)
         case let message as TextMessage:
-          self.showLocalNotification(message: message)
+          // Brekeke server will send everything as TextMessage
+          // We will check if it is a call or chat PN in PushConfigurationManager
+          // If it requires CallKit interaction, we must check here instead
+          self.reportIncomingCall(userInfo: [
+            "uuid": UUID().uuidString,
+            "payload": message.custom,
+          ])
+        case let message as Invite:
+          self.logger.log("error: currently server will not send message as Invite")
         default:
+          self.logger.log("error: unknown message=\(message)")
           break
         }
       }
@@ -61,7 +68,6 @@ class BrekekeLPCProvider: NEAppPushProvider {
 
         let user = User(uuid: settings.user.uuid,
                         deviceName: settings.deviceName)
-//        self.logger.log("user register:: \(user)")
         self.channel.register(user)
         self.channel.setHost(settings.pushManagerSettings.host)
       }
@@ -72,13 +78,11 @@ class BrekekeLPCProvider: NEAppPushProvider {
 
   override func start() {
     logger.log("Started")
-
     guard let host = providerConfiguration?["host"] as? String
     else {
       logger.log("Provider configuration is missing value for key: `host`")
       return
     }
-
     channel.setHost(host)
     channel.connect()
   }
@@ -88,7 +92,6 @@ class BrekekeLPCProvider: NEAppPushProvider {
     completionHandler: @escaping () -> Void
   ) {
     logger.log("Stopped with reason \(reason)")
-
     channel.disconnect()
     completionHandler()
   }
@@ -96,49 +99,5 @@ class BrekekeLPCProvider: NEAppPushProvider {
   override func handleTimerEvent() {
     logger.log("Handle timer called")
     channel.checkConnectionHealth()
-  }
-
-  // MARK: - Notify User
-
-  func showLocalNotification(message: TextMessage) {
-    logger
-      .log("Received text message from \(message.routing.sender.deviceName)")
-
-    let content = UNMutableNotificationContent()
-    content.title = message.routing.sender.deviceName
-    content.body = message.message
-    content.sound = .default
-    content.userInfo = [
-      "senderName": message.routing.sender.deviceName,
-      "senderUUID": message.routing.sender.uuid,
-      "message": message.message,
-    ]
-
-    let request = UNNotificationRequest(
-      identifier: UUID().uuidString,
-      content: content,
-      trigger: nil
-    )
-
-    UNUserNotificationCenter.current().add(request) { [weak self] error in
-      if let error = error {
-        self?.logger.log("Error submitting local notification: \(error)")
-        return
-      }
-
-      self?.logger.log("Local notification posted successfully")
-    }
-  }
-
-  func reportIncomingCall(invite: Invite) {
-    logger
-      .log("Received incoming call from \(invite.routing.sender.deviceName)")
-
-    let callInfo = [
-      "senderName": invite.routing.sender.deviceName,
-      "senderUUIDString": invite.routing.sender.uuid,
-    ]
-
-    reportIncomingCall(userInfo: callInfo)
   }
 }
