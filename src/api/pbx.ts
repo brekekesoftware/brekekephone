@@ -576,13 +576,13 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
-    BrekekeUtils.setConfig(
-      device_id,
-      'com.brekeke.phonedev',
-      username,
-      'NGOCTRAM',
-      'apps.brekeke.com',
-    )
+    // BrekekeUtils.setConfig(
+    //   device_id,
+    //   'com.brekeke.phonedev',
+    //   username,
+    //   'NGOCTRAM',
+    //   'apps.brekeke.com',
+    // )
     return true
   }
 
