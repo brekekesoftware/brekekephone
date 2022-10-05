@@ -3,13 +3,8 @@ import Foundation
 import NetworkExtension
 
 class BrekekeLPCManager: NSObject {
-  static let shared = BrekekeLPCManager()
-
-  // A publisher that returns the active state of the current push manager.
-  private(set) lazy var pushManagerIsActivePublisher =
-    pushManagerIsActiveSubject
-      .debounce(for: .milliseconds(500), scheduler: dispatchQueue)
-      .eraseToAnyPublisher()
+  public static let shared = BrekekeLPCManager()
+  private var initialized = false
 
   private let dispatchQueue =
     DispatchQueue(label: "BrekekeLPCManager.dispatchQueue")
@@ -21,9 +16,6 @@ class BrekekeLPCManager: NSObject {
   private let pushManagerDescription = "BrekekeLPCExtension"
   private let pushProviderBundleIdentifier =
     "com.brekeke.phonedev.BrekekeLPCExtension"
-  private let pushManagerIsActiveSubject = CurrentValueSubject<Bool,
-    Never>(false)
-  private var pushManagerIsActiveCancellable: AnyCancellable?
   private var cancellables = Set<AnyCancellable>()
 
   override init() {
@@ -43,10 +35,13 @@ class BrekekeLPCManager: NSObject {
         var publisher: AnyPublisher<NEAppPushManager?, Swift.Error>?
 
         if !pushManagerSettings.isEmpty {
+          var pm = pushManager ?? NEAppPushManager()
+          pm.delegate = BrekekeLPCManager.shared
+          self.logger.log("pm.delegate = nil? \(pm.delegate == nil)")
           // Create a new push manager or update the existing instance with the new values from settings.
           logger.log("Saving new push manager configuration.")
           publisher = save(
-            pushManager: pushManager ?? NEAppPushManager(),
+            pushManager: pm,
             with: pushManagerSettings
           )
           .flatMap { pushManager -> AnyPublisher<
@@ -54,6 +49,9 @@ class BrekekeLPCManager: NSObject {
             Error
           > in
             // Reload the push manager.
+            pushManager.delegate = BrekekeLPCManager.shared
+            self.logger
+              .log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
             logger
               .log("Loading new push manager configuration.")
             return pushManager.load()
@@ -64,6 +62,9 @@ class BrekekeLPCManager: NSObject {
         } else if let pushManager = pushManager {
           // Remove the push manager and map its value to nil to indicate removal of the push manager to the downstream subscribers.
           logger.log("Removing push manager configuration.")
+          pushManager.delegate = BrekekeLPCManager.shared
+          self.logger
+            .log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
           publisher = pushManager.remove()
             .map { _ in nil }
             .eraseToAnyPublisher()
@@ -89,6 +90,11 @@ class BrekekeLPCManager: NSObject {
   }
 
   func initialize() {
+    if initialized {
+      return
+    }
+    initialized = true
+
     logger.log("Loading existing push manager.")
 
     // It is important to call loadAllFromPreferences as early as possible during app initialization in order to set the delegate on your
@@ -99,6 +105,13 @@ class BrekekeLPCManager: NSObject {
           .log("Failed to load all managers from preferences: \(error)")
         return
       }
+      self.logger.log("loadAllFromPreferences length:\(managers?.count)")
+      if let a = managers {
+        for i in a {
+          i.delegate = BrekekeLPCManager.shared
+          self.logger.log("i.delegate = nil? \(i.delegate == nil)")
+        }
+      }
 
       guard let manager = managers?.first else {
         return
@@ -106,7 +119,8 @@ class BrekekeLPCManager: NSObject {
       self.logger.log("to load all managers from preferences:")
       // The manager's delegate must be set synchronously in this closure in order to avoid race conditions when the app launches in response
       // to an incoming call.
-      manager.delegate = self
+      manager.delegate = BrekekeLPCManager.shared
+      self.logger.log("manager.delegate = nil? \(manager.delegate == nil)")
 
       self.dispatchQueue.async {
         self.prepare(pushManager: manager)
@@ -115,23 +129,12 @@ class BrekekeLPCManager: NSObject {
   }
 
   private func prepare(pushManager: NEAppPushManager) {
+    logger.log("prepare")
     self.pushManager = pushManager
-
     if pushManager.delegate == nil {
-      pushManager.delegate = self
+      pushManager.delegate = BrekekeLPCManager.shared
     }
-    // TODO:
-    logger.log("\(pushManager.matchSSIDs)")
-    logger.log("\(pushManager.isActive)")
-    logger.log("\(pushManager.providerConfiguration)")
-    logger.log("\(pushManager.delegate)")
-    // Observe changes to the manager's `isActive` property and send the value out on the `pushManagerIsActiveSubject`.
-    pushManagerIsActiveCancellable = NSObject.KeyValueObservingPublisher(
-      object: pushManager,
-      keyPath: \.isActive,
-      options: [.initial, .new]
-    )
-    .subscribe(pushManagerIsActiveSubject)
+    logger.log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
   }
 
   private func save(
@@ -140,7 +143,8 @@ class BrekekeLPCManager: NSObject {
   ) -> AnyPublisher<NEAppPushManager, Swift.Error> {
     pushManager.localizedDescription = pushManagerDescription
     pushManager.providerBundleIdentifier = pushProviderBundleIdentifier
-    pushManager.delegate = self
+    pushManager.delegate = BrekekeLPCManager.shared
+    logger.log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
     pushManager.isEnabled = true
     logger
       .log("pushProviderBundleIdentifier:\(pushProviderBundleIdentifier)")
@@ -180,8 +184,6 @@ class BrekekeLPCManager: NSObject {
 
   private func cleanup() {
     pushManager = nil
-    pushManagerIsActiveCancellable = nil
-    pushManagerIsActiveSubject.send(false)
   }
 }
 
@@ -191,8 +193,8 @@ extension BrekekeLPCManager: NEAppPushDelegate {
     didReceiveIncomingCallWithUserInfo userInfo: [AnyHashable: Any] = [:]
   ) {
     logger.log("NEAppPushDelegate received an incoming call")
-    guard let uuid = userInfo["uuid"] as? String,
-          let payload = userInfo["payload"] as? [AnyHashable: Any] else {
+    guard let payload = userInfo["payload"] as? [AnyHashable: Any],
+          let uuid = payload["callkeepUuid"] as? String else {
       logger.log("userInfo dictionary is missing a required field")
       return
     }

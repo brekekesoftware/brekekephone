@@ -21,12 +21,12 @@ class BrekekeLPCExtension: NEAppPushProvider {
   override init() {
     super.init()
 
-    print("Initialized")
+    logger.log("Initialized")
 
     // Observe notification channel connection state changes for logging purposes.
     channel.statePublisher
       .sink { [weak self] state in
-        print("Notification channel state changed to: \(state)")
+        self?.logger.log("Notification channel state changed to: \(state)")
       }
       .store(in: &cancellables)
 
@@ -45,7 +45,6 @@ class BrekekeLPCExtension: NEAppPushProvider {
           // We will check if it is a call or chat PN in BrekekeLPCManager
           // If it requires CallKit interaction, we must check here instead
           self.reportIncomingCall(userInfo: [
-            "uuid": UUID().uuidString,
             "payload": message.custom,
           ])
         case let message as Invite:

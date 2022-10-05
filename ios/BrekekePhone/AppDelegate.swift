@@ -7,6 +7,11 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   UNUserNotificationCenterDelegate, ObservableObject {
+  override init() {
+    super.init()
+    BrekekeLPCManager.shared.initialize()
+  }
+
   var window: UIWindow?
   var bridge: RCTBridge!
 
@@ -15,8 +20,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     didFinishLaunchingWithOptions launchOptions: [UIApplication
       .LaunchOptionsKey: Any]?
   ) -> Bool {
-    initLCP()
-
     let jsCodeLocation: URL
     jsCodeLocation = RCTBundleURLProvider.sharedSettings()
       .jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
@@ -35,19 +38,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     center.delegate = self
     RNSplashScreen.show()
     return true
-  }
-
-  func initLCP() {
-    print("initLCP")
-    // It is important to initialize the BrekekeLPCManager as early as possible during app initialization.
-    BrekekeLPCManager.shared.initialize()
-    do {
-      print("Saving updated settings")
-      try SettingsManager.shared
-        .set(settings: SettingsManager.shared.settings)
-    } catch {
-      print("Saving to settings failed with error: \(error)")
-    }
   }
 
   func sourceURLForBridge(bridge _: RCTBridge!) -> NSURL! {

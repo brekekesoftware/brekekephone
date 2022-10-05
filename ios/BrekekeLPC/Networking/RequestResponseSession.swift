@@ -258,7 +258,8 @@ public class RequestResponseSession: NetworkSession {
               with: Data(datajson.utf8),
               options: []
             ) as? [AnyHashable: Any] {
-              if let custom = json["custom"] as? [AnyHashable: Any] {
+              if var custom = json["custom"] as? [AnyHashable: Any] {
+                custom["callkeepUuid"] = UUID().uuidString
                 msg.custom = custom
               }
             }

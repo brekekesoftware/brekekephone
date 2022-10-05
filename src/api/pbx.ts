@@ -8,7 +8,6 @@ import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser, Phonebook2 } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
 
