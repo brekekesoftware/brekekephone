@@ -120,6 +120,11 @@ class BrekekeLPCManager: NSObject {
     if pushManager.delegate == nil {
       pushManager.delegate = self
     }
+    // TODO:
+    logger.log("\(pushManager.matchSSIDs)")
+    logger.log("\(pushManager.isActive)")
+    logger.log("\(pushManager.providerConfiguration)")
+    logger.log("\(pushManager.delegate)")
     // Observe changes to the manager's `isActive` property and send the value out on the `pushManagerIsActiveSubject`.
     pushManagerIsActiveCancellable = NSObject.KeyValueObservingPublisher(
       object: pushManager,
