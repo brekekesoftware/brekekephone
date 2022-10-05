@@ -8,7 +8,12 @@ RCT_EXTERN_METHOD(systemUptimeMs
                   : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(playRBT)
 RCT_EXTERN_METHOD(stopRBT)
-RCT_EXTERN_METHOD(setConfig:(NSString *)deviceId appId:(NSString *)appId deviceName:(NSString *)deviceName ssid:(NSString *)ssid host:(NSString *)host)
+RCT_EXTERN_METHOD(setConfig
+                  : (NSString *)deviceId appId
+                  : (NSString *)appId deviceName
+                  : (NSString *)deviceName ssid
+                  : (NSString *)ssid host
+                  : (NSString *)host)
 RCT_EXTERN_METHOD(makeCallLPC)
 RCT_EXTERN_METHOD(endCallLPC)
 @end

@@ -1,50 +1,20 @@
+import Combine
 import Foundation
 import SwiftUI
 import UIKit
-import Combine
 import UserNotifications
-import BrekekeLPC
+
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
-                   UNUserNotificationCenterDelegate, ObservableObject {
-
-  private(set) lazy var isExecutingInBackgroundPublisher: AnyPublisher<Bool, Never> = {
-      Just(true)
-      .merge(with:
-          NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
-          .merge(with: NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification))
-          .map { notification -> Bool in
-              notification.name == UIApplication.didEnterBackgroundNotification
-          }
-      )
-      .debounce(for: .milliseconds(100), scheduler: dispatchQueue)
-      .eraseToAnyPublisher()
-  }()
-  private let dispatchQueue = DispatchQueue(label: "AppDelegate.dispatchQueue")
-  private var cancellables = Set<AnyCancellable>()
-  private let logger = Logger(prependString: "AppDelegate", subsystem: .general)
-  @StateObject private var rootViewCoordinator = RootViewCoordinator()
-  @State private var userViewModels = [UUID: UserViewModel]()
-
+  UNUserNotificationCenterDelegate, ObservableObject {
   var window: UIWindow?
   var bridge: RCTBridge!
-
-//  func application(
-//      _ application: UIApplication,
-//      configurationForConnecting connectingSceneSession: UISceneSession,
-//      options: UIScene.ConnectionOptions
-//    ) -> UISceneConfiguration {
-//      let sceneConfig = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
-//      sceneConfig.delegateClass = AppDelegate.self // 👈🏻
-//      return sceneConfig
-//    }
 
   func application(
     _: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication
       .LaunchOptionsKey: Any]?
   ) -> Bool {
-
     initLCP()
 
     let jsCodeLocation: URL
@@ -67,75 +37,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     return true
   }
 
-
-  func initLCP(){
+  func initLCP() {
     print("initLCP")
-    // It is important to initialize the PushConfigurationManager as early as possible during app initialization.
-    PushConfigurationManager.shared.initialize()
-
-    // Initialize the central messaging manager for text communication and request notification permission from the user.
-    MessagingManager.shared.initialize()
-    MessagingManager.shared.requestNotificationPermission()
+    // It is important to initialize the BrekekeLPCManager as early as possible during app initialization.
+    BrekekeLPCManager.shared.initialize()
     do {
-        print("Saving updated settings")
-        try SettingsManager.shared.set(settings: SettingsManager.shared.settings)
-        // ControlChannel.shared.connect()
+      print("Saving updated settings")
+      try SettingsManager.shared
+        .set(settings: SettingsManager.shared.settings)
     } catch {
       print("Saving to settings failed with error: \(error)")
     }
-//    ControlChannel.shared.setHost("192.168.89.2")
-//    ControlChannel.shared.connect()
-    // Register this device with the control channel.
-    // let user = User(uuid: UserManager.shared.currentUser.uuid, deviceName: UserManager.shared.currentUser.deviceName)
-    // ControlChannel.shared.register(user)
-
-
-
-    // Observe the active state of NEAppPushManager to display the active state in the SettingsView.
-    PushConfigurationManager.shared.pushManagerIsActivePublisher
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] isAppPushManagerActive in
-            print("isActive:\(isAppPushManagerActive)")
-        }
-        .store(in: &cancellables)
-
-    // Connect the control channel when the app is in the foreground or responding to a CallKit call in the background. Disconnect the control
-    // channel when the app is in the background and not in a CallKit call.
-    isExecutingInBackgroundPublisher
-        .combineLatest(CallManager.shared.$state)
-        .sink { [weak self] isExecutingInBackground, callManagerState in
-          guard self != nil else {
-                return
-            }
-
-            if isExecutingInBackground {
-                switch callManagerState {
-                // case .connecting:
-//                    self.logger.log("App running in background and the CallManager's state is connecting, connecting to control channel")
-                    // ControlChannel.shared.connect()
-                // case .disconnected:
-//                    self.logger.log("App running in background and the CallManager's state is disconnected, disconnecting from control channel")
-                    // ControlChannel.shared.disconnect()
-                default:
-                    print("App running in background")
-                }
-            } else {
-//                self.logger.log("App running in foreground, connecting to control channel")
-                // ControlChannel.shared.connect()
-            }
-        }
-        .store(in: &cancellables)
   }
-
-//  func viewModel(for user: User) -> UserViewModel {
-//      userViewModels.get(user.id, insert: UserViewModel(user: user))
-//  }
-
-  func applicationWillTerminate(_ application: UIApplication) {
-//      logger.log("Application is terminating, disconnecting control channel")
-      // ControlChannel.shared.disconnect()
-  }
-
 
   func sourceURLForBridge(bridge _: RCTBridge!) -> NSURL! {
     #if DEBUG
@@ -210,36 +123,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                               forType: (type as NSString) as String,
                               callkeepUuid: uuid)
     // RNCallKeep
-    var callerName: String! = payload
-      .dictionaryPayload["x_displayname"] as? String
-    if callerName == nil {
-      callerName = (payload.dictionaryPayload["x_from"] as? String)
-      if callerName == nil {
-        let aps: NSDictionary! = payload
-          .dictionaryPayload["aps"] as? NSDictionary
-        if aps != nil {
-          callerName = aps.value(forKey: "x_displayname") as? String
-          if callerName == nil {
-            callerName = aps.value(forKey: "x_from") as? String
-          }
-        }
-      }
-    }
-    if callerName == nil {
-      callerName = "Loading..."
-    }
-    RNCallKeep.reportNewIncomingCall(uuid,
-                                     handle: "Brekeke Phone",
-                                     handleType: "generic",
-                                     hasVideo: false,
-                                     localizedCallerName: callerName,
-                                     supportsHolding: true,
-                                     supportsDTMF: true,
-                                     supportsGrouping: false,
-                                     supportsUngrouping: false,
-                                     fromPushKit: true,
-                                     payload: payload.dictionaryPayload,
-                                     withCompletionHandler: completion)
+    AppDelegate.reportNewIncomingCall(
+      uuid: uuid,
+      payload: payload.dictionaryPayload,
+      handler: completion
+    )
     // --- don't need to call this if we do on the js side
     // --- already add completion in above reportNewIncomingCall
     // completion();
@@ -315,5 +203,40 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       }
     )
     completionHandler([.sound, .badge])
+  }
+
+  public static func reportNewIncomingCall(
+    uuid: String,
+    payload: [AnyHashable: Any],
+    handler: (() -> Void)?
+  ) {
+    var callerName: String! = payload["x_displayname"] as? String
+    if callerName == nil {
+      callerName = (payload["x_from"] as? String)
+      if callerName == nil {
+        let aps: NSDictionary! = payload["aps"] as? NSDictionary
+        if aps != nil {
+          callerName = aps.value(forKey: "x_displayname") as? String
+          if callerName == nil {
+            callerName = aps.value(forKey: "x_from") as? String
+          }
+        }
+      }
+    }
+    if callerName == nil {
+      callerName = "Loading..."
+    }
+    RNCallKeep.reportNewIncomingCall(uuid,
+                                     handle: "Brekeke Phone",
+                                     handleType: "generic",
+                                     hasVideo: false,
+                                     localizedCallerName: callerName,
+                                     supportsHolding: true,
+                                     supportsDTMF: true,
+                                     supportsGrouping: false,
+                                     supportsUngrouping: false,
+                                     fromPushKit: true,
+                                     payload: payload,
+                                     withCompletionHandler: handler)
   }
 }

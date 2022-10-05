@@ -6,7 +6,10 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>NSLocalNetworkUsageDescription</key>
-    <string>SimplePush requires access to your local network in order to activate the Local Push Connectivity extension.</string>
+    <string>
+      SimplePush requires access to your local network in order to activate the
+      Local Push Connectivity extension.
+    </string>
     <key>CFBundleDisplayName</key>
     <string>Brekeke Phone Dev</string>
     <key>CFBundleExecutable</key>
