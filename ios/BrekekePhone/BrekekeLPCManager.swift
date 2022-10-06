@@ -21,7 +21,8 @@ class BrekekeLPCManager: NSObject {
   override init() {
     super.init()
 
-    // Create, update, or delete the push manager when SettingsManager.hostSSIDPublisher produces a new value.
+    // Create, update, or delete the push manager when
+    // SettingsManager.hostSSIDPublisher produces a new value.
     SettingsManager.shared.settingsDidWritePublisher
       .compactMap { settings in
         settings.pushManagerSettings
@@ -38,7 +39,8 @@ class BrekekeLPCManager: NSObject {
           var pm = pushManager ?? NEAppPushManager()
           pm.delegate = BrekekeLPCManager.shared
           self.logger.log("pm.delegate = nil? \(pm.delegate == nil)")
-          // Create a new push manager or update the existing instance with the new values from settings.
+          // Create a new push manager or update the existing instance with the new
+          // values from settings.
           logger.log("Saving new push manager configuration.")
           publisher = save(
             pushManager: pm,
@@ -60,7 +62,8 @@ class BrekekeLPCManager: NSObject {
           .eraseToAnyPublisher()
           logger.log("Saving new push \(String(describing: publisher))")
         } else if let pushManager = pushManager {
-          // Remove the push manager and map its value to nil to indicate removal of the push manager to the downstream subscribers.
+          // Remove the push manager and map its value to nil to indicate removal of
+          // the push manager to the downstream subscribers.
           logger.log("Removing push manager configuration.")
           pushManager.delegate = BrekekeLPCManager.shared
           self.logger
@@ -97,7 +100,8 @@ class BrekekeLPCManager: NSObject {
 
     logger.log("Loading existing push manager.")
 
-    // It is important to call loadAllFromPreferences as early as possible during app initialization in order to set the delegate on your
+    // It is important to call loadAllFromPreferences as early as possible during
+    // app initialization in order to set the delegate on your
     // NEAppPushManagers. This allows your NEAppPushManagers to receive an incoming call.
     NEAppPushManager.loadAllFromPreferences { managers, error in
       if let error = error {
@@ -117,7 +121,8 @@ class BrekekeLPCManager: NSObject {
         return
       }
       self.logger.log("to load all managers from preferences:")
-      // The manager's delegate must be set synchronously in this closure in order to avoid race conditions when the app launches in response
+      // The manager's delegate must be set synchronously in this closure in order
+      // to avoid race conditions when the app launches in response
       // to an incoming call.
       manager.delegate = BrekekeLPCManager.shared
       self.logger.log("manager.delegate = nil? \(manager.delegate == nil)")
@@ -148,7 +153,8 @@ class BrekekeLPCManager: NSObject {
     pushManager.isEnabled = true
     logger
       .log("pushProviderBundleIdentifier:\(pushProviderBundleIdentifier)")
-    // The provider configuration passes global variables; don't put user-specific info in here (which could expose sensitive user info when
+    // The provider configuration passes global variables; don't put user-specific
+    // info in here (which could expose sensitive user info when
     // running on a shared iPad).
     pushManager.providerConfiguration = [
       "host": pushManagerSettings.host,

@@ -33,8 +33,6 @@ type TBrekekeUtils = {
     ssid: string,
     host: string,
   ): void
-  makeCallLPC(): void
-  endCallLPC(): void
   // these methods available on both
   systemUptimeMs(): Promise<number>
 }
@@ -65,8 +63,6 @@ const Polyfill: TBrekekeUtils = {
   stopRBT: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
   setConfig: () => undefined,
-  makeCallLPC: () => undefined,
-  endCallLPC: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

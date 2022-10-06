@@ -76,7 +76,8 @@ class BaseChannel {
       .subscribe(internalMessageSubject)
       .store(in: &cancellables)
 
-    // Observe changes to the `connectActionPublisher` and connect or disconnect the session accordingly.
+    // Observe changes to the `connectActionPublisher` and connect or disconnect the
+    // session accordingly.
     connectActionPublisher
       .sink { [weak self] connectAction in
         guard let self = self else {
@@ -134,7 +135,8 @@ class BaseChannel {
         return
       }
 
-      // Disconnect the network session if a better path is available. In this case, the retry logic in connectActionPublisher
+      // Disconnect the network session if a better path is available. In this case, the
+      // retry logic in connectActionPublisher
       // takes care of reestablishing the connection over a viable interface.
       self.networkSession.disconnect()
     }
@@ -144,8 +146,10 @@ class BaseChannel {
 
   // MARK: - Publishers
 
-  // A publisher that signals whether the subscriber connects to the server or disconnects an existing connection. This publisher takes
-  // multiple variables into account, such as the network session's current state, whether this class's connect/disconnect method resulted
+  // A publisher that signals whether the subscriber connects to the server or
+  // disconnects an existing connection. This publisher takes
+  // multiple variables into account, such as the network session's current state,
+  // whether this class's connect/disconnect method resulted
   // from an external call, and whether the host changed.
   private lazy var connectActionPublisher: AnyPublisher<
     ConnectAction,
@@ -166,8 +170,10 @@ class BaseChannel {
             guard last?.host != host else {
               break
             }
-            // Disconnect if the host changed and the network session is in the connecting or connected state. When network session's
-            // state transitions to .disconnected, the next case causes the channel to try to reconnect.
+            // Disconnect if the host changed and the network session is in the connecting
+            // or connected state. When network session's
+            // state transitions to .disconnected, the next case causes the channel
+            // to try to reconnect.
             connect = false
           case .disconnected:
             // Connect if the server is currently disconnected (retry).
@@ -178,7 +184,8 @@ class BaseChannel {
         } else {
           switch networkSessionState {
           case .connected, .connecting:
-            // Disconnect if the user wants to be disconnected and the session's state is connected or connecting.
+            // Disconnect if the user wants to be disconnected and the session's state is
+            // connected or connecting.
             connect = false
           default:
             break
@@ -190,7 +197,8 @@ class BaseChannel {
       .compactMap { value -> ConnectAction? in
         guard let value = value,
               let shouldConnect = value.connect else {
-          // It's an indication from the upstream publisher to not proceed if `value` or `value.connect` are nil.
+          // It's an indication from the upstream publisher to not proceed if
+          // `value` or `value.connect` are nil.
           return nil
         }
 
@@ -202,7 +210,8 @@ class BaseChannel {
       }
       .eraseToAnyPublisher()
 
-  // A publisher that upon subscription drops all states from the control channel until receiving a `connected` state, waits for a
+  // A publisher that upon subscription drops all states from the control channel
+  // until receiving a `connected` state, waits for a
   // `disconnecting` state, then finishes.
   public func isDisconnectingPublisher()
     -> AnyPublisher<NetworkSession.State, Never> {

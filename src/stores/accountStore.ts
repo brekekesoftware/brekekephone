@@ -20,7 +20,7 @@ let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
-
+export type PNOptions = 'disabled' | 'APNs' | 'LPC' | undefined
 export type Account = {
   id: string
   pbxHostname: string
@@ -32,6 +32,8 @@ export type Account = {
   pbxTurnEnabled: boolean
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
+  pushNotificationType?: PNOptions //'disabled', 'APNs', 'LPC'
+  pushNotificationSSID?: string
   pushNotificationEnabledSynced?: boolean
   parks?: string[]
   parkNames?: string[]
@@ -91,6 +93,8 @@ class AccountStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
+    pushNotificationType: undefined,
+    pushNotificationSSID: '',
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,

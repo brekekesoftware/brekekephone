@@ -30,7 +30,8 @@ class BrekekeLPCExtension: NEAppPushProvider {
       }
       .store(in: &cancellables)
 
-    // Observe notification channel messages and alert the user when receiving a new text message or call invite.
+    // Observe notification channel messages and alert the user when receiving a new
+    // text message or call invite.
     channel.messagePublisher
       .receive(on: DispatchQueue.main)
       .sink { [weak self] message in
@@ -56,7 +57,8 @@ class BrekekeLPCExtension: NEAppPushProvider {
       }
       .store(in: &cancellables)
 
-    // Observe changes to Settings to send new user registrations on the notification channel when receiving a Settings change.
+    // Observe changes to Settings to send new user registrations on the notification
+    // channel when receiving a Settings change.
     SettingsManager.shared.settingsPublisher
       .sink { [weak self] settings in
         guard let self = self

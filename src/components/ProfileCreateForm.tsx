@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { Platform, View } from 'react-native'
 
-import { Account, accountStore } from '../stores/accountStore'
+import { Account, accountStore, PNOptions } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
@@ -19,13 +19,33 @@ export const ProfileCreateForm: FC<{
   onSave: Function
   footerLogout?: boolean
   title: string
+  pushNotificationType?: PNOptions
 }> = observer(props => {
   const isWeb = Platform.OS === 'web'
+  const isIos = Platform.OS === 'ios'
+  const updateNotificationType = (profileData: Account | undefined) => {
+    if (!profileData) {
+      return
+    }
+    return {
+      ...profileData,
+      pushNotificationType: profileData.pushNotificationEnabled
+        ? 'APNs'
+        : undefined,
+    }
+  }
+  // update profile with new function LPC ios
+  const isShouldChange =
+    isIos && !!!props?.updatingProfile?.pushNotificationType
+  const profile = isShouldChange
+    ? updateNotificationType(props.updatingProfile)
+    : props.updatingProfile
+
   const m = () => ({
     observable: {
       profile: {
         ...accountStore.genEmptyAccount(),
-        ...cloneDeep(props.updatingProfile),
+        ...cloneDeep(profile),
       },
       addingPark: { name: '', number: '' },
     },
@@ -36,7 +56,7 @@ export const ProfileCreateForm: FC<{
         onConfirm: () => {
           $.set('profile', (p: Account) => ({
             ...accountStore.genEmptyAccount(),
-            ...cloneDeep(props.updatingProfile),
+            ...cloneDeep(profile),
             id: p.id,
           }))
         },
@@ -110,6 +130,19 @@ export const ProfileCreateForm: FC<{
       })
     },
     onValidSubmit: () => {
+      console.log({ profile: $.profile })
+      // update value pushNotificationEnabled with case use Ios setting PN
+      isIos &&
+        $.profile?.pushNotificationType &&
+        $.set('profile', (p: Account) => {
+          if (p?.pushNotificationType !== 'disabled') {
+            p.pushNotificationEnabled = true
+          } else {
+            p.pushNotificationEnabled = false
+          }
+          return p
+        })
+
       props.onSave($.profile, $.hasUnsavedChanges())
     },
   })
@@ -215,12 +248,33 @@ export const ProfileCreateForm: FC<{
             name: 'pbxTurnEnabled',
             label: intl`TURN`,
           },
+          !isIos
+            ? {
+                disabled: props.footerLogout,
+                type: 'Switch',
+                name: 'pushNotificationEnabled',
+                label: intl`PUSH NOTIFICATION`,
+                hidden: isWeb,
+              }
+            : {
+                disabled: props.footerLogout,
+                type: 'RnPicker',
+                name: 'pushNotificationType',
+                label: intl`PUSH NOTIFICATION`,
+                rule: 'required',
+                hidden: isWeb,
+                options: [
+                  { key: 'disabled', label: intl`Disabled` },
+                  { key: 'APNs', label: intl`APNs Push Notification` },
+                  { key: 'LPC', label: intl`LPC Push Notification` },
+                ],
+              },
           {
             disabled: props.footerLogout,
-            type: 'Switch',
-            name: 'pushNotificationEnabled',
-            label: intl`PUSH NOTIFICATION`,
-            hidden: isWeb,
+            name: 'pushNotificationSSID',
+            label: intl`SSID`,
+            rule: 'required',
+            hidden: !isIos || $.profile?.pushNotificationType !== 'LPC',
           },
           {
             isGroup: true,

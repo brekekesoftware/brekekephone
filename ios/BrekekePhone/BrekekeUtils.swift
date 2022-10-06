@@ -18,6 +18,28 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
+  func setConfig(
+    _ deviceId: String,
+    appId: String,
+    deviceName: String,
+    ssid: String,
+    host: String
+  ) {
+    var settingInfo = SettingsManager.shared.settings
+    settingInfo.uuid = deviceId
+    settingInfo.appId = appId
+    settingInfo.deviceName = deviceName
+    settingInfo.pushManagerSettings.ssid = ssid
+    settingInfo.pushManagerSettings.host = host
+    print("setConfig: \(settingInfo)")
+    do {
+//        try SettingsManager.shared.set(settings: settingInfo)
+    } catch let error as NSError {
+      print("Error encoding settings - \(error)")
+    }
+  }
+
+  @objc
   func playRBT() {
     print("BrekekeUtils.playRBT()")
     do {

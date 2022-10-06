@@ -14,6 +14,4 @@ RCT_EXTERN_METHOD(setConfig
                   : (NSString *)deviceName ssid
                   : (NSString *)ssid host
                   : (NSString *)host)
-RCT_EXTERN_METHOD(makeCallLPC)
-RCT_EXTERN_METHOD(endCallLPC)
 @end

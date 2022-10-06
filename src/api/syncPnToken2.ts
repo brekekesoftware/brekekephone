@@ -40,13 +40,19 @@ const syncPnTokenWithoutCatch = async (
       t = tvoip
     }
   }
+  //8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3
+  //a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11
   t = 'a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11'
   tvoip = 'a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11'
 
   const fn =
     Platform.OS === 'ios'
       ? p.pushNotificationEnabled
-        ? pbx.setLPCToken
+        ? p.pushNotificationType === 'LPC'
+          ? pbx.setLPCToken
+          : pbx.setApnsToken
+        : p.pushNotificationType === 'LPC'
+        ? pbx.removeLPCToken
         : pbx.removeLPCToken
       : Platform.OS === 'android'
       ? p.pushNotificationEnabled
