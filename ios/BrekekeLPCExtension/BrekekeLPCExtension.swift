@@ -65,9 +65,12 @@ class BrekekeLPCExtension: NEAppPushProvider {
         else {
           return
         }
+        
+        self.logger.log("settingsPublisher::start::user \(settings)")
 
         let user = User(uuid: settings.user.uuid,
-                        deviceName: settings.deviceName)
+                        deviceName: settings.deviceName, appid: settings.appId)
+//        self.channel.register(user)
         self.channel.register(user)
         self.channel.setHost(settings.pushManagerSettings.host)
       }

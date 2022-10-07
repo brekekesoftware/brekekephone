@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { FlatList, Platform, StyleSheet, View } from 'react-native'
+import { Button, FlatList, Platform, StyleSheet, View } from 'react-native'
 
 import {
   mdiDotsHorizontal,
@@ -15,6 +15,7 @@ import { accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 
 const css = StyleSheet.create({
   PageProfileSignIn_ListServers: {
@@ -83,6 +84,20 @@ export const PageProfileSignIn = observer(() => {
         title={intl`Accounts`}
         transparent
       >
+        {
+          <Button
+            title={'SetupConfig'}
+            onPress={() => {
+              BrekekeUtils.setConfig(
+                '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d31',
+                'com.brekeke.phonedev2',
+                'Iphone 33',
+                'NGOCTRAM3',
+                'apps.brekeke.com3',
+              )
+            }}
+          />
+        }
         <View
           style={{
             flexDirection: 'column',

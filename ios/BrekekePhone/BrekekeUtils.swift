@@ -25,15 +25,30 @@ public class BrekekeUtils: NSObject {
     ssid: String,
     host: String
   ) {
+//    BrekekeLPCManager.shared.loadAllFromPreferences()
+
+    let date = Date()
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm:ss.SSSS"
     var settingInfo = SettingsManager.shared.settings
     settingInfo.uuid = deviceId
     settingInfo.appId = appId
     settingInfo.deviceName = deviceName
     settingInfo.pushManagerSettings.ssid = ssid
     settingInfo.pushManagerSettings.host = host
-    print("setConfig: \(settingInfo)")
+    settingInfo.pushManagerSettings.payLoad = formatter.string(from: date)
+    var settings = Settings(
+      appId: appId,
+      uuid: deviceId,
+      deviceName: deviceName
+    )
+    settings.pushManagerSettings.ssid = ssid
+    settings.pushManagerSettings.host = host
+    settings.pushManagerSettings.payLoad = formatter.string(from: date)
+
+    print("BrekekeLPCManager:setConfig: \(settings)")
     do {
-//        try SettingsManager.shared.set(settings: settingInfo)
+        try SettingsManager.shared.set(settings: settings)
     } catch let error as NSError {
       print("Error encoding settings - \(error)")
     }

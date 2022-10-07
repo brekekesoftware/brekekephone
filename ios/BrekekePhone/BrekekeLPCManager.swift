@@ -80,7 +80,7 @@ class BrekekeLPCManager: NSObject {
       .sink { [self] result in
         switch result {
         case let .success(pushManager):
-          logger.log("success::\(String(describing: pushManager))")
+          logger.log("BrekekeLPCManager::success::\(String(describing: pushManager))")
           if let pushManager = pushManager {
             prepare(pushManager: pushManager)
           } else {

@@ -14,8 +14,7 @@ class SettingsManager: NSObject {
     settingsSubject.value
   }
 
-  private(set) lazy var settingsPublisher = settingsSubject
-    .eraseToAnyPublisher()
+  private(set) lazy var settingsPublisher = settingsSubject.eraseToAnyPublisher()
   private let settingsWillWriteSubject = PassthroughSubject<Void, Never>()
   private static let settingsKey = "settings"
   private static let userDefaults =
@@ -32,8 +31,8 @@ class SettingsManager: NSObject {
     if settings == nil {
       settings = Settings(
         appId: "apps.brekeke.com",
-        uuid: "a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11",
-        deviceName: UIDevice.current.name
+        uuid: "8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3",
+        deviceName: "ABC"
       )
 
       do {
@@ -61,8 +60,8 @@ class SettingsManager: NSObject {
   private(set) lazy var settingsDidWritePublisher = settingsWillWriteSubject
     .compactMap { [weak self] _ in
       self?.settingsPublisher
-        .dropFirst()
-        .first()
+          .dropFirst()
+          .first()
     }
     .switchToLatest()
     .eraseToAnyPublisher()
@@ -78,13 +77,16 @@ class SettingsManager: NSObject {
   }
 
   func set(settings: Settings) throws {
-    guard settings.uuid == self.settings.uuid else {
-      throw Error.uuidMismatch
+//    guard settings.uuid == self.settings.uuid else {
+//      throw Error.uuidMismatch
+//    }
+    if(settings.uuid != ""){
+      Self.logger.log("setSetting::\(settings)")
+        settingsWillWriteSubject.send()
+       try Self.set(settings: settings)
+      settingsSubject.send(settings)
+//      Self.logger.log("setSetting::\(settingsSubject.first())")
     }
-
-    settingsWillWriteSubject.send()
-    try Self.set(settings: settings)
-    settingsSubject.send(settings)
   }
 
   private static func set(settings: Settings) throws {

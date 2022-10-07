@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import { Account, accountStore } from '../stores/accountStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
@@ -42,8 +43,8 @@ const syncPnTokenWithoutCatch = async (
   }
   //8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3
   //a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11
-  t = 'a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11'
-  tvoip = 'a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11'
+  t = '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3'
+  tvoip = '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3'
 
   const fn =
     Platform.OS === 'ios'

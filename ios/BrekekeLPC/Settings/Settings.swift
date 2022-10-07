@@ -2,11 +2,12 @@ import Foundation
 
 public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
-    var ssid = "NamN20"
+    var ssid = "NGOCTRAM"
     var mobileCountryCode = ""
     var mobileNetworkCode = ""
     var trackingAreaCode = ""
     var host = "apps.brekeke.com"
+    var payLoad = "anyText"
   }
 
   var appId: String

@@ -15,12 +15,12 @@ public struct User: Codable, Equatable, Hashable, Identifiable {
     self.appid = appid
   }
 
-  public init(uuid: String, deviceName: String) {
-    self.uuid = uuid
-    self.deviceName = deviceName
-    self
-      .uuid = "a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11"
-    self.deviceName = "Nam iPhoneXs"
-    appid = "com.brekeke.phonedev"
-  }
+//  public init(uuid: String, deviceName: String) {
+//    self.uuid = uuid
+//    self.deviceName = deviceName
+//    self
+//      .uuid = "a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11"
+//    self.deviceName = "Nam iPhoneXs"
+//    appid = "com.brekeke.phonedev"
+//  }
 }
