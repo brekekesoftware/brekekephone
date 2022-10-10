@@ -12,7 +12,7 @@ class BrekekeLPCManager: NSObject {
     prependString: "BrekekeLPCManager",
     subsystem: .general
   )
-  private var pushManager: NEAppPushManager?
+  public var pushManager: NEAppPushManager?
   private let pushManagerDescription = "BrekekeLPCExtension"
   private let pushProviderBundleIdentifier =
     "com.brekeke.phonedev.BrekekeLPCExtension"
@@ -20,37 +20,6 @@ class BrekekeLPCManager: NSObject {
 
   override init() {
     super.init()
-//    // Observe settings published by the SettingsManager to update the SettingsView.
-//    SettingsManager.shared.settingsPublisher
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] settings in
-//          guard let self = self
-//                 else {
-//                   return
-//                 }
-////            self?.settings = settings
-//          self.logger.log("settingsPublisher::setting::host:: \(settings.user.deviceName)")
-//        }
-//        .store(in: &cancellables)
-//    
-    // Check subcription setting
-//    SettingsManager.shared.settingsPublisher
-//      .sink { [weak self] settings in
-//        guard let self = self
-//        else {
-//          return
-//        }
-//
-////        self.logger.log("settingsPublisher::setting:: \(settings)")
-//        self.logger.log("settingsPublisher::setting::host:: \(settings.user.deviceName)")
-////        let user = User(uuid: settings.user.uuid,
-////                        deviceName: settings.deviceName, appid: settings.appId)
-////        self.channel.register(user)
-////        self.channel.register(user)
-////        self.channel.setHost(settings.pushManagerSettings.host)
-//      }
-//      .store(in: &cancellables)
-    
     // Create, update, or delete the push manager when
     // SettingsManager.hostSSIDPublisher produces a new value.
     SettingsManager.shared.settingsDidWritePublisher
@@ -65,7 +34,7 @@ class BrekekeLPCManager: NSObject {
       >? in
         var publisher: AnyPublisher<NEAppPushManager?, Swift.Error>?
 
-        if !pushManagerSettings.isEmpty {
+        if !pushManagerSettings.isEmpty, pushManagerSettings.enabled {
           var pm = pushManager ?? NEAppPushManager()
           pm.delegate = BrekekeLPCManager.shared
           self.logger.log("pm.delegate = nil? \(pm.delegate == nil)")
@@ -110,7 +79,10 @@ class BrekekeLPCManager: NSObject {
       .sink { [self] result in
         switch result {
         case let .success(pushManager):
-          logger.log("BrekekeLPCManager::success::\(String(describing: pushManager))")
+          logger
+            .log(
+              "BrekekeLPCManager::success::\(String(describing: pushManager))"
+            )
           if let pushManager = pushManager {
             prepare(pushManager: pushManager)
           } else {

@@ -576,7 +576,7 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
-    BrekekeUtils.setConfig(
+    BrekekeUtils.enableLPC(
       '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d31',
       'com.brekeke.phonedev2',
       'Iphone 33',

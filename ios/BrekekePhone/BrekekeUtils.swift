@@ -18,7 +18,7 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
-  func setConfig(
+  func enableLPC(
     _ deviceId: String,
     appId: String,
     deviceName: String,
@@ -40,24 +40,30 @@ public class BrekekeUtils: NSObject {
     var settings = Settings(
       appId: appId,
       uuid: deviceId,
-      deviceName: deviceName + formatter.string(from: date) // username pbx 
+      deviceName: deviceName + formatter.string(from: date) // username pbx
     )
     settings.pushManagerSettings.ssid = ssid
     settings.pushManagerSettings.host = host
 //    settings.pushManagerSettings.payLoad = formatter.string(from: date)
 
-    print("BrekekeLPCManager:setConfig: \(settings)")
+    print("BrekekeLPCManager:enableLPC: \(settings)")
     do {
-        try SettingsManager.shared.set(settings: settings)
+      try SettingsManager.shared.set(settings: settings)
     } catch let error as NSError {
       print("Error encoding settings - \(error)")
     }
   }
-  
+
   @objc
-  func removeConfig(){
-    BrekekeLPCManager.shared.pushManager?.remove()
+  func disableLPC() {
+    do {
+      BrekekeLPCManager.shared.pushManager?.remove()
+      var old = SettingsManager.shared.settings
+      old.pushManagerSettings.enabled = false
+      try SettingsManager.shared.set(settings: old)
+    } catch {}
   }
+
   @objc
   func playRBT() {
     print("BrekekeUtils.playRBT()")

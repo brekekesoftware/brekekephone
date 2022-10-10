@@ -88,7 +88,7 @@ export const PageProfileSignIn = observer(() => {
           <Button
             title={'SetupConfig'}
             onPress={() => {
-              BrekekeUtils.setConfig(
+              BrekekeUtils.enableLPC(
                 '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3',
                 'com.brekeke.phonedev',
                 'Iphone 3',

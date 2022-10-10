@@ -26,13 +26,14 @@ type TBrekekeUtils = {
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
-  setConfig(
+  enableLPC(
     deviceId: string,
     appId: string,
     deviceName: string,
     ssid: string,
     host: string,
   ): void
+  disableLPC(): void
   // these methods available on both
   systemUptimeMs(): Promise<number>
 }
@@ -61,8 +62,9 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
+  enableLPC: () => undefined,
+  disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
-  setConfig: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

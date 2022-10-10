@@ -14,7 +14,8 @@ class SettingsManager: NSObject {
     settingsSubject.value
   }
 
-  private(set) lazy var settingsPublisher = settingsSubject.eraseToAnyPublisher()
+  private(set) lazy var settingsPublisher = settingsSubject
+    .eraseToAnyPublisher()
   private let settingsWillWriteSubject = PassthroughSubject<Void, Never>()
   private static let settingsKey = "settings"
   private static let userDefaults =
@@ -84,10 +85,10 @@ class SettingsManager: NSObject {
 //    }
 //    if(settings.uuid != ""){
 //      if(settings.uuid != self.settings.uuid){
-        settingsWillWriteSubject.send()
+    settingsWillWriteSubject.send()
 //      }
-      try Self.set(settings: settings)
-      settingsSubject.send(settings)
+    try Self.set(settings: settings)
+    settingsSubject.send(settings)
 //      Self.logger.log("setSetting::\(settingsSubject.first())")
 //    }
   }

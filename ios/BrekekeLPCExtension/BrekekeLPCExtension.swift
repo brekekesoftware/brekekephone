@@ -67,8 +67,13 @@ class BrekekeLPCExtension: NEAppPushProvider {
         else {
           return
         }
-        self.logger.log("settingsPublisher::start::user \(settings)")
+        if !settings.pushManagerSettings.enabled {
+          self.stop(with: NEProviderStopReason(rawValue: 5)!,
+                    completionHandler: {})
+          return
+        }
 
+        self.logger.log("settingsPublisher::start::user \(settings)")
         let user = User(uuid: settings.user.uuid,
                         deviceName: settings.deviceName, appid: settings.appId)
 //        self.channel.register(user)
