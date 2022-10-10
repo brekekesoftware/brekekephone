@@ -56,7 +56,7 @@ class BaseChannel {
           } catch {
             self.logger.log("Unable to start hearbeat monitor")
           }
-
+          self.logger.log("registration:: \(registration)")
           if let registration = registration {
             self.request(message: registration)
           }

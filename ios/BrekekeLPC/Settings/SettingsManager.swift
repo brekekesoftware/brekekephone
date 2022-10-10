@@ -18,7 +18,7 @@ class SettingsManager: NSObject {
   private let settingsWillWriteSubject = PassthroughSubject<Void, Never>()
   private static let settingsKey = "settings"
   private static let userDefaults =
-    UserDefaults(suiteName: "group.com.example.apple-samplecode.SimplePush")!
+    UserDefaults(suiteName: "group.com.brekeke.lpc")!
   private let settingsSubject: CurrentValueSubject<Settings, Never>
   private static let logger = Logger(
     prependString: "SettingsManager",
@@ -27,12 +27,12 @@ class SettingsManager: NSObject {
 
   override init() {
     var settings = Self.fetch()
-
+    SettingsManager.logger.log("settings init(): \(settings)")
     if settings == nil {
       settings = Settings(
-        appId: "apps.brekeke.com",
-        uuid: "8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3",
-        deviceName: "ABC"
+        appId: "",
+        uuid: "",
+        deviceName: ""
       )
 
       do {
@@ -60,8 +60,8 @@ class SettingsManager: NSObject {
   private(set) lazy var settingsDidWritePublisher = settingsWillWriteSubject
     .compactMap { [weak self] _ in
       self?.settingsPublisher
-          .dropFirst()
-          .first()
+        .dropFirst()
+        .first()
     }
     .switchToLatest()
     .eraseToAnyPublisher()
@@ -77,16 +77,19 @@ class SettingsManager: NSObject {
   }
 
   func set(settings: Settings) throws {
+//    Self.logger.log("setSetting::\(settings)")
+//    Self.logger.log("setSetting::\(self.settings)")
 //    guard settings.uuid == self.settings.uuid else {
 //      throw Error.uuidMismatch
 //    }
-    if(settings.uuid != ""){
-      Self.logger.log("setSetting::\(settings)")
+//    if(settings.uuid != ""){
+//      if(settings.uuid != self.settings.uuid){
         settingsWillWriteSubject.send()
-       try Self.set(settings: settings)
+//      }
+      try Self.set(settings: settings)
       settingsSubject.send(settings)
 //      Self.logger.log("setSetting::\(settingsSubject.first())")
-    }
+//    }
   }
 
   private static func set(settings: Settings) throws {

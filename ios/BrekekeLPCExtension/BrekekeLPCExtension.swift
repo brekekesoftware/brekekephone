@@ -61,11 +61,12 @@ class BrekekeLPCExtension: NEAppPushProvider {
     // channel when receiving a Settings change.
     SettingsManager.shared.settingsPublisher
       .sink { [weak self] settings in
+        print("settingsPublisher::start::user1 ")
+        self?.logger.log("settingsPublisher::start::user1 \(settings)")
         guard let self = self
         else {
           return
         }
-        
         self.logger.log("settingsPublisher::start::user \(settings)")
 
         let user = User(uuid: settings.user.uuid,

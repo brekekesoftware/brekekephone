@@ -20,7 +20,37 @@ class BrekekeLPCManager: NSObject {
 
   override init() {
     super.init()
-
+//    // Observe settings published by the SettingsManager to update the SettingsView.
+//    SettingsManager.shared.settingsPublisher
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] settings in
+//          guard let self = self
+//                 else {
+//                   return
+//                 }
+////            self?.settings = settings
+//          self.logger.log("settingsPublisher::setting::host:: \(settings.user.deviceName)")
+//        }
+//        .store(in: &cancellables)
+//    
+    // Check subcription setting
+//    SettingsManager.shared.settingsPublisher
+//      .sink { [weak self] settings in
+//        guard let self = self
+//        else {
+//          return
+//        }
+//
+////        self.logger.log("settingsPublisher::setting:: \(settings)")
+//        self.logger.log("settingsPublisher::setting::host:: \(settings.user.deviceName)")
+////        let user = User(uuid: settings.user.uuid,
+////                        deviceName: settings.deviceName, appid: settings.appId)
+////        self.channel.register(user)
+////        self.channel.register(user)
+////        self.channel.setHost(settings.pushManagerSettings.host)
+//      }
+//      .store(in: &cancellables)
+    
     // Create, update, or delete the push manager when
     // SettingsManager.hostSSIDPublisher produces a new value.
     SettingsManager.shared.settingsDidWritePublisher
@@ -87,7 +117,7 @@ class BrekekeLPCManager: NSObject {
             cleanup()
           }
         case let .failure(error):
-          logger.log("failure::\(error)")
+          logger.log("BrekekeLPCManager::failure::\(error)")
         }
       }.store(in: &cancellables)
   }
@@ -152,7 +182,7 @@ class BrekekeLPCManager: NSObject {
     logger.log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
     pushManager.isEnabled = true
     logger
-      .log("pushProviderBundleIdentifier:\(pushProviderBundleIdentifier)")
+      .log("pushProviderBundleIdentifier:\(pushManagerSettings)")
     // The provider configuration passes global variables; don't put user-specific
     // info in here (which could expose sensitive user info when
     // running on a shared iPad).

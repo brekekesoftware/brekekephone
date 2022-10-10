@@ -7,7 +7,7 @@ public struct Settings: Codable, Equatable {
     var mobileNetworkCode = ""
     var trackingAreaCode = ""
     var host = "apps.brekeke.com"
-    var payLoad = "anyText"
+    
   }
 
   var appId: String
