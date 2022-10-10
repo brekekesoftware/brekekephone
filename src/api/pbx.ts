@@ -556,10 +556,14 @@ export class PBX extends EventEmitter {
     device_id,
     username,
     voip = false,
+    host,
+    ssid,
   }: {
     device_id: string
     username: string
     voip?: boolean
+    host: string
+    ssid: string
   }) => {
     if (this.needToWait) {
       await waitPbx()
@@ -567,7 +571,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-
+    // await this.removeApnsToken({device_id, username, voip})
     await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '4',
@@ -577,11 +581,11 @@ export class PBX extends EventEmitter {
       device_id,
     })
     BrekekeUtils.enableLPC(
-      '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d31',
-      'com.brekeke.phonedev2',
-      'Iphone 33',
-      'NGOCTRAM3',
-      'apps.brekeke.com3',
+      device_id,
+      'com.brekeke.phonedev',
+      username,
+      ssid,
+      host,
     )
     return true
   }
@@ -601,6 +605,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
+
     await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '11',
@@ -609,6 +614,7 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+    BrekekeUtils.disableLPC()
     return true
   }
 
@@ -685,6 +691,9 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+
+    BrekekeUtils.disableLPC()
+
     return true
   }
 

@@ -3,7 +3,6 @@ import { Platform } from 'react-native'
 import { Account, accountStore } from '../stores/accountStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
-import { BrekekeUtils } from '../utils/RnNativeModules'
 import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
@@ -41,10 +40,6 @@ const syncPnTokenWithoutCatch = async (
       t = tvoip
     }
   }
-  //8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3
-  //a20a2ad59457ae42fd3a14a93241ea25074756ba26067d8cfd1604401a61fc11
-  t = '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3'
-  tvoip = '8850a30427c8a0c532867abcd44f8aefad32feae041d2f5bc6e2aca146f441d3'
 
   const fn =
     Platform.OS === 'ios'
@@ -54,7 +49,7 @@ const syncPnTokenWithoutCatch = async (
           : pbx.setApnsToken
         : p.pushNotificationType === 'LPC'
         ? pbx.removeLPCToken
-        : pbx.removeLPCToken
+        : pbx.removeApnsToken
       : Platform.OS === 'android'
       ? p.pushNotificationEnabled
         ? pbx.setFcmPnToken
@@ -77,6 +72,8 @@ const syncPnTokenWithoutCatch = async (
       fn({
         username: webPhone.id,
         device_id: t,
+        host: p.pbxHostname,
+        ssid: p.pushNotificationSSID || '',
       }),
     )
   }
@@ -86,6 +83,8 @@ const syncPnTokenWithoutCatch = async (
         username: webPhone.id,
         device_id: tvoip,
         voip: true,
+        host: p.pbxHostname,
+        ssid: p.pushNotificationSSID || '',
       }),
     )
   }

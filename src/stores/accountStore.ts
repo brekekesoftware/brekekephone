@@ -162,8 +162,10 @@ class AccountStore {
           noUpsert: true,
         })
       } else if (
-        typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== p0.pushNotificationEnabled
+        (typeof p.pushNotificationEnabled === 'boolean' &&
+          p.pushNotificationEnabled !== p0.pushNotificationEnabled) ||
+        (p.pushNotificationEnabled &&
+          p.pushNotificationType !== p0.pushNotificationType)
       ) {
         p1.pushNotificationEnabledSynced = false
         SyncPnToken().sync(p1, {

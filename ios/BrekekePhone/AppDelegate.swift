@@ -10,7 +10,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   override init() {
     super.init()
     BrekekeLPCManager.shared.initialize()
-//    SettingsManager.shared.settings
   }
 
   var window: UIWindow?
