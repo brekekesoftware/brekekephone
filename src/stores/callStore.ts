@@ -11,6 +11,7 @@ import { uc } from '../api/uc'
 import { embedApi } from '../embed/embedApi'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
+import { showNotification } from '../utils/DesktopNotification'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
@@ -19,7 +20,7 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
 import { Call } from './Call'
 import { CancelRecentPn } from './cancelRecentPn'
-import { intlDebug } from './intl'
+import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
@@ -264,6 +265,9 @@ export class CallStore {
     this.calls = [c, ...this.calls]
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
+    if (Platform.OS === 'web' && c.incoming && !c.answered) {
+      showNotification(c.getDisplayName() + ' ' + intl`Incoming call`)
+    }
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return

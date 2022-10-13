@@ -6,6 +6,7 @@ import './stores/Nav2' // Fix circular dependencies
 import './stores/authStore2' // Fix circular dependencies
 import './api/syncPnToken2' // Fix circular dependencies
 import 'brekekejs/lib/phonebook'
+import 'brekekejs/lib/webnotification'
 
 import { configure, onReactionError } from 'mobx'
 import { AppRegistry } from 'react-native'
