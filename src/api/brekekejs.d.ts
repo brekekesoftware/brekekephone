@@ -19,13 +19,13 @@ export type Brekeke = {
 }
 export type WebNotification = {
   requestPermission(Options: OptionRequestNotification): void
-  showNotification(Options: OptionShowNotification): void
+  showNotification(Options: OptionShowNotification): string
   closeNotification(Options: OptionCloseNotification): void
 }
 
 export type OptionCloseNotification = {
   notificationId: string
-  reason: string
+  reason?: string
 }
 export type OptionRequestNotification = {
   document: Document

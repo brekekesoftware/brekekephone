@@ -1,6 +1,6 @@
 export const showNotification = async (body: string) => {
   const notification = window.Brekeke.WebNotification
-  notification.showNotification({
+  const id = notification.showNotification({
     document,
     timeout: 15000,
     interval: -1,
@@ -11,6 +11,8 @@ export const showNotification = async (body: string) => {
     onclick: (ev: any) => {
       window.focus()
     },
-    onclose: (ev: any) => {},
+    onclose: (ev: any) => {
+      notification.closeNotification({ notificationId: id })
+    },
   })
 }
