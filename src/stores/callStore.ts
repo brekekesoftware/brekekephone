@@ -266,7 +266,10 @@ export class CallStore {
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
-      showNotification(c.getDisplayName() + ' ' + intl`Incoming call`)
+      showNotification(
+        c.getDisplayName() + ' ' + intl`Incoming call`,
+        c.getDisplayName(),
+      )
     }
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {

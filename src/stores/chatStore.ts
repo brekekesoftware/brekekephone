@@ -217,7 +217,7 @@ class ChatStore {
       m.length === 1
     ) {
       const messageNotification = name + ': ' + m[0]?.text || ''
-      showNotification(messageNotification)
+      showNotification(messageNotification, name)
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {

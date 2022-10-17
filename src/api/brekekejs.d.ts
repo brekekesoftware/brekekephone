@@ -38,6 +38,8 @@ export type OptionShowNotification = {
   title: string
   body: string
   icon: string
+  tag?: string
+  renotify?: boolean
   noisiness?: number // whether sounds or vibrations should be issued (0: silent, 1: once, 2: every) (default: 0)
   onclick: (ev: Event) => void
   onclose: (ev: Event) => void
