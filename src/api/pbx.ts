@@ -2,12 +2,14 @@ import 'brekekejs/lib/jsonrpc'
 import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
+import { Platform } from 'react-native'
 
 import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import { PbxUser, Phonebook2 } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
 
@@ -203,6 +205,18 @@ export class PBX extends EventEmitter {
     })
     const d = await s.getCurrentDataAsync()
     d.palParamUser = s.pbxConfig['webphone.pal.param.user']
+    if (Platform.OS === 'android') {
+      BrekekeUtils.setConfig(
+        s.pbxConfig?.['webphone.call.transfer'] === 'false',
+        s.pbxConfig?.['webphone.call.park'] === 'false',
+        s.pbxConfig?.['webphone.call.video'] === 'false',
+        s.pbxConfig?.['webphone.call.speaker'] === 'false',
+        s.pbxConfig?.['webphone.call.mute'] === 'false',
+        s.pbxConfig?.['webphone.call.record'] === 'false',
+        s.pbxConfig?.['webphone.call.dtmf'] === 'false',
+        s.pbxConfig?.['webphone.call.hold'] === 'false',
+      )
+    }
     accountStore.updateAccountData(d)
     return s.pbxConfig
   }

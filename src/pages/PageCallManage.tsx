@@ -32,6 +32,7 @@ import { RnText } from '../components/RnText'
 import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
+import { getAuthStore } from '../stores/authStore'
 import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
@@ -74,12 +75,19 @@ const css = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  BtnFuncCalls: {
+    marginBottom: 10,
+  },
   Btns_Hidden: {
     opacity: 0,
   },
   Btns_Inner: {
     flexDirection: 'row',
     alignSelf: 'center',
+    width: Dimensions.get('screen').width - 20,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   Btns_Space: {
     height: 20,
@@ -283,15 +291,18 @@ export class PageCallManage extends Component<{
     }
     const isHideButtons =
       !(c.withSDPControls || c.answered) && Platform.OS === 'web'
+
+    const configure = getAuthStore()?.pbxConfig
     return (
       <Container
         onPress={isVideoEnabled ? this.toggleButtons : undefined}
         style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
-        <View style={isHideButtons && css.Btns_Hidden}>
-          <View style={css.Btns_Inner}>
+        <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
+          {!(configure?.['webphone.call.transfer'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -302,7 +313,10 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
+          )}
+          {!(configure?.['webphone.call.park'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -313,7 +327,10 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
+          )}
+          {!(configure?.['webphone.call.video'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.localVideoEnabled ? activeColor : 'white'}
               color={c.localVideoEnabled ? 'white' : 'black'}
@@ -324,9 +341,12 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
-            {Platform.OS !== 'web' && (
+          )}
+          {Platform.OS !== 'web' &&
+            !(configure?.['webphone.call.speaker'] === 'false') && (
               <ButtonIcon
                 // disabled={!this.enableSpeaker}
+                styleContainer={css.BtnFuncCalls}
                 bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
                 color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
@@ -341,10 +361,12 @@ export class PageCallManage extends Component<{
                 textcolor='white'
               />
             )}
-          </View>
-          <View style={css.Btns_Space} />
-          <View style={css.Btns_Inner}>
+
+          {/* <View style={css.Btns_Space} /> */}
+          {/* <View style={css.Btns_Inner}> */}
+          {!(configure?.['webphone.call.mute'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.muted ? activeColor : 'white'}
               color={c.muted ? 'white' : 'black'}
@@ -355,7 +377,10 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
+          )}
+          {!(configure?.['webphone.call.record'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
               color={c.recording ? 'white' : 'black'}
@@ -366,7 +391,10 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
+          )}
+          {!(configure?.['webphone.call.dtmf'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!(c.withSDPControls || c.answered)}
               bgcolor='white'
               color='black'
@@ -377,7 +405,10 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
+          )}
+          {!(configure?.['webphone.call.hold'] === 'false') && (
             <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.holding ? activeColor : 'white'}
               color={c.holding ? 'white' : 'black'}
@@ -388,8 +419,9 @@ export class PageCallManage extends Component<{
               size={40}
               textcolor='white'
             />
-          </View>
+          )}
         </View>
+        {/* </View> */}
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}

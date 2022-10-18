@@ -1,5 +1,11 @@
 import { FC } from 'react'
-import { Platform, StyleSheet, TouchableOpacityProps, View } from 'react-native'
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacityProps,
+  View,
+  ViewProps,
+} from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { RnText, RnTouchableOpacity } from './Rn'
@@ -33,10 +39,11 @@ export const ButtonIcon: FC<{
   bdcolor?: string
   name?: string
   textcolor?: string
+  styleContainer?: ViewProps['style']
 }> = p => {
   const size = p.size || 15
   return (
-    <View style={css.ButtonIcon}>
+    <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
         disabled={p.disabled}
         onPress={p.onPress}
