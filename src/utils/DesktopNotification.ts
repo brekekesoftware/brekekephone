@@ -1,4 +1,9 @@
+import { getAuthStore } from '../stores/authStore'
+
 export const showNotification = async (body: string, tag: string) => {
+  if (getAuthStore().pbxConfig?.['webphone.desktop.notification'] === 'false') {
+    return
+  }
   const notification = window.Brekeke.WebNotification
   const id = notification.showNotification({
     document,
