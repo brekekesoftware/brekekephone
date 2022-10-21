@@ -5,6 +5,7 @@ import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
+import { MakeCallFn } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
@@ -337,10 +338,7 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
-  startCall = async (
-    number: string,
-    options: { videoEnabled?: boolean } = {},
-  ) => {
+  startCall: MakeCallFn = (number: string, ...args) => {
     if (callStore.calls.filter(c => !c.incoming && !c.answered).length) {
       RnAlert.error({
         message: intlDebug`Only make one outgoing call`,
@@ -349,7 +347,7 @@ export class CallStore {
     }
 
     let reconnectCalled = false
-    const sipCreateSession = () => sip.createSession(number, options)
+    const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
     try {
       // Try to call pbx first to see if there's any error with the network
       // TODO
@@ -414,8 +412,7 @@ export class CallStore {
       500,
     )
   }
-  startVideoCall = (number: string) =>
-    this.startCall(number, { videoEnabled: true })
+  startVideoCall = (number: string) => this.startCall(number, undefined, true)
 
   private updateBackgroundCalls = () => {
     // Auto hold background calls

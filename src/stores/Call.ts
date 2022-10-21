@@ -53,16 +53,24 @@ export class Call {
   callkeepAlreadyRejected = false
 
   @action
-  answer = (ignoreNav?: boolean) => {
+  answer = (options?: any, videoOptions?: any, exInfo?: any) => {
+    const ignoreNav = options?.ignoreNav
+    if (options) {
+      delete options.ignoreNav
+    }
     this.answered = true
     this.store.currentCallId = this.id
     // Hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
       .forEach(c => c.toggleHoldWithCheck())
-    sip.answerSession(this.id, {
-      videoEnabled: this.remoteVideoEnabled,
-    })
+    sip.phone?.answer(
+      this.id,
+      options,
+      this.remoteVideoEnabled,
+      videoOptions,
+      exInfo,
+    )
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }

@@ -328,10 +328,6 @@ export class SIP extends EventEmitter {
     }
   }
 
-  createSession = (number: string, opts: { videoEnabled?: boolean } = {}) => {
-    return this.phone?.makeCall(number, null, opts.videoEnabled)
-  }
-
   hangupSession = (sessionId: string) => {
     const session = this.phone?.getSession(sessionId)
     const rtcSession = session && session.rtcSession
@@ -348,12 +344,6 @@ export class SIP extends EventEmitter {
     session?.remoteStreamObject?.getTracks().forEach(track => {
       track.enabled = true
     })
-  }
-  answerSession = (
-    sessionId: string,
-    opts: { videoEnabled?: boolean } = {},
-  ) => {
-    return this.phone?.answer(sessionId, null, opts.videoEnabled)
   }
   sendDTMF = async (p: {
     signal: string
