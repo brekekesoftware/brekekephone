@@ -26,7 +26,7 @@ export class PBX extends EventEmitter {
     }
 
     const d = await accountStore.getAccountDataAsync(p)
-    const oldPalParamUser = d.palParamUser
+    const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
     )
@@ -39,10 +39,10 @@ export class PBX extends EventEmitter {
       _wn: d.accessToken,
       park: p.parks || [],
       voicemail: 'self',
-      user: d.palParamUser,
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
+      ...d.palParams,
     })
     this.client = client
 
@@ -202,7 +202,7 @@ export class PBX extends EventEmitter {
       webphone: 'true',
     })
     const d = await s.getCurrentDataAsync()
-    d.palParamUser = s.pbxConfig['webphone.pal.param.user']
+    d.palParams = parsePalParams(s.pbxConfig)
     accountStore.updateAccountData(d)
     return s.pbxConfig
   }
@@ -692,3 +692,11 @@ export class PBX extends EventEmitter {
 }
 
 export const pbx = new PBX()
+
+export const parsePalParams = (config: object = {}) =>
+  Object.entries(config)
+    .filter(([k]) => k.startsWith('webphone.pal.param.'))
+    .reduce((params, [k, v]) => {
+      params[k] = v
+      return params
+    }, {} as { [k: string]: string })
