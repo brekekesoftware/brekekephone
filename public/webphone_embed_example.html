@@ -56,10 +56,14 @@
           password: 'PASSWORD',
         },
       ],
+      // pal params
+      'webphone.pal.param.user': 'user1,user2,user3',
+      'webphone.pal.param.line': 'line1,line2,line3',
+      'webphone.pal.param.xxxx': 'yyyy',
     })
 
     // prompt for permission if needed
-    // phone.promptBrowserPermission()
+    phone.promptBrowserPermission()
 
     // show/hide the instance via the div, using above css in <style> tag
     div.classList.remove('brekeke_phone_component_hidden')
@@ -85,7 +89,7 @@
 
     // get the raw pal instance from pbx:
     // when account login, it will construct pal and you can access the pbx pal
-    phone.on('pal', (account, pal) => {
+    phone.on('pal', async (account, pal) => {
       // account fields can be found github Brekeke Phone src/stores/accountStore.ts
       console.log('phone.on.pal', account.pbxTenant, account.pbxUsername)
       // pal is from window.Brekeke.pbx.getPal
@@ -99,12 +103,16 @@
         console.log(e.status, e.user, e.talker_id)
       }
       // you can call pal method here using promise:
-      // var res = await pal.call_pal('name', options)
+      var res = await pal.call_pal('name', options)
     })
 
     // make outgoing call
     // the new call will be notified via above event phone.on('call', ...)
-    // phone.call('number', options)
+    const options = {
+      extraHeaders: ['X-Foo: foo', 'X-Bar: bar'],
+    }
+    const withVideo = true
+    phone.call('number', options, withVideo)
 
     // attach to window so we can test in devtool
     window._brekeke_phone = phone
