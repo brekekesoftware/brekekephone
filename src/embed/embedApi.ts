@@ -5,6 +5,7 @@ import { getCallStore } from '../stores/cancelRecentPn'
 import { promptBrowserPermission } from '../utils/promptBrowserPermission'
 
 export class EmbedApi extends EventEmitter {
+  rootTag?: HTMLElement
   palParams?: { [k: string]: string }
 
   getRunningCalls = () => getCallStore().calls
