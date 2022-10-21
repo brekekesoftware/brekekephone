@@ -10,6 +10,7 @@ import { PbxUser, Phonebook2 } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
+import { parsePalParams } from './parsePalParams'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -43,6 +44,7 @@ export class PBX extends EventEmitter {
       secure_login_password: false,
       phonetype: 'webphone',
       ...d.palParams,
+      ...embedApi.palParams,
     })
     this.client = client
 
@@ -692,11 +694,3 @@ export class PBX extends EventEmitter {
 }
 
 export const pbx = new PBX()
-
-export const parsePalParams = (config: object = {}) =>
-  Object.entries(config)
-    .filter(([k]) => k.startsWith('webphone.pal.param.'))
-    .reduce((params, [k, v]) => {
-      params[k] = v
-      return params
-    }, {} as { [k: string]: string })

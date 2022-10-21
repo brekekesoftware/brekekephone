@@ -10,6 +10,7 @@ import 'brekekejs/lib/phonebook'
 import { configure, onReactionError } from 'mobx'
 import { AppRegistry } from 'react-native'
 
+import { parsePalParams } from './api/parsePalParams'
 import { App } from './components/App'
 import { embedApi } from './embed/embedApi'
 import {
@@ -61,7 +62,7 @@ type Options = {
   auto_login?: boolean
   clear_existing_account?: boolean
   accounts: ComponentAccount[]
-}
+} & { [k: string]: string }
 const convertToStorage = (a: ComponentAccount): Account => {
   const p = accountStore.genEmptyAccount()
   p.pbxHostname = a.hostname || ''
@@ -122,6 +123,7 @@ const renderAsync = async (div: HTMLElement, o: Options) => {
 }
 const render = (div: HTMLElement, o: Options) => {
   renderAsync(div, o)
+  embedApi.palParams = parsePalParams(o)
   return embedApi
 }
 
