@@ -44,7 +44,7 @@ export class PBX extends EventEmitter {
       secure_login_password: false,
       phonetype: 'webphone',
       ...d.palParams,
-      ...embedApi.palParams,
+      ...embedApi._palParams,
     })
     this.client = client
 

@@ -62,6 +62,11 @@
       'webphone.pal.param.xxxx': 'yyyy',
     })
 
+    // MULTIPLE INSTANCES WILL NOT WORK
+    // THIS IS NOT SUPPORTED YET
+    var phone1 = window.Brekeke.Phone.render(div1, opt1)
+    var phone2 = window.Brekeke.Phone.render(div2, opt2)
+
     // prompt for permission if needed
     phone.promptBrowserPermission()
 
@@ -88,7 +93,7 @@
     })
 
     // get the raw pal instance from pbx:
-    // when account login, it will construct pal and you can access the pbx pal
+    // when account login, it will construct the pal and you can access:
     phone.on('pal', async (account, pal) => {
       // account fields can be found github Brekeke Phone src/stores/accountStore.ts
       console.log('phone.on.pal', account.pbxTenant, account.pbxUsername)
@@ -106,13 +111,30 @@
       var res = await pal.call_pal('name', options)
     })
 
+    // get the raw instance from webrtcclient.js:
+    // when account login, it will construct the client and you can access:
+    phone.on('webrtcclient', async (account, client) => {
+      // client is an instance of window.Brekeke.WebrtcClient.Phone
+      // console log to see all details
+      console.log(client)
+      // here you can access to inner sip object:
+      console.log(client._ua)
+    })
+
     // make outgoing call
     // the new call will be notified via above event phone.on('call', ...)
-    const options = {
+    var options = {
       extraHeaders: ['X-Foo: foo', 'X-Bar: bar'],
     }
-    const withVideo = true
+    var withVideo = true
     phone.call('number', options, withVideo)
+
+    // restart the instance, it will logout the current account if any, and relogin with the new option
+    // same opt shape from window.Brekeke.Phone.render(div, opt)
+    phone.restart(opt)
+
+    // cleanup the instance, it will logout the current account if any, and unmount all the dom nodes from the div
+    phone.cleanup()
 
     // attach to window so we can test in devtool
     window._brekeke_phone = phone

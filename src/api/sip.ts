@@ -6,6 +6,7 @@ import stableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
+import { embedApi } from '../embed/embedApi'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { CallStore } from '../stores/callStore'
@@ -93,6 +94,7 @@ export class SIP extends EventEmitter {
 
     const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
     this.phone = phone
+    embedApi.emit('webrtcclient', getAuthStore().getCurrentAccount(), phone)
 
     const h = (ev: { phoneStatus: string }) => {
       if (!ev) {
