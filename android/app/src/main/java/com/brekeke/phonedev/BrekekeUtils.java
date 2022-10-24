@@ -37,14 +37,14 @@ import org.json.JSONObject;
 public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public class Config {
-    public  boolean hideBtnTransfer;
-    public   boolean hideBtnPark;
-    public  boolean hideBtnVideo;
-    public   boolean hideBtnSpeaker;
-    public  boolean hideBtnMute;
-    public   boolean hideBtnRecord;
-    public  boolean hideBtnDTMF;
-    public   boolean hideBtnHold;
+    public boolean hideBtnTransfer;
+    public boolean hideBtnPark;
+    public boolean hideBtnVideo;
+    public boolean hideBtnSpeaker;
+    public boolean hideBtnMute;
+    public boolean hideBtnRecord;
+    public boolean hideBtnDTMF;
+    public boolean hideBtnHold;
 
     public Config() {
       this.hideBtnTransfer = false;
@@ -56,7 +56,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       this.hideBtnDTMF = false;
       this.hideBtnHold = false;
     }
-
   }
 
   public static RCTDeviceEventEmitter eventEmitter;
@@ -549,8 +548,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // React methods
   //
   @ReactMethod
-  public void setConfig(Boolean hideBtnTransfer, Boolean hideBtnPark,Boolean hideBtnVideo,Boolean hideBtnSpeaker,
-   Boolean hideBtnMute,Boolean hideBtnRecord,Boolean hideBtnDTMF, Boolean hideBtnHold) {
+  public void setConfig(
+      Boolean hideBtnTransfer,
+      Boolean hideBtnPark,
+      Boolean hideBtnVideo,
+      Boolean hideBtnSpeaker,
+      Boolean hideBtnMute,
+      Boolean hideBtnRecord,
+      Boolean hideBtnDTMF,
+      Boolean hideBtnHold) {
     this.config.hideBtnTransfer = hideBtnTransfer;
     this.config.hideBtnPark = hideBtnPark;
     this.config.hideBtnVideo = hideBtnVideo;

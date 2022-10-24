@@ -1,3 +1,21 @@
+#### 2.11.4
+
+- Merge ios lpc into master
+- Desktop notification
+- Fix auto login not working with background mode on ios
+- Hide buttons using data from getProductInfo
+- Display park label instead of number in other screens
+- Fix ios RBT bug never stop
+- Improve phonebook: remove toggle shared, add icon (s) for shared, fix checkbox keep displaying after finish deleting, use dislay_name
+- Fix recording status using notify_callrecording
+
+#### 2.11.3
+
+- Embed: Allow to set pal params from embed
+- Embed: Allow to set sip headers with makeCall
+- Embed: Re-initialize / restart the instance
+- Embed: Access webrtcclient instance, with inner sip instance
+
 #### 2.11.1
 
 - Save webphone.pal.param.user to local storage and reconnect if mismatch

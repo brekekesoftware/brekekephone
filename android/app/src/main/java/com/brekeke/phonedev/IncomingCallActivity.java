@@ -34,7 +34,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCallManageLoading,
       vHeaderIncomingCall,
       vHeaderManageCall;
-  public LinearLayout vCallManageControls, vBtnTransfer, vBtnPark, vBtnVideo, vBtnSpeaker, vBtnMute, vBtnRecord, vBtnDTMF, vBtnHold;
+  public LinearLayout vCallManageControls,
+      vBtnTransfer,
+      vBtnPark,
+      vBtnVideo,
+      vBtnSpeaker,
+      vBtnMute,
+      vBtnRecord,
+      vBtnDTMF,
+      vBtnHold;
   public View vCardAvatar;
   public View vCardAvatarTalking;
   public WebRTCView vWebrtcVideo;
@@ -133,17 +141,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     videoLoading = (ProgressBar) findViewById(R.id.video_loading);
     vCallManage.setOnClickListener(this);
 
-//    view btn
+    //    view btn
     vBtnTransfer = (LinearLayout) findViewById(R.id.ln_btn_transfer);
     vBtnPark = (LinearLayout) findViewById(R.id.ln_btn_park);
     vBtnVideo = (LinearLayout) findViewById(R.id.ln_btn_video);
-    vBtnSpeaker =(LinearLayout) findViewById(R.id.ln_btn_speaker);
+    vBtnSpeaker = (LinearLayout) findViewById(R.id.ln_btn_speaker);
     vBtnMute = (LinearLayout) findViewById(R.id.ln_btn_mute);
-    vBtnRecord =  (LinearLayout) findViewById(R.id.ln_btn_record);
+    vBtnRecord = (LinearLayout) findViewById(R.id.ln_btn_record);
     vBtnDTMF = (LinearLayout) findViewById(R.id.ln_btn_dtmf);
     vBtnHold = (LinearLayout) findViewById(R.id.ln_btn_hold);
     updateConfig();
-
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -197,32 +204,34 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateLabels();
     updateHeader();
   }
-  public void  updateConfig(){
-    if(BrekekeUtils.config.hideBtnTransfer){
+
+  public void updateConfig() {
+    if (BrekekeUtils.config.hideBtnTransfer) {
       vBtnTransfer.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnPark){
+    if (BrekekeUtils.config.hideBtnPark) {
       vBtnPark.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnVideo){
+    if (BrekekeUtils.config.hideBtnVideo) {
       vBtnVideo.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnSpeaker){
+    if (BrekekeUtils.config.hideBtnSpeaker) {
       vBtnSpeaker.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnMute){
+    if (BrekekeUtils.config.hideBtnMute) {
       vBtnMute.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnRecord){
+    if (BrekekeUtils.config.hideBtnRecord) {
       vBtnRecord.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnDTMF){
+    if (BrekekeUtils.config.hideBtnDTMF) {
       vBtnDTMF.setVisibility(View.GONE);
     }
-    if(BrekekeUtils.config.hideBtnHold){
+    if (BrekekeUtils.config.hideBtnHold) {
       vBtnHold.setVisibility(View.GONE);
     }
   }
+
   public void updateHeader() {
     if ("large".equalsIgnoreCase(avatarSize)) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
