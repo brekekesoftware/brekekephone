@@ -10,6 +10,7 @@ import { PbxUser, Phonebook2 } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
+import { parsePalParams } from './parsePalParams'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -26,7 +27,7 @@ export class PBX extends EventEmitter {
     }
 
     const d = await accountStore.getAccountDataAsync(p)
-    const oldPalParamUser = d.palParamUser
+    const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
     )
@@ -39,11 +40,12 @@ export class PBX extends EventEmitter {
       _wn: d.accessToken,
       park: p.parks || [],
       voicemail: 'self',
-      user: d.palParamUser,
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
       callrecording: 'self',
+      ...d.palParams,
+      ...embedApi._palParams,
     })
     this.client = client
 
@@ -209,7 +211,7 @@ export class PBX extends EventEmitter {
       webphone: 'true',
     })
     const d = await s.getCurrentDataAsync()
-    d.palParamUser = s.pbxConfig['webphone.pal.param.user']
+    d.palParams = parsePalParams(s.pbxConfig)
     accountStore.updateAccountData(d)
     return s.pbxConfig
   }

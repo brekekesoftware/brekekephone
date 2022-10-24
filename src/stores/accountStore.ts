@@ -65,7 +65,7 @@ export type AccountData = {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
   }
-  palParamUser?: string
+  palParams?: { [k: string]: string }
 }
 
 class AccountStore {

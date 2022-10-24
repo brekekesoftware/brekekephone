@@ -22,10 +22,13 @@ import {
 import { authSIP } from './AuthSIP'
 import { compareAccount, setAuthStore } from './authStore'
 import { callStore } from './callStore'
+import { chatStore } from './chatStore'
+import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { userStore } from './userStore'
 
 type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
 
@@ -150,6 +153,9 @@ export class AuthStore {
 
   signOut = () => {
     saveLastSignedInId(false)
+    this.signOutWithoutSaving()
+  }
+  signOutWithoutSaving = () => {
     callStore.calls.forEach(c => c.hangupWithUnhold())
     if (Platform.OS !== 'web') {
       // Try to end callkeep if it's stuck
@@ -169,6 +175,9 @@ export class AuthStore {
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()
     this.pbxConfig = undefined
     this.ucConfig = undefined
+    userStore.clearStore()
+    contactStore.clearStore()
+    chatStore.clearStore()
   }
 
   @action resetFailureState = () => {
