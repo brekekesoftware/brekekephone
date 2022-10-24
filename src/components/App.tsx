@@ -68,6 +68,19 @@ const initApp = async () => {
       getAuthStore().resetFailureState()
       BrekekeUtils.closeAllIncomingCalls()
       callStore.onCallKeepAction()
+      // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
+      // ref: https://github.com/facebook/react-native-website/issues/273
+      const handleUrlParams = await s.handleUrlParams()
+      if (
+        Platform.OS !== 'web' &&
+        Platform.OS === 'ios' &&
+        !handleUrlParams &&
+        AppState.currentState === 'active' &&
+        !hasCallOrWakeFromPN
+      ) {
+        await actionAutoLogin()
+      }
+      SyncPnToken().syncForAllAccounts()
     }
   })
   registerOnUnhandledError(unexpectedErr => {
@@ -112,7 +125,17 @@ const initApp = async () => {
     }
   }, 17)
   observe(s, 'signedInId', onAuthUpdate)
+  const actionAutoLogin = async () => {
+    const d = await getLastSignedInId(true)
 
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+      console.log('App navigated by auto signin')
+      // already navigated
+    } else {
+      Nav().goToPageIndex()
+    }
+  }
   if (await s.handleUrlParams()) {
     console.log('App navigated by url params')
     // already navigated
@@ -123,20 +146,13 @@ const initApp = async () => {
     AppState.currentState === 'active' &&
     !hasCallOrWakeFromPN
   ) {
-    const d = await getLastSignedInId(true)
-    console.log('Auto signin data: ', d)
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
-    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
-      console.log('App navigated by auto signin')
-      // already navigated
-    } else {
-      Nav().goToPageIndex()
-    }
+    await actionAutoLogin()
   } else {
     Nav().goToPageIndex()
   }
 
   if (AppState.currentState === 'active') {
+    // console.error('syncForAllAccounts')
     SyncPnToken().syncForAllAccounts()
   }
 }
