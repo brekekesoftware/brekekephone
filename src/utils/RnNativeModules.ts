@@ -22,6 +22,7 @@ type TBrekekeUtils = {
   setLocale(locale: string): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallkeepAction): void
+  setRecordingStatus(uuid: string, recording: boolean): void
 
   // these methods only available on ios
   playRBT(): void
@@ -56,6 +57,7 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  setRecordingStatus: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

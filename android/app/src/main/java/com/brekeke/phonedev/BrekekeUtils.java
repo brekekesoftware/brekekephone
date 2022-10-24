@@ -568,6 +568,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setRecordingStatus(String uuid, Boolean isRecording) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setRecordingStatus(isRecording);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
   public void setTalkingAvatar(String uuid, String url, Boolean isLarge) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {

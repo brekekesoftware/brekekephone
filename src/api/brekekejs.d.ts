@@ -43,6 +43,7 @@ export type GetPalOptions = {
   status: boolean
   secure_login_password: boolean
   phonetype: string
+  callrecording: string
 }
 
 /* PBX */
@@ -60,7 +61,7 @@ export type Pbx = PbxPal & {
   notify_status?(e: PbxEvent['userStatus']): void
   notify_park?(e: PbxEvent['park']): void
   notify_voicemail?(e: PbxEvent['voicemail']): void
-
+  notify_callrecording?(e: PbxEvent['callRecording']): void
   // not actually exist in the sdk, should be added manually
   call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
@@ -83,6 +84,11 @@ export type PbxEvent = {
   }
   voicemail: {
     new: number
+  }
+  callRecording: {
+    user: string
+    talker_id: string
+    status: string // on or off
   }
 }
 
