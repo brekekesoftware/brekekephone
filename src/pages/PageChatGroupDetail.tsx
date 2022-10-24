@@ -438,9 +438,9 @@ export class PageChatGroupDetail extends Component<{
     Nav().goToPageChatGroupInvite({ groupId: this.props.groupId })
   }
   call = (target: string, bVideoEnabled: boolean) => {
-    callStore.startCall(target, {
-      videoEnabled: bVideoEnabled,
-    })
+    bVideoEnabled
+      ? callStore.startVideoCall(target)
+      : callStore.startCall(target)
   }
   callVoiceConference = () => {
     let target = this.props.groupId

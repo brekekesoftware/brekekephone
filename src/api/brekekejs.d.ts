@@ -43,6 +43,7 @@ export type GetPalOptions = {
   status: boolean
   secure_login_password: boolean
   phonetype: string
+  callrecording: string
 }
 
 /* PBX */
@@ -60,7 +61,7 @@ export type Pbx = PbxPal & {
   notify_status?(e: PbxEvent['userStatus']): void
   notify_park?(e: PbxEvent['park']): void
   notify_voicemail?(e: PbxEvent['voicemail']): void
-
+  notify_callrecording?(e: PbxEvent['callRecording']): void
   // not actually exist in the sdk, should be added manually
   call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
@@ -83,6 +84,11 @@ export type PbxEvent = {
   }
   voicemail: {
     new: number
+  }
+  callRecording: {
+    user: string
+    talker_id: string
+    status: string // on or off
   }
 }
 
@@ -304,8 +310,8 @@ export type Sip = {
   setDefaultCallOptions(options: CallOptions): void
   getSession(sessionId: string): Session
   getSessionCount(): number
-  makeCall(number: string, options: null, videoEnabled?: boolean): void
-  answer(sessionId: string, options: null, videoEnabled?: boolean): void
+  makeCall: MakeCallFn
+  answer: MakeCallFn
   setWithVideo(sessionId: string, withVideo?: boolean): void
   setMuted(options: { main: boolean }, sessionId: string): void
   setWithVideo(
@@ -328,6 +334,14 @@ export type Sip = {
   }
   _removeEventListenerPhoneStatusChange?: Function
 }
+
+export type MakeCallFn = (
+  number: string,
+  options?: object,
+  videoEnabled?: boolean,
+  videoOptions?: object,
+  exInfo?: object,
+) => void
 
 export type VideoOptions = {
   call: {

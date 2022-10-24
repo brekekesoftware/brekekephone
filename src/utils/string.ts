@@ -4,4 +4,4 @@ export const toUpperCaseFirstChar = (s: string) =>
   s.charAt(0).toUpperCase() + s.substr(1)
 
 export const toBoolean = (s?: string) =>
-  s === 'true' || s === '1' || (s as any) === true ? true : false
+  s === 'on' || s === 'true' || s === '1' || (s as any) === true ? true : false

@@ -333,6 +333,22 @@ class ContactStore {
         p.info.$tel_work === phoneNumber,
     )?.[0]
   }
+  getParkNameByParkNumber = (parkNumber?: string) => {
+    if (!parkNumber) {
+      return
+    }
+    const cp = getAuthStore().getCurrentAccount()
+    if (!cp) {
+      return
+    }
+    const arr =
+      cp.parks?.map((p, i) => ({
+        park: p,
+        name: cp.parkNames?.[i] || '',
+      })) || []
+    const parks = uniqBy(arr, 'park')
+    return parks.find(p => p.park === parkNumber)?.name
+  }
   getPhonebookById = (id: string) => {
     return this.phoneBooksMap[id]
   }
@@ -354,4 +370,5 @@ export const contactStore = new ContactStore()
 
 export const getPartyName = (partyNumber?: string) =>
   (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
-  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name
+  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name ||
+  contactStore.getParkNameByParkNumber(partyNumber)

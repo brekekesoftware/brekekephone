@@ -6,6 +6,7 @@ import stableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
+import { embedApi } from '../embed/embedApi'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { CallStore } from '../stores/callStore'
@@ -93,6 +94,7 @@ export class SIP extends EventEmitter {
 
     const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
     this.phone = phone
+    embedApi.emit('webrtcclient', getAuthStore().getCurrentAccount(), phone)
 
     const h = (ev: { phoneStatus: string }) => {
       if (!ev) {
@@ -328,10 +330,6 @@ export class SIP extends EventEmitter {
     }
   }
 
-  createSession = (number: string, opts: { videoEnabled?: boolean } = {}) => {
-    return this.phone?.makeCall(number, null, opts.videoEnabled)
-  }
-
   hangupSession = (sessionId: string) => {
     const session = this.phone?.getSession(sessionId)
     const rtcSession = session && session.rtcSession
@@ -348,12 +346,6 @@ export class SIP extends EventEmitter {
     session?.remoteStreamObject?.getTracks().forEach(track => {
       track.enabled = true
     })
-  }
-  answerSession = (
-    sessionId: string,
-    opts: { videoEnabled?: boolean } = {},
-  ) => {
-    return this.phone?.answer(sessionId, null, opts.videoEnabled)
   }
   sendDTMF = async (p: {
     signal: string

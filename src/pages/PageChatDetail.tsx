@@ -141,10 +141,7 @@ export class PageChatDetail extends Component<{
           },
           {
             label: intl`Start video call`,
-            onPress: () =>
-              callStore.startCall(id, {
-                videoEnabled: true,
-              }),
+            onPress: () => callStore.startVideoCall(id),
           },
         ]}
       >

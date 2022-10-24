@@ -487,7 +487,7 @@ export class PageCallManage extends Component<{
                 bgcolor={v.colors.primary}
                 color='white'
                 noborder
-                onPress={() => c.answer(true)}
+                onPress={() => c.answer({ ignoreNav: true })}
                 path={mdiPhone}
                 size={40}
                 textcolor='white'
