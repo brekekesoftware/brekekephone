@@ -15,7 +15,36 @@ export type Brekeke = {
     render: Function
   }
   Phonebook: Phonebook
+  WebNotification: WebNotification
 }
+export type WebNotification = {
+  requestPermission(Options: OptionRequestNotification): void
+  showNotification(Options: OptionShowNotification): string
+  closeNotification(Options: OptionCloseNotification): void
+}
+
+export type OptionCloseNotification = {
+  notificationId: string
+  reason?: string
+}
+export type OptionRequestNotification = {
+  document: Document
+  callback: (result: string) => void
+}
+export type OptionShowNotification = {
+  document: Document
+  timeout?: number
+  interval?: number
+  title: string
+  body: string
+  icon: string
+  tag?: string
+  renotify?: boolean
+  noisiness?: number // whether sounds or vibrations should be issued (0: silent, 1: once, 2: every) (default: 0)
+  onclick: (ev: Event) => void
+  onclose: (ev: Event) => void
+}
+
 export type Phonebook = {
   getManager(lan: string): ManagerPhonebook | undefined
   getManagers(): ManagerPhonebook[]
@@ -158,6 +187,7 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
+  'webphone.desktop.notification': string
   'sip.wss.port': string
   'webrtcclient.dtmfSendMode': string
   'webphone.dtmf.send.pal': string
