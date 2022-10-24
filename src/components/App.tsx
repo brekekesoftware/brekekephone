@@ -127,7 +127,6 @@ const initApp = async () => {
   observe(s, 'signedInId', onAuthUpdate)
   const actionAutoLogin = async () => {
     const d = await getLastSignedInId(true)
-
     const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
     if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
       console.log('App navigated by auto signin')
@@ -152,7 +151,6 @@ const initApp = async () => {
   }
 
   if (AppState.currentState === 'active') {
-    // console.error('syncForAllAccounts')
     SyncPnToken().syncForAllAccounts()
   }
 }
