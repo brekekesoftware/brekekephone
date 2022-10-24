@@ -20,7 +20,7 @@ let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
-
+export type PNOptions = 'disabled' | 'APNs' | 'LPC' | undefined
 export type Account = {
   id: string
   pbxHostname: string
@@ -32,6 +32,8 @@ export type Account = {
   pbxTurnEnabled: boolean
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
+  pushNotificationType?: PNOptions //'disabled', 'APNs', 'LPC'
+  pushNotificationSSID?: string
   pushNotificationEnabledSynced?: boolean
   parks?: string[]
   parkNames?: string[]
@@ -91,6 +93,8 @@ class AccountStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
+    pushNotificationType: undefined,
+    pushNotificationSSID: '',
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
@@ -158,8 +162,10 @@ class AccountStore {
           noUpsert: true,
         })
       } else if (
-        typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== p0.pushNotificationEnabled
+        (typeof p.pushNotificationEnabled === 'boolean' &&
+          p.pushNotificationEnabled !== p0.pushNotificationEnabled) ||
+        (p.pushNotificationEnabled &&
+          p.pushNotificationType !== p0.pushNotificationType)
       ) {
         p1.pushNotificationEnabledSynced = false
         SyncPnToken().sync(p1, {
@@ -249,6 +255,7 @@ type TLastSignedInId = {
   at: number
   version: string
   logoutPressed?: boolean
+  uptime?: number
   autoSignInBrekekePhone?: boolean
 }
 
@@ -278,8 +285,8 @@ export const getLastSignedInId = async (
     d.autoSignInBrekekePhone = false
     return d
   }
-  const uptime = await BrekekeUtils.systemUptimeMs()
-  d.autoSignInBrekekePhone = uptime > 0 && uptime > Date.now() - d.at
+  d.uptime = await BrekekeUtils.systemUptimeMs()
+  d.autoSignInBrekekePhone = d.uptime > 0 && d.uptime > Date.now() - d.at
   return d
 }
 export const saveLastSignedInId = async (id: string | false) => {

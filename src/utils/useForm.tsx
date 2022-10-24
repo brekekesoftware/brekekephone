@@ -55,7 +55,7 @@ export const useForm = () => {
     submit: () => {
       const { $: $parent, fields, k, onValidSubmit } = $.props
       const rules = arrToMap(
-        fields.filter((f: FormField) => f.rule && !f.disabled),
+        fields.filter((f: FormField) => f.rule && !f.disabled && !f.hidden),
         (f: FormField) => f.name,
         (f: FormField) => f.rule,
       ) as { [k: string]: unknown }

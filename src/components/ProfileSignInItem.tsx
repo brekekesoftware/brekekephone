@@ -8,9 +8,10 @@ import {
   mdiClose,
   mdiDotsHorizontal,
   mdiServerNetwork,
+  mdiUnfoldMoreHorizontal,
   mdiWeb,
 } from '../assets/icons'
-import { accountStore } from '../stores/accountStore'
+import { accountStore, PNOptions } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
@@ -75,7 +76,20 @@ export const ProfileSignInItem: FC<{
     return null
   }
   const isWeb = Platform.OS === 'web'
+  const isIos = Platform.OS === 'ios'
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
+
+  const onNotificationPress = (value: PNOptions) => {
+    if (value === 'LPC') {
+      Nav().goToPageProfileUpdate({ id: p.id, pushNotificationType: value })
+      return
+    }
+    accountStore.upsertAccount({
+      id: p.id,
+      pushNotificationEnabled: value === 'disabled' ? false : true,
+      pushNotificationType: value,
+    })
+  }
   return (
     <View
       style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
@@ -96,17 +110,36 @@ export const ProfileSignInItem: FC<{
         <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
         <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
       </RnTouchableOpacity>
-      {!isWeb && (
-        <Field
-          label={intl`PUSH NOTIFICATION`}
-          onValueChange={(e: boolean) =>
-            accountStore.upsertAccount({ id: p.id, pushNotificationEnabled: e })
-          }
-          type='Switch'
-          value={p.pushNotificationEnabled}
-          loading={isLoading}
-        />
-      )}
+      {!isWeb &&
+        (!isIos ? (
+          <Field
+            label={intl`PUSH NOTIFICATION`}
+            onValueChange={(e: boolean) =>
+              accountStore.upsertAccount({
+                id: p.id,
+                pushNotificationEnabled: e,
+              })
+            }
+            type='Switch'
+            value={p.pushNotificationEnabled}
+            loading={isLoading}
+          />
+        ) : (
+          <Field
+            label={intl`PUSH NOTIFICATION`}
+            onValueChange={onNotificationPress}
+            type='RnPicker'
+            options={[
+              { key: 'disabled', label: intl`Disabled` },
+              { key: 'APNs', label: intl`APNs Push Notification` },
+              { key: 'LPC', label: intl`LPC Push Notification` },
+            ]}
+            value={p.pushNotificationType}
+            disabled={false}
+            icon={mdiUnfoldMoreHorizontal}
+            loading={isLoading}
+          />
+        ))}
       <Field
         label={intl`UC`}
         onValueChange={(e: boolean) =>

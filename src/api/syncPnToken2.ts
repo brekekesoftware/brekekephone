@@ -44,7 +44,11 @@ const syncPnTokenWithoutCatch = async (
   const fn =
     Platform.OS === 'ios'
       ? p.pushNotificationEnabled
-        ? pbx.setApnsToken
+        ? p.pushNotificationType === 'LPC'
+          ? pbx.setLPCToken
+          : pbx.setApnsToken
+        : p.pushNotificationType === 'LPC'
+        ? pbx.removeLPCToken
         : pbx.removeApnsToken
       : Platform.OS === 'android'
       ? p.pushNotificationEnabled
@@ -68,6 +72,8 @@ const syncPnTokenWithoutCatch = async (
       fn({
         username: webPhone.id,
         device_id: t,
+        host: p.pbxHostname,
+        ssid: p.pushNotificationSSID || '',
       }),
     )
   }
@@ -77,6 +83,8 @@ const syncPnTokenWithoutCatch = async (
         username: webPhone.id,
         device_id: tvoip,
         voip: true,
+        host: p.pbxHostname,
+        ssid: p.pushNotificationSSID || '',
       }),
     )
   }

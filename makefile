@@ -1,6 +1,7 @@
 format:
 	yarn format
 	make format-objc
+	make format-swift
 	make format-java
 	make format-xml
 
@@ -8,6 +9,8 @@ format-objc:
 	export EXT="h|m" && \
 	make -s ls | \
 	xargs clang-format -i -style=file;
+format-swift:
+	swiftformat ios;
 format-java:
 	export EXT="java" && \
 	make -s ls | \

@@ -5,6 +5,11 @@
   <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>
+      SimplePush requires access to your local network in order to activate the
+      Local Push Connectivity extension.
+    </string>
     <key>CFBundleDisplayName</key>
     <string>Brekeke Phone Dev</string>
     <key>CFBundleExecutable</key>
@@ -31,15 +36,15 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true />
-    <key>LSSupportsOpeningDocumentsInPlace</key>
-    <true />
+    <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>mailto</string>
     </array>
+    <key>LSRequiresIPhoneOS</key>
+    <true />
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true />
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
@@ -51,16 +56,16 @@
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>Capture a new photo to send</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>React Native usage</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>React Native usage</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Capture a new video to send</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>Save photo to photo library</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Select from photo library</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>React Native usage</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>React Native usage</string>
     <key>UIAppFonts</key>
     <array />
     <key>UIBackgroundModes</key>
@@ -84,7 +89,6 @@
     <false />
     <key>UISupportedInterfaceOrientations</key>
     <array>
-      <string>UIInterfaceOrientationPortraitUpsideDown</string>
       <string>UIInterfaceOrientationPortrait</string>
     </array>
     <key>UISupportedInterfaceOrientations~ipad</key>

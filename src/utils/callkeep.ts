@@ -2,6 +2,7 @@ import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
+import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -136,6 +137,7 @@ export const setupCallKeep = async () => {
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
     if (n) {
+      getAuthStore().signInByNotification(n)
       callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
     } else {
       console.log('SIP PN debug: call RNCallKeep.endCall: pnData not found')

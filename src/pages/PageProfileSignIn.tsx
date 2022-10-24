@@ -83,6 +83,13 @@ export const PageProfileSignIn = observer(() => {
         title={intl`Accounts`}
         transparent
       >
+        <View
+          style={{
+            flexDirection: 'column',
+            width: '100%',
+            justifyContent: 'space-around',
+          }}
+        ></View>
         <View style={css.PageProfileSignIn_Spacing} />
         {!l ? (
           <ProfileSignInItem empty />
