@@ -1,7 +1,5 @@
-import { FC } from 'react'
-
 import { PageCallParks } from './PageCallParks'
 
-export const PageCallParks2: FC<object> = p => (
+export const PageCallParks2 = (p?: object) => (
   <PageCallParks {...p} callParks2 />
 )

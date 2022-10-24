@@ -9,7 +9,8 @@ import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
-import { Conference } from './brekekejs'
+import { toBoolean } from '../utils/string'
+import { Conference, PbxEvent } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -28,6 +29,7 @@ class Api {
     pbx.on('voicemail-updated', this.onVoiceMailUpdated)
     pbx.on('park-started', this.onPBXUserParkStarted)
     pbx.on('park-stopped', this.onPBXUserParkStopped)
+    pbx.on('call-recording', this.onPbxCallRecording)
     sip.on('connection-started', this.onSIPConnectionStarted)
     sip.on('connection-stopped', this.onSIPConnectionStopped)
     sip.on('connection-timeout', this.onSIPConnectionTimeout)
@@ -109,7 +111,11 @@ class Api {
     console.log('onPBXUserParkStopped', parkNumber)
     callStore.removeParkNumber(parkNumber)
   }
-
+  onPbxCallRecording = (ev: PbxEvent['callRecording']) => {
+    callStore.calls
+      .find(item => item.pbxTalkerId === ev.talker_id)
+      ?.updateRecordingStatus(toBoolean(ev.status))
+  }
   @action onSIPConnectionStarted = () => {
     console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()

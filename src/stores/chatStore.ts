@@ -8,6 +8,7 @@ import FCM from 'react-native-fcm'
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { showNotification } from '../utils/DesktopNotification'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
 import { arrToMap } from '../utils/toMap'
@@ -199,6 +200,7 @@ class ChatStore {
     this.updateThreadConfig(threadId, isGroup, {
       isUnread,
     })
+
     // show chat in-app notification
     let name = ''
     if (isGroup) {
@@ -207,6 +209,17 @@ class ChatStore {
       // user not set username
       name = getPartyName(threadId) || threadId
     }
+
+    // show desktop notification for Web platform
+    if (
+      Platform.OS === 'web' &&
+      this.getThreadConfig(threadId).isUnread &&
+      m.length === 1
+    ) {
+      const messageNotification = name + ': ' + m[0]?.text || ''
+      showNotification(messageNotification, name)
+    }
+
     if (m.length === 1 && AppState.currentState !== 'active') {
       this.pushChatNotification(name, m[0]?.text || '', threadId)
     }

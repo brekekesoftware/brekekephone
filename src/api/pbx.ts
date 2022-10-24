@@ -2,6 +2,7 @@ import 'brekekejs/lib/jsonrpc'
 import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
+import { Platform } from 'react-native'
 
 import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
@@ -11,6 +12,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
+import { parsePalParams } from './parsePalParams'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -27,7 +29,7 @@ export class PBX extends EventEmitter {
     }
 
     const d = await accountStore.getAccountDataAsync(p)
-    const oldPalParamUser = d.palParamUser
+    const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
     )
@@ -40,10 +42,12 @@ export class PBX extends EventEmitter {
       _wn: d.accessToken,
       park: p.parks || [],
       voicemail: 'self',
-      user: d.palParamUser,
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
+      callrecording: 'self',
+      ...d.palParams,
+      ...embedApi._palParams,
     })
     this.client = client
 
@@ -127,6 +131,12 @@ export class PBX extends EventEmitter {
       }
       return
     }
+    client.notify_callrecording = e => {
+      if (!e) {
+        return
+      }
+      this.emit('call-recording', e)
+    }
 
     client.notify_voicemail = e => {
       if (!e) {
@@ -203,7 +213,19 @@ export class PBX extends EventEmitter {
       webphone: 'true',
     })
     const d = await s.getCurrentDataAsync()
-    d.palParamUser = s.pbxConfig['webphone.pal.param.user']
+    if (Platform.OS === 'android') {
+      BrekekeUtils.setConfig(
+        s.pbxConfig?.['webphone.call.transfer'] === 'false',
+        s.pbxConfig?.['webphone.call.park'] === 'false',
+        s.pbxConfig?.['webphone.call.video'] === 'false',
+        s.pbxConfig?.['webphone.call.speaker'] === 'false',
+        s.pbxConfig?.['webphone.call.mute'] === 'false',
+        s.pbxConfig?.['webphone.call.record'] === 'false',
+        s.pbxConfig?.['webphone.call.dtmf'] === 'false',
+        s.pbxConfig?.['webphone.call.hold'] === 'false',
+      )
+    }
+    d.palParams = parsePalParams(s.pbxConfig)
     accountStore.updateAccountData(d)
     return s.pbxConfig
   }
@@ -326,15 +348,15 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-
     const res = await this.client.call_pal('getContactList', {
       phonebook: '',
       search_text,
-      shared,
+      // The shared is just indicate if the phonebook is shared or not.
+      // In the future, maybe you can add a filter like PBX UI.
+      //shared,
       offset,
       limit,
     })
-
     return res.map(contact => ({
       id: contact.aid,
       display_name: contact.display_name,

@@ -257,12 +257,14 @@
           android:layout_gravity="center"
         >
           <LinearLayout
+            android:id="@+id/ln_btn_transfer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_transfer"
@@ -285,14 +287,16 @@
               android:textSize="14dp"
             />
           </LinearLayout>
-
+<!--btn park-->
           <LinearLayout
+            android:id="@+id/ln_btn_park"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_park"
@@ -315,14 +319,16 @@
               android:textSize="14dp"
             />
           </LinearLayout>
-
+<!--btn video-->
           <LinearLayout
+            android:id="@+id/ln_btn_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_video"
@@ -342,14 +348,16 @@
               android:textSize="14dp"
             />
           </LinearLayout>
-
+<!--btn speaker-->
           <LinearLayout
+            android:id="@+id/ln_btn_speaker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_speaker"
@@ -377,13 +385,16 @@
           android:layout_marginTop="5dp"
           android:layout_gravity="center"
         >
+<!--          btn mute-->
           <LinearLayout
+            android:id="@+id/ln_btn_mute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_mute"
@@ -404,14 +415,16 @@
               android:textSize="14dp"
             />
           </LinearLayout>
-
+<!--btn record-->
           <LinearLayout
+            android:id="@+id/ln_btn_record"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_record"
@@ -431,14 +444,16 @@
               android:textSize="14dp"
             />
           </LinearLayout>
-
+<!--btn dtmf-->
           <LinearLayout
+            android:id="@+id/ln_btn_dtmf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_dtmf"
@@ -461,14 +476,16 @@
               android:textSize="14dp"
             />
           </LinearLayout>
-
+<!--btn hold-->
           <LinearLayout
+            android:id="@+id/ln_btn_hold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:minWidth="90dp"
             android:orientation="vertical"
+            android:visibility="visible"
           >
             <Button
               android:id="@+id/btn_hold"
@@ -488,6 +505,15 @@
               android:textSize="14dp"
             />
           </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+          android:id="@+id/ln_flex1"
+          android:layout_width="wrap_content"
+          android:layout_height="100dp"
+          android:orientation="horizontal"
+          android:visibility="gone"
+        >
+
         </LinearLayout>
       </LinearLayout>
 

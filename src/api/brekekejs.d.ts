@@ -15,7 +15,36 @@ export type Brekeke = {
     render: Function
   }
   Phonebook: Phonebook
+  WebNotification: WebNotification
 }
+export type WebNotification = {
+  requestPermission(Options: OptionRequestNotification): void
+  showNotification(Options: OptionShowNotification): string
+  closeNotification(Options: OptionCloseNotification): void
+}
+
+export type OptionCloseNotification = {
+  notificationId: string
+  reason?: string
+}
+export type OptionRequestNotification = {
+  document: Document
+  callback: (result: string) => void
+}
+export type OptionShowNotification = {
+  document: Document
+  timeout?: number
+  interval?: number
+  title: string
+  body: string
+  icon: string
+  tag?: string
+  renotify?: boolean
+  noisiness?: number // whether sounds or vibrations should be issued (0: silent, 1: once, 2: every) (default: 0)
+  onclick: (ev: Event) => void
+  onclose: (ev: Event) => void
+}
+
 export type Phonebook = {
   getManager(lan: string): ManagerPhonebook | undefined
   getManagers(): ManagerPhonebook[]
@@ -43,6 +72,7 @@ export type GetPalOptions = {
   status: boolean
   secure_login_password: boolean
   phonetype: string
+  callrecording: string
 }
 
 /* PBX */
@@ -60,7 +90,7 @@ export type Pbx = PbxPal & {
   notify_status?(e: PbxEvent['userStatus']): void
   notify_park?(e: PbxEvent['park']): void
   notify_voicemail?(e: PbxEvent['voicemail']): void
-
+  notify_callrecording?(e: PbxEvent['callRecording']): void
   // not actually exist in the sdk, should be added manually
   call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
     k: K,
@@ -83,6 +113,11 @@ export type PbxEvent = {
   }
   voicemail: {
     new: number
+  }
+  callRecording: {
+    user: string
+    talker_id: string
+    status: string // on or off
   }
 }
 
@@ -152,6 +187,7 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
+  'webphone.desktop.notification': string
   'sip.wss.port': string
   'webrtcclient.dtmfSendMode': string
   'webphone.dtmf.send.pal': string
@@ -162,6 +198,14 @@ export type PbxGetProductInfoRes = {
   'webphone.allusers': string
   'webphone.users.max': string
   'webphone.pal.param.user': string
+  'webphone.call.transfer': string
+  'webphone.call.speaker': string
+  'webphone.call.park': string
+  'webphone.call.video': string
+  'webphone.call.mute': string
+  'webphone.call.record': string
+  'webphone.call.dtmf': string
+  'webphone.call.hold': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
@@ -296,8 +340,8 @@ export type Sip = {
   setDefaultCallOptions(options: CallOptions): void
   getSession(sessionId: string): Session
   getSessionCount(): number
-  makeCall(number: string, options: null, videoEnabled?: boolean): void
-  answer(sessionId: string, options: null, videoEnabled?: boolean): void
+  makeCall: MakeCallFn
+  answer: MakeCallFn
   setWithVideo(sessionId: string, withVideo?: boolean): void
   setMuted(options: { main: boolean }, sessionId: string): void
   setWithVideo(
@@ -320,6 +364,14 @@ export type Sip = {
   }
   _removeEventListenerPhoneStatusChange?: Function
 }
+
+export type MakeCallFn = (
+  number: string,
+  options?: object,
+  videoEnabled?: boolean,
+  videoOptions?: object,
+  exInfo?: object,
+) => void
 
 export type VideoOptions = {
   call: {

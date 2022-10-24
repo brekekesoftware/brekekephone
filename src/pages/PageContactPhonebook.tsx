@@ -17,8 +17,6 @@ import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -45,7 +43,12 @@ export class PageContactPhonebook extends Component {
       BackgroundTimer.clearInterval(id)
     }, 1000)
   }
-
+  componentWillUnmount() {
+    if (contactStore.isDeleteState) {
+      contactStore.isDeleteState = false
+      contactStore.selectedContactIds = {}
+    }
+  }
   update = (id: string) => {
     const contact = contactStore.getPhonebookById(id)
     if (contact?.loaded) {
@@ -239,6 +242,7 @@ export class PageContactPhonebook extends Component {
         onPress: contactStore.loadContacts,
       },
     ]
+
     return (
       <Layout
         description={intl`Your phonebook contacts`}
@@ -253,7 +257,8 @@ export class PageContactPhonebook extends Component {
           onValueChange={this.updateSearchText}
           value={contactStore.phonebookSearchTerm}
         />
-        <Field
+        {/* Next time, will make filter like PBX UI. */}
+        {/* <Field
           label={intl`SHOW SHARED CONTACTS`}
           onValueChange={(v: boolean) => {
             if (pbx.client && getAuthStore().pbxState === 'success') {
@@ -267,7 +272,7 @@ export class PageContactPhonebook extends Component {
           }}
           type='Switch'
           value={getAuthStore().getCurrentAccount()?.displaySharedContacts}
-        />
+        /> */}
         <View>
           {groups.map(gr => (
             <Fragment key={gr.key}>
@@ -292,7 +297,8 @@ export class PageContactPhonebook extends Component {
                     iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
                     icons={[mdiPhone, mdiInformation]}
                     key={i}
-                    name={u?.display_name || intl`<Unnamed>`}
+                    phonebook={`${u.phonebook}${u.shared ? 'Ⓢ' : ''}`}
+                    name={`${u?.display_name || intl`<Unnamed>`}`}
                   />
                 ),
               )}

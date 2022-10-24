@@ -22,6 +22,17 @@ type TBrekekeUtils = {
   setLocale(locale: string): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallkeepAction): void
+  setConfig(
+    hideBtnTransfer: boolean,
+    hideBtnPark: boolean,
+    hideBtnVideo: boolean,
+    hideBtnSpeaker: boolean,
+    hideBtnMute: boolean,
+    hideBtnRecord: boolean,
+    hideBtnDTMF: boolean,
+    hideBtnHold: boolean,
+  ): void
+  setRecordingStatus(uuid: string, recording: boolean): void
 
   // these methods only available on ios
   playRBT(): void
@@ -60,6 +71,8 @@ const Polyfill: TBrekekeUtils = {
   setLocale: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
+  setConfig: () => undefined,
+  setRecordingStatus: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
   enableLPC: () => undefined,
