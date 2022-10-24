@@ -35,6 +35,30 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
+
+  public class Config {
+    public  boolean hideBtnTransfer;
+    public   boolean hideBtnPark;
+    public  boolean hideBtnVideo;
+    public   boolean hideBtnSpeaker;
+    public  boolean hideBtnMute;
+    public   boolean hideBtnRecord;
+    public  boolean hideBtnDTMF;
+    public   boolean hideBtnHold;
+
+    public Config() {
+      this.hideBtnTransfer = false;
+      this.hideBtnPark = false;
+      this.hideBtnVideo = false;
+      this.hideBtnSpeaker = false;
+      this.hideBtnMute = false;
+      this.hideBtnRecord = false;
+      this.hideBtnDTMF = false;
+      this.hideBtnHold = false;
+    }
+
+  }
+
   public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
@@ -69,11 +93,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
+  public static Config config;
 
   BrekekeUtils(ReactApplicationContext c) {
     super(c);
     ctx = c;
     initStaticServices(c);
+    config = new Config();
   }
 
   @Override
@@ -522,6 +548,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   //
   // React methods
   //
+  @ReactMethod
+  public void setConfig(Boolean hideBtnTransfer, Boolean hideBtnPark,Boolean hideBtnVideo,Boolean hideBtnSpeaker,
+   Boolean hideBtnMute,Boolean hideBtnRecord,Boolean hideBtnDTMF, Boolean hideBtnHold) {
+    this.config.hideBtnTransfer = hideBtnTransfer;
+    this.config.hideBtnPark = hideBtnPark;
+    this.config.hideBtnVideo = hideBtnVideo;
+    this.config.hideBtnSpeaker = hideBtnSpeaker;
+    this.config.hideBtnMute = hideBtnMute;
+    this.config.hideBtnRecord = hideBtnRecord;
+    this.config.hideBtnDTMF = hideBtnDTMF;
+    this.config.hideBtnHold = hideBtnHold;
+  }
 
   @ReactMethod
   public void getInitialNotifications(Promise promise) {

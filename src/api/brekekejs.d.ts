@@ -168,6 +168,14 @@ export type PbxGetProductInfoRes = {
   'webphone.allusers': string
   'webphone.users.max': string
   'webphone.pal.param.user': string
+  'webphone.call.transfer': string
+  'webphone.call.speaker': string
+  'webphone.call.park': string
+  'webphone.call.video': string
+  'webphone.call.mute': string
+  'webphone.call.record': string
+  'webphone.call.dtmf': string
+  'webphone.call.hold': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
