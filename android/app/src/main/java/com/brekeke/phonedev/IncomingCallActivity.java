@@ -150,7 +150,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vBtnRecord = (LinearLayout) findViewById(R.id.ln_btn_record);
     vBtnDTMF = (LinearLayout) findViewById(R.id.ln_btn_dtmf);
     vBtnHold = (LinearLayout) findViewById(R.id.ln_btn_hold);
-    updateConfig();
+
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -203,6 +203,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtHeaderCallerName.setText(callerName);
     updateLabels();
     updateHeader();
+
+    if(BrekekeUtils.config != null){
+      updateConfig();
+    }
+
   }
 
   public void updateConfig() {
