@@ -324,6 +324,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtc.setVisibility(View.GONE);
       videoLoading.setVisibility(View.GONE);
+      vCardAvatarTalking.setVisibility(View.VISIBLE);
       showCallManageControls();
     }
   }
@@ -338,6 +339,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } else {
       initWebrtcVideo();
       btnSwitchCamera.setVisibility(View.VISIBLE);
+      vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
