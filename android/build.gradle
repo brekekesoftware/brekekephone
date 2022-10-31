@@ -9,7 +9,6 @@ buildscript {
   repositories {
     mavenCentral()
     google()
-    jcenter()
   }
   dependencies {
     classpath("com.android.tools.build:gradle:4.2.2")
@@ -19,7 +18,11 @@ buildscript {
 
 allprojects {
   repositories {
-    mavenCentral()
+    mavenCentral {
+      content {
+        excludeGroup "com.facebook.react"
+      }
+    }
     mavenLocal()
     maven {
       url("$rootDir/../node_modules/react-native/android")
@@ -31,6 +34,5 @@ allprojects {
       url("https://www.jitpack.io")
     }
     google()
-    jcenter()
   }
 }

@@ -289,14 +289,14 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.7.2):
     - React-Core
-  - react-native-image-picker (2.3.4):
+  - react-native-image-picker (2.3.4-brekeke221031):
     - React-Core
   - react-native-splash-screen (3.2.0):
     - React
-  - react-native-video (5.2.0):
+  - react-native-video (5.2.1-brekeke221031):
     - React-Core
-    - react-native-video/Video (= 5.2.0)
-  - react-native-video/Video (5.2.0):
+    - react-native-video/Video (= 5.2.1-brekeke221031)
+  - react-native-video/Video (5.2.1-brekeke221031):
     - React-Core
   - react-native-webrtc (1.75.3-brekeke-000):
     - React
@@ -624,9 +624,9 @@ SPEC CHECKSUMS:
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-document-picker: 20f652c2402d3ddc81f396d8167c3bd978add4a2
   react-native-get-random-values: 30b3f74ca34e30e2e480de48e4add2706a40ac8f
-  react-native-image-picker: c6d75c4ab2cf46f9289f341242b219cb3c1180d3
+  react-native-image-picker: a6997f0d4f634b5e9d9790a2d94df8632a6a507f
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
+  react-native-video: 8839f019915271ba41a977674318d63de48e8e3e
   react-native-webrtc: 78c2ca886be7222ed9514f855704494da8e6f2c8
   React-perflogger: 73732888d37d4f5065198727b167846743232882
   React-RCTActionSheet: 96c6d774fa89b1f7c59fc460adc3245ba2d7fd79
