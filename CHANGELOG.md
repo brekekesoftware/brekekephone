@@ -2,12 +2,13 @@
 
 - Merge ios lpc into master
 - Desktop notification
-- Fix auto login not working with background mode on ios
+- Fix ios should not logout when app is in background
 - Hide buttons using data from getProductInfo
 - Display park label instead of number in other screens
 - Fix ios RBT bug never stop
 - Improve phonebook: remove toggle shared, add icon (s) for shared, fix checkbox keep displaying after finish deleting, use dislay_name
 - Fix recording status using notify_callrecording
+- Fix android avatar still shows when video call
 
 #### 2.11.3
 

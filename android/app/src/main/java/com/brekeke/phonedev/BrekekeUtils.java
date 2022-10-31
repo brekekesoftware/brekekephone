@@ -575,7 +575,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       }
     } catch (Exception e) {
     }
-
   }
 
   @ReactMethod
