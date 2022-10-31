@@ -565,6 +565,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     this.config.hideBtnRecord = hideBtnRecord;
     this.config.hideBtnDTMF = hideBtnDTMF;
     this.config.hideBtnHold = hideBtnHold;
+    // update UI with case IncomingCallActivity start before user login finish
+    try {
+      for (IncomingCallActivity a : activities) {
+        try {
+          a.updateConfig();
+        } catch (Exception e) {
+        }
+      }
+    } catch (Exception e) {
+    }
+
   }
 
   @ReactMethod

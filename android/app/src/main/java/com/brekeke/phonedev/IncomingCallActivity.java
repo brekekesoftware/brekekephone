@@ -150,7 +150,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vBtnRecord = (LinearLayout) findViewById(R.id.ln_btn_record);
     vBtnDTMF = (LinearLayout) findViewById(R.id.ln_btn_dtmf);
     vBtnHold = (LinearLayout) findViewById(R.id.ln_btn_hold);
-    updateConfig();
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -203,6 +202,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtHeaderCallerName.setText(callerName);
     updateLabels();
     updateHeader();
+
+    if (BrekekeUtils.config != null) {
+      updateConfig();
+    }
   }
 
   public void updateConfig() {
@@ -321,6 +324,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtc.setVisibility(View.GONE);
       videoLoading.setVisibility(View.GONE);
+      vCardAvatarTalking.setVisibility(View.VISIBLE);
       showCallManageControls();
     }
   }
@@ -335,6 +339,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } else {
       initWebrtcVideo();
       btnSwitchCamera.setVisibility(View.VISIBLE);
+      vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
@@ -491,12 +496,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vIncomingCall.setVisibility(View.GONE);
       vHeaderIncomingCall.setVisibility(View.GONE);
       vHeaderManageCall.setVisibility(View.VISIBLE);
+      vCardAvatarTalking.setVisibility(View.GONE);
+      vCallManageControls.setVisibility(View.GONE);
       vCallManage.setVisibility(View.VISIBLE);
-      if (v != null) {
-        vCardAvatarTalking.setVisibility(View.GONE);
-        vCallManageControls.setVisibility(View.GONE);
-        updateLayoutManagerCallLoading();
-      }
+      updateLayoutManagerCallLoading();
     } else {
       BrekekeUtils.removeAllAndBackToForeground();
     }
