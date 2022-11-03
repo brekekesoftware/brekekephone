@@ -195,17 +195,71 @@ class BrekekeLPCManager: NSObject {
   }
 }
 
+extension String {
+  func match(_ regex: String) -> [[String]] {
+    let nsString = self as NSString
+    return (try? NSRegularExpression(pattern: regex, options: []))?
+      .matches(in: self, options: [],
+               range: NSMakeRange(0, nsString.length)).map { match in
+        (0 ..< match.numberOfRanges)
+          .map {
+            match.range(at: $0).location == NSNotFound ? "" : nsString
+              .substring(with: match.range(at: $0))
+          }
+      } ?? []
+  }
+}
+
 extension BrekekeLPCManager: NEAppPushDelegate {
   func appPushManager(
     _: NEAppPushManager,
     didReceiveIncomingCallWithUserInfo userInfo: [AnyHashable: Any] = [:]
   ) {
-    logger.log("NEAppPushDelegate received an incoming call")
-    guard let payload = userInfo["payload"] as? [AnyHashable: Any],
-          let uuid = payload["callkeepUuid"] as? String else {
+    guard let payload = userInfo["payload"] as? [AnyHashable: Any] else {
       logger.log("userInfo dictionary is missing a required field")
       return
     }
+
+    // Check and Handle chat message
+    guard payload["x_pn-id"] is String else {
+      let content = UNMutableNotificationContent()
+      let body = payload["body"] as! String
+      let matched = body.match("from (.*?):(.*?)$")
+
+      content.title = matched[0][1]
+      content.body = matched[0][2]
+      content.sound = .default
+      content.userInfo = payload
+      content.sound = UNNotificationSound.default
+      let trigger = UNTimeIntervalNotificationTrigger(
+        timeInterval: 2.0,
+        repeats: false
+      )
+      let request = UNNotificationRequest(
+        identifier: UUID().uuidString,
+        content: content,
+        trigger: trigger
+      )
+
+      UNUserNotificationCenter.current().add(request) { [weak self] error in
+        if let error = error {
+          self?.logger.log("Error submitting local notification: \(error)")
+          return
+        }
+
+        self?.logger.log("Local notification posted successfully")
+      }
+
+      return
+    }
+
+    // handle PN call
+    guard let uuid = payload["callkeepUuid"] as? String else {
+      logger
+        .log("userInfo dictionary is missing a required callkeepUuid field ")
+      return
+    }
+
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload,
