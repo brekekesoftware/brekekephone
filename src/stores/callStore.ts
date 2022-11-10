@@ -5,7 +5,7 @@ import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
-import { MakeCallFn } from '../api/brekekejs'
+import { MakeCallFn, Session } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
@@ -209,6 +209,10 @@ export class CallStore {
     this.recentCallActivityAt = now
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
+      if (cPartial.rawSession && cExisting.rawSession) {
+        Object.assign(cExisting.rawSession, cPartial.rawSession)
+        delete cPartial.rawSession
+      }
       if (
         cPartial.videoSessionId &&
         cExisting.videoSessionId &&
@@ -292,11 +296,16 @@ export class CallStore {
     }
   }
 
-  @action onCallRemove = (id: string) => {
+  @action onCallRemove = (rawSession: Session) => {
     this.recentCallActivityAt = Date.now()
-    const c = this.calls.find(_ => _.id === id)
+    const c = this.calls.find(_ => _.id === rawSession.sessionId)
     if (!c) {
       return
+    }
+    if (c.rawSession) {
+      Object.assign(c.rawSession, rawSession)
+    } else {
+      c.rawSession = rawSession
     }
     this.onSipUaCancel({ pnId: c.pnId })
     c.callkeepUuid && this.endCallKeep(c.callkeepUuid)

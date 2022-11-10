@@ -84,9 +84,12 @@ type EmbedAccount = {
   tenant?: string
   username: string
   password?: string
+  phoneIndex?: number
   uc?: boolean
+  ucDisplayOfflineUsers?: boolean
   parks?: string[]
   parkNames?: string[]
+  pushNotification?: boolean
 }
 const convertToStorage = (a: EmbedAccount): Account => {
   const p = accountStore.genEmptyAccount()
@@ -95,9 +98,12 @@ const convertToStorage = (a: EmbedAccount): Account => {
   p.pbxTenant = a.tenant || ''
   p.pbxUsername = a.username || ''
   p.pbxPassword = a.password || ''
+  p.pbxPhoneIndex = `${Number(a.phoneIndex) || 4}`
   p.ucEnabled = a.uc || false
+  p.displayOfflineUsers = a.ucDisplayOfflineUsers || false
   p.parks = a.parks || []
   p.parkNames = a.parkNames || []
+  p.pushNotificationEnabled = a.pushNotification || false
   return p
 }
 const copyToStorage = (fr: Account, to: Account) => {
@@ -106,7 +112,10 @@ const copyToStorage = (fr: Account, to: Account) => {
   to.pbxTenant = fr.pbxTenant
   to.pbxUsername = fr.pbxUsername
   to.pbxPassword = fr.pbxPassword
+  to.pbxPhoneIndex = fr.pbxPhoneIndex
   to.ucEnabled = fr.ucEnabled
+  to.displayOfflineUsers = fr.displayOfflineUsers
   to.parks = fr.parks
   to.parkNames = fr.parkNames
+  to.pushNotificationEnabled = fr.pushNotificationEnabled
 }

@@ -6,10 +6,10 @@ export const exposeEmbedApi = (renderApp: (rootTag: HTMLElement) => void) => {
     rootTag: HTMLElement,
     o: EmbedSignInOptions,
   ) => {
-    renderApp(rootTag)
-    embedApi._signIn(o)
     embedApi._rootTag = rootTag
     embedApi._palParams = parsePalParams(o)
+    renderApp(rootTag)
+    embedApi._signIn(o)
     return embedApi
   }
 }

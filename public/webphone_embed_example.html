@@ -39,14 +39,17 @@
       // the accounts are stored in the localStorage
       // if false, the accounts will overwrite the same entry (host, port, tenant, user)
       clear_existing_accounts: false,
-      // hostname: string
-      // port: string
-      // tenant: string - optional
-      // username: string
-      // password: string
-      // uc: boolean - optional
-      // parks: string[] - optional
-      // parkNames: string[] - optional
+      // hostname:              string
+      // port:                  string
+      // tenant:                string - optional
+      // username:              string
+      // password:              string
+      // phoneIndex:            number 1-4 - optional - default 4
+      // uc:                    boolean - optional - default false
+      // ucDisplayOfflineUsers: boolean - optional - default false
+      // parks:                 string[] - optional
+      // parkNames:             string[] - optional
+      // pushNotification:      boolean - optional - default false
       accounts: [
         {
           hostname: 'YOUR_PBX_HOSTNAME',
@@ -79,10 +82,14 @@
       console.log(c) // console log to see all details
       // here you manually can show the UI
       div.classList.remove('brekeke_phone_component_hidden')
+      // access to the raw session to get more data
+      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
     })
     phone.on('call_update', c => {
       console.log('phone.on.call_update', c.id) // identify by the same above id
       console.log(c) // all fields same with above
+      // access to the raw session to get more data
+      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
     })
     phone.on('call_end', c => {
       console.log('phone.on.call_end', c.id) // identify by the same above id
@@ -90,6 +97,8 @@
       if (!phone.getRunningCalls().length) {
         div.classList.add('brekeke_phone_component_hidden')
       }
+      // access to the raw session to get more data
+      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
     })
 
     // get the raw pal instance from pbx:

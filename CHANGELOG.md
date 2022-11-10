@@ -9,13 +9,20 @@
 - Improve phonebook: remove toggle shared, add icon (s) for shared, fix checkbox keep displaying after finish deleting, use dislay_name
 - Fix recording status using notify_callrecording
 - Fix android avatar still shows when video call
+- Embed:
+  - Allow to get the raw session object which can get the header on call events. The object should be available for all the events: new call, call updated, call ended. See in the example `c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')`
+  - Fix bug: should assign pal params before sign in
+  - Fix bug: should parse pal params correctly stripe out 'webphone.pal.param.'
+  - Fix bug: should move the `emit('pal')` to the bottom
+  - Add more fields to the account option for login: phoneIndex, ucDisplayOfflineUsers, pushNotification. See the example for more detail on typing and default value. The other 2 options: uc, parks are already included in the previous version.
 
 #### 2.11.3
 
-- Embed: Allow to set pal params from embed
-- Embed: Allow to set sip headers with makeCall
-- Embed: Re-initialize / restart the instance
-- Embed: Access webrtcclient instance, with inner sip instance
+- Embed:
+  - Allow to set pal params
+  - Allow to set sip headers with makeCall
+  - Re-initialize / restart the instance
+  - Access webrtcclient instance, with inner sip instance
 
 #### 2.11.1
 
@@ -41,7 +48,7 @@
 #### 2.10.9
 
 - Fix RBT low volume after a call
-- Webphone embed: fix auto_login logic
+- Embed: fix auto_login logic
 
 #### 2.10.8
 
@@ -63,7 +70,7 @@
 - Fix 571: speaker on immediately after make a call does not work
 - Fix 572: speaker on does not affect when change from ringing to talking
 - Fix css icon text position change on length
-- Webphone embed: merge into the main bundle
+- Embed: merge into the main bundle
 
 #### 2.10.3
 
@@ -96,7 +103,7 @@
 - Fix 492 493 494 495 499 500 528ios: Various minor UC chat bugs
 - Fix sometimes can not logout, app stuck
 - Fix sometimes can not login, white screen
-- Webphone embed: init api as a separated bundle
+- Embed: init api as a separated bundle
 
 #### 2.9.10
 

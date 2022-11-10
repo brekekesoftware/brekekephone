@@ -98,7 +98,6 @@ export class PBX extends EventEmitter {
     }
 
     this.clearConnectTimeoutId()
-    embedApi.emit('pal', p, client)
 
     client.onClose = () => {
       this.emit('connection-stopped')
@@ -180,6 +179,11 @@ export class PBX extends EventEmitter {
         default:
           return
       }
+    }
+    // when sync pn token, needToWait = false
+    // we will not emit pal in that case
+    if (this.needToWait) {
+      embedApi.emit('pal', p, client)
     }
   }
 

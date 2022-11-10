@@ -137,6 +137,7 @@ export class SIP extends EventEmitter {
         d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
       return {
+        rawSession: ev,
         id: ev.sessionId,
         pnId: ev.incomingMessage?.getHeader('X-PN-ID'),
         incoming: ev.rtcSession.direction === 'incoming',
@@ -178,7 +179,7 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
-        return this.emit('session-stopped', ev.sessionId)
+        return this.emit('session-stopped', ev)
       }
       const withSDP =
         ev.rtcSession.direction === 'outgoing' &&

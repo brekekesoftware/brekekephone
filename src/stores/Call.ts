@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
 
-import { SessionStatus } from '../api/brekekejs'
+import { Session, SessionStatus } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
@@ -18,6 +18,8 @@ import { RnAlert } from './RnAlert'
 
 export class Call {
   constructor(private store: CallStore) {}
+
+  rawSession?: Session
 
   @observable earlyMedia: MediaStream | null = null
   @observable withSDP: boolean = false
