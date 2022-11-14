@@ -16,6 +16,11 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
+  if (!p.id || !p.pbxUsername) {
+    console.log('PN sync debug: invalid data')
+    return
+  }
+
   if (accountStore.pnSyncLoadingMap[p.id]) {
     console.log('PN sync debug: sync is loading')
     return

@@ -1,6 +1,7 @@
 import { action } from 'mobx'
 
 import { authPBX } from '../stores/AuthPBX'
+import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { Call } from '../stores/Call'
 import { callStore } from '../stores/callStore'
@@ -53,6 +54,7 @@ class Api {
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
+    authSIP.authWithCheck()
     await waitSip()
     await pbx.getConfig()
     const cp = s.getCurrentAccount()
