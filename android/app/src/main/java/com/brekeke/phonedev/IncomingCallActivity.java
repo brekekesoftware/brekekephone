@@ -3,6 +3,7 @@ package com.brekeke.phonedev;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,7 +36,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCallManage,
       vCallManageLoading,
       vHeaderIncomingCall,
-      vHeaderManageCall;
+      vHeaderManageCall,
+      vWebViewAvatarLoading,
+      vWebViewAvatarTalkingLoading;
   public LinearLayout vCallManageControls,
       vBtnTransfer,
       vBtnPark,
@@ -47,6 +52,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public View vCardAvatarTalking;
   public WebRTCView vWebrtcVideo;
   public ImageView imgAvatar;
+  public WebView webViewAvatar, webViewAvatarTalking;
   public ImageView imgAvatarTalking;
   public ProgressBar videoLoading;
   public Button btnAnswer,
@@ -139,6 +145,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCardAvatarTalking = (View) findViewById(R.id.card_avatar_talking);
     vCardAvatar = (View) findViewById(R.id.card_avatar);
     videoLoading = (ProgressBar) findViewById(R.id.video_loading);
+    vWebViewAvatarLoading = (RelativeLayout) findViewById(R.id.rl_webview_loading);
+    vWebViewAvatarTalkingLoading = (RelativeLayout) findViewById(R.id.rl_taking_loading);
     vCallManage.setOnClickListener(this);
 
     //    view btn
@@ -150,6 +158,22 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vBtnRecord = (LinearLayout) findViewById(R.id.ln_btn_record);
     vBtnDTMF = (LinearLayout) findViewById(R.id.ln_btn_dtmf);
     vBtnHold = (LinearLayout) findViewById(R.id.ln_btn_hold);
+
+    webViewAvatar = (WebView) findViewById(R.id.avatar_html);
+    webViewAvatar.setBackgroundColor(Color.WHITE);
+    webViewAvatar.getSettings().setBuiltInZoomControls(false);
+    webViewAvatar.getSettings().setSupportZoom(false);
+    webViewAvatar.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+    webViewAvatar.getSettings().setAllowFileAccess(true);
+    webViewAvatar.getSettings().setDomStorageEnabled(true);
+
+    webViewAvatarTalking = (WebView) findViewById(R.id.avatar_talking_html);
+    webViewAvatarTalking.setBackgroundColor(Color.WHITE);
+    webViewAvatarTalking.getSettings().setBuiltInZoomControls(false);
+    webViewAvatarTalking.getSettings().setSupportZoom(false);
+    webViewAvatarTalking.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+    webViewAvatarTalking.getSettings().setAllowFileAccess(true);
+    webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -255,17 +279,40 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       params.setMargins(0, (int) (height * 1.5), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
+    // handle avatar for incomming call
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
     } else {
-      Glide.with(this)
-          .load(avatar)
-          .diskCacheStrategy(DiskCacheStrategy.NONE)
-          .skipMemoryCache(true)
-          .placeholder(drawableProgress)
-          .error(R.mipmap.avatar_failed)
-          .centerCrop()
-          .into(imgAvatar);
+      if (BrekekeUtils.isImageUrl(avatar) == false) {
+        webViewAvatar.setVisibility(View.VISIBLE);
+        imgAvatar.setVisibility(View.GONE);
+        webViewAvatar.loadUrl(avatar);
+        webViewAvatar.setWebViewClient(
+            new WebViewClient() {
+              @Override
+              public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                vWebViewAvatarLoading.setVisibility(View.VISIBLE);
+              }
+
+              @Override
+              public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                vWebViewAvatarLoading.setVisibility(View.GONE);
+              }
+            });
+      } else {
+        webViewAvatar.setVisibility(View.GONE);
+        imgAvatar.setVisibility(View.VISIBLE);
+        Glide.with(this)
+            .load(avatar)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .placeholder(drawableProgress)
+            .error(R.mipmap.avatar_failed)
+            .centerCrop()
+            .into(imgAvatar);
+      }
     }
   }
 
@@ -474,6 +521,39 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     constraintSet.applyTo(constraintLayout);
   }
 
+  public void handleShowAvatarTalking() {
+    if (BrekekeUtils.isImageUrl(talkingAvatar) == true) {
+      webViewAvatarTalking.setVisibility(View.GONE);
+      imgAvatarTalking.setVisibility(View.VISIBLE);
+      Glide.with(this)
+          .load(talkingAvatar)
+          .diskCacheStrategy(DiskCacheStrategy.NONE)
+          .skipMemoryCache(true)
+          .placeholder(drawableProgress)
+          .error(R.mipmap.avatar_failed)
+          .centerCrop()
+          .into(imgAvatarTalking);
+    } else {
+      webViewAvatarTalking.setVisibility(View.VISIBLE);
+      imgAvatarTalking.setVisibility(View.GONE);
+      webViewAvatarTalking.setWebViewClient(
+          new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+              super.onPageFinished(view, url);
+              vWebViewAvatarTalkingLoading.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+              super.onPageStarted(view, url, favicon);
+              vWebViewAvatarTalkingLoading.setVisibility(View.VISIBLE);
+            }
+          });
+      webViewAvatarTalking.loadUrl(talkingAvatar);
+    }
+  }
+
   public void onBtnAnswerClick(View v) {
     BrekekeUtils.putUserActionAnswerCall(uuid);
     BrekekeUtils.emit("answerCall", uuid);
@@ -482,14 +562,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         if (!isLarge) {
           updateLayoutManagerCall();
         }
-        Glide.with(this)
-            .load(talkingAvatar)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .placeholder(drawableProgress)
-            .error(R.mipmap.avatar_failed)
-            .centerCrop()
-            .into(imgAvatarTalking);
+        handleShowAvatarTalking();
       }
       answered = true;
       BrekekeUtils.stopRingtone();
@@ -690,14 +763,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     vCardAvatarTalking.setVisibility(View.VISIBLE);
     // load image content
-    Glide.with(this)
-        .load(talkingAvatar)
-        .diskCacheStrategy(DiskCacheStrategy.NONE)
-        .skipMemoryCache(true)
-        .placeholder(drawableProgress)
-        .error(R.mipmap.avatar_failed)
-        .centerCrop()
-        .into(imgAvatarTalking);
+    handleShowAvatarTalking();
+    //    Glide.with(this)
+    //        .load(talkingAvatar)
+    //        .diskCacheStrategy(DiskCacheStrategy.NONE)
+    //        .skipMemoryCache(true)
+    //        .placeholder(drawableProgress)
+    //        .error(R.mipmap.avatar_failed)
+    //        .centerCrop()
+    //        .into(imgAvatarTalking);
   }
 
   private void updateUILayoutManagerCall(Boolean isVideoCall) {
