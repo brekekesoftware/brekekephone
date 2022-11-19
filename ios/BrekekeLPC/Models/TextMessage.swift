@@ -2,7 +2,7 @@ import Foundation
 
 public struct TextMessage: Codable, Routable {
   public var routing: Routing
-  public var message: String
+  public var message: String?
   private enum CodingKeys: String, CodingKey {
     case routing, message
   }
