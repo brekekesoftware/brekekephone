@@ -265,7 +265,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
       int height = (int) (displayMetrics.heightPixels * 4 / 10);
       // CardAvatar Layout
-
       vCardAvatar.getLayoutParams().height = height;
       vCardAvatar.getLayoutParams().width = height;
       GradientDrawable shape = new GradientDrawable();
@@ -764,14 +763,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCardAvatarTalking.setVisibility(View.VISIBLE);
     // load image content
     handleShowAvatarTalking();
-    //    Glide.with(this)
-    //        .load(talkingAvatar)
-    //        .diskCacheStrategy(DiskCacheStrategy.NONE)
-    //        .skipMemoryCache(true)
-    //        .placeholder(drawableProgress)
-    //        .error(R.mipmap.avatar_failed)
-    //        .centerCrop()
-    //        .into(imgAvatarTalking);
   }
 
   private void updateUILayoutManagerCall(Boolean isVideoCall) {

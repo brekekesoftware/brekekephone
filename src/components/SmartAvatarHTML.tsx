@@ -56,7 +56,7 @@ export const SmartImage = (p: {
   }
   // fix for exception get image from UC: https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
   const isImageUrl =
-    /\.(jpeg|jpg|gif|png|jpg)\?/.test(p.uri) ||
+    /\.(jpeg|jpg|gif|png)\?/.test(p.uri) ||
     p.uri.includes('/uc/image?ACTION=DOWNLOAD&tenant')
 
   return (

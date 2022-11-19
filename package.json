@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.11.4",
+  "version": "2.11.5",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -74,7 +74,7 @@
     "react-native-web": "0.17.7",
     "react-native-web-linear-gradient": "1.1.2",
     "react-native-webrtc": "github:brekekesoftware/react-native-webrtc#6cac2cfa0aad8e35f0b78e5d1ac8f161431e4b71",
-    "react-native-webview": "^11.23.1",
+    "react-native-webview": "11.23.1",
     "url-parse": "1.5.10",
     "uuid": "8.3.2",
     "validatorjs": "3.22.1"

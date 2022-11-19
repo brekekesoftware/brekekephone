@@ -53,7 +53,7 @@ export const SmartImage = (p: {
     setStatusImageLoading(1)
   }
   const isImageUrl =
-    /\.(jpeg|jpg|gif|png|jpg)\?/.test(p.uri) ||
+    /\.(jpeg|jpg|gif|png)\?/.test(p.uri) ||
     p.uri.includes('/uc/image?ACTION=DOWNLOAD&tenant')
   return (
     <View

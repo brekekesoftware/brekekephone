@@ -219,13 +219,11 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       logger.log("userInfo dictionary is missing a required field")
       return
     }
-
-    // Check and Handle chat message
+    // Handle chat message
     guard payload["x_pn-id"] is String else {
       let content = UNMutableNotificationContent()
       let body = payload["body"] as! String
       let matched = body.match("from (.*?):(.*?)$")
-
       content.title = matched[0][1]
       content.body = matched[0][2]
       content.sound = .default
@@ -240,26 +238,21 @@ extension BrekekeLPCManager: NEAppPushDelegate {
         content: content,
         trigger: trigger
       )
-
       UNUserNotificationCenter.current().add(request) { [weak self] error in
         if let error = error {
           self?.logger.log("Error submitting local notification: \(error)")
           return
         }
-
         self?.logger.log("Local notification posted successfully")
       }
-
       return
     }
-
-    // handle PN call
+    // Handle PN call
     guard let uuid = payload["callkeepUuid"] as? String else {
       logger
         .log("userInfo dictionary is missing a required callkeepUuid field ")
       return
     }
-
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload,

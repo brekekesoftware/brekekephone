@@ -154,7 +154,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (url.contains("/uc/image?ACTION=DOWNLOAD&tenant")) {
       return true;
     }
-    Pattern p = Pattern.compile(".(jpeg|jpg|gif|png|jpg)\\?");
+    Pattern p = Pattern.compile(".(jpeg|jpg|gif|png)\\?");
     Matcher m = p.matcher(url);
     return m.find();
   }

@@ -1,3 +1,8 @@
+#### 2.11.5
+
+- Handle chat message ios LPC PN
+- Handle avatar as html url using webview
+
 #### 2.11.4
 
 - Merge ios lpc into master
