@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -144,6 +146,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       userActions.put(uuid, "answerCall");
     } catch (Exception e) {
     }
+  }
+
+  public static boolean isImageUrl(String url) {
+    // fix for exception get image from UC:
+    // https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
+    if (url.contains("/uc/image?ACTION=DOWNLOAD&tenant")) {
+      return true;
+    }
+    Pattern p = Pattern.compile(".(jpeg|jpg|gif|png|jpg)\\?");
+    Matcher m = p.matcher(url);
+    return m.find();
   }
 
   // Interval for the case js set rejectCall even before activity start/starting

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
+import WebView, { WebViewMessageEvent } from 'react-native-webview'
 
 import noPhoto from '../assets/no_photo.png'
 
@@ -38,6 +39,14 @@ export const SmartImage = (p: {
   useEffect(() => {
     setStatusImageLoading(0)
   }, [p.uri])
+  console.error({ url: p.uri })
+  const styleBorderRadius = p.isLarge ? {} : { borderRadius: p.size / 2 }
+  const onMessage = (event: WebViewMessageEvent) => {
+    setStatusImageLoading(1)
+  }
+  const onLoadEnd = () => {
+    setStatusImageLoading(1)
+  }
 
   const onImageLoadError = () => {
     setStatusImageLoading(2)
@@ -45,7 +54,11 @@ export const SmartImage = (p: {
   const onImageLoad = () => {
     setStatusImageLoading(1)
   }
-  const styleBorderRadius = p.isLarge ? {} : { borderRadius: p.size / 2 }
+  // fix for exception get image from UC: https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
+  const isImageUrl =
+    /\.(jpeg|jpg|gif|png|jpg)\?/.test(p.uri) ||
+    p.uri.includes('/uc/image?ACTION=DOWNLOAD&tenant')
+
   return (
     <View
       style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}
@@ -57,16 +70,33 @@ export const SmartImage = (p: {
           style={[css.loading, { width: p.size, height: p.size }]}
         />
       )}
-      <Image
-        source={{
-          uri: p.uri,
-        }}
-        style={[css.image, { width: p.size, height: p.size }]}
-        onError={onImageLoadError}
-        onLoad={onImageLoad}
-        resizeMode={'cover'}
-      />
-      {statusImageLoading === 2 && (
+      {!isImageUrl ? (
+        <WebView
+          source={{
+            uri: p.uri,
+          }}
+          style={[css.image, { width: p.size, height: p.size }]}
+          scalesPageToFit={true}
+          bounces={false}
+          startInLoadingState={true}
+          onMessage={onMessage}
+          onLoadEnd={onLoadEnd}
+          originWhitelist={['*']}
+          javaScriptEnabled={true}
+          resizeMode={'cover'}
+        />
+      ) : (
+        <Image
+          source={{
+            uri: p.uri,
+          }}
+          style={[css.image, { width: p.size, height: p.size }]}
+          onError={onImageLoadError}
+          onLoad={onImageLoad}
+          resizeMode={'cover'}
+        />
+      )}
+      {statusImageLoading === 2 && isImageUrl && (
         <Image
           source={noPhotoImg}
           style={[css.imageError, { width: p.size, height: p.size }]}

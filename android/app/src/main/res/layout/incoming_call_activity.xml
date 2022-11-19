@@ -77,6 +77,35 @@
           android:layout_centerHorizontal="true"
           android:gravity="center"
         />
+
+        <WebView
+          android:id="@+id/avatar_html"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+        >
+
+        </WebView>
+        <RelativeLayout
+          android:id="@+id/rl_webview_loading"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_centerHorizontal="true"
+          android:visibility="gone"
+        >
+          <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/black"
+          />
+        </RelativeLayout>
+
       </androidx.cardview.widget.CardView>
 
       <TextView
@@ -94,6 +123,54 @@
         app:layout_constraintTop_toBottomOf="@+id/card_avatar"
         tools:layout_editor_absoluteX="0dp"
       />
+      <RelativeLayout
+        android:id="@+id/view_incoming_call"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-2dp"
+      >
+        <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="20dp"
+          android:layout_alignParentBottom="true"
+          android:layout_centerInParent="true"
+        >
+          <Button
+            android:id="@+id/btn_answer"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:paddingTop="39dp"
+            android:paddingLeft="13dp"
+            android:background="@drawable/btn_answer"
+            android:drawableLeft="@drawable/ic_answer"
+          />
+
+          <Button
+            android:id="@+id/btn_reject"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="200dp"
+            android:paddingTop="39dp"
+            android:paddingLeft="13dp"
+            android:background="@drawable/btn_reject"
+            android:drawableLeft="@drawable/ic_reject"
+          />
+        </LinearLayout>
+
+        <TextView
+          android:id="@+id/txt_incoming_call"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"
+          android:gravity="center"
+          android:text="Incoming Call"
+          android:textColor="@color/white"
+          android:textSize="20dp"
+        />
+      </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
   </RelativeLayout>
   <!-- Header manage call -->
@@ -140,52 +217,6 @@
   </RelativeLayout>
 
   <!-- view_incoming_call -->
-  <RelativeLayout
-    android:id="@+id/view_incoming_call"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="visible"
-  >
-    <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="20dp"
-      android:layout_alignParentBottom="true"
-      android:layout_centerInParent="true"
-    >
-      <Button
-        android:id="@+id/btn_answer"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:paddingTop="39dp"
-        android:paddingLeft="13dp"
-        android:background="@drawable/btn_answer"
-        android:drawableLeft="@drawable/ic_answer"
-      />
-
-      <Button
-        android:id="@+id/btn_reject"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:layout_marginLeft="200dp"
-        android:paddingTop="39dp"
-        android:paddingLeft="13dp"
-        android:background="@drawable/btn_reject"
-        android:drawableLeft="@drawable/ic_reject"
-      />
-    </LinearLayout>
-
-    <TextView
-      android:id="@+id/txt_incoming_call"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_centerInParent="true"
-      android:gravity="center"
-      android:text="Incoming Call"
-      android:textColor="@color/white"
-      android:textSize="20dp"
-    />
-  </RelativeLayout>
 
   <!-- view_call_manage -->
   <RelativeLayout
@@ -221,6 +252,33 @@
           android:layout_centerHorizontal="true"
           android:gravity="center"
         />
+        <WebView
+          android:id="@+id/avatar_talking_html"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+        >
+
+        </WebView>
+        <RelativeLayout
+          android:id="@+id/rl_taking_loading"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_centerHorizontal="true"
+          android:visibility="gone"
+        >
+          <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/black"
+          />
+        </RelativeLayout>
       </androidx.cardview.widget.CardView>
 
       <Button
