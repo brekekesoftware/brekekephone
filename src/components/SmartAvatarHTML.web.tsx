@@ -4,6 +4,7 @@ import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import noPhoto from '../assets/no_photo.png'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
+const URLParse = require('url')
 
 const css = StyleSheet.create({
   image: {
@@ -52,9 +53,17 @@ export const SmartImage = (p: {
   const onImageLoad = () => {
     setStatusImageLoading(1)
   }
+  const checkUrlImage = (url: string) => {
+    const ps = URLParse.parse(url.toLowerCase())
+    return /\.(jpeg|jpg|gif|png)$/.test(ps.pathname)
+  }
+  // fix for exception get image from UC: https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
   const isImageUrl =
-    /\.(jpeg|jpg|gif|png)\?/.test(p.uri) ||
-    p.uri.includes('/uc/image?ACTION=DOWNLOAD&tenant')
+    checkUrlImage(p.uri) ||
+    p.uri
+      .toLowerCase()
+      .includes('/uc/image?ACTION=DOWNLOAD&tenant'.toLowerCase())
+
   return (
     <View
       style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}

@@ -162,18 +162,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatar = (WebView) findViewById(R.id.avatar_html);
     webViewAvatar.setBackgroundColor(Color.WHITE);
     webViewAvatar.getSettings().setBuiltInZoomControls(false);
-    webViewAvatar.getSettings().setSupportZoom(false);
+    webViewAvatar.getSettings().setSupportZoom(true);
     webViewAvatar.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+    webViewAvatar.getSettings().setJavaScriptEnabled(true);
     webViewAvatar.getSettings().setAllowFileAccess(true);
     webViewAvatar.getSettings().setDomStorageEnabled(true);
 
     webViewAvatarTalking = (WebView) findViewById(R.id.avatar_talking_html);
     webViewAvatarTalking.setBackgroundColor(Color.WHITE);
     webViewAvatarTalking.getSettings().setBuiltInZoomControls(false);
-    webViewAvatarTalking.getSettings().setSupportZoom(false);
+    webViewAvatarTalking.getSettings().setSupportZoom(true);
     webViewAvatarTalking.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
+    webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
