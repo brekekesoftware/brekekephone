@@ -24,6 +24,8 @@ import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -151,12 +153,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isImageUrl(String url) {
     // fix for exception get image from UC:
     // https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
-    if (url.contains("/uc/image?ACTION=DOWNLOAD&tenant")) {
+    if (url.toLowerCase().contains("/uc/image?ACTION=DOWNLOAD&tenant".toLowerCase())) {
       return true;
     }
-    Pattern p = Pattern.compile(".(jpeg|jpg|gif|png)\\?");
-    Matcher m = p.matcher(url);
-    return m.find();
+    try {
+      URL aURL = new URL(url.toLowerCase());
+      Pattern p = Pattern.compile(".(jpeg|jpg|gif|png)$");
+      Matcher m = p.matcher(aURL.getPath());
+      return m.find();
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      return false;
+    }
   }
 
   // Interval for the case js set rejectCall even before activity start/starting

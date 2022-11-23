@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 
 import noPhoto from '../assets/no_photo.png'
+import { checkImageUrl } from '../utils/checkImageURL'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
-
 const css = StyleSheet.create({
   image: {
     overflow: 'hidden',
@@ -52,9 +52,9 @@ export const SmartImage = (p: {
   const onImageLoad = () => {
     setStatusImageLoading(1)
   }
-  const isImageUrl =
-    /\.(jpeg|jpg|gif|png)\?/.test(p.uri) ||
-    p.uri.includes('/uc/image?ACTION=DOWNLOAD&tenant')
+
+  const isImageUrl = checkImageUrl(p.uri)
+
   return (
     <View
       style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}

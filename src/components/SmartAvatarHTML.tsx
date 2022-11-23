@@ -3,6 +3,7 @@ import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 
 import noPhoto from '../assets/no_photo.png'
+import { checkImageUrl } from '../utils/checkImageURL'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
@@ -54,10 +55,7 @@ export const SmartImage = (p: {
   const onImageLoad = () => {
     setStatusImageLoading(1)
   }
-  // fix for exception get image from UC: https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
-  const isImageUrl =
-    /\.(jpeg|jpg|gif|png)\?/.test(p.uri) ||
-    p.uri.includes('/uc/image?ACTION=DOWNLOAD&tenant')
+  const isImageUrl = checkImageUrl(p.uri)
 
   return (
     <View
