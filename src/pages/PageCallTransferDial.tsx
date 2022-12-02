@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
+  Platform,
   TextInput,
   TextInputSelectionChangeEventData,
 } from 'react-native'
@@ -16,6 +17,8 @@ import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
+import { onBackToCallManageScreen } from '../utils/backToCallManage'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 
 @observer
 export class PageCallTransferDial extends Component {
@@ -63,7 +66,7 @@ export class PageCallTransferDial extends Component {
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={Nav().backToPageCallManage}
+        onBack={onBackToCallManageScreen}
         menu={'call_transfer'}
         subMenu={'external_number'}
         isTab

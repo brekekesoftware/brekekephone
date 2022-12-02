@@ -66,7 +66,8 @@ const initApp = async () => {
   AppState.addEventListener('change', async () => {
     if (AppState.currentState === 'active') {
       getAuthStore().resetFailureState()
-      BrekekeUtils.closeAllIncomingCalls()
+      console.log("dev::: enAppState.currentState === 'active'")
+      // BrekekeUtils.closeAllIncomingCalls()
       callStore.onCallKeepAction()
       // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
       // ref: https://github.com/facebook/react-native-website/issues/273

@@ -1,7 +1,7 @@
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { SectionList } from 'react-native'
+import { Platform, SectionList } from 'react-native'
 
 import { mdiPhone, mdiPhoneForward } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
@@ -15,6 +15,8 @@ import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { userStore } from '../stores/userStore'
+import { onBackToCallManageScreen } from '../utils/backToCallManage'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 
 @observer
 export class PageCallTransferChooseUser extends Component {
@@ -108,7 +110,7 @@ export class PageCallTransferChooseUser extends Component {
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={Nav().backToPageCallManage}
+        onBack={onBackToCallManageScreen}
         menu={'call_transfer'}
         subMenu={'list_user'}
         isTab

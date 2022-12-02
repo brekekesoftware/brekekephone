@@ -11,6 +11,7 @@ import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { embedApi } from '../embed/embedApi'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { onBackToCallManageScreen } from '../utils/backToCallManage'
 import { TEvent } from '../utils/callkeep'
 import { showNotification } from '../utils/DesktopNotification'
 import { ParsedPn } from '../utils/PushNotification-parse'
@@ -120,6 +121,7 @@ export class CallStore {
       includingOutgoing: Platform.OS === 'ios',
     })
     console.log(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
+    console.log(`dev::: SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
       c.callkeepAlreadyRejected = true
       c.hangupWithUnhold()
@@ -339,11 +341,15 @@ export class CallStore {
   }
 
   @action onSelectBackgroundCall = (c: Immutable<Call>) => {
+    console.log('dev::: onSelectBackgroundCall')
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
     this.currentCallId = c.id
-    Nav().backToPageCallManage()
+    setTimeout(() => {
+      onBackToCallManageScreen()
+    }, 1000)
+    // Nav().backToPageCallManage()
   }
 
   private startCallIntervalAt = 0
@@ -569,6 +575,8 @@ export class CallStore {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
+    console.log('dev::: endCallKeepAllCalls')
+
     BrekekeUtils.closeAllIncomingCalls()
     this.onCallKeepAction()
   }

@@ -252,6 +252,10 @@ export class Call {
     Nav().goToPageCallRecents()
     return pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
+      .then(() => {
+        Platform.OS === 'android' &&
+          BrekekeUtils.onCloseIncomingActivity(this.callkeepUuid)
+      })
       .catch(this.onTransferFailure)
   }
   @action transferAttended = (number: string) => {
@@ -263,6 +267,10 @@ export class Call {
     this.holding = true
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
+      .then(() => {
+        Platform.OS === 'android' &&
+          BrekekeUtils.onCloseIncomingActivity(this.callkeepUuid)
+      })
       .catch(this.onTransferFailure)
   }
   @action private onTransferFailure = (err: Error) => {
@@ -282,6 +290,10 @@ export class Call {
     this.holding = false
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .then(() => {
+        Platform.OS === 'android' &&
+          BrekekeUtils.onCloseIncomingActivity(this.callkeepUuid)
+      })
       .catch(this.onStopTransferringFailure)
   }
   @action private onStopTransferringFailure = (err: Error) => {
@@ -300,6 +312,11 @@ export class Call {
     this.holding = false
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .then(() => {
+        console.error('dev:::joinTalkerTransfer')
+        Platform.OS === 'android' &&
+          BrekekeUtils.onCloseIncomingActivity(this.callkeepUuid)
+      })
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
@@ -314,6 +331,10 @@ export class Call {
   @action park = (number: string) => {
     return pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
+      .then(() => {
+        Platform.OS === 'android' &&
+          BrekekeUtils.onCloseIncomingActivity(this.callkeepUuid)
+      })
       .catch(this.onParkFailure)
   }
   private onParkFailure = (err: Error) => {

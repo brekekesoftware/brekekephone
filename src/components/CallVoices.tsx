@@ -19,12 +19,14 @@ export const CallVoices = observer(() => {
     currentCall &&
     !currentCall.incoming &&
     !currentCall.answered &&
-    currentCall.sessionStatus === 'progress'
+    (currentCall.sessionStatus === 'progress' ||
+      currentCall.sessionStatus === 'dialing')
 
   const outgoingWithSDP = currentCall && currentCall?.withSDP
 
   const isPaused = !(isOutgoingCallStart && !outgoingWithSDP)
 
+  console.error({ isPaused, isOutgoingCallStart, outgoingWithSDP })
   return (
     <>
       {isOutgoingCallStart &&

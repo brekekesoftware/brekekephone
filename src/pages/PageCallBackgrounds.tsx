@@ -11,6 +11,7 @@ import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
+import { onBackToCallManageScreen } from '../utils/backToCallManage'
 
 export const PageCallBackgrounds = observer(() => {
   const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
@@ -64,14 +65,14 @@ export const PageCallBackgrounds = observer(() => {
   return (
     <Layout
       compact
-      onBack={Nav().backToPageCallManage}
+      onBack={onBackToCallManageScreen}
       title={intl`Background calls`}
     >
       <Field isGroup label={intl`CURRENT CALL`} />
       {(currentCall ? [currentCall] : []).map(c => (
         <RnTouchableOpacity
           key={c.id}
-          onPress={() => Nav().backToPageCallManage()}
+          onPress={() => onBackToCallManageScreen()}
         >
           {renderItemCall(c, true)}
         </RnTouchableOpacity>

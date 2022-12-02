@@ -10,6 +10,7 @@ import { getAuthStore } from '../stores/authStore'
 import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { onBackToCallManageScreen } from '../utils/backToCallManage'
 
 @observer
 export class PageCallParks extends Component<{
@@ -70,13 +71,14 @@ export class PageCallParks extends Component<{
       }
       return !callStore.parkNumbers[parkNumber]
     }
+
     return (
       <Layout
         description={intl`Your park numbers`}
         fabOnNext={sp ? this.park : undefined}
         fabOnNextText={cp2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={cp2 ? undefined : 'call'}
-        onBack={cp2 ? Nav().backToPageCallManage : undefined}
+        onBack={cp2 ? onBackToCallManageScreen : undefined}
         subMenu={cp2 ? undefined : 'parks'}
         title={intl`Park`}
       >

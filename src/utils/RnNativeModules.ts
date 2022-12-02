@@ -33,7 +33,8 @@ type TBrekekeUtils = {
     hideBtnHold: boolean,
   ): void
   setRecordingStatus(uuid: string, recording: boolean): void
-
+  onStartIncomingActivity(uuid: string): void
+  onCloseIncomingActivity(uuid: string): void
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
@@ -73,6 +74,8 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   setConfig: () => undefined,
   setRecordingStatus: () => undefined,
+  onStartIncomingActivity: () => undefined,
+  onCloseIncomingActivity: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
   enableLPC: () => undefined,

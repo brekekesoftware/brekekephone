@@ -16,6 +16,7 @@ import { callStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnKeyboard } from '../stores/RnKeyboard'
+import { onBackToCallManageScreen } from '../utils/backToCallManage'
 
 @observer
 export class PageCallDtmfKeypad extends Component {
@@ -26,7 +27,7 @@ export class PageCallDtmfKeypad extends Component {
   componentDidUpdate() {
     const c = callStore.getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
-      Nav().backToPageCallManage()
+      onBackToCallManageScreen()
     }
     this.prevId = c?.id
   }
@@ -59,7 +60,7 @@ export class PageCallDtmfKeypad extends Component {
       <Layout
         title={c?.getDisplayName()}
         description={intl`Keypad dial manually`}
-        onBack={Nav().backToPageCallManage}
+        onBack={onBackToCallManageScreen}
       >
         <ShowNumber
           refInput={this.txtRef}

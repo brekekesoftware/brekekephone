@@ -234,6 +234,10 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('transfer', (uuid: string) => {
       BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 300)
     })
+    eventEmitter.addListener('showBackgroundCall', (uuid: string) => {
+      console.log('dev::: showBackgroundCall')
+      Nav().goToPageCallBackgrounds()
+    })
     eventEmitter.addListener('park', (uuid: string) => {
       BackgroundTimer.setTimeout(Nav().goToPageCallParks2, 300)
     })
@@ -278,8 +282,9 @@ export const setupCallKeep = async () => {
     // In case of answer call when phone locked
     eventEmitter.addListener('backToForeground', () => {
       console.log('SIP PN debug: backToForeground')
+      console.log("dev:::  eventEmitter.addListener('backToForeground'")
       BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
-      BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
+      // BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
     })
     // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
