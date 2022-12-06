@@ -661,6 +661,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setRecordingStatus(String uuid, Boolean isRecording) {
+    Log.d("dev::", "setRecordingStatus: "+ uuid+"::isRecording::"+ isRecording);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -797,7 +798,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void onStartIncomingActivity(String uuid){
     IncomingCallActivity a = at(uuid);
     Log.d("dev::", "onStartIncomingActivity: "+ a.getIntent());
-    if(a != null ){
+//    Context context = getCurrentActivity();
+//    String packageName = context.getApplicationContext().getPackageName();
+//    Intent focusIntent = a.getIntent().cloneFilter();
+//    Activity activity = getCurrentActivity();
+//    focusIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//    activity.startActivity(focusIntent);
+    if(a != null){
       a.reorderToFront();
     }
   }

@@ -1,6 +1,7 @@
 package com.brekeke.phonedev;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -90,7 +91,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       isLarge = false,
       isVideoCall = false;
   public CircularProgressDrawable drawableProgress;
-
+  public boolean mIsRestoredToTop = false;
   Timer timer;
   TimerTask timerTask;
 
@@ -98,6 +99,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Bundle b = getIntent().getExtras();
+
     if (b == null) {
       b = savedInstanceState;
     }
@@ -107,6 +109,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       return;
     }
     timer = new Timer();
+    Log.d("dev::", "onCreate::::"+ b.getString("currentUUID"));
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     avatar = b.getString("avatar");
@@ -542,8 +545,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           .centerCrop()
           .into(imgAvatarTalking);
     } else {
-      webViewAvatarTalking.setVisibility(View.VISIBLE);
       imgAvatarTalking.setVisibility(View.GONE);
+      webViewAvatarTalking.setVisibility(View.VISIBLE);
       webViewAvatarTalking.setWebViewClient(
           new WebViewClient() {
             @Override
@@ -605,7 +608,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnUnlockClick(View v) {
-    Log.d("dev::", "onBtnUnlockClick");
+//    Log.d("dev::", "onBtnUnlockClick" + BrekekeUtils.activities.get(0).uuid);
+//    startActivity(new Intent(this, IncomingCallActivity.class));
     // Already invoked in onKeyguardDismissSucceeded
     updateBtnUnlockLabel();
     int n =
@@ -615,6 +619,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if(n > 1){
       BrekekeUtils.emit("showBackgroundCall", uuid);
       onStartMainActivity();
+//      BrekekeUtils.activities.get(0).reorderToFront();
     }
   }
   public void onStartMainActivity(){
@@ -837,6 +842,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRecordingStatus(Boolean isRecording) {
+    Log.d("dev:::", "setRecordingStatus: "+ isRecording);
     btnRecord.setSelected(isRecording);
   }
 
@@ -860,20 +866,48 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void reorderToFront() {
     Intent i = new Intent(this, IncomingCallActivity.class);
     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//    i.putExtra("currentUUID", this.uuid);
     startActivity(i);
   }
 
   @Override
   protected void onPause() {
-    Log.d("dev::", "onPause: ");
+    Log.d("dev::", "onPause: "+ this.uuid);
     paused = true;
 //    BrekekeUtils.onActivityPauseOrDestroy(uuid, false);
     super.onPause();
   }
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
 
+    if ((intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT) > 0) {
+      mIsRestoredToTop  = true;
+    }
+    Log.d("dev:::", "onNewIntent:mIsRestoredToTop:"+ mIsRestoredToTop);
+  }
+
+  @Override
+  public void finish() {
+    super.finish();
+    if (android.os.Build.VERSION.SDK_INT >= 19 && !isTaskRoot() && mIsRestoredToTop) {
+      Log.d("dev:::", "finish:4.4.2 platform issues for FLAG_ACTIVITY_REORDER_TO_FRONT:");
+      // 4.4.2 platform issues for FLAG_ACTIVITY_REORDER_TO_FRONT,
+      // reordered activity back press will go to home unexpectly,
+      // Workaround: move reordered activity current task to front when it's finished.
+      ActivityManager tasksManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+      tasksManager.moveTaskToFront(getTaskId(), ActivityManager.MOVE_TASK_NO_USER_ACTION);
+    }
+  }
   @Override
   protected void onResume() {
     Log.d("dev::", "onResume: "+ this.uuid);
+    Bundle b = this.getIntent().getExtras();
+    if(b!=null){
+      Log.d("dev::", "onResume::::currentUUID:::"+ b.getString("currentUUID"));
+    }else {
+      Log.d("dev::", "onCreate::::currentUUID:: null ");
+    }
     if (!answered) {
       BrekekeUtils.startRingtone();
     } else if (!BrekekeUtils.isLocked()) {
