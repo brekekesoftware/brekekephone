@@ -119,6 +119,10 @@ class AccountStore {
         profiles = x
         profileData = []
       }
+      // Set tenant to '-' if empty
+      profiles.forEach(a => {
+        a.pbxTenant = a.pbxTenant || '-'
+      })
       runInAction(() => {
         this.accounts = profiles
         this.accountData = uniqBy(profileData, 'id') as unknown as AccountData[]
@@ -143,11 +147,18 @@ class AccountStore {
       })
     }
   }
-  saveAccountsToLocalStorageDebounced = debounce(
+  private _saveAccountsToLocalStorageDebounced = debounce(
     this.saveAccountsToLocalStorage,
     100,
     { maxWait: 1000 },
   )
+  saveAccountsToLocalStorageDebounced = () => {
+    // Set tenant to '-' if empty
+    this.accounts.forEach(a => {
+      a.pbxTenant = a.pbxTenant || '-'
+    })
+    return this._saveAccountsToLocalStorageDebounced()
+  }
 
   @action upsertAccount = (p: Partial<Account>) => {
     const p1 = this.accounts.find(p0 => p0.id === p.id)
@@ -238,7 +249,7 @@ class AccountStore {
 export const getAccountUniqueId = (p: Account) =>
   stringify({
     u: p.pbxUsername,
-    t: p.pbxTenant,
+    t: p.pbxTenant || '-',
     h: p.pbxHostname,
     p: p.pbxPort,
   })
