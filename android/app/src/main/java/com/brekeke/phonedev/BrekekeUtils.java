@@ -556,38 +556,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  //
+  // ==========================================================================
   // React methods
-  //
-  @ReactMethod
-  public void setConfig(
-      Boolean hideBtnTransfer,
-      Boolean hideBtnPark,
-      Boolean hideBtnVideo,
-      Boolean hideBtnSpeaker,
-      Boolean hideBtnMute,
-      Boolean hideBtnRecord,
-      Boolean hideBtnDTMF,
-      Boolean hideBtnHold) {
-    this.config.hideBtnTransfer = hideBtnTransfer;
-    this.config.hideBtnPark = hideBtnPark;
-    this.config.hideBtnVideo = hideBtnVideo;
-    this.config.hideBtnSpeaker = hideBtnSpeaker;
-    this.config.hideBtnMute = hideBtnMute;
-    this.config.hideBtnRecord = hideBtnRecord;
-    this.config.hideBtnDTMF = hideBtnDTMF;
-    this.config.hideBtnHold = hideBtnHold;
-    // update UI with case IncomingCallActivity start before user login finish
-    try {
-      for (IncomingCallActivity a : activities) {
-        try {
-          a.updateConfig();
-        } catch (Exception e) {
-        }
-      }
-    } catch (Exception e) {
-    }
-  }
 
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
@@ -630,24 +600,39 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setIsAppActive(boolean b1, boolean b2) {
-    isAppActive = b1;
-    isAppActiveLocked = b2;
+  public void setConfig(
+      Boolean hideBtnTransfer,
+      Boolean hideBtnPark,
+      Boolean hideBtnVideo,
+      Boolean hideBtnSpeaker,
+      Boolean hideBtnMute,
+      Boolean hideBtnRecord,
+      Boolean hideBtnDTMF,
+      Boolean hideBtnHold) {
+    this.config.hideBtnTransfer = hideBtnTransfer;
+    this.config.hideBtnPark = hideBtnPark;
+    this.config.hideBtnVideo = hideBtnVideo;
+    this.config.hideBtnSpeaker = hideBtnSpeaker;
+    this.config.hideBtnMute = hideBtnMute;
+    this.config.hideBtnRecord = hideBtnRecord;
+    this.config.hideBtnDTMF = hideBtnDTMF;
+    this.config.hideBtnHold = hideBtnHold;
+    // update UI with case IncomingCallActivity start before user login finish
+    try {
+      for (IncomingCallActivity a : activities) {
+        try {
+          a.updateConfig();
+        } catch (Exception e) {
+        }
+      }
+    } catch (Exception e) {
+    }
   }
 
   @ReactMethod
-  public void setRecordingStatus(String uuid, Boolean isRecording) {
-    emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRecordingStatus(isRecording);
-            } catch (Exception e) {
-            }
-          }
-        });
+  public void setIsAppActive(boolean b1, boolean b2) {
+    isAppActive = b1;
+    isAppActiveLocked = b2;
   }
 
   @ReactMethod
@@ -677,6 +662,21 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             updateBtnUnlockLabels();
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setRecordingStatus(String uuid, Boolean isRecording) {
+    emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setRecordingStatus(isRecording);
+            } catch (Exception e) {
+            }
           }
         });
   }

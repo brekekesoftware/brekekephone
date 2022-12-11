@@ -12,16 +12,6 @@ type TBrekekeUtils = {
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
-  setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
-  setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
-  setJsCallsSize(n: number): void
-  setIsVideoCall(uuid: string, isVideoCall: boolean): void
-  setRemoteVideoStreamURL(uuid: string, url: string): void
-  setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
-  setOnHold(uuid: string, holding: boolean): void
-  setLocale(locale: string): void
-  onCallConnected(uuid: string): void
-  onCallKeepAction(uuid: string, action: TCallkeepAction): void
   setConfig(
     hideBtnTransfer: boolean,
     hideBtnPark: boolean,
@@ -32,8 +22,19 @@ type TBrekekeUtils = {
     hideBtnDTMF: boolean,
     hideBtnHold: boolean,
   ): void
+  setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
+  setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
+  setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
+  setIsVideoCall(uuid: string, isVideoCall: boolean): void
+  setRemoteVideoStreamURL(uuid: string, url: string): void
+  setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
+  setOnHold(uuid: string, holding: boolean): void
+  setLocale(locale: string): void
+  onCallConnected(uuid: string): void
+  onCallKeepAction(uuid: string, action: TCallkeepAction): void
   onPageCallManage(uuid: string): void
+
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
@@ -45,6 +46,7 @@ type TBrekekeUtils = {
     host: string,
   ): void
   disableLPC(): void
+
   // these methods available on both
   systemUptimeMs(): Promise<number>
 }
@@ -61,9 +63,11 @@ const Polyfill: TBrekekeUtils = {
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
+  setConfig: () => undefined,
   setIsAppActive: () => undefined,
   setTalkingAvatar: () => undefined,
   setJsCallsSize: () => undefined,
+  setRecordingStatus: () => undefined,
   setIsVideoCall: () => undefined,
   setRemoteVideoStreamURL: () => undefined,
   setIsFrontCamera: () => undefined,
@@ -71,13 +75,15 @@ const Polyfill: TBrekekeUtils = {
   setLocale: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
-  setConfig: () => undefined,
-  setRecordingStatus: () => undefined,
   onPageCallManage: () => undefined,
+
+  // these methods only available on ios
   playRBT: () => undefined,
   stopRBT: () => undefined,
   enableLPC: () => undefined,
   disableLPC: () => undefined,
+
+  // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
 }
 
