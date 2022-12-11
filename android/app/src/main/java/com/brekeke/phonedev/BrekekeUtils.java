@@ -381,7 +381,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static void remove(String uuid) {
     removeCallKeepCallbacks(uuid);
     IncomingCallActivity a = at(uuid);
-    emit("debug", "BrekekeUtils.remove a==null " + (a == null));
+    emit("debug", "remove a==null " + (a == null));
     if (a == null) {
       return;
     }
@@ -389,7 +389,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       activities.remove(index(uuid));
     } catch (Exception e) {
     }
-    if (activitiesSize == 1) {
+    if (activitiesSize == 1 && !a.answered) {
       tryExitClearTask();
     }
     a.forceFinish();
@@ -464,10 +464,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return -1;
   }
 
-  // To open app when:
-  // - call is answered and
-  // - on pause (click home when locked) or destroy (click answer when foreground)
-  // TODO handle case multiple calls
   public static void onActivityPauseOrDestroy(String uuid, boolean destroyed) {
     emit("debug", "onActivityPauseOrDestroy activites.size()=" + activities.size());
     if (destroyed) {
@@ -480,9 +476,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       IncomingCallActivity l = last();
       if (l == null || l.answered) {
         stopRingtone();
-      }
-      if (l != null) {
-        l.reorderToFront();
       }
     }
     if (activitiesSize > 0) {
@@ -779,26 +772,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void onPageCallManage(String uuid) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            IncomingCallActivity toFront = at(uuid);
-            emit("debug", "onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
-            if (toFront != null) {
-              toFront.reorderToFront();
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void onCloseIncomingActivity(String uuid) {
-    closeIncomingCall(uuid);
-  }
-
-  @ReactMethod
   public void onCallKeepAction(String uuid, String action) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -815,6 +788,21 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
                 at(uuid).onBtnRejectClick(null);
               }
             } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void onPageCallManage(String uuid) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity toFront = at(uuid);
+            emit("debug", "onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
+            if (toFront != null) {
+              toFront.reorderToFront();
             }
           }
         });
