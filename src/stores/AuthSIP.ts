@@ -31,7 +31,6 @@ class AuthSIP {
     console.log('SIP PN debug: set sipState stopped dispose')
     this.clearObserve?.()
     const s = getAuthStore()
-    s.sipPn = {}
     s.sipState = 'stopped'
     sip.stopWebRTC()
   }
@@ -100,12 +99,17 @@ class AuthSIP {
       throw new Error('Failed to get phoneId from updatePhoneIndex')
     }
     pn.sipAuth = await pbx.createSIPAccessToken(pn.phoneId)
+    pn.sipAuthAt = Date.now()
     await this.authPnWithoutCatch(pn)
   }
 
   private waitingTimeout = false
   authWithCheck = async () => {
     const s = getAuthStore()
+    if (!s.sipPn.sipAuthAt || Date.now() - s.sipPn.sipAuthAt > 90000) {
+      // Empty or expire after 90 seconds
+      s.sipPn = {}
+    }
     const sipShouldAuth = s.sipShouldAuth()
     console.log(
       `SIP PN debug: authWithCheck ${sipShouldAuth} ${JSON.stringify({

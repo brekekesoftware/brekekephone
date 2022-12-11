@@ -122,7 +122,6 @@ class Api {
     console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     const s = getAuthStore()
-    s.sipPn.sipAuth = ''
     s.sipState = 'success'
     s.sipTotalFailure = 0
     authPBX.auth()

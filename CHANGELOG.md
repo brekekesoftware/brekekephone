@@ -1,7 +1,15 @@
+#### 2.11.6
+
+- Use PN screen for incoming call so it will keep html/js state in avatar
+- Use `-` as the tenant if it is empty
+- Unhold a call should also set it as the current call
+- Keep the sip token to reuse until expired after 90 seconds
+
 #### 2.11.5
 
 - Handle chat message ios LPC PN
 - Handle avatar as html url using webview
+- Fix `__DEV__` is not defined on web browser
 
 #### 2.11.4
 

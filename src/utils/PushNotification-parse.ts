@@ -136,6 +136,7 @@ export const parseNotificationData = (raw: object) => {
   n.sipPn = {
     phoneId,
     sipAuth,
+    sipAuthAt: Date.now(),
     sipWssPort,
     dtmfSendPal,
     turnServer,
@@ -321,6 +322,7 @@ export type ParsedPn = {
 export type SipPn = {
   phoneId: string
   sipAuth: string
+  sipAuthAt: number
   sipWssPort: string
   dtmfSendPal: string
   turnServer: string

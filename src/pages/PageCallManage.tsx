@@ -1,3 +1,4 @@
+import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
@@ -43,8 +44,11 @@ import { Call } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { RnAppState } from '../stores/RnAppState'
+import { RnStacker } from '../stores/RnStacker'
 import { Duration } from '../stores/timerStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const height = Dimensions.get('window').height
@@ -174,14 +178,47 @@ export class PageCallManage extends Component<{
     this.hideButtonsIfVideo()
   }
   componentDidUpdate() {
-    this.hideButtonsIfVideo()
     if (!getCallStore().calls.length) {
       Nav().goToPageCallRecents()
+      return
+    }
+    this.hideButtonsIfVideo()
+    if (this.shouldOpenNativeCallManage()) {
+      this.openNativeCallManage()
+    }
+    if (RnAppState.currentState !== 'active') {
+      this.openNativeCallManage.cancel()
     }
   }
   componentWillUnmount() {
     getCallStore().onCallKeepAction()
   }
+
+  shouldOpenNativeCallManage = () => {
+    const c = getCallStore().getCurrentCall()
+    return (
+      Platform.OS === 'android' &&
+      !(
+        RnStacker.stacks[RnStacker.stacks.length - 1].name !==
+          'PageCallManage' ||
+        RnAppState.currentState !== 'active' ||
+        !c ||
+        !c.incoming ||
+        !c.callkeepUuid
+      )
+    )
+  }
+  openNativeCallManage = debounce(() => {
+    // Must use debounce to wait for other navigation
+    if (!this.shouldOpenNativeCallManage()) {
+      return
+    }
+    const uuid = getCallStore().getCurrentCall()?.callkeepUuid
+    if (!uuid) {
+      return
+    }
+    BrekekeUtils.onPageCallManage(uuid)
+  }, 1000)
 
   @action toggleButtons = () => {
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
@@ -523,6 +560,7 @@ export class PageCallManage extends Component<{
   render() {
     const c = getCallStore().getCurrentCall()
     void getCallStore().calls.length // trigger componentDidUpdate
+    void RnAppState.currentState
     const Container = c?.localVideoEnabled ? Fragment : BrekekeGradient
     return <Container>{this.renderCall(c, c?.localVideoEnabled)}</Container>
   }

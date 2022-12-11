@@ -26,7 +26,6 @@ export const CallVoices = observer(() => {
 
   const isPaused = !(isOutgoingCallStart && !outgoingWithSDP)
 
-  console.error({ isPaused, isOutgoingCallStart, outgoingWithSDP })
   return (
     <>
       {isOutgoingCallStart &&
