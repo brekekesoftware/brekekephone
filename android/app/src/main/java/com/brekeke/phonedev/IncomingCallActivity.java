@@ -89,7 +89,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       isVideoCall = false;
 
   // ==========================================================================
-  // activity lifecycles
+  // Activity lifecycles
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -331,40 +331,38 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       params.setMargins(0, (int) (height * 1.5), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
-    // handle avatar for incomming call
+    // Handle avatar for incomming call
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
-    } else {
-      if (!BrekekeUtils.isImageUrl(avatar)) {
-        webViewAvatar.setVisibility(View.VISIBLE);
-        imgAvatar.setVisibility(View.GONE);
-        webViewAvatar.loadUrl(avatar);
-        webViewAvatar.setWebViewClient(
-            new WebViewClient() {
-              @Override
-              public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                vWebViewAvatarLoading.setVisibility(View.VISIBLE);
-              }
+    } else if (!BrekekeUtils.isImageUrl(avatar)) {
+      webViewAvatar.setVisibility(View.VISIBLE);
+      imgAvatar.setVisibility(View.GONE);
+      webViewAvatar.loadUrl(avatar);
+      webViewAvatar.setWebViewClient(
+          new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+              super.onPageStarted(view, url, favicon);
+              vWebViewAvatarLoading.setVisibility(View.VISIBLE);
+            }
 
-              @Override
-              public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                vWebViewAvatarLoading.setVisibility(View.GONE);
-              }
-            });
-      } else {
-        webViewAvatar.setVisibility(View.GONE);
-        imgAvatar.setVisibility(View.VISIBLE);
-        Glide.with(this)
-            .load(avatar)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .placeholder(imgAvatarLoadingProgress)
-            .error(R.mipmap.avatar_failed)
-            .centerCrop()
-            .into(imgAvatar);
-      }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+              super.onPageFinished(view, url);
+              vWebViewAvatarLoading.setVisibility(View.GONE);
+            }
+          });
+    } else {
+      webViewAvatar.setVisibility(View.GONE);
+      imgAvatar.setVisibility(View.VISIBLE);
+      Glide.with(this)
+          .load(avatar)
+          .diskCacheStrategy(DiskCacheStrategy.NONE)
+          .skipMemoryCache(true)
+          .placeholder(imgAvatarLoadingProgress)
+          .error(R.mipmap.avatar_failed)
+          .centerCrop()
+          .into(imgAvatar);
     }
   }
 
@@ -894,7 +892,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // stop ringtone if any of the hardware key press
+  // Stop ringtone if any of the hardware key press
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
     debug("onKeyDown k=" + k);
@@ -908,7 +906,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // timer to count talking time
+  // Timer to count talking time
   private Timer timer;
   private TimerTask timerTask;
 
@@ -946,7 +944,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // utils
+  // Private utils
   private void debug(String message) {
     BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
   }

@@ -240,27 +240,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
             userActions.put(uuid, "display");
             activitiesSize++;
-            Intent i;
-            IncomingCallActivity prev = last();
-            // if (prev == null) {
-            i = new Intent(c, IncomingCallActivity.class);
+            Intent i = new Intent(c, IncomingCallActivity.class);
             i.setFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
                     | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             firstShowCallAppActive = isAppActive || isAppActiveLocked;
-            // } else {
-            //   i = new Intent(prev, IncomingCallActivity.class);
-            // }
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
-            // if (prev != null) {
-            //   prev.startActivity(i);
-            // } else {
             c.startActivity(i);
-            // }
           }
         };
     Runnable onReject =
