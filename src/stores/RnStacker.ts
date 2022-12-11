@@ -25,6 +25,7 @@ export class RnStackerStore {
     if (stack.isRoot) {
       this.stacks = [stack]
     } else {
+      this.stacks = this.stacks.filter(s => s.name !== stack.name)
       this.stacks.push(stack)
     }
   }

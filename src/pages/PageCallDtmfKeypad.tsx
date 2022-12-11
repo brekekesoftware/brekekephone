@@ -12,7 +12,7 @@ import { KeyPad } from '../components/CallKeyPad'
 import { ShowNumber } from '../components/CallShowNumbers'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnKeyboard } from '../stores/RnKeyboard'
@@ -24,7 +24,7 @@ export class PageCallDtmfKeypad extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -40,7 +40,7 @@ export class PageCallDtmfKeypad extends Component {
   }
 
   sendKey = (key: string) => {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     const cp = getAuthStore().getCurrentAccount()
     if (!c || !cp) {
       return
@@ -54,7 +54,7 @@ export class PageCallDtmfKeypad extends Component {
   }
 
   render() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     return (
       <Layout
         title={c?.getDisplayName()}

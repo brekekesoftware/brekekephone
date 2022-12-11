@@ -9,7 +9,7 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore, RecentCall } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { PushNotification } from '../utils/PushNotification.ios'
@@ -86,10 +86,10 @@ export class PageCallRecents extends Component {
         />
         <Field
           isGroup
-          label={intl`VOICEMAIL (${callStore.newVoicemailCount})`}
+          label={intl`VOICEMAIL (${getCallStore().newVoicemailCount})`}
         />
         <UserItem
-          iconFuncs={[() => callStore.startCall('8')]}
+          iconFuncs={[() => getCallStore().startCall('8')]}
           icons={[mdiPhone]}
           name={intl`Voicemail`}
           isVoicemail
@@ -98,8 +98,8 @@ export class PageCallRecents extends Component {
         {calls.map((c, i) => (
           <UserItem
             iconFuncs={[
-              () => callStore.startVideoCall(c.partyNumber),
-              () => callStore.startCall(c.partyNumber),
+              () => getCallStore().startVideoCall(c.partyNumber),
+              () => getCallStore().startCall(c.partyNumber),
             ]}
             {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}

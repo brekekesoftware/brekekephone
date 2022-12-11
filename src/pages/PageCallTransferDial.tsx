@@ -11,7 +11,7 @@ import { KeyPad } from '../components/CallKeyPad'
 import { ShowNumber } from '../components/CallShowNumbers'
 import { Layout } from '../components/Layout'
 import { setPageCallTransferDial } from '../components/navigationConfig2'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -24,10 +24,10 @@ export class PageCallTransferDial extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    if (this.prevId && this.prevId !== callStore.currentCallId) {
+    if (this.prevId && this.prevId !== getCallStore().currentCallId) {
       Nav().backToPageCallManage()
     }
-    this.prevId = callStore.currentCallId
+    this.prevId = getCallStore().currentCallId
   }
 
   @observable txt = ''
@@ -46,7 +46,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    callStore.getCurrentCall()?.transferBlind(this.txt)
+    getCallStore().getCurrentCall()?.transferBlind(this.txt)
   }
   transferAttended = () => {
     this.txt = this.txt.trim()
@@ -56,7 +56,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    callStore.getCurrentCall()?.transferAttended(this.txt)
+    getCallStore().getCurrentCall()?.transferAttended(this.txt)
   }
 
   render() {

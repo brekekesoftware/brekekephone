@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { CallVideosUI } from './CallVideosUI'
 
 @observer
 export class CallVideos extends Component {
   render() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     return (
       <CallVideosUI
         callIds={(c ? [c] : [])
@@ -22,6 +22,6 @@ export class CallVideos extends Component {
   }
 
   resolveCall = () => ({
-    sourceObject: callStore.getCurrentCall()?.remoteVideoStreamObject,
+    sourceObject: getCallStore().getCurrentCall()?.remoteVideoStreamObject,
   })
 }

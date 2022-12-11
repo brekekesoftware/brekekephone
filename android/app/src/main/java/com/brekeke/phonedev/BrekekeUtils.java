@@ -240,24 +240,19 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
             userActions.put(uuid, "display");
             activitiesSize++;
-            Intent i;
-            IncomingCallActivity prev = last();
-            if (prev == null) {
-              i = new Intent(c, IncomingCallActivity.class);
-              i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (last() == null) {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
-            } else {
-              i = new Intent(prev, IncomingCallActivity.class);
             }
+            Intent i = new Intent(c, IncomingCallActivity.class);
+            i.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
-            if (prev != null) {
-              prev.startActivity(i);
-            } else {
-              c.startActivity(i);
-            }
+            c.startActivity(i);
           }
         };
     Runnable onReject =
@@ -327,6 +322,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // We will fire the event manually here
   // There may be duplicated events in some cases, need to test more
   public static void onPassiveReject(String uuid) {
+    emit("debug", "onPassiveReject uuid=" + uuid);
     emit("rejectCall", uuid);
     staticCloseIncomingCall(uuid);
   }
@@ -385,6 +381,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static void remove(String uuid) {
     removeCallKeepCallbacks(uuid);
     IncomingCallActivity a = at(uuid);
+    emit("debug", "remove a==null " + (a == null));
     if (a == null) {
       return;
     }
@@ -399,6 +396,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void removeAll() {
+    emit("debug", "removeAll");
     stopRingtone();
     if (activities.size() <= 0) {
       return;
@@ -419,11 +417,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void removeAllAndBackToForeground() {
+    emit("debug", "removeAllAndBackToForeground");
     removeAll();
     emit("backToForeground", "");
   }
 
   public static void staticCloseIncomingCall(String uuid) {
+    emit("debug", "staticCloseIncomingCall");
     try {
       at(uuid).answered = false;
     } catch (Exception e) {
@@ -464,11 +464,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return -1;
   }
 
-  // To open app when:
-  // - call is answered and
-  // - on pause (click home when locked) or destroy (click answer when forground)
-  // TODO handle case multiple calls
   public static void onActivityPauseOrDestroy(String uuid, boolean destroyed) {
+    emit("debug", "onActivityPauseOrDestroy activites.size()=" + activities.size());
     if (destroyed) {
       activitiesSize--;
       updateBtnUnlockLabels();
@@ -486,12 +483,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     if (jsCallsSize == 0) {
       releaseWakeLock();
-    }
-    try {
-      if (last().answered) {
-        removeAllAndBackToForeground();
-      }
-    } catch (Exception e) {
     }
   }
 
@@ -565,38 +556,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  //
+  // ==========================================================================
   // React methods
-  //
-  @ReactMethod
-  public void setConfig(
-      Boolean hideBtnTransfer,
-      Boolean hideBtnPark,
-      Boolean hideBtnVideo,
-      Boolean hideBtnSpeaker,
-      Boolean hideBtnMute,
-      Boolean hideBtnRecord,
-      Boolean hideBtnDTMF,
-      Boolean hideBtnHold) {
-    this.config.hideBtnTransfer = hideBtnTransfer;
-    this.config.hideBtnPark = hideBtnPark;
-    this.config.hideBtnVideo = hideBtnVideo;
-    this.config.hideBtnSpeaker = hideBtnSpeaker;
-    this.config.hideBtnMute = hideBtnMute;
-    this.config.hideBtnRecord = hideBtnRecord;
-    this.config.hideBtnDTMF = hideBtnDTMF;
-    this.config.hideBtnHold = hideBtnHold;
-    // update UI with case IncomingCallActivity start before user login finish
-    try {
-      for (IncomingCallActivity a : activities) {
-        try {
-          a.updateConfig();
-        } catch (Exception e) {
-        }
-      }
-    } catch (Exception e) {
-    }
-  }
 
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
@@ -628,32 +589,50 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void closeIncomingCall(String uuid) {
+    emit("debug", "closeIncomingCall uuid=" + uuid);
     staticCloseIncomingCall(uuid);
   }
 
   @ReactMethod
   public void closeAllIncomingCalls() {
+    emit("debug", "closeAllIncomingCalls");
     removeAll();
+  }
+
+  @ReactMethod
+  public void setConfig(
+      Boolean hideBtnTransfer,
+      Boolean hideBtnPark,
+      Boolean hideBtnVideo,
+      Boolean hideBtnSpeaker,
+      Boolean hideBtnMute,
+      Boolean hideBtnRecord,
+      Boolean hideBtnDTMF,
+      Boolean hideBtnHold) {
+    this.config.hideBtnTransfer = hideBtnTransfer;
+    this.config.hideBtnPark = hideBtnPark;
+    this.config.hideBtnVideo = hideBtnVideo;
+    this.config.hideBtnSpeaker = hideBtnSpeaker;
+    this.config.hideBtnMute = hideBtnMute;
+    this.config.hideBtnRecord = hideBtnRecord;
+    this.config.hideBtnDTMF = hideBtnDTMF;
+    this.config.hideBtnHold = hideBtnHold;
+    // update UI with case IncomingCallActivity start before user login finish
+    try {
+      for (IncomingCallActivity a : activities) {
+        try {
+          a.updateConfig();
+        } catch (Exception e) {
+        }
+      }
+    } catch (Exception e) {
+    }
   }
 
   @ReactMethod
   public void setIsAppActive(boolean b1, boolean b2) {
     isAppActive = b1;
     isAppActiveLocked = b2;
-  }
-
-  @ReactMethod
-  public void setRecordingStatus(String uuid, Boolean isRecording) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRecordingStatus(isRecording);
-            } catch (Exception e) {
-            }
-          }
-        });
   }
 
   @ReactMethod
@@ -683,6 +662,21 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             updateBtnUnlockLabels();
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setRecordingStatus(String uuid, Boolean isRecording) {
+    emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setRecordingStatus(isRecording);
+            } catch (Exception e) {
+            }
           }
         });
   }
@@ -794,6 +788,21 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
                 at(uuid).onBtnRejectClick(null);
               }
             } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void onPageCallManage(String uuid) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity toFront = at(uuid);
+            emit("debug", "onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
+            if (toFront != null) {
+              toFront.reorderToFront();
             }
           }
         });

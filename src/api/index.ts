@@ -4,7 +4,7 @@ import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { Call } from '../stores/Call'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -103,19 +103,19 @@ class Api {
     contactStore.setTalkerStatus(ev.user, ev.talker, '')
   }
   onVoiceMailUpdated = (ev: { new: number }) => {
-    callStore.setNewVoicemailCount(ev?.new || 0)
+    getCallStore().setNewVoicemailCount(ev?.new || 0)
   }
   onPBXUserParkStarted = (parkNumber: string) => {
     console.log('onPBXUserParkStarted', parkNumber)
-    callStore.addParkNumber(parkNumber)
+    getCallStore().addParkNumber(parkNumber)
   }
   onPBXUserParkStopped = (parkNumber: string) => {
     console.log('onPBXUserParkStopped', parkNumber)
-    callStore.removeParkNumber(parkNumber)
+    getCallStore().removeParkNumber(parkNumber)
   }
   onPbxCallRecording = (ev: PbxEvent['callRecording']) => {
-    callStore.calls
-      .find(item => item.pbxTalkerId === ev.talker_id)
+    getCallStore()
+      .calls.find(item => item.pbxTalkerId === ev.talker_id)
       ?.updateRecordingStatus(toBoolean(ev.status))
   }
   @action onSIPConnectionStarted = () => {
@@ -152,13 +152,13 @@ class Api {
     if (!c.partyName) {
       c.partyName = getPartyName(c.partyNumber) || c.partyNumber
     }
-    callStore.onCallUpsert(c)
+    getCallStore().onCallUpsert(c)
   }
   onSIPSessionUpdated = (call: Call) => {
-    callStore.onCallUpsert(call)
+    getCallStore().onCallUpsert(call)
   }
   onSIPSessionStopped = (rawSession: Session) => {
-    callStore.onCallRemove(rawSession)
+    getCallStore().onCallRemove(rawSession)
   }
 
   onUCConnectionStopped = () => {

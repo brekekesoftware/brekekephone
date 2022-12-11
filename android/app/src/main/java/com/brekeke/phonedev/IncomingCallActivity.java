@@ -48,13 +48,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnRecord,
       vBtnDTMF,
       vBtnHold;
-  public View vCardAvatar;
-  public View vCardAvatarTalking;
   public WebRTCView vWebrtcVideo;
-  public ImageView imgAvatar;
-  public WebView webViewAvatar, webViewAvatarTalking;
-  public ImageView imgAvatarTalking;
   public ProgressBar videoLoading;
+  public View vCardAvatar, vCardAvatarTalking;
+  public ImageView imgAvatar, imgAvatarTalking;
+  public CircularProgressDrawable imgAvatarLoadingProgress;
+  public WebView webViewAvatar, webViewAvatarTalking;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -88,11 +87,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = false,
       isLarge = false,
       isVideoCall = false;
-  public CircularProgressDrawable drawableProgress;
 
-  Timer timer;
-  TimerTask timerTask;
-
+  // ==========================================================================
+  // Activity lifecycles
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -101,9 +98,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       b = savedInstanceState;
     }
     if (b == null) {
+      debug("onCreate bundle=null");
       forceFinish();
       return;
     }
+
     timer = new Timer();
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
@@ -111,6 +110,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     avatarSize = b.getString("avatarSize");
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
+      debug("onCreate rejectCall");
       forceFinish();
       RNCallKeepModule.staticEndCall(uuid);
       return;
@@ -129,11 +129,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.activities.add(this);
     BrekekeUtils.startRingtone();
 
-    drawableProgress = new CircularProgressDrawable(this);
-    drawableProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
-    drawableProgress.setCenterRadius(30f);
-    drawableProgress.setStrokeWidth(5f);
-    drawableProgress.start();
+    imgAvatarLoadingProgress = new CircularProgressDrawable(this);
+    imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
+    imgAvatarLoadingProgress.setCenterRadius(30f);
+    imgAvatarLoadingProgress.setStrokeWidth(5f);
+    imgAvatarLoadingProgress.start();
 
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
@@ -149,7 +149,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebViewAvatarTalkingLoading = (RelativeLayout) findViewById(R.id.rl_taking_loading);
     vCallManage.setOnClickListener(this);
 
-    //    view btn
     vBtnTransfer = (LinearLayout) findViewById(R.id.ln_btn_transfer);
     vBtnPark = (LinearLayout) findViewById(R.id.ln_btn_park);
     vBtnVideo = (LinearLayout) findViewById(R.id.ln_btn_video);
@@ -206,8 +205,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnHold.setOnClickListener(this);
     btnEndcall.setOnClickListener(this);
     btnSwitchCamera.setOnClickListener(this);
-    // set default icon front camera
-    btnSwitchCamera.setSelected(true);
+    btnSwitchCamera.setSelected(true); // default front camera
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
@@ -226,12 +224,65 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
+
     updateLabels();
     updateHeader();
 
     if (BrekekeUtils.config != null) {
       updateConfig();
     }
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    debug("onNewIntent");
+    super.onNewIntent(intent);
+  }
+
+  @Override
+  protected void onPause() {
+    debug("onPause");
+    paused = true;
+    super.onPause();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    debug("onResume answered=" + answered);
+    if (!answered) {
+      BrekekeUtils.startRingtone();
+    }
+    paused = false;
+  }
+
+  @Override
+  protected void onDestroy() {
+    debug("onDestroy");
+    destroyed = true;
+    try {
+      timer.cancel();
+      timerTask.cancel();
+    } catch (Exception e) {
+    }
+    timerTask = null;
+    timer = null;
+    BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
+    super.onDestroy();
+  }
+
+  public void openMainActivity() {
+    Intent i = new Intent(this, MainActivity.class);
+    if (BrekekeUtils.main != null) {
+      i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    }
+    startActivity(i);
+  }
+
+  @Override
+  public void onBackPressed() {
+    debug("onBackPressed");
+    openMainActivity();
   }
 
   public void updateConfig() {
@@ -280,40 +331,38 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       params.setMargins(0, (int) (height * 1.5), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
-    // handle avatar for incomming call
+    // Handle avatar for incomming call
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
-    } else {
-      if (BrekekeUtils.isImageUrl(avatar) == false) {
-        webViewAvatar.setVisibility(View.VISIBLE);
-        imgAvatar.setVisibility(View.GONE);
-        webViewAvatar.loadUrl(avatar);
-        webViewAvatar.setWebViewClient(
-            new WebViewClient() {
-              @Override
-              public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                vWebViewAvatarLoading.setVisibility(View.VISIBLE);
-              }
+    } else if (!BrekekeUtils.isImageUrl(avatar)) {
+      webViewAvatar.setVisibility(View.VISIBLE);
+      imgAvatar.setVisibility(View.GONE);
+      webViewAvatar.loadUrl(avatar);
+      webViewAvatar.setWebViewClient(
+          new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+              super.onPageStarted(view, url, favicon);
+              vWebViewAvatarLoading.setVisibility(View.VISIBLE);
+            }
 
-              @Override
-              public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                vWebViewAvatarLoading.setVisibility(View.GONE);
-              }
-            });
-      } else {
-        webViewAvatar.setVisibility(View.GONE);
-        imgAvatar.setVisibility(View.VISIBLE);
-        Glide.with(this)
-            .load(avatar)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .placeholder(drawableProgress)
-            .error(R.mipmap.avatar_failed)
-            .centerCrop()
-            .into(imgAvatar);
-      }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+              super.onPageFinished(view, url);
+              vWebViewAvatarLoading.setVisibility(View.GONE);
+            }
+          });
+    } else {
+      webViewAvatar.setVisibility(View.GONE);
+      imgAvatar.setVisibility(View.VISIBLE);
+      Glide.with(this)
+          .load(avatar)
+          .diskCacheStrategy(DiskCacheStrategy.NONE)
+          .skipMemoryCache(true)
+          .placeholder(imgAvatarLoadingProgress)
+          .error(R.mipmap.avatar_failed)
+          .centerCrop()
+          .into(imgAvatar);
     }
   }
 
@@ -337,6 +386,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         BrekekeUtils.jsCallsSize > BrekekeUtils.activitiesSize
             ? BrekekeUtils.jsCallsSize
             : BrekekeUtils.activitiesSize;
+    if (!BrekekeUtils.isLocked() && n < 2) {
+      btnUnlock.setVisibility(View.GONE);
+    } else {
+      btnUnlock.setVisibility(View.VISIBLE);
+    }
     btnUnlock.setText(n <= 1 ? L.unlock() : L.nCallsInBackground(n - 1));
   }
 
@@ -414,6 +468,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     isCallManageControlsHidden = false;
     vCallManageControls.setVisibility(View.VISIBLE);
     btnUnlock.setVisibility(View.VISIBLE);
+    updateBtnUnlockLabel();
   }
 
   public void hideCallManageControls() {
@@ -478,12 +533,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void updateLayoutManagerCallLoaded() {
-
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
-
     if (talkingAvatar == null || talkingAvatar.isEmpty()) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -497,7 +550,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           ConstraintSet.PARENT_ID,
           ConstraintSet.TOP,
           flexValue);
-
       constraintSet.connect(
           R.id.view_button_end,
           ConstraintSet.BOTTOM,
@@ -523,20 +575,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
-    if (BrekekeUtils.isImageUrl(talkingAvatar) == true) {
+    if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
       Glide.with(this)
           .load(talkingAvatar)
           .diskCacheStrategy(DiskCacheStrategy.NONE)
           .skipMemoryCache(true)
-          .placeholder(drawableProgress)
+          .placeholder(imgAvatarLoadingProgress)
           .error(R.mipmap.avatar_failed)
           .centerCrop()
           .into(imgAvatarTalking);
     } else {
-      webViewAvatarTalking.setVisibility(View.VISIBLE);
       imgAvatarTalking.setVisibility(View.GONE);
+      webViewAvatarTalking.setVisibility(View.VISIBLE);
       webViewAvatarTalking.setWebViewClient(
           new WebViewClient() {
             @Override
@@ -558,25 +610,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnAnswerClick(View v) {
     BrekekeUtils.putUserActionAnswerCall(uuid);
     BrekekeUtils.emit("answerCall", uuid);
-    if (BrekekeUtils.isLocked()) {
-      if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
-        if (!isLarge) {
-          updateLayoutManagerCall();
-        }
-        handleShowAvatarTalking();
+    if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
+      if (!isLarge) {
+        updateLayoutManagerCall();
       }
-      answered = true;
-      BrekekeUtils.stopRingtone();
-      vIncomingCall.setVisibility(View.GONE);
-      vHeaderIncomingCall.setVisibility(View.GONE);
-      vHeaderManageCall.setVisibility(View.VISIBLE);
-      vCardAvatarTalking.setVisibility(View.GONE);
-      vCallManageControls.setVisibility(View.GONE);
-      vCallManage.setVisibility(View.VISIBLE);
-      updateLayoutManagerCallLoading();
-    } else {
-      BrekekeUtils.removeAllAndBackToForeground();
+      handleShowAvatarTalking();
     }
+    answered = true;
+    BrekekeUtils.stopRingtone();
+    vIncomingCall.setVisibility(View.GONE);
+    vHeaderIncomingCall.setVisibility(View.GONE);
+    vHeaderManageCall.setVisibility(View.VISIBLE);
+    vCardAvatarTalking.setVisibility(View.GONE);
+    vCallManageControls.setVisibility(View.GONE);
+    vCallManage.setVisibility(View.VISIBLE);
+    updateLayoutManagerCallLoading();
   }
 
   public void onBtnRejectClick(View v) {
@@ -597,14 +645,25 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnUnlockClick(View v) {
     // Already invoked in onKeyguardDismissSucceeded
+    updateBtnUnlockLabel();
+    int n =
+        BrekekeUtils.jsCallsSize > BrekekeUtils.activitiesSize
+            ? BrekekeUtils.jsCallsSize
+            : BrekekeUtils.activitiesSize;
+    if (n > 1) {
+      BrekekeUtils.emit("showBackgroundCall", uuid);
+      openMainActivity();
+    }
   }
 
   public void onBtnTransferClick(View v) {
     BrekekeUtils.emit("transfer", uuid);
+    openMainActivity();
   }
 
   public void onBtnParkClick(View v) {
     BrekekeUtils.emit("park", uuid);
+    openMainActivity();
   }
 
   public void onBtnVideoClick(View v) {
@@ -630,6 +689,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnDtmfClick(View v) {
     BrekekeUtils.emit("dtmf", uuid);
+    openMainActivity();
   }
 
   public void onBtnHoldClick(View v) {
@@ -637,15 +697,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onRequestUnlock(View v) {
-    BrekekeUtils.km.requestDismissKeyguard(
-        this,
-        new KeyguardManager.KeyguardDismissCallback() {
-          @Override
-          public void onDismissSucceeded() {
-            super.onDismissSucceeded();
-            onKeyguardDismissSucceeded(v);
-          }
-        });
+    if (BrekekeUtils.isLocked()) {
+      BrekekeUtils.km.requestDismissKeyguard(
+          this,
+          new KeyguardManager.KeyguardDismissCallback() {
+            @Override
+            public void onDismissSucceeded() {
+              super.onDismissSucceeded();
+              onKeyguardDismissSucceeded(v);
+            }
+          });
+    } else {
+      onKeyguardDismissSucceeded(v);
+    }
   }
 
   public void onKeyguardDismissSucceeded(View v) {
@@ -668,7 +732,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       default:
         break;
     }
-    BrekekeUtils.removeAllAndBackToForeground();
   }
 
   @Override
@@ -799,6 +862,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRecordingStatus(Boolean isRecording) {
+    debug("setRecordingStatus: " + isRecording);
     btnRecord.setSelected(isRecording);
   }
 
@@ -807,6 +871,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
+      debug("forceFinish catch: " + e.getLocalizedMessage());
+    }
+  }
+
+  public void finishRemoveTask() {
+    destroyed = true;
+    try {
+      finishAndRemoveTask();
+    } catch (Exception e) {
+      debug("finishRemoveTask catch: " + e.getLocalizedMessage());
     }
   }
 
@@ -814,44 +888,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     Intent i = new Intent(this, IncomingCallActivity.class);
     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     startActivity(i);
+    updateBtnUnlockLabel();
   }
 
-  @Override
-  protected void onPause() {
-    paused = true;
-    BrekekeUtils.onActivityPauseOrDestroy(uuid, false);
-    super.onPause();
-  }
-
-  @Override
-  protected void onResume() {
-    if (!answered) {
-      BrekekeUtils.startRingtone();
-    } else if (!BrekekeUtils.isLocked()) {
-      // User press home button, unlock the screen, then open app
-      BrekekeUtils.removeAllAndBackToForeground();
-    }
-    paused = false;
-    super.onResume();
-  }
-
-  @Override
-  protected void onDestroy() {
-    destroyed = true;
-    try {
-      timer.cancel();
-      timerTask.cancel();
-    } catch (Exception e) {
-    }
-
-    timerTask = null;
-    timer = null;
-    BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
-    super.onDestroy();
-  }
-
+  // ==========================================================================
+  // Stop ringtone if any of the hardware key press
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
+    debug("onKeyDown k=" + k);
     BrekekeUtils.stopRingtone();
     return super.onKeyDown(k, e);
   }
@@ -861,7 +905,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return onKeyDown(e.getAction(), e);
   }
 
-  // function for count up timer
+  // ==========================================================================
+  // Timer to count talking time
+  private Timer timer;
+  private TimerTask timerTask;
+
   private void startTimer(long answeredAt) {
     timerTask =
         new TimerTask() {
@@ -893,5 +941,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return h != 0
         ? (String.format("%02d", (int) h) + ":")
         : "" + String.format("%02d", (int) m) + ":" + String.format("%02d", (int) s);
+  }
+
+  // ==========================================================================
+  // Private utils
+  private void debug(String message) {
+    BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
   }
 }

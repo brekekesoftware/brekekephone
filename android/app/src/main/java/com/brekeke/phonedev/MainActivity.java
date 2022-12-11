@@ -32,14 +32,15 @@ public class MainActivity extends ReactActivity {
     }
   }
 
-  // @Override
-  // protected void onDestroy() {
-  //   BrekekeUtils.main = null;
-  //   super.onDestroy();
-  // }
+  @Override
+  protected void onDestroy() {
+    BrekekeUtils.main = null;
+    super.onDestroy();
+  }
 
   @Override
   public void onBackPressed() {
+    BrekekeUtils.emit("debug", "MainActivity.onBackPressed");
     // Do not exit on back pressed
     BrekekeUtils.emit("onBackPressed", "");
   }

@@ -10,7 +10,7 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -26,7 +26,7 @@ export class PageCallTransferChooseUser extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -130,7 +130,7 @@ type ItemUser = {
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => {
-  const c = callStore.getCurrentCall()
+  const c = getCallStore().getCurrentCall()
   return (
     <UserItem
       iconFuncs={[

@@ -17,7 +17,7 @@ import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { contactStore, Phonebook2 } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -88,7 +88,7 @@ export class PageContactPhonebook extends Component {
 
   callRequest = (number: string, u: Phonebook2) => {
     if (number !== '') {
-      callStore.startCall(number.replace(/\s+/g, ''))
+      getCallStore().startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(u.id)
       RnAlert.error({

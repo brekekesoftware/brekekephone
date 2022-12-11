@@ -10,7 +10,7 @@ import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
-import { CallStore } from './callStore'
+import { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -230,6 +230,9 @@ export class Call {
       return true
     }
     this.holding = !this.holding
+    if (!this.holding) {
+      this.store.currentCallId = this.id
+    }
     if (this.callkeepUuid && !this.holding) {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)
@@ -252,6 +255,7 @@ export class Call {
     Nav().goToPageCallRecents()
     return pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
+      .then(() => BrekekeUtils.closeIncomingCall(this.callkeepUuid))
       .catch(this.onTransferFailure)
   }
   @action transferAttended = (number: string) => {
@@ -263,6 +267,7 @@ export class Call {
     this.holding = true
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
+      .then(() => BrekekeUtils.closeIncomingCall(this.callkeepUuid))
       .catch(this.onTransferFailure)
   }
   @action private onTransferFailure = (err: Error) => {
@@ -282,6 +287,7 @@ export class Call {
     this.holding = false
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .then(() => BrekekeUtils.closeIncomingCall(this.callkeepUuid))
       .catch(this.onStopTransferringFailure)
   }
   @action private onStopTransferringFailure = (err: Error) => {
@@ -300,6 +306,7 @@ export class Call {
     this.holding = false
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .then(() => BrekekeUtils.closeIncomingCall(this.callkeepUuid))
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
@@ -314,6 +321,7 @@ export class Call {
   @action park = (number: string) => {
     return pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
+      .then(() => BrekekeUtils.closeIncomingCall(this.callkeepUuid))
       .catch(this.onParkFailure)
   }
   private onParkFailure = (err: Error) => {

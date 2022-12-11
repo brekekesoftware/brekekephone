@@ -4,7 +4,7 @@ import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
 import { BrekekeUtils } from './RnNativeModules'
 import { toBoolean } from './string'
@@ -71,7 +71,7 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       return map
     }, {})
   if (n.image) {
-    callStore.updateCallAvatar(n.image, n.image_size)
+    getCallStore().updateCallAvatar(n.image, n.image_size)
   }
   return n
 }
@@ -191,7 +191,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!n) {
     return
   }
-  const accountExist = await checkAndRemovePnTokenViaSip(n, callStore)
+  const accountExist = await checkAndRemovePnTokenViaSip(n)
   //
   // Handle duplicated pn on android
   if (Platform.OS === 'android') {
@@ -272,22 +272,22 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
   }
-  callStore.calls
-    .filter(c => c.pnId === n.id && !c.callkeepUuid)
+  getCallStore()
+    .calls.filter(c => c.pnId === n.id && !c.callkeepUuid)
     .forEach(c => {
       Object.assign(c, { callkeepUuid: n.callkeepUuid })
     })
   // Continue handling incoming call in android
   if (Platform.OS === 'android') {
-    callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
+    getCallStore().showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,
     )
     console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
-      callStore.onCallKeepAnswerCall(n.callkeepUuid)
+      getCallStore().onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {
-      callStore.onCallKeepEndCall(n.callkeepUuid)
+      getCallStore().onCallKeepEndCall(n.callkeepUuid)
     }
     // Already invoke callkeep in java code
   }

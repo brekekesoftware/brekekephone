@@ -19,7 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -137,11 +137,11 @@ export class PageChatDetail extends Component<{
         dropdown={[
           {
             label: intl`Start voice call`,
-            onPress: () => callStore.startCall(id),
+            onPress: () => getCallStore().startCall(id),
           },
           {
             label: intl`Start video call`,
-            onPress: () => callStore.startVideoCall(id),
+            onPress: () => getCallStore().startVideoCall(id),
           },
         ]}
       >

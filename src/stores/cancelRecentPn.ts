@@ -1,12 +1,7 @@
-import { CallStore } from './callStore'
+import { getCallStore } from './callStore'
 
-export const getCallStore = () => store
-
-let store: CallStore
-export const setCallStore = (s: CallStore) => {
-  store = s
-}
-export const cancelRecentPn = (n?: CancelRecentPn) => store.onSipUaCancel(n)
+export const cancelRecentPn = (n?: CancelRecentPn) =>
+  getCallStore().onSipUaCancel(n)
 
 export type CancelRecentPn = {
   pnId?: string

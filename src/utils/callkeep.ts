@@ -3,7 +3,7 @@ import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -29,7 +29,7 @@ const setupCallKeepWithCheck = async () => {
   if (
     Platform.OS === 'ios' &&
     (Object.keys(await RNCallKeep.getCalls()).length ||
-      Object.keys(callStore.callkeepMap).length ||
+      Object.keys(getCallStore().callkeepMap).length ||
       AppState.currentState !== 'active')
   ) {
     return
@@ -107,7 +107,7 @@ export const setupCallKeep = async () => {
     Platform.OS === 'android'
       ? // Handle action from CallKeep Notification on android
         BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-      : callStore.onCallKeepAnswerCall(uuid)
+      : getCallStore().onCallKeepAnswerCall(uuid)
   }
   const endCall = (e: TEvent) => {
     BackgroundTimer.setTimeout(setupCallKeepWithCheck, 0)
@@ -115,7 +115,7 @@ export const setupCallKeep = async () => {
     Platform.OS === 'android'
       ? // Handle action from CallKeep Notification on android
         BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
-      : callStore.onCallKeepEndCall(uuid)
+      : getCallStore().onCallKeepEndCall(uuid)
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
@@ -138,7 +138,7 @@ export const setupCallKeep = async () => {
     )
     if (n) {
       getAuthStore().signInByNotification(n)
-      callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
+      getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
     } else {
       console.log('SIP PN debug: call RNCallKeep.endCall: pnData not found')
       RNCallKeep.endCall(uuid)
@@ -150,7 +150,7 @@ export const setupCallKeep = async () => {
     },
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = callStore.calls.find(_ => _.callkeepUuid === uuid)
+    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
       c.toggleMuted()
     }
@@ -161,7 +161,7 @@ export const setupCallKeep = async () => {
     },
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = callStore.calls.find(_ => _.callkeepUuid === uuid)
+    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
@@ -172,7 +172,7 @@ export const setupCallKeep = async () => {
     },
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = callStore.calls.find(_ => _.callkeepUuid === uuid)
+    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c) {
       sip.sendDTMF({
         sessionId: c.id,
@@ -189,8 +189,10 @@ export const setupCallKeep = async () => {
   const didDeactivateAudioSession = () => {
     // Only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
-    callStore.calls
-      .filter(c => c.answered && !c.holding && c.id !== callStore.currentCallId)
+    getCallStore()
+      .calls.filter(
+        c => c.answered && !c.holding && c.id !== getCallStore().currentCallId,
+      )
       .forEach(c => c.toggleHoldWithCheck())
   }
 
@@ -225,38 +227,41 @@ export const setupCallKeep = async () => {
     // Events from our custom IncomingCall module
     const eventEmitter = new NativeEventEmitter(BrekekeUtils)
     eventEmitter.addListener('answerCall', (uuid: string) => {
-      callStore.onCallKeepAnswerCall(uuid.toUpperCase())
+      getCallStore().onCallKeepAnswerCall(uuid.toUpperCase())
       RNCallKeep.setOnHold(uuid, false)
     })
     eventEmitter.addListener('rejectCall', (uuid: string) => {
-      callStore.onCallKeepEndCall(uuid.toUpperCase())
+      getCallStore().onCallKeepEndCall(uuid.toUpperCase())
     })
     eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 300)
+      BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 100)
+    })
+    eventEmitter.addListener('showBackgroundCall', (uuid: string) => {
+      BackgroundTimer.setTimeout(Nav().goToPageCallBackgrounds, 100)
     })
     eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallParks2, 300)
+      BackgroundTimer.setTimeout(Nav().goToPageCallParks2, 100)
     })
     eventEmitter.addListener('video', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleVideo()
+      getCallStore().getCurrentCall()?.toggleVideo()
     })
     eventEmitter.addListener('speaker', (uuid: string) => {
-      callStore.toggleLoudSpeaker()
+      getCallStore().toggleLoudSpeaker()
     })
     eventEmitter.addListener('mute', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleMuted()
+      getCallStore().getCurrentCall()?.toggleMuted()
     })
     eventEmitter.addListener('record', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleRecording()
+      getCallStore().getCurrentCall()?.toggleRecording()
     })
     eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallDtmfKeypad, 300)
+      BackgroundTimer.setTimeout(Nav().goToPageCallDtmfKeypad, 100)
     })
     eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleHoldWithCheck()
+      getCallStore().getCurrentCall()?.toggleHoldWithCheck()
     })
     eventEmitter.addListener('switchCamera', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleSwitchCamera()
+      getCallStore().getCurrentCall()?.toggleSwitchCamera()
     })
     eventEmitter.addListener('onNotificationPress', (data: string) => {
       if (!data) {
@@ -275,12 +280,6 @@ export const setupCallKeep = async () => {
       }
     })
 
-    // In case of answer call when phone locked
-    eventEmitter.addListener('backToForeground', () => {
-      console.log('SIP PN debug: backToForeground')
-      BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
-      BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
-    })
     // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
     eventEmitter.addListener('debug', (m: string) =>
