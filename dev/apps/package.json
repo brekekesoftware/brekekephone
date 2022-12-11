@@ -1,0 +1,23 @@
+{
+  "name": "brekekephone-dev-apps",
+  "version": "0.0.0-locked",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "dependencies": {
+    "humanize-duration": "3.27.2",
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "semver-compare": "1.0.0",
+    "whatwg-fetch": "3.6.2"
+  },
+  "devDependencies": {
+    "@types/humanize-duration": "3.27.1",
+    "@types/semver-compare": "1.0.1",
+    "react-scripts": "4.0.3"
+  },
+  "proxy": "https://apps.brekeke.com",
+  "browserslist": "ie 10-11"
+}
