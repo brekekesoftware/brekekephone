@@ -240,12 +240,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
             userActions.put(uuid, "display");
             activitiesSize++;
+            if (last() == null) {
+              firstShowCallAppActive = isAppActive || isAppActiveLocked;
+            }
             Intent i = new Intent(c, IncomingCallActivity.class);
             i.setFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
                     | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            firstShowCallAppActive = isAppActive || isAppActiveLocked;
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
