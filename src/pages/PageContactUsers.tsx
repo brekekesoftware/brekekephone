@@ -11,7 +11,7 @@ import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -246,8 +246,8 @@ const RenderItemUser = observer(({ item, index }: ItemUser) => (
   >
     <UserItem
       iconFuncs={[
-        () => callStore.startVideoCall(item.id),
-        () => callStore.startCall(item.id),
+        () => getCallStore().startVideoCall(item.id),
+        () => getCallStore().startCall(item.id),
       ]}
       icons={[mdiVideo, mdiPhone]}
       lastMessage={getLastMessageChat(item.id)?.text}

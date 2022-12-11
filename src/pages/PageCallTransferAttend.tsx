@@ -12,7 +12,7 @@ import {
 import { Avatar } from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -79,7 +79,7 @@ export class PageCallTransferAttend extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -95,7 +95,7 @@ export class PageCallTransferAttend extends Component {
   }
 
   render() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (!c) {
       return null
     }

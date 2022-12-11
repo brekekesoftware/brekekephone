@@ -26,7 +26,7 @@ import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
 import { authUC } from '../stores/AuthUC'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -47,7 +47,6 @@ import {
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
-import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
@@ -66,9 +65,7 @@ const initApp = async () => {
   AppState.addEventListener('change', async () => {
     if (AppState.currentState === 'active') {
       getAuthStore().resetFailureState()
-      console.log("dev::: enAppState.currentState === 'active'")
-      // BrekekeUtils.closeAllIncomingCalls()
-      callStore.onCallKeepAction()
+      getCallStore().onCallKeepAction()
       // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
       // ref: https://github.com/facebook/react-native-website/issues/273
       const handleUrlParams = await s.handleUrlParams()
@@ -94,8 +91,8 @@ const initApp = async () => {
   BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
   const hasCallOrWakeFromPN =
-    callStore.calls.length ||
-    Object.keys(callStore.callkeepMap).length ||
+    getCallStore().calls.length ||
+    Object.keys(getCallStore().callkeepMap).length ||
     s.sipPn.sipAuth
 
   if (Platform.OS === 'web') {

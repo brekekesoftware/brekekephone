@@ -14,7 +14,6 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -243,22 +242,25 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             activitiesSize++;
             Intent i;
             IncomingCallActivity prev = last();
-            if (prev == null) {
-              i = new Intent(c, IncomingCallActivity.class);
-              i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-              firstShowCallAppActive = isAppActive || isAppActiveLocked;
-            } else {
-              i = new Intent(prev, IncomingCallActivity.class);
-            }
+            // if (prev == null) {
+            i = new Intent(c, IncomingCallActivity.class);
+            i.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            firstShowCallAppActive = isAppActive || isAppActiveLocked;
+            // } else {
+            //   i = new Intent(prev, IncomingCallActivity.class);
+            // }
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
-            if (prev != null) {
-              prev.startActivity(i);
-            } else {
-              c.startActivity(i);
-            }
+            // if (prev != null) {
+            //   prev.startActivity(i);
+            // } else {
+            c.startActivity(i);
+            // }
           }
         };
     Runnable onReject =
@@ -328,7 +330,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // We will fire the event manually here
   // There may be duplicated events in some cases, need to test more
   public static void onPassiveReject(String uuid) {
-    Log.d("dev:::", "onPassiveReject: ");
+    emit("debug", "onPassiveReject uuid=" + uuid);
     emit("rejectCall", uuid);
     staticCloseIncomingCall(uuid);
   }
@@ -345,11 +347,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void tryExitClearTask() {
-    Log.d("dev:::", "firstShowCallAppActive:"+ firstShowCallAppActive + "::main::"+ main + " ::activities.isEmpty()::"+ activities.isEmpty());
     if (!activities.isEmpty()) {
       return;
     }
-
     if (!firstShowCallAppActive) {
       try {
         main.moveTaskToBack(true);
@@ -387,10 +387,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static int jsCallsSize = 0;
 
   public static void remove(String uuid) {
-    Log.d("dev::", "removeCall::");
     removeCallKeepCallbacks(uuid);
     IncomingCallActivity a = at(uuid);
-    Log.d("dev::", "removeCall::"+ a);
+    emit("debug", "BrekekeUtils.remove a==null " + (a == null));
     if (a == null) {
       return;
     }
@@ -399,15 +398,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
     }
     if (activitiesSize == 1) {
-      Log.d("dev::", "activitiesSize::"+ activitiesSize);
       tryExitClearTask();
-//      a.finishRemoveTask();
     }
     a.forceFinish();
   }
 
   public static void removeAll() {
-    Log.d("dev::", "removeAll::");
+    emit("debug", "removeAll");
     stopRingtone();
     if (activities.size() <= 0) {
       return;
@@ -428,13 +425,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void removeAllAndBackToForeground() {
-    Log.d("dev::", "removeAllAndBackToForeground: ");
+    emit("debug", "removeAllAndBackToForeground");
     removeAll();
     emit("backToForeground", "");
   }
 
   public static void staticCloseIncomingCall(String uuid) {
-    Log.d("dev::", "staticCloseIncomingCall: ");
+    emit("debug", "staticCloseIncomingCall");
     try {
       at(uuid).answered = false;
     } catch (Exception e) {
@@ -477,10 +474,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // To open app when:
   // - call is answered and
-  // - on pause (click home when locked) or destroy (click answer when forground)
+  // - on pause (click home when locked) or destroy (click answer when foreground)
   // TODO handle case multiple calls
   public static void onActivityPauseOrDestroy(String uuid, boolean destroyed) {
-    Log.d("dev::", "onActivityPauseOrDestroy: activites::"+ activities.size());
+    emit("debug", "onActivityPauseOrDestroy activites.size()=" + activities.size());
     if (destroyed) {
       activitiesSize--;
       updateBtnUnlockLabels();
@@ -492,7 +489,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       if (l == null || l.answered) {
         stopRingtone();
       }
-      if(l != null){
+      if (l != null) {
         l.reorderToFront();
       }
     }
@@ -502,12 +499,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (jsCallsSize == 0) {
       releaseWakeLock();
     }
-//    try {
-//      if (last().answered) {
-//        removeAllAndBackToForeground();
-//      }
-//    } catch (Exception e) {
-//    }
   }
 
   public static void updateBtnUnlockLabels() {
@@ -643,13 +634,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void closeIncomingCall(String uuid) {
-    Log.d("dev:::", "closeIncomingCall: ");
+    emit("debug", "closeIncomingCall uuid=" + uuid);
     staticCloseIncomingCall(uuid);
   }
 
   @ReactMethod
   public void closeAllIncomingCalls() {
-    Log.d("dev::", "closeAllIncomingCalls");
+    emit("debug", "closeAllIncomingCalls");
     removeAll();
   }
 
@@ -661,7 +652,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setRecordingStatus(String uuid, Boolean isRecording) {
-    Log.d("dev::", "setRecordingStatus: "+ uuid+"::isRecording::"+ isRecording);
+    emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -794,31 +785,27 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           }
         });
   }
+
   @ReactMethod
-  public void onStartIncomingActivity(String uuid){
-    IncomingCallActivity a = at(uuid);
-    Log.d("dev::", "onStartIncomingActivity: "+ a.getIntent());
-//    Context context = getCurrentActivity();
-//    String packageName = context.getApplicationContext().getPackageName();
-//    Intent focusIntent = a.getIntent().cloneFilter();
-//    Activity activity = getCurrentActivity();
-//    focusIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//    activity.startActivity(focusIntent);
-    if(a != null){
-      a.reorderToFront();
-    }
+  public void onPageCallManage(String uuid) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity toFront = at(uuid);
+            emit("debug", "onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
+            if (toFront != null) {
+              toFront.reorderToFront();
+            }
+          }
+        });
   }
+
   @ReactMethod
-  public void onCloseIncomingActivity(String uuid){
+  public void onCloseIncomingActivity(String uuid) {
     closeIncomingCall(uuid);
-//    IncomingCallActivity a = at(uuid);
-//    Log.d("dev::", "onCloseIncomingActivity: "+ a);
-//    if(a != null){
-//      a.forceFinish();
-//    }
-//    this.getCurrentActivity().startActivity(new Intent(this.getCurrentActivity(), a.getClass()));
-//    this.getCurrentActivity().onBackPressed();
   }
+
   @ReactMethod
   public void onCallKeepAction(String uuid, String action) {
     UiThreadUtil.runOnUiThread(

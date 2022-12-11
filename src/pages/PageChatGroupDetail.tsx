@@ -20,7 +20,7 @@ import { Layout } from '../components/Layout'
 import { RnText } from '../components/RnText'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { v } from '../components/variables'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import {
   ChatFile,
   ChatGroup,
@@ -439,8 +439,8 @@ export class PageChatGroupDetail extends Component<{
   }
   call = (target: string, bVideoEnabled: boolean) => {
     bVideoEnabled
-      ? callStore.startVideoCall(target)
-      : callStore.startCall(target)
+      ? getCallStore().startVideoCall(target)
+      : getCallStore().startCall(target)
   }
   callVoiceConference = () => {
     let target = this.props.groupId

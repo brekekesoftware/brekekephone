@@ -9,7 +9,7 @@ import { currentVersion } from '../components/variables'
 import { embedApi } from '../embed/embedApi'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { CallStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -28,21 +28,19 @@ type DeviceInputWeb = {
   facing: string
 }
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
-export const checkAndRemovePnTokenViaSip = async (
-  n: ParsedPn,
-  s: CallStore,
-) => {
+export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
   await accountStore.waitStorageLoaded()
   const exist = !!getAuthStore().findAccountByPn(n)
   const k = n.id || stableStringify(n)
   if (!alreadyRemovePnTokenViaSip[k] && !exist) {
     alreadyRemovePnTokenViaSip[k] = true
-    removePnTokenViaSip(n, s)
+    removePnTokenViaSip(n)
   }
   return exist
 }
 
-const removePnTokenViaSip = async (n: ParsedPn, s: CallStore) => {
+const removePnTokenViaSip = async (n: ParsedPn) => {
+  const s = getCallStore()
   if (n.callkeepUuid) {
     s.onCallKeepEndCall(n.callkeepUuid)
   }

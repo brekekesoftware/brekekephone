@@ -7,15 +7,16 @@ import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { Call } from '../stores/Call'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
-import { onBackToCallManageScreen } from '../utils/backToCallManage'
 
 export const PageCallBackgrounds = observer(() => {
-  const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
-  const currentCall = callStore.getCurrentCall()
+  const bg = getCallStore().calls.filter(
+    c => c.id !== getCallStore().currentCallId,
+  )
+  const currentCall = getCallStore().getCurrentCall()
   const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
@@ -31,7 +32,7 @@ export const PageCallBackgrounds = observer(() => {
         ? [
             () => {
               c.answer()
-              callStore.onSelectBackgroundCall(c)
+              getCallStore().onSelectBackgroundCall(c)
             },
           ]
         : []),
@@ -65,15 +66,12 @@ export const PageCallBackgrounds = observer(() => {
   return (
     <Layout
       compact
-      onBack={onBackToCallManageScreen}
+      onBack={Nav().backToPageCallManage}
       title={intl`Background calls`}
     >
       <Field isGroup label={intl`CURRENT CALL`} />
       {(currentCall ? [currentCall] : []).map(c => (
-        <RnTouchableOpacity
-          key={c.id}
-          onPress={() => onBackToCallManageScreen()}
-        >
+        <RnTouchableOpacity key={c.id} onPress={Nav().backToPageCallManage}>
           {renderItemCall(c, true)}
         </RnTouchableOpacity>
       ))}
@@ -86,7 +84,7 @@ export const PageCallBackgrounds = observer(() => {
           onPress={
             !c.answered && c.incoming
               ? undefined
-              : () => callStore.onSelectBackgroundCall(c)
+              : () => getCallStore().onSelectBackgroundCall(c)
           }
         >
           {renderItemCall(c)}

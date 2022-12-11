@@ -7,10 +7,9 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { onBackToCallManageScreen } from '../utils/backToCallManage'
 
 @observer
 export class PageCallParks extends Component<{
@@ -24,7 +23,7 @@ export class PageCallParks extends Component<{
     if (!this.props.callParks2) {
       return
     }
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -45,8 +44,8 @@ export class PageCallParks extends Component<{
   park = () => {
     const p = this.state.selectedPark
     return this.props.callParks2
-      ? callStore.getCurrentCall()?.park(p)
-      : callStore.startCall(p || '')
+      ? getCallStore().getCurrentCall()?.park(p)
+      : getCallStore().startCall(p || '')
   }
 
   render() {
@@ -64,12 +63,12 @@ export class PageCallParks extends Component<{
 
     const sp = this.state.selectedPark
     const cp2 = this.props.callParks2
-    void callStore.getCurrentCall() // trigger componentDidUpdate
+    void getCallStore().getCurrentCall() // trigger componentDidUpdate
     const isDisable = (parkNumber: string) => {
       if (cp2) {
-        return !!callStore.parkNumbers[parkNumber]
+        return !!getCallStore().parkNumbers[parkNumber]
       }
-      return !callStore.parkNumbers[parkNumber]
+      return !getCallStore().parkNumbers[parkNumber]
     }
 
     return (
@@ -78,7 +77,7 @@ export class PageCallParks extends Component<{
         fabOnNext={sp ? this.park : undefined}
         fabOnNextText={cp2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={cp2 ? undefined : 'call'}
-        onBack={cp2 ? onBackToCallManageScreen : undefined}
+        onBack={cp2 ? Nav().backToPageCallManage : undefined}
         subMenu={cp2 ? undefined : 'parks'}
         title={intl`Park`}
       >

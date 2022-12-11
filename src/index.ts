@@ -4,6 +4,7 @@ import './polyfill'
 import './polyfill/mobx'
 import './utils/validator'
 import './stores/Nav2' // Fix circular dependencies
+import './stores/callStore2' // Fix circular dependencies
 import './stores/authStore2' // Fix circular dependencies
 import './api/syncPnToken2' // Fix circular dependencies
 import 'brekekejs/lib/phonebook'
@@ -13,10 +14,7 @@ import { AppRegistry } from 'react-native'
 
 import { App } from './components/App'
 import { exposeEmbedApi } from './embed/exposeEmbedApi'
-import { callStore } from './stores/callStore'
-import { setCallStore } from './stores/cancelRecentPn'
 
-setCallStore(callStore)
 AppRegistry.registerComponent('BrekekePhone', () => App)
 
 const runApp = (rootTag: HTMLElement) => {

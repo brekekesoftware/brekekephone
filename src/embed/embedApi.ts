@@ -8,7 +8,7 @@ import {
   getAccountUniqueId,
 } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/cancelRecentPn'
+import { getCallStore } from '../stores/callStore'
 import { promptBrowserPermission } from '../utils/promptBrowserPermission'
 import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'

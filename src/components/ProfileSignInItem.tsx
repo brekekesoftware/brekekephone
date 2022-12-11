@@ -13,7 +13,7 @@ import {
 } from '../assets/icons'
 import { accountStore, PNOptions } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -175,7 +175,7 @@ export const ProfileSignInItem: FC<{
             getAuthStore().signIn(p)
             // Try to end callkeep if it's stuck
             if (Platform.OS !== 'web') {
-              callStore.endCallKeepAllCalls()
+              getCallStore().endCallKeepAllCalls()
             }
           }}
           onNextText={intl`SIGN IN`}

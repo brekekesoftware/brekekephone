@@ -20,7 +20,7 @@ import {
   mdiVideo,
 } from '../assets/icons'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
 import {
@@ -210,7 +210,7 @@ const RenderItemUser = observer(
     const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
       idx => idx === index,
     )
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
 
     return !isHidden ? (
       <View
@@ -247,8 +247,8 @@ const RenderItemUser = observer(
           >
             <UserItem
               iconFuncs={[
-                () => callStore.startVideoCall(item.user_id),
-                () => callStore.startCall(item.user_id),
+                () => getCallStore().startVideoCall(item.user_id),
+                () => getCallStore().startCall(item.user_id),
               ]}
               icons={[mdiVideo, mdiPhone]}
               lastMessage={getLastMessageChat(item.user_id)?.text}

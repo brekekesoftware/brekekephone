@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { Platform } from 'react-native'
 
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import {
   AnsweredItem,
   OutgoingItem,
@@ -11,10 +11,10 @@ import {
 
 export const CallVoices = observer(() => {
   // Try trigger observer?
-  void Object.keys(callStore.callkeepMap)
-  void callStore.calls.map(_ => _.callkeepUuid)
+  void Object.keys(getCallStore().callkeepMap)
+  void getCallStore().calls.map(_ => _.callkeepUuid)
 
-  const currentCall = callStore.getCurrentCall()
+  const currentCall = getCallStore().getCurrentCall()
   const isOutgoingCallStart =
     currentCall &&
     !currentCall.incoming &&
@@ -40,12 +40,12 @@ export const CallVoices = observer(() => {
         Platform.OS === 'ios' && isOutgoingCallStart && (
           <VideoRBT
             isPaused={isPaused}
-            isLoudSpeaker={callStore.isLoudSpeakerEnabled}
+            isLoudSpeaker={getCallStore().isLoudSpeakerEnabled}
           />
         )
       }
-      {callStore.calls
-        .filter(c => c.answered)
+      {getCallStore()
+        .calls.filter(c => c.answered)
         .map(c => (
           <AnsweredItem key={c.id} voiceStreamObject={c.voiceStreamObject} />
         ))}

@@ -15,7 +15,7 @@ import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
-import { getCallStore } from './cancelRecentPn'
+import { getCallStore } from './callStore'
 import { getPartyName } from './contactStore'
 import { RnStacker } from './RnStacker'
 

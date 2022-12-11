@@ -4,7 +4,7 @@ import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
@@ -30,7 +30,7 @@ export class IncomingItem extends Component {
     this.ringtonePlaying = false
     if (Platform.OS === 'android') {
       // Bug speaker auto turn on after call stopRingtone/stopRingback
-      IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+      IncallManager.setForceSpeakerphoneOn(getCallStore().isLoudSpeakerEnabled)
     }
   }
   render() {
@@ -43,7 +43,7 @@ export class OutgoingItem extends Component<{}, { isPause: boolean }> {
     isPause: true,
   }
   componentDidMount = () => {
-    const currentCall = callStore.getCurrentCall()
+    const currentCall = getCallStore().getCurrentCall()
     currentCall && sip.disableMedia(currentCall.id)
     if (Platform.OS === 'android') {
       IncallManager.startRingback('_BUNDLE_')
@@ -64,7 +64,7 @@ export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
   componentDidMount = () => {
-    const currentCall = callStore.getCurrentCall()
+    const currentCall = getCallStore().getCurrentCall()
     currentCall && sip.enableMedia(currentCall.id)
   }
   render() {
@@ -80,11 +80,13 @@ export class AnsweredItem extends Component<{
     if (Platform.OS === 'android') {
       IncallManager.start()
       BackgroundTimer.setTimeout(() => {
-        IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+        IncallManager.setForceSpeakerphoneOn(
+          getCallStore().isLoudSpeakerEnabled,
+        )
       }, 2000)
     }
 
-    const currentCall = callStore.getCurrentCall()
+    const currentCall = getCallStore().getCurrentCall()
     currentCall && sip.enableMedia(currentCall.id)
   }
   render() {

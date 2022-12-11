@@ -1,7 +1,7 @@
 import { get, set } from 'lodash'
 import { NativeModule, NativeModules, Platform } from 'react-native'
 
-import { TCallkeepAction } from '../stores/callStore'
+import { TCallkeepAction } from '../stores/callStore2'
 
 type TBrekekeUtils = {
   // these methods only available on android
@@ -33,7 +33,7 @@ type TBrekekeUtils = {
     hideBtnHold: boolean,
   ): void
   setRecordingStatus(uuid: string, recording: boolean): void
-  onStartIncomingActivity(uuid: string): void
+  onPageCallManage(uuid: string): void
   onCloseIncomingActivity(uuid: string): void
   // these methods only available on ios
   playRBT(): void
@@ -74,7 +74,7 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   setConfig: () => undefined,
   setRecordingStatus: () => undefined,
-  onStartIncomingActivity: () => undefined,
+  onPageCallManage: () => undefined,
   onCloseIncomingActivity: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,

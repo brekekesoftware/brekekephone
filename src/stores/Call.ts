@@ -10,7 +10,7 @@ import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
-import { CallStore } from './callStore'
+import { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -230,6 +230,9 @@ export class Call {
       return true
     }
     this.holding = !this.holding
+    if (!this.holding) {
+      this.store.currentCallId = this.id
+    }
     if (this.callkeepUuid && !this.holding) {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)
@@ -313,7 +316,6 @@ export class Call {
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .then(() => {
-        console.error('dev:::joinTalkerTransfer')
         Platform.OS === 'android' &&
           BrekekeUtils.onCloseIncomingActivity(this.callkeepUuid)
       })

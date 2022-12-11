@@ -1,7 +1,6 @@
 package com.brekeke.phonedev;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,13 +48,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnRecord,
       vBtnDTMF,
       vBtnHold;
-  public View vCardAvatar;
-  public View vCardAvatarTalking;
   public WebRTCView vWebrtcVideo;
-  public ImageView imgAvatar;
-  public WebView webViewAvatar, webViewAvatarTalking;
-  public ImageView imgAvatarTalking;
   public ProgressBar videoLoading;
+  public View vCardAvatar, vCardAvatarTalking;
+  public ImageView imgAvatar, imgAvatarTalking;
+  public CircularProgressDrawable imgAvatarLoadingProgress;
+  public WebView webViewAvatar, webViewAvatarTalking;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -90,32 +87,30 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = false,
       isLarge = false,
       isVideoCall = false;
-  public CircularProgressDrawable drawableProgress;
-  public boolean mIsRestoredToTop = false;
-  Timer timer;
-  TimerTask timerTask;
 
+  // ==========================================================================
+  // activity lifecycles
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Bundle b = getIntent().getExtras();
-
     if (b == null) {
       b = savedInstanceState;
     }
     if (b == null) {
-      Log.d("dev::", "onCreate::savedInstanceState::");
+      debug("onCreate bundle=null");
       forceFinish();
       return;
     }
+
     timer = new Timer();
-    Log.d("dev::", "onCreate::::"+ b.getString("currentUUID"));
     uuid = b.getString("uuid");
     callerName = b.getString("callerName");
     avatar = b.getString("avatar");
     avatarSize = b.getString("avatarSize");
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
+      debug("onCreate rejectCall");
       forceFinish();
       RNCallKeepModule.staticEndCall(uuid);
       return;
@@ -134,11 +129,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.activities.add(this);
     BrekekeUtils.startRingtone();
 
-    drawableProgress = new CircularProgressDrawable(this);
-    drawableProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
-    drawableProgress.setCenterRadius(30f);
-    drawableProgress.setStrokeWidth(5f);
-    drawableProgress.start();
+    imgAvatarLoadingProgress = new CircularProgressDrawable(this);
+    imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
+    imgAvatarLoadingProgress.setCenterRadius(30f);
+    imgAvatarLoadingProgress.setStrokeWidth(5f);
+    imgAvatarLoadingProgress.start();
 
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
@@ -154,7 +149,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebViewAvatarTalkingLoading = (RelativeLayout) findViewById(R.id.rl_taking_loading);
     vCallManage.setOnClickListener(this);
 
-    //    view btn
     vBtnTransfer = (LinearLayout) findViewById(R.id.ln_btn_transfer);
     vBtnPark = (LinearLayout) findViewById(R.id.ln_btn_park);
     vBtnVideo = (LinearLayout) findViewById(R.id.ln_btn_video);
@@ -211,8 +205,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnHold.setOnClickListener(this);
     btnEndcall.setOnClickListener(this);
     btnSwitchCamera.setOnClickListener(this);
-    // set default icon front camera
-    btnSwitchCamera.setSelected(true);
+    btnSwitchCamera.setSelected(true); // default front camera
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
@@ -238,6 +231,58 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (BrekekeUtils.config != null) {
       updateConfig();
     }
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    debug("onNewIntent");
+    super.onNewIntent(intent);
+  }
+
+  @Override
+  protected void onPause() {
+    debug("onPause");
+    paused = true;
+    super.onPause();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    debug("onResume answered=" + answered);
+    if (!answered) {
+      BrekekeUtils.startRingtone();
+    }
+    paused = false;
+  }
+
+  @Override
+  protected void onDestroy() {
+    debug("onDestroy");
+    destroyed = true;
+    try {
+      timer.cancel();
+      timerTask.cancel();
+    } catch (Exception e) {
+    }
+    timerTask = null;
+    timer = null;
+    BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
+    super.onDestroy();
+  }
+
+  public void openMainActivity() {
+    Intent i = new Intent(this, MainActivity.class);
+    if (BrekekeUtils.main != null) {
+      i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    }
+    startActivity(i);
+  }
+
+  @Override
+  public void onBackPressed() {
+    debug("onBackPressed");
+    openMainActivity();
   }
 
   public void updateConfig() {
@@ -290,7 +335,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
     } else {
-      if (BrekekeUtils.isImageUrl(avatar) == false) {
+      if (!BrekekeUtils.isImageUrl(avatar)) {
         webViewAvatar.setVisibility(View.VISIBLE);
         imgAvatar.setVisibility(View.GONE);
         webViewAvatar.loadUrl(avatar);
@@ -315,7 +360,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             .load(avatar)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
-            .placeholder(drawableProgress)
+            .placeholder(imgAvatarLoadingProgress)
             .error(R.mipmap.avatar_failed)
             .centerCrop()
             .into(imgAvatar);
@@ -343,8 +388,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         BrekekeUtils.jsCallsSize > BrekekeUtils.activitiesSize
             ? BrekekeUtils.jsCallsSize
             : BrekekeUtils.activitiesSize;
-    if(BrekekeUtils.isLocked() == false && n < 2){
+    if (!BrekekeUtils.isLocked() && n < 2) {
       btnUnlock.setVisibility(View.GONE);
+    } else {
+      btnUnlock.setVisibility(View.VISIBLE);
     }
     btnUnlock.setText(n <= 1 ? L.unlock() : L.nCallsInBackground(n - 1));
   }
@@ -488,12 +535,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void updateLayoutManagerCallLoaded() {
-
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
-
     if (talkingAvatar == null || talkingAvatar.isEmpty()) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -507,7 +552,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           ConstraintSet.PARENT_ID,
           ConstraintSet.TOP,
           flexValue);
-
       constraintSet.connect(
           R.id.view_button_end,
           ConstraintSet.BOTTOM,
@@ -533,14 +577,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
-    if (BrekekeUtils.isImageUrl(talkingAvatar) == true) {
+    if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
       Glide.with(this)
           .load(talkingAvatar)
           .diskCacheStrategy(DiskCacheStrategy.NONE)
           .skipMemoryCache(true)
-          .placeholder(drawableProgress)
+          .placeholder(imgAvatarLoadingProgress)
           .error(R.mipmap.avatar_failed)
           .centerCrop()
           .into(imgAvatarTalking);
@@ -568,25 +612,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnAnswerClick(View v) {
     BrekekeUtils.putUserActionAnswerCall(uuid);
     BrekekeUtils.emit("answerCall", uuid);
-//    if (BrekekeUtils.isLocked()) {
-      if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
-        if (!isLarge) {
-          updateLayoutManagerCall();
-        }
-        handleShowAvatarTalking();
+    if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
+      if (!isLarge) {
+        updateLayoutManagerCall();
       }
-      answered = true;
-      BrekekeUtils.stopRingtone();
-      vIncomingCall.setVisibility(View.GONE);
-      vHeaderIncomingCall.setVisibility(View.GONE);
-      vHeaderManageCall.setVisibility(View.VISIBLE);
-      vCardAvatarTalking.setVisibility(View.GONE);
-      vCallManageControls.setVisibility(View.GONE);
-      vCallManage.setVisibility(View.VISIBLE);
-      updateLayoutManagerCallLoading();
-//    } else {
-//      BrekekeUtils.removeAllAndBackToForeground();
-//    }
+      handleShowAvatarTalking();
+    }
+    answered = true;
+    BrekekeUtils.stopRingtone();
+    vIncomingCall.setVisibility(View.GONE);
+    vHeaderIncomingCall.setVisibility(View.GONE);
+    vHeaderManageCall.setVisibility(View.VISIBLE);
+    vCardAvatarTalking.setVisibility(View.GONE);
+    vCallManageControls.setVisibility(View.GONE);
+    vCallManage.setVisibility(View.VISIBLE);
+    updateLayoutManagerCallLoading();
   }
 
   public void onBtnRejectClick(View v) {
@@ -594,8 +634,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.emit("rejectCall", uuid);
     answered = false;
     BrekekeUtils.remove(uuid);
-//    forceFinish();
-//    finishRemoveTask();
   }
 
   // vCallManage
@@ -608,40 +646,26 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnUnlockClick(View v) {
-//    Log.d("dev::", "onBtnUnlockClick" + BrekekeUtils.activities.get(0).uuid);
-//    startActivity(new Intent(this, IncomingCallActivity.class));
     // Already invoked in onKeyguardDismissSucceeded
     updateBtnUnlockLabel();
     int n =
-     BrekekeUtils.jsCallsSize > BrekekeUtils.activitiesSize
-      ? BrekekeUtils.jsCallsSize
-      : BrekekeUtils.activitiesSize;
-    if(n > 1){
+        BrekekeUtils.jsCallsSize > BrekekeUtils.activitiesSize
+            ? BrekekeUtils.jsCallsSize
+            : BrekekeUtils.activitiesSize;
+    if (n > 1) {
       BrekekeUtils.emit("showBackgroundCall", uuid);
-      onStartMainActivity();
-//      BrekekeUtils.activities.get(0).reorderToFront();
+      openMainActivity();
     }
   }
-  public void onStartMainActivity(){
-    if(BrekekeUtils.main == null){
-      Intent i = new Intent(this, MainActivity.class);
-      startActivity(i);
-    }else {
-      Intent i = new Intent(this, MainActivity.class);
-      i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-      startActivity(i);
-    }
 
-  }
   public void onBtnTransferClick(View v) {
     BrekekeUtils.emit("transfer", uuid);
-    Log.d("dev::", "onBtnTransferClick");
-    onStartMainActivity();
+    openMainActivity();
   }
 
   public void onBtnParkClick(View v) {
     BrekekeUtils.emit("park", uuid);
-    onStartMainActivity();
+    openMainActivity();
   }
 
   public void onBtnVideoClick(View v) {
@@ -667,7 +691,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnDtmfClick(View v) {
     BrekekeUtils.emit("dtmf", uuid);
-    onStartMainActivity();
+    openMainActivity();
   }
 
   public void onBtnHoldClick(View v) {
@@ -675,18 +699,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onRequestUnlock(View v) {
-
-    if(BrekekeUtils.isLocked() == true){
+    if (BrekekeUtils.isLocked()) {
       BrekekeUtils.km.requestDismissKeyguard(
-       this,
-       new KeyguardManager.KeyguardDismissCallback() {
-         @Override
-         public void onDismissSucceeded() {
-           super.onDismissSucceeded();
-           onKeyguardDismissSucceeded(v);
-         }
-       });
-    }else {
+          this,
+          new KeyguardManager.KeyguardDismissCallback() {
+            @Override
+            public void onDismissSucceeded() {
+              super.onDismissSucceeded();
+              onKeyguardDismissSucceeded(v);
+            }
+          });
+    } else {
       onKeyguardDismissSucceeded(v);
     }
   }
@@ -711,7 +734,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       default:
         break;
     }
-//    BrekekeUtils.removeAllAndBackToForeground();
   }
 
   @Override
@@ -842,7 +864,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRecordingStatus(Boolean isRecording) {
-    Log.d("dev:::", "setRecordingStatus: "+ isRecording);
+    debug("setRecordingStatus: " + isRecording);
     btnRecord.setSelected(isRecording);
   }
 
@@ -851,92 +873,31 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
-      Log.d("dev:::", "forceFinish: "+ e.getLocalizedMessage());
+      debug("forceFinish catch: " + e.getLocalizedMessage());
     }
   }
-  public  void finishRemoveTask(){
+
+  public void finishRemoveTask() {
     destroyed = true;
     try {
       finishAndRemoveTask();
     } catch (Exception e) {
-      Log.d("dev:::", "forceFinish: "+ e.getLocalizedMessage());
+      debug("finishRemoveTask catch: " + e.getLocalizedMessage());
     }
   }
 
   public void reorderToFront() {
     Intent i = new Intent(this, IncomingCallActivity.class);
     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//    i.putExtra("currentUUID", this.uuid);
     startActivity(i);
-  }
-
-  @Override
-  protected void onPause() {
-    Log.d("dev::", "onPause: "+ this.uuid);
-    paused = true;
-//    BrekekeUtils.onActivityPauseOrDestroy(uuid, false);
-    super.onPause();
-  }
-  @Override
-  protected void onNewIntent(Intent intent) {
-    super.onNewIntent(intent);
-
-    if ((intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT) > 0) {
-      mIsRestoredToTop  = true;
-    }
-    Log.d("dev:::", "onNewIntent:mIsRestoredToTop:"+ mIsRestoredToTop);
-  }
-
-  @Override
-  public void finish() {
-    super.finish();
-    if (android.os.Build.VERSION.SDK_INT >= 19 && !isTaskRoot() && mIsRestoredToTop) {
-      Log.d("dev:::", "finish:4.4.2 platform issues for FLAG_ACTIVITY_REORDER_TO_FRONT:");
-      // 4.4.2 platform issues for FLAG_ACTIVITY_REORDER_TO_FRONT,
-      // reordered activity back press will go to home unexpectly,
-      // Workaround: move reordered activity current task to front when it's finished.
-      ActivityManager tasksManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-      tasksManager.moveTaskToFront(getTaskId(), ActivityManager.MOVE_TASK_NO_USER_ACTION);
-    }
-  }
-  @Override
-  protected void onResume() {
-    Log.d("dev::", "onResume: "+ this.uuid);
-    Bundle b = this.getIntent().getExtras();
-    if(b!=null){
-      Log.d("dev::", "onResume::::currentUUID:::"+ b.getString("currentUUID"));
-    }else {
-      Log.d("dev::", "onCreate::::currentUUID:: null ");
-    }
-    if (!answered) {
-      BrekekeUtils.startRingtone();
-    } else if (!BrekekeUtils.isLocked()) {
-      // User press home button, unlock the screen, then open app
-//      BrekekeUtils.removeAllAndBackToForeground();
-    }
-    paused = false;
     updateBtnUnlockLabel();
-    super.onResume();
   }
 
-  @Override
-  protected void onDestroy() {
-    Log.d("dev::", "onDestroy: ");
-    destroyed = true;
-    try {
-      timer.cancel();
-      timerTask.cancel();
-    } catch (Exception e) {
-    }
-
-    timerTask = null;
-    timer = null;
-    BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
-    super.onDestroy();
-  }
-
+  // ==========================================================================
+  // stop ringtone if any of the hardware key press
   @Override
   public boolean onKeyDown(int k, KeyEvent e) {
+    debug("onKeyDown k=" + k);
     BrekekeUtils.stopRingtone();
     return super.onKeyDown(k, e);
   }
@@ -946,7 +907,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return onKeyDown(e.getAction(), e);
   }
 
-  // function for count up timer
+  // ==========================================================================
+  // timer to count talking time
+  private Timer timer;
+  private TimerTask timerTask;
+
   private void startTimer(long answeredAt) {
     timerTask =
         new TimerTask() {
@@ -978,5 +943,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return h != 0
         ? (String.format("%02d", (int) h) + ":")
         : "" + String.format("%02d", (int) m) + ":" + String.format("%02d", (int) s);
+  }
+
+  // ==========================================================================
+  // utils
+  private void debug(String message) {
+    BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
   }
 }

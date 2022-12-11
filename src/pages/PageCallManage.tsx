@@ -1,7 +1,13 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component, Fragment } from 'react'
-import { Dimensions, Platform, StyleSheet, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 
 import {
   mdiAlphaPCircle,
@@ -34,7 +40,7 @@ import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
 import { Call } from '../stores/Call'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
@@ -146,6 +152,12 @@ const css = StyleSheet.create({
   Hangup_avoidAvatar_Large: {
     top: '60%',
   },
+  LoadingFullScreen: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 })
 
 const TIME_OUT_SPEAKER = Platform.select({ ios: 3000, android: 500 }) || 0
@@ -163,12 +175,12 @@ export class PageCallManage extends Component<{
   }
   componentDidUpdate() {
     this.hideButtonsIfVideo()
-    if (!callStore.calls.length) {
+    if (!getCallStore().calls.length) {
       Nav().goToPageCallRecents()
     }
   }
   componentWillUnmount() {
-    callStore.onCallKeepAction()
+    getCallStore().onCallKeepAction()
   }
 
   @action toggleButtons = () => {
@@ -178,7 +190,7 @@ export class PageCallManage extends Component<{
     if (
       !this.props.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      callStore.getCurrentCall()?.remoteVideoEnabled
+      getCallStore().getCurrentCall()?.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
@@ -215,6 +227,13 @@ export class PageCallManage extends Component<{
           {this.renderHangupBtn(c)}
         </>
       )}
+      {c?.callkeepUuid &&
+      c.incoming &&
+      getAuthStore().getCurrentAccount()?.pushNotificationEnabled ? (
+        <View style={css.LoadingFullScreen}>
+          <ActivityIndicator size='large' color='black' />
+        </View>
+      ) : null}
     </Layout>
   )
 
@@ -273,8 +292,8 @@ export class PageCallManage extends Component<{
   }
 
   renderBtns = (c: Call, isVideoEnabled?: boolean) => {
-    const n = callStore.calls.filter(
-      _ => _.id !== callStore.currentCallId,
+    const n = getCallStore().calls.filter(
+      _ => _.id !== getCallStore().currentCallId,
     ).length
     if (isVideoEnabled && !this.showButtonsInVideoCall) {
       return null
@@ -347,13 +366,15 @@ export class PageCallManage extends Component<{
               <ButtonIcon
                 // disabled={!this.enableSpeaker}
                 styleContainer={css.BtnFuncCalls}
-                bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
-                color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
+                bgcolor={
+                  getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
+                }
+                color={getCallStore().isLoudSpeakerEnabled ? 'white' : 'black'}
                 name={intl`SPEAKER`}
                 noborder
-                onPress={callStore.toggleLoudSpeaker}
+                onPress={getCallStore().toggleLoudSpeaker}
                 path={
-                  callStore.isLoudSpeakerEnabled
+                  getCallStore().isLoudSpeakerEnabled
                     ? mdiVolumeHigh
                     : mdiVolumeMedium
                 }
@@ -500,8 +521,8 @@ export class PageCallManage extends Component<{
   }
 
   render() {
-    const c = callStore.getCurrentCall()
-    void callStore.calls.length // trigger componentDidUpdate
+    const c = getCallStore().getCurrentCall()
+    void getCallStore().calls.length // trigger componentDidUpdate
     const Container = c?.localVideoEnabled ? Fragment : BrekekeGradient
     return <Container>{this.renderCall(c, c?.localVideoEnabled)}</Container>
   }

@@ -12,7 +12,7 @@ import {
   mdiVolumeHigh,
   mdiVolumeMedium,
 } from '../assets/icons'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
@@ -51,7 +51,7 @@ const css = StyleSheet.create({
 })
 
 export const CallBar = observer(() => {
-  const c = callStore.getCurrentCall()
+  const c = getCallStore().getCurrentCall()
   if (
     RnStacker.stacks.some(t => t.name === 'PageCallManage') ||
     !c ||
@@ -105,13 +105,13 @@ export const CallBar = observer(() => {
                     <ButtonIcon
                       bdcolor={v.borderBg}
                       color={
-                        callStore.isLoudSpeakerEnabled
+                        getCallStore().isLoudSpeakerEnabled
                           ? v.colors.primary
                           : v.color
                       }
-                      onPress={callStore.toggleLoudSpeaker}
+                      onPress={getCallStore().toggleLoudSpeaker}
                       path={
-                        callStore.isLoudSpeakerEnabled
+                        getCallStore().isLoudSpeakerEnabled
                           ? mdiVolumeHigh
                           : mdiVolumeMedium
                       }

@@ -29,7 +29,9 @@ import { PageSettingsDebug } from '../pages/PageSettingsDebug'
 import { PageSettingsOther } from '../pages/PageSettingsOther'
 import { PageSettingsProfile } from '../pages/PageSettingsProfile'
 import { PageWebChat } from '../pages/PageWebChat'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { getAuthStore } from './authStore'
+import { getCallStore } from './callStore'
 import { setNav } from './Nav'
 import { RnStacker } from './RnStacker'
 
@@ -126,10 +128,24 @@ export class Nav2 {
     ComponentProps<typeof PagePhonebookUpdate>
   >({ PagePhonebookUpdate })
   // call
-  goToPageCallManage = RnStacker.createGoTo<
+  goToPageCallManage = (...args: any) => {
+    const uuid = getCallStore().getCurrentCall()?.callkeepUuid
+    if (uuid) {
+      BrekekeUtils.onPageCallManage(uuid)
+    }
+    return this._goToPageCallManage(...args)
+  }
+  backToPageCallManage = (...args: any) => {
+    const uuid = getCallStore().getCurrentCall()?.callkeepUuid
+    if (uuid) {
+      BrekekeUtils.onPageCallManage(uuid)
+    }
+    return this._backToPageCallManage(...args)
+  }
+  _goToPageCallManage = RnStacker.createGoTo<
     ComponentProps<typeof PageCallManage>
   >({ PageCallManage })
-  backToPageCallManage = RnStacker.createBackTo<
+  _backToPageCallManage = RnStacker.createBackTo<
     ComponentProps<typeof PageCallManage>
   >({ PageCallManage })
   goToPageCallBackgrounds = RnStacker.createGoTo<

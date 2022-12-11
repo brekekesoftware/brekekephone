@@ -21,7 +21,7 @@ import {
 } from './accountStore'
 import { authSIP } from './AuthSIP'
 import { compareAccount, setAuthStore } from './authStore'
-import { callStore } from './callStore'
+import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -156,10 +156,10 @@ export class AuthStore {
     this.signOutWithoutSaving()
   }
   signOutWithoutSaving = () => {
-    callStore.calls.forEach(c => c.hangupWithUnhold())
+    getCallStore().calls.forEach(c => c.hangupWithUnhold())
     if (Platform.OS !== 'web') {
       // Try to end callkeep if it's stuck
-      callStore.endCallKeepAllCalls()
+      getCallStore().endCallKeepAllCalls()
     }
     this.resetState()
     Nav().goToPageProfileSignIn()
@@ -229,8 +229,8 @@ export class AuthStore {
 
   handleUrlParams = async () => {
     if (
-      callStore.calls.length ||
-      Object.keys(callStore.callkeepMap).length ||
+      getCallStore().calls.length ||
+      Object.keys(getCallStore().callkeepMap).length ||
       sip.phone?.getSessionCount()
     ) {
       return false

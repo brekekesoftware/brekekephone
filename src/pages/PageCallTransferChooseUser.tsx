@@ -1,7 +1,7 @@
 import orderBy from 'lodash/orderBy'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform, SectionList } from 'react-native'
+import { SectionList } from 'react-native'
 
 import { mdiPhone, mdiPhoneForward } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
@@ -10,13 +10,11 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { userStore } from '../stores/userStore'
-import { onBackToCallManageScreen } from '../utils/backToCallManage'
-import { BrekekeUtils } from '../utils/RnNativeModules'
 
 @observer
 export class PageCallTransferChooseUser extends Component {
@@ -28,7 +26,7 @@ export class PageCallTransferChooseUser extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -110,7 +108,7 @@ export class PageCallTransferChooseUser extends Component {
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={onBackToCallManageScreen}
+        onBack={Nav().backToPageCallManage}
         menu={'call_transfer'}
         subMenu={'list_user'}
         isTab
@@ -132,7 +130,7 @@ type ItemUser = {
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => {
-  const c = callStore.getCurrentCall()
+  const c = getCallStore().getCurrentCall()
   return (
     <UserItem
       iconFuncs={[
