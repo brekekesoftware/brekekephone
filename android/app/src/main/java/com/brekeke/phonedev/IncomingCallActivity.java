@@ -259,6 +259,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     debug("onDestroy");
+    avatarWebViewDestroys();
+    avatarTalkingWebViewDestroy();
     destroyed = true;
     try {
       timer.cancel();
@@ -312,6 +314,24 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  public void avatarWebViewDestroys() {
+    try {
+      webViewAvatar.getSettings().setJavaScriptEnabled(false);
+      webViewAvatar.destroy();
+    } catch (Exception ex) {
+      debug("avatarWebViewDestroys: " + ex.toString());
+    }
+  }
+
+  public void avatarTalkingWebViewDestroy() {
+    try {
+      webViewAvatarTalking.getSettings().setJavaScriptEnabled(false);
+      webViewAvatarTalking.destroy();
+    } catch (Exception ex) {
+      debug("avatarTalkingWebViewDestroy: " + ex.toString());
+    }
+  }
+
   public void updateHeader() {
     if ("large".equalsIgnoreCase(avatarSize)) {
       DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -352,7 +372,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               vWebViewAvatarLoading.setVisibility(View.GONE);
             }
           });
+
     } else {
+
       webViewAvatar.setVisibility(View.GONE);
       imgAvatar.setVisibility(View.VISIBLE);
       Glide.with(this)
@@ -575,6 +597,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
+    avatarWebViewDestroys();
     if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
