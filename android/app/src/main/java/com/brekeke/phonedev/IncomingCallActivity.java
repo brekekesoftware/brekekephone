@@ -259,6 +259,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   protected void onDestroy() {
     debug("onDestroy");
+    destroyAvatarWebView();
+    destroyAvatarTalkingWebView();
     destroyed = true;
     try {
       timer.cancel();
@@ -309,6 +311,24 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
     if (BrekekeUtils.config.hideBtnHold) {
       vBtnHold.setVisibility(View.GONE);
+    }
+  }
+
+  public void destroyAvatarWebView() {
+    try {
+      webViewAvatar.getSettings().setJavaScriptEnabled(false);
+      webViewAvatar.destroy();
+    } catch (Exception ex) {
+      debug("destroyAvatarWebView: " + ex.toString());
+    }
+  }
+
+  public void destroyAvatarTalkingWebView() {
+    try {
+      webViewAvatarTalking.getSettings().setJavaScriptEnabled(false);
+      webViewAvatarTalking.destroy();
+    } catch (Exception ex) {
+      debug("destroyAvatarTalkingWebView: " + ex.toString());
     }
   }
 
@@ -575,6 +595,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
+    destroyAvatarWebView();
     if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
