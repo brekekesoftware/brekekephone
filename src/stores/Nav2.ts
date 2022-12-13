@@ -4,7 +4,6 @@ import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
 import { PageCallBackgrounds } from '../pages/PageCallBackgrounds'
 import { PageCallDtmfKeypad } from '../pages/PageCallDtmfKeypad'
 import { PageCallKeypad } from '../pages/PageCallKeypad'
-import { PageCallManage } from '../pages/PageCallManage'
 import { PageCallParks } from '../pages/PageCallParks'
 import { PageCallParks2 } from '../pages/PageCallParks2'
 import { PageCallRecents } from '../pages/PageCallRecents'
@@ -32,6 +31,7 @@ import { PageWebChat } from '../pages/PageWebChat'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { getAuthStore } from './authStore'
 import { getCallStore } from './callStore'
+import { CallStore } from './callStore2'
 import { setNav } from './Nav'
 import { RnStacker } from './RnStacker'
 
@@ -128,26 +128,29 @@ export class Nav2 {
     ComponentProps<typeof PagePhonebookUpdate>
   >({ PagePhonebookUpdate })
   // call
-  goToPageCallManage = (...args: any) => {
-    const uuid = getCallStore().getCurrentCall()?.callkeepUuid
+  goToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+    const s = getCallStore()
+    const uuid = s.getCurrentCall()?.callkeepUuid
     if (uuid) {
       BrekekeUtils.onPageCallManage(uuid)
     }
-    return this._goToPageCallManage(...args)
+    s.inPageCallManage = {
+      isFromCallBar: props?.isFromCallBar,
+    }
   }
-  backToPageCallManage = (...args: any) => {
-    const uuid = getCallStore().getCurrentCall()?.callkeepUuid
+  backToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+    const s = getCallStore()
+    const uuid = s.getCurrentCall()?.callkeepUuid
     if (uuid) {
       BrekekeUtils.onPageCallManage(uuid)
     }
-    return this._backToPageCallManage(...args)
+    s.inPageCallManage = {
+      isFromCallBar: props?.isFromCallBar,
+    }
+    if (RnStacker.stacks.length > 1) {
+      RnStacker.dismiss()
+    }
   }
-  _goToPageCallManage = RnStacker.createGoTo<
-    ComponentProps<typeof PageCallManage>
-  >({ PageCallManage })
-  _backToPageCallManage = RnStacker.createBackTo<
-    ComponentProps<typeof PageCallManage>
-  >({ PageCallManage })
   goToPageCallBackgrounds = RnStacker.createGoTo<
     ComponentProps<typeof PageCallBackgrounds>
   >({ PageCallBackgrounds })
@@ -211,8 +214,7 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
-  //Contact Group
-
+  // contact
   goToPageContactEdit = RnStacker.createGoTo<
     ComponentProps<typeof PageContactEdit>
   >({
@@ -221,7 +223,6 @@ export class Nav2 {
   backToPageContactEdit = RnStacker.createBackTo<
     ComponentProps<typeof PageContactEdit>
   >({ PageContactEdit }, true)
-
   goToPageContactGroupCreate = RnStacker.createGoTo<
     ComponentProps<typeof PageContactGroupCreate>
   >({
@@ -232,6 +233,7 @@ export class Nav2 {
   >({
     PageContactGroupEdit,
   })
+
   customPageIndex?: Function
   goToPageIndex = () => {
     const p = getAuthStore().getCurrentAccount()

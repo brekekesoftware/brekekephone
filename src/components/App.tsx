@@ -17,6 +17,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import { SyncPnToken } from '../api/syncPnToken'
+import { RenderAllCalls } from '../pages/PageCallManage'
 import {
   accountStore,
   getAccountUniqueId,
@@ -265,6 +266,7 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
+        <RenderAllCalls />
         <RnPickerRoot />
         <PBAddItem />
 
@@ -280,7 +282,7 @@ export const App = observer(() => {
 
       {!accountStore.appInitDone && (
         <View style={css.LoadingFullscreen}>
-          <ActivityIndicator size='small' color='white' />
+          <ActivityIndicator size='large' color='white' />
         </View>
       )}
     </View>

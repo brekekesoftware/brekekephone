@@ -123,7 +123,7 @@ class Control extends Component<{
   render() {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
-      s.name === 'PageCallManage' ||
+      getCallStore().inPageCallManage ||
       s.name === 'PageCallTransferDial' ||
       s.name === 'PageCallTransferAttend'
     ) {

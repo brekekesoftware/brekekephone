@@ -809,6 +809,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void hasIncomingCallActivity(String uuid, Promise p) {
+    try {
+      p.resolve(at(uuid) != null);
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
   public void systemUptimeMs(Promise p) {
     try {
       p.resolve((double) SystemClock.elapsedRealtime());
