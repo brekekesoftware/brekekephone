@@ -66,7 +66,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnDtmf,
       btnHold,
       btnEndcall,
-      btnSwitchCamera;
+      btnSwitchCamera,
+      btnBack;
   public TextView txtCallerName,
       txtHeaderCallerName,
       txtIncomingCall,
@@ -80,7 +81,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDtmfBtn,
       txtHoldBtn,
       txtCallIsOnHold,
-      txtDurationCall;
+      txtDurationCall,
+      txtCallerNameHeader;
   public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
   public boolean destroyed = false,
       paused = false,
@@ -191,7 +193,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnHold = (Button) findViewById(R.id.btn_hold);
     btnEndcall = (Button) findViewById(R.id.btn_end_call);
     btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
+    btnBack = (Button) findViewById(R.id.btn_back);
 
+    btnBack.setOnClickListener(this);
     btnAnswer.setOnClickListener(this);
     btnReject.setOnClickListener(this);
     btnUnlock.setOnClickListener(this);
@@ -221,10 +225,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
-
+    txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
-
+    txtCallerNameHeader.setText(callerName);
     updateLabels();
     updateHeader();
 
@@ -281,7 +285,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     startActivity(i);
   }
 
-  @Override
   public void onBackPressed() {
     debug("onBackPressed");
     openMainActivity();
@@ -357,7 +360,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } else if (!BrekekeUtils.isImageUrl(avatar)) {
       webViewAvatar.setVisibility(View.VISIBLE);
       imgAvatar.setVisibility(View.GONE);
-      webViewAvatar.loadUrl(avatar);
       webViewAvatar.setWebViewClient(
           new WebViewClient() {
             @Override
@@ -372,6 +374,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               vWebViewAvatarLoading.setVisibility(View.GONE);
             }
           });
+      webViewAvatar.loadUrl(avatar);
     } else {
       webViewAvatar.setVisibility(View.GONE);
       imgAvatar.setVisibility(View.VISIBLE);
@@ -592,6 +595,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         20);
     constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
     constraintSet.applyTo(constraintLayout);
+
+    if (this.talkingAvatar != null && !talkingAvatar.isEmpty()) {
+      if (!this.isLarge) {
+        updateLayoutManagerCall();
+      }
+      handleShowAvatarTalking();
+    }
   }
 
   public void handleShowAvatarTalking() {
@@ -631,12 +641,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnAnswerClick(View v) {
     BrekekeUtils.putUserActionAnswerCall(uuid);
     BrekekeUtils.emit("answerCall", uuid);
-    if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
-      if (!isLarge) {
-        updateLayoutManagerCall();
-      }
-      handleShowAvatarTalking();
-    }
     answered = true;
     BrekekeUtils.stopRingtone();
     vIncomingCall.setVisibility(View.GONE);
@@ -675,6 +679,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       BrekekeUtils.emit("showBackgroundCall", uuid);
       openMainActivity();
     }
+  }
+
+  public void onBtnBackPress(View v) {
+    onBackPressed();
   }
 
   public void onBtnTransferClick(View v) {
@@ -734,6 +742,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onKeyguardDismissSucceeded(View v) {
+    if (v == null) {
+      return;
+    }
     switch (v.getId()) {
       case R.id.btn_unlock:
         onBtnUnlockClick(v);
@@ -750,6 +761,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_video:
         onBtnVideoClick(v);
         break;
+      case R.id.btn_back:
+        onBtnBackPress(v);
+        break;
       default:
         break;
     }
@@ -758,6 +772,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
+      case R.id.btn_back:
+        onRequestUnlock(v);
+        break;
         // vIncomingCall
       case R.id.btn_answer:
         onBtnAnswerClick(v);
@@ -817,6 +834,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCardAvatarTalking.setVisibility(View.VISIBLE);
     }
     vCallManageControls.setVisibility(View.VISIBLE);
+
     updateLayoutManagerCallLoaded();
   }
 
@@ -918,6 +936,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public boolean onKeyDown(int k, KeyEvent e) {
     debug("onKeyDown k=" + k);
     BrekekeUtils.stopRingtone();
+    if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
+      if (BrekekeUtils.isLocked()) {
+        onRequestUnlock(null);
+      } else {
+        onBackPressed();
+      }
+    }
     return super.onKeyDown(k, e);
   }
 
