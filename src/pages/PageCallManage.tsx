@@ -403,7 +403,8 @@ class PageCallManage extends Component<{
       ? v.colors.primary
       : v.colors.warning
     const isHideButtons =
-      !(c.withSDPControls || c.answered) && Platform.OS === 'web'
+      (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
+      !c.answered
     const configure = getAuthStore().pbxConfig
     return (
       <Container
