@@ -3,6 +3,7 @@ import { ReactComponentLike } from 'prop-types'
 import { SyntheticEvent } from 'react'
 
 import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { getCallStore } from './callStore'
 import { RnKeyboard } from './RnKeyboard'
 
 export type StackerFn<T> = keyof T extends never
@@ -47,6 +48,7 @@ export class RnStackerStore {
     const Component = o[name]
     const f = RnKeyboard.waitKeyboard(
       action((stack: SyntheticEvent) => {
+        getCallStore().inPageCallManage = undefined
         // Prevent multiple stacks from opening at the same time
         if (this.stackAnimating) {
           return
@@ -79,6 +81,7 @@ export class RnStackerStore {
   createBackTo =
     <T>(o: { [k: string]: ReactComponentLike }, isRoot = false): StackerFn<T> =>
     (...args: unknown[]) => {
+      getCallStore().inPageCallManage = undefined
       if (this.stacks.length <= 1) {
         // @ts-ignore
         this.createGoTo(o, isRoot)(...args)

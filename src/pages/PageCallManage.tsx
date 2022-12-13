@@ -1,7 +1,6 @@
-import { debounce } from 'lodash'
-import { action, observable } from 'mobx'
+import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -44,11 +43,9 @@ import { Call } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnAppState } from '../stores/RnAppState'
-import { RnStacker } from '../stores/RnStacker'
 import { Duration } from '../stores/timerStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const height = Dimensions.get('window').height
@@ -77,7 +74,6 @@ const css = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-
   Btns: {
     position: 'absolute',
     height: '70%', // Header compact height
@@ -128,20 +124,17 @@ const css = StyleSheet.create({
   labelStyle: {
     paddingRight: 50,
   },
-
   Image_wrapper: {
     marginHorizontal: 15,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
-
   ImageSize: {
     height: 130,
     width: 130,
     borderRadius: 75,
   },
-
   ImageLargeSize: {
     height: '100%',
     width: (height * 30) / 100,
@@ -162,142 +155,208 @@ const css = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  hidden: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: '-100%',
+    left: '-100%',
+  },
 })
 
-const TIME_OUT_SPEAKER = Platform.select({ ios: 3000, android: 500 }) || 0
+// Render all the calls in App.tsx
+// The avatars will be kept even if we navigate between views
 @observer
-export class PageCallManage extends Component<{
-  isFromCallBar?: boolean
+export class RenderAllCalls extends Component {
+  prevCallsLength = getCallStore().calls.length
+  componentDidUpdate() {
+    const l = getCallStore().calls.length
+    if (this.prevCallsLength && !l) {
+      Nav().goToPageCallRecents()
+    }
+    this.prevCallsLength = l
+  }
+  render() {
+    const s = getCallStore()
+    if (s.inPageCallManage && !s.calls.length) {
+      return (
+        <Layout
+          compact
+          noScroll
+          onBack={Nav().goToPageCallRecents}
+          title={intl`Connecting...`}
+        />
+      )
+    }
+    return (
+      <>
+        {s.calls.map(c => (
+          <PageCallManage key={c.id} call={c} />
+        ))}
+      </>
+    )
+  }
+}
+
+@observer
+class PageCallManage extends Component<{
+  call: Call
 }> {
   @observable showButtonsInVideoCall = true
-  @observable enableSpeaker = false
-  alreadySetTimeoutEnableSpeaker = false
   alreadySetShowButtonsInVideoCall = false
 
+  @observable hasJavaPn = true
+
   componentDidMount() {
+    this.checkJavaPn()
     this.hideButtonsIfVideo()
+    this.openJavaPnOnVisible()
   }
   componentDidUpdate() {
-    if (!getCallStore().calls.length) {
-      Nav().goToPageCallRecents()
-      return
-    }
     this.hideButtonsIfVideo()
-    if (this.shouldOpenNativeCallManage()) {
-      this.openNativeCallManage()
-    }
-    if (RnAppState.currentState !== 'active') {
-      this.openNativeCallManage.cancel()
-    }
+    this.openJavaPnOnVisible()
   }
   componentWillUnmount() {
     getCallStore().onCallKeepAction()
   }
-
-  shouldOpenNativeCallManage = () => {
-    const c = getCallStore().getCurrentCall()
-    return (
-      Platform.OS === 'android' &&
-      !(
-        RnStacker.stacks[RnStacker.stacks.length - 1].name !==
-          'PageCallManage' ||
-        RnAppState.currentState !== 'active' ||
-        !c ||
-        !c.incoming ||
-        !c.callkeepUuid
-      )
-    )
-  }
-  openNativeCallManage = debounce(() => {
-    // Must use debounce to wait for other navigation
-    if (!this.shouldOpenNativeCallManage()) {
-      return
-    }
-    const uuid = getCallStore().getCurrentCall()?.callkeepUuid
-    if (!uuid) {
-      return
-    }
-    BrekekeUtils.onPageCallManage(uuid)
-  }, 1000)
 
   @action toggleButtons = () => {
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
   }
   @action hideButtonsIfVideo = () => {
     if (
-      !this.props.isFromCallBar &&
+      !getCallStore().inPageCallManage?.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      getCallStore().getCurrentCall()?.remoteVideoEnabled
+      this.props.call.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
     }
   }
 
-  renderCall = (c?: Call, isVideoEnabled?: boolean) => (
-    <Layout
-      compact
-      dropdown={
-        isVideoEnabled && !c?.transferring
-          ? [
-              {
-                label: this.showButtonsInVideoCall
-                  ? intl`Hide call menu buttons`
-                  : intl`Show call menu buttons`,
-                onPress: this.toggleButtons,
-              },
-            ]
-          : undefined
+  checkJavaPn = async () => {
+    const { call: c } = this.props
+    if (
+      Platform.OS !== 'android' ||
+      !c.incoming ||
+      !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
+    ) {
+      runInAction(() => {
+        this.hasJavaPn = false
+      })
+      return
+    }
+    // The PN may come slower than SIP web socket
+    // We check if PN screen exists here in 3 seconds
+    for (let i = 0; i < 3; i++) {
+      if (!c.callkeepUuid) {
+        break
       }
-      noScroll
-      onBack={Nav().goToPageCallRecents}
-      title={c?.getDisplayName() || intl`Connecting...`}
-      transparent={!c?.transferring}
-    >
-      {!c ? null : c.transferring ? (
-        <PageCallTransferAttend />
-      ) : (
-        <>
-          {isVideoEnabled && this.renderVideo(c)}
-          {this.renderAvatar(c, isVideoEnabled)}
-          {this.renderBtns(c, isVideoEnabled)}
-          {this.renderHangupBtn(c)}
-        </>
-      )}
-      {c?.callkeepUuid &&
-      c.incoming &&
-      getAuthStore().getCurrentAccount()?.pushNotificationEnabled ? (
+      const r = await BrekekeUtils.hasIncomingCallActivity(c.callkeepUuid)
+      if (r) {
+        return
+      }
+      await waitTimeout(1000)
+    }
+    runInAction(() => {
+      this.hasJavaPn = false
+    })
+  }
+  openJavaPnOnVisible = () => {
+    const { call: c } = this.props
+    if (this.hasJavaPn && this.isVisible() && c.callkeepUuid) {
+      BrekekeUtils.onPageCallManage(c.callkeepUuid)
+    }
+  }
+
+  isVisible = () => {
+    const s = getCallStore()
+    const { call: c } = this.props
+    return s.inPageCallManage && s.getCurrentCall()?.id === c.id
+  }
+
+  renderLayout = () => {
+    const { call: c } = this.props
+    return (
+      <Layout
+        compact
+        dropdown={
+          c.localVideoEnabled && !c.transferring
+            ? [
+                {
+                  label: this.showButtonsInVideoCall
+                    ? intl`Hide call menu buttons`
+                    : intl`Show call menu buttons`,
+                  onPress: this.toggleButtons,
+                },
+              ]
+            : undefined
+        }
+        noScroll
+        onBack={Nav().goToPageCallRecents}
+        title={c.getDisplayName() || intl`Connecting...`}
+        transparent={!c.transferring}
+      >
+        {this.renderCall()}
+      </Layout>
+    )
+  }
+  renderCall = () => {
+    const { call: c } = this.props
+    if (this.hasJavaPn) {
+      return (
         <View style={css.LoadingFullScreen}>
           <ActivityIndicator size='large' color='black' />
         </View>
-      ) : null}
-    </Layout>
-  )
+      )
+    }
+    // Render PageCallTransferAttend as a layer instead
+    // So switching will not cause the avatar to reload
+    return (
+      <>
+        {c.localVideoEnabled && this.renderVideo()}
+        {this.renderAvatar()}
+        {this.renderBtns()}
+        {this.renderHangupBtn()}
+        {c.transferring ? (
+          <View style={css.LoadingFullScreen}>
+            <PageCallTransferAttend />
+          </View>
+        ) : null}
+      </>
+    )
+  }
 
-  renderVideo = (c: Call) => (
-    <>
-      <View style={css.cameraStyle}>
-        <ButtonIcon
-          color={'white'}
-          noborder
-          onPress={c.toggleSwitchCamera}
-          path={c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant}
-          size={40}
+  renderVideo = () => {
+    const { call: c } = this.props
+    return (
+      <>
+        <View style={css.cameraStyle}>
+          <ButtonIcon
+            color={'white'}
+            noborder
+            onPress={c.toggleSwitchCamera}
+            path={
+              c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant
+            }
+            size={40}
+          />
+        </View>
+        <View style={css.Video_Space} />
+        <View style={css.Video}>
+          <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
+        </View>
+        <RnTouchableOpacity
+          onPress={this.toggleButtons}
+          style={StyleSheet.absoluteFill}
         />
-      </View>
-      <View style={css.Video_Space} />
-      <View style={css.Video}>
-        <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
-      </View>
-      <RnTouchableOpacity
-        onPress={this.toggleButtons}
-        style={StyleSheet.absoluteFill}
-      />
-    </>
-  )
+      </>
+    )
+  }
 
-  renderAvatar = (c: Call, isVideoEnabled?: boolean) => {
-    if (isVideoEnabled) {
+  renderAvatar = () => {
+    const { call: c } = this.props
+    if (c.localVideoEnabled) {
       return
     }
     const incoming = c.incoming && !c.answered
@@ -328,30 +387,22 @@ export class PageCallManage extends Component<{
     )
   }
 
-  renderBtns = (c: Call, isVideoEnabled?: boolean) => {
-    const n = getCallStore().calls.filter(
-      _ => _.id !== getCallStore().currentCallId,
-    ).length
-    if (isVideoEnabled && !this.showButtonsInVideoCall) {
+  renderBtns = () => {
+    const { call: c } = this.props
+    const n = getCallStore().calls.filter(_ => _.id !== c.id).length
+    if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
-    const Container = isVideoEnabled ? RnTouchableOpacity : View
-    const activeColor = isVideoEnabled ? v.colors.primary : v.colors.warning
-
-    // wait render then enable Speaker
-    if (!this.alreadySetTimeoutEnableSpeaker) {
-      this.alreadySetTimeoutEnableSpeaker = true
-      BackgroundTimer.setTimeout(() => {
-        this.enableSpeaker = true
-      }, TIME_OUT_SPEAKER)
-    }
+    const Container = c.localVideoEnabled ? RnTouchableOpacity : View
+    const activeColor = c.localVideoEnabled
+      ? v.colors.primary
+      : v.colors.warning
     const isHideButtons =
       !(c.withSDPControls || c.answered) && Platform.OS === 'web'
-
-    const configure = getAuthStore()?.pbxConfig
+    const configure = getAuthStore().pbxConfig
     return (
       <Container
-        onPress={isVideoEnabled ? this.toggleButtons : undefined}
+        onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
         style={css.Btns}
       >
         <View style={css.Btns_VerticalMargin} />
@@ -401,7 +452,6 @@ export class PageCallManage extends Component<{
           {Platform.OS !== 'web' &&
             !(configure?.['webphone.call.speaker'] === 'false') && (
               <ButtonIcon
-                // disabled={!this.enableSpeaker}
                 styleContainer={css.BtnFuncCalls}
                 bgcolor={
                   getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
@@ -419,9 +469,6 @@ export class PageCallManage extends Component<{
                 textcolor='white'
               />
             )}
-
-          {/* <View style={css.Btns_Space} /> */}
-          {/* <View style={css.Btns_Inner}> */}
           {!(configure?.['webphone.call.mute'] === 'false') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
@@ -479,7 +526,6 @@ export class PageCallManage extends Component<{
             />
           )}
         </View>
-        {/* </View> */}
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
@@ -497,7 +543,8 @@ export class PageCallManage extends Component<{
     )
   }
 
-  renderHangupBtn = (c: Call) => {
+  renderHangupBtn = () => {
+    const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = c.partyImageSize && c.partyImageSize === 'large'
     return (
@@ -521,7 +568,7 @@ export class PageCallManage extends Component<{
         </View>
         {incoming && (
           <>
-            <IncomingItemWithTimer />
+            {this.isVisible() && <IncomingItemWithTimer />}
             <View
               style={[
                 css.Hangup,
@@ -558,10 +605,13 @@ export class PageCallManage extends Component<{
   }
 
   render() {
-    const c = getCallStore().getCurrentCall()
-    void getCallStore().calls.length // trigger componentDidUpdate
-    void RnAppState.currentState
-    const Container = c?.localVideoEnabled ? Fragment : BrekekeGradient
-    return <Container>{this.renderCall(c, c?.localVideoEnabled)}</Container>
+    return (
+      <BrekekeGradient
+        white={this.props.call.localVideoEnabled}
+        style={this.isVisible() ? undefined : css.hidden}
+      >
+        {this.renderLayout()}
+      </BrekekeGradient>
+    )
   }
 }

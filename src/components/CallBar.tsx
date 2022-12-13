@@ -15,7 +15,6 @@ import {
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnStacker } from '../stores/RnStacker'
 import { Duration } from '../stores/timerStore'
 import { ButtonIcon } from './ButtonIcon'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
@@ -51,12 +50,9 @@ const css = StyleSheet.create({
 })
 
 export const CallBar = observer(() => {
-  const c = getCallStore().getCurrentCall()
-  if (
-    RnStacker.stacks.some(t => t.name === 'PageCallManage') ||
-    !c ||
-    (c.incoming && !c.answered)
-  ) {
+  const s = getCallStore()
+  const c = s.getCurrentCall()
+  if (s.inPageCallManage || !c || (c.incoming && !c.answered)) {
     return null
   }
   return (

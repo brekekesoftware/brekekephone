@@ -8,7 +8,6 @@ import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnStacker } from '../stores/RnStacker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ButtonIcon } from './ButtonIcon'
 import { IncomingItem } from './CallVoicesUI'
@@ -65,8 +64,7 @@ export const CallNotify = observer(() => {
   void getCallStore().calls.map(_ => _.callkeepUuid)
   const c = getCallStore().getCallInNotify()
   // Do not show notify if in page call manage
-  const s = RnStacker.stacks[RnStacker.stacks.length - 1]
-  if (s?.name === 'PageCallManage' || !c) {
+  if (getCallStore().inPageCallManage || !c) {
     return null
   }
   const k = getCallStore().callkeepMap[c.callkeepUuid]

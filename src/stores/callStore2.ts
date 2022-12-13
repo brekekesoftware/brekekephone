@@ -30,6 +30,10 @@ import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
 
 export class CallStore {
+  @observable inPageCallManage?: {
+    isFromCallBar?: boolean
+  } = undefined
+
   private recentCallActivityAt = 0
 
   private getCallkeep = (

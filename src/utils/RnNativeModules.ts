@@ -34,6 +34,7 @@ type TBrekekeUtils = {
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallkeepAction): void
   onPageCallManage(uuid: string): void
+  hasIncomingCallActivity(uuid: string): Promise<boolean>
 
   // these methods only available on ios
   playRBT(): void
@@ -76,6 +77,7 @@ const Polyfill: TBrekekeUtils = {
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
+  hasIncomingCallActivity: () => Promise.resolve(false),
 
   // these methods only available on ios
   playRBT: () => undefined,

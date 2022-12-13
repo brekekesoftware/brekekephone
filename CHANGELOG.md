@@ -1,3 +1,8 @@
+#### 2.11.7
+
+- Keep avatar webview html/js state for outgoing calls or incoming calls without PN
+- Fix android PN screen avatar webview should not keep connection
+
 #### 2.11.6
 
 - Use PN screen for incoming call so it will keep html/js state in avatar

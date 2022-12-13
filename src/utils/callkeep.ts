@@ -301,6 +301,11 @@ export const onBackPressed = () => {
     RnPicker.dismiss()
     return true
   }
+  const s = getCallStore()
+  if (s.inPageCallManage) {
+    s.inPageCallManage = undefined
+    return true
+  }
   if (RnStacker.stacks.length > 1) {
     RnStacker.stacks.pop()
     return true
