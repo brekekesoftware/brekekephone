@@ -603,7 +603,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         20);
     constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
     constraintSet.applyTo(constraintLayout);
-
     if (this.talkingAvatar != null && !talkingAvatar.isEmpty()) {
       if (!this.isLarge) {
         updateLayoutManagerCall();
