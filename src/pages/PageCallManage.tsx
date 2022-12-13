@@ -235,10 +235,9 @@ class PageCallManage extends Component<{
   }
 
   checkJavaPn = async () => {
-    const { call: c } = this.props
     if (
       Platform.OS !== 'android' ||
-      !c.incoming ||
+      !this.props.call.incoming ||
       !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
     ) {
       runInAction(() => {
@@ -247,18 +246,24 @@ class PageCallManage extends Component<{
       return
     }
     // The PN may come slower than SIP web socket
-    // We check if PN screen exists here in 3 seconds
-    for (let i = 0; i < 3; i++) {
-      if (!c.callkeepUuid) {
-        break
+    // We check if PN screen exists here in 5 seconds
+    for (let i = 0; i < 5; i++) {
+      const uuid = this.props.call.callkeepUuid
+      if (!uuid) {
+        await waitTimeout(1000)
+        continue
       }
-      const r = await BrekekeUtils.hasIncomingCallActivity(c.callkeepUuid)
+      const r = await BrekekeUtils.hasIncomingCallActivity(uuid)
+      console.log('hasIncomingCallActivity', r)
       if (r) {
         return
       }
       await waitTimeout(1000)
     }
     runInAction(() => {
+      console.warn(
+        `No incoming call activity for uuid=${this.props.call.callkeepUuid}`,
+      )
       this.hasJavaPn = false
     })
   }

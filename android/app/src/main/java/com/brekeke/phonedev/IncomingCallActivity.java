@@ -39,7 +39,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vHeaderManageCall,
       vWebViewAvatarLoading,
       vWebViewAvatarTalkingLoading;
-  public LinearLayout vCallManageControls,
+  public LinearLayout vNavHeader,
+      vCallManageControls,
       vBtnTransfer,
       vBtnPark,
       vBtnVideo,
@@ -82,6 +83,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtHoldBtn,
       txtCallIsOnHold,
       txtDurationCall,
+      txtBrekekePhone,
       txtCallerNameHeader;
   public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
   public boolean destroyed = false,
@@ -137,6 +139,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     imgAvatarLoadingProgress.setStrokeWidth(5f);
     imgAvatarLoadingProgress.start();
 
+    vNavHeader = (LinearLayout) findViewById(R.id.view_nav_header);
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
@@ -225,10 +228,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
+    txtBrekekePhone = (TextView) findViewById(R.id.txt_brekeke_phone);
     txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
+
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     txtCallerNameHeader.setText(callerName);
+
     updateLabels();
     updateHeader();
 
@@ -287,6 +293,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBackPressed() {
     debug("onBackPressed");
+    BrekekeUtils.emit("onIncomingCallActivityBackPressed", "");
     openMainActivity();
   }
 
@@ -475,6 +482,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onBtnSwitchCamera(View v) {
     BrekekeUtils.emit("switchCamera", uuid);
   }
+
   // Show/hide call manage controls in video call
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
@@ -501,7 +509,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // vIncomingCall
-  private void updateLayoutManagerCall() {
+  public void updateLayoutManagerCall() {
     GradientDrawable shape = new GradientDrawable();
     DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -539,7 +547,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     constraintSet.applyTo(constraintLayout);
   }
 
-  private void updateLayoutManagerCallLoading() {
+  public void updateLayoutManagerCallLoading() {
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
@@ -555,7 +563,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     constraintSet.applyTo(constraintLayout);
   }
 
-  private void updateLayoutManagerCallLoaded() {
+  public void updateLayoutManagerCallLoaded() {
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
@@ -649,6 +657,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCardAvatarTalking.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
+    // txtBrekekePhone.setVisibility(View.GONE);
+    vNavHeader.setVisibility(View.VISIBLE);
     updateLayoutManagerCallLoading();
   }
 
@@ -834,11 +844,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCardAvatarTalking.setVisibility(View.VISIBLE);
     }
     vCallManageControls.setVisibility(View.VISIBLE);
-
     updateLayoutManagerCallLoaded();
   }
 
-  private void disableAvatarTalking() {
+  public void disableAvatarTalking() {
     vCardAvatarTalking.setVisibility(View.GONE);
     // update position Top for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
@@ -850,7 +859,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     constraintSet.applyTo(constraintLayout);
   }
 
-  private void enableAvatarTalking() {
+  public void enableAvatarTalking() {
     // update position bottom for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
@@ -869,7 +878,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     handleShowAvatarTalking();
   }
 
-  private void updateUILayoutManagerCall(Boolean isVideoCall) {
+  public void updateUILayoutManagerCall(Boolean isVideoCall) {
     if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
     } else {
@@ -953,10 +962,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // ==========================================================================
   // Timer to count talking time
-  private Timer timer;
-  private TimerTask timerTask;
+  public Timer timer;
+  public TimerTask timerTask;
 
-  private void startTimer(long answeredAt) {
+  public void startTimer(long answeredAt) {
     timerTask =
         new TimerTask() {
           @Override
@@ -975,7 +984,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     timer.scheduleAtFixedRate(timerTask, 0, 1000);
   }
 
-  private String getTimerText(long ms) {
+  public String getTimerText(long ms) {
     long os = 1000;
     long om = 60 * os;
     long oh = 60 * om;
@@ -991,7 +1000,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // ==========================================================================
   // Private utils
-  private void debug(String message) {
+  public void debug(String message) {
     BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
   }
 }

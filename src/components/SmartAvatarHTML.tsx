@@ -40,7 +40,7 @@ export const SmartImage = (p: {
   useEffect(() => {
     setStatusImageLoading(0)
   }, [p.uri])
-  console.error({ url: p.uri })
+  console.log(`SmartImage url=${p.uri}`)
   const styleBorderRadius = p.isLarge ? {} : { borderRadius: p.size / 2 }
   const onMessage = (event: WebViewMessageEvent) => {
     setStatusImageLoading(1)
