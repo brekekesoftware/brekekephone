@@ -75,11 +75,12 @@ const css = StyleSheet.create({
     alignSelf: 'stretch',
   },
   Btns: {
-    position: 'absolute',
-    height: '70%', // Header compact height
-    left: 0,
-    right: 0,
-    bottom: 0,
+    // position: 'absolute',
+    // height: '50%', // Header compact height
+    // left: 0,
+    // right: 0,
+    // bottom: 0,
+    // flex: 1,
   },
   BtnFuncCalls: {
     marginBottom: 10,
@@ -102,10 +103,11 @@ const css = StyleSheet.create({
     flex: 1,
   },
   Hangup: {
-    position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
+    // position: 'absolute',
+    // bottom: 40,
+    // left: 0,
+    // right: 0,
+    marginBottom: 40,
   },
   Hangup_incoming: {
     marginLeft: 180,
@@ -302,7 +304,16 @@ class PageCallManage extends Component<{
         title={c.getDisplayName() || intl`Connecting...`}
         transparent={!c.transferring}
       >
-        {this.renderCall()}
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          {this.renderCall()}
+        </View>
       </Layout>
     )
   }
@@ -321,7 +332,7 @@ class PageCallManage extends Component<{
       <>
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
-        {this.renderBtns()}
+        {/* {this.renderBtns()} */}
         {this.renderHangupBtn()}
         {c.transferring ? (
           <View style={css.LoadingFullScreen}>
@@ -367,27 +378,33 @@ class PageCallManage extends Component<{
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
+
     return (
-      <View style={css.Image_wrapper}>
+      <View style={[css.Image_wrapper, { flex: 1 }]}>
         {isShowAvatar ? (
           <SmartImage
             uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
             size={isLarge ? (height * 30) / 100 : 150}
             isLarge={isLarge}
+            style={{ flex: 1, aspectRatio: 1 }}
           />
         ) : null}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
-          {!incoming && (
-            <RnText title white center numberOfLines={2}>
-              {`${c.getDisplayName()}`}
-            </RnText>
-          )}
+          <RnText title white center numberOfLines={2}>
+            {`${c.getDisplayName()}`}
+          </RnText>
           {c.answered && (
             <Duration subTitle white center>
               {c.answeredAt}
             </Duration>
           )}
+          {incoming && (
+            <RnText bold white center>
+              {intl`Incoming Call`}
+            </RnText>
+          )}
         </View>
+        {/* <View style={{flex:1}}></View> */}
       </View>
     )
   }
@@ -411,6 +428,18 @@ class PageCallManage extends Component<{
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
         style={css.Btns}
       >
+        {n > 0 && (
+          <FieldButton
+            label={intl`BACKGROUND CALLS`}
+            onCreateBtnPress={Nav().goToPageCallBackgrounds}
+            textInputStyle={css.labelStyle}
+            value={
+              n > 1
+                ? intl`${n} other calls are in background`
+                : intl`${n} other call is in background`
+            }
+          />
+        )}
         <View style={css.Btns_VerticalMargin} />
         <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
           {!(configure?.['webphone.call.transfer'] === 'false') && (
@@ -532,18 +561,7 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        {n > 0 && (
-          <FieldButton
-            label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={Nav().goToPageCallBackgrounds}
-            textInputStyle={css.labelStyle}
-            value={
-              n > 1
-                ? intl`${n} other calls are in background`
-                : intl`${n} other call is in background`
-            }
-          />
-        )}
+
         <View style={css.Btns_VerticalMargin} />
       </Container>
     )
@@ -554,7 +572,7 @@ class PageCallManage extends Component<{
     const incoming = c.incoming && !c.answered
     const isLarge = c.partyImageSize && c.partyImageSize === 'large'
     return (
-      <>
+      <View style={{ marginBottom: 10 }}>
         <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
           {c.holding ? (
             <RnText small white center>
@@ -579,20 +597,13 @@ class PageCallManage extends Component<{
               style={[
                 css.Hangup,
                 css.Hangup_incomingText,
-                c.partyImageUrl.length > 0
-                  ? isLarge
-                    ? css.Hangup_avoidAvatar_Large
-                    : css.Hangup_avoidAvatar
-                  : null,
+                // c.partyImageUrl.length > 0
+                //   ? isLarge
+                //     ? css.Hangup_avoidAvatar_Large
+                //     : css.Hangup_avoidAvatar
+                //   : null,
               ]}
-            >
-              <RnText title white center numberOfLines={2}>
-                {`${c.getDisplayName()}`}
-              </RnText>
-              <RnText bold white center>
-                {intl`Incoming Call`}
-              </RnText>
-            </View>
+            ></View>
             <View style={[css.Hangup, css.Hangup_answer]}>
               <ButtonIcon
                 bgcolor={v.colors.primary}
@@ -606,7 +617,7 @@ class PageCallManage extends Component<{
             </View>
           </>
         )}
-      </>
+      </View>
     )
   }
 
