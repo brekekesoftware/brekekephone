@@ -75,12 +75,7 @@ const css = StyleSheet.create({
     alignSelf: 'stretch',
   },
   Btns: {
-    // position: 'absolute',
-    // height: '50%', // Header compact height
-    // left: 0,
-    // right: 0,
-    // bottom: 0,
-    // flex: 1,
+    marginTop: 10,
   },
   BtnFuncCalls: {
     marginBottom: 10,
@@ -163,6 +158,30 @@ const css = StyleSheet.create({
     height: '100%',
     top: '-100%',
     left: '-100%',
+  },
+  viewHangupBtns: {
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    marginTop: 10,
+  },
+  viewHangupBtn: {
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+  },
+  txtHold: {
+    height: 65,
+    marginBottom: 10,
+  },
+  smallAvatar: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    overflow: 'hidden',
   },
 })
 
@@ -332,7 +351,7 @@ class PageCallManage extends Component<{
       <>
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
-        {/* {this.renderBtns()} */}
+        {this.renderBtns()}
         {this.renderHangupBtn()}
         {c.transferring ? (
           <View style={css.LoadingFullScreen}>
@@ -378,16 +397,17 @@ class PageCallManage extends Component<{
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
+    const styleViewAvatar = isLarge ? { flex: 1 } : css.smallAvatar
 
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
         {isShowAvatar ? (
-          <SmartImage
-            uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
-            size={isLarge ? (height * 30) / 100 : 150}
-            isLarge={isLarge}
-            style={{ flex: 1, aspectRatio: 1 }}
-          />
+          <View style={styleViewAvatar}>
+            <SmartImage
+              uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
+              style={{ flex: 1, aspectRatio: 1 }}
+            />
+          </View>
         ) : null}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
@@ -423,10 +443,11 @@ class PageCallManage extends Component<{
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
     const configure = getAuthStore().pbxConfig
+    const incoming = c.incoming && !c.answered
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={css.Btns}
+        style={[css.Btns, { marginTop: !incoming ? 30 : 0 }]}
       >
         {n > 0 && (
           <FieldButton
@@ -440,7 +461,7 @@ class PageCallManage extends Component<{
             }
           />
         )}
-        <View style={css.Btns_VerticalMargin} />
+        <View style={{ paddingTop: 10 }} />
         <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
           {!(configure?.['webphone.call.transfer'] === 'false') && (
             <ButtonIcon
@@ -562,7 +583,7 @@ class PageCallManage extends Component<{
           )}
         </View>
 
-        <View style={css.Btns_VerticalMargin} />
+        <View style={{ paddingBottom: 10 }} />
       </Container>
     )
   }
@@ -570,41 +591,20 @@ class PageCallManage extends Component<{
   renderHangupBtn = () => {
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
-    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+    const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
+
     return (
-      <View style={{ marginBottom: 10 }}>
-        <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
-          {c.holding ? (
+      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
+        {c.holding ? (
+          <View style={css.txtHold}>
             <RnText small white center>
               {intl`CALL IS ON HOLD`}
             </RnText>
-          ) : (
-            <ButtonIcon
-              bgcolor={v.colors.danger}
-              color='white'
-              noborder
-              onPress={c.hangupWithUnhold}
-              path={mdiPhoneHangup}
-              size={40}
-              textcolor='white'
-            />
-          )}
-        </View>
-        {incoming && (
-          <>
-            {this.isVisible() && <IncomingItemWithTimer />}
-            <View
-              style={[
-                css.Hangup,
-                css.Hangup_incomingText,
-                // c.partyImageUrl.length > 0
-                //   ? isLarge
-                //     ? css.Hangup_avoidAvatar_Large
-                //     : css.Hangup_avoidAvatar
-                //   : null,
-              ]}
-            ></View>
-            <View style={[css.Hangup, css.Hangup_answer]}>
+          </View>
+        ) : (
+          <View style={css.viewHangupBtn}>
+            {incoming && this.isVisible() && <IncomingItemWithTimer />}
+            {incoming && (
               <ButtonIcon
                 bgcolor={v.colors.primary}
                 color='white'
@@ -614,8 +614,18 @@ class PageCallManage extends Component<{
                 size={40}
                 textcolor='white'
               />
-            </View>
-          </>
+            )}
+            {incoming && <View style={{ width: 100 }} />}
+            <ButtonIcon
+              bgcolor={v.colors.danger}
+              color='white'
+              noborder
+              onPress={c.hangupWithUnhold}
+              path={mdiPhoneHangup}
+              size={40}
+              textcolor='white'
+            />
+          </View>
         )}
       </View>
     )

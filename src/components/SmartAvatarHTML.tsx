@@ -34,24 +34,17 @@ const css = StyleSheet.create({
   },
 })
 
-export const SmartImage = (p: {
-  uri: string
-  size: number
-  isLarge: boolean
-  style: object
-}) => {
+export const SmartImage = (p: { uri: string; style: object }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
-
   useEffect(() => {
     setStatusImageLoading(0)
   }, [p.uri])
   console.log(`SmartImage url=${p.uri}`)
-  const styleBorderRadius = p.isLarge
-    ? {}
-    : { borderRadius: 200, width: 100, height: 100 }
+
   const onMessage = (event: WebViewMessageEvent) => {
     setStatusImageLoading(1)
   }
+
   const onLoadEnd = () => {
     setStatusImageLoading(1)
   }
@@ -65,7 +58,7 @@ export const SmartImage = (p: {
   const isImageUrl = checkImageUrl(p.uri)
 
   return (
-    <View style={[css.image, p.style, styleBorderRadius]}>
+    <View style={[css.image, p.style]}>
       {!statusImageLoading && (
         <ActivityIndicator
           size='small'
