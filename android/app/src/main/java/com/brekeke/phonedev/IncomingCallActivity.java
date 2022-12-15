@@ -36,7 +36,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCallManage,
       vCallManageLoading,
       vHeaderIncomingCall,
-      vHeaderManageCall,
       vWebViewAvatarLoading,
       vWebViewAvatarTalkingLoading;
   public LinearLayout vNavHeader,
@@ -83,7 +82,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtHoldBtn,
       txtCallIsOnHold,
       txtDurationCall,
-      txtBrekekePhone,
       txtCallerNameHeader;
   public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
   public boolean destroyed = false,
@@ -141,7 +139,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     vNavHeader = (LinearLayout) findViewById(R.id.view_nav_header);
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
-    vHeaderManageCall = (RelativeLayout) findViewById(R.id.header_manage_call);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
@@ -228,7 +225,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
-    txtBrekekePhone = (TextView) findViewById(R.id.txt_brekeke_phone);
     txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
 
     txtCallerName.setText(callerName);
@@ -652,11 +648,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.stopRingtone();
     vIncomingCall.setVisibility(View.GONE);
     vHeaderIncomingCall.setVisibility(View.GONE);
-    vHeaderManageCall.setVisibility(View.VISIBLE);
     vCardAvatarTalking.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
-    // txtBrekekePhone.setVisibility(View.GONE);
     vNavHeader.setVisibility(View.VISIBLE);
     updateLayoutManagerCallLoading();
   }

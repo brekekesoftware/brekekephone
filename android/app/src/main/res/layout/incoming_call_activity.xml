@@ -45,6 +45,7 @@
     <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:visibility="visible"
     >
       <RelativeLayout
         android:id="@+id/view_webrtc"
@@ -218,28 +219,28 @@
           android:textSize="20dp"
           android:textStyle="normal"
         />
-        <TextView
-          android:id="@+id/txt_header_caller_name"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="30dp"
-          android:gravity="center"
-          android:text="Caller Name"
-          android:textColor="@color/white"
-          android:textSize="28dp"
-          android:textStyle="bold"
-        />
-        <TextView
-          android:id="@+id/txt_count_timer"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="70dp"
-          android:gravity="center"
-          android:text="00:00"
-          android:textColor="@color/white"
-          android:textSize="22dp"
-          android:textStyle="bold"
-        />
+<!--        <TextView-->
+<!--          android:id="@+id/txt_header_caller_name"-->
+<!--          android:layout_width="match_parent"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:layout_marginTop="30dp"-->
+<!--          android:gravity="center"-->
+<!--          android:text="Caller Name"-->
+<!--          android:textColor="@color/white"-->
+<!--          android:textSize="28dp"-->
+<!--          android:textStyle="bold"-->
+<!--        />-->
+<!--        <TextView-->
+<!--          android:id="@+id/txt_count_timer"-->
+<!--          android:layout_width="match_parent"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:layout_marginTop="70dp"-->
+<!--          android:gravity="center"-->
+<!--          android:text="00:00"-->
+<!--          android:textColor="@color/white"-->
+<!--          android:textSize="22dp"-->
+<!--          android:textStyle="bold"-->
+<!--        />-->
       </RelativeLayout>
       <!-- view_incoming_call -->
       <!-- view_call_manage -->
@@ -254,56 +255,38 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
         >
-          <androidx.cardview.widget.CardView
-            android:id="@+id/card_avatar_talking"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="100dp"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="0dp"
-            app:cardPreventCornerOverlap="true"
+          <LinearLayout
+            android:id="@+id/view_time"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/btn_unlock"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
           >
-            <ImageView
-              android:id="@+id/avatar_talking"
+            <TextView
+              android:id="@+id/txt_header_caller_name"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
+              android:layout_height="wrap_content"
               android:gravity="center"
+              android:text="Caller Name"
+              android:textColor="@color/white"
+              android:textSize="22dp"
+              android:textStyle="bold"
             />
-            <WebView
-              android:id="@+id/avatar_talking_html"
+            <TextView
+              android:id="@+id/txt_count_timer"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
+              android:layout_height="wrap_content"
               android:gravity="center"
+              android:paddingBottom="10dp"
+              android:text="00:00"
+              android:textColor="@color/white"
+              android:textSize="22dp"
+              android:textStyle="bold"
             />
-            <RelativeLayout
-              android:id="@+id/rl_taking_loading"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
-              android:visibility="gone"
-            >
-              <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:indeterminate="true"
-                android:indeterminateTint="@color/black"
-              />
-            </RelativeLayout>
-          </androidx.cardview.widget.CardView>
+          </LinearLayout>
           <Button
             android:id="@+id/btn_unlock"
+            android:visibility="visible"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -318,6 +301,17 @@
             app:layout_constraintBottom_toTopOf="@+id/view_call_manage_controls"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+          />
+          <Button
+            android:id="@+id/btn_switch_camera"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:paddingTop="40dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/btn_switch_camera"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
           />
           <LinearLayout
             android:id="@+id/view_call_manage_controls"
@@ -585,6 +579,35 @@
             />
           </LinearLayout>
           <RelativeLayout
+            android:id="@+id/view_call_manage_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/view_call_manage_controls"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+          >
+            <ProgressBar
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:indeterminate="true"
+              android:indeterminateTint="@color/white"
+            />
+            <TextView
+              android:id="@+id/txt_connecting"
+              android:textStyle="normal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="60dp"
+              android:gravity="center"
+              android:text="Connecting..."
+              android:textColor="@color/white"
+              android:textSize="20dp"
+            />
+          </RelativeLayout>
+          <RelativeLayout
             android:id="@+id/view_button_end"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
@@ -615,46 +638,56 @@
               android:visibility="gone"
             />
           </RelativeLayout>
-          <RelativeLayout
-            android:id="@+id/view_call_manage_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/view_call_manage_controls"
+          <androidx.cardview.widget.CardView
+            android:id="@+id/card_avatar_talking"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center"
+            app:cardCornerRadius="0dp"
+            app:cardPreventCornerOverlap="true"
+            app:layout_constraintBottom_toTopOf="@+id/view_time"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
           >
-            <ProgressBar
+
+            <ImageView
+              android:id="@+id/avatar_talking"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:indeterminate="true"
-              android:indeterminateTint="@color/white"
-            />
-            <TextView
-              android:id="@+id/txt_connecting"
-              android:textStyle="normal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="60dp"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
               android:gravity="center"
-              android:text="Connecting..."
-              android:textColor="@color/white"
-              android:textSize="20dp"
             />
-          </RelativeLayout>
-          <Button
-            android:id="@+id/btn_switch_camera"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:paddingTop="40dp"
-            android:background="@android:color/transparent"
-            android:drawableLeft="@drawable/btn_switch_camera"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-          />
+            <RelativeLayout
+              android:id="@+id/rl_taking_loading"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
+              android:visibility="gone"
+            >
+              <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/black"
+              />
+            </RelativeLayout>
+            <WebView
+              android:id="@+id/avatar_talking_html"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
+              android:gravity="center"
+            />
+
+          </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
       </RelativeLayout>
     </RelativeLayout>
