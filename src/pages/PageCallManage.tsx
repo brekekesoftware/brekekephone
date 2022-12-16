@@ -351,26 +351,30 @@ class PageCallManage extends Component<{
   }
   renderCall = () => {
     const { call: c } = this.props
+    // Render PageCallTransferAttend as a layer instead
+    // So switching will not cause the avatar to reload
+    const transferring = (
+      <View style={css.LoadingFullScreen}>
+        <PageCallTransferAttend />
+      </View>
+    )
     if (this.hasJavaPn) {
+      if (c.transferring) {
+        return transferring
+      }
       return (
         <View style={css.LoadingFullScreen}>
           <ActivityIndicator size='large' color='black' />
         </View>
       )
     }
-    // Render PageCallTransferAttend as a layer instead
-    // So switching will not cause the avatar to reload
     return (
       <>
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
-        {c.transferring ? (
-          <View style={css.LoadingFullScreen}>
-            <PageCallTransferAttend />
-          </View>
-        ) : null}
+        {c.transferring ? transferring : null}
       </>
     )
   }
@@ -404,9 +408,6 @@ class PageCallManage extends Component<{
 
   renderAvatar = () => {
     const { call: c } = this.props
-    // if (c.localVideoEnabled) {
-    //   return
-    // }
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
@@ -415,7 +416,6 @@ class PageCallManage extends Component<{
       ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
-
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
         {isShowAvatar ? (
@@ -443,7 +443,6 @@ class PageCallManage extends Component<{
             </RnText>
           )}
         </View>
-        {/* <View style={{flex:1}}></View> */}
       </View>
     )
   }
@@ -601,7 +600,6 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-
         <View style={{ paddingBottom: 10 }} />
       </Container>
     )
@@ -611,7 +609,6 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
         {c.holding ? (
