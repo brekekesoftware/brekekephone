@@ -96,7 +96,7 @@ export const App = () => {
             const url = `/0/brekeke_phone${b.version}.zip`
             return (
               <>
-                <div>
+                <div className='version'>
                   <strong>{b.version}</strong> <LastModified url={url} />
                 </div>
                 <div>
