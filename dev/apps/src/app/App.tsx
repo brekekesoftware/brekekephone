@@ -65,7 +65,7 @@ export const App = () => {
               const apk = b.apk && `/0/brekeke_phone${v}.apk`
               return (
                 <>
-                  <div>
+                  <div className='version'>
                     <strong>{b.version}</strong>{' '}
                     <LastModified url={ipa || apk || ''} />
                   </div>
