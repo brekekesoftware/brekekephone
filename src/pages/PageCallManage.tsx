@@ -353,14 +353,14 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     // Render PageCallTransferAttend as a layer instead
     // So switching will not cause the avatar to reload
-    const transferring = (
+    const renderTransferring = () => (
       <View style={css.LoadingFullScreen}>
         <PageCallTransferAttend />
       </View>
     )
     if (this.hasJavaPn) {
       if (c.transferring) {
-        return transferring
+        return renderTransferring()
       }
       return (
         <View style={css.LoadingFullScreen}>
@@ -374,7 +374,7 @@ class PageCallManage extends Component<{
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
-        {c.transferring ? transferring : null}
+        {c.transferring ? renderTransferring() : null}
       </>
     )
   }
