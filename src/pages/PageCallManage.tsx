@@ -183,6 +183,20 @@ const css = StyleSheet.create({
     borderRadius: 100,
     overflow: 'hidden',
   },
+  vContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  vContainerVideo: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
 })
 
 // Render all the calls in App.tsx
@@ -324,12 +338,11 @@ class PageCallManage extends Component<{
         transparent={!c.transferring}
       >
         <View
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-          }}
+          style={
+            this.props.call.localVideoEnabled || c.localVideoEnabled
+              ? css.vContainerVideo
+              : css.vContainer
+          }
         >
           {this.renderCall()}
         </View>
@@ -391,13 +404,17 @@ class PageCallManage extends Component<{
 
   renderAvatar = () => {
     const { call: c } = this.props
-    if (c.localVideoEnabled) {
-      return
-    }
+    // if (c.localVideoEnabled) {
+    //   return
+    // }
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
-    const styleViewAvatar = isLarge ? { flex: 1 } : css.smallAvatar
+    const isShowAvatar =
+      (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+    const styleBigAvatar = c.localVideoEnabled
+      ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
+      : { flex: 1 }
+    const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
 
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
@@ -408,7 +425,9 @@ class PageCallManage extends Component<{
               style={{ flex: 1, aspectRatio: 1 }}
             />
           </View>
-        ) : null}
+        ) : (
+          <View style={{ flex: 1 }} />
+        )}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}

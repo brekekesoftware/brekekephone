@@ -33,6 +33,8 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
+const configViewPort =
+  "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); "
 
 export const SmartImage = (p: { uri: string; style: object }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
@@ -71,6 +73,7 @@ export const SmartImage = (p: { uri: string; style: object }) => {
           source={{
             uri: p.uri,
           }}
+          injectedJavaScript={configViewPort}
           style={[css.image, css.full]}
           bounces={false}
           startInLoadingState={true}
