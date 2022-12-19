@@ -103,6 +103,9 @@ class BaseChannel {
 
   private func setupNewConnection(to host: String,
                                   port: UInt16) -> NWConnection {
+
+    // TODO LPC TLS
+    // check xem tlsEnabled ở settings có true hay không rồi tạo connection tương ứng
     /* mitu: disable TLS */
     /*
      let tls = ConnectionOptions.TLS.Client(publicKeyHash: "XTQSZGrHFDV6KdlHsGVhixmbI/Cm2EMsz2FqE2iZoqU=").options
