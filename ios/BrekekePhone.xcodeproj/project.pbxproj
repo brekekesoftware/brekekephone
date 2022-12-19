@@ -620,7 +620,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
-				PROVISIONING_PROFILE_SPECIFIER = "LPC com.brekeke.phonedev";
+				PROVISIONING_PROFILE_SPECIFIER = "phonedev-provisioning-profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -654,7 +654,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
-				PROVISIONING_PROFILE_SPECIFIER = "LPC com.brekeke.phonedev";
+				PROVISIONING_PROFILE_SPECIFIER = "phonedev-provisioning-profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -801,7 +801,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = BrekekeLPCExtension;
+				PROVISIONING_PROFILE_SPECIFIER = "BrekekeLPCExtension-provisioning-profile";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = BrekekeLPCExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -842,7 +842,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = BrekekeLPCExtension;
+				PROVISIONING_PROFILE_SPECIFIER = "BrekekeLPCExtension-provisioning-profile";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = BrekekeLPCExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;

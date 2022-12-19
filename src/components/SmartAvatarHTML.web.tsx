@@ -28,20 +28,18 @@ const css = StyleSheet.create({
     overflow: 'hidden',
     zIndex: 100,
   },
+  full: {
+    width: '100%',
+    height: '100%',
+  },
 })
 
-export const SmartImage = (p: {
-  uri: string
-  size: number
-  isLarge: boolean
-}) => {
+export const SmartImage = (p: { uri: string; style: object }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
-
+  const [size, setSize] = useState(0)
   useEffect(() => {
     setStatusImageLoading(0)
   }, [p.uri])
-
-  const styleBorderRadius = p.isLarge ? {} : { borderRadius: p.size / 2 }
 
   const onLoaded = () => {
     setStatusImageLoading(1)
@@ -57,13 +55,17 @@ export const SmartImage = (p: {
 
   return (
     <View
-      style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}
+      style={[css.image, p.style]}
+      onLayout={event => {
+        const { height } = event.nativeEvent.layout
+        setSize(height)
+      }}
     >
       {!statusImageLoading && (
         <ActivityIndicator
           size='small'
           color='white'
-          style={[css.loading, { width: p.size, height: p.size }]}
+          style={[css.loading, css.full]}
         />
       )}
       {!isImageUrl ? (
@@ -71,8 +73,8 @@ export const SmartImage = (p: {
           <iframe
             title='Load Image'
             src={p.uri}
-            height={p.size}
-            width={p.size}
+            height={size}
+            width={size}
             onLoad={onLoaded}
             frameBorder='0'
           />
@@ -82,7 +84,7 @@ export const SmartImage = (p: {
           source={{
             uri: p.uri,
           }}
-          style={[css.image, { width: p.size, height: p.size }]}
+          style={[css.image, { width: size, height: size }]}
           onError={onImageLoadError}
           onLoad={onImageLoad}
           resizeMode={'cover'}
@@ -91,7 +93,7 @@ export const SmartImage = (p: {
       {statusImageLoading === 2 && isImageUrl && (
         <Image
           source={noPhotoImg}
-          style={[css.imageError, { width: p.size, height: p.size }]}
+          style={[css.imageError, { width: size, height: size }]}
           resizeMode={'cover'}
         />
       )}

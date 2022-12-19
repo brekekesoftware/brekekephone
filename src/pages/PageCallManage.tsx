@@ -75,11 +75,7 @@ const css = StyleSheet.create({
     alignSelf: 'stretch',
   },
   Btns: {
-    position: 'absolute',
-    height: '70%', // Header compact height
-    left: 0,
-    right: 0,
-    bottom: 0,
+    marginTop: 10,
   },
   BtnFuncCalls: {
     marginBottom: 10,
@@ -102,10 +98,11 @@ const css = StyleSheet.create({
     flex: 1,
   },
   Hangup: {
-    position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
+    // position: 'absolute',
+    // bottom: 40,
+    // left: 0,
+    // right: 0,
+    marginBottom: 40,
   },
   Hangup_incoming: {
     marginLeft: 180,
@@ -161,6 +158,44 @@ const css = StyleSheet.create({
     height: '100%',
     top: '-100%',
     left: '-100%',
+  },
+  viewHangupBtns: {
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    marginTop: 10,
+  },
+  viewHangupBtn: {
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+  },
+  txtHold: {
+    height: 65,
+    marginBottom: 10,
+  },
+  smallAvatar: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    overflow: 'hidden',
+  },
+  vContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  vContainerVideo: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 })
 
@@ -235,10 +270,9 @@ class PageCallManage extends Component<{
   }
 
   checkJavaPn = async () => {
-    const { call: c } = this.props
     if (
       Platform.OS !== 'android' ||
-      !c.incoming ||
+      !this.props.call.incoming ||
       !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
     ) {
       runInAction(() => {
@@ -247,24 +281,35 @@ class PageCallManage extends Component<{
       return
     }
     // The PN may come slower than SIP web socket
-    // We check if PN screen exists here in 3 seconds
-    for (let i = 0; i < 3; i++) {
-      if (!c.callkeepUuid) {
-        break
+    // We check if PN screen exists here in 5 seconds
+    for (let i = 0; i < 5; i++) {
+      const uuid = this.props.call.callkeepUuid
+      if (!uuid) {
+        await waitTimeout(1000)
+        continue
       }
-      const r = await BrekekeUtils.hasIncomingCallActivity(c.callkeepUuid)
+      const r = await BrekekeUtils.hasIncomingCallActivity(uuid)
+      console.log('hasIncomingCallActivity', r)
       if (r) {
         return
       }
       await waitTimeout(1000)
     }
     runInAction(() => {
+      console.warn(
+        `No incoming call activity for uuid=${this.props.call.callkeepUuid}`,
+      )
       this.hasJavaPn = false
     })
   }
   openJavaPnOnVisible = () => {
     const { call: c } = this.props
-    if (this.hasJavaPn && this.isVisible() && c.callkeepUuid) {
+    if (
+      this.hasJavaPn &&
+      this.isVisible() &&
+      c.callkeepUuid &&
+      !c.transferring
+    ) {
       BrekekeUtils.onPageCallManage(c.callkeepUuid)
     }
   }
@@ -297,32 +342,44 @@ class PageCallManage extends Component<{
         title={c.getDisplayName() || intl`Connecting...`}
         transparent={!c.transferring}
       >
-        {this.renderCall()}
+        <View
+          style={
+            this.props.call.localVideoEnabled || c.localVideoEnabled
+              ? css.vContainerVideo
+              : css.vContainer
+          }
+        >
+          {this.renderCall()}
+        </View>
       </Layout>
     )
   }
   renderCall = () => {
     const { call: c } = this.props
+    // Render PageCallTransferAttend as a layer instead
+    // So switching will not cause the avatar to reload
+    const renderTransferring = () => (
+      <View style={css.LoadingFullScreen}>
+        <PageCallTransferAttend />
+      </View>
+    )
     if (this.hasJavaPn) {
+      if (c.transferring) {
+        return renderTransferring()
+      }
       return (
         <View style={css.LoadingFullScreen}>
           <ActivityIndicator size='large' color='black' />
         </View>
       )
     }
-    // Render PageCallTransferAttend as a layer instead
-    // So switching will not cause the avatar to reload
     return (
       <>
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
-        {c.transferring ? (
-          <View style={css.LoadingFullScreen}>
-            <PageCallTransferAttend />
-          </View>
-        ) : null}
+        {c.transferring ? renderTransferring() : null}
       </>
     )
   }
@@ -356,31 +413,39 @@ class PageCallManage extends Component<{
 
   renderAvatar = () => {
     const { call: c } = this.props
-    if (c.localVideoEnabled) {
-      return
-    }
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const isShowAvatar = c.partyImageUrl || c.talkingImageUrl
+    const isShowAvatar =
+      (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+    const styleBigAvatar = c.localVideoEnabled
+      ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
+      : { flex: 1 }
+    const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
-      <View style={css.Image_wrapper}>
+      <View style={[css.Image_wrapper, { flex: 1 }]}>
         {isShowAvatar ? (
-          <SmartImage
-            uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
-            size={isLarge ? (height * 30) / 100 : 150}
-            isLarge={isLarge}
-          />
-        ) : null}
+          <View style={styleViewAvatar}>
+            <SmartImage
+              uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
+              style={{ flex: 1, aspectRatio: 1 }}
+            />
+          </View>
+        ) : (
+          <View style={{ flex: 1 }} />
+        )}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
-          {!incoming && (
-            <RnText title white center numberOfLines={2}>
-              {`${c.getDisplayName()}`}
-            </RnText>
-          )}
+          <RnText title white center numberOfLines={2}>
+            {`${c.getDisplayName()}`}
+          </RnText>
           {c.answered && (
             <Duration subTitle white center>
               {c.answeredAt}
             </Duration>
+          )}
+          {incoming && (
+            <RnText bold white center>
+              {intl`Incoming Call`}
+            </RnText>
           )}
         </View>
       </View>
@@ -398,14 +463,28 @@ class PageCallManage extends Component<{
       ? v.colors.primary
       : v.colors.warning
     const isHideButtons =
-      !(c.withSDPControls || c.answered) && Platform.OS === 'web'
+      (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
+      !c.answered
     const configure = getAuthStore().pbxConfig
+    const incoming = c.incoming && !c.answered
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={css.Btns}
+        style={[css.Btns, { marginTop: !incoming ? 30 : 0 }]}
       >
-        <View style={css.Btns_VerticalMargin} />
+        {n > 0 && (
+          <FieldButton
+            label={intl`BACKGROUND CALLS`}
+            onCreateBtnPress={Nav().goToPageCallBackgrounds}
+            textInputStyle={css.labelStyle}
+            value={
+              n > 1
+                ? intl`${n} other calls are in background`
+                : intl`${n} other call is in background`
+            }
+          />
+        )}
+        <View style={{ paddingTop: 10 }} />
         <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
           {!(configure?.['webphone.call.transfer'] === 'false') && (
             <ButtonIcon
@@ -526,19 +605,7 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        {n > 0 && (
-          <FieldButton
-            label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={Nav().goToPageCallBackgrounds}
-            textInputStyle={css.labelStyle}
-            value={
-              n > 1
-                ? intl`${n} other calls are in background`
-                : intl`${n} other call is in background`
-            }
-          />
-        )}
-        <View style={css.Btns_VerticalMargin} />
+        <View style={{ paddingBottom: 10 }} />
       </Container>
     )
   }
@@ -546,48 +613,19 @@ class PageCallManage extends Component<{
   renderHangupBtn = () => {
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
-    const isLarge = c.partyImageSize && c.partyImageSize === 'large'
+    const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     return (
-      <>
-        <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
-          {c.holding ? (
+      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
+        {c.holding ? (
+          <View style={css.txtHold}>
             <RnText small white center>
               {intl`CALL IS ON HOLD`}
             </RnText>
-          ) : (
-            <ButtonIcon
-              bgcolor={v.colors.danger}
-              color='white'
-              noborder
-              onPress={c.hangupWithUnhold}
-              path={mdiPhoneHangup}
-              size={40}
-              textcolor='white'
-            />
-          )}
-        </View>
-        {incoming && (
-          <>
-            {this.isVisible() && <IncomingItemWithTimer />}
-            <View
-              style={[
-                css.Hangup,
-                css.Hangup_incomingText,
-                c.partyImageUrl.length > 0
-                  ? isLarge
-                    ? css.Hangup_avoidAvatar_Large
-                    : css.Hangup_avoidAvatar
-                  : null,
-              ]}
-            >
-              <RnText title white center numberOfLines={2}>
-                {`${c.getDisplayName()}`}
-              </RnText>
-              <RnText bold white center>
-                {intl`Incoming Call`}
-              </RnText>
-            </View>
-            <View style={[css.Hangup, css.Hangup_answer]}>
+          </View>
+        ) : (
+          <View style={css.viewHangupBtn}>
+            {incoming && this.isVisible() && <IncomingItemWithTimer />}
+            {incoming && (
               <ButtonIcon
                 bgcolor={v.colors.primary}
                 color='white'
@@ -597,10 +635,20 @@ class PageCallManage extends Component<{
                 size={40}
                 textcolor='white'
               />
-            </View>
-          </>
+            )}
+            {incoming && <View style={{ width: 100 }} />}
+            <ButtonIcon
+              bgcolor={v.colors.danger}
+              color='white'
+              noborder
+              onPress={c.hangupWithUnhold}
+              path={mdiPhoneHangup}
+              size={40}
+              textcolor='white'
+            />
+          </View>
         )}
-      </>
+      </View>
     )
   }
 
