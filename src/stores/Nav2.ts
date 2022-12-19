@@ -130,8 +130,9 @@ export class Nav2 {
   // call
   goToPageCallManage = (props?: CallStore['inPageCallManage']) => {
     const s = getCallStore()
-    const uuid = s.getCurrentCall()?.callkeepUuid
-    if (uuid) {
+    const c = s.getCurrentCall()
+    const uuid = c?.callkeepUuid
+    if (uuid && !c.transferring) {
       BrekekeUtils.onPageCallManage(uuid)
     }
     s.inPageCallManage = {
@@ -140,8 +141,9 @@ export class Nav2 {
   }
   backToPageCallManage = (props?: CallStore['inPageCallManage']) => {
     const s = getCallStore()
-    const uuid = s.getCurrentCall()?.callkeepUuid
-    if (uuid) {
+    const c = s.getCurrentCall()
+    const uuid = c?.callkeepUuid
+    if (uuid && !c.transferring) {
       BrekekeUtils.onPageCallManage(uuid)
     }
     s.inPageCallManage = {

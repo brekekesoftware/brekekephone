@@ -4,7 +4,6 @@ import { RTCView } from 'react-native-webrtc'
 
 const css = StyleSheet.create({
   video: {
-    flex: 1,
     width: '100%',
     height: '100%',
   },

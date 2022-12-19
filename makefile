@@ -37,8 +37,7 @@ w:
 	zip -vr brekeke_phone.zip brekeke_phone && \
 	scp ./brekeke_phone.zip bre:/var/www/apps-static/0/ && \
 	ssh bre "cd /var/www/brekekephone && rm -rf phone && unzip /var/www/apps-static/0/brekeke_phone.zip && mv brekeke_phone phone" && \
-	rm -rf brekeke_phone* && \
-	git checkout master;
+	rm -rf brekeke_phone*;
 
 d:
 	git status && \
@@ -52,14 +51,7 @@ p:
 	scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa bre:/var/www/apps-static/0/brekeke_phone.ipa && \
 	rm -rf ../0/build/BrekekePhone/ && \
 	cd android && ./gradlew clean && ./gradlew assembleRelease && \
-	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/apps-static/0/brekeke_phone.apk && \
-	git checkout master;
-
-r:
-	git push && \
-	git checkout release && \
-	git rebase master && \
-	git push -f;
+	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/apps-static/0/brekeke_phone.apk;
 
 apps:
 	cd dev/apps && \

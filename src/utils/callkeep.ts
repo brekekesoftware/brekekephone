@@ -282,6 +282,14 @@ export const setupCallKeep = async () => {
 
     // Other utils
     eventEmitter.addListener('onBackPressed', onBackPressed)
+    eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
+      if (!RnStacker.stacks.length) {
+        Nav().goToPageIndex()
+      } else {
+        RnStacker.stacks = [RnStacker.stacks[0]]
+      }
+      getCallStore().inPageCallManage = undefined
+    })
     eventEmitter.addListener('debug', (m: string) =>
       console.log(`Android debug: ${m}`),
     )

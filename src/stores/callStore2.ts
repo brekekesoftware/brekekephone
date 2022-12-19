@@ -574,7 +574,6 @@ export class CallStore {
     if (Platform.OS !== 'web') {
       RNCallKeep.endAllCalls()
     }
-
     BrekekeUtils.closeAllIncomingCalls()
     this.onCallKeepAction()
   }

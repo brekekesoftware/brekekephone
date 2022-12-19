@@ -28,23 +28,25 @@ const css = StyleSheet.create({
     overflow: 'hidden',
     zIndex: 100,
   },
+  full: {
+    width: '100%',
+    height: '100%',
+  },
 })
+const configViewPort =
+  "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); "
 
-export const SmartImage = (p: {
-  uri: string
-  size: number
-  isLarge: boolean
-}) => {
+export const SmartImage = (p: { uri: string; style: object }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
-
   useEffect(() => {
     setStatusImageLoading(0)
   }, [p.uri])
-  console.error({ url: p.uri })
-  const styleBorderRadius = p.isLarge ? {} : { borderRadius: p.size / 2 }
+  console.log(`SmartImage url=${p.uri}`)
+
   const onMessage = (event: WebViewMessageEvent) => {
     setStatusImageLoading(1)
   }
+
   const onLoadEnd = () => {
     setStatusImageLoading(1)
   }
@@ -58,14 +60,12 @@ export const SmartImage = (p: {
   const isImageUrl = checkImageUrl(p.uri)
 
   return (
-    <View
-      style={[css.image, { width: p.size, height: p.size }, styleBorderRadius]}
-    >
+    <View style={[css.image, p.style]}>
       {!statusImageLoading && (
         <ActivityIndicator
           size='small'
           color='white'
-          style={[css.loading, { width: p.size, height: p.size }]}
+          style={[css.loading, css.full]}
         />
       )}
       {!isImageUrl ? (
@@ -73,22 +73,22 @@ export const SmartImage = (p: {
           source={{
             uri: p.uri,
           }}
-          style={[css.image, { width: p.size, height: p.size }]}
-          scalesPageToFit={true}
+          injectedJavaScript={configViewPort}
+          style={[css.image, css.full]}
           bounces={false}
           startInLoadingState={true}
           onMessage={onMessage}
           onLoadEnd={onLoadEnd}
           originWhitelist={['*']}
           javaScriptEnabled={true}
-          resizeMode={'cover'}
+          scalesPageToFit={false}
         />
       ) : (
         <Image
           source={{
             uri: p.uri,
           }}
-          style={[css.image, { width: p.size, height: p.size }]}
+          style={[css.image, css.full]}
           onError={onImageLoadError}
           onLoad={onImageLoad}
           resizeMode={'cover'}
@@ -97,7 +97,7 @@ export const SmartImage = (p: {
       {statusImageLoading === 2 && isImageUrl && (
         <Image
           source={noPhotoImg}
-          style={[css.imageError, { width: p.size, height: p.size }]}
+          style={[css.imageError, css.full]}
           resizeMode={'cover'}
         />
       )}
