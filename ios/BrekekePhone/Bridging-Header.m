@@ -11,8 +11,12 @@ RCT_EXTERN_METHOD(stopRBT)
 RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)deviceId appId
                   : (NSString *)appId deviceName
-                  : (NSString *)deviceName ssid
-                  : (NSString *)ssid host
-                  : (NSString *)host)
+                  : (NSString *)deviceName host
+                  : (NSString *)host localSsid
+                  : (NSString *)localSsid remoteSsids
+                  : (NSArray *)remoteSsids tlsKey
+                  : (NSString *)tlsKey port
+                  : (nonnull NSNumber *)port
+                  )
 RCT_EXTERN_METHOD(disableLPC)
 @end

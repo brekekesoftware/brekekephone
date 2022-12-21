@@ -1,8 +1,11 @@
 import { Platform } from 'react-native'
+import WifiManager from 'react-native-wifi-reborn'
 
 import { Account, accountStore } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
@@ -11,6 +14,7 @@ const syncPnTokenWithoutCatch = async (
   p: Account,
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
+  console.log('PN sync debug: syncPnTokenWithoutCatch')
   if (Platform.OS === 'web') {
     console.log('PN sync debug: invalid platform')
     return
@@ -45,14 +49,29 @@ const syncPnTokenWithoutCatch = async (
       t = tvoip
     }
   }
+  const config = getAuthStore()?.pbxConfig
+  const localSsid = (await WifiManager.getCurrentWifiSSID()) || ''
+  const port = config?.['webphone.lpc.port']
+    ? parseInt(config?.['webphone.lpc.port'])
+    : 3000
+  const remoteSsids = config?.['webphone.lpc.wifi.name']?.split(',') || []
+  const tlsKey = config?.['webphone.lpc.hashkey'] || ''
+
+  console.log('dev:::', {
+    pushNotificationEnabled: p.pushNotificationEnabled,
+    localSsid,
+    port: config?.['webphone.lpc.port'],
+    remoteSsids,
+    tlsKey,
+  })
 
   const fn =
     Platform.OS === 'ios'
       ? p.pushNotificationEnabled
-        ? p.pushNotificationType === 'LPC'
+        ? config?.['webphone.lpc.port']
           ? pbx.setLPCToken
           : pbx.setApnsToken
-        : p.pushNotificationType === 'LPC'
+        : config?.['webphone.lpc.port']
         ? pbx.removeLPCToken
         : pbx.removeApnsToken
       : Platform.OS === 'android'
@@ -70,15 +89,22 @@ const syncPnTokenWithoutCatch = async (
       p.pushNotificationEnabled ? 'on' : 'off'
     } PN for account ${p.pbxUsername}`,
   )
-
   const arr: Promise<unknown>[] = []
+  console.log('dev:::tvoip::', {
+    t,
+    tvoip,
+  })
   if (t) {
     arr.push(
       fn({
         username: webPhone.id,
         device_id: t,
+        voip: false,
         host: p.pbxHostname,
-        ssid: p.pushNotificationSSID || '',
+        localSsid,
+        remoteSsids,
+        tlsKey,
+        port,
       }),
     )
   }
@@ -89,7 +115,10 @@ const syncPnTokenWithoutCatch = async (
         device_id: tvoip,
         voip: true,
         host: p.pbxHostname,
-        ssid: p.pushNotificationSSID || '',
+        localSsid,
+        remoteSsids,
+        tlsKey,
+        port,
       }),
     )
   }

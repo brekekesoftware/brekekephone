@@ -8,14 +8,7 @@ import { Nav } from '../stores/Nav'
 
 export const PageProfileUpdate: FC<{
   id: string
-  pushNotificationType?: PNOptions
 }> = observer(props => {
-  const profile = props?.pushNotificationType
-    ? {
-        ...accountStore.accountsMap[props.id],
-        pushNotificationType: props.pushNotificationType,
-      }
-    : accountStore.accountsMap[props.id]
   return (
     <ProfileCreateForm
       onBack={Nav().backToPageProfileSignIn}
@@ -24,7 +17,7 @@ export const PageProfileUpdate: FC<{
         Nav().backToPageProfileSignIn()
       }}
       title={intl`Update Account`}
-      updatingProfile={profile}
+      updatingProfile={accountStore.accountsMap[props.id]}
     />
   )
 })

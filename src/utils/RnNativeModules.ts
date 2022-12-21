@@ -43,8 +43,11 @@ type TBrekekeUtils = {
     deviceId: string,
     appId: string,
     deviceName: string,
-    ssid: string,
     host: string,
+    localSsid: string,
+    remoteSsids: string[],
+    tlsKey: string,
+    port: number,
   ): void
   disableLPC(): void
 

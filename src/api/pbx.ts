@@ -583,13 +583,19 @@ export class PBX extends EventEmitter {
     username,
     voip = false,
     host,
-    ssid,
+    localSsid,
+    remoteSsids,
+    tlsKey,
+    port,
   }: {
     device_id: string
     username: string
     voip?: boolean
     host: string
-    ssid: string
+    localSsid: string
+    remoteSsids: string[]
+    tlsKey: string
+    port: number
   }) => {
     if (this.needToWait) {
       await waitPbx()
@@ -606,13 +612,18 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+
     BrekekeUtils.enableLPC(
       device_id,
       'com.brekeke.phonedev',
       username,
-      ssid,
       host,
+      localSsid,
+      remoteSsids,
+      tlsKey,
+      port,
     )
+
     return true
   }
 
@@ -625,6 +636,7 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
+    console.log('devv::setApnsToken')
     if (this.needToWait) {
       await waitPbx()
     }
@@ -703,6 +715,7 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
+    console.log('devv::removeLPCToken')
     if (this.needToWait) {
       await waitPbx()
     }

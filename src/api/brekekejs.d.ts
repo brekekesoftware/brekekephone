@@ -206,6 +206,11 @@ export type PbxGetProductInfoRes = {
   'webphone.call.record': string
   'webphone.call.dtmf': string
   'webphone.call.hold': string
+  'webphone.pn': string
+  'webphone.lpc.port': string
+  'webphone.lpc.proto': string
+  'webphone.lpc.wifi.name': string
+  'webphone.lpc.hashkey': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
