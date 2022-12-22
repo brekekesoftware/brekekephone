@@ -162,9 +162,11 @@ class BrekekeLPCManager: NSObject {
       "host": pushManagerSettings.host,
     ]
 
-    // TODO LPC
+    // TODO: LPC
     // nếu remoteSsids không empty thì lấy remote, còn không thì lấy local
-    pushManager.matchSSIDs = pushManagerSettings.remoteSsids.isEmpty ? pushManagerSettings.localSsids: pushManagerSettings.remoteSsids
+    pushManager.matchSSIDs = pushManagerSettings.remoteSsids
+      .isEmpty ? pushManagerSettings.localSsids : pushManagerSettings
+      .remoteSsids
 
     if !pushManagerSettings.mobileCountryCode.isEmpty,
        !pushManagerSettings.mobileNetworkCode.isEmpty {

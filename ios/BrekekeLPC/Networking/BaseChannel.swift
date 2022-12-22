@@ -22,8 +22,8 @@ class BaseChannel {
   private let shouldConnectToServerSubject = CurrentValueSubject<Bool,
     Never>(false)
   private let hostSubject = CurrentValueSubject<String, Never>("")
-  private var port:UInt16 = 3000
-  private var tlsKey:String = ""
+  private var port: UInt16 = 3000
+  private var tlsKey: String = ""
   private let stateSubject = CurrentValueSubject<NetworkSession.State,
     Never>(.disconnected)
   private let registrationSubject = CurrentValueSubject<User?, Never>(nil)
@@ -32,7 +32,7 @@ class BaseChannel {
   private var cancellables = Set<AnyCancellable>()
   private let logger: Logger
 
-  init(port: UInt16, heartbeatTimeout: DispatchTimeInterval, logger: Logger) {
+  init(port _: UInt16, heartbeatTimeout: DispatchTimeInterval, logger: Logger) {
     self.logger = logger
     networkSession.logger = logger
     heartbeatMonitor = HeartbeatMonitor(
@@ -40,7 +40,7 @@ class BaseChannel {
       logger: Logger(prependString: "Heartbeat Monitor",
                      subsystem: .heartbeat)
     )
-    self.logger.log("Init:: \(self.port) \(self.tlsKey)")
+    self.logger.log("Init:: \(port) \(tlsKey)")
     // Observe the network session's state changes and react.
     networkSession.statePublisher
       .combineLatest(registrationSubject)
@@ -104,18 +104,20 @@ class BaseChannel {
       .store(in: &cancellables)
   }
 
-  private func setupNewConnection(to host: String,
-                                  port: UInt16, tlsKey: String) -> NWConnection {
-
-    // TODO LPC TLS
+  private func setupNewConnection(
+    to host: String,
+    port: UInt16,
+    tlsKey: String
+  ) -> NWConnection {
+    // TODO: LPC TLS
     // check xem tlsEnabled ở settings có true hay không rồi tạo connection tương ứng
     /* mitu: disable TLS */
     /*
      let tls = ConnectionOptions.TLS.Client(publicKeyHash: "XTQSZGrHFDV6KdlHsGVhixmbI/Cm2EMsz2FqE2iZoqU=").options
      let parameters = NWParameters(tls: tls, tcp: ConnectionOptions.TCP.options)
        */
-    var tls: NWProtocolTLS.Options? = nil;
-    if(!tlsKey.isEmpty){
+    var tls: NWProtocolTLS.Options?
+    if !tlsKey.isEmpty {
       tls = ConnectionOptions.TLS.Client(publicKeyHash: tlsKey).options
     }
     // mitu: TCP
@@ -217,7 +219,7 @@ class BaseChannel {
 
         return .disconnect
       }
-      .eraseToAnyPublisher();
+      .eraseToAnyPublisher()
 
   // A publisher that upon subscription drops all states from the control channel
   // until receiving a `connected` state, waits for a
@@ -247,14 +249,15 @@ class BaseChannel {
   func setHost(_ host: String) {
     hostSubject.send(host)
   }
+
   func setPort(_ port: UInt16) {
-   
     self.port = port
-    self.logger.log("setPort:: \(self.port)")
+    logger.log("setPort:: \(self.port)")
   }
+
   func setTlsKey(_ tlsKey: String) {
     self.tlsKey = tlsKey
-    self.logger.log("setTlsKey:: \(self.tlsKey)")
+    logger.log("setTlsKey:: \(self.tlsKey)")
   }
 
   // MARK: - Registration

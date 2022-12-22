@@ -16,7 +16,6 @@ RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)localSsid remoteSsids
                   : (NSArray *)remoteSsids tlsKey
                   : (NSString *)tlsKey port
-                  : (nonnull NSNumber *)port
-                  )
+                  : (nonnull NSNumber *)port)
 RCT_EXTERN_METHOD(disableLPC)
 @end

@@ -17,8 +17,7 @@ public class BrekekeUtils: NSObject {
     print("BrekekeUtils.init(): initialized")
   }
 
-
-  // TODO LPC
+  // TODO: LPC
   // lúc user đăng nhập thành công, check nếu đang sử dụng lpc thì gọi
   //
   @objc
@@ -32,16 +31,18 @@ public class BrekekeUtils: NSObject {
     tlsKey: String,
     port: NSNumber
   ) {
-    NSLog("BrekekeLPCManager:enableLPC");
+    NSLog("BrekekeLPCManager:enableLPC")
     var settings = Settings(
       appId: appId,
       uuid: deviceId,
       deviceName: deviceName // username pbx
     )
     // cập nhật localSsid vào arr localSsids
-    settings.pushManagerSettings.localSsids = settings.pushManagerSettings.localSsids.filter { $0 != localSsid }
-    settings.pushManagerSettings.localSsids.append(localSsid) // cái mới nhất là chèn vào sau cùng
-    if (settings.pushManagerSettings.localSsids.count > 10) {
+    settings.pushManagerSettings.localSsids = settings.pushManagerSettings
+      .localSsids.filter { $0 != localSsid }
+    settings.pushManagerSettings.localSsids
+      .append(localSsid) // cái mới nhất là chèn vào sau cùng
+    if settings.pushManagerSettings.localSsids.count > 10 {
       settings.pushManagerSettings.localSsids.removeFirst() // bỏ cái cũ nhất
     }
     // cập nhật remoteSsid
@@ -49,7 +50,7 @@ public class BrekekeUtils: NSObject {
     settings.pushManagerSettings.host = host
     settings.pushManagerSettings.port = UInt16(truncating: port)
     settings.pushManagerSettings.tlsKey = tlsKey
-    
+
     print("BrekekeLPCManager:enableLPC: \(settings)")
     do {
       try SettingsManager.shared.set(settings: settings)

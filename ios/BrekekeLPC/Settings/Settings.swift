@@ -2,14 +2,14 @@ import Foundation
 
 public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
-    // TODO LPC
+    // TODO: LPC
     // arr string lưu 10 cái ssid gần nhất mà user dùng
-    var localSsids:[String] = []
+    var localSsids: [String] = []
     // arr string lưu ssid từ server trả về
-    var remoteSsids:[String] = []
-    // TODO LPC TLS
+    var remoteSsids: [String] = []
+    // TODO: LPC TLS
     var tlsKey = ""
-    // TODO LPC
+    // TODO: LPC
     var port: UInt16 = 3000
 
     var mobileCountryCode = ""
@@ -36,12 +36,12 @@ extension Settings.PushManagerSettings {
   // configuration properties set. A valid configuration
   // includes both a host value and an SSID or private LTE network configuration.
   var isEmpty: Bool {
-    // TODO LPC
+    // TODO: LPC
     // sửa lại logic, nếu cả 2 arr ở trên empty
     if (!localSsids
-      .isEmpty && !remoteSsids.isEmpty)  || (
-        !mobileCountryCode.isEmpty && !mobileNetworkCode.isEmpty
-      ),
+      .isEmpty && !remoteSsids.isEmpty) || (
+      !mobileCountryCode.isEmpty && !mobileNetworkCode.isEmpty
+    ),
       !host.isEmpty {
       return false
     } else {
