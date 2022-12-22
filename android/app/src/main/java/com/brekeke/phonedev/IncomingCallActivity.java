@@ -169,7 +169,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatar.getSettings().setJavaScriptEnabled(true);
     webViewAvatar.getSettings().setAllowFileAccess(true);
     webViewAvatar.getSettings().setDomStorageEnabled(true);
-    webViewAvatar.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+    webViewAvatar.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
     webViewAvatarTalking = (WebView) findViewById(R.id.avatar_talking_html);
     webViewAvatarTalking.setBackgroundColor(Color.WHITE);
@@ -179,7 +179,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
-    webViewAvatarTalking.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+    webViewAvatarTalking.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);

@@ -37,7 +37,6 @@
     android:requestLegacyExternalStorage="true"
     android:theme="@style/AppTheme"
     android:largeHeap="true"
-    android:usesCleartextTraffic="true"
   >
     <activity
       android:name=".IncomingCallActivity"
