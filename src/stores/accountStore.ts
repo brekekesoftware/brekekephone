@@ -33,9 +33,6 @@ export type Account = {
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationType?: PNOptions // 'APNs', 'LPC'
-  pushNotificationSSID?: string
-  pushNotificationPort?: string // for LPC type
-  pushNotificationProtocol?: string // for LPC type
   pushNotificationEnabledSynced?: boolean
   parks?: string[]
   parkNames?: string[]
@@ -96,9 +93,6 @@ class AccountStore {
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
     pushNotificationType: 'APNs',
-    pushNotificationSSID: '',
-    pushNotificationPort: '', // for LPC type
-    pushNotificationProtocol: 'tls', // for LPC type
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
