@@ -227,6 +227,7 @@ export class PBX extends EventEmitter {
         s.pbxConfig?.['webphone.call.record'] === 'false',
         s.pbxConfig?.['webphone.call.dtmf'] === 'false',
         s.pbxConfig?.['webphone.call.hold'] === 'false',
+        s.pbxConfig?.['webphone.call.hangup'] === 'false',
       )
     }
     d.palParams = parsePalParams(s.pbxConfig)

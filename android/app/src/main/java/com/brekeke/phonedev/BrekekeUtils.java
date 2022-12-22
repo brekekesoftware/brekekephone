@@ -49,6 +49,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     public boolean hideBtnRecord;
     public boolean hideBtnDTMF;
     public boolean hideBtnHold;
+    public boolean hideBtnReject;
 
     public Config() {
       this.hideBtnTransfer = false;
@@ -59,6 +60,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       this.hideBtnRecord = false;
       this.hideBtnDTMF = false;
       this.hideBtnHold = false;
+      this.hideBtnReject = false;
     }
   }
 
@@ -608,7 +610,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       Boolean hideBtnMute,
       Boolean hideBtnRecord,
       Boolean hideBtnDTMF,
-      Boolean hideBtnHold) {
+      Boolean hideBtnHold,
+      Boolean hideBtnReject) {
     this.config.hideBtnTransfer = hideBtnTransfer;
     this.config.hideBtnPark = hideBtnPark;
     this.config.hideBtnVideo = hideBtnVideo;
@@ -617,6 +620,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     this.config.hideBtnRecord = hideBtnRecord;
     this.config.hideBtnDTMF = hideBtnDTMF;
     this.config.hideBtnHold = hideBtnHold;
+    this.config.hideBtnReject = hideBtnReject;
     // update UI with case IncomingCallActivity start before user login finish
     try {
       for (IncomingCallActivity a : activities) {
