@@ -134,8 +134,6 @@ export class SIP extends EventEmitter {
         partyName ||
         d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
-
-      console.error({ sessionStatus: ev.sessionStatus })
       return {
         rawSession: ev,
         id: ev.sessionId,

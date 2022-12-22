@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { Platform, View } from 'react-native'
 
-import { Account, accountStore, PNOptions } from '../stores/accountStore'
+import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'

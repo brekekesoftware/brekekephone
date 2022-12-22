@@ -24,7 +24,6 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.3",
     "@react-native-community/push-notification-ios": "1.10.1",
-    "add": "^2.0.6",
     "brekekejs": "github:brekekesoftware/brekekejs#cff84fbb3c8267413808802ed7d27a68abab00aa",
     "buffer": "6.0.3",
     "circular-json": "0.5.9",
@@ -76,11 +75,10 @@
     "react-native-web-linear-gradient": "1.1.2",
     "react-native-webrtc": "github:brekekesoftware/react-native-webrtc#6cac2cfa0aad8e35f0b78e5d1ac8f161431e4b71",
     "react-native-webview": "11.23.1",
-    "react-native-wifi-reborn": "^4.7.0",
+    "react-native-wifi-reborn": "4.7.0",
     "url-parse": "1.5.10",
     "uuid": "8.3.2",
-    "validatorjs": "3.22.1",
-    "yarn": "^1.22.19"
+    "validatorjs": "3.22.1"
   },
   "devDependencies": {
     "@babel/cli": "7.17.6",

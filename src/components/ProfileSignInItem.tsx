@@ -8,10 +8,9 @@ import {
   mdiClose,
   mdiDotsHorizontal,
   mdiServerNetwork,
-  mdiUnfoldMoreHorizontal,
   mdiWeb,
 } from '../assets/icons'
-import { accountStore, PNOptions } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'

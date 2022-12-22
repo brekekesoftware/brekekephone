@@ -5,7 +5,6 @@ import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
-import { BrekekeUtils } from '../utils/RnNativeModules'
 import { PBX } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
@@ -15,6 +14,7 @@ const syncPnTokenWithoutCatch = async (
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   console.log('PN sync debug: syncPnTokenWithoutCatch')
+
   if (Platform.OS === 'web') {
     console.log('PN sync debug: invalid platform')
     return
@@ -51,16 +51,15 @@ const syncPnTokenWithoutCatch = async (
   }
   const config = getAuthStore()?.pbxConfig
   const localSsid = (await WifiManager.getCurrentWifiSSID()) || ''
-  const port = config?.['webphone.lpc.port']
-    ? parseInt(config?.['webphone.lpc.port'])
-    : 3000
+  const port = parseInt(config?.['webphone.lpc.port'] || '0', 10) || 3000
   const remoteSsids = config?.['webphone.lpc.wifi.name']?.split(',') || []
   const tlsKey = config?.['webphone.lpc.hashkey'] || ''
 
-  console.log('dev:::', {
+  console.log('PN sync debug: syncPnTokenWithoutCatch pbxConfig', {
+    config,
     pushNotificationEnabled: p.pushNotificationEnabled,
     localSsid,
-    port: config?.['webphone.lpc.port'],
+    port,
     remoteSsids,
     tlsKey,
   })
@@ -90,10 +89,6 @@ const syncPnTokenWithoutCatch = async (
     } PN for account ${p.pbxUsername}`,
   )
   const arr: Promise<unknown>[] = []
-  console.log('dev:::tvoip::', {
-    t,
-    tvoip,
-  })
   if (t) {
     arr.push(
       fn({

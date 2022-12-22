@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 
 import { ProfileCreateForm } from '../components/ProfileCreateForm'
-import { Account, accountStore, PNOptions } from '../stores/accountStore'
+import { Account, accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
