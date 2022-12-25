@@ -2,7 +2,6 @@ import { Platform } from 'react-native'
 import WifiManager from 'react-native-wifi-reborn'
 
 import { Account, accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { toBoolean } from '../utils/string'

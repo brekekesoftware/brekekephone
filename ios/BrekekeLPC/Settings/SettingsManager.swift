@@ -31,7 +31,7 @@ class SettingsManager: NSObject {
     SettingsManager.logger.log("settings init(): \(settings)")
     if settings == nil {
       settings = Settings(
-        appId: "",
+        appid: "",
         uuid: "",
         deviceName: ""
       )

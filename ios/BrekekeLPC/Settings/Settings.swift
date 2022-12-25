@@ -2,19 +2,20 @@ import Foundation
 
 public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
+    var host = "apps.brekeke.com"
+    var port: UInt16 = 3000
     var localSsids: [String] = []
     var remoteSsids: [String] = []
     var tlsKeyHash = ""
-    var port: UInt16 = 3000
 
     var mobileCountryCode = ""
     var mobileNetworkCode = ""
     var trackingAreaCode = ""
-    var host = "apps.brekeke.com"
+
     var enabled = true
   }
 
-  var appId = "com.brekeke.phonedev"
+  var appid = "com.brekeke.phonedev"
   var uuid: String
   var deviceName: String
   var pushManagerSettings = PushManagerSettings()
@@ -22,7 +23,7 @@ public struct Settings: Codable, Equatable {
 
 extension Settings {
   var user: User {
-    User(uuid: uuid, deviceName: deviceName, appid: appId)
+    User(uuid: uuid, deviceName: deviceName, appid: appid)
   }
 }
 

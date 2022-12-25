@@ -74,7 +74,6 @@ export const ProfileSignInItem: FC<{
   if (!p) {
     return null
   }
-  const isWeb = Platform.OS === 'web'
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
 
   return (
