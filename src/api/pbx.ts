@@ -19,7 +19,7 @@ export class PBX extends EventEmitter {
   private connectTimeoutId = 0
 
   // wait auth state to success
-  needToWait = true
+  isMainInstance = true
 
   connect = async (p: Account, palParamUserReconnect?: boolean) => {
     console.log('PBX PN debug: call pbx.connect')
@@ -182,7 +182,7 @@ export class PBX extends EventEmitter {
     }
     // when sync pn token, needToWait = false
     // we will not emit pal in that case
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       embedApi.emit('pal', p, client)
     }
   }
@@ -202,20 +202,27 @@ export class PBX extends EventEmitter {
     }
   }
 
-  getConfig = async (force?: boolean) => {
-    const s = getAuthStore()
-    if (s.pbxConfig) {
-      return s.pbxConfig
-    }
-    if (this.needToWait && !force) {
-      await waitPbx()
+  getConfig = async (skipWait?: boolean) => {
+    if (this.isMainInstance) {
+      const s = getAuthStore()
+      if (s.pbxConfig) {
+        return s.pbxConfig
+      }
+      if (!skipWait) {
+        await waitPbx()
+      }
     }
     if (!this.client) {
       return
     }
-    s.pbxConfig = await this.client.call_pal('getProductInfo', {
+    const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
+    if (!this.isMainInstance) {
+      return config
+    }
+    const s = getAuthStore()
+    s.pbxConfig = config
     const d = await s.getCurrentDataAsync()
     if (Platform.OS === 'android') {
       BrekekeUtils.setConfig(
@@ -235,7 +242,7 @@ export class PBX extends EventEmitter {
   }
 
   createSIPAccessToken = async (sipUsername: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -247,7 +254,7 @@ export class PBX extends EventEmitter {
   }
 
   getUsers = async (tenant: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -262,7 +269,7 @@ export class PBX extends EventEmitter {
     })
   }
   getExtraUsers = async (ids: string[]): Promise<PbxUser[] | undefined> => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     const cp = getAuthStore().getCurrentAccount()
@@ -282,7 +289,7 @@ export class PBX extends EventEmitter {
   }
 
   getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -346,7 +353,7 @@ export class PBX extends EventEmitter {
     offset: number
     limit: number
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -378,7 +385,7 @@ export class PBX extends EventEmitter {
     return res?.filter(item => !!!item.shared) || []
   }
   getContact = async (id: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -399,7 +406,7 @@ export class PBX extends EventEmitter {
     }
   }
   deleteContact = async (id: string[]) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -411,7 +418,7 @@ export class PBX extends EventEmitter {
     return res
   }
   setContact = async (contact: Phonebook2) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -427,7 +434,7 @@ export class PBX extends EventEmitter {
   }
 
   holdTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -441,7 +448,7 @@ export class PBX extends EventEmitter {
   }
 
   unholdTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -455,7 +462,7 @@ export class PBX extends EventEmitter {
   }
 
   startRecordingTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -469,7 +476,7 @@ export class PBX extends EventEmitter {
   }
 
   stopRecordingTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -487,7 +494,7 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -507,7 +514,7 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -522,7 +529,7 @@ export class PBX extends EventEmitter {
   }
 
   joinTalkerTransfer = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -536,7 +543,7 @@ export class PBX extends EventEmitter {
   }
 
   stopTalkerTransfer = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -550,7 +557,7 @@ export class PBX extends EventEmitter {
   }
 
   parkTalker = async (tenant: string, talker: string, atNumber: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -565,7 +572,7 @@ export class PBX extends EventEmitter {
   }
 
   sendDTMF = async (signal: string, tenant: string, talker_id: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -578,32 +585,32 @@ export class PBX extends EventEmitter {
     })
     return true
   }
+
   setLPCToken = async ({
     device_id,
     username,
     voip = false,
     host,
+    port,
     localSsid,
     remoteSsids,
-    tlsKey,
-    port,
+    tlsKeyHash,
   }: {
     device_id: string
     username: string
     voip?: boolean
     host: string
+    port: number
     localSsid: string
     remoteSsids: string[]
-    tlsKey: string
-    port: number
+    tlsKeyHash: string
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
       return false
     }
-    // await this.removeApnsToken({device_id, username, voip})
     await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '4',
@@ -612,21 +619,17 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
-
     BrekekeUtils.enableLPC(
       device_id,
-      'com.brekeke.phonedev',
       username,
       host,
+      port,
       localSsid,
       remoteSsids,
-      tlsKey,
-      port,
+      tlsKeyHash,
     )
-
     return true
   }
-
   setApnsToken = async ({
     device_id,
     username,
@@ -637,13 +640,12 @@ export class PBX extends EventEmitter {
     voip?: boolean
   }) => {
     console.log('devv::setApnsToken')
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
       return false
     }
-
     await this.client.call_pal('pnmanage', {
       command: 'set',
       service_id: '11',
@@ -655,7 +657,6 @@ export class PBX extends EventEmitter {
     BrekekeUtils.disableLPC()
     return true
   }
-
   setFcmPnToken = async ({
     device_id,
     username,
@@ -665,7 +666,7 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -679,6 +680,34 @@ export class PBX extends EventEmitter {
       username: username + (voip ? '@voip' : ''),
       device_id,
     })
+    return true
+  }
+
+  removeLPCToken = async ({
+    device_id,
+    username,
+    voip = false,
+  }: {
+    device_id: string
+    username: string
+    voip?: boolean
+  }) => {
+    console.log('devv::removeLPCToken')
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return false
+    }
+    await this.client.call_pal('pnmanage', {
+      command: 'remove',
+      service_id: '4',
+      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
+      user_agent: 'react-native',
+      username: username + (voip ? '@voip' : ''),
+      device_id,
+    })
+    BrekekeUtils.disableLPC()
     return true
   }
   removeApnsToken = async ({
@@ -690,7 +719,7 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -706,36 +735,6 @@ export class PBX extends EventEmitter {
     })
     return true
   }
-  removeLPCToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    console.log('devv::removeLPCToken')
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '4',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-
-    BrekekeUtils.disableLPC()
-
-    return true
-  }
-
   removeFcmPnToken = async ({
     device_id,
     username,
@@ -745,7 +744,7 @@ export class PBX extends EventEmitter {
     username: string
     voip?: boolean
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -762,7 +761,7 @@ export class PBX extends EventEmitter {
     return true
   }
 
-  addWebPnToken = async ({
+  setWebPnToken = async ({
     auth_secret,
     endpoint,
     key,
@@ -773,7 +772,7 @@ export class PBX extends EventEmitter {
     username: string
     key: string
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {

@@ -4,7 +4,7 @@ public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
     var localSsids: [String] = []
     var remoteSsids: [String] = []
-    var tlsKey = ""
+    var tlsKeyHash = ""
     var port: UInt16 = 3000
 
     var mobileCountryCode = ""
@@ -14,7 +14,7 @@ public struct Settings: Codable, Equatable {
     var enabled = true
   }
 
-  var appId: String
+  var appId = "com.brekeke.phonedev"
   var uuid: String
   var deviceName: String
   var pushManagerSettings = PushManagerSettings()

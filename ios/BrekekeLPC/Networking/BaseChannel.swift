@@ -23,7 +23,7 @@ class BaseChannel {
     Never>(false)
   private let hostSubject = CurrentValueSubject<String, Never>("")
   private var port: UInt16 = 3000
-  private var tlsKey: String = ""
+  private var tlsKeyHash: String = ""
   private let stateSubject = CurrentValueSubject<NetworkSession.State,
     Never>(.disconnected)
   private let registrationSubject = CurrentValueSubject<User?, Never>(nil)
@@ -40,7 +40,7 @@ class BaseChannel {
       logger: Logger(prependString: "Heartbeat Monitor",
                      subsystem: .heartbeat)
     )
-    self.logger.log("Init:: \(port) \(tlsKey)")
+    self.logger.log("Init:: \(port) \(tlsKeyHash)")
     // Observe the network session's state changes and react.
     networkSession.statePublisher
       .combineLatest(registrationSubject)
@@ -88,12 +88,13 @@ class BaseChannel {
 
         switch connectAction {
         case let .connect(host):
-          self.logger.log("Connecting to - \(host) \(self.port) \(self.tlsKey)")
+          self.logger
+            .log("Connecting to - \(host) \(self.port) \(self.tlsKeyHash)")
 
           let connection = self.setupNewConnection(
             to: host,
             port: self.port,
-            tlsKey: self.tlsKey
+            tlsKeyHash: self.tlsKeyHash
           )
           self.networkSession.connect(connection: connection)
         case .disconnect:
@@ -107,11 +108,11 @@ class BaseChannel {
   private func setupNewConnection(
     to host: String,
     port: UInt16,
-    tlsKey: String
+    tlsKeyHash: String
   ) -> NWConnection {
     var tls: NWProtocolTLS.Options?
-    if !tlsKey.isEmpty {
-      tls = ConnectionOptions.TLS.Client(publicKeyHash: tlsKey).options
+    if !tlsKeyHash.isEmpty {
+      tls = ConnectionOptions.TLS.Client(publicKeyHash: tlsKeyHash).options
     }
 
     let parameters = NWParameters(
@@ -248,9 +249,9 @@ class BaseChannel {
     logger.log("setPort:: \(self.port)")
   }
 
-  func setTlsKey(_ tlsKey: String) {
-    self.tlsKey = tlsKey
-    logger.log("setTlsKey:: \(self.tlsKey)")
+  func setTlsKey(_ tlsKeyHash: String) {
+    self.tlsKeyHash = tlsKeyHash
+    logger.log("setTlsKey:: \(self.tlsKeyHash)")
   }
 
   // MARK: - Registration

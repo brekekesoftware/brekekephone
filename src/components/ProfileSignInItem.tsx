@@ -97,20 +97,18 @@ export const ProfileSignInItem: FC<{
         <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
         <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
       </RnTouchableOpacity>
-      {!isWeb && (
-        <Field
-          label={intl`PUSH NOTIFICATION`}
-          onValueChange={(e: boolean) =>
-            accountStore.upsertAccount({
-              id: p.id,
-              pushNotificationEnabled: e,
-            })
-          }
-          type='Switch'
-          value={p.pushNotificationEnabled}
-          loading={isLoading}
-        />
-      )}
+      <Field
+        label={intl`PUSH NOTIFICATION`}
+        onValueChange={(e: boolean) =>
+          accountStore.upsertAccount({
+            id: p.id,
+            pushNotificationEnabled: e,
+          })
+        }
+        type='Switch'
+        value={p.pushNotificationEnabled}
+        loading={isLoading}
+      />
       <Field
         label={intl`UC`}
         onValueChange={(e: boolean) =>

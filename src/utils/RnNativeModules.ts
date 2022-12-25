@@ -41,13 +41,12 @@ type TBrekekeUtils = {
   stopRBT(): void
   enableLPC(
     deviceId: string,
-    appId: string,
     deviceName: string,
     host: string,
+    port: number,
     localSsid: string,
     remoteSsids: string[],
-    tlsKey: string,
-    port: number,
+    tlsKeyHash: string,
   ): void
   disableLPC(): void
 

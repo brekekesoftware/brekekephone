@@ -79,7 +79,7 @@ class BrekekeLPCExtension: NEAppPushProvider {
         self.channel.register(user)
         self.channel.setHost(settings.pushManagerSettings.host)
         self.channel.setPort(settings.pushManagerSettings.port)
-        self.channel.setTlsKey(settings.pushManagerSettings.tlsKey)
+        self.channel.setTlsKey(settings.pushManagerSettings.tlsKeyHash)
       }
       .store(in: &cancellables)
   }

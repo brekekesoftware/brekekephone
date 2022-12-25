@@ -32,7 +32,6 @@ export type Account = {
   pbxTurnEnabled: boolean
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
-  pushNotificationType?: PNOptions // 'APNs', 'LPC'
   pushNotificationEnabledSynced?: boolean
   parks?: string[]
   parkNames?: string[]
@@ -92,7 +91,6 @@ class AccountStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
-    pushNotificationType: 'APNs',
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
@@ -171,10 +169,8 @@ class AccountStore {
           noUpsert: true,
         })
       } else if (
-        (typeof p.pushNotificationEnabled === 'boolean' &&
-          p.pushNotificationEnabled !== p0.pushNotificationEnabled) ||
-        (p.pushNotificationEnabled &&
-          p.pushNotificationType !== p0.pushNotificationType)
+        typeof p.pushNotificationEnabled === 'boolean' &&
+        p.pushNotificationEnabled !== p0.pushNotificationEnabled
       ) {
         p1.pushNotificationEnabledSynced = false
         SyncPnToken().sync(p1, {

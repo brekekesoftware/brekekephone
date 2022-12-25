@@ -20,17 +20,15 @@ public class BrekekeUtils: NSObject {
   @objc
   func enableLPC(
     _ deviceId: String,
-    appId: String,
     deviceName: String,
     host: String,
+    port: NSNumber,
     localSsid: String,
     remoteSsids: NSArray,
-    tlsKey: String,
-    port: NSNumber
+    tlsKeyHash: String
   ) {
     print("BrekekeLPCManager:enableLPC")
     var settings = Settings(
-      appId: appId,
       uuid: deviceId,
       deviceName: deviceName
     )
@@ -46,7 +44,7 @@ public class BrekekeUtils: NSObject {
     settings.pushManagerSettings.remoteSsids = remoteSsids as! [String]
     settings.pushManagerSettings.host = host
     settings.pushManagerSettings.port = UInt16(truncating: port)
-    settings.pushManagerSettings.tlsKey = tlsKey
+    settings.pushManagerSettings.tlsKeyHash = tlsKeyHash
     print("BrekekeLPCManager:enableLPC: \(settings)")
     do {
       try SettingsManager.shared.set(settings: settings)
