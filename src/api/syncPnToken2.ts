@@ -72,6 +72,7 @@ const syncPnTokenWithoutCatch = async (
         throw new Error('PN sync debug: Empty ios voip PN token')
       }
       if (!t) {
+        // TODO why?
         t = tvoip
       }
     }
