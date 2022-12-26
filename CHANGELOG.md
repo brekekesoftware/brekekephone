@@ -1,3 +1,8 @@
+#### 2.11.8
+
+- Disable hangup button when pbx config webphone.call.hangup = false
+- Fix android PN screen webview can not load http image: allow http clear text traffic
+
 #### 2.11.7
 
 - Keep avatar webview html/js state for outgoing calls or incoming calls without PN

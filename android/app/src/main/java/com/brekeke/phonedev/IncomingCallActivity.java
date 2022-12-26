@@ -297,6 +297,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void updateConfig() {
+    if (BrekekeUtils.config.hideBtnReject) {
+      btnReject.setVisibility(View.GONE);
+    }
     if (BrekekeUtils.config.hideBtnTransfer) {
       vBtnTransfer.setVisibility(View.GONE);
     }

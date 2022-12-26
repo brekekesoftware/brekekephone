@@ -21,6 +21,7 @@ type TBrekekeUtils = {
     hideBtnRecord: boolean,
     hideBtnDTMF: boolean,
     hideBtnHold: boolean,
+    hideBtnReject: boolean,
   ): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
   setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
