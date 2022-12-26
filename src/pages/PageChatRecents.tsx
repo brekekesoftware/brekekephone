@@ -1,4 +1,4 @@
-import stableStringify from 'json-stable-stringify'
+import jsonStableStringify from 'json-stable-stringify'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { observer } from 'mobx-react'
@@ -43,7 +43,7 @@ export class PageChatRecents extends Component {
       arr2.pop()
     }
     const d = await getAuthStore().getCurrentDataAsync()
-    if (stableStringify(arr2) !== stableStringify(d.recentChats)) {
+    if (jsonStableStringify(arr2) !== jsonStableStringify(d.recentChats)) {
       d.recentChats = arr2
       accountStore.saveAccountsToLocalStorageDebounced()
     }

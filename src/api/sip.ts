@@ -2,7 +2,7 @@ import 'brekekejs/lib/jsonrpc'
 import 'brekekejs/lib/webrtcclient'
 
 import EventEmitter from 'eventemitter3'
-import stableStringify from 'json-stable-stringify'
+import jsonStableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
@@ -31,7 +31,7 @@ const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
   await accountStore.waitStorageLoaded()
   const exist = !!getAuthStore().findAccountByPn(n)
-  const k = n.id || stableStringify(n)
+  const k = n.id || jsonStableStringify(n)
   if (!alreadyRemovePnTokenViaSip[k] && !exist) {
     alreadyRemovePnTokenViaSip[k] = true
     removePnTokenViaSip(n)

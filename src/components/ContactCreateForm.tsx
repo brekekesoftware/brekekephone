@@ -1,4 +1,4 @@
-import stableStringify from 'json-stable-stringify'
+import jsonStableStringify from 'json-stable-stringify'
 import cloneDeep from 'lodash/cloneDeep'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
@@ -104,7 +104,9 @@ export const ContactsCreateForm: FC<{
       fields: getFields() as ItemPBForm[],
     },
     hasUnsavedChanges: () => {
-      return !(stableStringify($.phonebook) === stableStringify(defaultObj))
+      return !(
+        jsonStableStringify($.phonebook) === jsonStableStringify(defaultObj)
+      )
     },
 
     onBackBtnPress: () => {

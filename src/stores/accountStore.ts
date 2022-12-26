@@ -1,4 +1,4 @@
-import stringify from 'json-stable-stringify'
+import jsonStableStringify from 'json-stable-stringify'
 import debounce from 'lodash/debounce'
 import uniqBy from 'lodash/uniqBy'
 import { action, computed, observable, runInAction } from 'mobx'
@@ -66,6 +66,7 @@ export type AccountData = {
     users: (UcBuddy | UcBuddyGroup)[]
   }
   palParams?: { [k: string]: string }
+  lpcParams?: string
 }
 
 class AccountStore {
@@ -241,7 +242,7 @@ class AccountStore {
 }
 
 export const getAccountUniqueId = (p: Account) =>
-  stringify({
+  jsonStableStringify({
     u: p.pbxUsername,
     t: p.pbxTenant || '-',
     h: p.pbxHostname,
