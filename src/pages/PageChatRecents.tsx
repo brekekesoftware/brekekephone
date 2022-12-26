@@ -1,6 +1,5 @@
 import jsonStableStringify from 'json-stable-stringify'
-import orderBy from 'lodash/orderBy'
-import uniqBy from 'lodash/uniqBy'
+import { orderBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 

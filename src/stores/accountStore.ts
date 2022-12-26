@@ -1,6 +1,5 @@
 import jsonStableStringify from 'json-stable-stringify'
-import debounce from 'lodash/debounce'
-import uniqBy from 'lodash/uniqBy'
+import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'

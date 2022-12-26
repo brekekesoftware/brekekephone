@@ -180,7 +180,7 @@ export class PBX extends EventEmitter {
           return
       }
     }
-    // when sync pn token, needToWait = false
+    // in syncPnToken, isMainInstance = false
     // we will not emit pal in that case
     if (this.isMainInstance) {
       embedApi.emit('pal', p, client)

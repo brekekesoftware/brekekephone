@@ -1,4 +1,4 @@
-import _, { uniq } from 'lodash'
+import { cloneDeep, uniq } from 'lodash'
 import { action, observable } from 'mobx'
 
 export type RnDropdownSectionListOption = {}
@@ -63,7 +63,7 @@ export class RnDropdownSectionListStore {
       cloneHiddenGroupIndex.push(sectionIndex)
     }
     const isCollapse = !this.hiddenGroupIndex.some(itm => itm === sectionIndex)
-    const clonePositionDD = _.cloneDeep(this.listDropdownPosition)
+    const clonePositionDD = cloneDeep(this.listDropdownPosition)
 
     this.listDropdownPosition.forEach((i, index) => {
       if (index > sectionIndex) {

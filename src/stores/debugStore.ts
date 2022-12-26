@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import debounce from 'lodash/debounce'
+import { debounce } from 'lodash'
 import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking, Platform } from 'react-native'

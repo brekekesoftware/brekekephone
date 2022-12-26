@@ -1,5 +1,5 @@
 import jsonStableStringify from 'json-stable-stringify'
-import cloneDeep from 'lodash/cloneDeep'
+import { cloneDeep } from 'lodash'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { StyleSheet } from 'react-native'

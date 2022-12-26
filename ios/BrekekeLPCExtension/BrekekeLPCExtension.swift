@@ -76,10 +76,10 @@ class BrekekeLPCExtension: NEAppPushProvider {
         self.logger.log("settingsPublisher::start::user \(settings)")
         let user = User(uuid: settings.user.uuid,
                         deviceName: settings.deviceName, appid: settings.appid)
-        self.channel.register(user)
         self.channel.setHost(settings.pushManagerSettings.host)
         self.channel.setPort(settings.pushManagerSettings.port)
-        self.channel.setTlsKey(settings.pushManagerSettings.tlsKeyHash)
+        self.channel.setTlsKeyHash(settings.pushManagerSettings.tlsKeyHash)
+        self.channel.register(user)
       }
       .store(in: &cancellables)
   }

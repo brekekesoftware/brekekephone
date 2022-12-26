@@ -34,7 +34,7 @@ extension Settings.PushManagerSettings {
   var isEmpty: Bool {
     if (!localSsids.isEmpty && !remoteSsids.isEmpty) || (
       !mobileCountryCode.isEmpty && !mobileNetworkCode.isEmpty
-    ) || !host.isEmpty {
+    ), !host.isEmpty {
       return false
     } else {
       return true

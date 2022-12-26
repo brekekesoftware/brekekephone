@@ -61,7 +61,7 @@
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>React Native usage</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>The App uses the location for the network SSID</string>
+    <string>React Native usage to get network SSID for LPC</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Capture a new video to send</string>
     <key>NSPhotoLibraryAddUsageDescription</key>

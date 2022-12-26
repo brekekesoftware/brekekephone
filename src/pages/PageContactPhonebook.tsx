@@ -1,5 +1,4 @@
-import { debounce, isEmpty } from 'lodash'
-import orderBy from 'lodash/orderBy'
+import { debounce, isEmpty, orderBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'

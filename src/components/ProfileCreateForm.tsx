@@ -1,5 +1,4 @@
-import cloneDeep from 'lodash/cloneDeep'
-import isEqual from 'lodash/isEqual'
+import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { Platform, View } from 'react-native'

@@ -249,9 +249,9 @@ class BaseChannel {
     logger.log("setPort:: \(self.port)")
   }
 
-  func setTlsKey(_ tlsKeyHash: String) {
+  func setTlsKeyHash(_ tlsKeyHash: String) {
     self.tlsKeyHash = tlsKeyHash
-    logger.log("setTlsKey:: \(self.tlsKeyHash)")
+    logger.log("setTlsKeyHash:: \(self.tlsKeyHash)")
   }
 
   // MARK: - Registration
