@@ -109,6 +109,7 @@
                 android:paddingLeft="13dp"
                 android:background="@drawable/btn_reject"
                 android:drawableLeft="@drawable/ic_reject"
+                android:visibility="visible"
               />
             </LinearLayout>
             <TextView

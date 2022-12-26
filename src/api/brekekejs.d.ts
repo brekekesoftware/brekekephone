@@ -187,6 +187,7 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
+  'webphone.call.hangup': string
   'webphone.desktop.notification': string
   'sip.wss.port': string
   'webrtcclient.dtmfSendMode': string

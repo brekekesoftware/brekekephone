@@ -614,6 +614,9 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
+    const configure = getAuthStore().pbxConfig
+    const hideHangup =
+      incoming && configure?.['webphone.call.hangup'] === 'false'
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
         {c.holding ? (
@@ -636,16 +639,18 @@ class PageCallManage extends Component<{
                 textcolor='white'
               />
             )}
-            {incoming && <View style={{ width: 100 }} />}
-            <ButtonIcon
-              bgcolor={v.colors.danger}
-              color='white'
-              noborder
-              onPress={c.hangupWithUnhold}
-              path={mdiPhoneHangup}
-              size={40}
-              textcolor='white'
-            />
+            {incoming && <View style={{ width: hideHangup ? 0 : 100 }} />}
+            {!hideHangup && (
+              <ButtonIcon
+                bgcolor={v.colors.danger}
+                color='white'
+                noborder
+                onPress={c.hangupWithUnhold}
+                path={mdiPhoneHangup}
+                size={40}
+                textcolor='white'
+              />
+            )}
           </View>
         )}
       </View>
