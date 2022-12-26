@@ -64,14 +64,24 @@ const syncPnTokenWithoutCatch = async (
     }
 
     const username = webPhone.id
-    const device_id = await PushNotification.getToken()
-    if (!device_id) {
+    let t = await PushNotification.getToken()
+    let tvoip = t
+    if (Platform.OS === 'ios') {
+      tvoip = await PushNotification.getVoipToken()
+      if (!tvoip) {
+        throw new Error('PN sync debug: Empty ios voip PN token')
+      }
+      if (!t) {
+        t = tvoip
+      }
+    }
+    if (!t) {
       throw new Error('PN sync debug: Empty PN token')
     }
 
     const params = {
       username,
-      device_id,
+      device_id: t,
       voip: false,
     }
     const promises: Promise<unknown>[] = []
@@ -83,10 +93,6 @@ const syncPnTokenWithoutCatch = async (
     }
 
     if (Platform.OS === 'ios') {
-      const tvoip = await PushNotification.getVoipToken()
-      if (!tvoip) {
-        throw new Error('PN sync debug: Empty ios voip PN token')
-      }
       let shouldSetApns = pnEnabled
       const config = await pbx.getConfig()
       const lpcPort = parseInt(config?.['webphone.lpc.port'] || '0', 10)
