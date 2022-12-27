@@ -599,7 +599,7 @@ export class PBX extends EventEmitter {
   }: {
     device_id: string
     username: string
-    voip?: boolean
+    voip: boolean
     host: string
     port: number
     localSsid: string
@@ -638,7 +638,7 @@ export class PBX extends EventEmitter {
   }: {
     device_id: string
     username: string
-    voip?: boolean
+    voip: boolean
   }) => {
     console.log('devv::setApnsToken')
     if (this.isMainInstance) {
@@ -665,7 +665,7 @@ export class PBX extends EventEmitter {
   }: {
     device_id: string
     username: string
-    voip?: boolean
+    voip: boolean
   }) => {
     if (this.isMainInstance) {
       await waitPbx()
@@ -691,7 +691,7 @@ export class PBX extends EventEmitter {
   }: {
     device_id: string
     username: string
-    voip?: boolean
+    voip: boolean
   }) => {
     console.log('devv::removeLPCToken')
     if (this.isMainInstance) {
@@ -718,7 +718,7 @@ export class PBX extends EventEmitter {
   }: {
     device_id: string
     username: string
-    voip?: boolean
+    voip: boolean
   }) => {
     if (this.isMainInstance) {
       await waitPbx()
@@ -743,7 +743,7 @@ export class PBX extends EventEmitter {
   }: {
     device_id: string
     username: string
-    voip?: boolean
+    voip: boolean
   }) => {
     if (this.isMainInstance) {
       await waitPbx()
