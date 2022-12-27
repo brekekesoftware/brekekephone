@@ -65,7 +65,6 @@ export type AccountData = {
     users: (UcBuddy | UcBuddyGroup)[]
   }
   palParams?: { [k: string]: string }
-  lpcParams?: string
 }
 
 class AccountStore {
@@ -163,6 +162,7 @@ class AccountStore {
     } else {
       const p0 = { ...p1 } // Clone before assign
       Object.assign(p1, p)
+      // TODO handle case change phone index
       if (getAccountUniqueId(p0) !== getAccountUniqueId(p1)) {
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {

@@ -135,7 +135,6 @@ const syncPnTokenWithoutCatch = async (
   } catch (err) {
     console.error(err)
     disconnectPbx()
-    return
   }
 }
 

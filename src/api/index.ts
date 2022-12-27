@@ -1,8 +1,5 @@
-import stableStringify from 'json-stable-stringify'
 import { action } from 'mobx'
-import { Platform } from 'react-native'
 
-import { accountStore } from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
@@ -59,12 +56,11 @@ class Api {
     s.pbxTotalFailure = 0
     authSIP.authWithCheck()
     await waitSip()
-    const config = await pbx.getConfig()
+    await pbx.getConfig()
     const cp = s.getCurrentAccount()
     if (!cp) {
       return
     }
-
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
     if (cp.pbxLocalAllUsers === undefined) {
@@ -75,22 +71,8 @@ class Api {
     } else {
       contactStore.getPbxUsers()
     }
-
     if (s.isSignInByNotification) {
       return
-    }
-
-    const d = await s.getCurrentDataAsync()
-    const lpcParams = stableStringify({
-      port: config?.['webphone.lpc.port'],
-      wifi: config?.['webphone.lpc.wifi'],
-      keyhash: config?.['webphone.lpc.keyhash'],
-      pn: config?.['webphone.lpc.pn'],
-    })
-    if (Platform.OS === 'ios' && d.lpcParams !== lpcParams) {
-      cp.pushNotificationEnabledSynced = false
-      d.lpcParams = lpcParams
-      accountStore.saveAccountsToLocalStorageDebounced()
     }
     SyncPnToken()
       .sync(cp)
