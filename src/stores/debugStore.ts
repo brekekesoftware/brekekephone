@@ -291,19 +291,35 @@ if (Platform.OS !== 'web') {
 }
 export const debugStore = store
 
-export const compareSemVer = (newV: string, curV: string) => {
-  const curA = curV.split('.').map(Number)
-  const newA = newV.split('.').map(Number)
-  if (curA.length !== 3 || newA.length !== 3) {
-    return false
+const getSemVer = (v?: string) => {
+  const a =
+    v
+      ?.split(/[.-_]/g)
+      .map(s => s.match(/^d+/)?.[0])
+      .map(Number) || []
+  return [a[0] || 0, a[1] || 0, a[2] || 0, a[3] || 0]
+}
+
+/**
+ * Comapre 2 semantic versions
+ * @param a new version
+ * @param b current version
+ * @returns a > b ? 1 : a < b ? -1 : 0
+ */
+export const compareSemVer = (a?: string, b?: string) => {
+  const [aMajor, aMinor, aPatch, aFourth] = getSemVer(a)
+  const [bMajor, bMinor, bPatch, bFourth] = getSemVer(b)
+  if (bMajor !== aMajor) {
+    return aMajor > bMajor ? 1 : -1
   }
-  const [cMajor, cMinor, cPatch] = curA
-  const [nMajor, nMinor, nPatch] = newA
-  if (cMajor !== nMajor) {
-    return cMajor < nMajor
+  if (bMinor !== aMinor) {
+    return aMinor > bMinor ? 1 : -1
   }
-  if (cMinor !== nMinor) {
-    return cMinor < nMinor
+  if (bPatch !== aPatch) {
+    return aPatch > bPatch ? 1 : -1
   }
-  return cPatch < nPatch
+  if (bFourth !== aFourth) {
+    return aFourth > bFourth ? 1 : -1
+  }
+  return 0
 }

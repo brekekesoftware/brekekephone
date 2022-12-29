@@ -286,7 +286,7 @@ export const getLastSignedInId = async (
   if (!checkAutoSignInBrekekePhone) {
     return d
   }
-  if (d.logoutPressed || compareSemVer(currentVersion, d.version)) {
+  if (d.logoutPressed || compareSemVer(currentVersion, d.version) > 0) {
     d.autoSignInBrekekePhone = false
     return d
   }

@@ -2,10 +2,12 @@ import { Platform } from 'react-native'
 import WifiManager from 'react-native-wifi-reborn'
 
 import { Account, accountStore } from '../stores/accountStore'
+import { compareSemVer } from '../stores/debugStore'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
-import { PBX } from './pbx'
+import { PBX, PnCommand, PnServiceId } from './pbx'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
 
@@ -42,7 +44,9 @@ const syncPnTokenWithoutCatch = async (
   const pbx = new PBX()
   pbx.isMainInstance = false
   const disconnectPbx = (success?: boolean) => {
-    console.log('PBX PN debug: disconnect by syncPnToken')
+    console.log(
+      `PBX PN debug: disconnect by syncPnToken success=${success} noUpsert=${noUpsert}`,
+    )
     pbx.disconnect()
     if (success && !noUpsert) {
       accountStore.upsertAccount({
@@ -59,8 +63,7 @@ const syncPnTokenWithoutCatch = async (
     const webPhone = await updatePhoneIndex(p, pbx)
     if (!webPhone) {
       console.log('PN sync debug: can not find webphone')
-      disconnectPbx()
-      return
+      return disconnectPbx()
     }
 
     const username = webPhone.id
@@ -80,61 +83,106 @@ const syncPnTokenWithoutCatch = async (
       throw new Error('PN sync debug: Empty PN token')
     }
 
+    const c = await pbx.getConfig()
+    // const pnmanageNew = compareSemVer(c?.version, '3.15') >= 0
+    const pnmanageNew = true // TODO apps server not updated yet
+    console.log(
+      `PN sync debug: pbx version=${c?.version} pnmanageNew=${pnmanageNew}`,
+    )
+
     const params = {
       username,
       device_id: t,
-      voip: false,
     }
-    const promises: Promise<unknown>[] = []
+
+    // @ts-ignore
+    if (Platform.OS === 'web') {
+      // TODO web
+      return disconnectPbx(true)
+    }
 
     if (Platform.OS === 'android') {
-      const fn = pnEnabled ? pbx.setFcmPnToken : pbx.removeFcmPnToken
-      promises.push(fn(params))
-      promises.push(fn({ ...params, voip: true }))
-    }
-
-    if (Platform.OS === 'ios') {
-      let shouldSetApns = pnEnabled
-      const config = await pbx.getConfig()
-      const lpcPort = parseInt(config?.['webphone.lpc.port'] || '0', 10)
-      if (lpcPort) {
-        shouldSetApns = toBoolean(config?.['webphone.lpc.pn'])
-        const localSsid = (await WifiManager.getCurrentWifiSSID()) || ''
-        const remoteSsids =
-          config?.['webphone.lpc.wifi']
-            ?.split(',')
-            .map(w => w.trim())
-            .filter(w => w) || []
-        const tlsKeyHash = config?.['webphone.lpc.keyhash'] || ''
-        console.log('PN sync debug: lpc data', {
-          shouldSetApns,
-          lpcPort,
-          localSsid,
-          remoteSsids,
-          tlsKeyHash,
-        })
-        const fn = pnEnabled ? pbx.setLPCToken : pbx.removeLPCToken
-        const lpcParams = {
+      if (pnmanageNew) {
+        await pbx.pnmanage({
           ...params,
-          host: p.pbxHostname,
-          port: lpcPort,
-          localSsid,
-          remoteSsids,
-          tlsKeyHash,
-        }
-        promises.push(fn(lpcParams))
-        promises.push(fn({ ...lpcParams, device_id: tvoip, voip: true }))
+          command: pnEnabled ? PnCommand.set : PnCommand.remove,
+          service_id: [PnServiceId.fcm],
+          pnmanageNew,
+          device_id_voip: tvoip,
+        })
+      } else {
+        const fn = pnEnabled ? pbx.setFcmPnToken : pbx.removeFcmPnToken
+        await Promise.all([fn(params), fn({ ...params, voip: true })])
       }
-      const fn = shouldSetApns ? pbx.setApnsToken : pbx.removeApnsToken
-      promises.push(fn(params))
-      promises.push(fn({ ...params, device_id: tvoip, voip: true }))
+      return disconnectPbx(true)
     }
 
-    await Promise.all(promises)
-    disconnectPbx(true)
+    const lpcPort = parseInt(c?.['webphone.lpc.port'] || '0', 10)
+    if (!lpcPort) {
+      BrekekeUtils.disableLPC()
+      if (pnmanageNew) {
+        await pbx.pnmanage({
+          ...params,
+          command: pnEnabled ? PnCommand.set : PnCommand.remove,
+          service_id: [PnServiceId.apns],
+          pnmanageNew,
+          device_id_voip: tvoip,
+        })
+      } else {
+        const fn = pnEnabled ? pbx.setApnsToken : pbx.removeApnsToken
+        await Promise.all([
+          fn(params),
+          fn({ ...params, device_id: tvoip, voip: true }),
+        ])
+      }
+      return disconnectPbx(true)
+    }
+
+    // pnmanageNew must be true since lpc is only in pbx 3.15 and above
+    const localSsid = (await WifiManager.getCurrentWifiSSID()) || ''
+    const remoteSsids =
+      c?.['webphone.lpc.wifi']
+        ?.split(',')
+        .map(w => w.trim())
+        .filter(w => w) || []
+    const tlsKeyHash = c?.['webphone.lpc.keyhash'] || ''
+    const lpcPn = toBoolean(c?.['webphone.lpc.pn'])
+    console.log('PN sync debug: lpc data', {
+      pnmanageNew,
+      lpcPort,
+      localSsid,
+      remoteSsids,
+      tlsKeyHash,
+      lpcPn,
+    })
+    if (pnEnabled) {
+      BrekekeUtils.enableLPC(
+        tvoip,
+        username,
+        p.pbxHostname,
+        lpcPort,
+        localSsid,
+        remoteSsids,
+        tlsKeyHash,
+      )
+    } else {
+      BrekekeUtils.disableLPC()
+    }
+    const service_id = [PnServiceId.lpc]
+    if (lpcPn) {
+      service_id.push(PnServiceId.apns)
+    }
+    await pbx.pnmanage({
+      ...params,
+      command: pnEnabled ? PnCommand.set : PnCommand.remove,
+      service_id,
+      pnmanageNew: true,
+      device_id_voip: tvoip,
+    })
+    return disconnectPbx(true)
   } catch (err) {
     console.error(err)
-    disconnectPbx()
+    return disconnectPbx()
   }
 }
 

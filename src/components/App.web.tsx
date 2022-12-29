@@ -6,6 +6,7 @@ import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import Url from 'url-parse'
 
+import { bundleIdentifier } from '../api/pbx'
 import brand from '../assets/brand.png'
 import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
@@ -99,7 +100,7 @@ export const App = () => {
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phonedev;end`
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=${bundleIdentifier};end`
     child = (
       <>
         <RnImage

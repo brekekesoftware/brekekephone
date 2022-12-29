@@ -587,214 +587,126 @@ export class PBX extends EventEmitter {
     return true
   }
 
-  setLPCToken = async ({
-    device_id,
-    username,
-    voip = false,
-    host,
-    port,
-    localSsid,
-    remoteSsids,
-    tlsKeyHash,
-  }: {
-    device_id: string
-    username: string
-    voip: boolean
-    host: string
-    port: number
-    localSsid: string
-    remoteSsids: string[]
-    tlsKeyHash: string
-  }) => {
+  pnmanage = async (d: PnParams) => {
     if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
       return false
     }
+    const {
+      pnmanageNew,
+      command,
+      service_id,
+      device_id,
+      device_id_voip,
+      auth_secret,
+      endpoint,
+      key,
+    } = d
+    const isFcm =
+      !Array.isArray(service_id) &&
+      (service_id === PnServiceId.fcm || service_id === PnServiceId.web)
+    let application_id = isFcm ? fcmApplicationId : bundleIdentifier
+    let { username } = d
+    if (!pnmanageNew && d.voip) {
+      if (!isFcm) {
+        application_id += '.voip'
+      }
+      username += '@voip'
+    }
     await this.client.call_pal('pnmanage', {
-      command: 'set',
-      service_id: '4',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-    BrekekeUtils.enableLPC(
-      device_id,
+      command,
+      service_id,
+      application_id,
+      user_agent: Platform.OS === 'web' ? navigator.userAgent : 'react-native',
       username,
-      host,
-      port,
-      localSsid,
-      remoteSsids,
-      tlsKeyHash,
-    )
-    return true
-  }
-  setApnsToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip: boolean
-  }) => {
-    console.log('devv::setApnsToken')
-    if (this.isMainInstance) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'set',
-      service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
       device_id,
-    })
-    BrekekeUtils.disableLPC()
-    return true
-  }
-  setFcmPnToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip: boolean
-  }) => {
-    if (this.isMainInstance) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'set',
-      service_id: '12',
-      application_id: '22177122297',
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+      device_id_voip,
+      add_voip: pnmanageNew ? true : undefined,
+      auth_secret,
+      endpoint,
+      key,
     })
     return true
   }
 
-  removeLPCToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip: boolean
-  }) => {
-    console.log('devv::removeLPCToken')
-    if (this.isMainInstance) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '4',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+  setWebPnToken = async (d: PnParamsLegacy) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.web,
     })
-    BrekekeUtils.disableLPC()
-    return true
   }
-  removeApnsToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip: boolean
-  }) => {
-    if (this.isMainInstance) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+  removeWebPnToken = async (d: PnParamsLegacy) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.web,
     })
-    return true
-  }
-  removeFcmPnToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip: boolean
-  }) => {
-    if (this.isMainInstance) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '12',
-      application_id: '22177122297',
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-    return true
   }
 
-  setWebPnToken = async ({
-    auth_secret,
-    endpoint,
-    key,
-    username,
-  }: {
-    auth_secret: string
-    endpoint: string
-    username: string
-    key: string
-  }) => {
-    if (this.isMainInstance) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client
-      .call_pal('pnmanage', {
-        command: 'set',
-        service_id: '13',
-        application_id: '22177122297',
-        user_agent: navigator.userAgent,
-        username,
-        endpoint,
-        auth_secret,
-        key,
-      })
-      .catch((err: Error) => {
-        console.error('pbx.addWebPnToken:', err)
-      })
-    return true
+  setFcmPnToken = async (d: PnParamsLegacy) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.fcm,
+    })
+  }
+  removeFcmPnToken = async (d: PnParamsLegacy) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.fcm,
+    })
+  }
+
+  setApnsToken = async (d: PnParamsLegacy) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.apns,
+    })
+  }
+  removeApnsToken = async (d: PnParamsLegacy) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.apns,
+    })
   }
 }
 
 export const pbx = new PBX()
+
+export type PnParams = {
+  command: PnCommand
+  service_id: PnServiceId | PnServiceId[]
+  // common
+  device_id: string
+  username: string
+  voip?: boolean
+  // new pnmanage in pbx 3.15 which can compose multile services
+  pnmanageNew?: boolean
+  device_id_voip?: string
+  // for web browser
+  auth_secret?: string
+  endpoint?: string
+  key?: string
+}
+export type PnParamsLegacy = Omit<
+  PnParams,
+  'command' | 'service_id' | 'pnmanageNew' | 'device_id_voip'
+>
+export enum PnCommand {
+  set = 'set',
+  remove = 'remove',
+}
+export enum PnServiceId {
+  lpc = '4',
+  apns = '11',
+  fcm = '12',
+  web = '13',
+}
+export const fcmApplicationId = '22177122297'
+export const bundleIdentifier = 'com.brekeke.phonedev'

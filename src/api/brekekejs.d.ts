@@ -187,30 +187,31 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
-  'webphone.call.hangup': string
-  'webphone.desktop.notification': string
   'sip.wss.port': string
-  'webrtcclient.dtmfSendMode': string
-  'webphone.dtmf.send.pal': string
-  'webphone.turn.server': string
-  'webphone.turn.username': string
-  'webphone.turn.credential': string
-  'webphone.uc.host': string
+  version: string
   'webphone.allusers': string
-  'webphone.users.max': string
-  'webphone.pal.param.user': string
-  'webphone.call.transfer': string
-  'webphone.call.speaker': string
-  'webphone.call.park': string
-  'webphone.call.video': string
-  'webphone.call.mute': string
-  'webphone.call.record': string
   'webphone.call.dtmf': string
+  'webphone.call.hangup': string
   'webphone.call.hold': string
-  'webphone.lpc.port': string
-  'webphone.lpc.wifi': string
+  'webphone.call.mute': string
+  'webphone.call.park': string
+  'webphone.call.record': string
+  'webphone.call.speaker': string
+  'webphone.call.transfer': string
+  'webphone.call.video': string
+  'webphone.desktop.notification': string
+  'webphone.dtmf.send.pal': string
   'webphone.lpc.keyhash': string
   'webphone.lpc.pn': string
+  'webphone.lpc.port': string
+  'webphone.lpc.wifi': string
+  'webphone.pal.param.user': string
+  'webphone.turn.credential': string
+  'webphone.turn.server': string
+  'webphone.turn.username': string
+  'webphone.uc.host': string
+  'webphone.users.max': string
+  'webrtcclient.dtmfSendMode': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
@@ -268,7 +269,7 @@ export type PbxDeleteContactResponse = {
 }
 export type PbxPnmanageParam = {
   command: string
-  service_id: string
+  service_id: string | string[]
   application_id: string
   user_agent: string
   username: string
@@ -276,6 +277,7 @@ export type PbxPnmanageParam = {
   endpoint?: string
   auth_secret?: string
   key?: string
+  add_voip?: boolean
 }
 export type PbxHoldParam = {
   tenant: string
