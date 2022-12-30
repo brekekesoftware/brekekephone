@@ -587,7 +587,7 @@ export class PBX extends EventEmitter {
     return true
   }
 
-  pnmanage = async (d: PnParams) => {
+  pnmanage = async (d: PnParamsNew) => {
     if (this.isMainInstance) {
       await waitPbx()
     }
@@ -631,14 +631,14 @@ export class PBX extends EventEmitter {
     return true
   }
 
-  setWebPnToken = async (d: PnParamsLegacy) => {
+  setWebPnToken = async (d: PnParams) => {
     return this.pnmanage({
       ...d,
       command: PnCommand.set,
       service_id: PnServiceId.web,
     })
   }
-  removeWebPnToken = async (d: PnParamsLegacy) => {
+  removeWebPnToken = async (d: PnParams) => {
     return this.pnmanage({
       ...d,
       command: PnCommand.remove,
@@ -646,14 +646,14 @@ export class PBX extends EventEmitter {
     })
   }
 
-  setFcmPnToken = async (d: PnParamsLegacy) => {
+  setFcmPnToken = async (d: PnParams) => {
     return this.pnmanage({
       ...d,
       command: PnCommand.set,
       service_id: PnServiceId.fcm,
     })
   }
-  removeFcmPnToken = async (d: PnParamsLegacy) => {
+  removeFcmPnToken = async (d: PnParams) => {
     return this.pnmanage({
       ...d,
       command: PnCommand.remove,
@@ -661,14 +661,14 @@ export class PBX extends EventEmitter {
     })
   }
 
-  setApnsToken = async (d: PnParamsLegacy) => {
+  setApnsToken = async (d: PnParams) => {
     return this.pnmanage({
       ...d,
       command: PnCommand.set,
       service_id: PnServiceId.apns,
     })
   }
-  removeApnsToken = async (d: PnParamsLegacy) => {
+  removeApnsToken = async (d: PnParams) => {
     return this.pnmanage({
       ...d,
       command: PnCommand.remove,
@@ -680,24 +680,22 @@ export class PBX extends EventEmitter {
 export const pbx = new PBX()
 
 export type PnParams = {
-  command: PnCommand
-  service_id: PnServiceId | PnServiceId[]
   // common
   device_id: string
   username: string
   voip?: boolean
-  // new pnmanage in pbx 3.15 which can compose multile services
-  pnmanageNew?: boolean
-  device_id_voip?: string
   // for web browser
   auth_secret?: string
   endpoint?: string
   key?: string
 }
-export type PnParamsLegacy = Omit<
-  PnParams,
-  'command' | 'service_id' | 'pnmanageNew' | 'device_id_voip'
->
+export type PnParamsNew = PnParams & {
+  // new pnmanage in pbx 3.15 which can compose multile services
+  command: PnCommand
+  service_id: PnServiceId | PnServiceId[]
+  pnmanageNew?: boolean
+  device_id_voip?: string
+}
 export enum PnCommand {
   set = 'set',
   remove = 'remove',

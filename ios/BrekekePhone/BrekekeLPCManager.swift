@@ -15,7 +15,7 @@ class BrekekeLPCManager: NSObject {
   public var pushManager: NEAppPushManager?
   private let pushManagerDescription = "BrekekeLPCExtension"
   private let pushProviderBundleIdentifier =
-    "com.brekeke.phonedev.BrekekeLPCExtension"
+    Settings.bundleIdentifier + ".BrekekeLPCExtension"
   private var cancellables = Set<AnyCancellable>()
 
   override init() {

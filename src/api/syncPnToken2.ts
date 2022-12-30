@@ -84,8 +84,7 @@ const syncPnTokenWithoutCatch = async (
     }
 
     const c = await pbx.getConfig()
-    // const pnmanageNew = compareSemVer(c?.version, '3.15') >= 0
-    const pnmanageNew = true // TODO apps server not updated yet
+    const pnmanageNew = compareSemVer(c?.version, '3.14.5') >= 0
     console.log(
       `PN sync debug: pbx version=${c?.version} pnmanageNew=${pnmanageNew}`,
     )
@@ -94,23 +93,22 @@ const syncPnTokenWithoutCatch = async (
       username,
       device_id: t,
     }
-
-    // @ts-ignore
-    if (Platform.OS === 'web') {
-      // TODO web
-      return disconnectPbx(true)
-    }
-
-    if (Platform.OS === 'android') {
-      if (pnmanageNew) {
-        await pbx.pnmanage({
+    const newParams = pnmanageNew
+      ? {
           ...params,
           command: pnEnabled ? PnCommand.set : PnCommand.remove,
-          service_id: [PnServiceId.fcm],
-          pnmanageNew,
+          service_id:
+            Platform.OS === 'android' ? [PnServiceId.fcm] : [PnServiceId.apns],
+          pnmanageNew: true,
           device_id_voip: tvoip,
-        })
+        }
+      : undefined
+
+    if (Platform.OS === 'android') {
+      if (newParams) {
+        await pbx.pnmanage(newParams)
       } else {
+        // backward compatibility
         const fn = pnEnabled ? pbx.setFcmPnToken : pbx.removeFcmPnToken
         await Promise.all([fn(params), fn({ ...params, voip: true })])
       }
@@ -118,17 +116,14 @@ const syncPnTokenWithoutCatch = async (
     }
 
     const lpcPort = parseInt(c?.['webphone.lpc.port'] || '0', 10)
-    if (!lpcPort) {
+    // if lpc is enabled pnmanageNew must be true
+    // since lpc is only available in pbx 3.14.5 and above
+    if (!lpcPort || !newParams) {
       BrekekeUtils.disableLPC()
-      if (pnmanageNew) {
-        await pbx.pnmanage({
-          ...params,
-          command: pnEnabled ? PnCommand.set : PnCommand.remove,
-          service_id: [PnServiceId.apns],
-          pnmanageNew,
-          device_id_voip: tvoip,
-        })
+      if (newParams) {
+        await pbx.pnmanage(newParams)
       } else {
+        // backward compatibility
         const fn = pnEnabled ? pbx.setApnsToken : pbx.removeApnsToken
         await Promise.all([
           fn(params),
@@ -138,7 +133,6 @@ const syncPnTokenWithoutCatch = async (
       return disconnectPbx(true)
     }
 
-    // pnmanageNew must be true since lpc is only in pbx 3.15 and above
     const localSsid = (await WifiManager.getCurrentWifiSSID()) || ''
     const remoteSsids =
       c?.['webphone.lpc.wifi']
@@ -157,6 +151,7 @@ const syncPnTokenWithoutCatch = async (
     })
     if (pnEnabled) {
       BrekekeUtils.enableLPC(
+        t,
         tvoip,
         username,
         p.pbxHostname,
@@ -168,17 +163,11 @@ const syncPnTokenWithoutCatch = async (
     } else {
       BrekekeUtils.disableLPC()
     }
-    const service_id = [PnServiceId.lpc]
+    newParams.service_id = [PnServiceId.lpc]
     if (lpcPn) {
-      service_id.push(PnServiceId.apns)
+      newParams.service_id.push(PnServiceId.apns)
     }
-    await pbx.pnmanage({
-      ...params,
-      command: pnEnabled ? PnCommand.set : PnCommand.remove,
-      service_id,
-      pnmanageNew: true,
-      device_id_voip: tvoip,
-    })
+    await pbx.pnmanage(newParams)
     return disconnectPbx(true)
   } catch (err) {
     console.error(err)

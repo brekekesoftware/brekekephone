@@ -19,8 +19,9 @@ public class BrekekeUtils: NSObject {
 
   @objc
   func enableLPC(
-    _ deviceId: String,
-    deviceName: String,
+    _ token: String,
+    tokenVoip: String,
+    username: String,
     host: String,
     port: NSNumber,
     localSsid: String,
@@ -29,8 +30,9 @@ public class BrekekeUtils: NSObject {
   ) {
     print("BrekekeLPCManager:enableLPC")
     var settings = Settings(
-      uuid: deviceId,
-      deviceName: deviceName
+      token: token,
+      tokenVoip: tokenVoip,
+      username: username
     )
     if !localSsid.isEmpty {
       settings.pushManagerSettings.localSsids = settings.pushManagerSettings

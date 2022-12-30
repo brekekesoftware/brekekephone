@@ -9,8 +9,9 @@ RCT_EXTERN_METHOD(systemUptimeMs
 RCT_EXTERN_METHOD(playRBT)
 RCT_EXTERN_METHOD(stopRBT)
 RCT_EXTERN_METHOD(enableLPC
-                  : (NSString *)deviceId deviceName
-                  : (NSString *)deviceName host
+                  : (NSString *)token tokenVoip
+                  : (NSString *)tokenVoip username
+                  : (NSString *)username host
                   : (NSString *)host port
                   : (nonnull NSNumber *)port localSsid
                   : (NSString *)localSsid remoteSsids
