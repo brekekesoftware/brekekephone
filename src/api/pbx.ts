@@ -4,6 +4,7 @@ import 'brekekejs/lib/pal'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
@@ -13,6 +14,7 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
 import { parsePalParams } from './parsePalParams'
+import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -51,7 +53,7 @@ export class PBX extends EventEmitter {
     })
     this.client = client
 
-    client.call_pal = ((method: keyof Pbx, params?: object) => {
+    client.call_pal = (method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
@@ -59,7 +61,7 @@ export class PBX extends EventEmitter {
         }
         f(params, resolve, reject)
       })
-    }) as unknown as Pbx['call_pal']
+    }
 
     client.debugLevel = 2
 
@@ -345,12 +347,10 @@ export class PBX extends EventEmitter {
 
   getContacts = async ({
     search_text,
-    shared,
     offset,
     limit,
   }: {
     search_text: string
-    shared: boolean
     offset: number
     limit: number
   }) => {
@@ -363,9 +363,6 @@ export class PBX extends EventEmitter {
     const res = await this.client.call_pal('getContactList', {
       phonebook: '',
       search_text,
-      // The shared is just indicate if the phonebook is shared or not.
-      // In the future, maybe you can add a filter like PBX UI.
-      //shared,
       offset,
       limit,
     })
@@ -374,7 +371,7 @@ export class PBX extends EventEmitter {
       display_name: contact.display_name,
       phonebook: contact.phonebook,
       user: contact.user,
-      shared: !!!contact?.user,
+      shared: !contact?.user,
       info: {},
     }))
   }
@@ -383,7 +380,7 @@ export class PBX extends EventEmitter {
       return
     }
     const res = await this.client.call_pal('getPhonebooks', {})
-    return res?.filter(item => !!!item.shared) || []
+    return res?.filter(item => !item.shared) || []
   }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
@@ -624,6 +621,7 @@ export class PBX extends EventEmitter {
       device_id,
       device_id_voip,
       add_voip: pnmanageNew ? true : undefined,
+      add_device_id_suffix: pnmanageNew ? true : undefined,
       auth_secret,
       endpoint,
       key,
@@ -678,33 +676,3 @@ export class PBX extends EventEmitter {
 }
 
 export const pbx = new PBX()
-
-export type PnParams = {
-  // common
-  device_id: string
-  username: string
-  voip?: boolean
-  // for web browser
-  auth_secret?: string
-  endpoint?: string
-  key?: string
-}
-export type PnParamsNew = PnParams & {
-  // new pnmanage in pbx 3.15 which can compose multile services
-  command: PnCommand
-  service_id: PnServiceId | PnServiceId[]
-  pnmanageNew?: boolean
-  device_id_voip?: string
-}
-export enum PnCommand {
-  set = 'set',
-  remove = 'remove',
-}
-export enum PnServiceId {
-  lpc = '4',
-  apns = '11',
-  fcm = '12',
-  web = '13',
-}
-export const fcmApplicationId = '22177122297'
-export const bundleIdentifier = 'com.brekeke.phonedev'

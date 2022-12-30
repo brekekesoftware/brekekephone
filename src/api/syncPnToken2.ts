@@ -7,7 +7,8 @@ import { compareSemVer } from '../stores/debugStore'
 import { PushNotification } from '../utils/PushNotification'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
-import { PBX, PnCommand, PnServiceId } from './pbx'
+import { PBX } from './pbx'
+import { PnCommand, PnServiceId } from './pnConfig'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
 
@@ -97,8 +98,9 @@ const syncPnTokenWithoutCatch = async (
       ? {
           ...params,
           command: pnEnabled ? PnCommand.set : PnCommand.remove,
-          service_id:
-            Platform.OS === 'android' ? [PnServiceId.fcm] : [PnServiceId.apns],
+          service_id: [
+            Platform.OS === 'android' ? PnServiceId.fcm : PnServiceId.apns,
+          ],
           pnmanageNew: true,
           device_id_voip: tvoip,
         }

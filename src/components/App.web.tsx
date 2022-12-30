@@ -6,10 +6,10 @@ import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import Url from 'url-parse'
 
-import { bundleIdentifier } from '../api/pbx'
 import brand from '../assets/brand.png'
 import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
+import { bundleIdentifier } from '../config'
 import { intl } from '../stores/intl'
 import { parse } from '../utils/deeplink-parse'
 // @ts-ignore

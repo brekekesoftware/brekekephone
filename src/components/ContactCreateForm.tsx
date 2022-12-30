@@ -175,7 +175,7 @@ export const ContactsCreateForm: FC<{
       onBack={$.onBackBtnPress}
       title={props.title}
     >
-      {!!!disabled && (
+      {!disabled && (
         <RnText
           title
           style={[
@@ -192,7 +192,7 @@ export const ContactsCreateForm: FC<{
         k='phonebook'
         onValidSubmit={$.onValidSubmit}
       />
-      {!!!disabled && (
+      {!disabled && (
         <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
           <RnText small style={css.labelAddItem}>
             {'>>' + intl`Add item`}

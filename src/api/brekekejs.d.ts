@@ -92,9 +92,11 @@ export type Pbx = PbxPal & {
   notify_voicemail?(e: PbxEvent['voicemail']): void
   notify_callrecording?(e: PbxEvent['callRecording']): void
   // not actually exist in the sdk, should be added manually
-  call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
+  call_pal<K extends keyof PbxPal>(
     k: K,
-    ...p: P extends undefined ? [] : [P]
+    ...p: Parameters<PbxPal[K]>[0] extends undefined
+      ? []
+      : [Parameters<PbxPal[K]>[0]]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
 }
 
@@ -246,7 +248,6 @@ export type PbxExtensionProperties = {
 export type PbxGetContactListParam = {
   phonebook?: string
   search_text?: string
-  shared: boolean
   offset: number
   limit: number
 }
@@ -274,10 +275,12 @@ export type PbxPnmanageParam = {
   user_agent: string
   username: string
   device_id?: string
+  device_id_voip?: string
   endpoint?: string
   auth_secret?: string
   key?: string
   add_voip?: boolean
+  add_device_id_suffix?: boolean
 }
 export type PbxHoldParam = {
   tenant: string
@@ -303,18 +306,7 @@ export type PbxContact = {
   phonebook: string
   shared: string
   display_name: string
-  info: {
-    $firstname: string
-    $lastname: string
-    $tel_work: string
-    $tel_home: string
-    $tel_mobile: string
-    $address: string
-    $company: string
-    $email: string
-    $title: string
-    $hidden: string
-  }
+  info: object
 }
 export type PbxSendDtmfParam = {
   tenant: string
@@ -413,13 +405,10 @@ export type SipConfiguration = {
   host?: string
   port?: string
   tls?: boolean
-
   user: string
   auth?: string
-
   useVideoClient?: boolean
   videoClientUser?: string
-
   user_agent?: string
   userAgent?: string
   register?: boolean

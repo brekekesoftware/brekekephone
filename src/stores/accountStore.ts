@@ -35,7 +35,6 @@ export type Account = {
   parks?: string[]
   parkNames?: string[]
   ucEnabled: boolean
-  displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
   navIndex: number
   navSubMenus: string[]

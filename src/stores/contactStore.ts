@@ -79,8 +79,6 @@ class ContactStore {
     await pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,
-        shared:
-          getAuthStore().getCurrentAccount()?.displaySharedContacts || false,
         offset: this.offset,
         limit: this.numberOfContactsPerPage,
       })
