@@ -8,6 +8,7 @@
   - If webphone.lpc.wifi is present, it will be split by comma. If it is not present, the current connected wifi will be used for lpc
   - If webphone.lpc.keyhash is present, which mean tls is enabled. The key hash will be supplied to establish tls connection
   - If webphone.lpc.pn is true, it will enable both lpc and regular pn at the same time, otherwise it will disable regular pn and use only lpc
+- Use new pnmanage pal command for pbx version 3.14.5 and above, backward compatibility for lower versions
 
 #### 2.11.7
 
