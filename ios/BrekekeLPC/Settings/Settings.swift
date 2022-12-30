@@ -3,7 +3,7 @@ import Foundation
 public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
     var host = ""
-    var port: UInt16 = 3000
+    var port: UInt16 = 3000 // default port
     var localSsids: [String] = []
     var remoteSsids: [String] = []
     var tlsKeyHash = ""
@@ -36,7 +36,7 @@ extension Settings.PushManagerSettings {
     if host.isEmpty {
       return true
     }
-    if (localSsids.isEmpty && remoteSsids.isEmpty) || mobileCountryCode
+    if localSsids.isEmpty, remoteSsids.isEmpty, mobileCountryCode
       .isEmpty || mobileNetworkCode.isEmpty {
       return true
     }

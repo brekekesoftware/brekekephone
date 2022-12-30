@@ -22,8 +22,6 @@
 		9CF1917928E34BA20048E7A1 /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917628E34BA20048E7A1 /* Bridging-Header.m */; };
 		9CF1917A28E34BA20048E7A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917728E34BA20048E7A1 /* AppDelegate.swift */; };
 		9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */; };
-		9CF382C228ED8495008FC490 /* Port.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A228ED8495008FC490 /* Port.swift */; };
-		9CF382C328ED8495008FC490 /* Port.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A228ED8495008FC490 /* Port.swift */; };
 		9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */; };
 		9CF382C528ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */; };
 		9CF382C628ED8495008FC490 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A428ED8495008FC490 /* ConnectionOptions.swift */; };
@@ -125,7 +123,6 @@
 		9CF1917628E34BA20048E7A1 /* Bridging-Header.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "Bridging-Header.m"; path = "BrekekePhone/Bridging-Header.m"; sourceTree = "<group>"; };
 		9CF1917728E34BA20048E7A1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BrekekePhone/AppDelegate.swift; sourceTree = "<group>"; };
 		9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrekekeUtils.swift; path = BrekekePhone/BrekekeUtils.swift; sourceTree = "<group>"; };
-		9CF382A228ED8495008FC490 /* Port.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Port.swift; sourceTree = "<group>"; };
 		9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartbeatCoordinator.swift; sourceTree = "<group>"; };
 		9CF382A428ED8495008FC490 /* ConnectionOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionOptions.swift; sourceTree = "<group>"; };
 		9CF382A528ED8495008FC490 /* NetworkSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
@@ -271,7 +268,6 @@
 		9CF382A128ED8495008FC490 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				9CF382A228ED8495008FC490 /* Port.swift */,
 				9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */,
 				9CF382A428ED8495008FC490 /* ConnectionOptions.swift */,
 				9CF382A528ED8495008FC490 /* NetworkSession.swift */,
@@ -531,7 +527,6 @@
 				9CF382E628ED8496008FC490 /* Logger.swift in Sources */,
 				9CF382D228ED8495008FC490 /* TextMessage.swift in Sources */,
 				9CF382E828ED8496008FC490 /* Dictionary+Mutation.swift in Sources */,
-				9CF382C228ED8495008FC490 /* Port.swift in Sources */,
 				9CF382DE28ED8495008FC490 /* User.swift in Sources */,
 				9CF382D428ED8495008FC490 /* Heartbeat.swift in Sources */,
 				9CF382D028ED8495008FC490 /* BaseChannel.swift in Sources */,
@@ -578,7 +573,6 @@
 				9CF382ED28ED8496008FC490 /* KeyCodable.swift in Sources */,
 				9CF382C928ED8495008FC490 /* NetworkSession.swift in Sources */,
 				9CF382EF28ED8496008FC490 /* Decodable+JSON.swift in Sources */,
-				9CF382C328ED8495008FC490 /* Port.swift in Sources */,
 				9CF382D928ED8495008FC490 /* Directory.swift in Sources */,
 				9CF382DF28ED8495008FC490 /* User.swift in Sources */,
 			);

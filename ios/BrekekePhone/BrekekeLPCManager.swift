@@ -33,7 +33,9 @@ class BrekekeLPCManager: NSObject {
         Never
       >? in
         var publisher: AnyPublisher<NEAppPushManager?, Swift.Error>?
-
+        if pushManagerSettings.isEmpty {
+          self.logger.log("pushManagerSettings.isEmpty true")
+        }
         if !pushManagerSettings.isEmpty, pushManagerSettings.enabled {
           var pm = pushManager ?? NEAppPushManager()
           pm.delegate = BrekekeLPCManager.shared
@@ -160,6 +162,8 @@ class BrekekeLPCManager: NSObject {
     // running on a shared iPad).
     pushManager.providerConfiguration = [
       "host": pushManagerSettings.host,
+      "port": pushManagerSettings.port,
+      "tlsKeyHash": pushManagerSettings.tlsKeyHash,
     ]
 
     pushManager.matchSSIDs = !pushManagerSettings.remoteSsids
