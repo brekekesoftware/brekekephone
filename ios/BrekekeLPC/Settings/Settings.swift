@@ -4,9 +4,9 @@ public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
     var host = ""
     var port: UInt16 = 3000 // default port
+    var tlsKeyHash = ""
     var localSsids: [String] = []
     var remoteSsids: [String] = []
-    var tlsKeyHash = ""
 
     var mobileCountryCode = ""
     var mobileNetworkCode = ""

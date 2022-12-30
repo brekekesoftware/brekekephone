@@ -236,6 +236,7 @@ class BaseChannel {
       )
     self.port = port
     self.tlsKeyHash = tlsKeyHash
+    // trigger change?
     hostSubject.send(host)
   }
 

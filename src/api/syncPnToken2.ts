@@ -29,12 +29,6 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
-  if (accountStore.pnSyncLoadingMap[p.id]) {
-    console.log('PN sync debug: sync is loading')
-    return
-  }
-  accountStore.pnSyncLoadingMap[p.id] = true
-
   const pnEnabled = p.pushNotificationEnabled
   console.log(
     `PN sync debug: trying to turn ${pnEnabled ? 'on' : 'off'} PN for account ${
@@ -55,7 +49,6 @@ const syncPnTokenWithoutCatch = async (
         pushNotificationEnabledSynced: true,
       })
     }
-    accountStore.pnSyncLoadingMap[p.id] = false
   }
 
   try {
@@ -135,19 +128,19 @@ const syncPnTokenWithoutCatch = async (
       return disconnectPbx(true)
     }
 
-    const localSsid = (await WifiManager.getCurrentWifiSSID()) || ''
     const remoteSsids =
       c?.['webphone.lpc.wifi']
         ?.split(',')
         .map(w => w.trim())
         .filter(w => w) || []
+    const localSsid = remoteSsids.length ? '' : await getLocalSsid()
     const tlsKeyHash = c?.['webphone.lpc.keyhash'] || ''
     const lpcPn = toBoolean(c?.['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {
       pnmanageNew,
       lpcPort,
-      localSsid,
       remoteSsids,
+      localSsid,
       tlsKeyHash,
       lpcPn,
     })
@@ -158,8 +151,8 @@ const syncPnTokenWithoutCatch = async (
         username,
         p.pbxHostname,
         lpcPort,
-        localSsid,
         remoteSsids,
+        localSsid,
         tlsKeyHash,
       )
     } else {
@@ -172,6 +165,7 @@ const syncPnTokenWithoutCatch = async (
     await pbx.pnmanage(newParams)
     return disconnectPbx(true)
   } catch (err) {
+    console.error('PN sync debug: catch error')
     console.error(err)
     return disconnectPbx()
   }
@@ -182,9 +176,13 @@ export interface SyncPnTokenOption {
   onError?: (err: Error) => void
 }
 
-const syncPnToken = (p: Account, o: SyncPnTokenOption = {}) => {
-  return syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
-    accountStore.pnSyncLoadingMap[p.id] = false
+const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
+  if (accountStore.pnSyncLoadingMap[p.id]) {
+    console.log('PN sync debug: sync is loading')
+    return
+  }
+  accountStore.pnSyncLoadingMap[p.id] = true
+  await syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
     if (o.onError) {
       o.onError(err)
       return
@@ -194,6 +192,7 @@ const syncPnToken = (p: Account, o: SyncPnTokenOption = {}) => {
       err,
     )
   })
+  accountStore.pnSyncLoadingMap[p.id] = false
 }
 
 const syncPnTokenForAllAccounts = () => {
@@ -212,3 +211,11 @@ const m = {
 setSyncPnTokenModule(m)
 
 export type TSyncPnToken = typeof m
+
+const getLocalSsid = () =>
+  Promise.race([
+    WifiManager.getCurrentWifiSSID(),
+    new Promise<string | undefined>(r => setTimeout(r, 10000)),
+  ])
+    .then(v => v || '')
+    .catch(() => '')

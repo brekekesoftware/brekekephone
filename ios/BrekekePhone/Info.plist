@@ -55,19 +55,19 @@
       <true />
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Capture a new photo to send</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>React Native usage</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>React Native usage</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>React Native usage to get network SSID for LPC</string>
+    <string>To capture a new photo to send</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Capture a new video to send</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Save photo to photo library</string>
+    <string>To capture a new video to send</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Select from photo library</string>
+    <string>To select from photo library</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>To save photo to photo library</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>To get network SSID for LPC</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>To get network SSID for LPC</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>To get network SSID for LPC</string>
     <key>UIAppFonts</key>
     <array />
     <key>UIBackgroundModes</key>

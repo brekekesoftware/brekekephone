@@ -13,9 +13,9 @@ RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)tokenVoip username
                   : (NSString *)username host
                   : (NSString *)host port
-                  : (nonnull NSNumber *)port localSsid
-                  : (NSString *)localSsid remoteSsids
-                  : (NSArray *)remoteSsids tlsKeyHash
+                  : (nonnull NSNumber *)port remoteSsids
+                  : (NSArray *)remoteSsids localSsid
+                  : (NSString *)localSsid tlsKeyHash
                   : (NSString *)tlsKeyHash)
 RCT_EXTERN_METHOD(disableLPC)
 @end

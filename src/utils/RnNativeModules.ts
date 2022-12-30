@@ -46,8 +46,8 @@ type TBrekekeUtils = {
     username: string,
     host: string,
     port: number,
-    localSsid: string,
     remoteSsids: string[],
+    localSsid: string,
     tlsKeyHash: string,
   ): void
   disableLPC(): void

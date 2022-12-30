@@ -24,8 +24,8 @@ public class BrekekeUtils: NSObject {
     username: String,
     host: String,
     port: NSNumber,
-    localSsid: String,
     remoteSsids: NSArray,
+    localSsid: String,
     tlsKeyHash: String
   ) {
     print("BrekekeLPCManager:enableLPC")
@@ -34,6 +34,7 @@ public class BrekekeUtils: NSObject {
       tokenVoip: tokenVoip,
       username: username
     )
+    settings.pushManagerSettings.remoteSsids = remoteSsids as! [String]
     if !localSsid.isEmpty {
       settings.pushManagerSettings.localSsids = settings.pushManagerSettings
         .localSsids.filter { $0 != localSsid }
@@ -43,7 +44,6 @@ public class BrekekeUtils: NSObject {
         settings.pushManagerSettings.localSsids.removeFirst()
       }
     }
-    settings.pushManagerSettings.remoteSsids = remoteSsids as! [String]
     settings.pushManagerSettings.host = host
     settings.pushManagerSettings.port = UInt16(truncating: port)
     settings.pushManagerSettings.tlsKeyHash = tlsKeyHash
