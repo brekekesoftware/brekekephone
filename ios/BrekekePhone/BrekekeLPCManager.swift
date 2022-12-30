@@ -15,7 +15,7 @@ class BrekekeLPCManager: NSObject {
   public var pushManager: NEAppPushManager?
   private let pushManagerDescription = "BrekekeLPCExtension"
   private let pushProviderBundleIdentifier =
-    "com.brekeke.phonedev.BrekekeLPCExtension"
+    Settings.bundleIdentifier + ".BrekekeLPCExtension"
   private var cancellables = Set<AnyCancellable>()
 
   override init() {
@@ -33,7 +33,9 @@ class BrekekeLPCManager: NSObject {
         Never
       >? in
         var publisher: AnyPublisher<NEAppPushManager?, Swift.Error>?
-
+        if pushManagerSettings.isEmpty {
+          self.logger.log("pushManagerSettings.isEmpty true")
+        }
         if !pushManagerSettings.isEmpty, pushManagerSettings.enabled {
           var pm = pushManager ?? NEAppPushManager()
           pm.delegate = BrekekeLPCManager.shared
@@ -155,19 +157,17 @@ class BrekekeLPCManager: NSObject {
     pushManager.isEnabled = true
     logger
       .log("pushProviderBundleIdentifier:\(pushManagerSettings)")
-    // The provider configuration passes global variables; don't put user-specific
-    // info in here (which could expose sensitive user info when
-    // running on a shared iPad).
+    // Store configuration so it can be retrieved later in Extension
     pushManager.providerConfiguration = [
       "host": pushManagerSettings.host,
+      "port": pushManagerSettings.port,
+      "tlsKeyHash": pushManagerSettings.tlsKeyHash,
     ]
-
-    if !pushManagerSettings.ssid.isEmpty {
-      pushManager.matchSSIDs = [pushManagerSettings.ssid]
-    } else {
-      pushManager.matchSSIDs = []
-    }
-
+    // Set wifi matches
+    pushManager.matchSSIDs = !pushManagerSettings.remoteSsids
+      .isEmpty ? pushManagerSettings.remoteSsids : pushManagerSettings
+      .localSsids
+    // Set LTE matches (currently not using)
     if !pushManagerSettings.mobileCountryCode.isEmpty,
        !pushManagerSettings.mobileNetworkCode.isEmpty {
       let privateLTENetwork = NEPrivateLTENetwork()
@@ -175,14 +175,12 @@ class BrekekeLPCManager: NSObject {
         .mobileCountryCode
       privateLTENetwork.mobileNetworkCode = pushManagerSettings
         .mobileNetworkCode
-
       if !pushManagerSettings.trackingAreaCode.isEmpty {
         privateLTENetwork.trackingAreaCode = pushManagerSettings
           .trackingAreaCode
       } else {
         privateLTENetwork.trackingAreaCode = nil
       }
-
       pushManager.matchPrivateLTENetworks = [privateLTENetwork]
     } else {
       pushManager.matchPrivateLTENetworks = []

@@ -31,9 +31,9 @@ class SettingsManager: NSObject {
     SettingsManager.logger.log("settings init(): \(settings)")
     if settings == nil {
       settings = Settings(
-        appId: "",
-        uuid: "",
-        deviceName: ""
+        token: "",
+        tokenVoip: "",
+        username: ""
       )
 
       do {
@@ -78,19 +78,9 @@ class SettingsManager: NSObject {
   }
 
   func set(settings: Settings) throws {
-//    Self.logger.log("setSetting::\(settings)")
-//    Self.logger.log("setSetting::\(self.settings)")
-//    guard settings.uuid == self.settings.uuid else {
-//      throw Error.uuidMismatch
-//    }
-//    if(settings.uuid != ""){
-//      if(settings.uuid != self.settings.uuid){
     settingsWillWriteSubject.send()
-//      }
     try Self.set(settings: settings)
     settingsSubject.send(settings)
-//      Self.logger.log("setSetting::\(settingsSubject.first())")
-//    }
   }
 
   private static func set(settings: Settings) throws {

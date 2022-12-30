@@ -1,5 +1,4 @@
-import _, { debounce } from 'lodash'
-import uniqBy from 'lodash/uniqBy'
+import { debounce, isEqual, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 
 import * as brekekejs from '../api/brekekejs'
@@ -80,8 +79,6 @@ class ContactStore {
     await pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,
-        shared:
-          getAuthStore().getCurrentAccount()?.displaySharedContacts || false,
         offset: this.offset,
         limit: this.numberOfContactsPerPage,
       })
@@ -268,7 +265,7 @@ class ContactStore {
     if (!u0) {
       return
     }
-    if (_.isEqual(u0, u)) {
+    if (isEqual(u0, u)) {
       return
     }
     Object.assign(u0, u)

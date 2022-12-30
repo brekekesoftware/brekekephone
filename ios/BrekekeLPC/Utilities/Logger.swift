@@ -15,10 +15,8 @@ public class Logger {
 
   public init(prependString: String, subsystem: Subsystem) {
     self.prependString = prependString
-    let bundleID = Bundle(for: type(of: self))
-      .bundleIdentifier ?? "com.brekeke.phonedev.lpc"
     logger = os.Logger(
-      subsystem: bundleID + "." + subsystem.rawValue,
+      subsystem: Settings.bundleIdentifier + ".lpc." + subsystem.rawValue,
       category: "Debug"
     )
   }

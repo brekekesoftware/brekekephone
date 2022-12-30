@@ -71,7 +71,6 @@ class Api {
     } else {
       contactStore.getPbxUsers()
     }
-
     if (s.isSignInByNotification) {
       return
     }

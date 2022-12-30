@@ -21,7 +21,6 @@ class BaseChannel {
   private let heartbeatMonitor: HeartbeatMonitor
   private let shouldConnectToServerSubject = CurrentValueSubject<Bool,
     Never>(false)
-  private let hostSubject = CurrentValueSubject<String, Never>("")
   private let stateSubject = CurrentValueSubject<NetworkSession.State,
     Never>(.disconnected)
   private let registrationSubject = CurrentValueSubject<User?, Never>(nil)
@@ -30,7 +29,11 @@ class BaseChannel {
   private var cancellables = Set<AnyCancellable>()
   private let logger: Logger
 
-  init(port: UInt16, heartbeatTimeout: DispatchTimeInterval, logger: Logger) {
+  private var port: UInt16 = 3000 // default port
+  private var tlsKeyHash: String = ""
+  private let hostSubject = CurrentValueSubject<String, Never>("")
+
+  init(heartbeatTimeout: DispatchTimeInterval, logger: Logger) {
     self.logger = logger
     networkSession.logger = logger
     heartbeatMonitor = HeartbeatMonitor(
@@ -38,7 +41,6 @@ class BaseChannel {
       logger: Logger(prependString: "Heartbeat Monitor",
                      subsystem: .heartbeat)
     )
-
     // Observe the network session's state changes and react.
     networkSession.statePublisher
       .combineLatest(registrationSubject)
@@ -46,15 +48,13 @@ class BaseChannel {
         guard let self = self else {
           return
         }
-
         switch state {
         case .connected:
           self.heartbeatMonitor.session = self.networkSession
-
           do {
             try self.heartbeatMonitor.start()
           } catch {
-            self.logger.log("Unable to start hearbeat monitor")
+            self.logger.log("Unable to start heartbeat monitor")
           }
           self.logger.log("registration:: \(registration)")
           if let registration = registration {
@@ -65,7 +65,6 @@ class BaseChannel {
         default:
           break
         }
-
         self.stateSubject.send(state)
       }
       .store(in: &cancellables)
@@ -83,14 +82,14 @@ class BaseChannel {
         guard let self = self else {
           return
         }
-
         switch connectAction {
         case let .connect(host):
-          self.logger.log("Connecting to - \(host)")
-
+          self.logger
+            .log("Connecting to - \(host) \(self.port) \(self.tlsKeyHash)")
           let connection = self.setupNewConnection(
-            to: host,
-            port: port
+            host: host,
+            port: self.port,
+            tlsKeyHash: self.tlsKeyHash
           )
           self.networkSession.connect(connection: connection)
         case .disconnect:
@@ -101,20 +100,19 @@ class BaseChannel {
       .store(in: &cancellables)
   }
 
-  private func setupNewConnection(to host: String,
-                                  port: UInt16) -> NWConnection {
-    /* mitu: disable TLS */
-    /*
-     let tls = ConnectionOptions.TLS.Client(publicKeyHash: "XTQSZGrHFDV6KdlHsGVhixmbI/Cm2EMsz2FqE2iZoqU=").options
-     let parameters = NWParameters(tls: tls, tcp: ConnectionOptions.TCP.options)
-       */
-
-    // mitu: TCP
+  private func setupNewConnection(
+    host: String,
+    port: UInt16,
+    tlsKeyHash: String
+  ) -> NWConnection {
+    var tls: NWProtocolTLS.Options?
+    if !tlsKeyHash.isEmpty {
+      tls = ConnectionOptions.TLS.Client(publicKeyHash: tlsKeyHash).options
+    }
     let parameters = NWParameters(
-      tls: nil,
+      tls: tls,
       tcp: ConnectionOptions.TCP.options
     )
-
     let protocolFramer = NWProtocolFramer
       .Options(definition: LengthPrefixedFramer.definition)
     parameters.defaultProtocolStack.applicationProtocols.insert(
@@ -126,21 +124,17 @@ class BaseChannel {
       port: NWEndpoint.Port(rawValue: port)!,
       using: parameters
     )
-
     connection.betterPathUpdateHandler = { isBetterPathAvailable in
       self.logger
         .log("A better path is available: \(isBetterPathAvailable)")
-
       guard isBetterPathAvailable else {
         return
       }
-
       // Disconnect the network session if a better path is available. In this case, the
       // retry logic in connectActionPublisher
       // takes care of reestablishing the connection over a viable interface.
       self.networkSession.disconnect()
     }
-
     return connection
   }
 
@@ -235,13 +229,20 @@ class BaseChannel {
     shouldConnectToServerSubject.send(false)
   }
 
-  func setHost(_ host: String) {
+  func setConnectionDetail(host: String, port: UInt16, tlsKeyHash: String) {
+    logger
+      .log(
+        "setConnectionDetail host=\(host) port=\(port) tlsKeyHash=\(tlsKeyHash)"
+      )
+    self.port = port
+    self.tlsKeyHash = tlsKeyHash
+    // trigger change?
     hostSubject.send(host)
   }
 
   // MARK: - Registration
 
-  func register(_ user: User) {
+  func register(user: User) {
     registrationSubject.send(user)
   }
 

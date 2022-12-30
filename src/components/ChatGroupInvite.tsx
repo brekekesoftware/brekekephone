@@ -1,4 +1,4 @@
-import sortBy from 'lodash/sortBy'
+import { sortBy } from 'lodash'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, FC } from 'react'

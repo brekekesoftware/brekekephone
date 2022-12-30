@@ -1,5 +1,4 @@
-import flow from 'lodash/flow'
-import get from 'lodash/get'
+import { flow, get } from 'lodash'
 import { observer } from 'mobx-react'
 import { Fragment } from 'react'
 import { Platform } from 'react-native'

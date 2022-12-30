@@ -9,6 +9,7 @@ import Url from 'url-parse'
 import brand from '../assets/brand.png'
 import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
+import { bundleIdentifier } from '../config'
 import { intl } from '../stores/intl'
 import { parse } from '../utils/deeplink-parse'
 // @ts-ignore
@@ -99,7 +100,7 @@ export const App = () => {
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phonedev;end`
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=${bundleIdentifier};end`
     child = (
       <>
         <RnImage

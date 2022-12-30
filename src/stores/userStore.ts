@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { cloneDeep } from 'lodash'
 import { action, observable } from 'mobx'
 import { SectionListData } from 'react-native'
 
@@ -68,7 +68,7 @@ class UserStore {
     // get from local
     const d = await s.getCurrentDataAsync()
     const buddyList = d?.pbxBuddyList
-    const users = _.cloneDeep(buddyList?.users || [])
+    const users = cloneDeep(buddyList?.users || [])
 
     if (s.isBigMode()) {
       this.isSelectedAddAllUser = false
@@ -190,8 +190,8 @@ class UserStore {
     this.dataGroupAllUser = sectionData
     this.dataListAllUser = [...listDataUser, ...listUserNotSelected]
     this.selectedUserIds = selectedUserIds
-    this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
-    this.dataDisplayGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
+    this.saveSelectedUserIds = cloneDeep(this.selectedUserIds)
+    this.dataDisplayGroupAllUser = cloneDeep(this.dataGroupAllUser)
   }
 
   filterUser = (searchTxt: string, isOnline: boolean) => {
@@ -360,8 +360,8 @@ class UserStore {
     this.dataListAllUser = []
   }
   @action updateDisplayGroupList = () => {
-    this.saveSelectedUserIds = _.cloneDeep(this.selectedUserIds)
-    this.dataDisplayGroupAllUser = _.cloneDeep(this.dataGroupAllUser)
+    this.saveSelectedUserIds = cloneDeep(this.selectedUserIds)
+    this.dataDisplayGroupAllUser = cloneDeep(this.dataGroupAllUser)
     // reset dataGroupAllUser
     this.resetCache()
   }
@@ -399,7 +399,6 @@ class UserStore {
     Object.keys(selectedUserItems).forEach(u => {
       this.selectedUserIds[u] = true
     })
-    // this.selectedUserIds = _.merge(this.selectedUserIds, selectedUsersId)
     removedUsers.forEach(u => {
       delete this.selectedUserIds[u.user_id]
     })

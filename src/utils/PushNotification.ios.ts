@@ -16,7 +16,6 @@ const onVoipToken = (t: string) => {
 
 let apnsToken = ''
 const onToken = (t: string) => {
-  console.error(t)
   if (t) {
     apnsToken = t
   }

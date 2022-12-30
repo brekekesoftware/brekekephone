@@ -1,4 +1,4 @@
-import pickBy from 'lodash/pickBy'
+import { pickBy } from 'lodash'
 import { FC, forwardRef } from 'react'
 import { Animated, StyleSheet, Text, TextProps } from 'react-native'
 

@@ -1,5 +1,4 @@
-import { debounce, isEmpty } from 'lodash'
-import orderBy from 'lodash/orderBy'
+import { debounce, isEmpty, orderBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -75,7 +74,7 @@ export class PageContactPhonebook extends Component {
           ...ct,
           loaded: true,
         }
-        contactStore.upsertPhonebook(x)
+        contactStore.upsertPhonebook(x as Phonebook2)
         cb(x)
       })
       .catch((err: Error) => {
@@ -257,22 +256,6 @@ export class PageContactPhonebook extends Component {
           onValueChange={this.updateSearchText}
           value={contactStore.phonebookSearchTerm}
         />
-        {/* Next time, will make filter like PBX UI. */}
-        {/* <Field
-          label={intl`SHOW SHARED CONTACTS`}
-          onValueChange={(v: boolean) => {
-            if (pbx.client && getAuthStore().pbxState === 'success') {
-              accountStore.upsertAccount({
-                id: getAuthStore().signedInId,
-                displaySharedContacts: v,
-              })
-              contactStore.refreshContacts()
-              contactStore.selectedContactIds = {}
-            }
-          }}
-          type='Switch'
-          value={getAuthStore().getCurrentAccount()?.displaySharedContacts}
-        /> */}
         <View>
           {groups.map(gr => (
             <Fragment key={gr.key}>
