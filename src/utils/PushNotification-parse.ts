@@ -1,5 +1,5 @@
 import jsonStableStringify from 'json-stable-stringify'
-import get from 'lodash/get'
+import { get } from 'lodash'
 import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'

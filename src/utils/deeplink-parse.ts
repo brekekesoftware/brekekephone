@@ -1,4 +1,4 @@
-import get from 'lodash/get'
+import { get } from 'lodash'
 import qs from 'qs'
 import Url from 'url-parse'
 

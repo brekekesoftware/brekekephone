@@ -5,7 +5,6 @@ import UserNotifications
 
 class BrekekeLPCExtension: NEAppPushProvider {
   private let channel = BaseChannel(
-    port: Port.notification,
     heartbeatTimeout: .seconds(30),
     logger: Logger(
       prependString: "Notification Channel",
@@ -75,10 +74,14 @@ class BrekekeLPCExtension: NEAppPushProvider {
 
         self.logger.log("settingsPublisher::start::user \(settings)")
         let user = User(uuid: settings.user.uuid,
-                        deviceName: settings.deviceName, appid: settings.appId)
-//        self.channel.register(user)
-        self.channel.register(user)
-        self.channel.setHost(settings.pushManagerSettings.host)
+                        uuid2: settings.user.uuid2,
+                        deviceName: settings.user.deviceName)
+        self.channel.setConnectionDetail(
+          host: settings.pushManagerSettings.host,
+          port: settings.pushManagerSettings.port,
+          tlsKeyHash: settings.pushManagerSettings.tlsKeyHash
+        )
+        self.channel.register(user: user)
       }
       .store(in: &cancellables)
   }
@@ -87,12 +90,14 @@ class BrekekeLPCExtension: NEAppPushProvider {
 
   override func start() {
     logger.log("Started")
-    guard let host = providerConfiguration?["host"] as? String
+    guard let host = providerConfiguration?["host"] as? String,
+          let port = providerConfiguration?["port"] as? UInt16,
+          let tlsKeyHash = providerConfiguration?["tlsKeyHash"] as? String
     else {
-      logger.log("Provider configuration is missing value for key: `host`")
+      logger.log("Provider configuration is missing value host/port/tlsKeyHash")
       return
     }
-    channel.setHost(host)
+    channel.setConnectionDetail(host: host, port: port, tlsKeyHash: tlsKeyHash)
     channel.connect()
   }
 

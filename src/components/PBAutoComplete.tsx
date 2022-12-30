@@ -100,7 +100,7 @@ export const PBAutoComplete: FC<
     if (!contactStore.pbxBooks.length) {
       return []
     }
-    if (!!!value) {
+    if (!value) {
       return [...contactStore.pbxBooks]
     }
     const result = contactStore.pbxBooks.filter(item => {

@@ -4,6 +4,7 @@ import 'brekekejs/lib/pal'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
@@ -13,13 +14,14 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
 import { parsePalParams } from './parsePalParams'
+import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
   client?: Pbx
   private connectTimeoutId = 0
 
   // wait auth state to success
-  needToWait = true
+  isMainInstance = true
 
   connect = async (p: Account, palParamUserReconnect?: boolean) => {
     console.log('PBX PN debug: call pbx.connect')
@@ -51,7 +53,7 @@ export class PBX extends EventEmitter {
     })
     this.client = client
 
-    client.call_pal = ((method: keyof Pbx, params?: object) => {
+    client.call_pal = (method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
@@ -59,7 +61,7 @@ export class PBX extends EventEmitter {
         }
         f(params, resolve, reject)
       })
-    }) as unknown as Pbx['call_pal']
+    }
 
     client.debugLevel = 2
 
@@ -180,9 +182,9 @@ export class PBX extends EventEmitter {
           return
       }
     }
-    // when sync pn token, needToWait = false
+    // in syncPnToken, isMainInstance = false
     // we will not emit pal in that case
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       embedApi.emit('pal', p, client)
     }
   }
@@ -202,20 +204,27 @@ export class PBX extends EventEmitter {
     }
   }
 
-  getConfig = async (force?: boolean) => {
-    const s = getAuthStore()
-    if (s.pbxConfig) {
-      return s.pbxConfig
-    }
-    if (this.needToWait && !force) {
-      await waitPbx()
+  getConfig = async (skipWait?: boolean) => {
+    if (this.isMainInstance) {
+      const s = getAuthStore()
+      if (s.pbxConfig) {
+        return s.pbxConfig
+      }
+      if (!skipWait) {
+        await waitPbx()
+      }
     }
     if (!this.client) {
       return
     }
-    s.pbxConfig = await this.client.call_pal('getProductInfo', {
+    const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
+    if (!this.isMainInstance) {
+      return config
+    }
+    const s = getAuthStore()
+    s.pbxConfig = config
     const d = await s.getCurrentDataAsync()
     if (Platform.OS === 'android') {
       BrekekeUtils.setConfig(
@@ -236,7 +245,7 @@ export class PBX extends EventEmitter {
   }
 
   createSIPAccessToken = async (sipUsername: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -248,7 +257,7 @@ export class PBX extends EventEmitter {
   }
 
   getUsers = async (tenant: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -263,7 +272,7 @@ export class PBX extends EventEmitter {
     })
   }
   getExtraUsers = async (ids: string[]): Promise<PbxUser[] | undefined> => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     const cp = getAuthStore().getCurrentAccount()
@@ -283,7 +292,7 @@ export class PBX extends EventEmitter {
   }
 
   getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -338,16 +347,14 @@ export class PBX extends EventEmitter {
 
   getContacts = async ({
     search_text,
-    shared,
     offset,
     limit,
   }: {
     search_text: string
-    shared: boolean
     offset: number
     limit: number
   }) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -356,9 +363,6 @@ export class PBX extends EventEmitter {
     const res = await this.client.call_pal('getContactList', {
       phonebook: '',
       search_text,
-      // The shared is just indicate if the phonebook is shared or not.
-      // In the future, maybe you can add a filter like PBX UI.
-      //shared,
       offset,
       limit,
     })
@@ -367,7 +371,7 @@ export class PBX extends EventEmitter {
       display_name: contact.display_name,
       phonebook: contact.phonebook,
       user: contact.user,
-      shared: !!!contact?.user,
+      shared: !contact?.user,
       info: {},
     }))
   }
@@ -376,10 +380,10 @@ export class PBX extends EventEmitter {
       return
     }
     const res = await this.client.call_pal('getPhonebooks', {})
-    return res?.filter(item => !!!item.shared) || []
+    return res?.filter(item => !item.shared) || []
   }
   getContact = async (id: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -400,7 +404,7 @@ export class PBX extends EventEmitter {
     }
   }
   deleteContact = async (id: string[]) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -412,7 +416,7 @@ export class PBX extends EventEmitter {
     return res
   }
   setContact = async (contact: Phonebook2) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -428,7 +432,7 @@ export class PBX extends EventEmitter {
   }
 
   holdTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -442,7 +446,7 @@ export class PBX extends EventEmitter {
   }
 
   unholdTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -456,7 +460,7 @@ export class PBX extends EventEmitter {
   }
 
   startRecordingTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -470,7 +474,7 @@ export class PBX extends EventEmitter {
   }
 
   stopRecordingTalker = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -488,7 +492,7 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -508,7 +512,7 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -523,7 +527,7 @@ export class PBX extends EventEmitter {
   }
 
   joinTalkerTransfer = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -537,7 +541,7 @@ export class PBX extends EventEmitter {
   }
 
   stopTalkerTransfer = async (tenant: string, talker: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -551,7 +555,7 @@ export class PBX extends EventEmitter {
   }
 
   parkTalker = async (tenant: string, talker: string, atNumber: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -566,7 +570,7 @@ export class PBX extends EventEmitter {
   }
 
   sendDTMF = async (signal: string, tenant: string, talker_id: string) => {
-    if (this.needToWait) {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
@@ -579,209 +583,95 @@ export class PBX extends EventEmitter {
     })
     return true
   }
-  setLPCToken = async ({
-    device_id,
-    username,
-    voip = false,
-    host,
-    ssid,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-    host: string
-    ssid: string
-  }) => {
-    if (this.needToWait) {
+
+  pnmanage = async (d: PnParamsNew) => {
+    if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
       return false
     }
-    // await this.removeApnsToken({device_id, username, voip})
+    const {
+      pnmanageNew,
+      command,
+      service_id,
+      device_id,
+      device_id_voip,
+      auth_secret,
+      endpoint,
+      key,
+    } = d
+    const isFcm =
+      !Array.isArray(service_id) &&
+      (service_id === PnServiceId.fcm || service_id === PnServiceId.web)
+    let application_id = isFcm ? fcmApplicationId : bundleIdentifier
+    let { username } = d
+    if (!pnmanageNew && d.voip) {
+      if (!isFcm) {
+        application_id += '.voip'
+      }
+      username += '@voip'
+    }
     await this.client.call_pal('pnmanage', {
-      command: 'set',
-      service_id: '4',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-    BrekekeUtils.enableLPC(
-      device_id,
-      'com.brekeke.phonedev',
+      command,
+      service_id,
+      application_id,
+      user_agent: Platform.OS === 'web' ? navigator.userAgent : 'react-native',
       username,
-      ssid,
-      host,
-    )
-    return true
-  }
-
-  setApnsToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-
-    await this.client.call_pal('pnmanage', {
-      command: 'set',
-      service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
       device_id,
-    })
-    BrekekeUtils.disableLPC()
-    return true
-  }
-
-  setFcmPnToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'set',
-      service_id: '12',
-      application_id: '22177122297',
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-    return true
-  }
-  removeApnsToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-    return true
-  }
-  removeLPCToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '4',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
-    })
-
-    BrekekeUtils.disableLPC()
-
-    return true
-  }
-
-  removeFcmPnToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client.call_pal('pnmanage', {
-      command: 'remove',
-      service_id: '12',
-      application_id: '22177122297',
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+      device_id_voip,
+      add_voip: pnmanageNew ? true : undefined,
+      add_device_id_suffix: pnmanageNew ? true : undefined,
+      auth_secret,
+      endpoint,
+      key,
     })
     return true
   }
 
-  addWebPnToken = async ({
-    auth_secret,
-    endpoint,
-    key,
-    username,
-  }: {
-    auth_secret: string
-    endpoint: string
-    username: string
-    key: string
-  }) => {
-    if (this.needToWait) {
-      await waitPbx()
-    }
-    if (!this.client) {
-      return false
-    }
-    await this.client
-      .call_pal('pnmanage', {
-        command: 'set',
-        service_id: '13',
-        application_id: '22177122297',
-        user_agent: navigator.userAgent,
-        username,
-        endpoint,
-        auth_secret,
-        key,
-      })
-      .catch((err: Error) => {
-        console.error('pbx.addWebPnToken:', err)
-      })
-    return true
+  setWebPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.web,
+    })
+  }
+  removeWebPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.web,
+    })
+  }
+
+  setFcmPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.fcm,
+    })
+  }
+  removeFcmPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.fcm,
+    })
+  }
+
+  setApnsToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.apns,
+    })
+  }
+  removeApnsToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.apns,
+    })
   }
 }
 

@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce'
+import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 

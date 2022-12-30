@@ -29,10 +29,8 @@ const css = StyleSheet.create({
 @observer
 export class PageSettingsDebug extends Component {
   render() {
-    const isUpdateAvailable = compareSemVer(
-      debugStore.remoteVersion,
-      currentVersion,
-    )
+    const isUpdateAvailable =
+      compareSemVer(debugStore.remoteVersion, currentVersion) > 0
     return (
       <Layout
         description={intl`App information and debugging`}

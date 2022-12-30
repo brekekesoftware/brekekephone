@@ -1,6 +1,5 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
-import sortBy from 'lodash/sortBy'
-import uniqBy from 'lodash/uniqBy'
+import { sortBy, uniqBy } from 'lodash'
 import { computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import FCM from 'react-native-fcm'

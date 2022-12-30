@@ -1,4 +1,4 @@
-import orderBy from 'lodash/orderBy'
+import { orderBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { SectionList } from 'react-native'

@@ -1,3 +1,4 @@
+import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
 import { FC, useState } from 'react'
 import {
@@ -10,7 +11,6 @@ import {
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { RnKeyboard } from '../stores/RnKeyboard'
-import { toLowerCaseFirstChar } from '../utils/string'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { HeaderDropdownItem } from './HeaderDropdown'
@@ -82,7 +82,7 @@ export const Layout: FC<
     if (k.startsWith('container')) {
       delete props[k as K]
       k = k.replace('container', '')
-      k = toLowerCaseFirstChar(k)
+      k = lowerFirst(k)
       m[k] = vk as typeof props[K]
     }
     return m

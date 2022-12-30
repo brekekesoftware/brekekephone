@@ -389,6 +389,8 @@ PODS:
     - React-Core
   - RNVoipPushNotification (3.3.0-brekeke-002):
     - React-Core
+  - RNWifi (4.7.0):
+    - React-Core
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -471,6 +473,7 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVoipPushNotification (from `../node_modules/react-native-voip-push-notification`)
+  - RNWifi (from `../node_modules/react-native-wifi-reborn`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -590,6 +593,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNVoipPushNotification:
     :path: "../node_modules/react-native-voip-push-notification"
+  RNWifi:
+    :path: "../node_modules/react-native-wifi-reborn"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -656,6 +661,7 @@ SPEC CHECKSUMS:
   RNShare: 4df87d1791f50a2c7b1d89432fb9bbb7c02a9c9a
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   RNVoipPushNotification: 1d35daef2173a4be409d9c10ed09fe6880aef86f
+  RNWifi: 94c5dd913df64acbd5024f051552ffdd1681642d
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Yoga: 32a18c0e845e185f4a2a66ec76e1fd1f958f22fa

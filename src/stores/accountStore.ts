@@ -1,6 +1,5 @@
-import stringify from 'json-stable-stringify'
-import debounce from 'lodash/debounce'
-import uniqBy from 'lodash/uniqBy'
+import jsonStableStringify from 'json-stable-stringify'
+import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
@@ -20,7 +19,7 @@ let resolveFn: Function | undefined
 const profilesLoaded = new Promise(resolve => {
   resolveFn = resolve
 })
-export type PNOptions = 'disabled' | 'APNs' | 'LPC' | undefined
+export type PNOptions = 'APNs' | 'LPC' | undefined
 export type Account = {
   id: string
   pbxHostname: string
@@ -32,13 +31,10 @@ export type Account = {
   pbxTurnEnabled: boolean
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
-  pushNotificationType?: PNOptions //'disabled', 'APNs', 'LPC'
-  pushNotificationSSID?: string
   pushNotificationEnabledSynced?: boolean
   parks?: string[]
   parkNames?: string[]
   ucEnabled: boolean
-  displaySharedContacts?: boolean
   displayOfflineUsers?: boolean
   navIndex: number
   navSubMenus: string[]
@@ -93,8 +89,6 @@ class AccountStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: Platform.OS === 'web' ? false : true,
-    pushNotificationType: undefined,
-    pushNotificationSSID: '',
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
@@ -167,16 +161,15 @@ class AccountStore {
     } else {
       const p0 = { ...p1 } // Clone before assign
       Object.assign(p1, p)
+      // TODO handle case change phone index
       if (getAccountUniqueId(p0) !== getAccountUniqueId(p1)) {
         p0.pushNotificationEnabled = false
         SyncPnToken().sync(p0, {
           noUpsert: true,
         })
       } else if (
-        (typeof p.pushNotificationEnabled === 'boolean' &&
-          p.pushNotificationEnabled !== p0.pushNotificationEnabled) ||
-        (p.pushNotificationEnabled &&
-          p.pushNotificationType !== p0.pushNotificationType)
+        typeof p.pushNotificationEnabled === 'boolean' &&
+        p.pushNotificationEnabled !== p0.pushNotificationEnabled
       ) {
         p1.pushNotificationEnabledSynced = false
         SyncPnToken().sync(p1, {
@@ -247,7 +240,7 @@ class AccountStore {
 }
 
 export const getAccountUniqueId = (p: Account) =>
-  stringify({
+  jsonStableStringify({
     u: p.pbxUsername,
     t: p.pbxTenant || '-',
     h: p.pbxHostname,
@@ -292,7 +285,7 @@ export const getLastSignedInId = async (
   if (!checkAutoSignInBrekekePhone) {
     return d
   }
-  if (d.logoutPressed || compareSemVer(currentVersion, d.version)) {
+  if (d.logoutPressed || compareSemVer(currentVersion, d.version) > 0) {
     d.autoSignInBrekekePhone = false
     return d
   }

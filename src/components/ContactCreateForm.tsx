@@ -1,5 +1,5 @@
-import stableStringify from 'json-stable-stringify'
-import cloneDeep from 'lodash/cloneDeep'
+import jsonStableStringify from 'json-stable-stringify'
+import { cloneDeep } from 'lodash'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { StyleSheet } from 'react-native'
@@ -104,7 +104,9 @@ export const ContactsCreateForm: FC<{
       fields: getFields() as ItemPBForm[],
     },
     hasUnsavedChanges: () => {
-      return !(stableStringify($.phonebook) === stableStringify(defaultObj))
+      return !(
+        jsonStableStringify($.phonebook) === jsonStableStringify(defaultObj)
+      )
     },
 
     onBackBtnPress: () => {
@@ -173,7 +175,7 @@ export const ContactsCreateForm: FC<{
       onBack={$.onBackBtnPress}
       title={props.title}
     >
-      {!!!disabled && (
+      {!disabled && (
         <RnText
           title
           style={[
@@ -190,7 +192,7 @@ export const ContactsCreateForm: FC<{
         k='phonebook'
         onValidSubmit={$.onValidSubmit}
       />
-      {!!!disabled && (
+      {!disabled && (
         <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
           <RnText small style={css.labelAddItem}>
             {'>>' + intl`Add item`}

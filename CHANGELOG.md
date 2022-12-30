@@ -2,6 +2,13 @@
 
 - Disable hangup button when pbx config webphone.call.hangup = false
 - Fix android PN screen webview can not load http image: allow http clear text traffic
+- Update ios lpc config:
+  - Use config from pbx getProductInfo: webphone.lpc.{port,wifi,keyhash,pn}
+  - If webphone.lpc.port is present, which mean lpc is enabled. Otherwise if lpc is disabled, all other lpc config will be ignored
+  - If webphone.lpc.wifi is present, it will be split by comma. If it is not present, the current connected wifi will be used for lpc
+  - If webphone.lpc.keyhash is present, which mean tls is enabled. The key hash will be supplied to establish tls connection
+  - If webphone.lpc.pn is true, it will enable both lpc and regular pn at the same time, otherwise it will disable regular pn and use only lpc
+- Use new pnmanage pal command for pbx version 3.14.5 and above, backward compatibility for lower versions
 
 #### 2.11.7
 

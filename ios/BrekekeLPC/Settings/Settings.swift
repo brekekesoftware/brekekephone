@@ -2,23 +2,29 @@ import Foundation
 
 public struct Settings: Codable, Equatable {
   struct PushManagerSettings: Codable, Equatable {
-    var ssid = "NGOCTRAM"
+    var host = ""
+    var port: UInt16 = 3000 // default port
+    var tlsKeyHash = ""
+    var localSsids: [String] = []
+    var remoteSsids: [String] = []
+
     var mobileCountryCode = ""
     var mobileNetworkCode = ""
     var trackingAreaCode = ""
-    var host = "apps.brekeke.com"
+
     var enabled = true
   }
 
-  var appId: String
-  var uuid: String
-  var deviceName: String
+  static var bundleIdentifier = "com.brekeke.phonedev"
   var pushManagerSettings = PushManagerSettings()
+  var token: String
+  var tokenVoip: String
+  var username: String
 }
 
 extension Settings {
   var user: User {
-    User(uuid: uuid, deviceName: deviceName, appid: appId)
+    User(token: token, tokenVoip: tokenVoip, username: username)
   }
 }
 
@@ -27,14 +33,13 @@ extension Settings.PushManagerSettings {
   // configuration properties set. A valid configuration
   // includes both a host value and an SSID or private LTE network configuration.
   var isEmpty: Bool {
-    if !ssid
-      .isEmpty || (
-        !mobileCountryCode.isEmpty && !mobileNetworkCode.isEmpty
-      ),
-      !host.isEmpty {
-      return false
-    } else {
+    if host.isEmpty {
       return true
     }
+    if localSsids.isEmpty, remoteSsids.isEmpty, mobileCountryCode
+      .isEmpty || mobileNetworkCode.isEmpty {
+      return true
+    }
+    return false
   }
 }

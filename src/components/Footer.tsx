@@ -1,10 +1,10 @@
+import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { RnKeyboard } from '../stores/RnKeyboard'
-import { toLowerCaseFirstChar } from '../utils/string'
 import { arrToMap } from '../utils/toMap'
 import { FooterActions } from './FooterActions'
 import { Navigation } from './FooterNavigation'
@@ -53,7 +53,7 @@ export const Footer: FC<{
     onShowKeyboard(): void
   } = arrToMap(
     Object.keys(props).filter(k => k.startsWith('fab')),
-    (k: string) => toLowerCaseFirstChar(k.replace('fab', '')),
+    (k: string) => lowerFirst(k.replace('fab', '')),
     (k: string) => props[k as keyof typeof props],
   ) as any
   const { menu, isTab } = props

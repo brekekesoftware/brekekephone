@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce'
+import { debounce } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'

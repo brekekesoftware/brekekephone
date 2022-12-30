@@ -63,3 +63,9 @@ apps:
 	cd ../server && \
 	scp index.js package.json yarn.lock bre:/var/www/apps/server && \
 	ssh bre "cd /var/www/apps/server && yarn && pm2 -s restart dev";
+
+keyhash1:
+	ssh bre "openssl x509 -in /etc/letsencrypt/live/apps.brekeke.com/cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64";
+
+keyhash2:
+	openssl pkcs12 -in ../0/brekeke/tomcat7.p12 -clcerts -nokeys | openssl x509 -pubkey -in /dev/stdin -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64;

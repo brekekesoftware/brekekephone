@@ -92,9 +92,11 @@ export type Pbx = PbxPal & {
   notify_voicemail?(e: PbxEvent['voicemail']): void
   notify_callrecording?(e: PbxEvent['callRecording']): void
   // not actually exist in the sdk, should be added manually
-  call_pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
+  call_pal<K extends keyof PbxPal>(
     k: K,
-    ...p: P extends undefined ? [] : [P]
+    ...p: Parameters<PbxPal[K]>[0] extends undefined
+      ? []
+      : [Parameters<PbxPal[K]>[0]]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
 }
 
@@ -187,26 +189,31 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 export type PbxGetProductInfoRes = {
-  'webphone.call.hangup': string
-  'webphone.desktop.notification': string
   'sip.wss.port': string
-  'webrtcclient.dtmfSendMode': string
+  version: string
+  'webphone.allusers': string
+  'webphone.call.dtmf': string
+  'webphone.call.hangup': string
+  'webphone.call.hold': string
+  'webphone.call.mute': string
+  'webphone.call.park': string
+  'webphone.call.record': string
+  'webphone.call.speaker': string
+  'webphone.call.transfer': string
+  'webphone.call.video': string
+  'webphone.desktop.notification': string
   'webphone.dtmf.send.pal': string
+  'webphone.lpc.keyhash': string
+  'webphone.lpc.pn': string
+  'webphone.lpc.port': string
+  'webphone.lpc.wifi': string
+  'webphone.pal.param.user': string
+  'webphone.turn.credential': string
   'webphone.turn.server': string
   'webphone.turn.username': string
-  'webphone.turn.credential': string
   'webphone.uc.host': string
-  'webphone.allusers': string
   'webphone.users.max': string
-  'webphone.pal.param.user': string
-  'webphone.call.transfer': string
-  'webphone.call.speaker': string
-  'webphone.call.park': string
-  'webphone.call.video': string
-  'webphone.call.mute': string
-  'webphone.call.record': string
-  'webphone.call.dtmf': string
-  'webphone.call.hold': string
+  'webrtcclient.dtmfSendMode': string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
@@ -241,7 +248,6 @@ export type PbxExtensionProperties = {
 export type PbxGetContactListParam = {
   phonebook?: string
   search_text?: string
-  shared: boolean
   offset: number
   limit: number
 }
@@ -264,14 +270,17 @@ export type PbxDeleteContactResponse = {
 }
 export type PbxPnmanageParam = {
   command: string
-  service_id: string
+  service_id: string | string[]
   application_id: string
   user_agent: string
   username: string
   device_id?: string
+  device_id_voip?: string
   endpoint?: string
   auth_secret?: string
   key?: string
+  add_voip?: boolean
+  add_device_id_suffix?: boolean
 }
 export type PbxHoldParam = {
   tenant: string
@@ -297,18 +306,7 @@ export type PbxContact = {
   phonebook: string
   shared: string
   display_name: string
-  info: {
-    $firstname: string
-    $lastname: string
-    $tel_work: string
-    $tel_home: string
-    $tel_mobile: string
-    $address: string
-    $company: string
-    $email: string
-    $title: string
-    $hidden: string
-  }
+  info: object
 }
 export type PbxSendDtmfParam = {
   tenant: string
@@ -407,13 +405,10 @@ export type SipConfiguration = {
   host?: string
   port?: string
   tls?: boolean
-
   user: string
   auth?: string
-
   useVideoClient?: boolean
   videoClientUser?: string
-
   user_agent?: string
   userAgent?: string
   register?: boolean
