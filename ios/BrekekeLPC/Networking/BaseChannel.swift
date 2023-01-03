@@ -4,7 +4,7 @@ import Network
 
 class BaseChannel {
   private enum ConnectAction {
-    case connect(String)
+    case connect(NewConnection)
     case disconnect
   }
 
@@ -29,9 +29,25 @@ class BaseChannel {
   private var cancellables = Set<AnyCancellable>()
   private let logger: Logger
 
-  private var port: UInt16 = 3000 // default port
-  private var tlsKeyHash: String = ""
-  private let hostSubject = CurrentValueSubject<String, Never>("")
+  public struct NewConnection: Equatable {
+    public var port: UInt16
+    public var host: String
+    public var tlsKeyHash: String
+    public init(port: UInt16, host: String, tlsKeyHash: String) {
+      self.port = port
+      self.host = host
+      self.tlsKeyHash = tlsKeyHash
+    }
+  }
+
+  private let hostSubject = CurrentValueSubject<NewConnection,
+    Never>(
+    NewConnection(
+      port: 3000,
+      host: "apps.brekeke.com",
+      tlsKeyHash: ""
+    )
+  )
 
   init(heartbeatTimeout: DispatchTimeInterval, logger: Logger) {
     self.logger = logger
@@ -83,13 +99,11 @@ class BaseChannel {
           return
         }
         switch connectAction {
-        case let .connect(host):
-          self.logger
-            .log("Connecting to - \(host) \(self.port) \(self.tlsKeyHash)")
+        case let .connect(conn):
           let connection = self.setupNewConnection(
-            host: host,
-            port: self.port,
-            tlsKeyHash: self.tlsKeyHash
+            host: conn.host,
+            port: conn.port,
+            tlsKeyHash: conn.tlsKeyHash
           )
           self.networkSession.connect(connection: connection)
         case .disconnect:
@@ -154,14 +168,14 @@ class BaseChannel {
         shouldConnectToServerSubject,
         hostSubject.removeDuplicates()
       )
-      .scan(nil) { last, next -> (host: String, connect: Bool?)? in
-        let (networkSessionState, shouldConnectToServer, host) = next
+      .scan(nil) { last, next -> (conn: NewConnection, connect: Bool?)? in
+        let (networkSessionState, shouldConnectToServer, conn) = next
         var connect: Bool?
 
-        if shouldConnectToServer, !host.isEmpty {
+        if shouldConnectToServer, !conn.host.isEmpty {
           switch networkSessionState {
           case .connecting, .connected:
-            guard last?.host != host else {
+            guard last?.conn != conn else {
               break
             }
             // Disconnect if the host changed and the network session is in the connecting
@@ -186,7 +200,7 @@ class BaseChannel {
           }
         }
 
-        return (host: host, connect: connect)
+        return (conn: conn, connect: connect)
       }
       .compactMap { value -> ConnectAction? in
         guard let value = value,
@@ -197,7 +211,7 @@ class BaseChannel {
         }
 
         if shouldConnect {
-          return .connect(value.host)
+          return .connect(value.conn)
         }
 
         return .disconnect
@@ -234,10 +248,8 @@ class BaseChannel {
       .log(
         "setConnectionDetail host=\(host) port=\(port) tlsKeyHash=\(tlsKeyHash)"
       )
-    self.port = port
-    self.tlsKeyHash = tlsKeyHash
-    // trigger change?
-    hostSubject.send(host)
+    hostSubject
+      .send(NewConnection(port: port, host: host, tlsKeyHash: tlsKeyHash))
   }
 
   // MARK: - Registration
