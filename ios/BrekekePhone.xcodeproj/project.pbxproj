@@ -593,7 +593,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 164381613BE1C60CB8E3DF44 /* Pods-BrekekePhone.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
@@ -627,7 +627,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1EF4B6F27DC95E67795C03E1 /* Pods-BrekekePhone.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
