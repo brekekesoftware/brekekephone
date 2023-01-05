@@ -601,9 +601,15 @@ export class PBX extends EventEmitter {
       endpoint,
       key,
     } = d
-    const isFcm =
-      !Array.isArray(service_id) &&
-      (service_id === PnServiceId.fcm || service_id === PnServiceId.web)
+    let isFcm = false
+    const arr = Array.isArray(service_id) ? service_id : [service_id]
+    arr.forEach(id => {
+      if (id === PnServiceId.fcm || id === PnServiceId.web) {
+        isFcm = true
+      } else if (isFcm) {
+        throw new Error('Can not mix service_id fcm/web together with apns/lpc')
+      }
+    })
     let application_id = isFcm ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {
