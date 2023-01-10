@@ -34,5 +34,16 @@ allprojects {
       url("https://www.jitpack.io")
     }
     google()
+    // https://github.com/facebook/react-native/issues/35210#issuecomment-1309813425
+    exclusiveContent {
+      filter {
+        includeGroup "com.facebook.react"
+      }
+      forRepository {
+        maven {
+          url("$rootDir/../node_modules/react-native/android")
+        }
+      }
+    }
   }
 }
