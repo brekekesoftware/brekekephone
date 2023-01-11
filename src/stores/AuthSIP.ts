@@ -135,7 +135,7 @@ class AuthSIP {
         s.sipState = 'failure'
         s.sipTotalFailure += 1
         sip.stopWebRTC()
-        console.error('Failed to connect to sip', err)
+        console.error('Failed to connect to sip:', err)
       }),
     )
     this.waitingTimeout = false

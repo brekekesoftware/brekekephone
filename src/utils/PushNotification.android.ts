@@ -45,7 +45,7 @@ const onNotification = async (n0: Notification, initApp: Function) => {
       is_local_notification: 'local_notification',
     })
   } catch (err) {
-    console.error(`PushNotification.android.ts onNotification err: ${err}`)
+    console.error('PushNotification.android.ts onNotification error:', err)
   }
 }
 
@@ -100,7 +100,7 @@ const getInitialNotifications = async () => {
   try {
     return (JSON.parse(n) as string[]).map(s => JSON.parse(s) as Notification)
   } catch (err) {
-    console.error(`getInitialNotifications n=${n} err: ${err}`)
+    console.error(`getInitialNotifications n=${n} error:`, err)
     return []
   }
 }

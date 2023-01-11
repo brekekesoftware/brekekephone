@@ -69,7 +69,7 @@ class AuthUC {
       action((err: Error) => {
         s.ucState = 'failure'
         s.ucTotalFailure += 1
-        console.error('Failed to connect to uc', err)
+        console.error('Failed to connect to uc:', err)
       }),
     )
   }

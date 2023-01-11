@@ -11,11 +11,11 @@ export const saveBlob = (blob: Blob, name: string) => {
     try {
       await RNFS.writeFile(p, b64, 'base64')
     } catch (err) {
-      console.error(`saveBlob RNFS.writeFile err: ${err}`)
+      console.error('saveBlob RNFS.writeFile error:', err)
     }
   }
   fr.onerror = err => {
-    console.error(`saveBlob onerror err: ${err}`)
+    console.error('saveBlob onerror error:', err)
   }
   fr.readAsDataURL(blob)
 }
@@ -35,7 +35,7 @@ const readChunkFile = (p: string, pos: number, data: Blob) => {
         }
         a(p)
       } catch (err) {
-        console.error(`saveBlobFile RNFS.writeFile err: ${err}`)
+        console.error('saveBlobFile RNFS.writeFile error:', err)
         b(err)
       }
     }

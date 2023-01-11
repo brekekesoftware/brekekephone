@@ -189,8 +189,7 @@ class DebugStore {
     })
       .then(this.saveRemoteVersionToStorage)
       .catch((err: Error) => {
-        console.error('Failed to get app version from app store:')
-        console.error(err)
+        console.error('Failed to get app version from app store:', err)
         this.isCheckingForUpdate = false
       })
   }
@@ -202,8 +201,7 @@ class DebugStore {
         lastCheck: this.remoteVersionLastCheck,
       }),
     ).catch((err: Error) => {
-      console.error('Failed to save app version to storage:')
-      console.error(err)
+      console.error('Failed to save app version to storage:', err)
     })
   }
 
@@ -271,8 +269,7 @@ class DebugStore {
           this.autoCheckForUpdate()
         })
         .catch((err: Error) => {
-          console.error('Failed to read app version from storage:')
-          console.error(err)
+          console.error('Failed to read app version from storage:', err)
         }),
     )
     //

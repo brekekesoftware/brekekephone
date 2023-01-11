@@ -452,7 +452,7 @@ export class PageChatDetail extends Component<{
       chatStore.upsertFile(file)
       chatStore.pushMessages(buddyId, chat)
     } catch (err) {
-      console.error(`PageChatDetail.handleSaveBlobFileWeb err: ${err}`)
+      console.error('PageChatDetail.handleSaveBlobFileWeb err', err)
     }
   }
   sendFile = (file: { type: string; name: string; uri: string }) => {

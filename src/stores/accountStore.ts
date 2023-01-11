@@ -118,8 +118,13 @@ class AccountStore {
         a.pbxTenant = a.pbxTenant || '-'
       })
       runInAction(() => {
-        this.accounts = profiles
-        this.accountData = uniqBy(profileData, 'id') as unknown as AccountData[]
+        this.accounts = profiles.filter(a => a.id && a.pbxUsername)
+        if (profiles.length !== this.accounts.length) {
+          console.error(
+            'loadAccountsFromLocalStorage error missing id or pbxUsername',
+          )
+        }
+        this.accountData = uniqBy(profileData, 'id')
       })
     }
     resolveFn?.()
@@ -127,10 +132,16 @@ class AccountStore {
   }
   private saveAccountsToLocalStorage = async () => {
     try {
+      const profiles = this.accounts.filter(a => a.id && a.pbxUsername)
+      if (profiles.length !== this.accounts.length) {
+        console.error(
+          'saveAccountsToLocalStorage error missing id or pbxUsername',
+        )
+      }
       await RnAsyncStorage.setItem(
         '_api_profiles',
         JSON.stringify({
-          profiles: this.accounts,
+          profiles,
           profileData: this.accountData,
         }),
       )

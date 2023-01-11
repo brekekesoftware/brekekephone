@@ -44,7 +44,7 @@ class AuthPBX {
       action((err: Error) => {
         s.pbxState = 'failure'
         s.pbxTotalFailure += 1
-        console.error('Failed to connect to pbx', err)
+        console.error('Failed to connect to pbx:', err)
       }),
     )
     this.waitingTimeout = false
