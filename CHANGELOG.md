@@ -1,6 +1,7 @@
 #### 2.11.9
 
 - Try fix bug can not logout
+- Allow to download debug log without logout
 - Set currentCallId in unhold function (change request came from embed api)
 
 #### 2.11.8

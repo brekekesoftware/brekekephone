@@ -5,6 +5,7 @@ import { Platform, View } from 'react-native'
 
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
+import { debugStore } from '../stores/debugStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
@@ -139,6 +140,10 @@ export const ProfileCreateForm: FC<{
                     },
                   ]
                 : []),
+              {
+                label: intl`Open debug log`,
+                onPress: debugStore.openLogFile,
+              },
               {
                 label: intl`Logout`,
                 onPress: as.signOut,

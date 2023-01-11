@@ -6,6 +6,7 @@ import { mdiCheck, mdiTranslate } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
+import { debugStore } from '../stores/debugStore'
 import { intl, intlDebug } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
@@ -63,6 +64,10 @@ export class PageSettingsOther extends Component {
                 },
               ]
             : []),
+          {
+            label: intl`Open debug log`,
+            onPress: debugStore.openLogFile,
+          },
           {
             label: intl`Logout`,
             onPress: as.signOut,
