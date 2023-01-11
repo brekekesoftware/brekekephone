@@ -156,17 +156,24 @@ export class AuthStore {
   }
 
   signOut = () => {
+    console.log('signOut debug: autoStore.signOut')
     saveLastSignedInId(false)
     this.signOutWithoutSaving()
   }
   signOutWithoutSaving = () => {
-    getCallStore().calls.forEach(c => c.hangupWithUnhold())
-    if (Platform.OS !== 'web') {
-      // Try to end callkeep if it's stuck
-      getCallStore().endCallKeepAllCalls()
+    try {
+      getCallStore().calls.forEach(c => c.hangupWithUnhold())
+      if (Platform.OS !== 'web') {
+        // Try to end callkeep if it's stuck
+        getCallStore().endCallKeepAllCalls()
+      }
+      this.resetState()
+    } catch (err) {
+      console.error('signOut debug: signOutWithoutSaving error:', err)
     }
-    this.resetState()
+    console.log('signOut debug: goToPageProfileSignIn')
     Nav().goToPageProfileSignIn()
+    console.log('signOut debug: goToPageProfileSignIn done')
   }
   @action private resetState = () => {
     this.signedInId = ''

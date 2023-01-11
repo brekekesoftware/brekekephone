@@ -8,5 +8,5 @@ configure({
   disableErrorBoundaries: false,
 })
 onReactionError((err: Error) => {
-  console.error('onEractionError', err)
+  console.error('onReactionError:', err)
 })

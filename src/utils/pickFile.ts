@@ -107,7 +107,7 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       name = getName(stat.originalFilepath || stat.path) || name
       size = stat.size
     } catch (err) {
-      console.error(`pickFile RNFS.stat err: ${err}`)
+      console.error('pickFile RNFS.stat error:', err)
     }
   }
 

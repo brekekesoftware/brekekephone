@@ -24,7 +24,7 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
-  if (!p.id || !p.pbxUsername) {
+  if (!p.pbxUsername) {
     console.log('PN sync debug: invalid data')
     return
   }
@@ -43,7 +43,7 @@ const syncPnTokenWithoutCatch = async (
       `PBX PN debug: disconnect by syncPnToken success=${success} noUpsert=${noUpsert}`,
     )
     pbx.disconnect()
-    if (success && !noUpsert) {
+    if (success && !noUpsert && p.id) {
       accountStore.upsertAccount({
         id: p.id,
         pushNotificationEnabledSynced: true,
@@ -165,8 +165,7 @@ const syncPnTokenWithoutCatch = async (
     await pbx.pnmanage(newParams)
     return disconnectPbx(true)
   } catch (err) {
-    console.error('PN sync debug: catch error')
-    console.error(err)
+    console.error('PN sync debug: catch error:', err)
     return disconnectPbx()
   }
 }

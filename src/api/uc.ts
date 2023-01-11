@@ -638,7 +638,7 @@ export class UC extends EventEmitter {
           b = new ClipboardEvent('').clipboardData || undefined
         }
         if (!b) {
-          console.error('Can not set input.files')
+          console.error('Can not set input.files: empty data transfer')
           return null
         }
 
@@ -709,7 +709,7 @@ export class UC extends EventEmitter {
           b = e.clipboardData || undefined
         }
         if (!b) {
-          console.error('Can not set input.files')
+          console.error('Can not set input.files: empty data transfer')
           return null
         }
         b.items.add(file as File)
