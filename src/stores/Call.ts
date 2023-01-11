@@ -214,6 +214,9 @@ export class Call {
   @action private toggleHold = () => {
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
+    if (!this.isAboutToHangup && !this.holding) {
+      this.store.currentCallId = this.id
+    }
     if (!this.isAboutToHangup) {
       if (this.callkeepUuid && !this.holding) {
         // Hack to fix no voice after unhold: only setOnHold in unhold case
