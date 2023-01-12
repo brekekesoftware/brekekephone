@@ -291,14 +291,14 @@ export const debugStore = store
 const getSemVer = (v?: string) => {
   const a =
     v
-      ?.split(/[.-_]/g)
-      .map(s => s.match(/^d+/)?.[0])
+      ?.split(/\./g)
+      .map(s => s.match(/^\d+/)?.[0])
       .map(Number) || []
   return [a[0] || 0, a[1] || 0, a[2] || 0, a[3] || 0]
 }
 
 /**
- * Comapre 2 semantic versions
+ * Compare 2 semantic versions
  * @param a new version
  * @param b current version
  * @returns a > b ? 1 : a < b ? -1 : 0
