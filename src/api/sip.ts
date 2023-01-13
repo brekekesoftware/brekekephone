@@ -15,7 +15,7 @@ import { chatStore } from '../stores/chatStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
-import { CallOptions, Session, Sip } from './brekekejs'
+import { CallConfig, CallOptions, Session, Sip } from './brekekejs'
 import { getCameraSourceIds } from './getCameraSourceId'
 import { pbx } from './pbx'
 import { turnConfig } from './turnConfig'
@@ -117,6 +117,20 @@ export class SIP extends EventEmitter {
       phone.removeEventListener('phoneStatusChanged', h)
     }
 
+    const getCallConfig = (config?: string) => {
+      if (!config) {
+        return {}
+      }
+      const arrayConfig =
+        config
+          ?.split(';')
+          .map(cf => cf.trim())
+          .filter(cf => cf)
+          ?.map(cf => cf.split(':')) || []
+
+      return Object.fromEntries(arrayConfig) as CallConfig
+    }
+
     const computeCallPatch = async (ev: Session) => {
       const partyNumber = ev.rtcSession.remote_identity.uri.user
       let partyName = ev.rtcSession.remote_identity.display_name
@@ -134,6 +148,9 @@ export class SIP extends EventEmitter {
         partyName ||
         d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
+      const callConfig = getCallConfig(
+        ev.incomingMessage?.getHeader('X-WEBPHONE-CALL'),
+      )
       return {
         rawSession: ev,
         id: ev.sessionId,
@@ -144,6 +161,7 @@ export class SIP extends EventEmitter {
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
         sessionStatus: ev.sessionStatus,
+        callConfig,
       }
     }
 
@@ -210,6 +228,7 @@ export class SIP extends EventEmitter {
           'X-PBX-IMAGE-TALKING',
         )
         const imageSize = ev.incomingMessage?.getHeader('X-PBX-IMAGE-SIZE')
+
         if (typeof pbxSessionInfo === 'string') {
           const infos = pbxSessionInfo.split(';')
           patch.pbxTenant = infos[0]

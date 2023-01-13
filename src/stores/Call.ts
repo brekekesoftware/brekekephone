@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
 
-import { Session, SessionStatus } from '../api/brekekejs'
+import { CallConfig, Session, SessionStatus } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
@@ -36,6 +36,7 @@ export class Call {
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
   @observable isFrontCamera = true
+  @observable callConfig: CallConfig = {}
   getDisplayName = () =>
     getPartyName(this.partyNumber) ||
     this.partyName ||
