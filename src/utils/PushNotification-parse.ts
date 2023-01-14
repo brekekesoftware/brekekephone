@@ -278,8 +278,19 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     .forEach(c => {
       Object.assign(c, { callkeepUuid: n.callkeepUuid })
     })
+
   // Continue handling incoming call in android
   if (Platform.OS === 'android') {
+    const call = getCallStore().calls.find(
+      c => c.pnId === n.id && c.callkeepUuid === n.callkeepUuid,
+    )
+    if (call) {
+      BrekekeUtils.setBtnCallConfig(
+        call.callkeepUuid,
+        JSON.stringify(call.callConfig),
+      )
+    }
+
     getCallStore().showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,

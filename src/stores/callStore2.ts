@@ -214,6 +214,16 @@ export class CallStore {
     this.recentCallActivityAt = now
     const cExisting = this.calls.find(c => c.id === cPartial.id)
     if (cExisting) {
+      if (
+        Platform.OS === 'android' &&
+        cExisting.callkeepUuid &&
+        cExisting.answered
+      ) {
+        BrekekeUtils.setBtnCallConfig(
+          cExisting.callkeepUuid,
+          JSON.stringify(cPartial.callConfig),
+        )
+      }
       if (cPartial.rawSession && cExisting.rawSession) {
         Object.assign(cExisting.rawSession, cPartial.rawSession)
         delete cPartial.rawSession
@@ -273,6 +283,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, cPartial)
     this.calls = [c, ...this.calls]
+
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
@@ -286,10 +297,12 @@ export class CallStore {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
+
     const callkeepAction = this.getCallkeepAction(c)
     console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
     )
+
     if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
       c.answer()

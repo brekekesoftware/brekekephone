@@ -30,6 +30,8 @@ import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public RelativeLayout vWebrtc,
@@ -238,7 +240,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateHeader();
 
     if (BrekekeUtils.config != null) {
-      updateConfig();
+      updatePbxConfig();
     }
   }
 
@@ -296,7 +298,56 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     openMainActivity();
   }
 
-  public void updateConfig() {
+  public void updateBtnConfig(@Nullable String config) {
+    debug("updateBtnConfig");
+    debug(config);
+    try {
+      JSONObject jObject = new JSONObject(config);
+      if (jObject == null || jObject.length() == 0) {
+        updatePbxConfig();
+      } else {
+        updateCallConfig(jObject);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void updateCallConfig(JSONObject config) {
+    try {
+      if (config.has("hangup") && config.getString("hangup").equals("false")) {
+        btnReject.setVisibility(View.GONE);
+      }
+      if (config.has("transfer") && config.getString("transfer").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+      if (config.has("park") && config.getString("park").equals("false")) {
+        btnReject.setVisibility(View.GONE);
+      }
+      if (config.has("video") && config.getString("video").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+      if (config.has("speaker") && config.getString("speaker").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+      if (config.has("mute") && config.getString("mute").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+      if (config.has("record") && config.getString("record").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+      if (config.has("dtmf") && config.getString("dtmf").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+      if (config.has("hold") && config.getString("hold").equals("false")) {
+        vBtnTransfer.setVisibility(View.GONE);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void updatePbxConfig() {
     if (BrekekeUtils.config.hideBtnReject) {
       btnReject.setVisibility(View.GONE);
     }

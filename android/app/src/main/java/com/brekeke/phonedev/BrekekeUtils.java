@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -622,15 +623,29 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     this.config.hideBtnHold = hideBtnHold;
     this.config.hideBtnReject = hideBtnReject;
     // update UI with case IncomingCallActivity start before user login finish
-    try {
-      for (IncomingCallActivity a : activities) {
-        try {
-          a.updateConfig();
-        } catch (Exception e) {
-        }
-      }
-    } catch (Exception e) {
-    }
+    //    try {
+    //      for (IncomingCallActivity a : activities) {
+    //        try {
+    //          a.updateConfig();
+    //        } catch (Exception e) {
+    //        }
+    //      }
+    //    } catch (Exception e) {
+    //    }
+  }
+
+  @ReactMethod
+  public void setBtnCallConfig(String uuid, @Nullable String config) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).updateBtnConfig(config);
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 
   @ReactMethod
