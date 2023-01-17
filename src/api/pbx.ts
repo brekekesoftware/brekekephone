@@ -240,6 +240,7 @@ export class PBX extends EventEmitter {
       )
     }
     d.palParams = parsePalParams(s.pbxConfig)
+    d.userAgent = s.pbxConfig['webphone.useragent']
     accountStore.updateAccountData(d)
     return s.pbxConfig
   }

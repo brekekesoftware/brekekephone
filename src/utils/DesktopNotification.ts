@@ -15,10 +15,10 @@ export const showNotification = async (body: string, tag: string) => {
     tag,
     icon: 'https://apps.brekeke.com/favicon.ico',
     noisiness: 1,
-    onclick: (ev: any) => {
+    onclick: (e: unknown) => {
       window.focus()
     },
-    onclose: (ev: any) => {
+    onclose: (e: unknown) => {
       notification.closeNotification({ notificationId: id })
     },
   })

@@ -160,9 +160,8 @@ PushNotification.register(async () => {
     return
   }
   alreadyInitApp = true
-  await initApp()
-    .catch(err => void err)
-    .then(() => waitTimeout(100))
+  await initApp().catch(console.error)
+  await waitTimeout(100)
   runInAction(() => {
     accountStore.appInitDone = true
   })

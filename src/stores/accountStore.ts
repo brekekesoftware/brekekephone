@@ -8,6 +8,7 @@ import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RnAsyncStorage } from '../components/Rn'
 import { currentVersion } from '../components/variables'
+import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -64,6 +65,7 @@ export type AccountData = {
     users: (UcBuddy | UcBuddyGroup)[]
   }
   palParams?: { [k: string]: string }
+  userAgent?: string
 }
 
 class AccountStore {
@@ -209,8 +211,8 @@ class AccountStore {
       })
     }
   }
-  getAccountData = (p?: Account): AccountData | undefined => {
-    if (!p || !p.pbxUsername || !p.pbxTenant || !p.pbxHostname || !p.pbxPort) {
+  getAccountData = (a?: AccountUnique): AccountData | undefined => {
+    if (!a || !a.pbxUsername || !a.pbxTenant || !a.pbxHostname || !a.pbxPort) {
       return {
         id: '',
         accessToken: '',
@@ -219,16 +221,16 @@ class AccountStore {
         pbxBuddyList: undefined,
       }
     }
-    const id = getAccountUniqueId(p)
-    return this.accountData.find(_ => _.id === id)
+    const id = getAccountUniqueId(a)
+    return this.accountData.find(d => d.id === id)
   }
-  getAccountDataAsync = async (p?: Account): Promise<AccountData> => {
-    const d = this.getAccountData(p)
+  getAccountDataAsync = async (a?: AccountUnique): Promise<AccountData> => {
+    const d = this.getAccountData(a)
     if (d) {
       return d
     }
     const newD = {
-      id: getAccountUniqueId(p!),
+      id: getAccountUniqueId(a!),
       accessToken: '',
       recentCalls: [],
       recentChats: [],
@@ -250,12 +252,22 @@ class AccountStore {
   }
 }
 
-export const getAccountUniqueId = (p: Account) =>
+export type AccountUnique = Pick<
+  Account,
+  'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort'
+>
+export const parsedPnToAccountUnique = (n: ParsedPn) => ({
+  pbxHostname: n.pbxHostname,
+  pbxPort: n.pbxPort,
+  pbxTenant: n.tenant,
+  pbxUsername: n.to,
+})
+export const getAccountUniqueId = (a: AccountUnique) =>
   jsonStableStringify({
-    u: p.pbxUsername,
-    t: p.pbxTenant || '-',
-    h: p.pbxHostname,
-    p: p.pbxPort,
+    u: a.pbxUsername,
+    t: a.pbxTenant || '-',
+    h: a.pbxHostname,
+    p: a.pbxPort,
   })
 
 export const accountStore = new AccountStore()
@@ -265,7 +277,7 @@ type TAccountDataInStorage = {
   profileData: AccountData[]
 }
 
-type TLastSignedInId = {
+type LastSignedInId = {
   id: string
   at: number
   version: string
@@ -276,19 +288,19 @@ type TLastSignedInId = {
 
 export const getLastSignedInId = async (
   checkAutoSignInBrekekePhone?: boolean,
-): Promise<TLastSignedInId> => {
+) => {
   const j = await RnAsyncStorage.getItem('lastSignedInId')
-  let d: any = null
+  let d = undefined as unknown as LastSignedInId
   try {
     d = j && JSON.parse(j)
   } catch (err) {}
-  if (d?.h) {
-    // unique account id is json
-    d = j
+  if (d && 'h' in d) {
+    // backward compatibility json is the unique account id
+    d = j as unknown as LastSignedInId
   }
   if (!d?.id) {
     d = {
-      id: d || j || '',
+      id: (d || j || '') as unknown as string,
       at: Date.now(),
       version: currentVersion,
     }

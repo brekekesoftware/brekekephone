@@ -55,7 +55,11 @@ export class Call {
   callkeepAlreadyRejected = false
 
   @action
-  answer = (options?: any, videoOptions?: any, exInfo?: any) => {
+  answer = (
+    options?: { ignoreNav?: boolean },
+    videoOptions?: object,
+    exInfo?: object,
+  ) => {
     const ignoreNav = options?.ignoreNav
     if (options) {
       delete options.ignoreNav
