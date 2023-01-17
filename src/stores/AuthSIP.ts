@@ -4,7 +4,7 @@ import { action, autorun, Lambda } from 'mobx'
 
 import { PbxGetProductInfoRes } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
+import { sip, SipLoginOption } from '../api/sip'
 import { updatePhoneIndex } from '../api/updatePhoneIndex'
 import { SipPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
@@ -55,7 +55,7 @@ class AuthSIP {
           credential: pn.turnCredential,
         }
       : undefined
-    await sip.connect({
+    const o: SipLoginOption = {
       hostname: p.pbxHostname,
       port: pn.sipWssPort,
       username: pn.phoneId,
@@ -63,7 +63,8 @@ class AuthSIP {
       pbxTurnEnabled: p.pbxTurnEnabled,
       dtmfSendPal: toBoolean(pn.dtmfSendPal),
       turnConfig,
-    })
+    }
+    await sip.connect(o, p)
   }
 
   @action private authWithoutCatch = async () => {

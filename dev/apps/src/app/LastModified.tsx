@@ -27,8 +27,7 @@ export const LastModified = ({ url }: { url: string }) => {
           }),
         )
       })
-      .catch(err => {
-        void err
+      .catch(() => {
         setDuration('')
       })
   }, [url])

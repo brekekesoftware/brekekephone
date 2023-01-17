@@ -17,6 +17,7 @@ import {
   accountStore,
   getAccountUniqueId,
   getLastSignedInId,
+  parsedPnToAccountUnique,
   saveLastSignedInId,
 } from './accountStore'
 import { authSIP } from './AuthSIP'
@@ -108,11 +109,7 @@ export class AuthStore {
     return accountStore.accounts.find(p0 => compareAccount(p0, p))
   }
   findAccountByPn = (n: ParsedPn) => {
-    return this.findAccount({
-      ...n,
-      pbxUsername: n.to,
-      pbxTenant: n.tenant,
-    })
+    return this.findAccount(parsedPnToAccountUnique(n))
   }
 
   @observable signedInId = ''
@@ -129,21 +126,21 @@ export class AuthStore {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
 
-  signIn = async (p?: Account, autoSignIn?: boolean) => {
-    if (!p) {
+  signIn = async (a?: Account, autoSignIn?: boolean) => {
+    if (!a) {
       return false
     }
-    const d = await accountStore.getAccountDataAsync(p)
-    if (!p.pbxPassword && !d.accessToken) {
-      Nav().goToPageProfileUpdate({ id: p.id })
+    const d = await accountStore.getAccountDataAsync(a)
+    if (!a.pbxPassword && !d.accessToken) {
+      Nav().goToPageProfileUpdate({ id: a.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
       })
       return true
     }
-    this.signedInId = p.id
+    this.signedInId = a.id
     if (!autoSignIn) {
-      await saveLastSignedInId(getAccountUniqueId(p))
+      await saveLastSignedInId(getAccountUniqueId(a))
     }
     return true
   }
