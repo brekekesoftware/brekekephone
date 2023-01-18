@@ -325,8 +325,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       webViewAvatar.getSettings().setJavaScriptEnabled(false);
       webViewAvatar.destroy();
-    } catch (Exception ex) {
-      debug("destroyAvatarWebView: " + ex.toString());
+    } catch (Exception e) {
+      debug("destroyAvatarWebView: " + e.toString());
     }
   }
 
@@ -334,8 +334,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       webViewAvatarTalking.getSettings().setJavaScriptEnabled(false);
       webViewAvatarTalking.destroy();
-    } catch (Exception ex) {
-      debug("destroyAvatarTalkingWebView: " + ex.toString());
+    } catch (Exception e) {
+      debug("destroyAvatarTalkingWebView: " + e.toString());
     }
   }
 
