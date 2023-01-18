@@ -12,9 +12,9 @@ import { uc } from '../api/uc'
 import { embedApi } from '../embed/embedApi'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
-import { showNotification } from '../utils/DesktopNotification'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { showWebNotification } from '../utils/showWebNotification'
 import { arrToMap } from '../utils/toMap'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
@@ -59,9 +59,7 @@ export class CallStore {
     if (Platform.OS === 'ios') {
       RNCallKeep.answerIncomingCall(uuid)
     }
-    if (Platform.OS === 'android') {
-      BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-    }
+    BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
   }
   @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
     if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
@@ -202,107 +200,105 @@ export class CallStore {
       IncallManager.setForceSpeakerphoneOn(false)
     }
   }
-  onForeUpdateSpeaker = () => {
+  onForceUpdateSpeaker = () => {
     BackgroundTimer.setTimeout(() => {
       IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
     }, 2000)
   }
   @action private upsertCall = (
-    cPartial: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
+    // partial
+    p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
   ) => {
     const now = Date.now()
     this.recentCallActivityAt = now
-    const cExisting = this.calls.find(c => c.id === cPartial.id)
-    if (cExisting) {
+    // existing
+    const e = this.calls.find(c => c.id === p.id)
+    if (e) {
+      if (p.callConfig) {
+        // Merge new config with current config instead of replacing
+        Object.assign(e.callConfig, p.callConfig)
+      }
+      delete p.callConfig
+      if (e.callkeepUuid) {
+        BrekekeUtils.setCallConfig(e.callkeepUuid, JSON.stringify(e.callConfig))
+      }
+      if (p.rawSession && e.rawSession) {
+        Object.assign(e.rawSession, p.rawSession)
+        delete p.rawSession
+      }
       if (
-        Platform.OS === 'android' &&
-        cExisting.callkeepUuid &&
-        cExisting.answered
+        p.videoSessionId &&
+        e.videoSessionId &&
+        p.videoSessionId !== e.videoSessionId &&
+        !p.remoteVideoEnabled
       ) {
-        BrekekeUtils.setBtnCallConfig(
-          cExisting.callkeepUuid,
-          JSON.stringify(cPartial.callConfig),
-        )
+        delete p.videoSessionId
+        delete p.remoteVideoEnabled
+        delete p.remoteVideoStreamObject
       }
-      if (cPartial.rawSession && cExisting.rawSession) {
-        Object.assign(cExisting.rawSession, cPartial.rawSession)
-        delete cPartial.rawSession
-      }
-      if (
-        cPartial.videoSessionId &&
-        cExisting.videoSessionId &&
-        cPartial.videoSessionId !== cExisting.videoSessionId &&
-        !cPartial.remoteVideoEnabled
-      ) {
-        delete cPartial.videoSessionId
-        delete cPartial.remoteVideoEnabled
-        delete cPartial.remoteVideoStreamObject
-      }
-      if (!cExisting.answered && cPartial.answered) {
-        this.currentCallId = cExisting.id
-        cExisting.answerCallKeep()
-        cPartial.answeredAt = now
-        // update speaker again - ios
-        Platform.OS === 'ios' && this.onForeUpdateSpeaker()
-        if (Platform.OS === 'android') {
-          BrekekeUtils.onCallConnected(cExisting.callkeepUuid)
+      if (!e.answered && p.answered) {
+        this.currentCallId = e.id
+        e.answerCallKeep()
+        p.answeredAt = now
+        BrekekeUtils.onCallConnected(e.callkeepUuid)
+        // TODO hacky way to fix no audio/voice
+        if (Platform.OS === 'ios') {
+          this.onForceUpdateSpeaker()
         }
       }
-      Object.assign(cExisting, cPartial, {
-        withSDPControls: cExisting.withSDPControls || cPartial.withSDP,
+      Object.assign(e, p, {
+        withSDPControls: e.withSDPControls || p.withSDP,
       })
-      if (cExisting.incoming && cExisting.callkeepUuid) {
+      if (e.incoming && e.callkeepUuid) {
         BrekekeUtils.setRemoteVideoStreamURL(
-          cExisting.callkeepUuid,
-          cExisting.remoteVideoStreamObject
-            ? cExisting.remoteVideoStreamObject.toURL()
-            : '',
+          e.callkeepUuid,
+          e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
         )
       }
-      if (cExisting.talkingImageUrl && cExisting.talkingImageUrl.length > 0) {
+      if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {
         BrekekeUtils.setTalkingAvatar(
-          cExisting.callkeepUuid,
-          cExisting.talkingImageUrl,
-          cExisting.partyImageSize === 'large',
+          e.callkeepUuid,
+          e.talkingImageUrl,
+          e.partyImageSize === 'large',
         )
       }
       if (
-        cExisting.incoming &&
-        cExisting.callkeepUuid &&
-        typeof cExisting.localVideoEnabled === 'boolean'
+        e.incoming &&
+        e.callkeepUuid &&
+        typeof e.localVideoEnabled === 'boolean'
       ) {
-        BrekekeUtils.setIsVideoCall(
-          cExisting.callkeepUuid,
-          !!cExisting.localVideoEnabled,
-        )
+        BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
-      embedApi.emit('call_update', cExisting)
+      embedApi.emit('call_update', e)
       return
     }
+
     // Construct a new call
     const c = new Call(this)
-    Object.assign(c, cPartial)
+    Object.assign(c, p)
     this.calls = [c, ...this.calls]
 
+    // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
+
+    // Desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
-      showNotification(
+      showWebNotification(
         c.getDisplayName() + ' ' + intl`Incoming call`,
         c.getDisplayName(),
       )
     }
+
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
-
     const callkeepAction = this.getCallkeepAction(c)
     console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
     )
-
     if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
       c.answer()
@@ -395,12 +391,7 @@ export class CallStore {
     // Start call logic in RNCallKeep
     // Adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
-    if (
-      /*Platform.OS === 'android' ||
-      // ios allow only 1 callkeep
-      Platform.OS === 'ios' && !Object.keys(this.callkeepMap).length*/
-      Platform.OS !== 'web'
-    ) {
+    if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
       Platform.OS === 'ios' &&
         RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
@@ -706,11 +697,11 @@ export class CallStore {
       })
   }
 
-  // Additional static logic
   constructor() {
     if (Platform.OS === 'android') {
       BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
-      // If it is locked right after blur, we assume it was put in background because of lock
+      // If it is locked right after blur 300ms
+      // we assume it was put in background because of lock
       AppState.addEventListener('change', () => {
         BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
         if (AppState.currentState === 'active') {

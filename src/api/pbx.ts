@@ -13,7 +13,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
-import { parsePalParams } from './parsePalParams'
+import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
@@ -227,17 +227,7 @@ export class PBX extends EventEmitter {
     s.pbxConfig = config
     const d = await s.getCurrentDataAsync()
     if (Platform.OS === 'android') {
-      BrekekeUtils.setConfig(
-        s.pbxConfig?.['webphone.call.transfer'] === 'false',
-        s.pbxConfig?.['webphone.call.park'] === 'false',
-        s.pbxConfig?.['webphone.call.video'] === 'false',
-        s.pbxConfig?.['webphone.call.speaker'] === 'false',
-        s.pbxConfig?.['webphone.call.mute'] === 'false',
-        s.pbxConfig?.['webphone.call.record'] === 'false',
-        s.pbxConfig?.['webphone.call.dtmf'] === 'false',
-        s.pbxConfig?.['webphone.call.hold'] === 'false',
-        s.pbxConfig?.['webphone.call.hangup'] === 'false',
-      )
+      BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(s.pbxConfig)))
     }
     d.palParams = parsePalParams(s.pbxConfig)
     d.userAgent = s.pbxConfig['webphone.useragent']

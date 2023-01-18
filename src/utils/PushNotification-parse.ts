@@ -285,7 +285,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       c => c.pnId === n.id && c.callkeepUuid === n.callkeepUuid,
     )
     if (call) {
-      BrekekeUtils.setBtnCallConfig(
+      BrekekeUtils.setCallConfig(
         call.callkeepUuid,
         JSON.stringify(call.callConfig),
       )

@@ -37,6 +37,7 @@ export class Call {
   @observable pbxTenant = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
+
   getDisplayName = () =>
     getPartyName(this.partyNumber) ||
     this.partyName ||

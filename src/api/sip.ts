@@ -121,20 +121,6 @@ export class SIP extends EventEmitter {
       phone.removeEventListener('phoneStatusChanged', h)
     }
 
-    const getCallConfig = (config?: string) => {
-      if (!config) {
-        return {}
-      }
-      const arrayConfig =
-        config
-          ?.split(';')
-          .map(cf => cf.trim())
-          .filter(cf => cf)
-          ?.map(cf => cf.split(':')) || []
-
-      return Object.fromEntries(arrayConfig) as CallConfig
-    }
-
     const computeCallPatch = async (ev: Session) => {
       const partyNumber = ev.rtcSession.remote_identity.uri.user
       let partyName = ev.rtcSession.remote_identity.display_name
@@ -152,7 +138,7 @@ export class SIP extends EventEmitter {
         partyName ||
         d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
-      const callConfig = getCallConfig(
+      const callConfig = getCallConfigFromHeader(
         ev.incomingMessage?.getHeader('X-WEBPHONE-CALL'),
       )
       return {
@@ -531,3 +517,18 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
       socketKeepAlive: 60,
     },
   })
+
+const getCallConfigFromHeader = (config?: string): CallConfig =>
+  config
+    ? Object.fromEntries(
+        config
+          .split(';')
+          .map(c =>
+            c
+              .split(':')
+              .map(kv => kv.trim())
+              .filter(kv => kv),
+          )
+          .filter(a => a.length === 2),
+      )
+    : {}

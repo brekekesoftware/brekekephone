@@ -35,42 +35,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
-
-  public class Config {
-    public boolean hideBtnTransfer;
-    public boolean hideBtnPark;
-    public boolean hideBtnVideo;
-    public boolean hideBtnSpeaker;
-    public boolean hideBtnMute;
-    public boolean hideBtnRecord;
-    public boolean hideBtnDTMF;
-    public boolean hideBtnHold;
-    public boolean hideBtnReject;
-
-    public Config() {
-      this.hideBtnTransfer = false;
-      this.hideBtnPark = false;
-      this.hideBtnVideo = false;
-      this.hideBtnSpeaker = false;
-      this.hideBtnMute = false;
-      this.hideBtnRecord = false;
-      this.hideBtnDTMF = false;
-      this.hideBtnHold = false;
-      this.hideBtnReject = false;
-    }
-  }
-
   public static RCTDeviceEventEmitter eventEmitter;
 
   public static void emit(String name, String data) {
     try {
       eventEmitter.emit(name, data);
-    } catch (Exception ex) {
+    } catch (Exception e) {
     }
   }
 
@@ -99,13 +73,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
-  public static Config config;
 
   BrekekeUtils(ReactApplicationContext c) {
     super(c);
     ctx = c;
     initStaticServices(c);
-    config = new Config();
   }
 
   @Override
@@ -283,7 +255,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         L.l =
             AsyncLocalStorageUtil.getItemImpl(
                 ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "locale");
-      } catch (Exception ex) {
+      } catch (Exception e) {
       }
     }
     if (L.l == null) {
@@ -603,45 +575,42 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setConfig(
-      Boolean hideBtnTransfer,
-      Boolean hideBtnPark,
-      Boolean hideBtnVideo,
-      Boolean hideBtnSpeaker,
-      Boolean hideBtnMute,
-      Boolean hideBtnRecord,
-      Boolean hideBtnDTMF,
-      Boolean hideBtnHold,
-      Boolean hideBtnReject) {
-    this.config.hideBtnTransfer = hideBtnTransfer;
-    this.config.hideBtnPark = hideBtnPark;
-    this.config.hideBtnVideo = hideBtnVideo;
-    this.config.hideBtnSpeaker = hideBtnSpeaker;
-    this.config.hideBtnMute = hideBtnMute;
-    this.config.hideBtnRecord = hideBtnRecord;
-    this.config.hideBtnDTMF = hideBtnDTMF;
-    this.config.hideBtnHold = hideBtnHold;
-    this.config.hideBtnReject = hideBtnReject;
-    // update UI with case IncomingCallActivity start before user login finish
-    //    try {
-    //      for (IncomingCallActivity a : activities) {
-    //        try {
-    //          a.updateConfig();
-    //        } catch (Exception e) {
-    //        }
-    //      }
-    //    } catch (Exception e) {
-    //    }
-  }
-
-  @ReactMethod
-  public void setBtnCallConfig(String uuid, @Nullable String config) {
+  public void setPbxConfig(String jsonStr) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).updateBtnConfig(config);
+              if (!jsonStr.startsWith("{")) {
+                return;
+              }
+              JSONObject o = new JSONObject(jsonStr);
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.pbxConfig = o;
+                  a.updateCallConfig();
+                } catch (Exception e) {
+                }
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setCallConfig(String uuid, String jsonStr) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              if (!jsonStr.startsWith("{")) {
+                return;
+              }
+              IncomingCallActivity a = at(uuid);
+              a.callConfig = new JSONObject(jsonStr);
+              a.updateCallConfig();
             } catch (Exception e) {
             }
           }

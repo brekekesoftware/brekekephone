@@ -467,14 +467,13 @@ class PageCallManage extends Component<{
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
 
-    const configure = getAuthStore().pbxConfig
-
+    const pbxConfig = getAuthStore().pbxConfig
     const isShowBtn = (btnName: BtnCallManage) => {
       // Priority is given to CallConfig first
       if (c.callConfig?.[btnName]) {
-        return !(c.callConfig?.[btnName] === 'false')
+        return !(c.callConfig[btnName] === 'false')
       }
-      return !(configure?.[`webphone.call.${btnName}`] === 'false')
+      return !(pbxConfig?.[`webphone.call.${btnName}`] === 'false')
     }
 
     const incoming = c.incoming && !c.answered
