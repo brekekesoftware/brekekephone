@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.11.9",
+  "version": "2.11.10",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -18,7 +18,7 @@
     "test:eslint": "eslint --ignore-path=.gitignore --ext=.js,.ts,.tsx --max-warnings=0 .",
     "test:prettier": "prettier --ignore-path=.gitignore --list-different .",
     "test:typescript": "tsc",
-    "test:type-coverage": "type-coverage --ignoreCatch --atLeast=100",
+    "test:type-coverage": "type-coverage",
     "postinstall": "husky install"
   },
   "dependencies": {
@@ -127,6 +127,10 @@
       "prettier --write"
     ],
     "*.{html,scss,json,md}": "prettier --write"
+  },
+  "typeCoverage": {
+    "atLeast": 100,
+    "ignoreCatch": true
   },
   "cracoConfig": ".cracorc.js",
   "browserslist": "ie 10-11"

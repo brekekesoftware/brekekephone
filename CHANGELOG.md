@@ -1,3 +1,8 @@
+#### 2.11.10
+
+- Fix bug it should compare pbx versions correctly
+- Save getProductInfo webphone.useragent to local storage and use it in the next sip login
+
 #### 2.11.9
 
 - Try fix bug can not logout

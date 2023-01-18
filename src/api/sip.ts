@@ -7,7 +7,11 @@ import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
 import { embedApi } from '../embed/embedApi'
-import { accountStore } from '../stores/accountStore'
+import {
+  accountStore,
+  AccountUnique,
+  parsedPnToAccountUnique,
+} from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
@@ -59,7 +63,7 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
     user: n.sipPn.phoneId,
     auth: n.sipPn.sipAuth,
     useVideoClient: true,
-    userAgent: getUserAgent(),
+    userAgent: getUserAgent(n),
   })
   const started = await new Promise(r => {
     phone.addEventListener(
@@ -277,32 +281,31 @@ export class SIP extends EventEmitter {
     return phone
   }
 
-  connect = async (sipLoginOption: SipLoginOption) => {
+  connect = async (o: SipLoginOption, a: AccountUnique) => {
     console.log('SIP PN debug: call sip.stopWebRTC in sip.connect')
     this.phone?._removeEventListenerPhoneStatusChange?.()
     this.stopWebRTC()
-    const phone = await this.init(sipLoginOption)
+    const phone = await this.init(o)
     //
-    const callOptions = ((sipLoginOption.pbxTurnEnabled && turnConfig) ||
-      {}) as CallOptions
+    const callOptions = ((o.pbxTurnEnabled && turnConfig) || {}) as CallOptions
     if (!callOptions.pcConfig) {
       callOptions.pcConfig = {}
     }
     if (!Array.isArray(callOptions.pcConfig.iceServers)) {
       callOptions.pcConfig.iceServers = []
     }
-    if (sipLoginOption.turnConfig) {
-      callOptions.pcConfig.iceServers.push(sipLoginOption.turnConfig)
+    if (o.turnConfig) {
+      callOptions.pcConfig.iceServers.push(o.turnConfig)
     }
     phone.setDefaultCallOptions(callOptions)
     //
     phone.startWebRTC({
-      url: getWssUrl(sipLoginOption.hostname, sipLoginOption.port),
+      url: getWssUrl(o.hostname, o.port),
       tls: true,
-      user: sipLoginOption.username,
-      auth: sipLoginOption.accessToken,
+      user: o.username,
+      auth: o.accessToken,
       useVideoClient: true,
-      userAgent: getUserAgent(),
+      userAgent: getUserAgent(a),
     })
     //
     console.log('SIP PN debug: added listener on _ua')
@@ -464,26 +467,21 @@ const parseCanceledPnIds = (data?: string) => {
   })
 }
 
-const getUserAgent = () => {
-  let platformOs: string = Platform.OS
-  if (platformOs === 'ios') {
-    platformOs = 'iOS'
-  } else if (platformOs === 'android') {
-    platformOs = 'Android'
-  } else if (platformOs === 'web') {
-    platformOs = 'Web'
-  }
-  const jssipVersion = '3.2.15'
-  const appVersion = currentVersion
-  return (
-    'Brekeke Phone for ' +
-    platformOs +
-    ' ' +
-    appVersion +
-    '/JsSIP ' +
-    jssipVersion
-  )
+const osMap: { [k: string]: string } = {
+  ios: 'iOS',
+  android: 'Android',
+  web: 'Web',
 }
+const getUserAgent = (a: ParsedPn | AccountUnique) => {
+  const au = 'to' in a ? parsedPnToAccountUnique(a) : a
+  const savedUserAgent = accountStore.getAccountData(au)?.userAgent
+  if (savedUserAgent) {
+    return savedUserAgent
+  }
+  const os = osMap[Platform.OS]
+  return `Brekeke Phone for ${os} ${currentVersion} /JsSIP 3.2.15`
+}
+
 const getWssUrl = (host?: string, port?: string) =>
   `wss://${host}:${port}/phone`
 

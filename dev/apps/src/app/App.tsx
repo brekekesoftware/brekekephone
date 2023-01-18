@@ -22,7 +22,7 @@ export const App = () => {
     window
       .fetch('https://apps.brekeke.com/api/builds')
       .then(r => r.json())
-      .then(arr => {
+      .then((arr: string[]) => {
         if (!Array.isArray(arr)) {
           return
         }
