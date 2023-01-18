@@ -1,6 +1,6 @@
 import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native'
 
-import { BtnCallManage } from '../api/brekekejs'
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -40,7 +39,7 @@ import { SmartImage } from '../components/SmartAvatarHTML'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
-import { Call } from '../stores/Call'
+import { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -322,7 +321,7 @@ class PageCallManage extends Component<{
     return s.inPageCallManage && s.getCurrentCall()?.id === c.id
   }
 
-  isBtnHidden = (k: BtnCallManage) => {
+  isBtnHidden = (k: CallConfigKey) => {
     const {
       call: { callConfig },
     } = this.props

@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 import { v4 as newUuid } from 'uuid'
 
-import { CallConfig, Session, SessionStatus } from '../api/brekekejs'
+import { Session, SessionStatus } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
@@ -335,3 +335,16 @@ export class Call {
     })
   }
 }
+
+export type CallConfig = {
+  dtmf?: string
+  hangup?: string
+  hold?: string
+  mute?: string
+  park?: string
+  record?: string
+  speaker?: string
+  transfer?: string
+  video?: string
+}
+export type CallConfigKey = keyof CallConfig

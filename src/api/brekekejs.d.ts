@@ -216,27 +216,6 @@ export type PbxGetProductInfoRes = {
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
 }
-export type BtnCallManage =
-  | 'dtmf'
-  | 'hangup'
-  | 'hold'
-  | 'mute'
-  | 'park'
-  | 'record'
-  | 'speaker'
-  | 'transfer'
-  | 'video'
-export type CallConfig = {
-  dtmf?: string
-  hangup?: string
-  hold?: string
-  mute?: string
-  park?: string
-  record?: string
-  speaker?: string
-  transfer?: string
-  video?: string
-}
 export type PbxGetProductInfoParam = {
   webphone: string
 }
