@@ -76,7 +76,7 @@ export class RnStackerStore {
         this.openStack(stack0)
       }),
     )
-    return f as unknown as StackerFn<T>
+    return f as any as StackerFn<T>
   }
   createBackTo =
     <T>(o: { [k: string]: ReactComponentLike }, isRoot = false): StackerFn<T> =>

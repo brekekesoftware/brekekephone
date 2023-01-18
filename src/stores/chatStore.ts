@@ -227,7 +227,7 @@ class ChatStore {
     const isTalking =
       cs.calls.some(c => c.answered) ||
       Object.values(cs.callkeepActionMap).some(a => a === 'answerCall')
-    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as any as {
       groupId?: string
       buddy?: string
       name?: string

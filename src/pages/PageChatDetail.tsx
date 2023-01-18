@@ -458,7 +458,7 @@ export class PageChatDetail extends Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const u = contactStore.getUcUserById(this.props.buddy)
-    uc.sendFile(u?.id, file as unknown as Blob)
+    uc.sendFile(u?.id, file as any as Blob)
       .then(res => {
         this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
@@ -466,7 +466,7 @@ export class PageChatDetail extends Component<{
         Object.assign(res.file, { target: { user_id: buddyId } })
         if (Platform.OS === 'web') {
           this.handleSaveBlobFileWeb(
-            file as unknown as Blob,
+            file as any as Blob,
             res.file as ChatFile,
             res.chat,
           )

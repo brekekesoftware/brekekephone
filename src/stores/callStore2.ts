@@ -76,6 +76,7 @@ export class CallStore {
     const c = this.getCallkeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
+      BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
     }
     console.log(
       `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${n.id} sessionId=${c?.id} rejected=${rejected}`,

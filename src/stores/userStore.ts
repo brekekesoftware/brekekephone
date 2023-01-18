@@ -61,7 +61,7 @@ class UserStore {
             tenant: cp.pbxTenant,
             block_settings: {},
             status: false,
-          } as unknown as UcBuddy
+          } as any as UcBuddy
         })
     }
 

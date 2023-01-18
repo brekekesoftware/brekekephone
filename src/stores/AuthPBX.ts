@@ -33,20 +33,28 @@ class AuthPBX {
       return
     }
     if (s.pbxTotalFailure > 1) {
-      const timeWait = s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000
       this.waitingTimeout = true
-      await waitTimeout(timeWait)
+      await waitTimeout(
+        s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000,
+      )
     }
     console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
     s.pbxState = 'connecting'
-    pbx.connect(s.getCurrentAccount()).catch(
-      action((err: Error) => {
-        s.pbxState = 'failure'
-        s.pbxTotalFailure += 1
-        console.error('Failed to connect to pbx:', err)
-      }),
-    )
+    pbx
+      .connect(s.getCurrentAccount())
+      .then(connected => {
+        if (!connected) {
+          throw new Error('Pbx login connection timed out')
+        }
+      })
+      .catch(
+        action((err: Error) => {
+          s.pbxState = 'failure'
+          s.pbxTotalFailure += 1
+          console.error('Failed to connect to pbx:', err)
+        }),
+      )
     this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)

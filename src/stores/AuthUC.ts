@@ -99,7 +99,7 @@ class AuthUC {
     }[],
   ) => {
     chats.forEach(c0 => {
-      const chat = c0 as unknown as ChatMessage
+      const chat = c0 as any as ChatMessage
       chatStore.pushMessages(chat.creator, [chat], true)
     })
   }

@@ -495,7 +495,7 @@ const sipCreateMediaConstraints = (
   return {
     audio: false,
     video: Platform.OS === 'web' ? webVideoConfig : appVideoConfig,
-  } as unknown as MediaStreamConstraints
+  } as any as MediaStreamConstraints
 }
 const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
   new window.Brekeke.WebrtcClient.Phone({

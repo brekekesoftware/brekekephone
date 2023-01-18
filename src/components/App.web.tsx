@@ -96,7 +96,7 @@ export const App = () => {
   if (isBrowser) {
     child = <RnApp />
   } else {
-    const params = parse(window.location as unknown as Url<any>)
+    const params = parse(window.location as any as Url<any>)
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
