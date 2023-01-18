@@ -327,7 +327,7 @@ class PageCallManage extends Component<{
       call: { callConfig },
     } = this.props
     if (callConfig?.[k]) {
-      return callConfig?.[k] === 'false'
+      return callConfig[k] === 'false'
     }
     const { pbxConfig } = getAuthStore()
     return pbxConfig?.[`webphone.call.${k}`] === 'false'
