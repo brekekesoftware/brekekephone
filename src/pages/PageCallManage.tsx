@@ -283,6 +283,7 @@ class PageCallManage extends Component<{
     }
     // The PN may come slower than SIP web socket
     // We check if PN screen exists here in 5 seconds
+    // Must get callkeepUuid from object since it may be assigned lately
     for (let i = 0; i < 5; i++) {
       const uuid = this.props.call.callkeepUuid
       if (!uuid) {
@@ -319,6 +320,17 @@ class PageCallManage extends Component<{
     const s = getCallStore()
     const { call: c } = this.props
     return s.inPageCallManage && s.getCurrentCall()?.id === c.id
+  }
+
+  isBtnHidden = (k: BtnCallManage) => {
+    const {
+      call: { callConfig },
+    } = this.props
+    if (callConfig?.[k]) {
+      return callConfig?.[k] === 'false'
+    }
+    const { pbxConfig } = getAuthStore()
+    return pbxConfig?.[`webphone.call.${k}`] === 'false'
   }
 
   renderLayout = () => {
@@ -466,16 +478,6 @@ class PageCallManage extends Component<{
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
-
-    const pbxConfig = getAuthStore().pbxConfig
-    const isShowBtn = (btnName: BtnCallManage) => {
-      // Priority is given to CallConfig first
-      if (c.callConfig?.[btnName]) {
-        return !(c.callConfig[btnName] === 'false')
-      }
-      return !(pbxConfig?.[`webphone.call.${btnName}`] === 'false')
-    }
-
     const incoming = c.incoming && !c.answered
     return (
       <Container
@@ -496,7 +498,7 @@ class PageCallManage extends Component<{
         )}
         <View style={{ paddingTop: 10 }} />
         <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
-          {isShowBtn('transfer') && (
+          {!this.isBtnHidden('transfer') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -510,7 +512,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {isShowBtn('park') && (
+          {!this.isBtnHidden('park') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -524,7 +526,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {isShowBtn('video') && (
+          {!this.isBtnHidden('video') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -538,7 +540,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {Platform.OS !== 'web' && isShowBtn('speaker') && (
+          {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               bgcolor={
@@ -557,7 +559,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {isShowBtn('mute') && (
+          {!this.isBtnHidden('mute') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -571,7 +573,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {isShowBtn('record') && (
+          {!this.isBtnHidden('record') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -585,7 +587,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {isShowBtn('dtmf') && (
+          {!this.isBtnHidden('dtmf') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!(c.withSDPControls || c.answered)}
@@ -599,7 +601,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {isShowBtn('hold') && (
+          {!this.isBtnHidden('hold') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -623,16 +625,7 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const configure = getAuthStore().pbxConfig
-    const isShowBtnHangup = () => {
-      if (c.callConfig?.['hangup']) {
-        return !(c.callConfig?.['hangup'] === 'false')
-      }
-
-      return !(configure?.['webphone.call.hangup'] === 'false')
-    }
-    const hideHangup = incoming && !isShowBtnHangup()
-
+    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
         {c.holding ? (
@@ -655,8 +648,10 @@ class PageCallManage extends Component<{
                 textcolor='white'
               />
             )}
-            {incoming && <View style={{ width: hideHangup ? 0 : 100 }} />}
-            {!hideHangup && (
+            {incoming && (
+              <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
+            )}
+            {!isHangupBtnHidden && (
               <ButtonIcon
                 bgcolor={v.colors.danger}
                 color='white'
