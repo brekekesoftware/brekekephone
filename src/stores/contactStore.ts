@@ -189,10 +189,10 @@ class ContactStore {
       this.pbxUsers = res
         .filter(u => u[0] !== p.pbxUsername)
         .map(id => ({ id: id[0], name: id[1] }))
-    } catch (error) {
+    } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to load PBX users`,
-        err: error as Error,
+        err: err as Error,
       })
     }
   }

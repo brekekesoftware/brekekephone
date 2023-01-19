@@ -91,7 +91,9 @@ class DebugStore {
     //    we will copy it to log2 and clear the log1
     if (this.logSizes[0] > maximumBytes) {
       this.logSizes[1] = this.logSizes[0]
-      await RNFS.unlink(log2).catch((e: Error) => void e)
+      await RNFS.unlink(log2).catch((err: Error) => {
+        console.error('debugStore RNFS.unlink(log2).catch error:', err)
+      })
       await RNFS.moveFile(log1, log2)
     }
   }

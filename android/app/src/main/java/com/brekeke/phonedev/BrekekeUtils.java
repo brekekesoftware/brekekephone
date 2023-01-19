@@ -24,7 +24,6 @@ import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -128,7 +127,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isImageUrl(String url) {
     // fix for exception get image from UC:
     // https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
-    if (url.toLowerCase().contains("/uc/image?ACTION=DOWNLOAD&tenant".toLowerCase())) {
+    if (url.toLowerCase().contains("/uc/image?action=download&tenant")) {
       return true;
     }
     try {
@@ -136,7 +135,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       Pattern p = Pattern.compile(".(jpeg|jpg|gif|png)$");
       Matcher m = p.matcher(aURL.getPath());
       return m.find();
-    } catch (MalformedURLException e) {
+    } catch (Exception e) {
       e.printStackTrace();
       return false;
     }
@@ -292,9 +291,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return false;
   }
 
-  // When an incoming GSM call is ringing, if another incoming Brekeke Phone call comes
-  //    the Brekeke Phone call it will be automatically rejected by the system
-  // We will fire the event manually here
+  // When an incoming GSM call is ringing
+  //    if another incoming Brekeke Phone call comes
+  //    it will be automatically rejected by the system
+  // We will manually fire the rejectCall event here
   // There may be duplicated events in some cases, need to test more
   public static void onPassiveReject(String uuid) {
     emit("debug", "onPassiveReject uuid=" + uuid);
@@ -389,12 +389,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (!atLeastOneAnswerPressed) {
       tryExitClearTask();
     }
-  }
-
-  public static void removeAllAndBackToForeground() {
-    emit("debug", "removeAllAndBackToForeground");
-    removeAll();
-    emit("backToForeground", "");
   }
 
   public static void staticCloseIncomingCall(String uuid) {
