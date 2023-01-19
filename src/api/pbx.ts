@@ -13,7 +13,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { Pbx, PbxEvent } from './brekekejs'
-import { parsePalParams } from './parsePalParams'
+import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
@@ -23,11 +23,14 @@ export class PBX extends EventEmitter {
   // wait auth state to success
   isMainInstance = true
 
-  connect = async (p: Account, palParamUserReconnect?: boolean) => {
+  connect = async (
+    p: Account,
+    palParamUserReconnect?: boolean,
+  ): Promise<boolean> => {
     console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
       console.warn('PAL client already connected, ignore...')
-      return
+      return true
     }
 
     const d = await accountStore.getAccountDataAsync(p)
@@ -53,6 +56,7 @@ export class PBX extends EventEmitter {
     })
     this.client = client
 
+    client.debugLevel = 2
     client.call_pal = (method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
@@ -63,30 +67,72 @@ export class PBX extends EventEmitter {
       })
     }
 
-    client.debugLevel = 2
-
-    await Promise.race([
-      new Promise((_, reject) => {
+    const newTimeoutPromise = () => {
+      this.clearConnectTimeoutId()
+      return new Promise<boolean>(resolve => {
         this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
-          client.close()
+          resolve(false)
+          console.warn('Pbx login connection timed out')
           // Fix case already reconnected
           if (client === this.client) {
-            reject(new Error('Timeout'))
+            this.disconnect()
+          } else {
+            client.close()
           }
         }, 10000)
-      }),
-      new Promise((resolve, reject) => {
-        client.login(() => resolve(undefined), reject)
-      }),
-    ])
+      })
+    }
 
+    let resolveFn: Function | undefined = undefined
+    const connected = new Promise<boolean>(r => {
+      resolveFn = r
+    })
     const pendingServerStatuses: PbxEvent['serverStatus'][] = []
-    client.notify_serverstatus = e => pendingServerStatuses.push(e)
+    client.notify_serverstatus = e => {
+      pendingServerStatuses.push(e)
+      if (!e?.status) {
+        return
+      }
+      if (e.status === 'active') {
+        resolveFn?.(true)
+        resolveFn = undefined
+      } else if (e.status === 'inactive') {
+        resolveFn?.(false)
+        resolveFn = undefined
+      }
+    }
+    const pendingClose: unknown[] = []
+    client.onClose = () => {
+      pendingClose.push()
+      resolveFn?.(false)
+      resolveFn = undefined
+    }
+
+    // TODO why login failure doesnt throw error here?
+    const login = new Promise<boolean>((resolve, reject) =>
+      client.login(() => resolve(true), reject),
+    )
+    await Promise.race([login, newTimeoutPromise()])
+    this.clearConnectTimeoutId()
+
+    const isConnected = async () => {
+      const r = await Promise.race([connected, newTimeoutPromise()])
+      this.clearConnectTimeoutId()
+      return r
+    }
+
+    // in syncPnToken, isMainInstance = false
+    // we will not proceed further in that case
+    if (!this.isMainInstance) {
+      return isConnected()
+    }
+
     // Check again webphone.pal.param.user
     if (!palParamUserReconnect) {
       const as = getAuthStore()
-      // TODO may any function get pbxConfig on this time may get undefined
+      // TODO any function get pbxConfig on this time may get undefined
       as.pbxConfig = undefined
+      await isConnected()
       await this.getConfig(true)
       const newPalParamUser = as.pbxConfig?.['webphone.pal.param.user']
       if (newPalParamUser !== oldPalParamUser) {
@@ -94,98 +140,102 @@ export class PBX extends EventEmitter {
           `Attempt to reconnect due to mismatch webphone.pal.param.user after login: old=${oldPalParamUser} new=${newPalParamUser}`,
         )
         this.disconnect()
-        await this.connect(p, true)
-        return
+        return this.connect(p, true)
       }
     }
 
-    this.clearConnectTimeoutId()
+    // register client direct event handlers
+    client.onClose = this.onClose
+    pendingClose.forEach(client.onClose)
+    client.onError = this.onError
+    client.notify_serverstatus = this.onServerStatus
+    pendingServerStatuses.forEach(client.notify_serverstatus)
+    client.notify_park = this.onPark
+    client.notify_callrecording = this.onCallRecording
+    client.notify_voicemail = this.onVoicemail
+    client.notify_status = this.onUserStatus
 
-    client.onClose = () => {
+    // emit to embed api
+    embedApi.emit('pal', p, client)
+    return connected
+  }
+
+  // pal client direct event handlers
+  private onClose = () => {
+    this.emit('connection-stopped')
+  }
+  private onError = (err: Error) => {
+    console.error('pbx.client.onError:', err)
+  }
+  private onServerStatus = (e: PbxEvent['serverStatus']) => {
+    if (!e?.status) {
+      return
+    }
+    if (e.status === 'active') {
+      this.emit('connection-started')
+    } else if (e.status === 'inactive') {
       this.emit('connection-stopped')
     }
-
-    client.onError = err => {
-      console.error('pbx.client.onError:', err)
-    }
-
-    client.notify_serverstatus = e => {
-      if (e?.status === 'active') {
-        return this.emit('connection-started')
-      }
-      if (e?.status === 'inactive') {
-        return this.emit('connection-stopped')
-      }
+  }
+  // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
+  // {"time":1587451575120,"park":"777","status":"off"}
+  private onPark = (e: PbxEvent['park']) => {
+    if (!e?.status) {
       return
     }
-    pendingServerStatuses.forEach(client.notify_serverstatus)
-
-    // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
-    // {"time":1587451575120,"park":"777","status":"off"}
-    client.notify_park = e => {
-      // TODO
-      if (e?.status === 'on') {
-        return this.emit('park-started', e.park)
-      }
-      if (e?.status === 'off') {
-        return this.emit('park-stopped', e.park)
-      }
+    // TODO
+    if (e.status === 'on') {
+      this.emit('park-started', e.park)
+    } else if (e.status === 'off') {
+      this.emit('park-stopped', e.park)
+    }
+  }
+  private onCallRecording = (e: PbxEvent['callRecording']) => {
+    if (!e) {
       return
     }
-    client.notify_callrecording = e => {
-      if (!e) {
-        return
-      }
-      this.emit('call-recording', e)
+    this.emit('call-recording', e)
+  }
+  private onVoicemail = (e: PbxEvent['voicemail']) => {
+    if (!e) {
+      return
     }
-
-    client.notify_voicemail = e => {
-      if (!e) {
-        return
-      }
-      this.emit('voicemail-updated', e)
+    this.emit('voicemail-updated', e)
+  }
+  private onUserStatus = (e: PbxEvent['userStatus']) => {
+    if (!e) {
+      return
     }
-
-    client.notify_status = e => {
-      if (!e) {
+    switch (e.status) {
+      case '14':
+      case '2':
+      case '36':
+        return this.emit('user-talking', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '35':
+        return this.emit('user-holding', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '-1':
+        return this.emit('user-hanging', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '1':
+        return this.emit('user-calling', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '65':
+        return this.emit('user-ringing', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      default:
         return
-      }
-      switch (e.status) {
-        case '14':
-        case '2':
-        case '36':
-          return this.emit('user-talking', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '35':
-          return this.emit('user-holding', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '-1':
-          return this.emit('user-hanging', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '1':
-          return this.emit('user-calling', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '65':
-          return this.emit('user-ringing', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        default:
-          return
-      }
-    }
-    // in syncPnToken, isMainInstance = false
-    // we will not emit pal in that case
-    if (this.isMainInstance) {
-      embedApi.emit('pal', p, client)
     }
   }
 
@@ -226,18 +276,8 @@ export class PBX extends EventEmitter {
     const s = getAuthStore()
     s.pbxConfig = config
     const d = await s.getCurrentDataAsync()
-    if (Platform.OS === 'android') {
-      BrekekeUtils.setConfig(
-        s.pbxConfig?.['webphone.call.transfer'] === 'false',
-        s.pbxConfig?.['webphone.call.park'] === 'false',
-        s.pbxConfig?.['webphone.call.video'] === 'false',
-        s.pbxConfig?.['webphone.call.speaker'] === 'false',
-        s.pbxConfig?.['webphone.call.mute'] === 'false',
-        s.pbxConfig?.['webphone.call.record'] === 'false',
-        s.pbxConfig?.['webphone.call.dtmf'] === 'false',
-        s.pbxConfig?.['webphone.call.hold'] === 'false',
-        s.pbxConfig?.['webphone.call.hangup'] === 'false',
-      )
+    if (this.isMainInstance) {
+      BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(s.pbxConfig)))
     }
     d.palParams = parsePalParams(s.pbxConfig)
     d.userAgent = s.pbxConfig['webphone.useragent']
@@ -288,7 +328,7 @@ export class PBX extends EventEmitter {
     // server return "No permission." if id not exist on Pbx.
     return res.map((r, i) => ({
       id: ids[i],
-      name: (r as unknown as string) === 'No permission.' ? '' : r[0],
+      name: (r as any as string) === 'No permission.' ? '' : r[0],
     }))
   }
 

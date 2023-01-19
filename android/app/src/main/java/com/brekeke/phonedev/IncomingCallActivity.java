@@ -30,6 +30,7 @@ import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.json.JSONObject;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public RelativeLayout vWebrtc,
@@ -66,7 +67,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnRecord,
       btnDtmf,
       btnHold,
-      btnEndcall,
+      btnEndCall,
       btnSwitchCamera,
       btnBack;
   public TextView txtCallerName,
@@ -90,6 +91,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = false,
       isLarge = false,
       isVideoCall = false;
+
+  public JSONObject pbxConfig;
+  public JSONObject callConfig;
 
   // ==========================================================================
   // Activity lifecycles
@@ -194,7 +198,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnRecord = (Button) findViewById(R.id.btn_record);
     btnDtmf = (Button) findViewById(R.id.btn_dtmf);
     btnHold = (Button) findViewById(R.id.btn_hold);
-    btnEndcall = (Button) findViewById(R.id.btn_end_call);
+    btnEndCall = (Button) findViewById(R.id.btn_end_call);
     btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
     btnBack = (Button) findViewById(R.id.btn_back);
 
@@ -210,7 +214,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnRecord.setOnClickListener(this);
     btnDtmf.setOnClickListener(this);
     btnHold.setOnClickListener(this);
-    btnEndcall.setOnClickListener(this);
+    btnEndCall.setOnClickListener(this);
     btnSwitchCamera.setOnClickListener(this);
     btnSwitchCamera.setSelected(true); // default front camera
 
@@ -236,10 +240,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     updateLabels();
     updateHeader();
-
-    if (BrekekeUtils.config != null) {
-      updateConfig();
-    }
+    updateCallConfig();
   }
 
   @Override
@@ -296,33 +297,27 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     openMainActivity();
   }
 
-  public void updateConfig() {
-    if (BrekekeUtils.config.hideBtnReject) {
-      btnReject.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnTransfer) {
-      vBtnTransfer.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnPark) {
-      vBtnPark.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnVideo) {
-      vBtnVideo.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnSpeaker) {
-      vBtnSpeaker.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnMute) {
-      vBtnMute.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnRecord) {
-      vBtnRecord.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnDTMF) {
-      vBtnDTMF.setVisibility(View.GONE);
-    }
-    if (BrekekeUtils.config.hideBtnHold) {
-      vBtnHold.setVisibility(View.GONE);
+  public void updateCallConfig() {
+    updateBtnDisabled("hangup", btnReject);
+    updateBtnDisabled("hangup", btnEndCall);
+    updateBtnDisabled("transfer", vBtnTransfer);
+    updateBtnDisabled("park", vBtnPark);
+    updateBtnDisabled("video", vBtnVideo);
+    updateBtnDisabled("speaker", vBtnSpeaker);
+    updateBtnDisabled("mute", vBtnMute);
+    updateBtnDisabled("record", vBtnRecord);
+    updateBtnDisabled("dtmf", vBtnDTMF);
+    updateBtnDisabled("hold", vBtnHold);
+  }
+
+  private void updateBtnDisabled(String k, View v) {
+    try {
+      boolean disabled =
+          callConfig != null && callConfig.has(k)
+              ? callConfig.getString(k).equals("false")
+              : (pbxConfig != null && pbxConfig.has(k) && pbxConfig.getString(k).equals("false"));
+      v.setVisibility(disabled ? View.GONE : View.VISIBLE);
+    } catch (Exception e) {
     }
   }
 
@@ -330,8 +325,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       webViewAvatar.getSettings().setJavaScriptEnabled(false);
       webViewAvatar.destroy();
-    } catch (Exception ex) {
-      debug("destroyAvatarWebView: " + ex.toString());
+    } catch (Exception e) {
+      debug("destroyAvatarWebView: " + e.toString());
     }
   }
 
@@ -339,8 +334,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       webViewAvatarTalking.getSettings().setJavaScriptEnabled(false);
       webViewAvatarTalking.destroy();
-    } catch (Exception ex) {
-      debug("destroyAvatarTalkingWebView: " + ex.toString());
+    } catch (Exception e) {
+      debug("destroyAvatarTalkingWebView: " + e.toString());
     }
   }
 
@@ -895,7 +890,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void setBtnHoldSelected(boolean holding) {
     btnHold.setSelected(holding);
     updateBtnHoldLabel();
-    btnEndcall.setVisibility(holding ? View.GONE : View.VISIBLE);
+    btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
 

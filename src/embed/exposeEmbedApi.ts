@@ -1,4 +1,4 @@
-import { parsePalParams } from '../api/parsePalParams'
+import { parsePalParams } from '../api/parseParamsWithPrefix'
 import { embedApi, EmbedSignInOptions } from './embedApi'
 
 export const exposeEmbedApi = (renderApp: (rootTag: HTMLElement) => void) => {

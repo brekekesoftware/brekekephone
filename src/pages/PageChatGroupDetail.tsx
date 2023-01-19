@@ -465,8 +465,8 @@ export class PageChatGroupDetail extends Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
-    uc.sendFiles(groupId, file as unknown as Blob)
-      .then(res => this.onSendFileSuccess(res, file as unknown as Blob))
+    uc.sendFiles(groupId, file as any as Blob)
+      .then(res => this.onSendFileSuccess(res, file as any as Blob))
       .catch(this.onSendFileFailure)
   }
   handleSaveBlobFileWeb = async (

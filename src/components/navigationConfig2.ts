@@ -35,7 +35,7 @@ export const getTabs = (tab: string) => {
       ],
       defaultSubMenuKey: 'list_user',
     },
-  ] as unknown as Menu[]
+  ] as any as Menu[]
 
   const subMenuNames = arr[0].subMenus.map(s => Object.keys(s.navFnKey)[0])
 

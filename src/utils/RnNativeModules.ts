@@ -12,17 +12,8 @@ type TBrekekeUtils = {
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
-  setConfig(
-    hideBtnTransfer: boolean,
-    hideBtnPark: boolean,
-    hideBtnVideo: boolean,
-    hideBtnSpeaker: boolean,
-    hideBtnMute: boolean,
-    hideBtnRecord: boolean,
-    hideBtnDTMF: boolean,
-    hideBtnHold: boolean,
-    hideBtnReject: boolean,
-  ): void
+  setPbxConfig(jsonStr: string): void
+  setCallConfig(uuid: string, jsonStr: string): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
   setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
   setJsCallsSize(n: number): void
@@ -68,7 +59,8 @@ const Polyfill: TBrekekeUtils = {
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
-  setConfig: () => undefined,
+  setPbxConfig: () => undefined,
+  setCallConfig: () => undefined,
   setIsAppActive: () => undefined,
   setTalkingAvatar: () => undefined,
   setJsCallsSize: () => undefined,

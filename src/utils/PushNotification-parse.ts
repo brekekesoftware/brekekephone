@@ -237,6 +237,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     console.log('SIP PN debug: PushNotification-parse: local notification')
     return
   }
+  const as = getAuthStore()
+  const cs = getCallStore()
   //
   // Handle chat notification
   if (!n.isCall) {
@@ -250,7 +252,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     // App currently active and already logged in using this account
     if (
       AppState.currentState === 'active' &&
-      getAuthStore().getCurrentAccount()?.pbxUsername === n.to
+      as.getCurrentAccount()?.pbxUsername === n.to
     ) {
       return
     }
@@ -264,7 +266,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     )
   }
   console.log('SIP PN debug: call signInByNotification')
-  getAuthStore().signInByNotification(n)
+  as.signInByNotification(n)
   // Custom fork of react-native-voip-push-notification to get callkeepUuid
   // Also we forked fcm to insert callkeepUuid there as well
   if (!n.callkeepUuid) {
@@ -273,22 +275,23 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
   }
-  getCallStore()
-    .calls.filter(c => c.pnId === n.id && !c.callkeepUuid)
+  cs.calls
+    .filter(c => c.pnId === n.id && !c.callkeepUuid)
     .forEach(c => {
       Object.assign(c, { callkeepUuid: n.callkeepUuid })
     })
+
   // Continue handling incoming call in android
   if (Platform.OS === 'android') {
-    getCallStore().showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
+    cs.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,
     )
     console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
-      getCallStore().onCallKeepAnswerCall(n.callkeepUuid)
+      cs.onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {
-      getCallStore().onCallKeepEndCall(n.callkeepUuid)
+      cs.onCallKeepEndCall(n.callkeepUuid)
     }
     // Already invoke callkeep in java code
   }

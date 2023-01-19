@@ -40,7 +40,7 @@ const syncPnTokenWithoutCatch = async (
   pbx.isMainInstance = false
   const disconnectPbx = (success?: boolean) => {
     console.log(
-      `PBX PN debug: disconnect by syncPnToken success=${success} noUpsert=${noUpsert}`,
+      `PN sync debug: pbx disconnect by syncPnToken success=${success} noUpsert=${noUpsert}`,
     )
     pbx.disconnect()
     if (success && !noUpsert && p.id) {
@@ -52,7 +52,11 @@ const syncPnTokenWithoutCatch = async (
   }
 
   try {
-    await pbx.connect(p)
+    const success = await pbx.connect(p)
+    if (!success) {
+      console.log('PN sync debug: failed to connect to pbx')
+      return disconnectPbx()
+    }
 
     const webPhone = await updatePhoneIndex(p, pbx)
     if (!webPhone) {
