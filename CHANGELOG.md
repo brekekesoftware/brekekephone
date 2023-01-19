@@ -2,6 +2,8 @@
 
 - Fix bug it should compare pbx versions correctly
 - Save getProductInfo webphone.useragent to local storage and use it in the next sip login
+- Update call buttons via sip header X-WEBPHONE-CALL
+- Fix android auto answer case: press home button
 
 #### 2.11.9
 
