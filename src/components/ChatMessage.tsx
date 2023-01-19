@@ -108,7 +108,7 @@ const css = StyleSheet.create({
     padding: 0,
     ...Platform.select({
       web: {
-        display: 'inline' as unknown as undefined,
+        display: 'inline' as any as undefined,
       },
     }),
   },
@@ -271,7 +271,7 @@ export class Message extends Component<{
 
   render() {
     const p = this.props
-    const file = p.file as unknown as ChatFile
+    const file = p.file as any as ChatFile
     const isImage =
       file && (file.fileType === 'image' || file.fileType === 'video')
     const TextContainer = Platform.OS === 'web' ? View : RnTouchableOpacity

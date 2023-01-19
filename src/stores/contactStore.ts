@@ -169,7 +169,7 @@ class ContactStore {
         keyboardType: i.type === 'phone' ? 'numeric' : 'default',
         maxLength: 50,
       }
-    }) as unknown as ItemPBForm[]
+    }) as any as ItemPBForm[]
     return newItems
   }
 

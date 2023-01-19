@@ -13,6 +13,7 @@ import {
   parsedPnToAccountUnique,
 } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
+import { CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
@@ -138,6 +139,9 @@ export class SIP extends EventEmitter {
         partyName ||
         d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
+      const callConfig = getCallConfigFromHeader(
+        ev.incomingMessage?.getHeader('X-WEBPHONE-CALL'),
+      )
       return {
         rawSession: ev,
         id: ev.sessionId,
@@ -148,6 +152,7 @@ export class SIP extends EventEmitter {
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
         sessionStatus: ev.sessionStatus,
+        callConfig,
       }
     }
 
@@ -214,6 +219,7 @@ export class SIP extends EventEmitter {
           'X-PBX-IMAGE-TALKING',
         )
         const imageSize = ev.incomingMessage?.getHeader('X-PBX-IMAGE-SIZE')
+
         if (typeof pbxSessionInfo === 'string') {
           const infos = pbxSessionInfo.split(';')
           patch.pbxTenant = infos[0]
@@ -489,7 +495,7 @@ const sipCreateMediaConstraints = (
   return {
     audio: false,
     video: Platform.OS === 'web' ? webVideoConfig : appVideoConfig,
-  } as unknown as MediaStreamConstraints
+  } as any as MediaStreamConstraints
 }
 const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
   new window.Brekeke.WebrtcClient.Phone({
@@ -512,3 +518,18 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
       socketKeepAlive: 60,
     },
   })
+
+const getCallConfigFromHeader = (config?: string): CallConfig =>
+  config
+    ? Object.fromEntries(
+        config
+          .split(';')
+          .map(c =>
+            c
+              .split(':')
+              .map(kv => kv.trim())
+              .filter(kv => kv),
+          )
+          .filter(a => a.length === 2),
+      )
+    : {}

@@ -13,7 +13,7 @@ export const getAudioVideoPermission = () => {
     { audio: true, video: true },
     cb,
     eb,
-  ) as unknown as Promise<MediaStream>
+  ) as any as Promise<MediaStream>
   if (p?.then) {
     p.then(cb).catch(eb)
   }

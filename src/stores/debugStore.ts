@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-let store = null as unknown as DebugStore
+let store = null as any as DebugStore
 // The location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
 // The `log` will be used for combining the two above files in ios

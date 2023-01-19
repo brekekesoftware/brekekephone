@@ -36,6 +36,8 @@ export class Call {
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
   @observable isFrontCamera = true
+  @observable callConfig: CallConfig = {}
+
   getDisplayName = () =>
     getPartyName(this.partyNumber) ||
     this.partyName ||
@@ -333,3 +335,16 @@ export class Call {
     })
   }
 }
+
+export type CallConfig = {
+  dtmf?: string
+  hangup?: string
+  hold?: string
+  mute?: string
+  park?: string
+  record?: string
+  speaker?: string
+  transfer?: string
+  video?: string
+}
+export type CallConfigKey = keyof CallConfig

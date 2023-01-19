@@ -199,7 +199,7 @@ export class UnreadChatNoti extends Component {
     })
     //
     unreadChats = unreadChats.filter(c => {
-      const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+      const s = RnStacker.stacks[RnStacker.stacks.length - 1] as any as {
         name: string
         buddy: string
         groupId: string

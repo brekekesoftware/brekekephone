@@ -1,6 +1,6 @@
 import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -39,7 +39,7 @@ import { SmartImage } from '../components/SmartAvatarHTML'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
-import { Call } from '../stores/Call'
+import { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -282,6 +282,7 @@ class PageCallManage extends Component<{
     }
     // The PN may come slower than SIP web socket
     // We check if PN screen exists here in 5 seconds
+    // Must get callkeepUuid from object since it may be assigned lately
     for (let i = 0; i < 5; i++) {
       const uuid = this.props.call.callkeepUuid
       if (!uuid) {
@@ -318,6 +319,17 @@ class PageCallManage extends Component<{
     const s = getCallStore()
     const { call: c } = this.props
     return s.inPageCallManage && s.getCurrentCall()?.id === c.id
+  }
+
+  isBtnHidden = (k: CallConfigKey) => {
+    const {
+      call: { callConfig },
+    } = this.props
+    if (callConfig?.[k]) {
+      return callConfig[k] === 'false'
+    }
+    const { pbxConfig } = getAuthStore()
+    return pbxConfig?.[`webphone.call.${k}`] === 'false'
   }
 
   renderLayout = () => {
@@ -465,7 +477,6 @@ class PageCallManage extends Component<{
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
-    const configure = getAuthStore().pbxConfig
     const incoming = c.incoming && !c.answered
     return (
       <Container
@@ -486,7 +497,7 @@ class PageCallManage extends Component<{
         )}
         <View style={{ paddingTop: 10 }} />
         <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
-          {!(configure?.['webphone.call.transfer'] === 'false') && (
+          {!this.isBtnHidden('transfer') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -500,7 +511,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {!(configure?.['webphone.call.park'] === 'false') && (
+          {!this.isBtnHidden('park') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -514,7 +525,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {!(configure?.['webphone.call.video'] === 'false') && (
+          {!this.isBtnHidden('video') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -528,27 +539,26 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {Platform.OS !== 'web' &&
-            !(configure?.['webphone.call.speaker'] === 'false') && (
-              <ButtonIcon
-                styleContainer={css.BtnFuncCalls}
-                bgcolor={
-                  getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
-                }
-                color={getCallStore().isLoudSpeakerEnabled ? 'white' : 'black'}
-                name={intl`SPEAKER`}
-                noborder
-                onPress={getCallStore().toggleLoudSpeaker}
-                path={
-                  getCallStore().isLoudSpeakerEnabled
-                    ? mdiVolumeHigh
-                    : mdiVolumeMedium
-                }
-                size={40}
-                textcolor='white'
-              />
-            )}
-          {!(configure?.['webphone.call.mute'] === 'false') && (
+          {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              bgcolor={
+                getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
+              }
+              color={getCallStore().isLoudSpeakerEnabled ? 'white' : 'black'}
+              name={intl`SPEAKER`}
+              noborder
+              onPress={getCallStore().toggleLoudSpeaker}
+              path={
+                getCallStore().isLoudSpeakerEnabled
+                  ? mdiVolumeHigh
+                  : mdiVolumeMedium
+              }
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('mute') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -562,7 +572,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {!(configure?.['webphone.call.record'] === 'false') && (
+          {!this.isBtnHidden('record') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -576,7 +586,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {!(configure?.['webphone.call.dtmf'] === 'false') && (
+          {!this.isBtnHidden('dtmf') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!(c.withSDPControls || c.answered)}
@@ -590,7 +600,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {!(configure?.['webphone.call.hold'] === 'false') && (
+          {!this.isBtnHidden('hold') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
@@ -614,9 +624,7 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const configure = getAuthStore().pbxConfig
-    const hideHangup =
-      incoming && configure?.['webphone.call.hangup'] === 'false'
+    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
         {c.holding ? (
@@ -639,8 +647,10 @@ class PageCallManage extends Component<{
                 textcolor='white'
               />
             )}
-            {incoming && <View style={{ width: hideHangup ? 0 : 100 }} />}
-            {!hideHangup && (
+            {incoming && (
+              <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
+            )}
+            {!isHangupBtnHidden && (
               <ButtonIcon
                 bgcolor={v.colors.danger}
                 color='white'

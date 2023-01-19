@@ -107,20 +107,20 @@ export class PageChatRecents extends Component {
 
     const recentGroups = recentFromStorage.filter(
       c => c.group,
-    ) as unknown as ChatWithThreadId[]
+    ) as any as ChatWithThreadId[]
     recentGroups.push(
       ...groupIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )
 
     const recentUsers = recentFromStorage.filter(
       c => !c.group,
-    ) as unknown as ChatWithThreadId[]
+    ) as any as ChatWithThreadId[]
     recentUsers.push(
       ...threadIds.map(id => ({ ...this.getLastChat(id), threadId: id })),
     )
 
     const fn = (group: boolean) => (c0: ChatWithThreadId) => {
-      const c = c0 as unknown as ChatFromStorage
+      const c = c0 as any as ChatFromStorage
 
       const id = typeof c.group === 'boolean' ? c.id : c.threadId
       const x = (group ? groupById : userById)[id] as {
@@ -143,7 +143,7 @@ export class PageChatRecents extends Component {
         id,
         name,
         text,
-        type: isTextOnly ? 1 : c.type || (c as unknown as UcMessageLog).ctype,
+        type: isTextOnly ? 1 : c.type || (c as any as UcMessageLog).ctype,
         group: !!group,
         unread,
         created: c.created,

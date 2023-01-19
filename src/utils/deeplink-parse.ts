@@ -37,7 +37,7 @@ export const parse = (location: string | Url<any> | null) => {
     params.port = '' + location.port
   }
   //
-  return params as unknown as UrlParams
+  return params as any as UrlParams
 }
 
 export interface UrlParams {

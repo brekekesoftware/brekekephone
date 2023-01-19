@@ -290,17 +290,17 @@ export const getLastSignedInId = async (
   checkAutoSignInBrekekePhone?: boolean,
 ) => {
   const j = await RnAsyncStorage.getItem('lastSignedInId')
-  let d = undefined as unknown as LastSignedInId
+  let d = undefined as any as LastSignedInId
   try {
     d = j && JSON.parse(j)
   } catch (err) {}
   if (d && 'h' in d) {
     // backward compatibility json is the unique account id
-    d = j as unknown as LastSignedInId
+    d = j as any as LastSignedInId
   }
   if (!d?.id) {
     d = {
-      id: (d || j || '') as unknown as string,
+      id: (d || j || '') as any as string,
       at: Date.now(),
       version: currentVersion,
     }

@@ -7,9 +7,9 @@ import FCM from 'react-native-fcm'
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { showNotification } from '../utils/DesktopNotification'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { saveBlobFile } from '../utils/saveBlob'
+import { showWebNotification } from '../utils/showWebNotification'
 import { arrToMap } from '../utils/toMap'
 import { playDing, vibration } from '../utils/vibrationAndSound'
 import { accountStore } from './accountStore'
@@ -216,7 +216,7 @@ class ChatStore {
       m.length === 1
     ) {
       const messageNotification = name + ': ' + m[0]?.text || ''
-      showNotification(messageNotification, name)
+      showWebNotification(messageNotification, name)
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {
@@ -227,7 +227,7 @@ class ChatStore {
     const isTalking =
       cs.calls.some(c => c.answered) ||
       Object.values(cs.callkeepActionMap).some(a => a === 'answerCall')
-    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1] as any as {
       groupId?: string
       buddy?: string
       name?: string
