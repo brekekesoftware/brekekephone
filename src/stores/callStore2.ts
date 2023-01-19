@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import { AppState, NativeEventSubscription, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
@@ -55,15 +55,34 @@ export class CallStore {
         !c.isAboutToHangup,
     )
   }
-  autoAnswer = (uuid: string) => {
+
+  private autoAnswer = (uuid: string) => {
     if (Platform.OS === 'ios') {
       RNCallKeep.answerIncomingCall(uuid)
     }
     BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
   }
+  private autoAnswerWithCheck = async (uuid: string) => {
+    let listener: NativeEventSubscription | undefined = undefined
+    const onForeground = () => {
+      BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 300)
+      AppState.removeEventListener('change', onForeground)
+      listener?.remove?.()
+    }
+    if (
+      Platform.OS !== 'android' ||
+      AppState.currentState === 'active' ||
+      (await BrekekeUtils.isLocked())
+    ) {
+      onForeground()
+      return
+    }
+    listener = AppState.addEventListener('change', onForeground)
+    RNCallKeep.backToForeground()
+  }
   @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
     if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
-      BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 1000)
+      this.autoAnswerWithCheck(uuid)
     }
     this.setAutoEndCallKeepTimer(uuid, n)
     checkAndRemovePnTokenViaSip(n)

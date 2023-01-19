@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import io.wazo.callkeep.RNCallKeepModule;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends ReactActivity {
@@ -24,7 +23,7 @@ public class MainActivity extends ReactActivity {
       for (String key : extras.keySet()) {
         try {
           data.put(key, extras.get(key));
-        } catch (JSONException e) {
+        } catch (Exception e) {
           e.printStackTrace();
         }
       }

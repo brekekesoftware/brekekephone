@@ -179,10 +179,10 @@ export class PageContactPhonebook extends Component {
         contactStore.removeContacts(result.succeeded)
       }
       contactStore.selectedContactIds = {}
-    } catch (error) {
+    } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to delete contact`,
-        err: error as Error,
+        err: err as Error,
       })
     }
   }
