@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { action, autorun, Lambda } from 'mobx'
+import { action, Lambda, reaction } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -12,10 +12,7 @@ class AuthPBX {
     this.authWithCheck()
     this.clearObserve?.()
     const s = getAuthStore()
-    this.clearObserve = autorun(() => {
-      void s.pbxShouldAuth()
-      this.authWithCheckDebounced()
-    })
+    this.clearObserve = reaction(s.pbxShouldAuth, this.authWithCheckDebounced)
   }
   @action dispose = () => {
     console.log('PBX PN debug: disconnect by AuthPBX.dispose')

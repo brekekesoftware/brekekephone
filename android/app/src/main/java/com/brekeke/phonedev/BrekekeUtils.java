@@ -763,9 +763,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               if ("answerCall".equals(action)) {
                 IncomingCallActivity a = at(uuid);
                 a.onBtnAnswerClick(null);
-                if (isLocked()) {
-                  a.reorderToFront();
-                }
+                a.reorderToFront();
               } else if ("rejectCall".equals(action)) {
                 at(uuid).onBtnRejectClick(null);
               }
