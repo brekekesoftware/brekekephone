@@ -107,8 +107,13 @@ export class PBX extends EventEmitter {
       resolveFn?.(false)
       resolveFn = undefined
     }
+    const pendingError: Error[] = []
+    client.onError = err => {
+      pendingError.push(err)
+      resolveFn?.(false)
+      resolveFn = undefined
+    }
 
-    // TODO why login failure doesnt throw error here?
     const login = new Promise<boolean>((resolve, reject) =>
       client.login(() => resolve(true), reject),
     )
@@ -148,6 +153,7 @@ export class PBX extends EventEmitter {
     client.onClose = this.onClose
     pendingClose.forEach(client.onClose)
     client.onError = this.onError
+    pendingError.forEach(client.onError)
     client.notify_serverstatus = this.onServerStatus
     pendingServerStatuses.forEach(client.notify_serverstatus)
     client.notify_park = this.onPark

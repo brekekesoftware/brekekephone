@@ -1,6 +1,6 @@
 import CiruclarJSON from 'circular-json'
 import { debounce } from 'lodash'
-import { action, autorun, Lambda } from 'mobx'
+import { action, Lambda, reaction } from 'mobx'
 
 import { PbxGetProductInfoRes } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
@@ -22,10 +22,7 @@ class AuthSIP {
     this.authWithCheck()
     this.clearObserve?.()
     const s = getAuthStore()
-    this.clearObserve = autorun(() => {
-      void s.sipShouldAuth()
-      this.authWithCheckDebounced()
-    })
+    this.clearObserve = reaction(s.sipShouldAuth, this.authWithCheckDebounced)
   }
   @action dispose = () => {
     console.log('SIP PN debug: set sipState stopped dispose')
@@ -112,16 +109,14 @@ class AuthSIP {
       s.sipPn = {}
     }
     const sipShouldAuth = s.sipShouldAuth()
-    console.log(
-      `SIP PN debug: authWithCheck ${sipShouldAuth} ${JSON.stringify({
-        sipState: s.sipState,
-        signedInId: !!s.signedInId,
-        sipAuth: !!s.sipPn.sipAuth,
-        pbxState: s.pbxState,
-        sipTotalFailure: s.sipTotalFailure,
-        waitingTimeout: this.waitingTimeout,
-      })}`,
-    )
+    console.log(`SIP PN debug: authWithCheck ${sipShouldAuth}`, {
+      sipState: s.sipState,
+      signedInId: !!s.signedInId,
+      sipAuth: !!s.sipPn.sipAuth,
+      pbxState: s.pbxState,
+      sipTotalFailure: s.sipTotalFailure,
+      waitingTimeout: this.waitingTimeout,
+    })
     if (!sipShouldAuth || this.waitingTimeout) {
       return
     }

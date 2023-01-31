@@ -2,14 +2,15 @@
 
 - Fix bug it should compare pbx versions correctly
 - Save getProductInfo webphone.useragent to local storage and use it in the next sip login
-- Update call buttons via sip header X-WEBPHONE-CALL
-- Fix android auto answer case: press home button
+- Update call buttons via sip header X-WEBPHONE-CALL. The config will be merged one by one each time it receives
+- Update jsonrpc.js to fix bug it should show error if pal login failed
 
 #### 2.11.9
 
-- Try fix bug can not logout
+- Try fix bug can not logout, due to corrupted data in that phone local storage
 - Allow to download debug log without logout
-- Set currentCallId in unhold function (change request came from embed api)
+- Embed:
+  - Set currentCallId in unhold function (also included in the main build)
 
 #### 2.11.8
 
@@ -78,10 +79,10 @@
   - or a new version installed
   - or the OS restarted
   - or the app wake in background by push or by linking url
-- Handle PN data x_autoanswer, automatically answer the new PN call if no ongoing call, test result:
-  - android: worked in most of cases: foreground, lock, kill, background - except press home button
-  - ios: only worked if app is foreground
-  - -> due to some security privacy policy, it is difficult for us to automatically receive and answer call
+- Handle PN data x_autoanswer:
+  - Only answer automatically if there is no other ongoing call
+  - android: working in most of cases: foreground, lock, kill, background. In some background case like press home button, although answer action was fired but it failed to connect to SIP server occasionally
+  - ios: only worked if app is foreground. Due to security privacy policy from Apple, it is difficult for us to automatically answer the call
 - Update logic of phonebook contact using phonebook.js
 - Display call duration in screen call detail
 - Fix loud spkeaker RBT for ios
