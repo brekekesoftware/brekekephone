@@ -115,9 +115,17 @@ const syncPnTokenWithoutCatch = async (
     }
 
     const lpcPort = parseInt(c?.['webphone.lpc.port'] || '0', 10)
+    const tlsKeyHash = c?.['webphone.lpc.keyhash'] || ''
+    // never establish plain non-tls lpc connection
+    const lpcEnabled = lpcPort && tlsKeyHash
+    if (lpcPort && !tlsKeyHash) {
+      console.warn(
+        'webphone.lpc.port is present but empty webphone.lpc.keyhash, thus lpc is disabled since we dont allow non-tls lpc connection',
+      )
+    }
     // if lpc is enabled pnmanageNew must be true
     // since lpc is only available in pbx 3.14.5 and above
-    if (!lpcPort || !newParams) {
+    if (!lpcEnabled || !newParams) {
       BrekekeUtils.disableLPC()
       if (newParams) {
         await pbx.pnmanage(newParams)
@@ -138,7 +146,6 @@ const syncPnTokenWithoutCatch = async (
         .map(w => w.trim())
         .filter(w => w) || []
     const localSsid = remoteSsids.length ? '' : await getLocalSsid()
-    const tlsKeyHash = c?.['webphone.lpc.keyhash'] || ''
     const lpcPn = toBoolean(c?.['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {
       pnmanageNew,
