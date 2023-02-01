@@ -15,27 +15,21 @@ const css = StyleSheet.create({
   },
 })
 export class IncomingItem extends Component {
-  ringtonePlaying = false
   async componentDidMount() {
-    if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
-      return
-    }
     if (Platform.OS === 'android') {
-      BrekekeUtils.setStartRingtone()
+      BrekekeUtils.rStartRingtone()
     } else {
       IncallManager.startRingtone('_BUNDLE_')
     }
-    this.ringtonePlaying = true
     // TODO stop ringtone if user press hardware button
     // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
-      BrekekeUtils.setStopRingtone()
+      BrekekeUtils.rStopRingtone()
     } else {
       IncallManager.stopRingtone()
     }
-    this.ringtonePlaying = false
     if (Platform.OS === 'android') {
       // Bug speaker auto turn on after call stopRingtone/stopRingback
       IncallManager.setForceSpeakerphoneOn(getCallStore().isLoudSpeakerEnabled)

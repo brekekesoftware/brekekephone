@@ -338,11 +338,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return km.isKeyguardLocked() || km.isDeviceLocked();
   }
 
-  public static boolean isSilent() {
-    int mode = am.getRingerMode();
-    return mode == AudioManager.RINGER_MODE_SILENT;
-  }
-
   //
   // IncomingCallActivityManager
   //
@@ -472,11 +467,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   //
   public static MediaPlayer mp;
 
-  @ReactMethod
-  public void setStartRingtone() {
-    startRingtone();
-  }
-
   public static void startRingtone() {
     if (mp != null) {
       return;
@@ -514,11 +504,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     mp.start();
   }
 
-  @ReactMethod
-  public void setStopRingtone() {
-    stopRingtone();
-  }
-
   public static void stopRingtone() {
     try {
       vib.cancel();
@@ -549,8 +534,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void isSilent(Promise p) {
-    p.resolve(isSilent());
+  public void rStartRingtone() {
+    startRingtone();
+  }
+
+  @ReactMethod
+  public void rStopRingtone() {
+    stopRingtone();
   }
 
   @ReactMethod

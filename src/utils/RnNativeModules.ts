@@ -7,7 +7,8 @@ type TBrekekeUtils = {
   // these methods only available on android
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  isSilent(): Promise<boolean>
+  rStartRingtone(): void
+  rStopRingtone(): void
   backToBackground(): void
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
@@ -27,8 +28,7 @@ type TBrekekeUtils = {
   onCallKeepAction(uuid: string, action: TCallkeepAction): void
   onPageCallManage(uuid: string): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
-  setStopRingtone(): void
-  setStartRingtone(): void
+
   // these methods only available on ios
   playRBT(): void
   stopRBT(): void
@@ -55,7 +55,8 @@ export type TNativeModules = {
 const Polyfill: TBrekekeUtils = {
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
-  isSilent: () => Promise.resolve(false),
+  rStartRingtone: () => undefined,
+  rStopRingtone: () => undefined,
   backToBackground: () => undefined,
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
@@ -75,8 +76,7 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
   hasIncomingCallActivity: () => Promise.resolve(false),
-  setStopRingtone: () => undefined,
-  setStartRingtone: () => undefined,
+
   // these methods only available on ios
   playRBT: () => undefined,
   stopRBT: () => undefined,
