@@ -190,7 +190,6 @@ export type PbxPal = {
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
-  version: string
   'webphone.allusers': string
   'webphone.call.dtmf': string
   'webphone.call.hangup': string
@@ -208,6 +207,7 @@ export type PbxGetProductInfoRes = {
   'webphone.lpc.port': string
   'webphone.lpc.wifi': string
   'webphone.pal.param.user': string
+  'webphone.pn_expires': string
   'webphone.turn.credential': string
   'webphone.turn.server': string
   'webphone.turn.username': string
@@ -215,6 +215,7 @@ export type PbxGetProductInfoRes = {
   'webphone.useragent': string
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
+  version: string
 }
 export type PbxGetProductInfoParam = {
   webphone: string

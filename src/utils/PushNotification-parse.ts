@@ -40,6 +40,7 @@ const keysInCustomNotification = [
   'pn-id',
   'callkeepUuid',
   'callkeepAt',
+  'time',
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
@@ -116,9 +117,6 @@ export const parseNotificationData = (raw: object) => {
       return
     }
     const k2 = k.substr(2)
-    // if (!isNoU(n2[k2])) {
-    //   return
-    // }
     n2[k2] = v
   })
 
@@ -167,6 +165,7 @@ export const parseNotificationData = (raw: object) => {
   n.displayName = get(n, 'displayname') || n.from
 
   n.isCall = !!n.id || !!n.sipPn.sipAuth
+  n.time = Number(n.time) || 0
 
   return n
 }
@@ -321,6 +320,7 @@ export type ParsedPn = {
   sipPn: SipPn
   callkeepUuid: string
   callkeepAt: string
+  time: number
 }
 export type SipPn = {
   phoneId: string

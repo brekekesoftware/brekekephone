@@ -16,6 +16,7 @@ import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { webShowNotification } from '../utils/webShowNotification'
+import { accountStore, parsedPnToAccountUnique } from './accountStore'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
@@ -71,21 +72,30 @@ export class CallStore {
     }
     this.setAutoEndCallKeepTimer(uuid, n)
     checkAndRemovePnTokenViaSip(n)
-    // Check if call is rejected already
-    const rejected = this.isCallRejected({
-      callkeepUuid: uuid,
-      pnId: n.id,
-    })
     // Find the current incoming call which is not callkeep
+    // Assign the data and config
     const c = this.getCallkeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
       BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
     }
+    // Check if call is rejected already
+    const rejected = this.isCallRejected({
+      callkeepUuid: uuid,
+      pnId: n.id,
+    })
+    // Check if call is expired already
+    let expired = false
+    const d = accountStore.getAccountData(parsedPnToAccountUnique(n))
+    const pnExpires = Number(d?.pnExpires) || 50000 // default to 50s
+    const now = Date.now()
+    if (n.time) {
+      expired = now > n.time + pnExpires
+    }
     console.log(
-      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${n.id} sessionId=${c?.id} rejected=${rejected}`,
+      `SIP PN debug: onCallKeepDidDisplayIncomingCall uuid=${uuid} pnId=${n.id} sessionId=${c?.id} rejected=${rejected} now=${now} n.time=${n.time} pnExpires=${pnExpires} expired=${expired}`,
     )
-    if (rejected) {
+    if (rejected || expired) {
       this.endCallKeep(uuid)
       return
     }
@@ -94,7 +104,6 @@ export class CallStore {
     // So even if sipState is `success` but the connection has dropped
     // We just drop the connection no matter if it is alive or not
     // Then construct a new connection to receive the call as quickly as possible
-    const now = Date.now()
     if (now - this.recentCallActivityAt > 3000) {
       const as = getAuthStore()
       if (as.sipState === 'connecting') {

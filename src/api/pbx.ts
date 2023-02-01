@@ -287,6 +287,7 @@ export class PBX extends EventEmitter {
     }
     d.palParams = parsePalParams(s.pbxConfig)
     d.userAgent = s.pbxConfig['webphone.useragent']
+    d.pnExpires = s.pbxConfig['webphone.pn_expires']
     accountStore.updateAccountData(d)
     return s.pbxConfig
   }

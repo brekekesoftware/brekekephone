@@ -66,6 +66,7 @@ export type AccountData = {
   }
   palParams?: { [k: string]: string }
   userAgent?: string
+  pnExpires?: string
 }
 
 class AccountStore {
