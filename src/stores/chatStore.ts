@@ -8,10 +8,11 @@ import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
+import { rnVibrate } from '../utils/rnVibrate'
 import { saveBlobFile } from '../utils/saveBlob'
-import { showWebNotification } from '../utils/showWebNotification'
 import { arrToMap } from '../utils/toMap'
-import { playDing, vibration } from '../utils/vibrationAndSound'
+import { webPlayDing } from '../utils/webPlayDing'
+import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
 import { getCallStore } from './callStore'
@@ -216,7 +217,7 @@ class ChatStore {
       m.length === 1
     ) {
       const messageNotification = name + ': ' + m[0]?.text || ''
-      showWebNotification(messageNotification, name)
+      webShowNotification(messageNotification, name)
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {
@@ -246,13 +247,13 @@ class ChatStore {
   @observable chatNotificationSoundRunning: boolean = false
   private playChatNotificationSoundVibration = () => {
     if (Platform.OS === 'web') {
-      playDing()
+      webPlayDing()
       return
     }
     if (this.chatNotificationSoundRunning) {
       return
     }
-    vibration()
+    rnVibrate()
     this.chatNotificationSoundRunning = true
     BackgroundTimer.setTimeout(() => {
       this.chatNotificationSoundRunning = false
