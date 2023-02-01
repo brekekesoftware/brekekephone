@@ -14,8 +14,8 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { showWebNotification } from '../utils/showWebNotification'
 import { arrToMap } from '../utils/toMap'
+import { webShowNotification } from '../utils/webShowNotification'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
@@ -289,7 +289,7 @@ export class CallStore {
 
     // Desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
-      showWebNotification(
+      webShowNotification(
         c.getDisplayName() + ' ' + intl`Incoming call`,
         c.getDisplayName(),
       )

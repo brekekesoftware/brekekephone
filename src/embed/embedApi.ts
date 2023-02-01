@@ -9,9 +9,9 @@ import {
 } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
-import { promptBrowserPermission } from '../utils/promptBrowserPermission'
 import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'
+import { webPromptPermission } from '../utils/webPromptPermission'
 
 export type EmbedSignInOptions = {
   auto_login?: boolean
@@ -22,7 +22,7 @@ export type EmbedSignInOptions = {
 export class EmbedApi extends EventEmitter {
   getRunningCalls = () => getCallStore().calls
   call: MakeCallFn = (...args) => getCallStore().startCall(...args)
-  promptBrowserPermission = promptBrowserPermission
+  promptBrowserPermission = webPromptPermission
 
   restart = async (o: EmbedSignInOptions) => {
     getAuthStore().signOutWithoutSaving()

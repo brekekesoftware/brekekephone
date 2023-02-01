@@ -41,14 +41,12 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { onBackPressed, setupCallKeep } from '../utils/callkeep'
-import {
-  getAudioVideoPermission,
-  promptBrowserPermission,
-} from '../utils/promptBrowserPermission'
+import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
+import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
@@ -98,7 +96,7 @@ const initApp = async () => {
 
   if (Platform.OS === 'web') {
     if (window._BrekekePhoneWebRoot) {
-      promptBrowserPermission()
+      webPromptPermission()
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     getAudioVideoPermission()

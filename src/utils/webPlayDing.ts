@@ -1,7 +1,7 @@
 import ding from '../assets/ding.mp3'
 import { BackgroundTimer } from './BackgroundTimer'
 
-export const triggerAudioPermission = () => {
+export const webPlayDing = () => {
   const a = new Audio()
   a.volume = 0.05
   a.src = ding
