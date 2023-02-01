@@ -20,13 +20,21 @@ export class IncomingItem extends Component {
     if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
       return
     }
-    IncallManager.startRingtone('_BUNDLE_')
+    if (Platform.OS === 'android') {
+      BrekekeUtils.setStartRingtone()
+    } else {
+      IncallManager.startRingtone('_BUNDLE_')
+    }
     this.ringtonePlaying = true
     // TODO stop ringtone if user press hardware button
     // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
-    IncallManager.stopRingtone()
+    if (Platform.OS === 'android') {
+      BrekekeUtils.setStopRingtone()
+    } else {
+      IncallManager.stopRingtone()
+    }
     this.ringtonePlaying = false
     if (Platform.OS === 'android') {
       // Bug speaker auto turn on after call stopRingtone/stopRingback

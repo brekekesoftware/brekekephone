@@ -656,10 +656,7 @@ export class CallStore {
   }
   shouldRingInNotify = (uuid?: string) => {
     // Disable ringtone when enable PN
-    if (
-      Platform.OS === 'ios' &&
-      getAuthStore().getCurrentAccount()?.pushNotificationEnabled
-    ) {
+    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
       return false
     }
 
