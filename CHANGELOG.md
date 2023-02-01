@@ -2,6 +2,7 @@
 
 - Fix bug it should compare pbx versions correctly
 - Save getProductInfo webphone.useragent to local storage and use it in the next sip login
+- Save getProductInfo webphone.pn_expires to local storage and use it in the next incoming PN to check if the pn expired. If it is not present, use 50000 as default 50 seconds
 - Update call buttons via sip header X-WEBPHONE-CALL. The config will be merged one by one each time it receives
 - Update jsonrpc.js to fix bug it should show error if pal login failed
 
