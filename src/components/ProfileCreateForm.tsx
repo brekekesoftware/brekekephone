@@ -140,10 +140,14 @@ export const ProfileCreateForm: FC<{
                     },
                   ]
                 : []),
-              {
-                label: intl`Open debug log`,
-                onPress: debugStore.openLogFile,
-              },
+              ...(Platform.OS !== 'web'
+                ? [
+                    {
+                      label: intl`Open debug log`,
+                      onPress: debugStore.openLogFile,
+                    },
+                  ]
+                : []),
               {
                 label: intl`Logout`,
                 onPress: as.signOut,

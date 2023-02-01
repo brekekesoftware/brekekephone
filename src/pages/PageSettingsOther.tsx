@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import { Platform } from 'react-native'
 
 import { uc } from '../api/uc'
 import { mdiCheck, mdiTranslate } from '../assets/icons'
@@ -64,10 +65,14 @@ export class PageSettingsOther extends Component {
                 },
               ]
             : []),
-          {
-            label: intl`Open debug log`,
-            onPress: debugStore.openLogFile,
-          },
+          ...(Platform.OS !== 'web'
+            ? [
+                {
+                  label: intl`Open debug log`,
+                  onPress: debugStore.openLogFile,
+                },
+              ]
+            : []),
           {
             label: intl`Logout`,
             onPress: as.signOut,
