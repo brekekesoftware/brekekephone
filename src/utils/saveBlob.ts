@@ -47,9 +47,8 @@ export const saveBlobFile = (id: string, topic_id: string, type?: string) =>
       type = type || 'image'
       const data: Blob = (await uc.acceptFile(id)) as Blob
       const chunkSize = 1024 * 1024 * 4 // (4 Megabyte)
-      const p = `${RNFS.DocumentDirectoryPath}/${id}.${
-        type === 'image' ? 'jpeg' : 'mp4'
-      }`
+      const e = type === 'image' ? 'jpeg' : 'mp4'
+      const p = `${RNFS.DocumentDirectoryPath}/${id}.${e}`
       const totalChunks = Math.ceil(data.size / chunkSize)
       let pos = 1
       while (pos <= totalChunks) {

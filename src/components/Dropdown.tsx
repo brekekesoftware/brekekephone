@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Platform, StyleSheet, View, ViewProps } from 'react-native'
 
-import { DropdownPosition } from '../stores/RnDropdownSectionList'
+import { DropdownPosition } from '../stores/RnDropdown'
 import { DropdownItem, DropdownItemProps } from './DropdownItem'
 import { v } from './variables'
 

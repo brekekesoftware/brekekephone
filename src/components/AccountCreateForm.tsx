@@ -13,8 +13,8 @@ import { useStore } from '../utils/useStore'
 import { Layout } from './Layout'
 import { RnText } from './Rn'
 
-export const ProfileCreateForm: FC<{
-  updatingProfile?: Account
+export const AccountCreateForm: FC<{
+  updating?: Account
   onBack: Function
   onSave: Function
   footerLogout?: boolean
@@ -23,9 +23,9 @@ export const ProfileCreateForm: FC<{
   const isWeb = Platform.OS === 'web'
   const m = () => ({
     observable: {
-      profile: {
+      account: {
         ...accountStore.genEmptyAccount(),
-        ...cloneDeep(props.updatingProfile),
+        ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
     },
@@ -34,9 +34,9 @@ export const ProfileCreateForm: FC<{
         title: intl`Reset`,
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
-          $.set('profile', (p: Account) => ({
+          $.set('account', (p: Account) => ({
             ...accountStore.genEmptyAccount(),
-            ...cloneDeep(props.updatingProfile),
+            ...cloneDeep(props.updating),
             id: p.id,
           }))
         },
@@ -45,7 +45,7 @@ export const ProfileCreateForm: FC<{
     },
     //
     onAddingParkSubmit: () => {
-      $.set('profile', (p: Account) => {
+      $.set('account', (p: Account) => {
         p.parks = p.parks || []
         p.parkNames = p.parkNames || []
         if ($.addingPark.name && $.addingPark.number) {
@@ -73,14 +73,14 @@ export const ProfileCreateForm: FC<{
           <>
             <RnText small>
               Park {i + 1}:{' '}
-              {$.profile.parks?.[i] + ' - ' + $.profile.parkNames?.[i]}
+              {$.account.parks?.[i] + ' - ' + $.account.parkNames?.[i]}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
           </>
         ),
         onConfirm: () => {
-          $.set('profile', (p: Account) => {
+          $.set('account', (p: Account) => {
             p.parks = p.parks?.filter((p0, i0) => i0 !== i)
             return p
           })
@@ -89,13 +89,13 @@ export const ProfileCreateForm: FC<{
     },
     //
     hasUnsavedChanges: () => {
-      const p = props.updatingProfile || accountStore.genEmptyAccount()
-      if (!props.updatingProfile) {
-        Object.assign(p, {
-          id: $.profile.id,
+      const a = props.updating || accountStore.genEmptyAccount()
+      if (!props.updating) {
+        Object.assign(a, {
+          id: $.account.id,
         })
       }
-      return !isEqual($.profile, p)
+      return !isEqual($.account, a)
     },
     onBackBtnPress: () => {
       if (!$.hasUnsavedChanges()) {
@@ -110,8 +110,8 @@ export const ProfileCreateForm: FC<{
       })
     },
     onValidSubmit: () => {
-      console.log({ profile: $.profile })
-      props.onSave($.profile, $.hasUnsavedChanges())
+      console.log({ account: $.account })
+      props.onSave($.account, $.hasUnsavedChanges())
     },
   })
   type M0 = ReturnType<typeof m>
@@ -124,8 +124,8 @@ export const ProfileCreateForm: FC<{
   return (
     <Layout
       description={
-        props.updatingProfile
-          ? `${props.updatingProfile.pbxUsername} - ${props.updatingProfile.pbxHostname}`
+        props.updating
+          ? `${props.updating.pbxUsername} - ${props.updating.pbxHostname}`
           : intl`Create a new sign in account`
       }
       dropdown={
@@ -165,7 +165,7 @@ export const ProfileCreateForm: FC<{
       fabOnNext={props.footerLogout ? undefined : (submitForm as () => void)}
       menu={props.footerLogout ? 'settings' : undefined}
       onBack={props.footerLogout ? undefined : $.onBackBtnPress}
-      subMenu={props.footerLogout ? 'profile' : undefined}
+      subMenu={props.footerLogout ? 'account' : undefined}
       title={props.title}
     >
       <Form
@@ -242,7 +242,7 @@ export const ProfileCreateForm: FC<{
             name: 'ucEnabled',
             label: intl`UC`,
             onValueChange: (v: boolean) => {
-              $.set('profile', (p: Account) => {
+              $.set('account', (p: Account) => {
                 p.ucEnabled = v
                 return p
               })
@@ -250,11 +250,11 @@ export const ProfileCreateForm: FC<{
           },
           {
             isGroup: true,
-            label: intl`PARKS (${$.profile.parks?.length})`,
+            label: intl`PARKS (${$.account.parks?.length})`,
             hasMargin: true,
           },
-          ...($.profile.parks?.map((p, i) => {
-            const parkName = $.profile.parkNames?.[i]
+          ...($.account.parks?.map((p, i) => {
+            const parkName = $.account.parkNames?.[i]
             return {
               disabled: true,
               name: `parks[${i}]`,
@@ -280,7 +280,7 @@ export const ProfileCreateForm: FC<{
                 },
               ]),
         ]}
-        k='profile'
+        k='account'
         onValidSubmit={$.onValidSubmit}
       />
     </Layout>

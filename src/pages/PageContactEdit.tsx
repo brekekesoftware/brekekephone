@@ -16,7 +16,7 @@ import { Nav } from '../stores/Nav'
 import { DropdownItemProps } from '../components/DropdownItem'
 
 import { userStore } from '../stores/userStore'
-import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
+import { RnDropdown } from '../stores/RnDropdown'
 import { observer } from 'mobx-react'
 import { uc } from '../api/uc'
 import { RnAlert } from '../stores/RnAlert'
@@ -104,7 +104,7 @@ export class PageContactEdit extends Component {
   }
 
   onAddRemoveUser = (ddIndex: number) => {
-    RnDropdownSectionList.closeDropdown()
+    RnDropdown.close()
     Nav().goToPageContactGroupEdit({
       groupName: userStore.dataGroupAllUser[ddIndex].title,
       listItem: userStore.dataGroupAllUser[ddIndex].data.map(itm => itm),
@@ -113,18 +113,18 @@ export class PageContactEdit extends Component {
   }
 
   onCheckAll = (groupIndex: number) => {
-    RnDropdownSectionList.closeDropdown()
+    RnDropdown.close()
     userStore.selectAllUserIdsByGroup(groupIndex)
   }
 
   onUncheckAll = (groupIndex: number) => {
-    RnDropdownSectionList.closeDropdown()
+    RnDropdown.close()
     userStore.unselectAllUserIdsByGroup(groupIndex)
   }
 
   onRemoveGroup = (ddIndex: number) => {
-    RnDropdownSectionList.closeDropdown()
-    RnDropdownSectionList.removeSection(
+    RnDropdown.close()
+    RnDropdown.removeSection(
       ddIndex,
       userStore.dataGroupAllUser[ddIndex]?.data?.length,
     )
@@ -132,9 +132,9 @@ export class PageContactEdit extends Component {
   }
 
   onSelectEditGroupingAndUserOrderOption = () => {
-    RnDropdownSectionList.closeDropdown()
+    RnDropdown.close()
     if (!userStore.isSelectEditGroupingAndUserOrder) {
-      RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+      RnDropdown.setShouldUpdatePosition(true)
     }
     userStore.toggleIsSelectEditGroupingAndUserOrder()
   }
@@ -148,7 +148,7 @@ export class PageContactEdit extends Component {
     if (getAuthStore().getCurrentAccount()?.ucEnabled) {
       userStore.loadUcBuddyList()
     }
-    RnDropdownSectionList.closeDropdown()
+    RnDropdown.close()
     Nav().backToPageContactUsers()
   }
 
@@ -174,7 +174,7 @@ export class PageContactEdit extends Component {
       dataGroupAllUser,
       buddyMode,
     } = userStore
-    const { dropdownOpenedIndex } = RnDropdownSectionList
+    const { openedIndex } = RnDropdown
     return (
       <Layout
         fabOnBack={this.onGoBack}
@@ -184,7 +184,7 @@ export class PageContactEdit extends Component {
         title={intl`Edit buddy list`}
         containerRef={this.setViewRef}
       >
-        <TouchableWithoutFeedback onPress={RnDropdownSectionList.closeDropdown}>
+        <TouchableWithoutFeedback onPress={RnDropdown.close}>
           <View style={css.listHeaderSection}>
             {!isDisableAddAllUserToTheList && (
               <SelectionItem
@@ -228,7 +228,7 @@ export class PageContactEdit extends Component {
           <ContactSectionList
             sectionListData={dataGroupAllUser}
             isEditMode={true}
-            ddItems={this.getDDOptions(dropdownOpenedIndex)}
+            ddItems={this.getDDOptions(openedIndex)}
           />
         ) : (
           <ContactList data={dataListAllUser} />

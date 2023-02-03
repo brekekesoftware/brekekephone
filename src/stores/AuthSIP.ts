@@ -33,8 +33,8 @@ class AuthSIP {
   }
 
   private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
-    const p = getAuthStore().getCurrentAccount()
-    if (!p) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       console.log('SIP PN debug: Already signed out after long await')
       return
     }
@@ -53,15 +53,15 @@ class AuthSIP {
         }
       : undefined
     const o: SipLoginOption = {
-      hostname: p.pbxHostname,
+      hostname: ca.pbxHostname,
       port: pn.sipWssPort,
       username: pn.phoneId,
       accessToken: pn.sipAuth,
-      pbxTurnEnabled: p.pbxTurnEnabled,
+      pbxTurnEnabled: ca.pbxTurnEnabled,
       dtmfSendPal: toBoolean(pn.dtmfSendPal),
       turnConfig,
     }
-    await sip.connect(o, p)
+    await sip.connect(o, ca)
   }
 
   @action private authWithoutCatch = async () => {

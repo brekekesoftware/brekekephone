@@ -5,14 +5,14 @@ import { Component } from 'react'
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
 import { getAuthStore } from '../stores/authStore'
-import { ContactInfo, contactStore, Phonebook2 } from '../stores/contactStore'
+import { ContactInfo, contactStore, Phonebook } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 
 @observer
 export class PagePhonebookUpdate extends Component<{
-  contact: Phonebook2
+  contact: Phonebook
 }> {
   render() {
     return (
@@ -46,13 +46,13 @@ export class PagePhonebookUpdate extends Component<{
       phonebook,
       shared: !!this.props.contact?.shared,
       info: { ...p },
-    } as Phonebook2
+    } as Phonebook
     pbx
       .setContact(contactUpdate)
       .then(() => this.onSaveSuccess(contactUpdate))
       .catch(this.onSaveFailure)
   }
-  onSaveSuccess = (phonebook: Phonebook2) => {
+  onSaveSuccess = (phonebook: Phonebook) => {
     Nav().goToPageContactPhonebook()
     contactStore.upsertPhonebook(phonebook)
   }

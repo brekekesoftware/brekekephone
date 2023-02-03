@@ -17,7 +17,7 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getCallStore } from '../stores/callStore'
-import { contactStore, Phonebook2 } from '../stores/contactStore'
+import { contactStore, Phonebook } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -55,7 +55,7 @@ export class PageContactPhonebook extends Component {
         contact,
       })
     } else {
-      this.loadContactDetail(id, (ct: Phonebook2) => {
+      this.loadContactDetail(id, (ct: Phonebook) => {
         Nav().goToPagePhonebookUpdate({
           contact: ct,
         })
@@ -74,7 +74,7 @@ export class PageContactPhonebook extends Component {
           ...ct,
           loaded: true,
         }
-        contactStore.upsertPhonebook(x as Phonebook2)
+        contactStore.upsertPhonebook(x as Phonebook)
         cb(x)
       })
       .catch((err: Error) => {
@@ -85,7 +85,7 @@ export class PageContactPhonebook extends Component {
       })
   }
 
-  callRequest = (number: string, u: Phonebook2) => {
+  callRequest = (number: string, u: Phonebook) => {
     if (number !== '') {
       getCallStore().startCall(number.replace(/\s+/g, ''))
     } else {
@@ -96,12 +96,12 @@ export class PageContactPhonebook extends Component {
     }
   }
 
-  onIcon0 = (u0: Phonebook2) => {
+  onIcon0 = (u0: Phonebook) => {
     if (!u0) {
       return
     }
 
-    const onIcon0 = (u: Phonebook2) => {
+    const onIcon0 = (u: Phonebook) => {
       if (!u) {
         return
       }
@@ -192,7 +192,7 @@ export class PageContactPhonebook extends Component {
   }
   render() {
     const phonebooks = contactStore.phoneBooks
-    const map = {} as { [k: string]: Phonebook2[] }
+    const map = {} as { [k: string]: Phonebook[] }
     phonebooks.forEach(u => {
       let c0 = u?.display_name?.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {

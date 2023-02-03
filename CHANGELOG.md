@@ -87,7 +87,7 @@
   - ios: only worked if app is foreground. Due to security privacy policy from Apple, it is difficult for us to automatically answer the call
 - Update logic of phonebook contact using phonebook.js
 - Display call duration in screen call detail
-- Fix loud spkeaker RBT for ios
+- Fix loud speaker RBT for ios
 - Switch back/front camera in video call
 - Update park logic to correctly listen on events
 

@@ -23,10 +23,7 @@ import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
-import {
-  DropdownPosition,
-  RnDropdownSectionList,
-} from '../stores/RnDropdownSectionList'
+import { DropdownPosition, RnDropdown } from '../stores/RnDropdown'
 import { GroupUserSectionListData, userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
@@ -79,7 +76,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     const reCalculatedLayoutDropdownTimeoutId = useRef<number>(0)
 
     useEffect(() => {
-      RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+      RnDropdown.setShouldUpdatePosition(true)
       return () => {
         sectionHeaderRefs.current = []
         if (reCalculatedLayoutDropdownTimeoutId.current) {
@@ -91,16 +88,13 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     }, [])
 
     useEffect(() => {
-      if (
-        p.isEditMode &&
-        RnDropdownSectionList.isShouldUpdateDropdownPosition
-      ) {
+      if (p.isEditMode && RnDropdown.shouldUpdatePosition) {
         // recalculate position header dropdown
-        RnDropdownSectionList.setIsShouldUpdateDropdownPosition(false)
+        RnDropdown.setShouldUpdatePosition(false)
         calculateSectionHeaderPosition()
       }
       // eslint-disable-next-line react-app/react-hooks/exhaustive-deps
-    }, [p.isEditMode, RnDropdownSectionList.isShouldUpdateDropdownPosition])
+    }, [p.isEditMode, RnDropdown.shouldUpdatePosition])
 
     const clearConnectTimeoutId = () => {
       if (reCalculatedLayoutDropdownTimeoutId.current) {
@@ -129,10 +123,8 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                 })
                 // After get all section list dropdown position
                 if (index === sectionHeaderRefs.current.length - 1) {
-                  RnDropdownSectionList.setDropdownPosition(
-                    listDropdownPosition,
-                  )
-                  RnDropdownSectionList.setHeaderHeight(h)
+                  RnDropdown.setPositions(listDropdownPosition)
+                  RnDropdown.setHeaderHeight(h)
                 }
               })
             }
@@ -142,7 +134,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       )
     }
 
-    const { dropdownOpenedIndex, listDropdownPosition } = RnDropdownSectionList
+    const { openedIndex, positions } = RnDropdown
 
     const sectionListData: GroupUserSectionListData[] = toJS(p.sectionListData) //p.sectionListData
 
@@ -178,15 +170,10 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             />
           )}
         />
-        {dropdownOpenedIndex >= 0 && (
-          <TouchableWithoutFeedback
-            onPress={() => RnDropdownSectionList.closeDropdown()}
-          >
+        {openedIndex >= 0 && (
+          <TouchableWithoutFeedback onPress={() => RnDropdown.close()}>
             <View style={css.containerDropdown}>
-              <Dropdown
-                position={listDropdownPosition[dropdownOpenedIndex]}
-                items={p.ddItems}
-              />
+              <Dropdown position={positions[openedIndex]} items={p.ddItems} />
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -207,16 +194,14 @@ type ItemUser = {
 const RenderItemUser = observer(
   ({ sectionListData, item, title, isEditMode, isTransferCall }: ItemUser) => {
     const index = sectionListData.findIndex(i => i.title === title)
-    const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
-      idx => idx === index,
-    )
+    const hidden = RnDropdown.hiddenIndexes.some(idx => idx === index)
     const c = getCallStore().getCurrentCall()
 
-    return !isHidden ? (
+    return !hidden ? (
       <View
         key={`ItemUser-${item.user_id}-${index}`}
         onLayout={e => {
-          RnDropdownSectionList.setItemHeight(e.nativeEvent.layout.height)
+          RnDropdown.setItemHeight(e.nativeEvent.layout.height)
         }}
       >
         {isEditMode ? (
@@ -292,18 +277,16 @@ const RenderHeaderSection = observer(
     data,
   }: SectionHeader) => {
     const index = sectionListData.findIndex(i => i.title === title)
-    const isHidden = RnDropdownSectionList.hiddenGroupIndex.some(
-      i => i === index,
-    )
+    const hidden = RnDropdown.hiddenIndexes.some(i => i === index)
     const titleHeaderRender = userStore.getHeaderTitle(title, data, isEditMode)
 
     const isDisableMarginTop =
       !sectionListData[index - 1]?.data?.length ||
-      RnDropdownSectionList.hiddenGroupIndex.some(idx => idx === index - 1)
+      RnDropdown.hiddenIndexes.some(idx => idx === index - 1)
 
     return (
       <RnTouchableOpacity
-        onPress={() => RnDropdownSectionList.toggleSection(index, data.length)}
+        onPress={() => RnDropdown.toggleSection(index, data.length)}
       >
         <View
           style={[
@@ -319,7 +302,7 @@ const RenderHeaderSection = observer(
           <Fragment>
             <View style={css.leftSection}>
               <View>
-                <RnIcon path={isHidden ? mdiMenuRight : mdiMenuDown} />
+                <RnIcon path={hidden ? mdiMenuRight : mdiMenuDown} />
               </View>
               <RnText small>{titleHeaderRender}</RnText>
             </View>
@@ -327,14 +310,10 @@ const RenderHeaderSection = observer(
               <RnTouchableOpacity
                 style={css.editGroupIcon}
                 onPress={() => {
-                  if (
-                    RnDropdownSectionList.hiddenGroupIndex.some(
-                      i => i === index,
-                    )
-                  ) {
-                    RnDropdownSectionList.toggleSection(index, data.length)
+                  if (RnDropdown.hiddenIndexes.some(i => i === index)) {
+                    RnDropdown.toggleSection(index, data.length)
                   }
-                  RnDropdownSectionList.setDropdown(index)
+                  RnDropdown.toggle(index)
                 }}
               >
                 <RnIcon path={mdiMoreHoriz} />

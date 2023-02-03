@@ -31,16 +31,18 @@ export type UcUser = {
 //   shared: boolean
 //   loaded?: boolean
 //   hidden: boolean
-//   info: Phonebook2
+//   info: Phonebook
 // }
 export type ContactInfo = { [k: string]: string }
-export type Phonebook2 = {
+export type Phonebook = {
   id: string
   display_name: string
   phonebook: string
   shared: boolean
   loaded?: boolean
-  user?: string // I mean if user is empty, it is shared. if user is specified, it means it is user's
+  // if user is empty, it is shared
+  // if user is specified, it means it is belonged to that user
+  user?: string
   info: ContactInfo
 }
 export type ItemPBForm = brekekejs.ItemPhonebook & {
@@ -87,7 +89,7 @@ class ContactStore {
           return
         }
 
-        this.setPhonebook(arr as Phonebook2[])
+        this.setPhonebook(arr as Phonebook[])
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
       })
       .catch((err: Error) => {
@@ -178,16 +180,16 @@ class ContactStore {
 
   getPbxUsers = async () => {
     try {
-      const p = getAuthStore().getCurrentAccount()
-      if (!p) {
+      const ca = getAuthStore().getCurrentAccount()
+      if (!ca) {
         return
       }
-      const res = await pbx.getUsers(p.pbxTenant)
+      const res = await pbx.getUsers(ca.pbxTenant)
       if (!res) {
         return
       }
       this.pbxUsers = res
-        .filter(u => u[0] !== p.pbxUsername)
+        .filter(u => u[0] !== ca.pbxUsername)
         .map(id => ({ id: id[0], name: id[1] }))
     } catch (err) {
       RnAlert.error({
@@ -280,7 +282,7 @@ class ContactStore {
     return this.ucUsersMap[id]
   }
 
-  @observable phoneBooks: Phonebook2[] = []
+  @observable phoneBooks: Phonebook[] = []
   @observable pbxBooks: brekekejs.PbxBook[] = []
 
   @action loadPbxBoook = () => {
@@ -291,7 +293,7 @@ class ContactStore {
       }
     })
   }
-  @action upsertPhonebook = (p: Phonebook2) => {
+  @action upsertPhonebook = (p: Phonebook) => {
     const p0 = this.getPhonebookById(p.id)
     if (!p0) {
       this.phoneBooks.push(p)
@@ -300,7 +302,7 @@ class ContactStore {
     }
     this.phoneBooks = [...this.phoneBooks]
   }
-  @action setPhonebook = (p: Phonebook2 | Phonebook2[]) => {
+  @action setPhonebook = (p: Phonebook | Phonebook[]) => {
     if (!p) {
       return
     }
@@ -314,8 +316,8 @@ class ContactStore {
     }
   }
   @computed private get phoneBooksMap() {
-    return arrToMap(this.phoneBooks, 'id', (u: Phonebook2) => u) as {
-      [k: string]: Phonebook2
+    return arrToMap(this.phoneBooks, 'id', (u: Phonebook) => u) as {
+      [k: string]: Phonebook
     }
   }
 

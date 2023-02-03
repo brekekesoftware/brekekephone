@@ -7,8 +7,8 @@ import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore, RecentCall } from '../stores/authStore'
+import { accountStore, RecentCall } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -50,7 +50,7 @@ export class PageCallRecents extends Component {
     const as = getAuthStore()
     const d = as.getCurrentData()
     if (!d) {
-      accountStore.getAccountDataAsync(as.getCurrentAccount())
+      accountStore.findDataAsync(as.getCurrentAccount())
     }
     const calls = d?.recentCalls.filter(this.isMatchUser) || []
     // Backward compatibility to remove invalid items from the previous versions

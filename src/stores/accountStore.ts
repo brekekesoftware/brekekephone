@@ -17,7 +17,7 @@ import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
 
 let resolveFn: Function | undefined
-const profilesLoaded = new Promise(resolve => {
+const storagePromise = new Promise(resolve => {
   resolveFn = resolve
 })
 export type PNOptions = 'APNs' | 'LPC' | undefined
@@ -72,7 +72,7 @@ export type AccountData = {
 class AccountStore {
   @observable appInitDone = false
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
-  waitStorageLoaded = () => profilesLoaded
+  waitStorageLoaded = () => storagePromise
 
   @observable accounts: Account[] = []
   @computed get accountsMap() {
@@ -101,33 +101,33 @@ class AccountStore {
 
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
-    let x: TAccountDataInStorage | undefined
+    let d: TAccountDataInStorage | undefined
     if (arr && !Array.isArray(arr)) {
       try {
-        x = JSON.parse(arr)
+        d = JSON.parse(arr)
       } catch (err) {
-        x = undefined
+        d = undefined
       }
     }
-    if (x) {
-      let { profileData, profiles } = x
-      if (Array.isArray(x)) {
+    if (d) {
+      let { profileData: accountData, profiles: accounts } = d
+      if (Array.isArray(d)) {
         // Lower version compatible
-        profiles = x
-        profileData = []
+        accounts = d
+        accountData = []
       }
       // Set tenant to '-' if empty
-      profiles.forEach(a => {
+      accounts.forEach(a => {
         a.pbxTenant = a.pbxTenant || '-'
       })
       runInAction(() => {
-        this.accounts = profiles.filter(a => a.id && a.pbxUsername)
-        if (profiles.length !== this.accounts.length) {
+        this.accounts = accounts.filter(a => a.id && a.pbxUsername)
+        if (accounts.length !== this.accounts.length) {
           console.error(
             'loadAccountsFromLocalStorage error missing id or pbxUsername',
           )
         }
-        this.accountData = uniqBy(profileData, 'id')
+        this.accountData = uniqBy(accountData, 'id')
       })
     }
     resolveFn?.()
@@ -169,31 +169,32 @@ class AccountStore {
   }
 
   @action upsertAccount = (p: Partial<Account>) => {
-    const p1 = this.accounts.find(p0 => p0.id === p.id)
-    if (!p1) {
+    const a = this.accounts.find(_ => _.id === p.id)
+    if (!a) {
       this.accounts.push(p as Account)
     } else {
-      const p0 = { ...p1 } // Clone before assign
-      Object.assign(p1, p)
+      const clonedA = { ...a } // Clone before assign
+      Object.assign(a, p)
       // TODO handle case change phone index
-      if (getAccountUniqueId(p0) !== getAccountUniqueId(p1)) {
-        p0.pushNotificationEnabled = false
-        SyncPnToken().sync(p0, {
+      if (getAccountUniqueId(clonedA) !== getAccountUniqueId(a)) {
+        clonedA.pushNotificationEnabled = false
+        SyncPnToken().sync(clonedA, {
           noUpsert: true,
         })
       } else if (
         typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== p0.pushNotificationEnabled
+        p.pushNotificationEnabled !== clonedA.pushNotificationEnabled
       ) {
-        p1.pushNotificationEnabledSynced = false
-        SyncPnToken().sync(p1, {
+        a.pushNotificationEnabledSynced = false
+        SyncPnToken().sync(a, {
           onError: err => {
             RnAlert.error({
-              message: intlDebug`Failed to sync Push Notification settings for ${p1.pbxUsername}`,
+              message: intlDebug`Failed to sync Push Notification settings for ${a.pbxUsername}`,
               err,
             })
-            p1.pushNotificationEnabled = p0.pushNotificationEnabled
-            p1.pushNotificationEnabledSynced = p0.pushNotificationEnabledSynced
+            a.pushNotificationEnabled = clonedA.pushNotificationEnabled
+            a.pushNotificationEnabledSynced =
+              clonedA.pushNotificationEnabledSynced
             this.saveAccountsToLocalStorageDebounced()
           },
         })
@@ -202,36 +203,60 @@ class AccountStore {
     this.saveAccountsToLocalStorageDebounced()
   }
   @action removeAccount = (id: string) => {
-    const p0 = this.accounts.find(p => p.id === id)
-    this.accounts = this.accounts.filter(p => p.id !== id)
+    const a = this.accounts.find(_ => _.id === id)
+    this.accounts = this.accounts.filter(_ => _.id !== id)
     this.saveAccountsToLocalStorageDebounced()
-    if (p0) {
-      p0.pushNotificationEnabled = false
-      SyncPnToken().sync(p0, {
+    if (a) {
+      a.pushNotificationEnabled = false
+      SyncPnToken().sync(a, {
         noUpsert: true,
       })
     }
   }
-  getAccountData = (a?: AccountUnique): AccountData | undefined => {
+
+  find = async (a: Partial<Account>) => {
+    await storagePromise
+    // This accept partial compare: only pbxUsername is required to find
+    // This behavior is needed because returned data may be incompleted
+    // For eg: PN data doesnt have all the fields to compare
+    return accountStore.accounts.find(_ => compareAccount(_, a))
+  }
+  findByPn = (n: ParsedPn) =>
+    this.find({
+      pbxUsername: n.to,
+      pbxTenant: n.tenant,
+      pbxHostname: n.pbxHostname,
+      pbxPort: n.pbxPort,
+    })
+
+  findData = async (a?: AccountUnique) => {
+    await storagePromise
+    return this.findDataSync(a)
+  }
+  findDataSync = (a?: AccountUnique) => {
     if (!a || !a.pbxUsername || !a.pbxTenant || !a.pbxHostname || !a.pbxPort) {
-      return {
-        id: '',
-        accessToken: '',
-        recentCalls: [],
-        recentChats: [],
-        pbxBuddyList: undefined,
-      }
+      return
     }
     const id = getAccountUniqueId(a)
     return this.accountData.find(d => d.id === id)
   }
-  getAccountDataAsync = async (a?: AccountUnique): Promise<AccountData> => {
-    const d = this.getAccountData(a)
+  findDataByPn = async (n: ParsedPn) => {
+    const a = await this.findByPn(n)
+    if (!a) {
+      return
+    }
+    return this.findData(a)
+  }
+
+  findDataAsync = async (a: AccountUnique): Promise<AccountData> => {
+    // Async to use in mobx to not trigger data change in render
+    // This method will update the data if not found in storage
+    const d = await this.findData(a)
     if (d) {
       return d
     }
     const newD = {
-      id: getAccountUniqueId(a!),
+      id: getAccountUniqueId(a),
       accessToken: '',
       recentCalls: [],
       recentChats: [],
@@ -241,6 +266,7 @@ class AccountStore {
     this.updateAccountData(newD)
     return newD
   }
+
   updateAccountData = (d: AccountData) => {
     const arr = [d, ...this.accountData.filter(d2 => d2.id !== d.id)]
     if (arr.length > 20) {
@@ -257,12 +283,6 @@ export type AccountUnique = Pick<
   Account,
   'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort'
 >
-export const parsedPnToAccountUnique = (n: ParsedPn) => ({
-  pbxHostname: n.pbxHostname,
-  pbxPort: n.pbxPort,
-  pbxTenant: n.tenant,
-  pbxUsername: n.to,
-})
 export const getAccountUniqueId = (a: AccountUnique) =>
   jsonStableStringify({
     u: a.pbxUsername,
@@ -271,7 +291,24 @@ export const getAccountUniqueId = (a: AccountUnique) =>
     p: a.pbxPort,
   })
 
+// compareAccount in case data is fragment
+const compareField = (p1: object, p2: object, field: keyof AccountUnique) => {
+  const v1 = p1[field as keyof typeof p1]
+  const v2 = p2[field as keyof typeof p2]
+  return !v1 || !v2 || v1 === v2
+}
+export const compareAccount = (p1: { pbxUsername: string }, p2: object) => {
+  return (
+    p1.pbxUsername && // Must have pbxUsername
+    compareField(p1, p2, 'pbxUsername') &&
+    compareField(p1, p2, 'pbxTenant') &&
+    compareField(p1, p2, 'pbxHostname') &&
+    compareField(p1, p2, 'pbxPort')
+  )
+}
+
 export const accountStore = new AccountStore()
+export type RecentCall = AccountData['recentCalls'][0]
 
 type TAccountDataInStorage = {
   profiles: Account[]

@@ -3,6 +3,7 @@ import { get } from 'lodash'
 import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
@@ -173,14 +174,14 @@ export const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
-export const signInByLocalNotification = (n: ParsedPn) => {
+export const signInByLocalNotification = async (n: ParsedPn) => {
+  const a = await accountStore.findByPn(n)
   const as = getAuthStore()
-  const p = as.findAccountByPn(n)
-  if (as.signedInId === p?.id) {
+  if (as.signedInId === a?.id) {
     as.resetFailureState()
   }
-  if (p?.id && !as.signedInId) {
-    as.signIn(p)
+  if (a?.id && !as.signedInId) {
+    as.signIn(a)
   }
 }
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
@@ -225,7 +226,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
     waitTimeout().then(Nav().goToPageCallRecents)
   } else if (isLocal) {
     // Chat local notification
-    signInByLocalNotification(n)
+    await signInByLocalNotification(n)
     if (n.threadId && n.threadId.length > 0) {
       nav.customPageIndex = nav.goToPageChatDetail
       waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
@@ -312,8 +313,8 @@ export type ParsedPn = {
   displayName: string
   to: string
   tenant: string
-  pbxHostname: string
-  pbxPort: string
+  pbxHostname?: string
+  pbxPort?: string
   my_custom_data: unknown
   is_local_notification: boolean
   isCall: boolean

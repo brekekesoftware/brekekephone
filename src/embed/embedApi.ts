@@ -92,19 +92,19 @@ type EmbedAccount = {
   pushNotification?: boolean
 }
 const convertToStorage = (a: EmbedAccount): Account => {
-  const p = accountStore.genEmptyAccount()
-  p.pbxHostname = a.hostname || ''
-  p.pbxPort = a.port || ''
-  p.pbxTenant = a.tenant || ''
-  p.pbxUsername = a.username || ''
-  p.pbxPassword = a.password || ''
-  p.pbxPhoneIndex = `${Number(a.phoneIndex) || 4}`
-  p.ucEnabled = a.uc || false
-  p.displayOfflineUsers = a.ucDisplayOfflineUsers || false
-  p.parks = a.parks || []
-  p.parkNames = a.parkNames || []
-  p.pushNotificationEnabled = a.pushNotification || false
-  return p
+  const ea = accountStore.genEmptyAccount()
+  ea.pbxHostname = a.hostname || ''
+  ea.pbxPort = a.port || ''
+  ea.pbxTenant = a.tenant || ''
+  ea.pbxUsername = a.username || ''
+  ea.pbxPassword = a.password || ''
+  ea.pbxPhoneIndex = `${Number(a.phoneIndex) || 4}`
+  ea.ucEnabled = a.uc || false
+  ea.displayOfflineUsers = a.ucDisplayOfflineUsers || false
+  ea.parks = a.parks || []
+  ea.parkNames = a.parkNames || []
+  ea.pushNotificationEnabled = a.pushNotification || false
+  return ea
 }
 const copyToStorage = (fr: Account, to: Account) => {
   to.pbxHostname = fr.pbxHostname

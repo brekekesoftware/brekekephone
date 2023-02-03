@@ -5,7 +5,7 @@ import { Component } from 'react'
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
 import { getAuthStore } from '../stores/authStore'
-import { ContactInfo, contactStore, Phonebook2 } from '../stores/contactStore'
+import { ContactInfo, contactStore, Phonebook } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -40,7 +40,7 @@ export class PagePhonebookCreate extends Component<{
       phonebook,
       shared: false, // admin can't login on brekeke phone => share = false
       info: p,
-    } as Phonebook2
+    } as Phonebook
 
     pbx
       .setContact(contact)

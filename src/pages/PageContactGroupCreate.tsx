@@ -11,7 +11,7 @@ import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
-import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
+import { RnDropdown } from '../stores/RnDropdown'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { css } from './PageContactEdit'
@@ -85,7 +85,7 @@ export class PageContactGroupCreate extends Component {
     //   u => this.selectedUsers[u.user_id],
     // )
     userStore.addGroup(name, this.selectedUserItems)
-    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+    RnDropdown.setShouldUpdatePosition(true)
     Nav().backToPageContactEdit()
   }
 }
