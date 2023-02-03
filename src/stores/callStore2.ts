@@ -16,7 +16,7 @@ import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { arrToMap } from '../utils/toMap'
 import { webShowNotification } from '../utils/webShowNotification'
-import { accountStore, parsedPnToAccountUnique } from './accountStore'
+import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip } from './authStore'
@@ -63,7 +63,10 @@ export class CallStore {
     }
     BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
   }
-  @action onCallKeepDidDisplayIncomingCall = (uuid: string, n: ParsedPn) => {
+  @action onCallKeepDidDisplayIncomingCall = async (
+    uuid: string,
+    n: ParsedPn,
+  ) => {
     if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
       if (RnAppState.foregroundOnce && RnAppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
@@ -86,7 +89,7 @@ export class CallStore {
     })
     // Check if call is expired already
     let expired = false
-    const d = accountStore.getAccountData(parsedPnToAccountUnique(n))
+    const d = await accountStore.findDataByPn(n)
     const pnExpires = Number(d?.pnExpires) || 50000 // default to 50s
     const now = Date.now()
     if (n.time) {

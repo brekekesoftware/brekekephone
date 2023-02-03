@@ -49,7 +49,7 @@ export class PageSettingsDebug extends Component {
               ]
             : undefined
         }
-        onBack={Nav().backToPageProfileSignIn}
+        onBack={Nav().backToPageAccountSignIn}
         title={intl`Debug`}
       >
         {Platform.OS !== 'web' && (

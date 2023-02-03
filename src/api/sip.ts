@@ -7,11 +7,7 @@ import { Platform } from 'react-native'
 
 import { currentVersion } from '../components/variables'
 import { embedApi } from '../embed/embedApi'
-import {
-  accountStore,
-  AccountUnique,
-  parsedPnToAccountUnique,
-} from '../stores/accountStore'
+import { accountStore, AccountUnique } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
@@ -34,8 +30,7 @@ type DeviceInputWeb = {
 }
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
-  await accountStore.waitStorageLoaded()
-  const exist = !!getAuthStore().findAccountByPn(n)
+  const exist = !!(await accountStore.findByPn(n))
   const k = n.id || jsonStableStringify(n)
   if (!alreadyRemovePnTokenViaSip[k] && !exist) {
     alreadyRemovePnTokenViaSip[k] = true
@@ -57,6 +52,7 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
   }
   console.log('checkAndRemovePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
+  const userAgent = await getUserAgent(n)
   phone.startWebRTC({
     register: false,
     url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
@@ -64,7 +60,7 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
     user: n.sipPn.phoneId,
     auth: n.sipPn.sipAuth,
     useVideoClient: true,
-    userAgent: getUserAgent(n),
+    userAgent,
   })
   const started = await new Promise(r => {
     phone.addEventListener(
@@ -286,13 +282,14 @@ export class SIP extends EventEmitter {
     }
     phone.setDefaultCallOptions(callOptions)
     //
+    const userAgent = await getUserAgent(a)
     phone.startWebRTC({
       url: getWssUrl(o.hostname, o.port),
       tls: true,
       user: o.username,
       auth: o.accessToken,
       useVideoClient: true,
-      userAgent: getUserAgent(a),
+      userAgent,
     })
     //
     console.log('SIP PN debug: added listener on _ua')
@@ -459,11 +456,11 @@ const osMap: { [k: string]: string } = {
   android: 'Android',
   web: 'Web',
 }
-const getUserAgent = (a: ParsedPn | AccountUnique) => {
-  const au = 'to' in a ? parsedPnToAccountUnique(a) : a
-  const savedUserAgent = accountStore.getAccountData(au)?.userAgent
-  if (savedUserAgent) {
-    return savedUserAgent
+const getUserAgent = async (a: ParsedPn | AccountUnique) => {
+  const au = 'to' in a ? await accountStore.findByPn(a) : a
+  const d = await accountStore.findData(au)
+  if (d?.userAgent) {
+    return d.userAgent
   }
   const os = osMap[Platform.OS]
   return `Brekeke Phone for ${os} ${currentVersion} /JsSIP 3.2.15`

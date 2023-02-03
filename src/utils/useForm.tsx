@@ -6,7 +6,7 @@ import Validator, { Rules } from 'validatorjs'
 
 import { PbxBook } from '../api/brekekejs'
 import { Field } from '../components/Field'
-import { PBAutoComplete } from '../components/PBAutoComplete'
+import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
 import { CreatedStore } from './createStore'
 import { arrToMap, mapToMap } from './toMap'
 import { useStore } from './useStore'
@@ -127,7 +127,7 @@ export const useForm = () => {
               ),
           )}
           {k === 'phonebook' && $.currentFocus === 'phonebook' && (
-            <PBAutoComplete
+            <PhonebookAutoComplete
               value={get($parent, k + '.phonebook')}
               onPressItem={(item: PbxBook) => {
                 $parent.set(k + '.phonebook', item.phonebook)

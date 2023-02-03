@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
-import { contactStore, ItemPBForm, Phonebook2 } from '../stores/contactStore'
+import { contactStore, ItemPBForm, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
@@ -48,7 +48,7 @@ const phonebookField = {
   maxLength: 100,
 }
 export const ContactsCreateForm: FC<{
-  updatingPhonebook?: Phonebook2
+  updatingPhonebook?: Phonebook
   phonebook?: string
   onBack: Function
   onSave: Function

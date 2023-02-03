@@ -8,7 +8,7 @@ import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
-import { PbxUser, Phonebook2 } from '../stores/contactStore'
+import { PbxUser, Phonebook } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
@@ -33,7 +33,7 @@ export class PBX extends EventEmitter {
       return true
     }
 
-    const d = await accountStore.getAccountDataAsync(p)
+    const d = await accountStore.findDataAsync(p)
     const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
@@ -463,7 +463,7 @@ export class PBX extends EventEmitter {
     })
     return res
   }
-  setContact = async (contact: Phonebook2) => {
+  setContact = async (contact: Phonebook) => {
     if (this.isMainInstance) {
       await waitPbx()
     }

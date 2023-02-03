@@ -77,7 +77,7 @@ const css = StyleSheet.create({
   },
 })
 
-export const PBAutoComplete: FC<
+export const PhonebookAutoComplete: FC<
   Partial<{
     style?: TouchableOpacityProps['style']
     // onCreateBtnPress(): void

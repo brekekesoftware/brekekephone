@@ -86,9 +86,9 @@ const genMenus = () => {
       icon: mdiCogOutline,
       subMenus: [
         {
-          key: 'profile',
+          key: 'account',
           label: intl`CURRENT ACCOUNT`,
-          navFnKey: 'goToPageSettingsProfile',
+          navFnKey: 'goToPageSettingsCurrentAccount',
         },
         {
           key: 'other',
@@ -96,7 +96,7 @@ const genMenus = () => {
           navFnKey: 'goToPageSettingsOther',
         },
       ],
-      defaultSubMenuKey: 'profile',
+      defaultSubMenuKey: 'account',
     },
   ] as Menu[]
   //
@@ -145,8 +145,8 @@ export const menus = () => {
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const p = getAuthStore().getCurrentAccount()
-  if (!m || !p) {
+  const ca = getAuthStore().getCurrentAccount()
+  if (!m || !ca) {
     return
   }
   if (!(k in m.subMenusMap)) {
@@ -154,26 +154,26 @@ const saveNavigation = (i: number, k: string) => {
   }
   normalizeSavedNavigation()
   if (m.key !== 'settings') {
-    p.navIndex = i
+    ca.navIndex = i
   }
-  p.navSubMenus[i] = k
+  ca.navSubMenus[i] = k
   accountStore.saveAccountsToLocalStorageDebounced()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const p = getAuthStore().getCurrentAccount()
-  if (!p) {
+  const ca = getAuthStore().getCurrentAccount()
+  if (!ca) {
     return
   }
-  if (!arr[p.navIndex]) {
-    p.navIndex = 0
+  if (!arr[ca.navIndex]) {
+    ca.navIndex = 0
   }
-  if (p.navSubMenus?.length !== arr.length) {
-    p.navSubMenus = arr.map(() => '')
+  if (ca.navSubMenus?.length !== arr.length) {
+    ca.navSubMenus = arr.map(() => '')
   }
   arr.forEach((m, i) => {
-    if (!(p.navSubMenus[i] in m.subMenusMap)) {
-      p.navSubMenus[i] = m.defaultSubMenuKey
+    if (!(ca.navSubMenus[i] in m.subMenusMap)) {
+      ca.navSubMenus[i] = m.defaultSubMenuKey
     }
   })
 }

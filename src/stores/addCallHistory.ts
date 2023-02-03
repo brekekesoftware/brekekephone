@@ -27,9 +27,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     alreadyAddHistoryMap[pnId] = true
   }
 
-  await accountStore.waitStorageLoaded()
-  const as = getAuthStore()
-  if (!isTypeCall && !as.findAccountByPn(c)) {
+  if (!isTypeCall && !(await accountStore.findByPn(c))) {
     console.log(
       'checkAndRemovePnTokenViaSip debug: do not add history account not exist',
     )
@@ -61,7 +59,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         // -> B got cancel event from sip
         isAboutToHangup: false,
       }
-  await as.pushRecentCall(info)
+  await getAuthStore().pushRecentCall(info)
   presentNotification(info)
 }
 

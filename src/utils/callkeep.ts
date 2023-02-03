@@ -263,7 +263,7 @@ export const setupCallKeep = async () => {
     eventEmitter.addListener('switchCamera', (uuid: string) => {
       getCallStore().getCurrentCall()?.toggleSwitchCamera()
     })
-    eventEmitter.addListener('onNotificationPress', (data: string) => {
+    eventEmitter.addListener('onNotificationPress', async (data: string) => {
       if (!data) {
         return
       }
@@ -272,7 +272,7 @@ export const setupCallKeep = async () => {
       if (!n) {
         return
       }
-      signInByLocalNotification(n)
+      await signInByLocalNotification(n)
       if (raw.id?.startsWith('missedcall')) {
         Nav().goToPageCallRecents()
       } else {

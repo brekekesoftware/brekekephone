@@ -22,24 +22,24 @@ import { RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
 const css = StyleSheet.create({
-  ProfileSignInItem: {
+  AccountSignInItem: {
     backgroundColor: v.bg,
     marginBottom: 15,
     marginLeft: 15,
     borderRadius: v.borderRadius,
     width: 280,
   },
-  ProfileSignInItem__last: {
+  AccountSignInItem__last: {
     marginRight: 15,
   },
-  ProfileSignInItem__empty: {
+  AccountSignInItem__empty: {
     height: '70%',
     minHeight: 320,
     marginVertical: 45,
     marginLeft: 15,
     padding: 15,
   },
-  ProfileSignInItem_Btns: {
+  AccountSignInItem_Btns: {
     position: 'absolute',
     bottom: 15,
     left: 15,
@@ -47,20 +47,20 @@ const css = StyleSheet.create({
   },
 })
 
-export const ProfileSignInItem: FC<{
+export const AccountSignInItem: FC<{
   empty?: boolean
   id?: string
   last?: boolean
 }> = observer(props => {
   if (props.empty) {
     return (
-      <View style={[css.ProfileSignInItem, css.ProfileSignInItem__empty]}>
+      <View style={[css.AccountSignInItem, css.AccountSignInItem__empty]}>
         <RnText subTitle>{intl`No account`}</RnText>
         <RnText>{intl`There is no account created`}</RnText>
         <RnText>{intl`Tap the below button to create one`}</RnText>
-        <View style={css.ProfileSignInItem_Btns}>
+        <View style={css.AccountSignInItem_Btns}>
           <FooterActions
-            onNext={Nav().goToPageProfileCreate}
+            onNext={Nav().goToPageAccountCreate}
             onNextText={intl`CREATE NEW ACCOUNT`}
           />
         </View>
@@ -70,53 +70,53 @@ export const ProfileSignInItem: FC<{
   if (!props.id) {
     return null
   }
-  const p = accountStore.accountsMap[props.id]
-  if (!p) {
+  const a = accountStore.accountsMap[props.id]
+  if (!a) {
     return null
   }
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
 
   return (
     <View
-      style={[css.ProfileSignInItem, props.last && css.ProfileSignInItem__last]}
+      style={[css.AccountSignInItem, props.last && css.AccountSignInItem__last]}
     >
       <RnTouchableOpacity
-        onPress={() => Nav().goToPageProfileUpdate({ id: p.id })}
+        onPress={() => Nav().goToPageAccountUpdate({ id: a.id })}
       >
         <Field
           icon={mdiAccountCircleOutline}
           label={intl`USERNAME`}
-          value={p.pbxUsername}
+          value={a.pbxUsername}
         />
         <Field
           icon={mdiApplicationOutline}
           label={intl`TENANT`}
-          value={p.pbxTenant}
+          value={a.pbxTenant}
         />
-        <Field icon={mdiWeb} label={intl`HOSTNAME`} value={p.pbxHostname} />
-        <Field icon={mdiServerNetwork} label={intl`PORT`} value={p.pbxPort} />
+        <Field icon={mdiWeb} label={intl`HOSTNAME`} value={a.pbxHostname} />
+        <Field icon={mdiServerNetwork} label={intl`PORT`} value={a.pbxPort} />
       </RnTouchableOpacity>
       <Field
         label={intl`PUSH NOTIFICATION`}
         onValueChange={(e: boolean) =>
           accountStore.upsertAccount({
-            id: p.id,
+            id: a.id,
             pushNotificationEnabled: e,
           })
         }
         type='Switch'
-        value={p.pushNotificationEnabled}
+        value={a.pushNotificationEnabled}
         loading={isLoading}
       />
       <Field
         label={intl`UC`}
         onValueChange={(e: boolean) =>
-          accountStore.upsertAccount({ id: p.id, ucEnabled: e })
+          accountStore.upsertAccount({ id: a.id, ucEnabled: e })
         }
         type='Switch'
-        value={p.ucEnabled}
+        value={a.ucEnabled}
       />
-      <View style={css.ProfileSignInItem_Btns}>
+      <View style={css.AccountSignInItem_Btns}>
         <FooterActions
           onBack={() => {
             RnAlert.prompt({
@@ -125,22 +125,22 @@ export const ProfileSignInItem: FC<{
                 <>
                   <View>
                     <RnText small>
-                      {p.pbxUsername} - {p.pbxHostname}
+                      {a.pbxUsername} - {a.pbxHostname}
                     </RnText>
                   </View>
                   <RnText>{intl`Do you want to remove this account?`}</RnText>
                 </>
               ),
               onConfirm: () => {
-                accountStore.removeAccount(p.id)
+                accountStore.removeAccount(a.id)
               },
             })
           }}
           onBackIcon={mdiClose}
-          onMore={() => Nav().goToPageProfileUpdate({ id: p.id })}
+          onMore={() => Nav().goToPageAccountUpdate({ id: a.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
-            getAuthStore().signIn(p)
+            getAuthStore().signIn(a)
             // Try to end callkeep if it's stuck
             if (Platform.OS !== 'web') {
               getCallStore().endCallKeepAllCalls()

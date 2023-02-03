@@ -33,7 +33,6 @@ import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { PBAddItem } from '../stores/PBAddItem'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
@@ -53,6 +52,7 @@ import { CallNotify } from './CallNotify'
 import { CallVideos } from './CallVideos'
 import { CallVoices } from './CallVoices'
 import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
+import { PhonebookAddItem } from './PhonebookAddItem'
 import { AudioPlayer, RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
@@ -265,7 +265,7 @@ export const App = observer(() => {
         <RnStackerRoot />
         <RenderAllCalls />
         <RnPickerRoot />
-        <PBAddItem />
+        <PhonebookAddItem />
 
         <RnAlertRoot />
         {failure && (

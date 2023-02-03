@@ -93,13 +93,11 @@ export class PageCallDtmfKeypad extends Component {
                   min = min - 1
                 }
               }
-              // Update text to trigger render
               const t = this.txt
               this.txt = t.substring(0, min) + v + t.substring(max)
-              //
-              const p = min + (isDelete ? 0 : 1)
-              this.txtSelection.start = p
-              this.txtSelection.end = p
+              const position = min + (isDelete ? 0 : 1)
+              this.txtSelection.start = position
+              this.txtSelection.end = position
             }}
             showKeyboard={this.showKeyboard}
           />

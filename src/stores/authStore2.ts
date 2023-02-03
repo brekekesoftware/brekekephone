@@ -17,11 +17,10 @@ import {
   accountStore,
   getAccountUniqueId,
   getLastSignedInId,
-  parsedPnToAccountUnique,
   saveLastSignedInId,
 } from './accountStore'
 import { authSIP } from './AuthSIP'
-import { compareAccount, setAuthStore } from './authStore'
+import { setAuthStore } from './authStore'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
@@ -105,19 +104,12 @@ export class AuthStore {
     ].some(s => s === 'failure')
   }
 
-  private findAccount = (p: Partial<Account>) => {
-    return accountStore.accounts.find(p0 => compareAccount(p0, p))
-  }
-  findAccountByPn = (n: ParsedPn) => {
-    return this.findAccount(parsedPnToAccountUnique(n))
-  }
-
   @observable signedInId = ''
   getCurrentAccount = () =>
-    accountStore.accounts.find(p => p.id === this.signedInId) as Account
-  getCurrentData = () => accountStore.getAccountData(this.getCurrentAccount())
+    accountStore.accounts.find(a => a.id === this.signedInId) as Account
+  getCurrentData = () => accountStore.findDataSync(this.getCurrentAccount())
   getCurrentDataAsync = () =>
-    accountStore.getAccountDataAsync(this.getCurrentAccount())
+    accountStore.findDataAsync(this.getCurrentAccount())
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
@@ -130,9 +122,9 @@ export class AuthStore {
     if (!a) {
       return false
     }
-    const d = await accountStore.getAccountDataAsync(a)
+    const d = await accountStore.findDataAsync(a)
     if (!a.pbxPassword && !d.accessToken) {
-      Nav().goToPageProfileUpdate({ id: a.id })
+      Nav().goToPageAccountUpdate({ id: a.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
       })
@@ -168,9 +160,9 @@ export class AuthStore {
     } catch (err) {
       console.error('signOut debug: signOutWithoutSaving error:', err)
     }
-    console.log('signOut debug: goToPageProfileSignIn')
-    Nav().goToPageProfileSignIn()
-    console.log('signOut debug: goToPageProfileSignIn done')
+    console.log('signOut debug: goToPageAccountSignIn')
+    Nav().goToPageAccountSignIn()
+    console.log('signOut debug: goToPageAccountSignIn done')
   }
   @action private resetState = () => {
     this.signedInId = ''
@@ -244,7 +236,6 @@ export class AuthStore {
       return false
     }
     //
-    await accountStore.waitStorageLoaded()
     const urlParams = await getUrlParams()
     if (!urlParams) {
       return false
@@ -255,7 +246,7 @@ export class AuthStore {
       return false
     }
     //
-    const p = this.findAccount({
+    const a = await accountStore.find({
       pbxUsername: user,
       pbxTenant: tenant,
       pbxHostname: host,
@@ -266,24 +257,24 @@ export class AuthStore {
       phoneIdx = 4
     }
     //
-    if (p) {
-      if (!p.pbxHostname) {
-        p.pbxHostname = host
+    if (a) {
+      if (!a.pbxHostname) {
+        a.pbxHostname = host
       }
-      if (!p.pbxPort) {
-        p.pbxPort = port
+      if (!a.pbxPort) {
+        a.pbxPort = port
       }
-      p.pbxPhoneIndex = `${phoneIdx}`
-      const d = await accountStore.getAccountDataAsync(p)
+      a.pbxPhoneIndex = `${phoneIdx}`
+      const d = await accountStore.findDataAsync(a)
       if (_wn) {
         d.accessToken = _wn
       }
       //
-      accountStore.upsertAccount(p)
-      if (p.pbxPassword || d.accessToken) {
-        this.signIn(p)
+      accountStore.upsertAccount(a)
+      if (a.pbxPassword || d.accessToken) {
+        this.signIn(a)
       } else {
-        Nav().goToPageProfileUpdate({ id: p.id })
+        Nav().goToPageAccountUpdate({ id: a.id })
       }
       return true
     }
@@ -296,13 +287,13 @@ export class AuthStore {
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
-    const d = await accountStore.getAccountDataAsync(newP)
+    const d = await accountStore.findDataAsync(newP)
     //
     accountStore.upsertAccount(newP)
     if (d.accessToken) {
       this.signIn(newP)
     } else {
-      Nav().goToPageProfileUpdate({ id: newP.id })
+      Nav().goToPageAccountUpdate({ id: newP.id })
     }
     return true
   }
@@ -330,10 +321,9 @@ export class AuthStore {
     )
     this.sipPn = n.sipPn
     this.resetFailureState()
-    await accountStore.waitStorageLoaded()
     // Find account for the notification target
-    const p = this.findAccountByPn(n)
-    if (!p?.id) {
+    const a = await accountStore.findByPn(n)
+    if (!a?.id) {
       console.log('SIP PN debug: can not find account from notification')
       return false
     }
@@ -342,8 +332,8 @@ export class AuthStore {
       this.isSignInByNotification = true
       this.clearSignInByNotification()
     }
-    if (this.signedInId !== p.id) {
-      return this.signIn(p)
+    if (this.signedInId !== a.id) {
+      return this.signIn(a)
     }
     return false
   }

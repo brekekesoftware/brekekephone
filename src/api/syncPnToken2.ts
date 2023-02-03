@@ -206,11 +206,11 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
 }
 
 const syncPnTokenForAllAccounts = () => {
-  accountStore.accounts.forEach(p => {
-    if (p.pushNotificationEnabledSynced) {
+  accountStore.accounts.forEach(a => {
+    if (a.pushNotificationEnabledSynced) {
       return
     }
-    syncPnToken(p)
+    syncPnToken(a)
   })
 }
 

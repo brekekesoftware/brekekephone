@@ -80,7 +80,7 @@ export const updatePhoneIndex = async (
             })
         },
         onDismiss: () => {
-          Nav().goToPageProfileSignIn()
+          Nav().goToPageAccountSignIn()
           resolve(null)
         },
       })

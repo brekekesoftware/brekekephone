@@ -85,7 +85,7 @@ class ChatStore {
     const as = getAuthStore()
     const d = as.getCurrentData()
     if (!d) {
-      accountStore.getAccountDataAsync(as.getCurrentAccount())
+      accountStore.findDataAsync(as.getCurrentAccount())
     }
     const l2 = filterTextOnly(
       d?.recentChats.filter(c => !idMap[c.id] && c.unread),

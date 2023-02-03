@@ -9,11 +9,15 @@ import {
   View,
 } from 'react-native'
 
-import { RnText, RnTextInput, RnTouchableOpacity } from '../components/Rn'
-import { v } from '../components/variables'
+import {
+  contactStore,
+  ItemPBForm,
+  PickerItemOption,
+} from '../stores/contactStore'
+import { intl } from '../stores/intl'
 import { useAnimationOnDidMount } from '../utils/animation'
-import { contactStore, ItemPBForm, PickerItemOption } from './contactStore'
-import { intl } from './intl'
+import { RnText, RnTextInput, RnTouchableOpacity } from './Rn'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   vBottom: {
@@ -205,7 +209,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
     </View>
   )
 }
-export const PBAddItem = observer(
+export const PhonebookAddItem = observer(
   () =>
     contactStore.showPickerItem && (
       <RNPickerInput {...contactStore.showPickerItem} />

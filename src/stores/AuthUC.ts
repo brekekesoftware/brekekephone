@@ -41,13 +41,13 @@ class AuthUC {
     if (!c) {
       throw new Error('AuthUC.authWithoutCatch pbx.getConfig() undefined')
     }
-    const p = s.getCurrentAccount()
-    if (!p) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
       return
     }
     await uc.connect(
-      p,
-      c['webphone.uc.host'] || `${p.pbxHostname}:${p.pbxPort}`,
+      ca,
+      c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
     )
     this.loadUsers()
     this.loadUnreadChats().then(

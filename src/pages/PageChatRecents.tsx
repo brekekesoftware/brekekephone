@@ -93,7 +93,7 @@ export class PageChatRecents extends Component {
     const as = getAuthStore()
     const d = as.getCurrentData()
     if (!d) {
-      accountStore.getAccountDataAsync(as.getCurrentAccount())
+      accountStore.findDataAsync(as.getCurrentAccount())
     }
     const recentFromStorage =
       d?.recentChats.filter(

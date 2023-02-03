@@ -10,7 +10,7 @@ import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
+import { RnDropdown } from '../stores/RnDropdown'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { css } from './PageContactEdit'
@@ -84,7 +84,7 @@ export class PageContactGroupEdit extends Component<{
       listItemRemoved,
       this.selectedUserItems,
     )
-    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+    RnDropdown.setShouldUpdatePosition(true)
     Nav().backToPageContactEdit()
   }
 }

@@ -1,14 +1,14 @@
-import { ProfileCreateForm } from '../components/ProfileCreateForm'
+import { AccountCreateForm } from '../components/AccountCreateForm'
 import { Account, accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
-export const PageProfileCreate = () => (
-  <ProfileCreateForm
-    onBack={Nav().backToPageProfileSignIn}
+export const PageAccountCreate = () => (
+  <AccountCreateForm
+    onBack={Nav().backToPageAccountSignIn}
     onSave={(p: Account) => {
       accountStore.upsertAccount(p)
-      Nav().backToPageProfileSignIn()
+      Nav().backToPageAccountSignIn()
     }}
     title={intl`New Account`}
   />

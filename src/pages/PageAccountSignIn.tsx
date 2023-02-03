@@ -6,9 +6,9 @@ import {
   mdiLadybug,
   mdiUnfoldMoreHorizontal,
 } from '../assets/icons'
+import { AccountSignInItem } from '../components/AccountSignInItem'
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { Layout } from '../components/Layout'
-import { ProfileSignInItem } from '../components/ProfileSignInItem'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { currentVersion, v } from '../components/variables'
 import { accountStore } from '../stores/accountStore'
@@ -17,11 +17,11 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 
 const css = StyleSheet.create({
-  PageProfileSignIn_ListServers: {
+  PageAccountSignIn_ListServers: {
     height: '70%',
     minHeight: 320,
   },
-  PageProfileSignIn_Spacing: {
+  PageAccountSignIn_Spacing: {
     flex: 1,
     maxHeight: '20%',
   },
@@ -71,7 +71,7 @@ const css = StyleSheet.create({
   },
 })
 
-export const PageProfileSignIn = observer(() => {
+export const PageAccountSignIn = observer(() => {
   const ids = accountStore.accounts.map(a => a.id).filter(id => id)
   const l = ids.length
   return (
@@ -79,7 +79,7 @@ export const PageProfileSignIn = observer(() => {
       <Layout
         description={intl`${l} accounts in total`}
         noScroll
-        onCreate={!!l ? Nav().goToPageProfileCreate : undefined}
+        onCreate={!!l ? Nav().goToPageAccountCreate : undefined}
         title={intl`Accounts`}
         transparent
       >
@@ -90,19 +90,19 @@ export const PageProfileSignIn = observer(() => {
             justifyContent: 'space-around',
           }}
         ></View>
-        <View style={css.PageProfileSignIn_Spacing} />
+        <View style={css.PageAccountSignIn_Spacing} />
         {!l ? (
-          <ProfileSignInItem empty />
+          <AccountSignInItem empty />
         ) : (
           <FlatList
             data={ids}
             horizontal
             keyExtractor={(id: string) => id}
             renderItem={({ index, item }) => (
-              <ProfileSignInItem id={item} last={index === l - 1} />
+              <AccountSignInItem id={item} last={index === l - 1} />
             )}
             showsHorizontalScrollIndicator={false}
-            style={css.PageProfileSignIn_ListServers}
+            style={css.PageAccountSignIn_ListServers}
           />
         )}
       </Layout>
