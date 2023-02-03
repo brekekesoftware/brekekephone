@@ -239,9 +239,6 @@ export class Call {
       return true
     }
     this.holding = !this.holding
-    if (!this.holding) {
-      this.store.currentCallId = this.id
-    }
     if (this.callkeepUuid && !this.holding) {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)

@@ -152,37 +152,40 @@ export class CallStore {
 
   getCurrentCall = () => {
     this.updateCurrentCallDebounce()
-    const call = this.calls.find(c => c.id === this.currentCallId)
-    if (call) {
+    const curr = this.calls.find(c => c.id === this.currentCallId)
+    // TODO:
+    // Should not modify state in getter
+    // This will throw an error in mobx-react
+    // Currently we forked mobx-react to temporary get over this error
+    // In the future we need to rewrite and refactor the whole stores/actions
+    if (curr) {
       const ucEnabled = getAuthStore()?.getCurrentAccount()?.ucEnabled
       if (
-        !call.answered &&
-        (!call.partyImageUrl || !call.partyImageUrl?.length)
+        !curr.answered &&
+        (!curr.partyImageUrl || !curr.partyImageUrl?.length)
       ) {
-        call.partyImageUrl = ucEnabled
-          ? this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
+        curr.partyImageUrl = ucEnabled
+          ? this.getOriginalUserImageUrl(curr.pbxTenant, curr.partyNumber)
           : ''
-        call.partyImageSize = ucEnabled ? 'large' : ''
+        curr.partyImageSize = ucEnabled ? 'large' : ''
       }
       if (
-        call.answered &&
-        (!call.talkingImageUrl || !call.talkingImageUrl.length)
+        curr.answered &&
+        (!curr.talkingImageUrl || !curr.talkingImageUrl.length)
       ) {
-        call.talkingImageUrl = ucEnabled
-          ? this.getOriginalUserImageUrl(call.pbxTenant, call.partyNumber)
+        curr.talkingImageUrl = ucEnabled
+          ? this.getOriginalUserImageUrl(curr.pbxTenant, curr.partyNumber)
           : ''
       }
     }
-
-    return call
+    return curr
   }
 
   @action updateCallAvatar = (url: string, size?: string) => {
-    this.updateCurrentCallDebounce()
-    const call = this.calls.find(c => c.id === this.currentCallId)
-    if (call) {
-      call.partyImageUrl = url
-      call.partyImageSize = size || 'small'
+    const c = this.getCurrentCall()
+    if (c) {
+      c.partyImageUrl = url
+      c.partyImageSize = size || 'small'
     }
   }
 
@@ -226,8 +229,10 @@ export class CallStore {
     // partial
     p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
   ) => {
+    this.updateCurrentCallDebounce()
     const now = Date.now()
     this.recentCallActivityAt = now
+    //
     // existing
     const e = this.calls.find(c => c.id === p.id)
     if (e) {
@@ -289,16 +294,14 @@ export class CallStore {
       embedApi.emit('call_update', e)
       return
     }
-
+    //
     // Construct a new call
     const c = new Call(this)
     Object.assign(c, p)
     this.calls = [c, ...this.calls]
-
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
-
     // Desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
       webShowNotification(
@@ -306,7 +309,6 @@ export class CallStore {
         c.getDisplayName(),
       )
     }
-
     // Get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
@@ -328,6 +330,7 @@ export class CallStore {
   }
 
   @action onCallRemove = (rawSession: Session) => {
+    this.updateCurrentCallDebounce()
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(_ => _.id === rawSession.sessionId)
     if (!c) {
@@ -364,8 +367,6 @@ export class CallStore {
       this.incallManagerStarted = false
       IncallManager.stop()
     }
-    // Update current call
-    this.updateCurrentCallDebounce()
     embedApi.emit('call_end', c)
   }
 
@@ -478,17 +479,11 @@ export class CallStore {
     { maxWait: 1000 },
   )
   @action private updateCurrentCall = () => {
-    let curr: Call | undefined
-    if (this.calls.length) {
-      curr =
-        this.calls.find(c => c.id === this.currentCallId) ||
-        this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
-        this.calls[0]
-    }
-    const currentCallId = curr?.id || ''
-    if (currentCallId !== this.currentCallId) {
-      this.currentCallId = currentCallId
-    }
+    const curr =
+      this.calls.find(c => c.id === this.currentCallId) ||
+      this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
+      this.calls[0]
+    this.currentCallId = curr?.id || ''
     if (!this.currentCallId) {
       const [s0, ...stacks] = RnStacker.stacks
       if (stacks.some(s => s.name.startsWith('PageCall'))) {
@@ -554,7 +549,6 @@ export class CallStore {
       if (!Object.keys(this.callkeepMap).length) {
         this.clearAutoEndCallKeepTimer()
       }
-      this.updateCurrentCallDebounce()
     }, 500)
   }
   @action private endCallKeep = (
