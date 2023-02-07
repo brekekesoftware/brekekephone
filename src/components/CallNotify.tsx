@@ -78,7 +78,7 @@ export const CallNotify = observer(() => {
   const configure = getAuthStore().pbxConfig
   const hideHangup =
     c.incoming && configure?.['webphone.call.hangup'] === 'false'
-
+  const numberCalls = getCallStore().calls?.length || 0
   return (
     <Wrapper>
       {getCallStore().shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
@@ -88,7 +88,10 @@ export const CallNotify = observer(() => {
       >
         <View style={css.Notify_Info}>
           <RnText bold>{c.getDisplayName()}</RnText>
-          <RnText>{intl`Incoming Call`}</RnText>
+          <RnText>
+            {intl`Incoming Call`}
+            {numberCalls > 1 ? ` (${numberCalls})` : ''}
+          </RnText>
         </View>
         {!hideHangup && (
           <ButtonIcon
