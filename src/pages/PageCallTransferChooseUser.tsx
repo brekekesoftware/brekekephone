@@ -1,9 +1,10 @@
 import { orderBy } from 'lodash'
+import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { SectionList } from 'react-native'
 
-import { mdiPhone, mdiPhoneForward } from '../assets/icons'
+import { mdiMagnify, mdiPhone, mdiPhoneForward } from '../assets/icons'
 import { ContactSectionList } from '../components/ContactSectionList'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
@@ -19,6 +20,7 @@ import { userStore } from '../stores/userStore'
 @observer
 export class PageCallTransferChooseUser extends Component {
   prevId?: string
+  @observable txtSearch: string = ''
   componentDidMount() {
     if (!contactStore.pbxUsers.length) {
       contactStore.getPbxUsers()
@@ -48,7 +50,7 @@ export class PageCallTransferChooseUser extends Component {
     }
   }
   renderUserSelectionMode = () => {
-    const { displayUsers } = userStore.filterUser('', true)
+    const { displayUsers } = userStore.filterUser(this.txtSearch, true)
     return <ContactSectionList sectionListData={displayUsers} isTransferCall />
   }
   renderAllUserMode = () => {
@@ -56,7 +58,13 @@ export class PageCallTransferChooseUser extends Component {
     if (!cp) {
       return null
     }
-    const users = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
+    const datas = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
+    const users = datas.filter(i => {
+      const name = i.name.toLowerCase()
+      const txtSearch = this.txtSearch.toLowerCase()
+      const number = i.number.toLowerCase()
+      return name.includes(txtSearch) || number.includes(txtSearch)
+    })
     type User = typeof users[0]
 
     const map = {} as { [k: string]: User[] }
@@ -114,6 +122,14 @@ export class PageCallTransferChooseUser extends Component {
         isTab
         title={intl`Transfer`}
       >
+        <Field
+          icon={mdiMagnify}
+          label={intl`SEARCH FOR USERS`}
+          onValueChange={(v: string) => {
+            this.txtSearch = v
+          }}
+          value={this.txtSearch}
+        />
         {isUserSelectionMode
           ? this.renderUserSelectionMode()
           : this.renderAllUserMode()}
