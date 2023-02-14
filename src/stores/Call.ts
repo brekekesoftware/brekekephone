@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
 import { Session, SessionStatus } from '../api/brekekejs'
@@ -10,6 +11,7 @@ import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
+import { getCallStore } from './callStore'
 import { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -90,7 +92,9 @@ export class Call {
     }
     const updateCallKeep = () => {
       RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-      RNCallKeep.setOnHold(this.callkeepUuid, false)
+      if (Platform.OS === 'android') {
+        RNCallKeep.setOnHold(this.callkeepUuid, false)
+      }
       this.callkeepAlreadyAnswered = true
     }
     const startCallCallKeep = async () => {
@@ -136,6 +140,7 @@ export class Call {
       return
     }
     this.isAboutToHangup = true
+
     if (this.holding) {
       await this.toggleHold().then(
         success =>
@@ -225,8 +230,20 @@ export class Call {
     }
     if (!this.isAboutToHangup) {
       if (this.callkeepUuid && !this.holding) {
-        // Hack to fix no voice after unhold: only setOnHold in unhold case
-        RNCallKeep.setOnHold(this.callkeepUuid, false)
+        // Hack to fix no voice after unhold
+        if (Platform.OS === 'ios') {
+          IncallManager.setForceSpeakerphoneOn(
+            !getCallStore().isLoudSpeakerEnabled,
+          )
+          setTimeout(() => {
+            IncallManager.setForceSpeakerphoneOn(
+              getCallStore().isLoudSpeakerEnabled,
+            )
+          }, 500)
+        }
+        if (Platform.OS === 'android') {
+          RNCallKeep.setOnHold(this.callkeepUuid, false)
+        }
       }
       BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     }
@@ -239,7 +256,7 @@ export class Call {
       return true
     }
     this.holding = !this.holding
-    if (this.callkeepUuid && !this.holding) {
+    if (this.callkeepUuid && !this.holding && Platform.OS !== 'ios') {
       // Hack to fix no voice after unhold: only setOnHold in unhold case
       RNCallKeep.setOnHold(this.callkeepUuid, false)
     }

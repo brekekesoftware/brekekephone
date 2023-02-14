@@ -220,11 +220,6 @@ export class CallStore {
       IncallManager.setForceSpeakerphoneOn(false)
     }
   }
-  onForceUpdateSpeaker = () => {
-    BackgroundTimer.setTimeout(() => {
-      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
-    }, 2000)
-  }
   @action private upsertCall = (
     // partial
     p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
@@ -263,10 +258,6 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
-        // TODO hacky way to fix no audio/voice
-        if (Platform.OS === 'ios') {
-          this.onForceUpdateSpeaker()
-        }
       }
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
@@ -564,6 +555,7 @@ export class CallStore {
     if (!uuid) {
       return
     }
+
     console.log('PN callkeep debug: endCallKeep ' + uuid)
     if (setAction) {
       this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
@@ -576,13 +568,17 @@ export class CallStore {
     ) {
       addCallHistory(pnData)
     }
-    delete this.callkeepMap[uuid]
-    RNCallKeep.rejectCall(uuid)
-    RNCallKeep.endCall(uuid)
-    RNCallKeep.reportEndCallWithUUID(
-      uuid,
-      CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
-    )
+
+    if (this.callkeepMap[uuid]) {
+      console.log('dev::[RNCallKeep]:[jsCall]:endCallKeep:: ' + uuid)
+      delete this.callkeepMap[uuid]
+      RNCallKeep.rejectCall(uuid)
+      RNCallKeep.endCall(uuid)
+      RNCallKeep.reportEndCallWithUUID(
+        uuid,
+        CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
+      )
+    }
     BrekekeUtils.closeIncomingCall(uuid)
   }
   endCallKeepAllCalls = () => {

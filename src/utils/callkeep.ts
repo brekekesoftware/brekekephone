@@ -1,5 +1,6 @@
 import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
+import IncallManager from 'react-native-incall-manager'
 
 import { sip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
@@ -185,6 +186,11 @@ export const setupCallKeep = async () => {
   const didActivateAudioSession = () => {
     // Only in ios
     console.log('CallKeep debug: didActivateAudioSession')
+    // hack to fix no voice on ios
+    IncallManager.setForceSpeakerphoneOn(!getCallStore().isLoudSpeakerEnabled)
+    setTimeout(() => {
+      IncallManager.setForceSpeakerphoneOn(getCallStore().isLoudSpeakerEnabled)
+    }, 500)
   }
   const didDeactivateAudioSession = () => {
     // Only in ios
