@@ -16,14 +16,14 @@ const css = StyleSheet.create({
 export class IncomingItem extends Component {
   async componentDidMount() {
     if (Platform.OS === 'android') {
-      BrekekeUtils.rStartRingtone()
+      BrekekeUtils.startRingtone()
     } else {
       IncallManager.startRingtone('_BUNDLE_')
     }
   }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
-      BrekekeUtils.rStopRingtone()
+      BrekekeUtils.stopRingtone()
     } else {
       IncallManager.stopRingtone()
     }

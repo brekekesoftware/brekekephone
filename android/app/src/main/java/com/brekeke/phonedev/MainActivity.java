@@ -58,7 +58,7 @@ public class MainActivity extends ReactActivity {
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       BrekekeUtils.emit("onBackPressed", "");
     } else {
-      BrekekeUtils.stopRingtone();
+      BrekekeUtils.staticStopRingtone();
     }
     return super.onKeyDown(k, e);
   }

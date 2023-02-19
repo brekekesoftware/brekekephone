@@ -134,7 +134,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
-    BrekekeUtils.startRingtone();
+    BrekekeUtils.staticStartRingtone();
 
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);
     imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
@@ -261,7 +261,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     super.onResume();
     debug("onResume answered=" + answered);
     if (!answered) {
-      BrekekeUtils.startRingtone();
+      BrekekeUtils.staticStartRingtone();
     }
     paused = false;
   }
@@ -646,7 +646,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.putUserActionAnswerCall(uuid);
     BrekekeUtils.emit("answerCall", uuid);
     answered = true;
-    BrekekeUtils.stopRingtone();
+    BrekekeUtils.staticStopRingtone();
     vIncomingCall.setVisibility(View.GONE);
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCardAvatarTalking.setVisibility(View.GONE);
@@ -945,7 +945,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onBackPressed();
       }
     } else {
-      BrekekeUtils.stopRingtone();
+      BrekekeUtils.staticStopRingtone();
     }
     return super.onKeyDown(k, e);
   }

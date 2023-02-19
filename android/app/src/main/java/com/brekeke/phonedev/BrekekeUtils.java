@@ -367,7 +367,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void removeAll() {
     emit("debug", "removeAll");
-    stopRingtone();
+    staticStopRingtone();
     if (activities.size() <= 0) {
       return;
     }
@@ -439,7 +439,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       }
       IncomingCallActivity l = last();
       if (l == null || l.answered) {
-        stopRingtone();
+        staticStopRingtone();
       }
     }
     if (activitiesSize > 0) {
@@ -467,7 +467,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   //
   public static MediaPlayer mp;
 
-  public static void startRingtone() {
+  public static void staticStartRingtone() {
     if (mp != null) {
       return;
     }
@@ -504,7 +504,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     mp.start();
   }
 
-  public static void stopRingtone() {
+  public static void staticStopRingtone() {
     try {
       vib.cancel();
       vib = null;
@@ -534,13 +534,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void rStartRingtone() {
-    startRingtone();
+  public void startRingtone() {
+    staticStartRingtone();
   }
 
   @ReactMethod
-  public void rStopRingtone() {
-    stopRingtone();
+  public void stopRingtone() {
+    staticStopRingtone();
   }
 
   @ReactMethod

@@ -7,8 +7,8 @@ type TBrekekeUtils = {
   // these methods only available on android
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  rStartRingtone(): void
-  rStopRingtone(): void
+  startRingtone(): void
+  stopRingtone(): void
   backToBackground(): void
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
@@ -55,8 +55,8 @@ export type TNativeModules = {
 const Polyfill: TBrekekeUtils = {
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
-  rStartRingtone: () => undefined,
-  rStopRingtone: () => undefined,
+  startRingtone: () => undefined,
+  stopRingtone: () => undefined,
   backToBackground: () => undefined,
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
