@@ -21,11 +21,6 @@ import { v } from './variables'
 const globalCss = `* {
   outline: none !important;
   box-sizing: border-box;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-*::-webkit-scrollbar {
-  display: none;
 }
 a {
   text-decoration: none;
