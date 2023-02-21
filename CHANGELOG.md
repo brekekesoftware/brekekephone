@@ -2,6 +2,7 @@
 
 - Fix android case PN-off it should vibrate ring correctly
 - Fix page call transfer it should have search functionality
+- Fix PN-off incoming call notify it should show number of other incoming calls
 
 #### 2.11.10
 
