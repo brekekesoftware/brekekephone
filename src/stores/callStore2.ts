@@ -217,13 +217,9 @@ export class CallStore {
     ) {
       this.incallManagerStarted = true
       IncallManager.start()
+      // Reset loud speaker on each call
       IncallManager.setForceSpeakerphoneOn(false)
     }
-  }
-  onForceUpdateSpeaker = () => {
-    BackgroundTimer.setTimeout(() => {
-      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
-    }, 2000)
   }
   @action private upsertCall = (
     // partial
@@ -263,10 +259,6 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
-        // TODO hacky way to fix no audio/voice
-        if (Platform.OS === 'ios') {
-          this.onForceUpdateSpeaker()
-        }
       }
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
@@ -353,7 +345,7 @@ export class CallStore {
     if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
       uc.sendCallResult(c.getDuration(), c.partyNumber)
     }
-    // Turn off loud speaker if there's no call left
+    // Reset loud speaker if there's no call left
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
@@ -575,6 +567,9 @@ export class CallStore {
       !completedElseWhere
     ) {
       addCallHistory(pnData)
+    }
+    if (!this.callkeepMap[uuid] && Platform.OS === 'ios') {
+      return
     }
     delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
