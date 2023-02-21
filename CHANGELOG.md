@@ -3,6 +3,7 @@
 - Fix android case PN-off it should vibrate ring correctly
 - Fix page call transfer it should have search functionality
 - Fix PN-off incoming call notify it should show number of other incoming calls
+- Fix ios it should have audio in some cases with multiple calls, using hacky toggle speaker
 
 #### 2.11.10
 
