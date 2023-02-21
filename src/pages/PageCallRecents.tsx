@@ -80,6 +80,7 @@ export class PageCallRecents extends Component {
           icon={mdiMagnify}
           label={intl`SEARCH NAME, PHONE NUMBER ...`}
           onValueChange={(v: string) => {
+            // TODO use debounced value to perform data filter
             contactStore.callSearchRecents = v
           }}
           value={contactStore.callSearchRecents}

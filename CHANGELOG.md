@@ -1,6 +1,7 @@
 #### 2.11.11
 
 - Fix android case PN-off it should vibrate ring correctly
+- Fix page call transfer it should have search functionality
 
 #### 2.11.10
 
