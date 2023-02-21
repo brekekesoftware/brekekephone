@@ -186,6 +186,9 @@ export const setupCallKeep = async () => {
   const didActivateAudioSession = () => {
     // Only in ios
     console.log('CallKeep debug: didActivateAudioSession')
+    // TODO:
+    // hackyToggleSpeaker is only to fix some cases in multi calls
+    // Here if we call it, it may affect other cases such as single call?
     hackyToggleSpeaker()
   }
   const didDeactivateAudioSession = () => {
