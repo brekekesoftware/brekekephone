@@ -206,10 +206,8 @@ export class CallStore {
     }
   }
   onForceUpdateSpeaker = () => {
-    const v = this.isLoudSpeakerEnabled
-    IncallManager.setForceSpeakerphoneOn(!v)
     BackgroundTimer.setTimeout(() => {
-      IncallManager.setForceSpeakerphoneOn(v)
+      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
     }, 2000)
   }
   @action private upsertCall = (
