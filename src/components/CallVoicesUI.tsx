@@ -36,16 +36,6 @@ export class IncomingItem extends Component {
 
 export class OutgoingItem extends Component {
   componentDidMount = () => {
-    // update status speaker, again
-    // ref: https://stackoverflow.com/questions/41762392/what-happens-with-onaudiofocuschange-when-a-phone-call-ends
-    if (Platform.OS === 'android') {
-      IncallManager.start()
-      BackgroundTimer.setTimeout(() => {
-        IncallManager.setForceSpeakerphoneOn(
-          getCallStore().isLoudSpeakerEnabled,
-        )
-      }, 2000)
-    }
     const currentCall = getCallStore().getCurrentCall()
     if (currentCall) {
       sip.disableMedia(currentCall.id)
@@ -80,6 +70,16 @@ export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   componentDidMount = () => {
+    // update status speaker, again
+    // ref: https://stackoverflow.com/questions/41762392/what-happens-with-onaudiofocuschange-when-a-phone-call-ends
+    if (Platform.OS === 'android') {
+      IncallManager.start()
+      BackgroundTimer.setTimeout(() => {
+        IncallManager.setForceSpeakerphoneOn(
+          getCallStore().isLoudSpeakerEnabled,
+        )
+      }, 2000)
+    }
     const currentCall = getCallStore().getCurrentCall()
     if (currentCall) {
       sip.enableMedia(currentCall.id)
