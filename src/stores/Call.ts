@@ -140,7 +140,6 @@ export class Call {
       return
     }
     this.isAboutToHangup = true
-
     if (this.holding) {
       await this.toggleHold().then(
         success =>
@@ -230,16 +229,8 @@ export class Call {
     }
     if (!this.isAboutToHangup) {
       if (this.callkeepUuid && !this.holding) {
-        // Hack to fix no voice after unhold
         if (Platform.OS === 'ios') {
-          IncallManager.setForceSpeakerphoneOn(
-            !getCallStore().isLoudSpeakerEnabled,
-          )
-          setTimeout(() => {
-            IncallManager.setForceSpeakerphoneOn(
-              getCallStore().isLoudSpeakerEnabled,
-            )
-          }, 500)
+          hackyToggleSpeaker()
         }
         if (Platform.OS === 'android') {
           RNCallKeep.setOnHold(this.callkeepUuid, false)
@@ -256,8 +247,7 @@ export class Call {
       return true
     }
     this.holding = !this.holding
-    if (this.callkeepUuid && !this.holding && Platform.OS !== 'ios') {
-      // Hack to fix no voice after unhold: only setOnHold in unhold case
+    if (this.callkeepUuid && !this.holding && Platform.OS === 'android') {
       RNCallKeep.setOnHold(this.callkeepUuid, false)
     }
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
@@ -348,6 +338,17 @@ export class Call {
       err,
     })
   }
+}
+
+// Hack to fix no voice after unhold using toggle loud speaker
+// This issue happens on ios only, toggle loud speaker reset the audio route
+// The actual issue could be related to ios audio route
+// Related packages: callkeep, webrtc, incall-manager...
+export const hackyToggleSpeaker = async (ms = 500) => {
+  const c = getCallStore()
+  IncallManager.setForceSpeakerphoneOn(!c.isLoudSpeakerEnabled)
+  await waitTimeout(ms)
+  IncallManager.setForceSpeakerphoneOn(c.isLoudSpeakerEnabled)
 }
 
 export type CallConfig = {

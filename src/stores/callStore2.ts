@@ -217,6 +217,7 @@ export class CallStore {
     ) {
       this.incallManagerStarted = true
       IncallManager.start()
+      // Reset loud speaker on each call
       IncallManager.setForceSpeakerphoneOn(false)
     }
   }
@@ -344,7 +345,7 @@ export class CallStore {
     if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
       uc.sendCallResult(c.getDuration(), c.partyNumber)
     }
-    // Turn off loud speaker if there's no call left
+    // Reset loud speaker if there's no call left
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
