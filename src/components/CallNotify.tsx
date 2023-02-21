@@ -74,11 +74,12 @@ export const CallNotify = observer(() => {
     !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
-
   const configure = getAuthStore().pbxConfig
   const hideHangup =
     c.incoming && configure?.['webphone.call.hangup'] === 'false'
-
+  const n = getCallStore().calls.filter(
+    _ => _.incoming && !_.answered && _.id !== c.id,
+  ).length
   return (
     <Wrapper>
       {getCallStore().shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
@@ -88,7 +89,10 @@ export const CallNotify = observer(() => {
       >
         <View style={css.Notify_Info}>
           <RnText bold>{c.getDisplayName()}</RnText>
-          <RnText>{intl`Incoming Call`}</RnText>
+          <RnText>
+            {intl`Incoming Call`}
+            {n > 0 ? ' (' + intl`${n} in background` + ')' : ''}
+          </RnText>
         </View>
         {!hideHangup && (
           <ButtonIcon
