@@ -2,14 +2,19 @@ import { Platform } from 'react-native'
 
 declare global {
   interface Window {
-    _BrekekePhoneWebRoot: HTMLElement | null
+    _BrekekePhoneWebRoot?: HTMLElement | null
+    _BrekekePhoneCaptureConsole?: boolean
   }
 }
 
-window._BrekekePhoneWebRoot =
-  Platform.OS === 'web'
-    ? document.getElementById('__web_phone_not_as_component_api')
-    : null
+if (Platform.OS === 'web') {
+  window._BrekekePhoneWebRoot = document.getElementById(
+    '__brekeke_phone_web_root',
+  )
+  if (typeof window._BrekekePhoneCaptureConsole !== 'boolean') {
+    window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot
+  }
+}
 
 if (!window.Brekeke) {
   // type-coverage:ignore-next-line

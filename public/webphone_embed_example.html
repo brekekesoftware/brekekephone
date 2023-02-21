@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brekeke Phone Component Example</title>
+
     <style>
       #web_phone_embed_div {
         /* must display flex */
@@ -22,10 +23,19 @@
       }
     </style>
   </head>
+
   <body>
     <div id="web_phone_embed_div"></div>
   </body>
+
+  <!-- here we can globally configure some property
+      need to inject this snippet BEFORE webphone.js -->
+  <script type="text/javascript">
+    window._BrekekePhoneCaptureConsole = true
+  </script>
   <script type="text/javascript" src="./webphone.js"></script>
+
+  <!-- here the actual code to use the embed webphone.js -->
   <script type="text/javascript">
     // we need to create div in our html code and get it
     var div = document.getElementById('web_phone_embed_div')
