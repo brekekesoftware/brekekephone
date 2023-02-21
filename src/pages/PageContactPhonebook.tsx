@@ -158,6 +158,7 @@ export class PageContactPhonebook extends Component {
   }
 
   updateSearchText = (v: string) => {
+    // TODO use debounced value to perform data filter
     contactStore.phonebookSearchTerm = v
     this.updateListPhoneBook()
     contactStore.selectedContactIds = {}

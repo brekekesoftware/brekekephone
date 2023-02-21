@@ -199,6 +199,7 @@ export class PageContactUsers extends Component {
           icon={mdiMagnify}
           label={intl`SEARCH FOR USERS`}
           onValueChange={(v: string) => {
+            // TODO use debounced value to perform data filter
             contactStore.usersSearchTerm = v
           }}
           value={contactStore.usersSearchTerm}

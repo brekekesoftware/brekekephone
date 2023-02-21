@@ -126,6 +126,7 @@ export class PageCallTransferChooseUser extends Component {
           icon={mdiMagnify}
           label={intl`SEARCH FOR USERS`}
           onValueChange={(v: string) => {
+            // TODO use debounced value to perform data filter
             this.txtSearch = v
           }}
           value={this.txtSearch}
