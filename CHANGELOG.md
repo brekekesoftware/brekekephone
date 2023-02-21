@@ -1,3 +1,8 @@
+#### 2.11.11
+
+- Fix android case PN-off it should vibrate ring correctly
+- Fix page call transfer it should have search functionality
+
 #### 2.11.10
 
 - Fix bug it should compare pbx versions correctly
@@ -12,7 +17,7 @@
 - Try fix bug can not logout, due to corrupted data in that phone local storage
 - Allow to download debug log without logout
 - Embed:
-  - Set currentCallId in unhold function (also included in the main build)
+  - When unhold a call then set that call as the current call (also included in the main build)
 
 #### 2.11.8
 
@@ -35,7 +40,6 @@
 
 - Use PN screen for incoming call so it will keep html/js state in avatar
 - Use `-` as the tenant if it is empty
-- Unhold a call should also set it as the current call
 - Keep the sip token to reuse until expired after 90 seconds
 
 #### 2.11.5

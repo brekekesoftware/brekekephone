@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.11.10",
+  "version": "2.11.11",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -19,7 +19,7 @@
     "test:prettier": "prettier --ignore-path=.gitignore --list-different .",
     "test:typescript": "tsc",
     "test:type-coverage": "type-coverage",
-    "postinstall": "husky install"
+    "postinstall": "husky install && patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.3",
@@ -116,6 +116,7 @@
     "husky": "7.0.4",
     "lint-staged": "12.3.7",
     "metro-react-native-babel-preset": "0.70.0",
+    "patch-package": "6.5.1",
     "prettier": "2.6.1",
     "react-scripts": "4.0.3",
     "type-coverage": "2.21.1",
