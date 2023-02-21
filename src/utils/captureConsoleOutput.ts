@@ -64,13 +64,17 @@ const captureConsoleOutput = () => {
           ? (...args: Error[]) => {
               const msg = formatErrors(...args)
               // add timestamp on dev (prod already added in debugStore)
-              msg && f(moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + msg)
+              if (msg) {
+                f(moment().format('YYYY/MM/DD HH:mm:ss.SSS') + ' ' + msg)
+              }
             }
           : (...args: Error[]) => {
               // debugStore was added globally in src/stores/debugStore.ts
               //    so it can be used here
               const msg = formatErrors(...args)
-              msg && window.debugStore?.captureConsoleOutput(k, msg)
+              if (msg) {
+                window.debugStore?.captureConsoleOutput(k, msg)
+              }
             }
       return m
     },

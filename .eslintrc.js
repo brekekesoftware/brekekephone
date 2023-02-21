@@ -44,6 +44,8 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
     'no-shadow': 0,
     '@typescript-eslint/no-shadow': 1,
+    'no-unused-expressions': 0,
+    '@typescript-eslint/no-unused-expressions': 1,
   },
   settings: {
     react: {
