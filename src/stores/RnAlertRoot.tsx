@@ -173,8 +173,9 @@ const RnAlertR = ({
 }
 
 export const RnAlertRoot = observer(() => {
-  if (!RnAlert.alertsCount || !RnAlert.alerts[0]) {
+  const a0 = RnAlert.alerts.find(a => a)
+  if (!RnAlert.alertsCount || !a0) {
     return null
   }
-  return <RnAlertR {...RnAlert.alerts[0]} />
+  return <RnAlertR {...a0} />
 })

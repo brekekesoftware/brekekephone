@@ -474,7 +474,7 @@ export class CallStore {
     const curr =
       this.calls.find(c => c.id === this.currentCallId) ||
       this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
-      this.calls[0]
+      this.calls.find(c => c)
     this.currentCallId = curr?.id || ''
     if (!this.currentCallId) {
       const [s0, ...stacks] = RnStacker.stacks
