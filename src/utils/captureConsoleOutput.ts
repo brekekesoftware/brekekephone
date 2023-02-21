@@ -52,7 +52,7 @@ const formatErrors = (...errs: Error[]) => {
 }
 
 const captureConsoleOutput = () => {
-  if (Platform.OS === 'web' && !window._BrekekePhoneWebRoot) {
+  if (Platform.OS === 'web' && !window._BrekekePhoneCaptureConsole) {
     return
   }
   const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
@@ -80,7 +80,6 @@ const captureConsoleOutput = () => {
     },
     {} as { [k: string]: Function },
   )
-
   Object.entries(customConsoleObject).forEach(([k, v]) => {
     Object.defineProperty(console, k, {
       get() {
