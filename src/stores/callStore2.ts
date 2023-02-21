@@ -556,7 +556,6 @@ export class CallStore {
     if (!uuid) {
       return
     }
-
     console.log('PN callkeep debug: endCallKeep ' + uuid)
     if (setAction) {
       this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
@@ -569,17 +568,16 @@ export class CallStore {
     ) {
       addCallHistory(pnData)
     }
-
-    if (this.callkeepMap[uuid]) {
-      console.log('dev::[RNCallKeep]:[jsCall]:endCallKeep:: ' + uuid)
-      delete this.callkeepMap[uuid]
-      RNCallKeep.rejectCall(uuid)
-      RNCallKeep.endCall(uuid)
-      RNCallKeep.reportEndCallWithUUID(
-        uuid,
-        CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
-      )
+    if (!this.callkeepMap[uuid] && Platform.OS === 'ios') {
+      return
     }
+    delete this.callkeepMap[uuid]
+    RNCallKeep.rejectCall(uuid)
+    RNCallKeep.endCall(uuid)
+    RNCallKeep.reportEndCallWithUUID(
+      uuid,
+      CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
+    )
     BrekekeUtils.closeIncomingCall(uuid)
   }
   endCallKeepAllCalls = () => {
