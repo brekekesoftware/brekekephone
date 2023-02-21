@@ -1,4 +1,4 @@
-import { Component, useEffect, useState } from 'react'
+import { Component, useEffect } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
