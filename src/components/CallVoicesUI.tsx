@@ -91,29 +91,15 @@ export class AnsweredItem extends Component<{
 }
 
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
-export const VideoRBT = (p: { isPaused: boolean; isLoudSpeaker: boolean }) => {
-  const [paused, setPaused] = useState(true)
+export const VideoRBT = (p: { withSDP: boolean; isLoudSpeaker: boolean }) => {
   useEffect(() => {
-    if (!p.isPaused) {
-      if (p.isLoudSpeaker) {
-        BrekekeUtils.stopRBT()
-        setPaused(false)
-      } else {
-        setPaused(true)
-        BrekekeUtils.playRBT()
-      }
-    } else {
-      if (p.isLoudSpeaker) {
-        setPaused(true)
-      } else {
-        BrekekeUtils.stopRBT()
-        setPaused(false)
-      }
+    if (!p.withSDP && !p.isLoudSpeaker) {
+      BrekekeUtils.playRBT()
     }
-    return () => {
-      BrekekeUtils.stopRBT()
-    }
-  }, [p.isLoudSpeaker, p.isPaused])
+    return () => BrekekeUtils.stopRBT()
+  }, [p.isLoudSpeaker, p.withSDP])
+  const paused =
+    (!p.withSDP && !p.isLoudSpeaker) || (p.withSDP && p.isLoudSpeaker)
   return (
     <Video
       source={require('../assets/incallmanager_ringback.mp3')}
