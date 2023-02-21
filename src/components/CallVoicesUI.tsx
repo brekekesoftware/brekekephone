@@ -1,4 +1,4 @@
-import { Component, useEffect, useState } from 'react'
+import { Component, useEffect } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
@@ -15,22 +15,18 @@ const css = StyleSheet.create({
   },
 })
 export class IncomingItem extends Component {
-  ringtonePlaying = false
   async componentDidMount() {
-    if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
-      return
+    if (Platform.OS === 'android') {
+      BrekekeUtils.startRingtone()
+    } else {
+      IncallManager.startRingtone('_BUNDLE_')
     }
-    IncallManager.startRingtone('_BUNDLE_')
-    this.ringtonePlaying = true
-    // TODO stop ringtone if user press hardware button
-    // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
-    IncallManager.stopRingtone()
-    this.ringtonePlaying = false
     if (Platform.OS === 'android') {
-      // Bug speaker auto turn on after call stopRingtone/stopRingback
-      IncallManager.setForceSpeakerphoneOn(getCallStore().isLoudSpeakerEnabled)
+      BrekekeUtils.stopRingtone()
+    } else {
+      IncallManager.stopRingtone()
     }
   }
   render() {
@@ -38,21 +34,18 @@ export class IncomingItem extends Component {
   }
 }
 
-export class OutgoingItem extends Component<{}, { isPause: boolean }> {
-  state = {
-    isPause: true,
-  }
+export class OutgoingItem extends Component {
   componentDidMount = () => {
     const currentCall = getCallStore().getCurrentCall()
-    currentCall && sip.disableMedia(currentCall.id)
+    if (currentCall) {
+      sip.disableMedia(currentCall.id)
+    }
     if (Platform.OS === 'android') {
       IncallManager.startRingback('_BUNDLE_')
     }
   }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
-      IncallManager.stop()
-    } else {
       IncallManager.stopRingback()
     }
   }
@@ -65,7 +58,9 @@ export class OutgoingItemWithSDP extends Component<{
 }> {
   componentDidMount = () => {
     const currentCall = getCallStore().getCurrentCall()
-    currentCall && sip.enableMedia(currentCall.id)
+    if (currentCall) {
+      sip.enableMedia(currentCall.id)
+    }
   }
   render() {
     return null
@@ -85,44 +80,31 @@ export class AnsweredItem extends Component<{
         )
       }, 2000)
     }
-
     const currentCall = getCallStore().getCurrentCall()
-    currentCall && sip.enableMedia(currentCall.id)
+    if (currentCall) {
+      sip.enableMedia(currentCall.id)
+    }
   }
   render() {
     return null
   }
 }
+
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
-export const VideoRBT = (p: { isPaused: boolean; isLoudSpeaker: boolean }) => {
-  const [pauseVideo, setPauseVideo] = useState(true)
-
+export const VideoRBT = (p: { withSDP: boolean; isLoudSpeaker: boolean }) => {
   useEffect(() => {
-    if (!p.isPaused) {
-      if (p.isLoudSpeaker) {
-        BrekekeUtils.stopRBT()
-        setPauseVideo(false)
-      } else {
-        setPauseVideo(true)
-        BrekekeUtils.playRBT()
-      }
-    } else {
-      if (p.isLoudSpeaker) {
-        setPauseVideo(true)
-      } else {
-        BrekekeUtils.stopRBT()
-      }
+    if (!p.withSDP && !p.isLoudSpeaker) {
+      BrekekeUtils.playRBT()
     }
-    return () => {
-      BrekekeUtils.stopRBT()
-    }
-  }, [p.isLoudSpeaker, p.isPaused])
-
+    return () => BrekekeUtils.stopRBT()
+  }, [p.isLoudSpeaker, p.withSDP])
+  const paused =
+    (!p.withSDP && !p.isLoudSpeaker) || (p.withSDP && p.isLoudSpeaker)
   return (
     <Video
       source={require('../assets/incallmanager_ringback.mp3')}
       style={css.video}
-      paused={pauseVideo}
+      paused={paused}
       repeat={true}
       ignoreSilentSwitch={'ignore'}
       playInBackground={true}

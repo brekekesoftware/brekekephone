@@ -96,11 +96,12 @@ public class BrekekeUtils: NSObject {
 
   @objc
   func stopRBT() {
-    print("BrekekeUtils.stopRBT()")
-    if audio != nil {
-      audio.stop()
-      audio = nil
+    if audio == nil {
+      return
     }
+    print("BrekekeUtils.stopRBT()")
+    audio.stop()
+    audio = nil
   }
 
   @objc

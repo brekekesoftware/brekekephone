@@ -13,7 +13,6 @@ export const CallVoices = observer(() => {
   // Try trigger observer?
   void Object.keys(getCallStore().callkeepMap)
   void getCallStore().calls.map(_ => _.callkeepUuid)
-
   const currentCall = getCallStore().getCurrentCall()
   const isOutgoingCallStart =
     currentCall &&
@@ -21,28 +20,20 @@ export const CallVoices = observer(() => {
     !currentCall.answered &&
     (currentCall.sessionStatus === 'progress' ||
       currentCall.sessionStatus === 'dialing')
-
-  const outgoingWithSDP = currentCall && currentCall?.withSDP
-
-  const isPaused = !(isOutgoingCallStart && !outgoingWithSDP)
-
   return (
     <>
       {isOutgoingCallStart &&
-        (outgoingWithSDP ? (
+        (currentCall?.withSDP ? (
           <OutgoingItemWithSDP earlyMedia={currentCall.earlyMedia} />
         ) : (
           <OutgoingItem />
         ))}
-      {
-        // load RBT first
-        Platform.OS === 'ios' && isOutgoingCallStart && (
-          <VideoRBT
-            isPaused={isPaused}
-            isLoudSpeaker={getCallStore().isLoudSpeakerEnabled}
-          />
-        )
-      }
+      {Platform.OS === 'ios' && isOutgoingCallStart && (
+        <VideoRBT
+          withSDP={!!currentCall?.withSDP}
+          isLoudSpeaker={getCallStore().isLoudSpeakerEnabled}
+        />
+      )}
       {getCallStore()
         .calls.filter(c => c.answered)
         .map(c => (
