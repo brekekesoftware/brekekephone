@@ -32,10 +32,10 @@ import { userStore } from './userStore'
 
 type ConnectionState =
   | 'stopped'
+  | 'waiting'
   | 'connecting'
   | 'success'
   | 'failure'
-  | 'waiting'
 
 export class AuthStore {
   @observable sipPn: Partial<SipPn> = {}
@@ -68,6 +68,7 @@ export class AuthStore {
 
   sipShouldAuth = () => {
     return (
+      this.sipState !== 'waiting' &&
       this.sipState !== 'connecting' &&
       this.sipState !== 'success' &&
       ((this.signedInId && this.sipPn.sipAuth) ||
@@ -79,7 +80,7 @@ export class AuthStore {
     )
   }
   sipConnectingOrFailure = () => {
-    return ['connecting', 'failure', 'waiting'].some(s => s === this.sipState)
+    return ['waiting', 'connecting', 'failure'].some(s => s === this.sipState)
   }
 
   ucShouldAuth = () => {
