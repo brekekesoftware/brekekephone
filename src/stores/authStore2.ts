@@ -30,7 +30,12 @@ import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 import { userStore } from './userStore'
 
-type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
+type ConnectionState =
+  | 'stopped'
+  | 'connecting'
+  | 'success'
+  | 'failure'
+  | 'waiting'
 
 export class AuthStore {
   @observable sipPn: Partial<SipPn> = {}
@@ -74,7 +79,7 @@ export class AuthStore {
     )
   }
   sipConnectingOrFailure = () => {
-    return ['connecting', 'failure', 'stopped'].some(s => s === this.sipState)
+    return ['connecting', 'failure', 'waiting'].some(s => s === this.sipState)
   }
 
   ucShouldAuth = () => {
