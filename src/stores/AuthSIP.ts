@@ -115,14 +115,14 @@ class AuthSIP {
       pbxState: s.pbxState,
       sipTotalFailure: s.sipTotalFailure,
     })
-    if (!sipShouldAuth || s.sipState === 'waiting') {
+    if (!sipShouldAuth) {
       return
     }
-    // keep Sip connecting
     if (s.sipTotalFailure > 1) {
-      const timeWait = s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000
       s.sipState = 'waiting'
-      await waitTimeout(timeWait)
+      await waitTimeout(
+        s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000,
+      )
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {

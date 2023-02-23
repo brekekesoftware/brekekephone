@@ -50,7 +50,8 @@ export class AuthStore {
 
   pbxShouldAuth = () => {
     return (
-      this.signedInId &&
+      this.getCurrentAccount() &&
+      this.pbxState !== 'waiting' &&
       // Do not auth pbx if sip token is provided in case of PN
       // Wait until sip login success or failure
       (!this.sipPn.sipAuth ||
@@ -63,7 +64,7 @@ export class AuthStore {
     )
   }
   pbxConnectingOrFailure = () => {
-    return ['connecting', 'failure'].some(s => s === this.pbxState)
+    return ['waiting', 'connecting', 'failure'].some(s => s === this.pbxState)
   }
 
   sipShouldAuth = () => {
