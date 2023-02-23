@@ -30,7 +30,12 @@ import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
 import { userStore } from './userStore'
 
-type ConnectionState = 'stopped' | 'connecting' | 'success' | 'failure'
+type ConnectionState =
+  | 'stopped'
+  | 'waiting'
+  | 'connecting'
+  | 'success'
+  | 'failure'
 
 export class AuthStore {
   @observable sipPn: Partial<SipPn> = {}
@@ -45,7 +50,8 @@ export class AuthStore {
 
   pbxShouldAuth = () => {
     return (
-      this.signedInId &&
+      this.getCurrentAccount() &&
+      this.pbxState !== 'waiting' &&
       // Do not auth pbx if sip token is provided in case of PN
       // Wait until sip login success or failure
       (!this.sipPn.sipAuth ||
@@ -58,11 +64,12 @@ export class AuthStore {
     )
   }
   pbxConnectingOrFailure = () => {
-    return ['connecting', 'failure'].some(s => s === this.pbxState)
+    return ['waiting', 'connecting', 'failure'].some(s => s === this.pbxState)
   }
 
   sipShouldAuth = () => {
     return (
+      this.sipState !== 'waiting' &&
       this.sipState !== 'connecting' &&
       this.sipState !== 'success' &&
       ((this.signedInId && this.sipPn.sipAuth) ||
@@ -74,7 +81,7 @@ export class AuthStore {
     )
   }
   sipConnectingOrFailure = () => {
-    return ['connecting', 'failure'].some(s => s === this.sipState)
+    return ['waiting', 'connecting', 'failure'].some(s => s === this.sipState)
   }
 
   ucShouldAuth = () => {
