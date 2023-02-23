@@ -11,12 +11,12 @@ import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
-import { BackgroundTimer } from './BackgroundTimer'
 import {
   parseNotificationData,
   signInByLocalNotification,
 } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
+import { waitTimeout } from './waitTimeout'
 
 let alreadySetupCallKeep = false
 
@@ -105,18 +105,23 @@ export const setupCallKeep = async () => {
   }
   const answerCall = (e: TEvent) => {
     const uuid = e.callUUID.toUpperCase()
-    Platform.OS === 'android'
-      ? // Handle action from CallKeep Notification on android
-        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-      : getCallStore().onCallKeepAnswerCall(uuid)
+    if (Platform.OS === 'android') {
+      // Handle action from CallKeep Notification on android
+      BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+    } else {
+      getCallStore().onCallKeepAnswerCall(uuid)
+    }
   }
   const endCall = (e: TEvent) => {
-    BackgroundTimer.setTimeout(setupCallKeepWithCheck, 0)
     const uuid = e.callUUID.toUpperCase()
-    Platform.OS === 'android'
-      ? // Handle action from CallKeep Notification on android
-        BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
-      : getCallStore().onCallKeepEndCall(uuid)
+    if (Platform.OS === 'android') {
+      // Handle action from CallKeep Notification on android
+      BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
+    } else {
+      getCallStore().onCallKeepEndCall(uuid)
+    }
+    // try to setup callkeep on each endcall if not yet
+    setupCallKeepWithCheck()
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
@@ -228,77 +233,83 @@ export const setupCallKeep = async () => {
   })
 
   // Android self-managed connection service forked version
-  if (Platform.OS === 'android') {
-    // Events from our custom IncomingCall module
-    const eventEmitter = new NativeEventEmitter(BrekekeUtils)
-    eventEmitter.addListener('answerCall', (uuid: string) => {
-      getCallStore().onCallKeepAnswerCall(uuid.toUpperCase())
-      RNCallKeep.setOnHold(uuid, false)
-    })
-    eventEmitter.addListener('rejectCall', (uuid: string) => {
-      getCallStore().onCallKeepEndCall(uuid.toUpperCase())
-    })
-    eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 100)
-    })
-    eventEmitter.addListener('showBackgroundCall', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallBackgrounds, 100)
-    })
-    eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallParks2, 100)
-    })
-    eventEmitter.addListener('video', (uuid: string) => {
-      getCallStore().getCurrentCall()?.toggleVideo()
-    })
-    eventEmitter.addListener('speaker', (uuid: string) => {
-      getCallStore().toggleLoudSpeaker()
-    })
-    eventEmitter.addListener('mute', (uuid: string) => {
-      getCallStore().getCurrentCall()?.toggleMuted()
-    })
-    eventEmitter.addListener('record', (uuid: string) => {
-      getCallStore().getCurrentCall()?.toggleRecording()
-    })
-    eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallDtmfKeypad, 100)
-    })
-    eventEmitter.addListener('hold', (uuid: string) => {
-      getCallStore().getCurrentCall()?.toggleHoldWithCheck()
-    })
-    eventEmitter.addListener('switchCamera', (uuid: string) => {
-      getCallStore().getCurrentCall()?.toggleSwitchCamera()
-    })
-    eventEmitter.addListener('onNotificationPress', async (data: string) => {
-      if (!data) {
-        return
-      }
-      const raw: { id?: string } = JSON.parse(data)
-      const n = parseNotificationData(raw)
-      if (!n) {
-        return
-      }
-      await signInByLocalNotification(n)
-      if (raw.id?.startsWith('missedcall')) {
-        Nav().goToPageCallRecents()
-      } else {
-        Nav().goToPageChatRecents()
-      }
-    })
-
-    // Other utils
-    eventEmitter.addListener('onBackPressed', onBackPressed)
-    eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
-      if (!RnStacker.stacks.length) {
-        Nav().goToPageIndex()
-      } else {
-        RnStacker.stacks = [RnStacker.stacks[0]]
-      }
-      getCallStore().inPageCallManage = undefined
-    })
-    eventEmitter.addListener('debug', (m: string) =>
-      console.log(`Android debug: ${m}`),
-    )
+  if (Platform.OS !== 'android') {
+    return
   }
+
+  const nav = Nav()
+  // Events from our custom IncomingCall module
+  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
+  eventEmitter.addListener('answerCall', (uuid: string) => {
+    getCallStore().onCallKeepAnswerCall(uuid.toUpperCase())
+    RNCallKeep.setOnHold(uuid, false)
+  })
+  eventEmitter.addListener('rejectCall', (uuid: string) => {
+    getCallStore().onCallKeepEndCall(uuid.toUpperCase())
+  })
+  eventEmitter.addListener('transfer', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallTransferChooseUser()
+  })
+  eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallBackgrounds()
+  })
+  eventEmitter.addListener('park', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallParks2()
+  })
+  eventEmitter.addListener('video', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleVideo()
+  })
+  eventEmitter.addListener('speaker', (uuid: string) => {
+    getCallStore().toggleLoudSpeaker()
+  })
+  eventEmitter.addListener('mute', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleMuted()
+  })
+  eventEmitter.addListener('record', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleRecording()
+  })
+  eventEmitter.addListener('dtmf', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallDtmfKeypad()
+  })
+  eventEmitter.addListener('hold', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleHoldWithCheck()
+  })
+  eventEmitter.addListener('switchCamera', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleSwitchCamera()
+  })
+  eventEmitter.addListener('onNotificationPress', async (data: string) => {
+    if (!data) {
+      return
+    }
+    const raw: { id?: string } = JSON.parse(data)
+    const n = parseNotificationData(raw)
+    if (!n) {
+      return
+    }
+    await signInByLocalNotification(n)
+    if (raw.id?.startsWith('missedcall')) {
+      nav.goToPageCallRecents()
+    } else {
+      nav.goToPageChatRecents()
+    }
+  })
+  // Other utils
+  eventEmitter.addListener('onBackPressed', onBackPressed)
+  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
+    if (!RnStacker.stacks.length) {
+      nav.goToPageIndex()
+    } else {
+      RnStacker.stacks = [RnStacker.stacks[0]]
+    }
+    getCallStore().inPageCallManage = undefined
+  })
+  eventEmitter.addListener('debug', (m: string) =>
+    console.log(`Android debug: ${m}`),
+  )
 }
 
 export const onBackPressed = () => {

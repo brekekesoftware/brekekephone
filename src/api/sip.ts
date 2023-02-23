@@ -13,9 +13,9 @@ import { CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
+import { waitTimeout } from '../utils/waitTimeout'
 import { CallOptions, Session, Sip } from './brekekejs'
 import { getCameraSourceIds } from './getCameraSourceId'
 import { pbx } from './pbx'
@@ -62,12 +62,14 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
     useVideoClient: true,
     userAgent,
   })
-  const started = await new Promise(r => {
-    phone.addEventListener(
-      'phoneStatusChanged',
-      e => e.phoneStatus === 'started' && r(true),
-    )
-    BackgroundTimer.setTimeout(() => r(false), 10000)
+  const started = await new Promise(async r => {
+    phone.addEventListener('phoneStatusChanged', e => {
+      if (e.phoneStatus === 'started') {
+        r(true)
+      }
+    })
+    await waitTimeout(10000)
+    r(false)
   })
   const o = phone._ua?.registrator?.()!
   if (!started || !o) {

@@ -1,5 +1,5 @@
 import { Platform } from 'react-native'
-import WifiManager from 'react-native-wifi-reborn'
+import { getCurrentWifiSSID } from 'react-native-wifi-reborn'
 
 import { Account, accountStore } from '../stores/accountStore'
 import { compareSemVer } from '../stores/debugStore'
@@ -7,6 +7,7 @@ import { compareSemVer } from '../stores/debugStore'
 import { PushNotification } from '../utils/PushNotification'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
+import { waitTimeout } from '../utils/waitTimeout'
 import { PBX } from './pbx'
 import { PnCommand, PnServiceId } from './pnConfig'
 import { setSyncPnTokenModule } from './syncPnToken'
@@ -223,9 +224,6 @@ setSyncPnTokenModule(m)
 export type TSyncPnToken = typeof m
 
 const getLocalSsid = () =>
-  Promise.race([
-    WifiManager.getCurrentWifiSSID(),
-    new Promise<string | undefined>(r => setTimeout(r, 10000)),
-  ])
+  Promise.race([getCurrentWifiSSID(), waitTimeout(10000)])
     .then(v => v || '')
     .catch(() => '')

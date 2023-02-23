@@ -101,7 +101,6 @@ class AuthSIP {
     await this.authPnWithoutCatch(pn)
   }
 
-  private waitingTimeout = false
   authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.sipPn.sipAuthAt || Date.now() - s.sipPn.sipAuthAt > 90000) {
@@ -115,15 +114,15 @@ class AuthSIP {
       sipAuth: !!s.sipPn.sipAuth,
       pbxState: s.pbxState,
       sipTotalFailure: s.sipTotalFailure,
-      waitingTimeout: this.waitingTimeout,
     })
-    if (!sipShouldAuth || this.waitingTimeout) {
+    if (!sipShouldAuth) {
       return
     }
     if (s.sipTotalFailure > 1) {
-      const timeWait = s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000
-      this.waitingTimeout = true
-      await waitTimeout(timeWait)
+      s.sipState = 'waiting'
+      await waitTimeout(
+        s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000,
+      )
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {
@@ -134,7 +133,6 @@ class AuthSIP {
         console.error('Failed to connect to sip:', err)
       }),
     )
-    this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }

@@ -1,13 +1,12 @@
 import ding from '../assets/ding.mp3'
-import { BackgroundTimer } from './BackgroundTimer'
+import { waitTimeout } from './waitTimeout'
 
-export const webPlayDing = () => {
+export const webPlayDing = async () => {
   const a = new Audio()
   a.volume = 0.05
   a.src = ding
   document.body.appendChild(a)
   a.play()
-  BackgroundTimer.setTimeout(() => {
-    document.body.removeChild(a)
-  }, 3000)
+  await waitTimeout(3000)
+  document.body.removeChild(a)
 }
