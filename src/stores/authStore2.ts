@@ -74,7 +74,7 @@ export class AuthStore {
     )
   }
   sipConnectingOrFailure = () => {
-    return ['connecting', 'failure'].some(s => s === this.sipState)
+    return ['connecting', 'failure', 'stopped'].some(s => s === this.sipState)
   }
 
   ucShouldAuth = () => {
