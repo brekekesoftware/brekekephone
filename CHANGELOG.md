@@ -1,3 +1,8 @@
+#### 2.11.12
+
+- Fix after restart server, it should show connecting state and reconnect
+- Fix small screen device, it should display the call UI more properly
+
 #### 2.11.11
 
 - Fix android case PN-off it should vibrate ring correctly
