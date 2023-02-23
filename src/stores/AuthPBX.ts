@@ -23,14 +23,13 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
-  private waitingTimeout = false
   @action private authWithCheck = async () => {
     const s = getAuthStore()
-    if (!s.pbxShouldAuth() || !s.getCurrentAccount() || this.waitingTimeout) {
+    if (!s.pbxShouldAuth()) {
       return
     }
     if (s.pbxTotalFailure > 1) {
-      this.waitingTimeout = true
+      s.pbxState = 'waiting'
       await waitTimeout(
         s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000,
       )
@@ -52,7 +51,6 @@ class AuthPBX {
           console.error('Failed to connect to pbx:', err)
         }),
       )
-    this.waitingTimeout = false
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
