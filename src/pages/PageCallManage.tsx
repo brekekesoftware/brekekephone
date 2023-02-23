@@ -86,7 +86,7 @@ const css = StyleSheet.create({
   Btns_Inner: {
     flexDirection: 'row',
     alignSelf: 'center',
-    width: Dimensions.get('screen').width - 20,
+    width: Dimensions.get('screen').width,
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
@@ -626,7 +626,7 @@ class PageCallManage extends Component<{
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
     return (
-      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 80 }]}>
+      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding ? (
           <View style={css.txtHold}>
             <RnText small white center>
