@@ -1,29 +1,32 @@
-import { Component } from 'react'
-import { Platform } from 'react-native'
+import { Component, useEffect } from 'react'
+import { Platform, StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
+import Video from 'react-native-video'
 
-import { callStore } from '../stores/callStore'
+import { sip } from '../api/sip'
+import { getCallStore } from '../stores/callStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
+const css = StyleSheet.create({
+  video: {
+    width: 0,
+    height: 0,
+  },
+})
 export class IncomingItem extends Component {
-  ringtonePlaying = false
   async componentDidMount() {
-    if (Platform.OS === 'android' && (await BrekekeUtils.isSilent())) {
-      return
+    if (Platform.OS === 'android') {
+      BrekekeUtils.startRingtone()
+    } else {
+      IncallManager.startRingtone('_BUNDLE_')
     }
-    IncallManager.startRingtone('_BUNDLE_')
-    this.ringtonePlaying = true
-    // TODO stop ringtone if user press hardware button
-    // https://www.npmjs.com/package/react-native-keyevent
   }
   componentWillUnmount() {
-    if (this.ringtonePlaying) {
-      IncallManager.stopRingtone()
-      this.ringtonePlaying = false
-    }
     if (Platform.OS === 'android') {
-      // Bug speaker auto turn on after call stopRingtone/stopRingback
-      IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+      BrekekeUtils.stopRingtone()
+    } else {
+      IncallManager.stopRingtone()
     }
   }
   render() {
@@ -32,14 +35,54 @@ export class IncomingItem extends Component {
 }
 
 export class OutgoingItem extends Component {
-  componentDidMount() {
-    IncallManager.startRingback('_BUNDLE_')
+  componentDidMount = () => {
+    const currentCall = getCallStore().getCurrentCall()
+    if (currentCall) {
+      sip.disableMedia(currentCall.id)
+    }
+    if (Platform.OS === 'android') {
+      IncallManager.startRingback('_BUNDLE_')
+    }
   }
   componentWillUnmount() {
-    IncallManager.stopRingback()
     if (Platform.OS === 'android') {
-      // Bug speaker auto turn on after call stopRingtone/stopRingback
-      IncallManager.setForceSpeakerphoneOn(callStore.isLoudSpeakerEnabled)
+      IncallManager.stopRingback()
+    }
+  }
+  render() {
+    return null
+  }
+}
+export class OutgoingItemWithSDP extends Component<{
+  earlyMedia: MediaStream | null
+}> {
+  componentDidMount = () => {
+    const currentCall = getCallStore().getCurrentCall()
+    if (currentCall) {
+      sip.enableMedia(currentCall.id)
+    }
+  }
+  render() {
+    return null
+  }
+}
+export class AnsweredItem extends Component<{
+  voiceStreamObject: MediaStream | null
+}> {
+  componentDidMount = () => {
+    // update status speaker, again
+    // ref: https://stackoverflow.com/questions/41762392/what-happens-with-onaudiofocuschange-when-a-phone-call-ends
+    if (Platform.OS === 'android') {
+      IncallManager.start()
+      BackgroundTimer.setTimeout(() => {
+        IncallManager.setForceSpeakerphoneOn(
+          getCallStore().isLoudSpeakerEnabled,
+        )
+      }, 2000)
+    }
+    const currentCall = getCallStore().getCurrentCall()
+    if (currentCall) {
+      sip.enableMedia(currentCall.id)
     }
   }
   render() {
@@ -47,6 +90,25 @@ export class OutgoingItem extends Component {
   }
 }
 
-// polyfill for web
-export const AnsweredItem = (p: { voiceStreamObject: MediaStream | null }) =>
-  null
+// fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
+export const VideoRBT = (p: { withSDP: boolean; isLoudSpeaker: boolean }) => {
+  useEffect(() => {
+    if (!p.withSDP && !p.isLoudSpeaker) {
+      BrekekeUtils.playRBT()
+    }
+    return () => BrekekeUtils.stopRBT()
+  }, [p.isLoudSpeaker, p.withSDP])
+  const paused =
+    (!p.withSDP && !p.isLoudSpeaker) || (p.withSDP && p.isLoudSpeaker)
+  return (
+    <Video
+      source={require('../assets/incallmanager_ringback.mp3')}
+      style={css.video}
+      paused={paused}
+      repeat={true}
+      ignoreSilentSwitch={'ignore'}
+      playInBackground={true}
+      audioOnly
+    />
+  )
+}

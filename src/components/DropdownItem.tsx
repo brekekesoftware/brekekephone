@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { RnText } from './RnText'
@@ -27,7 +27,7 @@ export const DropdownItem: FC<DropdownItemProps> = ({
 }: DropdownItemProps) => {
   return (
     <RnTouchableOpacity
-      onPressIn={onPress}
+      onPress={onPress}
       style={css.container}
       disabled={disabled}
     >

@@ -6,6 +6,7 @@ import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
 import { ParsedPn } from '../utils/PushNotification-parse'
+import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
 import { intl } from './intl'
@@ -22,7 +23,7 @@ export const addCallHistory = async (
     return
   }
 
-  if (!isTypeCall && !getAuthStore().currentProfile) {
+  if (!isTypeCall && !getAuthStore().getCurrentAccount()) {
     await getAuthStore().signInByNotification(c)
   }
   const pnId = isTypeCall ? c.pnId : c.id
@@ -34,6 +35,13 @@ export const addCallHistory = async (
     alreadyAddHistoryMap[pnId] = true
   }
 
+  if (!isTypeCall && !(await accountStore.findByPn(c))) {
+    console.log(
+      'checkAndRemovePnTokenViaSip debug: do not add history account not exist',
+    )
+    return
+  }
+
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const info = isTypeCall
@@ -42,7 +50,7 @@ export const addCallHistory = async (
         created,
         incoming: c.incoming,
         answered: c.answered,
-        partyName: c.computedName,
+        partyName: c.getDisplayName(),
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
@@ -59,6 +67,7 @@ export const addCallHistory = async (
         // -> B got cancel event from sip
         isAboutToHangup: false,
       }
+
   getAuthStore().pushRecentCall(info)
   !isCalleeRejectCall && presentNotification(info)
 }

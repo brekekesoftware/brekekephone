@@ -1,9 +1,10 @@
 // API was a component but had been rewritten to a listener
 import '../api'
 
-import { observe } from 'mobx'
+import { debounce } from 'lodash'
+import { observe, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
@@ -16,52 +17,67 @@ import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import { SyncPnToken } from '../api/syncPnToken'
+import { RenderAllCalls } from '../pages/PageCallManage'
+import {
+  accountStore,
+  getAccountUniqueId,
+  getLastSignedInId,
+} from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
 import { authUC } from '../stores/AuthUC'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
+import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { onBackPressed, setupCallKeep } from '../utils/callkeep'
+import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
-import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
+import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
 import { CallVideos } from './CallVideos'
 import { CallVoices } from './CallVoices'
 import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
-import { RnStatusBar, RnText } from './Rn'
+import { PhonebookAddItem } from './PhonebookAddItem'
+import { AudioPlayer, RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
-let alreadyInitApp = false
-PushNotification.register(async () => {
-  if (alreadyInitApp) {
-    return
-  }
-  alreadyInitApp = true
-
+const initApp = async () => {
   await intlStore.wait()
   const s = getAuthStore()
 
   AppState.addEventListener('change', async () => {
     if (AppState.currentState === 'active') {
       getAuthStore().resetFailureState()
-      BrekekeUtils.closeAllIncomingCalls()
-      callStore.onCallKeepAction()
+      getCallStore().onCallKeepAction()
+      // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
+      // ref: https://github.com/facebook/react-native-website/issues/273
+      const handleUrlParams = await s.handleUrlParams()
+      if (
+        Platform.OS !== 'web' &&
+        Platform.OS === 'ios' &&
+        !handleUrlParams &&
+        AppState.currentState === 'active' &&
+        !hasCallOrWakeFromPN
+      ) {
+        await actionAutoLogin()
+      }
+      SyncPnToken().syncForAllAccounts()
     }
   })
   registerOnUnhandledError(unexpectedErr => {
@@ -73,55 +89,27 @@ PushNotification.register(async () => {
   // Handle android hardware back button press
   BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
-  const getAudioVideoPermission = () => {
-    const cb = (stream: MediaStream) =>
-      stream.getTracks().forEach(t => t.stop())
-    // @ts-ignore
-    const eb = (err: MediaStreamError) => {
-      /* TODO */
-    }
-    // @ts-ignore
-    const p = window.navigator.getUserMedia(
-      { audio: true, video: true },
-      cb,
-      eb,
-    ) as unknown as Promise<MediaStream>
-    if (p?.then) {
-      p.then(cb).catch(eb)
-    }
-  }
+  const hasCallOrWakeFromPN =
+    getCallStore().calls.length ||
+    Object.keys(getCallStore().callkeepMap).length ||
+    s.sipPn.sipAuth
+
   if (Platform.OS === 'web') {
-    RnAlert.prompt({
-      title: intl`Action Required`,
-      message: intl`Web Phone needs your action to work well on browser. Press OK to continue`,
-      confirmText: 'OK',
-      dismissText: false,
-      onConfirm: getAudioVideoPermission,
-      onDismiss: getAudioVideoPermission,
-    })
-  } else if (
-    AppState.currentState === 'active' &&
-    !callStore.calls.length &&
-    !Object.keys(callStore.callkeepMap).length &&
-    !s.sipPn.sipAuth
-  ) {
+    if (window._BrekekePhoneWebRoot) {
+      webPromptPermission()
+    }
+  } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     getAudioVideoPermission()
   }
 
   setupCallKeep()
-  profileStore.loadProfilesFromLocalStorage().then(() => {
-    if (AppState.currentState === 'active') {
-      SyncPnToken().syncForAllAccounts()
-    }
-  })
+  await accountStore.loadAccountsFromLocalStorage()
 
-  Nav().goToPageIndex()
-  s.handleUrlParams()
-
-  observe(s, 'signedInId', () => {
+  const onAuthUpdate = debounce(() => {
     Nav().goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
+    userStore.clearStore()
     if (s.signedInId) {
       s.resetFailureState()
       authPBX.auth()
@@ -132,6 +120,48 @@ PushNotification.register(async () => {
       authSIP.dispose()
       authUC.dispose()
     }
+  }, 17)
+  observe(s, 'signedInId', onAuthUpdate)
+  const actionAutoLogin = async () => {
+    const d = await getLastSignedInId(true)
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+      console.log('App navigated by auto signin')
+      // already navigated
+    } else {
+      Nav().goToPageIndex()
+    }
+  }
+  if (await s.handleUrlParams()) {
+    console.log('App navigated by url params')
+    // already navigated
+  } else if (
+    // only auto sign in if app active mean user open app intentionally
+    // other cases like wakeup via push we should not auto sign in
+    Platform.OS !== 'web' &&
+    AppState.currentState === 'active' &&
+    !hasCallOrWakeFromPN
+  ) {
+    await actionAutoLogin()
+  } else {
+    Nav().goToPageIndex()
+  }
+
+  if (AppState.currentState === 'active') {
+    SyncPnToken().syncForAllAccounts()
+  }
+}
+
+let alreadyInitApp = false
+PushNotification.register(async () => {
+  if (alreadyInitApp) {
+    return
+  }
+  alreadyInitApp = true
+  await initApp().catch(console.error)
+  await waitTimeout(100)
+  runInAction(() => {
+    accountStore.appInitDone = true
   })
 })
 
@@ -204,6 +234,7 @@ export const App = observer(() => {
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
+      {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize
@@ -232,7 +263,10 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
+        <RenderAllCalls />
         <RnPickerRoot />
+        <PhonebookAddItem />
+
         <RnAlertRoot />
         {failure && (
           <RnTouchableOpacity
@@ -243,9 +277,9 @@ export const App = observer(() => {
       </View>
       {Platform.OS === 'ios' && <KeyboardSpacer />}
 
-      {!profileStore.profilesLoadedObservable && (
+      {!accountStore.appInitDone && (
         <View style={css.LoadingFullscreen}>
-          <ActivityIndicator size='small' color='white' />
+          <ActivityIndicator size='large' color='white' />
         </View>
       )}
     </View>

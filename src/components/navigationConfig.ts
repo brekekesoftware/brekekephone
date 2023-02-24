@@ -3,11 +3,11 @@ import {
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/toMap'
 
@@ -86,9 +86,9 @@ const genMenus = () => {
       icon: mdiCogOutline,
       subMenus: [
         {
-          key: 'profile',
+          key: 'account',
           label: intl`CURRENT ACCOUNT`,
-          navFnKey: 'goToPageSettingsProfile',
+          navFnKey: 'goToPageSettingsCurrentAccount',
         },
         {
           key: 'other',
@@ -96,7 +96,7 @@ const genMenus = () => {
           navFnKey: 'goToPageSettingsOther',
         },
       ],
-      defaultSubMenuKey: 'profile',
+      defaultSubMenuKey: 'account',
     },
   ] as Menu[]
   //
@@ -109,7 +109,7 @@ const genMenus = () => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().currentProfile.ucEnabled) {
+        if (s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
@@ -119,7 +119,10 @@ const genMenus = () => {
       }
     })
     m.navFn = () => {
-      let k = getAuthStore().currentProfile.navSubMenus?.[i]
+      let k = getAuthStore().getCurrentAccount()?.navSubMenus?.[i]
+      if (!k) {
+        return
+      }
       if (!(k in m.subMenusMap)) {
         k = m.defaultSubMenuKey
       }
@@ -142,8 +145,8 @@ export const menus = () => {
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const p = getAuthStore().currentProfile
-  if (!m || !p) {
+  const ca = getAuthStore().getCurrentAccount()
+  if (!m || !ca) {
     return
   }
   if (!(k in m.subMenusMap)) {
@@ -151,23 +154,26 @@ const saveNavigation = (i: number, k: string) => {
   }
   normalizeSavedNavigation()
   if (m.key !== 'settings') {
-    p.navIndex = i
+    ca.navIndex = i
   }
-  p.navSubMenus[i] = k
-  profileStore.saveProfilesToLocalStorage()
+  ca.navSubMenus[i] = k
+  accountStore.saveAccountsToLocalStorageDebounced()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const p = getAuthStore().currentProfile
-  if (!arr[p.navIndex]) {
-    p.navIndex = 0
+  const ca = getAuthStore().getCurrentAccount()
+  if (!ca) {
+    return
   }
-  if (p.navSubMenus?.length !== arr.length) {
-    p.navSubMenus = arr.map(() => '')
+  if (!arr[ca.navIndex]) {
+    ca.navIndex = 0
+  }
+  if (ca.navSubMenus?.length !== arr.length) {
+    ca.navSubMenus = arr.map(() => '')
   }
   arr.forEach((m, i) => {
-    if (!(p.navSubMenus[i] in m.subMenusMap)) {
-      p.navSubMenus[i] = m.defaultSubMenuKey
+    if (!(ca.navSubMenus[i] in m.subMenusMap)) {
+      ca.navSubMenus[i] = m.defaultSubMenuKey
     }
   })
 }
@@ -182,6 +188,6 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !getAuthStore().currentProfile.ucEnabled),
+    s => !(s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled),
   )
 }

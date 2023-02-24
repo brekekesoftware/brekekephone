@@ -1,16 +1,17 @@
 import { action } from 'mobx'
 
 import { authPBX } from '../stores/AuthPBX'
+import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { Call } from '../stores/Call'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
-import { Conference } from './brekekejs'
+import { toBoolean } from '../utils/string'
+import { Conference, PbxEvent, Session } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -27,6 +28,9 @@ class Api {
     pbx.on('user-holding', this.onPBXUserHolding)
     pbx.on('user-hanging', this.onPBXUserHanging)
     pbx.on('voicemail-updated', this.onVoiceMailUpdated)
+    pbx.on('park-started', this.onPBXUserParkStarted)
+    pbx.on('park-stopped', this.onPBXUserParkStopped)
+    pbx.on('call-recording', this.onPbxCallRecording)
     sip.on('connection-started', this.onSIPConnectionStarted)
     sip.on('connection-stopped', this.onSIPConnectionStopped)
     sip.on('connection-timeout', this.onSIPConnectionTimeout)
@@ -46,37 +50,37 @@ class Api {
   }
 
   @action onPBXConnectionStarted = async () => {
-    console.error('PBX PN debug: set pbxState succsess')
+    console.log('PBX PN debug: set pbxState success')
     const s = getAuthStore()
     s.pbxState = 'success'
+    s.pbxTotalFailure = 0
+    authSIP.authWithCheck()
     await waitSip()
-    const p = s.currentProfile
-    try {
-      const ids = await pbx.getUsers(p.pbxTenant)
-      if (!ids) {
-        return
-      }
-      const userIds = ids.filter(id => id !== p.pbxUsername)
-      const users = await pbx.getOtherUsers(p.pbxTenant, userIds)
-      if (!users) {
-        return
-      }
-      contactStore.pbxUsers = users
-    } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to load PBX users`,
-        err: err as Error,
-      })
+    await pbx.getConfig()
+    const cp = s.getCurrentAccount()
+    if (!cp) {
+      return
+    }
+    // load list local  when pbx start
+    // set default pbxLocalAllUsers = true
+    if (cp.pbxLocalAllUsers === undefined) {
+      cp.pbxLocalAllUsers = true
+    }
+    if (s.isBigMode() || !cp.pbxLocalAllUsers) {
+      cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+    } else {
+      contactStore.getPbxUsers()
     }
     if (s.isSignInByNotification) {
       return
     }
     SyncPnToken()
-      .sync(p)
+      .sync(cp)
       .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'
+    getAuthStore().pbxTotalFailure += 1
   }
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
@@ -98,30 +102,43 @@ class Api {
     contactStore.setTalkerStatus(ev.user, ev.talker, '')
   }
   onVoiceMailUpdated = (ev: { new: number }) => {
-    callStore.setNewVoicemailCount(ev?.new || 0)
+    getCallStore().setNewVoicemailCount(ev?.new || 0)
   }
-
+  onPBXUserParkStarted = (parkNumber: string) => {
+    console.log('onPBXUserParkStarted', parkNumber)
+    getCallStore().addParkNumber(parkNumber)
+  }
+  onPBXUserParkStopped = (parkNumber: string) => {
+    console.log('onPBXUserParkStopped', parkNumber)
+    getCallStore().removeParkNumber(parkNumber)
+  }
+  onPbxCallRecording = (ev: PbxEvent['callRecording']) => {
+    getCallStore()
+      .calls.find(item => item.pbxTalkerId === ev.talker_id)
+      ?.updateRecordingStatus(toBoolean(ev.status))
+  }
   @action onSIPConnectionStarted = () => {
-    console.error('SIP PN debug: set sipState succsess')
+    console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     const s = getAuthStore()
-    s.sipPn.sipAuth = ''
     s.sipState = 'success'
+    s.sipTotalFailure = 0
     authPBX.auth()
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     const s = getAuthStore()
     if (!e?.reason && !e?.response) {
-      console.error('SIP PN debug: set sipState stopped')
+      console.log('SIP PN debug: set sipState stopped')
       getAuthStore().sipState = 'stopped'
+      s.sipTotalFailure += 1
     } else {
-      console.error('SIP PN debug: set sipState failure stopped')
+      console.log('SIP PN debug: set sipState failure stopped')
       s.sipState = 'failure'
       s.sipTotalFailure += 1
     }
   }
   onSIPConnectionTimeout = () => {
-    console.error('SIP PN debug: set sipState failure timeout')
+    console.log('SIP PN debug: set sipState failure timeout')
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
     sip.stopWebRTC()
@@ -133,13 +150,13 @@ class Api {
     if (!c.partyName) {
       c.partyName = getPartyName(c.partyNumber) || c.partyNumber
     }
-    callStore.onCallUpsert(c)
+    getCallStore().onCallUpsert(c)
   }
   onSIPSessionUpdated = (call: Call) => {
-    callStore.onCallUpsert(call)
+    getCallStore().onCallUpsert(call)
   }
-  onSIPSessionStopped = (id: string) => {
-    callStore.onCallRemove(id)
+  onSIPSessionStopped = (rawSession: Session) => {
+    getCallStore().onCallRemove(rawSession)
   }
 
   onUCConnectionStopped = () => {
@@ -157,7 +174,7 @@ class Api {
     statusText: string
   }) => {
     contactStore.updateUcUser(ev)
-    userStore.updateStatusBuddy(ev.id, ev.status)
+    userStore.updateStatusBuddy(ev.id, ev.status, ev.avatar)
   }
   onBuddyChatCreated = (chat: {
     id: string

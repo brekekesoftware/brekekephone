@@ -1,33 +1,27 @@
+import './embed/polyfill'
 import './utils/captureConsoleOutput'
 import './polyfill'
+import './polyfill/mobx'
 import './utils/validator'
 import './stores/Nav2' // Fix circular dependencies
+import './stores/callStore2' // Fix circular dependencies
 import './stores/authStore2' // Fix circular dependencies
 import './api/syncPnToken2' // Fix circular dependencies
+import 'brekekejs/lib/phonebook'
+import 'brekekejs/lib/webnotification'
 
-import { configure, onReactionError } from 'mobx'
-import { AppRegistry, Platform } from 'react-native'
+import { AppRegistry } from 'react-native'
 
 import { App } from './components/App'
-import { callStore } from './stores/callStore'
-import { setCallStore } from './stores/cancelRecentPn'
+import { exposeEmbedApi } from './embed/exposeEmbedApi'
 
-configure({
-  enforceActions: 'never',
-  computedRequiresReaction: false,
-  observableRequiresReaction: false,
-  reactionRequiresObservable: false,
-  disableErrorBoundaries: false,
-})
-onReactionError((err: Error) => {
-  console.error(err)
-})
-
-setCallStore(callStore)
 AppRegistry.registerComponent('BrekekePhone', () => App)
 
-if (Platform.OS === 'web') {
-  AppRegistry.runApplication('BrekekePhone', {
-    rootTag: document.getElementById('root'),
-  })
+const runApp = (rootTag: HTMLElement) => {
+  AppRegistry.runApplication('BrekekePhone', { rootTag })
 }
+
+if (window._BrekekePhoneWebRoot) {
+  runApp(window._BrekekePhoneWebRoot)
+}
+exposeEmbedApi(runApp)

@@ -1,15 +1,18 @@
-import { action, computed, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
+import { Session, SessionStatus } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
-import { CallStore } from './callStore'
+import { getCallStore } from './callStore'
+import { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -18,27 +21,37 @@ import { RnAlert } from './RnAlert'
 export class Call {
   constructor(private store: CallStore) {}
 
+  rawSession?: Session
+
+  @observable earlyMedia: MediaStream | null = null
+  @observable withSDP: boolean = false
+  @observable withSDPControls: boolean = false
+  @observable sessionStatus: SessionStatus = 'dialing'
   @observable id = ''
   @observable pnId = ''
   @observable partyNumber = ''
-  /** @deprecated use computedName instead */
+  @observable partyImageUrl = ''
+  @observable partyImageSize = ''
+  @observable talkingImageUrl = ''
+  /** @deprecated use below getDisplayName instead */
   @observable partyName = ''
   @observable pbxTalkerId = ''
   @observable pbxTenant = ''
-  @computed get computedName() {
-    return (
-      getPartyName(this.partyNumber) ||
-      this.partyName ||
-      this.partyNumber ||
-      this.pbxTalkerId ||
-      this.id
-    )
-  }
+  @observable isFrontCamera = true
+  @observable callConfig: CallConfig = {}
+
+  getDisplayName = () =>
+    getPartyName(this.partyNumber) ||
+    this.partyName ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
   createdAt = Date.now()
 
   @observable incoming = false
   @observable answered = false
   @observable answeredAt = 0
+
   getDuration = () => this.answeredAt && Date.now() - this.answeredAt
 
   callkeepUuid = ''
@@ -46,19 +59,28 @@ export class Call {
   callkeepAlreadyRejected = false
 
   @action
-  answer = (ignoreNav?: boolean) => {
+  answer = (
+    options?: { ignoreNav?: boolean },
+    videoOptions?: object,
+    exInfo?: object,
+  ) => {
+    const ignoreNav = options?.ignoreNav
+    if (options) {
+      delete options.ignoreNav
+    }
     this.answered = true
     this.store.currentCallId = this.id
     // Hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
       .forEach(c => c.toggleHoldWithCheck())
-    sip.answerSession(this.id, {
-      videoEnabled: this.remoteVideoEnabled,
-    })
-    if (Platform.OS === 'android') {
-      BrekekeUtils.onCallConnected(this.callkeepUuid)
-    }
+    sip.phone?.answer(
+      this.id,
+      options,
+      this.remoteVideoEnabled,
+      videoOptions,
+      exInfo,
+    )
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
@@ -70,7 +92,9 @@ export class Call {
     }
     const updateCallKeep = () => {
       RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-      RNCallKeep.setOnHold(this.callkeepUuid, false)
+      if (Platform.OS === 'android') {
+        RNCallKeep.setOnHold(this.callkeepUuid, false)
+      }
       this.callkeepAlreadyAnswered = true
     }
     const startCallCallKeep = async () => {
@@ -102,7 +126,7 @@ export class Call {
     // If it doesnt have callkeepUuid, which means: incoming call without PN
     // We'll treat them all as outgoing call in CallKeep
     // We dont want to display incoming call here again
-    if (getAuthStore().currentProfile?.pushNotificationEnabled) {
+    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
       return
     }
     this.callkeepUuid = newUuid().toUpperCase()
@@ -142,6 +166,11 @@ export class Call {
       ? sip.disableVideo(this.id)
       : sip.enableVideo(this.id)
   }
+  @action toggleSwitchCamera = () => {
+    this.isFrontCamera = !this.isFrontCamera
+    sip.switchCamera(this.id, this.isFrontCamera)
+    BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
+  }
 
   @observable remoteVideoStreamObject: MediaStream | null = null
   voiceStreamObject: MediaStream | null = null
@@ -156,6 +185,10 @@ export class Call {
   }
 
   @observable recording = false
+  @action updateRecordingStatus = (status: boolean) => {
+    this.recording = status
+    BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
+  }
   @action toggleRecording = () => {
     const fn = this.recording
       ? pbx.stopRecordingTalker
@@ -191,10 +224,17 @@ export class Call {
   @action private toggleHold = () => {
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
+    if (!this.isAboutToHangup && !this.holding) {
+      this.store.currentCallId = this.id
+    }
     if (!this.isAboutToHangup) {
       if (this.callkeepUuid && !this.holding) {
-        // Hack to fix no voice after unhold: only setOnHold in unhold case
-        RNCallKeep.setOnHold(this.callkeepUuid, false)
+        if (Platform.OS === 'ios') {
+          hackyToggleSpeaker()
+        }
+        if (Platform.OS === 'android') {
+          RNCallKeep.setOnHold(this.callkeepUuid, false)
+        }
       }
       BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     }
@@ -207,8 +247,7 @@ export class Call {
       return true
     }
     this.holding = !this.holding
-    if (this.callkeepUuid && !this.holding) {
-      // Hack to fix no voice after unhold: only setOnHold in unhold case
+    if (this.callkeepUuid && !this.holding && Platform.OS === 'android') {
       RNCallKeep.setOnHold(this.callkeepUuid, false)
     }
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
@@ -300,3 +339,27 @@ export class Call {
     })
   }
 }
+
+// Hack to fix no voice after unhold using toggle loud speaker
+// This issue happens on ios only, toggle loud speaker reset the audio route
+// The actual issue could be related to ios audio route
+// Related packages: callkeep, webrtc, incall-manager...
+export const hackyToggleSpeaker = async (ms = 500) => {
+  const c = getCallStore()
+  IncallManager.setForceSpeakerphoneOn(!c.isLoudSpeakerEnabled)
+  await waitTimeout(ms)
+  IncallManager.setForceSpeakerphoneOn(c.isLoudSpeakerEnabled)
+}
+
+export type CallConfig = {
+  dtmf?: string
+  hangup?: string
+  hold?: string
+  mute?: string
+  park?: string
+  record?: string
+  speaker?: string
+  transfer?: string
+  video?: string
+}
+export type CallConfigKey = keyof CallConfig

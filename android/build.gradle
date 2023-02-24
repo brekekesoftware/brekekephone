@@ -4,12 +4,11 @@ buildscript {
     minSdkVersion = 27
     compileSdkVersion = 30
     targetSdkVersion = 30
-    ndkVersion = "21.4.7075529"
+    ndkVersion = "22.0.7026061"
   }
   repositories {
     mavenCentral()
     google()
-    jcenter()
   }
   dependencies {
     classpath("com.android.tools.build:gradle:4.2.2")
@@ -19,7 +18,11 @@ buildscript {
 
 allprojects {
   repositories {
-    mavenCentral()
+    mavenCentral {
+      content {
+        excludeGroup "com.facebook.react"
+      }
+    }
     mavenLocal()
     maven {
       url("$rootDir/../node_modules/react-native/android")
@@ -31,6 +34,16 @@ allprojects {
       url("https://www.jitpack.io")
     }
     google()
-    jcenter()
+    // https://github.com/facebook/react-native/issues/35210#issuecomment-1309813425
+    exclusiveContent {
+      filter {
+        includeGroup "com.facebook.react"
+      }
+      forRepository {
+        maven {
+          url("$rootDir/../node_modules/react-native/android")
+        }
+      }
+    }
   }
 }

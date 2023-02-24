@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Platform } from 'react-native'
 
 import { uc } from '../api/uc'
@@ -7,7 +7,7 @@ import { mdiCheck, mdiTranslate } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { debugStore } from '../stores/debugStore'
 import { intl, intlDebug } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
@@ -51,29 +51,31 @@ export class PageSettingsOther extends Component {
       })
   }
   render() {
+    const as = getAuthStore()
+    const cp = as.getCurrentAccount()
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
         dropdown={[
-          ...(getAuthStore().isConnFailure()
+          ...(as.isConnFailure()
             ? [
                 {
                   label: intl`Reconnect to server`,
-                  onPress:
-                    getAuthStore()
-                      .resetFailureStateIncludeUcLoginFromAnotherPlace,
+                  onPress: as.resetFailureStateIncludeUcLoginFromAnotherPlace,
+                },
+              ]
+            : []),
+          ...(Platform.OS !== 'web'
+            ? [
+                {
+                  label: intl`Open debug log`,
+                  onPress: debugStore.openLogFile,
                 },
               ]
             : []),
           {
             label: intl`Logout`,
-            onPress: () => {
-              getAuthStore().signOut()
-              // Try to end callkeep if it's stuck
-              if (Platform.OS !== 'web') {
-                callStore.endCallKeepAllCalls()
-              }
-            },
+            onPress: as.signOut,
             danger: true,
           },
         ]}
@@ -87,13 +89,13 @@ export class PageSettingsOther extends Component {
           label={intl`LANGUAGE`}
           onTouchPress={intlStore.selectLocale}
           value={intlStore.locale}
-          valueRender={() => intlStore.localeName}
+          valueRender={() => intlStore.getLocaleName()}
         />
-        {getAuthStore().currentProfile.ucEnabled && (
+        {cp?.ucEnabled && (
           <>
             <Field isGroup label={intl`UC`} />
             <Field
-              disabled={!getAuthStore().currentProfile.ucEnabled}
+              disabled={!cp.ucEnabled}
               label={intl`STATUS`}
               onValueChange={this.submitStatus}
               options={[
@@ -106,7 +108,7 @@ export class PageSettingsOther extends Component {
             />
             <Field
               createBtnIcon={mdiCheck}
-              disabled={!getAuthStore().currentProfile.ucEnabled}
+              disabled={!cp.ucEnabled}
               label={intl`STATUS NOTE`}
               onCreateBtnPress={this.submitStatusText}
               onSubmitEditing={this.submitStatusText}

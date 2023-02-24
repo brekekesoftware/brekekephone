@@ -36,6 +36,7 @@ module.exports = {
       },
     ],
     // Some other rules
+    'react-app/react/react-in-jsx-scope': 0,
     'prefer-const': 1,
     'import/no-default-export': 1,
     'object-shorthand': [1, 'always'],
@@ -43,6 +44,8 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
     'no-shadow': 0,
     '@typescript-eslint/no-shadow': 1,
+    'no-unused-expressions': 0,
+    '@typescript-eslint/no-unused-expressions': 1,
   },
   settings: {
     react: {

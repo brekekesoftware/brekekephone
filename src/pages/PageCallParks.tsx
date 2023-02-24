@@ -1,12 +1,13 @@
+import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
@@ -22,7 +23,7 @@ export class PageCallParks extends Component<{
     if (!this.props.callParks2) {
       return
     }
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -43,19 +44,32 @@ export class PageCallParks extends Component<{
   park = () => {
     const p = this.state.selectedPark
     return this.props.callParks2
-      ? callStore.getCurrentCall()?.park(p)
-      : callStore.startCall(p || '')
+      ? getCallStore().getCurrentCall()?.park(p)
+      : getCallStore().startCall(p || '')
   }
 
   render() {
-    const cp = getAuthStore().currentProfile
-    const parks = cp.parks.map((p, i) => ({
-      park: p,
-      name: cp.parkNames?.[i] || '',
-    }))
+    const cp = getAuthStore().getCurrentAccount()
+    if (!cp) {
+      return null
+    }
+
+    const arr =
+      cp.parks?.map((p, i) => ({
+        park: p,
+        name: cp.parkNames?.[i] || '',
+      })) || []
+    const parks = uniqBy(arr, 'park')
+
     const sp = this.state.selectedPark
     const cp2 = this.props.callParks2
-    void callStore.getCurrentCall() // trigger componentDidUpdate
+    void getCallStore().getCurrentCall() // trigger componentDidUpdate
+    const isDisable = (parkNumber: string) => {
+      if (cp2) {
+        return !!getCallStore().parkNumbers[parkNumber]
+      }
+      return !getCallStore().parkNumbers[parkNumber]
+    }
 
     return (
       <Layout
@@ -74,13 +88,17 @@ export class PageCallParks extends Component<{
           </>
         )}
         {parks.map((p, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.selectPark(p.park)}>
+          <RnTouchableOpacity
+            key={i}
+            onPress={() => !isDisable(p.park) && this.selectPark(p.park)}
+          >
             <UserItem
               key={i}
-              name={
-                intl`Park` + ` ${i + 1}: ${p.park}${p.name && ' - '}${p.name}`
-              }
+              avatar=''
+              name={intl`Park` + ` ${i + 1}: ${p.name}`}
+              parkNumber={`${p.park}`}
               selected={p.park === sp}
+              disabled={isDisable(p.park)}
             />
           </RnTouchableOpacity>
         ))}

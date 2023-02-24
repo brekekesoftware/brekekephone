@@ -1,7 +1,6 @@
-import { debounce } from 'lodash'
-import orderBy from 'lodash/orderBy'
+import { debounce, isEmpty, orderBy } from 'lodash'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
+import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { pbx } from '../api/pbx'
@@ -17,12 +16,10 @@ import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
-import { contactStore, Phonebook2 } from '../stores/contactStore'
+import { getCallStore } from '../stores/callStore'
+import { contactStore, Phonebook } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { profileStore } from '../stores/profileStore'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -36,6 +33,7 @@ const css = StyleSheet.create({
 @observer
 export class PageContactPhonebook extends Component {
   componentDidMount() {
+    contactStore.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
         return
@@ -44,7 +42,12 @@ export class PageContactPhonebook extends Component {
       BackgroundTimer.clearInterval(id)
     }, 1000)
   }
-
+  componentWillUnmount() {
+    if (contactStore.isDeleteState) {
+      contactStore.isDeleteState = false
+      contactStore.selectedContactIds = {}
+    }
+  }
   update = (id: string) => {
     const contact = contactStore.getPhonebookById(id)
     if (contact?.loaded) {
@@ -52,7 +55,7 @@ export class PageContactPhonebook extends Component {
         contact,
       })
     } else {
-      this.loadContactDetail(id, (ct: Phonebook2) => {
+      this.loadContactDetail(id, (ct: Phonebook) => {
         Nav().goToPagePhonebookUpdate({
           contact: ct,
         })
@@ -70,10 +73,8 @@ export class PageContactPhonebook extends Component {
         const x = {
           ...ct,
           loaded: true,
-          name: ct.firstName + ' ' + ct.lastName,
-          hidden: ct.hidden === 'true',
         }
-        contactStore.upsertPhonebook(x)
+        contactStore.upsertPhonebook(x as Phonebook)
         cb(x)
       })
       .catch((err: Error) => {
@@ -84,9 +85,9 @@ export class PageContactPhonebook extends Component {
       })
   }
 
-  callRequest = (number: string, u: Phonebook2) => {
+  callRequest = (number: string, u: Phonebook) => {
     if (number !== '') {
-      callStore.startCall(number.replace(/\s+/g, ''))
+      getCallStore().startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(u.id)
       RnAlert.error({
@@ -95,15 +96,16 @@ export class PageContactPhonebook extends Component {
     }
   }
 
-  onIcon0 = (u0: Phonebook2) => {
+  onIcon0 = (u0: Phonebook) => {
     if (!u0) {
       return
     }
-    const onIcon0 = (u: Phonebook2) => {
+
+    const onIcon0 = (u: Phonebook) => {
       if (!u) {
         return
       }
-      if (!u.homeNumber && !u.workNumber && !u.cellNumber) {
+      if (!u.info.$tel_work && !u.info.$tel_home && !u.info.$tel_mobile) {
         this.callRequest('', u)
         return
       }
@@ -112,24 +114,24 @@ export class PageContactPhonebook extends Component {
         value: string
         icon: string
       }[] = []
-      if (u.workNumber !== '') {
+      if (u.info.$tel_work) {
         numbers.push({
           key: 'workNumber',
-          value: u.workNumber,
+          value: u.info.$tel_work,
           icon: mdiBriefcase,
         })
       }
-      if (u.cellNumber !== '') {
+      if (u.info.$tel_mobile) {
         numbers.push({
           key: 'cellNumber',
-          value: u.cellNumber,
+          value: u.info.$tel_mobile,
           icon: mdiCellphone,
         })
       }
-      if (u.homeNumber !== '') {
+      if (u.info.$tel_home) {
         numbers.push({
           key: 'homeNumber',
-          value: u.homeNumber,
+          value: u.info.$tel_home,
           icon: mdiHome,
         })
       }
@@ -156,21 +158,44 @@ export class PageContactPhonebook extends Component {
   }
 
   updateSearchText = (v: string) => {
+    // TODO use debounced value to perform data filter
     contactStore.phonebookSearchTerm = v
     this.updateListPhoneBook()
+    contactStore.selectedContactIds = {}
   }
 
   updateListPhoneBook = debounce(() => {
     contactStore.offset = 0
     contactStore.loadContacts()
   }, 500)
-
+  onDelete = async () => {
+    if (isEmpty(contactStore.selectedContactIds)) {
+      return
+    }
+    try {
+      const result = await pbx.deleteContact(
+        Object.keys(contactStore.selectedContactIds),
+      )
+      if (result?.succeeded?.length) {
+        contactStore.removeContacts(result.succeeded)
+      }
+      contactStore.selectedContactIds = {}
+    } catch (err) {
+      RnAlert.error({
+        message: intlDebug`Failed to delete contact`,
+        err: err as Error,
+      })
+    }
+  }
+  onCancel = () => {
+    contactStore.isDeleteState = false
+    contactStore.selectedContactIds = {}
+  }
   render() {
     const phonebooks = contactStore.phoneBooks
-
-    const map = {} as { [k: string]: Phonebook2[] }
+    const map = {} as { [k: string]: Phonebook[] }
     phonebooks.forEach(u => {
-      let c0 = u?.name?.charAt(0).toUpperCase()
+      let c0 = u?.display_name?.charAt(0).toUpperCase()
       if (!/[A-Z]/.test(c0)) {
         c0 = '#'
       }
@@ -189,19 +214,39 @@ export class PageContactPhonebook extends Component {
     groups.forEach(gr => {
       gr.phonebooks = orderBy(gr.phonebooks, 'name')
     })
+    const optionDelete = [
+      {
+        label:
+          intl`Delete ` +
+          `(${Object.keys(contactStore.selectedContactIds).length})`,
+        onPress: this.onDelete,
+      },
+      {
+        label: intl`Cancel`,
+        onPress: this.onCancel,
+      },
+    ]
+    const options = [
+      {
+        label: intl`Create new contact`,
+        onPress: Nav().goToPagePhonebookCreate,
+      },
+      {
+        label: intl`Delete contacts`,
+        onPress: () => {
+          contactStore.isDeleteState = true
+        },
+      },
+      {
+        label: intl`Reload`,
+        onPress: contactStore.loadContacts,
+      },
+    ]
+
     return (
       <Layout
         description={intl`Your phonebook contacts`}
-        dropdown={[
-          {
-            label: intl`Create new contact`,
-            onPress: Nav().goToPagePhonebookCreate,
-          },
-          {
-            label: intl`Reload`,
-            onPress: contactStore.loadContacts,
-          },
-        ]}
+        dropdown={contactStore.isDeleteState ? optionDelete : options}
         menu='contact'
         subMenu='phonebook'
         title={intl`Phonebook`}
@@ -212,30 +257,35 @@ export class PageContactPhonebook extends Component {
           onValueChange={this.updateSearchText}
           value={contactStore.phonebookSearchTerm}
         />
-        <Field
-          label={intl`SHOW SHARED CONTACTS`}
-          onValueChange={(v: boolean) => {
-            profileStore.upsertProfile({
-              id: getAuthStore().signedInId,
-              displaySharedContacts: v,
-            })
-            contactStore.refreshContacts()
-          }}
-          type='Switch'
-          value={getAuthStore().currentProfile.displaySharedContacts}
-        />
         <View>
           {groups.map(gr => (
             <Fragment key={gr.key}>
               <Field isGroup label={gr.key} />
-              {gr.phonebooks.map((u, i) => (
-                <UserItem
-                  iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
-                  icons={[mdiPhone, mdiInformation]}
-                  key={i}
-                  name={u.name}
-                />
-              ))}
+              {gr.phonebooks.map((u, i) =>
+                contactStore.isDeleteState ? (
+                  <RnTouchableOpacity
+                    onPress={() => contactStore.selectContactId(u.id)}
+                    disabled={u.shared}
+                  >
+                    <UserItem
+                      key={i}
+                      name={u?.display_name || intl`<Unnamed>`}
+                      isSelection
+                      isSelected={contactStore.selectedContactIds[u.id]}
+                      disabled={u.shared}
+                      onSelect={() => contactStore.selectContactId(u.id)}
+                    />
+                  </RnTouchableOpacity>
+                ) : (
+                  <UserItem
+                    iconFuncs={[() => this.onIcon0(u), () => this.update(u.id)]}
+                    icons={[mdiPhone, mdiInformation]}
+                    key={i}
+                    phonebook={`${u.phonebook}${u.shared ? 'Ⓢ' : ''}`}
+                    name={`${u?.display_name || intl`<Unnamed>`}`}
+                  />
+                ),
+              )}
             </Fragment>
           ))}
         </View>

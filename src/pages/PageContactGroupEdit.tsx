@@ -1,6 +1,7 @@
+import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
-import { View } from 'react-native'
+import { Component } from 'react'
+import { ActivityIndicator, FlatList, View } from 'react-native'
 
 import { UcBuddy } from '../api/brekekejs'
 import { UserItem } from '../components/ContactUserItem'
@@ -9,18 +10,27 @@ import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnDropdownSectionList } from '../stores/RnDropdownSectionList'
+import { RnDropdown } from '../stores/RnDropdown'
 import { userStore } from '../stores/userStore'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { css } from './PageContactEdit'
 
 @observer
 export class PageContactGroupEdit extends Component<{
   groupName: string
   listItem: UcBuddy[]
 }> {
-  state: {
-    selectedUsers: UcBuddy[]
-  } = {
-    selectedUsers: this.props.listItem,
+  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
+  state = {
+    didMount: false,
+  }
+  componentDidMount() {
+    this.props.listItem.forEach(u => {
+      if (userStore.selectedUserIds[u.user_id]) {
+        this.selectedUserItems[u.user_id] = u
+      }
+    })
+    BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
   render() {
@@ -38,49 +48,80 @@ export class PageContactGroupEdit extends Component<{
           disabled={true}
         />
         <Field isGroup label={intl`Members`} disabled={true} />
-        {userStore.dataListAllUser.map((item, index) => (
-          <View key={`ContactListUser-${item.user_id}-${index}`}>
-            <RnTouchableOpacity onPress={() => this.selectUser(item)}>
-              <UserItem
-                id={item.user_id}
-                name={item.name || item.user_id}
-                avatar={item.profile_image_url}
-                isSelected={this.state.selectedUsers.some(
-                  u => u.user_id === item.user_id,
-                )}
-                onSelect={() => this.selectUser(item)}
-                isSelection
+        {!this.state.didMount ? (
+          <ActivityIndicator size='large' />
+        ) : (
+          <FlatList
+            data={userStore.dataListAllUser}
+            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+              <RenderItem
+                item={item}
+                index={index}
+                selectedUsers={this.selectedUserItems}
               />
-            </RnTouchableOpacity>
-          </View>
-        ))}
+            )}
+            keyExtractor={item => item.user_id}
+          />
+        )}
       </Layout>
     )
   }
 
   selectUser = (item: UcBuddy) => {
-    const { selectedUsers } = this.state
-    this.setState({
-      selectedUsers: selectedUsers.some(u => u.user_id === item.user_id)
-        ? selectedUsers.filter(u => u.user_id !== item.user_id)
-        : [...selectedUsers, item],
-    })
+    if (this.selectedUserItems[item.user_id]) {
+      delete this.selectedUserItems[item.user_id]
+    } else {
+      this.selectedUserItems[item.user_id] = item
+    }
   }
 
-  setName = (name: string) =>
-    this.setState({
-      name,
-    })
-
   create = () => {
-    const { selectedUsers } = this.state
-
     const listItemRemoved = this.props.listItem.filter(
-      itm => !selectedUsers.some(u => u.user_id === itm.user_id),
+      itm => !this.selectedUserItems[itm.user_id],
     )
-
-    userStore.editGroup(this.props.groupName, selectedUsers, listItemRemoved)
-    RnDropdownSectionList.setIsShouldUpdateDropdownPosition(true)
+    userStore.editGroup(
+      this.props.groupName,
+      listItemRemoved,
+      this.selectedUserItems,
+    )
+    RnDropdown.setShouldUpdatePosition(true)
     Nav().backToPageContactEdit()
   }
 }
+
+const RenderItem = observer(
+  ({
+    item,
+    index,
+    selectedUsers,
+  }: {
+    item: UcBuddy
+    index: number
+    selectedUsers: { [k: string]: UcBuddy }
+  }) => {
+    const selectUser = (i: UcBuddy) => {
+      if (selectedUsers[item.user_id]) {
+        delete selectedUsers[item.user_id]
+      } else {
+        selectedUsers[item.user_id] = item
+      }
+    }
+    return (
+      <View key={`PageContactGroupEdit-${item.user_id}-${index}`}>
+        <RnTouchableOpacity
+          style={css.loadingIcon}
+          onPress={() => selectUser(item)}
+        >
+          <UserItem
+            id={item.user_id}
+            name={item.name || item.user_id}
+            avatar={item.profile_image_url}
+            isSelected={!!selectedUsers[item.user_id]}
+            onSelect={() => selectUser(item)}
+            isSelection
+          />
+        </RnTouchableOpacity>
+      </View>
+    )
+  },
+)

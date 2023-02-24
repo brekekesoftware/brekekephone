@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, createRef } from 'react'
+import { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
@@ -12,7 +12,7 @@ import { KeyPad } from '../components/CallKeyPad'
 import { ShowNumber } from '../components/CallShowNumbers'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnKeyboard } from '../stores/RnKeyboard'
@@ -24,7 +24,7 @@ export class PageCallDtmfKeypad extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -40,23 +40,24 @@ export class PageCallDtmfKeypad extends Component {
   }
 
   sendKey = (key: string) => {
-    const c = callStore.getCurrentCall()
-    if (!c) {
+    const c = getCallStore().getCurrentCall()
+    const cp = getAuthStore().getCurrentAccount()
+    if (!c || !cp) {
       return
     }
     sip.sendDTMF({
       signal: key,
       sessionId: c.id,
-      tenant: c.pbxTenant || getAuthStore().currentProfile.pbxTenant,
+      tenant: c.pbxTenant || cp.pbxTenant,
       talkerId: c.pbxTalkerId || c.partyNumber,
     })
   }
 
   render() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     return (
       <Layout
-        title={c?.computedName}
+        title={c?.getDisplayName()}
         description={intl`Keypad dial manually`}
         onBack={Nav().backToPageCallManage}
       >
@@ -92,13 +93,11 @@ export class PageCallDtmfKeypad extends Component {
                   min = min - 1
                 }
               }
-              // Update text to trigger render
               const t = this.txt
               this.txt = t.substring(0, min) + v + t.substring(max)
-              //
-              const p = min + (isDelete ? 0 : 1)
-              this.txtSelection.start = p
-              this.txtSelection.end = p
+              const position = min + (isDelete ? 0 : 1)
+              this.txtSelection.start = position
+              this.txtSelection.end = position
             }}
             showKeyboard={this.showKeyboard}
           />

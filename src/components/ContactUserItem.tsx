@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC, ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
@@ -14,6 +14,7 @@ import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { trimHtml } from '../utils/trimHtml'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { RnCheckBox } from './RnCheckbox'
@@ -116,6 +117,8 @@ export const UserItem: FC<
     disabled?: boolean
     isSelection?: boolean
     isSelected?: boolean
+    parkNumber?: string
+    phonebook?: string
     onSelect?: () => void
   }>
 > = observer(p0 => {
@@ -143,6 +146,8 @@ export const UserItem: FC<
     disabled,
     isSelection,
     isSelected,
+    parkNumber,
+    phonebook,
     onSelect,
     ...p
   } = p0
@@ -199,17 +204,25 @@ export const UserItem: FC<
               style={css.IconGroup}
             />
           </View>
-        ) : (
+        ) : !parkNumber ? (
           <Avatar
             source={{ uri: avatar as string }}
             status={p0.status}
             {...p}
             style={css.WithSpace}
           />
-        )}
+        ) : null}
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
-            <RnText black bold singleLine>
+            <RnText
+              black
+              bold
+              singleLine
+              style={{
+                color:
+                  name === intl`<Unnamed>` ? v.colors.greyTextChat : 'black',
+              }}
+            >
               {getPartyName(partyNumber) ||
                 partyName ||
                 name ||
@@ -222,9 +235,22 @@ export const UserItem: FC<
               </RnText>
             )}
           </View>
+          {!!parkNumber && (
+            <RnText normal small style={css.CallCreatedAt}>
+              {intl`Park number: ` + `${parkNumber}`}
+            </RnText>
+          )}
+
+          {!!phonebook && (
+            <RnText normal small style={css.CallCreatedAt}>
+              {phonebook}
+            </RnText>
+          )}
           {!isRecentCall && !!lastMessage && (
             <RnText normal singleLine small>
-              {lastMessage}
+              {typeof lastMessage === 'string'
+                ? trimHtml(lastMessage)
+                : lastMessage}
             </RnText>
           )}
           {((isRecentCall && !lastMessage) || isVoicemail) && (

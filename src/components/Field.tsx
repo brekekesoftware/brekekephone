@@ -1,8 +1,7 @@
-import flow from 'lodash/flow'
-import omit from 'lodash/omit'
+import { flow, omit } from 'lodash'
 import { observer } from 'mobx-react'
 import { ReactElementLike } from 'prop-types'
-import React, { FC, useRef } from 'react'
+import { FC, useRef } from 'react'
 import {
   ActivityIndicator,
   Keyboard,
@@ -243,6 +242,7 @@ export const Field: FC<
     error: string
     loading: boolean
     horizontalInput: string[]
+    maxLength?: number
   }>
 > = observer(({ ...props }) => {
   if (props.isGroup) {
@@ -330,7 +330,7 @@ export const Field: FC<
       props?.onValueChange && props?.onValueChange(newPark)
     }
     return (
-      <View style={[css.Field_ViewRow]}>
+      <View style={css.Field_ViewRow}>
         <RnTextInput
           ref={inputRef}
           {...omit(props, [
@@ -344,11 +344,11 @@ export const Field: FC<
             'createBtnIcon',
             'onRemoveBtnPress',
             'removeBtnIcon',
+            'disabled',
             'error',
           ])}
           placeholder={intl`park number`}
           placeholderTextColor={'grey'}
-          keyboardType={'numeric'}
           onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
           onChangeText={txt => onChangeNumber(txt)}
           onFocus={() => {
@@ -371,6 +371,7 @@ export const Field: FC<
             'createBtnIcon',
             'onRemoveBtnPress',
             'removeBtnIcon',
+            'disabled',
             'error',
           ])}
           placeholder={intl`label`}
@@ -500,6 +501,7 @@ export const Field: FC<
             {props.inputElement || (
               <RnTextInput
                 disabled
+                maxLength={props?.maxLength || 100000}
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
                 style={[css.Field_TextInput, props.textInputStyle]}
                 value={

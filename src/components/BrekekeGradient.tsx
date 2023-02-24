@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 import LinearGradient, {
   LinearGradientProps,
@@ -13,12 +13,15 @@ const css = StyleSheet.create({
   },
 })
 
-export const BrekekeGradient: FC<
-  Omit<LinearGradientProps, 'colors'>
-> = props => (
+export type BrekekeGradientProps = Omit<LinearGradientProps, 'colors'> & {
+  white?: boolean
+}
+export const BrekekeGradient: FC<BrekekeGradientProps> = props => (
   <LinearGradient
     {...props}
-    colors={[v.colors.primaryFn(0.2), v.revBg]}
+    colors={
+      props.white ? ['white', 'white'] : [v.colors.primaryFn(0.2), v.revBg]
+    }
     style={[css.BrekekeGradient, props.style]}
   />
 )

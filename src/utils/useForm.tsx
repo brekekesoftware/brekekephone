@@ -1,11 +1,12 @@
-import flow from 'lodash/flow'
-import get from 'lodash/get'
+import { flow, get } from 'lodash'
 import { observer } from 'mobx-react'
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 
+import { PbxBook } from '../api/brekekejs'
 import { Field } from '../components/Field'
+import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
 import { CreatedStore } from './createStore'
 import { arrToMap, mapToMap } from './toMap'
 import { useStore } from './useStore'
@@ -17,6 +18,7 @@ export const useForm = () => {
     $: CreatedStore & {
       dirtyMap: { [k: string]: boolean }
       errorMap: { [k: string]: string }
+      currentFocus: string | undefined
       props: {
         $: CreatedStore
         fields: FormField[]
@@ -26,15 +28,21 @@ export const useForm = () => {
       submit: Function
       onFieldBlur: Function
       onFieldChange: Function
+      onFocus: Function
     },
   ) => ({
     observable: {
       dirtyMap: {},
       errorMap: {},
+      currentFocus: undefined,
     },
     props: {},
     onFieldBlur: (k: string) => {
       $.set(`dirtyMap.${k}`, true)
+      // $.set('currentFocus', undefined)
+    },
+    onFocus: (k: string) => {
+      $.set('currentFocus', k)
     },
     onFieldChange: (k: string, v: string) => {
       // TODO batch, remember k
@@ -46,7 +54,7 @@ export const useForm = () => {
     submit: () => {
       const { $: $parent, fields, k, onValidSubmit } = $.props
       const rules = arrToMap(
-        fields.filter((f: FormField) => f.rule && !f.disabled),
+        fields.filter((f: FormField) => f.rule && !f.disabled && !f.hidden),
         (f: FormField) => f.name,
         (f: FormField) => f.rule,
       ) as { [k: string]: unknown }
@@ -83,7 +91,9 @@ export const useForm = () => {
                   key={i}
                   {...f}
                   error={
-                    !f.disabled && $.dirtyMap[f.name]
+                    !f.disabled &&
+                    $.dirtyMap[f.name] &&
+                    $.currentFocus !== f.name
                       ? $.errorMap[f.name]
                       : undefined
                   }
@@ -105,6 +115,7 @@ export const useForm = () => {
                         : (...args: unknown[]) => f.onValueChange(...args),
                     ].filter(_ => _),
                   )}
+                  onFocus={() => $.onFocus(f.name)}
                   // Error
                   value={
                     // Default value from store
@@ -115,11 +126,20 @@ export const useForm = () => {
                 />
               ),
           )}
+          {k === 'phonebook' && $.currentFocus === 'phonebook' && (
+            <PhonebookAutoComplete
+              value={get($parent, k + '.phonebook')}
+              onPressItem={(item: PbxBook) => {
+                $parent.set(k + '.phonebook', item.phonebook)
+                $.onFieldChange('phonebook', item.phonebook)
+              }}
+            />
+          )}
         </RnForm>
       )
     }),
   })
-  const $ = useStore(f0) as unknown as FormContext
+  const $ = useStore(f0) as any as FormContext
   return [$.render, $.submit, $.onFieldChange]
 }
 

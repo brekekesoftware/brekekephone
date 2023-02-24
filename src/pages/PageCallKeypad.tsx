@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, createRef } from 'react'
+import { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
@@ -10,7 +10,7 @@ import {
 import { KeyPad } from '../components/CallKeyPad'
 import { ShowNumber } from '../components/CallShowNumbers'
 import { Layout } from '../components/Layout'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
@@ -32,7 +32,7 @@ export class PageCallKeypad extends Component {
       })
       return
     }
-    callStore.startCall(this.txt)
+    getCallStore().startCall(this.txt)
   }
 
   render() {

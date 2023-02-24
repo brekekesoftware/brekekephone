@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import {
@@ -13,10 +12,9 @@ import {
   mdiVolumeHigh,
   mdiVolumeMedium,
 } from '../assets/icons'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnStacker } from '../stores/RnStacker'
 import { Duration } from '../stores/timerStore'
 import { ButtonIcon } from './ButtonIcon'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
@@ -52,12 +50,9 @@ const css = StyleSheet.create({
 })
 
 export const CallBar = observer(() => {
-  const c = callStore.getCurrentCall()
-  if (
-    RnStacker.stacks.some(t => t.name === 'PageCallManage') ||
-    !c ||
-    (c.incoming && !c.answered)
-  ) {
+  const s = getCallStore()
+  const c = s.getCurrentCall()
+  if (s.inPageCallManage || !c || (c.incoming && !c.answered)) {
     return null
   }
   return (
@@ -73,7 +68,9 @@ export const CallBar = observer(() => {
           />
         </View>
         <View style={css.CallBar_Info}>
-          <RnText style={css.Notify_Info_PartyName}>{c.computedName}</RnText>
+          <RnText style={css.Notify_Info_PartyName}>
+            {c.getDisplayName()}
+          </RnText>
           <RnText>
             {c.answered ? (
               <Duration>{c.answeredAt}</Duration>
@@ -104,13 +101,13 @@ export const CallBar = observer(() => {
                     <ButtonIcon
                       bdcolor={v.borderBg}
                       color={
-                        callStore.isLoudSpeakerEnabled
+                        getCallStore().isLoudSpeakerEnabled
                           ? v.colors.primary
                           : v.color
                       }
-                      onPress={callStore.toggleLoudSpeaker}
+                      onPress={getCallStore().toggleLoudSpeaker}
                       path={
-                        callStore.isLoudSpeakerEnabled
+                        getCallStore().isLoudSpeakerEnabled
                           ? mdiVolumeHigh
                           : mdiVolumeMedium
                       }

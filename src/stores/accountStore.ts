@@ -1,0 +1,370 @@
+import jsonStableStringify from 'json-stable-stringify'
+import { debounce, uniqBy } from 'lodash'
+import { action, computed, observable, runInAction } from 'mobx'
+import { Platform } from 'react-native'
+import { v4 as newUuid } from 'uuid'
+
+import { UcBuddy, UcBuddyGroup } from '../api/brekekejs'
+import { SyncPnToken } from '../api/syncPnToken'
+import { RnAsyncStorage } from '../components/Rn'
+import { currentVersion } from '../components/variables'
+import { ParsedPn } from '../utils/PushNotification-parse'
+import { BrekekeUtils } from '../utils/RnNativeModules'
+import { arrToMap } from '../utils/toMap'
+import { waitTimeout } from '../utils/waitTimeout'
+import { compareSemVer } from './debugStore'
+import { intlDebug } from './intl'
+import { RnAlert } from './RnAlert'
+
+let resolveFn: Function | undefined
+const storagePromise = new Promise(resolve => {
+  resolveFn = resolve
+})
+export type PNOptions = 'APNs' | 'LPC' | undefined
+export type Account = {
+  id: string
+  pbxHostname: string
+  pbxPort: string
+  pbxTenant: string
+  pbxUsername: string
+  pbxPassword: string
+  pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
+  pbxTurnEnabled: boolean
+  pbxLocalAllUsers?: boolean
+  pushNotificationEnabled: boolean
+  pushNotificationEnabledSynced?: boolean
+  parks?: string[]
+  parkNames?: string[]
+  ucEnabled: boolean
+  displayOfflineUsers?: boolean
+  navIndex: number
+  navSubMenus: string[]
+}
+export type AccountData = {
+  id: string
+  accessToken: string
+  recentCalls: {
+    id: string
+    incoming: boolean
+    answered: boolean
+    partyName: string
+    partyNumber: string
+    created: string
+  }[]
+  recentChats: {
+    id: string // thread id
+    name: string
+    text: string
+    type: number
+    group: boolean
+    unread: boolean
+    created: string
+  }[]
+  pbxBuddyList?: {
+    screened: boolean
+    users: (UcBuddy | UcBuddyGroup)[]
+  }
+  palParams?: { [k: string]: string }
+  userAgent?: string
+  pnExpires?: string
+}
+
+class AccountStore {
+  @observable appInitDone = false
+  @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+  waitStorageLoaded = () => storagePromise
+
+  @observable accounts: Account[] = []
+  @computed get accountsMap() {
+    return arrToMap(this.accounts, 'id', (p: Account) => p) as {
+      [k: string]: Account
+    }
+  }
+  @observable accountData: AccountData[] = []
+
+  genEmptyAccount = (): Account => ({
+    id: newUuid(),
+    pbxTenant: '',
+    pbxUsername: '',
+    pbxHostname: '',
+    pbxPort: '',
+    pbxPassword: '',
+    pbxPhoneIndex: '',
+    pbxTurnEnabled: false,
+    pushNotificationEnabled: Platform.OS === 'web' ? false : true,
+    parks: [] as string[],
+    parkNames: [] as string[],
+    ucEnabled: false,
+    navIndex: -1,
+    navSubMenus: [],
+  })
+
+  loadAccountsFromLocalStorage = async () => {
+    const arr = await RnAsyncStorage.getItem('_api_profiles')
+    let d: TAccountDataInStorage | undefined
+    if (arr && !Array.isArray(arr)) {
+      try {
+        d = JSON.parse(arr)
+      } catch (err) {
+        d = undefined
+      }
+    }
+    if (d) {
+      let { profileData: accountData, profiles: accounts } = d
+      if (Array.isArray(d)) {
+        // Lower version compatible
+        accounts = d
+        accountData = []
+      }
+      // Set tenant to '-' if empty
+      accounts.forEach(a => {
+        a.pbxTenant = a.pbxTenant || '-'
+      })
+      runInAction(() => {
+        this.accounts = accounts.filter(a => a.id && a.pbxUsername)
+        if (accounts.length !== this.accounts.length) {
+          console.error(
+            'loadAccountsFromLocalStorage error missing id or pbxUsername',
+          )
+        }
+        this.accountData = uniqBy(accountData, 'id')
+      })
+    }
+    resolveFn?.()
+    resolveFn = undefined
+  }
+  private saveAccountsToLocalStorage = async () => {
+    try {
+      const profiles = this.accounts.filter(a => a.id && a.pbxUsername)
+      if (profiles.length !== this.accounts.length) {
+        console.error(
+          'saveAccountsToLocalStorage error missing id or pbxUsername',
+        )
+      }
+      await RnAsyncStorage.setItem(
+        '_api_profiles',
+        JSON.stringify({
+          profiles,
+          profileData: this.accountData,
+        }),
+      )
+    } catch (err) {
+      RnAlert.error({
+        message: intlDebug`Failed to save accounts to local storage`,
+        err: err as Error,
+      })
+    }
+  }
+  private _saveAccountsToLocalStorageDebounced = debounce(
+    this.saveAccountsToLocalStorage,
+    100,
+    { maxWait: 1000 },
+  )
+  saveAccountsToLocalStorageDebounced = () => {
+    // Set tenant to '-' if empty
+    this.accounts.forEach(a => {
+      a.pbxTenant = a.pbxTenant || '-'
+    })
+    return this._saveAccountsToLocalStorageDebounced()
+  }
+
+  @action upsertAccount = (p: Partial<Account>) => {
+    const a = this.accounts.find(_ => _.id === p.id)
+    if (!a) {
+      this.accounts.push(p as Account)
+    } else {
+      const clonedA = { ...a } // Clone before assign
+      Object.assign(a, p)
+      // TODO handle case change phone index
+      if (getAccountUniqueId(clonedA) !== getAccountUniqueId(a)) {
+        clonedA.pushNotificationEnabled = false
+        SyncPnToken().sync(clonedA, {
+          noUpsert: true,
+        })
+      } else if (
+        typeof p.pushNotificationEnabled === 'boolean' &&
+        p.pushNotificationEnabled !== clonedA.pushNotificationEnabled
+      ) {
+        a.pushNotificationEnabledSynced = false
+        SyncPnToken().sync(a, {
+          onError: err => {
+            RnAlert.error({
+              message: intlDebug`Failed to sync Push Notification settings for ${a.pbxUsername}`,
+              err,
+            })
+            a.pushNotificationEnabled = clonedA.pushNotificationEnabled
+            a.pushNotificationEnabledSynced =
+              clonedA.pushNotificationEnabledSynced
+            this.saveAccountsToLocalStorageDebounced()
+          },
+        })
+      }
+    }
+    this.saveAccountsToLocalStorageDebounced()
+  }
+  @action removeAccount = (id: string) => {
+    const a = this.accounts.find(_ => _.id === id)
+    this.accounts = this.accounts.filter(_ => _.id !== id)
+    this.saveAccountsToLocalStorageDebounced()
+    if (a) {
+      a.pushNotificationEnabled = false
+      SyncPnToken().sync(a, {
+        noUpsert: true,
+      })
+    }
+  }
+
+  find = async (a: Partial<Account>) => {
+    await storagePromise
+    // This accept partial compare: only pbxUsername is required to find
+    // This behavior is needed because returned data may be incompleted
+    // For eg: PN data doesnt have all the fields to compare
+    return accountStore.accounts.find(_ => compareAccount(_, a))
+  }
+  findByPn = (n: ParsedPn) =>
+    this.find({
+      pbxUsername: n.to,
+      pbxTenant: n.tenant,
+      pbxHostname: n.pbxHostname,
+      pbxPort: n.pbxPort,
+    })
+
+  findData = async (a?: AccountUnique) => {
+    await storagePromise
+    return this.findDataSync(a)
+  }
+  findDataSync = (a?: AccountUnique) => {
+    if (!a || !a.pbxUsername || !a.pbxTenant || !a.pbxHostname || !a.pbxPort) {
+      return
+    }
+    const id = getAccountUniqueId(a)
+    return this.accountData.find(d => d.id === id)
+  }
+  findDataByPn = async (n: ParsedPn) => {
+    const a = await this.findByPn(n)
+    if (!a) {
+      return
+    }
+    return this.findData(a)
+  }
+
+  findDataAsync = async (a: AccountUnique): Promise<AccountData> => {
+    // Async to use in mobx to not trigger data change in render
+    // This method will update the data if not found in storage
+    const d = await this.findData(a)
+    if (d) {
+      return d
+    }
+    const newD = {
+      id: getAccountUniqueId(a),
+      accessToken: '',
+      recentCalls: [],
+      recentChats: [],
+      pbxBuddyList: undefined,
+    }
+    await waitTimeout(17)
+    this.updateAccountData(newD)
+    return newD
+  }
+
+  updateAccountData = (d: AccountData) => {
+    const arr = [d, ...this.accountData.filter(d2 => d2.id !== d.id)]
+    if (arr.length > 20) {
+      arr.pop()
+    }
+    runInAction(() => {
+      this.accountData = arr
+    })
+    this.saveAccountsToLocalStorageDebounced()
+  }
+}
+
+export type AccountUnique = Pick<
+  Account,
+  'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort'
+>
+export const getAccountUniqueId = (a: AccountUnique) =>
+  jsonStableStringify({
+    u: a.pbxUsername,
+    t: a.pbxTenant || '-',
+    h: a.pbxHostname,
+    p: a.pbxPort,
+  })
+
+// compareAccount in case data is fragment
+const compareField = (p1: object, p2: object, field: keyof AccountUnique) => {
+  const v1 = p1[field as keyof typeof p1]
+  const v2 = p2[field as keyof typeof p2]
+  return !v1 || !v2 || v1 === v2
+}
+export const compareAccount = (p1: { pbxUsername: string }, p2: object) => {
+  return (
+    p1.pbxUsername && // Must have pbxUsername
+    compareField(p1, p2, 'pbxUsername') &&
+    compareField(p1, p2, 'pbxTenant') &&
+    compareField(p1, p2, 'pbxHostname') &&
+    compareField(p1, p2, 'pbxPort')
+  )
+}
+
+export const accountStore = new AccountStore()
+export type RecentCall = AccountData['recentCalls'][0]
+
+type TAccountDataInStorage = {
+  profiles: Account[]
+  profileData: AccountData[]
+}
+
+type LastSignedInId = {
+  id: string
+  at: number
+  version: string
+  logoutPressed?: boolean
+  uptime?: number
+  autoSignInBrekekePhone?: boolean
+}
+
+export const getLastSignedInId = async (
+  checkAutoSignInBrekekePhone?: boolean,
+) => {
+  const j = await RnAsyncStorage.getItem('lastSignedInId')
+  let d = undefined as any as LastSignedInId
+  try {
+    d = j && JSON.parse(j)
+  } catch (err) {}
+  if (d && 'h' in d) {
+    // backward compatibility json is the unique account id
+    d = j as any as LastSignedInId
+  }
+  if (!d?.id) {
+    d = {
+      id: (d || j || '') as any as string,
+      at: Date.now(),
+      version: currentVersion,
+    }
+  }
+  if (!checkAutoSignInBrekekePhone) {
+    return d
+  }
+  if (d.logoutPressed || compareSemVer(currentVersion, d.version) > 0) {
+    d.autoSignInBrekekePhone = false
+    return d
+  }
+  d.uptime = await BrekekeUtils.systemUptimeMs()
+  d.autoSignInBrekekePhone = d.uptime > 0 && d.uptime > Date.now() - d.at
+  return d
+}
+export const saveLastSignedInId = async (id: string | false) => {
+  if (id === false) {
+    const d = await getLastSignedInId()
+    d.logoutPressed = true
+    await RnAsyncStorage.setItem('lastSignedInId', JSON.stringify(d))
+    return
+  }
+  const j = JSON.stringify({
+    id,
+    at: Date.now(),
+    version: currentVersion,
+  })
+  await RnAsyncStorage.setItem('lastSignedInId', j)
+}

@@ -1,21 +1,29 @@
-import get from 'lodash/get'
+import jsonStableStringify from 'json-stable-stringify'
+import { get } from 'lodash'
 import { AppState, Platform } from 'react-native'
 
+import { checkAndRemovePnTokenViaSip } from '../api/sip'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
 import { BrekekeUtils } from './RnNativeModules'
+import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
   'title',
+  'threadId',
   'alert',
   'body',
   'message',
   'from',
+  'image',
+  'image_size',
   'displayname',
   'to',
   'tenant',
+  'host',
   'pbxHostname',
   'pbxPort',
   'my_custom_data',
@@ -28,18 +36,20 @@ const keysInCustomNotification = [
   'webphone.turn.server',
   'webphone.turn.username',
   'webphone.turn.credential',
+  'autoanswer',
   // Others
   'pn-id',
   'callkeepUuid',
   'callkeepAt',
+  'time',
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
   keysInCustomNotification.push('x_' + k)
 })
 
-const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
-  fields
+const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
+  const n: ParsedPn = fields
     .filter(f => !!f)
     .map(f => {
       // @ts-ignore
@@ -50,7 +60,7 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
       }
       return f
     })
-    .reduce((map: { [k: string]: unknown }, f: { [k: string]: unknown }) => {
+    .reduce((map: { [k: string]: string }, f: { [k: string]: string }) => {
       if (!f || typeof f !== 'object') {
         return map
       }
@@ -62,6 +72,12 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn =>
       })
       return map
     }, {})
+  if (n.image) {
+    getCallStore().updateCallAvatar(n.image, n.image_size)
+  }
+  return n
+}
+
 export const parseNotificationData = (raw: object) => {
   let n: ParsedPn | undefined
   if (Platform.OS === 'android') {
@@ -102,12 +118,11 @@ export const parseNotificationData = (raw: object) => {
       return
     }
     const k2 = k.substr(2)
-    // if (!isNoU(n2[k2])) {
-    //   return
-    // }
     n2[k2] = v
   })
+
   n.id = get(n, 'pn-id')
+  n.pbxHostname = n.pbxHostname || get(n, 'host')
 
   const phoneId: string = get(n, 'phone.id')
   const sipAuth: string = get(n, 'auth')
@@ -116,14 +131,17 @@ export const parseNotificationData = (raw: object) => {
   const turnServer: string = get(n, 'webphone.turn.server')
   const turnUsername: string = get(n, 'webphone.turn.username')
   const turnCredential: string = get(n, 'webphone.turn.credential')
+  const autoAnswer = toBoolean(get(n, 'autoanswer'))
   n.sipPn = {
     phoneId,
     sipAuth,
+    sipAuthAt: Date.now(),
     sipWssPort,
     dtmfSendPal,
     turnServer,
     turnUsername,
     turnCredential,
+    autoAnswer,
   }
 
   if (!n.body) {
@@ -148,6 +166,7 @@ export const parseNotificationData = (raw: object) => {
   n.displayName = get(n, 'displayname') || n.from
 
   n.isCall = !!n.id || !!n.sipPn.sipAuth
+  n.time = Number(n.time) || 0
 
   return n
 }
@@ -155,36 +174,39 @@ export const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
-export const signInByLocalNotification = (n: ParsedPn) => {
-  const p = getAuthStore().findProfile({
-    ...n,
-    pbxUsername: n.to,
-    pbxTenant: n.tenant,
-  })
-  if (getAuthStore().signedInId === p?.id) {
-    getAuthStore().resetFailureState()
+export const signInByLocalNotification = async (n: ParsedPn) => {
+  const a = await accountStore.findByPn(n)
+  const as = getAuthStore()
+  if (as.signedInId === a?.id) {
+    as.resetFailureState()
   }
-  if (p?.id && !getAuthStore().signedInId) {
-    getAuthStore().signIn(p.id)
+  if (a?.id && !as.signedInId) {
+    as.signIn(a)
   }
 }
 export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   if (!raw) {
-    return null
+    return
   }
-
-  const id = raw['id'] as string
-  if (id?.startsWith('missedcall')) {
-    // Nav after signin in App.tsx mobx observe?
-    Nav().customPageIndex = Nav().goToPageCallRecents
-    waitTimeout().then(Nav().goToPageCallRecents)
-  }
-
   const n = parseNotificationData(raw)
   if (!n) {
-    return null
+    return
   }
-
+  const accountExist = await checkAndRemovePnTokenViaSip(n)
+  //
+  // Handle duplicated pn on android
+  if (Platform.OS === 'android') {
+    const k = n.id || jsonStableStringify(raw)
+    if (androidAlreadyProccessedPn[k]) {
+      console.log(
+        `SIP PN debug: PushNotification-parse: already processed k=${k}`,
+      )
+      return
+    }
+    androidAlreadyProccessedPn[k] = true
+  }
+  //
+  // Update isLocal
   isLocal = Boolean(
     isLocal ||
       raw.my_custom_data ||
@@ -192,98 +214,129 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
       n.my_custom_data ||
       n.is_local_notification,
   )
-
-  if (Platform.OS === 'android') {
-    if (n.id && androidAlreadyProccessedPn[n.id]) {
-      console.error(
-        `SIP PN debug: PushNotification-parse: already processed pnId=${n.id}`,
-      )
-      return null
-    }
-    androidAlreadyProccessedPn[n.id] = true
-  }
-
-  if (n.callkeepAt) {
-    console.error(
-      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
-    )
-  }
-  if (isLocal) {
-    signInByLocalNotification(n)
-    if (!id?.startsWith('missedcall')) {
-      const nav = Nav()
+  //
+  // Handle nav on notification
+  const rawId = raw['id'] as string | undefined
+  const nav = Nav()
+  if (!accountExist) {
+    // Do nothing
+  } else if (rawId?.startsWith('missedcall')) {
+    // Missed call local notification
+    nav.customPageIndex = nav.goToPageCallRecents
+    waitTimeout().then(Nav().goToPageCallRecents)
+  } else if (isLocal) {
+    // Chat local notification
+    await signInByLocalNotification(n)
+    if (n.threadId && n.threadId.length > 0) {
+      nav.customPageIndex = nav.goToPageChatDetail
+      waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
+    } else {
       nav.customPageIndex = nav.goToPageChatRecents
       waitTimeout().then(nav.goToPageChatRecents)
     }
-    console.error('SIP PN debug: PushNotification-parse: local notification')
-    return null
+    console.log('SIP PN debug: PushNotification-parse: local notification')
+    return
   }
+  const as = getAuthStore()
+  const cs = getCallStore()
+  //
+  // Handle chat notification
   if (!n.isCall) {
-    console.error('SIP PN debug: PushNotification-parse: n.isCall=false')
-    return AppState.currentState !== 'active' ||
-      getAuthStore().currentProfile?.pbxUsername !== n.to
-      ? n
-      : null
+    console.log('SIP PN debug: PushNotification-parse: n.isCall=false')
+    if (!accountExist) {
+      console.log(
+        'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
+      )
+      return
+    }
+    // App currently active and already logged in using this account
+    if (
+      AppState.currentState === 'active' &&
+      as.getCurrentAccount()?.pbxUsername === n.to
+    ) {
+      return
+    }
+    return n
   }
-  console.error('SIP PN debug: call signInByNotification')
-  getAuthStore().signInByNotification(n)
+  //
+  // Handle call notification
+  if (n.callkeepAt) {
+    console.log(
+      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
+    )
+  }
+  console.log('SIP PN debug: call signInByNotification')
+  as.signInByNotification(n)
   // Custom fork of react-native-voip-push-notification to get callkeepUuid
   // Also we forked fcm to insert callkeepUuid there as well
   if (!n.callkeepUuid) {
     // Should not happen
-    console.error(
+    console.log(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
   }
-  callStore.calls
+  cs.calls
     .filter(c => c.pnId === n.id && !c.callkeepUuid)
     .forEach(c => {
       Object.assign(c, { callkeepUuid: n.callkeepUuid })
     })
+
   // Continue handling incoming call in android
   if (Platform.OS === 'android') {
-    callStore.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
+    cs.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,
     )
-    console.error(`SIP PN debug: getPendingUserAction=${action}`)
+    console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
-      callStore.onCallKeepAnswerCall(n.callkeepUuid)
+      cs.onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {
-      callStore.onCallKeepEndCall(n.callkeepUuid)
+      cs.onCallKeepEndCall(n.callkeepUuid)
     }
     // Already invoke callkeep in java code
   }
   // Let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
-  return null
+  return
 }
 
 export type ParsedPn = {
   id: string
   title: string
   body: string
+  threadId: string
   alert: string
   message: string
   from: string
+  image: string
+  image_size: string
   displayName: string
   to: string
   tenant: string
-  pbxHostname: string
-  pbxPort: string
+  pbxHostname?: string
+  pbxPort?: string
   my_custom_data: unknown
   is_local_notification: boolean
   isCall: boolean
   sipPn: SipPn
   callkeepUuid: string
   callkeepAt: string
+  time: number
 }
 export type SipPn = {
   phoneId: string
   sipAuth: string
+  sipAuthAt: number
   sipWssPort: string
   dtmfSendPal: string
   turnServer: string
   turnUsername: string
   turnCredential: string
+  autoAnswer: boolean
 }
+
+export const toXPN = (n: object) =>
+  Object.entries(n).reduce((m, [k, v]: [string, unknown]) => {
+    m['x_' + k] = v
+    return m
+  }, {} as { [k: string]: unknown })

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { sip } from '../api/sip'
@@ -12,8 +12,8 @@ import {
 import { Avatar } from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
-import { callStore } from '../stores/callStore'
-import { contactStore } from '../stores/contactStore'
+import { getCallStore } from '../stores/callStore'
+import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 
@@ -79,7 +79,7 @@ export class PageCallTransferAttend extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (this.prevId && this.prevId !== c?.id) {
       Nav().backToPageCallManage()
     }
@@ -95,7 +95,7 @@ export class PageCallTransferAttend extends Component {
   }
 
   render() {
-    const c = callStore.getCurrentCall()
+    const c = getCallStore().getCurrentCall()
     if (!c) {
       return null
     }
@@ -109,7 +109,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__from]}>
             <Avatar source={{ uri: usersource?.avatar }} />
             <RnText center singleLine small>
-              {c.computedName}
+              {c.getDisplayName()}
             </RnText>
           </View>
           <View style={css.Arrow}>
@@ -118,7 +118,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__to]}>
             <Avatar source={{ uri: usertarget?.avatar }} />
             <RnText center singleLine small>
-              {c.transferring}
+              {getPartyName(c.transferring) || c.transferring}
             </RnText>
           </View>
         </View>

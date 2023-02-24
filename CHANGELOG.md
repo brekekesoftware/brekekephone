@@ -1,3 +1,186 @@
+#### 2.11.12
+
+- Fix after restart server, it should show connecting state and reconnect
+- Fix small screen device, it should display the call UI more properly
+
+#### 2.11.11
+
+- Fix android case PN-off it should vibrate ring correctly
+- Fix page call transfer it should have search functionality
+- Fix PN-off incoming call notify it should show number of other incoming calls
+- Fix ios it should have audio in some cases with multiple calls, using hacky toggle speaker
+
+#### 2.11.10
+
+- Fix bug it should compare pbx versions correctly
+- Disable non-tls or plain http connection for lpc and avatar image html
+- Save getProductInfo webphone.useragent to local storage and use it in the next sip login
+- Save getProductInfo webphone.pn_expires to local storage and use it in the next incoming PN to check if the pn expired. If it is not present, use 50000 as default 50 seconds
+- Update call buttons via sip header X-WEBPHONE-CALL. The config will be merged one by one each time it receives
+- Update jsonrpc.js to fix bug it should show error if pal login failed
+
+#### 2.11.9
+
+- Try fix bug can not logout, due to corrupted data in that phone local storage
+- Allow to download debug log without logout
+- Embed:
+  - When unhold a call then set that call as the current call (also included in the main build)
+
+#### 2.11.8
+
+- Disable hangup button when pbx config webphone.call.hangup = false
+- Fix android PN screen webview can not load http image: allow http clear text traffic
+- Update ios lpc config:
+  - Use config from pbx getProductInfo: webphone.lpc.{port,wifi,keyhash,pn}
+  - If webphone.lpc.port is present, which mean lpc is enabled. Otherwise if lpc is disabled, all other lpc config will be ignored
+  - If webphone.lpc.wifi is present, it will be split by comma. If it is not present, the current connected wifi will be used for lpc
+  - If webphone.lpc.keyhash is present, which mean tls is enabled. The key hash will be supplied to establish tls connection
+  - If webphone.lpc.pn is true, it will enable both lpc and regular pn at the same time, otherwise it will disable regular pn and use only lpc
+- Use new pnmanage pal command for pbx version 3.14.5 and above, backward compatibility for lower versions
+
+#### 2.11.7
+
+- Keep avatar webview html/js state for outgoing calls or incoming calls without PN
+- Fix android PN screen avatar webview should not keep connection
+
+#### 2.11.6
+
+- Use PN screen for incoming call so it will keep html/js state in avatar
+- Use `-` as the tenant if it is empty
+- Keep the sip token to reuse until expired after 90 seconds
+
+#### 2.11.5
+
+- Handle chat message ios LPC PN
+- Handle avatar as html url using webview
+- Fix `__DEV__` is not defined on web browser
+
+#### 2.11.4
+
+- Merge ios lpc into master
+- Desktop notification
+- Fix ios should not logout when app is in background
+- Hide buttons using data from getProductInfo
+- Display park label instead of number in other screens
+- Fix ios RBT bug never stop
+- Improve phonebook: remove toggle shared, add icon (s) for shared, fix checkbox keep displaying after finish deleting, use dislay_name
+- Fix recording status using notify_callrecording
+- Fix android avatar still shows when video call
+- Embed:
+  - Allow to get the raw session object which can get the header on call events. The object should be available for all the events: new call, call updated, call ended. See in the example `c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')`
+  - Fix bug: should assign pal params before sign in
+  - Fix bug: should parse pal params correctly stripe out 'webphone.pal.param.'
+  - Fix bug: should move the `emit('pal')` to the bottom
+  - Add more fields to the account option for login: phoneIndex, ucDisplayOfflineUsers, pushNotification. See the example for more detail on typing and default value. The other 2 options: uc, parks are already included in the previous version.
+
+#### 2.11.3
+
+- Embed:
+  - Allow to set pal params
+  - Allow to set sip headers with makeCall
+  - Re-initialize / restart the instance
+  - Access webrtcclient instance, with inner sip instance
+
+#### 2.11.1
+
+- Save webphone.pal.param.user to local storage and reconnect if mismatch
+- Add some more space to Keypad with the call green button
+- Add dropdown to start voice/video call from screen user chat detail. For screen group chat detail, they were added already in the past
+- Fix: should not show "No Account" although it has
+- Improve: should not logout when app is in background or killed (android/ios), it should re-login automatically every time user open the app, unless:
+  - user pressed log out intentionally in the last session
+  - or a new version installed
+  - or the OS restarted
+  - or the app wake in background by push or by linking url
+- Handle PN data x_autoanswer:
+  - Only answer automatically if there is no other ongoing call
+  - android: working in most of cases: foreground, lock, kill, background. In some background case like press home button, although answer action was fired but it failed to connect to SIP server occasionally
+  - ios: only worked if app is foreground. Due to security privacy policy from Apple, it is difficult for us to automatically answer the call
+- Update logic of phonebook contact using phonebook.js
+- Display call duration in screen call detail
+- Fix loud speaker RBT for ios
+- Switch back/front camera in video call
+- Update park logic to correctly listen on events
+
+#### 2.10.9
+
+- Fix RBT low volume after a call
+- Embed: fix auto_login logic
+
+#### 2.10.8
+
+- Android: try to fix loud speaker is not showing correctly as UI in a rare case with RBT. Currently fix using hacky timeout 2000ms. Need to check the library incall-manager and merge their latest change to see if they fixed it in a correct way not hacky
+- ios: fix the issue with proximity sensor still works after end call
+- Fix text style callee name or caller name is cut off sometimes if too long
+- Fix avatar placeholder in case of no photo not showing on the browser
+- Do not use avatar UC url if UC is disabled
+- Do not send random parameter when get avatar url, in combination with a fix on server
+- Do not show error when failed to get appstore version
+- Update label DTMF -> KEYPAD
+
+#### 2.10.7
+
+- Fix avatar: remove cache, add loading, error
+
+#### 2.10.6
+
+- Fix 571: speaker on immediately after make a call does not work
+- Fix 572: speaker on does not affect when change from ringing to talking
+- Fix css icon text position change on length
+- Embed: merge into the main bundle
+
+#### 2.10.3
+
+- Reduce console error, use log instead for debug purpose
+- Some fixes remove PN token via sip header
+- Some fixes UC chat image url resolver
+- Allow loud speaker on early media
+- Fix issue ios no audio on early media
+
+#### 2.10.2
+
+- Remove user=\* in pal construction
+- Remove PN token via sip header if no account match
+
+#### 2.10.1
+
+- Fix 547: UC chat display name empty in some case
+- Fix 548: UC chat should not play sound + vibration in background
+- Fix 532: UC chat group name buddy list incorrect
+- Fix 537: UC chat send big file cause app crash
+- Fix 544 545: Fix retry login too frequently
+- Early media SDP handling
+- Show controls & keypad in outgoing call before answered/connected
+- Fix 456 533: Incorrect hold current call
+- Fix 481: Should not play both ring tone of Brekeke phone and device
+- Fix 529: Clear notification badge number when open screen recent calls
+- Fix 494: Message alert should not play sound or vibrate when talking
+- Show avatar in incoming/outbound/manage call using x-image
+- Handle PN canceled somewhere else SIP header
+- Fix 492 493 494 495 499 500 528ios: Various minor UC chat bugs
+- Fix sometimes can not logout, app stuck
+- Fix sometimes can not login, white screen
+- Embed: init api as a separated bundle
+
+#### 2.9.10
+
+- Fix: send file UC chat should work correctly
+- Fix: contact display name not correct
+
+#### 2.9.8
+
+- Enhancement for PBX buddy list
+
+#### 2.9.2
+
+- Implement PBX buddy list
+- Handle canceled PN call completed elsewhere: do not add history
+- Trim html on UC message render
+- Fix: android 10 rare case ringtone can not stop reported by Akira
+- Fix: PN switch enable take long time
+- Fix: bug chat scroll to end on new message
+- Web: Try trigger audio permission on OK press so it can play ringtone even window minimized
+
 #### 2.9.0
 
 - Update webrtcclient to 2.0.30.333
@@ -149,7 +332,7 @@
 - Auto accept/display image/video on UC chat. Certain kinds of file extensions are supported differently on each platform browser/ios/android. Generally jpg image and mp4 video
 - Reconnect SIP if PN token is expired or timeout of 10s
 - Try to cancel/not displaying the PN if caller canceled the call: add more logic and fix bugs
-- Insert call history for cancelled PN calls
+- Insert call history for canceled PN calls
 - Improve PN settings (enabled/disabled) loading (remove the loading icon covers the whole login screen, only show it on the switcher). Only show error if user proactively changes the setting
 - Add group chat icon to make it different with user icon
 - Add call history on group chat call, fix incorrect group name in call history

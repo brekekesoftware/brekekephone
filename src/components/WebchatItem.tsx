@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC, useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Conference } from '../api/brekekejs'
@@ -60,7 +60,7 @@ export const WebchatItem: FC<{
   // CONF_STATUS_INVITED: 1 => enabled join
   // CONF_STATUS_JOINED: 2 => enable show
   // CONF_STATUS_INVITED_WEBCHAT: 5 => enabled answer
-  const messages = chatStore.messagesByThreadId[data.conf_id] || []
+  const messages = chatStore.getMessagesByThreadId(data.conf_id)
   const isEnabledAnswer =
     data.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT
   const isEnabledJoin = data.conf_status === Constants.CONF_STATUS_INVITED
@@ -90,7 +90,7 @@ export const WebchatItem: FC<{
     <View style={[css.Row, isEnabledAnswer ? css.bgUnread : null]}>
       <View style={css.Column}>
         {isEnabledAnswer ? (
-          <RnTouchableOpacity onPress={answerPress} style={[css.BtnText]}>
+          <RnTouchableOpacity onPress={answerPress} style={css.BtnText}>
             <RnText normal white bold>
               {intl`Answer`}
             </RnText>

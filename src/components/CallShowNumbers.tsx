@@ -1,4 +1,4 @@
-import React, { FC, RefObject } from 'react'
+import { FC, RefObject } from 'react'
 import {
   Keyboard,
   NativeSyntheticEvent,

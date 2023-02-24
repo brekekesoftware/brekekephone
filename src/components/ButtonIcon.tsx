@@ -1,8 +1,15 @@
-import React, { FC } from 'react'
-import { StyleSheet, TouchableOpacityProps, View } from 'react-native'
+import { FC } from 'react'
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacityProps,
+  View,
+  ViewProps,
+} from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { RnText, RnTouchableOpacity } from './Rn'
+import { v } from './variables'
 
 const css = StyleSheet.create({
   ButtonIcon: {
@@ -15,7 +22,8 @@ const css = StyleSheet.create({
   },
   ButtonIcon_Name: {
     paddingTop: 5,
-    maxWidth: 74,
+    minWidth: Platform.OS === 'ios' ? 70 : 80,
+    textAlign: 'center',
   },
 })
 
@@ -31,10 +39,11 @@ export const ButtonIcon: FC<{
   bdcolor?: string
   name?: string
   textcolor?: string
+  styleContainer?: ViewProps['style']
 }> = p => {
   const size = p.size || 15
   return (
-    <View style={css.ButtonIcon}>
+    <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
         disabled={p.disabled}
         onPress={p.onPress}
@@ -42,7 +51,7 @@ export const ButtonIcon: FC<{
           css.ButtonIcon_Btn,
           p.style,
           { borderRadius: size * 1.5 },
-          { backgroundColor: p.bgcolor },
+          { backgroundColor: p?.disabled ? v.subColor : p.bgcolor },
           p.noborder && { borderWidth: 0 },
           { borderColor: p.bdcolor },
         ]}

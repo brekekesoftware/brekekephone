@@ -4,9 +4,10 @@ import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { Account } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
 import { ChatFile } from '../stores/chatStore'
 import { UcUser } from '../stores/contactStore'
-import { Profile } from '../stores/profileStore'
 import { formatFileType } from '../utils/formatFileType'
 import {
   UcBuddy,
@@ -236,7 +237,7 @@ export class UC extends EventEmitter {
     })
   }
 
-  connect = (profile: Profile, ucHost: string) => {
+  connect = (a: Account, ucHost: string) => {
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
     }
@@ -245,9 +246,9 @@ export class UC extends EventEmitter {
       this.client.signIn(
         `${ucScheme}://${ucHost}`,
         'uc',
-        profile.pbxTenant,
-        profile.pbxUsername,
-        profile.pbxPassword,
+        a.pbxTenant,
+        a.pbxUsername,
+        a.pbxPassword,
         undefined,
         () => resolve(undefined),
         reject,
@@ -329,8 +330,23 @@ export class UC extends EventEmitter {
   }
 
   getConfigProperties = () => {
-    return this.client.getConfigProperties()
+    const s = getAuthStore()
+    if (!s.ucConfig) {
+      s.ucConfig = this.client.getConfigProperties()
+    }
+    return s.ucConfig
   }
+
+  readUnreadChats = async (id: string) => {
+    const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
+      this.client.receiveUnreadText(resolve, reject)
+    })
+    const readRequiredMessageIds = res.messages
+      .filter(msg => msg.requires_read && msg.sender?.user_id === id)
+      .map(msg => msg.received_text_id)
+    this.client.readText(readRequiredMessageIds)
+  }
+
   getUnreadChats = async () => {
     const res: UcReceieveUnreadText = await new Promise((resolve, reject) => {
       this.client.receiveUnreadText(resolve, reject)
@@ -622,7 +638,7 @@ export class UC extends EventEmitter {
           b = new ClipboardEvent('').clipboardData || undefined
         }
         if (!b) {
-          console.error('Can not set input.files')
+          console.error('Can not set input.files: empty data transfer')
           return null
         }
 
@@ -693,7 +709,7 @@ export class UC extends EventEmitter {
           b = e.clipboardData || undefined
         }
         if (!b) {
-          console.error('Can not set input.files')
+          console.error('Can not set input.files: empty data transfer')
           return null
         }
         b.items.add(file as File)

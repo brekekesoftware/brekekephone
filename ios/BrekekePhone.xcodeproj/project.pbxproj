@@ -7,37 +7,149 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9B7F2B5E9818D914804557B8 /* libPods-BrekekePhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F076CB1F741A58F4BB3C3A03 /* libPods-BrekekePhone.a */; };
+		9C3747BB28E1935F00327869 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3747BA28E1935F00327869 /* NetworkExtension.framework */; };
 		9C4B210926FB8B71000FE077 /* libswiftDataDetection.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4B210826FB8B71000FE077 /* libswiftDataDetection.tbd */; };
 		9C4B210B26FB8B85000FE077 /* libswiftFileProvider.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4B210A26FB8B85000FE077 /* libswiftFileProvider.tbd */; };
+		9C92A07728E201AA00AF2311 /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C92A07628E201AA00AF2311 /* Network.framework */; };
+		9C972B9F28E1B3A900DD89B4 /* BrekekeLPCExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972B9E28E1B3A900DD89B4 /* BrekekeLPCExtension.swift */; };
+		9C972BB828E1B5BF00DD89B4 /* BrekekeLPCExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C972B9E28E1B3A900DD89B4 /* BrekekeLPCExtension.swift */; };
 		9CD3B8F325AE45B200D8A122 /* callkit.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CD3B8F225AE45B200D8A122 /* callkit.png */; };
 		9CE4DA042565F16E00512187 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */; };
 		9CE4DA052565F16E00512187 /* incallmanager_ringtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */; };
+		9CF1917928E34BA20048E7A1 /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917628E34BA20048E7A1 /* Bridging-Header.m */; };
+		9CF1917A28E34BA20048E7A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917728E34BA20048E7A1 /* AppDelegate.swift */; };
+		9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */; };
+		9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */; };
+		9CF382C528ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */; };
+		9CF382C628ED8495008FC490 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A428ED8495008FC490 /* ConnectionOptions.swift */; };
+		9CF382C728ED8495008FC490 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A428ED8495008FC490 /* ConnectionOptions.swift */; };
+		9CF382C828ED8495008FC490 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A528ED8495008FC490 /* NetworkSession.swift */; };
+		9CF382C928ED8495008FC490 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A528ED8495008FC490 /* NetworkSession.swift */; };
+		9CF382CA28ED8495008FC490 /* HeartbeatMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A628ED8495008FC490 /* HeartbeatMonitor.swift */; };
+		9CF382CB28ED8495008FC490 /* HeartbeatMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A628ED8495008FC490 /* HeartbeatMonitor.swift */; };
+		9CF382CC28ED8495008FC490 /* RequestResponseSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A728ED8495008FC490 /* RequestResponseSession.swift */; };
+		9CF382CD28ED8495008FC490 /* RequestResponseSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A728ED8495008FC490 /* RequestResponseSession.swift */; };
+		9CF382CE28ED8495008FC490 /* LengthPrefixedFramer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A828ED8495008FC490 /* LengthPrefixedFramer.swift */; };
+		9CF382CF28ED8495008FC490 /* LengthPrefixedFramer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A828ED8495008FC490 /* LengthPrefixedFramer.swift */; };
+		9CF382D028ED8495008FC490 /* BaseChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A928ED8495008FC490 /* BaseChannel.swift */; };
+		9CF382D128ED8495008FC490 /* BaseChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382A928ED8495008FC490 /* BaseChannel.swift */; };
+		9CF382D228ED8495008FC490 /* TextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AB28ED8495008FC490 /* TextMessage.swift */; };
+		9CF382D328ED8495008FC490 /* TextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AB28ED8495008FC490 /* TextMessage.swift */; };
+		9CF382D428ED8495008FC490 /* Heartbeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AC28ED8495008FC490 /* Heartbeat.swift */; };
+		9CF382D528ED8495008FC490 /* Heartbeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AC28ED8495008FC490 /* Heartbeat.swift */; };
+		9CF382D628ED8495008FC490 /* Invite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AD28ED8495008FC490 /* Invite.swift */; };
+		9CF382D728ED8495008FC490 /* Invite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AD28ED8495008FC490 /* Invite.swift */; };
+		9CF382D828ED8495008FC490 /* Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AE28ED8495008FC490 /* Directory.swift */; };
+		9CF382D928ED8495008FC490 /* Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AE28ED8495008FC490 /* Directory.swift */; };
+		9CF382DA28ED8495008FC490 /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AF28ED8495008FC490 /* Routable.swift */; };
+		9CF382DB28ED8495008FC490 /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382AF28ED8495008FC490 /* Routable.swift */; };
+		9CF382DC28ED8495008FC490 /* KeyCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B028ED8495008FC490 /* KeyCoder.swift */; };
+		9CF382DD28ED8495008FC490 /* KeyCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B028ED8495008FC490 /* KeyCoder.swift */; };
+		9CF382DE28ED8495008FC490 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B128ED8495008FC490 /* User.swift */; };
+		9CF382DF28ED8495008FC490 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B128ED8495008FC490 /* User.swift */; };
+		9CF382E028ED8495008FC490 /* Routing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B228ED8495008FC490 /* Routing.swift */; };
+		9CF382E128ED8495008FC490 /* Routing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B228ED8495008FC490 /* Routing.swift */; };
+		9CF382E228ED8496008FC490 /* CallAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B328ED8495008FC490 /* CallAction.swift */; };
+		9CF382E328ED8496008FC490 /* CallAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B328ED8495008FC490 /* CallAction.swift */; };
+		9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B528ED8495008FC490 /* Publisher+DropNil.swift */; };
+		9CF382E528ED8496008FC490 /* Publisher+DropNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B528ED8495008FC490 /* Publisher+DropNil.swift */; };
+		9CF382E628ED8496008FC490 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B628ED8495008FC490 /* Logger.swift */; };
+		9CF382E728ED8496008FC490 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B628ED8495008FC490 /* Logger.swift */; };
+		9CF382E828ED8496008FC490 /* Dictionary+Mutation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B728ED8495008FC490 /* Dictionary+Mutation.swift */; };
+		9CF382E928ED8496008FC490 /* Dictionary+Mutation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B728ED8495008FC490 /* Dictionary+Mutation.swift */; };
+		9CF382EA28ED8496008FC490 /* Publisher+Unfailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B828ED8495008FC490 /* Publisher+Unfailable.swift */; };
+		9CF382EB28ED8496008FC490 /* Publisher+Unfailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382B828ED8495008FC490 /* Publisher+Unfailable.swift */; };
+		9CF382EC28ED8496008FC490 /* KeyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382BA28ED8495008FC490 /* KeyCodable.swift */; };
+		9CF382ED28ED8496008FC490 /* KeyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382BA28ED8495008FC490 /* KeyCodable.swift */; };
+		9CF382EE28ED8496008FC490 /* Decodable+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382BB28ED8495008FC490 /* Decodable+JSON.swift */; };
+		9CF382EF28ED8496008FC490 /* Decodable+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382BB28ED8495008FC490 /* Decodable+JSON.swift */; };
+		9CF382FC28ED908E008FC490 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FA28ED908E008FC490 /* Settings.swift */; };
+		9CF382FD28ED908E008FC490 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FA28ED908E008FC490 /* Settings.swift */; };
+		9CF382FE28ED908E008FC490 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FB28ED908E008FC490 /* SettingsManager.swift */; };
+		9CF382FF28ED908E008FC490 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FB28ED908E008FC490 /* SettingsManager.swift */; };
+		9CF3830128ED909C008FC490 /* BrekekeLPCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */; };
+		CB8766C028E83920002261CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB8766BF28E83920002261CB /* Assets.xcassets */; };
+		CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CB8766E228E87C5A002261CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9C972B8B28E1B34C00DD89B4;
+			remoteInfo = BrekekeLPCExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CB8766E428E87C5A002261CB /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BrekekePhone/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BrekekePhone/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BrekekePhone/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BrekekePhone/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BrekekePhone/main.m; sourceTree = "<group>"; };
 		164381613BE1C60CB8E3DF44 /* Pods-BrekekePhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.debug.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.debug.xcconfig"; sourceTree = "<group>"; };
 		1EF4B6F27DC95E67795C03E1 /* Pods-BrekekePhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.release.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BrekekePhone/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9C3747BA28E1935F00327869 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		9C391D932550EEAD00E3924D /* BrekekePhone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = BrekekePhone.entitlements; path = BrekekePhone/BrekekePhone.entitlements; sourceTree = "<group>"; };
 		9C4B210826FB8B71000FE077 /* libswiftDataDetection.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftDataDetection.tbd; path = usr/lib/swift/libswiftDataDetection.tbd; sourceTree = SDKROOT; };
 		9C4B210A26FB8B85000FE077 /* libswiftFileProvider.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftFileProvider.tbd; path = usr/lib/swift/libswiftFileProvider.tbd; sourceTree = SDKROOT; };
+		9C92A07628E201AA00AF2311 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = System/Library/Frameworks/Network.framework; sourceTree = SDKROOT; };
+		9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BrekekeLPCExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C972B9628E1B34C00DD89B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9C972B9D28E1B3A900DD89B4 /* BrekekeLPCExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BrekekeLPCExtension.entitlements; sourceTree = "<group>"; };
+		9C972B9E28E1B3A900DD89B4 /* BrekekeLPCExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrekekeLPCExtension.swift; sourceTree = "<group>"; };
 		9CD3B8F225AE45B200D8A122 /* callkit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callkit.png; path = BrekekePhone/callkit.png; sourceTree = "<group>"; };
 		9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = ../src/assets/incallmanager_ringback.mp3; sourceTree = "<group>"; };
 		9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = ../src/assets/incallmanager_ringtone.mp3; sourceTree = "<group>"; };
+		9CF1917528E34BA20048E7A1 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "BrekekePhone/Bridging-Header.h"; sourceTree = "<group>"; };
+		9CF1917628E34BA20048E7A1 /* Bridging-Header.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "Bridging-Header.m"; path = "BrekekePhone/Bridging-Header.m"; sourceTree = "<group>"; };
+		9CF1917728E34BA20048E7A1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BrekekePhone/AppDelegate.swift; sourceTree = "<group>"; };
+		9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrekekeUtils.swift; path = BrekekePhone/BrekekeUtils.swift; sourceTree = "<group>"; };
+		9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartbeatCoordinator.swift; sourceTree = "<group>"; };
+		9CF382A428ED8495008FC490 /* ConnectionOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionOptions.swift; sourceTree = "<group>"; };
+		9CF382A528ED8495008FC490 /* NetworkSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
+		9CF382A628ED8495008FC490 /* HeartbeatMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartbeatMonitor.swift; sourceTree = "<group>"; };
+		9CF382A728ED8495008FC490 /* RequestResponseSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestResponseSession.swift; sourceTree = "<group>"; };
+		9CF382A828ED8495008FC490 /* LengthPrefixedFramer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LengthPrefixedFramer.swift; sourceTree = "<group>"; };
+		9CF382A928ED8495008FC490 /* BaseChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseChannel.swift; sourceTree = "<group>"; };
+		9CF382AB28ED8495008FC490 /* TextMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextMessage.swift; sourceTree = "<group>"; };
+		9CF382AC28ED8495008FC490 /* Heartbeat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Heartbeat.swift; sourceTree = "<group>"; };
+		9CF382AD28ED8495008FC490 /* Invite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Invite.swift; sourceTree = "<group>"; };
+		9CF382AE28ED8495008FC490 /* Directory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Directory.swift; sourceTree = "<group>"; };
+		9CF382AF28ED8495008FC490 /* Routable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Routable.swift; sourceTree = "<group>"; };
+		9CF382B028ED8495008FC490 /* KeyCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyCoder.swift; sourceTree = "<group>"; };
+		9CF382B128ED8495008FC490 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		9CF382B228ED8495008FC490 /* Routing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Routing.swift; sourceTree = "<group>"; };
+		9CF382B328ED8495008FC490 /* CallAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAction.swift; sourceTree = "<group>"; };
+		9CF382B528ED8495008FC490 /* Publisher+DropNil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Publisher+DropNil.swift"; sourceTree = "<group>"; };
+		9CF382B628ED8495008FC490 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		9CF382B728ED8495008FC490 /* Dictionary+Mutation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dictionary+Mutation.swift"; sourceTree = "<group>"; };
+		9CF382B828ED8495008FC490 /* Publisher+Unfailable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Publisher+Unfailable.swift"; sourceTree = "<group>"; };
+		9CF382BA28ED8495008FC490 /* KeyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyCodable.swift; sourceTree = "<group>"; };
+		9CF382BB28ED8495008FC490 /* Decodable+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decodable+JSON.swift"; sourceTree = "<group>"; };
+		9CF382FA28ED908E008FC490 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		9CF382FB28ED908E008FC490 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrekekeLPCManager.swift; path = BrekekePhone/BrekekeLPCManager.swift; sourceTree = "<group>"; };
+		CB8766BF28E83920002261CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F076CB1F741A58F4BB3C3A03 /* libPods-BrekekePhone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BrekekePhone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -49,6 +161,15 @@
 				9C4B210B26FB8B85000FE077 /* libswiftFileProvider.tbd in Frameworks */,
 				9C4B210926FB8B71000FE077 /* libswiftDataDetection.tbd in Frameworks */,
 				9B7F2B5E9818D914804557B8 /* libPods-BrekekePhone.a in Frameworks */,
+				9C92A07728E201AA00AF2311 /* Network.framework in Frameworks */,
+				9C3747BB28E1935F00327869 /* NetworkExtension.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9C972B8928E1B34C00DD89B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,14 +179,17 @@
 		13B07FAE1A68108700A75B9A /* BrekekePhone */ = {
 			isa = PBXGroup;
 			children = (
+				9CF1917528E34BA20048E7A1 /* Bridging-Header.h */,
+				9CF1917628E34BA20048E7A1 /* Bridging-Header.m */,
+				9CF1917728E34BA20048E7A1 /* AppDelegate.swift */,
+				9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */,
+				9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */,
 				9C391D932550EEAD00E3924D /* BrekekePhone.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				CB8766BF28E83920002261CB /* Assets.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
-				13B07FB71A68108700A75B9A /* main.m */,
 				9CD3B8F225AE45B200D8A122 /* callkit.png */,
 				9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
@@ -76,10 +200,11 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9C92A07628E201AA00AF2311 /* Network.framework */,
+				9C3747BA28E1935F00327869 /* NetworkExtension.framework */,
 				9C4B210A26FB8B85000FE077 /* libswiftFileProvider.tbd */,
 				9C4B210826FB8B71000FE077 /* libswiftDataDetection.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				F076CB1F741A58F4BB3C3A03 /* libPods-BrekekePhone.a */,
 			);
 			name = Frameworks;
@@ -98,6 +223,8 @@
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* BrekekePhone */,
+				9CF3829C28ED8495008FC490 /* BrekekeLPC */,
+				9C972B8F28E1B34C00DD89B4 /* BrekekeLPCExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				79C57AF890EDEFC18471D005 /* Pods */,
@@ -111,8 +238,90 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */,
+				9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9C972B8F28E1B34C00DD89B4 /* BrekekeLPCExtension */ = {
+			isa = PBXGroup;
+			children = (
+				9C972B9D28E1B3A900DD89B4 /* BrekekeLPCExtension.entitlements */,
+				9C972B9E28E1B3A900DD89B4 /* BrekekeLPCExtension.swift */,
+				9C972B9628E1B34C00DD89B4 /* Info.plist */,
+			);
+			path = BrekekeLPCExtension;
+			sourceTree = "<group>";
+		};
+		9CF3829C28ED8495008FC490 /* BrekekeLPC */ = {
+			isa = PBXGroup;
+			children = (
+				9CF382A128ED8495008FC490 /* Networking */,
+				9CF382AA28ED8495008FC490 /* Models */,
+				9CF382F928ED9040008FC490 /* Settings */,
+				9CF382B428ED8495008FC490 /* Utilities */,
+				9CF382B928ED8495008FC490 /* Coding */,
+			);
+			path = BrekekeLPC;
+			sourceTree = "<group>";
+		};
+		9CF382A128ED8495008FC490 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				9CF382A328ED8495008FC490 /* HeartbeatCoordinator.swift */,
+				9CF382A428ED8495008FC490 /* ConnectionOptions.swift */,
+				9CF382A528ED8495008FC490 /* NetworkSession.swift */,
+				9CF382A628ED8495008FC490 /* HeartbeatMonitor.swift */,
+				9CF382A728ED8495008FC490 /* RequestResponseSession.swift */,
+				9CF382A828ED8495008FC490 /* LengthPrefixedFramer.swift */,
+				9CF382A928ED8495008FC490 /* BaseChannel.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		9CF382AA28ED8495008FC490 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9CF382AB28ED8495008FC490 /* TextMessage.swift */,
+				9CF382AC28ED8495008FC490 /* Heartbeat.swift */,
+				9CF382AD28ED8495008FC490 /* Invite.swift */,
+				9CF382AE28ED8495008FC490 /* Directory.swift */,
+				9CF382AF28ED8495008FC490 /* Routable.swift */,
+				9CF382B028ED8495008FC490 /* KeyCoder.swift */,
+				9CF382B128ED8495008FC490 /* User.swift */,
+				9CF382B228ED8495008FC490 /* Routing.swift */,
+				9CF382B328ED8495008FC490 /* CallAction.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9CF382B428ED8495008FC490 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				9CF382B528ED8495008FC490 /* Publisher+DropNil.swift */,
+				9CF382B628ED8495008FC490 /* Logger.swift */,
+				9CF382B728ED8495008FC490 /* Dictionary+Mutation.swift */,
+				9CF382B828ED8495008FC490 /* Publisher+Unfailable.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		9CF382B928ED8495008FC490 /* Coding */ = {
+			isa = PBXGroup;
+			children = (
+				9CF382BA28ED8495008FC490 /* KeyCodable.swift */,
+				9CF382BB28ED8495008FC490 /* Decodable+JSON.swift */,
+			);
+			path = Coding;
+			sourceTree = "<group>";
+		};
+		9CF382F928ED9040008FC490 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				9CF382FA28ED908E008FC490 /* Settings.swift */,
+				9CF382FB28ED908E008FC490 /* SettingsManager.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,15 +338,34 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				386206F8C0258BEA0AF03683 /* [CP] Copy Pods Resources */,
 				EACFD818B078D98618E3DB5F /* [CP] Embed Pods Frameworks */,
+				CB8766E428E87C5A002261CB /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CB8766E328E87C5A002261CB /* PBXTargetDependency */,
 			);
 			name = BrekekePhone;
 			productName = "Brekeke Phone Dev";
 			productReference = 13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */;
 			productType = "com.apple.product-type.application";
+		};
+		9C972B8B28E1B34C00DD89B4 /* BrekekeLPCExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9C972B9A28E1B34C00DD89B4 /* Build configuration list for PBXNativeTarget "BrekekeLPCExtension" */;
+			buildPhases = (
+				9C972B8828E1B34C00DD89B4 /* Sources */,
+				9C972B8928E1B34C00DD89B4 /* Frameworks */,
+				9C972B8A28E1B34C00DD89B4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BrekekeLPCExtension;
+			productName = BrekekeLPCExtension;
+			productReference = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -145,11 +373,18 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 4XR752Y62T;
 						LastSwiftMigration = 1120;
+						ProvisioningStyle = Manual;
+					};
+					9C972B8B28E1B34C00DD89B4 = {
+						CreatedOnToolsVersion = 13.2.1;
+						DevelopmentTeam = 4XR752Y62T;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -167,6 +402,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* BrekekePhone */,
+				9C972B8B28E1B34C00DD89B4 /* BrekekeLPCExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -180,7 +416,15 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				9CE4DA042565F16E00512187 /* incallmanager_ringback.mp3 in Resources */,
+				CB8766C028E83920002261CB /* Assets.xcassets in Resources */,
 				9CE4DA052565F16E00512187 /* incallmanager_ringtone.mp3 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9C972B8A28E1B34C00DD89B4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,7 +443,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		386206F8C0258BEA0AF03683 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -249,8 +493,8 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone-frameworks.sh",
 				"${PODS_ROOT}/../../node_modules/react-native-webrtc/ios/WebRTC.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/double-conversion/double-conversion.framework/double-conversion",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -270,30 +514,99 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				9CF382C628ED8495008FC490 /* ConnectionOptions.swift in Sources */,
+				9CF382EE28ED8496008FC490 /* Decodable+JSON.swift in Sources */,
+				9CF382D828ED8495008FC490 /* Directory.swift in Sources */,
+				9CF382CE28ED8495008FC490 /* LengthPrefixedFramer.swift in Sources */,
+				9CF382CA28ED8495008FC490 /* HeartbeatMonitor.swift in Sources */,
+				9CF1917A28E34BA20048E7A1 /* AppDelegate.swift in Sources */,
+				9CF1917928E34BA20048E7A1 /* Bridging-Header.m in Sources */,
+				9CF382E028ED8495008FC490 /* Routing.swift in Sources */,
+				9CF382DC28ED8495008FC490 /* KeyCoder.swift in Sources */,
+				9CF382C828ED8495008FC490 /* NetworkSession.swift in Sources */,
+				9CF382E628ED8496008FC490 /* Logger.swift in Sources */,
+				9CF382D228ED8495008FC490 /* TextMessage.swift in Sources */,
+				9CF382E828ED8496008FC490 /* Dictionary+Mutation.swift in Sources */,
+				9CF382DE28ED8495008FC490 /* User.swift in Sources */,
+				9CF382D428ED8495008FC490 /* Heartbeat.swift in Sources */,
+				9CF382D028ED8495008FC490 /* BaseChannel.swift in Sources */,
+				9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
+				9CF382FC28ED908E008FC490 /* Settings.swift in Sources */,
+				9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */,
+				9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */,
+				9C972BB828E1B5BF00DD89B4 /* BrekekeLPCExtension.swift in Sources */,
+				9CF382EC28ED8496008FC490 /* KeyCodable.swift in Sources */,
+				9CF382EA28ED8496008FC490 /* Publisher+Unfailable.swift in Sources */,
+				9CF382D628ED8495008FC490 /* Invite.swift in Sources */,
+				9CF382CC28ED8495008FC490 /* RequestResponseSession.swift in Sources */,
+				9CF382E228ED8496008FC490 /* CallAction.swift in Sources */,
+				9CF382FE28ED908E008FC490 /* SettingsManager.swift in Sources */,
+				9CF382DA28ED8495008FC490 /* Routable.swift in Sources */,
+				9CF3830128ED909C008FC490 /* BrekekeLPCManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9C972B8828E1B34C00DD89B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CF382E128ED8495008FC490 /* Routing.swift in Sources */,
+				9CF382D528ED8495008FC490 /* Heartbeat.swift in Sources */,
+				9CF382C728ED8495008FC490 /* ConnectionOptions.swift in Sources */,
+				9CF382E328ED8496008FC490 /* CallAction.swift in Sources */,
+				9CF382D328ED8495008FC490 /* TextMessage.swift in Sources */,
+				9CF382CB28ED8495008FC490 /* HeartbeatMonitor.swift in Sources */,
+				9CF382CF28ED8495008FC490 /* LengthPrefixedFramer.swift in Sources */,
+				9CF382E528ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
+				9CF382E728ED8496008FC490 /* Logger.swift in Sources */,
+				9CF382FD28ED908E008FC490 /* Settings.swift in Sources */,
+				9CF382D128ED8495008FC490 /* BaseChannel.swift in Sources */,
+				9CF382C528ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */,
+				9CF382DD28ED8495008FC490 /* KeyCoder.swift in Sources */,
+				9CF382EB28ED8496008FC490 /* Publisher+Unfailable.swift in Sources */,
+				9CF382FF28ED908E008FC490 /* SettingsManager.swift in Sources */,
+				9CF382E928ED8496008FC490 /* Dictionary+Mutation.swift in Sources */,
+				9CF382CD28ED8495008FC490 /* RequestResponseSession.swift in Sources */,
+				9C972B9F28E1B3A900DD89B4 /* BrekekeLPCExtension.swift in Sources */,
+				9CF382DB28ED8495008FC490 /* Routable.swift in Sources */,
+				9CF382D728ED8495008FC490 /* Invite.swift in Sources */,
+				9CF382ED28ED8496008FC490 /* KeyCodable.swift in Sources */,
+				9CF382C928ED8495008FC490 /* NetworkSession.swift in Sources */,
+				9CF382EF28ED8496008FC490 /* Decodable+JSON.swift in Sources */,
+				9CF382D928ED8495008FC490 /* Directory.swift in Sources */,
+				9CF382DF28ED8495008FC490 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CB8766E328E87C5A002261CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9C972B8B28E1B34C00DD89B4 /* BrekekeLPCExtension */;
+			targetProxy = CB8766E228E87C5A002261CB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 164381613BE1C60CB8E3DF44 /* Pods-BrekekePhone.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BrekekePhone/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Brekeke phone";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SDKROOT)/usr/lib/swift",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -301,6 +614,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "phonedev-provisioning-profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -312,18 +627,20 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1EF4B6F27DC95E67795C03E1 /* Pods-BrekekePhone.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BrekekePhone/BrekekePhone.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BrekekePhone/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Brekeke phone";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SDKROOT)/usr/lib/swift",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -331,6 +648,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "phonedev-provisioning-profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -386,13 +705,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
-					"\"$(inherited)\"",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -441,16 +756,93 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
-					"\"$(inherited)\"",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9C972B9B28E1B34C00DD89B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BrekekeLPCExtension/BrekekeLPCExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 4XR752Y62T;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4XR752Y62T;
+				EXCLUDED_ARCHS = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BrekekeLPCExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BrekekeLPCExtension;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 2.11.12;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "BrekekeLPCExtension-provisioning-profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = BrekekeLPCExtension;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9C972B9C28E1B34C00DD89B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BrekekeLPCExtension/BrekekeLPCExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 4XR752Y62T;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4XR752Y62T;
+				EXCLUDED_ARCHS = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BrekekeLPCExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BrekekeLPCExtension;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 2.11.12;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "BrekekeLPCExtension-provisioning-profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = BrekekeLPCExtension;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -471,6 +863,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9C972B9A28E1B34C00DD89B4 /* Build configuration list for PBXNativeTarget "BrekekeLPCExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9C972B9B28E1B34C00DD89B4 /* Debug */,
+				9C972B9C28E1B34C00DD89B4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

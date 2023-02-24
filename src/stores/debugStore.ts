@@ -1,13 +1,12 @@
 import { Buffer } from 'buffer'
-import debounce from 'lodash/debounce'
-import { computed, observable } from 'mobx'
+import { debounce } from 'lodash'
+import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking, Platform } from 'react-native'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '../components/Rn'
-import { currentVersion } from '../components/variables'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { intl, intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
@@ -18,7 +17,7 @@ declare global {
   }
 }
 
-let store = null as unknown as DebugStore
+let store = null as any as DebugStore
 // The location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
 // The `log` will be used for combining the two above files in ios
@@ -47,9 +46,7 @@ class DebugStore {
 
   // Cache the size of log files
   @observable logSizes = [0, 0]
-  @computed get logSize() {
-    return this.logSizes.reduce((sum, s) => sum + s, 0)
-  }
+  getLogSize = () => this.logSizes.reduce((sum, s) => sum + s, 0)
 
   // Use a queue to write logs to file in batch
   logQueue: string[] = []
@@ -94,7 +91,9 @@ class DebugStore {
     //    we will copy it to log2 and clear the log1
     if (this.logSizes[0] > maximumBytes) {
       this.logSizes[1] = this.logSizes[0]
-      await RNFS.unlink(log2).catch((e: Error) => void e)
+      await RNFS.unlink(log2).catch((err: Error) => {
+        console.error('debugStore RNFS.unlink(log2).catch error:', err)
+      })
       await RNFS.moveFile(log1, log2)
     }
   }
@@ -154,15 +153,6 @@ class DebugStore {
   @observable isCheckingForUpdate = false
   @observable remoteVersion = ''
   @observable remoteVersionLastCheck = 0
-  @computed get isUpdateAvailable() {
-    const a1 = currentVersion.split('.')
-    const a2 = this.remoteVersion.split('.')
-    return a1.reduce((available, v, i) => {
-      const v1 = Number(v) || 0
-      const v2 = Number(a2[i]) || 0
-      return available || v2 > v1
-    }, false)
-  }
 
   checkForUpdate = () => {
     if (this.isCheckingForUpdate) {
@@ -176,8 +166,10 @@ class DebugStore {
               'https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en',
             )
             .then(res => res.text())
-            .then(t =>
-              t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
+            .then(
+              t =>
+                t.match(/\[\[\["(\d+\.\d+\.\d+)"\]/)?.[1].trim() ||
+                t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
             )
         : window
             .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
@@ -199,10 +191,7 @@ class DebugStore {
     })
       .then(this.saveRemoteVersionToStorage)
       .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get app version from app store`,
-          err,
-        })
+        console.error('Failed to get app version from app store:', err)
         this.isCheckingForUpdate = false
       })
   }
@@ -214,10 +203,7 @@ class DebugStore {
         lastCheck: this.remoteVersionLastCheck,
       }),
     ).catch((err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to save app version to storage`,
-        err,
-      })
+      console.error('Failed to save app version to storage:', err)
     })
   }
 
@@ -285,10 +271,7 @@ class DebugStore {
           this.autoCheckForUpdate()
         })
         .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to read app version from storage`,
-            err,
-          })
+          console.error('Failed to read app version from storage:', err)
         }),
     )
     //
@@ -306,3 +289,36 @@ if (Platform.OS !== 'web') {
   store.init()
 }
 export const debugStore = store
+
+const getSemVer = (v?: string) => {
+  const a =
+    v
+      ?.split(/\./g)
+      .map(s => s.match(/^\d+/)?.[0])
+      .map(Number) || []
+  return [a[0] || 0, a[1] || 0, a[2] || 0, a[3] || 0]
+}
+
+/**
+ * Compare 2 semantic versions
+ * @param a new version
+ * @param b current version
+ * @returns a > b ? 1 : a < b ? -1 : 0
+ */
+export const compareSemVer = (a?: string, b?: string) => {
+  const [aMajor, aMinor, aPatch, aFourth] = getSemVer(a)
+  const [bMajor, bMinor, bPatch, bFourth] = getSemVer(b)
+  if (bMajor !== aMajor) {
+    return aMajor > bMajor ? 1 : -1
+  }
+  if (bMinor !== aMinor) {
+    return aMinor > bMinor ? 1 : -1
+  }
+  if (bPatch !== aPatch) {
+    return aPatch > bPatch ? 1 : -1
+  }
+  if (bFourth !== aFourth) {
+    return aFourth > bFourth ? 1 : -1
+  }
+  return 0
+}

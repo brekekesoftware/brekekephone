@@ -5,6 +5,11 @@
   <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>
+      SimplePush requires access to your local network in order to activate the
+      Local Push Connectivity extension.
+    </string>
     <key>CFBundleDisplayName</key>
     <string>Brekeke Phone Dev</string>
     <key>CFBundleExecutable</key>
@@ -18,7 +23,7 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.9.0</string>
+    <string>2.11.12</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -31,36 +36,38 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true />
-    <key>LSSupportsOpeningDocumentsInPlace</key>
-    <true />
+    <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>mailto</string>
     </array>
+    <key>LSRequiresIPhoneOS</key>
+    <true />
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true />
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
-      <true />
+      <false />
       <key>NSAllowsArbitraryLoadsInWebContent</key>
-      <true />
+      <false />
       <key>NSAllowsLocalNetworking</key>
       <true />
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Capture a new photo to send</string>
+    <string>To capture a new photo to send</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Capture a new video to send</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Save photo to photo library</string>
+    <string>To capture a new video to send</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Select from photo library</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>React Native usage</string>
+    <string>To select from photo library</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>To save photo to photo library</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>React Native usage</string>
+    <string>To get network SSID for LPC</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>To get network SSID for LPC</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>To get network SSID for LPC</string>
     <key>UIAppFonts</key>
     <array />
     <key>UIBackgroundModes</key>
@@ -84,7 +91,6 @@
     <false />
     <key>UISupportedInterfaceOrientations</key>
     <array>
-      <string>UIInterfaceOrientationPortraitUpsideDown</string>
       <string>UIInterfaceOrientationPortrait</string>
     </array>
     <key>UISupportedInterfaceOrientations~ipad</key>

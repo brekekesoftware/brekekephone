@@ -11,8 +11,56 @@ export type Brekeke = {
   WebrtcClient: {
     Phone: Sip
   }
+  Phone: {
+    render: Function
+  }
+  Phonebook: Phonebook
+  WebNotification: WebNotification
+}
+export type WebNotification = {
+  requestPermission(Options: OptionRequestNotification): void
+  showNotification(Options: OptionShowNotification): string
+  closeNotification(Options: OptionCloseNotification): void
 }
 
+export type OptionCloseNotification = {
+  notificationId: string
+  reason?: string
+}
+export type OptionRequestNotification = {
+  document: Document
+  callback: (result: string) => void
+}
+export type OptionShowNotification = {
+  document: Document
+  timeout?: number
+  interval?: number
+  title: string
+  body: string
+  icon: string
+  tag?: string
+  renotify?: boolean
+  noisiness?: number // whether sounds or vibrations should be issued (0: silent, 1: once, 2: every) (default: 0)
+  onclick: (ev: Event) => void
+  onclose: (ev: Event) => void
+}
+
+export type Phonebook = {
+  getManager(lan: string): ManagerPhonebook | undefined
+  getManagers(): ManagerPhonebook[]
+}
+export type ManagerPhonebook = {
+  item: ItemPhonebook[]
+  toDisplayName(map: object): string
+  getLang(): void
+  toSortStr(map: object): void
+}
+export type ItemPhonebook = {
+  id: string
+  caption?: string
+  onscreen?: boolean
+  type?: string
+}
 export type GetPalOptions = {
   tenant: string
   login_user: string
@@ -20,10 +68,11 @@ export type GetPalOptions = {
   _wn: string
   park: string[]
   voicemail: string
-  user: string
+  user?: string
   status: boolean
   secure_login_password: boolean
   phonetype: string
+  callrecording: string
 }
 
 /* PBX */
@@ -41,11 +90,13 @@ export type Pbx = PbxPal & {
   notify_status?(e: PbxEvent['userStatus']): void
   notify_park?(e: PbxEvent['park']): void
   notify_voicemail?(e: PbxEvent['voicemail']): void
-
+  notify_callrecording?(e: PbxEvent['callRecording']): void
   // not actually exist in the sdk, should be added manually
-  _pal<K extends keyof PbxPal, P = Parameters<PbxPal[K]>[0]>(
+  call_pal<K extends keyof PbxPal>(
     k: K,
-    ...p: P extends undefined ? [] : [P]
+    ...p: Parameters<PbxPal[K]>[0] extends undefined
+      ? []
+      : [Parameters<PbxPal[K]>[0]]
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
 }
 
@@ -65,6 +116,11 @@ export type PbxEvent = {
   voicemail: {
     new: number
   }
+  callRecording: {
+    user: string
+    talker_id: string
+    status: string // on or off
+  }
 }
 
 export type PbxPal = {
@@ -81,12 +137,12 @@ export type PbxPal = {
 
   getExtensions(
     p: PbxGetExtensionsParam,
-    resolve: (extensions: string[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
-  getExtensionProperties<T extends string | string[]>(
+  getExtensionProperties(
     p: PbxGetExtensionPropertiesParam,
-    resolve: (properties: T[]) => void,
+    resolve: (properties: string[][]) => void,
     reject: ErrorHandler,
   ): void
   setExtensionProperties(
@@ -98,6 +154,16 @@ export type PbxPal = {
   getContactList(
     p: PbxGetContactListParam,
     resolve: (res: PbxGetContactListItem[]) => void,
+    reject: ErrorHandler,
+  ): void
+  getPhonebooks(
+    p: {},
+    resolve: (res: PbxBook[]) => void,
+    reject: ErrorHandler,
+  ): void
+  deleteContact(
+    p: PbxDeleteContactParam,
+    resolve: (res: PbxDeleteContactResponse) => void,
     reject: ErrorHandler,
   ): void
   getContact(
@@ -124,12 +190,32 @@ export type PbxPal = {
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
-  'webrtcclient.dtmfSendMode': string
+  'webphone.allusers': string
+  'webphone.call.dtmf': string
+  'webphone.call.hangup': string
+  'webphone.call.hold': string
+  'webphone.call.mute': string
+  'webphone.call.park': string
+  'webphone.call.record': string
+  'webphone.call.speaker': string
+  'webphone.call.transfer': string
+  'webphone.call.video': string
+  'webphone.desktop.notification': string
   'webphone.dtmf.send.pal': string
+  'webphone.lpc.keyhash': string
+  'webphone.lpc.pn': string
+  'webphone.lpc.port': string
+  'webphone.lpc.wifi': string
+  'webphone.pal.param.user': string
+  'webphone.pn_expires': string
+  'webphone.turn.credential': string
   'webphone.turn.server': string
   'webphone.turn.username': string
-  'webphone.turn.credential': string
   'webphone.uc.host': string
+  'webphone.useragent': string
+  'webphone.users.max': string
+  'webrtcclient.dtmfSendMode': string
+  version: string
 }
 export type PbxGetProductInfoParam = {
   webphone: string
@@ -142,10 +228,11 @@ export type PbxGetExtensionsParam = {
   pattern: '..*'
   type: 'user'
   limit: number
+  property_names: string[]
 }
 export type PbxGetExtensionPropertiesParam = {
   tenant: string
-  extension: T
+  extension: string[]
   property_names: string[]
 }
 export type PbxSetExtensionPropertiesParam = {
@@ -163,7 +250,6 @@ export type PbxExtensionProperties = {
 export type PbxGetContactListParam = {
   phonebook?: string
   search_text?: string
-  shared: boolean
   offset: number
   limit: number
 }
@@ -173,19 +259,30 @@ export type PbxGetContactListItem = {
   phonebook: string
   user?: string
 }
+
 export type PbxGetContactParam = {
   aid: string
 }
+export type PbxDeleteContactParam = {
+  aid: string[]
+}
+export type PbxDeleteContactResponse = {
+  succeeded: number[] | string[]
+  failed: number[] | string[]
+}
 export type PbxPnmanageParam = {
   command: string
-  service_id: string
+  service_id: string | string[]
   application_id: string
   user_agent: string
   username: string
   device_id?: string
+  device_id_voip?: string
   endpoint?: string
   auth_secret?: string
   key?: string
+  add_voip?: boolean
+  add_device_id_suffix?: boolean
 }
 export type PbxHoldParam = {
   tenant: string
@@ -202,23 +299,16 @@ export type PbxParkParam = {
   tid: string
   number: string
 }
-
+export type PbxBook = {
+  phonebook: string
+  shared?: string
+}
 export type PbxContact = {
   aid: string
   phonebook: string
   shared: string
-  info: {
-    $firstname: string
-    $lastname: string
-    $tel_work: string
-    $tel_home: string
-    $tel_mobile: string
-    $address: string
-    $company: string
-    $email: string
-    $title: string
-    $hidden: string
-  }
+  display_name: string
+  info: object
 }
 export type PbxSendDtmfParam = {
   tenant: string
@@ -251,21 +341,47 @@ export type Sip = {
   setDefaultCallOptions(options: CallOptions): void
   getSession(sessionId: string): Session
   getSessionCount(): number
-  makeCall(number: string, options: null, videoEnabled?: boolean): void
-  answer(sessionId: string, options: null, videoEnabled?: boolean): void
+  makeCall: MakeCallFn
+  answer: MakeCallFn
   setWithVideo(sessionId: string, withVideo?: boolean): void
   setMuted(options: { main: boolean }, sessionId: string): void
-
+  setWithVideo(
+    sessionId: string,
+    withVideo?: boolean,
+    videoOptions?: VideoOptions,
+  ): void
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
 
   _ua?: {
+    _transport?: {
+      socket?: object
+    }
+    registrator?(): {
+      _registered: boolean
+      setExtraHeaders: Function
+    }
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
-    _transport?: { socket?: object }
   }
   _removeEventListenerPhoneStatusChange?: Function
 }
 
+export type MakeCallFn = (
+  number: string,
+  options?: object,
+  videoEnabled?: boolean,
+  videoOptions?: object,
+  exInfo?: object,
+) => void
+
+export type VideoOptions = {
+  call: {
+    mediaConstraints: MediaStreamConstraints
+  }
+  answer: {
+    mediaConstraints: MediaStreamConstraints
+  }
+}
 export type SipConstructorOptions = {
   logLevel: string
   multiSession: number
@@ -291,14 +407,10 @@ export type SipConfiguration = {
   host?: string
   port?: string
   tls?: boolean
-
   user: string
   auth?: string
-  password?: string
-
   useVideoClient?: boolean
   videoClientUser?: string
-
   user_agent?: string
   userAgent?: string
   register?: boolean
@@ -326,9 +438,10 @@ export type PhoneStatusChangedEvent = {
   reason: string
   response: unknown
 }
+export type SessionStatus = 'dialing' | 'terminated' | 'connected' | 'progress'
 export type Session = {
   sessionId: string
-  sessionStatus: 'dialing' | 'terminated' | 'connected'
+  sessionStatus: SessionStatus
   rtcSession: {
     remote_identity: {
       display_name: string
@@ -345,6 +458,7 @@ export type Session = {
   localStreamObject: MediaStream
   incomingMessage?: {
     getHeader(h: string): string
+    body?: object
   }
   videoClientSessionTable: {
     [id: string]: Session
@@ -404,15 +518,7 @@ export type UcChatClient = {
     profile_image_url: string
     tenant: string
   }
-  getConfigProperties(): {
-    buddy_mode: number
-    chat_mode: number
-    webnotif_timeout: number
-    webchat_enabled: string
-    optional_config: {
-      buddy_max: number
-    }
-  }
+  getConfigProperties(): UcConfig
 
   saveProperties(
     profile?: null,
@@ -582,6 +688,7 @@ export type UcWebchat = {
   isTalking: boolean
 }
 export type UcBuddy = {
+  disabledBuddy?: boolean
   user_id: string
   name: string
   profile_image_url: string
@@ -789,6 +896,15 @@ export type UcEventMap = {
     conference: Conference
   }
   conferenceMemberChanged: UcEventMap['invitedToConference']
+}
+export type UcConfig = {
+  buddy_mode: number
+  chat_mode: number
+  webnotif_timeout: number
+  webchat_enabled: string
+  optional_config: {
+    buddy_max: number
+  }
 }
 
 export type UcConstants = {

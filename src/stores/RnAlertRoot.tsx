@@ -1,6 +1,6 @@
-import flow from 'lodash/flow'
+import { flow } from 'lodash'
 import { observer } from 'mobx-react'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { RnText, RnTouchableOpacity } from '../components/Rn'
@@ -173,8 +173,9 @@ const RnAlertR = ({
 }
 
 export const RnAlertRoot = observer(() => {
-  if (!RnAlert.alertsCount || !RnAlert.alerts[0]) {
+  const a0 = RnAlert.alerts.find(a => a)
+  if (!RnAlert.alertsCount || !a0) {
     return null
   }
-  return <RnAlertR {...RnAlert.alerts[0]} />
+  return <RnAlertR {...a0} />
 })

@@ -46,6 +46,9 @@ const onNotification = async (
   if (!n) {
     return
   }
+  // TODO ios present local PN?
+  // Modify server background mode content only PN?
+  // toXPN
 }
 
 export const PushNotification = {
@@ -82,7 +85,6 @@ export const PushNotification = {
     )
     //
     PushNotificationIOS.requestPermissions()
-    Voip.requestPermissions()
     //
     const n0 = await PushNotificationIOS.getInitialNotification()
     onNotification(n0, initApp, true)

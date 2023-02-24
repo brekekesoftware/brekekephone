@@ -11,42 +11,57 @@ export const saveBlob = (blob: Blob, name: string) => {
     try {
       await RNFS.writeFile(p, b64, 'base64')
     } catch (err) {
-      console.error(`saveBlob RNFS.writeFile err: ${err}`)
+      console.error('saveBlob RNFS.writeFile error:', err)
     }
   }
   fr.onerror = err => {
-    console.error(`saveBlob onerror err: ${err}`)
+    console.error('saveBlob onerror error:', err)
   }
   fr.readAsDataURL(blob)
 }
-export const saveBlobFile = (id: string, topic_id: string, type?: string) => {
-  const fileType = type || 'image'
-  return new Promise(async (resolve, reject) => {
+
+const readChunkFile = (p: string, pos: number, data: Blob) =>
+  new Promise((resolve, reject) => {
     const fr = new FileReader()
-    try {
-      const data: Blob = (await uc.acceptFile(id)) as Blob
-      fr.onloadend = async () => {
-        const r = fr.result as string
-        const b64 = r.replace(/^data:.*base64,/, '')
-        const p = `${RNFS.DocumentDirectoryPath}/${id}.${
-          fileType === 'image' ? 'jpeg' : 'mp4'
-        }`
-        try {
+    fr.onloadend = async () => {
+      const r = fr.result as string
+      const b64 = r.replace(/^data:.*base64,/, '')
+      try {
+        if (!pos) {
           await RNFS.writeFile(p, b64, 'base64')
-          resolve(p)
-        } catch (err) {
-          console.error(`saveBlobFile RNFS.writeFile err: ${err}`)
-          reject(err)
+        } else {
+          await RNFS.appendFile(p, b64, 'base64')
         }
-      }
-      fr.onerror = err => {
-        console.error(`saveBlobFile onerror err: ${err}`)
+        resolve(p)
+      } catch (err) {
+        console.error('readChunkFile RNFS.writeFile error:', err)
         reject(err)
       }
-      fr.readAsDataURL(data)
+    }
+    fr.readAsDataURL(data)
+  })
+
+export const saveBlobFile = (id: string, topic_id: string, type?: string) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      type = type || 'image'
+      const data: Blob = (await uc.acceptFile(id)) as Blob
+      const chunkSize = 1024 * 1024 * 4 // (4 Megabyte)
+      const e = type === 'image' ? 'jpeg' : 'mp4'
+      const p = `${RNFS.DocumentDirectoryPath}/${id}.${e}`
+      const totalChunks = Math.ceil(data.size / chunkSize)
+      let pos = 1
+      while (pos <= totalChunks) {
+        const offset = (pos - 1) * chunkSize
+        const currentChunk: Blob = data.slice(
+          offset,
+          pos === totalChunks ? data.size : offset + chunkSize,
+        )
+        await readChunkFile(p, pos - 1, currentChunk)
+        pos++
+      }
+      resolve(p)
     } catch (err) {
-      console.error(`saveBlobFile catch err: ${err}`)
       reject(err)
     }
   })
-}

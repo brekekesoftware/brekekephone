@@ -62,6 +62,22 @@ src/assets/logo.png
     - Open `src/components/variables.ts` and update the primary color there
     - You can also update other colors their as you want
 
+- Keystores and other credentials keys:
+
+  - `android/app/google-services.json`
+    - Download from your Firebase console.
+    - https://support.google.com/firebase/answer/7015592
+  - `android/keystores/development.keystore`
+  - `android/keystores/release.keystore`
+    - Generate from terminal or Android Studio if you dont have any existing app. Must keep it and use the same keystore every time you build your app.
+    - If you have the existing app and you want to use the old bundle identifier then reuse those keystore from that existing app.
+    - https://developer.android.com/training/articles/keystore
+    - https://stackoverflow.com/questions/3997748
+  - `src/api/turnConfig.ts`
+    - To export TURN config for WebRTC usage. Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off.
+    - https://stackoverflow.com/questions/57547378
+    - https://github.com/coturn/coturn
+
 - For the push notification and build:
   - Update google application id `22177122297` in `src/api/pbx.ts`
   - You may need to update the app version / build code here:

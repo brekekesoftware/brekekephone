@@ -22,6 +22,7 @@
   <uses-permission android:name="android.permission.READ_PHONE_STATE" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-permission android:name="android.permission.REORDER_TASKS" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
   <uses-permission android:name="android.permission.VIBRATE" />
@@ -35,6 +36,7 @@
     android:networkSecurityConfig="@xml/network_security_config"
     android:requestLegacyExternalStorage="true"
     android:theme="@style/AppTheme"
+    android:largeHeap="true"
   >
     <activity
       android:name=".IncomingCallActivity"

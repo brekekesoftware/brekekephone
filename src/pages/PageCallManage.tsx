@@ -1,11 +1,19 @@
-import { action, observable } from 'mobx'
+import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { Component } from 'react'
+import {
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
+  mdiCameraFrontVariant,
+  mdiCameraRearVariant,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -27,15 +35,33 @@ import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
+import { SmartImage } from '../components/SmartAvatarHTML'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
-import { Call } from '../stores/Call'
-import { callStore } from '../stores/callStore'
+import { getAuthStore } from '../stores/authStore'
+import { Call, CallConfigKey } from '../stores/Call'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { Duration } from '../stores/timerStore'
+import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
+const height = Dimensions.get('window').height
 const css = StyleSheet.create({
+  BtnSwitchCamera: {
+    position: 'absolute',
+    top: 10, // Header compact height
+    right: 10,
+    zIndex: 100,
+  },
+  cameraStyle: {
+    position: 'absolute',
+    top: 50,
+    right: 10,
+    zIndex: 100,
+  },
   Video: {
     position: 'absolute',
     top: 40, // Header compact height
@@ -48,14 +74,11 @@ const css = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-
   Btns: {
-    position: 'absolute',
-    top: 40, // Header compact height
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingBottom: 124, // Hangup button 64 + 2*30
+    marginTop: 10,
+  },
+  BtnFuncCalls: {
+    marginBottom: 10,
   },
   Btns_Hidden: {
     opacity: 0,
@@ -63,6 +86,10 @@ const css = StyleSheet.create({
   Btns_Inner: {
     flexDirection: 'row',
     alignSelf: 'center',
+    width: Dimensions.get('screen').width,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   Btns_Space: {
     height: 20,
@@ -70,12 +97,12 @@ const css = StyleSheet.create({
   Btns_VerticalMargin: {
     flex: 1,
   },
-
   Hangup: {
-    position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
+    // position: 'absolute',
+    // bottom: 40,
+    // left: 0,
+    // right: 0,
+    marginBottom: 40,
   },
   Hangup_incoming: {
     marginLeft: 180,
@@ -87,29 +114,145 @@ const css = StyleSheet.create({
     bottom: undefined,
     top: 100,
   },
+  Hangup_incomingText_avoidLargeImg: {
+    bottom: undefined,
+    top: 200,
+  },
   labelStyle: {
     paddingRight: 50,
   },
+  Image_wrapper: {
+    marginHorizontal: 15,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  ImageSize: {
+    height: 130,
+    width: 130,
+    borderRadius: 75,
+  },
+  ImageLargeSize: {
+    height: '100%',
+    width: (height * 30) / 100,
+    backgroundColor: 'white',
+  },
+  styleTextBottom: {
+    marginTop: 20,
+  },
+  Hangup_avoidAvatar: {
+    top: '35%',
+  },
+  Hangup_avoidAvatar_Large: {
+    top: '60%',
+  },
+  LoadingFullScreen: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hidden: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: '-100%',
+    left: '-100%',
+  },
+  viewHangupBtns: {
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    marginTop: 10,
+  },
+  viewHangupBtn: {
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+  },
+  txtHold: {
+    height: 65,
+    marginBottom: 10,
+  },
+  smallAvatar: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    overflow: 'hidden',
+  },
+  vContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  vContainerVideo: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
 })
 
+// Render all the calls in App.tsx
+// The avatars will be kept even if we navigate between views
 @observer
-export class PageCallManage extends Component<{
-  isFromCallBar?: boolean
+export class RenderAllCalls extends Component {
+  prevCallsLength = getCallStore().calls.length
+  componentDidUpdate() {
+    const l = getCallStore().calls.length
+    if (this.prevCallsLength && !l) {
+      Nav().goToPageCallRecents()
+    }
+    this.prevCallsLength = l
+  }
+  render() {
+    const s = getCallStore()
+    if (s.inPageCallManage && !s.calls.length) {
+      return (
+        <Layout
+          compact
+          noScroll
+          onBack={Nav().goToPageCallRecents}
+          title={intl`Connecting...`}
+        />
+      )
+    }
+    return (
+      <>
+        {s.calls.map(c => (
+          <PageCallManage key={c.id} call={c} />
+        ))}
+      </>
+    )
+  }
+}
+
+@observer
+class PageCallManage extends Component<{
+  call: Call
 }> {
   @observable showButtonsInVideoCall = true
   alreadySetShowButtonsInVideoCall = false
 
+  @observable hasJavaPn = true
+
   componentDidMount() {
+    this.checkJavaPn()
     this.hideButtonsIfVideo()
+    this.openJavaPnOnVisible()
   }
   componentDidUpdate() {
     this.hideButtonsIfVideo()
-    if (!callStore.calls.length) {
-      Nav().goToPageCallRecents()
-    }
+    this.openJavaPnOnVisible()
   }
   componentWillUnmount() {
-    callStore.onCallKeepAction()
+    getCallStore().onCallKeepAction()
   }
 
   @action toggleButtons = () => {
@@ -117,167 +260,229 @@ export class PageCallManage extends Component<{
   }
   @action hideButtonsIfVideo = () => {
     if (
-      !this.props.isFromCallBar &&
+      !getCallStore().inPageCallManage?.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      callStore.getCurrentCall()?.remoteVideoEnabled
+      this.props.call.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
     }
   }
 
-  renderCall = (c?: Call, isVideoEnabled?: boolean) => (
-    <Layout
-      compact
-      dropdown={
-        isVideoEnabled && !c?.transferring
-          ? [
-              {
-                label: this.showButtonsInVideoCall
-                  ? intl`Hide call menu buttons`
-                  : intl`Show call menu buttons`,
-                onPress: this.toggleButtons,
-              },
-            ]
-          : undefined
+  checkJavaPn = async () => {
+    if (
+      Platform.OS !== 'android' ||
+      !this.props.call.incoming ||
+      !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
+    ) {
+      runInAction(() => {
+        this.hasJavaPn = false
+      })
+      return
+    }
+    // The PN may come slower than SIP web socket
+    // We check if PN screen exists here in 5 seconds
+    // Must get callkeepUuid from object since it may be assigned lately
+    for (let i = 0; i < 5; i++) {
+      const uuid = this.props.call.callkeepUuid
+      if (!uuid) {
+        await waitTimeout(1000)
+        continue
       }
-      noScroll
-      onBack={Nav().goToPageCallRecents}
-      title={c?.computedName || intl`Connecting...`}
-      transparent={!c?.transferring}
-    >
-      {!c ? null : c.transferring ? (
+      const r = await BrekekeUtils.hasIncomingCallActivity(uuid)
+      console.log('hasIncomingCallActivity', r)
+      if (r) {
+        return
+      }
+      await waitTimeout(1000)
+    }
+    runInAction(() => {
+      console.warn(
+        `No incoming call activity for uuid=${this.props.call.callkeepUuid}`,
+      )
+      this.hasJavaPn = false
+    })
+  }
+  openJavaPnOnVisible = () => {
+    const { call: c } = this.props
+    if (
+      this.hasJavaPn &&
+      this.isVisible() &&
+      c.callkeepUuid &&
+      !c.transferring
+    ) {
+      BrekekeUtils.onPageCallManage(c.callkeepUuid)
+    }
+  }
+
+  isVisible = () => {
+    const s = getCallStore()
+    const { call: c } = this.props
+    return s.inPageCallManage && s.getCurrentCall()?.id === c.id
+  }
+
+  isBtnHidden = (k: CallConfigKey) => {
+    const {
+      call: { callConfig },
+    } = this.props
+    if (callConfig?.[k]) {
+      return callConfig[k] === 'false'
+    }
+    const { pbxConfig } = getAuthStore()
+    return pbxConfig?.[`webphone.call.${k}`] === 'false'
+  }
+
+  renderLayout = () => {
+    const { call: c } = this.props
+    return (
+      <Layout
+        compact
+        dropdown={
+          c.localVideoEnabled && !c.transferring
+            ? [
+                {
+                  label: this.showButtonsInVideoCall
+                    ? intl`Hide call menu buttons`
+                    : intl`Show call menu buttons`,
+                  onPress: this.toggleButtons,
+                },
+              ]
+            : undefined
+        }
+        noScroll
+        onBack={Nav().goToPageCallRecents}
+        title={c.getDisplayName() || intl`Connecting...`}
+        transparent={!c.transferring}
+      >
+        <View
+          style={
+            this.props.call.localVideoEnabled || c.localVideoEnabled
+              ? css.vContainerVideo
+              : css.vContainer
+          }
+        >
+          {this.renderCall()}
+        </View>
+      </Layout>
+    )
+  }
+  renderCall = () => {
+    const { call: c } = this.props
+    // Render PageCallTransferAttend as a layer instead
+    // So switching will not cause the avatar to reload
+    const renderTransferring = () => (
+      <View style={css.LoadingFullScreen}>
         <PageCallTransferAttend />
-      ) : (
-        <>
-          {isVideoEnabled && this.renderVideo(c)}
-          {this.renderBtns(c, isVideoEnabled)}
-          {this.renderHangupBtn(c)}
-        </>
-      )}
-    </Layout>
-  )
-  renderVideo = (c: Call) => (
-    <>
-      <View style={css.Video_Space} />
-      <View style={css.Video}>
-        <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
       </View>
-      <RnTouchableOpacity
-        onPress={this.toggleButtons}
-        style={StyleSheet.absoluteFill}
-      />
-    </>
-  )
-  renderBtns = (c: Call, isVideoEnabled?: boolean) => {
-    const n = callStore.calls.filter(
-      _ => _.id !== callStore.currentCallId,
-    ).length
-    if (isVideoEnabled && !this.showButtonsInVideoCall) {
+    )
+    if (this.hasJavaPn) {
+      if (c.transferring) {
+        return renderTransferring()
+      }
+      return (
+        <View style={css.LoadingFullScreen}>
+          <ActivityIndicator size='large' color='black' />
+        </View>
+      )
+    }
+    return (
+      <>
+        {c.localVideoEnabled && this.renderVideo()}
+        {this.renderAvatar()}
+        {this.renderBtns()}
+        {this.renderHangupBtn()}
+        {c.transferring ? renderTransferring() : null}
+      </>
+    )
+  }
+
+  renderVideo = () => {
+    const { call: c } = this.props
+    return (
+      <>
+        <View style={css.cameraStyle}>
+          <ButtonIcon
+            color={'white'}
+            noborder
+            onPress={c.toggleSwitchCamera}
+            path={
+              c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant
+            }
+            size={40}
+          />
+        </View>
+        <View style={css.Video_Space} />
+        <View style={css.Video}>
+          <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
+        </View>
+        <RnTouchableOpacity
+          onPress={this.toggleButtons}
+          style={StyleSheet.absoluteFill}
+        />
+      </>
+    )
+  }
+
+  renderAvatar = () => {
+    const { call: c } = this.props
+    const incoming = c.incoming && !c.answered
+    const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
+    const isShowAvatar =
+      (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+    const styleBigAvatar = c.localVideoEnabled
+      ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
+      : { flex: 1 }
+    const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
+    return (
+      <View style={[css.Image_wrapper, { flex: 1 }]}>
+        {isShowAvatar ? (
+          <View style={styleViewAvatar}>
+            <SmartImage
+              uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
+              style={{ flex: 1, aspectRatio: 1 }}
+            />
+          </View>
+        ) : (
+          <View style={{ flex: 1 }} />
+        )}
+        <View style={!isShowAvatar ? css.styleTextBottom : {}}>
+          <RnText title white center numberOfLines={2}>
+            {`${c.getDisplayName()}`}
+          </RnText>
+          {c.answered && (
+            <Duration subTitle white center>
+              {c.answeredAt}
+            </Duration>
+          )}
+          {incoming && (
+            <RnText bold white center>
+              {intl`Incoming Call`}
+            </RnText>
+          )}
+        </View>
+      </View>
+    )
+  }
+
+  renderBtns = () => {
+    const { call: c } = this.props
+    const n = getCallStore().calls.filter(_ => _.id !== c.id).length
+    if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
-    const Container = isVideoEnabled ? RnTouchableOpacity : View
-    const activeColor = isVideoEnabled ? v.colors.primary : v.colors.warning
+    const Container = c.localVideoEnabled ? RnTouchableOpacity : View
+    const activeColor = c.localVideoEnabled
+      ? v.colors.primary
+      : v.colors.warning
+    const isHideButtons =
+      (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
+      !c.answered
+    const incoming = c.incoming && !c.answered
     return (
       <Container
-        onPress={isVideoEnabled ? this.toggleButtons : undefined}
-        style={css.Btns}
+        onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
+        style={[css.Btns, { marginTop: !incoming ? 30 : 0 }]}
       >
-        <View style={css.Btns_VerticalMargin} />
-        {/* TODO add Connecting... */}
-        <View style={!c.answered && css.Btns_Hidden}>
-          <View style={css.Btns_Inner}>
-            <ButtonIcon
-              bgcolor='white'
-              color='black'
-              name={intl`TRANSFER`}
-              noborder
-              onPress={Nav().goToPageCallTransferChooseUser}
-              path={mdiCallSplit}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor='white'
-              color='black'
-              name={intl`PARK`}
-              noborder
-              onPress={Nav().goToPageCallParks2}
-              path={mdiAlphaPCircle}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor={c.localVideoEnabled ? activeColor : 'white'}
-              color={c.localVideoEnabled ? 'white' : 'black'}
-              name={intl`VIDEO`}
-              noborder
-              onPress={c.toggleVideo}
-              path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
-              size={40}
-              textcolor='white'
-            />
-            {Platform.OS !== 'web' && (
-              <ButtonIcon
-                bgcolor={callStore.isLoudSpeakerEnabled ? activeColor : 'white'}
-                color={callStore.isLoudSpeakerEnabled ? 'white' : 'black'}
-                name={intl`SPEAKER`}
-                noborder
-                onPress={callStore.toggleLoudSpeaker}
-                path={
-                  callStore.isLoudSpeakerEnabled
-                    ? mdiVolumeHigh
-                    : mdiVolumeMedium
-                }
-                size={40}
-                textcolor='white'
-              />
-            )}
-          </View>
-          <View style={css.Btns_Space} />
-          <View style={css.Btns_Inner}>
-            <ButtonIcon
-              bgcolor={c.muted ? activeColor : 'white'}
-              color={c.muted ? 'white' : 'black'}
-              name={c.muted ? intl`UNMUTE` : intl`MUTE`}
-              noborder
-              onPress={() => c.toggleMuted()}
-              path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor={c.recording ? activeColor : 'white'}
-              color={c.recording ? 'white' : 'black'}
-              name={intl`RECORD`}
-              noborder
-              onPress={c.toggleRecording}
-              path={c.recording ? mdiRecordCircle : mdiRecord}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor='white'
-              color='black'
-              name={intl`DTMF`}
-              noborder
-              onPress={Nav().goToPageCallDtmfKeypad}
-              path={mdiDialpad}
-              size={40}
-              textcolor='white'
-            />
-            <ButtonIcon
-              bgcolor={c.holding ? activeColor : 'white'}
-              color={c.holding ? 'white' : 'black'}
-              name={c.holding ? intl`UNHOLD` : intl`HOLD`}
-              noborder
-              onPress={c.toggleHoldWithCheck}
-              path={c.holding ? mdiPlayCircle : mdiPauseCircle}
-              size={40}
-              textcolor='white'
-            />
-          </View>
-        </View>
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
@@ -290,63 +495,186 @@ export class PageCallManage extends Component<{
             }
           />
         )}
-        <View style={css.Btns_VerticalMargin} />
-      </Container>
-    )
-  }
-  renderHangupBtn = (c: Call) => {
-    const incoming = c.incoming && !c.answered
-    return (
-      <>
-        <View style={[css.Hangup, incoming && css.Hangup_incoming]}>
-          {c.holding ? (
-            <RnText small white center>
-              {intl`CALL IS ON HOLD`}
-            </RnText>
-          ) : (
+        <View style={{ paddingTop: 10 }} />
+        <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
+          {!this.isBtnHidden('transfer') && (
             <ButtonIcon
-              bgcolor={v.colors.danger}
-              color='white'
+              styleContainer={css.BtnFuncCalls}
+              disabled={!c.answered}
+              bgcolor='white'
+              color='black'
+              name={intl`TRANSFER`}
               noborder
-              onPress={c.hangupWithUnhold}
-              path={mdiPhoneHangup}
+              onPress={Nav().goToPageCallTransferChooseUser}
+              path={mdiCallSplit}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('park') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              disabled={!c.answered}
+              bgcolor='white'
+              color='black'
+              name={intl`PARK`}
+              noborder
+              onPress={Nav().goToPageCallParks2}
+              path={mdiAlphaPCircle}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('video') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              disabled={!c.answered}
+              bgcolor={c.localVideoEnabled ? activeColor : 'white'}
+              color={c.localVideoEnabled ? 'white' : 'black'}
+              name={intl`VIDEO`}
+              noborder
+              onPress={c.toggleVideo}
+              path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              bgcolor={
+                getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
+              }
+              color={getCallStore().isLoudSpeakerEnabled ? 'white' : 'black'}
+              name={intl`SPEAKER`}
+              noborder
+              onPress={getCallStore().toggleLoudSpeaker}
+              path={
+                getCallStore().isLoudSpeakerEnabled
+                  ? mdiVolumeHigh
+                  : mdiVolumeMedium
+              }
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('mute') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              disabled={!c.answered}
+              bgcolor={c.muted ? activeColor : 'white'}
+              color={c.muted ? 'white' : 'black'}
+              name={c.muted ? intl`UNMUTE` : intl`MUTE`}
+              noborder
+              onPress={() => c.toggleMuted()}
+              path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('record') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              disabled={!c.answered}
+              bgcolor={c.recording ? activeColor : 'white'}
+              color={c.recording ? 'white' : 'black'}
+              name={intl`RECORD`}
+              noborder
+              onPress={c.toggleRecording}
+              path={c.recording ? mdiRecordCircle : mdiRecord}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('dtmf') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              disabled={!(c.withSDPControls || c.answered)}
+              bgcolor='white'
+              color='black'
+              name={intl`KEYPAD`}
+              noborder
+              onPress={Nav().goToPageCallDtmfKeypad}
+              path={mdiDialpad}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {!this.isBtnHidden('hold') && (
+            <ButtonIcon
+              styleContainer={css.BtnFuncCalls}
+              disabled={!c.answered}
+              bgcolor={c.holding ? activeColor : 'white'}
+              color={c.holding ? 'white' : 'black'}
+              name={c.holding ? intl`UNHOLD` : intl`HOLD`}
+              noborder
+              onPress={c.toggleHoldWithCheck}
+              path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
               textcolor='white'
             />
           )}
         </View>
-        {incoming && (
-          <>
-            <IncomingItemWithTimer />
-            <View style={[css.Hangup, css.Hangup_incomingText]}>
-              <RnText title white center>
-                {c.computedName}
-              </RnText>
-              <RnText bold white center>
-                {intl`Incoming Call`}
-              </RnText>
-            </View>
-            <View style={[css.Hangup, css.Hangup_answer]}>
+        <View style={{ paddingBottom: 10 }} />
+      </Container>
+    )
+  }
+
+  renderHangupBtn = () => {
+    const { call: c } = this.props
+    const incoming = c.incoming && !c.answered
+    const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
+    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
+    return (
+      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
+        {c.holding ? (
+          <View style={css.txtHold}>
+            <RnText small white center>
+              {intl`CALL IS ON HOLD`}
+            </RnText>
+          </View>
+        ) : (
+          <View style={css.viewHangupBtn}>
+            {incoming && this.isVisible() && <IncomingItemWithTimer />}
+            {incoming && (
               <ButtonIcon
                 bgcolor={v.colors.primary}
                 color='white'
                 noborder
-                onPress={() => c.answer(true)}
+                onPress={() => c.answer({ ignoreNav: true })}
                 path={mdiPhone}
                 size={40}
                 textcolor='white'
               />
-            </View>
-          </>
+            )}
+            {incoming && (
+              <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
+            )}
+            {!isHangupBtnHidden && (
+              <ButtonIcon
+                bgcolor={v.colors.danger}
+                color='white'
+                noborder
+                onPress={c.hangupWithUnhold}
+                path={mdiPhoneHangup}
+                size={40}
+                textcolor='white'
+              />
+            )}
+          </View>
         )}
-      </>
+      </View>
     )
   }
 
   render() {
-    const c = callStore.getCurrentCall()
-    void callStore.calls.length // trigger componentDidUpdate
-    const Container = c?.localVideoEnabled ? Fragment : BrekekeGradient
-    return <Container>{this.renderCall(c, c?.localVideoEnabled)}</Container>
+    return (
+      <BrekekeGradient
+        white={this.props.call.localVideoEnabled}
+        style={this.isVisible() ? undefined : css.hidden}
+      >
+        {this.renderLayout()}
+      </BrekekeGradient>
+    )
   }
 }

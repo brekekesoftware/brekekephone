@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet, ViewProps } from 'react-native'
 
 import { mdiCheck } from '../assets/icons'

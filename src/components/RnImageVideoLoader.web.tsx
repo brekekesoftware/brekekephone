@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
@@ -78,7 +78,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       blobFile && setObjectUrl(URL.createObjectURL(blobFile))
     } catch (err) {
       setObjectUrl('')
-      console.error(`ImageVideoLoader.readImage err: ${err}`)
+      console.error('ImageVideoLoader.readImage error:', err)
     }
   }
   useEffect(() => {
@@ -110,12 +110,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
   const isLoadSuccess = state === 'success' && !!objectURL
-  if (state === 'success' && !!!objectURL) {
+  if (state === 'success' && !objectURL) {
     return null
   }
   const cssLoading = fileType === 'image' ? css.loading : css.loadingVideo
   return (
-    <View style={[css.image]}>
+    <View style={css.image}>
       {isLoading && (
         <ActivityIndicator size='small' color='white' style={cssLoading} />
       )}

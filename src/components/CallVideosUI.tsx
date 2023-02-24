@@ -1,6 +1,6 @@
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, FC } from 'react'
+import { Component, FC } from 'react'
 import {
   GestureResponderEvent,
   PanResponder,
@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native'
 
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
 import { v } from './variables'
@@ -70,7 +70,10 @@ class Mini extends Component<Props> {
         ref={this.setViewRef}
         style={[
           css.Mini,
-          { top: callStore.videoPositionT, left: callStore.videoPositionL },
+          {
+            top: getCallStore().videoPositionT,
+            left: getCallStore().videoPositionL,
+          },
         ]}
         {...this.panResponder.panHandlers}
       >
@@ -86,8 +89,8 @@ class Mini extends Component<Props> {
   onDrag = (e: GestureResponderEvent, gesture: PanResponderGestureState) => {
     this.view?.setNativeProps({
       style: {
-        left: callStore.videoPositionL + gesture.dx,
-        top: callStore.videoPositionT + gesture.dy,
+        left: getCallStore().videoPositionL + gesture.dx,
+        top: getCallStore().videoPositionT + gesture.dy,
       },
     })
   }
@@ -96,9 +99,9 @@ class Mini extends Component<Props> {
     e: GestureResponderEvent,
     gesture: PanResponderGestureState,
   ) => {
-    Object.assign(callStore, {
-      videoPositionL: callStore.videoPositionL + gesture.dx,
-      videoPositionT: callStore.videoPositionT + gesture.dy,
+    Object.assign(getCallStore(), {
+      videoPositionL: getCallStore().videoPositionL + gesture.dx,
+      videoPositionT: getCallStore().videoPositionT + gesture.dy,
     })
     const n = Date.now()
     if (
@@ -120,7 +123,7 @@ class Control extends Component<{
   render() {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
-      s.name === 'PageCallManage' ||
+      getCallStore().inPageCallManage ||
       s.name === 'PageCallTransferDial' ||
       s.name === 'PageCallTransferAttend'
     ) {

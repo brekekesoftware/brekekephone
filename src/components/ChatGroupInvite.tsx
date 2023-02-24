@@ -1,7 +1,7 @@
-import sortBy from 'lodash/sortBy'
-import { action, computed, observable } from 'mobx'
+import { sortBy } from 'lodash'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, FC } from 'react'
+import { Component, FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
@@ -92,12 +92,6 @@ const Notify: FC<{
 @observer
 export class ChatGroupInvite extends Component {
   @observable loading = false
-  @computed get groupIds() {
-    // update logic if from webchat don't show notify
-    return chatStore.groups
-      .filter(gr => !gr.webchat && !gr.jointed)
-      .map(gr => gr.id)
-  }
 
   formatGroup = (group: string) => {
     const { id, inviter, name } = chatStore.getGroupById(group) || {}
@@ -140,16 +134,19 @@ export class ChatGroupInvite extends Component {
   }
 
   render() {
-    return this.groupIds.map(group => (
-      <Notify
-        key={group}
-        {...this.formatGroup(group)}
-        accept={this.accept}
-        reject={this.reject}
-        type='inviteChat'
-        loading={this.loading}
-      />
-    ))
+    return chatStore.groups
+      .filter(gr => !gr.webchat && !gr.jointed)
+      .map(gr => gr.id)
+      .map(group => (
+        <Notify
+          key={group}
+          {...this.formatGroup(group)}
+          accept={this.accept}
+          reject={this.reject}
+          type='inviteChat'
+          loading={this.loading}
+        />
+      ))
   }
 }
 
@@ -182,10 +179,11 @@ export class UnreadChatNoti extends Component {
     let unreadChats = Object.entries(chatStore.threadConfig)
       .filter(
         ([k, c]) =>
-          c.isUnread && filterTextOnly(chatStore.messagesByThreadId[k])?.length,
+          c.isUnread &&
+          filterTextOnly(chatStore.getMessagesByThreadId(k)).length,
       )
       .map(([k, c]) => {
-        const arr = filterTextOnly(chatStore.messagesByThreadId[k])
+        const arr = filterTextOnly(chatStore.getMessagesByThreadId(k))
         return {
           ...c,
           lastMessage: arr[arr.length - 1],
@@ -201,7 +199,7 @@ export class UnreadChatNoti extends Component {
     })
     //
     unreadChats = unreadChats.filter(c => {
-      const s = RnStacker.stacks[RnStacker.stacks.length - 1] as unknown as {
+      const s = RnStacker.stacks[RnStacker.stacks.length - 1] as any as {
         name: string
         buddy: string
         groupId: string

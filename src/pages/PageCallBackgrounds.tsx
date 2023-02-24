@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 
 import { mdiPhone, mdiPhoneHangup } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
@@ -8,14 +7,16 @@ import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { Call } from '../stores/Call'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
 
 export const PageCallBackgrounds = observer(() => {
-  const bg = callStore.calls.filter(c => c.id !== callStore.currentCallId)
-  const currentCall = callStore.getCurrentCall()
+  const bg = getCallStore().calls.filter(
+    c => c.id !== getCallStore().currentCallId,
+  )
+  const currentCall = getCallStore().getCurrentCall()
   const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
@@ -31,7 +32,7 @@ export const PageCallBackgrounds = observer(() => {
         ? [
             () => {
               c.answer()
-              callStore.onSelectBackgroundCall(c)
+              getCallStore().onSelectBackgroundCall(c)
             },
           ]
         : []),
@@ -86,7 +87,7 @@ export const PageCallBackgrounds = observer(() => {
           onPress={
             !c.answered && c.incoming
               ? undefined
-              : () => callStore.onSelectBackgroundCall(c)
+              : () => getCallStore().onSelectBackgroundCall(c)
           }
         >
           {renderItemCall(c)}

@@ -1,6 +1,5 @@
-import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 import { uc } from '../api/uc'
 import { UserItem } from '../components/ContactUserItem'
@@ -8,23 +7,13 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
 import { chatStore } from '../stores/chatStore'
-import { contactStore, UcUser } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
-import { arrToMap } from '../utils/toMap'
 
 @observer
 export class PageChatGroupCreate extends Component {
-  @computed get buddyIds() {
-    return contactStore.ucUsers.map(u => u.id)
-  }
-  @computed get buddyById() {
-    return arrToMap(contactStore.ucUsers, 'id', (u: UcUser) => u) as {
-      [k: string]: UcUser
-    }
-  }
-
   state: {
     name: string
     members: string[]
@@ -48,12 +37,12 @@ export class PageChatGroupCreate extends Component {
           value={this.state.name}
         />
         <Field isGroup label={intl`Members`} />
-        {this.buddyIds.map((id, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
+        {contactStore.ucUsers.map((u, i) => (
+          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(u.id)}>
             <UserItem
-              key={id}
-              {...this.buddyById[id]}
-              selected={this.state.members.includes(id)}
+              key={u.id}
+              {...u}
+              selected={this.state.members.includes(u.id)}
             />
           </RnTouchableOpacity>
         ))}

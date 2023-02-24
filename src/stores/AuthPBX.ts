@@ -1,7 +1,8 @@
 import { debounce } from 'lodash'
-import { action, autorun, Lambda } from 'mobx'
+import { action, Lambda, reaction } from 'mobx'
 
 import { pbx } from '../api/pbx'
+import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 
 class AuthPBX {
@@ -11,13 +12,10 @@ class AuthPBX {
     this.authWithCheck()
     this.clearObserve?.()
     const s = getAuthStore()
-    this.clearObserve = autorun(() => {
-      void s.pbxShouldAuth()
-      this.authWithCheckDebounced()
-    })
+    this.clearObserve = reaction(s.pbxShouldAuth, this.authWithCheckDebounced)
   }
   @action dispose = () => {
-    console.error('PBX PN debug: disconnect by AuthPBX.dispose')
+    console.log('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearObserve?.()
     this.clearObserve = undefined
     pbx.disconnect()
@@ -25,21 +23,34 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
-  @action private authWithCheck = () => {
+  @action private authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.pbxShouldAuth()) {
       return
     }
-    console.error('PBX PN debug: disconnect by AuthPBX.authWithCheck')
+    if (s.pbxTotalFailure > 1) {
+      s.pbxState = 'waiting'
+      await waitTimeout(
+        s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000,
+      )
+    }
+    console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
     s.pbxState = 'connecting'
-    pbx.connect(s.currentProfile).catch(
-      action((err: Error) => {
-        s.pbxState = 'failure'
-        s.pbxTotalFailure += 1
-        console.error('Failed to connect to pbx', err)
-      }),
-    )
+    pbx
+      .connect(s.getCurrentAccount())
+      .then(connected => {
+        if (!connected) {
+          throw new Error('Pbx login connection timed out')
+        }
+      })
+      .catch(
+        action((err: Error) => {
+          s.pbxState = 'failure'
+          s.pbxTotalFailure += 1
+          console.error('Failed to connect to pbx:', err)
+        }),
+      )
   }
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }

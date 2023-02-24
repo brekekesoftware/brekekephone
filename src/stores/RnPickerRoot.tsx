@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react'
-import React from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '../assets/icons'

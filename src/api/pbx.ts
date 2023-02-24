@@ -2,44 +2,62 @@ import 'brekekejs/lib/jsonrpc'
 import 'brekekejs/lib/pal'
 
 import EventEmitter from 'eventemitter3'
+import { Platform } from 'react-native'
 
-import { waitPbx } from '../stores/authStore'
-import { Profile, profileStore } from '../stores/profileStore'
+import { bundleIdentifier, fcmApplicationId } from '../config'
+import { embedApi } from '../embed/embedApi'
+import { Account, accountStore } from '../stores/accountStore'
+import { getAuthStore, waitPbx } from '../stores/authStore'
+import { PbxUser, Phonebook } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { Pbx, PbxGetProductInfoRes } from './brekekejs'
+import { BrekekeUtils } from '../utils/RnNativeModules'
+import { toBoolean } from '../utils/string'
+import { Pbx, PbxEvent } from './brekekejs'
+import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
+import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
   client?: Pbx
   private connectTimeoutId = 0
 
-  connect = async (p: Profile) => {
-    console.error('PBX PN debug: call pbx.connect')
+  // wait auth state to success
+  isMainInstance = true
+
+  connect = async (
+    p: Account,
+    palParamUserReconnect?: boolean,
+  ): Promise<boolean> => {
+    console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
-      // return Promise.reject(new Error('PAL client is connected'))
-      // TODO
-      return
+      console.warn('PAL client already connected, ignore...')
+      return true
     }
 
-    this.pbxConfig = undefined
+    const d = await accountStore.findDataAsync(p)
+    const oldPalParamUser = d.palParams?.['user']
+    console.log(
+      `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
+    )
 
-    const d = profileStore.getProfileData(p)
     const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: p.pbxTenant,
       login_user: p.pbxUsername,
       login_password: p.pbxPassword,
       _wn: d.accessToken,
-      park: p.parks,
+      park: p.parks || [],
       voicemail: 'self',
-      user: '*',
       status: true,
       secure_login_password: false,
       phonetype: 'webphone',
+      callrecording: 'self',
+      ...d.palParams,
+      ...embedApi._palParams,
     })
     this.client = client
-    console.error('PBX PN debug: construct pbx.client')
 
-    client._pal = ((method: keyof Pbx, params?: object) => {
+    client.debugLevel = 2
+    client.call_pal = (method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
         const f = (client[method] as Function).bind(client) as Function
         if (typeof f !== 'function') {
@@ -47,100 +65,183 @@ export class PBX extends EventEmitter {
         }
         f(params, resolve, reject)
       })
-    }) as unknown as Pbx['_pal']
+    }
 
-    client.debugLevel = 2
-
-    await Promise.race([
-      new Promise((_, reject) => {
+    const newTimeoutPromise = () => {
+      this.clearConnectTimeoutId()
+      return new Promise<boolean>(resolve => {
         this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
-          client.close()
+          resolve(false)
+          console.warn('Pbx login connection timed out')
           // Fix case already reconnected
           if (client === this.client) {
-            reject(new Error('Timeout'))
+            this.disconnect()
+          } else {
+            client.close()
           }
         }, 10000)
-      }),
-      new Promise((resolve, reject) => {
-        client.login(() => resolve(undefined), reject)
-      }),
-    ])
+      })
+    }
 
+    let resolveFn: Function | undefined = undefined
+    const connected = new Promise<boolean>(r => {
+      resolveFn = r
+    })
+    const pendingServerStatuses: PbxEvent['serverStatus'][] = []
+    client.notify_serverstatus = e => {
+      pendingServerStatuses.push(e)
+      if (!e?.status) {
+        return
+      }
+      if (e.status === 'active') {
+        resolveFn?.(true)
+        resolveFn = undefined
+      } else if (e.status === 'inactive') {
+        resolveFn?.(false)
+        resolveFn = undefined
+      }
+    }
+    const pendingClose: unknown[] = []
+    client.onClose = () => {
+      pendingClose.push()
+      resolveFn?.(false)
+      resolveFn = undefined
+    }
+    const pendingError: Error[] = []
+    client.onError = err => {
+      pendingError.push(err)
+      resolveFn?.(false)
+      resolveFn = undefined
+    }
+
+    const login = new Promise<boolean>((resolve, reject) =>
+      client.login(() => resolve(true), reject),
+    )
+    await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
 
-    client.onClose = () => {
+    const isConnected = async () => {
+      const r = await Promise.race([connected, newTimeoutPromise()])
+      this.clearConnectTimeoutId()
+      return r
+    }
+
+    // in syncPnToken, isMainInstance = false
+    // we will not proceed further in that case
+    if (!this.isMainInstance) {
+      return isConnected()
+    }
+
+    // Check again webphone.pal.param.user
+    if (!palParamUserReconnect) {
+      const as = getAuthStore()
+      // TODO any function get pbxConfig on this time may get undefined
+      as.pbxConfig = undefined
+      await isConnected()
+      await this.getConfig(true)
+      const newPalParamUser = as.pbxConfig?.['webphone.pal.param.user']
+      if (newPalParamUser !== oldPalParamUser) {
+        console.warn(
+          `Attempt to reconnect due to mismatch webphone.pal.param.user after login: old=${oldPalParamUser} new=${newPalParamUser}`,
+        )
+        this.disconnect()
+        return this.connect(p, true)
+      }
+    }
+
+    // register client direct event handlers
+    client.onClose = this.onClose
+    pendingClose.forEach(client.onClose)
+    client.onError = this.onError
+    pendingError.forEach(client.onError)
+    client.notify_serverstatus = this.onServerStatus
+    pendingServerStatuses.forEach(client.notify_serverstatus)
+    client.notify_park = this.onPark
+    client.notify_callrecording = this.onCallRecording
+    client.notify_voicemail = this.onVoicemail
+    client.notify_status = this.onUserStatus
+
+    // emit to embed api
+    embedApi.emit('pal', p, client)
+    return connected
+  }
+
+  // pal client direct event handlers
+  private onClose = () => {
+    this.emit('connection-stopped')
+  }
+  private onError = (err: Error) => {
+    console.error('pbx.client.onError:', err)
+  }
+  private onServerStatus = (e: PbxEvent['serverStatus']) => {
+    if (!e?.status) {
+      return
+    }
+    if (e.status === 'active') {
+      this.emit('connection-started')
+    } else if (e.status === 'inactive') {
       this.emit('connection-stopped')
     }
-
-    client.onError = err => {
-      console.error('pbx.client.onError:', err)
-    }
-
-    client.notify_serverstatus = e => {
-      if (e?.status === 'active') {
-        return this.emit('connection-started')
-      }
-      if (e?.status === 'inactive') {
-        return this.emit('connection-stopped')
-      }
+  }
+  // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
+  // {"time":1587451575120,"park":"777","status":"off"}
+  private onPark = (e: PbxEvent['park']) => {
+    if (!e?.status) {
       return
     }
-
-    // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
-    // {"time":1587451575120,"park":"777","status":"off"}
-    client.notify_park = e => {
-      // TODO
-      if (e?.status === 'on') {
-        return this.emit('park-started', e.park)
-      }
-      if (e?.status === 'off') {
-        return this.emit('park-stopped', e.park)
-      }
+    // TODO
+    if (e.status === 'on') {
+      this.emit('park-started', e.park)
+    } else if (e.status === 'off') {
+      this.emit('park-stopped', e.park)
+    }
+  }
+  private onCallRecording = (e: PbxEvent['callRecording']) => {
+    if (!e) {
       return
     }
-
-    client.notify_voicemail = e => {
-      if (!e) {
-        return
-      }
-      this.emit('voicemail-updated', e)
+    this.emit('call-recording', e)
+  }
+  private onVoicemail = (e: PbxEvent['voicemail']) => {
+    if (!e) {
+      return
     }
-
-    client.notify_status = e => {
-      if (!e) {
+    this.emit('voicemail-updated', e)
+  }
+  private onUserStatus = (e: PbxEvent['userStatus']) => {
+    if (!e) {
+      return
+    }
+    switch (e.status) {
+      case '14':
+      case '2':
+      case '36':
+        return this.emit('user-talking', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '35':
+        return this.emit('user-holding', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '-1':
+        return this.emit('user-hanging', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '1':
+        return this.emit('user-calling', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      case '65':
+        return this.emit('user-ringing', {
+          user: e.user,
+          talker: e.talker_id,
+        })
+      default:
         return
-      }
-      switch (e.status) {
-        case '14':
-        case '2':
-        case '36':
-          return this.emit('user-talking', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '35':
-          return this.emit('user-holding', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '-1':
-          return this.emit('user-hanging', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '1':
-          return this.emit('user-calling', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        case '65':
-          return this.emit('user-ringing', {
-            user: e.user,
-            talker: e.talker_id,
-          })
-        default:
-          return
-      }
     }
   }
 
@@ -148,7 +249,7 @@ export class PBX extends EventEmitter {
     if (this.client) {
       this.client.close()
       this.client = undefined
-      console.error('PBX PN debug: pbx.client set to null')
+      console.log('PBX PN debug: pbx.client set to null')
     }
     this.clearConnectTimeoutId()
   }
@@ -159,81 +260,96 @@ export class PBX extends EventEmitter {
     }
   }
 
-  private pbxConfig?: PbxGetProductInfoRes
-  getConfig = async () => {
-    if (!this.pbxConfig) {
-      await waitPbx()
-      if (!this.client) {
-        return
+  getConfig = async (skipWait?: boolean) => {
+    if (this.isMainInstance) {
+      const s = getAuthStore()
+      if (s.pbxConfig) {
+        return s.pbxConfig
       }
-      this.pbxConfig = await this.client._pal('getProductInfo', {
-        webphone: 'true',
-      })
+      if (!skipWait) {
+        await waitPbx()
+      }
     }
-    return this.pbxConfig
-  }
-
-  createSIPAccessToken = async (sipUsername: string) => {
-    await waitPbx()
     if (!this.client) {
       return
     }
-    return this.client._pal('createAuthHeader', {
+    const config = await this.client.call_pal('getProductInfo', {
+      webphone: 'true',
+    })
+    if (!this.isMainInstance) {
+      return config
+    }
+    const s = getAuthStore()
+    s.pbxConfig = config
+    const d = await s.getCurrentDataAsync()
+    if (this.isMainInstance) {
+      BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(s.pbxConfig)))
+    }
+    d.palParams = parsePalParams(s.pbxConfig)
+    d.userAgent = s.pbxConfig['webphone.useragent']
+    d.pnExpires = s.pbxConfig['webphone.pn_expires']
+    accountStore.updateAccountData(d)
+    return s.pbxConfig
+  }
+
+  createSIPAccessToken = async (sipUsername: string) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    return this.client.call_pal('createAuthHeader', {
       username: sipUsername,
     })
   }
 
   getUsers = async (tenant: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
-    return this.client._pal('getExtensions', {
+    return this.client.call_pal('getExtensions', {
       tenant,
       pattern: '..*',
       limit: -1,
       type: 'user',
-    })
-  }
-
-  getOtherUsers = async (tenant: string, userIds: string | string[]) => {
-    await waitPbx()
-    if (!this.client) {
-      return
-    }
-
-    const res = await this.client._pal('getExtensionProperties', {
-      tenant,
-      extension: userIds,
       property_names: ['name'],
     })
-
-    const users = new Array(res.length)
-
-    for (let i = 0; i < res.length; i++) {
-      const srcUser = res[i]
-
-      const dstUser = {
-        id: userIds[i],
-        name: srcUser[0],
-      }
-
-      users[i] = dstUser
+  }
+  getExtraUsers = async (ids: string[]): Promise<PbxUser[] | undefined> => {
+    if (this.isMainInstance) {
+      await waitPbx()
     }
-
-    return users
+    const cp = getAuthStore().getCurrentAccount()
+    if (!this.client || !cp) {
+      return
+    }
+    const res = await this.client.call_pal('getExtensionProperties', {
+      tenant: cp.pbxTenant,
+      extension: ids,
+      property_names: ['name'],
+    })
+    // server return "No permission." if id not exist on Pbx.
+    return res.map((r, i) => ({
+      id: ids[i],
+      name: (r as any as string) === 'No permission.' ? '' : r[0],
+    }))
   }
 
-  getUserForSelf = async (tenant: string, userId: string) => {
-    await waitPbx()
+  getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
 
-    const res = await this.client._pal('getExtensionProperties', {
+    const [res] = await this.client.call_pal('getExtensionProperties', {
       tenant,
-      extension: userId,
-
+      extension: [userId],
       property_names: [
         'name',
         'p1_ptype',
@@ -250,19 +366,19 @@ export class PBX extends EventEmitter {
     const phones = [
       {
         id: pnumber[0],
-        type: res[1] as string,
+        type: res[1],
       },
       {
         id: pnumber[1],
-        type: res[2] as string,
+        type: res[2],
       },
       {
         id: pnumber[2],
-        type: res[3] as string,
+        type: res[3],
       },
       {
         id: pnumber[3],
-        type: res[4] as string,
+        type: res[4],
       },
     ]
 
@@ -271,117 +387,106 @@ export class PBX extends EventEmitter {
 
     return {
       id: userId,
-      name: userName as string,
+      name: userName,
       phones,
-      language: lang as string,
+      language: lang,
     }
   }
 
   getContacts = async ({
     search_text,
-    shared,
     offset,
     limit,
   }: {
     search_text: string
-    shared: boolean
     offset: number
     limit: number
   }) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
-
-    const res = await this.client._pal('getContactList', {
+    const res = await this.client.call_pal('getContactList', {
       phonebook: '',
       search_text,
-      shared,
       offset,
       limit,
     })
-
     return res.map(contact => ({
       id: contact.aid,
-      name: contact.display_name,
+      display_name: contact.display_name,
       phonebook: contact.phonebook,
       user: contact.user,
+      shared: !contact?.user,
+      info: {},
     }))
   }
-
+  getPhonebooks = async () => {
+    if (!this.client) {
+      return
+    }
+    const res = await this.client.call_pal('getPhonebooks', {})
+    return res?.filter(item => !item.shared) || []
+  }
   getContact = async (id: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
 
-    const res = await this.client._pal('getContact', {
+    const res = await this.client.call_pal('getContact', {
       aid: id,
     })
-    res.info = res.info || {}
 
+    res.info = res.info || {}
     return {
-      id,
-      firstName: res.info.$firstname,
-      lastName: res.info.$lastname,
-      workNumber: res.info.$tel_work,
-      homeNumber: res.info.$tel_home,
-      cellNumber: res.info.$tel_mobile,
-      address: res.info.$address,
-      company: res.info.$company,
-      email: res.info.$email,
-      job: res.info.$title,
-      book: res.phonebook,
-      hidden: res.info.$hidden,
-      shared: res.shared === 'true',
+      id: res.aid,
+      display_name: res.display_name,
+      phonebook: res.phonebook,
+      shared: toBoolean(res.shared),
+      info: res.info,
     }
   }
-
-  setContact = async (contact: {
-    id: string
-    book: string
-    shared: boolean
-    firstName: string
-    lastName: string
-    workNumber: string
-    homeNumber: string
-    cellNumber: string
-    address: string
-    job: string
-    email: string
-    company: string
-    hidden: boolean
-  }) => {
-    await waitPbx()
+  deleteContact = async (id: string[]) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return
     }
-    return this.client._pal('setContact', {
+    const res = await this.client.call_pal('deleteContact', {
+      aid: id,
+    })
+    return res
+  }
+  setContact = async (contact: Phonebook) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    return this.client.call_pal('setContact', {
       aid: contact.id,
-      phonebook: contact.book,
+      phonebook: contact.phonebook,
       shared: contact.shared ? 'true' : 'false',
-
-      info: {
-        $firstname: contact.firstName,
-        $lastname: contact.lastName,
-        $tel_work: contact.workNumber,
-        $tel_home: contact.homeNumber,
-        $tel_mobile: contact.cellNumber,
-        $address: contact.address,
-        $title: contact.job,
-        $email: contact.email,
-        $company: contact.company,
-        $hidden: contact.hidden ? 'true' : 'false',
-      },
+      display_name: contact.display_name,
+      info: contact.info,
     })
   }
 
   holdTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('hold', {
+    await this.client.call_pal('hold', {
       tenant,
       tid: talker,
     })
@@ -389,11 +494,13 @@ export class PBX extends EventEmitter {
   }
 
   unholdTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('unhold', {
+    await this.client.call_pal('unhold', {
       tenant,
       tid: talker,
     })
@@ -401,11 +508,13 @@ export class PBX extends EventEmitter {
   }
 
   startRecordingTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('startRecording', {
+    await this.client.call_pal('startRecording', {
       tenant,
       tid: talker,
     })
@@ -413,11 +522,13 @@ export class PBX extends EventEmitter {
   }
 
   stopRecordingTalker = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('stopRecording', {
+    await this.client.call_pal('stopRecording', {
       tenant,
       tid: talker,
     })
@@ -429,11 +540,13 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('transfer', {
+    await this.client.call_pal('transfer', {
       tenant,
       user: toUser,
       tid: talker,
@@ -447,11 +560,13 @@ export class PBX extends EventEmitter {
     talker: string,
     toUser: string,
   ) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('transfer', {
+    await this.client.call_pal('transfer', {
       tenant,
       user: toUser,
       tid: talker,
@@ -460,11 +575,13 @@ export class PBX extends EventEmitter {
   }
 
   joinTalkerTransfer = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('conference', {
+    await this.client.call_pal('conference', {
       tenant,
       tid: talker,
     })
@@ -472,11 +589,13 @@ export class PBX extends EventEmitter {
   }
 
   stopTalkerTransfer = async (tenant: string, talker: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('cancelTransfer', {
+    await this.client.call_pal('cancelTransfer', {
       tenant,
       tid: talker,
     })
@@ -484,11 +603,13 @@ export class PBX extends EventEmitter {
   }
 
   parkTalker = async (tenant: string, talker: string, atNumber: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('park', {
+    await this.client.call_pal('park', {
       tenant,
       tid: talker,
       number: atNumber,
@@ -497,11 +618,13 @@ export class PBX extends EventEmitter {
   }
 
   sendDTMF = async (signal: string, tenant: string, talker_id: string) => {
-    await waitPbx()
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('sendDTMF', {
+    await this.client.call_pal('sendDTMF', {
       signal,
       tenant,
       talker_id,
@@ -509,132 +632,100 @@ export class PBX extends EventEmitter {
     return true
   }
 
-  setApnsToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    await waitPbx()
+  pnmanage = async (d: PnParamsNew) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
     if (!this.client) {
       return false
     }
-    await this.client._pal('pnmanage', {
-      command: 'set',
-      service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
+    const {
+      pnmanageNew,
+      command,
+      service_id,
       device_id,
+      device_id_voip,
+      auth_secret,
+      endpoint,
+      key,
+    } = d
+    let isFcm = false
+    const arr = Array.isArray(service_id) ? service_id : [service_id]
+    arr.forEach(id => {
+      if (id === PnServiceId.fcm || id === PnServiceId.web) {
+        isFcm = true
+      } else if (isFcm) {
+        throw new Error('Can not mix service_id fcm/web together with apns/lpc')
+      }
+    })
+    let application_id = isFcm ? fcmApplicationId : bundleIdentifier
+    let { username } = d
+    if (!pnmanageNew && d.voip) {
+      if (!isFcm) {
+        application_id += '.voip'
+      }
+      username += '@voip'
+    }
+    await this.client.call_pal('pnmanage', {
+      command,
+      service_id,
+      application_id,
+      user_agent: Platform.OS === 'web' ? navigator.userAgent : 'react-native',
+      username,
+      device_id,
+      device_id_voip,
+      add_voip: pnmanageNew ? true : undefined,
+      add_device_id_suffix: pnmanageNew ? true : undefined,
+      auth_secret,
+      endpoint,
+      key,
     })
     return true
   }
 
-  setFcmPnToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    await waitPbx()
-    if (!this.client) {
-      return false
-    }
-    await this.client._pal('pnmanage', {
-      command: 'set',
-      service_id: '12',
-      application_id: '22177122297',
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+  setWebPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.web,
     })
-    return true
+  }
+  removeWebPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.web,
+    })
   }
 
-  removeApnsToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    await waitPbx()
-    if (!this.client) {
-      return false
-    }
-    await this.client._pal('pnmanage', {
-      command: 'remove',
-      service_id: '11',
-      application_id: 'com.brekeke.phonedev' + (voip ? '.voip' : ''),
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+  setFcmPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.fcm,
     })
-    return true
+  }
+  removeFcmPnToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.fcm,
+    })
   }
 
-  removeFcmPnToken = async ({
-    device_id,
-    username,
-    voip = false,
-  }: {
-    device_id: string
-    username: string
-    voip?: boolean
-  }) => {
-    await waitPbx()
-    if (!this.client) {
-      return false
-    }
-    await this.client._pal('pnmanage', {
-      command: 'remove',
-      service_id: '12',
-      application_id: '22177122297',
-      user_agent: 'react-native',
-      username: username + (voip ? '@voip' : ''),
-      device_id,
+  setApnsToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.set,
+      service_id: PnServiceId.apns,
     })
-    return true
   }
-
-  addWebPnToken = async ({
-    auth_secret,
-    endpoint,
-    key,
-    username,
-  }: {
-    auth_secret: string
-    endpoint: string
-    username: string
-    key: string
-  }) => {
-    await waitPbx()
-    if (!this.client) {
-      return false
-    }
-    await this.client
-      ._pal('pnmanage', {
-        command: 'set',
-        service_id: '13',
-        application_id: '22177122297',
-        user_agent: navigator.userAgent,
-        username,
-        endpoint,
-        auth_secret,
-        key,
-      })
-      .catch((err: Error) => {
-        console.error('addWebPnToken:', err)
-      })
-    return true
+  removeApnsToken = async (d: PnParams) => {
+    return this.pnmanage({
+      ...d,
+      command: PnCommand.remove,
+      service_id: PnServiceId.apns,
+    })
   }
 }
 

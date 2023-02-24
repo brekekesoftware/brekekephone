@@ -1,3 +1,4 @@
+import './dev'
 import './shared'
 
 import PropTypes from 'prop-types'

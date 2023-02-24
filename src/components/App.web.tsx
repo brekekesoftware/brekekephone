@@ -1,7 +1,7 @@
 // Main entry for the create-react-app web bundle
 
 import qs from 'qs'
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import Url from 'url-parse'
@@ -9,6 +9,7 @@ import Url from 'url-parse'
 import brand from '../assets/brand.png'
 import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
+import { bundleIdentifier } from '../config'
 import { intl } from '../stores/intl'
 import { parse } from '../utils/deeplink-parse'
 // @ts-ignore
@@ -20,11 +21,6 @@ import { v } from './variables'
 const globalCss = `* {
   outline: none !important;
   box-sizing: border-box;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-*::-webkit-scrollbar {
-  display: none;
 }
 a {
   text-decoration: none;
@@ -45,7 +41,9 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'fixed' as 'absolute',
+    position: window._BrekekePhoneWebRoot
+      ? ('fixed' as 'absolute')
+      : 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
@@ -93,11 +91,11 @@ export const App = () => {
   if (isBrowser) {
     child = <RnApp />
   } else {
-    const params = parse(window.location as unknown as Url<any>)
+    const params = parse(window.location as any as Url<any>)
     const q = qs.stringify(params)
     const appUrl = isIOS
       ? `brekekeapp://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekeapp;package=com.brekeke.phonedev;end`
+      : `intent://open?${q}#Intent;scheme=brekekeapp;package=${bundleIdentifier};end`
     child = (
       <>
         <RnImage

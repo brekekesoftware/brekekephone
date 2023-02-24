@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
@@ -56,10 +56,10 @@ export const Navigation: FC<{
     {menus().map(m => {
       const active = m.key === menu
       const totalUnreadChat = chatStore.unreadCount
-      const totalNoticesWebchat = chatStore.numberNoticesWebchat
+      const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
       const totalNoticesContact = totalUnreadChat + totalNoticesWebchat
       const showUnreadChat =
-        getAuthStore().currentProfile?.ucEnabled &&
+        getAuthStore().getCurrentAccount()?.ucEnabled &&
         !!totalNoticesContact &&
         m.key === 'contact' &&
         !active

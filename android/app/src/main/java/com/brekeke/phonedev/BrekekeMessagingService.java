@@ -25,16 +25,16 @@ public class BrekekeMessagingService extends MessagingService {
       arr = initialNotifications.toArray(arr);
       initialNotifications = null;
       promise.resolve(new JSONArray(arr).toString());
-    } catch (Exception ex) {
+    } catch (Exception e) {
       promise.resolve(null);
-      Log.d(TAG, "getInitialNotifications" + ex.getMessage());
-      ex.printStackTrace();
+      Log.d(TAG, "getInitialNotifications" + e.getMessage());
+      e.printStackTrace();
     }
   }
 
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
-    BrekekeModule.onFcmMessageReceived(this, remoteMessage.getData());
+    BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
 
     if (!alreadyGetInitialNotifications) {
       if (initialNotifications == null) {
@@ -44,9 +44,9 @@ public class BrekekeMessagingService extends MessagingService {
         initialNotifications.add(
             ReactNativeJson.convertMapToJson(FIRMessagingModule.parseParams(remoteMessage))
                 .toString());
-      } catch (Exception ex) {
-        Log.d(TAG, "initialNotifications.add: " + ex.getMessage());
-        ex.printStackTrace();
+      } catch (Exception e) {
+        Log.d(TAG, "initialNotifications.add: " + e.getMessage());
+        e.printStackTrace();
       }
     }
 

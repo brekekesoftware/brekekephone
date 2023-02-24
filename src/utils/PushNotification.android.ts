@@ -5,7 +5,7 @@ import FCM, { FCMEvent, Notification } from 'react-native-fcm'
 
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
-import { parse } from './PushNotification-parse'
+import { parse, toXPN } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
 let fcmPnToken = ''
@@ -29,6 +29,7 @@ const onNotification = async (n0: Notification, initApp: Function) => {
     //
     FCM.presentLocalNotification({
       ...n,
+      ...toXPN(n),
       body: 'Click to view',
       title: n.body,
       number: 0,
@@ -44,7 +45,7 @@ const onNotification = async (n0: Notification, initApp: Function) => {
       is_local_notification: 'local_notification',
     })
   } catch (err) {
-    console.error(`PushNotification.android.ts onNotification err: ${err}`)
+    console.error('PushNotification.android.ts onNotification error:', err)
   }
 }
 
@@ -99,7 +100,7 @@ const getInitialNotifications = async () => {
   try {
     return (JSON.parse(n) as string[]).map(s => JSON.parse(s) as Notification)
   } catch (err) {
-    console.error(`getInitialNotifications n=${n} err: ${err}`)
+    console.error(`getInitialNotifications n=${n} error:`, err)
     return []
   }
 }

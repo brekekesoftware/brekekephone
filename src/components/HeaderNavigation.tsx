@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { FC, useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 
 import { chatStore } from '../stores/chatStore'
@@ -67,7 +67,7 @@ export const Navigation: FC<{
       {tabs.map(s => {
         const active = s.key === subMenu
         const totalUnreadChat = chatStore.unreadCount
-        const totalNoticesWebchat = chatStore.numberNoticesWebchat
+        const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
 
         return (
           <RnTouchableOpacity

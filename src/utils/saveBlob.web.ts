@@ -9,36 +9,14 @@ export const saveBlob = (blob: Blob, name: string) => {
   a.click()
   window.URL.revokeObjectURL(url)
 }
-export const saveBlobImage = (id: string, topic_id: string, type?: string) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const data: Blob = (await uc.acceptFile(id)) as Blob
-      const fr = new FileReader()
-      fr.onload = async () => {
-        const r = fr.result as string
-        const cache = await caches.open(topic_id)
-        const imageResponse = new Response(r)
-        const urlCacheFile = `${topic_id}/${id}`
-        cache.put(id, imageResponse)
-        resolve(urlCacheFile)
-      }
-      fr.onerror = err => {
-        console.error(`saveBlob.web onerror err: ${err}`)
-      }
-      fr.readAsDataURL(data)
-    } catch (err) {
-      console.error(`saveBlob.web catch err: ${err}`)
-      reject(err)
-    }
-  })
-}
+
 export const saveBlobFile = (
   id: string,
   topic_id: string,
   type?: string,
   data?: Blob,
-) => {
-  return new Promise(async (resolve, reject) => {
+) =>
+  new Promise(async (resolve, reject) => {
     try {
       const dataBlob = data ? data : ((await uc.acceptFile(id)) as Blob)
       const fr = new FileReader()
@@ -54,12 +32,11 @@ export const saveBlobFile = (
         resolve(urlCacheFile)
       }
       fr.onerror = err => {
-        console.error(`saveBlobFile.web onerror err: ${err}`)
+        console.error('saveBlobFile.web onerror error:', err)
       }
       fr.readAsArrayBuffer(dataBlob)
     } catch (err) {
-      console.error(`saveBlobFile.web catch err: ${err}`)
+      console.error('saveBlobFile.web catch error:', err)
       reject(err)
     }
   })
-}

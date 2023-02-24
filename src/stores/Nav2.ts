@@ -1,10 +1,12 @@
 import { ComponentProps } from 'react'
 
 import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
+import { PageAccountCreate } from '../pages/PageAccountCreate'
+import { PageAccountSignIn } from '../pages/PageAccountSignIn'
+import { PageAccountUpdate } from '../pages/PageAccountUpdate'
 import { PageCallBackgrounds } from '../pages/PageCallBackgrounds'
 import { PageCallDtmfKeypad } from '../pages/PageCallDtmfKeypad'
 import { PageCallKeypad } from '../pages/PageCallKeypad'
-import { PageCallManage } from '../pages/PageCallManage'
 import { PageCallParks } from '../pages/PageCallParks'
 import { PageCallParks2 } from '../pages/PageCallParks2'
 import { PageCallRecents } from '../pages/PageCallRecents'
@@ -22,25 +24,25 @@ import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
 import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
 import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
-import { PageProfileCreate } from '../pages/PageProfileCreate'
-import { PageProfileSignIn } from '../pages/PageProfileSignIn'
-import { PageProfileUpdate } from '../pages/PageProfileUpdate'
+import { PageSettingsCurrentAccount } from '../pages/PageSettingsCurrentAccount'
 import { PageSettingsDebug } from '../pages/PageSettingsDebug'
 import { PageSettingsOther } from '../pages/PageSettingsOther'
-import { PageSettingsProfile } from '../pages/PageSettingsProfile'
 import { PageWebChat } from '../pages/PageWebChat'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { getAuthStore } from './authStore'
+import { getCallStore } from './callStore'
+import { CallStore } from './callStore2'
 import { setNav } from './Nav'
 import { RnStacker } from './RnStacker'
 
 export class Nav2 {
   // root account/login
-  goToPageProfileSignIn = RnStacker.createGoTo<
-    ComponentProps<typeof PageProfileSignIn>
-  >({ PageProfileSignIn }, true)
-  backToPageProfileSignIn = RnStacker.createBackTo<
-    ComponentProps<typeof PageProfileSignIn>
-  >({ PageProfileSignIn }, true)
+  goToPageAccountSignIn = RnStacker.createGoTo<
+    ComponentProps<typeof PageAccountSignIn>
+  >({ PageAccountSignIn }, true)
+  backToPageAccountSignIn = RnStacker.createBackTo<
+    ComponentProps<typeof PageAccountSignIn>
+  >({ PageAccountSignIn }, true)
   // root user/chat
   goToPageContactPhonebook = RnStacker.createGoTo<
     ComponentProps<typeof PageContactPhonebook>
@@ -93,26 +95,26 @@ export class Nav2 {
   backToPageSettingsOther = RnStacker.createBackTo<
     ComponentProps<typeof PageSettingsOther>
   >({ PageSettingsOther }, true)
-  goToPageSettingsProfile = RnStacker.createGoTo<
-    ComponentProps<typeof PageSettingsProfile>
-  >({ PageSettingsProfile }, true)
-  backToPageSettingsProfile = RnStacker.createBackTo<
-    ComponentProps<typeof PageSettingsProfile>
-  >({ PageSettingsProfile }, true)
+  goToPageSettingsCurrentAccount = RnStacker.createGoTo<
+    ComponentProps<typeof PageSettingsCurrentAccount>
+  >({ PageSettingsCurrentAccount }, true)
+  backToPageSettingsCurrentAccount = RnStacker.createBackTo<
+    ComponentProps<typeof PageSettingsCurrentAccount>
+  >({ PageSettingsCurrentAccount }, true)
 
   // account
-  goToPageProfileCreate = RnStacker.createGoTo<
-    ComponentProps<typeof PageProfileCreate>
-  >({ PageProfileCreate })
-  backToPageProfileCreate = RnStacker.createBackTo<
-    ComponentProps<typeof PageProfileCreate>
-  >({ PageProfileCreate })
-  goToPageProfileUpdate = RnStacker.createGoTo<
-    ComponentProps<typeof PageProfileUpdate>
-  >({ PageProfileUpdate })
-  backToPageProfileUpdate = RnStacker.createBackTo<
-    ComponentProps<typeof PageProfileUpdate>
-  >({ PageProfileUpdate })
+  goToPageAccountCreate = RnStacker.createGoTo<
+    ComponentProps<typeof PageAccountCreate>
+  >({ PageAccountCreate })
+  backToPageAccountCreate = RnStacker.createBackTo<
+    ComponentProps<typeof PageAccountCreate>
+  >({ PageAccountCreate })
+  goToPageAccountUpdate = RnStacker.createGoTo<
+    ComponentProps<typeof PageAccountUpdate>
+  >({ PageAccountUpdate })
+  backToPageAccountUpdate = RnStacker.createBackTo<
+    ComponentProps<typeof PageAccountUpdate>
+  >({ PageAccountUpdate })
   goToPagePhonebookCreate = RnStacker.createGoTo<
     ComponentProps<typeof PagePhonebookCreate>
   >({ PagePhonebookCreate })
@@ -126,12 +128,31 @@ export class Nav2 {
     ComponentProps<typeof PagePhonebookUpdate>
   >({ PagePhonebookUpdate })
   // call
-  goToPageCallManage = RnStacker.createGoTo<
-    ComponentProps<typeof PageCallManage>
-  >({ PageCallManage })
-  backToPageCallManage = RnStacker.createBackTo<
-    ComponentProps<typeof PageCallManage>
-  >({ PageCallManage })
+  goToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+    const s = getCallStore()
+    const c = s.getCurrentCall()
+    const uuid = c?.callkeepUuid
+    if (uuid && !c.transferring) {
+      BrekekeUtils.onPageCallManage(uuid)
+    }
+    s.inPageCallManage = {
+      isFromCallBar: props?.isFromCallBar,
+    }
+  }
+  backToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+    const s = getCallStore()
+    const c = s.getCurrentCall()
+    const uuid = c?.callkeepUuid
+    if (uuid && !c.transferring) {
+      BrekekeUtils.onPageCallManage(uuid)
+    }
+    s.inPageCallManage = {
+      isFromCallBar: props?.isFromCallBar,
+    }
+    if (RnStacker.stacks.length > 1) {
+      RnStacker.dismiss()
+    }
+  }
   goToPageCallBackgrounds = RnStacker.createGoTo<
     ComponentProps<typeof PageCallBackgrounds>
   >({ PageCallBackgrounds })
@@ -195,7 +216,7 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
-  //Contact Group
+  // contact
   goToPageContactEdit = RnStacker.createGoTo<
     ComponentProps<typeof PageContactEdit>
   >({
@@ -204,7 +225,6 @@ export class Nav2 {
   backToPageContactEdit = RnStacker.createBackTo<
     ComponentProps<typeof PageContactEdit>
   >({ PageContactEdit }, true)
-
   goToPageContactGroupCreate = RnStacker.createGoTo<
     ComponentProps<typeof PageContactGroupCreate>
   >({
@@ -215,11 +235,13 @@ export class Nav2 {
   >({
     PageContactGroupEdit,
   })
+
   customPageIndex?: Function
   goToPageIndex = () => {
-    if (!getAuthStore().currentProfile) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       this.customPageIndex = undefined
-      this.goToPageProfileSignIn()
+      this.goToPageAccountSignIn()
       return
     }
     if (this.customPageIndex) {
@@ -229,9 +251,8 @@ export class Nav2 {
     }
     const arr = menus()
     normalizeSavedNavigation()
-    const p = getAuthStore().currentProfile
-    const i = p.navIndex
-    const k = p.navSubMenus?.[i]
+    const i = ca.navIndex
+    const k = ca.navSubMenus?.[i]
     arr[i].subMenusMap[k].navFn()
   }
 }

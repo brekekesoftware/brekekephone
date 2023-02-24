@@ -2,19 +2,21 @@ import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { Events } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
-import { callStore } from '../stores/callStore'
+import { getAuthStore } from '../stores/authStore'
+import { hackyToggleSpeaker } from '../stores/Call'
+import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
-import { BackgroundTimer } from './BackgroundTimer'
 import {
   parseNotificationData,
   signInByLocalNotification,
 } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
+import { waitTimeout } from './waitTimeout'
 
 let alreadySetupCallKeep = false
 
@@ -28,7 +30,7 @@ const setupCallKeepWithCheck = async () => {
   if (
     Platform.OS === 'ios' &&
     (Object.keys(await RNCallKeep.getCalls()).length ||
-      Object.keys(callStore.callkeepMap).length ||
+      Object.keys(getCallStore().callkeepMap).length ||
       AppState.currentState !== 'active')
   ) {
     return
@@ -71,7 +73,7 @@ const setupCallKeepWithCheck = async () => {
     })
     .catch((err: Error) => {
       if (AppState.currentState !== 'active') {
-        console.error(err)
+        console.error('RNCallKeep.setup error:', err)
         return
       }
       RnAlert.error({
@@ -103,18 +105,23 @@ export const setupCallKeep = async () => {
   }
   const answerCall = (e: TEvent) => {
     const uuid = e.callUUID.toUpperCase()
-    Platform.OS === 'android'
-      ? // Handle action from CallKeep Notification on android
-        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-      : callStore.onCallKeepAnswerCall(uuid)
+    if (Platform.OS === 'android') {
+      // Handle action from CallKeep Notification on android
+      BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+    } else {
+      getCallStore().onCallKeepAnswerCall(uuid)
+    }
   }
   const endCall = (e: TEvent) => {
-    BackgroundTimer.setTimeout(setupCallKeepWithCheck, 0)
     const uuid = e.callUUID.toUpperCase()
-    Platform.OS === 'android'
-      ? // Handle action from CallKeep Notification on android
-        BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
-      : callStore.onCallKeepEndCall(uuid, true)
+    if (Platform.OS === 'android') {
+      // Handle action from CallKeep Notification on android
+      BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
+    } else {
+      getCallStore().onCallKeepEndCall(uuid, true)
+    }
+    // try to setup callkeep on each endcall if not yet
+    setupCallKeepWithCheck()
   }
   const didDisplayIncomingCall = (
     e: TEvent & {
@@ -132,13 +139,14 @@ export const setupCallKeep = async () => {
       return
     }
     const n = parseNotificationData(e.payload)
-    console.error(
+    console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
     if (n) {
-      callStore.onCallKeepDidDisplayIncomingCall(uuid, n)
+      getAuthStore().signInByNotification(n)
+      getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
     } else {
-      console.error('SIP PN debug: call RNCallKeep.endCall: pnData not found')
+      console.log('SIP PN debug: call RNCallKeep.endCall: pnData not found')
       RNCallKeep.endCall(uuid)
     }
   }
@@ -148,7 +156,7 @@ export const setupCallKeep = async () => {
     },
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = callStore.calls.find(_ => _.callkeepUuid === uuid)
+    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
       c.toggleMuted()
     }
@@ -159,7 +167,7 @@ export const setupCallKeep = async () => {
     },
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = callStore.calls.find(_ => _.callkeepUuid === uuid)
+    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
@@ -170,7 +178,7 @@ export const setupCallKeep = async () => {
     },
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = callStore.calls.find(_ => _.callkeepUuid === uuid)
+    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c) {
       sip.sendDTMF({
         sessionId: c.id,
@@ -182,13 +190,19 @@ export const setupCallKeep = async () => {
   }
   const didActivateAudioSession = () => {
     // Only in ios
-    console.error('CallKeep debug: didActivateAudioSession')
+    console.log('CallKeep debug: didActivateAudioSession')
+    // TODO:
+    // hackyToggleSpeaker is only to fix some cases in multi calls
+    // Here if we call it, it may affect other cases such as single call?
+    hackyToggleSpeaker()
   }
   const didDeactivateAudioSession = () => {
     // Only in ios
-    console.error('CallKeep debug: didDeactivateAudioSession')
-    callStore.calls
-      .filter(c => c.answered && !c.holding)
+    console.log('CallKeep debug: didDeactivateAudioSession')
+    getCallStore()
+      .calls.filter(
+        c => c.answered && !c.holding && c.id !== getCallStore().currentCallId,
+      )
       .forEach(c => c.toggleHoldWithCheck())
   }
 
@@ -219,75 +233,91 @@ export const setupCallKeep = async () => {
   })
 
   // Android self-managed connection service forked version
-  if (Platform.OS === 'android') {
-    // Events from our custom IncomingCall module
-    const eventEmitter = new NativeEventEmitter(BrekekeUtils)
-    eventEmitter.addListener('answerCall', (uuid: string) => {
-      callStore.onCallKeepAnswerCall(uuid.toUpperCase())
-      RNCallKeep.setOnHold(uuid, false)
-    })
-    eventEmitter.addListener('rejectCall', (uuid: string) => {
-      let callUUID = uuid
-      const isCalleeClickReject = uuid.startsWith('CalleeClickReject')
-      if (isCalleeClickReject) {
-        callUUID = uuid.replace('CalleeClickReject-', '')
-      }
-      callStore.onCallKeepEndCall(callUUID.toUpperCase(), isCalleeClickReject)
-    })
-    eventEmitter.addListener('transfer', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallTransferChooseUser, 300)
-    })
-    eventEmitter.addListener('park', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallParks2, 300)
-    })
-    eventEmitter.addListener('video', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleVideo()
-    })
-    eventEmitter.addListener('speaker', (uuid: string) => {
-      callStore.toggleLoudSpeaker()
-    })
-    eventEmitter.addListener('mute', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleMuted()
-    })
-    eventEmitter.addListener('record', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleRecording()
-    })
-    eventEmitter.addListener('dtmf', (uuid: string) => {
-      BackgroundTimer.setTimeout(Nav().goToPageCallDtmfKeypad, 300)
-    })
-    eventEmitter.addListener('hold', (uuid: string) => {
-      callStore.getCurrentCall()?.toggleHoldWithCheck()
-    })
-
-    eventEmitter.addListener('onNotificationPress', (data: string) => {
-      if (!data) {
-        return
-      }
-      const raw: { id?: string } = JSON.parse(data)
-      const n = parseNotificationData(raw)
-      if (!n) {
-        return
-      }
-      signInByLocalNotification(n)
-      if (raw.id?.startsWith('missedcall')) {
-        Nav().goToPageCallRecents()
-      } else {
-        Nav().goToPageChatRecents()
-      }
-    })
-
-    // In case of answer call when phone locked
-    eventEmitter.addListener('backToForeground', () => {
-      console.error('SIP PN debug: backToForeground')
-      BackgroundTimer.setTimeout(RNCallKeep.backToForeground, 100)
-      BackgroundTimer.setTimeout(BrekekeUtils.closeAllIncomingCalls, 300)
-    })
-    // Other utils
-    eventEmitter.addListener('onBackPressed', onBackPressed)
-    eventEmitter.addListener('debug', (m: string) =>
-      console.error(`Android debug: ${m}`),
-    )
+  if (Platform.OS !== 'android') {
+    return
   }
+
+  const nav = Nav()
+  // Events from our custom IncomingCall module
+  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
+  eventEmitter.addListener('answerCall', (uuid: string) => {
+    getCallStore().onCallKeepAnswerCall(uuid.toUpperCase())
+    RNCallKeep.setOnHold(uuid, false)
+  })
+  eventEmitter.addListener('rejectCall', (uuid: string) => {
+    let callUUID = uuid
+    const isCalleeClickReject = uuid.startsWith('CalleeClickReject')
+    if (isCalleeClickReject) {
+      callUUID = uuid.replace('CalleeClickReject-', '')
+    }
+    getCallStore().onCallKeepEndCall(
+      callUUID.toUpperCase(),
+      isCalleeClickReject,
+    )
+  })
+  eventEmitter.addListener('transfer', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallTransferChooseUser()
+  })
+  eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallBackgrounds()
+  })
+  eventEmitter.addListener('park', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallParks2()
+  })
+  eventEmitter.addListener('video', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleVideo()
+  })
+  eventEmitter.addListener('speaker', (uuid: string) => {
+    getCallStore().toggleLoudSpeaker()
+  })
+  eventEmitter.addListener('mute', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleMuted()
+  })
+  eventEmitter.addListener('record', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleRecording()
+  })
+  eventEmitter.addListener('dtmf', async (uuid: string) => {
+    await waitTimeout(100)
+    nav.goToPageCallDtmfKeypad()
+  })
+  eventEmitter.addListener('hold', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleHoldWithCheck()
+  })
+  eventEmitter.addListener('switchCamera', (uuid: string) => {
+    getCallStore().getCurrentCall()?.toggleSwitchCamera()
+  })
+  eventEmitter.addListener('onNotificationPress', async (data: string) => {
+    if (!data) {
+      return
+    }
+    const raw: { id?: string } = JSON.parse(data)
+    const n = parseNotificationData(raw)
+    if (!n) {
+      return
+    }
+    await signInByLocalNotification(n)
+    if (raw.id?.startsWith('missedcall')) {
+      nav.goToPageCallRecents()
+    } else {
+      nav.goToPageChatRecents()
+    }
+  })
+  // Other utils
+  eventEmitter.addListener('onBackPressed', onBackPressed)
+  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
+    if (!RnStacker.stacks.length) {
+      nav.goToPageIndex()
+    } else {
+      RnStacker.stacks = [RnStacker.stacks[0]]
+    }
+    getCallStore().inPageCallManage = undefined
+  })
+  eventEmitter.addListener('debug', (m: string) =>
+    console.log(`Android debug: ${m}`),
+  )
 }
 
 export const onBackPressed = () => {
@@ -301,6 +331,11 @@ export const onBackPressed = () => {
   }
   if (RnPicker.currentRnPicker) {
     RnPicker.dismiss()
+    return true
+  }
+  const s = getCallStore()
+  if (s.inPageCallManage) {
+    s.inPageCallManage = undefined
     return true
   }
   if (RnStacker.stacks.length > 1) {

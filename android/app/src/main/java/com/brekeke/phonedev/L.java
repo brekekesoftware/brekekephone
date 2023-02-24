@@ -51,7 +51,7 @@ public class L {
   }
 
   public static String dtmf() {
-    return "ja".equals(l) ? "DTMF" : "DTMF";
+    return "ja".equals(l) ? "キーパッド" : "KEYPAD";
   }
 
   public static String hold() {

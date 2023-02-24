@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component, createRef } from 'react'
+import { Component, createRef } from 'react'
 import {
   NativeSyntheticEvent,
   TextInput,
@@ -11,7 +11,7 @@ import { KeyPad } from '../components/CallKeyPad'
 import { ShowNumber } from '../components/CallShowNumbers'
 import { Layout } from '../components/Layout'
 import { setPageCallTransferDial } from '../components/navigationConfig2'
-import { callStore } from '../stores/callStore'
+import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -24,10 +24,10 @@ export class PageCallTransferDial extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    if (this.prevId && this.prevId !== callStore.currentCallId) {
+    if (this.prevId && this.prevId !== getCallStore().currentCallId) {
       Nav().backToPageCallManage()
     }
-    this.prevId = callStore.currentCallId
+    this.prevId = getCallStore().currentCallId
   }
 
   @observable txt = ''
@@ -46,7 +46,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    callStore.getCurrentCall()?.transferBlind(this.txt)
+    getCallStore().getCurrentCall()?.transferBlind(this.txt)
   }
   transferAttended = () => {
     this.txt = this.txt.trim()
@@ -56,7 +56,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    callStore.getCurrentCall()?.transferAttended(this.txt)
+    getCallStore().getCurrentCall()?.transferAttended(this.txt)
   }
 
   render() {
@@ -89,6 +89,8 @@ export class PageCallTransferDial extends Component {
             callVoice={this.transferBlind}
             callVoiceForward={this.transferAttended}
             onPressNumber={v => {
+              // TODO create new component with PageCallDtmfKeypad
+              // to avoid duplicated code
               const { end, start } = this.txtSelection
               let min = Math.min(start, end)
               const max = Math.max(start, end)
@@ -98,13 +100,11 @@ export class PageCallTransferDial extends Component {
                   min = min - 1
                 }
               }
-              // Update text to trigger render
               const t = this.txt
               this.txt = t.substring(0, min) + v + t.substring(max)
-              //
-              const p = min + (isDelete ? 0 : 1)
-              this.txtSelection.start = p
-              this.txtSelection.end = p
+              const position = min + (isDelete ? 0 : 1)
+              this.txtSelection.start = position
+              this.txtSelection.end = position
             }}
             showKeyboard={this.showKeyboard}
           />

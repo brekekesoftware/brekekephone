@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -104,6 +104,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   name,
   incoming,
   fileType,
+  save,
 }) => {
   const [visible, setIsVisible] = useState(false)
 
@@ -120,9 +121,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
 
   const images = url ? [{ url: convertUri(url) }] : []
   const isLoading =
-    state !== 'success' && state !== 'failure' && state !== 'stopped'
-  const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && !!url
+    (state !== 'success' && state !== 'failure' && state !== 'stopped') ||
+    (save && save === 'started')
+  const isLoadFailed =
+    state === 'failure' || state === 'stopped' || (save && save === 'failure')
+  const isLoadSuccess =
+    state === 'success' && !!url && save && save === 'success'
 
   const onShowImage = useCallback(() => {
     images.length > 0 && setIsVisible(true)
