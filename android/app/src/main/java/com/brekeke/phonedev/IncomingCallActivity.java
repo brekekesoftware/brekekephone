@@ -654,8 +654,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnRejectClick(View v) {
-    BrekekeModule.putUserActionRejectCall(uuid);
-    BrekekeModule.emit("rejectCall", "CalleeClickReject-"+uuid);
+    BrekekeUtils.putUserActionRejectCall(uuid);
+    BrekekeUtils.emit("rejectCall", "CalleeClickReject-"+uuid);
     answered = false;
     BrekekeUtils.remove(uuid);
   }
