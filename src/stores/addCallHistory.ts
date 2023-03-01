@@ -6,9 +6,11 @@ import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
 import { ParsedPn } from '../utils/PushNotification-parse'
+import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
+import { getCallStore } from './callStore'
 import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
@@ -20,6 +22,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     return
   }
   const pnId = isTypeCall ? c.pnId : c.id
+
   if (pnId) {
     if (alreadyAddHistoryMap[pnId]) {
       return
@@ -59,8 +62,27 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         // -> B got cancel event from sip
         isAboutToHangup: false,
       }
-  await getAuthStore().pushRecentCall(info)
-  presentNotification(info)
+
+  // do not show notification if rejected by callee
+  const m = getCallStore().calleeRejectedMap
+  const calleeRejected = m[c.callkeepUuid] || m[pnId]
+  if (!calleeRejected) {
+    presentNotification(info)
+  }
+
+  // try to wait for login?
+  // TODO
+  // add method based on the Account class
+  // allow multiple accounts at the same time
+  const as = getAuthStore()
+  const current = as.getCurrentAccount()
+  if (!current) {
+    await waitTimeout()
+  }
+  if (!as.getCurrentAccount()) {
+    return
+  }
+  as.pushRecentCall(info)
 }
 
 const presentNotification = (c: {
@@ -76,12 +98,7 @@ const presentNotification = (c: {
   if (Platform.OS === 'web') {
     return
   }
-  if (
-    AppState.currentState === 'active' ||
-    c.answered ||
-    !c.incoming ||
-    c.isAboutToHangup
-  ) {
+  if (c.answered || !c.incoming || c.isAboutToHangup) {
     return
   }
   const title = intl`Missed call`
