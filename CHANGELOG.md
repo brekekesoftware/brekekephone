@@ -2,7 +2,7 @@
 
 - Fix it should not show missed call notification if callee reject the call, known issues:
   - ios: while having an incoming brekeke phone call, if another incoming gsm call come, it will end brekeke phone call without showing notification
-- Try change timeout for hacky toggle speaker from 500ms to 850ms
+- Fix ios try change timeout for hacky toggle speaker from 500ms to 850ms
 
 #### 2.11.12
 
