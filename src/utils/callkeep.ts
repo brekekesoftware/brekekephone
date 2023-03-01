@@ -114,11 +114,13 @@ export const setupCallKeep = async () => {
   }
   const endCall = (e: TEvent) => {
     const uuid = e.callUUID.toUpperCase()
+    const cs = getCallStore()
     if (Platform.OS === 'android') {
       // Handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
     } else {
-      getCallStore().onCallKeepEndCall(uuid)
+      cs.setCalleeRejected({ callkeepUuid: uuid })
+      cs.onCallKeepEndCall(uuid)
     }
     // try to setup callkeep on each endcall if not yet
     setupCallKeepWithCheck()
@@ -245,7 +247,14 @@ export const setupCallKeep = async () => {
     RNCallKeep.setOnHold(uuid, false)
   })
   eventEmitter.addListener('rejectCall', (uuid: string) => {
-    getCallStore().onCallKeepEndCall(uuid.toUpperCase())
+    const cs = getCallStore()
+    if (uuid.startsWith('CalleeClickReject-')) {
+      uuid = uuid.replace('CalleeClickReject-', '').toUpperCase()
+      cs.setCalleeRejected({ callkeepUuid: uuid })
+    } else {
+      uuid = uuid.toUpperCase()
+    }
+    cs.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
     await waitTimeout(100)
