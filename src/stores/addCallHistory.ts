@@ -36,6 +36,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     )
     return
   }
+
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const info = isTypeCall
@@ -70,7 +71,9 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
   }
 
   // try to wait for login?
-  // TODO add method based on the Account class
+  // TODO
+  // add method based on the Account class
+  // allow multiple accounts at the same time
   const as = getAuthStore()
   const current = as.getCurrentAccount()
   if (!current) {
