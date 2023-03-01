@@ -6,25 +6,20 @@ import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
 import { ParsedPn } from '../utils/PushNotification-parse'
+import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
+import { getCallStore } from './callStore'
 import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
-export const addCallHistory = async (
-  c: Call | ParsedPn,
-  isCalleeRejectCall?: boolean,
-) => {
+export const addCallHistory = async (c: Call | ParsedPn) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
 
   if (isTypeCall && c.partyNumber === '8') {
     // voice mail
     return
-  }
-
-  if (!isTypeCall && !getAuthStore().getCurrentAccount()) {
-    await getAuthStore().signInByNotification(c)
   }
   const pnId = isTypeCall ? c.pnId : c.id
 
@@ -41,7 +36,6 @@ export const addCallHistory = async (
     )
     return
   }
-
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const info = isTypeCall
@@ -68,8 +62,24 @@ export const addCallHistory = async (
         isAboutToHangup: false,
       }
 
-  getAuthStore().pushRecentCall(info)
-  !isCalleeRejectCall && presentNotification(info)
+  // do not show notification if rejected by callee
+  const m = getCallStore().calleeRejectedMap
+  const calleeRejected = m[c.callkeepUuid] || m[pnId]
+  if (!calleeRejected) {
+    presentNotification(info)
+  }
+
+  // try to wait for login?
+  // TODO add method based on the Account class
+  const as = getAuthStore()
+  const current = as.getCurrentAccount()
+  if (!current) {
+    await waitTimeout()
+  }
+  if (!as.getCurrentAccount()) {
+    return
+  }
+  as.pushRecentCall(info)
 }
 
 const presentNotification = (c: {

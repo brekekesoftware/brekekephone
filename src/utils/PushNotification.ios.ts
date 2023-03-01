@@ -34,20 +34,20 @@ const onNotification = async (
     }
     callkeepUuid: string
   }
-  let withCallkeepUuid = withGetData as {
+  let withCallKeepUuid = withGetData as {
     [k: string]: unknown
   }
   if (withDictionaryPayload && withDictionaryPayload.dictionaryPayload) {
-    withCallkeepUuid = withDictionaryPayload.dictionaryPayload
-    withCallkeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
+    withCallKeepUuid = withDictionaryPayload.dictionaryPayload
+    withCallKeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
   await initApp()
-  const n = await parse(withCallkeepUuid, isLocal)
+  const n = await parse(withCallKeepUuid, isLocal)
   if (!n) {
     return
   }
   // TODO ios present local PN?
-  // Modify server background mode content only PN?
+  // Modify server to set background mode "content only"?
   // toXPN
 }
 

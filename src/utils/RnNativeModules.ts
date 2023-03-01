@@ -1,7 +1,7 @@
 import { get, set } from 'lodash'
 import { NativeModule, NativeModules, Platform } from 'react-native'
 
-import { TCallkeepAction } from '../stores/callStore2'
+import { TCallKeepAction } from '../stores/callStore2'
 
 type TBrekekeUtils = {
   // these methods only available on android
@@ -25,7 +25,7 @@ type TBrekekeUtils = {
   setOnHold(uuid: string, holding: boolean): void
   setLocale(locale: string): void
   onCallConnected(uuid: string): void
-  onCallKeepAction(uuid: string, action: TCallkeepAction): void
+  onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
 

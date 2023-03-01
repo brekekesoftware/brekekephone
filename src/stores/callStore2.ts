@@ -37,11 +37,7 @@ export class CallStore {
 
   private recentCallActivityAt = 0
 
-  private callKeepCalleeRejectCallMap: {
-    [uuidOrPnId: string]: boolean
-  } = {}
-
-  private getCallkeep = (
+  private getCallKeep = (
     uuid: string,
     o?: {
       includingOutgoing?: boolean
@@ -81,7 +77,7 @@ export class CallStore {
     checkAndRemovePnTokenViaSip(n)
     // Find the current incoming call which is not callkeep
     // Assign the data and config
-    const c = this.getCallkeep(uuid)
+    const c = this.getCallKeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
       BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
@@ -128,24 +124,17 @@ export class CallStore {
     }
   }
   @action onCallKeepAnswerCall = (uuid: string) => {
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'answerCall')
-    const c = this.getCallkeep(uuid)
+    this.setCallKeepAction({ callkeepUuid: uuid }, 'answerCall')
+    const c = this.getCallKeep(uuid)
     console.log(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
     }
   }
-  @action onCallKeepEndCall = (
-    uuid: string,
-    isCalleeClickReject: boolean = false,
-  ) => {
-    if (isCalleeClickReject) {
-      this.callKeepCalleeRejectCallMap[uuid] = true
-    }
-
-    this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
-    const c = this.getCallkeep(uuid, {
+  @action onCallKeepEndCall = (uuid: string) => {
+    this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
+    const c = this.getCallKeep(uuid, {
       includingAnswered: true,
       includingRejected: Platform.OS === 'android',
       includingOutgoing: Platform.OS === 'ios',
@@ -317,7 +306,7 @@ export class CallStore {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
-    const callkeepAction = this.getCallkeepAction(c)
+    const callkeepAction = this.getCallKeepAction(c)
     console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
     )
@@ -332,7 +321,7 @@ export class CallStore {
     }
   }
 
-  @action onCallRemove = (rawSession: Session) => {
+  @action onCallRemove = async (rawSession: Session) => {
     this.updateCurrentCallDebounce()
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(_ => _.id === rawSession.sessionId)
@@ -346,10 +335,9 @@ export class CallStore {
     }
     this.onSipUaCancel({ pnId: c.pnId })
     c.callkeepUuid && this.endCallKeep(c.callkeepUuid)
-    addCallHistory(c, this.callKeepCalleeRejectCallMap[c.callkeepUuid])
+    await addCallHistory(c)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
-    delete this.callKeepCalleeRejectCallMap[c.callkeepUuid]
 
     this.calls = this.calls.filter(c0 => c0 !== c)
     // Set number of total calls in our custom java incoming call module
@@ -510,11 +498,20 @@ export class CallStore {
       hasAction?: boolean
     }
   } = {}
-  getUuidFromPnId = (pnId: string) =>
+  private getUuidFromPnId = (pnId: string) =>
     Object.values(this.callkeepMap)
       .map(c => c.incomingPnData)
       .find(d => d?.id === pnId)?.callkeepUuid
-  getPnIdFromUuid = (uuid: string) => this.callkeepMap[uuid]?.incomingPnData?.id
+  private getPnIdFromUuid = (uuid: string) =>
+    this.callkeepMap[uuid]?.incomingPnData?.id
+  private getSetUuidPnId = (c: TCallKeepIds) => {
+    if (c.callkeepUuid && !c.pnId) {
+      c.pnId = this.getPnIdFromUuid(c.callkeepUuid)
+    }
+    if (c.pnId && !c.callkeepUuid) {
+      c.callkeepUuid = this.getUuidFromPnId(c.pnId)
+    }
+  }
 
   // Logic to end call if timeout of 20s
   private autoEndCallKeepTimerId = 0
@@ -571,7 +568,7 @@ export class CallStore {
     }
     console.log('PN callkeep debug: endCallKeep ' + uuid)
     if (setAction) {
-      this.setCallkeepAction({ callkeepUuid: uuid }, 'rejectCall')
+      this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
@@ -579,7 +576,7 @@ export class CallStore {
       !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id) &&
       !completedElseWhere
     ) {
-      addCallHistory(pnData, this.callKeepCalleeRejectCallMap[uuid])
+      addCallHistory(pnData)
     }
     if (!this.callkeepMap[uuid] && Platform.OS === 'ios') {
       return
@@ -632,14 +629,10 @@ export class CallStore {
   // Actions map in case of call is not available at the time receive the action
   // This map wont be deleted if the callkeep end
   @observable callkeepActionMap: {
-    [uuidOrPnId: string]: TCallkeepAction
+    [uuidOrPnId: string]: TCallKeepAction
   } = {}
-  private setCallkeepAction = (c: TCallkeepIds, a: TCallkeepAction) => {
-    if (c.callkeepUuid) {
-      c.pnId = this.getPnIdFromUuid(c.callkeepUuid)
-    } else if (c.pnId) {
-      c.callkeepUuid = this.getUuidFromPnId(c.pnId)
-    }
+  private setCallKeepAction = (c: TCallKeepIds, a: TCallKeepAction) => {
+    this.getSetUuidPnId(c)
     if (c.callkeepUuid) {
       this.callkeepActionMap[c.callkeepUuid] = a
     }
@@ -648,11 +641,25 @@ export class CallStore {
     }
     this.onCallKeepAction()
   }
-  private getCallkeepAction = (c: TCallkeepIds) =>
+
+  private getCallKeepAction = (c: TCallKeepIds) =>
     (c.callkeepUuid && this.callkeepActionMap[c.callkeepUuid]) ||
     (c.pnId && this.callkeepActionMap[c.pnId])
-  isCallRejected = (c?: TCallkeepIds) =>
-    c && this.getCallkeepAction(c) === 'rejectCall'
+  isCallRejected = (c?: TCallKeepIds) =>
+    c && this.getCallKeepAction(c) === 'rejectCall'
+
+  calleeRejectedMap: {
+    [uuidOrPnId: string]: boolean
+  } = {}
+  setCalleeRejected = (c: TCallKeepIds) => {
+    this.getSetUuidPnId(c)
+    if (c.callkeepUuid) {
+      this.calleeRejectedMap[c.callkeepUuid] = true
+    }
+    if (c.pnId) {
+      this.calleeRejectedMap[c.pnId] = true
+    }
+  }
 
   getCallInNotify = () => {
     // Do not display our callbar if already show callkeep
@@ -706,7 +713,7 @@ export class CallStore {
     }
     const uuid = this.getUuidFromPnId(n.pnId)
     console.log(`SIP PN debug: cancel PN uuid=${uuid}`)
-    this.setCallkeepAction({ pnId: n.pnId }, 'rejectCall')
+    this.setCallKeepAction({ pnId: n.pnId }, 'rejectCall')
     uuid &&
       this.endCallKeep(uuid, {
         completedElseWhere: n.completedElseWhere,
@@ -761,5 +768,5 @@ export class CallStore {
 const callStore = new CallStore()
 setCallStore(callStore)
 
-export type TCallkeepAction = 'answerCall' | 'rejectCall'
-type TCallkeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>
+export type TCallKeepAction = 'answerCall' | 'rejectCall'
+type TCallKeepIds = Partial<Pick<Call, 'callkeepUuid' | 'pnId'>>

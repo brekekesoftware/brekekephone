@@ -97,7 +97,7 @@ export class Call {
       }
       this.callkeepAlreadyAnswered = true
     }
-    const startCallCallKeep = async () => {
+    const startCallKeepCall = async () => {
       RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
       await waitTimeout()
     }
@@ -116,9 +116,8 @@ export class Call {
         return
       }
       if (Platform.OS === 'android') {
-        // Hack: fix the mix voice issue with gsm call: startCall to add voice connection
-        // ios still remains the same (still has bug?)
-        await startCallCallKeep()
+        // android fix issue mix voice with gsm call
+        await startCallKeepCall()
       }
       updateOutgoing()
       return
@@ -130,7 +129,7 @@ export class Call {
       return
     }
     this.callkeepUuid = newUuid().toUpperCase()
-    await startCallCallKeep()
+    await startCallKeepCall()
     updateOutgoing()
   }
 
