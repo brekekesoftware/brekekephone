@@ -98,12 +98,7 @@ const presentNotification = (c: {
   if (Platform.OS === 'web') {
     return
   }
-  if (
-    AppState.currentState === 'active' ||
-    c.answered ||
-    !c.incoming ||
-    c.isAboutToHangup
-  ) {
+  if (c.answered || !c.incoming || c.isAboutToHangup) {
     return
   }
   const title = intl`Missed call`

@@ -343,7 +343,7 @@ export class Call {
 // This issue happens on ios only, toggle loud speaker reset the audio route
 // The actual issue could be related to ios audio route
 // Related packages: callkeep, webrtc, incall-manager...
-export const hackyToggleSpeaker = async (ms = 500) => {
+export const hackyToggleSpeaker = async (ms = 850) => {
   const c = getCallStore()
   IncallManager.setForceSpeakerphoneOn(!c.isLoudSpeakerEnabled)
   await waitTimeout(ms)
