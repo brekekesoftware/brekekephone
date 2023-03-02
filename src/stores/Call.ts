@@ -348,6 +348,7 @@ export const hackyToggleSpeaker = async () => {
   IncallManager.setForceSpeakerphoneOn(!c.isLoudSpeakerEnabled)
   const conf = await pbx.getConfig()
   const ms = Number(conf?.['webphone.hacky.speaker']) || 500
+  console.log(`webphone.hacky.speaker ${ms}ms`)
   await waitTimeout(ms)
   IncallManager.setForceSpeakerphoneOn(c.isLoudSpeakerEnabled)
 }
