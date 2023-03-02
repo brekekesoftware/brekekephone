@@ -177,6 +177,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     completionHandler()
   }
 
+  // Manage notifications while app is in the foreground
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
     willPresent notification: UNNotification,
@@ -192,7 +193,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
         // "There is no completion handler with notification id"
       }
     )
-    completionHandler([.sound, .badge])
+    // rolback with old config: completionHandler(UNAuthorizationOptionSound |
+    // UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+    // 'alert' was deprecated in iOS 14.0 instead by banner
+    completionHandler([.sound, .badge, .banner])
   }
 
   public static func reportNewIncomingCall(
