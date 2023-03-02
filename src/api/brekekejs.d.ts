@@ -202,6 +202,7 @@ export type PbxGetProductInfoRes = {
   'webphone.call.video': string
   'webphone.desktop.notification': string
   'webphone.dtmf.send.pal': string
+  'webphone.hacky.speaker': string
   'webphone.lpc.keyhash': string
   'webphone.lpc.pn': string
   'webphone.lpc.port': string
