@@ -225,6 +225,19 @@ export class AuthStore {
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
+  updatePartyNameRecentCall = async (call: {
+    partyName: string
+    partyNumber: string
+  }) => {
+    const d = await this.getCurrentDataAsync()
+    if (!!!d.recentCalls?.length) {
+      return
+    }
+    d.recentCalls.map(item =>
+      item.partyNumber === call.partyNumber ? Object.assign(item, call) : item,
+    )
+    accountStore.saveAccountsToLocalStorageDebounced()
+  }
   savePbxBuddyList = async (pbxBuddyList: {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
