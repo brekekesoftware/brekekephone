@@ -380,6 +380,10 @@ export class CallStore {
     }
   }
   startCall: MakeCallFn = (number: string, ...args) => {
+    if (getAuthStore().sipConnectingOrFailure()) {
+      return
+    }
+
     if (this.calls.filter(c => !c.incoming && !c.answered).length) {
       RnAlert.error({
         message: intlDebug`Only make one outgoing call`,
