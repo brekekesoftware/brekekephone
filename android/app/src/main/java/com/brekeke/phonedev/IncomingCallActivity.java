@@ -933,7 +933,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   // ==========================================================================
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
-    if (e.getKeyCode() == KeyEvent.KEYCODE_BACK || e.getKeyCode() == KeyEvent.KEYCODE_SOFT_LEFT) {
+    int k = e.getKeyCode();
+    BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k);
+    if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (BrekekeUtils.isLocked()) {
         onRequestUnlock(null);
       } else {
