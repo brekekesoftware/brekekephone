@@ -42,31 +42,18 @@ public class MainActivity extends ReactActivity {
     }
   }
 
-  // ==========================================================================
-  // Do not exit on back pressed
+  // on back pressed
   @Override
-  public void onBackPressed() {
-    BrekekeUtils.emit("debug", "MainActivity.onBackPressed");
-    BrekekeUtils.emit("onBackPressed", "");
-  }
-
-  // ==========================================================================
-  // Stop ringtone if any of the hardware key press
-  // Same with IncomingCallActivity
-  @Override
-  public boolean onKeyDown(int k, KeyEvent e) {
+  public boolean dispatchKeyEvent(KeyEvent e) {
+    int k = e.getKeyCode();
     BrekekeUtils.emit("debug", "MainActivity.onKeyDown k=" + k);
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       BrekekeUtils.emit("onBackPressed", "");
     } else {
+      // incoming call press any key will stop ringtone
       BrekekeUtils.staticStopRingtone();
     }
-    return super.onKeyDown(k, e);
-  }
-
-  @Override
-  public boolean dispatchKeyEvent(KeyEvent e) {
-    return onKeyDown(e.getAction(), e);
+    return super.onKeyDown(e.getKeyCode(), e);
   }
 
   // ==========================================================================

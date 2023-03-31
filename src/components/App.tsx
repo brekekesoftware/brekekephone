@@ -87,7 +87,8 @@ const initApp = async () => {
     return false
   })
   // Handle android hardware back button press
-  BackHandler.addEventListener('hardwareBackPress', onBackPressed)
+  // already handle on Android native code
+  // BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
   const hasCallOrWakeFromPN =
     getCallStore().calls.length ||
