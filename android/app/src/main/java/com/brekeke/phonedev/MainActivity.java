@@ -42,7 +42,7 @@ public class MainActivity extends ReactActivity {
     }
   }
 
-  // on back pressed
+  //   on back pressed
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
@@ -53,7 +53,7 @@ public class MainActivity extends ReactActivity {
       // incoming call press any key will stop ringtone
       BrekekeUtils.staticStopRingtone();
     }
-    return super.onKeyDown(e.getKeyCode(), e);
+    return super.dispatchKeyEvent(e);
   }
 
   // ==========================================================================

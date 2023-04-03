@@ -277,6 +277,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     timerTask = null;
     timer = null;
     BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
+    BrekekeUtils.staticStopRingtone();
     super.onDestroy();
   }
 
@@ -945,7 +946,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       // Stop ringtone if any of the hardware key press
       BrekekeUtils.staticStopRingtone();
     }
-    return super.onKeyDown(e.getKeyCode(), e);
+    return super.dispatchKeyEvent(e);
   }
 
   // ==========================================================================
