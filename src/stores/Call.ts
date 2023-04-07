@@ -68,7 +68,8 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    this.answered = true
+    // already update on upsert Call
+    // this.answered = true
     this.store.currentCallId = this.id
     // Hold other calls
     this.store.calls

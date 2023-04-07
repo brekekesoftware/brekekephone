@@ -68,7 +68,7 @@ export const SmartImage = (p: { uri: string; style: object }) => {
           style={[css.loading, css.full]}
         />
       )}
-      {!isImageUrl && statusImageLoading ? (
+      {!isImageUrl ? (
         <WebView
           source={{
             uri: p.uri,
