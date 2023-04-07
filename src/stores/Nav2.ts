@@ -132,7 +132,8 @@ export class Nav2 {
     const s = getCallStore()
     const c = s.getCurrentCall()
     const uuid = c?.callkeepUuid
-    if (uuid && !c.transferring) {
+
+    if (!props?.isOutgoingCall && uuid && !c.transferring) {
       BrekekeUtils.onPageCallManage(uuid)
     }
     s.inPageCallManage = {
