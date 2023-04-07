@@ -40,8 +40,8 @@ export const SmartImage = (p: { uri: string; style: object }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
   useEffect(() => {
     setStatusImageLoading(0)
+    console.log(`SmartImage url=${p.uri}`)
   }, [p.uri])
-  console.log(`SmartImage url=${p.uri}`)
 
   const onMessage = (event: WebViewMessageEvent) => {
     setStatusImageLoading(1)
@@ -68,7 +68,7 @@ export const SmartImage = (p: { uri: string; style: object }) => {
           style={[css.loading, css.full]}
         />
       )}
-      {!isImageUrl ? (
+      {!isImageUrl && statusImageLoading ? (
         <WebView
           source={{
             uri: p.uri,
