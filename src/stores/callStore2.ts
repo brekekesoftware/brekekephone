@@ -291,6 +291,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, p)
     this.calls = [c, ...this.calls]
+    this.currentCallId = c.id
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
@@ -407,7 +408,7 @@ export class CallStore {
       reconnectCalled = true
       reconnectAndWaitSip().then(sipCreateSession)
     }
-    Nav().goToPageCallManage()
+    Nav().goToPageCallManage({ isOutgoingCall: true })
     // Start call logic in RNCallKeep
     // Adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
