@@ -931,6 +931,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
+  // Stop ringtone on any press and custom back btn handler
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
