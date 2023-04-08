@@ -8,7 +8,6 @@ import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
-  BackHandler,
   Platform,
   StyleSheet,
   View,
@@ -39,7 +38,7 @@ import { RnPickerRoot } from '../stores/RnPickerRoot'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { onBackPressed, setupCallKeep } from '../utils/callkeep'
+import { setupCallKeep } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
@@ -86,8 +85,6 @@ const initApp = async () => {
     BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
     return false
   })
-  // Handle android hardware back button press
-  BackHandler.addEventListener('hardwareBackPress', onBackPressed)
 
   const hasCallOrWakeFromPN =
     getCallStore().calls.length ||
