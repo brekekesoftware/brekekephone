@@ -385,7 +385,6 @@ class PageCallManage extends Component<{
         </View>
       )
     }
-
     return (
       <>
         {c.localVideoEnabled && this.renderVideo()}
@@ -434,23 +433,16 @@ class PageCallManage extends Component<{
       ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
-
+    const smartImageUrl = `${c.answered ? c.talkingImageUrl : c.partyImageUrl}`
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
         {isShowAvatar ? (
           <View style={styleViewAvatar}>
-            {c.answered && (
-              <SmartImage
-                uri={`${c.talkingImageUrl}`}
-                style={{ flex: 1, aspectRatio: 1 }}
-              />
-            )}
-            {!c.answered && (
-              <SmartImage
-                uri={`${c.partyImageUrl}`}
-                style={{ flex: 1, aspectRatio: 1 }}
-              />
-            )}
+            <SmartImage
+              key={smartImageUrl}
+              uri={smartImageUrl}
+              style={{ flex: 1, aspectRatio: 1 }}
+            />
           </View>
         ) : (
           <View style={{ flex: 1 }} />

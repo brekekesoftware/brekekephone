@@ -46,11 +46,9 @@ export const SmartImage = (p: { uri: string; style: object }) => {
   const onMessage = (event: WebViewMessageEvent) => {
     setStatusImageLoading(1)
   }
-
   const onLoadEnd = () => {
     setStatusImageLoading(1)
   }
-
   const onImageLoadError = () => {
     setStatusImageLoading(2)
   }
