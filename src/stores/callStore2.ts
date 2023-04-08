@@ -382,6 +382,13 @@ export class CallStore {
     }
   }
   startCall: MakeCallFn = (number: string, ...args) => {
+    const as = getAuthStore()
+    if (as.sipConnectingOrFailure()) {
+      as.sipTotalFailure = 0
+      // TODO reset waiting in AuthSIP as well
+      return
+    }
+
     if (this.calls.filter(c => !c.incoming && !c.answered).length) {
       RnAlert.error({
         message: intlDebug`Only make one outgoing call`,
