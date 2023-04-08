@@ -21,6 +21,7 @@ import {
 } from './accountStore'
 import { authSIP } from './AuthSIP'
 import { setAuthStore } from './authStore'
+import { Call } from './Call'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
@@ -225,19 +226,19 @@ export class AuthStore {
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
-  updatePartyNameRecentCall = async (call: {
-    partyName: string
-    partyNumber: string
-  }) => {
+  updatePartyNameRecentCall = async (
+    fragment: Pick<Call, 'partyNumber' | 'partyName'>,
+  ) => {
     const d = await this.getCurrentDataAsync()
-    if (!!!d.recentCalls?.length) {
+    if (!d.recentCalls?.length) {
       return
     }
-    d.recentCalls.map(item =>
-      item.partyNumber === call.partyNumber ? Object.assign(item, call) : item,
-    )
+    d.recentCalls
+      .filter(c => c.partyNumber === fragment.partyNumber)
+      .forEach(c => Object.assign(c, fragment))
     accountStore.saveAccountsToLocalStorageDebounced()
   }
+
   savePbxBuddyList = async (pbxBuddyList: {
     screened: boolean
     users: (UcBuddy | UcBuddyGroup)[]
