@@ -931,25 +931,26 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // Stop ringtone if any of the hardware key press
-  @Override
-  public boolean onKeyDown(int k, KeyEvent e) {
-    debug("onKeyDown k=" + k);
-    if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
-      if (BrekekeUtils.isLocked()) {
-        onRequestUnlock(null);
-      } else {
-        onBackPressed();
-      }
-    } else {
-      BrekekeUtils.staticStopRingtone();
-    }
-    return super.onKeyDown(k, e);
-  }
-
+  // Stop ringtone on any press and custom back btn handler
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
-    return onKeyDown(e.getAction(), e);
+    int k = e.getKeyCode();
+    int a = e.getAction();
+    BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
+    // Stop ringtone if any of the hardware key press
+    BrekekeUtils.staticStopRingtone();
+    // Handle back btn press, remember that this event fire twice, down/up
+    if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
+      if (a == KeyEvent.ACTION_DOWN) {
+        if (BrekekeUtils.isLocked()) {
+          onRequestUnlock(null);
+        } else {
+          onBackPressed();
+        }
+      }
+      return true;
+    }
+    return super.dispatchKeyEvent(e);
   }
 
   // ==========================================================================

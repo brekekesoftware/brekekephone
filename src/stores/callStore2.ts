@@ -336,7 +336,9 @@ export class CallStore {
       c.rawSession = rawSession
     }
     this.onSipUaCancel({ pnId: c.pnId })
-    c.callkeepUuid && this.endCallKeep(c.callkeepUuid)
+    if (c.callkeepUuid) {
+      this.endCallKeep(c.callkeepUuid)
+    }
     await addCallHistory(c)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
@@ -382,6 +384,13 @@ export class CallStore {
     }
   }
   startCall: MakeCallFn = (number: string, ...args) => {
+    const as = getAuthStore()
+    if (as.sipConnectingOrFailure()) {
+      as.sipTotalFailure = 0
+      // TODO reset waiting in AuthSIP as well
+      return
+    }
+
     if (this.calls.filter(c => !c.incoming && !c.answered).length) {
       RnAlert.error({
         message: intlDebug`Only make one outgoing call`,
@@ -406,8 +415,9 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      Platform.OS === 'ios' &&
+      if (Platform.OS === 'ios') {
         RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
+      }
       this.setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s: auto update currentCallId

@@ -177,6 +177,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     completionHandler()
   }
 
+  // process the user's response to a delivered notification
+  internal func userNotificationCenter(
+    _: UNUserNotificationCenter,
+    didReceive response: UNNotificationResponse,
+    withCompletionHandler completionHandler: () -> Void
+  ) {
+    RNCPushNotificationIOS.didReceive(response)
+    completionHandler()
+  }
+
   // Manage notifications while app is in the foreground
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
