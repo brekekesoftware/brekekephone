@@ -935,16 +935,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
-    BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k);
+    int a = e.getAction();
+    BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
+    // Stop ringtone if any of the hardware key press
+    BrekekeUtils.staticStopRingtone();
+    // Handle back btn press, remember that this event fire twice, down/up
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
-      if (BrekekeUtils.isLocked()) {
-        onRequestUnlock(null);
-      } else {
-        onBackPressed();
+      if (a == KeyEvent.ACTION_DOWN) {
+        if (BrekekeUtils.isLocked()) {
+          onRequestUnlock(null);
+        } else {
+          onBackPressed();
+        }
       }
-    } else {
-      // Stop ringtone if any of the hardware key press
-      BrekekeUtils.staticStopRingtone();
+      return true;
     }
     return super.dispatchKeyEvent(e);
   }

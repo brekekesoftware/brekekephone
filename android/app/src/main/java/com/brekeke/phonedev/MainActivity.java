@@ -46,12 +46,16 @@ public class MainActivity extends ReactActivity {
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
-    BrekekeUtils.emit("debug", "MainActivity.onKeyDown k=" + k);
+    int a = e.getAction();
+    BrekekeUtils.emit("debug", "MainActivity.onKeyDown k=" + k + " a=" + a);
+    // Stop ringtone if any of the hardware key press
+    BrekekeUtils.staticStopRingtone();
+    // Handle back btn press, remember that this event fire twice, down/up
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
-      BrekekeUtils.emit("onBackPressed", "");
-    } else {
-      // incoming call press any key will stop ringtone
-      BrekekeUtils.staticStopRingtone();
+      if (a == KeyEvent.ACTION_DOWN) {
+        BrekekeUtils.emit("onBackPressed", "");
+      }
+      return true;
     }
     return super.dispatchKeyEvent(e);
   }
