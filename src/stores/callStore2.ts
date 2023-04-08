@@ -291,6 +291,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, p)
     this.calls = [c, ...this.calls]
+    this.currentCallId = c.id
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     embedApi.emit('call', c)
@@ -334,7 +335,9 @@ export class CallStore {
       c.rawSession = rawSession
     }
     this.onSipUaCancel({ pnId: c.pnId })
-    c.callkeepUuid && this.endCallKeep(c.callkeepUuid)
+    if (c.callkeepUuid) {
+      this.endCallKeep(c.callkeepUuid)
+    }
     await addCallHistory(c)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
@@ -380,6 +383,13 @@ export class CallStore {
     }
   }
   startCall: MakeCallFn = (number: string, ...args) => {
+    const as = getAuthStore()
+    if (as.sipConnectingOrFailure()) {
+      as.sipTotalFailure = 0
+      // TODO reset waiting in AuthSIP as well
+      return
+    }
+
     if (this.calls.filter(c => !c.incoming && !c.answered).length) {
       RnAlert.error({
         message: intlDebug`Only make one outgoing call`,
@@ -398,14 +408,15 @@ export class CallStore {
       reconnectCalled = true
       reconnectAndWaitSip().then(sipCreateSession)
     }
-    Nav().goToPageCallManage()
+    Nav().goToPageCallManage({ isOutgoingCall: true })
     // Start call logic in RNCallKeep
     // Adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      Platform.OS === 'ios' &&
+      if (Platform.OS === 'ios') {
         RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
+      }
       this.setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s: auto update currentCallId
