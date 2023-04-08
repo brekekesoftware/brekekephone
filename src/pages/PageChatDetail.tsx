@@ -93,7 +93,9 @@ export class PageChatDetail extends Component<{
   componentWillUnmount() {
     if (Platform.OS === 'web') {
       const { topic_id } = this.state
-      topic_id && caches.delete(topic_id)
+      if (topic_id) {
+        caches.delete(topic_id)
+      }
     }
   }
   renderChatInput = () => {

@@ -30,11 +30,19 @@ export const SelectionItem: FC<
   <RnTouchableOpacity
     {...p}
     style={[css.SelectionItem, disabled && css.SelectionItem_Disabled, style]}
-    onPress={() => !disabled && onPress()}
+    onPress={() => {
+      if (!disabled) {
+        onPress()
+      }
+    }}
   >
     <RnCheckBox
       isSelected={isSelected}
-      onPress={() => !disabled && onPress()}
+      onPress={() => {
+        if (!disabled) {
+          onPress()
+        }
+      }}
       disabled={disabled}
     />
     <RnText style={css.SelectionItem_Title}>{title}</RnText>
