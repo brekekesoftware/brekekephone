@@ -439,12 +439,14 @@ class PageCallManage extends Component<{
           <View style={styleViewAvatar}>
             {c.answered && (
               <SmartImage
+                key={c.talkingImageUrl}
                 uri={`${c.talkingImageUrl}`}
                 style={{ flex: 1, aspectRatio: 1 }}
               />
             )}
             {!c.answered && (
               <SmartImage
+                key={c.partyImageUrl}
                 uri={`${c.partyImageUrl}`}
                 style={{ flex: 1, aspectRatio: 1 }}
               />
