@@ -277,7 +277,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     timerTask = null;
     timer = null;
     BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
-    BrekekeUtils.staticStopRingtone();
     super.onDestroy();
   }
 
