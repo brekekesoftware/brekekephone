@@ -300,6 +300,15 @@ class ContactStore {
     } else {
       Object.assign(p0, p)
     }
+
+    // update display name for recent call
+    const partyNumber =
+      p.info?.$tel_mobile || p.info?.$tel_work || p.info?.$tel_home
+    if (partyNumber) {
+      const ac = getAuthStore()
+      ac.updatePartyNameRecentCall({ partyName: p.display_name, partyNumber })
+    }
+
     this.phoneBooks = [...this.phoneBooks]
   }
   @action setPhonebook = (p: Phonebook | Phonebook[]) => {
