@@ -382,7 +382,10 @@ export class CallStore {
     }
   }
   startCall: MakeCallFn = (number: string, ...args) => {
-    if (getAuthStore().sipConnectingOrFailure()) {
+    const as = getAuthStore()
+    if (as.sipConnectingOrFailure()) {
+      as.sipTotalFailure = 0
+      // TODO reset waiting in AuthSIP as well
       return
     }
 
