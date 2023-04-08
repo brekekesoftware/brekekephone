@@ -43,6 +43,7 @@ export class Nav2 {
   backToPageAccountSignIn = RnStacker.createBackTo<
     ComponentProps<typeof PageAccountSignIn>
   >({ PageAccountSignIn }, true)
+
   // root user/chat
   goToPageContactPhonebook = RnStacker.createGoTo<
     ComponentProps<typeof PageContactPhonebook>
@@ -69,6 +70,7 @@ export class Nav2 {
   backToPageWebChat = RnStacker.createBackTo<
     ComponentProps<typeof PageWebChat>
   >({ PageWebChat }, true)
+
   // root call
   goToPageCallKeypad = RnStacker.createGoTo<
     ComponentProps<typeof PageCallKeypad>
@@ -88,6 +90,7 @@ export class Nav2 {
   backToPageCallParks = RnStacker.createBackTo<
     ComponentProps<typeof PageCallParks>
   >({ PageCallParks }, true)
+
   // root settings
   goToPageSettingsOther = RnStacker.createGoTo<
     ComponentProps<typeof PageSettingsOther>
@@ -127,12 +130,14 @@ export class Nav2 {
   backToPagePhonebookUpdate = RnStacker.createBackTo<
     ComponentProps<typeof PagePhonebookUpdate>
   >({ PagePhonebookUpdate })
+
   // call
-  goToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+  goToPageCallManage = (
+    props?: CallStore['inPageCallManage'] & { isOutgoingCall?: boolean },
+  ) => {
     const s = getCallStore()
     const c = s.getCurrentCall()
     const uuid = c?.callkeepUuid
-
     if (!props?.isOutgoingCall && uuid && !c.transferring) {
       BrekekeUtils.onPageCallManage(uuid)
     }
@@ -184,6 +189,7 @@ export class Nav2 {
   backToPageCallDtmfKeypad = RnStacker.createBackTo<
     ComponentProps<typeof PageCallDtmfKeypad>
   >({ PageCallDtmfKeypad })
+
   // chat
   goToPageChatDetail = RnStacker.createGoTo<
     ComponentProps<typeof PageChatDetail>
@@ -209,6 +215,7 @@ export class Nav2 {
   backToPageChatGroupDetail = RnStacker.createBackTo<
     ComponentProps<typeof PageChatGroupDetail>
   >({ PageChatGroupDetail })
+
   // settings
   goToPageSettingsDebug = RnStacker.createGoTo<
     ComponentProps<typeof PageSettingsDebug>

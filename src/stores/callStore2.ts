@@ -33,7 +33,6 @@ import { timerStore } from './timerStore'
 export class CallStore {
   @observable inPageCallManage?: {
     isFromCallBar?: boolean
-    isOutgoingCall?: boolean
   } = undefined
 
   private recentCallActivityAt = 0
