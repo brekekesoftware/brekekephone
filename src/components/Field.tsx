@@ -322,12 +322,16 @@ export const Field: FC<
     const onChangeName = (text: string) => {
       const newPark = { ...$.park, name: text }
       $.set('park', newPark)
-      props?.onValueChange && props?.onValueChange(newPark)
+      if (props.onValueChange) {
+        props.onValueChange(newPark)
+      }
     }
     const onChangeNumber = (text: string) => {
       const newPark = { ...$.park, number: text.trim() }
       $.set('park', newPark)
-      props?.onValueChange && props?.onValueChange(newPark)
+      if (props.onValueChange) {
+        props.onValueChange(newPark)
+      }
     }
     return (
       <View style={css.Field_ViewRow}>
@@ -349,10 +353,16 @@ export const Field: FC<
           ])}
           placeholder={intl`park number`}
           placeholderTextColor={'grey'}
-          onBlur={() => Platform.OS === 'web' && $.set('isFocusing', false)}
+          onBlur={() => {
+            if (Platform.OS === 'web') {
+              $.set('isFocusing', false)
+            }
+          }}
           onChangeText={txt => onChangeNumber(txt)}
           onFocus={() => {
-            Platform.OS !== 'web' && $.set('isParkNameFocusing', false)
+            if (Platform.OS !== 'web') {
+              $.set('isParkNameFocusing', false)
+            }
             $.set('isFocusing', true)
           }}
           style={[css.Field_Park_TextInput, props.style]}
@@ -376,12 +386,16 @@ export const Field: FC<
           ])}
           placeholder={intl`label`}
           placeholderTextColor={'grey'}
-          onBlur={() =>
-            Platform.OS === 'web' && $.set('isParkNameFocusing', false)
-          }
+          onBlur={() => {
+            if (Platform.OS === 'web') {
+              $.set('isParkNameFocusing', false)
+            }
+          }}
           onChangeText={txt => onChangeName(txt)}
           onFocus={() => {
-            Platform.OS !== 'web' && $.set('isFocusing', false)
+            if (Platform.OS !== 'web') {
+              $.set('isFocusing', false)
+            }
             $.set('isParkNameFocusing', true)
           }}
           style={[css.Field_Park_TextInput, props.style]}
@@ -422,7 +436,9 @@ export const Field: FC<
       Object.assign(props, {
         inputElement: renderPark(),
         onTouchPress: () => {
-          !$.isFocusing && !$.isParkNameFocusing && inputRef.current?.focus()
+          if (!$.isFocusing && !$.isParkNameFocusing) {
+            inputRef.current?.focus()
+          }
         },
       })
     } else {
@@ -505,9 +521,7 @@ export const Field: FC<
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
                 style={[css.Field_TextInput, props.textInputStyle]}
                 value={
-                  (props.valueRender && props.valueRender(props.value)) ||
-                  props.value ||
-                  '\u200a'
+                  props.valueRender?.(props.value) || props.value || '\u200a'
                 }
               />
             )}
@@ -516,7 +530,7 @@ export const Field: FC<
         }
         {/* Fix form auto fill style on web */}
         {Platform.OS === 'web' && label}
-        {(props.iconRender && props.iconRender(props.value)) ||
+        {props.iconRender?.(props.value) ||
           (props.icon && (
             <RnIcon
               path={props.icon}

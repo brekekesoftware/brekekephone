@@ -201,10 +201,9 @@ export const setupCallKeep = async () => {
   const didDeactivateAudioSession = () => {
     // Only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
-    getCallStore()
-      .calls.filter(
-        c => c.answered && !c.holding && c.id !== getCallStore().currentCallId,
-      )
+    const cs = getCallStore()
+    cs.calls
+      .filter(c => c.answered && !c.holding && c.id !== cs.currentCallId)
       .forEach(c => c.toggleHoldWithCheck())
   }
 

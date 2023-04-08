@@ -90,7 +90,11 @@ export class PageCallParks extends Component<{
         {parks.map((p, i) => (
           <RnTouchableOpacity
             key={i}
-            onPress={() => !isDisable(p.park) && this.selectPark(p.park)}
+            onPress={() => {
+              if (!isDisable(p.park)) {
+                this.selectPark(p.park)
+              }
+            }}
           >
             <UserItem
               key={i}

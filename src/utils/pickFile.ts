@@ -97,8 +97,8 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
     return
   }
 
-  const getName = (p: string) =>
-    p && p.split(/[\\/]/g).pop()?.replace(/\?.+$/, '')
+  const getName = (p?: string) =>
+    p?.split(/[\\/]/g).pop()?.replace(/\?.+$/, '') || 'untitled.bin'
   let name = file.fileName || file.filename || file.name || getName(file.uri)
   let size: string | number = file.fileSize || file.filesize || file.size || 0
   if (!size) {
