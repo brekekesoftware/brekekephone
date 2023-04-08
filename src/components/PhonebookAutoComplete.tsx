@@ -129,7 +129,7 @@ export const PhonebookAutoComplete: FC<
             style={css.itemPb}
             onPress={() => {
               setChoose(true)
-              onPressItem && onPressItem(item)
+              onPressItem?.(item)
             }}
           >
             <Text style={css.txtPb}>{item.phonebook}</Text>

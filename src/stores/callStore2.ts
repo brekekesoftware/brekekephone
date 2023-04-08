@@ -334,7 +334,9 @@ export class CallStore {
       c.rawSession = rawSession
     }
     this.onSipUaCancel({ pnId: c.pnId })
-    c.callkeepUuid && this.endCallKeep(c.callkeepUuid)
+    if (c.callkeepUuid) {
+      this.endCallKeep(c.callkeepUuid)
+    }
     await addCallHistory(c)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
@@ -404,8 +406,9 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      Platform.OS === 'ios' &&
+      if (Platform.OS === 'ios') {
         RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
+      }
       this.setAutoEndCallKeepTimer(uuid)
     }
     // Check for each 0.5s: auto update currentCallId
