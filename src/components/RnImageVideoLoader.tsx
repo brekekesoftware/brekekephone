@@ -129,7 +129,9 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     state === 'success' && !!url && save && save === 'success'
 
   const onShowImage = useCallback(() => {
-    images.length > 0 && setIsVisible(true)
+    if (images.length > 0) {
+      setIsVisible(true)
+    }
   }, [images])
 
   const onSwipeDown = useCallback(() => {

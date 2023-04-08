@@ -24,10 +24,11 @@ export class PageCallTransferDial extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    if (this.prevId && this.prevId !== getCallStore().currentCallId) {
+    const cs = getCallStore()
+    if (this.prevId && this.prevId !== cs.currentCallId) {
       Nav().backToPageCallManage()
     }
-    this.prevId = getCallStore().currentCallId
+    this.prevId = cs.currentCallId
   }
 
   @observable txt = ''
