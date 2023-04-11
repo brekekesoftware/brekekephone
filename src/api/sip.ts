@@ -95,7 +95,11 @@ export class SIP extends EventEmitter {
 
     const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
     this.phone = phone
-    embedApi.emit('webrtcclient', getAuthStore().getCurrentAccount(), phone)
+
+    // Emit to embed api
+    if (!window._BrekekePhoneWebRoot) {
+      embedApi.emit('webrtcclient', phone)
+    }
 
     const h = (ev: { phoneStatus: string }) => {
       if (!ev) {
