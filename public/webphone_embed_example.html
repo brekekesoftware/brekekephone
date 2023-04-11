@@ -47,7 +47,7 @@
       auto_login: true,
       // clear all the existing accounts, default false
       // the accounts are stored in the localStorage
-      // if false, the accounts will overwrite the same entry (host, port, tenant, user)
+      // if false, the accounts will overwrite the duplicated entries (host, port, tenant, user)
       clear_existing_accounts: false,
       // hostname:              string
       // port:                  string
@@ -111,16 +111,18 @@
       c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
     })
 
-    // get the raw pal instance from pbx:
-    // when account login, it will construct the pal and you can access:
-    phone.on('pal', async (account, pal) => {
+    // get the raw pal instance from pbx
+    // when account login, it will construct the pal and you can access via this event
+    // IMPORTANT NOTE: this event can fire multiple times if retry on login failed or pal params change
+    phone.on('pal', async pal => {
       // account fields can be found github Brekeke Phone src/stores/accountStore.ts
-      console.log('phone.on.pal', account.pbxTenant, account.pbxUsername)
+      var currentAccount = phone.getCurrentAccount()
+      console.log('phone.on.pal currentAccount:', currentAccount.pbxUsername)
       // pal is from window.Brekeke.pbx.getPal
       // console log to see all details
-      console.log(pal)
+      console.log('phone.on.pal', pal)
       // here you can listen on events like: notify_status...
-      // note that you need to keep the current listener so it wont be overrided
+      // IMPORTANT NOTE: you need to keep the current listener so it wont be overrided
       var old_notify_status = pal.notify_status
       pal.notify_status = e => {
         old_notify_status && old_notify_status(e) // call old listener
@@ -130,12 +132,12 @@
       var res = await pal.call_pal('name', options)
     })
 
-    // get the raw instance from webrtcclient.js:
-    // when account login, it will construct the client and you can access:
-    phone.on('webrtcclient', async (account, client) => {
+    // get the raw instance from webrtcclient.js
+    // when account login, it will construct the client and you can access via this event
+    phone.on('webrtcclient', async client => {
       // client is an instance of window.Brekeke.WebrtcClient.Phone
       // console log to see all details
-      console.log(client)
+      console.log('phone.on.webrtcclient', client)
       // here you can access to inner sip object:
       console.log(client._ua)
     })

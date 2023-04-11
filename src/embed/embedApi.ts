@@ -20,9 +20,12 @@ export type EmbedSignInOptions = {
 } & { [k: string]: string }
 
 export class EmbedApi extends EventEmitter {
-  getRunningCalls = () => getCallStore().calls
-  call: MakeCallFn = (...args) => getCallStore().startCall(...args)
   promptBrowserPermission = webPromptPermission
+
+  getCurrentAccount = () => getAuthStore().getCurrentAccount()
+
+  call: MakeCallFn = (...args) => getCallStore().startCall(...args)
+  getRunningCalls = () => getCallStore().calls
 
   restart = async (o: EmbedSignInOptions) => {
     getAuthStore().signOutWithoutSaving()
