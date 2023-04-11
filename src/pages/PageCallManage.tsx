@@ -437,10 +437,20 @@ class PageCallManage extends Component<{
       <View style={[css.Image_wrapper, { flex: 1 }]}>
         {isShowAvatar ? (
           <View style={styleViewAvatar}>
-            <SmartImage
-              uri={`${!c.answered ? c.partyImageUrl : c.talkingImageUrl}`}
-              style={{ flex: 1, aspectRatio: 1 }}
-            />
+            {c.answered && (
+              <SmartImage
+                key={c.talkingImageUrl}
+                uri={`${c.talkingImageUrl}`}
+                style={{ flex: 1, aspectRatio: 1 }}
+              />
+            )}
+            {!c.answered && (
+              <SmartImage
+                key={c.partyImageUrl}
+                uri={`${c.partyImageUrl}`}
+                style={{ flex: 1, aspectRatio: 1 }}
+              />
+            )}
           </View>
         ) : (
           <View style={{ flex: 1 }} />

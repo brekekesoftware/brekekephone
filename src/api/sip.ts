@@ -318,7 +318,9 @@ export class SIP extends EventEmitter {
 
   private hackJssipFork = () => {
     const socket = sip.phone?._ua?._transport?.socket
-    socket && Object.assign(socket, { __brekekephone_stopped: true })
+    if (socket) {
+      Object.assign(socket, { __brekekephone_stopped: true })
+    }
   }
   stopWebRTC = () => {
     this.hackJssipFork()
@@ -343,8 +345,7 @@ export class SIP extends EventEmitter {
 
   hangupSession = (sessionId: string) => {
     const session = this.phone?.getSession(sessionId)
-    const rtcSession = session && session.rtcSession
-    return rtcSession && rtcSession.terminate()
+    return session?.rtcSession?.terminate()
   }
   disableMedia = (sessionId: string) => {
     const session = this.phone?.getSession(sessionId)
