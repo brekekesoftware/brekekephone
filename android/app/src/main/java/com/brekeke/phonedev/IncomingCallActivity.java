@@ -727,19 +727,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onRequestUnlock(View v) {
-    if (BrekekeUtils.isLocked()) {
-      BrekekeUtils.km.requestDismissKeyguard(
-          this,
-          new KeyguardManager.KeyguardDismissCallback() {
-            @Override
-            public void onDismissSucceeded() {
-              super.onDismissSucceeded();
-              onKeyguardDismissSucceeded(v);
-            }
-          });
-    } else {
+    if (!BrekekeUtils.isLocked()) {
       onKeyguardDismissSucceeded(v);
+      return;
     }
+    BrekekeUtils.km.requestDismissKeyguard(
+        this,
+        new KeyguardManager.KeyguardDismissCallback() {
+          @Override
+          public void onDismissSucceeded() {
+            super.onDismissSucceeded();
+            onKeyguardDismissSucceeded(v);
+          }
+        });
   }
 
   public void onKeyguardDismissSucceeded(View v) {
