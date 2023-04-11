@@ -24,7 +24,7 @@ export class PBX extends EventEmitter {
   isMainInstance = true
 
   connect = async (
-    p: Account,
+    a: Account,
     palParamUserReconnect?: boolean,
   ): Promise<boolean> => {
     console.log('PBX PN debug: call pbx.connect')
@@ -33,19 +33,19 @@ export class PBX extends EventEmitter {
       return true
     }
 
-    const d = await accountStore.findDataAsync(p)
+    const d = await accountStore.findDataAsync(a)
     const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
     )
 
-    const wsUri = `wss://${p.pbxHostname}:${p.pbxPort}/pbx/ws`
+    const wsUri = `wss://${a.pbxHostname}:${a.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
-      tenant: p.pbxTenant,
-      login_user: p.pbxUsername,
-      login_password: p.pbxPassword,
+      tenant: a.pbxTenant,
+      login_user: a.pbxUsername,
+      login_password: a.pbxPassword,
       _wn: d.accessToken,
-      park: p.parks || [],
+      park: a.parks || [],
       voicemail: 'self',
       status: true,
       secure_login_password: false,
@@ -59,11 +59,11 @@ export class PBX extends EventEmitter {
     client.debugLevel = 2
     client.call_pal = (method: keyof Pbx, params?: object) => {
       return new Promise((resolve, reject) => {
-        const f = (client[method] as Function).bind(client) as Function
+        const f = client[method] as Function
         if (typeof f !== 'function') {
           return reject(new Error(`PAL client doesn't support "${method}"`))
         }
-        f(params, resolve, reject)
+        f.call(client, params, resolve, reject)
       })
     }
 
@@ -145,7 +145,7 @@ export class PBX extends EventEmitter {
           `Attempt to reconnect due to mismatch webphone.pal.param.user after login: old=${oldPalParamUser} new=${newPalParamUser}`,
         )
         this.disconnect()
-        return this.connect(p, true)
+        return this.connect(a, true)
       }
     }
 
@@ -162,7 +162,7 @@ export class PBX extends EventEmitter {
     client.notify_status = this.onUserStatus
 
     // emit to embed api
-    embedApi.emit('pal', p, client)
+    embedApi.emit('pal', a, client)
     return connected
   }
 
