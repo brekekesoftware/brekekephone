@@ -122,7 +122,7 @@
       // console log to see all details
       console.log('phone.on.pal', pal)
       // here you can listen on events like: notify_status...
-      // IMPORTANT NOTE: you need to keep the current listener so it wont be overrided
+      // IMPORTANT NOTE: you need to keep the current listener so it wont be overridden
       var old_notify_status = pal.notify_status
       pal.notify_status = e => {
         old_notify_status && old_notify_status(e) // call old listener
