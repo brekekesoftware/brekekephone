@@ -114,6 +114,11 @@ export class PBX extends EventEmitter {
       resolveFn = undefined
     }
 
+    // Emit to embed api
+    if (!window._BrekekePhoneWebRoot) {
+      embedApi.emit('pal', client)
+    }
+
     const login = new Promise<boolean>((resolve, reject) =>
       client.login(() => resolve(true), reject),
     )
@@ -161,8 +166,6 @@ export class PBX extends EventEmitter {
     client.notify_voicemail = this.onVoicemail
     client.notify_status = this.onUserStatus
 
-    // emit to embed api
-    embedApi.emit('pal', a, client)
     return connected
   }
 

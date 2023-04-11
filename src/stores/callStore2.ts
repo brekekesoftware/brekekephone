@@ -283,7 +283,10 @@ export class CallStore {
       ) {
         BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
-      embedApi.emit('call_update', e)
+      // Emit to embed api
+      if (!window._BrekekePhoneWebRoot) {
+        embedApi.emit('call_update', e)
+      }
       return
     }
     //
@@ -293,7 +296,10 @@ export class CallStore {
     this.calls = [c, ...this.calls]
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
-    embedApi.emit('call', c)
+    // Emit to embed api
+    if (!window._BrekekePhoneWebRoot) {
+      embedApi.emit('call', c)
+    }
     // Desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
       webShowNotification(
@@ -360,7 +366,10 @@ export class CallStore {
       this.incallManagerStarted = false
       IncallManager.stop()
     }
-    embedApi.emit('call_end', c)
+    // Emit to embed api
+    if (!window._BrekekePhoneWebRoot) {
+      embedApi.emit('call_end', c)
+    }
   }
 
   @action onSelectBackgroundCall = (c: Immutable<Call>) => {
