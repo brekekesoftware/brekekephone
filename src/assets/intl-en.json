@@ -265,6 +265,7 @@
   "park number",
   "{{$0}} accounts in total",
   "{{$0}} connection failed",
+  "{{$0}} in background",
   "{{$0}} other call is in background",
   "{{$0}} other calls are in background",
   "{{$0}} total",
