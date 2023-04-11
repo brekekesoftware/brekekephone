@@ -7,6 +7,8 @@
 - Fix it should navigate to the correct call if making an outgoing call while having another call
 - Fix android loud speaker not working in some cases
 - Fix avatar should keep consistent state using React key render
+- Embed:
+  - Emit pal instance before the login to allow listening on notify_serverstatus and more other pal events
 
 #### 2.11.14
 
