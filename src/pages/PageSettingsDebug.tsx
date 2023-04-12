@@ -30,6 +30,7 @@ const css = StyleSheet.create({
 export class PageSettingsDebug extends Component {
   render() {
     const isUpdateAvailable =
+      Platform.OS !== 'web' &&
       compareSemVer(debugStore.remoteVersion, currentVersion) > 0
     return (
       <Layout
