@@ -28,6 +28,8 @@
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
   <application
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
@@ -44,11 +46,13 @@
       android:launchMode="standard"
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
+      android:exported="true"
     />
     <activity
       android:name=".ExitActivity"
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
+      android:exported="true"
     />
     <!-- fcm -->
     <meta-data
@@ -95,6 +99,7 @@
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
       android:foregroundServiceType="camera|microphone"
+      android:exported="true"
     >
       <intent-filter>
         <action android:name="android.telecom.ConnectionService" />

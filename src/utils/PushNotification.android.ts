@@ -1,7 +1,8 @@
 import './callkeep'
 
-import { AppRegistry } from 'react-native'
+import { AppRegistry, Platform } from 'react-native'
 import FCM, { FCMEvent, Notification } from 'react-native-fcm'
+import { requestNotifications } from 'react-native-permissions'
 
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
@@ -56,7 +57,17 @@ export const PushNotification = {
   register: async (initApp: Function) => {
     try {
       initApp()
-      await FCM.requestPermissions()
+      // for permission notification android >=33
+      // ref: https://developer.android.com/develop/ui/views/notifications/notification-permission
+      if (Platform.OS === 'android' && Platform.Version >= 33) {
+        const result = await requestNotifications([])
+        console.log('dev::', { result })
+        if (result.status !== 'granted') {
+          throw new Error('Notification disabled')
+        }
+      } else {
+        await FCM.requestPermissions()
+      }
       await FCM.createNotificationChannel({
         id: 'default',
         name: 'Brekeke Phone',
@@ -71,9 +82,10 @@ export const PushNotification = {
       await getInitialNotifications().then(ns =>
         ns.forEach(n => onNotification(n, initApp)),
       )
-      // killed state local PN interaction?
+      // // killed state local PN interaction?
       await FCM.getInitialNotification().then(n => onNotification(n, initApp))
     } catch (err) {
+      console.log('dev::', { err })
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,
         err: err as Error,
