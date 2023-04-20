@@ -1,6 +1,7 @@
 // API was a component but had been rewritten to a listener
 import '../api'
 
+import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
 import { observe, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
@@ -196,13 +197,29 @@ const css = StyleSheet.create({
 })
 
 export const App = observer(() => {
+  const s = getAuthStore()
+
   useEffect(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
     }
-  }, [])
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (s.isConnected !== state.isConnected) {
+        if (!s.isConnected) {
+          s.resetFailureState()
+          authPBX.auth()
+          authSIP.auth()
+          authUC.auth()
+        }
+        s.isConnected = state.isConnected
+      }
+    })
+    return () => {
+      // Unsubscribe
+      unsubscribe()
+    }
+  }, [s])
 
-  const s = getAuthStore()
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -220,6 +237,7 @@ export const App = observer(() => {
     service = intl`UC`
   }
   const failure = isConnFailure()
+
   let connMessage =
     service &&
     (failure

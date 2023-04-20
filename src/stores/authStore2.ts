@@ -48,7 +48,7 @@ export class AuthStore {
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
   @observable ucLoginFromAnotherPlace = false
-
+  public isConnected: boolean | null = null
   pbxShouldAuth = () => {
     return (
       this.getCurrentAccount() &&
