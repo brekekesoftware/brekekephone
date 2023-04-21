@@ -81,7 +81,11 @@ export class RnStackerStore {
   createBackTo =
     <T>(o: { [k: string]: ReactComponentLike }, isRoot = false): StackerFn<T> =>
     (...args: unknown[]) => {
-      getCallStore().inPageCallManage = undefined
+      const cs = getCallStore()
+      if (cs.inPageCallManage) {
+        cs.inPageCallManage = undefined
+        return
+      }
       if (this.stacks.length <= 1) {
         // @ts-ignore
         this.createGoTo(o, isRoot)(...args)
