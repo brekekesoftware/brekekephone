@@ -67,9 +67,9 @@ const initApp = async () => {
   const pnToken = SyncPnToken()
 
   const checkHasCallOrWakeFromPN = () =>
-    cs.calls.length ||
     Object.keys(cs.callkeepMap).length ||
     sip.phone?.getSessionCount() ||
+    cs.calls.length ||
     s.sipPn.sipAuth
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 

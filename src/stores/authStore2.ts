@@ -252,9 +252,9 @@ export class AuthStore {
 
   handleUrlParams = async () => {
     if (
-      getCallStore().calls.length ||
       Object.keys(getCallStore().callkeepMap).length ||
-      sip.phone?.getSessionCount()
+      sip.phone?.getSessionCount() ||
+      getCallStore().calls.length
     ) {
       return false
     }
