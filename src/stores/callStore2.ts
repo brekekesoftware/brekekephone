@@ -68,7 +68,7 @@ export class CallStore {
     n: ParsedPn,
   ) => {
     if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
-      if (RnAppState.foregroundOnce && RnAppState.currentState !== 'active') {
+      if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
       BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 2000)

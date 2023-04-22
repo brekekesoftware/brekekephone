@@ -214,14 +214,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
             userActions.put(uuid, "display");
             activitiesSize++;
-            if (last() == null) {
+            if (activitiesSize == 1) {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             }
             Intent i = new Intent(c, IncomingCallActivity.class);
-            i.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                    | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
@@ -396,36 +393,54 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     remove(uuid);
   }
 
-  public static IncomingCallActivity at(String uuid) {
+  private static IncomingCallActivity at(String uuid) {
     try {
       for (IncomingCallActivity a : activities) {
         if (a.uuid.equals(uuid)) {
           return a;
         }
       }
-      return null;
     } catch (Exception e) {
-      return null;
     }
+    return null;
   }
 
-  public static IncomingCallActivity last() {
+  private static int index(String uuid) {
     try {
-      return activities.get(activities.size() - 1);
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  public static int index(String uuid) {
-    int i = 0;
-    for (IncomingCallActivity a : activities) {
-      if (a.uuid.equals(uuid)) {
-        return i;
+      int i = 0;
+      for (IncomingCallActivity a : activities) {
+        if (a.uuid.equals(uuid)) {
+          return i;
+        }
+        i++;
       }
-      i++;
+    } catch (Exception e) {
     }
     return -1;
+  }
+
+  private static boolean activitesAnyAnswered() {
+    try {
+      for (IncomingCallActivity a : activities) {
+        if (a.answered) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+    }
+    return false;
+  }
+
+  private static boolean activitesAllDestroyed() {
+    try {
+      for (IncomingCallActivity a : activities) {
+        if (!a.destroyed) {
+          return false;
+        }
+      }
+    } catch (Exception e) {
+    }
+    return true;
   }
 
   public static void onActivityPauseOrDestroy(String uuid, boolean destroyed) {
@@ -437,15 +452,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         destroyedUuids.put(uuid, "destroyed");
       } catch (Exception e) {
       }
-      IncomingCallActivity l = last();
-      if (l == null || l.answered) {
-        staticStopRingtone();
-      }
     }
-    if (activitiesSize > 0) {
-      return;
+    if (activitiesSize == 0 || activitesAnyAnswered() || activitesAllDestroyed()) {
+      staticStopRingtone();
     }
-    if (jsCallsSize == 0) {
+    if (activitiesSize == 0 && jsCallsSize == 0) {
       releaseWakeLock();
     }
   }
@@ -635,7 +646,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void setJsCallsSize(int n) {
     if (n > 0) {
       acquireWakeLock();
-    } else {
+    } else if (activitiesSize == 0) {
       releaseWakeLock();
     }
     jsCallsSize = n;

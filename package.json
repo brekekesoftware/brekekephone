@@ -98,7 +98,7 @@
     "@types/qs": "6.9.7",
     "@types/react": "17.0.43",
     "@types/react-dom": "17.0.14",
-    "@types/react-native": "0.67.3",
+    "@types/react-native": "0.66.3",
     "@types/react-native-background-timer": "2.0.0",
     "@types/react-native-incall-manager": "3.2.1",
     "@types/react-native-keyboard-spacer": "0.4.2",

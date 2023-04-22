@@ -6,18 +6,21 @@ import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 
 class AuthPBX {
-  private clearObserve?: Lambda
+  private clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
-    this.clearObserve?.()
+    this.clearShouldAuthReaction?.()
     const s = getAuthStore()
-    this.clearObserve = reaction(s.pbxShouldAuth, this.authWithCheckDebounced)
+    this.clearShouldAuthReaction = reaction(
+      s.pbxShouldAuth,
+      this.authWithCheckDebounced,
+    )
   }
   @action dispose = () => {
     console.log('PBX PN debug: disconnect by AuthPBX.dispose')
-    this.clearObserve?.()
-    this.clearObserve = undefined
+    this.clearShouldAuthReaction?.()
+    this.clearShouldAuthReaction = undefined
     pbx.disconnect()
     const s = getAuthStore()
     s.pbxState = 'stopped'

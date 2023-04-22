@@ -16,17 +16,21 @@ const UCClient = UCClient0 as {
 }
 
 class AuthUC {
-  private clearObserve?: Lambda
+  private clearShouldAuthReaction?: Lambda
+
   auth() {
     this.authWithCheck()
     uc.on('connection-stopped', this.onConnectionStopped)
-    this.clearObserve?.()
+    this.clearShouldAuthReaction?.()
     const s = getAuthStore()
-    this.clearObserve = reaction(s.ucShouldAuth, this.authWithCheckDebounced)
+    this.clearShouldAuthReaction = reaction(
+      s.ucShouldAuth,
+      this.authWithCheckDebounced,
+    )
   }
   @action dispose = () => {
     uc.off('connection-stopped', this.onConnectionStopped)
-    this.clearObserve?.()
+    this.clearShouldAuthReaction?.()
     uc.disconnect()
     const s = getAuthStore()
     s.ucState = 'stopped'

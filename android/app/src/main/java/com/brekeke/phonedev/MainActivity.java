@@ -20,6 +20,7 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onDestroy() {
     BrekekeUtils.main = null;
+    BrekekeUtils.staticStopRingtone();
     super.onDestroy();
   }
 
