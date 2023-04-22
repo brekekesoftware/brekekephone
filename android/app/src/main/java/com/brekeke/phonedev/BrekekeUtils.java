@@ -213,10 +213,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               return;
             }
             userActions.put(uuid, "display");
-            if (activitiesSize == 0) {
+            activitiesSize++;
+            if (activitiesSize == 1) {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             }
-            activitiesSize++;
             Intent i = new Intent(c, IncomingCallActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
