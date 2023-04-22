@@ -39,6 +39,8 @@ type ConnectionState =
   | 'failure'
 
 export class AuthStore {
+  hasInternetConnected: boolean | null = null
+
   @observable sipPn: Partial<SipPn> = {}
 
   @observable pbxState: ConnectionState = 'stopped'
@@ -250,9 +252,9 @@ export class AuthStore {
 
   handleUrlParams = async () => {
     if (
-      getCallStore().calls.length ||
       Object.keys(getCallStore().callkeepMap).length ||
-      sip.phone?.getSessionCount()
+      sip.phone?.getSessionCount() ||
+      getCallStore().calls.length
     ) {
       return false
     }

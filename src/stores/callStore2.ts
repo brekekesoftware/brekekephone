@@ -741,22 +741,24 @@ export class CallStore {
   }
 
   constructor() {
-    if (Platform.OS === 'android') {
-      BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
-      // If it is locked right after blur 300ms
-      // we assume it was put in background because of lock
-      AppState.addEventListener('change', () => {
-        BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
-        if (AppState.currentState === 'active') {
-          return
-        }
-        BackgroundTimer.setTimeout(async () => {
-          if (await BrekekeUtils.isLocked()) {
-            BrekekeUtils.setIsAppActive(false, true)
-          }
-        }, 300)
-      })
+    if (Platform.OS !== 'android') {
+      return
     }
+    BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
+    // If it is locked right after blur 300ms
+    //    we assume it was put in background because of lock
+    // No need to remove listener since this is singleton without cleanup for now
+    AppState.addEventListener('change', currentState => {
+      BrekekeUtils.setIsAppActive(currentState === 'active', false)
+      if (currentState === 'active') {
+        return
+      }
+      BackgroundTimer.setTimeout(async () => {
+        if (await BrekekeUtils.isLocked()) {
+          BrekekeUtils.setIsAppActive(false, true)
+        }
+      }, 300)
+    })
   }
 
   @observable parkNumbers: { [k: string]: boolean } = {}
