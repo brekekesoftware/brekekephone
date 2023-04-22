@@ -39,6 +39,8 @@ type ConnectionState =
   | 'failure'
 
 export class AuthStore {
+  hasInternetConnected: boolean | null = null
+
   @observable sipPn: Partial<SipPn> = {}
 
   @observable pbxState: ConnectionState = 'stopped'
@@ -48,7 +50,7 @@ export class AuthStore {
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
   @observable ucLoginFromAnotherPlace = false
-  public isConnected: boolean | null = null
+
   pbxShouldAuth = () => {
     return (
       this.getCurrentAccount() &&

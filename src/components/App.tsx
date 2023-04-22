@@ -60,11 +60,19 @@ import { v } from './variables'
 const initApp = async () => {
   await intlStore.wait()
   const s = getAuthStore()
+  const cs = getCallStore()
+
+  registerOnUnhandledError(unexpectedErr => {
+    // Must wrap in setTimeout to make sure
+    //    there's no state change when rendering
+    BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
+    return false
+  })
 
   AppState.addEventListener('change', async () => {
     if (AppState.currentState === 'active') {
-      getAuthStore().resetFailureState()
-      getCallStore().onCallKeepAction()
+      s.resetFailureState()
+      cs.onCallKeepAction()
       // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
       // ref: https://github.com/facebook/react-native-website/issues/273
       const handleUrlParams = await s.handleUrlParams()
@@ -80,17 +88,21 @@ const initApp = async () => {
       SyncPnToken().syncForAllAccounts()
     }
   })
-  registerOnUnhandledError(unexpectedErr => {
-    // Must wrap in setTimeout to make sure
-    //    there's no state change when rendering
-    BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
-    return false
+
+  NetInfo.addEventListener(state => {
+    if (s.hasInternetConnected !== state.isConnected) {
+      if (!s.hasInternetConnected) {
+        s.resetFailureState()
+        authPBX.auth()
+        authSIP.auth()
+        authUC.auth()
+      }
+      s.hasInternetConnected = state.isConnected
+    }
   })
 
   const hasCallOrWakeFromPN =
-    getCallStore().calls.length ||
-    Object.keys(getCallStore().callkeepMap).length ||
-    s.sipPn.sipAuth
+    cs.calls.length || Object.keys(cs.callkeepMap).length || s.sipPn.sipAuth
 
   if (Platform.OS === 'web') {
     if (window._BrekekePhoneWebRoot) {
@@ -197,28 +209,11 @@ const css = StyleSheet.create({
 })
 
 export const App = observer(() => {
-  const s = getAuthStore()
-
   useEffect(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
     }
-    const unsubscribe = NetInfo.addEventListener(state => {
-      if (s.isConnected !== state.isConnected) {
-        if (!s.isConnected) {
-          s.resetFailureState()
-          authPBX.auth()
-          authSIP.auth()
-          authUC.auth()
-        }
-        s.isConnected = state.isConnected
-      }
-    })
-    return () => {
-      // Unsubscribe
-      unsubscribe()
-    }
-  }, [s])
+  }, [])
 
   const {
     isConnFailure,
@@ -227,25 +222,26 @@ export const App = observer(() => {
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
     signedInId,
-  } = s
-  let service = ''
-  if (pbxConnectingOrFailure()) {
-    service = intl`PBX`
-  } else if (sipConnectingOrFailure()) {
-    service = intl`SIP`
-  } else if (ucConnectingOrFailure()) {
-    service = intl`UC`
-  }
-  const failure = isConnFailure()
+    resetFailureState,
+  } = getAuthStore()
 
-  let connMessage =
-    service &&
-    (failure
-      ? intl`${service} connection failed`
-      : intl`Connecting to ${service}...`)
-  if (failure && ucLoginFromAnotherPlace) {
-    connMessage = intl`UC signed in from another location`
-  }
+  const serviceConnectingOrFailure = pbxConnectingOrFailure()
+    ? intl`PBX`
+    : sipConnectingOrFailure()
+    ? intl`SIP`
+    : ucConnectingOrFailure()
+    ? intl`UC`
+    : ''
+  const isFailure = isConnFailure()
+
+  const connMessage =
+    isFailure && ucLoginFromAnotherPlace
+      ? intl`UC signed in from another location`
+      : !serviceConnectingOrFailure
+      ? ''
+      : isFailure
+      ? intl`${serviceConnectingOrFailure} connection failed`
+      : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
@@ -255,12 +251,12 @@ export const App = observer(() => {
         <AnimatedSize
           style={[
             css.App_ConnectionStatus,
-            failure && css.App_ConnectionStatus__failure,
+            isFailure && css.App_ConnectionStatus__failure,
           ]}
         >
           <RnTouchableOpacity
             style={css.App_ConnectionStatusInner}
-            onPress={failure ? s.resetFailureState : undefined}
+            onPress={isFailure ? resetFailureState : undefined}
           >
             <RnText small white>
               {connMessage}
@@ -283,10 +279,10 @@ export const App = observer(() => {
         <PhonebookAddItem />
 
         <RnAlertRoot />
-        {failure && (
+        {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
-            onPress={s.resetFailureState}
+            onPress={resetFailureState}
           />
         )}
       </View>
