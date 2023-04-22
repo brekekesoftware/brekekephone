@@ -320,7 +320,7 @@ class PageCallManage extends Component<{
     }
   }
 
-  appStateSubscription?: NativeEventSubscription
+  private appStateSubscription?: NativeEventSubscription
   private onAppStateChange = () => {
     if (AppState.currentState === 'active') {
       const { call: c } = this.props

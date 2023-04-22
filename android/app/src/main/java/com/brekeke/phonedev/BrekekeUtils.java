@@ -325,7 +325,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       i.addFlags(
           Intent.FLAG_ACTIVITY_NEW_TASK
               | Intent.FLAG_ACTIVITY_CLEAR_TASK
-              | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+              | Intent.FLAG_ACTIVITY_NO_ANIMATION
+              | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
       ctx.startActivity(i);
     }
   }
