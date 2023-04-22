@@ -323,7 +323,15 @@ class PageCallManage extends Component<{
   appStateSubscription?: NativeEventSubscription
   private onAppStateChange = () => {
     if (AppState.currentState === 'active') {
-      this.openJavaPnOnVisible()
+      const { call: c } = this.props
+      if (
+        this.hasJavaPn &&
+        this.isVisible() &&
+        c.callkeepUuid &&
+        !c.transferring
+      ) {
+        getCallStore().inPageCallManage = undefined
+      }
     }
   }
 
