@@ -1,6 +1,7 @@
 // API was a component but had been rewritten to a listener
 import '../api'
 
+import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
 import { observe, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
@@ -15,6 +16,7 @@ import {
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
+import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import {
@@ -58,38 +60,66 @@ import { v } from './variables'
 
 const initApp = async () => {
   await intlStore.wait()
-  const s = getAuthStore()
 
-  AppState.addEventListener('change', async () => {
-    if (AppState.currentState === 'active') {
-      getAuthStore().resetFailureState()
-      getCallStore().onCallKeepAction()
-      // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
-      // ref: https://github.com/facebook/react-native-website/issues/273
-      const handleUrlParams = await s.handleUrlParams()
-      if (
-        Platform.OS !== 'web' &&
-        Platform.OS === 'ios' &&
-        !handleUrlParams &&
-        AppState.currentState === 'active' &&
-        !hasCallOrWakeFromPN
-      ) {
-        await actionAutoLogin()
-      }
-      SyncPnToken().syncForAllAccounts()
+  const s = getAuthStore()
+  const cs = getCallStore()
+  const nav = Nav()
+  const pnToken = SyncPnToken()
+
+  const checkHasCallOrWakeFromPN = () =>
+    Object.keys(cs.callkeepMap).length ||
+    sip.phone?.getSessionCount() ||
+    cs.calls.length ||
+    s.sipPn.sipAuth
+  const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
+
+  const autoLogin = async () => {
+    const d = await getLastSignedInId(true)
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+      console.log('App navigated by auto signin')
+      // already navigated
+    } else {
+      nav.goToPageIndex()
     }
-  })
+  }
+
   registerOnUnhandledError(unexpectedErr => {
-    // Must wrap in setTimeout to make sure
-    //    there's no state change when rendering
+    // Must wrap in setTimeout avoid mobx error state change when rendering
     BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
     return false
   })
 
-  const hasCallOrWakeFromPN =
-    getCallStore().calls.length ||
-    Object.keys(getCallStore().callkeepMap).length ||
-    s.sipPn.sipAuth
+  AppState.addEventListener('change', async () => {
+    if (AppState.currentState !== 'active') {
+      return
+    }
+    s.resetFailureState()
+    cs.onCallKeepAction()
+    pnToken.syncForAllAccounts()
+    // With ios when wakekup app, currentState will be 'unknown' first then 'active'
+    // https://github.com/facebook/react-native-website/issues/273
+    if (Platform.OS !== 'ios') {
+      return
+    }
+    if (!checkHasCallOrWakeFromPN() && !(await s.handleUrlParams())) {
+      await autoLogin()
+    }
+  })
+
+  NetInfo.addEventListener(({ isConnected }) => {
+    if (s.hasInternetConnected === isConnected) {
+      return
+    }
+    s.hasInternetConnected = isConnected
+    if (!isConnected) {
+      return
+    }
+    s.resetFailureState()
+    authPBX.auth()
+    authSIP.auth()
+    authUC.auth()
+  })
 
   if (Platform.OS === 'web') {
     if (window._BrekekePhoneWebRoot) {
@@ -103,7 +133,7 @@ const initApp = async () => {
   await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {
-    Nav().goToPageIndex()
+    nav.goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
     userStore.clearStore()
@@ -119,16 +149,7 @@ const initApp = async () => {
     }
   }, 17)
   observe(s, 'signedInId', onAuthUpdate)
-  const actionAutoLogin = async () => {
-    const d = await getLastSignedInId(true)
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
-    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
-      console.log('App navigated by auto signin')
-      // already navigated
-    } else {
-      Nav().goToPageIndex()
-    }
-  }
+
   if (await s.handleUrlParams()) {
     console.log('App navigated by url params')
     // already navigated
@@ -139,13 +160,13 @@ const initApp = async () => {
     AppState.currentState === 'active' &&
     !hasCallOrWakeFromPN
   ) {
-    await actionAutoLogin()
+    await autoLogin()
   } else {
-    Nav().goToPageIndex()
+    nav.goToPageIndex()
   }
 
   if (AppState.currentState === 'active') {
-    SyncPnToken().syncForAllAccounts()
+    pnToken.syncForAllAccounts()
   }
 }
 
@@ -202,7 +223,6 @@ export const App = observer(() => {
     }
   }, [])
 
-  const s = getAuthStore()
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -210,24 +230,26 @@ export const App = observer(() => {
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
     signedInId,
-  } = s
-  let service = ''
-  if (pbxConnectingOrFailure()) {
-    service = intl`PBX`
-  } else if (sipConnectingOrFailure()) {
-    service = intl`SIP`
-  } else if (ucConnectingOrFailure()) {
-    service = intl`UC`
-  }
-  const failure = isConnFailure()
-  let connMessage =
-    service &&
-    (failure
-      ? intl`${service} connection failed`
-      : intl`Connecting to ${service}...`)
-  if (failure && ucLoginFromAnotherPlace) {
-    connMessage = intl`UC signed in from another location`
-  }
+    resetFailureState,
+  } = getAuthStore()
+
+  const serviceConnectingOrFailure = pbxConnectingOrFailure()
+    ? intl`PBX`
+    : sipConnectingOrFailure()
+    ? intl`SIP`
+    : ucConnectingOrFailure()
+    ? intl`UC`
+    : ''
+  const isFailure = isConnFailure()
+
+  const connMessage =
+    isFailure && ucLoginFromAnotherPlace
+      ? intl`UC signed in from another location`
+      : !serviceConnectingOrFailure
+      ? ''
+      : isFailure
+      ? intl`${serviceConnectingOrFailure} connection failed`
+      : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
@@ -237,12 +259,12 @@ export const App = observer(() => {
         <AnimatedSize
           style={[
             css.App_ConnectionStatus,
-            failure && css.App_ConnectionStatus__failure,
+            isFailure && css.App_ConnectionStatus__failure,
           ]}
         >
           <RnTouchableOpacity
             style={css.App_ConnectionStatusInner}
-            onPress={failure ? s.resetFailureState : undefined}
+            onPress={isFailure ? resetFailureState : undefined}
           >
             <RnText small white>
               {connMessage}
@@ -265,10 +287,10 @@ export const App = observer(() => {
         <PhonebookAddItem />
 
         <RnAlertRoot />
-        {failure && (
+        {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
-            onPress={s.resetFailureState}
+            onPress={resetFailureState}
           />
         )}
       </View>
