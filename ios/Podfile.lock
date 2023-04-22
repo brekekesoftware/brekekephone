@@ -291,6 +291,8 @@ PODS:
     - React-Core
   - react-native-image-picker (2.3.4-brekeke221208):
     - React-Core
+  - react-native-netinfo (9.3.9):
+    - React-Core
   - react-native-splash-screen (3.2.0):
     - React
   - react-native-video (5.2.1-brekeke221031):
@@ -447,6 +449,7 @@ DEPENDENCIES:
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webrtc (from `../node_modules/react-native-webrtc`)
@@ -541,6 +544,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
   react-native-video:
@@ -635,6 +640,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: 20f652c2402d3ddc81f396d8167c3bd978add4a2
   react-native-get-random-values: 30b3f74ca34e30e2e480de48e4add2706a40ac8f
   react-native-image-picker: c36b723efb08506b5258f5136fb01d99d2a47c53
+  react-native-netinfo: 22c082970cbd99071a4e5aa7a612ac20d66b08f0
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-video: 8839f019915271ba41a977674318d63de48e8e3e
   react-native-webrtc: 78c2ca886be7222ed9514f855704494da8e6f2c8

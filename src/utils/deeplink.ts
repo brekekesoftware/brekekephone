@@ -5,35 +5,31 @@ import { getAuthStore } from '../stores/authStore'
 import { parse, UrlParams } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
-let urlParams: UrlParams | null = null
+let urlParams: Promise<UrlParams | null> | UrlParams | null = null
 
-export const getUrlParams = () => {
+export const getUrlParams = async () => {
   if (alreadyHandleFirstOpen) {
-    return Promise.resolve(urlParams)
+    return urlParams
   }
   alreadyHandleFirstOpen = true
   Linking.addEventListener('url', e => {
     urlParams = parse(e.url)
+    const ca = getAuthStore().getCurrentAccount()
+    // Check against the current user
+    if (
+      !urlParams ||
+      !ca ||
+      compareAccount(ca, {
+        pbxHostname: urlParams.host,
+        pbxPort: urlParams.port,
+        pbxUsername: urlParams.user,
+        pbxTenant: urlParams.tenant,
+      })
+    ) {
+      return
+    }
     getAuthStore().handleUrlParams()
   })
-  return Linking.getInitialURL().then(parse)
+  urlParams = Linking.getInitialURL().then(parse)
+  return urlParams
 }
-
-Linking.addEventListener('url', e => {
-  const p = (urlParams = parse(e.url))
-  const cp = getAuthStore().getCurrentAccount()
-  // Check against the current user
-  if (
-    !p ||
-    !cp ||
-    compareAccount(cp, {
-      pbxHostname: p.host,
-      pbxPort: p.port,
-      pbxUsername: p.user,
-      pbxTenant: p.tenant,
-    })
-  ) {
-    return
-  }
-  getAuthStore().handleUrlParams()
-})
