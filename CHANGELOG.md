@@ -1,3 +1,12 @@
+#### 2.11.16
+
+- Update jsonrpc.js
+- Add missing ja translations
+- Fix it should play ding sound correctly on UC chat notification
+- Fix it should reconnect on internet access being restored
+- Fix android it should stop ringing on kill
+- Fix android in some cases it should switch well between multiple PN calls
+
 #### 2.11.15
 
 - Fix ios press on chat notification should navigate to the correct screen
