@@ -16,17 +16,20 @@ const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>
   pbx.getConfig().then(c => c && c[k])
 
 class AuthSIP {
-  private clearObserve?: Lambda
+  private clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
-    this.clearObserve?.()
+    this.clearShouldAuthReaction?.()
     const s = getAuthStore()
-    this.clearObserve = reaction(s.sipShouldAuth, this.authWithCheckDebounced)
+    this.clearShouldAuthReaction = reaction(
+      s.sipShouldAuth,
+      this.authWithCheckDebounced,
+    )
   }
   @action dispose = () => {
     console.log('SIP PN debug: set sipState stopped dispose')
-    this.clearObserve?.()
+    this.clearShouldAuthReaction?.()
     const s = getAuthStore()
     s.sipState = 'stopped'
     sip.stopWebRTC()

@@ -87,9 +87,9 @@ export class PBX extends EventEmitter {
     const connected = new Promise<boolean>(r => {
       resolveFn = r
     })
-    const pendingServerStatuses: PbxEvent['serverStatus'][] = []
+    const pendingServerStatus: PbxEvent['serverStatus'][] = []
     client.notify_serverstatus = e => {
-      pendingServerStatuses.push(e)
+      pendingServerStatus.push(e)
       if (!e?.status) {
         return
       }
@@ -160,7 +160,7 @@ export class PBX extends EventEmitter {
     client.onError = this.onError
     pendingError.forEach(client.onError)
     client.notify_serverstatus = this.onServerStatus
-    pendingServerStatuses.forEach(client.notify_serverstatus)
+    pendingServerStatus.forEach(client.notify_serverstatus)
     client.notify_park = this.onPark
     client.notify_callrecording = this.onCallRecording
     client.notify_voicemail = this.onVoicemail

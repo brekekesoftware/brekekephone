@@ -3,7 +3,9 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import {
   ActivityIndicator,
+  AppState,
   Dimensions,
+  NativeEventSubscription,
   Platform,
   StyleSheet,
   View,
@@ -207,7 +209,7 @@ export class RenderAllCalls extends Component {
   componentDidUpdate() {
     const l = getCallStore().calls.length
     if (this.prevCallsLength && !l) {
-      Nav().goToPageCallRecents()
+      Nav().backToPageCallRecents()
     }
     this.prevCallsLength = l
   }
@@ -218,7 +220,7 @@ export class RenderAllCalls extends Component {
         <Layout
           compact
           noScroll
-          onBack={Nav().goToPageCallRecents}
+          onBack={Nav().backToPageCallRecents}
           title={intl`Connecting...`}
         />
       )
@@ -237,15 +239,14 @@ export class RenderAllCalls extends Component {
 class PageCallManage extends Component<{
   call: Call
 }> {
-  @observable showButtonsInVideoCall = true
-  alreadySetShowButtonsInVideoCall = false
-
-  @observable hasJavaPn = true
-
   componentDidMount() {
     this.checkJavaPn()
     this.hideButtonsIfVideo()
     this.openJavaPnOnVisible()
+    this.appStateSubscription = AppState.addEventListener(
+      'change',
+      this.onAppStateChange,
+    )
   }
   componentDidUpdate() {
     this.hideButtonsIfVideo()
@@ -253,12 +254,15 @@ class PageCallManage extends Component<{
   }
   componentWillUnmount() {
     getCallStore().onCallKeepAction()
+    this.appStateSubscription?.remove()
   }
 
-  @action toggleButtons = () => {
+  @observable private showButtonsInVideoCall = true
+  private alreadySetShowButtonsInVideoCall = false
+  @action private toggleButtons = () => {
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
   }
-  @action hideButtonsIfVideo = () => {
+  @action private hideButtonsIfVideo = () => {
     if (
       !getCallStore().inPageCallManage?.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
@@ -269,7 +273,8 @@ class PageCallManage extends Component<{
     }
   }
 
-  checkJavaPn = async () => {
+  @observable private hasJavaPn = true
+  private checkJavaPn = async () => {
     if (
       Platform.OS !== 'android' ||
       !this.props.call.incoming ||
@@ -303,7 +308,7 @@ class PageCallManage extends Component<{
       this.hasJavaPn = false
     })
   }
-  openJavaPnOnVisible = () => {
+  private openJavaPnOnVisible = () => {
     const { call: c } = this.props
     if (
       this.hasJavaPn &&
@@ -315,13 +320,28 @@ class PageCallManage extends Component<{
     }
   }
 
-  isVisible = () => {
+  private appStateSubscription?: NativeEventSubscription
+  private onAppStateChange = () => {
+    if (AppState.currentState === 'active') {
+      const { call: c } = this.props
+      if (
+        this.hasJavaPn &&
+        this.isVisible() &&
+        c.callkeepUuid &&
+        !c.transferring
+      ) {
+        getCallStore().inPageCallManage = undefined
+      }
+    }
+  }
+
+  private isVisible = () => {
     const s = getCallStore()
     const { call: c } = this.props
     return s.inPageCallManage && s.getCurrentCall()?.id === c.id
   }
 
-  isBtnHidden = (k: CallConfigKey) => {
+  private isBtnHidden = (k: CallConfigKey) => {
     const {
       call: { callConfig },
     } = this.props
@@ -332,7 +352,7 @@ class PageCallManage extends Component<{
     return pbxConfig?.[`webphone.call.${k}`] === 'false'
   }
 
-  renderLayout = () => {
+  private renderLayout = () => {
     const { call: c } = this.props
     return (
       <Layout
@@ -350,7 +370,7 @@ class PageCallManage extends Component<{
             : undefined
         }
         noScroll
-        onBack={Nav().goToPageCallRecents}
+        onBack={Nav().backToPageCallRecents}
         title={c.getDisplayName() || intl`Connecting...`}
         transparent={!c.transferring}
       >
@@ -366,7 +386,7 @@ class PageCallManage extends Component<{
       </Layout>
     )
   }
-  renderCall = () => {
+  private renderCall = () => {
     const { call: c } = this.props
     // Render PageCallTransferAttend as a layer instead
     // So switching will not cause the avatar to reload
@@ -396,7 +416,7 @@ class PageCallManage extends Component<{
     )
   }
 
-  renderVideo = () => {
+  private renderVideo = () => {
     const { call: c } = this.props
     return (
       <>
@@ -423,7 +443,7 @@ class PageCallManage extends Component<{
     )
   }
 
-  renderAvatar = () => {
+  private renderAvatar = () => {
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
@@ -474,7 +494,7 @@ class PageCallManage extends Component<{
     )
   }
 
-  renderBtns = () => {
+  private renderBtns = () => {
     const { call: c } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
     if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
@@ -630,7 +650,7 @@ class PageCallManage extends Component<{
     )
   }
 
-  renderHangupBtn = () => {
+  private renderHangupBtn = () => {
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
