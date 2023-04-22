@@ -181,7 +181,6 @@
 		13B07FAE1A68108700A75B9A /* BrekekePhone */ = {
 			isa = PBXGroup;
 			children = (
-				CBAD324C29F374A20057D82C /* ding.mp3 */,
 				9CF1917528E34BA20048E7A1 /* Bridging-Header.h */,
 				9CF1917628E34BA20048E7A1 /* Bridging-Header.m */,
 				9CF1917728E34BA20048E7A1 /* AppDelegate.swift */,
@@ -196,6 +195,7 @@
 				9CD3B8F225AE45B200D8A122 /* callkit.png */,
 				9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
+				CBAD324C29F374A20057D82C /* ding.mp3 */,
 			);
 			name = BrekekePhone;
 			sourceTree = "<group>";
