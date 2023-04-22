@@ -16,6 +16,7 @@ import {
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
+import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import {
@@ -59,50 +60,66 @@ import { v } from './variables'
 
 const initApp = async () => {
   await intlStore.wait()
+
   const s = getAuthStore()
   const cs = getCallStore()
+  const nav = Nav()
+  const pnToken = SyncPnToken()
+
+  const checkHasCallOrWakeFromPN = () =>
+    cs.calls.length ||
+    Object.keys(cs.callkeepMap).length ||
+    sip.phone?.getSessionCount() ||
+    s.sipPn.sipAuth
+  const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
+
+  const autoLogin = async () => {
+    const d = await getLastSignedInId(true)
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+      console.log('App navigated by auto signin')
+      // already navigated
+    } else {
+      nav.goToPageIndex()
+    }
+  }
 
   registerOnUnhandledError(unexpectedErr => {
-    // Must wrap in setTimeout to make sure
-    //    there's no state change when rendering
+    // Must wrap in setTimeout avoid mobx error state change when rendering
     BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
     return false
   })
 
   AppState.addEventListener('change', async () => {
-    if (AppState.currentState === 'active') {
-      s.resetFailureState()
-      cs.onCallKeepAction()
-      // with ios when wakekup app, currentState will get 'unknown' first then get 'active'
-      // ref: https://github.com/facebook/react-native-website/issues/273
-      const handleUrlParams = await s.handleUrlParams()
-      if (
-        Platform.OS !== 'web' &&
-        Platform.OS === 'ios' &&
-        !handleUrlParams &&
-        AppState.currentState === 'active' &&
-        !hasCallOrWakeFromPN
-      ) {
-        await actionAutoLogin()
-      }
-      SyncPnToken().syncForAllAccounts()
+    if (AppState.currentState !== 'active') {
+      return
+    }
+    s.resetFailureState()
+    cs.onCallKeepAction()
+    pnToken.syncForAllAccounts()
+    // With ios when wakekup app, currentState will be 'unknown' first then 'active'
+    // https://github.com/facebook/react-native-website/issues/273
+    if (Platform.OS !== 'ios') {
+      return
+    }
+    if (!checkHasCallOrWakeFromPN() && !(await s.handleUrlParams())) {
+      await autoLogin()
     }
   })
 
-  NetInfo.addEventListener(state => {
-    if (s.hasInternetConnected !== state.isConnected) {
-      if (!s.hasInternetConnected) {
-        s.resetFailureState()
-        authPBX.auth()
-        authSIP.auth()
-        authUC.auth()
-      }
-      s.hasInternetConnected = state.isConnected
+  NetInfo.addEventListener(({ isConnected }) => {
+    if (s.hasInternetConnected === isConnected) {
+      return
     }
+    s.hasInternetConnected = isConnected
+    if (!isConnected) {
+      return
+    }
+    s.resetFailureState()
+    authPBX.auth()
+    authSIP.auth()
+    authUC.auth()
   })
-
-  const hasCallOrWakeFromPN =
-    cs.calls.length || Object.keys(cs.callkeepMap).length || s.sipPn.sipAuth
 
   if (Platform.OS === 'web') {
     if (window._BrekekePhoneWebRoot) {
@@ -116,7 +133,7 @@ const initApp = async () => {
   await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {
-    Nav().goToPageIndex()
+    nav.goToPageIndex()
     chatStore.clearStore()
     contactStore.clearStore()
     userStore.clearStore()
@@ -132,16 +149,7 @@ const initApp = async () => {
     }
   }, 17)
   observe(s, 'signedInId', onAuthUpdate)
-  const actionAutoLogin = async () => {
-    const d = await getLastSignedInId(true)
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
-    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
-      console.log('App navigated by auto signin')
-      // already navigated
-    } else {
-      Nav().goToPageIndex()
-    }
-  }
+
   if (await s.handleUrlParams()) {
     console.log('App navigated by url params')
     // already navigated
@@ -152,13 +160,13 @@ const initApp = async () => {
     AppState.currentState === 'active' &&
     !hasCallOrWakeFromPN
   ) {
-    await actionAutoLogin()
+    await autoLogin()
   } else {
-    Nav().goToPageIndex()
+    nav.goToPageIndex()
   }
 
   if (AppState.currentState === 'active') {
-    SyncPnToken().syncForAllAccounts()
+    pnToken.syncForAllAccounts()
   }
 }
 
