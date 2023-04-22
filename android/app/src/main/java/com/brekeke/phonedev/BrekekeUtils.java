@@ -218,10 +218,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             }
             Intent i = new Intent(c, IncomingCallActivity.class);
-            i.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                    | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
@@ -328,8 +325,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       i.addFlags(
           Intent.FLAG_ACTIVITY_NEW_TASK
               | Intent.FLAG_ACTIVITY_CLEAR_TASK
-              | Intent.FLAG_ACTIVITY_NO_ANIMATION
-              | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+              | Intent.FLAG_ACTIVITY_NO_ANIMATION);
       ctx.startActivity(i);
     }
   }
@@ -438,7 +434,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       } catch (Exception e) {
       }
       IncomingCallActivity l = last();
-      if (l == null || l.answered) {
+      if (l == null || l.answered == false) {
         staticStopRingtone();
       }
     }
