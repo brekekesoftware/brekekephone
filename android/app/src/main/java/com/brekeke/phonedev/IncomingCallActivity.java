@@ -276,7 +276,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
     timerTask = null;
     timer = null;
-    BrekekeUtils.onActivityPauseOrDestroy(uuid, true);
+    BrekekeUtils.onActivityDestroy(uuid);
+    onBtnRejectClick(null);
     super.onDestroy();
   }
 

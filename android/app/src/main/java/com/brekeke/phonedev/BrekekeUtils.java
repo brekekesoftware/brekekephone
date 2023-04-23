@@ -359,7 +359,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (activitiesSize == 1 && !a.answered) {
       tryExitClearTask();
     }
-    a.forceFinish();
+    try {
+      a.forceFinish();
+    } catch (Exception e) {
+    }
   }
 
   public static void removeAll() {
@@ -443,15 +446,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return true;
   }
 
-  public static void onActivityPauseOrDestroy(String uuid, boolean destroyed) {
-    emit("debug", "onActivityPauseOrDestroy activites.size()=" + activities.size());
-    if (destroyed) {
-      activitiesSize--;
-      updateBtnUnlockLabels();
-      try {
-        destroyedUuids.put(uuid, "destroyed");
-      } catch (Exception e) {
-      }
+  public static void onActivityDestroy(String uuid) {
+    activitiesSize--;
+    updateBtnUnlockLabels();
+    try {
+      destroyedUuids.put(uuid, "destroyed");
+    } catch (Exception e) {
     }
     if (activitiesSize == 0 || activitesAnyAnswered() || activitesAllDestroyed()) {
       staticStopRingtone();
