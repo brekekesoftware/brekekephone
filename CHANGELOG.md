@@ -4,8 +4,8 @@
 - Add missing ja translations
 - Fix it should play ding sound correctly on UC chat notification
 - Fix it should reconnect on internet access being restored
-- Fix android it should stop ringing on kill
-- Fix android in some cases it should switch well between multiple PN calls
+- Fix android it should stop ringing on app kill
+- Fix android it should reject call on app kill, then switch well between multiple PN calls
 
 #### 2.11.15
 
