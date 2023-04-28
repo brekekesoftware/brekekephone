@@ -68,8 +68,9 @@ export const CallBar = observer(() => {
           />
         </View>
         <View style={css.CallBar_Info}>
-          <RnText style={css.Notify_Info_PartyName}>
+          <RnText numberOfLines={1} style={css.Notify_Info_PartyName}>
             {c.getDisplayName()}
+            {'asdasdasdasdasdasdasdsadasdasdasdasdasdsadasdasdasdasdadasd'}
           </RnText>
           <RnText>
             {c.answered ? (

@@ -36,7 +36,9 @@ export const Title: FC<{
   })
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
-      <AnimatedText style={[css.Title, cssTitleA]}>{title}</AnimatedText>
+      <AnimatedText numberOfLines={1} style={[css.Title, cssTitleA]}>
+        {title}
+      </AnimatedText>
       {!compact && (
         <RnText style={css.Description}>{description || '\u200a'}</RnText>
       )}
