@@ -54,6 +54,7 @@ class Api {
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
+    contactStore.loadContacts()
     authSIP.authWithCheck()
     await waitSip()
     await pbx.getConfig()
