@@ -54,7 +54,6 @@ class Api {
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
-    contactStore.loadContacts()
     authSIP.authWithCheck()
     await waitSip()
     await pbx.getConfig()
@@ -62,6 +61,7 @@ class Api {
     if (!cp) {
       return
     }
+    contactStore.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
     if (cp.pbxLocalAllUsers === undefined) {
