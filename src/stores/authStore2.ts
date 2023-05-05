@@ -79,7 +79,7 @@ export class AuthStore {
         (this.pbxState === 'success' &&
           (this.sipState === 'stopped' ||
             (this.sipState === 'failure' &&
-              !this.sipTotalFailure &&
+              // !this.sipTotalFailure &&
               RnAppState.currentState === 'active'))))
     )
   }
