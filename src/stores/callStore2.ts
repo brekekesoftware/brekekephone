@@ -393,8 +393,9 @@ export class CallStore {
   }
   startCall: MakeCallFn = (number: string, ...args) => {
     const as = getAuthStore()
-    if (as.sipConnectingOrFailure()) {
+    if (as.sipConnectingOrFailure() || as.pbxConnectingOrFailure()) {
       as.sipTotalFailure = 0
+      as.pbxTotalFailure = 0
       // TODO reset waiting in AuthSIP as well
       return
     }
