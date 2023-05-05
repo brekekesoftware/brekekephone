@@ -455,8 +455,8 @@ class PageCallManage extends Component<{
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
-        {isShowAvatar ? (
-          <View style={styleViewAvatar}>
+        {
+          <View style={isShowAvatar ? styleViewAvatar : { height: 0 }}>
             {c.answered && (
               <SmartImage
                 key={c.talkingImageUrl}
@@ -472,9 +472,7 @@ class PageCallManage extends Component<{
               />
             )}
           </View>
-        ) : (
-          <View style={{ flex: 1 }} />
-        )}
+        }
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
