@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { Animated, StyleSheet } from 'react-native'
 
 import { useAnimation } from '../utils/animation'
+import { trimDisplayName } from './CallBar'
 import { RnText } from './Rn'
 import { AnimatedText } from './RnText'
 import { v } from './variables'
@@ -36,8 +37,8 @@ export const Title: FC<{
   })
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
-      <AnimatedText numberOfLines={1} style={[css.Title, cssTitleA]}>
-        {title}
+      <AnimatedText style={[css.Title, cssTitleA]}>
+        {trimDisplayName(title)}
       </AnimatedText>
       {!compact && (
         <RnText style={css.Description}>{description || '\u200a'}</RnText>

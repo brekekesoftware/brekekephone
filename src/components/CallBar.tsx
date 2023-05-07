@@ -68,8 +68,8 @@ export const CallBar = observer(() => {
           />
         </View>
         <View style={css.CallBar_Info}>
-          <RnText numberOfLines={1} style={css.Notify_Info_PartyName}>
-            {c.getDisplayName()}
+          <RnText style={css.Notify_Info_PartyName}>
+            {trimDisplayName(c.getDisplayName())}
           </RnText>
           <RnText>
             {c.answered ? (
@@ -128,3 +128,9 @@ export const CallBar = observer(() => {
     </View>
   )
 })
+
+export const trimDisplayName = (v?: string) => {
+  v = v || ''
+  v = v.replace(/\s+/, ' ').trim()
+  return v.length > 25 ? v.substring(0, 25) + '...' : v
+}
