@@ -481,6 +481,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   // Show/hide call manage controls in video call
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
+  public boolean isAvatarTalkingLoaded = false;
 
   public void toggleCallManageControls() {
     if (isCallManageControlsHidden) {
@@ -628,6 +629,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             public void onPageFinished(WebView view, String url) {
               super.onPageFinished(view, url);
               vWebViewAvatarTalkingLoading.setVisibility(View.GONE);
+              isAvatarTalkingLoaded = true;
             }
 
             @Override
@@ -636,7 +638,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               vWebViewAvatarTalkingLoading.setVisibility(View.VISIBLE);
             }
           });
-      webViewAvatarTalking.loadUrl(talkingAvatar);
+      if (!isAvatarTalkingLoaded) {
+        webViewAvatarTalking.loadUrl(talkingAvatar);
+      }
     }
   }
 
@@ -663,7 +667,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vCallManage
   public void onViewCallManageClick(View v) {
-    if (vWebrtcVideo == null) {
+    if (this.isVideoCall == false) {
       return;
     }
     hasManuallyToggledCallManageControls = true;

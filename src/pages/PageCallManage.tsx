@@ -455,26 +455,24 @@ class PageCallManage extends Component<{
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
-        {isShowAvatar ? (
-          <View style={styleViewAvatar}>
-            {c.answered && (
-              <SmartImage
-                key={c.talkingImageUrl}
-                uri={`${c.talkingImageUrl}`}
-                style={{ flex: 1, aspectRatio: 1 }}
-              />
-            )}
-            {!c.answered && (
-              <SmartImage
-                key={c.partyImageUrl}
-                uri={`${c.partyImageUrl}`}
-                style={{ flex: 1, aspectRatio: 1 }}
-              />
-            )}
-          </View>
-        ) : (
-          <View style={{ flex: 1 }} />
-        )}
+        <View
+          style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
+        >
+          {c.answered && (
+            <SmartImage
+              key={c.talkingImageUrl}
+              uri={`${c.talkingImageUrl}`}
+              style={{ flex: 1, aspectRatio: 1 }}
+            />
+          )}
+          {!c.answered && (
+            <SmartImage
+              key={c.partyImageUrl}
+              uri={`${c.partyImageUrl}`}
+              style={{ flex: 1, aspectRatio: 1 }}
+            />
+          )}
+        </View>
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
