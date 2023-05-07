@@ -158,16 +158,15 @@ export class PageContactPhonebook extends Component {
   }
 
   updateSearchText = (v: string) => {
-    // TODO use debounced value to perform data filter
     contactStore.phonebookSearchTerm = v
-    this.updateListPhoneBook()
+    this.loadContactsDebounced()
     contactStore.selectedContactIds = {}
   }
-
-  updateListPhoneBook = debounce(() => {
+  loadContactsDebounced = debounce(() => {
     contactStore.offset = 0
     contactStore.loadContacts()
   }, 500)
+
   onDelete = async () => {
     if (isEmpty(contactStore.selectedContactIds)) {
       return

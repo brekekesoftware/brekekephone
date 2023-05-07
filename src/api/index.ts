@@ -61,6 +61,7 @@ class Api {
     if (!cp) {
       return
     }
+    contactStore.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
     if (cp.pbxLocalAllUsers === undefined) {

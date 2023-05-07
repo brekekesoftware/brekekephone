@@ -88,7 +88,6 @@ class ContactStore {
         if (!arr) {
           return
         }
-
         this.setPhonebook(arr as Phonebook[])
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
       })

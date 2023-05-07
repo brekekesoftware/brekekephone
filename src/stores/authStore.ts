@@ -24,11 +24,12 @@ const wait = (
     return
   }
   const id = BackgroundTimer.setInterval(() => {
-    const enoughTimePassed = Date.now() - at > time
-    const isConnected = authStore[name] === 'success'
-    if (enoughTimePassed || isConnected) {
+    if (authStore[name] === 'success') {
       BackgroundTimer.clearInterval(id)
-      fn(isConnected)
+      fn(true)
+    } else if (Date.now() - at > time) {
+      BackgroundTimer.clearInterval(id)
+      fn(false)
     }
   }, 500)
 }
