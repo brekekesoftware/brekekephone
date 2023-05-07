@@ -5,6 +5,7 @@ import { action, Lambda, reaction } from 'mobx'
 import { UcErrors } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { uc } from '../api/uc'
+import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import { ChatMessage, chatStore } from './chatStore'
 import { contactStore } from './contactStore'
@@ -61,10 +62,14 @@ class AuthUC {
       }),
     )
   }
-  private authWithCheck = () => {
+  private authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.ucShouldAuth()) {
       return
+    }
+    if (s.ucTotalFailure > 1) {
+      s.ucState = 'waiting'
+      await waitTimeout(s.ucTotalFailure < 5 ? s.ucTotalFailure * 1000 : 15000)
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {

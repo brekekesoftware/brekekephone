@@ -62,7 +62,7 @@ export class AuthStore {
         this.sipState === 'failure') &&
       (this.pbxState === 'stopped' ||
         (this.pbxState === 'failure' &&
-          !this.pbxTotalFailure &&
+          // !this.pbxTotalFailure &&
           RnAppState.currentState === 'active'))
     )
   }
@@ -79,7 +79,7 @@ export class AuthStore {
         (this.pbxState === 'success' &&
           (this.sipState === 'stopped' ||
             (this.sipState === 'failure' &&
-              !this.sipTotalFailure &&
+              // !this.sipTotalFailure &&
               RnAppState.currentState === 'active'))))
     )
   }
@@ -95,14 +95,14 @@ export class AuthStore {
       this.pbxState === 'success' &&
       (this.ucState === 'stopped' ||
         (this.ucState === 'failure' &&
-          !this.ucTotalFailure &&
+          // !this.ucTotalFailure &&
           RnAppState.currentState === 'active'))
     )
   }
   ucConnectingOrFailure = () => {
     return (
       this.getCurrentAccount()?.ucEnabled &&
-      ['connecting', 'failure'].some(s => s === this.ucState)
+      ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
     )
   }
 
