@@ -44,6 +44,7 @@
       android:launchMode="standard"
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
+      android:autoRemoveFromRecents="true"
     />
     <activity
       android:name=".ExitActivity"
