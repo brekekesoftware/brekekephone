@@ -1,3 +1,12 @@
+#### 2.11.17
+
+- Fix android it should not display multiple PN screens in task manager
+- Fix android it should be able to toggle call buttons after toggle video call
+- Fix it should not reload avatar on video call toggle
+- Fix it should reconnect automatically on failure
+- Fix it should display the long name well in call bar
+- Fix it should load phonebook after each login to display the name in call transfer
+
 #### 2.11.16
 
 - Update jsonrpc.js
