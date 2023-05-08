@@ -126,6 +126,9 @@ class AuthSIP {
       await waitTimeout(
         s.sipTotalFailure < 5 ? s.sipTotalFailure * 1000 : 15000,
       )
+      if (s.sipState !== 'waiting') {
+        return
+      }
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {

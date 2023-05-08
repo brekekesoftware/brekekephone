@@ -70,6 +70,9 @@ class AuthUC {
     if (s.ucTotalFailure > 1) {
       s.ucState = 'waiting'
       await waitTimeout(s.ucTotalFailure < 5 ? s.ucTotalFailure * 1000 : 15000)
+      if (s.ucState !== 'waiting') {
+        return
+      }
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {

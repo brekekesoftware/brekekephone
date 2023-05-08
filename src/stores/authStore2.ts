@@ -93,6 +93,7 @@ export class AuthStore {
       !this.ucLoginFromAnotherPlace &&
       !this.isSignInByNotification &&
       this.pbxState === 'success' &&
+      this.ucState !== 'waiting' &&
       (this.ucState === 'stopped' ||
         (this.ucState === 'failure' &&
           // !this.ucTotalFailure &&
