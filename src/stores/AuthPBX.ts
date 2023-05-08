@@ -36,6 +36,9 @@ class AuthPBX {
       await waitTimeout(
         s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000,
       )
+      if (s.pbxState !== 'waiting') {
+        return
+      }
     }
     console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()

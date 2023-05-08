@@ -129,8 +129,8 @@ export const CallBar = observer(() => {
   )
 })
 
-export const trimDisplayName = (v?: string) => {
-  v = v || ''
-  v = v.replace(/\s+/, ' ').trim()
-  return v.length > 25 ? v.substring(0, 25) + '...' : v
+export const trimDisplayName = (n?: string) => {
+  n = n || ''
+  n = n.replace(/\s+/, ' ').trim()
+  return n.length > 25 ? n.substring(0, 25) + '...' : n
 }
