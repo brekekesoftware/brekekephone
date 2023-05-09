@@ -260,6 +260,9 @@ export const Field: FC<
       </View>
     )
   }
+  // handle enable/disable input Park
+  const disablePark = props.type === 'PARK' && props.disabled
+
   const $0 = useStore(() => ({
     observable: {
       isFocusing: false,
@@ -516,6 +519,7 @@ export const Field: FC<
           >
             {props.inputElement || (
               <RnTextInput
+                editable={!disablePark}
                 disabled
                 maxLength={props?.maxLength || 100000}
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
@@ -525,7 +529,9 @@ export const Field: FC<
                 }
               />
             )}
-            {!$.isFocusing && <View style={StyleSheet.absoluteFill} />}
+            {!$.isFocusing && disablePark && (
+              <View style={StyleSheet.absoluteFill} />
+            )}
           </View>
         }
         {/* Fix form auto fill style on web */}
