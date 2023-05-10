@@ -23,11 +23,11 @@ export class PageCallParks extends Component<{
     if (!this.props.callParks2) {
       return
     }
-    const c = getCallStore().getCurrentCall()
-    if (this.prevId && this.prevId !== c?.id) {
+    const oc = getCallStore().getOngoingCall()
+    if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
     }
-    this.prevId = c?.id
+    this.prevId = oc?.id
   }
 
   state = {
@@ -44,7 +44,7 @@ export class PageCallParks extends Component<{
   park = () => {
     const p = this.state.selectedPark
     return this.props.callParks2
-      ? getCallStore().getCurrentCall()?.park(p)
+      ? getCallStore().getOngoingCall()?.park(p)
       : getCallStore().startCall(p || '')
   }
 
@@ -63,7 +63,7 @@ export class PageCallParks extends Component<{
 
     const sp = this.state.selectedPark
     const cp2 = this.props.callParks2
-    void getCallStore().getCurrentCall() // trigger componentDidUpdate
+    void getCallStore().getOngoingCall() // trigger componentDidUpdate
     const isDisable = (parkNumber: string) => {
       if (cp2) {
         return !!getCallStore().parkNumbers[parkNumber]

@@ -69,7 +69,7 @@ export class Call {
       delete options.ignoreNav
     }
     this.answered = true
-    this.store.currentCallId = this.id
+    this.store.setCurrentCallId(this.id)
     // Hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
@@ -224,7 +224,7 @@ export class Call {
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
     this.holding = !this.holding
     if (!this.isAboutToHangup && !this.holding) {
-      this.store.currentCallId = this.id
+      this.store.setCurrentCallId(this.id)
     }
     if (!this.isAboutToHangup) {
       if (this.callkeepUuid && !this.holding) {

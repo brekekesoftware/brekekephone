@@ -36,9 +36,9 @@ export class IncomingItem extends Component {
 
 export class OutgoingItem extends Component {
   componentDidMount = () => {
-    const currentCall = getCallStore().getCurrentCall()
-    if (currentCall) {
-      sip.disableMedia(currentCall.id)
+    const { ongoingCallId } = getCallStore()
+    if (ongoingCallId) {
+      sip.disableMedia(ongoingCallId)
     }
     if (Platform.OS === 'android') {
       IncallManager.startRingback('_BUNDLE_')
@@ -57,9 +57,9 @@ export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
   componentDidMount = () => {
-    const currentCall = getCallStore().getCurrentCall()
-    if (currentCall) {
-      sip.enableMedia(currentCall.id)
+    const { ongoingCallId } = getCallStore()
+    if (ongoingCallId) {
+      sip.enableMedia(ongoingCallId)
     }
   }
   render() {
@@ -80,9 +80,9 @@ export class AnsweredItem extends Component<{
         )
       }, 2000)
     }
-    const currentCall = getCallStore().getCurrentCall()
-    if (currentCall) {
-      sip.enableMedia(currentCall.id)
+    const oc = getCallStore().getOngoingCall()
+    if (oc) {
+      sip.enableMedia(oc.id)
     }
   }
   render() {

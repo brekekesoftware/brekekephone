@@ -23,7 +23,7 @@
 - Fix it should prevent making an outgoing call if sip is not connected yet
 - Fix android the keyboard should work correctly
 - Fix it should navigate to the correct call if making an outgoing call while having another call
-- Fix android loud speaker not working in some cases
+- Fix android loud speaker not working in some cases, only fixed in android 11 and below, for android 12 and above we will fix it in the next build 2.12.x
 - Fix avatar should keep consistent state using React key render
 - Embed:
   - Emit pal instance before the login to allow listening on notify_serverstatus and more other pal events

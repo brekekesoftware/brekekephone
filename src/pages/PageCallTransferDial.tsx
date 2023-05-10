@@ -25,10 +25,10 @@ export class PageCallTransferDial extends Component {
   }
   componentDidUpdate() {
     const cs = getCallStore()
-    if (this.prevId && this.prevId !== cs.currentCallId) {
+    if (this.prevId && this.prevId !== cs.ongoingCallId) {
       Nav().backToPageCallManage()
     }
-    this.prevId = cs.currentCallId
+    this.prevId = cs.ongoingCallId
   }
 
   @observable txt = ''
@@ -47,7 +47,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    getCallStore().getCurrentCall()?.transferBlind(this.txt)
+    getCallStore().getOngoingCall()?.transferBlind(this.txt)
   }
   transferAttended = () => {
     this.txt = this.txt.trim()
@@ -57,7 +57,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    getCallStore().getCurrentCall()?.transferAttended(this.txt)
+    getCallStore().getOngoingCall()?.transferAttended(this.txt)
   }
 
   render() {

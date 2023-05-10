@@ -35,17 +35,34 @@ class AuthSIP {
     sip.stopWebRTC()
   }
 
+  private onSipFailure = () => {
+    sip.stopWebRTC()
+    const s = getAuthStore()
+    s.sipState = 'failure'
+    s.sipTotalFailure += 1
+    if (s.sipTotalFailure > 3) {
+      s.sipPn = {}
+    }
+  }
+
   private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
-    const ca = getAuthStore().getCurrentAccount()
+    const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     if (!ca) {
       console.log('SIP PN debug: Already signed out after long await')
+      return
+    }
+    if (isSipPnExpired(pn)) {
+      console.error('SIP PN debug: expired auth token')
+      this.onSipFailure()
       return
     }
     if (!pn.sipAuth || !pn.sipWssPort || !pn.phoneId) {
       console.error(
         `SIP PN debug: Invalid sip PN data: ${CiruclarJSON.stringify(pn)}`,
       )
-      this.dispose()
+      as.sipPn = {}
+      this.onSipFailure()
       return
     }
     const turnConfig: RTCIceServer | undefined = pn.turnServer
@@ -78,6 +95,9 @@ class AuthSIP {
       this.authWithCheck()
     })
     //
+    if (isSipPnExpired(s.sipPn)) {
+      s.sipPn = {}
+    }
     const pn = s.sipPn
     if (pn.sipAuth) {
       console.log('SIP PN debug: AuthSIP.authPnWithoutCatch')
@@ -106,8 +126,7 @@ class AuthSIP {
 
   authWithCheck = async () => {
     const s = getAuthStore()
-    if (!s.sipPn.sipAuthAt || Date.now() - s.sipPn.sipAuthAt > 90000) {
-      // Empty or expire after 90 seconds
+    if (isSipPnExpired(s.sipPn)) {
       s.sipPn = {}
     }
     const sipShouldAuth = s.sipShouldAuth()
@@ -133,9 +152,7 @@ class AuthSIP {
     this.authWithoutCatch().catch(
       action((err: Error) => {
         console.log('SIP PN debug: set sipState failure catch')
-        s.sipState = 'failure'
-        s.sipTotalFailure += 1
-        sip.stopWebRTC()
+        this.onSipFailure()
         console.error('Failed to connect to sip:', err)
       }),
     )
@@ -144,3 +161,7 @@ class AuthSIP {
 }
 
 export const authSIP = new AuthSIP()
+
+// Empty or expire after 90 seconds
+const isSipPnExpired = (pn: Partial<SipPn>) =>
+  !pn.sipAuthAt || Date.now() - pn.sipAuthAt > 90000

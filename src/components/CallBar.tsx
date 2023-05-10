@@ -51,8 +51,8 @@ const css = StyleSheet.create({
 
 export const CallBar = observer(() => {
   const s = getCallStore()
-  const c = s.getCurrentCall()
-  if (s.inPageCallManage || !c || (c.incoming && !c.answered)) {
+  const oc = s.getOngoingCall()
+  if (s.inPageCallManage || !oc || (oc.incoming && !oc.answered)) {
     return null
   }
   return (
@@ -63,17 +63,17 @@ export const CallBar = observer(() => {
       >
         <View style={css.CallBar_Icon}>
           <RnIcon
-            color={c.incoming ? v.colors.primary : v.colors.warning}
-            path={c.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline}
+            color={oc.incoming ? v.colors.primary : v.colors.warning}
+            path={oc.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline}
           />
         </View>
         <View style={css.CallBar_Info}>
           <RnText style={css.Notify_Info_PartyName}>
-            {trimDisplayName(c.getDisplayName())}
+            {trimDisplayName(oc.getDisplayName())}
           </RnText>
           <RnText>
-            {c.answered ? (
-              <Duration>{c.answeredAt}</Duration>
+            {oc.answered ? (
+              <Duration>{oc.answeredAt}</Duration>
             ) : (
               intl`Dialing...`
             )}
@@ -81,21 +81,21 @@ export const CallBar = observer(() => {
         </View>
 
         <View style={css.CallBar_BtnCall}>
-          {!c.holding && (
+          {!oc.holding && (
             <>
               <ButtonIcon
                 bdcolor={v.borderBg}
                 color={v.colors.danger}
-                onPress={c.hangupWithUnhold}
+                onPress={oc.hangupWithUnhold}
                 path={mdiPhoneHangup}
               />
-              {c.answered && (
+              {oc.answered && (
                 <>
                   <ButtonIcon
                     bdcolor={v.borderBg}
-                    color={c.muted ? v.colors.primary : v.color}
-                    onPress={() => c.toggleMuted()}
-                    path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
+                    color={oc.muted ? v.colors.primary : v.color}
+                    onPress={() => oc.toggleMuted()}
+                    path={oc.muted ? mdiMicrophoneOff : mdiMicrophone}
                   />
                   {Platform.OS !== 'web' && (
                     <ButtonIcon
@@ -119,9 +119,9 @@ export const CallBar = observer(() => {
           )}
           <ButtonIcon
             bdcolor={v.borderBg}
-            color={c.holding ? v.colors.primary : v.color}
-            onPress={c.toggleHoldWithCheck}
-            path={c.holding ? mdiPlay : mdiPause}
+            color={oc.holding ? v.colors.primary : v.color}
+            onPress={oc.toggleHoldWithCheck}
+            path={oc.holding ? mdiPlay : mdiPause}
           />
         </View>
       </RnTouchableOpacity>
