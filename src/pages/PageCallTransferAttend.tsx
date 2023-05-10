@@ -79,11 +79,11 @@ export class PageCallTransferAttend extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = getCallStore().getCurrentCall()
-    if (this.prevId && this.prevId !== c?.id) {
+    const oc = getCallStore().getOngoingCall()
+    if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
     }
-    this.prevId = c?.id
+    this.prevId = oc?.id
   }
 
   resolveMatch = (id: string) => {
@@ -95,12 +95,12 @@ export class PageCallTransferAttend extends Component {
   }
 
   render() {
-    const c = getCallStore().getCurrentCall()
-    if (!c) {
+    const oc = getCallStore().getOngoingCall()
+    if (!oc) {
       return null
     }
-    const usersource = this.resolveMatch(c.partyNumber)
-    const usertarget = this.resolveMatch(c.transferring)
+    const usersource = this.resolveMatch(oc.partyNumber)
+    const usertarget = this.resolveMatch(oc.transferring)
     return (
       <View style={css.Outer}>
         <RnText center subTitle>{intl`Transferring`}</RnText>
@@ -109,7 +109,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__from]}>
             <Avatar source={{ uri: usersource?.avatar }} />
             <RnText center singleLine small>
-              {c.getDisplayName()}
+              {oc.getDisplayName()}
             </RnText>
           </View>
           <View style={css.Arrow}>
@@ -118,7 +118,7 @@ export class PageCallTransferAttend extends Component {
           <View style={[css.Info, css.Info__to]}>
             <Avatar source={{ uri: usertarget?.avatar }} />
             <RnText center singleLine small>
-              {getPartyName(c.transferring) || c.transferring}
+              {getPartyName(oc.transferring) || oc.transferring}
             </RnText>
           </View>
         </View>
@@ -126,7 +126,7 @@ export class PageCallTransferAttend extends Component {
         <View style={css.Inner}>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={c.stopTransferring}
+              onPress={oc.stopTransferring}
               style={[css.Btn, css.Btn__stop]}
             >
               <RnIcon path={mdiPhoneOff} />
@@ -137,7 +137,7 @@ export class PageCallTransferAttend extends Component {
           </View>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={() => sip.hangupSession(c.id)}
+              onPress={() => sip.hangupSession(oc.id)}
               style={[css.Btn, css.Btn__hangup]}
             >
               <RnIcon path={mdiPhoneHangup} />
@@ -148,7 +148,7 @@ export class PageCallTransferAttend extends Component {
           </View>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={c.conferenceTransferring}
+              onPress={oc.conferenceTransferring}
               style={[css.Btn, css.Btn__conference]}
             >
               <RnIcon path={mdiPhoneForward} />

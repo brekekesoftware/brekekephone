@@ -203,7 +203,7 @@ export const setupCallKeep = async () => {
     console.log('CallKeep debug: didDeactivateAudioSession')
     const cs = getCallStore()
     cs.calls
-      .filter(c => c.answered && !c.holding && c.id !== cs.currentCallId)
+      .filter(c => c.answered && !c.holding && c.id !== cs.ongoingCallId)
       .forEach(c => c.toggleHoldWithCheck())
   }
 
@@ -268,26 +268,26 @@ export const setupCallKeep = async () => {
     nav.goToPageCallParks2()
   })
   eventEmitter.addListener('video', (uuid: string) => {
-    getCallStore().getCurrentCall()?.toggleVideo()
+    getCallStore().getOngoingCall()?.toggleVideo()
   })
   eventEmitter.addListener('speaker', (uuid: string) => {
     getCallStore().toggleLoudSpeaker()
   })
   eventEmitter.addListener('mute', (uuid: string) => {
-    getCallStore().getCurrentCall()?.toggleMuted()
+    getCallStore().getOngoingCall()?.toggleMuted()
   })
   eventEmitter.addListener('record', (uuid: string) => {
-    getCallStore().getCurrentCall()?.toggleRecording()
+    getCallStore().getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
     await waitTimeout(100)
     nav.goToPageCallDtmfKeypad()
   })
   eventEmitter.addListener('hold', (uuid: string) => {
-    getCallStore().getCurrentCall()?.toggleHoldWithCheck()
+    getCallStore().getOngoingCall()?.toggleHoldWithCheck()
   })
   eventEmitter.addListener('switchCamera', (uuid: string) => {
-    getCallStore().getCurrentCall()?.toggleSwitchCamera()
+    getCallStore().getOngoingCall()?.toggleSwitchCamera()
   })
   eventEmitter.addListener('onNotificationPress', async (data: string) => {
     if (!data) {

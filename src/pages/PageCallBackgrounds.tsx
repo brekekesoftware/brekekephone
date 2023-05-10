@@ -14,9 +14,9 @@ import { Duration } from '../stores/timerStore'
 
 export const PageCallBackgrounds = observer(() => {
   const bg = getCallStore().calls.filter(
-    c => c.id !== getCallStore().currentCallId,
+    c => c.id !== getCallStore().ongoingCallId,
   )
-  const currentCall = getCallStore().getCurrentCall()
+  const oc = getCallStore().getOngoingCall()
   const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
@@ -70,7 +70,7 @@ export const PageCallBackgrounds = observer(() => {
       title={intl`Background calls`}
     >
       <Field isGroup label={intl`CURRENT CALL`} />
-      {(currentCall ? [currentCall] : []).map(c => (
+      {(oc ? [oc] : []).map(c => (
         <RnTouchableOpacity
           key={c.id}
           onPress={() => Nav().backToPageCallManage()}

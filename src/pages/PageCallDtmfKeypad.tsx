@@ -24,11 +24,11 @@ export class PageCallDtmfKeypad extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = getCallStore().getCurrentCall()
-    if (this.prevId && this.prevId !== c?.id) {
+    const oc = getCallStore().getOngoingCall()
+    if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
     }
-    this.prevId = c?.id
+    this.prevId = oc?.id
   }
 
   @observable txt = ''
@@ -40,24 +40,24 @@ export class PageCallDtmfKeypad extends Component {
   }
 
   sendKey = (key: string) => {
-    const c = getCallStore().getCurrentCall()
+    const oc = getCallStore().getOngoingCall()
     const cp = getAuthStore().getCurrentAccount()
-    if (!c || !cp) {
+    if (!oc || !cp) {
       return
     }
     sip.sendDTMF({
       signal: key,
-      sessionId: c.id,
-      tenant: c.pbxTenant || cp.pbxTenant,
-      talkerId: c.pbxTalkerId || c.partyNumber,
+      sessionId: oc.id,
+      tenant: oc.pbxTenant || cp.pbxTenant,
+      talkerId: oc.pbxTalkerId || oc.partyNumber,
     })
   }
 
   render() {
-    const c = getCallStore().getCurrentCall()
+    const oc = getCallStore().getOngoingCall()
     return (
       <Layout
-        title={c?.getDisplayName()}
+        title={oc?.getDisplayName()}
         description={intl`Keypad dial manually`}
         onBack={Nav().backToPageCallManage}
       >

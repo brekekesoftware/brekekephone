@@ -19,7 +19,7 @@ import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
-import { getAuthStore, reconnectAndWaitSip } from './authStore'
+import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
 import { setCallStore } from './callStore'
 import { CancelRecentPn } from './cancelRecentPn'
@@ -148,44 +148,44 @@ export class CallStore {
   }
 
   @observable calls: Call[] = []
-  @observable currentCallId: string = ''
 
-  getCurrentCall = () => {
+  setCurrentCallId = (id: string) => {
+    this.displayingCallId = id
+    this.ongoingCallId = id
+  }
+  @observable ongoingCallId: string = ''
+  @observable displayingCallId = ''
+
+  getOngoingCall = () => {
     this.updateCurrentCallDebounce()
-    const curr = this.calls.find(c => c.id === this.currentCallId)
+    const oc = this.calls.find(c => c.id === this.ongoingCallId)
     // TODO:
     // Should not modify state in getter
     // This will throw an error in mobx-react
     // Currently we forked mobx-react to temporary get over this error
     // In the future we need to rewrite and refactor the whole stores/actions
-    if (curr) {
+    if (oc) {
       const ucEnabled = getAuthStore()?.getCurrentAccount()?.ucEnabled
-      if (
-        !curr.answered &&
-        (!curr.partyImageUrl || !curr.partyImageUrl?.length)
-      ) {
-        curr.partyImageUrl = ucEnabled
-          ? this.getOriginalUserImageUrl(curr.pbxTenant, curr.partyNumber)
+      if (!oc.answered && (!oc.partyImageUrl || !oc.partyImageUrl?.length)) {
+        oc.partyImageUrl = ucEnabled
+          ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
           : ''
-        curr.partyImageSize = ucEnabled ? 'large' : ''
+        oc.partyImageSize = ucEnabled ? 'large' : ''
       }
-      if (
-        curr.answered &&
-        (!curr.talkingImageUrl || !curr.talkingImageUrl.length)
-      ) {
-        curr.talkingImageUrl = ucEnabled
-          ? this.getOriginalUserImageUrl(curr.pbxTenant, curr.partyNumber)
+      if (oc.answered && (!oc.talkingImageUrl || !oc.talkingImageUrl.length)) {
+        oc.talkingImageUrl = ucEnabled
+          ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
           : ''
       }
     }
-    return curr
+    return oc
   }
 
   @action updateCallAvatar = (url: string, size?: string) => {
-    const c = this.getCurrentCall()
-    if (c) {
-      c.partyImageUrl = url
-      c.partyImageSize = size || 'small'
+    const oc = this.getOngoingCall()
+    if (oc) {
+      oc.partyImageUrl = url
+      oc.partyImageSize = size || 'small'
     }
   }
 
@@ -255,7 +255,7 @@ export class CallStore {
         delete p.remoteVideoStreamObject
       }
       if (!e.answered && p.answered) {
-        this.currentCallId = e.id
+        this.setCurrentCallId(e.id)
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
@@ -294,7 +294,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, p)
     this.calls = [c, ...this.calls]
-    this.currentCallId = c.id
+    this.displayingCallId = c.id // do not set ongoing call
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // Emit to embed api
@@ -379,7 +379,7 @@ export class CallStore {
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
-    this.currentCallId = c.id
+    this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
   }
 
@@ -393,9 +393,21 @@ export class CallStore {
   }
   startCall: MakeCallFn = (number: string, ...args) => {
     const as = getAuthStore()
-    if (as.sipConnectingOrFailure()) {
-      as.sipTotalFailure = 0
-      // TODO reset waiting in AuthSIP as well
+    as.sipTotalFailure = 0
+
+    const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
+    if (
+      as.sipState === 'waiting' ||
+      as.sipState === 'failure' ||
+      as.sipState === 'stopped'
+    ) {
+      reconnectAndWaitSip().then(sipCreateSession)
+      Nav().goToPageCallManage({ isOutgoingCall: true })
+      return
+    }
+    if (as.sipState === 'connecting') {
+      waitSip().then(sipCreateSession)
+      Nav().goToPageCallManage({ isOutgoingCall: true })
       return
     }
 
@@ -407,7 +419,6 @@ export class CallStore {
     }
 
     let reconnectCalled = false
-    const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
     try {
       // Try to call pbx first to see if there's any error with the network
       // TODO
@@ -431,7 +442,7 @@ export class CallStore {
     // Check for each 0.5s: auto update currentCallId
     // The call will be emitted from sip, we'll use interval here to set it
     runInAction(() => {
-      this.currentCallId = ''
+      this.setCurrentCallId('')
     })
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
     // Also if after 3s there's no call in store, reconnect
@@ -444,7 +455,7 @@ export class CallStore {
           if (uuid) {
             curr.callkeepUuid = uuid
           }
-          this.currentCallId = curr.id
+          this.setCurrentCallId(curr.id)
           this.clearStartCallIntervalTimer()
           return
         }
@@ -472,13 +483,13 @@ export class CallStore {
 
   private updateBackgroundCalls = () => {
     // Auto hold background calls
-    if (!this.currentCallId) {
+    if (!this.ongoingCallId) {
       return
     }
     this.calls
       .filter(
         c =>
-          c.id !== this.currentCallId &&
+          c.id !== this.ongoingCallId &&
           c.answered &&
           !c.transferring &&
           !c.holding &&
@@ -492,12 +503,12 @@ export class CallStore {
     { maxWait: 1000 },
   )
   @action private updateCurrentCall = () => {
-    const curr =
-      this.calls.find(c => c.id === this.currentCallId) ||
+    const oc =
+      this.calls.find(c => c.id === this.ongoingCallId) ||
       this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
       this.calls.find(c => c)
-    this.currentCallId = curr?.id || ''
-    if (!this.currentCallId) {
+    this.setCurrentCallId(oc?.id || '')
+    if (!this.ongoingCallId) {
       const [s0, ...stacks] = RnStacker.stacks
       if (stacks.some(s => s.name.startsWith('PageCall'))) {
         RnStacker.stacks = [s0]

@@ -195,7 +195,7 @@ const RenderItemUser = observer(
   ({ sectionListData, item, title, isEditMode, isTransferCall }: ItemUser) => {
     const index = sectionListData.findIndex(i => i.title === title)
     const hidden = RnDropdown.hiddenIndexes.some(idx => idx === index)
-    const c = getCallStore().getCurrentCall()
+    const oc = getCallStore().getOngoingCall()
 
     return !hidden ? (
       <View
@@ -246,8 +246,8 @@ const RenderItemUser = observer(
         ) : (
           <UserItem
             iconFuncs={[
-              () => c?.transferAttended(item.user_id),
-              () => c?.transferBlind(item.user_id),
+              () => oc?.transferAttended(item.user_id),
+              () => oc?.transferBlind(item.user_id),
             ]}
             icons={[mdiPhoneForward, mdiPhone]}
             id={item.user_id}

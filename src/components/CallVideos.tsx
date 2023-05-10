@@ -7,10 +7,10 @@ import { CallVideosUI } from './CallVideosUI'
 @observer
 export class CallVideos extends Component {
   render() {
-    const c = getCallStore().getCurrentCall()
+    const oc = getCallStore().getOngoingCall()
     return (
       <CallVideosUI
-        callIds={(c ? [c] : [])
+        callIds={(oc ? [oc] : [])
           .filter(
             _ =>
               _.videoSessionId && _.localVideoEnabled && _.remoteVideoEnabled,
@@ -22,6 +22,6 @@ export class CallVideos extends Component {
   }
 
   resolveCall = () => ({
-    sourceObject: getCallStore().getCurrentCall()?.remoteVideoStreamObject,
+    sourceObject: getCallStore().getOngoingCall()?.remoteVideoStreamObject,
   })
 }

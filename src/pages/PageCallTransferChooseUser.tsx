@@ -28,11 +28,11 @@ export class PageCallTransferChooseUser extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate() {
-    const c = getCallStore().getCurrentCall()
-    if (this.prevId && this.prevId !== c?.id) {
+    const oc = getCallStore().getOngoingCall()
+    if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
     }
-    this.prevId = c?.id
+    this.prevId = oc?.id
   }
 
   resolveMatch = (id: string) => {
@@ -147,12 +147,12 @@ type ItemUser = {
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => {
-  const c = getCallStore().getCurrentCall()
+  const oc = getCallStore().getOngoingCall()
   return (
     <UserItem
       iconFuncs={[
-        () => c?.transferAttended(item.number),
-        () => c?.transferBlind(item.number),
+        () => oc?.transferAttended(item.number),
+        () => oc?.transferBlind(item.number),
       ]}
       icons={[mdiPhoneForward, mdiPhone]}
       key={index}
