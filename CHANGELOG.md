@@ -1,3 +1,9 @@
+#### 2.11.18
+
+- Fix multi calls it should not hold immediately on new call
+- Fix it should show correct park name after delete
+- Fix it should be able to change new park after blur the field
+
 #### 2.11.17
 
 - Fix android it should not display multiple PN screens in task manager
