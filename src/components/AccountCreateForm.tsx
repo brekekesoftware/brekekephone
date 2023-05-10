@@ -82,6 +82,7 @@ export const AccountCreateForm: FC<{
         onConfirm: () => {
           $.set('account', (p: Account) => {
             p.parks = p.parks?.filter((p0, i0) => i0 !== i)
+            p.parkNames = p.parkNames?.filter((p0, i0) => i0 !== i)
             return p
           })
         },
