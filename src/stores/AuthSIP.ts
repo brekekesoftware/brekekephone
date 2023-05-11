@@ -36,6 +36,7 @@ class AuthSIP {
   }
 
   private onSipFailure = () => {
+    console.log('SIP PN debug: set sipState failure')
     sip.stopWebRTC()
     const s = getAuthStore()
     s.sipState = 'failure'
@@ -43,6 +44,8 @@ class AuthSIP {
     if (s.sipTotalFailure > 3) {
       s.sipPn = {}
     }
+    // auto reconnect
+    this.authWithCheck()
   }
 
   private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
@@ -93,7 +96,7 @@ class AuthSIP {
     sipErrorEmitter.on('error', () => {
       console.log('SIP PN debug: got error from sipErrorEmitter')
       this.dispose()
-      this.authWithCheck()
+      this.authWithCheckDebounced()
     })
     //
     if (isSipPnExpired(s.sipPn)) {
