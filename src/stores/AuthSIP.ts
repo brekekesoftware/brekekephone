@@ -62,6 +62,7 @@ class AuthSIP {
         `SIP PN debug: Invalid sip PN data: ${CiruclarJSON.stringify(pn)}`,
       )
       as.sipPn = {}
+      as.pbxConfig = undefined
       this.onSipFailure()
       return
     }
