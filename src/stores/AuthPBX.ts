@@ -26,7 +26,7 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
-  @action private authWithCheck = async () => {
+  @action authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.pbxShouldAuth()) {
       return
@@ -55,6 +55,7 @@ class AuthPBX {
           s.pbxState = 'failure'
           s.pbxTotalFailure += 1
           console.error('Failed to connect to pbx:', err)
+          this.authWithCheck()
         }),
       )
   }

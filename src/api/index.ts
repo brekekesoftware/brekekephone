@@ -3,6 +3,7 @@ import { action } from 'mobx'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
+import { authUC } from '../stores/AuthUC'
 import { Call } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
@@ -86,6 +87,7 @@ class Api {
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
     getAuthStore().pbxTotalFailure += 1
+    authPBX.authWithCheck()
   }
   onPBXUserCalling = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'calling')
@@ -139,12 +141,16 @@ class Api {
     if (s.sipTotalFailure > 3) {
       s.sipPn = {}
     }
+    if (s.sipState === 'failure') {
+      authSIP.authWithCheck()
+    }
   }
   onSIPConnectionTimeout = () => {
     console.log('SIP PN debug: set sipState failure timeout')
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
     sip.stopWebRTC()
+    authSIP.authWithCheck()
   }
   onSIPSessionStarted = (c: Call) => {
     if (c.partyNumber === '8') {
@@ -168,6 +174,7 @@ class Api {
   onUCConnectionTimeout = () => {
     getAuthStore().ucState = 'failure'
     getAuthStore().ucTotalFailure += 1
+    authUC.authWithCheck()
   }
   onUCUserUpdated = (ev: {
     id: string

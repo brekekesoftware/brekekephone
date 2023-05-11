@@ -62,7 +62,7 @@ class AuthUC {
       }),
     )
   }
-  private authWithCheck = async () => {
+  authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.ucShouldAuth()) {
       return
@@ -79,6 +79,7 @@ class AuthUC {
         s.ucState = 'failure'
         s.ucTotalFailure += 1
         console.error('Failed to connect to uc:', err)
+        this.authWithCheck()
       }),
     )
   }
@@ -89,6 +90,7 @@ class AuthUC {
     s.ucState = 'failure'
     s.ucTotalFailure += 1
     s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
+    this.authWithCheck()
   }
   @action private loadUsers = () => {
     const users = uc.getUsers()
