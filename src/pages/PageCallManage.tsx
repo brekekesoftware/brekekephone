@@ -310,12 +310,15 @@ class PageCallManage extends Component<{
   }
   private openJavaPnOnVisible = () => {
     const { call: c } = this.props
+    const s = getCallStore()
     if (
       this.hasJavaPn &&
       this.isVisible() &&
       c.callkeepUuid &&
-      !c.transferring
+      !c.transferring &&
+      s.prevDisplayingCallId !== c.id
     ) {
+      s.prevDisplayingCallId = c.id
       BrekekeUtils.onPageCallManage(c.callkeepUuid)
     }
   }
