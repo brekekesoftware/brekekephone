@@ -316,9 +316,9 @@ class PageCallManage extends Component<{
       this.isVisible() &&
       c.callkeepUuid &&
       !c.transferring &&
-      s.currentIdFront !== c.id
+      s.prevDisplayingCallId !== c.id
     ) {
-      s.currentIdFront = c.id
+      s.prevDisplayingCallId = c.id
       BrekekeUtils.onPageCallManage(c.callkeepUuid)
     }
   }

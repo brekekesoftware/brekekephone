@@ -155,7 +155,8 @@ export class CallStore {
   }
   @observable ongoingCallId: string = ''
   @observable displayingCallId = ''
-  @observable currentIdFront = ''
+  prevDisplayingCallId = ''
+
   getOngoingCall = () => {
     this.updateCurrentCallDebounce()
     const oc = this.calls.find(c => c.id === this.ongoingCallId)
