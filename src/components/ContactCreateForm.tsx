@@ -46,7 +46,6 @@ export const ContactsCreateForm: FC<{
   onSave: Function
   title: string
 }> = observer(props => {
-  // move to here to update language
   const phonebookField = {
     id: 'phonebook',
     name: 'phonebook',
@@ -169,7 +168,6 @@ export const ContactsCreateForm: FC<{
   const previewName = contactStore
     .getManagerContact($.phonebook?.$lang)
     ?.toDisplayName($.phonebook)
-  console.log({ field: $.phonebook })
 
   return (
     <Layout
