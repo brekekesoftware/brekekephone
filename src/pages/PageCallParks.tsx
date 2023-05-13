@@ -74,7 +74,7 @@ export class PageCallParks extends Component<{
     return (
       <Layout
         description={intl`Your park numbers`}
-        fabOnNext={sp ? this.park : undefined}
+        fabOnNext={sp && !isDisable(sp) ? this.park : undefined}
         fabOnNextText={cp2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={cp2 ? undefined : 'call'}
         onBack={cp2 ? Nav().backToPageCallManage : undefined}

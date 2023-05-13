@@ -39,14 +39,6 @@ const css = StyleSheet.create({
   },
 })
 
-const phonebookField = {
-  id: 'phonebook',
-  name: 'phonebook',
-  label: intl`PHONEBOOK`,
-  rule: 'required',
-  isFocus: false,
-  maxLength: 100,
-}
 export const ContactsCreateForm: FC<{
   updatingPhonebook?: Phonebook
   phonebook?: string
@@ -54,6 +46,14 @@ export const ContactsCreateForm: FC<{
   onSave: Function
   title: string
 }> = observer(props => {
+  const phonebookField = {
+    id: 'phonebook',
+    name: 'phonebook',
+    label: intl`PHONEBOOK`,
+    rule: 'required',
+    isFocus: false,
+    maxLength: 100,
+  }
   const lang = props.updatingPhonebook?.info?.$lang || intlStore.locale
   const disabled = props.updatingPhonebook?.shared
   const defaultObj = {
@@ -168,6 +168,7 @@ export const ContactsCreateForm: FC<{
   const previewName = contactStore
     .getManagerContact($.phonebook?.$lang)
     ?.toDisplayName($.phonebook)
+
   return (
     <Layout
       fabOnBack={$.onBackBtnPress}
