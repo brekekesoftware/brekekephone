@@ -155,6 +155,7 @@ export class CallStore {
   }
   @observable ongoingCallId: string = ''
   @observable displayingCallId = ''
+  prevDisplayingCallId = ''
 
   getOngoingCall = () => {
     this.updateCurrentCallDebounce()
