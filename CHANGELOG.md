@@ -1,3 +1,9 @@
+#### 2.11.19
+
+- Fix it should display correctly PN screen new incoming call on top of the current call
+- Fix button Start Parking should not be clickable when parked
+- Fix input label PHONEBOOK should update on language change
+
 #### 2.11.18
 
 - Fix multi calls it should not hold immediately on new call
