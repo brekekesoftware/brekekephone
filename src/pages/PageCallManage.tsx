@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   AppState,
   Dimensions,
+  Keyboard,
   NativeEventSubscription,
   Platform,
   StyleSheet,
@@ -45,6 +46,7 @@ import { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { RnKeyboard } from '../stores/RnKeyboard'
 import { Duration } from '../stores/timerStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -248,7 +250,11 @@ class PageCallManage extends Component<{
       this.onAppStateChange,
     )
   }
+
   componentDidUpdate() {
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+    }
     this.hideButtonsIfVideo()
     this.openJavaPnOnVisible()
   }
