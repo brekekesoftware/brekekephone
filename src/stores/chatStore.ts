@@ -14,9 +14,12 @@ import { arrToMap } from '../utils/toMap'
 import { webPlayDing } from '../utils/webPlayDing'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
-import { getAuthStore } from './authStore'
+import { getAuthStore, waitUc } from './authStore'
 import { getCallStore } from './callStore'
 import { getPartyName } from './contactStore'
+import { intl, intlDebug } from './intl'
+import { Nav } from './Nav'
+import { RnAlert } from './RnAlert'
 import { RnStacker } from './RnStacker'
 
 export type ChatMessage = {
@@ -127,16 +130,21 @@ class ChatStore {
     return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
   }
 
-  pushChatNotification = (title: string, body: string, threadId?: string) => {
+  pushChatNotification = (
+    title: string,
+    body: string,
+    threadId?: string,
+    isGroupChat?: boolean,
+  ) => {
     if (Platform.OS === 'web') {
       return
     }
-
     if (Platform.OS === 'android') {
       FCM.presentLocalNotification({
         title,
         body,
         threadId,
+        isGroupChat,
         number: 0,
         sound: 'ding.mp3',
         priority: 'high',
@@ -166,6 +174,7 @@ class ChatStore {
             aps: {
               title,
               threadId,
+              isGroupChat,
               body,
               my_custom_data: 'local_notification',
               pre_app_state: AppState.currentState,
@@ -222,7 +231,7 @@ class ChatStore {
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {
-      this.pushChatNotification(name, m[0]?.text || '', threadId)
+      this.pushChatNotification(name, m[0]?.text || '', threadId, isGroup)
     }
     // play chat notification sound & vibration
     const cs = getCallStore()
@@ -245,6 +254,34 @@ class ChatStore {
     }
   }
 
+  handleMoveToChatGroupDetail = async (groupId: string) => {
+    await waitUc()
+    const groupInfo: Conference = uc.getChatGroupInfo(groupId)
+    const groupStatus = groupInfo.conf_status
+    if (groupStatus === Constants.CONF_STATUS_INACTIVE) {
+      RnAlert.error({
+        message: intlDebug`You have rejected this group or this group has been deleted`,
+      })
+      const d = await getAuthStore().getCurrentDataAsync()
+      const newList = d.recentChats.filter(c => c.id !== groupId)
+      d.recentChats = [...newList]
+    } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
+      RnAlert.prompt({
+        title: '',
+        message: intl`Do you want to join this group?`,
+        confirmText: intl`Join`,
+        onConfirm: async () => {
+          await uc.joinChatGroup(groupId)
+          Nav().customPageIndex = Nav().goToPageChatGroupDetail
+          Nav().goToPageChatGroupDetail({ groupId })
+        },
+        onDismiss: () => {},
+      })
+    } else {
+      Nav().customPageIndex = Nav().goToPageChatGroupDetail
+      Nav().goToPageChatGroupDetail({ groupId })
+    }
+  }
   @observable chatNotificationSoundRunning: boolean = false
   private playChatNotificationSoundVibration = () => {
     if (Platform.OS === 'web') {
