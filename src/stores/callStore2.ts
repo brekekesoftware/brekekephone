@@ -21,7 +21,7 @@ import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
-import { setCallStore } from './callStore'
+import { getCallStore, setCallStore } from './callStore'
 import { CancelRecentPn } from './cancelRecentPn'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -380,6 +380,11 @@ export class CallStore {
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
+    // when select background call, should be update hold for other call
+    getCallStore()
+      .calls.filter(i => i.id !== c.id && i.answered && !i.holding)
+      .forEach(i => i.toggleHoldWithCheck())
+
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
   }

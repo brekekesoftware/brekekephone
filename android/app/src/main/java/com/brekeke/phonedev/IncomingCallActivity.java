@@ -831,6 +831,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onCallConnected() {
+    if (answered == false) {
+      BrekekeUtils.putUserActionAnswerCall(uuid);
+      BrekekeUtils.emit("answerCall", uuid);
+      BrekekeUtils.staticStopRingtone();
+      answered = true;
+      vIncomingCall.setVisibility(View.GONE);
+      vHeaderIncomingCall.setVisibility(View.GONE);
+      vCallManage.setVisibility(View.VISIBLE);
+      vNavHeader.setVisibility(View.VISIBLE);
+    }
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
